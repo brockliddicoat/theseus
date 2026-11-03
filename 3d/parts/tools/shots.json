@@ -1,0 +1,482 @@
+[
+{
+"out": "parts/shots/gt01-hero-paper.png",
+"q": "part=gt01&zoom=0.85&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-hero-night.png",
+"q": "part=gt01&zoom=0.85&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-exploded-paper.png",
+"q": "part=gt01&explode=1&dir=-1,0.35,0.55&zoom=0.95&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-exploded-night.png",
+"q": "part=gt01&explode=1&dir=-1,0.35,0.55&zoom=0.95&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-cutaway-paper.png",
+"q": "part=gt01&cutaway=1&zoom=0.85&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-cutaway-night.png",
+"q": "part=gt01&cutaway=1&zoom=0.85&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-press-000-rest-paper.png",
+"q": "part=gt01&cutaway=1&dir=-1,0.14,0.06&target=0,8.0,0.9&radius=5.0&press=0&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-press-000-rest-night.png",
+"q": "part=gt01&cutaway=1&dir=-1,0.14,0.06&target=0,8.0,0.9&radius=5.0&press=0&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-press-063-snap-paper.png",
+"q": "part=gt01&cutaway=1&dir=-1,0.14,0.06&target=0,8.0,0.9&radius=5.0&press=0.63&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-press-063-snap-night.png",
+"q": "part=gt01&cutaway=1&dir=-1,0.14,0.06&target=0,8.0,0.9&radius=5.0&press=0.63&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-press-100-bottom-paper.png",
+"q": "part=gt01&cutaway=1&dir=-1,0.14,0.06&target=0,8.0,0.9&radius=5.0&press=1&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-press-100-bottom-night.png",
+"q": "part=gt01&cutaway=1&dir=-1,0.14,0.06&target=0,8.0,0.9&radius=5.0&press=1&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-top-paper.png",
+"q": "part=gt01&view=top&zoom=0.8&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/gt01-top-night.png",
+"q": "part=gt01&view=top&zoom=0.8&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-hero-paper.png",
+"q": "part=wheel&view=threeQuarter&zoom=0.88&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-hero-night.png",
+"q": "part=wheel&view=threeQuarter&zoom=0.88&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-macro-paper.png",
+"q": "part=wheel&encoder=0&support=0&zoom=0.75&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-macro-night.png",
+"q": "part=wheel&encoder=0&support=0&zoom=0.75&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-side-web-paper.png",
+"q": "part=wheel&encoder=0&support=0&view=left&zoom=0.72&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-side-web-night.png",
+"q": "part=wheel&encoder=0&support=0&view=left&zoom=0.72&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-exploded-paper.png",
+"q": "part=wheel&explode=1&dir=0.18,0.42,1&zoom=0.74&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-exploded-night.png",
+"q": "part=wheel&explode=1&dir=0.18,0.42,1&zoom=0.74&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-xray-paper.png",
+"q": "part=wheel&xray=1&view=threeQuarterRight&zoom=0.9&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-xray-night.png",
+"q": "part=wheel&xray=1&view=threeQuarterRight&zoom=0.9&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-gate-AB11-paper.png",
+"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=-0.0327&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-gate-AB11-night.png",
+"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=-0.0327&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-gate-AB10-paper.png",
+"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=0.0327&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-gate-AB10-night.png",
+"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=0.0327&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-gate-AB00-paper.png",
+"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=0.0982&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/wheel-gate-AB00-night.png",
+"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=0.0982&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-hero-paper.png",
+"q": "part=millmax&insert=0.3&zoom=0.8&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-hero-night.png",
+"q": "part=millmax&insert=0.3&zoom=0.8&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-exploded-paper.png",
+"q": "part=millmax&explode=1&insert=1&zoom=0.85&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-exploded-night.png",
+"q": "part=millmax&explode=1&insert=1&zoom=0.85&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-section-045-throat-paper.png",
+"q": "part=millmax&insert=0.45&section=1&dir=-0.35,0.3,1&target=0,-0.6,0&radius=2.6&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-section-045-throat-night.png",
+"q": "part=millmax&insert=0.45&section=1&dir=-0.35,0.3,1&target=0,-0.6,0&radius=2.6&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-section-062-spread-paper.png",
+"q": "part=millmax&insert=0.62&section=1&dir=-0.35,0.3,1&target=0,-0.6,0&radius=2.6&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-section-062-spread-night.png",
+"q": "part=millmax&insert=0.62&section=1&dir=-0.35,0.3,1&target=0,-0.6,0&radius=2.6&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-section-100-seated-paper.png",
+"q": "part=millmax&insert=1&section=1&dir=-0.35,0.3,1&target=0,-0.6,0&radius=2.6&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-section-100-seated-night.png",
+"q": "part=millmax&insert=1&section=1&dir=-0.35,0.3,1&target=0,-0.6,0&radius=2.6&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-sock-paper.png",
+"q": "part=millmax&sock=1&insert=1&dir=-0.7,-0.35,0.8&zoom=0.8&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/millmax-sock-night.png",
+"q": "part=millmax&sock=1&insert=1&dir=-0.7,-0.35,0.8&zoom=0.8&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-hero-paper.png",
+"q": "part=joint&drive=1&zoom=0.85&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-hero-night.png",
+"q": "part=joint&drive=1&zoom=0.85&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-exploded-paper.png",
+"q": "part=joint&explode=1&zoom=0.9&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-exploded-night.png",
+"q": "part=joint&explode=1&zoom=0.9&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-section-drive-000-paper.png",
+"q": "part=joint&section=1&drive=0&dir=-0.3,0.25,1&target=0,0.9,0&radius=8.1&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-section-drive-000-night.png",
+"q": "part=joint&section=1&drive=0&dir=-0.3,0.25,1&target=0,0.9,0&radius=8.1&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-section-drive-050-paper.png",
+"q": "part=joint&section=1&drive=0.5&dir=-0.3,0.25,1&target=0,0.9,0&radius=8.1&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-section-drive-050-night.png",
+"q": "part=joint&section=1&drive=0.5&dir=-0.3,0.25,1&target=0,0.9,0&radius=8.1&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-section-drive-100-paper.png",
+"q": "part=joint&section=1&drive=1&dir=-0.3,0.25,1&target=0,0.9,0&radius=8.1&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-section-drive-100-night.png",
+"q": "part=joint&section=1&drive=1&dir=-0.3,0.25,1&target=0,0.9,0&radius=8.1&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-section-detail-paper.png",
+"q": "part=joint&section=1&drive=1&dir=-0.3,0.25,1&target=0,-1.2,0&radius=4.4&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/joint-section-detail-night.png",
+"q": "part=joint&section=1&drive=1&dir=-0.3,0.25,1&target=0,-1.2,0&radius=4.4&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/screw-macro-paper.png",
+"q": "part=screw&dir=-0.5,0.9,0.6&zoom=0.7&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/screw-macro-night.png",
+"q": "part=screw&dir=-0.5,0.9,0.6&zoom=0.7&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/insert-macro-paper.png",
+"q": "part=insert&zoom=0.75&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/insert-macro-night.png",
+"q": "part=insert&zoom=0.75&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/skate-hero-paper.png",
+"q": "part=skate&flip=1&dir=-0.7,0.45,0.8&zoom=0.8&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/skate-hero-night.png",
+"q": "part=skate&flip=1&dir=-0.7,0.45,0.8&zoom=0.8&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/skate-exploded-paper.png",
+"q": "part=skate&flip=1&explode=1&dir=-0.7,0.3,0.8&zoom=0.85&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/skate-exploded-night.png",
+"q": "part=skate&flip=1&explode=1&dir=-0.7,0.3,0.8&zoom=0.85&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/skates-set-bottom-paper.png",
+"q": "part=skates&view=bottom&zoom=0.95&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/skates-set-bottom-night.png",
+"q": "part=skates&view=bottom&zoom=0.95&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/skates-set-34-paper.png",
+"q": "part=skates&dir=-0.55,-0.75,0.5&zoom=0.9&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/skates-set-34-night.png",
+"q": "part=skates&dir=-0.55,-0.75,0.5&zoom=0.9&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-hero-paper.png",
+"q": "part=battery&zoom=0.8&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-hero-night.png",
+"q": "part=battery&zoom=0.8&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-exploded-paper.png",
+"q": "part=battery&explode=1&zoom=0.85&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-exploded-night.png",
+"q": "part=battery&explode=1&zoom=0.85&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-top-paper.png",
+"q": "part=battery&view=top&zoom=0.8&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-top-night.png",
+"q": "part=battery&view=top&zoom=0.8&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-plug-000-out-paper.png",
+"q": "part=battery&plug=0&dir=-0.6,0.6,0.9&target=12.5,2,22&radius=7.5&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-plug-000-out-night.png",
+"q": "part=battery&plug=0&dir=-0.6,0.6,0.9&target=12.5,2,22&radius=7.5&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-plug-050-paper.png",
+"q": "part=battery&plug=0.5&dir=-0.6,0.6,0.9&target=12.5,2,22&radius=7.5&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-plug-050-night.png",
+"q": "part=battery&plug=0.5&dir=-0.6,0.6,0.9&target=12.5,2,22&radius=7.5&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-plug-100-mated-paper.png",
+"q": "part=battery&plug=1&dir=-0.6,0.6,0.9&target=12.5,2,22&radius=7.5&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-plug-100-mated-night.png",
+"q": "part=battery&plug=1&dir=-0.6,0.6,0.9&target=12.5,2,22&radius=7.5&theme=night",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-bands-off-paper.png",
+"q": "part=battery&bands=0&zoom=0.85&theme=paper",
+"w": 1600,
+"h": 900
+},
+{
+"out": "parts/shots/battery-bands-off-night.png",
+"q": "part=battery&bands=0&zoom=0.85&theme=night",
+"w": 1600,
+"h": 900
+}
+]

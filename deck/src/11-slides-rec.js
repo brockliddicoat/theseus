@@ -28,12 +28,12 @@ function miniBar(t, t0, x, y, w, v, max, col, label, val) { const k = ep(t, t0, 
 S({
   id: 'cover', ch: 'intro', theme: 'night', title: 'recommendations', settle: 5,
   draw: t => {
-    text('a companion to "in pursuit of an objectively better mouse"', LM, 120, { size: 20, weight: 700, color: C.mute, t, t0: 0.05, cps: 60 });
-    text('what i\'d change\nbefore it ships', LM, 330, { size: 88, weight: 800, lh: 1.08, ls: -3, t, t0: 0.3, cps: 26, caret: true });
-    text('the ideas the research contradicted, couldn\'t confirm, or that you flagged as unsure, with what the evidence says and what to do instead.', LM, 560, { size: 24, weight: 500, color: C.ink2, t, t0: 1.8, cps: 70, maxW: 1100, lh: 1.45 });
+    text('A companion to "In pursuit of an objectively better mouse"', LM, 120, { role: 'label', size: 22, color: C.mute, forceCaps: true, t, t0: 0.05, cps: 60 });
+    text('What I\'d change\nbefore it ships', LM, 330, { role: 'd2', size: 112, t, rise: [0.3, 0.9] });
+    text('The ideas the research contradicted, couldn\'t confirm, or that you flagged as unsure, with what the evidence says and what to do instead.', LM, 560, { role: 'lead', size: 31, color: C.ink2, t, t0: 1.8, cps: 70, maxW: 1100 });
     const vs = ['contradicted', 'contested', 'unverified', 'keep'], defs = ['the evidence points the other way', 'studies disagree, or the claim overreaches', 'nothing public confirms it yet', 'right idea; fix the number or the reason'];
     vs.forEach((v, i) => { const y = 760 + i * 48, k = ep(t, 2.6 + i * 0.15, 3.0 + i * 0.15); verdictChip(LM, y, v, k); text(defs[i], LM + 200, y, { size: 17, weight: 600, color: C.mute, alpha: k }); });
-    text('prepared for brock liddicoat, nitrite labs', LM, 1030, { size: 16, weight: 600, color: C.faint, t, t0: 3.4, cps: 90 });
+    text('Prepared for Brock Liddicoat, Nitrite Labs', LM, 970, { role: 'label', size: 20, color: C.faint, t, t0: 3.4, cps: 90 });
   }
 });
 
@@ -81,7 +81,6 @@ S({
       text(r[3], cols[3], yy, { size: 14, weight: 700, color: C.ink, alpha: k });
     });
     captions(t, [[1.8, 'none of these sink the mouse. most are a claim worded past its evidence, or a choice that needs a test of your own first.']], { y: 952 });
-    source(t, 'details and sources on the following slides.', { y: 1046 });
   }
 });
 

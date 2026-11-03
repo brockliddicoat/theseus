@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Theseus — internal lattice</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;font-family:Inter,Helvetica,Arial,sans-serif}
+  canvas{width:100vw;height:100vh;display:block}
+  #legend{position:absolute;right:48px;bottom:44px;display:none;font-size:13px;letter-spacing:.02em}
+  #legend .bar{width:220px;height:10px;border-radius:5px;margin:6px 0 4px}
+  #legend .ticks{display:flex;justify-content:space-between;width:220px}
+  #legend .tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:700;margin-left:6px}
+  .lbl{position:absolute;font-weight:800;font-size:15px;letter-spacing:.02em;display:none}
+</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body><canvas></canvas>
+<div id="legend"><div id="ltitle"></div><div class="bar" id="lbar"></div><div class="ticks" id="lticks"></div></div>
+<div class="lbl" id="lblA"></div><div class="lbl" id="lblB"></div>
+<script type="module">
+// URL params: theme, view (name or x:y:z), cut, cutmode (half|quarter|top), cutx, build, stress, case (press|squeeze), flow,
+// compare (tri|hex|both), fillet, marks, pcb, triggers, t (seconds, flow phase), under (underside light), lights, legend, labels, margin, target (x:y:z), dist, fov
+import * as THREE from 'three';
+import { createStudio, materials, VIEWS } from '../lib/studio.js';
+import { buildLattice } from './lattice.js';
+const q = new URLSearchParams(location.search);
+const num = (k, d) => q.has(k) ? +q.get(k) : d;
+try {
+  const theme = q.get('theme') || 'paper';
+  const studio = createStudio({ canvas: document.querySelector('canvas'), theme, width: innerWidth, height: innerHeight, fov: num('fov', 22) });
+  studio.renderer.localClippingEnabled = true;
+  const M = materials();
+  const g = buildLattice({ materials: M });
+  studio.scene.add(g);
+  await g.userData.ready;
+  g.setCut(num('cut', 0), { mode: q.get('cutmode') || 'half', x: num('cutx', 0) });
+  g.setBuild(num('build', 1));
+  g.setCompare(q.get('compare') || 'tri');
+  g.setPcb(num('pcb', 0.85)); g.setTriggers(num('triggers', 1));
+  g.setStress(num('stress', 0), q.get('case') || 'press');
+  g.setFlow(num('flow', 0), q.get('case') || 'press');
+  g.setTime(num('t', 1.3)); g.setUnderLight(num('under', 0)); g.setLights(num('lights', 1));
+  if (q.has('marks')) g.setFilletMarks(num('marks', 1) > 0);
+  const view = q.get('view') || 'threeQuarter';
+  const v = view.includes(':') ? view.split(':').map(Number) : view;
+  const fr = studio.frame(g, { view: v, margin: num('margin', 1.08) });
+  if (q.get('target')) {
+    const t = new THREE.Vector3(...q.get('target').split(':').map(Number));
+    const dir = studio.camera.position.clone().sub(fr.center).normalize();
+    studio.camera.position.copy(t).addScaledVector(dir, num('dist', fr.dist)); studio.camera.lookAt(t);
+    studio.camera.near = 0.3; studio.camera.far = 2000; studio.camera.updateProjectionMatrix();
+  }
+  const fk = num('fillet', 0);
+  if (fk > 0) {
+    g.setFilletZoom(fk);
+    const from = { position: studio.camera.position.toArray(), target: fr.center.toArray(), fov: studio.camera.fov };
+    const c = g.getFilletCamera(fk, from);
+    studio.camera.position.copy(c.position); studio.camera.fov = c.fov; studio.camera.near = 0.2; studio.camera.far = 600;
+    studio.camera.lookAt(c.target); studio.camera.updateProjectionMatrix();
+  }
+  // legend for the stress view (the deck draws its own from g.userData.stressScale)
+  if (num('legend', 0) && num('stress', 0) > 0) {
+    const ss = g.userData.stressScale, cs = q.get('case') || 'press', ink = theme === 'night' ? '#e9e8e4' : '#0d0e0f';
+    const L = document.getElementById('legend'); L.style.display = 'block'; L.style.color = ink;
+    document.getElementById('ltitle').innerHTML = `${cs === 'press' ? '10 N press on the crown' : '10 N squeeze, each side'} · peak stress, MPa <span class="tag" style="background:${theme === 'night' ? '#2a2b2e' : '#e6e4dd'}">derived, this model</span>`;
+    document.getElementById('lbar').style.background = `linear-gradient(90deg, ${ss.ramp.join(',')})`;
+    const mx = ss.range[cs]; document.getElementById('lticks').innerHTML = [0, mx / 2, mx].map(x => `<span>${x.toFixed(0)}</span>`).join('');
+  }
+  if (num('labels', 0) && (q.get('compare') === 'both')) {
+    const ink = theme === 'night' ? '#e9e8e4' : '#0d0e0f';
+    studio.camera.updateMatrixWorld();
+    const put = (id, txt, p) => { const e = document.getElementById(id); const s = new THREE.Vector3(...p).project(studio.camera);
+      e.style.display = 'block'; e.style.color = ink; e.textContent = txt; e.style.left = ((s.x + 1) / 2 * innerWidth - 60) + 'px'; e.style.top = ((1 - s.y) / 2 * innerHeight) + 'px'; };
+    const gap = 36, zl = num('lblz', -66); put('lblA', 'triangles', [-gap, 0, zl]); put('lblB', 'hexagons, same rib mass', [gap, 0, zl]);
+  }
+  studio.render(); studio.render();
+  window.__ready = true;
+} catch (e) { window.__error = String(e && e.stack || e); console.error(e); }
+</script></body></html>

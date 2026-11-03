@@ -1,6 +1,6 @@
 /* ============================================================================================
-   parts: close-up technical drawings of single components, in millimetres (y down). Nothing in here
-   draws the mouse or its shape: the shape is the part most likely to change, so it never appears.
+   parts: close-up technical drawings of single components, in millimetres (y down). The mouse's own shape
+   appears only as the key plan (section 18): the Sora V2 top view, simplified, used to locate a section.
    Where a drawing has to include part of the shell or a trigger, the curvature is soft and
    deliberately generic, and the piece ends in a break line.
    Each part has a painter in mm (…MM) and a stage wrapper (part()) that places it at (x, y) with
@@ -740,36 +740,44 @@ function chipMM(o = {}) {
 }
 
 /* =================================== 18. key plan: where on the mouse a drawing is taken ===================================
-   a deliberately generic mouse, drawn as an icon from above (front up), so a section or detail can be located.
-   it is not the shape and never shown large. o.hi names what to highlight; o.cut draws the section line. */
-function keyOutline() {
-  const pts = [];
-  for (let i = 0; i < 96; i++) {
-    const a = i / 96 * TAU, ux = Math.cos(a), uy = Math.sin(a), w = lerp(30, 27, (uy + 1) / 2);
-    pts.push([w * Math.sign(ux) * Math.pow(Math.abs(ux), 0.78), -60 * Math.sign(uy) * Math.pow(Math.abs(uy), 0.92)]);
-  }
-  return pts;
+   the top view of a Ninjutso Sora V2, simplified: the symmetric outline traced from Brock's scan (refs/derived/sora_top_outline.json),
+   the scan's mid-length notches smoothed away, resampled to 56 points per half. Note the front: a broad, nearly straight arc
+   with tight shoulders, then straight sides to a round tail. Front up, mm, x right; y = -z (the scan's +z is forward).
+   Seams as fine lines: the centre split, a straight rear trigger seam (idea #17) and the wheel slot.
+   o.hi names what to highlight; o.cut draws the section line; o.detail circles a detail. */
+const SORA_HALF = [[0,59.44],[2.84,59.29],[5.66,58.88],[8.45,58.34],[11.22,57.69],[13.97,56.95],[16.68,56.07],[19.32,55.01],[21.86,53.73],[24.21,52.13],[26.23,50.13],[27.78,47.75],[28.77,45.08],[29.34,42.3],[29.67,39.47],[29.88,36.63],[30.02,33.79],[30.1,30.94],[30.16,28.09],[30.2,25.25],[30.29,22.4],[30.44,19.56],[30.51,16.71],[30.52,13.87],[30.5,11.02],[30.5,8.17],[30.5,5.33],[30.49,2.48],[30.49,-0.37],[30.49,-3.21],[30.5,-6.06],[30.54,-8.91],[30.67,-11.75],[30.83,-14.59],[30.97,-17.43],[31.1,-20.28],[31.18,-23.12],[31.19,-25.97],[31.11,-28.82],[30.86,-31.65],[30.41,-34.46],[29.72,-37.22],[28.79,-39.91],[27.63,-42.51],[26.22,-44.98],[24.59,-47.32],[22.76,-49.49],[20.74,-51.5],[18.56,-53.32],[16.21,-54.94],[13.73,-56.33],[11.13,-57.48],[8.43,-58.39],[5.66,-59.04],[2.84,-59.42],[0,-59.55]];
+const KEY_PTS = SORA_HALF.map(([x, z]) => [x, -z]).concat(SORA_HALF.slice(1, -1).reverse().map(([x, z]) => [-x, -z]));
+const KEY = { seam: -5.5, wheel: [-4.3, -48, 8.6, 20], nose: -59.44, tail: 59.55 };
+function keyPath() {
+  const P = KEY_PTS, n = P.length; G.beginPath();
+  G.moveTo((P[n - 1][0] + P[0][0]) / 2, (P[n - 1][1] + P[0][1]) / 2);
+  for (let i = 0; i < n; i++) { const p = P[i], q = P[(i + 1) % n]; G.quadraticCurveTo(p[0], p[1], (p[0] + q[0]) / 2, (p[1] + q[1]) / 2); }
+  G.closePath();
 }
-const KEY_PTS = keyOutline();
+/** half-width of the outline at y (mm), for placing things on the rim */
+function keyHalfW(y) { let best = 0; for (let i = 1; i < SORA_HALF.length; i++) { const [x0, z0] = SORA_HALF[i - 1], [x1, z1] = SORA_HALF[i]; const a = -z0, b = -z1; if ((y - a) * (y - b) <= 0 && a !== b) best = Math.max(best, x0 + (x1 - x0) * (y - a) / (b - a)); } return best; }
 function keyPlanMM(o = {}) {
-  const A = o.accent || acc(), hi = o.hi || [], H = Array.isArray(hi) ? hi : [hi], out = {};
-  const path = () => { G.beginPath(); KEY_PTS.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.closePath(); };
-  path(); G.fillStyle = inkA(0.05); G.fill();
-  const hiFill = f => { G.save(); path(); G.clip(); G.fillStyle = rgba(A, 0.38); f(); G.restore(); };
+  const A = o.accent || acc(), hi = o.hi || [], H = Array.isArray(hi) ? hi : [hi], out = {}, sy = KEY.seam;
+  keyPath(); G.fillStyle = o.fill || inkA(TH ? 0.06 : 0.07); G.fill();
+  const hiFill = f => { G.save(); keyPath(); G.clip(); G.fillStyle = rgba(A, 0.4); f(); G.restore(); };
   if (H.includes('shell')) hiFill(() => G.fillRect(-40, -70, 80, 140));
-  if (H.includes('trigL')) hiFill(() => G.fillRect(-40, -70, 39.4, 55.6));
-  if (H.includes('trigR')) hiFill(() => G.fillRect(0.6, -70, 39.4, 55.6));
-  if (H.includes('rear')) hiFill(() => G.fillRect(-40, -14.4, 80, 1.8));
-  if (H.includes('sides')) hiFill(() => { G.fillRect(-40, -20, 14, 70); G.fillRect(26, -20, 14, 70); });
-  if (H.includes('hump')) hiFill(() => { G.beginPath(); G.ellipse(0, 18, 16, 22, 0, 0, TAU); G.fill(); });
-  path(); G.strokeStyle = H.includes('rim') ? A : inkA(0.55); G.lineWidth = lw(H.includes('rim') ? 2.4 : 1.4); G.stroke();
-  /* buttons, wheel, side buttons */
-  mmLine([[0, -58.6], [0, -14]], inkA(0.45), 1.1); mmLine([[-27.6, -14], [27.6, -14]], inkA(0.45), 1.1);
-  G.beginPath(); pathRR(-2.6, -50, 5.2, 13, 2.2); G.fillStyle = H.includes('wheel') ? A : inkA(0.22); G.fill();
-  for (const [y0, y1] of [[-24, -13], [-10, 1]]) { G.beginPath(); pathRR(-31.8, y0, 3.4, y1 - y0, 1.4); G.fillStyle = H.includes('side') ? A : inkA(0.3); G.fill(); }
+  if (H.includes('trigL')) hiFill(() => G.fillRect(-40, -70, 39.6, 70 + sy));
+  if (H.includes('trigR')) hiFill(() => G.fillRect(0.4, -70, 39.6, 70 + sy));
+  if (H.includes('rear')) hiFill(() => G.fillRect(-40, sy - 1.1, 80, 2.2));
+  if (H.includes('sides')) hiFill(() => { G.fillRect(-40, -22, 15, 72); G.fillRect(25, -22, 15, 72); });
+  if (H.includes('hump')) hiFill(() => { G.beginPath(); G.ellipse(0, 20, 16, 22, 0, 0, TAU); G.fill(); });
+  keyPath(); G.strokeStyle = H.includes('rim') ? A : inkA(TH ? 0.7 : 0.62); G.lineWidth = lw(H.includes('rim') ? 2.6 : 1.6); G.lineJoin = 'round'; G.stroke();
+  /* seams: the centre split, the straight rear trigger seam, the wheel slot */
+  const seam = inkA(TH ? 0.5 : 0.45), hw = keyHalfW(sy);
+  mmLine([[0, KEY.nose + 0.4], [0, sy]], seam, 1.1); mmLine([[-hw + 0.3, sy], [hw - 0.3, sy]], seam, 1.1);
+  const [wx, wy, ww, wh] = KEY.wheel;
+  G.beginPath(); pathRR(wx, wy, ww, wh, 3.6); G.fillStyle = H.includes('wheel') ? A : (TH ? '#E7E6E1' : '#1F2023'); G.fill(); G.strokeStyle = H.includes('wheel') ? A : seam; G.lineWidth = lw(1.1); G.stroke();
+  if (!H.includes('wheel')) for (let k = 0; k < 6; k++) mmLine([[wx + 1.6, wy + 3.4 + k * 2.6], [wx + ww - 1.6, wy + 3.4 + k * 2.6]], inkA(0.22), 0.8);
+  /* side buttons, on the left */
+  for (const [y0, y1] of [[-23.5, -10.7], [-4.3, 9.7]]) { const x0 = -keyHalfW((y0 + y1) / 2); G.beginPath(); pathRR(x0 - 1.6, y0, 3.2, y1 - y0, 1.4); G.fillStyle = H.includes('side') ? A : inkA(TH ? 0.32 : 0.36); G.fill(); }
   /* hidden features underneath, dashed */
   G.setLineDash([lw(3), lw(2.5)]); G.lineWidth = lw(1.1);
-  const dash = (on, f) => { G.strokeStyle = on ? A : inkA(0.32); G.fillStyle = rgba(A, 0.5); f(on); };
+  const dash = (on, f) => { G.strokeStyle = on ? A : inkA(0.3); G.fillStyle = rgba(A, 0.5); f(on); };
   dash(H.includes('board'), on => { pathRR(-17, -34, 34, 72, 3); if (on) G.fill(); G.stroke(); });
   dash(H.includes('antenna'), on => { G.beginPath(); G.rect(-6, -33, 12, 5); if (on) G.fill(); G.stroke(); });
   dash(H.includes('sensor'), on => { G.beginPath(); G.arc(0, 4, 3.6, 0, TAU); if (on) G.fill(); G.stroke(); });
@@ -785,19 +793,18 @@ function keyPlanMM(o = {}) {
       const dx = c.type === 'long' ? -1 : 0, dy = c.type === 'long' ? 0 : 1;
       mmLine([[px, py], [px + dx * 7, py + dy * 7]], A, 1.8);
       G.beginPath(); G.moveTo(px + dx * 10, py + dy * 10); G.lineTo(px + dx * 6.5 - dy * 2.2, py + dy * 6.5 + dx * 2.2); G.lineTo(px + dx * 6.5 + dy * 2.2, py + dy * 6.5 - dx * 2.2); G.closePath(); G.fillStyle = A; G.fill();
-      G.save(); G.translate(px + dx * 15 + (c.type === 'long' ? 0 : 0), py + dy * 16 + (c.type === 'long' ? 3 : 4)); G.scale(mmpx(), mmpx()); setFont({ size: 13, weight: 800 }); G.fillStyle = A; G.textAlign = 'center'; G.fillText(c.label || 'A', 0, 0); G.restore();
+      G.save(); G.translate(px + dx * 15, py + dy * 16 + (c.type === 'long' ? 3 : 4)); G.scale(mmpx(), mmpx()); setFont({ font: 'mono', size: 20, weight: 700 }); G.fillStyle = A; G.textAlign = 'center'; G.fillText(c.label || 'A', 0, 0); G.restore();
     }
     xrest();
   }
   if (o.detail) { const d = o.detail; G.setLineDash([lw(5), lw(3)]); G.beginPath(); G.arc(d.x, d.y, d.r, 0, TAU); G.strokeStyle = A; G.lineWidth = lw(1.8); G.stroke(); G.setLineDash([]); out.detail = SP(d.x + d.r * 0.7, d.y - d.r * 0.7); }
   return out;
 }
-/** place a key plan: the icon, a label, and a one-line note that it is generic */
+/** place a key plan: the top-view icon (scaled up a little from the old film's), and a mono label under it */
 function keyPlan(t, t0, x, y, o = {}) {
   const k = ep(t, t0, t0 + 0.5); if (k <= 0) return {};
-  const s = o.s || 1.1;
+  const s = (o.s || 1.1) * 1.18;
   const r = part(x, y, s, () => keyPlanMM(o), { alpha: k });
-  text(o.label || 'where', x, y + 62 * s + 22, { size: 12, weight: 800, color: C.mute, align: 'center', alpha: k });
-  text('generic mouse', x, y + 62 * s + 38, { size: 11, weight: 600, color: C.faint, align: 'center', alpha: k });
+  text(o.label || 'where', x, y + 60 * s + 30, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: k });
   return r;
 }

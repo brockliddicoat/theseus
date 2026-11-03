@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Theseus parts — test bench</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;font:12px/1.4 Inter,system-ui,sans-serif}
+  canvas{width:100vw;height:100vh;display:block}
+  #ui{position:fixed;left:12px;top:12px;background:rgba(255,255,255,.86);border-radius:8px;padding:10px 12px;box-shadow:0 2px 12px rgba(0,0,0,.12);max-width:320px}
+  body.night #ui{background:rgba(24,25,27,.88);color:#ddd}
+  #ui label{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:3px 0}
+  #ui input[type=range]{width:150px}
+  #ui select{font:inherit}
+  #ui h1{font-size:13px;margin:0 0 6px}
+</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body><canvas></canvas>
+<div id="ui"></div>
+<script type="module">
+// URL params: part, theme (paper|night), view (hero|front|back|left|right|top|bottom|low|threeQuarterRight or dir=x,y,z),
+//   zoom (frame margin, <1 = closer), target=x,y,z, fov, ui=0, plus part states:
+//   gt01: press, releasing, explode, cutaway, tilt, cover, marking
+//   wheel: scroll (rad), explode, xray, steps   millmax: insert, section, explode, variant, sock
+//   joint: drive, section, explode   skate: explode, material   skates: explode, base   battery: explode, plug, bands
+import * as THREE from 'three';
+import { createStudio } from '../lib/studio.js';
+import * as P from './parts.js';
+
+const q = Object.fromEntries(new URLSearchParams(location.search));
+const num = (v, d) => (v === undefined || v === '' ? d : +v);
+const theme = q.theme || 'paper';
+document.body.classList.toggle('night', theme === 'night');
+
+const REG = {
+  gt01: {
+    title: 'Gateron GT01 (representative)',
+    build: () => P.buildGT01({ tilt: num(q.tilt, 20), cover: q.cover, marking: q.marking }),
+    controls: { press: [0, 1], explode: [0, 1], cutaway: [0, 1] },
+    apply: (o, s) => { o.setPress(s.press, { releasing: q.releasing === '1' }); o.setExplode(s.explode); o.setCutaway(s.cutaway); },
+  },
+  wheel: P.buildScrollWheel && {
+    title: 'Magnesium wheel + optical encoder',
+    build: () => P.buildScrollWheel({ steps: num(q.steps, 24), grousers: num(q.grousers, 48), encoder: q.encoder !== '0', support: q.support !== '0', anisoRot: q.aniso }),
+    controls: { scroll: [-0.6, 0.6], explode: [0, 1], xray: [0, 1] },
+    apply: (o, s) => { o.setScroll(s.scroll); o.setExplode(s.explode); o.setXray(s.xray); },
+  },
+  millmax: P.buildMillMax3305 && {
+    title: 'Mill-Max 3305 receptacle',
+    build: () => P.buildMillMax3305({ variant: num(q.variant, 0), sock: q.sock === '1', pin: q.pin !== '0', pcb: q.pcb !== '0' }),
+    controls: { insert: [0, 1], section: [0, 1], explode: [0, 1] },
+    apply: (o, s) => { o.setInsert(s.insert); o.setSection(s.section); o.setExplode(s.explode); },
+  },
+  joint: P.buildScrewJoint && {
+    title: 'M2 screw + brass heat-set insert',
+    build: () => P.buildScrewJoint({}),
+    controls: { drive: [0, 1], section: [0, 1], explode: [0, 1] },
+    apply: (o, s) => { o.setDrive(s.drive); o.setSection(s.section); o.setExplode(s.explode); },
+  },
+  screw: P.buildM2Screw && { title: 'M2 combination-drive screw', build: () => P.buildM2Screw({ finish: q.finish }), controls: {}, apply: () => {} },
+  insert: P.buildHeatSetInsert && { title: 'M2 brass heat-set insert', build: () => P.buildHeatSetInsert({}), controls: {}, apply: () => {} },
+  skate: P.buildDotSkate && {
+    title: 'Dot skate', build: () => P.buildDotSkate({ material: q.material || 'POM' }),
+    controls: { explode: [0, 1] }, apply: (o, s) => o.setExplode(s.explode),
+  },
+  skates: P.buildDotSkateSet && {
+    title: 'Dot skates ×8', build: () => P.buildDotSkateSet({ showFootprint: q.base !== '0', material: q.material || 'POM' }),
+    controls: { explode: [0, 1] }, apply: (o, s) => o.setExplode(s.explode),
+  },
+  battery: P.buildBattery && {
+    title: 'LiPo 502030 + PCM + JST SH', build: () => P.buildBattery({ bandColor: q.bandColor }),
+    controls: { explode: [0, 1], plug: [0, 1], bands: [0, 1] },
+    apply: (o, s) => { o.setExplode(s.explode); o.setPlug(s.plug); o.setBands(s.bands); },
+  },
+};
+const DEF = { press: 0, explode: 0, cutaway: 0, scroll: 0, xray: 0, insert: 1, section: 0, drive: 1, plug: 1, bands: 1 };
+const VIEWS = { hero: 'threeQuarter' };
+
+try {
+  const studio = createStudio({ canvas: document.querySelector('canvas'), theme, width: innerWidth, height: innerHeight, fov: num(q.fov, 22) });
+  studio.renderer.localClippingEnabled = true;
+  const names = Object.keys(REG).filter(k => REG[k]);
+  const partName = REG[q.part] ? q.part : 'gt01';
+  const def = REG[partName];
+  const holder = new THREE.Group(); studio.scene.add(holder);
+  const obj = def.build(); holder.add(obj);
+  if (q.flip === '1') obj.rotation.x = Math.PI;
+  const st = {};
+  for (const k of Object.keys(def.controls)) st[k] = num(q[k], DEF[k] ?? 0);
+  def.apply(obj, st);
+
+  // sit on the ground (the studio's shadow plane is Y = 0)
+  function sit() {
+    if (q.sit === '0') return;
+    holder.position.set(0, 0, 0); holder.updateMatrixWorld(true);
+    const b = new THREE.Box3().setFromObject(obj, true);
+    holder.position.y = -b.min.y + num(q.lift, 0);
+  }
+  sit();
+  function frameIt() {
+    const v = q.dir ? q.dir.split(',').map(Number) : (VIEWS[q.view] || q.view || 'threeQuarter');
+    if (q.target && q.radius) {
+      // close-up: look at a point given in the part's local frame, fit a sphere of `radius` mm
+      const cam = studio.camera;
+      const t = new THREE.Vector3(...q.target.split(',').map(Number)).add(holder.position);
+      const dir = new THREE.Vector3(...(Array.isArray(v) ? v : ({ threeQuarter: [-0.78, 0.62, 0.95], threeQuarterRight: [0.78, 0.62, 0.95], top: [0, 1, 0.0001], left: [-1, 0.08, 0], right: [1, 0.08, 0], front: [0, 0.12, 1], back: [0, 0.12, -1], low: [-0.9, 0.22, 0.75], bottom: [0, -1, 0.0001] })[v])).normalize();
+      const r = +q.radius, dist = r / Math.sin(THREE.MathUtils.degToRad(cam.fov / 2)) / Math.min(1, cam.aspect);
+      cam.position.copy(t).addScaledVector(dir, dist); cam.up.set(0, 1, 0);
+      if (Math.abs(dir.y) > 0.99) cam.up.set(0, 0, -1);
+      cam.lookAt(t); cam.near = Math.max(0.5, dist - 4 * r - 20); cam.far = dist + 4 * r + 40; cam.updateProjectionMatrix();   // tight range: depth precision
+      return;
+    }
+    return studio.frame(holder, { view: v, margin: num(q.zoom, 1.12) });
+  }
+  frameIt();
+  // ground shadow camera fits small parts
+  const s = 30; Object.assign(studio.key.shadow.camera, { left: -s, right: s, top: s, bottom: -s }); studio.key.shadow.camera.updateProjectionMatrix();
+  studio.key.shadow.mapSize.set(2048, 2048);
+
+  // UI
+  const ui = document.getElementById('ui');
+  if (q.ui === '0') ui.remove();
+  else {
+    const sel = `<label>part <select id=sel>${names.map(n => `<option ${n === partName ? 'selected' : ''} value=${n}>${n}</option>`).join('')}</select></label>`;
+    ui.innerHTML = `<h1>${def.title}</h1>${sel}` + Object.entries(def.controls).map(([k, [a, b]]) =>
+      `<label>${k}<input type=range min=${a} max=${b} step=0.001 value=${st[k]} data-k=${k}></label>`).join('') +
+      `<label>theme <a href="#" id=th>${theme === 'paper' ? 'night' : 'paper'}</a></label>`;
+    ui.querySelector('#sel').onchange = e => { const u = new URL(location); u.searchParams.set('part', e.target.value); location = u; };
+    ui.querySelector('#th').onclick = e => { e.preventDefault(); const u = new URL(location); u.searchParams.set('theme', theme === 'paper' ? 'night' : 'paper'); location = u; };
+    ui.querySelectorAll('input[type=range]').forEach(inp => inp.oninput = () => { st[inp.dataset.k] = +inp.value; def.apply(obj, st); studio.render(); });
+    // drag to orbit (simple)
+    let drag = null;
+    const cv = studio.renderer.domElement;
+    cv.onpointerdown = e => { drag = [e.clientX, e.clientY]; };
+    window.onpointerup = () => { drag = null; };
+    window.onpointermove = e => {
+      if (!drag) return;
+      const dx = (e.clientX - drag[0]) * 0.01, dy = (e.clientY - drag[1]) * 0.01; drag = [e.clientX, e.clientY];
+      const c = new THREE.Box3().setFromObject(holder).getCenter(new THREE.Vector3());
+      const off = studio.camera.position.clone().sub(c);
+      const sph = new THREE.Spherical().setFromVector3(off); sph.theta -= dx; sph.phi = Math.min(3.1, Math.max(0.05, sph.phi - dy));
+      studio.camera.position.copy(c).add(new THREE.Vector3().setFromSpherical(sph)); studio.camera.lookAt(c); studio.render();
+    };
+    cv.onwheel = e => { const c = new THREE.Box3().setFromObject(holder).getCenter(new THREE.Vector3()); studio.camera.position.lerp(c, e.deltaY > 0 ? -0.08 : 0.08); studio.render(); };
+  }
+  window.__obj = obj; window.__studio = studio;
+  // one render is enough (shadow map and transmission pass happen inside it)
+  requestAnimationFrame(() => { studio.render(); window.__ready = true; });
+} catch (e) { window.__error = String(e && e.stack || e); console.error(e); }
+</script></body></html>

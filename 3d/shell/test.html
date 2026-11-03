@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Theseus shell — test</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#f7f6f2}canvas{width:100vw;height:100vh;display:block}
+#hud{position:fixed;left:12px;bottom:10px;font:12px/1.4 ui-monospace,monospace;color:#888;pointer-events:none}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body><canvas></canvas><div id="hud"></div>
+<script type="module">
+// Params: view (SHELL_VIEWS key: hero|heroWide|top|left|right|front|frontLow|back|bottom|exploded|cuEngrave|cuChamfer|cuWheel|cuSide)
+//         theme (paper|night)  variant (theseus|sora)  colorway (black|white|grey|forged)
+//         click=L:1 | R:0.5   scroll=rad   side=0:1   explode=0..1   xray=0..1   exag=1   grain=1   hud=1
+//         t=seconds -> runs the demo timeline (click L, click R, scroll, side buttons, explode, x-ray) at time t
+import * as THREE from 'three';
+import { createStudio } from '../lib/studio.js';
+import { buildShell, applyView, SHELL_VIEWS } from './shell.js';
+const Q = new URLSearchParams(location.search);
+const num = (k, d) => Q.has(k) ? parseFloat(Q.get(k)) : d;
+try {
+  const theme = Q.get('theme') || 'paper';
+  document.body.style.background = theme === 'night' ? '#0d0e0f' : '#f7f6f2';
+  const studio = createStudio({ canvas: document.querySelector('canvas'), theme, width: innerWidth, height: innerHeight });
+  const view = Q.get('view') || 'hero';
+  const shell = await buildShell({ variant: Q.get('variant') || 'theseus', colorway: Q.get('colorway') || 'black', theme,
+                                   clickExaggeration: num('exag', 1), grain: num('grain', 1) });
+  if (Q.get('shadows') === '0') { studio.renderer.shadowMap.enabled = false; studio.key.castShadow = false; }
+  const holder = new THREE.Group(); holder.add(shell); studio.scene.add(holder);
+  if (view === 'bottom') {            // product-shot convention: mouse turned over onto its back
+    shell.rotation.z = Math.PI; shell.updateMatrixWorld(true);
+    const bb = new THREE.Box3().setFromObject(shell); shell.position.y = -bb.min.y;
+  }
+  const apply = (t) => {
+    if (Q.has('click')) { const [s, k] = Q.get('click').split(':'); shell.setClick(s, parseFloat(k)); }
+    if (Q.has('scroll')) shell.setScroll(num('scroll', 0));
+    if (Q.has('side')) { const [i, k] = Q.get('side').split(':'); shell.setSideButton(parseInt(i), parseFloat(k)); }
+    if (Q.has('explode')) shell.setExplode(num('explode', 0));
+    if (Q.has('xray')) shell.setXray(num('xray', 0));
+    if (t !== null) {          // demo timeline (deterministic in t)
+      const pulse = (a, b) => Math.max(0, Math.min(1, (t - a) / 0.12)) * Math.max(0, Math.min(1, (b - t) / 0.12));
+      shell.setClick('L', pulse(0.5, 0.9)); shell.setClick('R', pulse(1.3, 1.7));
+      shell.setScroll(Math.max(0, Math.min(1, (t - 2) / 1.5)) * Math.PI * 0.75);
+      shell.setSideButton(0, pulse(3.8, 4.2)); shell.setSideButton(1, pulse(4.5, 4.9));
+      shell.setExplode(Math.max(0, Math.min(1, (t - 5.5) / 2.5)));
+      shell.setXray(Math.max(0, Math.min(1, (t - 8.5) / 1.5)));
+    }
+  };
+  apply(Q.has('t') ? num('t', 0) : null);
+  applyView(studio.camera, SHELL_VIEWS[view] || SHELL_VIEWS.hero);
+  if (view === 'bottom') studio.camera.up.set(0, 0, 1), studio.camera.lookAt(0, 0, 0);
+  if (view === 'bottom') { studio.camera.position.set(0, 520, 0.001); studio.camera.lookAt(0, 20, 0); studio.camera.updateProjectionMatrix(); }
+  if (Q.get('hud') === '1') document.getElementById('hud').textContent = `${view} · ${Q.get('variant') || 'theseus'} · ${Q.get('colorway') || 'black'} · parts: ${shell.userData.partsSource}`;
+  studio.render();
+  if (Q.has('pick')) {   // debug: raycast pixel(s) "x,y;x,y" and log hit names
+    const rc = new THREE.Raycaster();
+    for (const pr of Q.get('pick').split(';')) {
+      const [px, py] = pr.split(',').map(Number);
+      rc.setFromCamera(new THREE.Vector2(px / innerWidth * 2 - 1, -(py / innerHeight * 2 - 1)), studio.camera);
+      const hits = rc.intersectObject(shell, true).slice(0, 3).map(h => {
+        let n = h.object.name || '?', o = h.object; while (o.parent && !o.name) { o = o.parent; n = o.name || n; }
+        let path = []; o = h.object; while (o && o !== shell) { path.push(o.name || o.type); o = o.parent; }
+        return path.join('<') + ' @' + h.point.toArray().map(v => v.toFixed(2)).join(',');
+      });
+      console.error('PICK', pr, JSON.stringify(hits));
+    }
+  }
+  window.__shell = shell; window.__studio = studio;
+  studio.renderer.getContext().finish();   // make sure SwiftShader has finished the frame before capture
+  window.__ready = true;
+} catch (e) { window.__error = String(e && e.stack || e); console.error(e); }
+</script></body></html>

@@ -4,7 +4,7 @@
    transitions: iris (a disc of the accent opens, the new frame opens inside it a beat later), sweep (a slanted
    band of the accent crosses), push (the new frame slides in, the old one slides away slower and dims).
    ============================================================================================ */
-const APP = { i: 0, t0: 0, tPause: 0, playing: true, dpr: 1, scale: 1, trStart: -1, TR: 0.95, trans: 'push', trAcc: '#ecebe7', frozenT: null, reduced: false, lastT: 0 };
+const APP = { i: 0, t0: 0, tPause: 0, playing: true, dpr: 1, scale: 1, trStart: -1, TR: 0.95, trans: 'push', trAcc: '#F3F2EE', frozenT: null, reduced: false, lastT: 0 };
 const $ = id => document.getElementById(id);
 const OFF = document.createElement('canvas'), SNAP = document.createElement('canvas');
 
@@ -31,7 +31,7 @@ function go(i, opts = {}) {
     APP.trStart = now;
     APP.trans = next.trans || (next.card ? 'iris' : themeOf(prev) !== themeOf(next) ? 'sweep' : 'push');
     APP.back = i < APP.i;
-    TH = themeOf(next); APP.trAcc = next.card ? acc(next.ch) : (themeOf(next) ? '#141516' : '#ecebe7');
+    TH = themeOf(next); APP.trAcc = next.card ? acc(next.ch) : (themeOf(next) ? '#111111' : '#F3F2EE');
     if (APP.trans === 'sweep') APP.trAcc = acc(next.ch) === C.ink ? APP.trAcc : acc(next.ch);
   } else APP.trStart = -1;
   APP.i = i; APP.t0 = now; APP.tPause = 0; APP.lastT = 0;
@@ -83,14 +83,19 @@ function drawSlide(ctx, s, t) {
   ctx.setTransform(sc, 0, 0, sc, 0, 0);
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+  if (QA.on) { QA.text.length = 0; QA.boxes.length = 0; }
   const j = s.jolt ? s.jolt(t) : null; if (j) ctx.translate(j[0], j[1]);
   paper(s.paper == null ? 1 : (typeof s.paper === 'function' ? s.paper(t) : s.paper));
   if (s.draw) { try { s.draw(t); } catch (e) { console.error(s.id, e); } }
-  /* a soft vignette, as a lens would give it: the edges of the frame fall off a little, more at night */
   ctx.setTransform(sc, 0, 0, sc, 0, 0); ctx.globalAlpha = 1;
-  const vg = ctx.createRadialGradient(W / 2, H * 0.47, H * 0.42, W / 2, H * 0.5, H * 1.08);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, TH ? 'rgba(70,60,40,0.075)' : 'rgba(0,0,0,0.30)');
-  ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  /* the deck's chrome: the rule, THESEUS / chapter, n / N */
+  try { slideChrome(t, s); } catch (e) { console.error(s.id, 'chrome', e); }
+  /* night gets a soft lens fall-off at the edges; paper stays flat, like a printed sheet */
+  if (!TH) {
+    const vg = ctx.createRadialGradient(W / 2, H * 0.5, H * 0.62, W / 2, H * 0.5, H * 1.15);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.18)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  }
 }
 function compose(k) {
   const fx = $('fx').getContext('2d'), w = $('fx').width, h = $('fx').height, sx = w / W;
@@ -119,7 +124,7 @@ function compose(k) {
     fx.fillStyle = `rgba(0,0,0,${0.32 * e})`; fx.fillRect(0, 0, w, h);
     const bx = dir > 0 ? w * (1 - e) : -w * (1 - e);
     fx.drawImage(B, bx, 0);
-    const lx = dir > 0 ? bx : bx + w; fx.strokeStyle = acc(DECK.slides[APP.i].ch) === C.ink ? '#9da3ae' : acc(DECK.slides[APP.i].ch); fx.lineWidth = 3 * sx; fx.beginPath(); fx.moveTo(lx, 0); fx.lineTo(lx, h); fx.stroke();
+    const lx = dir > 0 ? bx : bx + w; fx.strokeStyle = acc(DECK.slides[APP.i].ch) === C.ink ? YEL : acc(DECK.slides[APP.i].ch); fx.lineWidth = 3 * sx; fx.beginPath(); fx.moveTo(lx, 0); fx.lineTo(lx, h); fx.stroke();
   } else { fx.drawImage(A, 0, 0); fx.globalAlpha = E.io3(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1; }
 }
 function frame() {
@@ -139,13 +144,19 @@ async function start() {
   APP.reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (q.get('cap')) document.body.classList.add('cap', 'clean');
   fit(); window.addEventListener('resize', () => { fit(); if (APP.frozenT != null) frame(); });
-  try { await Promise.race([Promise.all([document.fonts.load('800 40px "JetBrains Mono"'), document.fonts.load('500 20px "JetBrains Mono"')]), new Promise(r => setTimeout(r, 2500))]); } catch (e) { }
+  /* the fonts are embedded (00-head.html); canvas never asks for a font by itself, so load every face before the first frame */
+  QA.on = !!q.get('qa');
+  const faces = [];
+  for (const w of [400, 500, 600, 700, 800, 900]) faces.push(`${w} 40px "Inter Display"`);
+  for (const w of [400, 450, 500, 600, 700, 800]) faces.push(`${w} 28px "Inter"`);
+  for (const w of [400, 500, 600, 700, 800]) faces.push(`${w} 22px "JetBrains Mono"`);
+  try { await Promise.race([Promise.all(faces.map(f => document.fonts.load(f, 'THESEUS 0123456789 µs →'))).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 8000))]); } catch (e) { }
   try { await Promise.race([Promise.all((window.IMGS || []).map(im => im.decode ? im.decode().catch(() => { }) : null)), new Promise(r => setTimeout(r, 3000))]); } catch (e) { }
   buildBar();
   let first = 0; const h = (q.get('s') || location.hash.slice(1));
   if (h) { const n = DECK.slides.findIndex(s => s.id === h); first = n >= 0 ? n : (parseInt(h) || 0); }
   APP.i = -1; go(first, { instant: true, force: true });
-  if (q.get('t') != null) { APP.frozenT = parseFloat(q.get('t')); frame(); window.__ready = true; return; }
+  if (q.get('t') != null) { APP.frozenT = parseFloat(q.get('t')); frame(); window.__qa = QA.on ? { text: QA.text.slice(), boxes: QA.boxes.slice() } : null; window.__ready = true; return; }
   $('prev').onclick = e => { e.stopPropagation(); go(APP.i - 1); };
   $('next').onclick = e => { e.stopPropagation(); go(APP.i + 1); };
   $('play').onclick = e => { e.stopPropagation(); togglePlay(); };

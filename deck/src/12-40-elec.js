@@ -36,7 +36,7 @@ ideaSheet({
         }, { alpha: a });
         G.restore();
         circle(ix, iy, R, { color: inkA(0.35), w: 1.5, alpha: a });
-        dLabel(melt < 1 ? 'paste, printed' : 'a joint, after reflow', ix - 4, iy + R + 18, { align: 'center', color: melt < 1 ? C.mute : A, weight: 800, alpha: a });
+        dLabel(melt < 1 ? 'Paste' : 'Joint, reflowed', ix - 4, iy + R + 18, { align: 'center', color: melt < 1 ? C.mute : A, weight: 800, alpha: a });
         /* bottom: both sides. the board flips for side two and its first-side joints melt again, upside down */
         const by2 = y + 290, s2 = 6.2, flip = ph < 0.5 ? 0 : ph < 0.7 ? E.io3((ph - 0.5) / 0.2) : 1, sy = Math.cos(flip * Math.PI);
         dLabel('both sides', x + 18, y + 214, { color: C.ink2, alpha: a }); dLabel(flip > 0.5 ? '2 oven passes' : '1 oven pass', x + w - 18, y + 214, { align: 'right', color: flip > 0.5 ? C.red : C.mute, alpha: a, weight: 800 });
@@ -73,14 +73,14 @@ ideaSheet({
         for (let f = 2.30; f <= 2.60; f += 0.003) pts.push([m.X(f), m.Y(-dep / (1 + Math.pow((f - f0) / bw, 2)))]);
         const off = k > 0.55; poly(pts, { color: off ? C.red : A, w: 2.5, alpha: a });
         line(m.X(2.30), m.Y(-10), m.X(2.60), m.Y(-10), { color: C.faint, w: 1, dash: [3, 3], alpha: a });
-        dLabel('return loss, dB', x + 70, y + 206, { size: 11, alpha: a }); dLabel('GHz', x + w - 14, y + 316, { size: 11, alpha: a, align: 'right' });
-        dLabel(off ? 'detuned: the dip has left the band' : 'in tune: the dip sits on the band', x + w - 40, y + 206, { align: 'right', size: 12, weight: 800, color: off ? C.red : A, alpha: a });
+        dLabel('Return loss, dB', x + 70, y + 236, { role: 'small', alpha: a }); dLabel('GHz', x + w - 14, y + 316, { role: 'small', alpha: a, align: 'right' });
+        dLabel(off ? 'Detuned' : 'In tune', x + w - 40, y + 206, { align: 'right', role: 'label', color: off ? C.red : A, alpha: a });
       }
     },
     {
       n: 25, ev: ['claim', 'proposal'], title: 'pair by plugging both in',
       body: 'plug the mouse and the receiver into the same PC and they pair over USB, the way a DualSense pairs with a PS5. one random key goes to both and is read back, so there\'s no button combination to remember.',
-      note: 'key exchange as in Kunai\'s tester guide.',
+      note: 'As in the Kunai guide',
       draw: (lt, x, y, w, h, A, a) => {
         const ph = cyc(lt, 0, 8), plug = ph < 0.1 ? E.out3(ph / 0.1) : ph < 0.62 ? 1 : ph < 0.72 ? 1 - E.io3((ph - 0.62) / 0.1) : 0;
         /* the PC, two ports */

@@ -106,11 +106,13 @@ def vertex_normals(V, F):
 
 
 def shade(V, F, cam, W, H, smooth=True, base=(0.55, 0.56, 0.6), bg=(0.97, 0.965, 0.95),
-          light=None, spec=0.35, shininess=40.0, vcolor=None, two_side=True, R=None):
+          light=None, spec=0.35, shininess=40.0, vcolor=None, two_side=True, R=None, VN=None):
     V = np.asarray(V, float); F = np.asarray(F, np.int64)
     if R is None:
         R = render(V, F, cam, W, H)
     vn, fn = vertex_normals(V, F)
+    if VN is not None:
+        vn = np.asarray(VN, float)
     m = R['mask']; fid = R['fid']; b = R['bary']
     img = np.zeros((H, W, 3)); img[:] = bg
     ids = fid[m]

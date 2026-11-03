@@ -27,7 +27,9 @@ def mesh_mask(V, F, view, pxmm=PX_PER_MM):
     # pixel scale: H/2 / half_h
     cam['half_h'] = (H / 2) / pxmm
     R = render(V, F, cam, W, H)
-    return R['mask'], cam, (W, H)
+    from scipy.ndimage import binary_fill_holes, binary_closing
+    m = binary_fill_holes(binary_closing(R['mask'], iterations=2))
+    return m, cam, (W, H)
 
 
 def _iou(a, b):
