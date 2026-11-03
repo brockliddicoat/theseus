@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>smoke</title>
+<style>html,body{margin:0;height:100%;overflow:hidden}canvas{width:100vw;height:100vh;display:block}</style>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head><body><canvas></canvas>
+<script type="module">
+import * as THREE from 'three';
+import { createStudio, materials } from '../lib/studio.js';
+try {
+  const studio = createStudio({ canvas: document.querySelector('canvas'), theme: new URLSearchParams(location.search).get('theme') || 'paper', width: innerWidth, height: innerHeight });
+  const M = materials();
+  const g = new THREE.Group();
+  const s = new THREE.Mesh(new THREE.SphereGeometry(20, 64, 32), M.shell); s.position.y = 20; s.castShadow = true; g.add(s);
+  const b = new THREE.Mesh(new THREE.BoxGeometry(30, 1.2, 40), M.mask); b.position.set(45, 0.6, 0); b.castShadow = true; g.add(b);
+  const r = new THREE.Mesh(new THREE.TorusGeometry(6, 1.2, 24, 64), M.gold); r.position.set(45, 1.8, 0); r.rotation.x = Math.PI / 2; g.add(r);
+  studio.scene.add(g);
+  studio.frame(g, { view: 'threeQuarter' });
+  studio.render();
+  window.__ready = true;
+} catch (e) { window.__error = String(e && e.stack || e); }
+</script></body></html>

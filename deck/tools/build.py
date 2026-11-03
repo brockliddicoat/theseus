@@ -1,0 +1,33 @@
+import sys, pathlib, re
+root = pathlib.Path(__file__).resolve().parent.parent
+src = root / 'src'
+# usage: python3 tools/build.py [main|rec|parts] [--dev] [--only=12-xx-name.js] [--out=name]
+#   main = 10-slides-main.js + every src/12-*.js idea sheet (sorted by name) + 13-sort.js
+#   --only keeps 12-00-ideas.js (the framework) and the one named sheet file, for an isolated preview
+#   --out writes dev|dist/main-<name>.html instead of main.html
+def build(name, title, slides, dev=False):
+    head = (src/'00-head.html').read_text().replace('%%TITLE%%', title)
+    if dev:
+        head = head.replace('<style>', '<style>\n@font-face{font-family:"JetBrains Mono";src:local("DejaVu Sans Mono");}\n', 1)
+    parts = ['01-core.js', '03-parts.js', '04-ui.js', '05-data.js', '06-audio.js'] + slides + ['20-app.js']
+    js = '\n'.join((src/p).read_text() for p in parts)
+    i = head.index('<div id="app">')
+    head_part, body_part = head[:i], head[i:]
+    if 'name="viewport"' not in head_part:
+        head_part = head_part.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">', 1)
+    out = ('<!DOCTYPE html>\n<html lang="en">\n<head>\n' + head_part + '</head>\n<body>\n' + body_part
+           + '\n<script>\n' + js + '\n</script>\n</body>\n</html>\n')
+    d = root / ('dev' if dev else 'dist'); d.mkdir(exist_ok=True)
+    (d / name).write_text(out)
+    print(name, len(out))
+args = sys.argv[1:]
+dev = '--dev' in args
+opt = dict(a[2:].split('=', 1) for a in args if a.startswith('--') and '=' in a)
+which = [a for a in args if not a.startswith('--')] or ['main', 'rec']
+sheets = sorted(p.name for p in src.glob('12-*.js'))
+if 'only' in opt: sheets = [s for s in sheets if s == '12-00-ideas.js' or s == opt['only']]
+main_slides = (['09-fillet-data.js'] if (src/'09-fillet-data.js').exists() else []) + ['10-slides-main.js'] + sheets + (['13-sort.js'] if (src/'13-sort.js').exists() else [])
+out = ('main-' + opt['out'] + '.html') if 'out' in opt else 'main.html'
+if 'main' in which: build(out, 'THESEUS — In Pursuit of an Objectively Better Mouse', main_slides, dev)
+if 'parts' in which: build('parts.html', 'Parts test', ['19-parts-test.js'], dev)
+if 'rec' in which: build('rec.html', 'THESEUS — Recommendations', ['11-slides-rec.js'], dev)

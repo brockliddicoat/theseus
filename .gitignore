@@ -1,0 +1,15 @@
+# local-only reference material (not ours to redistribute, or pre-production/confidential)
+refs/scan/
+refs/kunai/
+3d/node_modules/
+deck/dev/
+deck/shots/
+**/node_modules/
+**/shots/
+*.log
+# builders' scratch
+**/work/
+**/__pycache__/
+*.nbc
+*.nbi
+**/tmp/

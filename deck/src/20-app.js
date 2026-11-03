@@ -1,0 +1,175 @@
+/* ============================================================================================
+   app: one canvas. Each frame the current slide is drawn off screen on its own ground (paper or night),
+   then composed onto the stage; during a change the old frame and the new one meet in one of the film's
+   transitions: iris (a disc of the accent opens, the new frame opens inside it a beat later), sweep (a slanted
+   band of the accent crosses), push (the new frame slides in, the old one slides away slower and dims).
+   ============================================================================================ */
+const APP = { i: 0, t0: 0, tPause: 0, playing: true, dpr: 1, scale: 1, trStart: -1, TR: 0.95, trans: 'push', trAcc: '#ecebe7', frozenT: null, reduced: false, lastT: 0 };
+const $ = id => document.getElementById(id);
+const OFF = document.createElement('canvas'), SNAP = document.createElement('canvas');
+
+function slideT() { if (APP.frozenT != null) return APP.frozenT; return APP.playing ? (performance.now() - APP.t0) / 1000 : APP.tPause; }
+function themeOf(s) { return s.theme === 'paper' ? 1 : 0; }
+
+function fit() {
+  const cap = document.body.classList.contains('cap'), clean = document.body.classList.contains('clean');
+  const bar = clean || cap ? 0 : 56, pad = cap ? 0 : 32;
+  const vw = window.innerWidth - pad, vh = window.innerHeight - bar - (cap ? 0 : 24);
+  const w = Math.max(200, Math.min(vw, vh * 16 / 9)), h = w * 9 / 16;
+  const st = $('stage'); st.style.width = w + 'px'; st.style.height = h + 'px';
+  $('bar').style.width = w + 'px';
+  APP.dpr = Math.min(2, window.devicePixelRatio || 1); APP.scale = w / W;
+  const cw = Math.round(w * APP.dpr), ch = Math.round(h * APP.dpr);
+  for (const c of [$('fx'), OFF, SNAP]) { if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; } }
+}
+function go(i, opts = {}) {
+  i = clamp(i, 0, DECK.slides.length - 1);
+  if (i === APP.i && !opts.force) return;
+  const now = performance.now(), prev = DECK.slides[APP.i], next = DECK.slides[i];
+  if (!opts.instant && !APP.reduced && prev) {
+    SNAP.getContext('2d').drawImage($('fx'), 0, 0);
+    APP.trStart = now;
+    APP.trans = next.trans || (next.card ? 'iris' : themeOf(prev) !== themeOf(next) ? 'sweep' : 'push');
+    APP.back = i < APP.i;
+    TH = themeOf(next); APP.trAcc = next.card ? acc(next.ch) : (themeOf(next) ? '#141516' : '#ecebe7');
+    if (APP.trans === 'sweep') APP.trAcc = acc(next.ch) === C.ink ? APP.trAcc : acc(next.ch);
+  } else APP.trStart = -1;
+  APP.i = i; APP.t0 = now; APP.tPause = 0; APP.lastT = 0;
+  if (APP.reduced) { APP.t0 = now - (next.settle || 9) * 1000; APP.tPause = next.settle || 9; }
+  if (APP.frozenT == null) { try { history.replaceState(null, '', '#' + next.id); } catch (e) { } }
+  updateBar(); renderSources();
+}
+function updateBar() {
+  const s = DECK.slides[APP.i];
+  $('count').textContent = (APP.i + 1) + ' / ' + DECK.slides.length;
+  const ch = DECK.chapters.find(c => c.key === s.ch); $('chap').textContent = ch ? ch.name : '';
+  document.querySelectorAll('.seg').forEach(b => b.classList.toggle('on', b.dataset.ch === s.ch));
+}
+function buildBar() {
+  const segs = $('segs'); segs.innerHTML = '';
+  DECK.chapters.forEach(c => {
+    const n = DECK.slides.filter(s => s.ch === c.key).length; if (!n) return;
+    const b = document.createElement('button'); b.className = 'seg'; b.type = 'button'; b.dataset.ch = c.key; b.style.flexGrow = n; b.title = c.name; b.setAttribute('aria-label', 'Go to ' + c.name);
+    b.appendChild(document.createElement('i'));
+    b.onclick = e => { e.stopPropagation(); go(DECK.slides.findIndex(s => s.ch === c.key)); };
+    segs.appendChild(b);
+  });
+}
+function renderSources(all) {
+  const box = $('src'); const s = DECK.slides[APP.i];
+  const ids = all ? Object.keys(SRC) : (s.src || []);
+  box.innerHTML = '';
+  const h = document.createElement('h2'); h.textContent = all ? 'All sources' : 'Sources for this slide'; box.appendChild(h);
+  const sub = document.createElement('p'); sub.className = 'sub'; sub.textContent = all ? ids.length + ' references' : (s.title || ''); box.appendChild(sub);
+  if (!ids.length) { const p = document.createElement('p'); p.textContent = 'This slide is a design proposal, or a derivation shown on screen. It cites nothing outside the deck.'; p.style.cssText = 'margin:0;color:#c9c8c2;font-size:13px'; box.appendChild(p); }
+  else {
+    const ol = document.createElement('ol');
+    for (const id of ids) { const r = SRC[id]; if (!r) continue; const li = document.createElement('li'); li.appendChild(document.createTextNode(r.t + ' ')); if (r.u) { const a = document.createElement('a'); a.href = r.u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = r.u.replace(/^https?:\/\/(www\.)?/, '').slice(0, 70); li.appendChild(a); } if (r.n) { const n = document.createElement('div'); n.textContent = r.n; n.style.cssText = 'color:#8b8d91;font-size:12px;margin-top:2px'; li.appendChild(n); } ol.appendChild(li); }
+    box.appendChild(ol);
+  }
+  const row = document.createElement('div'); row.className = 'row';
+  const b = document.createElement('button'); b.className = 'pill'; b.type = 'button'; b.textContent = all ? 'this slide' : 'all sources'; b.onclick = e => { e.stopPropagation(); renderSources(!all); };
+  row.appendChild(b); box.appendChild(row);
+}
+function togglePlay() {
+  if (APP.playing) { APP.tPause = slideT(); APP.playing = false; } else { APP.t0 = performance.now() - APP.tPause * 1000; APP.playing = true; }
+  $('playIcon').setAttribute('d', APP.playing ? 'M6 5h4v14H6zM14 5h4v14h-4z' : 'M7 5v14l11-7z');
+  $('play').setAttribute('aria-label', APP.playing ? 'Pause' : 'Play');
+}
+/** draw slide s at time t into a 2D context */
+function drawSlide(ctx, s, t) {
+  G = ctx; TH = themeOf(s);
+  const sc = APP.scale * APP.dpr;
+  ctx.setTransform(sc, 0, 0, sc, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+  const j = s.jolt ? s.jolt(t) : null; if (j) ctx.translate(j[0], j[1]);
+  paper(s.paper == null ? 1 : (typeof s.paper === 'function' ? s.paper(t) : s.paper));
+  if (s.draw) { try { s.draw(t); } catch (e) { console.error(s.id, e); } }
+  /* a soft vignette, as a lens would give it: the edges of the frame fall off a little, more at night */
+  ctx.setTransform(sc, 0, 0, sc, 0, 0); ctx.globalAlpha = 1;
+  const vg = ctx.createRadialGradient(W / 2, H * 0.47, H * 0.42, W / 2, H * 0.5, H * 1.08);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, TH ? 'rgba(70,60,40,0.075)' : 'rgba(0,0,0,0.30)');
+  ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+}
+function compose(k) {
+  const fx = $('fx').getContext('2d'), w = $('fx').width, h = $('fx').height, sx = w / W;
+  fx.setTransform(1, 0, 0, 1, 0, 0); fx.globalAlpha = 1;
+  if (k >= 1 || APP.trStart < 0) { fx.drawImage(OFF, 0, 0); return; }
+  const A = SNAP, B = OFF, accent = APP.trAcc, dir = APP.back ? -1 : 1;
+  if (APP.trans === 'iris') {
+    const x = (APP.irisX || 300) * sx, y = (APP.irisY || 760) * sx, R = Math.hypot(Math.max(x, w - x), Math.max(y, h - y)) + 8;
+    const ea = E.io3(clamp(k / 0.9)), eb = E.io3(clamp((k - 0.1) / 0.9));
+    fx.save(); fx.translate(x, y); fx.scale(1 + 0.07 * ea, 1 + 0.07 * ea); fx.translate(-x, -y); fx.drawImage(A, 0, 0); fx.restore();
+    fx.fillStyle = accent; fx.beginPath(); fx.arc(x, y, R * ea, 0, Math.PI * 2); fx.fill();
+    fx.save(); fx.beginPath(); fx.arc(x, y, Math.max(0.01, R * eb), 0, Math.PI * 2); fx.clip();
+    fx.translate(x, y); fx.scale(1.1 - 0.1 * eb, 1.1 - 0.1 * eb); fx.translate(-x, -y); fx.drawImage(B, 0, 0); fx.restore();
+    if (eb > 0 && eb < 1) { fx.strokeStyle = 'rgba(255,255,255,0.35)'; fx.lineWidth = 1.5 * sx; fx.beginPath(); fx.arc(x, y, R * eb, 0, Math.PI * 2); fx.stroke(); }
+  } else if (APP.trans === 'sweep') {
+    const sl = 0.36 * h, x0 = -sl - 40, x1 = w + 40;
+    const ea = E.io3(clamp(k / 0.88)), eb = E.io3(clamp((k - 0.12) / 0.88));
+    const xa = lerp(x0, x1, ea), xb = lerp(x0, x1, eb);
+    fx.drawImage(A, -60 * sx * ea, 0);
+    const band = xe => { fx.beginPath(); fx.moveTo(-10, 0); fx.lineTo(xe + sl, 0); fx.lineTo(xe, h); fx.lineTo(-10, h); fx.closePath(); };
+    fx.fillStyle = accent; band(xa); fx.fill();
+    fx.save(); band(xb); fx.clip(); fx.drawImage(B, 0, 0); fx.restore();
+  } else if (APP.trans === 'push') {
+    const e = E.io5(k);
+    fx.drawImage(A, -0.38 * w * e * dir, 0);
+    fx.fillStyle = `rgba(0,0,0,${0.32 * e})`; fx.fillRect(0, 0, w, h);
+    const bx = dir > 0 ? w * (1 - e) : -w * (1 - e);
+    fx.drawImage(B, bx, 0);
+    const lx = dir > 0 ? bx : bx + w; fx.strokeStyle = acc(DECK.slides[APP.i].ch) === C.ink ? '#9da3ae' : acc(DECK.slides[APP.i].ch); fx.lineWidth = 3 * sx; fx.beginPath(); fx.moveTo(lx, 0); fx.lineTo(lx, h); fx.stroke();
+  } else { fx.drawImage(A, 0, 0); fx.globalAlpha = E.io3(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1; }
+}
+function frame() {
+  const s = DECK.slides[APP.i], t = slideT(), now = performance.now();
+  if (APP.frozenT == null) sfxRun(s, APP.lastT, t); APP.lastT = t;
+  drawSlide(OFF.getContext('2d'), s, t);
+  let k = APP.trStart > 0 ? prog((now - APP.trStart) / 1000, 0, APP.TR) : 1; if (k >= 1) APP.trStart = -1;
+  compose(k);
+  /* progress inside the chapter segment */
+  const segs = [...document.querySelectorAll('.seg')], si = segs.findIndex(b => b.dataset.ch === s.ch);
+  segs.forEach((b, kk) => { if (kk < si) b.firstChild.style.width = '100%'; else if (kk > si) b.firstChild.style.width = '0%'; });
+  if (segs[si]) { const list = DECK.slides.filter(x => x.ch === s.ch); segs[si].firstChild.style.width = ((list.indexOf(s) + clamp(t / (s.settle || 9))) / list.length * 100) + '%'; }
+}
+function loop() { frame(); if (APP.frozenT == null) requestAnimationFrame(loop); }
+async function start() {
+  const q = new URLSearchParams(location.search);
+  APP.reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (q.get('cap')) document.body.classList.add('cap', 'clean');
+  fit(); window.addEventListener('resize', () => { fit(); if (APP.frozenT != null) frame(); });
+  try { await Promise.race([Promise.all([document.fonts.load('800 40px "JetBrains Mono"'), document.fonts.load('500 20px "JetBrains Mono"')]), new Promise(r => setTimeout(r, 2500))]); } catch (e) { }
+  try { await Promise.race([Promise.all((window.IMGS || []).map(im => im.decode ? im.decode().catch(() => { }) : null)), new Promise(r => setTimeout(r, 3000))]); } catch (e) { }
+  buildBar();
+  let first = 0; const h = (q.get('s') || location.hash.slice(1));
+  if (h) { const n = DECK.slides.findIndex(s => s.id === h); first = n >= 0 ? n : (parseInt(h) || 0); }
+  APP.i = -1; go(first, { instant: true, force: true });
+  if (q.get('t') != null) { APP.frozenT = parseFloat(q.get('t')); frame(); window.__ready = true; return; }
+  $('prev').onclick = e => { e.stopPropagation(); go(APP.i - 1); };
+  $('next').onclick = e => { e.stopPropagation(); go(APP.i + 1); };
+  $('play').onclick = e => { e.stopPropagation(); togglePlay(); };
+  $('fs').onclick = e => { e.stopPropagation(); const el = document.documentElement; const p = document.fullscreenElement ? document.exitFullscreen() : (el.requestFullscreen ? el.requestFullscreen() : null); if (p && p.catch) p.catch(() => { }); };
+  $('srcBtn').onclick = e => { e.stopPropagation(); const b = $('src'); b.hidden = !b.hidden; $('srcBtn').setAttribute('aria-expanded', String(!b.hidden)); };
+  $('sndBtn').onclick = e => { e.stopPropagation(); auInit(); AU.on = !AU.on; $('sndBtn').textContent = AU.on ? 'sound on' : 'sound off'; $('sndBtn').setAttribute('aria-pressed', String(AU.on)); if (AU.on) sfx('click'); };
+  $('cleanBtn').onclick = e => { e.stopPropagation(); document.body.classList.toggle('clean'); fit(); };
+  $('stage').addEventListener('click', e => { const r = $('stage').getBoundingClientRect(); go(APP.i + ((e.clientX - r.left) < r.width * 0.3 ? -1 : 1)); });
+  let tx = null; $('stage').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  $('stage').addEventListener('touchend', e => { if (tx == null) return; const d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 40) go(APP.i + (d < 0 ? 1 : -1)); tx = null; });
+  window.addEventListener('keydown', e => {
+    if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
+    const k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); go(APP.i + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); go(APP.i - 1); }
+    else if (k === 'Home') go(0); else if (k === 'End') go(DECK.slides.length - 1);
+    else if (k === 'h' || k === 'H') { document.body.classList.toggle('clean'); fit(); }
+    else if (k === 'p' || k === 'P') togglePlay();
+    else if (k === 'r' || k === 'R') go(APP.i, { force: true, instant: true });
+    else if (k === 'f' || k === 'F') $('fs').click();
+    else if (k === 's' || k === 'S') $('sndBtn').click();
+    else if (k === 'Escape') $('src').hidden = true;
+  });
+  window.addEventListener('hashchange', () => { const n = DECK.slides.findIndex(s => s.id === location.hash.slice(1)); if (n >= 0 && n !== APP.i) go(n); });
+  requestAnimationFrame(loop);
+}
+window.addEventListener('DOMContentLoaded', start);

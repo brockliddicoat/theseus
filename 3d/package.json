@@ -1,0 +1,1 @@
+{"name":"theseus-3d","private":true,"type":"module","version":"0.0.0","dependencies":{"esbuild":"^0.28.2","three":"^0.187.0"}}

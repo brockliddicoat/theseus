@@ -1,0 +1,743 @@
+
+##### TAB: Tab 1
+In Pursuit of an Objectively Better Mouse, Optimization Over Opinion.
+Over 100 Incremental but Impactful Mouse Improvements:
+
+
+
+2) Rotating the microswitches to be aligned with the angle of the triggers.
+Endgame Gear uses this implementation in their mice, and they were voted “Best Click Feeling” during the Peripheral Awards. This setup prevents your input force from being wasted by possibly being split into separate directional vectors. Having your input force directly driven into the microswitch not only tactically feels better but also reduces post travel. Furthermore, the result of all this is better mechanical latency, leading to better player performance. There is an opportunity for this to be marketed as “Direct Drive Actuation”.
+
+3) A dual trigger plungers implementation.
+Popularized by G-Wolves, this is the method of adding an additional plunger as far away from the first one as possible to provide a second anchor point for each trigger. It was created to resolve the issue of horizontal trigger jiggle/sway, so it should result in better alignment and more consistent clicks (which leads to more consistent performance). This could be marketed as “Dual Rail Triggers”.
+
+
+4) True dual/split click tensioning.
+So many mice are held back from being perfect by their click tensioning mechanisms. For example on even a leadership performance mouse such as the ULX, the triggers on it do not each have their own tensioning mechanisms and instead are both mounted by the same flat, single-screw centralized click tensioning amalgamation. With this system, a tiny misalignment of how the triggers are mounted can lead to a completely compromised and uneven feeling of click tensioning. A dual/split click tensioning implementation could theoretically vastly improve the click tensioning quality control which may lead to less muscle strain and more consistent click timing (therefore theoretically increasing accuracy as well). This upgrade was made from the Arye FCC-1 to RCC-1 and it led to a massive upgrade in click feeling.
+
+
+7) Switching the scroll wheel axle to POM.
+This allows for every step of every scroll rotation to be self-lubricating, significantly reducing the risk of the scroll wheel becoming “sticky” after prolonged usage. Arye originally theorized the usefulness of a POM scroll wheel for longevity, and PMM shortly followed suit by implementing this feature on their higher-end models. At this point there are years of customer reception to support that there are only upsides for this type of axel.
+
+
+8) POM mouse skates.
+Due to POM mouse skates being pioneered by Artisan, they should be perceived as more premium and of having smoother glide ability (which means more consistent performance). This also introduces material uniformity throughout the mouse. POM skate should be installed by default, but PTFE skates should still be included for those with preference.
+
+
+10) Usage of 2 dot skates per corner by default.
+Many skate designs bend irreparably when removed or realigned. Additionally, most skates are just designed based on what area is available on the bottom of a mouse, which can lead to uneven friction distribution because of the resulting limited axes of symmetry. Because of their circular nature (circles having infinite axes of symmetry), dot skates do not have any of these issues (and are even lighter). As a precaution though, there should be enough room for 2 dot skates per corner as with only 1 dot per corner some softer pads cause the dots to sink in too much and the pad to scrape the bottom of the mouse.
+
+
+11) Not having cutouts under the skates.
+	This prevents dust from getting on the adhesive of the skates. It also gives the skates more surface area to stick to so they can stick to the base better. The base needs to be redesigned entirely to keep the sensor lens within focus distance if cut outs are being removed. Otherwise it will cause tracking issues as seen in several WLMOUSE products like Huan, Ying and G-Wolves HTM Plus
+
+12) A satin clear coat finish.
+A satin clear coat on raw Carbon Fiber filled Polymer (as seen in the ULX Competition) will make the mouse look black (except when it is under light), capturing both the minimalistic section of the market that wants a plain black mouse as well as the boisterous section of the market who wants a Forged Carbon Fiber look mouse. 
+
+
+13) Having colorways which are Pantone matched with popular GMK sets.
+I believe this will help break into the lucrative enthusiast keyboard market. Additionally, there may be a mental benefit here to giving a player a clean matching setup. As the old saying goes, when your workspace looks good, you feel good.
+
+
+14) Implementing hotswap components via claw springs.
+The Millmax 3305 is a claw spring that fits the legs of a microswitch as an alternative for soldering. This is an unpatentable way to implement user-hotswappable microswitches and encoders. There is a good chance that this technique could also eliminate the regulatory concerns often caused by exposed pins since the claw clips would cover them.
+
+
+15) Using a fully solid shell.
+A solid shell not only reduces the difficulty of injection molding (since it eliminates isolated and hard to reach areas created by cutouts), but it also minimizes susceptibility to liquids and prevents significantly less dust from getting into the encoder (which is an extremely common failure point for a mouse). A fully solid shell does have the downside of making perspiration on the surfaces slightly more noticeable (since there is less airflow), but this can easily be compensated for by a high-end coating. To further demonstrate the significance of this change, perspiration build up is commonly deemed much more acceptable than the “gunk” (dead skin and hair) build up caused by cutouts or a golfball texture.
+
+
+16) Implementing a ceramic coating.	Cerakote’s mass production oriented F-Series would eliminate the risk of any color shift since it has excellent chemical and ultraviolet durability, and its film thinness adds virtually no weight (the same cannot be said for the current rubberized coating).	A ceramic coating has been used in mice before, most notably on the scroll wheel of the Zaunkoenig M2K, and it received great consumer reception. When it was applied to the whole mouse by PMM, the surface friction was so high it went viral for its extremely desirable ability to allow you to pick up a mouse with just 2 fingers. A bad coating on your first drop can ruin your first impression and reputation, making the higher cost of a ceramic coating not only well worth it, but disingenuous to not have if youre advertising you’re building the best product possible.It is very important that this is advertised as “baked ceramic coating” versus PMM’s “air dry ceramic coating” since PMM’s ceramic coating, despite being extremely grippy, had durability issues. For marketing we can explain how because ceramics need heat to reach their full strength, there is a reason why a dried clay pot is weaker than a pot put in a kiln, the PMM coating in this analogy is the pot that has not been put in a kiln.Prolonged usage of the current coating has shown its susceptibility to being rubbed off, ceramic coating on the other hand cannot be rubbed off with anything short of something the same hardness as a diamond. Lastly, because Polypropylene has lower surface energy Cerakote is a perfect fit since it relies on how the surface is sanded rather than the material composition for its bond. 
+
+17) Straightening the rear trigger cutouts.
+This ensures the fulcrum of the click tensioning mechanism is aligned with where the load will be applied so that none of the input is wasted by being converted to a horizontal force component. The current “smile” style rear trigger cutouts may look more aesthetically pleasing and be more characterized, but since the click tensioning mechanism has to take the shape of the rear trigger cutouts, using a “smile” shape actually causes the click tensioning mechanism to bend inward diagonally (instead of straight up and down). This introduces mechanical latency and harms click feeling, making it of utmost importance that the rear trigger cutouts get reshaped. This is likely why the Viper V2 Pro had angled rear trigger cutouts, but the Viper V3 Pro had them completely straightened after complaints of poor click feelings.
+
+
+18) Aligning the click tensioning mechanisms with the microswitches.	Right now, the ULX only has one click central click tensioning mechanism, so it’s impossible to even align it to 2 microswitches, but even a lot of mice that do have dual/split click tensioning mechanisms don’t have their click tensioning mechanism aligned with the microswitch. Which is yet another way force can be converted to the horizontal component from the vertical component and further harm click feeling. Aligning the click tensioning mechanisms is only a theoretical (yet physically grounded) suggestion and will need to be tested as it is a novel solution.
+
+
+19) Angling the charging cable.
+	This helps prevent the mouse from running over the cable while it is charging. Angling the cable upwards keeps the cable as far away from the bottom of the mouse as possible, which is especially important for any mouse shape where the chin of the mouse is angled inwards towards the bottom in such a way that it is prone to sucking the cable in. I predict this will measurably increase player performance and consistency while the mouse is charging, reducing the chance the customer will switch to a new mouse after this one dies. Many brands like Lamzu and Pulsar already do this for a reason.
+
+
+20) Finding a Goldilocks thickness for the cable.
+The current cable is much too thick, it makes it impossible for the dongle to sit flat and therefore very easy for the dongle to fall off a desk and onto the floor. When this happens, it often goes unnoticed and destroys wireless latency. The current cable is also so thick that it can cause the mouse to move on its own when the tension in the bent cable is stronger than the weight of the mouse (and this issue would only get worse if further weight savings are implemented). Additionally, the cable cannot be too thin since that will cause slow charging, but surely a middleground can be found. If anything most users would likely rather have slower charging than the absurd thickness they have now. Apple’s cables would be a really good candidate for this. 
+
+
+23) Implementing web based software.
+	No one wants to download unnecessary software anymore, so it is very important that the main solution is web-based. It would also be helpful if the web software was hosted on the main store page domain since it’s easier to remember and access, doing this would also probably help drive repeat sales.
+ 
+
+26) A film thin bottom plate sticker.
+	G-Wolves used to do this a lot on older mice such as the HTS Plus. It was a great way to give a mouse more solid appearance for as little additional weight as possible while also reducing vulnerability to liquids. This sticker would need to be semi-permanent with a warning printed on it to not remove it.
+
+
+27) Moving the sensor forward.
+	One customer dremeled out a more forward slot for the sensor in the ULX PCB and then hand-soldered the sensor to be up more, this demonstrates how fierce the demand is for this feature. Research has also shown that a more forward sensor position also widens the arc of a flick and therefore has a strong correlation towards being beneficial to aim.
+
+
+28) Implementing POM pads to the left and right of plungers.
+	This implementation reduces the grinding which is prominent in Carbon filled Polymers because of their inherent abrasiveness. This also solves the alignment issue on many Carbon Fiber mice, such as the ULX. Lastly, changing the thickness of these pads should theoretically allow for an easy iteration of the tolerances. There was much fanfare from the enthusiast community when Finalmouse announced they would be doing this for the SLX.
+
+
+29) Adding a divider between the side buttons.
+	Implementing this feature increases the strength of the shell in what is normally a structurally weaker area. This also adds a spot to rest your thumb without actuating either side button, but that still has easy access to both of them. This is a heavily requested feature and meshes well with Dual Rail Side buttons. A direct example of the improvement this creates can be seen by feeling the difference between the Viper V2 and Viper V3 Pro for side button intense workloads.
+
+
+30) Enhancing the scroll wheel texture.
+	It would be beneficial for aesthetics, marketing, and tactile sensations to implement a new scroll wheel texture possibly based on a rover’s tread (as those patterns are engineered for longevity and consistency). The look of the scroll wheel is the number one thing that makes a lot of mice with mostly good design aesthetic end up looking cheap, so its very important careful consideration is put into the scroll wheel design. Any RGB, transparent plastic, or shiny plastic on the scroll wheel can usually immediately make an entire mouse look cheap.
+
+(rubber being optional scroll wheel?)
+
+
+32) Enhanced the top engravings.
+	Engravings on the triggers aren’t inherently bad, so long as they aren't in the center of the trigger, since that can cause distracting and unnecessary tactile stimulation. History has shown that engravings are a very important driver of sales since they give a mouse enough character to stand out, they have also become a hallmark of high end collectors mice in recent years. Lastly, they open the door for more expressive colorways.
+
+
+33) Adding engravings to the side(s).
+	This makes the mouse look more sleek and hasn’t been done before (with the exception of the Waizowl Triaina. A more stylish mouse increases player confidence and therefore may even increase performance via a better mindset.
+
+
+34) Less deep engravings.
+	The current depth of the engravings on almost every mouse on the market with engravings so far is likely compromising the overall strength of the mouse. The human eye is very sensitive to a break in a pattern so the depth of the engravings could easily be reduced twofold without impacting visual perception.
+
+
+35) Serialization to end in 9s.
+	Having one less figure in the serialization makes the mouse look more exclusive and makes you feel more special using it, humans also find patterns ending in 9s aesthetically pleasing as commonly shown in price tags.
+
+
+36) A large laser engraving of the serialization on the right click.
+	Laser engraving the 3 digit serial number on right the click makes the serialization perpetually visible and always front of mind to the consumer. It's a very obvious differentiation between units, making each mouse (even ones that are the same colorway) feel unique. Lastly this also incentivizes “super-enthusiasts” to purchase multiple units of each colorway to try to pull a desirable serial number, instead of just one unit of each colorway.
+
+
+37) Using a smaller sensor lens.
+For the newer LGA sensors, Pixart has smaller clip-on lenses that reduce weight. Many high-end mice are still using the large oval skate sensor lens, when it would be much more optimal to just have a lens that only supports a single dot skate.
+
+
+40) A lower front height.
+ 	The closer a user’s fingers are to the pad while resting on the triggers, the closer using the mouse will feel to your hand just resting in its natural position which is also the position at which the user will also experience the least strain. Furthermore, this allows for the usage of shorter and lighter encoders.
+
+
+
+41) Orientating the hump more towards claw grip.
+Claw has become a much more popular grip style in recent years to compensate for this as market knowledgeability of the different grip styles grows. Therefore, it is important that newer shapes have a slightly higher, and slightly further back hump then what would have been more commonplace a few years ago. The difference in shape between the Viper V2 Pro and Viper V3  Pro is an amazing example of other brands capitalizing on the market shift.
+
+
+44) Miscellaneous shape changes to increase contact area.
+	This can be tested and optimized by using a coarse white 3D print of a shape, covering your hands in paint, and then using Photoshop to determine what percentage of the white pixels on the mouse surface were painted. This is a very old school way of testing ergonomics, but a direct correlation has been found between more paint coverage and positive attributes of a shape (such as comfort and performance) by past shape designers.
+
+
+45) Miscellaneous changes in shape decrease tension and muscle strain.
+	Investment into EKG monitors for proper objective data of which shape iterations cause more muscle strain could be very worthwhile. It has the opportunity to considerably speed up shape development. Currently Zowie is the only company to take the Sports Science of shape design seriously enough to do this.
+
+
+46) Implement flat front trigger cutouts.
+The trigger cutouts which the triggers rest on and that are only visible when looking at the front/chin of the mouse head-on need to be perfectly flat and parallel to the ground. This makes additive and subtractive mold modifications to adjust post and pretravel easier.
+
+
+47) Making the comfort grooves shallow out near the front.
+	This is necessary for the front trigger cutouts to be flat and flush, but it also has the added benefit of increasing the amount of surface contact your fingertips have (because of the way it cradles the front of them).
+
+
+48) Making the shoulder trigger side walls flush to the triggers when actuated.
+	There is certainly a happy medium of trigger height offset, the default way will cause the triggers to sit too low when actuated causing perceptible tactile height disparity. Having them artificially raised too high up when not actuated can also cause this issue though.
+
+
+49) Using one screw per click tensioner.
+Far too many mice have 2 screws per trigger click tensioning mechanism, but that exponentially increases how difficult it is for the average consumer to get the click tensioning right compared to one screw, even if the overall click tensioning is less secure with just one screw per mechanism, the ease of maintenance is a worthy tradeoff.
+
+50) Implementing a bridge on the click tensioner.
+	The current click tensioning mechanism is just a flat plane, introducing a bridge style mechanism in the shape of an arch with thinner material towards the center will allow us to control where the mechanism actually bends (as well as controlling by how much it bends, which is very important since the proposed material to be used in the triggers is extremely stiff).
+
+
+51) Using wires instead of ribbon cables.
+	Ribbon cables are the most common point of failure in mouse assembly and disassembly (because they are so easy to rip). It is absolutely imperative that small weight efficient wires are used instead of ribbon cables to increase assembly yield rates and decrease the amount of customers that break their product doing maintenance (which will likely subsequently reduce the return rates of the product and the amount of customers who file for an RMA).
+
+
+52) Move the bottom rim screws so they aren’t under the skates.
+	One of the most commonly requested features in a mouse is making sure the screws aren’t under the skates will increase repairability and minimize the downside of repairing your mouse and prevent skate waste. Any company that does this gets a massive amount of consumer favor for being pro-consumer.
+
+
+53) Converting any separated floor to ceiling struts into fully connected arched ribbing.
+	This is vastly more structurally efficient, and it perceptibly increases the shell strength at the cost of very little extra weight gain. Arch bridges (and arches in general) have outstanding force distribution, and that is why they are not only the strongest type of bridge, but also an extremely valuable case study in structural engineering.
+
+
+54) Mounting the PCB to the top of the shell.
+	The screws for the PCB should be inserted from the bottom, and not the top. This makes them easier to access for disassembly and should also offer a moderate reduction to the cost of the tooling/moulding.
+
+
+55) Implementing vertical struts in the front of the mouse. 
+	Due to the front being the least tall area of the mouse, it is structurally the weakest and therefore needs ample reinforcement so it doesn’t detract from the strength of the mouse or become a possible break point. The Lamzu Maya uses these types of supports to great effect (likely because it also has quite a low front). It also does an excellent structural trick of connecting these struts to the trigger underwiring for even more structural efficiency.
+
+
+56) Hollowing out the plungers in the direction of the user.
+	Doing this creates a small echo chamber that amplifies the sound of the click while also causing harmonious reverberation, similar to how a guitar works. The Gilmouse Diamond is one of the only mice on the market to do this, but to great effect.
+
+
+57) Implementing a more unibody construction.
+	The majority of the bottom rim, hump and sides should all be one part. This will increase molding cost, but be worth it in the end by significantly increasing strength, and vastly reducing the amount of crucial tolerance points and panel gaps (these issues only arise when there’s many parts, so eliminating the amount of parts eliminates the issues).
+
+
+58) Removing the cutout above the scroll wheel dividing the left and right triggers. 
+	Doing this will prevent the user from jamming the triggers with their fingers during 1-3-1 grip. The current immediate edge of the trigger is a common spot to rest your finger, but the center is a much less common resting spot. Essentially, removing the double split needed for the cutouts reduces the amount of gaps your fingers can get stuck in from 2 areas to 1 unlikely and further away place. 
+
+
+59) Making the click tensioner’s fulcrum larger.
+	A taller fulcrum means more room to create leverage, which creates lighter clicks with a faster rebound time. This should make the clicks feel much more defined, the click tensioning mechanisms on the Lamzu Atlantis are offset 10mm from the peak of the mouse. I presume this is to give them the ample leverage they need to sound and feel so good. No other mice spend the material to do this, and yet there has to be a reason for this offset.
+
+
+60) Laser etching texture on the ceramic coating to even further increase grip.
+	Allows for quick iteration to find high grip patterns and would also look interesting. Due to it being a final production step it could even be optional for the customer.
+
+
+61) Using laser engravings instead of physical mold engravings for select decals.
+	Such as kanji on the side that would change every colorway, so as to not reduce structural integrity. Also opens the doors for customization without changing the production.
+
+
+62) Adding “LT” and “RT” decals onto the respective triggers.
+	All of the keys on match GMK use a specific font and are labelled, this would try to imitate that. I think it would increase both controller user and GMK user acquisition.
+
+
+63) Implementing geometric designs on the bottom of the PCB.
+	This is important since without a bottom rim the PCB will be constantly visible, so having aesthetic designs on the bottom would add character and show consideration that the mouse is meant to be used with the bottom rim off.
+
+
+64) Structurally supporting the side buttons with the microswitches and PCB.
+	This is the Hitscan Hyperlight implementation that was used to make its side buttons so sturdy and stop them from being pressed in too far.
+
+
+67) Better tolerancing for the scroll wheel aligner.
+ 	The scroll wheel has been a constant area of issue for many past releases across many generations of mice and it not only needs better tolerancing, but a complete redesign.
+
+
+68) Moving the antenna as far forward as possible. 
+ 	Doing this ensures as little of the mouse as possible is in between the dongle and the antenna. Any amount of material in front the antenna matters when you’re dealing with a shell made out of a composites which have a great propensity to introduce radio impedance.
+
+
+69) Braiding battery and side button wires.
+	Logitech does this with all the GPXs, it increases wire strength. This is pretty self-explanatory with the exception that the braids can’t be too tight or it will increase weight too much (as wires are heavy).
+
+
+71) Rotating the battery JST socket sideways.
+This reduces RMA fees by making it easier for customers to do their own battery replacements and mods, which therefore reduces the downtime of the mouse. This will also likely reduce assembly cost as well, as anything that is easier for the customer to take apart is easier for the assembly line to put together.
+
+
+72) Putting accessories in an envelope with a trifold display.
+An envelope would help reduce unboxing clutter and enable a more premium and curated unboxing experience. Sheets with extra sets of grip tape and skates would be connected to each other and fold out to an elaborate trifold style display that also doubles as a manual on the other side (as a cost effective way to maximize the cost- to-benefit of the color printing).
+
+
+73) Including screw driver.
+This would just be a nice gesture to gain customer gratitude. It would also ensure every customer has the necessary tools to make their own repairs, so not everything has to be sent for RMA. Phillips screwdrivers are also less common in some countries so this could provide the customer a good amount of value in certain circumstances.
+
+
+74). Adding custom battery cover.
+ 	The cover would have to be super thin for weight reasons, but all high end mice have the battery covered these days because having the battery exposed makes a mouse look like a prototype. The cover could be made out of laminate satin paper.
+
+
+75) Using hexagons instead of triangles.
+ 	Triangles are much better than hexagons for 3D shapes since they form arches when used in a 3 dimensional lattice. Additionally, triangles are also much more stiff than hexagons because they are statically determinate. It is very confusing why the majority of mice on the market use hexagons instead of triangles.
+
+
+76) Upgrading the sensor and undervolting it.
+ 	The PAW 3395 can struggle on certain glass pads and therefore severely needs to be upgraded. Additionally, undervolting the sensor could decrease power consumption by up to 40% and make a statement to the customer that we are trying to squeeze out every ounce of performance for them as possible. Consumers have been complaining that the ULX sensor is outdated for over 2 years now. 
+
+
+77) Upgrading the MCU to an NRF 54LM20A. 
+ 	An upgrade like this reduces the amount of components needed on the PCB and vastly improves battery life (as well as latency) because of the efficiency of the Nordic 54 Series. In particular, NRF 54LM20A reduces the need for a second and very costly High Speed USB Microcontroller, as well requiring fewer power passives and it does not need a 32khz crystal or external flash memory.
+
+
+
+
+79) Implementing negative latency via SPDT. 
+ 	After trying negative latency on G-Wolves and EGG mice, many customers can’t go back. So in order to still interest that section of the market, any new release would need to have negative latency in order to reach maximum possible sales. This also should frankly just be done in the pursuit for peak performance as well.
+
+
+80) Adding dual rail side buttons.
+ 	This makes the side buttons act more like a Gateron Dual Rail switch, the side buttons would essentially be put on sliding rails instead of a bending mechanism.
+
+
+82) Entirely hiding the mold vestige gates.
+ 	No vestige gates can be visible on an enthusiast grade mouse, this is a topic social media has shown enthusiasts are extremely critical of.o
+
+
+83). Adding holes in the side button PCB as slots for the dual rail mechanism.
+ 	This reduces molding complexity so the dual rail slots don’t have to be part of the shell, but is only viable in certain PCB orientations.
+
+
+
+
+91) Making the side button PCB reach across the whole mouse.
+  	A similar implementation could alternatively be done to reinforce a large area of the left side wall instead (depending on the final orientation of the side button PCB).
+
+
+92) Placing as many of the components as possible on the top side of the PCB.
+ 	Doing this would make it harder to damage the components while screwing in the PCB and it would also look more aesthetically pleasing.
+
+
+93) Implementing thicker walls near the bottom of the mouse.
+ 	This would be essentially just gradually changing the lattice thickness. It shouldn’t cost anything extra to mold/tool, it just is difficult to CAD (which is why I suspect no one has done it yet despite it being inherently more efficient than a statically thick wall).
+
+94) Connecting the side ribbing to the PCB.
+ 	The material in the core of a PCB, FR4, is just as strong as Magnesium Alloy, so not using the PCB as a reinforcement leaves a huge amount of efficiency on the table. The weight of the PCB is non-negotiable, so you may as well take advantage of it.
+
+
+95) Balancing the center of mass lower.
+ 	If the mass is centered more towards the bottom of the mouse, it is closer to where your fingers grip, which makes it feel easier to move. There is consensus among enthusiasts that a lower vertical center of mass is better than a higher vertical center of mass.
+
+98) Waterproofing the PCB with coatings.
+ 	Using a light conformal urethane coating on the entire PCB as well as a black epoxy resin on the most sensitive components would offer amazing protection against liquids
+
+
+
+100) Implementing clear on and off labels on the PCB power switch.
+ 	Reduces amount of people who can’t 
+
+
+101) Using small brass heat set inserts.
+Prevent stripping, needs to be as far away from the antenna as possible. Finalmouse currently uses M1.6 x 5.0 mm screws with a T5 head.
+102) Using a Raytac x Nordic NRF Module
+Reduces certification costs. Juskim used this with Moddo to bypass FCC certifications. Possibly has built in antenna and power passives?
+
+
+
+
+Pro Features:(more expensive or timely to implement, meant to be saved for a higher end model)
+6) Switching the trigger material to Polyphenylene Sulfide CFR Polymer.
+Mitsubishi’s Polyphenylene Sulfide CFR has a nanocrystalline structure similar to that of what would typically be found in a metal, this gives it a very “metallic” sound profile. Many past customers miss the crispness of the Starlight clicks, and this metallic sounding plastic is a way to bring this crispness back without introducing the radio frequency impedance and weight drawbacks that typically come along with using metals. Polyphenylene Sulfide CFR, while not quite as light as Polypropylene CFR is still significantly lighter than Magnesium Alloy, making it a clear-cut superseder.
+
+9) Upgrading the screws used.
+Phillips slotted combination drive sockets lead to much less slippage during tensioning because Phillips sockets are self-centering and statistically very forgiving on low torque screws. The “combination drive” aspect also allows for a fallback of any size flathead screwdriver in case the Phillips socket somehow strips. The screws used should be brass plated to help reduce the chances of corrosion between the screws and the brass heat set inserts. However, plating only offers a moderate improvement and is something that is best not to waste too much development time on. An aspect of the screws that would actually be worth the development time that would actually be useful is ensuring they are made with a but they also need a Carbon Steel core because magnetism makes assembly much easier. M2 size screws seem to have the best availability and compatibility of parts, so even though they are a little larger than the M1.6 currently used in the ULX, switching to M2 would likely be worth it for the chance that a more specialized screw can be found. Lastly, it is super important that machine screws are used instead of self tapping ones, as machine screws have much better compatibility and longevity with brass heat set threaded inserts.
+
+
+Brainstorming 
+(do not read)
+
+A smaller sensor lens does not cover exposed pins which can be a regulatory issue.
+
+RVMSE scroll wheel texture is most efficient happy medium between grippability an aesthetics
+
+GT01 style microswitch covers the microswitch pins, leaving only the encoder pins; an optical encoder could help with this, but requires more power.
+
+PMIC Nordic NPM 1300, up to 800mA fast charging current, cleaner radio transmission because there will be less noise.
+
+PCB holes under microswitches, but this has to be used sparingly to prevent the PCB getting too weak and causing post travel.
+
+Transparent microswitches are a necessity because they allow you to see mechanical issues without opening the mouse, this is another reason why optical switches could never work, they all are opaque to prevent optical interference.
+
+Optical encoder is a wait reduction but incurs higher development cost, more mould parts, more specialized pcb assembly
+
+TTC recently released optical encoders that are more similar in construction to typical encoders 
+
+Rounded front instead of creased
+
+Gold trim around as much of the PCB as possible.
+
+6 scroll wheel spokes. This seems counterintuitive but there are 360 degrees in a circle, meaning it fits 6 equilateral triangles perfectly, equilateral triangles perfectly distribute force, allowing for the outer shell of the scroll wheel to be the thinnest. This technique was pioneered by G-Wolves, and it fits with the triangle aesthetic of the rest of the mouse extremely well
+
+Insulative socks for the bottom of claw clips so they don’t emit electricity and cause potential regulatory issues, this is not possible with typical soldier legs because they are not round nor a uniform thickness, nor would it really help the aesthetic at all.
+
+Bring back the ferrite bead.
+
+M2 Heat set inserts are only 0.16-0.18g per unit
+M2 instead of M1.6 since parts are much easier to find and its slightly more durable for very little extra weight
+Millmax 3305 claw clips are 98% copper, 2% beryllium, gold plated and weigh approximately 0.11g per unit 
+
+Scroll wheel is more like a torus than cylinder, find the perfect surface arc 
+
+A smaller scroll wheel is generally safer so it gets less in the way, it’s also lighter.
+
+Optical encoders are 3.3x more reliable than mechanical encoders according to Razer.
+
+For mice with straight rear trigger cutouts, having separate color triggers from the rest of the mouse body (like on the Superstrike X2 or G03 V2 Ultra) can look very appealing. 
+
+Maya front curvature is much more desirable than Maya X, the latter is way too pointy and likely therefore structurally inefficient.
+
+Arye RCC-1 has a notch style cutout below the scroll wheel that looks really good and can probably be chamfered.
+
+Feinman and RCC-1 are the only mice with no engravings that have unique design.
+
+The bottom cutouts are extremely important for the sound of the clicks of a mouse, it makes them sound more like a guitar rather than a closed volume
+
+Bend the legs of microswitches for them to reach a 30 degree angle, small insert underneath switch to keep the legs from further bending from intense use over time. This has the side effect of completely eliminating switch options though, unless they come from us.
+
+Dongle has the footprint of flashdrive, and has its own male USB end like one. This ensures it can be plugged directly into a laptop without the need for a cord, as this is both just convenient and blank.
+
+New generation Pulsar sensors are said to connect to the PCB by an LGA, or Land Grid Array, similar to intel CPUs, but with solder instead of male pin arrays. Essentially surface mounting packaging technology.A very very slight smile may be worth it.0.1 mm LOD steps is a must for any future productBeing able to split the X/Y DPI functionality is also incredibly important.The Vaxee XE uses a mini microswitch on a support to make it tall enough to be the scroll wheel click.
+
+https://www.youtube.com/watch?v=wfxuDgTqbhY
+
+The sides need to be more grippy than the hump, you don’t want the hump to be locking you in, potentially laser engraving the sides with a texture.
+
+Aimed method of using 2 dot skates in each corner for 8 total.
+
+Dot skates have infinite axes of symmetry.
+
+OP1 8K encourages modding and therefore comes with a screw driver
+
+Centerhumped shapes are much more structurally sound than rear hump because the silhouette is more symmetrical and forms a more uniform arch rather than there being a lot of curvature quickly and then flatness
+
+Higher click angle = more leverage/better clicks DAV4 vs VV4P
+
+White scroll wheel on every unit could be a sign of luxury and staple of the brand.
+ 
+
+Side taper angling needs touching up to be more comfortable, it seems Zowie has done a lot of research with this and they concluded more side taper makes it quicker for you to pick up and move your mouse. This was published sports science research done for the U2 development. Faster lift allows for quicker target switching.
+
+Reduced thumb angle supports faster index finger movements.
+
+Zowie has an eSports Science Lab in Taipei
+
+The flexors and extensors in the hand and wrist have to activate similar rates to avoid one muscle group overpowering the other and causing fatigue.
+Flexor carpi radialis (FCR)
+Flexor carpi ulnaris (FCU)
+Located on the palm side. Responsible for counterbalance, grip  and subtle downward control.
+Extensor carpi radialis longus (ECRL)
+Extensor carpi radialis brevis (ECRB)
+Extensor carpi ulnaris (ECU)
+Responsible for lifting and stabilizing the wrist, especially during mouse hovering and micro-adjustments. Located in the top and back of the forearm.
+Lower thumb angle reduces abductor pollicis longus and extensor pollicis brevis activity, decreasing co-contraction and reciprocal inhibition, so flexor digitorum profundus/superficialis can recruit faster and activate the index finger more quickly.
+Provide ideal hand size measurements
+
+Model a routing channel for the battery wires.
+
+43) Extenuating the hump.
+	It would benefit the hump for it to be slightly wider. Additionally, to complement this change the underside of the grip width could be slightly thinner. The latter part is optional and will likely require testing, an extenuated grip width pocket has become quite popular in recent years though, so it at the very least is worth consideration.
+
+Clock divider that curves more towards the middle so that the rear trigger cutouts are still as straight as possible near the click tensioning mechanisms
+
+Matching DPI to polling rate generally feels better
+
+Customizable sensor position offers up to 14% of through-put (speed and accuracy) and reduces path deviation while aiming up to 23%
+
+Engraving on one of the side buttons so you can better differentiate it
+
+Inverted scroll wheel holder like on the Terra
+
+Dongle weighs more than the mouse for marketing purposes.
+
+Machined metal is very smooth, using a gummy o-ring between the screw and threaded insert could increase friction much better than glue.
+Over 100 Incremental & Impactful Improvements for the ULX to Engineer the Perfect Competitor(in no particular order)
+
+	Although the first few batches of the Finalmouse ULX were “rough” to say the least, the more recent drops (solid-sided ULX Competition and onward) have almost certainly comfortably secured the ULX as a market leader in the enthusiast mouse genre. At the very least, the later entries of the ULX generation (although still quite divisive) are among some of the most well-rounded mice on the enthusiast market as far as shape design, material science, aesthetics, desirability, and latency metrics go (even despite playing at a disadvantage due to the usage of a more matured sensor and microcontroller).
+
+All of these aforementioned leadership categories make the ULX an extremely insightful case study and benchmark mouse to build upon. Whether you’re making a ULX successor or a ULX competitor, the proper starting point is clear. If you start by taking consumer feedback and modifying what is already good, it's hard to not improve.
+
+The following is an amalgamation of subjectively obtained observations from not only me but also numerous other prominent voices and intellectuals in the field. With mice, a lot of what differentiates the perception of a  “good” or “bad” improvement can differ person to person. Any of these suggestions that do not have objective statistical backing are not meant to be interpreted as fact, but rather just logical propositions that are designed to benefit the largest number of people. Therefore, any and all constructive criticism is not only welcomed but much needed.
+
+PMM scroll wheel looks similar to AP.
+
+Bottom needs dongle storage.
+
+It feels causes tension and feels bad when the your pinky isn’t spread wider than your ring finger.
+
+A reduced bottom plate physically prevents users from putting skates in areas they shouldn’t that would harm performance.
+
+Consent to web drivers switch.
+
+Flat base.
+
+Exposed DPI button
+
+Any Mylar used has to be special high temp Mylar that can’t melt in shipping, mice have to be heat tested for failure to make sure they can withstand summer shipping temperatures. Mylar typically has a very low melting point.
+
+straight front makes sure the front bottoms out at the same time, which is imorotant because that’s where there’s the least ammount of room for tolerance error, it is important remember that if done properly only the front should make contact with the trigger underwear, because the back trigger cutout starts up 0.4mm higher compared to the front when actuated
+this height discrepancy should probably be taken into account account and averaged for the clicker walls
+comfort grooves seem to do something to click feeling
+dark brown on light brown colorway would be sick 
+
+full ceramic scroll wheel, not just ceramic coated 
+
+big holes on bottom are super important weight wise
+
+mouse needs to come pre charged
+trigger grooves help turn horizontal pressure into vertical pressure more easily and help with consistent finger placement  and grip ability
+
+you shouldn’t be making too much contact with the bottom rim or else it will prevent you from easily lifting your mouse (although this might just be correlation not causality with of bottom rims that are to steep, or begin to low) beginning too low can also be an issue if you can’t grip the bottom rim at all like on the lycan 
+
+flattening out the comfort grooves should almost perfectly guide your fingers directly over the microswitch
+
+ask boardzy to get my in contact with the logitech engineer he was talking about in stream.
+investigate ghost glides engineering 
+does size of mouse shape effect clicks? if so can we scientifically deduce that the gpx mini size is better for clicks than the full size one? or is there not enough data?
+
+the ideas in this doc should be generally under utilized and not too obvious 
+
+the 2 mice together still weigh less than a gpx
+
+could call the flattened out front comfort grooves “2 axis comfort grooves”
+why doesn’t zowie do comfort grooves?
+both mice work fine wired with no dongle
+
+yin and yang
+
+his and hers
+
+cause and effect
+pwnage method of side facing trigger cutouts, but toleranced well to cause an issue
+Gravity Well Sensor or Microswitcges
+higher center hump let’s the side button reach across pcb reinforce force more
+It might be worth it to to have sideway facing trigger cutouts because they support the mouse better, and you can connect them to the scroll wheel holder to from a dual rail for each trigger
+Trigger bezels 
+
+Pretension Microswitch to reduce travel 
+front trigger cutout has to be at the same angle as the microswitch
+
+japrons potentially feel so light because they consistently have so little pretravel
+
+not having post travel will make the bottom out feel harsh 
+
+Bottom rim can’t be too closed the pad and the crease can’t be apparent, both rims needed to be rounded 
+
+If you’re not at the factory they’ll skip over QC 
+
+The Lycan is a perfect example of why going from super curvy to super flat can be uncomfortable, it perfectly showcases the dangers of too deep of a grip width pocket
+
+For adding curvature, comfort grooves are significantly safer.
+
+Fire and Ice Encoder has a ton of research put into it, and is thicker so there is less wobble 
+
+Circular plungers are going to be a lot easier to keep aligned 
+
+Mouse acts dongle if you have 2 and then it acts as infinite charger as well.
+
+yield strength is the most important factor for mice, it’s when something bends (past the point of return) but hasn’t broken yet, 
+One sided PCBs are significantly more effective and QC tolerant because that don’t have to go through reflow
+
+what if i could get you 2 mice for $120 that work as dongles for eachother so you can swap them out when one gets low, or use them independently wired or bluetooth (for the same manufacturing or less manufacturing cost as the typical setup because you need less molds)
+
+naming this system “sidearm” because swapping is faster than reloading
+
+weight on the battery is very cool, i like how zowie started doing that  
+
+weight on the pcb would be cool too
+
+Same size screws for everything is an absolute must because putting the wrong screws in the wrong holes is a super easy way to ruin build qualityThe ULX already does an amazing job of just using a thin engraving to show where the skates should be placed instead of having a fully recessed skate alignment deprivation (like many mice designed by novices have). The latter can cause issues that result in the bottom of the mouse scraping the pad and ruining its glide on softer surfaces. This was an issue that made the Pulsar Tenz completely unusable on anything other than the stock skates.
+
+^flat base1) Implementing ceiling-facing trigger cutouts.
+	This style of cutout implementation was voted 3x more popular than the sideways-facing trigger cutouts during last year's Peripherals Awards. This style is not only more visually appealing, but it also is more ergonomically sound because you can't pinch your ring finger during certain grip styles (like you can with sideways trigger cutouts). This upgrade was made from the FCC-1 to RCC-1.
+
+5) Switching the main shell material to Polypropylene Carbon Filled Polymer.
+Polypropylene Carbon Filled Polymer (from Mitsubishi's Pyrofil series) is less dense than ABS while also being at least three times stronger and stiffer. Polypropylene composites should be considerably easier to mold than the Mitsubishi Kyronmax composite used in the current leadership material science mice(because of Polypropylene's exceptional melt flow rate). The inconsistencies in build quality between the same copies of units can likely almost directly be attributed to the poor flow of the material the ULX uses. Additionally, a less dense material allows for the shell to be thicker without necessarily being heavier, reducing the pressure and resistance the liquid composite needs to overcome to fill the mold, further reducing the likelihood of inconsistencies arising. Lastly, this is the same material used in weight-sensitive military applications such as drones and UAVs.
+
+Pictures with a real human using a product can increase sales by up to 30%
+
+Any additional post travel should be immediately cause foam to compress to make the bottom out not as harsh and so that the click is still supported by something
+
+Lamzu atlantis does this21) Implementing hardware DPI and Polling Rate buttons on the dongle.
+	It is always nice to have a hardware fallback when software fails (like if the user doesn't have internet or there is a server outage). These buttons will also add some heft and length to the dongle, which will help with the issue of it falling off the desk so often. Pulsar recently added this feature to their newer mice and it has been really popular with consumers. 
+
+
+22) Adding a second female USB C port to the dongle.
+This allows the dongle to act as USB as a passthrough for you to still charge your mouse without having to unplug the dongle, this saves the user a lot of time and makes it harder to lose your dongle since it almost never needs to be unplugged. Some people are also too lazy to find the dongle when the mouse is done charging and then end up suffering through the worse experience of wired mode longer than necessary, and this helps prevent that.
+
+25) Automatic dongle pairing.
+	With the dongle having 2 female USB C ports, the hardware is in place for the dongle to automatically pair as soon as both the dongle and the mouse have a wired connection to the PC. Sony does something similar with the PS5 and the Dualsense controller. This could be marketed as “Plug to Pair” technology and is very helpful if you have multiple units of the same mouse (which is an important quality of life priority because enthusiast mice heavily target repeat buyers).
+
+31) Modualizing the bottom plate.
+	This makes it easier to access the components in your mouse, which makes it less work to repair them while at the same time lowering risk of customers causing permanent damage to their mouse while making said repairs. This feature would also singlehandedly offer the biggest weight reduction from the current ULX and less weight means less inertia, which is easier to control and aim.
+
+38). Making the front silhouette pointier and straighter.
+	The current front silhouette is much too round and has been copied too many times to the point where it embodies the essence of a clone even though it is the source material. It also looks somewhat dated; a similar style front to the Darmoshark M2 or Ninjutsu Sora V2 would look much more modern.
+
+
+39) Reducing the amount of front flair.
+	In recent years front flair has really fallen out of favor both ergonomically and aesthetically. It is still important to have, but the sides need to look perceptively straight from a bird's eye view, even if they flare out slightly. The Darmoshark M2 has a very similar shape to the Finalmouse UL2, but the decreased amount of front flare makes it subjectively much more pleasant to use. Darmoshark was likely able to make such a good take on the Finalmouse shape because they are owned by Motospeed which is the company Finalmouse worked with to make their original shape (which was then only rescaled up until the 4th Age).42) Maintaining shoulder definition.
+	One of the most important features for the viability of the ULX shape is the round, yet defined shoulders where the top “rolls over” to the sides. Many mice make their shoulders sharp or transition them too quickly for aesthetic reasons, but the current shoulder shaping on the ULX is integral to being able to rest your ring finger right. It is important that the shoulders keep their characteristics throughout the modifications of the rest of the shape.
+
+65) Implementing miscellaneous optimizations for reduced motion latency.
+	Software development done by the factory. Requires lots of testing and can be extremely expensive.
+
+
+66) Making miscellaneous optimizations to improve sensor implementation.
+ 	Special request to Pixart. Back and forth communication with Pixart can be very time consuming so it is best to start as soon as possible.
+70) Sheath the charging cord in official Paracord.
+	The Paracord used for the cable should be Type Zero and officially branded for marketing purposes. The internal wires should also be braided for better flex.
+87) Having virtual sensor position/rotation in software.
+ 	In order to do this most easily, the software would have to interface with Raw Accel. This is a useful feature to have because very few people have tried sensor rotation since Raw Accel is difficult to set up. Having an easy way to access these features makes customers feel locked to your brand because they don’t want to lose the customizability.
+
+
+88) Displaying an estimation of remaining battery life on the dongle screen.
+ 	This would be shown at all times (except when the mouse is charging) so you know if you can make it through your next match without having to plug in.81) Using a Japanese Alps encoder.
+ 	An Alps encoder would both fit with the Japanese theme and be from the same country of origin as the chosen microswitches. Having as many components as possible coming from the same country will help simplify logistics. 
+
+78) Defaulting to usage of Japanese Omron main switches.
+ 	These match the Japanese theme, are much more power efficient than optical microswitches because they don’t have a laser that is always on, and lastly the brand value of Japanese Omrons is very strong.
+
+84) Making the scroll wheel Magnesium Alloy.
+ 	All high end mice have metal scroll wheels now, and the specular reflections from them make a mouse render look much more realistic, which is good for marketing.
+
+
+85) Adding a screen to the dongle.
+ 	The dongle should have a monotone low-resolution display that is hidden when powered off like with the Arye FCC-1 dongle. It might be cheapest in terms of development expense to potentially license this technology from Arye.
+
+
+86) Show the time until the battery is fully charged on the dongle.
+ 	This is also pretty self explanatory, and is something that should be displayed on the web UI as front and certain as possible.
+
+
+89) Optional lightweight haptic motors. 
+  	Haptic motors would solve the immersion disparity between console controllers and mice. It would essentially just play bass into your fingertips because that will be most universally compatible and easiest to code.
+
+
+90) Implementing single MCU 8K wired polling.
+  	This would be accomplished by still using wireless MCU while charging. It could simplify the code base, PCB design, better battery life and eliminate the largest BOM cost.
+96) Lubing bottom plate with Krytox 205.
+ 	Using lube on the bottom plate would prevent grinding and creaking. Some of the newer batches of the ULX have used this technique, but the application needs to be more consistent.
+
+
+97) Having the bottom rim slide into the top shell modularly.
+This would ensure 100% contact, and would be done alongside the screw-in modular bottom plate (which would keep the rim in place while minimizing the amount of screws needed to do so).
+
+
+99) Removing the RGB LED.
+ 	The RGB LED makes the mouse look incredibly tacky, and it also wastes battery life and weight, all information that can be communicated by an RGB light can be much more effectively communicated on the dongle’s screen.
+
+Fillted the front allows for more grip styles
+
+Things that work for 1-3-1 also are beneficial to people who want to try 1-3-1Side walls may reduce grinding
+
+type 1/95 paracord is 1.7mm thick 
+
+type 275 paracord is 2.4mm thick
+
+many brands who do metal
+scroll wheels have been implementing rubber inserts over them, this could be a sign metal is a poor choice 
+
+LA-1 had pom pads but still was grinding, loosening screws did jack until i sanded down the plunger on the sides (anecdote from marcel, some mice have grinding on their plungers 
+
+carbon fiber filled polyphenylene sulfide sounds metallic bc of its semi crystalline morphology and its just as strong as magnesium alloy, but while being less dense she without the radio frequency attenuation and moldibility issues
+
+ideally the click tensioning mechanism would still be a separate weaker plastic tho it can still bend
+
+a chamfer on the edge of the 2 buttons like on finalmice and the lycan could be aesthetically pleasing
+
+silicone bands to hold the battery in place instead of adhesive since adhesive usually gets ruined if you ever have to change the battery 
+
+injecting at the bottom where there is thicker walls should hopefully reduce resistance, and the walls tapering in to be thinner near the bottom should hopefully create a funnel like effect, this probably needs to be done with the thickness of the ribs as well
+
+the piece to stop the trigger from bending too much has to be at the front of the trigger and not the back, when it’s just at the plunger the trigger can still be bent up like in the turtle burst ii
+
+lower fronts are just a psyop to be able to use smaller mice for bigger handsSPDT sidebuttons
+
+open source channel hopping and radio tuning framework to let testers improve it Mice without comfort grooves will inherently feel like they're pushing your fingers to the sides of the mouse when you push down on them, this is just newtonian physics, the mouse is acting backwards on the direction of the sloped surface, but with comfort grooves there there are sloped surfaces on either side, which cancels out to your fingers feeling hugged and staying where they are. For this reason the intensity of the comfort grooves is somewhat irrelevant as long as it outpaces the general curvature of the mouse. An ample coating can fix this too, but that is kind of a cop out solution.For every angle on a mouse you have to think- “sure its comfortable here, but is it going to be comfortable if you keep adding pressure and following the opposite reaction of where adding pressure on a curve points you”
+
+Tan and brown cookies and cream colorways, a perfect addition to anyone with any woody or natural colors in their setup
+
+“Newtonion Shape Analysis
+ Hypothesis, for a flatter mouse, its better to be too small than too big, because big hands will still be able to fingertip grip.
+
+A hump being too fall on the sides and not tapering inward quick enough can be very uncomfortable for the ring and pinky finger, if we think about this newtonianly on off axis plane this extreme hump curvature we can see that it creates a sort of hump similar to the front end of the gpx
+
+Im more simple terms, if you follow the curve of the mouse 1:1 is it going to push you off the shape, sharp edges can also do this, if you follow the curve perfectly on a mouse with sharp shoulders it will send you off the mouse, but smooth shoulders smooths out the intensity of the curve near the end, so if you follow it youll end up on the side essentially, same thing with the front of the mouse
+
+Curves have to be balanced out, you can’t have a super wide hump, but then have no front flair, likewise if you have very little hump width, you can only have very little front flairNewtonian shape analysis is good, because you can take the derivative of the line at the edge and see if it points off the mouse or not, Newton invented calculus as well.Rate of change can be too extreme just as it can be too low
+
+Account for people with donk grip
+
+why the power passives on apple pcbs as tightly packed to the component they are using as if to form mini cities?
+
+Eliminating front flare trades comfort for stability
+
+average male hand size is 19.3x8.9Maya x aimlabs coating is either too smooth or doesnt have enough stability, particularly in the hump
+
+Normal Maya side angle is almost perfect for me
+
+2-4% smaller than gpx or viper v3 pro is probably the perfect size, likely somewhere around 3% is the weakspot, gpx 2 is ~4% smaller and is a touch too small, especially for mass market viability
+
+measure force pink and ring can exert on mouse compared to thumb and then adjust groove according
+
+i wish we would see more shapes that appear symmetrical from the top (since ergos are somewhat taboo to some consumers) but have entirely independent flare curvature on the bottom
+
+i really see no downsides to doing this besides the design and tooling taking longer to set up, can you think of anything? maybe people just aren’t thinking that deep into it bc it’s “just a mouse”, maybe i’m overthinking it or am missing something. 
+
+for me, my philosophy has always been: if there’s something you can do to improve your product that others aren’t doing just because it just takes too much time, that’s one of the most valuable things you can implement to show you care.
+
+the mz1 for example does this, but i’m unaware of any other mice that appear symmetrical but actually have independently developed side flares:
+
+(note that the mz1 is very straight in the pinky side, the bottom rim is just curved to further make it look symmetrical when it’s not)
+
+i want to there to be expansion of “semi symm shapes” that aren’t different enough on each side to be considered an asym, but do independently curate tapers to each side of your hand (without looking like they do so from the top)
+
+right now the mz1 is the only mouse in this category that i know of
+
+ie pinky side needs to be flatter than thumb side 
+
+MOUSE WILL HAVE TO BE THINNER THAN USual for this to work so it is not too wide
+
+Humped front trigger means you are technically driving the clicks significantly to the side instead of just downwards, creating potential grinding and poor click feeling
+
+hinge clicks have the most consistent feedback
+
+
+
+
+
+
+hinge clicks may seem like extra parts, but they also don’t require screws, the pom gasket could be one part and the springs could probably be replaced my magnets
+
+Not using fake 8k
+
+using mechanical spdt switches lets you absolutely fuck the the debounce timer if you set it to zero, likely making minecraft kids very happy
+
+when your budget doesn’t allow for retooling the clicks, being able to swap the springs on a hinge click seems like a very appealing option
+
+krytox 205 lubed hinge click springs
+
+if thumb angle inhibits pointer finger speed, than it makes sense that the hump is as thin as possible (or alternatively as wide as possible under the extremely prohibitive constraint that it doesn't make your thumb angle)
+
+mz1 appears to be a improvement of m42
+
+qr code to web software on the bottom of the pcb
+
+grip width to hump width transition area probably has a very large impact on thumb angle
+
+g wolves power switches are small and have been known to break, look for alternative solutions
+
+spdt switches have 3 pins, some opticals have up to 5, the 5 tiny pins make maintenance very hard
+
+5 pin omron opticals sound bad rotated, but the 3 pin logitech omrons are made to be rotated so only having 3 pins prevents users from inserting the bad sounding ones if they accidentally mess them up, but still allows for usage of opticals
+
+mouse detects whether the mouse is optical or mechanical based off of a single clicked based on if the mouse tried to send another signal during the debounce timer
+
+this could also so switch spring health
+
+gpx 2 switches and bspd are 70gf
+
+omron opticals being 10gf weaker at 60gf is quite noticeable 
+
+pom pads on the plunger (on front plunger probably better other than the back) allows you to get much more exact on the tolerances without having to worry about scraping
+
+glossy black bottom rim
+
+g502 is proof that comfort grooves help click feeling, taller arches are stronger, which is part of the reason why tall center hunped mice are so good
+
+skates have 3m transfer tape and poron foam core
+
+
+one of the most counterintuitive ideas of structurally engineer is that it’s possible to cut material out of a solid plane to make it stronger,
+
+this is because on a solid plane the force is not evenly distributed and usually converges onto one failure point, leaving lots of the material on that plane to not structurally contributing at all
+
+therefore, if you cut out material, but increase the amount of material the force is getting distributed to you can have a stronger part
+
+0.65mm is the optimal skate height, anything taller causes lod issues
+
+Your true FINAL mouse, but only in a ship of theseus way, like a framework laptop
+
+every new drop has a firmware update to go along with the new colorway so both groups of people have something to get excited about
+
+if you place a mouse at an 
+
+with metal on plastic even the tiniest difference in the angle you screw it will turn the screw into a bore and make it go in at a slightly different angle and have a different amount of tensioning (ie create inconsistency)
+
+this only happens because the plastic is softer than the metal, if you have metal on metal youd need the force needed to deform the metal to even have a chance at the tensioning being inconsistent
+
+lower front could help fix weight balancing
+
+chamfered front looks very sick
+
+mouse should come almost fully charged instead of 40% so people have a better first impression with the battery life 
+
+very few companies advertise the use of the lithium polymer battery, which is really something you want to be doing if you’re paying so much extra for it
+
+mag lev clicks with adjustable tensioning by use of stronger magnets?

@@ -1,0 +1,206 @@
+- [?] on "": 
+    ↳ [Brock Liddicoat] haha i think i actually have this ideas later down the line, i read a paper where virtual sensor position using vectors was used to quite some benefit, but chris also said it introduces a lot of latency to have to do the calc so i merged the idea with sensor rotation customization in case it didn’t work out.
+- [?] on "": 
+    ↳ [Brock Liddicoat] ah i didn’t know they didn’t make them on multiple sizes. my customer is japanese lol.
+    ↳ [Chuddah] I mean maybe they do but just not small enough from the last time I checked
+- [?] on "": 
+    ↳ [Brock Liddicoat] i wanted to see if i could just work with zowie for a day under the guise of a “school project” tbh. i’m unsure how ethical that is tho.
+    ↳ [Chuddah] nah thats the method, goated idea
+- [?] on "": 
+    ↳ [Chuddah] Consider the darmoshark method of including both a plastic and rubberized scroll in the box
+    ↳ [Brock Liddicoat] rubberized scroll wheels feel really cheap and impermanent to me, this is meant to be as enthusiast a product as possible. i also want it to last practically indefinitely.
+
+the vxe f2 looks like a rip of the current ulx scroll wheels actually, which mizu thinks needs bigger knurling (5 knurls per row instead of 9 like the pmm wheel). i think this would especially help with how cheap the current ulx wheel looks as well, the knurling is so fine that the mold quality and coating makes it look rounded out and inconsistent.
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] ideally gateron gt01 style so the pcb can still just one piece (as that helps with design, assembly strength and cost massively)
+
+i left it intentionally vague because im not sure if its going to be possible yet as gateron never even released their switch with the implementation, but essentially the marketing material showed the switch sitting on top of a 30 degree wedge between the switch and the still flat pcb.
+    ↳ [Josh / Deconcentrated] 
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] yeah i think if i need a light that’s where id put it (thank you), the ulx’s just being placed randomly looks so cheap. i’ve mentioned it so many times now but i just can’t get over it.
+    ↳ [Brock Liddicoat] from josh on discord:
+
+If you put a very, very thin layer of poron foam right on the strongest contact points where you have the clippings hitting each other, it would add maybe half a gram of weight and act as a force break much better than a lubricant would.
+
+brocks thoughts:
+
+i dont think lube really solves the issues it just makes them less noticeable by quieting the scraping. a small poron pads would actually act as a good force break and mechanically solve the issue.
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] this is the most iffy idea i have in the whole paper, im waiting on some input from another engineer but i might swap this one out for something else. it’s just so hard to ever want to go back after you’ve experienced it, it’s genuinely transformative.
+    ↳ [Chuddah] this is something youve tried???
+    ↳ [Brock Liddicoat] it’s in the superstrike, and ive played games on the dualsense before
+    ↳ [Brock Liddicoat] even just going back from a xbox controller with vibration to a mouse always feels like something is missing
+- [?] on "": 
+    ↳ [Brock Liddicoat] yeah i’m hesitant to do anything major because there are already so few center humped mice on the market, i certainly wouldn’t want it to transition over to just another one of the other thousand read humped mice on the planet.
+- [?] on "": 
+    ↳ [Brock Liddicoat] i was hoping with the mouse being plugged into the dongle even in wired mode the dongle could still display errors, but you’re right that i probably still need a fallback as i’ve just considered it’s still possible to lose the dongle. although the way i’ve set everything up the mouse actually wouldn’t work in wired mode with out a dongle now that i think about it so that’s another thing to contemplate.
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] brass plated steel screws eliminates corrosion for brass heat set inserts
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] no way they patented it 😭
+    ↳ [Brock Liddicoat] 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] i’m dislike how it sounds as well, but i feel like none of those properly differentiate from the current design of cutouts, which was the main thing i’m trying to communicate
+    ↳ [Josh / Deconcentrated] 
+    ↳ [Josh / Deconcentrated] agreed
+    ↳ [Brock Liddicoat] i’m literally not even sure about this one anymore. 
+
+side ways facing is more structurally sound, and usually more comfortable. It’s also easier to tolerance, my question now is if perfectly tolerances sideways cutouts are better than perfectly tolerances horizontal cutouts.
+    ↳ [Brock Liddicoat] 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] noted, i also saw teks post that 1mm+ skates can cause issues so i wanted to add something about that as well
+- [?] on "": 
+    ↳ [Brock Liddicoat] positive or negative?
+    ↳ [Chuddah] just saying thats more cost that seems a bit unnecessary
+    ↳ [Brock Liddicoat] i mean it literally only costs time, electricity cost of running the machine. laser engraving is needed for serialization on type of product no matter what so it costs very little extra to laser engrave more than just the serialization.
+- [?] on "": 
+    ↳ [Brock Liddicoat] that’s a actually such a smart idea, the laser engraving wouldn’t actually strip any material away, it just changes the texture, but i still don’t think the user would want that distraction, so it might be worthwhile to laser engrave the plastic and then clearcoat, yeah.
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] i wasn’t sure which was current, i’ve used both and never had anyone correct me until now so thank you.
+
+i don’t want to eliminate the flare, i just want to reduce it as i think the extent to which it is used in the ulx shape has fallen out of favor.
+- [?] on "": 
+- [?] on "": 
+    ↳ [Chuddah] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] i should’ve written “moved back OR up”, thanks!
+- [?] on "": 
+- [?] on "": 
+    ↳ [Chuddah] 
+    ↳ [Brock Liddicoat] 
+    ↳ [Brock Liddicoat] it was more so meant to allow users to swap out the same switch they they croak or start double clicking (as we can’t really control the failure of such things, but we can help the customer deal with it).
+
+but regardless i wasn’t aware different switches have different post and pretravel, i thought that almost entirely came down to the construction of the triggers and click tensioning mechanism. this is a great callout.
+
+how did you feel about EGGs swappable microswitches?
+
+have you had poor experiences swapping out microswitches before? i’ve never seen anyone who’s admitted a swap lead to worse feeling, but that could certainly be personal bias and the ikea effect.
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] cerakote in bulk isn’t much more than the current coating at scale. 
+
+in my opinion the cost is worth it to minimize risk of picking a bad coating that would ruin your brand perception first drop. 
+
+if the mouse needs to be more expensive to accommodate the ceramic coating then so be it, that’s worth it to me.
+
+pmm’s supplier only charges them ~15usd per unit for coating (from what jon told me), and it would be much cheaper at scale or if done in house.
+- [?] on "": 
+    ↳ [Brock Liddicoat] do you have an example with what types of other compromises there are?
+    ↳ [Chuddah] from what i read in the gwolves server basically either super stiff or mushy
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] i mean the pcb is top mounted and the mouse is currently designed to work without even having a bottom plate so i’d hope this would just be a qol thing and have no way to effect the clicks (unless im thinking about it wrong)
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] what mouse is this on? i’m honestly wondering if just 5 leds for:
+
+500hz, 1000hz, 2000hz, 4000hz and 8000hz
+
+would look better, but i’m unsure how to cleanly represent the difference between the dpi settings of
+
+400dpi, 800dpi, 1600dpi, 3200dpi and 6400dpi
+
+i’ve thought about just using the same dpi options as the the polling rate options, but i don’t know how people would feel about that. i’m worried it might cause some sort of uncanny valley effect.
+    ↳ [Chuddah] that crdrako mouse, the led for polling has been done before on some pulsar and rawm mice so its not super out there but it was a bit of an adjustment for me (not that its a bad thing just different)
+    ↳ [Chuddah] rawm leviathan v4 in fact has the exact setup you are talking about iirc
+    ↳ [Brock Liddicoat] so you don’t think it would bother people to be playing at 500, 1000 dpi and 2000 dpi instead of 400, 800 and 1600?
+- [?] on "": 
+    ↳ [Brock Liddicoat] for virtual rotation or just just positioning? do you have data?
+    ↳ [Brock Liddicoat] 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Chuddah] Bumping this, more contact does not mean a better shape. This is the reason why I dont like using certain mice as they feel impossible to maneuver in the hand making it feel like I am holding a potato.
+    ↳ [Brock Liddicoat] thanks, i will definitely add something about making sure not to overdo it, this was just something i saw in an old mouse review and should’ve thought more into how it could guide development in the wrong direction (like causing restricted mobility).
+
+i was stuck in looking for objective “bigger number better” ways to help shape development as that is how it was framed to me in the video. (not that that is a valid excuse or anything)
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] 95% of mice don’t have a pmic, it’s an extra ~0.90usd per mouse for the chip, but i totally think it’s worth it bc it enables 20x faster charging, safer battery regulation, and automatically calculates power drain.
+
+additionally the npm 1300 is made by nordic and should mesh really well with the mcu.
+- [?] on "": 
+    ↳ [Brock Liddicoat] i just wanted it to be the default option for material cohesiveness since the mouse is almost entirely cf polymer and pom down to screws, i’d want to include silent ptfe and tiger ice esque as well
+    ↳ [Brock Liddicoat] 
+    ↳ [Brock Liddicoat] 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] did it bother you on the gpx? i personally didn’t mind it but i definitely need more opinions.
+    ↳ [Chuddah] its just kinda finicky in my experience, not the worst thing in the world just something that felt unnecessary
+- [?] on "": 
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] modulation! i think many people are a little intimidated by the effect losing the bottom shell has on the shape, which is why it’s the only time i’d ever consider anything other than unibody. (just because of how drastic the weight loss can be, and because the mouse can still then has a unipart option.)
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] i wanted them way out of the way of where the player typically touches the mouse, i can show you the design. 
+
+but i like all these ideas, i think a competition version that was just fully laser engraved might be worthwhile as well, but im not a huge fan of unnecessary additional skus.
+- [?] on "": 
+    ↳ [Brock Liddicoat] ik and i’m hella jealous of the new razer exclusive sensor and lens, they removed the pins on the sensor and made it solder directly onto the pcb with contact pads which is massive for regulation issues.
+
+the sensor lens also just snaps onto the sensor now which is so sick for it not having to be tackily glued on or supported by a big ahh bottom plate.
+
+this is more of just a wishful thinking thing, juskim has said pixart has been surprisingly cooperative for his smaller project tho so i’m hopeful.
+- [?] on "": 
+    ↳ [Chuddah] I disagree, ribbons blow no matter what and the reattachment process is a hassle compared to just plugging in a jst. Even with length you still run in to the issue of the latch being a wear point that is either too delicate or built up to the point of negating weight savings.
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] i have never heard of lipid detention. 
+
+but yes stiffness was a massive consideration for this since i believe a stiff material is super important for the triggers (so long as you can still get the click tensioning right).
+
+the triggers inherent need to be mobile means they can’t really be supported by the rest of the mouse and need to be strong on their own in order to prevent a disgusting amount of gpx-level post travel.
+    ↳ [Chuddah] basically what i was talking about is resistance to the grime of the human body degrading the material over time
+    ↳ [Brock Liddicoat] oh sick, where did you see if helps with that?
+- [?] on "": 
+    ↳ [Brock Liddicoat] i mean razer does it, but i see your point. perhaps an automatic prompt to open the web driver would be much more safe.
+- [?] on "": 
+    ↳ [Brock Liddicoat] Focus on Finalmouse, unsure how to make generic.
+- [?] on "": 
+    ↳ [Brock Liddicoat] that was kinda tacky to me. i need to think on it. if there’s a less tacky way to do it im all for it, maybe it was just the pink that throws me off. i think a dot skate on the sensor was pretty cool, the pink thing just looks super fragile.
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+    ↳ [Brock Liddicoat] 
+- [?] on "": 
+- [?] on "": 
+    ↳ [Brock Liddicoat] my concerns with hex driver is that it might actually strip more easily since the shape is already very similar to a circle. i did a lot of research before making this decision and actually found some papers where phillips was consistently the safest.
+
+shipping a flathead screwdriver with phillips screws would also be uniquely efficient since the cross pattern essentially gives you a fall back even if you strip one socket there’s still the perpendicular one.
+- [?] on "": 
+    ↳ [Brock Liddicoat] my idea was the dongle is designed with second usb passthrough port so that the mouse can be charged via a cable that’s plugged into the dongle, hopefully making this whole process intuitive (and potentially happen without the user even thinking about it) and not in need of any special input combinations.
+
+maybe it’s not as intuitive as i think can implementing both could be a good way to safe as an smd switch is virtually weightless.
+- [?] on "": 
+    ↳ [Brock Liddicoat] i thought i already changed that tbh 😭, it was never meant to be left in the draft i shared with people
+- [?] on "": 
+    ↳ [Brock Liddicoat] i thought about that bc how pulsar did it was cool, but i wanted to maximize the chances of the user fumbling around with the dongle in the dark and still hitting the right button.
+
+if you think that having a customizable extra button is more beneficial than that niche use case i’ll definitely add it, because i’m unsure if it’s just personal bias or not.
