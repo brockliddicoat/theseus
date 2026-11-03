@@ -1,0 +1,1374 @@
+{
+ "meta": {
+  "title": "Existing features: best current implementation, evidence, complaints, and the Theseus step beyond",
+  "generated": "2026-11-03",
+  "note": "theseus_step_further entries are proposals (unlabelled text, the deck should tag them [PR]). Evidence values carry IM/DS/MC/CA/DV. Reddit (403) and TechPowerUp (403) could not be read in this session, so community complaints rely on Brock's doc thread, reviews and X posts."
+ },
+ "features": [
+  {
+   "feature": "Dot skates (2 per corner)",
+   "doc_ideas": [
+    10
+   ],
+   "best_current": [
+    {
+     "who": "Pulsar X2 CrazyLight (ships dot-skate option)",
+     "evidence": {
+      "value": {
+       "dots_g": 39,
+       "ptfe_g": 41
+      },
+      "unit": "g (Pulsar spec, +/-1 g)",
+      "source_url": "https://www.pcgamer.com/hardware/gaming-mice/pulsar-x2-crazylight-medium-review/",
+      "source_title": "PC Gamer, Pulsar X2 CrazyLight Medium review",
+      "label": "DS"
+     }
+    },
+    {
+     "who": "X-Raypad Obsidian universal dots",
+     "evidence": {
+      "value": {
+       "diameter_mm": 6.5,
+       "thickness_mm": 0.8
+      },
+      "unit": "mm",
+      "source_url": "https://divinikey.com/products/x-raypads-obsidian-mouse-skates-universal-dots",
+      "source_title": "X-Raypad Obsidian dots (deck source)",
+      "label": "DS"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": 2,
+     "unit": "g saved by dots vs full PTFE skates on the same mouse (41 - 39)",
+     "source_url": "https://www.pcgamer.com/hardware/gaming-mice/pulsar-x2-crazylight-medium-review/",
+     "source_title": "PC Gamer, Pulsar X2 CrazyLight Medium review",
+     "label": "DV",
+     "formula": "41 - 39"
+    },
+    {
+     "value": 0.057,
+     "unit": "g per 6.5 x 0.8 mm PTFE dot (8 dots = 0.46 g)",
+     "source_url": "https://xometry.asia/wp-content/uploads/2021/03/PTFE.pdf",
+     "source_title": "DV from PTFE density 2.16 g/cm3",
+     "label": "DV",
+     "formula": "pi x 0.325^2 x 0.08 x 2.16"
+    }
+   ],
+   "known_complaints": [
+    {
+     "value": "with only 1 dot per corner some softer pads let the dots sink in and the pad scrapes the base",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "CA"
+    },
+    {
+     "value": "thicker third-party skates can cause tracking issues (LOD)",
+     "unit": "text",
+     "source_url": "https://zowie.benq.eu/en-eu/support/faq/product/explanation/zowiegear-faq-kn-00024.html",
+     "source_title": "ZOWIE FAQ: thicker third-party skates can cause tracking issues (deck source)",
+     "label": "DS"
+    },
+    {
+     "value": "Z tolerance only 2.2-2.6 mm lens-plane-to-surface: every 0.1 mm of skate height spends 25% of the +/-0.2 mm window",
+     "unit": "text",
+     "source_url": "https://atta.szlcsc.com/upload/public/pdf/source/20251201/5A54B75DA77586FABF8CEFBD8F21947D.pdf",
+     "source_title": "PixArt PAW3395 datasheet: lens reference plane to surface Z = 2.2 / 2.4 / 2.6 mm; \"place mouse feet around the base plate opening\"",
+     "label": "DV",
+     "formula": "0.1 / 0.4 mm window"
+    }
+   ],
+   "theseus_step_further": "Eight molded dot seats (laser-etched rings, not recesses) with dot height tuned so the lens sits at Z = 2.4 mm nominal; ship PTFE and POM dot sets; publish the skate DXF and the dot height that keeps Z inside 2.2-2.6 mm.",
+   "measurable_target_to_publish": "Z (lens plane to pad) with each skate set, measured; sink-in on a soft pad (mm at 300 g load)",
+   "animation_beat": "Exploded underside: 8 dots drop into etched rings; a ruler shows Z = 2.4 mm centred in the 2.2-2.6 mm datasheet window; a soft pad compresses and the base stays clear."
+  },
+  {
+   "feature": "POM vs PTFE skates",
+   "doc_ideas": [
+    8
+   ],
+   "best_current": [
+    {
+     "who": "POM skates (Brock: pioneered by Artisan, unverified)",
+     "evidence": {
+      "value": "Artisan-pioneered POM skates",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA",
+      "note": "attribution not verified in this pass"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": 0.2,
+     "unit": "dynamic CoF (Delrin 150, 40 psi, 50 fpm, ASTM D3702)",
+     "source_url": "https://www.plasticsintl.com/media/05oith4t/delrin-150-data-sheet.pdf",
+     "source_title": "Delrin 150 datasheet: SG 1.42, dynamic CoF 0.20",
+     "label": "DS"
+    },
+    {
+     "value": 0.19,
+     "unit": "dynamic CoF dry vs steel (Delrin AF100)",
+     "source_url": "https://www.plasticsintl.com/media/rwhllvo1/delrin-100af-data-sheet.pdf",
+     "source_title": "Delrin AF100 datasheet: dynamic CoF 0.19 dry vs steel",
+     "label": "DS",
+     "note": "PTFE-filled acetal"
+    }
+   ],
+   "known_complaints": [
+    {
+     "value": "preference split: PTFE still wanted by some (Brock plans to include silent PTFE and Tiger-Ice-style options)",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "Default POM (material match with POM pads/axle) plus PTFE in the box, each with its measured static and kinetic friction on the same reference pad, printed on the skate card.",
+   "measurable_target_to_publish": "mu_static and mu_kinetic for each skate on 2 reference pads (cloth, glass), n>=10 pulls",
+   "animation_beat": "Two skate cards slide across a pad; a friction gauge overlays mu_s/mu_k for POM vs PTFE."
+  },
+  {
+   "feature": "SPDT \"negative latency\" (NC-release detection)",
+   "doc_ideas": [
+    79
+   ],
+   "best_current": [
+    {
+     "who": "Endgame Gear OP1 8k v2 (GX Speed / GX Safe)",
+     "evidence": {
+      "value": {
+       "GX_Speed_stationary_us": 320.29,
+       "GX_Safe_stationary_us": 65.63
+      },
+      "unit": "us electrical latency",
+      "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+      "source_title": "XBAB Tech on X 2026-06-30 + chart (refs/xbab/xbab-click-latency-chart.png)",
+      "label": "MC"
+     }
+    },
+    {
+     "who": "XBAB XA25 (NC Release / SR Latch)",
+     "evidence": {
+      "value": {
+       "NC_release_us": 72.04,
+       "SR_latch_us": 64.42
+      },
+      "unit": "us",
+      "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+      "source_title": "XBAB Tech on X 2026-06-30 + chart (refs/xbab/xbab-click-latency-chart.png)",
+      "label": "MC"
+     }
+    },
+    {
+     "who": "G-Wolves; Ninjutso Sora V3 HyperSwitch SPDT",
+     "evidence": {
+      "value": "G-Wolves and EGG SPDT; Sora V3 SPDT HyperSwitch per report",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": 1245,
+     "unit": "us net head start of NC release over NO latch on the OP1 (stationary)",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech on X 2026-06-30 + chart (refs/xbab/xbab-click-latency-chart.png)",
+     "label": "DV",
+     "formula": "~1500 us NC-before-NO - (320.29 - 65.63) us"
+    },
+    {
+     "value": 1.4,
+     "unit": "ms faster in GX Speed (approx.)",
+     "source_url": "https://www.techpowerup.com/review/endgame-gear-op1-8k/8.html",
+     "source_title": "TechPowerUp OP1 8K (deck source)",
+     "label": "IM"
+    }
+   ],
+   "known_complaints": [
+    {
+     "value": {
+      "OP1_speed_added_when_moving_us": 125.2,
+      "OP1_safe_added_when_moving_us": 121.0
+     },
+     "unit": "us",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech on X 2026-06-30 + chart (refs/xbab/xbab-click-latency-chart.png)",
+     "label": "DV",
+     "formula": "moving - stationary means",
+     "note": "OP1 clicks wait ~0.12 ms longer while the sensor is moving; XA25 shows no such penalty"
+    },
+    {
+     "value": "\"after trying negative latency on G-Wolves and EGG mice, many customers can't go back\" (demand signal)",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "NC-release SPDT with a click path that never waits for motion (separate interrupt, report slot reserved), electrical latency <= 75 us moving or still, published with 95% CIs like XBAB's.",
+   "measurable_target_to_publish": "NC-edge -> USB latency, stationary and moving, n>=300, Beagle-class analyzer, 95% CI",
+   "animation_beat": "Split screen: NC contact opens, a timeline shows the 1.5 ms head start; a second lane shows OP1 moving (+125 us) vs Theseus moving (+0 us)."
+  },
+  {
+   "feature": "Analog / rapid-trigger clicks",
+   "doc_ideas": [],
+   "best_current": [
+    {
+     "who": "Finalmouse Starlight X (TMR-DS)",
+     "evidence": {
+      "value": "magnet under each clicker + TMR sensor; 40 actuation steps down to 0.01 mm inside pre-travel; rapid trigger; Huano mechanical switches kept for feel",
+      "unit": "text",
+      "source_url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+      "source_title": "Back2Gaming, Finalmouse Starlight X Nightfall review",
+      "label": "MC"
+     }
+    },
+    {
+     "who": "Logitech G Pro X2 Superstrike (HITS inductive + haptics)",
+     "evidence": {
+      "value": "inductive sensing, 0.6 mm travel, 10 actuation levels, haptics",
+      "unit": "text",
+      "source_url": "https://www.logitech.com/blog/2025/09/industrys-first-gaming-mouse-featuring-logitech-gs-revolutionary-superstrike-technology/",
+      "source_title": "Logitech blog: PRO X2 SUPERSTRIKE (deck source)",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": {
+      "Starlight X": 2.0,
+      "Superstrike": 3.0,
+      "OP1 8K V2": 5.7,
+      "Viper V4 Pro": 7.5
+     },
+     "unit": "ms end-to-end incl. finger travel (Finalmouse rig, 50 clicks)",
+     "source_url": "https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/",
+     "source_title": "PC Gamer on Finalmouse click test (Sept 2026)",
+     "label": "MC",
+     "note": "vendor-run; PC Gamer: analog saves \"about 3-5 ms\" vs mechanical under this model"
+    }
+   ],
+   "known_complaints": [
+    {
+     "value": "Cons: TMR-DS learning curve; drop-only availability",
+     "unit": "text",
+     "source_url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+     "source_title": "Back2Gaming, Finalmouse Starlight X Nightfall review",
+     "label": "IM"
+    },
+    {
+     "value": "many users keep Superstrike at level 3-4 rather than the shallowest; SLX 2 ms may be \"theoretical but not very practically realisable\"",
+     "unit": "text",
+     "source_url": "https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/",
+     "source_title": "PC Gamer on Finalmouse click test (Sept 2026)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "Analog sensing that learns each switch's own snap point and fires at it (no user tuning), with manual RT/actuation in mm as an expert mode; show the live travel trace and the learned point in the web driver.",
+   "measurable_target_to_publish": "Actuation point (mm) and release point (mm) per button with SD over 1,000 clicks; end-to-end click latency on a published finger-model rig",
+   "animation_beat": "A travel graph scrolls under the finger: the snap spike appears, a marker locks onto it, the report fires; overlay of 1,000 clicks shows a tight cluster."
+  },
+  {
+   "feature": "Hot-swap switches",
+   "doc_ideas": [
+    14
+   ],
+   "best_current": [
+    {
+     "who": "Endgame Gear OP1 8K / 8k v2",
+     "evidence": {
+      "value": "sells OP1 Universal Switch Set (2 switch PCBs + 14 switches) and 7 switch packs (Huano, Omron, TTC, Zippy, Kailh GX, HNCHK)",
+      "unit": "text",
+      "source_url": "https://www.endgamegear.com/products.json",
+      "source_title": "Endgame Gear store feed: OP1 Universal Switch Set, 7 switch packs (2026)",
+      "label": "DS"
+     }
+    },
+    {
+     "who": "Epomaker Carbonis",
+     "evidence": {
+      "value": "hot-swappable RAESHA optical switch held by an alligator clip, no solder pins",
+      "unit": "text",
+      "source_url": "https://hwbusters.com/peripherals/epomaker-carbonis-mouse-review/4/",
+      "source_title": "Hardware Busters, Epomaker Carbonis teardown",
+      "label": "IM"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "swap terminal is hard to remove and easy to insert backwards",
+     "unit": "text",
+     "source_url": "https://www.techradar.com/computing/peripherals-accessories/mice/endgame-gear-op1-8k-review",
+     "source_title": "TechRadar OP1 8K review (deck source)",
+     "label": "IM"
+    },
+    {
+     "value": "switch swaps change pre/post-travel (different switches, different travel) - raised by a reviewer of Brock's doc",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-comments.txt",
+     "source_title": "Brock doc comment thread (Chuddah, Josh, Brock)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "Mill-Max 3305 claw receptacles (0.635-0.940 mm leads, 1,000 cycles min) under a molded, keyed pin cover so a switch cannot go in backwards; firmware detects the switch type from its bounce signature and checks spring health.",
+   "measurable_target_to_publish": "insertion orientation errors (should be 0 by design); contact resistance after 100 swaps; detection accuracy optical vs mechanical",
+   "animation_beat": "Switch drops into a keyed cover (wrong way blocked with a red ghost); the web driver pops \"Kailh GX detected, 52 gf\"."
+  },
+  {
+   "feature": "Dual plungers / dual-rail triggers",
+   "doc_ideas": [
+    3,
+    80
+   ],
+   "best_current": [
+    {
+     "who": "G-Wolves (Brock: popularised dual plungers)",
+     "evidence": {
+      "value": "second plunger far from the first to stop lateral trigger sway",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "from the G-Wolves Discord: dual-plunger clicks end up \"either super stiff or mushy\"",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-comments.txt",
+     "source_title": "Brock doc comment thread (Chuddah, Josh, Brock)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "Dual rails with POM bearing pads and a published lateral-play spec, so the second anchor adds alignment without adding preload.",
+   "measurable_target_to_publish": "trigger lateral play (um at 1 N side load) and click force spread left vs right",
+   "animation_beat": "Side load arrow on the trigger: single plunger wobbles, dual rail stays; dial gauge reads um."
+  },
+  {
+   "feature": "POM pads beside plungers",
+   "doc_ideas": [
+    28
+   ],
+   "best_current": [
+    {
+     "who": "Finalmouse Starlight X (announced POM pads)",
+     "evidence": {
+      "value": "\"much fanfare from the enthusiast community when Finalmouse announced they would be doing this for the SLX\"",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "LA-1 had POM pads but still ground until the plunger sides were sanded (anecdote from Marcel)",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "POM pads on the front plunger, replaceable shims in 0.05 mm steps, and a Poron micro-pad at the strongest contact points (Josh's suggestion, ~0.5 g) as a force break instead of lube.",
+   "measurable_target_to_publish": "grind/rub force across the travel (N), before and after 100k clicks",
+   "animation_beat": "Close-up: CF trigger slides on POM pad; shim swap animates a 0.05 mm change."
+  },
+  {
+   "feature": "Side-button divider",
+   "doc_ideas": [
+    29
+   ],
+   "best_current": [
+    {
+     "who": "Razer Viper V3 Pro (per Brock; vs Viper V2 Pro)",
+     "evidence": {
+      "value": "divider strengthens the side and gives a thumb rest between buttons",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA",
+      "note": "not independently verified in this pass"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [],
+   "theseus_step_further": "Make the divider structural: tie it to a side-button PCB that spans the side wall (#91) so it stiffens the weakest region, and give it a texture distinct from the buttons.",
+   "measurable_target_to_publish": "side-wall deflection at the divider (um at 5 N) vs no divider",
+   "animation_beat": "Thumb rests on the ridge; FE colour map shows the side wall stiffening."
+  },
+  {
+   "feature": "Dongle buttons (DPI / polling)",
+   "doc_ideas": [
+    21
+   ],
+   "best_current": [
+    {
+     "who": "Pulsar Link 8K dongle",
+     "evidence": {
+      "value": "iF Design Award winner: dongle with DPI and polling-rate buttons",
+      "unit": "text",
+      "source_url": "https://ifdesign.com/en/winner-ranking/project/pulsar-link-8k-dongle/754666",
+      "source_title": "iF Design Award: Pulsar Link 8K dongle with DPI and polling buttons",
+      "label": "DS"
+     }
+    },
+    {
+     "who": "Pulsar X2 eS series (on-mouse OLED + buttons)",
+     "evidence": {
+      "value": "software-free control of LOD, debounce, motion sync, polling, DPI, battery on an OLED on the bottom of the mouse",
+      "unit": "text",
+      "source_url": "https://www.pulsar.gg/products/x2h-v3-es-gaming-mouse",
+      "source_title": "Pulsar X2H v3 eS page: OLED display on the bottom of the mouse; LOD, debounce, motion sync, polling, DPI, battery; 500 mA[h] for 70-100 h",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "reviewer note: LED-per-polling-rate indicators take adjustment; Brock wants buttons findable in the dark",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-comments.txt",
+     "source_title": "Brock doc comment thread (Chuddah, Josh, Brock)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "Two tactile, differently shaped buttons on a weighted dongle + passthrough (#22) so the dongle never needs unplugging; settings mirrored to the web driver.",
+   "measurable_target_to_publish": "n/a (UX) - show press-to-change time vs opening software",
+   "animation_beat": "Finger finds the notched button in the dark; dongle screen flips 1000 -> 8000 Hz."
+  },
+  {
+   "feature": "Dongle screen / battery and time-to-full display",
+   "doc_ideas": [
+    85,
+    86,
+    88
+   ],
+   "best_current": [
+    {
+     "who": "Arye FCC-1 (Brock: hidden-until-on monotone display)",
+     "evidence": {
+      "value": "dongle display hidden when powered off",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA",
+      "note": "no review text found"
+     }
+    },
+    {
+     "who": "Razer Viper V4 Pro dongle",
+     "evidence": {
+      "value": "configurable LEDs for battery, connection, polling or DPI; taller antenna; weighted base",
+      "unit": "text",
+      "source_url": "https://www.razer.com/gaming-mice/razer-viper-v4-pro",
+      "source_title": "Razer Viper V4 Pro product page",
+      "label": "MC"
+     }
+    },
+    {
+     "who": "Finalmouse ULX dongle",
+     "evidence": {
+      "value": "battery LED colour bands",
+      "unit": "text",
+      "source_url": "https://thegamingsetup.com/finalmouse-ultralightx-review",
+      "source_title": "UltralightX dongle battery LED bands (deck source)",
+      "label": "CA"
+     }
+    },
+    {
+     "who": "Pulsar eS (screen on the mouse, not dongle)",
+     "evidence": {
+      "value": "OLED shows battery, LOD, polling, DPI",
+      "unit": "text",
+      "source_url": "https://www.pulsar.gg/products/x2h-v3-es-gaming-mouse",
+      "source_title": "Pulsar X2H v3 eS page: OLED display on the bottom of the mouse; LOD, debounce, motion sync, polling, DPI, battery; 500 mA[h] for 70-100 h",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "V4 Pro shows level only; nobody shows time-to-full or runtime (per report)",
+     "unit": "text",
+     "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+     "source_title": "TechPowerUp Viper V4 Pro review (per validation-report-2026-11-03)",
+     "label": "IM"
+    }
+   ],
+   "theseus_step_further": "Dongle screen showing runtime remaining at the current polling rate and time-to-full while charging, driven by the nPM1300 fuel gauge (8 uA active per Nordic).",
+   "measurable_target_to_publish": "runtime-estimate error (%) vs measured run-down at 1 kHz and 8 kHz",
+   "animation_beat": "Dongle screen counts \"41 h @ 8 kHz\"; plug in, it flips to \"Full in 52 min\"."
+  },
+  {
+   "feature": "Web software / WebHID driver",
+   "doc_ideas": [
+    23
+   ],
+   "best_current": [
+    {
+     "who": "Finalmouse XPanel (Windows, Mac, Linux; talks via the dongle)",
+     "evidence": {
+      "value": "Xpanel supported on Windows, Mac and Linux",
+      "unit": "text",
+      "source_url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+      "source_title": "Back2Gaming, Finalmouse Starlight X Nightfall review",
+      "label": "IM"
+     }
+    },
+    {
+     "who": "Kunai (pre-production) web driver + app for firmware",
+     "evidence": {
+      "value": "web driver for settings, calibration, save report; firmware updates from a Windows app",
+      "unit": "text",
+      "source_url": "file:refs/kunai/kunai-guide.pdf",
+      "source_title": "Kunai tester guide fw 96.79 (pre-production, private)",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": "WebHID available in Chrome and Edge 89+",
+     "unit": "text",
+     "source_url": "https://developer.chrome.com/docs/capabilities/hid",
+     "source_title": "Chrome developers: WebHID (Chrome and Edge 89+)",
+     "label": "DS"
+    }
+   ],
+   "known_complaints": [
+    {
+     "value": "XPanel talks only through the dongle",
+     "unit": "text",
+     "source_url": "https://www.techpowerup.com/review/finalmouse-ultralightx/9.html",
+     "source_title": "TechPowerUp ULX software: XPanel talks only through the dongle (deck source)",
+     "label": "IM"
+    },
+    {
+     "value": "WebHID is Chromium-only (Chrome/Edge), so Firefox/Safari users need a fallback",
+     "unit": "text",
+     "source_url": "https://developer.chrome.com/docs/capabilities/hid",
+     "source_title": "Chrome developers: WebHID (Chrome and Edge 89+)",
+     "label": "DS"
+    }
+   ],
+   "theseus_step_further": "Web driver on the store domain that updates mouse and dongle together, works wired without the dongle, exposes raw diagnostics (polling stability, packet loss, battery health), and a QR code on the PCB that opens it.",
+   "measurable_target_to_publish": "time from unbox to configured; % sessions with a firmware mismatch (target 0)",
+   "animation_beat": "QR on PCB -> phone/PC opens driver; one \"Update both\" bar fills for mouse and dongle."
+  },
+  {
+   "feature": "8K wireless + sensor-frame sync",
+   "doc_ideas": [
+    65,
+    66,
+    90
+   ],
+   "best_current": [
+    {
+     "who": "Razer Viper V4 Pro (FrameSync, HyperSpeed Gen-2)",
+     "evidence": {
+      "value": 0.34,
+      "unit": "ms motion latency, wireless 8 kHz (piaknow)",
+      "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+      "source_title": "piaknow motion-latency chart 2026-09-15 (pbs.twimg.com/media/HSPkG6fboAAFQJ8.png)",
+      "label": "IM"
+     }
+    },
+    {
+     "who": "Finalmouse SLX PerfectPolling",
+     "evidence": {
+      "value": "single polling mode instead of 2K/4K/8K choice",
+      "unit": "text",
+      "source_url": "https://cdn.shopify.com/s/files/1/2377/4861/files/26.5.27_Starlight_X_Technical_Overview.pdf?v=1779939240",
+      "source_title": "Finalmouse Starlight X technical overview",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": {
+      "V4 Pro wired": 0.26,
+      "V4 Pro wireless": 0.34,
+      "GPX2 wireless": 0.9
+     },
+     "unit": "ms at 8 kHz",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow motion-latency chart 2026-09-15 (pbs.twimg.com/media/HSPkG6fboAAFQJ8.png)",
+     "label": "IM"
+    },
+    {
+     "value": 163,
+     "unit": "us lower frame-to-USB than FrameSync (SensorLock)",
+     "source_url": "https://x.com/xbabtech/status/2107622164539306331",
+     "source_title": "XBAB Tech on X 2026-10-07: SensorLock, frame-to-USB 163 us lower than FrameSync",
+     "label": "MC"
+    }
+   ],
+   "known_complaints": [
+    {
+     "value": {
+      "1k": 95,
+      "8k": 17
+     },
+     "unit": "h (Viper V3 Pro: 82% less battery at 8 kHz)",
+     "source_url": "https://mysupport.razer.com/app/answers/detail/a_id/14044/kw/viper%20v3",
+     "source_title": "Razer support: Viper V3 Pro 95/62/40/17 h at 1/2/4/8 kHz",
+     "label": "MC"
+    },
+    {
+     "value": "12-bit wireless counts and post-lift smoothing on V4 Pro",
+     "unit": "text",
+     "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+     "source_title": "TechPowerUp Viper V4 Pro review (per validation-report-2026-11-03)",
+     "label": "IM"
+    }
+   ],
+   "theseus_step_further": "Sensor-frame lock on every report at every rate, full 16-bit counts, packet-loss rescue, and the motion-latency number measured with piaknow's published method before launch.",
+   "measurable_target_to_publish": "motion latency at 1/2/4/8 kHz wired and wireless on piaknow's scale; packet loss with a headset nearby",
+   "animation_beat": "Timeline: sensor frame, read, radio slot, USB poll line up with no gaps; chart bar drops below 0.34 ms."
+  },
+  {
+   "feature": "Fuel gauge",
+   "doc_ideas": [
+    86,
+    88
+   ],
+   "best_current": [
+    {
+     "who": "Razer Viper V4 Pro",
+     "evidence": {
+      "value": "fuel gauge IC present",
+      "unit": "text",
+      "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+      "source_title": "TechPowerUp Viper V4 Pro review (per validation-report-2026-11-03)",
+      "label": "IM"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": "PMIC gauge: 8 uA active, 0 in sleep vs up to 50 uA for dedicated gauges (Nordic)",
+     "unit": "text",
+     "source_url": "https://www.nordicsemi.com/Products/nPM1300",
+     "source_title": "Nordic nPM1300: 32-800 mA charging, fuel gauge (deck source)",
+     "label": "MC"
+    }
+   ],
+   "known_complaints": [
+    {
+     "value": "Logitech GPX2 has no fuel gauge IC",
+     "unit": "text",
+     "source_url": "https://www.techpowerup.com/review/logitech-g-pro-x-superlight-2/8.html",
+     "source_title": "TechPowerUp GPX2: no fuel gauge IC (deck source)",
+     "label": "IM"
+    }
+   ],
+   "theseus_step_further": "nPM1300 algorithmic gauge reporting state-of-charge, state-of-health and time-to-full/empty to the dongle and web driver.",
+   "measurable_target_to_publish": "gauge error vs coulomb-counted truth over a full cycle",
+   "animation_beat": "Battery icon becomes a live curve with SoH %."
+  },
+  {
+   "feature": "Fast, cell-limited charging",
+   "doc_ideas": [],
+   "best_current": [
+    {
+     "who": "Pulsar X2H",
+     "evidence": {
+      "value": "0.27-0.28",
+      "unit": "A",
+      "source_url": "https://www.techpowerup.com/review/pulsar-x2h/8.html",
+      "source_title": "TechPowerUp Pulsar X2H (deck source)",
+      "label": "IM"
+     }
+    },
+    {
+     "who": "Razer Viper V4 Pro",
+     "evidence": {
+      "value": 0.169,
+      "unit": "A (~0.55C on 306 mAh)",
+      "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+      "source_title": "TechPowerUp Viper V4 Pro review (per validation-report-2026-11-03)",
+      "label": "IM"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [],
+   "theseus_step_further": "1C charge only if the chosen cell is rated for it (a Jauch 250 mAh pack is rated 0.5C max), with JEITA/NTC limits shown live.",
+   "measurable_target_to_publish": "minutes to 80% and 100%; cell temperature rise",
+   "animation_beat": "Charge curve races to 80% while a thermometer stays green."
+  },
+  {
+   "feature": "Optical scroll encoder",
+   "doc_ideas": [
+    81
+   ],
+   "best_current": [
+    {
+     "who": "Razer Viper V4 Pro / DeathAdder V4 Pro",
+     "evidence": {
+      "value": "Razer Optical Scroll Wheel, 24 steps",
+      "unit": "text",
+      "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+      "source_title": "EloShapes spec sheets (encoders: Razer optical V4 Pro / DA V4 Pro; ZOWIE optical EC2-DW / U2-DW)",
+      "label": "DS"
+     }
+    },
+    {
+     "who": "ZOWIE EC2-DW / U2-DW",
+     "evidence": {
+      "value": "ZOWIE optical encoder, 24 steps",
+      "unit": "text",
+      "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+      "source_title": "EloShapes spec sheets (encoders: Razer optical V4 Pro / DA V4 Pro; ZOWIE optical EC2-DW / U2-DW)",
+      "label": "DS"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": "TPU on the V4 Pro optical encoder: \"arguably the best one currently available\"",
+     "unit": "text",
+     "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+     "source_title": "TechPowerUp Viper V4 Pro review (per validation-report-2026-11-03)",
+     "label": "IM"
+    },
+    {
+     "value": "Razer: optical encoders \"3.3x more reliable\" than mechanical",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "MC"
+    }
+   ],
+   "known_complaints": [
+    {
+     "value": "mechanical encoder scroll faults from dust, dirt or fluids (why optical/sealed matters)",
+     "unit": "text",
+     "source_url": "https://us-support.pulsar.gg/support/solutions/articles/159000412452-how-to-resolve-mouse-scrolling-issues",
+     "source_title": "Pulsar support: scroll issues from dust, dirt or fluids in the encoder (deck source)",
+     "label": "DS"
+    },
+    {
+     "value": "optical encoder costs power and adds mould parts/specialised assembly",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "Optical encoder inside a sealed wheel bay (solid shell, no cutout above the wheel), POM axle, and a published detent-torque spec.",
+   "measurable_target_to_publish": "detent torque (mN*m) and missed-step rate after dust test",
+   "animation_beat": "Dust particles bounce off the sealed bay; encoder beam counts clean steps."
+  },
+  {
+   "feature": "Magnesium / metal scroll wheel",
+   "doc_ideas": [
+    84
+   ],
+   "best_current": [
+    {
+     "who": "Magnesium-shell mice exist (WLMOUSE Beast X/Huan, Corsair Sabre v2 Pro MG); metal wheels common per Brock",
+     "evidence": {
+      "value": "\"All high end mice have metal scroll wheels now\"",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA",
+      "note": "which flagships use magnesium wheels was not verified in this pass"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "brands with metal wheels are adding rubber inserts over them, a sign metal alone is too slippery",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "Magnesium wheel with a rover-tread knurl (5 knurls per row, per Mizu via Brock's comments) and a ceramic coat for grip, so no rubber ring is needed.",
+   "measurable_target_to_publish": "wheel mass (g) and finger-slip torque wet/dry",
+   "animation_beat": "Wheel spins; tread pattern resolves; a wet fingertip still grips."
+  },
+  {
+   "feature": "Ceramic coating",
+   "doc_ideas": [
+    16,
+    60
+   ],
+   "best_current": [
+    {
+     "who": "PMM AIM 8K (ceramic-based grip coating)",
+     "evidence": {
+      "value": "ceramic-based grip coating",
+      "unit": "text",
+      "source_url": "https://www.eloshapes.com/mouse/review/pmm-aim-8k",
+      "source_title": "EloShapes, PMM AIM 8K review (ceramic-based grip coating) (deck source)",
+      "label": "IM"
+     }
+    },
+    {
+     "who": "Zaunkoenig M2K wheel (per Brock)",
+     "evidence": {
+      "value": "ceramic-coated wheel",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": {
+      "pencil": "8H",
+      "scratch": "7H",
+      "film_um": "23-30"
+     },
+     "unit": "H-167 on steel cured 250 F 2 h",
+     "source_url": "https://images.nicindustries.com/cerakote/documents/4979/h-167-usmc-red-tds-dt20231127204218354071.pdf",
+     "source_title": "Cerakote H-167 TDS: 1 mil (0.90-1.20), 8H pencil, 7H scratch, 250 F 2 h on steel, density 1.36 g/mL, 38% solids, 606 ft2/gal at 1 mil",
+     "label": "DS"
+    },
+    {
+     "value": {
+      "pencil": "3H",
+      "full_cure_days": 5
+     },
+     "unit": "C-299 air cure",
+     "source_url": "https://images.nicindustries.com/cerakote/documents/5510/c-299-deep-blue-tds-dt20240108230652737462.pdf",
+     "source_title": "Cerakote C-299 air-cure TDS: 3H pencil, 5-day full cure",
+     "label": "DS"
+    },
+    {
+     "value": {
+      "elite_hardness": ">9H",
+      "taber_cycles_per_mil": ">8000",
+      "CoF": 0.11
+     },
+     "unit": "Cerakote Elite",
+     "source_url": "https://images.nicindustries.com/cerakote/documents/196/cerakote-product-series-guide-dt20200220002501485.pdf",
+     "source_title": "Cerakote product series guide: Elite >9H, Taber >8000 cycles/mil, CoF 0.11",
+     "label": "MC"
+    }
+   ],
+   "known_complaints": [
+    {
+     "value": "PMM air-dry ceramic coating had durability issues; \"extremely grippy\"; supplier ~US$15/unit per Jon",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "CA"
+    },
+    {
+     "value": "plastics cure only at 150-180 F (2 h): the 8H figure was measured on steel at 250 F, so PP-substrate hardness must be tested",
+     "unit": "text",
+     "source_url": "https://cerakote.com/resources/knowledge-base/111/properly-curing-cerakote-elite-series-and-h-series",
+     "source_title": "Cerakote cure table: plastics 150-180 F for 2 h (H & Elite); F-Series 180 F 1 h",
+     "label": "DS"
+    },
+    {
+     "value": "PP surface energy 29 mN/m - adhesion relies on surface prep",
+     "unit": "text",
+     "source_url": "https://permabond.com/bonding-polypropylene-industrial-adhesive/",
+     "source_title": "Permabond: PP surface energy 29 mN/m (deck source)",
+     "label": "DS"
+    }
+   ],
+   "theseus_step_further": "Oven-cured H/Elite-class ceramic on CF-PP at the plastic cure schedule, hardness and adhesion re-measured on the actual substrate, laser-etched grip zones; publish the coat mass (~0.35-0.46 g per 1-mil coat on a Sora-size shell, DV).",
+   "measurable_target_to_publish": "pencil hardness and cross-cut on CF-PP; coat mass (g); grip friction",
+   "animation_beat": "Kiln animation: clay pot vs fired pot; then a pencil-hardness scratch fails to mark the shell."
+  },
+  {
+   "feature": "Solid shell",
+   "doc_ideas": [
+    15
+   ],
+   "best_current": [
+    {
+     "who": "Ninjutso Sora V2",
+     "evidence": {
+      "value": "Sora V2 \"feels solid\" vs ULX \"flexes and creaks with pressure\"",
+      "unit": "text",
+      "source_url": "https://www.rtings.com/mouse/reviews/ninjutso/sora-v2",
+      "source_title": "RTINGS Ninjutso Sora V2 review; Sora V2 vs ULX Pro comparison quoted in validation-report-2026-11-03 (Sora V2 \"feels solid\", ULX \"flexes and creaks with pressure\")",
+      "label": "IM"
+     }
+    },
+    {
+     "who": "Vaidemi Nimbus DIY (29 g, no holes)",
+     "evidence": {
+      "value": "29 g incl. skates and paint; SLA resin shell with internal skeleton; withstood 30+ kg",
+      "unit": "text",
+      "source_url": "https://www.notebookcheck.net/YouTuber-embarrasses-big-gaming-mouse-brands-with-29-g-ultralight-mouse-with-no-holes.1011756.0.html",
+      "source_title": "Notebookcheck: Vaidemi Nimbus 29 g solid-shell DIY mouse",
+      "label": "CA"
+     }
+    },
+    {
+     "who": "Finalmouse SLX (pressure-mapped openings)",
+     "evidence": {
+      "value": "openings only where the hand does not rest; base keeps honeycomb",
+      "unit": "text",
+      "source_url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+      "source_title": "Back2Gaming, Finalmouse Starlight X Nightfall review",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "ULX Pro vs Competition: flex, popping, creaking",
+     "unit": "text",
+     "source_url": "https://www.rtings.com/mouse/tools/compare/finalmouse-ulx-pro-series-finalmouse-ultralightx-competition/58188/78570",
+     "source_title": "RTINGS ULX Pro Series vs ULX Competition (deck source)",
+     "label": "IM"
+    },
+    {
+     "value": "ULX Competition: post-travel, flexy hump",
+     "unit": "text",
+     "source_url": "https://periview.gg/?p=2458",
+     "source_title": "Periview, ULX Competition review: post-travel, flexy hump (deck source)",
+     "label": "IM"
+    }
+   ],
+   "theseus_step_further": "Fully solid top at 29 g using arched internal ribs tied to the PCB (#53, #94), with a published deflection test against the SLX and Sora V3.",
+   "measurable_target_to_publish": "top-shell deflection (mm) at 10 N at 5 points; creak test",
+   "animation_beat": "Press test: competitor shell bows (FE colour), Theseus barely moves; weight stays 29 g."
+  },
+  {
+   "feature": "Unibody / fewer-part shell",
+   "doc_ideas": [
+    57
+   ],
+   "best_current": [
+    {
+     "who": "Finalmouse SLX",
+     "evidence": {
+      "value": "unibody main cage: 3 components instead of 4, 15 graphite-coated titanium screws (~0.02 g each)",
+      "unit": "text",
+      "source_url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+      "source_title": "Back2Gaming, Finalmouse Starlight X Nightfall review",
+      "label": "MC"
+     }
+    },
+    {
+     "who": "Nitrite Labs Carbon XT1",
+     "evidence": {
+      "value": "unipart shell to eliminate creaking",
+      "unit": "text",
+      "source_url": "https://x.com/nitritelabs",
+      "source_title": "Nitrite Labs on X, Carbon XT1 unipart shell (deck source)",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [],
+   "theseus_step_further": "Bottom rim, hump and sides as one part plus a slide-in modular bottom (#97); publish panel-gap and stiffness numbers.",
+   "measurable_target_to_publish": "part count, panel-gap (mm), torsional stiffness",
+   "animation_beat": "Exploded view collapses from 4 parts to 1; gap callouts vanish."
+  },
+  {
+   "feature": "Front struts / arched ribbing",
+   "doc_ideas": [
+    53,
+    55
+   ],
+   "best_current": [
+    {
+     "who": "Lamzu Maya (per Brock: front struts tied to trigger underwiring)",
+     "evidence": {
+      "value": "vertical front struts",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [],
+   "theseus_step_further": "Arched, continuous ribs (not separate struts) from floor to roof in the low front, tied into the trigger underwiring, sized by the deck's FE model.",
+   "measurable_target_to_publish": "front deflection (um at 5 N)",
+   "animation_beat": "Struts morph into arches; load path lights up."
+  },
+  {
+   "feature": "Smaller / snap-on sensor lens",
+   "doc_ideas": [
+    37
+   ],
+   "best_current": [
+    {
+     "who": "Razer Viper V4 Pro (Focus Pro 50K Gen-3)",
+     "evidence": {
+      "value": "\"completely different package and a new tracking engine\"; lens snaps on (Brock)",
+      "unit": "text",
+      "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+      "source_title": "TechPowerUp Viper V4 Pro review (per validation-report-2026-11-03)",
+      "label": "IM"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": {
+      "lens_g": 0.8,
+      "sensor_g": 0.6
+     },
+     "unit": "g (M1K PMW3360 lens heavier than the sensor)",
+     "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+     "source_title": "Zaunkoenig M1K weight in review",
+     "label": "MC"
+    }
+   ],
+   "known_complaints": [],
+   "theseus_step_further": "Clip-on small lens sized for one dot skate, if PixArt supplies it; otherwise trim lens + dot.",
+   "measurable_target_to_publish": "lens mass (g)",
+   "animation_beat": "Big oval lens shrinks to a small clip-on; scale reads -0.x g."
+  },
+  {
+   "feature": "Lift-off distance control",
+   "doc_ideas": [],
+   "best_current": [
+    {
+     "who": "WLMOUSE Huan M",
+     "evidence": {
+      "value": "LOD 0.7-1.7 mm in 0.1 mm steps",
+      "unit": "text",
+      "source_url": "https://www.wlmouse.com/products/huan-m-black",
+      "source_title": "WLMOUSE Huan M: LOD 0.7-1.7 mm in 0.1 mm steps (deck source)",
+      "label": "DS"
+     }
+    },
+    {
+     "who": "Razer Focus Pro 50K Gen-3",
+     "evidence": {
+      "value": "lift-off and landing set separately (26 steps per report)",
+      "unit": "text",
+      "source_url": "https://www.razer.com/mena-en/technology/razer-focus-pro-sensor",
+      "source_title": "Razer Focus Pro 50K Gen-3: lift-off and landing set separately (deck source)",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "PAW3950/3955 default 16-frame (~450 ms) smoothing after set-down (XA25 runs 2 frames)",
+     "unit": "text",
+     "source_url": "https://xbabtech.com/blog/smoothing",
+     "source_title": "XBAB blog: PAW3950/3955 default 16-frame (~450 ms) smoothing after set-down; XA25 runs 2 frames (~12 ms) (deck source)",
+     "label": "MC"
+    }
+   ],
+   "theseus_step_further": "Asymmetric lift/land in 0.1 mm steps with set-down smoothing cut to ~2 frames, shown on screen.",
+   "measurable_target_to_publish": "LOD per setting on 3 pads; frames of post-set-down smoothing",
+   "animation_beat": "Mouse lifts; two separate thresholds animate; a \"2 frames\" counter replaces \"16\"."
+  },
+  {
+   "feature": "Single-MCU 8K wired",
+   "doc_ideas": [
+    90
+   ],
+   "best_current": [
+    {
+     "who": "Razer Viper V4 Pro",
+     "evidence": {
+      "value": "single MCU 8K wired per report",
+      "unit": "text",
+      "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+      "source_title": "TechPowerUp Viper V4 Pro review (per validation-report-2026-11-03)",
+      "label": "IM"
+     }
+    },
+    {
+     "who": "XBAB XA25 (wired)",
+     "evidence": {
+      "value": 0.13,
+      "unit": "ms motion latency wired 8 kHz",
+      "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+      "source_title": "piaknow motion-latency chart 2026-09-15 (pbs.twimg.com/media/HSPkG6fboAAFQJ8.png)",
+      "label": "IM"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": {
+      "XA25": 0.13,
+      "OP1 8k V2": 0.19,
+      "V4 Pro wired": 0.26
+     },
+     "unit": "ms",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow motion-latency chart 2026-09-15 (pbs.twimg.com/media/HSPkG6fboAAFQJ8.png)",
+     "label": "IM"
+    }
+   ],
+   "known_complaints": [],
+   "theseus_step_further": "Wired mode on the same nRF54LM20A USB-HS MCU, timed to the host's polls (XA25-style), so the cable is strictly faster than wireless.",
+   "measurable_target_to_publish": "wired motion latency at 8 kHz (target <= 0.19 ms, OP1 8k V2 level)",
+   "animation_beat": "Cable plugs in; latency bar snaps to the wired row."
+  },
+  {
+   "feature": "Angled charging cable / cable thickness",
+   "doc_ideas": [
+    19,
+    20
+   ],
+   "best_current": [
+    {
+     "who": "Lamzu, Pulsar (angled, per Brock)",
+     "evidence": {
+      "value": "angled cables shipped by Lamzu and Pulsar",
+      "unit": "text",
+      "source_url": "file:research/brock-doc-in-pursuit.txt",
+      "source_title": "Brock doc (ideas + brainstorm)",
+      "label": "CA",
+      "note": "not verified per model"
+     }
+    },
+    {
+     "who": "XBAB XA25 cable",
+     "evidence": {
+      "value": "1.9 mm, 6.9 g/m, passes USB 2.0 HS eye test",
+      "unit": "text",
+      "source_url": "https://xbabtech.com/",
+      "source_title": "XBAB XA25 product page",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "ULX cable \"supremely stiff\", 1.7 m",
+     "unit": "text",
+     "source_url": "https://www.techpowerup.com/review/finalmouse-ultralightx/",
+     "source_title": "TechPowerUp UltralightX review (deck source: 1.7 m \"supremely stiff\" cable)",
+     "label": "IM"
+    },
+    {
+     "value": "current cable too thick: dongle cannot sit flat and falls; cable tension can move a light mouse",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "Angled USB-C plug + XA25-class 1.9 mm cable that still passes USB-HS, and the dongle passthrough (#22) so it rarely leaves the desk.",
+   "measurable_target_to_publish": "cable diameter, g/m, bend force (N at 30 mm radius), eye-pattern pass",
+   "animation_beat": "Cable curls without pulling the 29 g mouse; a spring scale reads the drag."
+  },
+  {
+   "feature": "Weighted / raised-antenna dongle",
+   "doc_ideas": [],
+   "best_current": [
+    {
+     "who": "Finalmouse SLX puck",
+     "evidence": {
+      "value": "raised metal antenna and a steel internal weight",
+      "unit": "text",
+      "source_url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+      "source_title": "Back2Gaming, Finalmouse Starlight X Nightfall review",
+      "label": "MC"
+     }
+    },
+    {
+     "who": "Razer V4 Pro dongle",
+     "evidence": {
+      "value": "taller antenna, weighted base",
+      "unit": "text",
+      "source_url": "https://www.razer.com/gaming-mice/razer-viper-v4-pro",
+      "source_title": "Razer Viper V4 Pro product page",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": "dongles fall off desks unnoticed and wireless latency suffers (Brock); neither brand publishes RSSI or packet-loss data",
+     "unit": "text",
+     "source_url": "file:research/brock-doc-in-pursuit.txt",
+     "source_title": "Brock doc (ideas + brainstorm)",
+     "label": "CA"
+    }
+   ],
+   "theseus_step_further": "Weighted flash-drive-style dongle with passthrough and screen; publish RSSI/packet loss vs distance against the SLX puck.",
+   "measurable_target_to_publish": "packet loss % at 0.5/1/2 m with a headset nearby",
+   "animation_beat": "Dongle sits flat; signal rings expand; packet-loss counter stays at 0."
+  },
+  {
+   "feature": "Antenna placement (forward)",
+   "doc_ideas": [
+    68
+   ],
+   "best_current": [
+    {
+     "who": "Finalmouse SLX",
+     "evidence": {
+      "value": "ceramic chip antenna repositioned \"northward\"",
+      "unit": "text",
+      "source_url": "https://cdn.shopify.com/s/files/1/2377/4861/files/26.5.27_Starlight_X_Technical_Overview.pdf?v=1779939240",
+      "source_title": "Finalmouse Starlight X technical overview",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [],
+   "theseus_step_further": "Module chip antenna at the nose with a keep-out free of CF ribs; publish RSSI vs a rear-antenna build.",
+   "measurable_target_to_publish": "RSSI (dBm) and loss at 1 m, antenna front vs rear",
+   "animation_beat": "Radio waves leave the nose unobstructed; a CF rib turns grey in the keep-out."
+  },
+  {
+   "feature": "Titanium / light fasteners",
+   "doc_ideas": [
+    9,
+    101
+   ],
+   "best_current": [
+    {
+     "who": "Finalmouse SLX",
+     "evidence": {
+      "value": "15 graphite-coated titanium screws, ~0.02 g each (~0.3 g total)",
+      "unit": "text",
+      "source_url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+      "source_title": "Back2Gaming, Finalmouse Starlight X Nightfall review",
+      "label": "MC"
+     }
+    },
+    {
+     "who": "XBAB XA25",
+     "evidence": {
+      "value": 0.064,
+      "unit": "g per screw (11 screws 0.708 g), trilobular thread-forming",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB weight breakdown",
+      "label": "DV",
+      "formula": "0.708 / 11"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [],
+   "theseus_step_further": "M2 machine screws into brass inserts only where users open the mouse (service points); titanium elsewhere; one screw size throughout.",
+   "measurable_target_to_publish": "fastener mass total (g); strip-out torque after 20 cycles",
+   "animation_beat": "Screw count and mass tally on screen."
+  },
+  {
+   "feature": "Serialization",
+   "doc_ideas": [
+    35,
+    36
+   ],
+   "best_current": [
+    {
+     "who": "Finalmouse ULX Competition",
+     "evidence": {
+      "value": "10,000-unit serialized run",
+      "unit": "text",
+      "source_url": "https://periview.gg/?p=2458",
+      "source_title": "ULX Competition: 10,000-unit serialized run (deck source)",
+      "label": "IM"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [],
+   "theseus_step_further": "Laser-etched serial on the right click plus a per-unit weight certificate (measured, not claimed).",
+   "measurable_target_to_publish": "serial + measured weight per unit",
+   "animation_beat": "Laser writes #0029 on the click; scale prints 29.0 g."
+  },
+  {
+   "feature": "Haptics",
+   "doc_ideas": [
+    89
+   ],
+   "best_current": [
+    {
+     "who": "Logitech G Pro X2 Superstrike",
+     "evidence": {
+      "value": "haptic click feedback, 10 levels",
+      "unit": "text",
+      "source_url": "https://www.logitech.com/blog/2025/09/industrys-first-gaming-mouse-featuring-logitech-gs-revolutionary-superstrike-technology/",
+      "source_title": "Logitech blog: PRO X2 SUPERSTRIKE (deck source)",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [],
+   "known_complaints": [
+    {
+     "value": 61,
+     "unit": "g claimed (heaviest mouse in the Logitech PRO line here)",
+     "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+     "source_title": "EloShapes Superstrike",
+     "label": "DS"
+    }
+   ],
+   "theseus_step_further": "Optional bass-only haptic module as a separate SKU so the 29 g base model carries none of it.",
+   "measurable_target_to_publish": "module mass (g), battery impact (h)",
+   "animation_beat": "Haptic puck clicks in only on the Pro SKU."
+  },
+  {
+   "feature": "No RGB",
+   "doc_ideas": [
+    99
+   ],
+   "best_current": [
+    {
+     "who": "Most enthusiast mice (V4 Pro LEDs only on dongle)",
+     "evidence": {
+      "value": "status LEDs live on the dongle",
+      "unit": "text",
+      "source_url": "https://www.razer.com/gaming-mice/razer-viper-v4-pro",
+      "source_title": "Razer Viper V4 Pro product page",
+      "label": "MC"
+     }
+    }
+   ],
+   "how_well_it_works": [
+    {
+     "value": {
+      "lighting_off_h": 30,
+      "rgb_cycling_h": 22
+     },
+     "unit": "h at 1 ms (G403/G703, 750 mAh)",
+     "source_url": "https://support.logi.com/hc/en-hk/articles/360023176314-Check-battery-status-and-charge-the-G403-or-G703-wireless-gaming-mouse",
+     "source_title": "Logitech: G403/G703 750 mAh, 30 h lighting off vs 22 h RGB cycling at 1 ms",
+     "label": "MC",
+     "note": "RGB costs 27% of runtime on that model"
+    }
+   ],
+   "known_complaints": [],
+   "theseus_step_further": "No LED on the mouse at all; all status on the dongle screen.",
+   "measurable_target_to_publish": "n/a",
+   "animation_beat": "LED fades out of the mouse and reappears as a pixel on the dongle screen."
+  }
+ ]
+}

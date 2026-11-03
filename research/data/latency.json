@@ -1,0 +1,1809 @@
+{
+ "meta": {
+  "title": "Click- and motion-latency tables with test conditions",
+  "generated": "2026-11-03",
+  "chart_suggestions": [
+   "Bar (sorted): piaknow motion latency at 8 kHz, wired solid / wireless hatched; XA25 and V4 Pro highlighted",
+   "XY: report rate (log x) vs motion latency for V4 Pro wired, V4 Pro wireless, OP1 8k V2, GPX2 wireless, with the T/2 floor line; region under the best curve shaded as the sweet spot",
+   "Grouped bar with 95% CI: XBAB XA25 vs OP1 8k v2, 4 panels",
+   "Bar: click latency by method family (electrical, end-to-end finger model) - never mix methods on one axis"
+  ],
+  "warnings": [
+   "Do not compare numbers across methods: TPU electrical click latency (us), XBAB electrical (us), Finalmouse end-to-end with finger travel (ms) and RTINGS (paywalled) measure different things.",
+   "piaknow rows marked * ran with Motion Sync forced on (may be inaccurate). Smoothing filters inflate motion latency in this method."
+  ]
+ },
+ "motion_latency_piaknow_2026_09_15": {
+  "source": {
+   "value": null,
+   "unit": null,
+   "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+   "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+   "label": "IM",
+   "note": "Post text: \"Since the data is getting old, I have decided to publish all of my mouse motion latency test results that I have been collecting for the past 2 years. ... My paper about the methods is nearly finished.\" Attached video shows the measurement setup.",
+   "image": "https://pbs.twimg.com/media/HSPkG6fboAAFQJ8.png",
+   "posted": "2026-09-15T08:35:00Z"
+  },
+  "method": "Every measurement at 1600 cpi, performance options (e.g. sensor frame rate) at maximum, other options default. Motion latency D(t_in) = lim(dt->0+) t_out(t_in, dt) - t_in, averaged over time; does not model smoothing, so mice with smoothing filters are often overestimated (by roughly 1-2x the (n-1)dt/2 SMA delay).",
+  "footnotes": {
+   "*": "Measured with \"Motion Sync\" forcibly enabled at 4000 Hz report rate or below; behaviour not modelled, results may be inaccurate.",
+   "**": "SPI reading not synchronized with USB polling, but an intentional frequency offset means no long-term drift in motion latency.",
+   "***": "SPI reading synchronized with USB polling only at 1000 Hz or below.",
+   "****": "1000 Hz measured over Full-Speed USB; 2000/4000 Hz omitted (report interval not an integer multiple of its minimum, incompatible with the data-correction method)."
+  },
+  "rows": [
+   {
+    "measured": "2026-08-15",
+    "receiver_fw": "-",
+    "mouse_fw": "v1.08",
+    "mouse": "XBAB XA25",
+    "footnote": "****",
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": {
+     "value": 0.13,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote ****"
+    },
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 0.59,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote ****"
+    }
+   },
+   {
+    "measured": "2026-04-24",
+    "receiver_fw": "-",
+    "mouse_fw": "v1.07",
+    "mouse": "Endgame Gear OP1 8k V2",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": {
+     "value": 0.19,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.26,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.38,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 0.62,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2025-12-12",
+    "receiver_fw": "-",
+    "mouse_fw": "v1.06",
+    "mouse": "Endgame Gear XM2 8k V2",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": {
+     "value": 0.19,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.26,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.38,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 0.63,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2026-05-01",
+    "receiver_fw": "-",
+    "mouse_fw": "-",
+    "mouse": "VAXEE NP01-S V3",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Unknown",
+    "ms_8000Hz": {
+     "value": 0.25,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.31,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.44,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 0.69,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-22",
+    "receiver_fw": "-",
+    "mouse_fw": "1.02.00",
+    "mouse": "Razer DeathAdder V3",
+    "footnote": "*",
+    "connection": "Wired",
+    "spi_usb_sync": "Unknown",
+    "ms_8000Hz": {
+     "value": 0.26,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_4000Hz": {
+     "value": 0.46,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_2000Hz": {
+     "value": 0.81,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_1000Hz": {
+     "value": 1.57,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    }
+   },
+   {
+    "measured": "2026-04-23",
+    "receiver_fw": "1.02.01",
+    "mouse_fw": "1.02.01",
+    "mouse": "Razer Viper V4 Pro",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": {
+     "value": 0.26,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.34,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.44,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 0.73,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-10",
+    "receiver_fw": "-",
+    "mouse_fw": "V1.09",
+    "mouse": "Endgame Gear OP1 8k",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": {
+     "value": 0.3,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.36,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.45,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 0.7,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2026-05-06",
+    "receiver_fw": "-",
+    "mouse_fw": "v1.1.1.1",
+    "mouse": "HP HyperX Pulsefire Haste 2",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": {
+     "value": 0.33,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.39,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.5,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 0.76,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2026-04-23",
+    "receiver_fw": "1.02.01",
+    "mouse_fw": "1.02.01",
+    "mouse": "Razer Viper V4 Pro",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": {
+     "value": 0.34,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.59,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.81,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 1.35,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2025-12-08",
+    "receiver_fw": "-",
+    "mouse_fw": "0.0.14",
+    "mouse": "ELECOM VM800L",
+    "footnote": "*",
+    "connection": "Wired",
+    "spi_usb_sync": "Unknown",
+    "ms_8000Hz": {
+     "value": 0.42,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_4000Hz": {
+     "value": 0.61,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_2000Hz": {
+     "value": 0.9,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_1000Hz": {
+     "value": 1.65,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    }
+   },
+   {
+    "measured": "2024-09-27",
+    "receiver_fw": "v1.0",
+    "mouse_fw": "v2.18",
+    "mouse": "Scyrox V8",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": {
+     "value": 0.51,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.76,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.92,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 2.29,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2026-05-01",
+    "receiver_fw": "-",
+    "mouse_fw": "-",
+    "mouse": "VAXEE NP01-S V3",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": {
+     "value": 0.7,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.53,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.69,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 0.93,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-15",
+    "receiver_fw": "-",
+    "mouse_fw": "-",
+    "mouse": "VAXEE XE-S Wireless",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No**",
+    "ms_8000Hz": null,
+    "ms_4000Hz": {
+     "value": 0.59,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.71,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 1.01,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-23",
+    "receiver_fw": "v01.00.02.00",
+    "mouse_fw": "v01.00.02.00",
+    "mouse": "WLMOUSE Beast X 8K",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "Unknown",
+    "ms_8000Hz": {
+     "value": 0.68,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.59,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.75,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 0.91,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-15",
+    "receiver_fw": "v2 24.06.07",
+    "mouse_fw": "4K v3 24.06.07",
+    "mouse": "VAXEE NP01-S Wireless",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No**",
+    "ms_8000Hz": null,
+    "ms_4000Hz": {
+     "value": 0.63,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.73,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 1.03,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2025-12-08",
+    "receiver_fw": "-",
+    "mouse_fw": "0.0.14",
+    "mouse": "ELECOM VM800L",
+    "footnote": "*",
+    "connection": "Wireless",
+    "spi_usb_sync": "Unknown",
+    "ms_8000Hz": {
+     "value": 0.65,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_4000Hz": {
+     "value": 1.16,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_2000Hz": {
+     "value": 2.16,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_1000Hz": {
+     "value": 2.95,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    }
+   },
+   {
+    "measured": "2024-09-21",
+    "receiver_fw": "1.0.34",
+    "mouse_fw": "1.0.34",
+    "mouse": "G-Wolves HTX 4K",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": {
+     "value": 0.72,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.94,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 2.12,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-22",
+    "receiver_fw": "1.12.01",
+    "mouse_fw": "1.12.01",
+    "mouse": "Razer Viper V3 Pro",
+    "footnote": "*",
+    "connection": "Wireless",
+    "spi_usb_sync": "Unknown",
+    "ms_8000Hz": {
+     "value": 0.77,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_4000Hz": {
+     "value": 0.92,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_2000Hz": {
+     "value": 1.46,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_1000Hz": {
+     "value": 2.28,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    }
+   },
+   {
+    "measured": "2024-09-20",
+    "receiver_fw": "2.1",
+    "mouse_fw": "2.17",
+    "mouse": "LAMZU Atlantis Mini Pro",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": {
+     "value": 0.84,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 0.98,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 1.83,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2026-04-29",
+    "receiver_fw": "7.2.11",
+    "mouse_fw": "42.0.11",
+    "mouse": "Logitech G PRO X2 SUPERSTRIKE",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "Yes***",
+    "ms_8000Hz": {
+     "value": 0.89,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.85,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 1.34,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 2.31,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-22",
+    "receiver_fw": "2.00.02",
+    "mouse_fw": "2.01.01",
+    "mouse": "Razer Viper V2 Pro",
+    "footnote": "*",
+    "connection": "Wireless",
+    "spi_usb_sync": "Unknown",
+    "ms_8000Hz": {
+     "value": 0.88,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_4000Hz": {
+     "value": 1.26,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_2000Hz": {
+     "value": 1.6,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    },
+    "ms_1000Hz": {
+     "value": 2.31,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    }
+   },
+   {
+    "measured": "2025-04-23",
+    "receiver_fw": "7.2.11",
+    "mouse_fw": "32.5.29",
+    "mouse": "Logitech G PRO X SUPERLIGHT 2",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "Yes***",
+    "ms_8000Hz": {
+     "value": 0.9,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_4000Hz": {
+     "value": 0.9,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_2000Hz": {
+     "value": 1.35,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    },
+    "ms_1000Hz": {
+     "value": 2.37,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-23",
+    "receiver_fw": "v01.00.02.00",
+    "mouse_fw": "v01.00.02.00",
+    "mouse": "WLMOUSE Beast X 8K",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.24,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-15",
+    "receiver_fw": "v2 24.06.07",
+    "mouse_fw": "4K v3 24.06.07",
+    "mouse": "VAXEE NP01-S Wireless",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.42,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-15",
+    "receiver_fw": "-",
+    "mouse_fw": "-",
+    "mouse": "VAXEE XE-S Wireless",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.42,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-27",
+    "receiver_fw": "v1.0",
+    "mouse_fw": "v2.18",
+    "mouse": "Scyrox V8",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.52,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-21",
+    "receiver_fw": "1.0.34",
+    "mouse_fw": "1.0.34",
+    "mouse": "G-Wolves HTX 4K",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.53,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-20",
+    "receiver_fw": "2.1",
+    "mouse_fw": "2.17",
+    "mouse": "LAMZU Atlantis Mini Pro",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.59,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-23",
+    "receiver_fw": "-",
+    "mouse_fw": "1.0.4.0",
+    "mouse": "Razer Cobra",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.63,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-17",
+    "receiver_fw": "-",
+    "mouse_fw": "95.2.26",
+    "mouse": "Logitech G303",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.66,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-23",
+    "receiver_fw": "-",
+    "mouse_fw": "1.3.2.0",
+    "mouse": "Razer Viper Mini",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.75,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-22",
+    "receiver_fw": "1.12.01",
+    "mouse_fw": "1.12.01",
+    "mouse": "Razer Viper V3 Pro",
+    "footnote": "*",
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.75,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    }
+   },
+   {
+    "measured": "2024-09-11",
+    "receiver_fw": "-",
+    "mouse_fw": "-",
+    "mouse": "BenQ ZOWIE EC1-CW",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.76,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-28",
+    "receiver_fw": "-",
+    "mouse_fw": "1.0.15+4244c08",
+    "mouse": "SteelSeries Prime",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.77,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-11",
+    "receiver_fw": "-",
+    "mouse_fw": "-",
+    "mouse": "BenQ ZOWIE S1-C",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.82,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-19",
+    "receiver_fw": "-",
+    "mouse_fw": "V1.06",
+    "mouse": "ROCCAT Kone Pure Ultra",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.84,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-17",
+    "receiver_fw": "4.2.9",
+    "mouse_fw": "25.1.18",
+    "mouse": "Logitech G PRO X SUPERLIGHT",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.9,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2025-04-21",
+    "receiver_fw": "-",
+    "mouse_fw": "v3.00",
+    "mouse": "VXE R1 SE+",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.92,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-28",
+    "receiver_fw": "-",
+    "mouse_fw": "0.39.0.0",
+    "mouse": "SteelSeries Rival 3",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.94,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-17",
+    "receiver_fw": "39.6.40",
+    "mouse_fw": "22.2.15",
+    "mouse": "Logitech G703h",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 1.97,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2026-04-29",
+    "receiver_fw": "7.2.11",
+    "mouse_fw": "42.0.11",
+    "mouse": "Logitech G PRO X2 SUPERSTRIKE",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.0,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-12",
+    "receiver_fw": "-",
+    "mouse_fw": "-",
+    "mouse": "BenQ ZOWIE FK2",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.14,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2025-04-23",
+    "receiver_fw": "7.2.11",
+    "mouse_fw": "32.5.29",
+    "mouse": "Logitech G PRO X SUPERLIGHT 2",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.14,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-17",
+    "receiver_fw": "4.2.9",
+    "mouse_fw": "25.1.18",
+    "mouse": "Logitech G PRO X SUPERLIGHT",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.18,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2025-04-21",
+    "receiver_fw": "-",
+    "mouse_fw": "v3.00",
+    "mouse": "VXE R1 SE+",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.27,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-11",
+    "receiver_fw": "-",
+    "mouse_fw": "-",
+    "mouse": "BenQ ZOWIE EC1-CW",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.29,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-22",
+    "receiver_fw": "2.00.02",
+    "mouse_fw": "2.01.01",
+    "mouse": "Razer Viper V2 Pro",
+    "footnote": "*",
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.45,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    }
+   },
+   {
+    "measured": "2024-09-21",
+    "receiver_fw": "-",
+    "mouse_fw": "V0340",
+    "mouse": "LAMZU Atlantis Mini",
+    "footnote": "*",
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.62,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    }
+   },
+   {
+    "measured": "2024-09-17",
+    "receiver_fw": "-",
+    "mouse_fw": "90.3.20",
+    "mouse": "Logitech G402",
+    "footnote": null,
+    "connection": "Wired",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.82,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-17",
+    "receiver_fw": "39.6.40",
+    "mouse_fw": "22.2.15",
+    "mouse": "Logitech G703h",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 2.96,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-17",
+    "receiver_fw": "44.1.5",
+    "mouse_fw": "68.2.21",
+    "mouse": "Logitech G305",
+    "footnote": null,
+    "connection": "Wireless",
+    "spi_usb_sync": "No",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 3.19,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM"
+    }
+   },
+   {
+    "measured": "2024-09-21",
+    "receiver_fw": "-",
+    "mouse_fw": "V0340",
+    "mouse": "LAMZU Atlantis Mini",
+    "footnote": "*",
+    "connection": "Wireless",
+    "spi_usb_sync": "Yes",
+    "ms_8000Hz": null,
+    "ms_4000Hz": null,
+    "ms_2000Hz": null,
+    "ms_1000Hz": {
+     "value": 3.2,
+     "unit": "ms motion latency",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+     "label": "IM",
+     "note": "footnote *"
+    }
+   }
+  ],
+  "n_rows": 52,
+  "kunai_guide_crosscheck": "Every 8000 Hz value in the Kunai tester guide redraw (p.4) matches this original chart."
+ },
+ "motion_latency_derived": [
+  {
+   "value": {
+    "mouse": "Razer Viper V4 Pro",
+    "wired_ms": 0.26,
+    "wireless_ms": 0.34,
+    "wireless_penalty_ms": 0.08
+   },
+   "unit": "ms at 8000 Hz",
+   "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+   "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+   "label": "DV",
+   "formula": "wireless - wired, same mouse, same chart"
+  },
+  {
+   "value": {
+    "mouse": "VAXEE NP01-S V3",
+    "wired_ms": 0.25,
+    "wireless_ms": 0.7,
+    "wireless_penalty_ms": 0.45
+   },
+   "unit": "ms at 8000 Hz",
+   "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+   "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+   "label": "DV",
+   "formula": "wireless - wired, same mouse, same chart"
+  },
+  {
+   "value": {
+    "mouse": "ELECOM VM800L",
+    "wired_ms": 0.42,
+    "wireless_ms": 0.65,
+    "wireless_penalty_ms": 0.23
+   },
+   "unit": "ms at 8000 Hz",
+   "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+   "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+   "label": "DV",
+   "formula": "wireless - wired, same mouse, same chart"
+  },
+  {
+   "value": {
+    "1000": 1.35,
+    "2000": 0.81,
+    "4000": 0.59,
+    "8000": 0.34,
+    "half_report_interval_ms": {
+     "1000": 0.5,
+     "2000": 0.25,
+     "4000": 0.125,
+     "8000": 0.0625
+    }
+   },
+   "unit": "ms",
+   "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+   "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+   "label": "DV",
+   "formula": "half report interval = 1/(2 x rate); the V4 Pro wireless curve falls faster than T/2 alone between 1 and 8 kHz (1.35 -> 0.34 ms, a 1.01 ms drop vs 0.44 ms of T/2)",
+   "note": "polling-rate scaling example for an XY chart (x = report rate, log scale)"
+  },
+  {
+   "value": {
+    "8000_wired": "XBAB XA25 0.13 ms (fw v1.08, before SensorLock)",
+    "8000_wireless": "Razer Viper V4 Pro 0.34 ms",
+    "4000_wired": "OP1 8k V2 / XM2 8k V2 0.26 ms",
+    "4000_wireless": "VAXEE NP01-S V3 0.53 ms",
+    "1000_wired": "XBAB XA25 0.59 ms",
+    "1000_wireless": "WLMOUSE Beast X 8K 0.91 ms"
+   },
+   "unit": "ms",
+   "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+   "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\" (chart image attached to the X post of 2026-09-15; read from the original 3629 x 2664 image)",
+   "label": "DV",
+   "formula": "minimum per (rate, connection) over all rows"
+  }
+ ],
+ "motion_latency_claims": [
+  {
+   "value": {
+    "viper_v4_pro": 0.36,
+    "non_razer_brand_x_wireless": 0.92
+   },
+   "unit": "ms motion latency",
+   "source_url": "https://www.razer.com/gaming-mice/razer-viper-v4-pro",
+   "source_title": "Razer Viper V4 Pro page (\"up to 2.5x ahead\")",
+   "label": "MC",
+   "note": "Consistent with piaknow: V4 Pro wireless 8 kHz 0.34 ms; Logitech GPX2 / Superstrike wireless 8 kHz 0.90 / 0.89 ms (Brand X is plausibly Logitech; not stated)"
+  },
+  {
+   "value": 0.13,
+   "unit": "ms (\"about 130 us\"; \"at least 60 us faster than all other mice tested the same way\")",
+   "source_url": "https://xbabtech.com/",
+   "source_title": "XBAB XA25 page citing @Tw1tterIsGood",
+   "label": "IM",
+   "mouse": "XBAB XA25"
+  },
+  {
+   "value": 163,
+   "unit": "us lower frame-to-USB latency than Razer FrameSync (SensorLock)",
+   "source_url": "https://x.com/xbabtech/status/2107622164539306331",
+   "source_title": "XBAB Tech on X, 2026-10-07 (SensorLock, with @tekkusai)",
+   "label": "MC"
+  },
+  {
+   "value": 0.14,
+   "unit": "ms projected, wireless 8 kHz, on piaknow's scale",
+   "source_url": "file:refs/kunai/kunai-guide.pdf",
+   "source_title": "Kunai tester guide fw 96.79 (pre-production, private; supplied by Brock)",
+   "label": "MC",
+   "note": "PROJECTION from a timing model, not a measurement; do not plot as data. Method: 79.6 us light-to-PC + 62.5 us (half an 8 kHz period)."
+  }
+ ],
+ "click_latency_xbab_vs_op1_8k_v2": {
+  "source": {
+   "value": null,
+   "unit": null,
+   "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+   "source_title": "XBAB Tech on X, 2026-06-30: \"We put the XA25 up against the click-latency king: the OP1 8k v2.\" Chart image = refs/xbab/xbab-click-latency-chart.png (same as pbs.twimg.com/media/HMEfv6_WkAAaArd.png)",
+   "label": "MC",
+   "note": "Manufacturer-run comparison (XBAB measured its own mouse vs a competitor) with full method disclosed; labelled MC, not IM."
+  },
+  "post_text": "XA25 (NC Release) / OP1 (GX Speed): XA25 wins by 248 us. XA25 (SR Latch) / OP1 (GX Safe): XA25 wins by 1 us. Measured by our Beagle USB 480 Protocol Analyzer. Then we tested again with sensor motion involved.",
+  "definitions": {
+   "NC Release / GX Speed": "NC edge -> USB data (switch reported when the normally-closed contact opens)",
+   "SR Latch / GX Safe": "NO edge -> USB data (set-reset latch on the normally-open contact)",
+   "note": "NC edge precedes NO edge by ~1.5 ms due to switch motion. Values are electrical latency, measured by Beagle USB 480."
+  },
+  "derived": [
+   {
+    "value": 248.25,
+    "unit": "us (NC/GX Speed, stationary: OP1 - XA25)",
+    "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+    "source_title": "XBAB chart",
+    "label": "DV",
+    "formula": "320.29 - 72.04 = 248.25 us (matches the post: \"wins by 248 us\")"
+   },
+   {
+    "value": {
+     "OP1_speed": 125.21,
+     "OP1_safe": 120.99,
+     "XA25_speed": -0.27,
+     "XA25_safe": -0.62
+    },
+    "unit": "us added when the sensor is moving (moving - stationary)",
+    "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+    "source_title": "XBAB chart",
+    "label": "DV",
+    "formula": "moving mean - stationary mean",
+    "note": "OP1 8k v2 adds ~121-125 us to a click while the sensor is moving; XA25 adds none within CI. Design target for Theseus: \"a click never waits for motion\" (same principle stated in the Kunai guide)."
+   },
+   {
+    "value": 1245,
+    "unit": "us net head start of NC-release (GX Speed) over NO-latch (GX Safe) on the OP1, stationary",
+    "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+    "source_title": "XBAB chart",
+    "label": "DV",
+    "formula": "~1500 us NC-before-NO switch motion - (320.29 - 65.63) us extra electrical latency = ~1245 us",
+    "note": "consistent with TechPowerUp's \"GX Speed about 1.4 ms faster\" (deck source tpuOp1); ~1.5 ms is XBAB's approximate figure"
+   }
+  ],
+  "panels": [
+   {
+    "mode": "NC Release / GX Speed",
+    "state": "stationary",
+    "XA25": {
+     "value": 72.04,
+     "unit": "us mean electrical latency (Beagle USB 480)",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech click-latency chart (X post 2026-06-30; refs/xbab/xbab-click-latency-chart.png)",
+     "label": "MC",
+     "ci95_us": [
+      68.6,
+      75.48
+     ],
+     "n": 500
+    },
+    "OP1_8k_v2": {
+     "value": 320.29,
+     "unit": "us mean electrical latency (Beagle USB 480)",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech click-latency chart (X post 2026-06-30; refs/xbab/xbab-click-latency-chart.png)",
+     "label": "MC",
+     "ci95_us": [
+      314.86,
+      325.73
+     ],
+     "n": 500
+    }
+   },
+   {
+    "mode": "NC Release / GX Speed",
+    "state": "moving",
+    "XA25": {
+     "value": 71.77,
+     "unit": "us mean electrical latency (Beagle USB 480)",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech click-latency chart (X post 2026-06-30; refs/xbab/xbab-click-latency-chart.png)",
+     "label": "MC",
+     "ci95_us": [
+      67.28,
+      76.27
+     ],
+     "n": 300
+    },
+    "OP1_8k_v2": {
+     "value": 445.5,
+     "unit": "us mean electrical latency (Beagle USB 480)",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech click-latency chart (X post 2026-06-30; refs/xbab/xbab-click-latency-chart.png)",
+     "label": "MC",
+     "ci95_us": [
+      438.13,
+      452.88
+     ],
+     "n": 300
+    }
+   },
+   {
+    "mode": "SR Latch / GX Safe",
+    "state": "stationary",
+    "XA25": {
+     "value": 64.42,
+     "unit": "us mean electrical latency (Beagle USB 480)",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech click-latency chart (X post 2026-06-30; refs/xbab/xbab-click-latency-chart.png)",
+     "label": "MC",
+     "ci95_us": [
+      64.2,
+      64.65
+     ],
+     "n": 100000
+    },
+    "OP1_8k_v2": {
+     "value": 65.63,
+     "unit": "us mean electrical latency (Beagle USB 480)",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech click-latency chart (X post 2026-06-30; refs/xbab/xbab-click-latency-chart.png)",
+     "label": "MC",
+     "ci95_us": [
+      65.41,
+      65.86
+     ],
+     "n": 100000
+    }
+   },
+   {
+    "mode": "SR Latch / GX Safe",
+    "state": "moving",
+    "XA25": {
+     "value": 63.8,
+     "unit": "us mean electrical latency (Beagle USB 480)",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech click-latency chart (X post 2026-06-30; refs/xbab/xbab-click-latency-chart.png)",
+     "label": "MC",
+     "ci95_us": [
+      59.77,
+      67.84
+     ],
+     "n": 300
+    },
+    "OP1_8k_v2": {
+     "value": 186.62,
+     "unit": "us mean electrical latency (Beagle USB 480)",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech click-latency chart (X post 2026-06-30; refs/xbab/xbab-click-latency-chart.png)",
+     "label": "MC",
+     "ci95_us": [
+      182.3,
+      190.93
+     ],
+     "n": 300
+    }
+   }
+  ]
+ },
+ "click_latency_other": [
+  {
+   "value": 0.079,
+   "unit": "ms, wired, 8 kHz",
+   "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+   "source_title": "TechPowerUp Viper V4 Pro (per validation report)",
+   "label": "IM",
+   "mouse": "Razer Viper V4 Pro",
+   "test": "TPU click latency (switch actuation to USB)"
+  },
+  {
+   "value": 0.4,
+   "unit": "ms, 8 kHz, 0 ms debounce",
+   "source_url": "https://www.techpowerup.com/review/hitscan-hyperlight/5.html",
+   "source_title": "TechPowerUp Hitscan Hyperlight (deck source)",
+   "label": "IM",
+   "mouse": "Hitscan Hyperlight"
+  },
+  {
+   "value": {
+    "0ms_debounce": 2.4,
+    "4ms_debounce": 5.4
+   },
+   "unit": "ms",
+   "source_url": "https://www.techpowerup.com/review/lamzu-atlantis/5.html",
+   "source_title": "TechPowerUp Lamzu Atlantis (deck source)",
+   "label": "IM",
+   "note": "shows debounce cost: +3.0 ms for a 4 ms debounce setting",
+   "mouse": "Lamzu Atlantis (original)"
+  },
+  {
+   "value": 1.4,
+   "unit": "ms faster in GX Speed vs GX Safe (approx.)",
+   "source_url": "https://www.techpowerup.com/review/endgame-gear-op1-8k/8.html",
+   "source_title": "TechPowerUp Endgame Gear OP1 8K (deck source)",
+   "label": "IM",
+   "mouse": "Endgame Gear OP1 8K"
+  },
+  {
+   "value": 0.065,
+   "unit": "ms (\"about 65 us\", electrical actuation to USB data, USB analyzer)",
+   "source_url": "https://xbabtech.com/",
+   "source_title": "XBAB XA25 product page",
+   "label": "MC",
+   "mouse": "XBAB XA25"
+  },
+  {
+   "value": {
+    "Starlight X": 2.0,
+    "GPX2 Superstrike": 3.0,
+    "OP1 8K V2": 5.7,
+    "Viper V4 Pro": 7.5
+   },
+   "unit": "ms end-to-end from start of finger press (copper tape + XLat + pressing machine, mean of 50 clicks)",
+   "source_url": "https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/",
+   "source_title": "PC Gamer (Sept 2026) reporting Finalmouse's own test of a pre-production SLX",
+   "label": "MC",
+   "note": "Vendor-run, competitor products included; PC Gamer: analog vs mechanical saves \"about 3-5 ms\" under this finger-press model; SLX result depends on running the shallowest actuation"
+  },
+  {
+   "value": 0.223,
+   "unit": "ms \"end-to-end latency\"",
+   "source_url": "https://cdn.shopify.com/s/files/1/2377/4861/files/26.5.27_Starlight_X_Technical_Overview.pdf?v=1779939240",
+   "source_title": "Finalmouse Starlight X technical overview",
+   "label": "MC",
+   "mouse": "Finalmouse Starlight X"
+  },
+  {
+   "value": "15-30",
+   "unit": "ms reduction in click latency (Superstrike vs mechanical)",
+   "source_url": "https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/",
+   "source_title": "PC Gamer summarising Logitech's Superstrike claim",
+   "label": "MC",
+   "mouse": "Logitech G Pro X2 Superstrike"
+  },
+  {
+   "value": 0.175,
+   "unit": "ms \"as low as\"",
+   "source_url": "https://www.ithome.com/0/963/000.htm",
+   "source_title": "IT Home: VGN Dragonfly 3 Master GT",
+   "label": "MC",
+   "mouse": "VGN Dragonfly 3 Master GT"
+  },
+  {
+   "value": {
+    "viper_v4_pro_side": 0.33,
+    "brand_x_side": 1.65
+   },
+   "unit": "ms side-button click latency",
+   "source_url": "https://www.razer.com/gaming-mice/razer-viper-v4-pro",
+   "source_title": "Razer Viper V4 Pro page (\"5.0x lower\")",
+   "label": "MC",
+   "mouse": "Razer Viper V4 Pro"
+  },
+  {
+   "value": "0.2 ms actuation and no debounce delay",
+   "unit": "text",
+   "source_url": "https://www.razer.com/gaming-mice/razer-viper-v3-pro",
+   "source_title": "Razer Viper V3 Pro page",
+   "label": "MC",
+   "mouse": "Razer Viper V3 Pro"
+  }
+ ],
+ "report_interval_floor": [
+  {
+   "value": {
+    "8000": 62.5,
+    "4000": 125,
+    "2000": 250,
+    "1000": 500
+   },
+   "unit": "us average wait for the next report (T/2)",
+   "source_url": "https://xbabtech.com/blog/firmware",
+   "source_title": "derived; 125 us microframe per XBAB firmware blog (deck source usbHs)",
+   "label": "DV",
+   "formula": "T/2 = 1/(2 x report rate)",
+   "note": "The floor any mouse pays on average from report timing alone, before sensor, firmware, radio and USB host stages. USB high-speed microframes are 125 us (XBAB firmware blog, deck source), which caps one report per microframe at 8 kHz."
+  }
+ ],
+ "rtings": "RTINGS click latency values exist for most mice but are paywalled (\"Locked\") in the free pages; not used.",
+ "techpowerup": "TPU tables could not be fetched (403); only values already quoted in the deck/validation report are included."
+}

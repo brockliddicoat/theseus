@@ -1,0 +1,236 @@
+{
+ "meta": {
+  "title": "Mouse-mass evidence: Zaunkoenig zero-gram claim + empirical studies",
+  "generated": "2026-11-03",
+  "bottom_line": "Zaunkoenig's \"zero grams\" is an argued design philosophy (2018 blog, no experiment), not research data. The empirical studies cover 40-190 g only. The largest gaming study (n=72) found 50, 60 and 90 g all beat 100 g by similar margins (a threshold, not a slope); a small study (n=12) found its 40 g mouse had the highest error rate and 60 g was preferred. Nothing has been tested in the 20-40 g range where Theseus (29 g) sits. Honest slide wording: \"Lighter beat heavier down to the lightest mass tested (50 g, n=72). Below 40 g there is no published data; Zaunkoenig argues the optimum is zero. We will publish our own test.\""
+ },
+ "zaunkoenig": {
+  "claim_quote": {
+   "value": "The optimal weight of a gaming mouse therefore is zero grams.",
+   "unit": "quote",
+   "source_url": "https://zaunkoenig.co/blog/optimal-weight-of-a-gaming-mouse",
+   "source_title": "Zaunkoenig blog, \"Optimal weight of a gaming mouse\", 29 Dec 2018, Dominik & Patrick Schmalzried",
+   "label": "MC",
+   "note": "Section heading on the same page: \"The optimal weight of a gaming mouse is zero grams\". The page is the original source."
+  },
+  "date": "2018-12-29",
+  "authors": "Dominik Schmalzried and Patrick Schmalzried (Zaunkoenig founders)",
+  "method": {
+   "value": "Argument from inertia and motor control, plus the Colin Chapman quote \"Adding power makes you faster on the straights; subtracting weight makes you faster everywhere.\" No experiment, participants or measurements are reported.",
+   "unit": "text",
+   "source_url": "https://zaunkoenig.co/blog/optimal-weight-of-a-gaming-mouse",
+   "source_title": "Zaunkoenig blog, \"Optimal weight of a gaming mouse\", 29 Dec 2018, Dominik & Patrick Schmalzried",
+   "label": "MC"
+  },
+  "supporting_quotes": [
+   {
+    "value": "Think of added mouse weight as built-in latency.",
+    "unit": "quote",
+    "source_url": "https://zaunkoenig.co/blog/optimal-weight-of-a-gaming-mouse",
+    "source_title": "Zaunkoenig blog, \"Optimal weight of a gaming mouse\", 29 Dec 2018, Dominik & Patrick Schmalzried",
+    "label": "MC"
+   },
+   {
+    "value": "Put another way: the heavier your mouse, the more often you will miss your targets.",
+    "unit": "quote",
+    "source_url": "https://zaunkoenig.co/blog/optimal-weight-of-a-gaming-mouse",
+    "source_title": "Zaunkoenig blog, \"Optimal weight of a gaming mouse\", 29 Dec 2018, Dominik & Patrick Schmalzried",
+    "label": "MC",
+    "note": "Asserted, not measured. Yan et al. 2022 (n=12) found the 40 g mouse had the highest error rate, which does not support a monotonic version of this claim at the low end."
+   },
+   {
+    "value": "If you want high control over your aiming, nothing beats a very light mouse plus a slow mousepad and slow mouse feet.",
+    "unit": "quote",
+    "source_url": "https://zaunkoenig.co/blog/optimal-weight-of-a-gaming-mouse",
+    "source_title": "Zaunkoenig blog, \"Optimal weight of a gaming mouse\", 29 Dec 2018, Dominik & Patrick Schmalzried",
+    "label": "MC"
+   },
+   {
+    "value": "At Zaunkoenig, we strongly believe that the optimal weight of a gaming mouse is zero grams. With 23 grams for the M1K we got pretty close, but there are still 23 grams to go.",
+    "unit": "quote",
+    "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+    "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020, Dominik Schmalzried",
+    "label": "MC",
+    "note": "repeated 2020"
+   }
+  ],
+  "m1k_production_weight": {
+   "value": 23.4,
+   "unit": "g, mean of the first 333 units (regular bottom shell); most between 22.5 and 24.3 g",
+   "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+   "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020, Dominik Schmalzried",
+   "label": "MC",
+   "note": "manufacturer weighed every unit; not independent"
+  },
+  "how_to_cite_on_slide": "Zaunkoenig (makers of the 23 g M1K and M2K) argue the optimal mouse weight is zero grams: \"The optimal weight of a gaming mouse therefore is zero grams.\" (zaunkoenig.co, 29 Dec 2018). Label it as an argument [MC], not a study."
+ },
+ "studies": [
+  {
+   "id": "conroy2022",
+   "citation": "Conroy, Toth & Campbell 2022, \"The effect of computer mouse mass on target acquisition performance among action video gamers\", Applied Ergonomics 99:103637, doi:10.1016/j.apergo.2021.103637",
+   "url": "https://pure.ul.ie/en/publications/the-effect-of-computer-mouse-mass-on-target-acquisition-performan/",
+   "label": "IM",
+   "n": 72,
+   "population": "video game players",
+   "masses_g": [
+    50,
+    60,
+    90,
+    100
+   ],
+   "task": "target acquisition task (FPS composite skill); mice varied only by mass; two control-display gains",
+   "results": [
+    {
+     "value": "participants were 4% faster and 9% more accurate with 50 g, 60 g and 90 g mice compared to the 100 g mouse",
+     "unit": "quote (abstract)",
+     "source_url": "https://pure.ul.ie/en/publications/the-effect-of-computer-mouse-mass-on-target-acquisition-performan/",
+     "source_title": "Conroy, Toth & Campbell 2022, \"The effect of computer mouse mass on target acquisition performance among action video gamers\", Applied Ergonomics 99:103637, doi:10.1016/j.apergo.2021.103637",
+     "label": "IM"
+    },
+    {
+     "value": "34% more accurate and 14% more precise when using lower control-display gain",
+     "unit": "quote (abstract)",
+     "source_url": "https://pure.ul.ie/en/publications/the-effect-of-computer-mouse-mass-on-target-acquisition-performan/",
+     "source_title": "Conroy, Toth & Campbell 2022, \"The effect of computer mouse mass on target acquisition performance among action video gamers\", Applied Ergonomics 99:103637, doi:10.1016/j.apergo.2021.103637",
+     "label": "IM"
+    },
+    {
+     "value": "preferred lighter mice (50 g and 60 g) when performing the skill at a lower control-display gain",
+     "unit": "quote (abstract)",
+     "source_url": "https://pure.ul.ie/en/publications/the-effect-of-computer-mouse-mass-on-target-acquisition-performan/",
+     "source_title": "Conroy, Toth & Campbell 2022, \"The effect of computer mouse mass on target acquisition performance among action video gamers\", Applied Ergonomics 99:103637, doi:10.1016/j.apergo.2021.103637",
+     "label": "IM"
+    }
+   ],
+   "reading": "The benefit appears between 90 g and 100 g with no reported gain from 90 to 50 g in the abstract; lightest tested 50 g. Full-text effect sizes per mass not extracted in this pass."
+  },
+  {
+   "id": "yan2022",
+   "citation": "Yan, Joshi, Barr & Harris Adamson 2022, \"The impact of computer mice weight on muscle activity, performance, and user preferences while gaming\", Proc. HFES Annual Meeting 66(1):868-870, doi:10.1177/1071181322661516",
+   "url": "https://www.coeh.berkeley.edu/node/1708",
+   "label": "IM",
+   "n": 12,
+   "masses_g": "six mice, 40-140 g",
+   "task": "Fitts' test + gaming tasks; wireless surface EMG; discomfort and preference ratings",
+   "results": [
+    {
+     "value": "muscle activity was slightly lower when using the heaviest mouse (140g); differences were not statistically significant",
+     "unit": "quote (abstract)",
+     "source_url": "https://www.coeh.berkeley.edu/node/1708",
+     "source_title": "Yan, Joshi, Barr & Harris Adamson 2022, \"The impact of computer mice weight on muscle activity, performance, and user preferences while gaming\", Proc. HFES Annual Meeting 66(1):868-870, doi:10.1177/1071181322661516",
+     "label": "IM"
+    },
+    {
+     "value": "The lightest mouse (40g) had the highest error rate.",
+     "unit": "quote (abstract)",
+     "source_url": "https://www.coeh.berkeley.edu/node/1708",
+     "source_title": "Yan, Joshi, Barr & Harris Adamson 2022, \"The impact of computer mice weight on muscle activity, performance, and user preferences while gaming\", Proc. HFES Annual Meeting 66(1):868-870, doi:10.1177/1071181322661516",
+     "label": "IM"
+    },
+    {
+     "value": "The 60g mouse received the highest overall preference score",
+     "unit": "quote (abstract)",
+     "source_url": "https://www.coeh.berkeley.edu/node/1708",
+     "source_title": "Yan, Joshi, Barr & Harris Adamson 2022, \"The impact of computer mice weight on muscle activity, performance, and user preferences while gaming\", Proc. HFES Annual Meeting 66(1):868-870, doi:10.1177/1071181322661516",
+     "label": "IM"
+    }
+   ],
+   "reading": "Small sample, conference paper. The only study found that tested 40 g; it does not support \"lighter is always better\" below ~60 g."
+  },
+  {
+   "id": "wang2023",
+   "citation": "Wang, Li, Arippa, Barr, Xue & Harris-Adamson 2023, \"The effects of mouse weight and connection type on performance, muscle activity, and preferences among professional gamers\", Int. J. Industrial Ergonomics 97:103493, doi:10.1016/j.ergon.2023.103493",
+   "url": "https://www.coeh.berkeley.edu/node/1668",
+   "label": "IM",
+   "n": 16,
+   "population": "professional players",
+   "masses_g": [
+    80,
+    87
+   ],
+   "task": "four mice differing in weight and connection type",
+   "results": [
+    {
+     "value": "No statistically significant differences between mouse weight were found.",
+     "unit": "quote (abstract)",
+     "source_url": "https://www.coeh.berkeley.edu/node/1668",
+     "source_title": "Wang, Li, Arippa, Barr, Xue & Harris-Adamson 2023, \"The effects of mouse weight and connection type on performance, muscle activity, and preferences among professional gamers\", Int. J. Industrial Ergonomics 97:103493, doi:10.1016/j.ergon.2023.103493",
+     "label": "IM"
+    },
+    {
+     "value": "The wireless mouse had a lower error rate (p = 0.05) and a higher overall comfort rating (p = 0.01).",
+     "unit": "quote (abstract)",
+     "source_url": "https://www.coeh.berkeley.edu/node/1668",
+     "source_title": "Wang, Li, Arippa, Barr, Xue & Harris-Adamson 2023, \"The effects of mouse weight and connection type on performance, muscle activity, and preferences among professional gamers\", Int. J. Industrial Ergonomics 97:103493, doi:10.1016/j.ergon.2023.103493",
+     "label": "IM"
+    }
+   ],
+   "reading": "7 g difference too small to detect with n=16. Useful for the wireless-vs-wired slide."
+  },
+  {
+   "id": "chen2012",
+   "citation": "Chen, Lee & Cheng 2012, \"The weight of computer mouse affects the wrist motion and forearm muscle activity during fast operation speed task\", Eur. J. Applied Physiology 112(6):2205-2212, doi:10.1007/s00421-011-2198-3",
+   "url": "https://scholars.lib.ntu.edu.tw/entities/publication/dce55077-b4b2-41a8-b4da-43130768a1f3",
+   "label": "IM",
+   "n": 25,
+   "masses_g": [
+    70,
+    100,
+    130,
+    160,
+    190
+   ],
+   "task": "office point-and-click between two targets at 50/min and 25/min; EMG of ECR, ECU, ED, upper trapezius; electrogoniometer",
+   "results": [
+    {
+     "value": "The wrist movement range and the forearm muscle activities showed a V-shape tendency with the lowest value in the mouse weight of 130 g. This tendency was diminished during the slow speed tasks.",
+     "unit": "quote (abstract)",
+     "source_url": "https://scholars.lib.ntu.edu.tw/entities/publication/dce55077-b4b2-41a8-b4da-43130768a1f3",
+     "source_title": "Chen, Lee & Cheng 2012, \"The weight of computer mouse affects the wrist motion and forearm muscle activity during fast operation speed task\", Eur. J. Applied Physiology 112(6):2205-2212, doi:10.1007/s00421-011-2198-3",
+     "label": "IM"
+    }
+   ],
+   "reading": "Office task with office-weight mice, not gaming; shows muscle cost is not monotonic in mass. Do not over-apply to 29 g."
+  }
+ ],
+ "physics_context": {
+  "hand_mass_fraction": {
+   "value": {
+    "Dempster_via_Winter_2009": 0.006,
+    "de_Leva_1996_male": 0.0061,
+    "de_Leva_1996_female": 0.0056
+   },
+   "unit": "fraction of body mass",
+   "source_url": "https://nbviewer.jupyter.org/github/demotu/BMC/blob/master/notebooks/BodySegmentParameters.ipynb",
+   "source_title": "Duarte, BMC notebook \"Body segment parameters\": Dempster via Winter (2009) and Zatsiorsky adjusted by de Leva (1996) mass fractions",
+   "label": "DS",
+   "note": "cadaver-derived anthropometric tables"
+  },
+  "example": {
+   "value": {
+    "body_70kg_hand_g": 420,
+    "body_90kg_hand_g": 540,
+    "mouse_share_of_hand_plus_mouse_60g_vs_29g_at_70kg": "12.5% vs 6.5%"
+   },
+   "unit": "g / %",
+   "source_url": "https://nbviewer.jupyter.org/github/demotu/BMC/blob/master/notebooks/BodySegmentParameters.ipynb",
+   "source_title": "Duarte, BMC notebook \"Body segment parameters\": Dempster via Winter (2009) and Zatsiorsky adjusted by de Leva (1996) mass fractions",
+   "label": "DV",
+   "formula": "hand = 0.006 x body mass; share = m_mouse / (m_hand + m_mouse): 60/(420+60)=12.5%, 29/(420+29)=6.5%",
+   "note": "For wrist/arm-driven flicks the hand moves too, so cutting 31 g removes ~6% of the moving mass; for finger-driven micro-corrections the mouse is a larger share (no finger-mass source found). Body masses are illustrative, not sourced."
+  },
+  "newton": "F = m*a: at the same acceleration, the force your hand must add to move the mouse scales with mouse mass; at 29 g that extra force is 48% of a 60 g mouse's (29/60) [DV]."
+ },
+ "deck_check": [
+  {
+   "deck_source": "Conroy, Toth & Campbell 2022, Applied Ergonomics 99: mouse mass and target acquisition",
+   "verdict": "verified",
+   "note": "n=72; 50/60/90 vs 100 g: 4% faster, 9% more accurate. Do not write \"lighter = monotonically better\"."
+  },
+  {
+   "deck_source": "Yan et al. 2022, HFES: 40 to 140 g mice, 40 g had the highest error rate",
+   "verdict": "verified",
+   "note": "n=12; also: 60 g highest preference; EMG differences not significant."
+  }
+ ]
+}

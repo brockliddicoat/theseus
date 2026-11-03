@@ -1,0 +1,3649 @@
+{
+ "meta": {
+  "title": "Flagship/enthusiast mice 2023-2026: specs, weights, battery, latency",
+  "generated": "2026-11-03",
+  "count": 35,
+  "field_notes": {
+   "EloShapes": "dims, claimed weight, sensor, MCU, switches, encoder, polling: manufacturer specs aggregated by EloShapes, labelled DS",
+   "RTINGS": "\"Default Weight\" is RTINGS measured weight (free featured result); other RTINGS test values are paywalled (\"Locked\") and were not used",
+   "TechPowerUp": "blocked from this session (HTTP 403 to curl and fetch, no search snippets); TPU numbers here come only from the deck sources and validation-report-2026-11-03",
+   "piaknow": "8 kHz motion latency read from the redraw in the Kunai tester guide (pre-production, private); original X post did not render",
+   "release": "where no launch date was sourced, store-listing publish dates (Shopify feeds) or RTINGS review dates are given and labelled as such",
+   "prices": "USD list/MSRP where found; sale prices noted"
+  },
+  "chart_suggestions": [
+   "Bar: claimed vs RTINGS-measured weight (gap %)",
+   "XY: measured weight vs USD price with Pareto frontier (lighter and cheaper)",
+   "XY: weight vs claimed 1 kHz battery hours with Pareto frontier",
+   "Bar: piaknow 8 kHz motion latency, wired vs wireless",
+   "Bar: pro usage share (ProSettings)"
+  ]
+ },
+ "mice": [
+  {
+   "id": "razer-viper-v4-pro",
+   "name": "Razer Viper V4 Pro",
+   "brand": "Razer",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 127.1,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.9,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 39.9,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 49.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Razer Focus Pro 50K Gen-3",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Airoha AB1623",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Razer / Optical Mouse Switches Gen-4 / Optical / 100M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Razer / Optical Scroll Wheel / Optical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 48.9,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/razer/viper-v4-pro",
+     "source_title": "RTINGS review \"Default Weight\" (published 2026-04-24)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2026-03 (shipping from 30 March 2026)",
+    "unit": "date",
+    "source_url": "https://www.notebookcheck.com/Razer-enthuellt-Viper-V4-Pro-mit-180h-Laufzeit-und-8-000-Hz-Polling-im-49g-Gehaeuse.1257839.0.html",
+    "source_title": "Notebookcheck, Viper V4 Pro launch (180 h / 45 h, EUR 179.99, shipping from 30 March 2026)",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 159.99,
+    "unit": "USD (Razer US list)",
+    "source_url": "https://www.razer.com/gaming-mice/razer-viper-v4-pro",
+    "source_title": "Razer Viper V4 Pro product page (US)",
+    "label": "DS",
+    "note": "EUR 179.99 (Notebookcheck)"
+   },
+   "battery_mAh": {
+    "value": 306,
+    "unit": "mAh",
+    "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+    "source_title": "TechPowerUp Viper V4 Pro review (values as recorded in validation-report-2026-11-03; TPU not reachable from this session)",
+    "label": "IM"
+   },
+   "battery_voltage": {
+    "value": 3.87,
+    "unit": "V",
+    "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+    "source_title": "TechPowerUp Viper V4 Pro review (values as recorded in validation-report-2026-11-03; TPU not reachable from this session)",
+    "label": "IM"
+   },
+   "battery_claim_1k_h": {
+    "value": 180,
+    "unit": "h at 1 kHz",
+    "source_url": "https://www.notebookcheck.com/Razer-enthuellt-Viper-V4-Pro-mit-180h-Laufzeit-und-8-000-Hz-Polling-im-49g-Gehaeuse.1257839.0.html",
+    "source_title": "Notebookcheck, Viper V4 Pro launch (180 h / 45 h, EUR 179.99, shipping from 30 March 2026)",
+    "label": "MC"
+   },
+   "battery_claim_8k_h": {
+    "value": 45,
+    "unit": "h at 8 kHz",
+    "source_url": "https://www.notebookcheck.com/Razer-enthuellt-Viper-V4-Pro-mit-180h-Laufzeit-und-8-000-Hz-Polling-im-49g-Gehaeuse.1257839.0.html",
+    "source_title": "Notebookcheck, Viper V4 Pro launch (180 h / 45 h, EUR 179.99, shipping from 30 March 2026)",
+    "label": "MC"
+   },
+   "battery_measured_h": {
+    "value": 40,
+    "unit": "h at 8 kHz (approx.)",
+    "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+    "source_title": "TechPowerUp Viper V4 Pro review (values as recorded in validation-report-2026-11-03; TPU not reachable from this session)",
+    "label": "IM"
+   },
+   "charge_current_A": {
+    "value": 0.169,
+    "unit": "A (CC, ~0.55C)",
+    "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+    "source_title": "TechPowerUp Viper V4 Pro review (values as recorded in validation-report-2026-11-03; TPU not reachable from this session)",
+    "label": "IM"
+   },
+   "fuel_gauge": {
+    "value": "fuel gauge IC present",
+    "unit": "text",
+    "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+    "source_title": "TechPowerUp Viper V4 Pro review (values as recorded in validation-report-2026-11-03; TPU not reachable from this session)",
+    "label": "IM"
+   },
+   "click_latency": [
+    {
+     "value": 0.079,
+     "unit": "ms, wired, 8 kHz (TPU method: switch electrical actuation to USB)",
+     "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+     "source_title": "TechPowerUp Viper V4 Pro review (values as recorded in validation-report-2026-11-03; TPU not reachable from this session)",
+     "label": "IM"
+    },
+    {
+     "value": 7.5,
+     "unit": "ms end-to-end incl. button travel (Finalmouse finger-press rig, 50 clicks)",
+     "source_url": "https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/",
+     "source_title": "PC Gamer: Finalmouse vendor-run end-to-end click test (Sept 2026)",
+     "label": "MC",
+     "note": "vendor-run by a competitor"
+    },
+    {
+     "value": 0.33,
+     "unit": "ms side buttons (Razer claim; vs 1.65 ms Brand X)",
+     "source_url": "https://www.razer.com/gaming-mice/razer-viper-v4-pro",
+     "source_title": "Razer Viper V4 Pro product page (US)",
+     "label": "MC"
+    }
+   ],
+   "motion_latency": [
+    {
+     "value": 0.34,
+     "unit": "ms, wireless, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    },
+    {
+     "value": 0.26,
+     "unit": "ms, wired, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    },
+    {
+     "value": 0.36,
+     "unit": "ms \"as low as\" (Razer; vs 0.92 ms Non-Razer Brand X wireless)",
+     "source_url": "https://www.razer.com/gaming-mice/razer-viper-v4-pro",
+     "source_title": "Razer Viper V4 Pro product page (US)",
+     "label": "MC"
+    }
+   ],
+   "pro_usage": {
+    "value": 10.21,
+    "unit": "% of 2448 tracked pros (250)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "notes": "12-bit wireless counts; >=2 (maybe 16) frames of post-lift smoothing for 1.5 s [IM, TPU via report]. White edition 50 g.",
+   "weight_gap_pct": {
+    "value": -0.2,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/razer/viper-v4-pro",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(48.9 - 49.0) / 49.0 x 100"
+   }
+  },
+  {
+   "id": "razer-viper-v3-pro",
+   "name": "Razer Viper V3 Pro",
+   "brand": "Razer",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 127.1,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v3-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v3-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.9,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v3-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v3-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 39.9,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v3-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v3-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 54.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v3-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v3-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Razer Focus Pro 35K Gen-2",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v3-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v3-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v3-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v3-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v3-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v3-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Razer / Optical Mouse Switches Gen-3 / Optical / 90M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v3-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v3-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-viper-v3-pro",
+    "source_title": "EloShapes spec sheet (razer-viper-v3-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 53.8,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/razer/viper-v3-pro",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-05-21)",
+     "label": "IM"
+    }
+   ],
+   "price_usd": {
+    "value": 159.99,
+    "unit": "USD list (US$129.99 on sale 2026-11-03)",
+    "source_url": "https://www.razer.com/gaming-mice/razer-viper-v3-pro",
+    "source_title": "Razer Viper V3 Pro product page (US)",
+    "label": "DS"
+   },
+   "battery_claim_1k_h": {
+    "value": 95,
+    "unit": "h at 1 kHz",
+    "source_url": "https://mysupport.razer.com/app/answers/detail/a_id/14044/kw/viper%20v3",
+    "source_title": "Razer support: Viper V3 Pro battery 95/62/40/17 h at 1/2/4/8 kHz",
+    "label": "MC"
+   },
+   "battery_claim_8k_h": {
+    "value": 17,
+    "unit": "h at 8 kHz",
+    "source_url": "https://mysupport.razer.com/app/answers/detail/a_id/14044/kw/viper%20v3",
+    "source_title": "Razer support: Viper V3 Pro battery 95/62/40/17 h at 1/2/4/8 kHz",
+    "label": "MC"
+   },
+   "battery_claim_other": {
+    "value": {
+     "2kHz": 62,
+     "4kHz": 40
+    },
+    "unit": "h",
+    "source_url": "https://mysupport.razer.com/app/answers/detail/a_id/14044/kw/viper%20v3",
+    "source_title": "Razer support: Viper V3 Pro battery 95/62/40/17 h at 1/2/4/8 kHz",
+    "label": "MC"
+   },
+   "motion_latency": [
+    {
+     "value": 0.77,
+     "unit": "ms, wireless, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ],
+   "pro_usage": {
+    "value": 10.46,
+    "unit": "% of 2448 tracked pros (256)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "notes": "White edition 55 g. TPU measured battery/charge/fuel-gauge values exist (deck source tpuVv3p) but numbers were not available to this pass.",
+   "weight_gap_pct": {
+    "value": -0.4,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/razer/viper-v3-pro",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(53.8 - 54.0) / 54.0 x 100"
+   }
+  },
+  {
+   "id": "razer-deathadder-v4-pro",
+   "name": "Razer DeathAdder V4 Pro",
+   "brand": "Razer",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 128.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-deathadder-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-deathadder-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 68.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-deathadder-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-deathadder-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 44.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-deathadder-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-deathadder-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 56.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-deathadder-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-deathadder-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Razer Focus Pro 45K Gen-2",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-deathadder-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-deathadder-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF54H20",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-deathadder-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-deathadder-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-deathadder-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-deathadder-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Razer / Optical Mouse Switches Gen-4 / Optical / 100M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-deathadder-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-deathadder-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Razer / Optical Scroll Wheel / Optical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=razer-deathadder-v4-pro",
+    "source_title": "EloShapes spec sheet (razer-deathadder-v4-pro); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 56.1,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/razer/deathadder-v4-pro",
+     "source_title": "RTINGS review \"Default Weight\" (published 2025-08-25)",
+     "label": "IM"
+    }
+   ],
+   "price_usd": {
+    "value": 179.99,
+    "unit": "USD list (US$152.99 on sale 2026-11-03)",
+    "source_url": "https://www.razer.com/gaming-mice/razer-deathadder-v4-pro",
+    "source_title": "Razer DeathAdder V4 Pro product page (US)",
+    "label": "DS"
+   },
+   "battery_claim_1k_h": {
+    "value": 150,
+    "unit": "h (polling rate not stated on page)",
+    "source_url": "https://www.razer.com/gaming-mice/razer-deathadder-v4-pro",
+    "source_title": "Razer DeathAdder V4 Pro product page (US)",
+    "label": "MC",
+    "note": "raised by firmware from 120 h stated on initial packaging"
+   },
+   "pro_usage": {
+    "value": 6.66,
+    "unit": "% of 2448 tracked pros (163)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "notes": "EloShapes lists Nordic nRF54H20 MCU.",
+   "weight_gap_pct": {
+    "value": 0.2,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/razer/deathadder-v4-pro",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(56.1 - 56.0) / 56.0 x 100"
+   }
+  },
+  {
+   "id": "logitech-gpx2",
+   "name": "Logitech G Pro X Superlight 2",
+   "brand": "Logitech",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 125.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.5,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 40.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 60.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Logitech HERO 2",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Logitech / LIGHTFORCE / Optical / Mechanical",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 59.4,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/logitech/g-pro-x-superlight-2",
+     "source_title": "RTINGS review \"Default Weight\" (published 2023-10-06)",
+     "label": "IM"
+    }
+   ],
+   "price_usd": {
+    "value": 159,
+    "unit": "USD at review (2023)",
+    "source_url": "https://www.pcgamer.com/logitech-g-pro-x-superlight-2-gaming-mouse-review/",
+    "source_title": "PC Gamer, Logitech G Pro X Superlight 2 review (Battery: 95 hours; $159)",
+    "label": "DS",
+    "note": "CONFLICT: Notebookcheck (2c article) implies a $180 Superlight 2 MSRP; Logitech page JSON shows 159.99 today"
+   },
+   "battery_claim_1k_h": {
+    "value": 95,
+    "unit": "h (Logitech quote)",
+    "source_url": "https://www.pcgamer.com/logitech-g-pro-x-superlight-2-gaming-mouse-review/",
+    "source_title": "PC Gamer, Logitech G Pro X Superlight 2 review (Battery: 95 hours; $159)",
+    "label": "MC"
+   },
+   "fuel_gauge": {
+    "value": "no fuel gauge IC",
+    "unit": "text",
+    "source_url": "https://www.techpowerup.com/review/logitech-g-pro-x-superlight-2/8.html",
+    "source_title": "TechPowerUp GPX2 battery page (deck source: no fuel gauge IC)",
+    "label": "IM"
+   },
+   "motion_latency": [
+    {
+     "value": 0.9,
+     "unit": "ms, wireless, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ],
+   "pro_usage": {
+    "value": 11.93,
+    "unit": "% of 2448 tracked pros (292)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "weight_gap_pct": {
+    "value": -1.0,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/logitech/g-pro-x-superlight-2",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(59.4 - 60.0) / 60.0 x 100"
+   }
+  },
+  {
+   "id": "logitech-gpx2c",
+   "name": "Logitech G Pro X Superlight 2c",
+   "brand": "Logitech",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 118.4,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2c",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2c); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 61.2,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2c",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2c); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.6,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2c",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2c); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 51.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2c",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2c); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Logitech HERO 2",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2c",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2c); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2c",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2c); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2c",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2c); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Logitech / LIGHTFORCE / Optical / Mechanical",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2c",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2c); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2c",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2c); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 50.4,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/logitech/g-pro-x-superlight-2c",
+     "source_title": "RTINGS review \"Default Weight\" (published 2025-11-27)",
+     "label": "IM"
+    }
+   ],
+   "price_usd": {
+    "value": 160,
+    "unit": "USD",
+    "source_url": "https://www.notebookcheck.net/Logitech-adds-a-compact-offering-to-its-Superlight-2-gaming-mouse-family.1118546.0.html",
+    "source_title": "Notebookcheck, Superlight 2c official: $160, $20 under the Superlight 2 MSRP",
+    "label": "DS"
+   },
+   "battery_claim_1k_h": {
+    "value": 95,
+    "unit": "h (up to)",
+    "source_url": "https://www.logitechg.com/en-us/shop/p/pro-x-superlight-2c",
+    "source_title": "Logitech shop, PRO X SUPERLIGHT 2c: 51 g, up to 95 hours",
+    "label": "MC"
+   },
+   "pro_usage": {
+    "value": 0.65,
+    "unit": "% of 2448 tracked pros (16)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "weight_gap_pct": {
+    "value": -1.2,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/logitech/g-pro-x-superlight-2c",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(50.4 - 51.0) / 51.0 x 100"
+   }
+  },
+  {
+   "id": "logitech-superstrike",
+   "name": "Logitech G Pro X2 Superstrike",
+   "brand": "Logitech",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 125.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x2-superstrike); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.5,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x2-superstrike); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 40.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x2-superstrike); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 61.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x2-superstrike); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Logitech HERO 2",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x2-superstrike); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52833",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x2-superstrike); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x2-superstrike); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Logitech / HITS / Inductive",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x2-superstrike); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x2-superstrike",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x2-superstrike); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 60.8,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/logitech/g-pro-x2-superstrike",
+     "source_title": "RTINGS review \"Default Weight\" (published 2026-03-02)",
+     "label": "IM"
+    }
+   ],
+   "battery_claim_1k_h": {
+    "value": 90,
+    "unit": "h",
+    "source_url": "https://www.logitech.com/blog/2025/09/industrys-first-gaming-mouse-featuring-logitech-gs-revolutionary-superstrike-technology/",
+    "source_title": "Logitech blog: PRO X2 SUPERSTRIKE (inductive HITS, 0.6 mm, 10 levels, 90 h) - deck source",
+    "label": "MC",
+    "note": "retailer listing in deck says 60-90 h depending on haptics"
+   },
+   "click_latency": [
+    {
+     "value": 3.0,
+     "unit": "ms end-to-end incl. button travel (Finalmouse rig)",
+     "source_url": "https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/",
+     "source_title": "PC Gamer: Finalmouse vendor-run end-to-end click test (Sept 2026)",
+     "label": "MC",
+     "note": "vendor-run by a competitor; Logitech itself claims a 15-30 ms reduction vs mechanical clicks (PC Gamer)"
+    }
+   ],
+   "motion_latency": [
+    {
+     "value": 0.89,
+     "unit": "ms, wireless, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ],
+   "pro_usage": {
+    "value": 7.43,
+    "unit": "% of 2448 tracked pros (182)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "notes": "Inductive analog buttons (HITS) with haptics, 0.6 mm travel, 10 actuation levels [MC].",
+   "weight_gap_pct": {
+    "value": -0.3,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/logitech/g-pro-x2-superstrike",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(60.8 - 61.0) / 61.0 x 100"
+   }
+  },
+  {
+   "id": "logitech-gpx2-dex",
+   "name": "Logitech G Pro X Superlight 2 DEX",
+   "brand": "Logitech",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 125.8,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2-dex",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2-dex); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 67.7,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2-dex",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2-dex); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 43.9,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2-dex",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2-dex); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 60.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2-dex",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2-dex); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Logitech HERO 2",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2-dex",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2-dex); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2-dex",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2-dex); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2-dex",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2-dex); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Logitech / LIGHTFORCE / Optical / Mechanical",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2-dex",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2-dex); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=logitech-g-pro-x-superlight-2-dex",
+    "source_title": "EloShapes spec sheet (logitech-g-pro-x-superlight-2-dex); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 58.4,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/logitech/g-pro-x-superlight-2-dex",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-11-11)",
+     "label": "IM"
+    }
+   ],
+   "pro_usage": {
+    "value": 1.06,
+    "unit": "% of 2448 tracked pros (26)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "weight_gap_pct": {
+    "value": -2.7,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/logitech/g-pro-x-superlight-2-dex",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(58.4 - 60.0) / 60.0 x 100"
+   }
+  },
+  {
+   "id": "finalmouse-ulx",
+   "name": "Finalmouse UltralightX (ULX)",
+   "brand": "Finalmouse",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 121.3,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-ulx-prophecy-medium",
+    "source_title": "EloShapes spec sheet (finalmouse-ulx-prophecy-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 62.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-ulx-prophecy-medium",
+    "source_title": "EloShapes spec sheet (finalmouse-ulx-prophecy-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 37.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-ulx-prophecy-medium",
+    "source_title": "EloShapes spec sheet (finalmouse-ulx-prophecy-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 36.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-ulx-prophecy-medium",
+    "source_title": "EloShapes spec sheet (finalmouse-ulx-prophecy-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-ulx-prophecy-medium",
+    "source_title": "EloShapes spec sheet (finalmouse-ulx-prophecy-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-ulx-prophecy-medium",
+    "source_title": "EloShapes spec sheet (finalmouse-ulx-prophecy-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-ulx-prophecy-medium",
+    "source_title": "EloShapes spec sheet (finalmouse-ulx-prophecy-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Huano / Transparent Blue Shell Pink Dot / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-ulx-prophecy-medium",
+    "source_title": "EloShapes spec sheet (finalmouse-ulx-prophecy-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-ulx-prophecy-medium",
+    "source_title": "EloShapes spec sheet (finalmouse-ulx-prophecy-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 38.0,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/finalmouse/ultralightx",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-01-05)",
+     "label": "IM"
+    },
+    {
+     "value": 37.9,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/finalmouse/ultralightx-competition",
+     "source_title": "RTINGS review \"Default Weight\" (published 2025-01-23)",
+     "label": "IM"
+    },
+    {
+     "value": 35.9,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/finalmouse/ulx-pro-series",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-06-11)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2023-08",
+    "unit": "date",
+    "source_url": "https://www.notebookcheck.com/Finalmouse-UltralightX-wiegt-nur-29-Gramm-trotz-8-000-Hz-Drahtlos-Verbindung-und-zwei-Monaten-Akkulaufzeit.738125.0.html",
+    "source_title": "Notebookcheck, UltralightX launch: $189, 29/33/35 g (S/M/L), Aug 2023",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 189,
+    "unit": "USD",
+    "source_url": "https://www.notebookcheck.com/Finalmouse-UltralightX-wiegt-nur-29-Gramm-trotz-8-000-Hz-Drahtlos-Verbindung-und-zwei-Monaten-Akkulaufzeit.738125.0.html",
+    "source_title": "Notebookcheck, UltralightX launch: $189, 29/33/35 g (S/M/L), Aug 2023",
+    "label": "DS"
+   },
+   "weight_claimed_sizes": {
+    "value": {
+     "S": 29,
+     "M": 33,
+     "L": 35
+    },
+    "unit": "g",
+    "source_url": "https://www.notebookcheck.com/Finalmouse-UltralightX-wiegt-nur-29-Gramm-trotz-8-000-Hz-Drahtlos-Verbindung-und-zwei-Monaten-Akkulaufzeit.738125.0.html",
+    "source_title": "Notebookcheck, UltralightX launch: $189, 29/33/35 g (S/M/L), Aug 2023",
+    "label": "DS",
+    "note": "CONFLICT: EloShapes lists the ULX Prophecy Medium at 36 g; ProSettings lists 36 g"
+   },
+   "charge_current_A": {
+    "value": 0.131,
+    "unit": "A",
+    "source_url": "https://www.techpowerup.com/review/finalmouse-ultralightx/",
+    "source_title": "TechPowerUp UltralightX review (deck source note)",
+    "label": "IM"
+   },
+   "pro_usage": {
+    "value": 0.78,
+    "unit": "% of 2448 tracked pros (19)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "notes": "EloShapes entry used for dims/MCU is \"ULX Prophecy Medium\". RTINGS rows: UltralightX 38.0 g, Competition 37.9 g, Pro Series 35.9 g (size of test units not stated in the free data).",
+   "weight_gap_pct": {
+    "value": 5.6,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/finalmouse/ultralightx",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(38.0 - 36.0) / 36.0 x 100"
+   }
+  },
+  {
+   "id": "finalmouse-slx",
+   "name": "Finalmouse Starlight X (SLX)",
+   "brand": "Finalmouse",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 124.8,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x",
+    "source_title": "EloShapes spec sheet (finalmouse-starlight-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 62.8,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x",
+    "source_title": "EloShapes spec sheet (finalmouse-starlight-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 39.5,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x",
+    "source_title": "EloShapes spec sheet (finalmouse-starlight-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 38.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x",
+    "source_title": "EloShapes spec sheet (finalmouse-starlight-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Finalmouse F1",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x",
+    "source_title": "EloShapes spec sheet (finalmouse-starlight-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF54LM20",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x",
+    "source_title": "EloShapes spec sheet (finalmouse-starlight-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x",
+    "source_title": "EloShapes spec sheet (finalmouse-starlight-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Huano / Transparent Blue Shell Pink Dot / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x",
+    "source_title": "EloShapes spec sheet (finalmouse-starlight-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x",
+    "source_title": "EloShapes spec sheet (finalmouse-starlight-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 41.7,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/finalmouse/starlight-x",
+     "source_title": "RTINGS review \"Default Weight\" (published 2026-10-22)",
+     "label": "IM"
+    },
+    {
+     "value": 41.58,
+     "unit": "g",
+     "source_url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+     "source_title": "Back2Gaming SLX review: 41.58 g measured; no hour rating published",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2026-05-12 (store listing published; shipments from Aug 2026 per deck)",
+    "unit": "date",
+    "source_url": "https://finalmouse.com/products.json",
+    "source_title": "Finalmouse store (Shopify product feed): ULX $189, SLX Nightfall $179 (published 2026-05-12)",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 179,
+    "unit": "USD",
+    "source_url": "https://finalmouse.com/products.json",
+    "source_title": "Finalmouse store (Shopify product feed): ULX $189, SLX Nightfall $179 (published 2026-05-12)",
+    "label": "DS"
+   },
+   "battery_mAh": {
+    "value": 250,
+    "unit": "mAh (Jauch)",
+    "source_url": "https://cdn.shopify.com/s/files/1/2377/4861/files/26.5.27_Starlight_X_Technical_Overview.pdf?v=1779939240",
+    "source_title": "Finalmouse Starlight X technical overview (per validation report)",
+    "label": "MC"
+   },
+   "battery_claim_1k_h": {
+    "value": null,
+    "unit": "h - Finalmouse publishes no hour rating",
+    "source_url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+    "source_title": "Back2Gaming SLX review: 41.58 g measured; no hour rating published",
+    "label": "MC"
+   },
+   "click_latency": [
+    {
+     "value": 2.0,
+     "unit": "ms end-to-end incl. button travel (Finalmouse rig, pre-production SLX)",
+     "source_url": "https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/",
+     "source_title": "PC Gamer: Finalmouse vendor-run end-to-end click test (Sept 2026)",
+     "label": "MC"
+    },
+    {
+     "value": 0.223,
+     "unit": "ms \"end-to-end latency\" (Finalmouse tech overview)",
+     "source_url": "https://cdn.shopify.com/s/files/1/2377/4861/files/26.5.27_Starlight_X_Technical_Overview.pdf?v=1779939240",
+     "source_title": "Finalmouse Starlight X technical overview (per validation report)",
+     "label": "MC"
+    }
+   ],
+   "notes": "CONFLICT: Finalmouse tech overview 124.8 x 58.9 x 39.5 mm vs EloShapes width 62.8 mm (grip vs max width?). Claimed 38 g vs measured 41.6-41.7 g (+9.5-9.7%). TMR-DS analog clicks, nRF54LM20 at both ends [MC].",
+   "weight_gap_pct": {
+    "value": 9.7,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/finalmouse/starlight-x",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(41.7 - 38.0) / 38.0 x 100"
+   }
+  },
+  {
+   "id": "ninjutso-sora-v2",
+   "name": "Ninjutso Sora V2 (8K)",
+   "brand": "Ninjutso",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 119.2,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v2",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 62.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v2",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 37.7,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v2",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 39.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v2",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v2",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v2",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v2",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Omron / Optical / Optical / 70M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v2",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v2",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 40.9,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/ninjutso/sora-v2",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-05-24)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2024-02-03 (store listing published)",
+    "unit": "date",
+    "source_url": "https://ninjutso.com/products.json",
+    "source_title": "Ninjutso store (Shopify product feed): Sora V3 $119.99 (published 2026-06-11); Sora V2 8K $79.99-99.99",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 99.99,
+    "unit": "USD (8K bundle; $79.99 variant)",
+    "source_url": "https://ninjutso.com/products.json",
+    "source_title": "Ninjutso store (Shopify product feed): Sora V3 $119.99 (published 2026-06-11); Sora V2 8K $79.99-99.99",
+    "label": "DS"
+   },
+   "notes": "Brock measured PCB + wheel at 8.29 g [IM-own]. RTINGS: \"feels solid\" vs ULX \"flexes and creaks\" [IM].",
+   "weight_gap_pct": {
+    "value": 4.9,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/ninjutso/sora-v2",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(40.9 - 39.0) / 39.0 x 100"
+   }
+  },
+  {
+   "id": "ninjutso-sora-v3",
+   "name": "Ninjutso Sora V3",
+   "brand": "Ninjutso",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 119.2,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v3",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 62.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v3",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 37.7,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v3",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 40.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v3",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Ninjutso AimNinja 2 Pro 45K",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v3",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "PixArt PAR2862QN",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v3",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v3",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Ninjutso / HyperSwitch / Mechanical",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v3",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Ninjutso / HyperScroll / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=ninjutso-sora-v3",
+    "source_title": "EloShapes spec sheet (ninjutso-sora-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 43.0,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/ninjutso/sora-v3",
+     "source_title": "RTINGS review \"Default Weight\" (published 2026-09-18)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2026-06-11 (global store listing); CN launch 7 Feb 2026 at CNY 599 per report",
+    "unit": "date",
+    "source_url": "https://ninjutso.com/products.json",
+    "source_title": "Ninjutso store (Shopify product feed): Sora V3 $119.99 (published 2026-06-11); Sora V2 8K $79.99-99.99",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 119.99,
+    "unit": "USD",
+    "source_url": "https://ninjutso.com/products.json",
+    "source_title": "Ninjutso store (Shopify product feed): Sora V3 $119.99 (published 2026-06-11); Sora V2 8K $79.99-99.99",
+    "label": "DS"
+   },
+   "pro_usage": {
+    "value": 0.04,
+    "unit": "% of 2448 tracked pros (1)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "notes": "Claimed 40 g vs RTINGS 43.0 g (+7.5%). SPDT HyperSwitch mains; internal skeleton +1 g for \"200%\" strength [MC].",
+   "weight_gap_pct": {
+    "value": 7.5,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/ninjutso/sora-v3",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(43.0 - 40.0) / 40.0 x 100"
+   }
+  },
+  {
+   "id": "lamzu-maya",
+   "name": "Lamzu Maya",
+   "brand": "Lamzu",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 119.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya",
+    "source_title": "EloShapes spec sheet (lamzu-maya); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 62.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya",
+    "source_title": "EloShapes spec sheet (lamzu-maya); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya",
+    "source_title": "EloShapes spec sheet (lamzu-maya); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 45.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya",
+    "source_title": "EloShapes spec sheet (lamzu-maya); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya",
+    "source_title": "EloShapes spec sheet (lamzu-maya); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya",
+    "source_title": "EloShapes spec sheet (lamzu-maya); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 1000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya",
+    "source_title": "EloShapes spec sheet (lamzu-maya); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Huano / Transparent Blue Shell Pink Dot / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya",
+    "source_title": "EloShapes spec sheet (lamzu-maya); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya",
+    "source_title": "EloShapes spec sheet (lamzu-maya); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 46.4,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/lamzu/maya",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-04-15)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2023-10-29 (store listing published)",
+    "unit": "date",
+    "source_url": "https://www.lamzu.com/products.json",
+    "source_title": "Lamzu store (Shopify product feed)",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 93.99,
+    "unit": "USD (4K compatible)",
+    "source_url": "https://www.lamzu.com/products.json",
+    "source_title": "Lamzu store (Shopify product feed)",
+    "label": "DS"
+   },
+   "weight_gap_pct": {
+    "value": 3.1,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/lamzu/maya",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(46.4 - 45.0) / 45.0 x 100"
+   }
+  },
+  {
+   "id": "lamzu-maya-x",
+   "name": "Lamzu Maya X",
+   "brand": "Lamzu",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 124.4,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x",
+    "source_title": "EloShapes spec sheet (lamzu-maya-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 64.9,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x",
+    "source_title": "EloShapes spec sheet (lamzu-maya-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 39.6,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x",
+    "source_title": "EloShapes spec sheet (lamzu-maya-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 47.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x",
+    "source_title": "EloShapes spec sheet (lamzu-maya-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x",
+    "source_title": "EloShapes spec sheet (lamzu-maya-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x",
+    "source_title": "EloShapes spec sheet (lamzu-maya-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x",
+    "source_title": "EloShapes spec sheet (lamzu-maya-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Omron / Optical / Optical / 70M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x",
+    "source_title": "EloShapes spec sheet (lamzu-maya-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-maya-x",
+    "source_title": "EloShapes spec sheet (lamzu-maya-x); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 46.2,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/lamzu/maya-x",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-12-06)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2024-09-10 (store listing published)",
+    "unit": "date",
+    "source_url": "https://www.lamzu.com/products.json",
+    "source_title": "Lamzu store (Shopify product feed)",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 119.99,
+    "unit": "USD",
+    "source_url": "https://www.lamzu.com/products.json",
+    "source_title": "Lamzu store (Shopify product feed)",
+    "label": "DS"
+   },
+   "pro_usage": {
+    "value": 1.63,
+    "unit": "% of 2448 tracked pros (40)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "weight_gap_pct": {
+    "value": -1.7,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/lamzu/maya-x",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(46.2 - 47.0) / 47.0 x 100"
+   }
+  },
+  {
+   "id": "lamzu-atlantis-mini-4k",
+   "name": "Lamzu Atlantis Mini 4K",
+   "brand": "Lamzu",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 117.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-atlantis-mini-4k",
+    "source_title": "EloShapes spec sheet (lamzu-atlantis-mini-4k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-atlantis-mini-4k",
+    "source_title": "EloShapes spec sheet (lamzu-atlantis-mini-4k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 37.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-atlantis-mini-4k",
+    "source_title": "EloShapes spec sheet (lamzu-atlantis-mini-4k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 49.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-atlantis-mini-4k",
+    "source_title": "EloShapes spec sheet (lamzu-atlantis-mini-4k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-atlantis-mini-4k",
+    "source_title": "EloShapes spec sheet (lamzu-atlantis-mini-4k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-atlantis-mini-4k",
+    "source_title": "EloShapes spec sheet (lamzu-atlantis-mini-4k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 4000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-atlantis-mini-4k",
+    "source_title": "EloShapes spec sheet (lamzu-atlantis-mini-4k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Huano / Transparent Blue Shell Pink Dot / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-atlantis-mini-4k",
+    "source_title": "EloShapes spec sheet (lamzu-atlantis-mini-4k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=lamzu-atlantis-mini-4k",
+    "source_title": "EloShapes spec sheet (lamzu-atlantis-mini-4k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 50.8,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/lamzu/atlantis-mini-4k",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-01-11)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2023-06-15 (store listing published)",
+    "unit": "date",
+    "source_url": "https://www.lamzu.com/products.json",
+    "source_title": "Lamzu store (Shopify product feed)",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 99.99,
+    "unit": "USD",
+    "source_url": "https://www.lamzu.com/products.json",
+    "source_title": "Lamzu store (Shopify product feed)",
+    "label": "DS"
+   },
+   "weight_gap_pct": {
+    "value": 3.7,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/lamzu/atlantis-mini-4k",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(50.8 - 49.0) / 49.0 x 100"
+   }
+  },
+  {
+   "id": "pulsar-x2-crazylight-m",
+   "name": "Pulsar X2 CrazyLight (Medium)",
+   "brand": "Pulsar",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 120.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2-crazylight-medium",
+    "source_title": "EloShapes spec sheet (pulsar-x2-crazylight-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2-crazylight-medium",
+    "source_title": "EloShapes spec sheet (pulsar-x2-crazylight-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2-crazylight-medium",
+    "source_title": "EloShapes spec sheet (pulsar-x2-crazylight-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 39.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2-crazylight-medium",
+    "source_title": "EloShapes spec sheet (pulsar-x2-crazylight-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Pulsar XS-1",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2-crazylight-medium",
+    "source_title": "EloShapes spec sheet (pulsar-x2-crazylight-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2-crazylight-medium",
+    "source_title": "EloShapes spec sheet (pulsar-x2-crazylight-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2-crazylight-medium",
+    "source_title": "EloShapes spec sheet (pulsar-x2-crazylight-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Pulsar / Optical Switch / Optical / 100M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2-crazylight-medium",
+    "source_title": "EloShapes spec sheet (pulsar-x2-crazylight-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2-crazylight-medium",
+    "source_title": "EloShapes spec sheet (pulsar-x2-crazylight-medium); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 38.3,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/pulsar/x2-crazylight",
+     "source_title": "RTINGS review \"Default Weight\" (published 2025-09-02)",
+     "label": "IM"
+    },
+    {
+     "value": 42,
+     "unit": "g (reviewer scale; Pulsar spec 39 g dots / 41 g PTFE)",
+     "source_url": "https://www.pcgamer.com/hardware/gaming-mice/pulsar-x2-crazylight-medium-review/",
+     "source_title": "PC Gamer, Pulsar X2 CrazyLight Medium review: 39 g dots / 41 g PTFE, reviewer scale 42 g, $130, \"a few days of heavy use at 1 kHz\"",
+     "label": "IM"
+    }
+   ],
+   "price_usd": {
+    "value": 130,
+    "unit": "USD",
+    "source_url": "https://www.pcgamer.com/hardware/gaming-mice/pulsar-x2-crazylight-medium-review/",
+    "source_title": "PC Gamer, Pulsar X2 CrazyLight Medium review: 39 g dots / 41 g PTFE, reviewer scale 42 g, $130, \"a few days of heavy use at 1 kHz\"",
+    "label": "DS"
+   },
+   "battery_claim_1k_h": {
+    "value": null,
+    "unit": "h - review: \"a few days of heavy use at 1 kHz\", \"poor battery life\"",
+    "source_url": "https://www.pcgamer.com/hardware/gaming-mice/pulsar-x2-crazylight-medium-review/",
+    "source_title": "PC Gamer, Pulsar X2 CrazyLight Medium review: 39 g dots / 41 g PTFE, reviewer scale 42 g, $130, \"a few days of heavy use at 1 kHz\"",
+    "label": "IM"
+   },
+   "notes": "EloShapes \"pulsar-x2-crazylight\" (likely Mini) lists 116 x 61 x 37 mm, 35 g.",
+   "weight_gap_pct": {
+    "value": -1.8,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/pulsar/x2-crazylight",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(38.3 - 39.0) / 39.0 x 100"
+   }
+  },
+  {
+   "id": "pulsar-x2f-crazylight",
+   "name": "Pulsar X2F CrazyLight (front-half shell)",
+   "brand": "Pulsar",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 87.5,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+    "source_title": "EloShapes spec sheet (pulsar-x2f-crazylight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 61.1,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+    "source_title": "EloShapes spec sheet (pulsar-x2f-crazylight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 31.6,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+    "source_title": "EloShapes spec sheet (pulsar-x2f-crazylight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 29.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+    "source_title": "EloShapes spec sheet (pulsar-x2f-crazylight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "Pulsar XS-2",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+    "source_title": "EloShapes spec sheet (pulsar-x2f-crazylight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF54L15",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+    "source_title": "EloShapes spec sheet (pulsar-x2f-crazylight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+    "source_title": "EloShapes spec sheet (pulsar-x2f-crazylight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Pulsar / Optical Switch / Optical / 100M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+    "source_title": "EloShapes spec sheet (pulsar-x2f-crazylight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2f-crazylight",
+    "source_title": "EloShapes spec sheet (pulsar-x2f-crazylight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "release": {
+    "value": "2026-09-28 (Pulsar LAB store listing published)",
+    "unit": "date",
+    "source_url": "https://www.pulsar.gg/products.json",
+    "source_title": "Pulsar store (Shopify product feed): [Pulsar LAB] X2F CrazyLight $149.95 (published 2026-09-28)",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 149.95,
+    "unit": "USD",
+    "source_url": "https://www.pulsar.gg/products.json",
+    "source_title": "Pulsar store (Shopify product feed): [Pulsar LAB] X2F CrazyLight $149.95 (published 2026-09-28)",
+    "label": "DS"
+   },
+   "notes": "The only 29 g production wireless mouse found; achieves it by deleting the rear half of the shell (length 87.5 mm per EloShapes), not by a full shell."
+  },
+  {
+   "id": "pulsar-x2h",
+   "name": "Pulsar X2H (2023, charge-current reference)",
+   "brand": "Pulsar",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 120.4,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h",
+    "source_title": "EloShapes spec sheet (pulsar-x2h); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 65.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h",
+    "source_title": "EloShapes spec sheet (pulsar-x2h); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 39.1,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h",
+    "source_title": "EloShapes spec sheet (pulsar-x2h); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 54.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h",
+    "source_title": "EloShapes spec sheet (pulsar-x2h); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h",
+    "source_title": "EloShapes spec sheet (pulsar-x2h); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h",
+    "source_title": "EloShapes spec sheet (pulsar-x2h); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 1000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h",
+    "source_title": "EloShapes spec sheet (pulsar-x2h); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "RAESHA / Optical / Optical / 90M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h",
+    "source_title": "EloShapes spec sheet (pulsar-x2h); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Pulsar / Blue Encoder / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=pulsar-x2h",
+    "source_title": "EloShapes spec sheet (pulsar-x2h); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "charge_current_A": {
+    "value": "0.27-0.28",
+    "unit": "A",
+    "source_url": "https://www.techpowerup.com/review/pulsar-x2h/8.html",
+    "source_title": "TechPowerUp Pulsar X2H battery page (deck source)",
+    "label": "IM"
+   }
+  },
+  {
+   "id": "zowie-ec2-dw",
+   "name": "ZOWIE EC2-DW",
+   "brand": "ZOWIE",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 123.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-ec2-dw",
+    "source_title": "EloShapes spec sheet (zowie-ec2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 65.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-ec2-dw",
+    "source_title": "EloShapes spec sheet (zowie-ec2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 42.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-ec2-dw",
+    "source_title": "EloShapes spec sheet (zowie-ec2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 60.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-ec2-dw",
+    "source_title": "EloShapes spec sheet (zowie-ec2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-ec2-dw",
+    "source_title": "EloShapes spec sheet (zowie-ec2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52833",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-ec2-dw",
+    "source_title": "EloShapes spec sheet (zowie-ec2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 4000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-ec2-dw",
+    "source_title": "EloShapes spec sheet (zowie-ec2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Huano / Transparent Blue Shell Pink Dot / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-ec2-dw",
+    "source_title": "EloShapes spec sheet (zowie-ec2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Zowie / Optical (24 steps) / Optical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-ec2-dw",
+    "source_title": "EloShapes spec sheet (zowie-ec2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "battery_claim_1k_h": {
+    "value": 80,
+    "unit": "h at 1 kHz",
+    "source_url": "https://zowie.benq.com/en-us/mouse/ec2-dw.html",
+    "source_title": "ZOWIE EC2-DW product page: 80 h (1 kHz) / 30 h (2 kHz) / 24 h (4 kHz), 60 g",
+    "label": "MC"
+   },
+   "battery_claim_other": {
+    "value": {
+     "2kHz": 30,
+     "4kHz": 24
+    },
+    "unit": "h",
+    "source_url": "https://zowie.benq.com/en-us/mouse/ec2-dw.html",
+    "source_title": "ZOWIE EC2-DW product page: 80 h (1 kHz) / 30 h (2 kHz) / 24 h (4 kHz), 60 g",
+    "label": "MC"
+   },
+   "pro_usage": {
+    "value": 1.35,
+    "unit": "% of 2448 tracked pros (33)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   }
+  },
+  {
+   "id": "zowie-u2-dw",
+   "name": "ZOWIE U2-DW",
+   "brand": "ZOWIE",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 123.3,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-u2-dw",
+    "source_title": "EloShapes spec sheet (zowie-u2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 64.3,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-u2-dw",
+    "source_title": "EloShapes spec sheet (zowie-u2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.1,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-u2-dw",
+    "source_title": "EloShapes spec sheet (zowie-u2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 60.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-u2-dw",
+    "source_title": "EloShapes spec sheet (zowie-u2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-u2-dw",
+    "source_title": "EloShapes spec sheet (zowie-u2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52833",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-u2-dw",
+    "source_title": "EloShapes spec sheet (zowie-u2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 4000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-u2-dw",
+    "source_title": "EloShapes spec sheet (zowie-u2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Huano / Transparent Blue Shell Pink Dot / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-u2-dw",
+    "source_title": "EloShapes spec sheet (zowie-u2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Zowie / Optical (24 steps) / Optical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=zowie-u2-dw",
+    "source_title": "EloShapes spec sheet (zowie-u2-dw); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "battery_claim_1k_h": {
+    "value": 80,
+    "unit": "h at 1 kHz",
+    "source_url": "https://zowie.benq.com/en-us/mouse/u2-dw.html",
+    "source_title": "ZOWIE U2-DW product page: 80 h (1 kHz) / 30 h (2 kHz) / 24 h (4 kHz), 60 g",
+    "label": "MC"
+   },
+   "battery_claim_other": {
+    "value": {
+     "2kHz": 30,
+     "4kHz": 24
+    },
+    "unit": "h",
+    "source_url": "https://zowie.benq.com/en-us/mouse/u2-dw.html",
+    "source_title": "ZOWIE U2-DW product page: 80 h (1 kHz) / 30 h (2 kHz) / 24 h (4 kHz), 60 g",
+    "label": "MC"
+   }
+  },
+  {
+   "id": "endgame-op1-8k-v2",
+   "name": "Endgame Gear OP1 8k v2 (wired)",
+   "brand": "Endgame Gear",
+   "connection": "wired",
+   "length_mm": {
+    "value": 118.2,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-op1-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-op1-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 60.5,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-op1-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-op1-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 37.2,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-op1-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-op1-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 49.5,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-op1-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-op1-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-op1-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-op1-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nuvoton M483SIDAE",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-op1-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-op1-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-op1-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-op1-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Kailh / GX / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-op1-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-op1-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Kailh / Black / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-op1-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-op1-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 46.6,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/endgame-gear/op1-8k-v2",
+     "source_title": "RTINGS review \"Default Weight\" (published 2025-10-24)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2025-04-23 (store listing published)",
+    "unit": "date",
+    "source_url": "https://www.endgamegear.com/products.json",
+    "source_title": "Endgame Gear store (Shopify feed): OP1 8k v2 Wired $89.99 (published 2025-04-23)",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 89.99,
+    "unit": "USD",
+    "source_url": "https://www.endgamegear.com/products.json",
+    "source_title": "Endgame Gear store (Shopify feed): OP1 8k v2 Wired $89.99 (published 2025-04-23)",
+    "label": "DS"
+   },
+   "click_latency": [
+    {
+     "value": 0.32,
+     "unit": "ms, NC release (GX Speed), stationary, wired 8 kHz, Beagle USB 480, n=500",
+     "source_url": "https://x.com/xbabtech/status/2071972219211985258",
+     "source_title": "XBAB Tech on X, 2026-06-30, click-latency chart (= refs/xbab/xbab-click-latency-chart.png)",
+     "label": "MC",
+     "note": "measured by a competitor (XBAB); see latency.json"
+    },
+    {
+     "value": 5.7,
+     "unit": "ms end-to-end incl. button travel (Finalmouse rig)",
+     "source_url": "https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/",
+     "source_title": "PC Gamer: Finalmouse vendor-run end-to-end click test (Sept 2026)",
+     "label": "MC"
+    }
+   ],
+   "motion_latency": [
+    {
+     "value": 0.19,
+     "unit": "ms, wired, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ],
+   "pro_usage": {
+    "value": 0.16,
+    "unit": "% of 2448 tracked pros (4)",
+    "source_url": "https://prosettings.net/gear/lists/mice/",
+    "source_title": "ProSettings.net gaming mice list: usage among 2,448 tracked pros (accessed 2026-11-03)",
+    "label": "CA"
+   },
+   "notes": "Hot-swap switch PCB; SPDT \"GX Speed\" (NC release) vs \"GX Safe\" (SR latch) modes.",
+   "weight_gap_pct": {
+    "value": -5.9,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/endgame-gear/op1-8k-v2",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(46.6 - 49.5) / 49.5 x 100"
+   }
+  },
+  {
+   "id": "xbab-xa25",
+   "name": "XBAB Tech XA25 (wired)",
+   "brand": "XBAB Tech",
+   "connection": "wired",
+   "length_mm": {
+    "value": 116.8,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xbab-xa25",
+    "source_title": "EloShapes spec sheet (xbab-xa25); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xbab-xa25",
+    "source_title": "EloShapes spec sheet (xbab-xa25); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 36.3,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xbab-xa25",
+    "source_title": "EloShapes spec sheet (xbab-xa25); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 25.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xbab-xa25",
+    "source_title": "EloShapes spec sheet (xbab-xa25); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xbab-xa25",
+    "source_title": "EloShapes spec sheet (xbab-xa25); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nuvoton M483SIDAE",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xbab-xa25",
+    "source_title": "EloShapes spec sheet (xbab-xa25); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xbab-xa25",
+    "source_title": "EloShapes spec sheet (xbab-xa25); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Kailh / Sword GM X / Mechanical / 100M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xbab-xa25",
+    "source_title": "EloShapes spec sheet (xbab-xa25); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xbab-xa25",
+    "source_title": "EloShapes spec sheet (xbab-xa25); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 169,
+    "unit": "USD",
+    "source_url": "https://xbabtech.com/",
+    "source_title": "XBAB Tech XA25 page: $169, 25 g +/- 1 g, ~65 us click, ~130 us motion, 1.9 mm 6.9 g/m cable",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 24.94,
+     "unit": "g (sum of 9 weighed parts)",
+     "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+     "source_title": "XBAB Tech on X, 2026-07-14, weight breakdown (= refs/xbab/xbab-weight-breakdown.jpg)",
+     "label": "MC",
+     "note": "manufacturer-weighed"
+    }
+   ],
+   "click_latency": [
+    {
+     "value": 0.065,
+     "unit": "ms (\"about 65 us\", electrical actuation to USB data, USB analyzer)",
+     "source_url": "https://xbabtech.com/",
+     "source_title": "XBAB Tech XA25 page: $169, 25 g +/- 1 g, ~65 us click, ~130 us motion, 1.9 mm 6.9 g/m cable",
+     "label": "MC"
+    }
+   ],
+   "motion_latency": [
+    {
+     "value": 0.13,
+     "unit": "ms (\"about 130 us\"; 3rd-party measurement by @Tw1tterIsGood/piaknow)",
+     "source_url": "https://xbabtech.com/",
+     "source_title": "XBAB Tech XA25 page: $169, 25 g +/- 1 g, ~65 us click, ~130 us motion, 1.9 mm 6.9 g/m cable",
+     "label": "IM"
+    },
+    {
+     "value": 0.13,
+     "unit": "ms, wired, 8 kHz, firmware v1.08 before SensorLock (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ],
+   "notes": "Firmware overhead ~2.3 us (USB report after sensor read, oscilloscope) [MC]. Cable 1.9 mm, 6.9 g/m, passes USB 2.0 HS eye test [MC]."
+  },
+  {
+   "id": "hitscan-hyperlight",
+   "name": "Hitscan Hyperlight",
+   "brand": "Hitscan",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 118.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=hitscan-hyperlight",
+    "source_title": "EloShapes spec sheet (hitscan-hyperlight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 61.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=hitscan-hyperlight",
+    "source_title": "EloShapes spec sheet (hitscan-hyperlight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.8,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=hitscan-hyperlight",
+    "source_title": "EloShapes spec sheet (hitscan-hyperlight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 39.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=hitscan-hyperlight",
+    "source_title": "EloShapes spec sheet (hitscan-hyperlight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=hitscan-hyperlight",
+    "source_title": "EloShapes spec sheet (hitscan-hyperlight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=hitscan-hyperlight",
+    "source_title": "EloShapes spec sheet (hitscan-hyperlight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=hitscan-hyperlight",
+    "source_title": "EloShapes spec sheet (hitscan-hyperlight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Omron / Optical / Optical / 70M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=hitscan-hyperlight",
+    "source_title": "EloShapes spec sheet (hitscan-hyperlight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=hitscan-hyperlight",
+    "source_title": "EloShapes spec sheet (hitscan-hyperlight); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 41.6,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/hitscan/hyperlight",
+     "source_title": "RTINGS review \"Default Weight\" (published 2025-01-31)",
+     "label": "IM"
+    }
+   ],
+   "click_latency": [
+    {
+     "value": 0.4,
+     "unit": "ms, 8 kHz, 0 ms debounce (TPU)",
+     "source_url": "https://www.techpowerup.com/review/hitscan-hyperlight/5.html",
+     "source_title": "TechPowerUp Hitscan Hyperlight: 0.4 ms click latency at 8 kHz, 0 ms debounce (deck source)",
+     "label": "IM"
+    }
+   ],
+   "weight_gap_pct": {
+    "value": 6.7,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/hitscan/hyperlight",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(41.6 - 39.0) / 39.0 x 100"
+   }
+  },
+  {
+   "id": "wlmouse-beast-x",
+   "name": "WLMOUSE Beast X (8K)",
+   "brand": "WLMOUSE",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 122.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-beast-x-8k",
+    "source_title": "EloShapes spec sheet (wlmouse-beast-x-8k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 62.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-beast-x-8k",
+    "source_title": "EloShapes spec sheet (wlmouse-beast-x-8k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 37.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-beast-x-8k",
+    "source_title": "EloShapes spec sheet (wlmouse-beast-x-8k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 39.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-beast-x-8k",
+    "source_title": "EloShapes spec sheet (wlmouse-beast-x-8k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-beast-x-8k",
+    "source_title": "EloShapes spec sheet (wlmouse-beast-x-8k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-beast-x-8k",
+    "source_title": "EloShapes spec sheet (wlmouse-beast-x-8k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-beast-x-8k",
+    "source_title": "EloShapes spec sheet (wlmouse-beast-x-8k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Omron / Optical / Optical / 70M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-beast-x-8k",
+    "source_title": "EloShapes spec sheet (wlmouse-beast-x-8k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-beast-x-8k",
+    "source_title": "EloShapes spec sheet (wlmouse-beast-x-8k); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 39.4,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/wlmouse/beast-x",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-02-22)",
+     "label": "IM"
+    }
+   ],
+   "battery_mAh": {
+    "value": 300,
+    "unit": "mAh (stated for Beast X V2 family; original Beast X capacity not on store)",
+    "source_url": "https://www.wlmouse.com/products.json",
+    "source_title": "WLMOUSE store (Shopify feed): Huan $155; Beast X Pro $145-155; Beast X V2 300 mAh; Beast X Mini Pro 220 mAh",
+    "label": "DS"
+   },
+   "motion_latency": [
+    {
+     "value": 0.68,
+     "unit": "ms, wireless, 8 kHz (piaknow, \"Beast X 8K\")",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ],
+   "weight_gap_pct": {
+    "value": 1.0,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/wlmouse/beast-x",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(39.4 - 39.0) / 39.0 x 100"
+   }
+  },
+  {
+   "id": "wlmouse-huan",
+   "name": "WLMOUSE Huan",
+   "brand": "WLMOUSE",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 116.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-huan",
+    "source_title": "EloShapes spec sheet (wlmouse-huan); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 61.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-huan",
+    "source_title": "EloShapes spec sheet (wlmouse-huan); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-huan",
+    "source_title": "EloShapes spec sheet (wlmouse-huan); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 48.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-huan",
+    "source_title": "EloShapes spec sheet (wlmouse-huan); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950 HS",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-huan",
+    "source_title": "EloShapes spec sheet (wlmouse-huan); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF54H20",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-huan",
+    "source_title": "EloShapes spec sheet (wlmouse-huan); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-huan",
+    "source_title": "EloShapes spec sheet (wlmouse-huan); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Omron / Optical / Optical / 70M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-huan",
+    "source_title": "EloShapes spec sheet (wlmouse-huan); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=wlmouse-huan",
+    "source_title": "EloShapes spec sheet (wlmouse-huan); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 49.7,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/wlmouse/huan",
+     "source_title": "RTINGS review \"Default Weight\" (published 2026-05-05)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2025-12-04 (store listing published)",
+    "unit": "date",
+    "source_url": "https://www.wlmouse.com/products.json",
+    "source_title": "WLMOUSE store (Shopify feed): Huan $155; Beast X Pro $145-155; Beast X V2 300 mAh; Beast X Mini Pro 220 mAh",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": 155,
+    "unit": "USD",
+    "source_url": "https://www.wlmouse.com/products.json",
+    "source_title": "WLMOUSE store (Shopify feed): Huan $155; Beast X Pro $145-155; Beast X V2 300 mAh; Beast X Mini Pro 220 mAh",
+    "label": "DS"
+   },
+   "weight_gap_pct": {
+    "value": 3.5,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/wlmouse/huan",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(49.7 - 48.0) / 48.0 x 100"
+   }
+  },
+  {
+   "id": "vaxee-xe-wireless",
+   "name": "VAXEE XE Wireless",
+   "brand": "VAXEE",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 124.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-xe-wireless",
+    "source_title": "EloShapes spec sheet (vaxee-xe-wireless); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 66.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-xe-wireless",
+    "source_title": "EloShapes spec sheet (vaxee-xe-wireless); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.7,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-xe-wireless",
+    "source_title": "EloShapes spec sheet (vaxee-xe-wireless); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 76.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-xe-wireless",
+    "source_title": "EloShapes spec sheet (vaxee-xe-wireless); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-xe-wireless",
+    "source_title": "EloShapes spec sheet (vaxee-xe-wireless); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "PixArt PAR2862QC",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-xe-wireless",
+    "source_title": "EloShapes spec sheet (vaxee-xe-wireless); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 1000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-xe-wireless",
+    "source_title": "EloShapes spec sheet (vaxee-xe-wireless); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Huano / Black Shell Blue Dot / Mechanical / 10M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-xe-wireless",
+    "source_title": "EloShapes spec sheet (vaxee-xe-wireless); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Alps / Encoder / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-xe-wireless",
+    "source_title": "EloShapes spec sheet (vaxee-xe-wireless); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 76.3,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/vaxee/xe-wireless",
+     "source_title": "RTINGS review \"Default Weight\" (published 2023-11-14)",
+     "label": "IM"
+    }
+   ],
+   "weight_gap_pct": {
+    "value": 0.4,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/vaxee/xe-wireless",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(76.3 - 76.0) / 76.0 x 100"
+   }
+  },
+  {
+   "id": "vaxee-np01s-v3",
+   "name": "VAXEE NP-01S V3",
+   "brand": "VAXEE",
+   "connection": "wireless+wired",
+   "length_mm": {
+    "value": 119.8,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-np-01s-v3",
+    "source_title": "EloShapes spec sheet (vaxee-np-01s-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-np-01s-v3",
+    "source_title": "EloShapes spec sheet (vaxee-np-01s-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 37.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-np-01s-v3",
+    "source_title": "EloShapes spec sheet (vaxee-np-01s-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 57.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-np-01s-v3",
+    "source_title": "EloShapes spec sheet (vaxee-np-01s-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "VAXEE Core1",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-np-01s-v3",
+    "source_title": "EloShapes spec sheet (vaxee-np-01s-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "PixArt PAR2863FJ",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-np-01s-v3",
+    "source_title": "EloShapes spec sheet (vaxee-np-01s-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-np-01s-v3",
+    "source_title": "EloShapes spec sheet (vaxee-np-01s-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Huano / Transparent Blue Shell Pink Dot / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-np-01s-v3",
+    "source_title": "EloShapes spec sheet (vaxee-np-01s-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vaxee-np-01s-v3",
+    "source_title": "EloShapes spec sheet (vaxee-np-01s-v3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "motion_latency": [
+    {
+     "value": 0.25,
+     "unit": "ms, wired, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    },
+    {
+     "value": 0.7,
+     "unit": "ms, wireless, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ]
+  },
+  {
+   "id": "mchose-l7-ultra",
+   "name": "MCHOSE L7 Ultra",
+   "brand": "MCHOSE",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 115.6,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+    "source_title": "EloShapes spec sheet (mchose-l7-ultra); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 60.6,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+    "source_title": "EloShapes spec sheet (mchose-l7-ultra); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 36.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+    "source_title": "EloShapes spec sheet (mchose-l7-ultra); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 39.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+    "source_title": "EloShapes spec sheet (mchose-l7-ultra); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+    "source_title": "EloShapes spec sheet (mchose-l7-ultra); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Unspecified Realtek MCU",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+    "source_title": "EloShapes spec sheet (mchose-l7-ultra); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+    "source_title": "EloShapes spec sheet (mchose-l7-ultra); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Omron / Optical / Optical / 70M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+    "source_title": "EloShapes spec sheet (mchose-l7-ultra); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=mchose-l7-ultra",
+    "source_title": "EloShapes spec sheet (mchose-l7-ultra); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 45.9,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/mchose/l7-ultra",
+     "source_title": "RTINGS review \"Default Weight\" (published 2025-07-09)",
+     "label": "IM"
+    }
+   ],
+   "notes": "CONFLICT: EloShapes 39 g vs RTINGS 45.9 g (+17.7%); RTINGS may have tested a different variant; verify before charting.",
+   "weight_gap_pct": {
+    "value": 17.7,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/mchose/l7-ultra",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(45.9 - 39.0) / 39.0 x 100"
+   }
+  },
+  {
+   "id": "scyrox-v8",
+   "name": "Scyrox V8",
+   "brand": "Scyrox",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 118.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v8",
+    "source_title": "EloShapes spec sheet (scyrox-v8); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v8",
+    "source_title": "EloShapes spec sheet (scyrox-v8); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v8",
+    "source_title": "EloShapes spec sheet (scyrox-v8); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 36.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v8",
+    "source_title": "EloShapes spec sheet (scyrox-v8); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v8",
+    "source_title": "EloShapes spec sheet (scyrox-v8); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v8",
+    "source_title": "EloShapes spec sheet (scyrox-v8); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v8",
+    "source_title": "EloShapes spec sheet (scyrox-v8); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Omron / Optical / Optical / 70M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v8",
+    "source_title": "EloShapes spec sheet (scyrox-v8); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "F-Switch / Encoder / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=scyrox-v8",
+    "source_title": "EloShapes spec sheet (scyrox-v8); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 40.2,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/scyrox/v8",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-11-22)",
+     "label": "IM"
+    }
+   ],
+   "motion_latency": [
+    {
+     "value": 0.51,
+     "unit": "ms, wireless, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ],
+   "weight_gap_pct": {
+    "value": 11.7,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/scyrox/v8",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(40.2 - 36.0) / 36.0 x 100"
+   }
+  },
+  {
+   "id": "vgn-f1-pro-max",
+   "name": "VGN Dragonfly F1 Pro Max",
+   "brand": "VGN",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 121.5,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-f1-pro-max",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-f1-pro-max); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.7,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-f1-pro-max",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-f1-pro-max); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 37.8,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-f1-pro-max",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-f1-pro-max); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 55.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-f1-pro-max",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-f1-pro-max); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-f1-pro-max",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-f1-pro-max); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF52840",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-f1-pro-max",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-f1-pro-max); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 4000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-f1-pro-max",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-f1-pro-max); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Kailh / GM 8.0 Blue / Mechanical / 90M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-f1-pro-max",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-f1-pro-max); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Silver / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-f1-pro-max",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-f1-pro-max); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 54.8,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/vgn/dragonfly-f1-pro-max",
+     "source_title": "RTINGS review \"Default Weight\" (published 2024-10-21)",
+     "label": "IM"
+    }
+   ],
+   "weight_gap_pct": {
+    "value": -0.4,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/vgn/dragonfly-f1-pro-max",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(54.8 - 55.0) / 55.0 x 100"
+   }
+  },
+  {
+   "id": "vgn-dragonfly-3-master-gt",
+   "name": "VGN Dragonfly 3 Master GT",
+   "brand": "VGN",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 125.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-3-master-gt",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-3-master-gt); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.3,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-3-master-gt",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-3-master-gt); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 40.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-3-master-gt",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-3-master-gt); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 56.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-3-master-gt",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-3-master-gt); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3955",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-3-master-gt",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-3-master-gt); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nordic nRF54L15",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-3-master-gt",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-3-master-gt); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-3-master-gt",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-3-master-gt); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "VGN x Kailh / Optical / Optical / 160M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-3-master-gt",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-3-master-gt); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=vgn-dragonfly-3-master-gt",
+    "source_title": "EloShapes spec sheet (vgn-dragonfly-3-master-gt); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "click_latency": [
+    {
+     "value": 0.175,
+     "unit": "ms \"as low as\" (VGN claim)",
+     "source_url": "https://www.ithome.com/0/963/000.htm",
+     "source_title": "IT Home: VGN Dragonfly 3 Master GT, click latency \"as low as\" 0.175 ms (VGN)",
+     "label": "MC"
+    }
+   ]
+  },
+  {
+   "id": "darmoshark-m3",
+   "name": "Darmoshark M3",
+   "brand": "Darmoshark",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 129.6,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=darmoshark-m3",
+    "source_title": "EloShapes spec sheet (darmoshark-m3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 66.1,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=darmoshark-m3",
+    "source_title": "EloShapes spec sheet (darmoshark-m3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 39.2,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=darmoshark-m3",
+    "source_title": "EloShapes spec sheet (darmoshark-m3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 58.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=darmoshark-m3",
+    "source_title": "EloShapes spec sheet (darmoshark-m3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3395",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=darmoshark-m3",
+    "source_title": "EloShapes spec sheet (darmoshark-m3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Telink TLSR8273",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=darmoshark-m3",
+    "source_title": "EloShapes spec sheet (darmoshark-m3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 2000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=darmoshark-m3",
+    "source_title": "EloShapes spec sheet (darmoshark-m3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Kailh / GM 8.0 / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=darmoshark-m3",
+    "source_title": "EloShapes spec sheet (darmoshark-m3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "F-Switch / Encoder / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=darmoshark-m3",
+    "source_title": "EloShapes spec sheet (darmoshark-m3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   }
+  },
+  {
+   "id": "keychron-g3",
+   "name": "Keychron G3",
+   "brand": "Keychron",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 120.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=keychron-g3",
+    "source_title": "EloShapes spec sheet (keychron-g3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=keychron-g3",
+    "source_title": "EloShapes spec sheet (keychron-g3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.3,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=keychron-g3",
+    "source_title": "EloShapes spec sheet (keychron-g3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 44.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=keychron-g3",
+    "source_title": "EloShapes spec sheet (keychron-g3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=keychron-g3",
+    "source_title": "EloShapes spec sheet (keychron-g3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Realtek RTL8762G",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=keychron-g3",
+    "source_title": "EloShapes spec sheet (keychron-g3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=keychron-g3",
+    "source_title": "EloShapes spec sheet (keychron-g3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Huano / Transparent Yellow Shell White Dot / Mechanical / 120M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=keychron-g3",
+    "source_title": "EloShapes spec sheet (keychron-g3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Unspecified / Mechanical Encoder / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=keychron-g3",
+    "source_title": "EloShapes spec sheet (keychron-g3); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_measured_g": [
+    {
+     "value": 47.4,
+     "unit": "g",
+     "source_url": "https://www.rtings.com/mouse/reviews/keychron/g3",
+     "source_title": "RTINGS review \"Default Weight\" (published 2026-06-05)",
+     "label": "IM"
+    }
+   ],
+   "release": {
+    "value": "2026-04-14 (store listing published)",
+    "unit": "date",
+    "source_url": "https://www.keychron.com/products.json",
+    "source_title": "Keychron store (Shopify feed): G3 44 g, up to 160 h, $84.99-109.99",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": "84.99-109.99",
+    "unit": "USD (variants)",
+    "source_url": "https://www.keychron.com/products.json",
+    "source_title": "Keychron store (Shopify feed): G3 44 g, up to 160 h, $84.99-109.99",
+    "label": "DS"
+   },
+   "battery_claim_1k_h": {
+    "value": 160,
+    "unit": "h (up to)",
+    "source_url": "https://www.keychron.com/products.json",
+    "source_title": "Keychron store (Shopify feed): G3 44 g, up to 160 h, $84.99-109.99",
+    "label": "MC"
+   },
+   "weight_gap_pct": {
+    "value": 7.7,
+    "unit": "% (RTINGS measured vs claimed)",
+    "source_url": "https://www.rtings.com/mouse/reviews/keychron/g3",
+    "source_title": "derived from RTINGS measured weight and the claimed weight (EloShapes/manufacturer)",
+    "label": "DV",
+    "formula": "(47.4 - 44.0) / 44.0 x 100"
+   }
+  },
+  {
+   "id": "xiaomi-gaming-mouse-2",
+   "name": "Xiaomi Gaming Mouse 2",
+   "brand": "Xiaomi",
+   "connection": "wireless",
+   "length_mm": {
+    "value": 125.5,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xiaomi-gaming-mouse-2",
+    "source_title": "EloShapes spec sheet (xiaomi-gaming-mouse-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 63.5,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xiaomi-gaming-mouse-2",
+    "source_title": "EloShapes spec sheet (xiaomi-gaming-mouse-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 40.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xiaomi-gaming-mouse-2",
+    "source_title": "EloShapes spec sheet (xiaomi-gaming-mouse-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 58.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xiaomi-gaming-mouse-2",
+    "source_title": "EloShapes spec sheet (xiaomi-gaming-mouse-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3955",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xiaomi-gaming-mouse-2",
+    "source_title": "EloShapes spec sheet (xiaomi-gaming-mouse-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Telink TL3228",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xiaomi-gaming-mouse-2",
+    "source_title": "EloShapes spec sheet (xiaomi-gaming-mouse-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xiaomi-gaming-mouse-2",
+    "source_title": "EloShapes spec sheet (xiaomi-gaming-mouse-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "TTC / Optical V2 / Optical / 100M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xiaomi-gaming-mouse-2",
+    "source_title": "EloShapes spec sheet (xiaomi-gaming-mouse-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "TTC / Gold / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=xiaomi-gaming-mouse-2",
+    "source_title": "EloShapes spec sheet (xiaomi-gaming-mouse-2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "price_usd": {
+    "value": null,
+    "unit": "CNY 349 launch (Notebookcheck converts to \"about $31\", which does not match the CNY figure; use CNY)",
+    "source_url": "https://www.notebookcheck.net/Xiaomi-launches-new-affordable-8K-wireless-gaming-mouse-with-flagship-PixArt-sensor.1293650.0.html",
+    "source_title": "Notebookcheck: Xiaomi Gaming Mouse 2, 530 mAh, 160 h at 1 kHz, ~58 g, CNY 349",
+    "label": "DS"
+   },
+   "battery_mAh": {
+    "value": 530,
+    "unit": "mAh",
+    "source_url": "https://www.notebookcheck.net/Xiaomi-launches-new-affordable-8K-wireless-gaming-mouse-with-flagship-PixArt-sensor.1293650.0.html",
+    "source_title": "Notebookcheck: Xiaomi Gaming Mouse 2, 530 mAh, 160 h at 1 kHz, ~58 g, CNY 349",
+    "label": "DS"
+   },
+   "battery_claim_1k_h": {
+    "value": 160,
+    "unit": "h at 1 kHz, 2.4 GHz",
+    "source_url": "https://www.notebookcheck.net/Xiaomi-launches-new-affordable-8K-wireless-gaming-mouse-with-flagship-PixArt-sensor.1293650.0.html",
+    "source_title": "Notebookcheck: Xiaomi Gaming Mouse 2, 530 mAh, 160 h at 1 kHz, ~58 g, CNY 349",
+    "label": "MC"
+   },
+   "notes": "PAW3955XM: 40,000 DPI / 750 IPS / 60 G variant."
+  },
+  {
+   "id": "elecom-vm800l",
+   "name": "ELECOM VM800L",
+   "brand": "ELECOM",
+   "connection": "wireless+wired",
+   "length_mm": {
+    "value": 130.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=elecom-vm800l",
+    "source_title": "EloShapes spec sheet (elecom-vm800l); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 70.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=elecom-vm800l",
+    "source_title": "EloShapes spec sheet (elecom-vm800l); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 43.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=elecom-vm800l",
+    "source_title": "EloShapes spec sheet (elecom-vm800l); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 64.0,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=elecom-vm800l",
+    "source_title": "EloShapes spec sheet (elecom-vm800l); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=elecom-vm800l",
+    "source_title": "EloShapes spec sheet (elecom-vm800l); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "-",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=elecom-vm800l",
+    "source_title": "EloShapes spec sheet (elecom-vm800l); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=elecom-vm800l",
+    "source_title": "EloShapes spec sheet (elecom-vm800l); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "RAESHA / Optical / Optical / 90M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=elecom-vm800l",
+    "source_title": "EloShapes spec sheet (elecom-vm800l); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Unspecified / Mechanical Encoder / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=elecom-vm800l",
+    "source_title": "EloShapes spec sheet (elecom-vm800l); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "motion_latency": [
+    {
+     "value": 0.42,
+     "unit": "ms, wired, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    },
+    {
+     "value": 0.65,
+     "unit": "ms, wireless, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ]
+  },
+  {
+   "id": "endgame-xm2-8k-v2",
+   "name": "Endgame Gear XM2 8k v2 (wired)",
+   "brand": "Endgame Gear",
+   "connection": "wired",
+   "length_mm": {
+    "value": 122.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-xm2-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-xm2-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "width_mm": {
+    "value": 66.0,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-xm2-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-xm2-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "height_mm": {
+    "value": 38.5,
+    "unit": "mm",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-xm2-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-xm2-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "weight_claimed_g": {
+    "value": 51.5,
+    "unit": "g",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-xm2-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-xm2-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "sensor": {
+    "value": "PixArt PAW3950",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-xm2-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-xm2-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "mcu": {
+    "value": "Nuvoton M483SIDAE",
+    "unit": "name",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-xm2-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-xm2-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "max_polling_hz": {
+    "value": 8000,
+    "unit": "Hz",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-xm2-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-xm2-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "main_switches": {
+    "value": "Kailh / GX / Mechanical / 80M",
+    "unit": "brand / model / type / rated clicks",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-xm2-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-xm2-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "encoder": {
+    "value": "Kailh / Black / Mechanical / 24 steps",
+    "unit": "brand / model / type / steps",
+    "source_url": "https://www.eloshapes.com/mouse/compare?p=endgame-gear-xm2-8k-v2",
+    "source_title": "EloShapes spec sheet (endgame-gear-xm2-8k-v2); manufacturer specs aggregated by EloShapes",
+    "label": "DS"
+   },
+   "motion_latency": [
+    {
+     "value": 0.19,
+     "unit": "ms, wired, 8 kHz (piaknow)",
+     "source_url": "https://x.com/Tw1tterIsGood/status/2099778999849549856",
+     "source_title": "piaknow, \"Motion Latency of Some Computer Mice 2026-09-15\", 8000 Hz column (read from the redraw in the Kunai tester guide p.4; original X post not rendered here)",
+     "label": "IM"
+    }
+   ]
+  }
+ ]
+}

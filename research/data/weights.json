@@ -1,0 +1,735 @@
+{
+ "meta": {
+  "title": "Part-by-part mouse weights and candidate part masses for a 29 g Theseus budget",
+  "generated": "2026-11-03",
+  "chart_suggestions": [
+   "Stacked horizontal bar: XA25 (24.94 g) vs M1K (23.4 g) vs Theseus 29 g target, by part category",
+   "Waterfall: XA25 -> minus USB cable -> plus battery options -> 29 g line",
+   "Bar: claimed vs measured weight gap (from mice.json)"
+  ]
+ },
+ "breakdowns": [
+  {
+   "mouse": "XBAB XA25 (wired, 2026)",
+   "total": {
+    "value": 24.94,
+    "unit": "g (stated); parts sum to 24.939 g",
+    "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+    "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+    "label": "MC"
+   },
+   "parts": [
+    {
+     "part": "Shell + skates",
+     "mass": {
+      "value": 12.16,
+      "unit": "g",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     },
+     "share": {
+      "value": 48.8,
+      "unit": "% of total",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Button (main-button part)",
+     "mass": {
+      "value": 3.328,
+      "unit": "g",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     },
+     "share": {
+      "value": 13.3,
+      "unit": "% of total",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Front PCB",
+     "mass": {
+      "value": 3.178,
+      "unit": "g",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     },
+     "share": {
+      "value": 12.7,
+      "unit": "% of total",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Main PCB",
+     "mass": {
+      "value": 2.895,
+      "unit": "g",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     },
+     "share": {
+      "value": 11.6,
+      "unit": "% of total",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Scroll wheel",
+     "mass": {
+      "value": 0.931,
+      "unit": "g",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     },
+     "share": {
+      "value": 3.7,
+      "unit": "% of total",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "USB cable (interior)",
+     "mass": {
+      "value": 0.83,
+      "unit": "g",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     },
+     "share": {
+      "value": 3.3,
+      "unit": "% of total",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Side PCB",
+     "mass": {
+      "value": 0.788,
+      "unit": "g",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     },
+     "share": {
+      "value": 3.2,
+      "unit": "% of total",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Screws (11)",
+     "mass": {
+      "value": 0.708,
+      "unit": "g",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     },
+     "share": {
+      "value": 2.8,
+      "unit": "% of total",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "FPC cables (2)",
+     "mass": {
+      "value": 0.121,
+      "unit": "g",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     },
+     "share": {
+      "value": 0.5,
+      "unit": "% of total",
+      "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+      "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+      "label": "MC"
+     }
+    }
+   ],
+   "notes": "Manufacturer-weighed (XBAB), labelled MC. Wired: no battery, no radio. Per-screw mass 0.708/11 = 0.064 g [DV]."
+  },
+  {
+   "mouse": "Zaunkoenig M1K (wired, 2019-2020)",
+   "total": {
+    "value": 23.4,
+    "unit": "g, mean of first 333 units (most 22.5-24.3 g)",
+    "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+    "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+    "label": "MC"
+   },
+   "parts": [
+    {
+     "part": "Carbon fiber shell",
+     "mass": {
+      "value": 7.5,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "PCB (assembled)",
+     "mass": {
+      "value": 6.8,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Regular bottom shell (3D printed)",
+     "mass": {
+      "value": 5.7,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Cable",
+     "mass": {
+      "value": 1.7,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Screws (9)",
+     "mass": {
+      "value": 1.5,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Hyperglide skates",
+     "mass": {
+      "value": 0.2,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    }
+   ],
+   "pcb_sub_breakdown": [
+    {
+     "part": "Bare PCB (FR4, 2-layer, 1.55 mm, 46.0 x 35.12 mm)",
+     "mass": {
+      "value": 3.5,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Sensor PixArt PMW3360",
+     "mass": {
+      "value": 0.6,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "Sensor lens",
+     "mass": {
+      "value": 0.8,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "2 x Omron D2F-01F",
+     "mass": {
+      "value": 1.2,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    },
+    {
+     "part": "SMD parts + solder",
+     "mass": {
+      "value": 0.7,
+      "unit": "g",
+      "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+      "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+      "label": "MC"
+     }
+    }
+   ],
+   "variation": {
+    "cf_shell": {
+     "value": "7.0-8.0",
+     "unit": "g (most of 333 shells; mean 7.5 g; hand-laid prepreg)",
+     "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+     "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+     "label": "MC"
+    },
+    "bare_pcb": {
+     "value": "3.3-3.7",
+     "unit": "g (+/-10% FR4 resin content)",
+     "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+     "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+     "label": "MC"
+    },
+    "bottom_shell": {
+     "value": {
+      "regular": "5.6-5.9",
+      "lightweight": "4.0-4.2"
+     },
+     "unit": "g",
+     "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+     "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+     "label": "MC"
+    }
+   },
+   "notes": "Per-screw mass 1.5/9 = 0.167 g [DV]. No scroll wheel or side buttons. Lens alone = 0.8 g, heavier than the sensor (0.6 g)."
+  }
+ ],
+ "candidate_parts": [
+  {
+   "part": "Ninjutso Sora V2 PCB + scroll wheel",
+   "mass": {
+    "value": 8.29,
+    "unit": "g",
+    "source_url": "file:refs/photos/sora-v2-pcb-8.29g.jpg",
+    "source_title": "Brock Liddicoat, own scale photo \"PCB & Wheel 8.29g\" (Sora V2 PCB v1.4)",
+    "label": "IM",
+    "note": "Brock's own measurement (not independent of the project). Includes USB-C receptacle, Omron optical mains, TTC wheel + encoder, sensor PAW3395, nRF52840."
+   },
+   "compare": {
+    "value": 7.792,
+    "unit": "g XA25 front+main+side PCB + wheel",
+    "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+    "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+    "label": "DV",
+    "formula": "3.178 + 2.895 + 0.788 + 0.931 = 7.792 g (wired 8 kHz board set, no radio)"
+   }
+  },
+  {
+   "part": "Titanium screw (Finalmouse Starlight X)",
+   "mass": {
+    "value": 0.02,
+    "unit": "g each (approx.), 15 per mouse = ~0.30 g",
+    "source_url": "https://cdn.shopify.com/s/files/1/2377/4861/files/26.5.27_Starlight_X_Technical_Overview.pdf?v=1779939240",
+    "source_title": "Finalmouse Starlight X technical overview (per validation report)",
+    "label": "MC"
+   }
+  },
+  {
+   "part": "Screw (XBAB XA25, thread-forming \"trilobular\")",
+   "mass": {
+    "value": 0.0644,
+    "unit": "g each",
+    "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+    "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+    "label": "DV",
+    "formula": "0.708 g / 11 screws"
+   }
+  },
+  {
+   "part": "Screw (Zaunkoenig M1K)",
+   "mass": {
+    "value": 0.167,
+    "unit": "g each",
+    "source_url": "D",
+    "source_title": "V",
+    "label": "MC",
+    "formula": "1.5 g / 9 screws"
+   }
+  },
+  {
+   "part": "M2 brass heat-set insert",
+   "mass": {
+    "value": "0.16-0.18",
+    "unit": "g each",
+    "source_url": "file:research/brock-doc-in-pursuit.txt",
+    "source_title": "Brock doc brainstorm note",
+    "label": "CA",
+    "note": "UNVERIFIED: no datasheet mass found (ruthex lists only M2 x 4 mm length). Weigh 10 on a 0.001 g scale before quoting."
+   }
+  },
+  {
+   "part": "Mill-Max 3305 receptacle",
+   "mass": {
+    "value": 0.11,
+    "unit": "g each (approx.)",
+    "source_url": "file:research/brock-doc-in-pursuit.txt",
+    "source_title": "Brock doc brainstorm note",
+    "label": "CA",
+    "note": "UNVERIFIED: the Mill-Max 3305 page lists lead range 0.635-0.940 mm, 1,000 cycles min, gold/nickel plating, but no mass."
+   },
+   "datasheet": {
+    "value": {
+     "accepts_leads_mm": "0.635-0.940",
+     "mating_cycles_min": 1000
+    },
+    "unit": "spec",
+    "source_url": "https://www.mill-max.com/products/receptacle/3305",
+    "source_title": "Mill-Max 3305 product page",
+    "label": "DS"
+   }
+  },
+  {
+   "part": "Omron D2F-01F microswitch",
+   "mass": {
+    "value": 0.62,
+    "unit": "g each",
+    "source_url": "https://zaunkoenig.co/blog/the-worlds-lightest-gaming-mouse-pcb",
+    "source_title": "Zaunkoenig blog, \"The worlds lightest gaming mouse PCB\", 31 Jan 2020",
+    "label": "MC"
+   },
+   "pcb_footprint_penalty": {
+    "value": 0.21,
+    "unit": "g of FR4 under one D2F-01F footprint (12.8 x 5.8 mm x 1.55 mm x 1.85 g/cm3)",
+    "source_url": "https://zaunkoenig.co/blog/the-worlds-lightest-gaming-mouse-pcb",
+    "source_title": "Zaunkoenig blog, \"The worlds lightest gaming mouse PCB\", 31 Jan 2020",
+    "label": "DV",
+    "formula": "1.28 x 0.58 x 0.155 cm^3 x 1.85 g/cm^3 = 0.21 g"
+   },
+   "note": "Zaunkoenig: one more D2F-01F adds \"almost 1.0 grams\" once solder, traces and clearance are counted."
+  },
+  {
+   "part": "PixArt PMW3360 sensor",
+   "mass": {
+    "value": 0.6,
+    "unit": "g",
+    "source_url": "https://zaunkoenig.co/blog/the-worlds-lightest-gaming-mouse-pcb",
+    "source_title": "Zaunkoenig blog, \"The worlds lightest gaming mouse PCB\", 31 Jan 2020",
+    "label": "MC"
+   }
+  },
+  {
+   "part": "Sensor lens (M1K, PMW3360-class)",
+   "mass": {
+    "value": 0.8,
+    "unit": "g",
+    "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+    "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+    "label": "MC"
+   },
+   "note": "Supports idea #37: the lens weighs more than the sensor; a smaller clip-on lens is a real saving."
+  },
+  {
+   "part": "0402-metric (1005) capacitor",
+   "mass": {
+    "value": 0.0016,
+    "unit": "g",
+    "source_url": "https://zaunkoenig.co/blog/the-worlds-lightest-gaming-mouse-pcb",
+    "source_title": "Zaunkoenig blog, \"The worlds lightest gaming mouse PCB\", 31 Jan 2020",
+    "label": "MC"
+   }
+  },
+  {
+   "part": "0603-metric (1608) capacitor",
+   "mass": {
+    "value": 0.0063,
+    "unit": "g",
+    "source_url": "https://zaunkoenig.co/blog/the-worlds-lightest-gaming-mouse-pcb",
+    "source_title": "Zaunkoenig blog, \"The worlds lightest gaming mouse PCB\", 31 Jan 2020",
+    "label": "MC"
+   },
+   "note": "14 caps = 0.0412 g, but the FR4 they occupy weighs 0.39 g (Zaunkoenig)"
+  },
+  {
+   "part": "FR4 laminate density",
+   "mass": {
+    "value": 1.85,
+    "unit": "g/cm^3",
+    "source_url": "https://zaunkoenig.co/blog/the-worlds-lightest-gaming-mouse-pcb",
+    "source_title": "Zaunkoenig blog, \"The worlds lightest gaming mouse PCB\", 31 Jan 2020",
+    "label": "DS"
+   },
+   "note": "same value as the deck's Gund NEMA FR4 source"
+  },
+  {
+   "part": "Dot skate, PTFE, 6.5 mm x 0.8 mm (X-Raypad Obsidian dot size)",
+   "mass": {
+    "value": 0.0573,
+    "unit": "g each",
+    "source_url": "https://xometry.asia/wp-content/uploads/2021/03/PTFE.pdf",
+    "source_title": "DV from PTFE density 2.16 g/cm3 (Xometry PTFE datasheet) and the deck's 6.5 x 0.8 mm dot size",
+    "label": "DV",
+    "formula": "pi x 0.325^2 x 0.08 cm^3 x 2.16 g/cm^3 = 0.057 g; 8 dots (2 per corner) = 0.46 g",
+    "note": "assumes solid PTFE through full thickness; real dots include adhesive/foam"
+   }
+  },
+  {
+   "part": "Dot skate, POM (Delrin 150), same size",
+   "mass": {
+    "value": 0.0377,
+    "unit": "g each",
+    "source_url": "https://www.plasticsintl.com/media/05oith4t/delrin-150-data-sheet.pdf",
+    "source_title": "DV from Delrin 150 specific gravity 1.42",
+    "label": "DV",
+    "formula": "pi x 0.325^2 x 0.08 x 1.42 = 0.038 g; 8 dots = 0.30 g"
+   }
+  },
+  {
+   "part": "LiPo pack 250 mAh (Jauch LP502030JH, with PCM + 50 mm leads)",
+   "mass": {
+    "value": 7.5,
+    "unit": "g",
+    "source_url": "https://endrich.com/Datenbl%C3%A4tter/Akkus%20%20%26%20Batterien/Lithium%20Ionen%20Akkumulatoren/Lithium%20Polymer%20Batterien/lp502030jh.pdf",
+    "source_title": "Jauch LP502030JH datasheet",
+    "label": "DS"
+   }
+  },
+  {
+   "part": "LiPo packs (Jauch family)",
+   "mass": {
+    "value": {
+     "60mAh": 2,
+     "140mAh": 5,
+     "180mAh": 7,
+     "250mAh": 7.5,
+     "330mAh": 8,
+     "370mAh": 8
+    },
+    "unit": "g",
+    "source_url": "https://www.endrich.com/en/product-categories/accus-batteries/lithium-ion-cells/lithium-polymer-batteries?page=2",
+    "source_title": "Endrich listing of Jauch LiPo packs",
+    "label": "DS",
+    "note": "see batteries.json for full list and Wh/kg"
+   }
+  },
+  {
+   "part": "WLMOUSE Beast X Mini Pro battery",
+   "mass": {
+    "value": null,
+    "unit": "g (not published)",
+    "source_url": "https://www.wlmouse.com/products.json",
+    "source_title": "WLMOUSE store: Beast X Mini Pro 34 +/-2 g with a 220 mAh battery",
+    "label": "MC",
+    "note": "shows a 34 g wireless mouse carries 220 mAh"
+   }
+  },
+  {
+   "part": "XA25 USB cable (external)",
+   "mass": {
+    "value": 6.9,
+    "unit": "g per metre, 1.9 mm diameter, passes USB 2.0 HS eye test",
+    "source_url": "https://xbabtech.com/",
+    "source_title": "XBAB XA25 page",
+    "label": "MC",
+    "note": "benchmark for idea #20 (cable thickness)"
+   }
+  }
+ ],
+ "reference_whole_mice": [
+  {
+   "value": {
+    "mouse": "Pulsar X2F CrazyLight",
+    "g": 29,
+    "how": "front-half shell, length 87.5 mm"
+   },
+   "unit": "g claimed",
+   "source_url": "https://www.pcgamer.com/hardware/gaming-mice/pulsars-new-mouse-is-sliced-in-half-to-make-it-genuinely-crazy-light/",
+   "source_title": "PC Gamer",
+   "label": "DS"
+  },
+  {
+   "value": {
+    "mouse": "Vaidemi Nimbus (DIY, 2025)",
+    "g": 29,
+    "how": "solid hole-less SLA-printed resin shell with internal skeleton (\"XSHELL\"); internals appear to be from a Xyder Amalight 4K; 29 g incl. skates and paint; survived 30+ kg load"
+   },
+   "unit": "g",
+   "source_url": "https://www.notebookcheck.net/YouTuber-embarrasses-big-gaming-mouse-brands-with-29-g-ultralight-mouse-with-no-holes.1011756.0.html",
+   "source_title": "Notebookcheck (May 2025) on Vaidemi's YouTube build",
+   "label": "CA",
+   "note": "closest precedent for a 29 g solid shell; prototype, not a product"
+  },
+  {
+   "value": {
+    "mouse": "Zeromouse V35 kit (Viper V2 Pro internals)",
+    "g": 26,
+    "price_usd": 69
+   },
+   "unit": "g",
+   "source_url": "https://www.notebookcheck.net/YouTuber-builds-16-g-gaming-mouse-and-you-can-buy-one-sort-of.876113.0.html",
+   "source_title": "Notebookcheck on Zeromouse V35 and Optimum Tech's 16 g prototype",
+   "label": "CA"
+  },
+  {
+   "value": {
+    "mouse": "Optimum Tech prototype on Zeromouse V35",
+    "g": 16,
+    "how": "stripped shell, includes Viper V2 Pro battery"
+   },
+   "unit": "g",
+   "source_url": "https://www.notebookcheck.net/YouTuber-builds-16-g-gaming-mouse-and-you-can-buy-one-sort-of.876113.0.html",
+   "source_title": "Notebookcheck",
+   "label": "CA"
+  },
+  {
+   "value": {
+    "mouse": "Zaunkoenig M1K (wired)",
+    "g": 23.4
+   },
+   "unit": "g mean of 333",
+   "source_url": "https://zaunkoenig.co/blog/m1k-weight-in-review",
+   "source_title": "Zaunkoenig blog, \"M1K weight in review\", 31 Aug 2020 (pie charts; mean of first 333 units)",
+   "label": "MC"
+  },
+  {
+   "value": {
+    "mouse": "XBAB XA25 (wired)",
+    "g": 24.94
+   },
+   "unit": "g",
+   "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+   "source_title": "XBAB Tech on X, 2026-07-14: \"9 parts. 24.94 g total (~25+/-1g)\" (image = refs/xbab/xbab-weight-breakdown.jpg)",
+   "label": "MC"
+  },
+  {
+   "value": {
+    "mouse": "Finalmouse ULX Small (claimed)",
+    "g": 29
+   },
+   "unit": "g",
+   "source_url": "https://www.notebookcheck.com/Finalmouse-UltralightX-wiegt-nur-29-Gramm-trotz-8-000-Hz-Drahtlos-Verbindung-und-zwei-Monaten-Akkulaufzeit.738125.0.html",
+   "source_title": "Notebookcheck ULX launch",
+   "label": "DS"
+  },
+  {
+   "value": {
+    "mouse": "WLMOUSE Beast X Mini Pro",
+    "g": 34,
+    "battery_mAh": 220
+   },
+   "unit": "g +/-2",
+   "source_url": "https://www.wlmouse.com/products.json",
+   "source_title": "WLMOUSE store",
+   "label": "MC"
+  },
+  {
+   "value": {
+    "mouse": "Epomaker Carbonis",
+    "claimed_g": 50,
+    "measured_g": 53.0,
+    "battery": "300 mAh 3.7 V LiPo"
+   },
+   "unit": "g",
+   "source_url": "https://hwbusters.com/peripherals/epomaker-carbonis-mouse-review/4/",
+   "source_title": "Hardware Busters teardown",
+   "label": "IM"
+  }
+ ],
+ "theseus_29g_budget": {
+  "target_g": 29,
+  "assumptions": "Starts from the XA25 (a wired 25 g mouse) and swaps its interior USB cable for a battery. Radio parts (antenna, RF passives, PMIC + 2 buck inductors), a USB-C receptacle and the battery bay/fixing are NOT included (masses not sourced), so these totals are lower bounds.",
+  "scenarios": [
+   {
+    "scenario": "XA25 build + Jauch 250 mAh pack",
+    "total_g": {
+     "value": 31.61,
+     "unit": "g",
+     "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+     "source_title": "XA25 parts (XBAB) minus interior USB cable, plus a Jauch pack mass (Endrich/Jauch)",
+     "label": "DV",
+     "formula": "24.939 - 0.830 + 7.5 = 31.61"
+    },
+    "vs_29g": 2.61,
+    "runtime_8kHz_h": {
+     "value": 31,
+     "unit": "h at 29.6 mW",
+     "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+     "source_title": "load from V4 Pro measured 8 kHz runtime (see batteries.json)",
+     "label": "DV",
+     "formula": "3.7 V x 0.25 Ah / 0.0296 W"
+    }
+   },
+   {
+    "scenario": "XA25 build + Jauch 140 mAh pack",
+    "total_g": {
+     "value": 29.11,
+     "unit": "g",
+     "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+     "source_title": "XA25 parts (XBAB) minus interior USB cable, plus a Jauch pack mass (Endrich/Jauch)",
+     "label": "DV",
+     "formula": "24.939 - 0.830 + 5.0 = 29.11"
+    },
+    "vs_29g": 0.11,
+    "runtime_8kHz_h": {
+     "value": 18,
+     "unit": "h at 29.6 mW",
+     "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+     "source_title": "load from V4 Pro measured 8 kHz runtime (see batteries.json)",
+     "label": "DV",
+     "formula": "3.7 V x 0.14 Ah / 0.0296 W"
+    }
+   },
+   {
+    "scenario": "XA25 build + Jauch 330 mAh pack",
+    "total_g": {
+     "value": 32.11,
+     "unit": "g",
+     "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+     "source_title": "XA25 parts (XBAB) minus interior USB cable, plus a Jauch pack mass (Endrich/Jauch)",
+     "label": "DV",
+     "formula": "24.939 - 0.830 + 8.0 = 32.11"
+    },
+    "vs_29g": 3.11,
+    "runtime_8kHz_h": {
+     "value": 41,
+     "unit": "h at 29.6 mW",
+     "source_url": "https://www.techpowerup.com/review/razer-viper-v4-pro/",
+     "source_title": "load from V4 Pro measured 8 kHz runtime (see batteries.json)",
+     "label": "DV",
+     "formula": "3.7 V x 0.33 Ah / 0.0296 W"
+    }
+   }
+  ],
+  "max_battery_mass_for_29g": {
+   "value": 4.89,
+   "unit": "g",
+   "source_url": "https://x.com/xbabtech/status/2076835183723245671",
+   "source_title": "derived from XBAB XA25 parts",
+   "label": "DV",
+   "formula": "29 - (24.939 - 0.830) = 4.89 g, before radio parts"
+  },
+  "reading": "Built like the XA25, a 29 g wireless mouse can carry at most ~4.9 g of battery before any radio hardware, i.e. a ~140 mAh-class pack (~17-18 h at an 8 kHz load, ~79 h at 1 kHz). Fitting a 250 mAh pack (SLX capacity) at 29 g needs ~2.6 g out of the shell, buttons or PCBs (e.g. shell + skates 12.2 -> ~9.6 g). The titanium-screw swap (11 x 0.064 g -> 11 x 0.02 g) saves only ~0.5 g."
+ }
+}
