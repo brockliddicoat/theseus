@@ -85,97 +85,97 @@
 },
 {
 "out": "parts/shots/wheel-hero-paper.png",
-"q": "part=wheel&view=threeQuarter&zoom=0.88&theme=paper",
+"q": "part=wheel&view=threeQuarterRight&zoom=0.88&theme=paper",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-hero-night.png",
-"q": "part=wheel&view=threeQuarter&zoom=0.88&theme=night",
+"q": "part=wheel&view=threeQuarterRight&zoom=0.88&theme=night",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-macro-paper.png",
-"q": "part=wheel&encoder=0&support=0&zoom=0.75&theme=paper",
+"q": "part=wheel&encoder=0&support=0&view=threeQuarterRight&zoom=0.75&theme=paper",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-macro-night.png",
-"q": "part=wheel&encoder=0&support=0&zoom=0.75&theme=night",
+"q": "part=wheel&encoder=0&support=0&view=threeQuarterRight&zoom=0.75&theme=night",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-side-web-paper.png",
-"q": "part=wheel&encoder=0&support=0&view=left&zoom=0.72&theme=paper",
+"q": "part=wheel&encoder=0&support=0&view=right&zoom=0.72&theme=paper",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-side-web-night.png",
-"q": "part=wheel&encoder=0&support=0&view=left&zoom=0.72&theme=night",
+"q": "part=wheel&encoder=0&support=0&view=right&zoom=0.72&theme=night",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-exploded-paper.png",
-"q": "part=wheel&explode=1&dir=0.18,0.42,1&zoom=0.74&theme=paper",
+"q": "part=wheel&explode=1&dir=-0.18,0.42,1&zoom=0.74&theme=paper",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-exploded-night.png",
-"q": "part=wheel&explode=1&dir=0.18,0.42,1&zoom=0.74&theme=night",
+"q": "part=wheel&explode=1&dir=-0.18,0.42,1&zoom=0.74&theme=night",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-xray-paper.png",
-"q": "part=wheel&xray=1&view=threeQuarterRight&zoom=0.9&theme=paper",
+"q": "part=wheel&xray=1&view=threeQuarter&zoom=0.9&theme=paper",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-xray-night.png",
-"q": "part=wheel&xray=1&view=threeQuarterRight&zoom=0.9&theme=night",
+"q": "part=wheel&xray=1&view=threeQuarter&zoom=0.9&theme=night",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-gate-AB11-paper.png",
-"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=-0.0327&theme=paper",
+"q": "part=wheel&xray=1&dir=-0.3,1,0.5&target=-7.8,14.2,-0.5&radius=3.4&scroll=-0.0327&theme=paper",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-gate-AB11-night.png",
-"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=-0.0327&theme=night",
+"q": "part=wheel&xray=1&dir=-0.3,1,0.5&target=-7.8,14.2,-0.5&radius=3.4&scroll=-0.0327&theme=night",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-gate-AB10-paper.png",
-"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=0.0327&theme=paper",
+"q": "part=wheel&xray=1&dir=-0.3,1,0.5&target=-7.8,14.2,-0.5&radius=3.4&scroll=0.0327&theme=paper",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-gate-AB10-night.png",
-"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=0.0327&theme=night",
+"q": "part=wheel&xray=1&dir=-0.3,1,0.5&target=-7.8,14.2,-0.5&radius=3.4&scroll=0.0327&theme=night",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-gate-AB00-paper.png",
-"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=0.0982&theme=paper",
+"q": "part=wheel&xray=1&dir=-0.3,1,0.5&target=-7.8,14.2,-0.5&radius=3.4&scroll=0.0982&theme=paper",
 "w": 1600,
 "h": 900
 },
 {
 "out": "parts/shots/wheel-gate-AB00-night.png",
-"q": "part=wheel&xray=1&dir=0.3,1,0.5&target=7.8,14.2,-0.5&radius=3.4&scroll=0.0982&theme=night",
+"q": "part=wheel&xray=1&dir=-0.3,1,0.5&target=-7.8,14.2,-0.5&radius=3.4&scroll=0.0982&theme=night",
 "w": 1600,
 "h": 900
 },

@@ -37,7 +37,7 @@ const REG = {
   },
   wheel: P.buildScrollWheel && {
     title: 'Magnesium wheel + optical encoder',
-    build: () => P.buildScrollWheel({ steps: num(q.steps, 24), grousers: num(q.grousers, 48), encoder: q.encoder !== '0', support: q.support !== '0', anisoRot: q.aniso }),
+    build: () => P.buildScrollWheel({ steps: num(q.steps, 24), grousers: num(q.grousers, 48), encoder: q.encoder !== '0', support: q.support !== '0', anisoRot: q.aniso, encoderSide: q.side }),
     controls: { scroll: [-0.6, 0.6], explode: [0, 1], xray: [0, 1] },
     apply: (o, s) => { o.setScroll(s.scroll); o.setExplode(s.explode); o.setXray(s.xray); },
   },
@@ -64,7 +64,7 @@ const REG = {
     controls: { explode: [0, 1] }, apply: (o, s) => o.setExplode(s.explode),
   },
   battery: P.buildBattery && {
-    title: 'LiPo 502030 + PCM + JST SH', build: () => P.buildBattery({ bandColor: q.bandColor }),
+    title: 'LiPo 502030 + PCM + JST SH', build: () => P.buildBattery({ bandColor: q.bandColor, connectorSide: q.side }),
     controls: { explode: [0, 1], plug: [0, 1], bands: [0, 1] },
     apply: (o, s) => { o.setExplode(s.explode); o.setPlug(s.plug); o.setBands(s.bands); },
   },

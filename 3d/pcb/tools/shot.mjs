@@ -35,6 +35,8 @@ await p.goto(`http://127.0.0.1:${port}/${page.replace(/^\//, '')}${opt.q ? '?' +
 try { await p.waitForFunction('window.__ready === true || !!window.__error', null, { timeout: WAIT }); } catch (e) { logs.push('TIMEOUT'); }
 const err = await p.evaluate(() => window.__error || null);
 if (err) logs.push('PAGE __error: ' + err);
+const res = await p.evaluate(() => (window.__res ? JSON.stringify(window.__res) : null));
+if (res) console.log('RESULT ' + res);
 fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true });
 await p.screenshot({ path: out, omitBackground: !!opt.transparent });
 if (logs.length) console.log(logs.slice(0, 30).join('\n'));

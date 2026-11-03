@@ -78,12 +78,10 @@ class Field:
         G = np.stack([map_coordinates(g, I, order=1, mode='nearest') for g in self.grad], 1)
         nin = -G / np.maximum(np.linalg.norm(G, axis=1, keepdims=True), 1e-9)
         T = wall_T(p); eta = -(D + T)
-        # the scan's bottom has recesses (sensor window etc.) whose offsets would float as bumps inside the opening:
-        # fill the floor under the opening up to y = 7.5 so only the rim flange carries the bottom face
-        Dw = np.minimum(D, np.maximum(np.maximum(P['y_bottom'] - p[:, 1], p[:, 1] - 7.5), self.open_sdf(p) + 0.6))
-        f_wall = np.maximum(Dw, -(Dw + T))
-        # bottom opening: keep the rim flange
-        yc = P['y_bottom'] + P['T_bot'] + 0.35
+        f_wall = np.maximum(D, eta)
+        # bottom opening: keep the rim flange. The prism runs up to y = 8 so the scan's floor recesses (sensor window
+        # etc., offset into bumps) go too; the walls flare outward above the bottom contour, bosses/ribs are added after.
+        yc = 8.0
         f_op = np.maximum(self.open_sdf(p), p[:, 1] - yc)
         f_wall = ri(f_wall, -f_op, 0.25)
         rr = P['r_top'] + (P['r_bot'] - P['r_top']) * grade(p)

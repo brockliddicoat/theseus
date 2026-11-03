@@ -1,6 +1,7 @@
 // Magnesium-alloy scroll wheel (#84) + POM axle (#7) + optical scroll encoder (research "step further").
 // Representative / proposal geometry. Frame: origin on the PCB top surface below the wheel centre;
-// axle along X (encoder on +X by default); wheel centre at Y = axleHeight.
+// axle along X; wheel centre at Y = axleHeight. Encoder on the user's RIGHT (−X) by default, as on the Sora V2
+// PCB (+X is the user's left in this right-handed frame); encoderSide: 'left' puts it on +X (mirror image).
 //
 // Design rules carried from Brock's doc:
 //  - 6 spokes: the web is cut into 6 equilateral-triangle windows (6 × 60° = 360°)  [brainstorm, proposal]
@@ -36,7 +37,9 @@ export function buildScrollWheel(opts = {}) {
   const Rc = opts.crownRadius ?? R;
   const nG = opts.grousers ?? 48, steps = opts.steps ?? 24;
   const AH = opts.axleHeight ?? 11;
-  const side = opts.encoderSide === -1 ? -1 : 1;
+  // geometry is built with the encoder on +X, then mirrored in X for the user's right (default)
+  const es = opts.encoderSide ?? 'right';
+  const side = (es === 'left' || es === 1 || es === '+1') ? 1 : -1;
   const M = partMaterials(opts.materials);
   if (opts.anisoRot !== undefined) { M.magnesium.anisotropyRotation = +opts.anisoRot; M.magnesiumFace.anisotropyRotation = +opts.anisoRot; }
   const userMats = new Set(Object.values(opts.materials || {}));
@@ -44,7 +47,7 @@ export function buildScrollWheel(opts = {}) {
 
   const root = new THREE.Group(); root.name = 'ScrollWheel';
   const assy = new THREE.Group(); assy.name = 'assembly'; assy.position.y = AH;
-  if (side < 0) assy.scale.x = -1;   // mirror for a left-hand encoder (geometry is symmetric enough)
+  if (side < 0) assy.scale.x = -1;   // exact mirror: rotation about X and the scroll sign are unaffected
   root.add(assy);
   const spin = new THREE.Group(); spin.name = 'spin';        // everything that turns with the wheel
   assy.add(spin);
@@ -281,8 +284,9 @@ export function buildScrollWheel(opts = {}) {
   root.userData.spec = {
     ...WHEEL_SPEC, diameter: D, width: Wd, crownRadius: Rc, grousers: nG, steps, axleHeight: AH, axleDiameter: 2 * rJ,
     hexAF: AF, sagitta: +(crown(0) - crown(hw)).toFixed(3),
-    encoderBox: { min: [x0, 0, -zD], max: [x1, AH + yTop, zD] },
-    supportBox: { min: [sx0, 0, -sw / 2], max: [sx1, AH + yt, sw / 2] },
+    encoderSide: side > 0 ? 'left (+X)' : 'right (−X)',
+    encoderBox: side > 0 ? { min: [x0, 0, -zD], max: [x1, AH + yTop, zD] } : { min: [-x1, 0, -zD], max: [-x0, AH + yTop, zD] },
+    supportBox: side > 0 ? { min: [sx0, 0, -sw / 2], max: [sx1, AH + yt, sw / 2] } : { min: [-sx1, 0, -sw / 2], max: [-sx0, AH + yt, sw / 2] },
     wheelVolume_mm3: +vol.toFixed(1), massEstimate_g: +(vol * 1.77e-3).toFixed(3),
   };
   root.userData.parts = { wheel, tread, grousers, web, hub, axle, disc, detentStar, encoder: enc, housing, emitter, detector, beamA: beams[0].b2, beamB: beams[1].b2, detent: spring, support: sup, spin };

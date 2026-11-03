@@ -70,8 +70,12 @@ _spl = UnivariateSpline(_ph, _yy, k=3, s=len(_ph) * 0.03)
 
 def lip_y(phi_deg):
     a = np.abs(np.asarray(phi_deg, float))
-    # beyond the hump-seam junction (~100 deg) the trigger is bounded by the hump seam: hold the seam height
-    y = _spl(np.minimum(a, 101))
+    # beyond the hump-seam junction (~100 deg) the trigger is bounded by the hump seam: hold the seam height,
+    # with a smooth (softplus) clamp so the seam function has no slope break on the shoulder
+    w = 2.0
+    ac = 101.0 - w * np.log1p(np.exp(np.minimum((101.0 - a) / w, 50.0)))
+    ac = np.where((101.0 - a) / w > 50.0, a, ac)
+    y = _spl(ac)
     # #46 flat front trigger cutouts: exactly 10.0 across the nose, blended in over 18..26 deg
     t = np.clip((a - _FLAT) / 8.0, 0, 1); t = t * t * (3 - 2 * t)
     return np.where(a < 26, 10.0 * (1 - t) + _spl(np.clip(a, _FLAT, 101)) * t, y)
@@ -114,3 +118,20 @@ def params_json(variant):
         sideButtons=[dict(name=b['name'], press=[-1, 0, 0], travel=0.45) for b in (SB_THESEUS if variant == 'theseus' else SB_SORA)],
         sideDecal=SIDE_DECAL,
     )
+
+
+# The scan's trigger surface sits ~0.03-0.10 mm proud of the hump surface along the ORIGINAL curved seam; the skin
+# smooths that into a shallow ramp across the seam band. Harmless under the Sora seam, but the Theseus straight cutout
+# crosses it (|x| ~ 13.5) and shows a tick. skin_correction() cancels the ramp (Theseus only): + = surface moves inward.
+_STEP_X = np.array([0.0, 5.0, 10.0, 15.0, 20.0, 22.0, 26.0])
+_STEP_V = np.array([0.0, 0.030, 0.044, 0.090, 0.099, 0.099, 0.0])
+
+
+def skin_correction(P, variant):
+    if variant != 'theseus':
+        return np.zeros(len(P))
+    x, z = P[:, 0], P[:, 2]
+    step = np.interp(np.abs(x), _STEP_X, _STEP_V)
+    t = np.clip((z - hump_z(x, 'sora')) / 3.6 + 0.5, 0, 1)
+    t = t * t * (3 - 2 * t)
+    return step * t

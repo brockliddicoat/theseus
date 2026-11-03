@@ -1,5 +1,6 @@
 // usage: node shot.js file.html out_dir slideId:t [slideId:t ...]
 const { chromium } = require('playwright');
+const { pageUrl } = require('./serve.js');
 (async () => {
   const [file, out, ...shots] = process.argv.slice(2);
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
@@ -9,7 +10,7 @@ const { chromium } = require('playwright');
   p.on('pageerror', e => errs.push('PAGEERR ' + e.message));
   for (const s of shots) {
     const [id, t] = s.split(':');
-    await p.goto('file://' + file + '?cap=1&s=' + id + '&t=' + (t || 8));
+    await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + (t || 8));
     await p.waitForFunction('window.__ready === true', null, { timeout: 30000 }).catch(() => errs.push('timeout ' + s));
     await p.screenshot({ path: `${out}/${id}_${t || 8}.png` });
   }

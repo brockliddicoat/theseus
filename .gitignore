@@ -13,3 +13,5 @@ deck/shots/
 *.nbc
 *.nbi
 **/tmp/
+deck/dist/assets/
+deck/vendor/

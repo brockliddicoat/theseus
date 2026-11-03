@@ -173,7 +173,9 @@ def bridge(P, sk):
 
 def core(P, sk):
     """stand-in for the internals: a dark volume inside the cavity so seams/lattice don't show daylight."""
-    return np.maximum(sk + FT.T_BODY + 0.9, np.maximum(FT.Y_FLANGE + 0.8 - P[:, 1], P[:, 1] - 33.0))
+    c = np.maximum(sk + FT.T_BODY + 0.9, np.maximum(FT.Y_FLANGE + 0.8 - P[:, 1], P[:, 1] - 33.0))
+    bayhole = round_rect2(P[:, 0], P[:, 2], 0.0, 0.5 * (WO['z0'] + WO['z1']), 6.4, 0.5 * (WO['z1'] - WO['z0']) + 2.6, 1.5)
+    return np.maximum(c, -bayhole)
 
 def side_button(P, sk, i):
     x, y, z = P[:, 0], P[:, 1], P[:, 2]
@@ -289,7 +291,8 @@ def mesh_part(name, fn, lo, hi, target_faces, h_scale=1):
         zz = zs[a:a + 30]
         P = np.empty((len(xs), len(ys), len(zz), 3)); P[..., 0] = X[:, :, None]; P[..., 1] = Y[:, :, None]; P[..., 2] = zz
         sk = VOL[i0[0]:i1[0], i0[1]:i1[1], i0[2] + a:i0[2] + a + len(zz)].reshape(-1)
-        vol[:, :, a:a + len(zz)] = fn(P.reshape(-1, 3), sk).reshape(len(xs), len(ys), len(zz))
+        Pf = P.reshape(-1, 3)
+        vol[:, :, a:a + len(zz)] = fn(Pf, sk + FT.skin_correction(Pf, VARIANT)).reshape(len(xs), len(ys), len(zz))
     # pad so surfaces touching the box close
     vol = np.pad(vol, 1, constant_values=1.0)
     V, F, _, _ = marching_cubes(vol, 0.0, spacing=(H, H, H))
@@ -304,7 +307,7 @@ def mesh_part(name, fn, lo, hi, target_faces, h_scale=1):
                                                  preserveboundary=True, optimalplacement=True, planarquadric=True, planarweight=0.002)
     D = ms.current_mesh(); V, F = D.vertex_matrix(), D.face_matrix()
     # Newton projection onto the exact field, then normals from its gradient
-    ex = lambda Q: fn(Q, SKIN(Q))
+    ex = lambda Q: fn(Q, SKIN(Q) + FT.skin_correction(Q, VARIANT))
     for it in range(2):
         f = ex(V); gr = grad_fd(V, ex, 2e-3)
         gn = (gr * gr).sum(1) + 1e-12
@@ -335,7 +338,7 @@ def ao_fn(name, V):
     if name == 'plate':
         d = V[:, 1] - FT.Y_BASE
         return 1 - 0.75 * _sm(0.04, 0.5, d)
-    d = -SKIN(V)
+    d = -(SKIN(V) + FT.skin_correction(V, VARIANT))
     if name in SB_NAMES:
         d = d + 0.0
         return 1 - 0.75 * _sm(0.02, 0.45, d)

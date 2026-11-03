@@ -1,5 +1,7 @@
 # Theseus main PCB — board outline, holes and cutouts traced from the Sora V2 photo.
-# Units: mm. Mouse frame: +x = user's right, +z = forward (nose), board top copper at local y = 0.
+# Units: mm. LAYOUT frame (as the photo, a top view with the nose up): +x = user's right = image right,
+# +z = forward (nose), board top copper at local y = 0. build_pcb.py mirrors x -> -x on export, giving the
+# mouse/three.js frame of CONVENTIONS.md (+X = user's LEFT = side-button side, right-handed).
 #
 # Source: refs/photos/sora-v2-pcb-8.29g.jpg, de-rotated by 0.72 deg (the board sits 0.72 deg clockwise
 # in the photo). Scale 15.15 px/mm, cross-checked against the USB-C shell (8.94 mm), the 2.0 mm pitch

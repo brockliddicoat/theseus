@@ -4,6 +4,7 @@
 // Cell: 502030 class (5.0 × 20 × 30 mm, sold as 3.7 V 250 mAh, e.g. Akyga AKY0106 LP502030 [MC]); the SLX uses
 // a Jauch 250 mAh cell [MC] and the Viper V4 Pro 306 mAh [IM]. Dimensions/internals: representative.
 // Frame: origin at the centre of the cell's bottom face; width X, thickness Y, length Z; PCM/tab end toward +Z.
+// connectorSide: 'left' (default, header on +X = the user's left) or 'right' (−X, exact mirror of the lead side).
 import * as THREE from 'three';
 import { partMaterials } from './lib/materials.js';
 import { extrude, lathe, sweep, arc, rectSection, roundedRectShape, roundedRectPath, circleSection, meshOf, disposeTree, clamp01, smooth, lerp } from './lib/geom.js';
@@ -29,6 +30,9 @@ export function buildBattery(opts = {}) {
   const root = new THREE.Group(); root.name = 'Battery';
   const cell = new THREE.Group(); cell.name = 'cell';
   root.add(cell);
+  const sx = opts.connectorSide === 'right' ? -1 : 1;     // +X is the user's LEFT (right-handed, +Y up, +Z forward)
+  const leadSide = new THREE.Group(); leadSide.name = 'leadSide'; leadSide.scale.x = sx;   // PCM, lead, plug, header
+  root.add(leadSide);
 
   // ---------------------------------------------------------------- pouch body (deep-drawn cup, rounded edges)
   const bodyW = W - 0.8;                      // side seals folded against the sides take 0.4 each
@@ -84,11 +88,13 @@ export function buildBattery(opts = {}) {
   const kapton = meshOf(kg, M.kapton, 'kapton'); kapton.position.set(0, 1.75, zEnd - pcbW / 2 - 0.15);
   kapton.castShadow = false;
   pcm.add(kapton);
-  cell.add(pcm);
+  leadSide.add(pcm);
 
   // ---------------------------------------------------------------- side-entry header on a PCB tile + plug + wires
   const conn = new THREE.Group(); conn.name = 'connector';
-  const H0 = new THREE.Vector3(...(opts.headerAt || [15.5, 0, 24.0]));     // header footprint centre on the board plane
+  // header footprint centre on the board plane; opts.headerAt is in the battery frame (world-side), stored mirrored
+  const hA = opts.headerAt || [15.5 * sx, 0, 24.0];
+  const H0 = new THREE.Vector3(sx * hA[0], hA[1], hA[2]);
   const header = buildJstShHeader({ materials: M, _inner: true });
   header.position.copy(H0);
   conn.add(header);
@@ -96,15 +102,15 @@ export function buildBattery(opts = {}) {
     const tile = extrude(roundedRectShape(9, 8, 0.8), { depth: 0.8, front: { r: 0.08, s: 2 }, curveSegments: 6 });
     tile.rotateX(-Math.PI / 2); const tm = meshOf(tile, M.maskBlack, 'pcbTile'); tm.position.set(H0.x + 1.0, -0.8, H0.z); conn.add(tm);
   }
-  root.add(conn);
+  leadSide.add(conn);
   const plug = new THREE.Group(); plug.name = 'plug';
   const pl = jstPlug(M);
   plug.add(pl.group);
-  root.add(plug);
+  leadSide.add(plug);
   // plug mated pose: housing inside the header opening, entering along −X (mating face toward −X)
   const mate = H0.clone().add(new THREE.Vector3(-0.7, 1.42, 0));     // plug front stops at the header's back wall
   const wires = new THREE.Group(); wires.name = 'wires';
-  root.add(wires);
+  leadSide.add(wires);
 
   // ---------------------------------------------------------------- silicone bands
   const bands = new THREE.Group(); bands.name = 'bands';
@@ -160,7 +166,7 @@ export function buildBattery(opts = {}) {
   root.setPlug = (k) => { st.plug = clamp01(k); apply(); };
   root.setBands = (k) => { st.bands = clamp01(k); apply(); };
   root.getState = () => ({ ...st });
-  root.userData.spec = { ...BATTERY_SPEC, headerAt: H0.toArray() };
+  root.userData.spec = { ...BATTERY_SPEC, connectorSide: sx > 0 ? 'left (+X)' : 'right (−X)', headerAt: [sx * H0.x, H0.y, H0.z] };
   root.userData.parts = { cell, pouch, label, pcm, kapton, tabs, wires, plug, header, bands };
   root.dispose = () => { for (const g of wireGeoms) g.dispose(); disposeTree(root, userMats); for (const m of own) m.dispose?.(); tex.dispose(); header.dispose?.(); };
   apply();

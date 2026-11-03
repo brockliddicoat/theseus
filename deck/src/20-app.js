@@ -38,6 +38,7 @@ function go(i, opts = {}) {
   if (APP.reduced) { APP.t0 = now - (next.settle || 9) * 1000; APP.tPause = next.settle || 9; }
   if (APP.frozenT == null) { try { history.replaceState(null, '', '#' + next.id); } catch (e) { } }
   updateBar(); renderSources();
+  try { prepare3D(next); prepare3D(DECK.slides[i + 1]); } catch (e) { }
 }
 function updateBar() {
   const s = DECK.slides[APP.i];
@@ -129,6 +130,7 @@ function compose(k) {
 }
 function frame() {
   const s = DECK.slides[APP.i], t = slideT(), now = performance.now();
+  V3.pending = 0;
   if (APP.frozenT == null) sfxRun(s, APP.lastT, t); APP.lastT = t;
   drawSlide(OFF.getContext('2d'), s, t);
   let k = APP.trStart > 0 ? prog((now - APP.trStart) / 1000, 0, APP.TR) : 1; if (k >= 1) APP.trStart = -1;
@@ -138,7 +140,7 @@ function frame() {
   segs.forEach((b, kk) => { if (kk < si) b.firstChild.style.width = '100%'; else if (kk > si) b.firstChild.style.width = '0%'; });
   if (segs[si]) { const list = DECK.slides.filter(x => x.ch === s.ch); segs[si].firstChild.style.width = ((list.indexOf(s) + clamp(t / (s.settle || 9))) / list.length * 100) + '%'; }
 }
-function loop() { frame(); if (APP.frozenT == null) requestAnimationFrame(loop); }
+function loop() { frame(); if (typeof R3D !== 'undefined' && (APP.gcN = (APP.gcN || 0) + 1) % 120 === 0) R3D.gc(); if (APP.frozenT == null) requestAnimationFrame(loop); }
 async function start() {
   const q = new URLSearchParams(location.search);
   APP.reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -156,7 +158,13 @@ async function start() {
   let first = 0; const h = (q.get('s') || location.hash.slice(1));
   if (h) { const n = DECK.slides.findIndex(s => s.id === h); first = n >= 0 ? n : (parseInt(h) || 0); }
   APP.i = -1; go(first, { instant: true, force: true });
-  if (q.get('t') != null) { APP.frozenT = parseFloat(q.get('t')); frame(); window.__qa = QA.on ? { text: QA.text.slice(), boxes: QA.boxes.slice() } : null; window.__ready = true; return; }
+  if (q.get('t') != null) {
+    APP.frozenT = parseFloat(q.get('t')); frame();
+    /* a 3D shot streams its geometry in: redraw until every scene on this slide has rendered (screenshots wait for it) */
+    const t0w = performance.now();
+    while (V3.pending > 0 && performance.now() - t0w < 120000) { await new Promise(r => setTimeout(r, 250)); frame(); }
+    window.__qa = QA.on ? { text: QA.text.slice(), boxes: QA.boxes.slice() } : null; window.__ready = true; return;
+  }
   $('prev').onclick = e => { e.stopPropagation(); go(APP.i - 1); };
   $('next').onclick = e => { e.stopPropagation(); go(APP.i + 1); };
   $('play').onclick = e => { e.stopPropagation(); togglePlay(); };

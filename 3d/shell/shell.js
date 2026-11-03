@@ -26,7 +26,7 @@ export const SHELL_VIEWS = {
   frontLow: { position: [0, 26, 360], target: [0, 15, 0], up: [0, 1, 0], fov: 9.5 },
   back: { position: [0, 60, -360], target: [0, 16, 0], up: [0, 1, 0], fov: 10.5 },
   bottom: { position: [0, -520, 0.001], target: [0, 0, 0], up: [0, 0, 1], fov: 15.5 },
-  exploded: { position: [170, 150, 150], target: [0, 8, 4], up: [-0.4482, 0.8378, -0.3117], fov: 30 },
+  exploded: { position: [196, 168, 176], target: [2, 9, 5], up: [-0.4482, 0.8378, -0.3117], fov: 30 },
   cuEngrave: { position: [-46, 92, -12], target: [-15.5, 31, 13.5], up: [0, 0.35, 1], fov: 22 },
   cuChamfer: { position: [52, 46, 108], target: [2, 12.5, 50], up: [0, 1, 0], fov: 20 },
   cuWheel: { position: [38, 58, 74], target: [0, 22.5, 36], up: [0, 1, 0], fov: 19 },
@@ -139,7 +139,7 @@ function makeMaterials() {
     magnesium: P({ color: 0x9a9fa5, metalness: 1.0, roughness: 0.3 }),
     pom: P({ color: 0xf0eee7, roughness: 0.4, sheen: 0.25, sheenColor: 0xffffff }),
     brass: P({ color: 0xcfae62, metalness: 1.0, roughness: 0.3 }),
-    lens: P({ color: 0x0d1015, roughness: 0.04, clearcoat: 1.0, clearcoatRoughness: 0.05, specularIntensity: 1.0 }),
+    lens: P({ color: 0x14181e, roughness: 0.22, clearcoat: 0.6, clearcoatRoughness: 0.25, specularIntensity: 0.6, envMapIntensity: 0.45 }),
     lensDark: P({ color: 0x050506, roughness: 0.2 }),
     cavity: new THREE.MeshBasicMaterial({ color: 0x050506 }),
   };
@@ -292,13 +292,13 @@ export async function buildShell(opts = {}) {
   }
   const EXPLODE = [
     // [object, delay, direction*distance (mm at k = 1)]
-    [parts.explodeL, 0.00, [6, 15, 3]], [parts.explodeR, 0.00, [-6, 15, 3]],
-    [wheelEx, 0.10, [0, 27, 2]], [bay, 0.16, [0, 11, 0]],
-    [parts.sideFront, 0.05, [13, 0, 0]], [parts.sideRear, 0.05, [13, 0, 0]],
-    [root.getObjectByName('usbC'), 0.20, [0, 0, 13]],
-    [plate, 0.08, [0, -13, 0]], [lens, 0.18, [0, -5, 0]],
-    ...screws.map((s, i) => [s, 0.14 + 0.02 * i, [0, -24, 0]]),
-    ...skates.map((s, i) => [s, 0.20 + 0.012 * i, [0, -19, 0]]),
+    [parts.explodeL, 0.00, [11, 24, 4]], [parts.explodeR, 0.00, [-11, 24, 4]],
+    [wheelEx, 0.10, [0, 40, 6]], [bay, 0.16, [0, 15, 3]],
+    [parts.sideFront, 0.05, [17, 0, 0]], [parts.sideRear, 0.05, [17, 0, 0]],
+    [root.getObjectByName('usbC'), 0.20, [0, 0, 16]],
+    [plate, 0.08, [0, -18, 0]], [lens, 0.18, [0, -7, 0]],
+    ...screws.map((s, i) => [s, 0.14 + 0.02 * i, [0, -32, 0]]),
+    ...skates.map((s, i) => [s, 0.20 + 0.012 * i, [0, -26, 0]]),
   ];
   const base = new Map(EXPLODE.map(([o]) => [o, o.position.clone()]));
   function setExplode(k) {
@@ -311,7 +311,7 @@ export async function buildShell(opts = {}) {
       o.position.copy(base.get(o)).add(new THREE.Vector3(...v).multiplyScalar(t));
     }
     // side buttons keep their press offset on top of the explode offset
-    sideBtns.forEach((e, i) => { const t = smooth(0.05, 0.77, k); e.g.position.set(13 * t, 0, 0).addScaledVector(new THREE.Vector3().fromArray(e.sb.press), state.side[i] * e.sb.travel * exag); });
+    sideBtns.forEach((e, i) => { const t = smooth(0.05, 0.77, k); e.g.position.set(17 * t, 0, 0).addScaledVector(new THREE.Vector3().fromArray(e.sb.press), state.side[i] * e.sb.travel * exag); });
   }
   const coreOn = () => opts.core !== false && !!geoms.core && state.xray < 0.02 && state.explode < 0.02;
   function setXray(k) {

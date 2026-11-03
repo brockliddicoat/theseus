@@ -1,20 +1,21 @@
 const { chromium } = require('playwright');
+const { pageUrl } = require('./serve.js');
 /* usage: node tools/qa.js <abs html> [ids...]   (no ids = every slide)   env: T=settle|mid|<seconds>, MINPX=21
    Renders each slide frozen with ?qa=1 and reports, from the boxes text() and demoWindow() record:
    off-stage text, text over text, text crossing a card's edge, and text smaller than the floor (stage px). */
 (async () => {
   const [file, ...ids0] = process.argv.slice(2);
   const spec = process.env.T || 'settle', minpx = parseFloat(process.env.MINPX || '19');
-  const b = await chromium.launch();
+  const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
-  await p.goto('file://' + file + '?cap=1&s=0&t=0.01'); await p.waitForFunction('window.__ready === true', null, { timeout: 30000 });
+  await p.goto((await pageUrl(file)) + '?cap=1&s=0&t=0.01'); await p.waitForFunction('window.__ready === true', null, { timeout: 30000 });
   const all = await p.evaluate(() => DECK.slides.map(s => [s.id, s.settle || 9]));
   const ids = ids0.length ? ids0 : all.map(a => a[0]);
   let total = 0;
   for (const id of ids) {
     const s = all.find(a => a[0] === id); if (!s) { console.log(id, 'not found'); continue; }
     const t = spec === 'settle' ? s[1] : spec === 'mid' ? +(s[1] * 0.4).toFixed(2) : parseFloat(spec);
-    await p.goto('file://' + file + '?cap=1&qa=1&s=' + id + '&t=' + t);
+    await p.goto((await pageUrl(file)) + '?cap=1&qa=1&s=' + id + '&t=' + t);
     await p.waitForFunction('window.__ready === true', null, { timeout: 30000 }).catch(() => {});
     const qa = await p.evaluate(() => window.__qa);
     if (!qa) { console.log(id, 'no qa data'); continue; }

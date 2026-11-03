@@ -13,6 +13,7 @@ from matplotlib.textpath import TextPath
 from matplotlib.font_manager import FontProperties
 sys.path.insert(0, '/home/claude/theseus/3d/shell/tools')
 from sdf import Skin
+import features as FT
 
 FONT_DISPLAY = '/usr/share/fonts/opentype/inter/InterDisplay-Medium.otf'
 FONT_LEGEND = '/usr/share/fonts/opentype/inter/Inter-SemiBold.otf'
@@ -101,7 +102,16 @@ def frame_at(skin, p0, up_hint, right_hint, ray=(0, -1, 0)):
 
 def build(grid, variant, serial='099'):
     G = np.load(grid)
-    skin = Skin(G['S'].astype(float), G['N'].astype(float), k=8, sym=True)
+    base = Skin(G['S'].astype(float), G['N'].astype(float), k=8, sym=True)
+    def skin(P, grad=False):
+        P = np.asarray(P, float)
+        if not grad:
+            return base(P) + FT.skin_correction(P, variant)
+        f, Gr = base(P, grad=True)
+        e = 1e-3; c0 = FT.skin_correction(P, variant)
+        gc = np.stack([(FT.skin_correction(P + d, variant) - c0) / e for d in (np.array([e, 0, 0]), np.array([0, e, 0]), np.array([0, 0, e]))], 1)
+        Gr = Gr + gc; Gr /= np.linalg.norm(Gr, axis=1, keepdims=True)
+        return f + c0, Gr
     out = {}
     # ---- serial on the right click (-X), rear-outer area, away from the finger rest zone
     o, u, v, n = frame_at(skin, [-16.0, 45.0, 13.6], up_hint=[0, 0, 1], right_hint=[-1, 0, 0])

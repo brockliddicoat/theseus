@@ -15,6 +15,7 @@
 // -2.88 mm in z so the encoder axle meets the shell's wheel centre (0, 17.03, 34.87); placement:'origin' centres it.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';   // the deck ships pcb.glb meshopt-compressed
 
 const HERE = new URL('.', import.meta.url).href;
 
@@ -52,13 +53,21 @@ function smooth(t) { t = Math.min(1, Math.max(0, t)); return t * t * (3 - 2 * t)
 export function pcbMaterials() {
   const P = (o) => new THREE.MeshPhysicalMaterial(o);
   return {
-    mask: P({ color: 0x030304, roughness: 0.5, metalness: 0, clearcoat: 0.0, envMapIntensity: 0.05, specularIntensity: 0.5 }),
-    mask_cu: P({ color: 0x060709, roughness: 0.42, metalness: 0, clearcoat: 0.0, envMapIntensity: 0.075, specularIntensity: 0.65 }),
+    // matte LPI black: low F90 (specularIntensity) so the studio rim light, which sits near the mirror direction of the
+    // 3/4 views, gives a soft sheen instead of a grey sheet; mask over copper is a touch glossier so traces read
+    mask: P({ color: 0x030304, roughness: 0.64, metalness: 0, clearcoat: 0.0, envMapIntensity: 0.05, specularIntensity: 0.22 }),
+    mask_cu: P({ color: 0x060709, roughness: 0.47, metalness: 0, clearcoat: 0.0, envMapIntensity: 0.075, specularIntensity: 0.38 }),
+    mask_b: P({ color: 0x030304, roughness: 0.64, metalness: 0, envMapIntensity: 0.05, specularIntensity: 0.22 }),
+    mask_tr: P({ color: 0x060709, roughness: 0.47, metalness: 0, envMapIntensity: 0.075, specularIntensity: 0.38 }),
+    mask_cub: P({ color: 0x060709, roughness: 0.47, metalness: 0, envMapIntensity: 0.075, specularIntensity: 0.38 }),
     enig: P({ color: 0xe2a43e, roughness: 0.3, metalness: 1, envMapIntensity: 0.82 }),
     edge_gold: P({ color: 0xdc9f39, roughness: 0.26, metalness: 1, envMapIntensity: 0.8 }),
     silk: P({ color: 0xeeeeea, roughness: 0.82, metalness: 0, envMapIntensity: 0.6 }),
     fr4: P({ color: 0x4c4632, roughness: 0.85, metalness: 0, envMapIntensity: 0.5 }),
     cu_inner: P({ color: 0xd9925f, roughness: 0.32, metalness: 1, side: THREE.DoubleSide, envMapIntensity: 1.0 }),
+    cu_l2: P({ color: 0xc9824e, roughness: 0.4, metalness: 1, side: THREE.DoubleSide, envMapIntensity: 0.8, transparent: true, opacity: 0, depthWrite: false }),
+    cu_l3: P({ color: 0x2ec4b6, roughness: 0.35, metalness: 0.2, side: THREE.DoubleSide, envMapIntensity: 0.6, emissive: 0x2ec4b6, emissiveIntensity: 0 }),
+    cu_via: P({ color: 0xe2a43e, roughness: 0.3, metalness: 1, side: THREE.DoubleSide, envMapIntensity: 0.9, emissive: 0xffb347, emissiveIntensity: 0 }),
     solder: P({ color: 0xdcdee2, roughness: 0.14, metalness: 1, envMapIntensity: 1.15 }),
     epoxy: P({ color: 0x0b0b0c, roughness: 0.62, metalness: 0, clearcoat: 0.08, clearcoatRoughness: 0.6, envMapIntensity: 0.34 }),
     laser: P({ color: 0x55565a, roughness: 0.8, metalness: 0, envMapIntensity: 0.45 }),
@@ -69,7 +78,7 @@ export function pcbMaterials() {
     black_plastic: P({ color: 0x0a0a0c, roughness: 0.6, metalness: 0, envMapIntensity: 0.4 }),
     white_plastic: P({ color: 0xe9e4d8, roughness: 0.48, metalness: 0, sheen: 0.2, sheenRoughness: 0.6, envMapIntensity: 0.75 }),
     blue_plastic: P({ color: 0x2c6cc9, roughness: 0.42, metalness: 0, envMapIntensity: 0.7 }),
-    module_pcb: P({ color: 0x163a8a, roughness: 0.36, metalness: 0, clearcoat: 0.6, clearcoatRoughness: 0.2, envMapIntensity: 0.6 }),
+    module_pcb: P({ color: 0x1b5aa8, roughness: 0.4, metalness: 0, clearcoat: 0.35, clearcoatRoughness: 0.25, envMapIntensity: 0.45 }),
     ferrite: P({ color: 0x151517, roughness: 0.7, metalness: 0.05, envMapIntensity: 0.38 }),
     label: P({ color: 0xf2f2ee, roughness: 0.6, metalness: 0, envMapIntensity: 0.6 }),
     clear: P({ color: 0xffffff, roughness: 0.05, metalness: 0, transmission: 0.92, thickness: 1.2, ior: 1.58, transparent: true, envMapIntensity: 1.0 }),
@@ -99,54 +108,75 @@ function bindEnvironment(mats) {
 
 // ---------------------------------------------------------------- shader patches (reflow heat front + x-ray)
 function patchHeat(mat, U, opts = {}) {
+  // The reflow front is a plane z = uFront in BOARD-LOCAL coordinates (layout z: nose ~52, tail ~-5), so the effect
+  // stays glued to the board wherever the deck places or animates the group (uBoardInv = inverse board matrixWorld).
   mat.onBeforeCompile = (sh) => {
-    sh.uniforms.uFront = U.front; sh.uniforms.uHeat = U.heat; sh.uniforms.uXray = U.xray;
+    sh.uniforms.uFront = U.front; sh.uniforms.uHeat = U.heat; sh.uniforms.uBoardInv = U.boardInv;
     sh.uniforms.uSolder = { value: opts.solder ? 1 : 0 };
     sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vWPos;')
-      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvWPos = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+      .replace('#include <common>', '#include <common>\nvarying vec3 vLoc;\nuniform mat4 uBoardInv;')
+      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvLoc = (uBoardInv * modelMatrix * vec4(transformed, 1.0)).xyz;');
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vWPos;\nuniform float uFront;\nuniform float uHeat;\nuniform float uXray;\nuniform float uSolder;')
+      .replace('#include <common>', '#include <common>\nvarying vec3 vLoc;\nuniform float uFront;\nuniform float uHeat;\nuniform float uSolder;')
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
-        // reflow: behind the front (already passed) the solder is wetted and bright; ahead of it, matte paste
-        float passed = smoothstep(0.0, 1.6, vWPos.z * -1.0 + uFront);
-        if (uSolder > 0.5 && uHeat > 0.0) { roughnessFactor = mix(0.78, roughnessFactor, passed); }`)
+        // the front travels nose -> tail (decreasing z): z > uFront has been through the peak zone
+        float passed = smoothstep(-0.6, 0.6, vLoc.z - uFront);
+        if (uSolder > 0.5 && uHeat > 0.0) { roughnessFactor = mix(0.82, roughnessFactor, passed); }`)
       .replace('#include <metalnessmap_fragment>', `#include <metalnessmap_fragment>
-        if (uSolder > 0.5 && uHeat > 0.0) { metalnessFactor = mix(0.25, metalnessFactor, passed); }`)
+        if (uSolder > 0.5 && uHeat > 0.0) { metalnessFactor = mix(0.15, metalnessFactor, passed); }`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-        float dz_ = (vWPos.z - uFront) / 2.2; float band = exp(-dz_ * dz_);
-        float tz_ = max(vWPos.z - uFront, 0.0); float trail = smoothstep(0.0, 1.0, tz_ / 6.0) * exp(-tz_ / 9.0);
-        totalEmissiveRadiance += uHeat * (vec3(1.0, 0.36, 0.08) * band * 0.85 + vec3(1.0, 0.55, 0.2) * trail * 0.18);`);
+        float dz_ = (vLoc.z - uFront) / 1.1; float band = exp(-dz_ * dz_);
+        float tz_ = max(vLoc.z - uFront, 0.0); float trail = smoothstep(0.0, 1.2, tz_) * exp(-tz_ / 4.0);
+        float pre = exp(-max(uFront - vLoc.z, 0.0) / 1.8) * (1.0 - band);
+        totalEmissiveRadiance += uHeat * (vec3(1.0, 0.34, 0.06) * band * 1.5 + vec3(1.0, 0.40, 0.10) * trail * 0.10 + vec3(0.9, 0.2, 0.03) * pre * 0.08);`);
     if (opts.solder) {
       sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
-        if (uHeat > 0.0) { float pas = smoothstep(0.0, 1.6, -vWPos.z + uFront); diffuseColor.rgb = mix(vec3(0.52, 0.53, 0.55), diffuseColor.rgb, pas); }`);
+        if (uHeat > 0.0) { float pas = smoothstep(-0.6, 0.6, vLoc.z - uFront); diffuseColor.rgb = mix(vec3(0.46, 0.47, 0.49), diffuseColor.rgb, pas); }`);
     }
   };
-  mat.customProgramCacheKey = () => 'heat' + (opts.solder ? 's' : '');
+  mat.customProgramCacheKey = () => 'heat2' + (opts.solder ? 's' : '');
 }
 
 function makeFlowMaterial(color) {
   return new THREE.ShaderMaterial({
-    uniforms: { uTime: { value: 0 }, uK: { value: 0 }, uColor: { value: new THREE.Color(color) }, uDim: { value: 1 } },
+    uniforms: { uTime: { value: 0 }, uK: { value: 0 }, uColor: { value: new THREE.Color(color) }, uDim: { value: 1 },
+      uPeriod: { value: 5.0 }, uSpeed: { value: 14.0 } },
     vertexShader: `attribute float s; attribute float side; varying float vS; varying float vSide;
       void main(){ vS = s; vSide = side; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-    fragmentShader: `uniform float uTime; uniform float uK; uniform vec3 uColor; uniform float uDim; varying float vS; varying float vSide;
+    fragmentShader: `uniform float uTime; uniform float uK; uniform vec3 uColor; uniform float uDim; uniform float uPeriod; uniform float uSpeed;
+      varying float vS; varying float vSide;
       void main(){
-        float edge = 1.0 - smoothstep(0.55, 1.0, abs(vSide));
-        float p = fract(vS / 3.2 - uTime * 0.9);
-        float pulse = smoothstep(0.0, 0.08, p) * (1.0 - smoothstep(0.08, 0.55, p));
-        float base = 0.22;
-        float a = uK * edge * (base + 0.95 * pulse) * uDim;
-        gl_FragColor = vec4(uColor * (0.6 + 1.4 * pulse), a);
+        float edge = 1.0 - smoothstep(0.35, 1.0, abs(vSide));
+        float core = 1.0 - smoothstep(0.0, 0.45, abs(vSide));
+        // comet: bright head, exponential tail behind it (current flows toward increasing s)
+        float p = fract((vS - uTime * uSpeed) / uPeriod);
+        float head = smoothstep(0.80, 0.97, p) * (1.0 - smoothstep(0.97, 1.0, p));
+        float tail = smoothstep(0.25, 0.97, p) * (1.0 - smoothstep(0.97, 1.0, p));
+        float pulse = max(head, tail * 0.45);
+        float a = uK * uDim * (edge * (0.30 + 0.9 * pulse) + core * 0.35 * pulse);
+        gl_FragColor = vec4(uColor * (0.75 + 1.1 * pulse + 0.6 * core * pulse), a);
       }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
   });
 }
 
-function ribbon(points, w, y) {
-  // flat strip along an (x,z) polyline at height y, with arc-length attribute s and side -1..1
+function makeGlowMaterial(color) {
+  return new THREE.ShaderMaterial({
+    uniforms: { uK: { value: 0 }, uTime: { value: 0 }, uColor: { value: new THREE.Color(color) }, uPhase: { value: 0 } },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+    fragmentShader: `uniform float uK; uniform float uTime; uniform vec3 uColor; uniform float uPhase; varying vec2 vUv;
+      void main(){ vec2 d = vUv - 0.5; float r = length(d) * 2.0;
+        float beat = 0.8 + 0.2 * sin(uTime * 6.2832 * 1.4 + uPhase);
+        float a = (exp(-r * r * 3.2) * 0.55 + exp(-r * r * 12.0) * 0.25) * (1.0 - smoothstep(0.7, 1.0, r));
+        gl_FragColor = vec4(uColor, a * uK * beat); }`,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+  });
+}
+
+function ribbon(points, w, y, s0 = 0) {
+  // flat strip along an (x,z) polyline at height y, with arc-length attribute s (offset s0) and side -1..1
   const pos = [], s = [], side = [], idx = [];
-  let acc = 0;
+  let acc = s0;
   for (let i = 0; i < points.length; i++) {
     const [x, z] = points[i];
     const [xa, za] = points[Math.max(0, i - 1)], [xb, zb] = points[Math.min(points.length - 1, i + 1)];
@@ -161,7 +191,7 @@ function ribbon(points, w, y) {
   g.setAttribute('s', new THREE.Float32BufferAttribute(s, 1));
   g.setAttribute('side', new THREE.Float32BufferAttribute(side, 1));
   g.setIndex(idx);
-  return { geo: g, length: acc };
+  return { geo: g, end: acc };
 }
 
 /**
@@ -177,14 +207,14 @@ export async function buildPcb(opts = {}) {
   const glbURL = opts.glb || HERE + 'pcb.glb';
   const layoutURL = opts.layout || HERE + 'pcb-layout.json';
   const [gltf, layout] = await Promise.all([
-    new GLTFLoader().loadAsync(glbURL),
+    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(glbURL),
     fetch(layoutURL).then((r) => r.json()),
   ]);
   const own = pcbMaterials();
   bindEnvironment(Object.values(own));
   const M = Object.assign(own, opts.materials || {});
-  const U = { front: { value: 999 }, heat: { value: 0 }, xray: { value: 0 } };
-  for (const k of ['mask', 'mask_cu', 'enig', 'edge_gold', 'silk']) patchHeat(M[k], U);
+  const U = { front: { value: 999 }, heat: { value: 0 }, boardInv: { value: new THREE.Matrix4() } };
+  for (const k of ['mask', 'mask_cu', 'mask_tr', 'enig', 'edge_gold', 'silk']) patchHeat(M[k], U);
   patchHeat(M.solder, U, { solder: true });
 
   const group = new THREE.Group(); group.name = 'theseus_pcb';
@@ -209,6 +239,11 @@ export async function buildPcb(opts = {}) {
   group.add(board);
   if ((opts.placement || 'mouse') === 'mouse') board.position.set(0, opts.boardY ?? PCB_INFO.boardTopYInMouse, opts.boardZ ?? PCB_INFO.boardOffsetZInMouse);
   else board.position.set(0, 0, -24.6);          // 'origin': board centred (local z 24.6 -> 0), top copper at y = 0
+  // keep the heat-front frame glued to the board (the deck may move/rotate the group at any time)
+  for (const k of ['mask', 'mask_cu', 'mask_tr', 'enig', 'edge_gold', 'silk', 'solder']) {
+    const m = M[k]; const prev = m.onBeforeRender;
+    m.onBeforeRender = function (r, sc, cam, geo, obj, grp) { prev.call(this, r, sc, cam, geo, obj, grp); U.boardInv.value.copy(board.matrixWorld).invert(); };
+  }
 
   // record rest transforms for every component node (explode + reflow settle start from these)
   const comps = [];
@@ -217,53 +252,87 @@ export async function buildPcb(opts = {}) {
       o.userData.rest = { p: o.position.clone(), q: o.quaternion.clone() };
       // deterministic pick-and-place error, removed by self-alignment during reflow
       const h = hash(o.userData.ref || o.name);
-      o.userData.placeErr = { dx: (h % 7 - 3) * 0.012, dz: ((h >> 3) % 7 - 3) * 0.012, rot: (((h >> 6) % 9) - 4) * 0.004, dy: 0.05 };
+      // (amplitudes are a little exaggerated so the self-alignment reads in a close-up)
+      o.userData.placeErr = { dx: (h % 7 - 3) * 0.03, dz: ((h >> 3) % 7 - 3) * 0.03, rot: (((h >> 6) % 9) - 4) * 0.008, dy: 0.06 };
       comps.push(o);
     }
   }
 
   // ---------------------------------------------------------------- power flow overlay
+  // Ribbons follow the real copper (pcb-layout.json power.*.segments). Arc length is chained across segments so the
+  // comet pulses run continuously from the source: USB-C -> nPM1300 -> battery ('charge'); battery -> nPM1300 bucks ->
+  // module + sensor ('run'). Glow discs mark the source, the PMIC and the loads.
   const flow = new THREE.Group(); flow.name = 'power_flow'; flow.visible = false; board.add(flow);
-  const flowMats = {
-    charge: makeFlowMaterial(0xfdc316), run: makeFlowMaterial(0x7fe3ff),
-  };
+  const FLOW_COLORS = { charge: 0xfdc316, run: 0x6fdcff };
+  const flowMats = [];
+  const NODES = { charge: ['usb', 'pmic', 'battery'], run: ['battery', 'pmic', 'l1', 'l2', 'module', 'sensor'] };
+  const NODE_REF = { usb: 'J1', pmic: 'U2', battery: 'J2', module: 'U1', sensor: 'U3', l1: 'L1', l2: 'L2' };
+  board.updateMatrixWorld(true);
   for (const mode of ['charge', 'run']) {
     const segs = layout.power[mode].segments;
+    const seen = [];           // [x, z, s] of every vertex placed so far (branch points)
+    let sMax = 0;
     for (const sg of segs) {
-      const y = sg.layer === 'L3' ? 0.16 : 0.13;
-      const { geo } = ribbon(sg.pts, Math.max(0.42, sg.w * 2.0), y);
-      const mat = flowMats[mode].clone();
-      mat.uniforms.uDim.value = sg.layer === 'L3' ? 0.6 : 1.0;
+      const [x0, z0] = sg.pts[0];
+      let s0 = sMax, best = 1.6;
+      for (const [x, z, sv] of seen) { const d = Math.hypot(x - x0, z - z0); if (d < best) { best = d; s0 = sv + d; } }
+      const L3 = sg.layer === 'L3';
+      const { geo, end } = ribbon(sg.pts, L3 ? Math.max(0.8, sg.w * 2.4) : Math.max(0.95, sg.w * 2.6), L3 ? 0.07 : 0.075, s0);
+      let acc = s0;
+      sg.pts.forEach((q, i) => { if (i > 0) acc += Math.hypot(q[0] - sg.pts[i - 1][0], q[1] - sg.pts[i - 1][1]); seen.push([q[0], q[1], acc]); });
+      sMax = Math.max(sMax, end);
+      const mat = makeFlowMaterial(FLOW_COLORS[mode]); flowMats.push(mat);
+      mat.uniforms.uDim.value = L3 ? 0.7 : 1.0;
       const mesh = new THREE.Mesh(geo, mat);
-      mesh.userData.mode = mode; mesh.renderOrder = 10; mesh.frustumCulled = false;
+      mesh.name = 'flow_' + mode; mesh.userData.mode = mode; mesh.renderOrder = 10; mesh.frustumCulled = false;
       flow.add(mesh);
     }
+    NODES[mode].forEach((n, i) => {
+      const at = layout.power.nodes[n]; if (!at) return;
+      // a halo on the board around the part it marks (sized from the part's footprint, so it shows around the body)
+      const ref = NODE_REF[n]; let r = 3.0, cx = at[0], cz = at[1];
+      if (ref && parts[ref]) {
+        const bb = new THREE.Box3().setFromObject(parts[ref]);
+        if (isFinite(bb.max.x)) { r = Math.max(bb.max.x - bb.min.x, bb.max.z - bb.min.z) * 0.75 + 1.6; cx = (bb.min.x + bb.max.x) / 2 - board.position.x; cz = (bb.min.z + bb.max.z) / 2 - board.position.z; }
+      }
+      const mat = makeGlowMaterial(FLOW_COLORS[mode]); flowMats.push(mat);
+      mat.uniforms.uPhase.value = i * 1.3;
+      const disc = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2), mat);
+      disc.rotation.x = -Math.PI / 2; disc.position.set(cx, 0.065, cz);
+      disc.name = 'flow_node_' + mode + '_' + n; disc.userData.mode = mode; disc.renderOrder = 10; disc.frustumCulled = false;
+      flow.add(disc);
+    });
   }
 
-  // ---------------------------------------------------------------- reflow heat sheet (a soft glowing plane moving along z)
+  // ---------------------------------------------------------------- reflow: a curtain of heat crossing the board once
   const sheetMat = new THREE.ShaderMaterial({
     uniforms: { uK: { value: 0 } },
     vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
     fragmentShader: `uniform float uK; varying vec2 vUv;
-      void main(){ float yy = (vUv.y-0.5)/0.18; float a = exp(-yy*yy) * smoothstep(0.0,0.25,vUv.x) * (1.0-smoothstep(0.75,1.0,vUv.x));
-        gl_FragColor = vec4(vec3(1.0,0.42,0.12)*1.4, a*0.55*uK); }`,
+      void main(){ float h = 1.0 - vUv.y; float a = h * h * h * smoothstep(0.0, 0.12, vUv.x) * (1.0 - smoothstep(0.88, 1.0, vUv.x));
+        gl_FragColor = vec4(vec3(1.0, 0.38, 0.08) * 1.3, a * 0.5 * uK); }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
   });
-  const sheet = new THREE.Mesh(new THREE.PlaneGeometry(52, 14), sheetMat);
-  sheet.rotation.y = 0; sheet.position.set(0, 4, 0); sheet.visible = false; sheet.renderOrder = 11;
-  // plane in XY, facing z: a vertical curtain of heat crossing the board
-  board.add(sheet);
+  const sheet = new THREE.Mesh(new THREE.PlaneGeometry(46, 9), sheetMat);
+  sheet.position.set(0, 4.5, 0); sheet.visible = false; sheet.renderOrder = 11; sheet.name = 'reflow_curtain';
+  board.add(sheet);       // plane in XY (facing z): moves along z with the front
 
   // ---------------------------------------------------------------- state
   const state = { explode: 0, power: 0, reflow: 0, xray: 0, press: { L: 0, R: 0 } };
-  const xrayTargets = ['mask', 'mask_cu', 'silk'];
+  // inner layers: hidden until the X-ray state; draw order bottom -> top for the translucent stack
   const inner = [];
-  root.traverse((o) => { if (o.isMesh && /^(inner_l2|inner_l3|via_barrels)/.test(o.parent?.name || o.name)) inner.push(o); });
-  root.traverse((o) => { if (o.isMesh && o.material === M.cu_inner) { o.visible = false; if (!inner.includes(o)) inner.push(o); } });
+  root.traverse((o) => {
+    if (!o.isMesh) return;
+    if (o.material === M.cu_l2 || o.material === M.cu_l3 || o.material === M.cu_via || o.material === M.cu_inner) { o.visible = false; inner.push(o); }
+    if (o.material === M.cu_l2) o.renderOrder = 1;
+    if (o.material === M.mask) o.renderOrder = 2;
+    if (o.material === M.mask_cu) o.renderOrder = 3;
+    if (o.material === M.silk) o.renderOrder = 4;
+    if (o.material === M.cu_l3 || o.material === M.cu_via) o.renderOrder = 5;   // drawn over the translucent stack
+  });
 
   function applyComponents() {
     const k = state.explode;
-    const reflowing = state.reflow > 0 && state.reflow < 1;
     const zf = frontZ(state.reflow);
     for (const o of comps) {
       const layer = o.userData.layer;
@@ -275,8 +344,7 @@ export async function buildPcb(opts = {}) {
       if (state.reflow > 0 && state.reflow < 1 && o.userData.smd) {
         // settle: parts ride on paste until the front passes, then pull to the pad centre (self-alignment)
         const zc = (o.userData.zc ?? r.p.z);
-        const passed = smooth((zf - zc) / -1.5 + 0.5 > 0 ? (zc - zf) / 2.5 : 0);
-        const pe = o.userData.placeErr; const a = 1 - smooth((zc - zf) / 2.5);
+        const pe = o.userData.placeErr; const a = 1 - smooth((zc - zf) / 2.5);   // 1 ahead of the front, 0 once passed
         o.position.x += pe.dx * a; o.position.z += pe.dz * a; o.position.y += pe.dy * a;
         o.rotateY(pe.rot * a);
       }
@@ -301,48 +369,65 @@ export async function buildPcb(opts = {}) {
       pl.position.copy(pl.userData.rest).add(new THREE.Vector3(...ax).multiplyScalar(travel * k));
     }
   }
+  const C = (hex) => new THREE.Color(hex);
+  function fade(m, op, depthWrite = op > 0.6, force = false) {
+    const tr = force || op < 0.999;
+    if (m.transparent !== tr) m.needsUpdate = true;
+    m.transparent = tr; m.opacity = op; m.depthWrite = tr ? depthWrite : true;
+  }
   function setXray(k) {
-    k = Math.min(1, Math.max(0, k)); state.xray = k; U.xray.value = k;
-    for (const n of xrayTargets) {
-      const m = M[n]; m.transparent = k > 0; m.opacity = 1 - 0.88 * k; m.depthWrite = k < 0.5; m.needsUpdate = true;
-    }
-    M.mask_cu.color.setHex(0x060709).lerp(new THREE.Color(0xc9824e), k * 0.85);
-    M.mask_cu.metalness = 0.9 * k; M.mask_cu.roughness = 0.42 - 0.1 * k; M.mask_cu.userData.envK = 0.075 + 0.8 * k;
-    M.mask_cu.emissive = new THREE.Color(0xff8a3a).multiplyScalar(0.12 * k);
-    for (const o of inner) { o.visible = k > 0.01; }
-    M.cu_inner.transparent = true; M.cu_inner.opacity = Math.min(1, k * 1.2); M.cu_inner.emissive = new THREE.Color(0xff7a2a).multiplyScalar(0.18 * k);
-    M.fr4.transparent = k > 0; M.fr4.opacity = 1 - 0.8 * k;
-    M.edge_gold.transparent = k > 0; M.edge_gold.opacity = 1 - 0.5 * k;
+    // the solder mask clears: L1 routing lights up in copper, the GND pour dims, L3 (power + long runs) glows teal
+    // through the board, the L2 ground plane is a faint copper veil and the via barrels show as gold points.
+    k = Math.min(1, Math.max(0, k)); state.xray = k;
+    fade(M.mask, 1 - 0.8 * k, k < 0.5);
+    fade(M.silk, 1 - 0.55 * k);
+    // pour: dim copper, translucent so L3 shows through
+    M.mask_cu.color.setHex(0x060709).lerp(C(0x6a4026), k * 0.9);
+    M.mask_cu.metalness = 0.5 * k; M.mask_cu.roughness = 0.47 - 0.05 * k; M.mask_cu.userData.envK = 0.075 + 0.3 * k;
+    M.mask_cu.specularIntensity = 0.38 + 0.3 * k;
+    fade(M.mask_cu, 1 - 0.58 * k, k < 0.5);
+    // signal + power traces on L1: saturated copper with a warm glow (low env so AgX keeps the hue)
+    M.mask_tr.color.setHex(0x060709).lerp(C(0xd9803f), k);
+    M.mask_tr.metalness = 0.85 * k; M.mask_tr.roughness = 0.47 - 0.12 * k; M.mask_tr.userData.envK = 0.075 + 0.35 * k;
+    M.mask_tr.specularIntensity = 0.38 + 0.5 * k;
+    M.mask_tr.emissive.setHex(0xff6a1a).multiplyScalar(0.42 * k);
+    for (const o of inner) o.visible = k > 0.01;
+    fade(M.cu_l2, 0.10 * k, false);
+    // L3 + via barrels: drawn after the translucent stack (renderOrder 5, no depth write) so they read through it
+    M.cu_l3.emissiveIntensity = 1.1 * k; fade(M.cu_l3, Math.min(1, 1.25 * k), false, true);
+    M.cu_via.emissiveIntensity = 0.6 * k; fade(M.cu_via, Math.min(1, 1.25 * k), false, true);
+    // the bottom mask cap is the dark floor of the X-ray (seen from above through the cleared top mask)
+    const ds = k > 0.001 ? THREE.DoubleSide : THREE.FrontSide;
+    if (M.mask_b.side !== ds) { M.mask_b.side = ds; M.mask_b.needsUpdate = true; }
   }
   function setPower(k, o = {}) {
+    // k: 0..1 intensity; mode 'charge' | 'run' | 'both'; t: seconds (pulses move at ~14 mm/s along the copper)
     k = Math.min(1, Math.max(0, k)); state.power = k;
     const mode = o.mode || 'charge'; const t = o.t ?? 0;
+    state.powerMode = mode;
     flow.visible = k > 0.001;
     flow.children.forEach((m) => {
-      const on = mode === 'both' || m.userData.mode === mode;
-      m.visible = on;
+      m.visible = mode === 'both' || m.userData.mode === mode;
       m.material.uniforms.uK.value = k; m.material.uniforms.uTime.value = t;
     });
   }
   function setReflow(k) {
+    // k = 0: finished board (default look). 0 < k < 1: the heat front crosses nose -> tail once; ahead of it the
+    // solder is matte paste and parts sit slightly off their pads; behind it the joints are wetted and parts have
+    // self-aligned. k = 1: done.
     k = Math.min(1, Math.max(0, k)); state.reflow = k;
     const zf = frontZ(k);
-    U.front.value = zf; U.heat.value = k > 0 && k < 1 ? 1 : (k >= 1 ? 0 : 0);
-    if (k <= 0) U.front.value = 999;      // nothing reflowed yet -> show paste (handled by heat=0: solder normal)
-    sheet.visible = k > 0 && k < 1; sheet.position.z = zf; sheetMat.uniforms.uK.value = Math.sin(Math.PI * Math.min(1, k * 1.1));
-    // before the pass starts, solder looks like paste everywhere
-    if (k === 0) { U.heat.value = 0; }
+    const active = k > 0 && k < 1;
+    U.front.value = active ? zf : 999; U.heat.value = active ? 1 : 0;
+    sheet.visible = active; sheet.position.z = zf; sheetMat.uniforms.uK.value = Math.sin(Math.PI * k);
     applyComponents();
   }
 
   // ---------------------------------------------------------------- parts builder models (3d/parts/), stand-ins as fallback
+  // Factories are passed in (no dynamic imports, so the module bundles): opts.gt01 = buildGT01,
+  // opts.millmax = buildMillMax3305, opts.wheel = buildScrollWheel. Without them the same-footprint stand-ins show.
   const owned = [];
-  let mods = {};
-  if (opts.useParts !== false) {
-    for (const f of ['gt01.js', 'millmax3305.js', 'parts.js']) {
-      try { Object.assign(mods, await import(new URL('../parts/' + f, HERE).href)); } catch (e) { /* not built yet */ }
-    }
-  }
+  const mods = {};
   const gt01 = {};
   const buildGT01 = opts.gt01 || mods.buildGT01;
   if (buildGT01) {
@@ -369,7 +454,9 @@ export async function buildPcb(opts = {}) {
   let wheel = null;
   if (buildWheel && parts.WHEEL) {
     // parts API: origin = PCB top under the wheel centre, axle along X, centre at Y = axleHeight (12, as the shell)
-    wheel = buildWheel({ diameter: 22.74, width: 7.0, axleHeight: 12, encoderSide: +1, materials: opts.partMaterials });
+    // encoder on +X (the user's left): that is where the Sora V2 photo has it (top view, nose up, text not mirrored:
+    // the blue encoder is image-left = +X) and where this board's encoder footprint is; the parts default is -X.
+    wheel = buildWheel({ diameter: 22.74, width: 7.0, axleHeight: 12, encoderSide: opts.encoderSide ?? 'left', materials: opts.partMaterials });
     if (wheel) {
       parts.WHEEL.children.forEach((c) => { c.visible = false; });
       parts.WHEEL.add(wheel); owned.push(wheel);
@@ -381,7 +468,7 @@ export async function buildPcb(opts = {}) {
     for (const o of owned) o.dispose?.();
     group.traverse((o) => { if (o.isMesh) { o.geometry?.dispose(); } });
     Object.values(M).forEach((m) => m.dispose());
-    Object.values(flowMats).forEach((m) => m.dispose());
+    flowMats.forEach((m) => m.dispose());
     sheetMat.dispose();
   }
 

@@ -170,4 +170,5 @@ def build_board(L, art_seed=7):
 
     return dict(outline=outline, core=core, tht_holes=tht_holes, pour=pour, relief_top=relief_top, pads_top=pads_top,
                 trim_top=trim_top, mask_open=mask_open, l1_copper=l1_copper, vias=all_vias, gvias=gvias,
-                l2=l2, l3=l3, l3_vias=l3_vias, keep=keep, inside=inside, bodies=bodies, mh_rings=mh_rings, trim_sq=trim_sq)
+                l2=l2, l3=l3, l3_vias=l3_vias, keep=keep, inside=inside, bodies=bodies, mh_rings=mh_rings, trim_sq=trim_sq,
+                nongnd_tr=nongnd_tr, nongnd_via=nongnd_via)

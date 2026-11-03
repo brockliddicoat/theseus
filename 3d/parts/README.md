@@ -18,7 +18,7 @@ import {
 
 Common rules (every builder):
 - Synchronous: `build*(opts) → THREE.Group`. No globals, no network, no randomness (a seeded PRNG where texture noise is needed), so the same opts give the same mesh.
-- **Millimetres; +X right, +Y up, +Z forward** (CONVENTIONS.md). Each part has its own local origin (below); place it with `group.position / rotation`.
+- **Millimetres; +Y up, +Z forward, +X = the user's LEFT** (CONVENTIONS.md, corrected: three.js is right-handed, so with +Y up and +Z forward the user's right is −X; side buttons are at +X). Each part has its own local origin (below); place it with `group.position / rotation`. Left/right options below are named in the user's terms.
 - `group.userData.parts`: named sub-objects (meshes/groups) for your own animation.
 - `group.userData.spec`: dimensions and honesty labels (`datasheet` / `manufacturer claim` / `representative` / `proposal` / `derived`).
 - State setters are **methods on the returned group** and are pure functions of their arguments (calling `setPress(0.5)` twice gives the same pose). Every `k` is clamped to [0, 1]. `getState()` returns the current state.
@@ -30,14 +30,14 @@ Common rules (every builder):
 ### 1. `buildGT01(opts)` — Gateron GT01 mouse micro switch (representative)
 - **Origin:** PCB top surface (Y = 0) at the middle pin. Pins point down (−Y) into the board. Switch length along Z; **plunger toward +Z**. The body sits on its molded wedge, tilted about X so the plunger end is low; plunger travel direction is `spec.plungerAxis = [0, cos t, sin t]` (pointing up/out of the switch).
 - **opts:** `tilt` (deg, default 20: measured from Gateron's cutaway image; Brock recalls a 30° wedge; 0 = a flat D2F-style switch), `cover` (`'pink'` | `'black'` | `'clear'`, default pink), `marking` (`'GT01'` default or `''`; other strings need `build_geo.py`), `pinLength` (3.3 mm below the PCB top), `edgeColor` (cutaway edge lines, default teal like Gateron's), `materials`.
-- **Setters:** `setPress(k, {releasing = false}) → {travel, closed}`: plunger travel = k × 0.35 mm; the moving contact snaps NC→NO at the operating point (k ≥ 0.63, 0.22 mm) and back below the release point (k < 0.50, 0.175 mm) when `releasing` is true. `setCutaway(k)`: a section plane sweeps through the cover's near (−X) half, the cut face gets a pink cap and teal edge lines fade in (like Gateron's cutaway). `setExplode(k)`: cover, plunger, blade/tongue lift along the switch axis.
+- **Setters:** `setPress(k, {releasing = false}) → {travel, closed}`: plunger travel = k × 0.35 mm; the moving contact snaps NC→NO at the operating point (k ≥ 0.63, 0.22 mm) and back below the release point (k < 0.50, 0.175 mm) when `releasing` is true. `setCutaway(k)`: a section plane sweeps through the cover's −X half (the switch's own −X side; for a switch placed unrotated that is the user's right), the cut face gets a pink cap and teal edge lines fade in (like Gateron's cutaway). `setExplode(k)`: cover, plunger, blade/tongue lift along the switch axis.
 - **spec:** `envelope [12.8, 5.8, 6.5]`, `travel`, `opTravel`, `rpTravel`, `force`, `life`, `claims`, `pitch 5.08`, `pins [{name, x, z}]` (COM z = +5.08, NO z = 0, NC z = −5.08; local, Y = 0), `pinSection [0.6, 0.4]`, `keyPeg {x: 1.45, z: 2.54, d: 0.9}` (keyed orientation), `plungerTop` (rest, local), `plungerAxis`, `footprint` (XZ rectangle of the wedge foot), `heightMax`, `tiltDeg`.
 - **parts:** `body` (the tilted switch-frame group), `base`, `core`, `cover`, `plunger`, `blade`, `tongue`, `contactNC`, `contactNO`, `contactCOM` (moving rivet), `terminals`, `pins[3]`.
 - `gt01PinGeometry(len)`: the terminal blade alone (used by the Mill-Max demo; handy for the PCB builder).
 
 ### 2. `buildScrollWheel(opts)` — magnesium wheel + POM axle + optical encoder
-- **Origin:** PCB top surface directly below the wheel centre. Axle along X, wheel centre at `Y = axleHeight`. Encoder on +X, axle support bracket on −X. The wheel bottom is at `axleHeight − diameter/2` (0 by default: the PCB needs a wheel cut-out, as on the Sora V2).
-- **opts:** `diameter` (22), `width` (7), `crownRadius` (default = diameter/2, a spherical crown), `grousers` (48), `steps` (24), `axleHeight` (11), `encoderSide` (+1 / −1 mirrors), `encoder` (true), `support` (true), `materials`.
+- **Origin:** PCB top surface directly below the wheel centre. Axle along X, wheel centre at `Y = axleHeight`. **Encoder on the user's right (−X) by default, as on the Sora V2 PCB; support bracket on +X.** (Changed after the handedness fix: the first API draft said "encoder on +X"; pass `encoderSide: 'left'` for that layout.) The wheel bottom is at `axleHeight − diameter/2` (0 by default: the PCB needs a wheel cut-out, as on the Sora V2).
+- **opts:** `diameter` (22), `width` (7), `crownRadius` (default = diameter/2, a spherical crown), `grousers` (48), `steps` (24), `axleHeight` (11), `encoderSide` (`'right'` default = −X | `'left'` = +X; an exact X-mirror, scroll sign unchanged), `encoder` (true), `support` (true), `materials`.
 - **Setters:** `setScroll(rad) → {step, A, B, gateA, gateB}`: rotates wheel, axle, code disc and detent star about +X (positive = top of the wheel moves toward +Z, i.e. scroll up/away); the two light gates (A/B, 90° electrical apart) pulse as slots pass and the detector windows glow. `setExplode(k)`: parts spread along the axle. `setXray(k)`: encoder housing becomes a smoke ghost and the IR beams become visible.
 - **spec:** `diameter, width, crownRadius, sagitta, grousers, steps, axleHeight, axleDiameter 2.4, hexAF 2.0, encoderBox {min, max}`, `supportBox`, `wheelVolume_mm3`, `massEstimate_g` (AZ31B 1.77 g/cm³).
 - **parts:** `wheel, tread, grousers, web, hub, axle, disc, detentStar, encoder, housing, emitter, detector, beamA, beamB, detent, support, spin`.
@@ -60,8 +60,8 @@ Common rules (every builder):
 - `layoutDotSkates({footprint, screws, inset = 4.6, spacing = 7.6, clearance = 1.5}) → [[x, z] × 8]`: two per corner on a curve inset from the outline, slid along it until each skate clears every screw head (Ø4) by `clearance`. **Shell builder: pass your real base outline and screw positions.**
 
 ### 6. Battery — `buildBattery(opts)`, `buildJstShHeader(opts)`
-- **Battery origin:** centre of the cell's bottom face (lying flat); width X, thickness Y, length Z; PCM/tab end toward +Z. The demo header sits at `headerAt` (default `[15.5, 0, 24]`, on a small board tile) with its opening toward −X, i.e. the plug goes in **sideways** (#71).
-- **opts:** `bands` (true), `bandColor` (`'smoke'` default | `'accent'` XBAB yellow), `headerAt`, `tile` (true), `labelLine1`, `labelLine2`, `weight` (printed on the label only if given), `materials`.
+- **Battery origin:** centre of the cell's bottom face (lying flat); width X, thickness Y, length Z; PCM/tab end toward +Z. The lead leaves the PCM on the `connectorSide` (`'left'` default = +X, the user's left | `'right'` = −X, an exact mirror of PCM, lead, plug and header; the label is never mirrored). The demo header sits at `headerAt` (default `[±15.5, 0, 24]`, battery frame, on a small board tile) with its opening facing the cell, so the plug goes in **sideways** (#71).
+- **opts:** `connectorSide` (`'left'` | `'right'`), `bands` (true), `bandColor` (`'smoke'` default | `'accent'` XBAB yellow), `headerAt`, `tile` (true), `labelLine1`, `labelLine2`, `weight` (printed on the label only if given), `materials`.
 - **Setters:** `setExplode(k)`, `setPlug(k)` (0 = plug 6 mm out, 1 = mated; the twisted lead follows), `setBands(k)` (0 = bands lifted off, 1 = on).
 - **Header:** `buildJstShHeader()`: side-entry SH 3-pin; origin on the PCB top surface at the footprint centre, opening toward −X, body 4.25 deep along X, 5.0 wide (Z), 3.0 tall.
 
@@ -127,7 +127,7 @@ Built from: an extruded side profile (wedge + lower base) split into two 1 mm sk
 | Stack | glide 0.38 (POM default, PTFE option) + 3M transfer tape 0.05 + PORON 0.17 + tape 0.05 | [REP] split; materials per Brock |
 | Glide edge | 0.2 mm radius on the glide side, 0.04 chamfer on the back | [REP] |
 | Layout | 2 per corner on a curve 4.6 mm inside the base outline, pairs 7.6 mm apart, clear of screw heads by ≥ 1.5 mm | [PR] (#10, #52) |
-| Base outline | `SORA_FOOTPRINT`: convex hull of Brock's scan below Y = 1.2 mm, 64 points, 56.8 × 108.8 mm at pad level | [DV] (stand-in for the shell's real outline) |
+| Base outline | `SORA_FOOTPRINT`: convex hull of Brock's scan below Y = 1.2 mm, 64 points, 56.8 × 108.8 mm at pad level, in the scan's own (unmirrored) frame, so +X is the side-button side | [DV] (stand-in for the shell's real outline) |
 | Screws | `STANDIN_SCREWS` (4 positions) until the shell publishes its own | stand-in |
 
 ### Battery (`battery.js`)
@@ -152,6 +152,14 @@ Built from: an extruded side profile (wedge + lower base) split into two 1 mm sk
 - `test.html?part=gt01|wheel|millmax|joint|screw|insert|skate|skates|battery&theme=paper|night` with sliders for every setter, a part selector, drag-to-orbit. URL params: `view` (studio view names) or `dir=x,y,z`, `zoom` (frame margin), `target=x,y,z&radius=r` (close-up in the part's frame), `flip=1`, `ui=0`, plus states (`press, releasing, explode, cutaway, scroll, xray, insert, section, drive, plug, bands`) and options (`tilt, cover, marking, steps, grousers, encoder=0, support=0, variant, sock=1, pin=0, pcb=0, material=PTFE, base=0, bandColor=accent`). Sets `window.__ready`.
 - `shots/`: 2× finals (3200 × 1800) on both themes, named `<part>-<view or state>-<theme>.png`; `shots/contact-sheet.jpg` shows them all. Regenerate from `3d/` with `node parts/tools/shoot.mjs parts/tools/shots.json --scale=2 --jobs=1 --skip=1` (one browser restarted every 8 shots, generous timeouts, refuses lost WebGL contexts; `--only=<substr>` for a subset), then `python3 -I parts/tools/validate_shots.py --delete` to drop blank frames and rerun with `--skip=1`. Run one job at a time: SwiftShader is multi-threaded and two instances on this 2-CPU box thrash (the shared `tools/shot.mjs` also times out on 2× transmission renders under load).
 - `tools/peval.mjs "<query>" "<js>"`: load the bench headless and evaluate an expression (debugging).
+
+## Handedness (after the CONVENTIONS fix)
++X is the user's LEFT. What that means here:
+- Skates: the layout is mirror-symmetric (two per corner) and the footprint comes from the unmirrored scan, so nothing moved. `STANDIN_SCREWS` are symmetric.
+- Scroll wheel: default encoder side is now the user's right (−X), matching the Sora V2 PCB photo (top view, nose up: encoder image-right). The wheel shots were re-rendered with mirrored cameras.
+- Battery: lead and header on the user's left (+X) by default, `connectorSide: 'right'` mirrors them. No reference fixes this side; the PCB layout should decide.
+- GT01: symmetric about its own X except the keyed peg (+X, `spec.keyPeg`) and the cutaway side (−X half removed).
+- The studio's `threeQuarter` view looks from the front-right of the user (camera at −X); `threeQuarterRight` from the front-left.
 
 ## Known gaps / stand-ins
 - GT01 has no public datasheet: footprint, pin form, internal mechanism and pin cover are representative. The snap mechanism is kinematic (no spring physics); hysteresis needs the caller to say `releasing`.

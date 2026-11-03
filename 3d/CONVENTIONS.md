@@ -13,8 +13,9 @@ The shape is a **placeholder**: Brock chose the **Ninjutso Sora V2** (same shape
 - Official dims: Sora V2 119.2 × 59–62 × 37.3–37.7 mm, 39 g (EloShapes 119.2 × 62.0 × 37.7). RTINGS measured 120 × 63 × 38 mm, 40.9 g.
 
 ## Coordinates and units
-- **Millimetres.** **+X = the user's right, +Y = up (Y = 0 is the pad), +Z = forward (toward the scroll wheel / nose).** Footprint centred at X = 0, Z = 0. Right-handed.
-- Side buttons are on the **left (−X)** side.
+- **Millimetres.** **+Y = up (Y = 0 is the pad), +Z = forward (toward the scroll wheel / nose), +X = the user's LEFT.** Footprint centred at X = 0, Z = 0. Right-handed, as three.js is: with +Y up and +Z forward, the user's right is −X. (An earlier version of this file said "+X = the user's right"; that was a left-handed reading and wrong.)
+- Side buttons are on the user's left, which is **+X**. In a top view with the nose at the top of the image, +X is image-left.
+- The scan is not mirrored: its side buttons sit at +X.
 
 ## Stack
 - three.js r187 (`/home/claude/theseus/3d/node_modules/three`), ES modules, imported as `three` and `three/addons/...` through an import map:

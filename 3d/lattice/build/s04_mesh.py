@@ -55,7 +55,7 @@ for k0 in range(0, len(zs) - 1, a.slab):
     if vol.min() < 0 < vol.max():
         v, f, _, _ = marching_cubes(vol, 0.0, spacing=(h, h, h))
         v += np.array([xs[0], ys[0], zz[0]])
-        Vs.append(v.astype(np.float32)); Fs.append(f.astype(np.int64) + nv); nv += len(v)
+        Vs.append(v.astype(np.float32)); Fs.append(f.astype(np.int32) + nv); nv += len(v)
     if (k0 // a.slab) % 10 == 0:
         print('slab z=%.1f  band %.2fM  tris %.2fM  %.0fs' % (zz[0], band.sum() / 1e6, sum(len(x) for x in Fs) / 1e6, time.time() - t0), flush=True)
 if a.vol:
@@ -67,14 +67,15 @@ if a.nomesh: raise SystemExit
 V = np.concatenate(Vs); Fc = np.concatenate(Fs); del Vs, Fs
 print('raw', len(V), len(Fc), 'band pts %.1fM' % (nband / 1e6), '%.0fs' % (time.time() - t0))
 # weld the duplicated slab-boundary vertices
-key = np.round(V.astype(np.float64) / 1e-4).astype(np.int64)
+key = np.round(V / np.float32(1e-3)).astype(np.int32)        # 1 micron lattice: slab-boundary duplicates coincide exactly
 _, inv, = np.unique(key, axis=0, return_inverse=True)[0:2] if False else (None, None)
 uq, idx, inv = np.unique(key, axis=0, return_index=True, return_inverse=True)
 V = V[idx]; Fc = inv.reshape(-1)[Fc]; del key, uq, idx, inv
 Fc = Fc[(Fc[:, 0] != Fc[:, 1]) & (Fc[:, 1] != Fc[:, 2]) & (Fc[:, 0] != Fc[:, 2])]
 print('welded', len(V), len(Fc))
 # components
-A = coo_matrix((np.ones(len(Fc) * 2), (np.r_[Fc[:, 0], Fc[:, 1]], np.r_[Fc[:, 1], Fc[:, 2]])), shape=(len(V), len(V)))
+Fc = Fc.astype(np.int32)
+A = coo_matrix((np.ones(len(Fc) * 2, np.int8), (np.r_[Fc[:, 0], Fc[:, 1]], np.r_[Fc[:, 1], Fc[:, 2]])), shape=(len(V), len(V)))
 nc, lab = connected_components(A, directed=False)
 fl = lab[Fc[:, 0]]; del A
 cnt = np.bincount(fl, minlength=nc)
