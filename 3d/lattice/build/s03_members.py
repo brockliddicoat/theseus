@@ -181,7 +181,9 @@ def lattice_members(kind):
             Q = surf_poly(p0, p1)
             kk = 0.5 * (K[i] + K[j])
             for R, reg in split_runs(Q, region(Q)):
-                if polyline_arclen(R)[-1] < 0.8: continue
+                if polyline_arclen(R)[-1] < 2.0: continue                      # clipped stubs read as debris
+                c_ = R.mean(0)
+                if reg == 1 and fam != 0 and c_[2] < -34 and c_[1] < 10: continue   # rear-bottom corner: rows converge, keep the arch legs only
                 if reg == -1:
                     M.add(R, int(fam), 'trigger_lattice', -1, h=1.15 if fam == 0 else 1.0, order=0.85 + 0.1 * (fam > 0))
                 else:
@@ -214,7 +216,9 @@ def lattice_members(kind):
             if p0[1] < Y_RIM - 1.5 and p1[1] < Y_RIM - 1.5: continue
             Q = surf_poly(p0, p1)
             for R, reg in split_runs(Q, region(Q)):
-                if polyline_arclen(R)[-1] < 0.6: continue
+                if polyline_arclen(R)[-1] < 1.2: continue
+                c_ = R.mean(0); tdir = R[-1] - R[0]; tdir /= max(np.linalg.norm(tdir), 1e-9)
+                if reg == 1 and c_[2] < -34 and c_[1] < 10 and abs(tdir[1]) < 0.6: continue   # same corner: vertical walls only
                 kk = q[0] / n
                 if reg == -1:
                     M.add(R, fam, 'trigger_lattice', -1, h=1.07, order=0.85 + 0.05 * fam)

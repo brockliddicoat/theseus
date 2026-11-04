@@ -120,18 +120,21 @@ def params_json(variant):
     )
 
 
-# The scan's trigger surface sits ~0.03-0.10 mm proud of the hump surface along the ORIGINAL curved seam; the skin
-# smooths that into a shallow ramp across the seam band. Harmless under the Sora seam, but the Theseus straight cutout
-# crosses it (|x| ~ 13.5) and shows a tick. skin_correction() cancels the ramp (Theseus only): + = surface moves inward.
-_STEP_X = np.array([0.0, 5.0, 10.0, 15.0, 20.0, 22.0, 26.0])
-_STEP_V = np.array([0.0, 0.030, 0.044, 0.090, 0.099, 0.099, 0.0])
+# The scan's trigger and hump surfaces meet the ORIGINAL curved seam with a tiny S-shaped ramp (+-0.015..0.04 mm, up to
+# 0.058 near the shoulder, plus a faint 0.03 mm groove near |x|~5) left in the skin where the seam band was excluded from
+# the fit. Harmless under the Sora seam; the Theseus straight cutout crosses it (|x|~14.7) and showed a jog.
+# skin_correction() subtracts the tabulated residual from a cubic trend across the band (work/residual_table.py),
+# Theseus only. Sign: + = surface moves inward.
+_RES = np.load(W + 'seam_residual.npz')
+from scipy.interpolate import RegularGridInterpolator as _RGI
+_RI = _RGI((_RES['xs'], _RES['us']), _RES['R'], bounds_error=False, fill_value=0.0)
 
 
 def skin_correction(P, variant):
     if variant != 'theseus':
         return np.zeros(len(P))
-    x, z = P[:, 0], P[:, 2]
-    step = np.interp(np.abs(x), _STEP_X, _STEP_V)
-    t = np.clip((z - hump_z(x, 'sora')) / 3.6 + 0.5, 0, 1)
-    t = t * t * (3 - 2 * t)
-    return step * t
+    ax = np.abs(P[:, 0]); u = P[:, 2] - hump_z(P[:, 0], 'sora')
+    r = _RI(np.c_[np.minimum(ax, 26.0), np.clip(u, -4.5, 4.5)])
+    wu = np.clip((4.5 - np.abs(u)) / 1.0, 0, 1); wu = wu * wu * (3 - 2 * wu)
+    wx = np.clip((26.0 - ax) / 3.0, 0, 1); wx = wx * wx * (3 - 2 * wx)
+    return r * wu * wx

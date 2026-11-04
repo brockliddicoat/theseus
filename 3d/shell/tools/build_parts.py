@@ -296,13 +296,14 @@ def mesh_part(name, fn, lo, hi, target_faces, h_scale=1):
     # pad so surfaces touching the box close
     vol = np.pad(vol, 1, constant_values=1.0)
     V, F, _, _ = marching_cubes(vol, 0.0, spacing=(H, H, H))
+    del vol
     V += np.array([xs[0], ys[0], zs[0]]) - H
-    m = trimesh.Trimesh(V, F, process=True)
-    cc = m.split(only_watertight=False)
-    cc = [c for c in cc if len(c.faces) > 200]
-    m = trimesh.util.concatenate(cc) if len(cc) > 1 else cc[0]
-    log(f'{name}: MC {len(m.faces)} faces, comps {len(cc)}')
-    ms = pymeshlab.MeshSet(); ms.add_mesh(pymeshlab.Mesh(m.vertices, m.faces))
+    nF = len(F)
+    ms = pymeshlab.MeshSet(); ms.add_mesh(pymeshlab.Mesh(V.astype(np.float64), F.astype(np.int32)))
+    del V, F
+    import gc; gc.collect()
+    ms.meshing_remove_connected_component_by_face_number(mincomponentsize=200)
+    log(f'{name}: MC {nF} faces')
     ms.meshing_decimation_quadric_edge_collapse(targetfacenum=int(target_faces), qualitythr=0.45, preservenormal=True,
                                                  preserveboundary=True, optimalplacement=True, planarquadric=True, planarweight=0.002)
     D = ms.current_mesh(); V, F = D.vertex_matrix(), D.face_matrix()

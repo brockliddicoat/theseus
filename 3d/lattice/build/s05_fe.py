@@ -68,13 +68,20 @@ def edges_of_mesh(T):
     u, c = np.unique(e, axis=0, return_counts=True); return u, c
 EU, EC = edges_of_mesh(T3); edge_set = set(map(tuple, EU)); bnd = EU[EC == 1]
 
+def _corner_ok(i, j, fam, kind):
+    # same pruning as the moulded geometry (s03): in the rear-bottom corner keep the arch legs (tri) / near-vertical walls (hex)
+    p, q = X[i], X[j]; c = 0.5 * (p + q)
+    if not (c[2] < -34 and c[1] < 10): return True
+    if kind == 'tri': return fam == 0
+    d = (q - p) / max(np.linalg.norm(q - p), 1e-9); return abs(d[1]) >= 0.6
+
 def lattice_edges(kind):
     out = []   # (a, b, fam)
     if kind == 'tri':
         for (K, J), i in nid.items():
             for (dk, dj, fam, cond) in ((0, 1, 0, K % n == 0), (1, 0, 1, J % n == 0), (1, -1, 2, (K + J) % n == 0)):
                 q = (K + dk, J + dj)
-                if cond and q in nid and tuple(sorted((i, nid[q]))) in edge_set: out.append((i, nid[q], fam))
+                if cond and q in nid and tuple(sorted((i, nid[q]))) in edge_set and _corner_ok(i, nid[q], fam, 'tri'): out.append((i, nid[q], fam))
     else:
         m = n // 3
         kept = {(K // m, J // m) for (K, J) in nid if K % m == 0 and J % m == 0 and ((J // m) - (K // m)) % 3 != 1}
@@ -84,7 +91,7 @@ def lattice_edges(kind):
                 chain = [(m * K3 + s_ * dk, m * J3 + s_ * dj) for s_ in range(m + 1)]
                 if all(q in nid for q in chain):
                     for (p_, q_) in zip(chain[:-1], chain[1:]):
-                        if tuple(sorted((nid[p_], nid[q_]))) in edge_set: out.append((nid[p_], nid[q_], fam))
+                        if tuple(sorted((nid[p_], nid[q_]))) in edge_set and _corner_ok(nid[chain[0]], nid[chain[-1]], fam, 'hex'): out.append((nid[p_], nid[q_], fam))
     return np.array(out)
 
 def rib_section(mid, fam, kind, wsc=1.0):
@@ -191,13 +198,17 @@ def build(kind, thick=1.0, ribs=True):
 # supports: skates -> nearest bottom-ring node
 ring_nodes = np.unique(rim_edges)
 def supports(Xn):
+    # each skate (6.5 mm dot) bears on the rim: vertical support spread over the rim nodes within 4 mm of it in plan
+    # (a single-node support is a stress singularity); friction pins at two skates remove the rigid-body drift
     fixed = []
     for i, (sx, sz) in enumerate(L['skates']):
-        j = ring_nodes[np.argmin(np.hypot(X[ring_nodes, 0] - sx, X[ring_nodes, 2] - sz))]
-        fixed.append(6 * j + 1)
+        dd = np.hypot(X[ring_nodes, 0] - sx, X[ring_nodes, 2] - sz)
+        js = ring_nodes[dd < max(4.0, dd.min() + 1.0)]
+        fixed += [6 * j + 1 for j in js]
+        j = ring_nodes[np.argmin(dd)]
         if i == 0: fixed += [6 * j, 6 * j + 2]
         if i == 3: fixed += [6 * j + 2]
-    return np.array(fixed)
+    return np.array(sorted(set(fixed)))
 
 ztop = X[np.argmax(X[:, 1]), 2]
 crown = np.array([0.0, X[:, 1].max(), ztop])

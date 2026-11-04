@@ -93,13 +93,14 @@ else:
         parts[nm] = sel
     print('components', nc, 'kept', {k: len(v) for k, v in parts.items()}, 'dropped tris', len(Fc) - sum(len(v) for v in parts.values()))
 tg = dict(kv.split(':') for kv in a.target.split(','))
+import subprocess, sys
+raws = []
 for nm, sel in parts.items():
-    f = Fc[sel]; used = np.unique(f); remap = np.full(len(V), -1); remap[used] = np.arange(len(used))
-    v = V[used].astype(np.float64); f = remap[f]
-    target = int(tg.get(nm, tg.get('patch', 120000)))
-    raw_n = len(f)
-    if len(f) > target:
-        v, f = fast_simplification.simplify(v.astype(np.float32), f.astype(np.int32), target_reduction=1 - target / len(f), agg=5)
-    np.savez_compressed(os.path.join(WORK, f'mesh_{name}_{nm}.npz'), V=np.asarray(v, np.float32), F=np.asarray(f, np.int32), h=h, raw=raw_n)
-    print(nm, 'raw', raw_n, '->', len(f))
+    f = Fc[sel]; used = np.unique(f); remap = np.full(len(V), -1, np.int64); remap[used] = np.arange(len(used))
+    rp = os.path.join(WORK, f'raw_{name}_{nm}.npy')
+    np.save(rp.replace('.npy', '_V.npy'), V[used]); np.save(rp.replace('.npy', '_F.npy'), remap[f].astype(np.int32))
+    raws.append((nm, rp, int(tg.get(nm, tg.get('patch', 120000)))))
+del V, Fc, parts, fl, lab
+for nm, rp, target in raws:      # decimate each part in a fresh process (the machine is shared; keep the peak low)
+    subprocess.run([sys.executable, os.path.abspath(__file__).replace('s04_mesh.py', 'decimate.py'), rp, os.path.join(WORK, f'mesh_{name}_{nm}.npz'), str(target), str(h)], check=True)
 print('done %.0fs' % (time.time() - t0))

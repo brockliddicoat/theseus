@@ -1,7 +1,8 @@
 // Theseus main PCB — builder + state setters for the deck timeline.
 //
 //   import { buildPcb } from './pcb/pcb.js';
-//   const pcb = await buildPcb({ placement: 'mouse' });   // THREE.Group (mm, mouse frame)
+//   import { buildGT01, buildMillMax3305, buildScrollWheel } from './parts/parts.js';
+//   const pcb = await buildPcb({ placement: 'mouse', gt01: buildGT01, millmax: buildMillMax3305, wheel: buildScrollWheel });
 //   scene.add(pcb);
 //   pcb.userData.setExplode(0.6);      // 0..1  components lift off in layers
 //   pcb.userData.setPower(1, { mode: 'charge', t: 2.4 });   // animated current flow ('charge' | 'run' | 'both')
@@ -29,17 +30,17 @@ export const PCB_INFO = {
 // explode targets (mm at k = 1) and cascade order
 const EXPLODE = {
   board: { y: 0, delay: 0 },
-  passives: { y: 4.5, delay: 0.10 },
-  pmic: { y: 8.0, delay: 0.16 },
-  sensor: { y: 6.5, delay: 0.20 },
-  lens: { y: -7.0, delay: 0.20 },
-  module: { y: 12.5, delay: 0.24 },
-  sockets: { y: 3.0, delay: 0.30 },
-  switches: { y: 15.0, delay: 0.34 },
-  mechanics: { y: 10.0, delay: 0.28 },
-  wheel: { y: 22.0, delay: 0.40 },
-  connectors: { y: 7.0, delay: 0.26 },
-  wires: { y: 7.0, delay: 0.26 },
+  passives: { y: 6.0, delay: 0.10 },
+  pmic: { y: 11.0, delay: 0.16 },
+  sensor: { y: 9.0, delay: 0.20 },
+  lens: { y: -9.0, delay: 0.20 },
+  module: { y: 16.0, delay: 0.24 },
+  sockets: { y: 4.5, delay: 0.30, out: 4.0 },
+  switches: { y: 18.0, delay: 0.34, out: 7.0 },     // 'out': also slide away from the centre line (clears the module)
+  mechanics: { y: 13.0, delay: 0.28 },
+  wheel: { y: 27.0, delay: 0.40 },
+  connectors: { y: 9.0, delay: 0.26 },
+  wires: { y: 9.0, delay: 0.26 },
 };
 
 function smooth(t) { t = Math.min(1, Math.max(0, t)); return t * t * (3 - 2 * t); }
@@ -126,9 +127,9 @@ function patchHeat(mat, U, opts = {}) {
         if (uSolder > 0.5 && uHeat > 0.0) { metalnessFactor = mix(0.15, metalnessFactor, passed); }`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
         float dz_ = (vLoc.z - uFront) / 1.1; float band = exp(-dz_ * dz_);
-        float tz_ = max(vLoc.z - uFront, 0.0); float trail = smoothstep(0.0, 1.2, tz_) * exp(-tz_ / 4.0);
+        float tz_ = max(vLoc.z - uFront, 0.0); float trail = smoothstep(0.0, 1.2, tz_) * exp(-tz_ / 2.5);
         float pre = exp(-max(uFront - vLoc.z, 0.0) / 1.8) * (1.0 - band);
-        totalEmissiveRadiance += uHeat * (vec3(1.0, 0.34, 0.06) * band * 1.5 + vec3(1.0, 0.40, 0.10) * trail * 0.10 + vec3(0.9, 0.2, 0.03) * pre * 0.08);`);
+        totalEmissiveRadiance += uHeat * (vec3(1.0, 0.34, 0.06) * band * 1.5 + vec3(1.0, 0.40, 0.10) * trail * 0.035 + vec3(0.9, 0.2, 0.03) * pre * 0.06);`);
     if (opts.solder) {
       sh.fragmentShader = sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
         if (uHeat > 0.0) { float pas = smoothstep(-0.6, 0.6, vLoc.z - uFront); diffuseColor.rgb = mix(vec3(0.46, 0.47, 0.49), diffuseColor.rgb, pas); }`);
@@ -153,7 +154,7 @@ function makeFlowMaterial(color) {
         float head = smoothstep(0.80, 0.97, p) * (1.0 - smoothstep(0.97, 1.0, p));
         float tail = smoothstep(0.25, 0.97, p) * (1.0 - smoothstep(0.97, 1.0, p));
         float pulse = max(head, tail * 0.45);
-        float a = uK * uDim * (edge * (0.30 + 0.9 * pulse) + core * 0.35 * pulse);
+        float a = uK * uDim * (edge * (0.42 + 0.9 * pulse) + core * 0.35 * pulse);
         gl_FragColor = vec4(uColor * (0.75 + 1.1 * pulse + 0.6 * core * pulse), a);
       }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
@@ -167,7 +168,7 @@ function makeGlowMaterial(color) {
     fragmentShader: `uniform float uK; uniform float uTime; uniform vec3 uColor; uniform float uPhase; varying vec2 vUv;
       void main(){ vec2 d = vUv - 0.5; float r = length(d) * 2.0;
         float beat = 0.8 + 0.2 * sin(uTime * 6.2832 * 1.4 + uPhase);
-        float a = (exp(-r * r * 3.2) * 0.55 + exp(-r * r * 12.0) * 0.25) * (1.0 - smoothstep(0.7, 1.0, r));
+        float a = (exp(-r * r * 3.2) * 0.75 + exp(-r * r * 12.0) * 0.3) * (1.0 - smoothstep(0.7, 1.0, r));
         gl_FragColor = vec4(uColor, a * uK * beat); }`,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
   });
@@ -199,7 +200,9 @@ function ribbon(points, w, y, s0 = 0) {
  *   placement: 'mouse' (default; board top at boardY in the mouse frame) | 'origin' (centred, board top at y=0)
  *   boardY, boardZ: board-top height / z shift in the mouse frame (defaults 5.03 / -2.88, see PCB_INFO)
  *   glb, layout: override asset URLs
- *   gt01, wheel: optional factories (from the parts builder) replacing the stand-ins: (THREE) => Object3D
+ *   gt01, millmax, wheel: factories from 3d/parts (buildGT01, buildMillMax3305, buildScrollWheel) replacing the
+ *     same-footprint stand-ins; omitted -> stand-ins.  useParts: accepted for compatibility (no effect: nothing is
+ *     imported at run time).  encoderSide: passed to the wheel factory (default 'left' = +X, as the Sora V2 photo)
  *   battery: show a placeholder cell at the end of the battery lead (default false)
  *   materials: override any material by name
  */
@@ -341,6 +344,7 @@ export async function buildPcb(opts = {}) {
       const r = o.userData.rest;
       o.position.copy(r.p); o.quaternion.copy(r.q);
       o.position.y += e.y * kk;
+      if (e.out) o.position.x += Math.sign(r.p.x || 1) * e.out * kk;
       if (state.reflow > 0 && state.reflow < 1 && o.userData.smd) {
         // settle: parts ride on paste until the front passes, then pull to the pad centre (self-alignment)
         const zc = (o.userData.zc ?? r.p.z);
@@ -427,9 +431,8 @@ export async function buildPcb(opts = {}) {
   // Factories are passed in (no dynamic imports, so the module bundles): opts.gt01 = buildGT01,
   // opts.millmax = buildMillMax3305, opts.wheel = buildScrollWheel. Without them the same-footprint stand-ins show.
   const owned = [];
-  const mods = {};
   const gt01 = {};
-  const buildGT01 = opts.gt01 || mods.buildGT01;
+  const buildGT01 = opts.gt01;
   if (buildGT01) {
     for (const ref of ['SW1', 'SW2']) {
       const node = parts[ref]; if (!node) continue;
@@ -440,7 +443,7 @@ export async function buildPcb(opts = {}) {
       node.add(sw); gt01[ref] = sw; owned.push(sw);
     }
   }
-  const buildMM = opts.millmax || mods.buildMillMax3305;
+  const buildMM = opts.millmax;
   if (buildMM) {
     for (const [ref, node] of Object.entries(parts)) {
       if (!/^SW[12]_MM\d$/.test(ref) || node.userData.kind !== 'component') continue;
@@ -450,7 +453,7 @@ export async function buildPcb(opts = {}) {
       node.add(mm); owned.push(mm);
     }
   }
-  const buildWheel = opts.wheel || mods.buildScrollWheel;
+  const buildWheel = opts.wheel;
   let wheel = null;
   if (buildWheel && parts.WHEEL) {
     // parts API: origin = PCB top under the wheel centre, axle along X, centre at Y = axleHeight (12, as the shell)
@@ -460,14 +463,15 @@ export async function buildPcb(opts = {}) {
     if (wheel) {
       parts.WHEEL.children.forEach((c) => { c.visible = false; });
       parts.WHEEL.add(wheel); owned.push(wheel);
-      for (const r of ['ENC1', 'WB1', 'SW4']) if (parts[r]) parts[r].visible = false;   // the wheel assembly brings its own encoder + support
+      // the wheel assembly brings its own encoder + axle support; the middle-click tact (SW4) stays on the board
+      for (const r of ['ENC1', 'WB1']) if (parts[r]) parts[r].visible = false;
     }
   }
 
   function dispose() {
     for (const o of owned) o.dispose?.();
     group.traverse((o) => { if (o.isMesh) { o.geometry?.dispose(); } });
-    Object.values(M).forEach((m) => m.dispose());
+    for (const [k, m] of Object.entries(own)) if (M[k] === m) m.dispose();   // caller-supplied materials are left alone
     flowMats.forEach((m) => m.dispose());
     sheetMat.dispose();
   }

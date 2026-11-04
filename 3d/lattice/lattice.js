@@ -46,7 +46,7 @@ function patchShell(mat, U, { cap = false, patch = false } = {}) {
         varying float vOuter; varying float vStress; varying vec3 vLocal;`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
         float gk = clamp((uBuild * (1.0 + uBuildWin) - aOrder) / uBuildWin, 0.0, 1.0); gk = gk * gk * (3.0 - 2.0 * gk);
-        transformed -= aWallN * (aEta * 3.0) * (1.0 - gk);
+        transformed -= aWallN * (aEta * 8.0) * (1.0 - gk);
         vOuter = aOuter; vStress = mix(aSP, aSS, uCase); vLocal = position;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
@@ -58,13 +58,13 @@ function patchShell(mat, U, { cap = false, patch = false } = {}) {
           return mix(a, b, f); }`)
       .replace('#include <color_fragment>', `#include <color_fragment>
         ${patch ? '' : `if (uPatchK > 0.5 && all(greaterThan(vLocal, uBoxMin)) && all(lessThan(vLocal, uBoxMax))) discard;`}
-        ${cap ? `diffuseColor.rgb = uCap;` : `
+        ${cap ? `diffuseColor.rgb = mix(uCap, vec3(0.55), uStressK);` : `
         vec3 baseC = mix(uInterior, diffuseColor.rgb, vOuter);
         bool nodata = vStress > 0.998;
         vec3 sc = nodata ? baseC * 0.55 : rampAt(vStress * 255.0 / 254.0);
         diffuseColor.rgb = mix(baseC, sc, uStressK);`}`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-        ${cap ? 'totalEmissiveRadiance += uCap * 0.55;' : 'if (vStress <= 0.998) totalEmissiveRadiance += rampAt(vStress * 255.0 / 254.0) * 0.38 * uStressK;'}`);
+        ${cap ? 'totalEmissiveRadiance += mix(uCap, vec3(0.42), uStressK) * 0.55;' : 'if (vStress <= 0.998) totalEmissiveRadiance += rampAt(vStress * 255.0 / 254.0) * 0.38 * uStressK;'}`);
   };
   mat.customProgramCacheKey = () => 'theseus-lattice-' + (cap ? 'cap' : '') + (patch ? 'patch' : '') + 'v1';
   return mat;
@@ -139,7 +139,8 @@ export function buildLattice(opts = {}) {
   }
 
   // ---- flow lines: instanced capsules with travelling pulses (compression = load path through the arches)
-  const flowU = { uTime: { value: 0 }, uFlowK: { value: 0 }, uColor: { value: new THREE.Color(opts.flowColor || 0xfdc316) }, uSrc: { value: new THREE.Vector3() } };
+  // white so the load path never reads as a stress level (the stress ramp is the accent hue)
+  const flowU = { uTime: { value: 0 }, uFlowK: { value: 0 }, uColor: { value: new THREE.Color(opts.flowColor || 0xf4f7ff) }, uSrc: { value: new THREE.Vector3() } };
   function buildFlow(seg, layout, planes) {
     const n = seg.length / 7, keep = [];
     let nmax = 0; for (let i = 0; i < n; i++) nmax = Math.max(nmax, -seg[i * 7 + 6]);

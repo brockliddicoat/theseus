@@ -15,14 +15,14 @@ d = np.load(os.path.join(WORK, 'mesh_patch_patch.npz')) if HAVE_PATCH else dict(
 V, F = d['V'], d['F']
 V2, F2, N2, src = crease_split(V, F)
 f, parts = Fd.eval(V2.astype(np.float64), want_parts=True)
-eta = np.clip(parts['eta'], 0, 3.0); memb = parts['memb']
+eta = np.clip(parts['eta'], 0, 8.0); memb = parts['memb']
 order = np.where(memb >= 0, orders[np.maximum(memb, 0)], 0.0)
 outer = (parts['D'] > -0.35 * wall_T(V2)).astype(np.uint8) * 255
 W = Writer(os.path.join(ASSETS, 'lattice_patch.bin'))
 W.add('patch.position', V2.astype(np.float32), 'f32', 3)
 W.add('patch.normal', np.round(N2 * 32767).astype(np.int16), 'i16', 3, True)
 W.add('patch.index', F2.astype(np.uint32), 'u32', 1)
-W.add('patch.aEta', np.round(eta / 3.0 * 255).astype(np.uint8), 'u8', 1, True)
+W.add('patch.aEta', np.round(eta / 8.0 * 255).astype(np.uint8), 'u8', 1, True)
 W.add('patch.aWallN', np.round(parts['nin'] * 127).astype(np.int8), 'i8', 3, True)
 W.add('patch.aOrder', np.round(np.clip(order, 0, 1) * 255).astype(np.uint8), 'u8', 1, True)
 W.add('patch.aOuter', outer, 'u8', 1, True)
@@ -44,8 +44,8 @@ masses = {
                 total_g=g(vol['tri']['wall_body'] + vol['tri']['ribs_body'] + vol['tri']['all_trig'])),
     'hex': dict(wall_body_mm3=vol['hex']['wall_body'], ribs_body_mm3=vol['hex']['ribs_body'], ribs_triggers_mm3=vol['hex']['ribs_trig'],
                 body_g=g(vol['hex']['wall_body'] + vol['hex']['ribs_body']), triggers_g=g(vol['hex']['all_trig']), ribs_body_g=g(vol['hex']['ribs_body']),
-                total_g=g(vol['hex']['wall_body'] + vol['hex']['ribs_body'] + vol['hex']['all_trig']), width_scale=vol['hex'].get('wscale')),
-    'note': 'derived, this model: field-integrated volumes of the moulded geometry (0.11 mm grid) x Pyrofil PP-C-20A 1.01 g/cm3; inserts, screws, skates not included',
+                total_g=g(vol['hex']['wall_body'] + vol['hex']['ribs_body'] + vol['hex']['all_trig']), width_scale=json.load(open(os.path.join(WORK, 'hex_wscale.json')))['wscale']),
+    'note': 'derived, this model: field-integrated volumes of the moulded geometry (0.13 mm grid) x Pyrofil PP-C-20A 1.01 g/cm3; inserts, screws, skates not included',
 }
 summ = {}
 for kind in ('tri', 'hex', 'hex_eqbeam', 'none', 'thick'):

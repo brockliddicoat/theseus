@@ -10,9 +10,11 @@
 //   cam=x,y,z target=x,y,z fov=deg (custom)   ortho=1 (orthographic top/bottom)   transparent=1   ground=0
 //   theme=paper|night  placement=origin|mouse  explode=0..1  power=0..1 mode=charge|run|both t=sec
 //   reflow=0..1  xray=0..1  pressL=0..1 pressR=0..1  exaggerate=1  anim=1 (live loop)  hud=1
+//   hide=REF,REF (hide parts)  lift=REF:mm (raise a part)  dir=x,y,z margin=k (auto-framed views)  glb=url  parts=0
 import * as THREE from 'three';
 import { createStudio } from '../lib/studio.js';
 import { buildPcb } from './pcb.js';
+import { buildGT01, buildMillMax3305, buildScrollWheel } from '../parts/parts.js';
 const Q = new URLSearchParams(location.search);
 const num = (k, d) => (Q.has(k) ? parseFloat(Q.get(k)) : d);
 const vec = (k) => Q.get(k).split(',').map(Number);
@@ -22,9 +24,13 @@ try {
     width: innerWidth, height: innerHeight, transparent, fov: num('fov', 22), ground: Q.get('ground') !== '0',
     envIntensity: num('env', 0.9), key: num('key', 2.2), rim: num('rim', 1.4), fill: num('fill', 0.35) });
   const { scene, camera, renderer } = studio;
-  const pcb = await buildPcb({ placement: Q.get('placement') || 'origin', pressExaggerate: num('exaggerate', 1), useParts: Q.get('parts') !== '0' });
+  const withParts = Q.get('parts') !== '0';     // parts=0 -> same-footprint stand-ins
+  const pcb = await buildPcb({ placement: Q.get('placement') || 'origin', pressExaggerate: num('exaggerate', 1),
+    ...(Q.has('glb') ? { glb: Q.get('glb') } : {}),
+    ...(withParts ? { gt01: buildGT01, millmax: buildMillMax3305, wheel: buildScrollWheel } : {}) });
   scene.add(pcb);
   const U = pcb.userData;
+  for (const n of (Q.get('hide') || '').split(',').filter(Boolean)) { const o = U.parts[n] || pcb.getObjectByName(n); if (o) o.visible = false; }
   const apply = (time = num('t', 0)) => {
     U.setExplode(num('explode', 0));
     U.setXray(num('xray', 0));
@@ -33,6 +39,8 @@ try {
     U.setPress('L', num('pressL', 0)); U.setPress('R', num('pressR', 0));
   };
   apply();
+  // lift=REF:mm[,REF:mm]  raise single parts (e.g. lift=SW1:5 pulls a GT01 out of its Mill-Max sockets)
+  for (const it of (Q.get('lift') || '').split(',').filter(Boolean)) { const [r, mm] = it.split(':'); if (U.parts[r]) U.parts[r].position.y += parseFloat(mm); }
   scene.updateMatrixWorld(true);
   // board frame offset (origin placement centres the board): local z -> world z - 25.6
   const oz = Q.get('placement') === 'mouse' ? -2.88 : -24.6, oy = Q.get('placement') === 'mouse' ? 5.03 : 0;
@@ -40,10 +48,10 @@ try {
   const views = {
     // world frame (x = user's left); board-local z
     module: { cam: P(13, 26, 2), target: P(0, 0.6, 24.2), fov: 22 },
-    antenna: { cam: P(9, 21, 47), target: P(0, 0.5, 26.0), fov: 22 },
+    antenna: { cam: P(-9, 44, 2), target: P(0, 0.6, 22.6), fov: 22 },
     pmic: { cam: P(-23, 21, -3), target: P(-11.3, 0.4, 10.6), fov: 22 },
     sensor: { cam: P(16, 22, -10), target: P(0, 0.8, 4.0), fov: 22 },
-    switch: { cam: P(34, 22, 58), target: P(15.5, 4, 40), fov: 22 },
+    switch: { cam: P(61, 34.5, 94.6), target: P(16.0, 4.6, 39.6), fov: 22 },
     usb: { cam: P(12, 16, 70), target: P(0, 1, 49), fov: 22 },
   };
   let cam = camera;
@@ -54,8 +62,10 @@ try {
     const halfH = num('halfh', 31.5);
     const oc = new THREE.OrthographicCamera(-halfH * a, halfH * a, halfH, -halfH, 0.1, 2000);
     const c = P(0, 0, num('cz', 24.6));
-    // nose up on screen in both views (physically correct: top view shows the user's right on the right)
-    oc.position.set(c.x, bottom ? -500 : 500, c.z);
+    // nose up on screen in both views. The bottom view turns the board over about its long axis (as on a bench, so
+    // the studio key light reaches the bottom side) and looks down: the user's left then shows on the right.
+    if (bottom) { pcb.rotation.z = Math.PI; pcb.position.y = Q.get('placement') === 'mouse' ? 2 * 5.03 - 1.0 : -1.0; scene.updateMatrixWorld(true); }
+    oc.position.set(c.x, 500, c.z);
     oc.up.set(0, 0, 1);
     oc.lookAt(c);
     oc.updateProjectionMatrix();
@@ -69,9 +79,11 @@ try {
     camera.near = 1; camera.far = 2000; camera.updateProjectionMatrix();
   } else {
     const dirs = { hero: [-0.78, 0.62, 0.95], top: [0, 1, 0.0001], bottom: [0, -1, 0.0001], side: [-1, 0.08, 0], front: [0, 0.12, 1],
-      low: [-0.9, 0.22, 0.75], threeQuarterRight: [0.78, 0.62, 0.95], back: [0, 0.3, -1], exploded: [-0.85, 0.55, 0.9] };
-    const boardNode = U.parts.board || pcb;
-    const f = studio.frame(boardNode, { view: dirs[view] || dirs.hero, margin: num('margin', 0.82) });
+      low: [-0.9, 0.22, 0.75], threeQuarterRight: [0.78, 0.62, 0.95], back: [0, 0.3, -1], exploded: [-0.9, 0.5, 0.8] };
+    // exploded states frame the whole assembly (lifted parts included); otherwise the board itself
+    const exploded = num('explode', 0) > 0.05 && view !== 'top' && view !== 'bottom';
+    const boardNode = exploded ? pcb : (U.parts.board || pcb);
+    const f = studio.frame(boardNode, { view: Q.has('dir') ? vec('dir') : (dirs[view] || dirs.hero), margin: num('margin', exploded ? 0.78 : 0.82) });
     if (view === 'top' || view === 'bottom') { camera.up.set(0, 0, 1); camera.lookAt(f.center); }
   }
   if (Q.get('ground') === '0') studio.ground.visible = false;

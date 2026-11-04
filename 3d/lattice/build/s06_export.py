@@ -92,7 +92,7 @@ def export_variant(kind, wscale, W, manifest):
         d = np.load(os.path.join(WORK, f'mesh_{kind}_{part}.npz')); V, F = d['V'], d['F']
         V2, F2, N2, src = crease_split(V, F)
         f, parts = Fd.eval(V2.astype(np.float64), want_parts=True)
-        eta = np.clip(parts['eta'], 0, 3.0); nin = parts['nin']; memb = parts['memb']; D = parts['D']
+        eta = np.clip(parts['eta'], 0, 8.0); nin = parts['nin']; memb = parts['memb']; D = parts['D']
         order = np.where(memb >= 0, orders[np.maximum(memb, 0)], 0.0)
         # bosses grow last, out of the wall
         for b in Fd.L['bosses']:
@@ -100,7 +100,7 @@ def export_variant(kind, wscale, W, manifest):
             inb = (rho < b['od'] / 2 + 0.9) & (V2[:, 1] > b['y0'] - 0.5) & (V2[:, 1] < b['y1'] + 0.9)
             order[inb] = 0.97
             # boss growth: collapse toward the wall horizontally by the distance from the inner wall
-            eta[inb] = np.clip(parts['eta'][inb], 0, 3.0)
+            eta[inb] = np.clip(parts['eta'][inb], 0, 8.0)
         outer = (D > -0.35 * wall_T(V2)).astype(np.uint8) * 255
         sp = np.full(len(V2), 255, np.uint8); ss = np.full(len(V2), 255, np.uint8)
         if part == 'body':
@@ -111,14 +111,15 @@ def export_variant(kind, wscale, W, manifest):
                 val = np.where(onrib, smp['rib'][1][ir], smp['wall'][1][iw])
                 val = smooth_vals(F2, val, 2)
                 q = np.clip(np.round(val / ST_RANGE[case] * 254), 0, 254).astype(np.uint8)
-                q[(dw > 4.0) & ~onrib] = 255
+                # no data where the FE has no shell elements: the rim flange (a ring beam in the model) and anything > 2 mm away
+                q[((dw > 2.0) & ~onrib) | (V2[:, 1] < 2.3)] = 255
                 if arr == 'sp': sp = q
                 else: ss = q
         name = f'{kind}_{part}'
         W.add(name + '.position', V2.astype(np.float32), 'f32', 3)
         W.add(name + '.normal', np.round(N2 * 32767).astype(np.int16), 'i16', 3, True)
         W.add(name + '.index', F2.astype(np.uint32), 'u32', 1)
-        W.add(name + '.aEta', np.round(eta / 3.0 * 255).astype(np.uint8), 'u8', 1, True)
+        W.add(name + '.aEta', np.round(eta / 8.0 * 255).astype(np.uint8), 'u8', 1, True)
         W.add(name + '.aWallN', np.round(nin * 127).astype(np.int8), 'i8', 3, True)
         W.add(name + '.aOrder', np.round(np.clip(order, 0, 1) * 255).astype(np.uint8), 'u8', 1, True)
         W.add(name + '.aOuter', outer, 'u8', 1, True)

@@ -27,20 +27,22 @@ if '--qr' in args:
 WITH_COMPONENTS = '--no-components' not in args
 
 # ------------------------------------------------------------------ materials (names are the contract with pcb.js)
+# Every entry has unique factors on purpose: the deck's compressor runs gltf-transform dedup(), which merges
+# materials that differ only by name (that would fold e.g. mask_tr into mask_cu and break the X-ray split).
 MATS = {
     'mask': ((0.035, 0.037, 0.040, 1), 0.0, 0.42),
-    'mask_b': ((0.035, 0.037, 0.040, 1), 0.0, 0.42),       # bottom mask cap (separate so X-ray keeps a dark floor)
+    'mask_b': ((0.036, 0.037, 0.040, 1), 0.0, 0.43),       # bottom mask cap (separate so X-ray keeps a dark floor)
     'mask_cu': ((0.055, 0.060, 0.062, 1), 0.0, 0.36),      # mask over L1 GND pour
-    'mask_tr': ((0.055, 0.060, 0.062, 1), 0.0, 0.36),      # mask over L1 signal/power traces (lit up in X-ray)
-    'mask_cub': ((0.055, 0.060, 0.062, 1), 0.0, 0.36),     # mask over L4 (bottom) copper art
+    'mask_tr': ((0.056, 0.060, 0.062, 1), 0.0, 0.37),      # mask over L1 signal/power traces (lit up in X-ray)
+    'mask_cub': ((0.057, 0.060, 0.062, 1), 0.0, 0.38),     # mask over L4 (bottom) copper art
     'enig': ((0.89, 0.74, 0.44, 1), 1.0, 0.30),
     'edge_gold': ((0.89, 0.74, 0.44, 1), 1.0, 0.26),
     'silk': ((0.93, 0.93, 0.90, 1), 0.0, 0.78),
     'fr4': ((0.36, 0.33, 0.22, 1), 0.0, 0.75),
     'cu_inner': ((0.82, 0.50, 0.32, 1), 1.0, 0.35),
-    'cu_l2': ((0.82, 0.50, 0.32, 1), 1.0, 0.35),
-    'cu_l3': ((0.82, 0.50, 0.32, 1), 1.0, 0.35),
-    'cu_via': ((0.82, 0.50, 0.32, 1), 1.0, 0.35),
+    'cu_l2': ((0.81, 0.50, 0.32, 1), 1.0, 0.36),
+    'cu_l3': ((0.18, 0.77, 0.71, 1), 0.2, 0.35),
+    'cu_via': ((0.89, 0.64, 0.24, 1), 1.0, 0.31),
     'solder': ((0.82, 0.83, 0.85, 1), 1.0, 0.16),
     'epoxy': ((0.05, 0.05, 0.055, 1), 0.0, 0.48),
     'laser': ((0.22, 0.22, 0.23, 1), 0.0, 0.65),

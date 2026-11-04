@@ -36,9 +36,9 @@ export const SHELL_VIEWS = {
 };
 
 const COLORWAYS = {
-  black: { shell: { color: 0x0b0c0e, roughness: 0.56, clearcoat: 0.06, clearcoatRoughness: 0.6, sheen: 0.18, sheenColor: 0x303236, sheenRoughness: 0.7, specularIntensity: 0.62, envMapIntensity: 0.72 },
-           button: { color: 0x0a0b0d, roughness: 0.38, clearcoat: 0.25, clearcoatRoughness: 0.35, specularIntensity: 0.8, envMapIntensity: 0.8 },
-           plate: { color: 0x131416, roughness: 0.62, specularIntensity: 0.5, envMapIntensity: 0.6 },
+  black: { shell: { color: 0x08090b, roughness: 0.56, clearcoat: 0.06, clearcoatRoughness: 0.6, sheen: 0.14, sheenColor: 0x2c2e32, sheenRoughness: 0.7, specularIntensity: 0.6, envMapIntensity: 0.62 },
+           button: { color: 0x08090b, roughness: 0.34, clearcoat: 0.3, clearcoatRoughness: 0.3, specularIntensity: 0.85, envMapIntensity: 0.8 },
+           plate: { color: 0x101113, roughness: 0.62, specularIntensity: 0.5, envMapIntensity: 0.6 },
            engrave: { color: 0x1e2023, roughness: 0.3, metalness: 0.0, specularIntensity: 1.0, envMapIntensity: 1.05 },
            bay: { color: 0x121314, roughness: 0.45 } },
   white: { shell: { color: 0xe6e5e1, roughness: 0.52, clearcoat: 0.08, clearcoatRoughness: 0.55, sheen: 0.12, sheenColor: 0xffffff, sheenRoughness: 0.8, specularIntensity: 0.55, envMapIntensity: 0.62 },

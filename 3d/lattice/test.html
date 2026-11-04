@@ -58,6 +58,7 @@ try {
   if (num('legend', 0) && num('stress', 0) > 0) {
     const ss = g.userData.stressScale, cs = q.get('case') || 'press', ink = theme === 'night' ? '#e9e8e4' : '#0d0e0f';
     const L = document.getElementById('legend'); L.style.display = 'block'; L.style.color = ink;
+    if (q.get('legendpos') === 'top') { L.style.bottom = 'auto'; L.style.top = '40px'; }
     document.getElementById('ltitle').innerHTML = `${cs === 'press' ? '10 N press on the crown' : '10 N squeeze, each side'} · peak stress, MPa <span class="tag" style="background:${theme === 'night' ? '#2a2b2e' : '#e6e4dd'}">derived, this model</span>`;
     document.getElementById('lbar').style.background = `linear-gradient(90deg, ${ss.ramp.join(',')})`;
     const mx = ss.range[cs]; document.getElementById('lticks').innerHTML = [0, mx / 2, mx].map(x => `<span>${x.toFixed(0)}</span>`).join('');

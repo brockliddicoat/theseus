@@ -8,15 +8,15 @@ const { pageUrl } = require('./serve.js');
   const spec = process.env.T || 'settle', minpx = parseFloat(process.env.MINPX || '19');
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const p = await b.newPage({ viewport: { width: 1920, height: 1080 } });
-  await p.goto((await pageUrl(file)) + '?cap=1&s=0&t=0.01'); await p.waitForFunction('window.__ready === true', null, { timeout: 30000 });
+  await p.goto((await pageUrl(file)) + '?cap=1&s=0&t=0.01', { waitUntil: 'domcontentloaded', timeout: 240000 }); await p.waitForFunction('window.__ready === true', null, { timeout: 240000 });
   const all = await p.evaluate(() => DECK.slides.map(s => [s.id, s.settle || 9]));
   const ids = ids0.length ? ids0 : all.map(a => a[0]);
   let total = 0;
   for (const id of ids) {
     const s = all.find(a => a[0] === id); if (!s) { console.log(id, 'not found'); continue; }
     const t = spec === 'settle' ? s[1] : spec === 'mid' ? +(s[1] * 0.4).toFixed(2) : parseFloat(spec);
-    await p.goto((await pageUrl(file)) + '?cap=1&qa=1&s=' + id + '&t=' + t);
-    await p.waitForFunction('window.__ready === true', null, { timeout: 30000 }).catch(() => {});
+    await p.goto((await pageUrl(file)) + '?cap=1&qa=1&s=' + id + '&t=' + t, { waitUntil: 'domcontentloaded', timeout: 240000 });
+    await p.waitForFunction('window.__ready === true', null, { timeout: 240000 }).catch(() => {});
     const qa = await p.evaluate(() => window.__qa);
     if (!qa) { console.log(id, 'no qa data'); continue; }
     const T = qa.text.filter(r => r.a > 0.25 && r.s.trim().length), B = qa.boxes, out = [];

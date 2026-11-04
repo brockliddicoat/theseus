@@ -10,8 +10,8 @@ const fs = require('fs');
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const scale = parseFloat(process.env.DSF || '1');
   const p0 = await b.newPage();
-  await p0.goto((await pageUrl(file)) + '?cap=1&s=0&t=0.01');
-  await p0.waitForFunction('window.__ready === true', null, { timeout: 30000 }).catch(() => {});
+  await p0.goto((await pageUrl(file)) + '?cap=1&s=0&t=0.01', { waitUntil: 'domcontentloaded', timeout: 240000 });
+  await p0.waitForFunction('window.__ready === true', null, { timeout: 240000 }).catch(() => {});
   const all = await p0.evaluate(() => DECK.slides.map(s => [s.id, s.settle || 9]));
   await p0.close();
   let jobs = [];
@@ -29,8 +29,8 @@ const fs = require('fs');
     p.on('console', m => { if (m.type() === 'error' && !m.text().includes('Failed to load resource') && !m.text().includes('ERR_TUN')) errs.push(m.text().slice(0, 200)); });
     while (jobs.length) {
       const [id, t, idx] = jobs.shift();
-      await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + t);
-      await p.waitForFunction('window.__ready === true', null, { timeout: 30000 }).catch(() => errs.push('timeout ' + id));
+      await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + t, { waitUntil: 'domcontentloaded', timeout: 240000 });
+      await p.waitForFunction('window.__ready === true', null, { timeout: 240000 }).catch(() => errs.push('timeout ' + id));
       await p.screenshot({ path: `${out}/${String(idx).padStart(2, '0')}_${id}_${t}.png` });
     }
     await p.close();

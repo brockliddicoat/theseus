@@ -684,8 +684,9 @@ def add_wires(glb):
         # J2: plug mouth at layout x ~ 18.3 (opening faces +x), lead runs to the battery tab behind the board
         'BATLEAD': dict(path=[(18.0, 1.5, 3.2), (19.6, 1.6, 3.2), (20.3, 1.8, 1.8), (20.1, 1.9, -2.5), (18.6, 2.0, -6.5), (14.0, 2.2, -8.6), (9.5, 2.4, -9.2)],
                         mats=['wire_red', 'wire_white', 'wire_black']),
-        # J3: plug mouth at layout x ~ -16.2 (opening faces -x), lead climbs to the side-button board on the left wall
-        'SIDELEAD': dict(path=[(-16.2, 1.5, 3.4), (-18.2, 1.8, 3.5), (-20.6, 3.6, 4.2), (-23.0, 7.5, 6.0), (-24.8, 11.0, 8.5), (-25.6, 13.0, 10.5)],
+        # J3: plug mouth at layout x ~ -16.2 (opening faces -x); the lead heads for the side-button board on the left
+        # wall and is drawn as a short stub (the side board belongs to the shell asset)
+        'SIDELEAD': dict(path=[(-16.2, 1.5, 3.4), (-18.0, 1.7, 3.5), (-20.0, 2.6, 4.0), (-21.8, 4.2, 4.9), (-23.0, 5.8, 5.9)],
                          mats=['wire_black', 'wire_white', 'wire_yellow']),
     }
     for name, L_ in leads.items():
