@@ -451,12 +451,12 @@ function hbars(t, o) {
     const col = r.hero ? C.hero : (r.color || C.comp);
     rect(xa, y - bh / 2, xb - xa, bh, { fill: C.track, alpha: a0 * (o.tracks ? 1 : 0) });
     if (r.dash) { G.save(); G.globalAlpha = 1; G.setLineDash([6, 5]); G.strokeStyle = r.hero ? C.heroText : col; G.lineWidth = 2; G.strokeRect(xa, y - bh / 2, (xb - xa) * k, bh); G.restore(); }
-    else { const bl = Math.max(r.v0 != null ? 2 : 0, (xb - xa) * k); if (bl > 0.5) { G.save(); rrPath(xa, y - bh / 2, bl, bh, bh / 2); G.fillStyle = r.hero ? gradH(xa, Math.max(bl, 40), C.heroGrad) : col; G.fill(); G.restore(); } glint(xa, y - bh / 2, (xb - xa) * k, bh, t, o.t0 + 4 + i * 0.22); }
+    else { const bl = Math.max(r.v0 != null ? 2 : 0, (xb - xa) * k); if (bl > 0.5) { G.save(); rrPath(xa, y - bh / 2, bl, bh, bh / 2); G.fillStyle = col; G.fill(); G.restore(); } glint(xa, y - bh / 2, (xb - xa) * k, bh, t, o.t0 + 4 + i * 0.22); }
     if (r.text) { const cu = countUp(r.text, k, r.v0 != null ? r.v0 : min); text(cu != null ? cu : r.text, xa + (xb - xa) * k + 14, y + 8, { role: 'num', size: 24, weight: 700, color: r.tcolor || (r.hero ? C.ink : r.color && r.color !== C.comp ? r.color : C.ink2), alpha: clamp(k * 1.4 - 0.3) }); }
     if (r.sub) text(r.sub, o.x, y + 36, { role: 'label', size: 21, color: C.mute, t, t0: o.t0 + 0.4 + i * d, cps: 120, maxW: lw - 16 });
   });
 }
-/** a left-to-right gradient over [x, x + w] (Theseus's bars use C.heroGrad) */
+/** a left-to-right gradient over [x, x + w]. For type; bars and marks stay flat (Brock: gradients in the font, sparingly anywhere else) */
 function gradH(x, w, cols) { const g = G.createLinearGradient(x, 0, x + w, 0); cols.forEach((c, j) => g.addColorStop(cols.length > 1 ? j / (cols.length - 1) : 0, c)); return g; }
 /** a soft band of light that runs along a finished bar now and then, so a settled chart still breathes */
 function glint(x, y, w, h, t, t0, per = 7) {

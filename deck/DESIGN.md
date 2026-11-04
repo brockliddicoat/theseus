@@ -33,13 +33,13 @@ Apple does. What Apple does, from its keynotes and its own design tokens (resear
    px, no shadows; tiles one shade off the ground). One or two tiles are big (2 × 2) and hold the product, small or
    abstract; the rest hold one stat each: a small "Up to" over a huge number, a short label under it. Here: `bento()`,
    `statTile()`, `demoWindow()` (the tile), `tileA()` (tiles coming in one after another).
-3. **Colour with intent, reused.** The chip's gradient is the chart line's gradient is the glow behind the part, so the
-   colour itself means the product without a legend. Here Theseus's gradient (`C.heroGrad`, cyan → blue → indigo) is
-   its big numbers, its bars, its line, its tile glow and the light behind its parts. Competitors are grey; the one to
-   beat is yellow; a problem is red.
-4. **Gradients, subtle.** On the big numbers (`text(..., { grad })`, `rich` runs with `grad`), inside a Theseus tile (a
-   glow rising from its foot), behind a part (`glowField`), on the stage itself (`stageLight`: a soft top light and a
-   slow drifting glow in the chapter's colour). Never behind body text.
+3. **Colour with intent, reused.** Theseus is blue everywhere it appears (`C.hero`): its bars, its line, its mark, its
+   tile's rim, its words. Competitors are grey; the one to beat is yellow; a problem is red.
+4. **Gradients live in the type** (Brock, 05:12: "gradients make the most sense in the font, you need to use them
+   everywhere else very sparingly ... so the presentation doesn't look too vibe coded"). Theseus's big numbers and
+   its name carry `C.heroGrad` (`text(..., { grad })`, `rich` runs with `grad`, `statTile`, `heroTag`). Everything else
+   is flat colour: tiles, bars, marks, the stage, transitions. `glowField` exists for one or two hero moments in the
+   whole deck, no more.
 5. **Show little of the product.** A zoomed-in, abstract, well-lit close-up of the part in question (the node of a
    lattice, a code disc with light through its slots, the thread's flank) does more than a full diagram. Use the 3D
    camera close, or draw the part large and simple, lit by `glowField`.
@@ -226,7 +226,7 @@ sentence, forceCaps, tnum, maxW, lh, t, t0, cps, caret, wipe, rise: [t0, dur] }`
 | `C.panel` | `#FFFFFF` | `#141517` | Card surface |
 | `C.comp` / `C.comp2` | `#B9B8B2` / `#D3D2CC` | `#55554F` / `#3A3A37` | Competitors / dimmed competitors |
 | `C.hero` (`HERO_P` / `HERO`) | `#0A6CFF` | `#2F8CFF` | **Theseus, only Theseus**: its bar, point, line, column, the hero word |
-| `C.heroGrad` | `#1F9BFF → #0A6CFF → #3D4FE0` | `#7AD4FF → #2F8CFF → #6A63FF` | Theseus's gradient: big numbers, bars, its tile's glow, `glowField` |
+| `C.heroGrad` | `#1F9BFF → #0A6CFF → #3D4FE0` | `#7AD4FF → #2F8CFF → #6A63FF` | Theseus's gradient, for its type only: big numbers, its name |
 | `C.heroText` | `#0058D6` | `#64B0FF` | Theseus blue as small text or a thin line |
 | `C.heroSoft` | blue at 12 % | blue at 16 % | A blue field behind something (a sweet spot) |
 | `C.second` / `C.ref` | `#E3A800` | `#FDC316` | **The next best**, the one to beat: the second highlight (the deck's first yellow) |
@@ -237,7 +237,7 @@ sentence, forceCaps, tnum, maxW, lh, t, t0, cps, caret, wipe, rise: [t0, dur] }`
 Rules:
 
 1. **Theseus is blue in every chart, and only Theseus is blue** (red read as bad; green is Razer's). Its bar, point
-   (`heroMark`, a diamond with a glow), column (`compareTable` with `hero: true`), target line (`targetX`), tag
+   (`heroMark`, a diamond), column (`compareTable` with `hero: true`), target line (`targetX`), tag
    (`heroTag`) and tile (`demoWindow(..., { hero: true })`). The hero word in a headline is the same claim.
    `C.yellow` and `C.gold` are old names that answer with the hero colour; true yellow is `C.yel` / `C.second`.
 2. **The next best is yellow** (`C.second`, `C.ref`, `secondTag`), and smaller or darker than Theseus: on the stats
@@ -318,7 +318,7 @@ S({
 | `bento(x, y, w, h, cols, rows, gap)` → `cell(c, r, cs, rs)` | Apple's grid of tiles: a tile's `[x, y, w, h]`, spanning cs columns and rs rows |
 | `statTile(t, t0, rect, { pre, value, unit, label, ev, by, hero, next: { value, unit, who }, align })` | A bento stat tile: evidence at the top, "Up to", the number (Theseus's in its gradient, counting up), its label, the next best smaller and darker at the foot. About 300 px tall for all of that |
 | `tileA(t, t0, i)` | The entrance of tile i of a set, one after another |
-| `glowField(t, x, y, r, { a, cols })` | A soft light in Theseus's colours behind a part, slowly turning |
+| `glowField(t, x, y, r, { a, cols })` | A soft light in Theseus's colours behind a part, slowly turning. Rare: one or two moments in the deck |
 | `glossBox(t, t0, x, y, w, term, def, o)` | What a word means, in a rounded tile anywhere on the slide: `VOCAB TERM` and the definition. Returns `{ h }` |
 | `sourceBox(t, t0, x, y, w, who, finding, { kind })` | Where a finding comes from, in a tile: `RESEARCH · WHO, YEAR` (or the evidence tag with `kind`) and what it found |
 | `noteBox(t, t0, x, y, w, { label, value, kind, head, body, h })` | The base of both: a tag and a run-in paragraph in a padded box |
@@ -328,11 +328,11 @@ S({
 | `callout(t, t0, [x, y], label, { to, side, elbow, sub, prose, color })` | A dot on a point, an elbow leader and a label. Short names are set as mono caps, phrases as sentences |
 | `chapterCard(t, { name, list, gloss, cx, cy, r })` | Chapter opener: name in `d2`, an XBAB-style idea count, the ideas as a numbered list, an iris round the chapter's part |
 | `slam(t, t0, x, y, num, unit, o)` / `bignum(...)` | A key number that drops in, or one that counts up |
-| `hbars(t, { x, y, w, rows: [{ label, v, hero, sub }], max, unit })` | Simple horizontal bars with round ends; the `hero` row is in Theseus's gradient |
+| `hbars(t, { x, y, w, rows: [{ label, v, hero, sub }], max, unit })` | Simple horizontal bars with round ends; the `hero` row is Theseus blue |
 | `axes(t, o)` + `series(m, pts, o)` | A plain x-y frame for drawings that are not one of the charts below |
 | `dim(t, t0, a, b, label, off)` | A drafting dimension |
 | `regMark(x, y, a, s, col)` | A registration `+`, for the corners of a composition |
-| `demoWindow(x, y, w, h, a, { hero, plain, grid, fill, r, flat })` | A tile: radius 28, a surface lit softly from the top, no hard border, an entrance that settles and a light that passes once; `hero` lights it from inside in Theseus's colours |
+| `demoWindow(x, y, w, h, a, { hero, plain, grid, fill, r })` | A tile: radius 28, flat, one step off the ground, no hard border, an entrance that settles; `hero` gives it a thin blue rim |
 
 ### Charts (`07-charts.js`)
 
@@ -457,8 +457,8 @@ Do:
 Don't:
 
 - Don't use lowercase titles or labels, or set long sentences in mono caps.
-- Don't add a third highlight colour, gradients behind body text, or drop shadows under tiles. Glows are for light
-  behind a part and Theseus's tile, softly.
+- Don't add a third highlight colour or drop shadows under tiles. Don't put gradients anywhere but type (big numbers,
+  Theseus's name); a glow behind a part is for one or two moments in the whole deck.
 - Don't put tags in capsules, dots or boxes: a tag is type (section 6). Don't use sharp-cornered boxes for anything;
   tiles are rounded.
 - Don't round a claim up, or print a projected number without the PROJECTED tag.

@@ -267,6 +267,7 @@ function srf_genFilm(f, o = {}) {
     let c = c0 > 0 ? Math.min(1, c0 / 0.42) : 0; c = c * c * (3 - 2 * c);
     const along = x * ca + y * sa, pulse = 0.5 + 0.5 * Math.sin(along / 3.1 * TAU);
     z += -D * c * (0.92 + 0.08 * pulse) + 0.3 * D * rim * (1 - c) * (0.6 + 0.8 * Math.max(0, srf_vn(x / 3.4, y / 3.4, seed + 8)));
+    if (o.bend) { const v2 = (y - h / 2) / (h / 2); z += o.bend * (1 - v2 * v2); }
     f.z0[p] = z;
     const sparkle = srf_hash(x, y, seed + 11) > 0.988, v = 5 * srf_vn(x / 3, y / 3, seed + 5);
     for (let j = 0; j < 3; j++) f.a0[i + j] = col[j] + v + (sparkle ? 26 : 0) + (ecol[j] - col[j]) * c * (0.78 + 0.22 * pulse);
@@ -297,7 +298,7 @@ function srf_polar(t, t0, cx, cy, R, curves, o = {}) {
   for (const f of [0.5, 1]) circle(cx, cy, R * f * E.out3(k), { color: C.hair, w: 1.5 });
   const lr = o.lr || 1.16;
   line(cx - R * lr, cy, cx + R * lr, cy, { color: C.hair, w: 1.5, alpha: k }); line(cx, cy - R * lr, cx, cy + R * lr, { color: C.hair, w: 1.5, alpha: k });
-  text('Along', cx + R * lr + 10, cy + 7, { role: 'label', size: 19, color: C.mute, alpha: k });
+  text('Along', cx + R * lr, cy + 28, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: k });
   text('Across', cx, cy - R * lr - 12, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: k });
   for (const c of curves) {
     const p = c.p == null ? 1 : c.p; if (p <= 0) continue;
@@ -428,7 +429,7 @@ S({
     const top = 296, gl = golden(LM, RM - LM, 24), [mx, mw] = gl.a, [px, pw] = gl.b, mh = 476, B = [mx, top, mw, mh];
     /* the macro: laser-cut grooves in the coat; a studio light sweeps once across them; the camera pushes in slowly */
     demoWindow(mx, top, mw, mh, tileA(t, 0.2, 0), { r: SRF.r });
-    const f = srf_field('grip:ridge', 1000, 450, ff => srf_genFilm(ff, { pat: 'ridge', pitch: 26, width: 14, depth: 4.2, ang: 0, seed: 5 }));
+    const f = srf_field('grip:ridge', 1000, 450, ff => srf_genFilm(ff, { pat: 'ridge', pitch: 40, width: 22, depth: 6, ang: 0, seed: 5, bend: 120 }));
     srf_macro(t, f, mx, top, mw, mh, { light: srf_sweep(t, f, 0.5, 3.4), zoom: 1 + 0.08 * ep(t, 0.5, 11.5, E.io3), alpha: ep(t, 0.35, 1.1) });
     text('Laser-cut grooves in the coat (illustrative)', mx + 32, top + mh - 30, { role: 'small', size: 24, weight: 500, color: 'rgba(255,255,255,0.7)', alpha: ep(t, 1.0, 1.4) });
     /* the fingertip, dragged by the pointer, and the friction that holds it back */
@@ -451,25 +452,25 @@ S({
       rich([{ s: '1.26', role: 'stat', size: 80, color: C.heroText, grad: C.heroGrad, tnum: true, count: [10.3, 0.8, 1] }, { s: '×', role: 'stat', size: 56, color: C.heroText, gap: 6 }], px + 32, top + 168, { t, alpha: k });
       text('Across against along', px + 32, top + 210, { role: 'small', size: 25, weight: 600, color: C.ink2, alpha: k });
     }
-    const pc = [px + pw - 178, top + 222], R = 84, nrm = c => ({ a: 2 * c.a / (c.a + c.b), b: 2 * c.b / (c.a + c.b) });
+    const pc = [px + pw - 196, top + 214], R = 74, nrm = c => ({ a: 2 * c.a / (c.a + c.b), b: 2 * c.b / (c.a + c.b) });
     const fine = nrm({ a: SRF_MU.along, b: SRF_MU.across }), coarse = nrm({ a: 1, b: SRF_MU.coarse });
     glowField(t, pc[0], pc[1], 170, { a: 0.6 * ep(t, 7.3, 9.0) });
     srf_polar(t, 0.8, pc[0], pc[1], R, [
       { a: 1, b: 1, color: C.second, w: 3 },
       { a: coarse.a, b: coarse.b, color: C.heroText, w: 2.5, dash: [7, 6], alpha: ep(t, 10.4, 11.0) },
       { a: fine.a, b: fine.b, color: C.hero, w: 4.5, p: gp.ph === 'turn' ? gp.turn : gp.ph === 'rest' ? 1 : 0, th0: -(Math.PI / 2), cw: true }
-    ], { lr: 1.62 });
-    text('Shape only', px + pw - 32, top + 372, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 1.2, 1.6) });
+    ], { lr: 1.5 });
     if (live != null) { const r = srf_mu(fine.a, fine.b, th) * R, q = [pc[0] + r * ux, pc[1] + r * uy]; line(pc[0], pc[1], q[0], q[1], { color: C.hero, w: 2.5, alpha: kr }); circle(q[0], q[1], 7, { fill: C.hero, alpha: kr }); }
     /* the legend */
     [[C.hero, null, 'Fine laser grooves', '0.42 along, 0.53 across', 2.6], [C.heroText, [7, 6], 'Coarser texture', 'Up to 2× across', 10.4], [C.second, null, 'Grip tape', 'The same every way', 0.9]].forEach(([c, dash, nm, sub, t0], i) => {
-      const k = ep(t, t0, t0 + 0.4), yy = top + 330 + i * 44;
+      const k = ep(t, t0, t0 + 0.4), yy = top + 344 + i * 40;
       line(px + 32, yy - 7, px + 62, yy - 7, { color: c, w: 4, dash: dash || [], alpha: k });
       rich([{ s: nm, role: 'label', size: 19, color: C.ink }, { s: sub, role: 'small', size: 24, weight: 450, color: C.mute, gap: 12, caps: false }], px + 76, yy, { alpha: k });
     });
+    text('Each curve is shown ÷ its own average', px + 32, top + mh - 26, { role: 'small', size: 24, weight: 450, color: C.faint, alpha: ep(t, 1.2, 1.6) });
     /* the word, under the drawing; the research, under the plot */
     glossBox(t, 7.0, mx, top + mh + 24, mw, 'Anisotropic friction', 'Friction that changes with the direction of the slide: ridges catch a fingertip crossing them, and along them it glides.');
-    sourceBox(t, 3.0, px, top + mh + 24, pw, 'Zhang et al. 2017', 'Laser grooves 20 µm wide, 10 µm deep, on steel: a fingertip slid at μ 0.42 along, 0.53 across.', { kind: 'study', label: 'Measured' });
+    sourceBox(t, 3.0, px, top + mh + 24, pw, 'Zhang et al. 2017', '20 µm laser grooves in steel: a fingertip slid at μ 0.42 along them and 0.53 across.', { kind: 'study', label: 'Measured' });
   }
 });
 

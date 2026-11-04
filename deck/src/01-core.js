@@ -417,18 +417,11 @@ function paper(a = 1) {
 /** rounded rectangle path */
 function rrPath(x, y, w, h, r) { r = Math.max(0, Math.min(r, w / 2, h / 2)); G.beginPath(); G.moveTo(x + r, y); G.arcTo(x + w, y, x + w, y + h, r); G.arcTo(x + w, y + h, x, y + h, r); G.arcTo(x, y + h, x, y, r); G.arcTo(x, y, x + w, y, r); G.closePath(); }
 function rr(x, y, w, h, r, fill, stroke, lw = 1.5, a = 1) { G.save(); G.globalAlpha = a; rrPath(x, y, w, h, r); if (fill) { G.fillStyle = fill; G.fill(); } if (stroke) { G.strokeStyle = stroke; G.lineWidth = lw; G.stroke(); } G.restore(); }
-/** a card: a tile, as in Apple's keynotes. A big radius, a surface lit softly from the top, no hard edge (a whisper of
-   one on paper), and an entrance that settles. o = { r (28), fill, plain (no entrance), grid (a faint 40 px grid inside),
-   hero (a blue edge glow: Theseus), accent, flat (no gradient) } */
+/** a card: a tile, as in Apple's keynotes. A big radius, a flat surface one step off the ground, no hard edge (a whisper
+   of one on paper), and an entrance that settles. Flat on purpose: in this deck gradients live in type.
+   o = { r (28), fill, plain (no entrance), grid (a faint 40 px grid inside), hero (a thin blue rim: Theseus) } */
 const TILE = { r: 28 };
-function tileFill(x, y, w, h, o = {}) {
-  if (o.fill) return o.fill;
-  if (o.flat) return C.panel;
-  const g = G.createLinearGradient(x, y, x + w * 0.25, y + h);
-  if (TH) { g.addColorStop(0, '#FFFFFF'); g.addColorStop(1, '#FBFAF7'); }
-  else { g.addColorStop(0, '#1C1D21'); g.addColorStop(0.55, '#16171A'); g.addColorStop(1, '#131416'); }
-  return g;
-}
+function tileFill(x, y, w, h, o = {}) { return o.fill || C.panel; }   /* flat, as Apple's are: gradients belong to type */
 function demoWindow(x, y, w, h, a = 1, o = {}) {
   if (a <= 0.003) return;
   const r = o.r == null ? Math.min(TILE.r, w / 6, h / 6) : o.r, p = E.out3(clamp(a));
@@ -437,52 +430,25 @@ function demoWindow(x, y, w, h, a = 1, o = {}) {
   /* on the way in the tile settles from a hair larger and a little lower */
   if (!o.plain && a < 1) { const sc = 1 + 0.015 * (1 - p), cx = x + w / 2, cy = y + h / 2; G.translate(cx, cy + (1 - p) * 14); G.scale(sc, sc); G.translate(-cx, -cy); }
   rrPath(x, y, w, h, r); G.fillStyle = tileFill(x, y, w, h, o); G.fill();
-  /* the top edge catches the light; paper gets a hairline so white on light grey still reads */
   G.save(); rrPath(x, y, w, h, r); G.clip();
-  const hl = G.createLinearGradient(x, y, x, y + Math.min(h, 160));
-  hl.addColorStop(0, TH ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.055)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
-  G.strokeStyle = hl; G.lineWidth = 2; rrPath(x + 0.5, y + 0.5, w - 1, h - 1, r); G.stroke();
   if (o.grid) {
     G.strokeStyle = inkA(TH ? 0.03 : 0.025); G.lineWidth = 1; G.beginPath();
     for (let gx = Math.ceil(x / 40) * 40; gx < x + w; gx += 40) { G.moveTo(gx + 0.5, y); G.lineTo(gx + 0.5, y + h); }
     for (let gy = Math.ceil(y / 40) * 40; gy < y + h; gy += 40) { G.moveTo(x, gy + 0.5); G.lineTo(x + w, gy + 0.5); }
     G.stroke();
   }
-  /* a soft light passes once on the way in */
-  if (!o.plain && a < 1) {
-    const bx = x - w * 0.4 + w * 1.8 * p, g = G.createLinearGradient(bx - 220, y, bx + 220, y + Math.min(h, 420) * 0.4);
-    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, TH ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.06)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-    G.globalAlpha = Math.sin(p * Math.PI); G.fillStyle = g; G.fillRect(x, y, w, h);
-  }
   G.restore();
   if (TH) { G.strokeStyle = 'rgba(17,17,17,0.05)'; G.lineWidth = 1; rrPath(x + 0.5, y + 0.5, w - 1, h - 1, r); G.stroke(); }
-  /* Theseus's tile: lit from inside in its colours, a soft glow rising from the foot, and a faint blue rim */
-  if (o.hero) {
-    G.save(); rrPath(x, y, w, h, r); G.clip();
-    const cols = C.heroGrad, g = G.createRadialGradient(x + w * 0.5, y + h * 1.15, 0, x + w * 0.5, y + h * 1.15, Math.max(w, h) * 0.95);
-    g.addColorStop(0, rgba(cols[1], TH ? 0.14 : 0.26)); g.addColorStop(0.5, rgba(cols[cols.length - 1], TH ? 0.05 : 0.09)); g.addColorStop(1, rgba(cols[0], 0));
-    G.fillStyle = g; G.fillRect(x, y, w, h); G.restore();
-    G.save(); G.strokeStyle = rgba(C.hero, TH ? 0.22 : 0.32); G.lineWidth = 1.5; rrPath(x + 0.75, y + 0.75, w - 1.5, h - 1.5, r); G.stroke(); G.restore();
-  }
+  /* Theseus's tile: a thin blue rim, nothing more (its numbers carry the gradient) */
+  if (o.hero) { G.save(); G.strokeStyle = rgba(C.hero, TH ? 0.45 : 0.55); G.lineWidth = 1.5; rrPath(x + 0.75, y + 0.75, w - 1.5, h - 1.5, r); G.stroke(); G.restore(); }
   G.restore();
 }
-/** the stage's own light, under everything: a soft top light and a faint, slowly drifting glow in the chapter's colour */
-function stageLight(t, key) {
-  const A = (typeof acc === 'function' ? acc(key) : C.ink), tint = A === C.ink ? C.hero : A;
-  G.save();
-  if (TH) {
-    const g = G.createRadialGradient(W * 0.5, -H * 0.25, 0, W * 0.5, -H * 0.25, H * 1.3);
-    g.addColorStop(0, 'rgba(255,255,255,0.75)'); g.addColorStop(1, 'rgba(255,255,255,0)'); G.fillStyle = g; G.fillRect(0, 0, W, H);
-  } else {
-    const g = G.createRadialGradient(W * 0.5, -H * 0.3, 0, W * 0.5, -H * 0.3, H * 1.25);
-    g.addColorStop(0, 'rgba(255,255,255,0.045)'); g.addColorStop(1, 'rgba(255,255,255,0)'); G.fillStyle = g; G.fillRect(0, 0, W, H);
-  }
-  const dx = Math.sin((t || 0) * 0.13) * 90, dy = Math.cos((t || 0) * 0.11) * 50, cx = W * 0.86 + dx, cy = H * 0.08 + dy;
-  const g2 = G.createRadialGradient(cx, cy, 0, cx, cy, H * 0.95);
-  g2.addColorStop(0, rgba(tint, TH ? 0.07 : 0.085)); g2.addColorStop(1, rgba(tint, 0)); G.fillStyle = g2; G.fillRect(0, 0, W, H);
-  G.restore();
-}
-/** a soft glow of light in Theseus's colours (or o.cols) behind a part, as Apple lights a chip: o = { a, cols, spin (rad/s) } */
+/** the stage's own light: none. Brock: gradients belong in the type, and very sparingly anywhere else, so the ground
+   stays flat (the app still calls this, so a slide could light one moment if it ever earns it) */
+function stageLight(t, key) { }
+/** a soft glow of light in Theseus's colours (or o.cols) behind a part, as Apple lights a chip. RARE: Brock wants
+   gradients in the type and very sparingly anywhere else; save this for one or two hero moments in the whole deck.
+   o = { a, cols, spin (rad/s) } */
 function glowField(t, x, y, r, o = {}) {
   const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
   const cols = o.cols || C.heroGrad, n = cols.length, sp = o.spin == null ? 0.25 : o.spin;

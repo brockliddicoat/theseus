@@ -77,7 +77,9 @@ function shlBar(o) {
   if (o.dash) { G.save(); G.globalAlpha = a; G.setLineDash([6, 5]); G.strokeStyle = o.col; G.lineWidth = 2; rrPath(o.x, o.y - h / 2, Math.max(h, (X(hi) - o.x) * k), h, h / 2); G.stroke(); G.setLineDash([]); G.restore(); }
   else {
     if (hi !== lo) rr(o.x, o.y - h / 2, Math.max(h, (X(hi) - o.x) * k), h, h / 2, rgba(o.col, 0.38), null, 0, a);
-    rr(o.x, o.y - h / 2, Math.max(h, (X(lo) - o.x) * k), h, h / 2, o.col, o.edge || null, 1.5, a);
+    const bl = Math.max(h, (X(lo) - o.x) * k);
+    if (o.grad) { G.save(); G.globalAlpha = a; rrPath(o.x, o.y - h / 2, bl, h, h / 2); G.fillStyle = gradH(o.x, Math.max(bl, 60), o.grad); G.fill(); G.restore(); }
+    else rr(o.x, o.y - h / 2, bl, h, h / 2, o.col, null, 0, a);
   }
   return o.x + (xe - o.x) * k;
 }
@@ -246,6 +248,434 @@ S({
     }
     gloss(t, 2.4, 'Minimum wall', 'The thinnest section a resin fills well. Below it the melt freezes early, and the extra pressure leaves stress that warps the part.');
     featureCard(t, 5.6, 'A lighter resin, a thicker wall', ['datasheet', 'derived'], 'At the same grams carbon PP gets 1.8× magnesium\'s wall: above its floor, half the scatter, stiffer in bending (#5).');
+  }
+});
+
+/* ============================== the models behind the structure slides ==============================
+   1. The 3D study's numbers (3d/lattice/assets/lattice.json, fe.summary and masses): 10 N load cases on the study body.
+   2. The plain wall's law, through its two solved points (the wall alone, 11.39 g; the same wall thickened to the body's
+      15.18 g): crown stiffness grows with mass^n, n ≈ 2.37. It draws the trade-off curve.
+   3. 2D frames (07-sim.js) for the principle: a 60 mm span pressed in the middle, the same grams as a solid plane, as
+      triangles of one size, or as triangles sized to their force; and lattices of 12.5 mm cells, triangles and hexagons
+      at the same mass, pinned and rigid. */
+const SHL_FE = {
+  tri: { press: 499.3, press_off: 329.2, squeeze: 645.7, defl: 20.0, rib: 4.33, ribP99: 3.39, wallP99: 1.98 },
+  hex: { press: 411.4, press_off: 276.0, squeeze: 540.7, defl: 24.3, rib: 7.03, ribP99: 4.08, wallP99: 2.25 },
+  thick: { press: 247.2, press_off: 149.9, squeeze: 474.8, defl: 40.5, wallP99: 3.84 },
+  none: { press: 125.1, press_off: 74.0, squeeze: 245.5, defl: 79.9, wallP99: 6.08 },
+  g: { body: 15.18, wall: 11.39, ribs: 3.79, triggers: 3.88 }
+};
+SHL_FE.n = Math.log(SHL_FE.thick.press / SHL_FE.none.press) / Math.log(SHL_FE.g.body / SHL_FE.g.wall);
+/** a plain wall of this shape at m grams: crown stiffness (N/mm) and flex at 10 N (µm) */
+const shlPlainK = m => SHL_FE.thick.press * Math.pow(m / SHL_FE.g.body, SHL_FE.n);
+const shlPlainFlex = m => 10000 / shlPlainK(m);
+/** the plain wall's mass that would match the lattice's crown stiffness (extrapolated along the same law) */
+SHL_FE.match = SHL_FE.g.body * Math.pow(SHL_FE.tri.press / SHL_FE.thick.press, 1 / SHL_FE.n);
+
+/* the meter's steps from this file; the hexagons are a comparison against the same plain wall, not a step */
+shellStep({ key: 'lattice', slide: 'shlShell3d', label: 'Triangle lattice', flex: SHL_FE.thick.press / SHL_FE.tri.press, stress: SHL_FE.tri.ribP99 / SHL_FE.thick.wallP99, ev: 'derived', how: '3D shell FE, PP-C-20A, 10 N on the crown: the 15.18 g body as a plain wall, or as its 0.9 to 1.2 mm wall plus 3.79 g of triangle ribs; stress is the P99 of the most stressed part' });
+const SHL_HEXGHOST = { flex: SHL_FE.thick.press / SHL_FE.hex.press, stress: SHL_FE.hex.ribP99 / SHL_FE.thick.wallP99, label: 'Hexagons, same mass' };
+
+/* ---------- 2D: the same grams three ways across a 60 mm span ---------- */
+const SHL_HOT = { L: 60, a: 12, b: 1.2, P: 10, h0: 1.0 };
+SHL_HOT.H = SHL_HOT.a * Math.sqrt(3) / 2;
+/** equilateral triangles of side a across the span: bottom chord on a pin and a roller, 10 N down on the top's middle node.
+   hs = each member's depth in the plane (mm), in the order they are added; default all h0 */
+function shlTrussModel(hs) {
+  const { L, a, b, H, P } = SHL_HOT, n = Math.round(L / a), M = SIM_MAT.ppcf, nodes = [], els = [];
+  for (let i = 0; i <= n; i++) nodes.push([-L / 2 + i * a, 0]);
+  for (let j = 0; j < n; j++) nodes.push([-L / 2 + (j + 0.5) * a, H]);
+  const top = j => n + 1 + j, add = (i, j) => els.push({ i, j, w: b, h: hs ? hs[els.length] : SHL_HOT.h0, E: M.E, rho: M.rho });
+  for (let i = 0; i < n; i++) add(i, i + 1);
+  for (let j = 0; j < n - 1; j++) add(top(j), top(j + 1));
+  for (let j = 0; j < n; j++) { add(j, top(j)); add(top(j), j + 1); }
+  const mid = top(Math.floor(n / 2));
+  return { nodes, els, fix: { 0: 'xy', [n]: 'y' }, loads: { [mid]: [0, -P, 0] }, mid };
+}
+/** the same triangles, each member's depth set by its own force (fully stressed), at the same total mass */
+function shlTrussSized() {
+  let hs = shlTrussModel().els.map(() => SHL_HOT.h0); const total = hs.reduce((s, v) => s + v, 0);
+  for (let it = 0; it < 14; it++) {
+    const r = feSolve(shlTrussModel(hs)), f = r.N.map(Math.abs), mean = f.reduce((s, v) => s + v, 0) / f.length;
+    const h2 = f.map(v => Math.max(0.35 * mean, v)), sc = total / h2.reduce((s, v) => s + v, 0); hs = h2.map(v => v * sc);
+  }
+  return shlTrussModel(hs);
+}
+/** a solid plane of the same span and depth, holding the same grams: a beam of depth H, thinner out of the page */
+function shlPlateModel(massG) {
+  const { L, H, P } = SHL_HOT, M = SIM_MAT.ppcf, n = 60, nodes = [], els = [], w = massG / (M.rho * H * L);
+  for (let i = 0; i <= n; i++) nodes.push([-L / 2 + L * i / n, H / 2]);
+  for (let i = 0; i < n; i++) els.push({ i, j: i + 1, w, h: H, E: M.E, rho: M.rho });
+  return { nodes, els, fix: { 0: 'xy', [n]: 'y' }, loads: { [n / 2]: [0, -P, 0] }, mid: n / 2, w };
+}
+/** stress samples through each member's depth and along it: [{ s (MPa, abs), g (grams) }]. sigma = N/A + M(x) y / I */
+function shlSamples(r, nx = 16, ny = 16) {
+  const out = [];
+  r.model.els.forEach((el, e) => {
+    const A = el.w * el.h, I = el.w * el.h ** 3 / 12, a = r.N[e] / A, g = r.mass[e] / (nx * ny);
+    for (let i = 0; i < nx; i++) { const xi = (i + 0.5) / nx, b = el.truss ? 0 : (r.M1[e] * (1 - xi) + r.M2[e] * xi) / I; for (let j = 0; j < ny; j++) { const y = el.h * ((j + 0.5) / ny - 0.5); out.push({ s: Math.abs(a + b * y), g }); } }
+  });
+  return out.sort((p, q) => q.s - p.s);
+}
+/** the grams that work: the share of the material stressed to at least frac of this frame's own peak */
+function shlWorkShare(r, frac = 0.5) { const S0 = r.samples, pk = S0[0].s; let g = 0, tot = 0; for (const p of S0) { tot += p.g; if (p.s >= frac * pk) g += p.g; } return g / tot; }
+/** n cells of equal mass, most stressed first: each cell's mean stress */
+function shlCellsOf(r, n = 52) {
+  const S0 = r.samples, tot = S0.reduce((s, p) => s + p.g, 0), cells = new Array(n).fill(0), cg = new Array(n).fill(0); let acc0 = 0;
+  for (const p of S0) { const c = Math.min(n - 1, Math.floor(acc0 / tot * n)); cells[c] += p.s * p.g; cg[c] += p.g; acc0 += p.g; }
+  return cells.map((v, i) => cg[i] ? v / cg[i] : 0);
+}
+function shlHot() {
+  if (SHL.hot) return SHL.hot;
+  const uni = simSolve('shl-hot-uni', () => shlTrussModel()), sized = simSolve('shl-hot-sized', shlTrussSized);
+  const mass = uni.mass.reduce((s, v) => s + v, 0), plate = simSolve('shl-hot-plate', () => shlPlateModel(mass));
+  for (const r of [uni, sized, plate]) { r.samples = shlSamples(r); r.k = SHL_HOT.P / -r.d[r.model.mid * 3 + 1]; r.peak = r.samples[0].s; r.work = shlWorkShare(r, 0.5); r.cells = shlCellsOf(r); }
+  /* the plane's stress falls as 1/thickness: the grams it needs to match the sized triangles' peak */
+  return (SHL.hot = { uni, sized, plate, mass, match: plate.peak / sized.peak });
+}
+/** the solid plane drawn as a field: each cell coloured by its stress, the beam's deflection exaggerated by sc.
+   P maps model mm to stage px; k = load on now; smax = the stress that reads as hot; o.crack (0..1) grows a crack */
+function shlPlateField(r, P, k, sc, smax, a, o = {}) {
+  if (a <= 0.003) return;
+  const m = r.model, H = SHL_HOT.H, ny = o.ny || 14, ne = m.els.length;
+  G.save(); G.globalAlpha = a;
+  for (let e = 0; e < ne; e++) {
+    const el = m.els[e], A = el.w * el.h, I = el.w * el.h ** 3 / 12, n0 = m.nodes[el.i], n1 = m.nodes[el.j];
+    const v0 = r.d[el.i * 3 + 1] * sc * k, v1 = r.d[el.j * 3 + 1] * sc * k;
+    for (let half = 0; half < 2; half++) {
+      const xi = (half + 0.5) / 2, Mx = (r.M1[e] * (1 - xi) + r.M2[e] * xi), xa = lerp(n0[0], n1[0], half / 2), xb = lerp(n0[0], n1[0], (half + 1) / 2), va = lerp(v0, v1, half / 2), vb = lerp(v0, v1, (half + 1) / 2);
+      for (let j = 0; j < ny; j++) {
+        const y0 = H * j / ny, y1 = H * (j + 1) / ny, yc = (y0 + y1) / 2 - H / 2, s = Math.abs(r.N[e] / A + Mx * yc / I) * k;
+        const p00 = P([xa, y0 + va]), p10 = P([xb, y0 + vb]), p11 = P([xb, y1 + vb]), p01 = P([xa, y1 + va]);
+        G.fillStyle = heatCol(s / smax); G.beginPath(); G.moveTo(p00[0], p00[1]); G.lineTo(p10[0] + 0.6, p10[1]); G.lineTo(p11[0] + 0.6, p11[1] - 0.6); G.lineTo(p01[0], p01[1] - 0.6); G.closePath(); G.fill();
+      }
+    }
+  }
+  /* the outline */
+  const top = [], bot = []; m.nodes.forEach((n0, i) => { const v = r.d[i * 3 + 1] * sc * k; top.push(P([n0[0], H + v])); bot.push(P([n0[0], v])); });
+  G.strokeStyle = inkA(0.55); G.lineWidth = 1.5; G.beginPath(); top.concat(bot.reverse()).forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.closePath(); G.stroke();
+  /* a crack from the bottom of the middle, where the tension peaks */
+  if (o.crack > 0) {
+    const v = r.d[m.mid * 3 + 1] * sc * k, rr0 = rng(7), pts = [P([0, v])]; let x = 0;
+    const nseg = 9; for (let q = 1; q <= nseg * o.crack; q++) { x += (rr0() - 0.5) * 1.1; pts.push(P([x, v + H * 0.62 * q / nseg])); }
+    G.strokeStyle = C.bad; G.lineWidth = 3; G.lineJoin = 'round'; G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.stroke();
+  }
+  G.restore();
+}
+/** a load arrow onto a stage point, and the pointer pressing it: returns nothing */
+function shlPress(t, t0, p, k, o = {}) {
+  const a = ep(t, t0, t0 + 0.3) * (o.alpha == null ? 1 : o.alpha); if (a <= 0.003) return;
+  const len = o.len || 64, col = o.color || C.ink;
+  arrow(p[0], p[1] - len - 10, p[0], p[1] - 6, { color: col, w: 3, hs: 13, alpha: a * (0.35 + 0.65 * k) });
+  if (o.label) text(o.label, p[0] + 16, p[1] - len + 4, { role: 'label', size: 19, color: C.mute, alpha: a });
+}
+
+/* ---------- 2D: triangle and hexagon lattices of 12.5 mm cells, at the same mass ---------- */
+const SHL_LAT = { a: 12.5, nx: 7, ny: 4, w: 2.0, t: 1.0, P: 10 };
+function shlTriPanel(t) {
+  const { a, nx, ny, w } = SHL_LAT, M = SIM_MAT.ppcf, h = a * Math.sqrt(3) / 2, nodes = [], idx = {}, els = [];
+  for (let r = 0; r <= ny; r++) { const off = (r % 2) * a / 2, n = nx + 1 - (r % 2); for (let c = 0; c < n; c++) { idx[r + ',' + c] = nodes.length; nodes.push([off + c * a, r * h]); } }
+  const add = (p, q) => { if (p != null && q != null) els.push({ i: p, j: q, w, h: t, E: M.E, rho: M.rho }); };
+  for (let r = 0; r <= ny; r++) { const n = nx + 1 - (r % 2); for (let c = 0; c < n; c++) { const i = idx[r + ',' + c]; add(i, idx[r + ',' + (c + 1)]); if (r < ny) { if (r % 2 === 0) { add(i, idx[(r + 1) + ',' + c]); add(i, idx[(r + 1) + ',' + (c - 1)]); } else { add(i, idx[(r + 1) + ',' + c]); add(i, idx[(r + 1) + ',' + (c + 1)]); } } } }
+  return { nodes, els };
+}
+/** pointy-top hexagons with walls a/√3 long, whole cells only (no wall left hanging), the same width as the triangles */
+function shlHexPanel(t) {
+  const { a, nx, ny, w } = SHL_LAT, M = SIM_MAT.ppcf, R = a / Math.sqrt(3), nodes = [], map = new Map(), els = [], seen = new Set();
+  const nid = p => { const k = Math.round(p[0] * 1000) + ',' + Math.round(p[1] * 1000); if (!map.has(k)) { map.set(k, nodes.length); nodes.push(p); } return map.get(k); };
+  for (let row = 0; row < ny; row++) for (let col = 0; col < nx - (row % 2); col++) {
+    const cx = a / 2 + col * a + (row % 2 ? a / 2 : 0), cy = R + row * 1.5 * R;
+    const v = [0, 1, 2, 3, 4, 5].map(k => { const an = Math.PI / 6 + k * Math.PI / 3; return nid([cx + R * Math.cos(an), cy + R * Math.sin(an)]); });
+    for (let k = 0; k < 6; k++) { const p = v[k], q = v[(k + 1) % 6], key = p < q ? p + ',' + q : q + ',' + p; if (!seen.has(key)) { seen.add(key); els.push({ i: p, j: q, w, h: t, E: M.E, rho: M.rho }); } }
+  }
+  return { nodes, els };
+}
+const shlLen = m => m.els.reduce((s, el) => s + Math.hypot(m.nodes[el.j][0] - m.nodes[el.i][0], m.nodes[el.j][1] - m.nodes[el.i][1]), 0);
+/** clamp the bottom row, load the top row: 'press' (10 N spread down), 'point' (10 N on the middle top node), 'shear' (sideways) */
+function shlLatSetup(m, mode) {
+  const ys = m.nodes.map(p => p[1]), y0 = Math.min(...ys), y1 = Math.max(...ys), xs = m.nodes.map(p => p[0]), xc = (Math.min(...xs) + Math.max(...xs)) / 2, P = SHL_LAT.P;
+  const fix = {}, loads = {}, top = [];
+  m.nodes.forEach((p, i) => { if (p[1] < y0 + 1e-6) fix[i] = 'xyr'; else if (p[1] > y1 - 1e-6) top.push(i); });
+  if (mode === 'point') { const c = top.reduce((b, i) => Math.abs(m.nodes[i][0] - xc) < Math.abs(m.nodes[b][0] - xc) ? i : b, top[0]); loads[c] = [0, -P, 0]; m.meas = [c]; m.dir = 1; }
+  else if (mode === 'shear') { top.forEach(i => { loads[i] = [P / top.length, 0, 0]; }); m.meas = top; m.dir = 0; }
+  else { top.forEach(i => { loads[i] = [0, -P / top.length, 0]; }); m.meas = top; m.dir = 1; }
+  m.fix = fix; m.loads = loads; m.top = top; m.y1 = y1; return m;
+}
+const shlLatD = r => Math.abs(r.model.meas.reduce((s, i) => s + r.d[i * 3 + r.model.dir], 0) / r.model.meas.length);
+/** the share of the strain energy that is bending (the rest is stretching): U_axial = N² L / (2 E A) */
+function shlBendShare(r) { let ua = 0, ut = 0; r.model.els.forEach((el, e) => { ua += r.N[e] ** 2 * r.L[e] / (2 * el.E * el.w * el.h); ut += r.U[e]; }); return ut > 0 ? clamp(1 - ua / ut) : 0; }
+function shlLat() {
+  if (SHL.lat) return SHL.lat;
+  const lt = shlLen(shlTriPanel(1)), lh = shlLen(shlHexPanel(1)), hOf = t => t * lt / lh;
+  const solve = (kind, t, mode) => simSolve('shl-lat-' + kind + '-' + t + '-' + mode, () => shlLatSetup(kind === 'tri' ? shlTriPanel(t) : shlHexPanel(hOf(t)), mode));
+  const out = { lt, lh, hOf, modes: {}, sweep: [] };
+  for (const mode of ['press', 'point', 'shear']) { const a = solve('tri', SHL_LAT.t, mode), b = solve('hex', SHL_LAT.t, mode); out.modes[mode] = { tri: a, hex: b, ratio: shlLatD(b) / shlLatD(a) }; }
+  for (const t of [1.2, 1.0, 0.8, 0.6, 0.45, 0.3]) { const a = solve('tri', t, 'press'), b = solve('hex', t, 'press'); out.sweep.push({ t, tri: a, hex: b, kt: SHL_LAT.P / shlLatD(a), kh: SHL_LAT.P / shlLatD(b), g: a.mass.reduce((s, v) => s + v, 0) }); }
+  const p = out.modes.press; out.bend = { tri: shlBendShare(p.tri), hex: shlBendShare(p.hex) }; out.mass = p.tri.mass.reduce((s, v) => s + v, 0);
+  /* one cell each, pin-jointed: the triangle holds, the hexagon is a mechanism */
+  const l = 20, M = SIM_MAT.ppcf, bar = (i, j) => ({ i, j, w: 2.0, h: 1.0, E: M.E, rho: M.rho, truss: true });
+  out.pinTri = simSolve('shl-pin-tri', () => ({ nodes: [[-l / 2, 0], [l / 2, 0], [0, l * Math.sqrt(3) / 2]], els: [bar(0, 1), bar(1, 2), bar(2, 0)], fix: { 0: 'xy', 1: 'y' }, loads: { 2: [0, -10, 0] } }));
+  out.pinHex = simSolve('shl-pin-hex', () => ({ nodes: shlHexCell(l, Math.PI / 3), els: [0, 1, 2, 3, 4, 5].map(k => bar(k, (k + 1) % 6)), fix: { 0: 'xy', 1: 'y' }, loads: { 3: [0, -5, 0], 4: [0, -5, 0] } }));
+  return (SHL.lat = out);
+}
+/** a hexagon of side l with a flat bottom on y = 0, its sides at angle th (60° is regular). Pin-jointed, it can fold
+   through every th with no member changing length: [BL, BR, R, TR, TL, L] */
+function shlHexCell(l, th) { const c = Math.cos(th) * l, s = Math.sin(th) * l; return [[-l / 2, 0], [l / 2, 0], [l / 2 + c, s], [l / 2, 2 * s], [-l / 2, 2 * s], [-l / 2 - c, s]]; }
+/** draw a lattice panel solved by shlLat: members as bent beams (feDraw) on a clamped base, a rigid press bar on top */
+function shlLatDraw(r, ox, oy, s, o = {}) {
+  const P = p => [ox + p[0] * s, oy - p[1] * s], k = o.load == null ? 1 : o.load, a = o.alpha == null ? 1 : o.alpha;
+  if (a <= 0.003) return P;
+  const m = r.model, xs = m.nodes.map(p => p[0]), x0 = Math.min(...xs), x1 = Math.max(...xs);
+  /* the clamped base */
+  part(0, 0, 1, () => solid(() => { G.beginPath(); G.rect(ox + x0 * s - 14, oy + 2, (x1 - x0) * s + 28, 12); }, MT.shell, [ox + x0 * s - 14, oy + 2, (x1 - x0) * s + 28, 12], { hatch: true }), { alpha: a });
+  feDraw(r, P, { scale: o.scale, load: k, smax: o.smax, w: s * 0.92, alpha: a, ghost: o.ghost !== false, seg: 12 });
+  if (o.flow) feFlow(r, P, o.t, { scale: o.scale, load: k, alpha: a * o.flow, nmax: o.nmax });
+  /* the press bar rides on the top row's mean deflection */
+  if (o.bar !== false && m.dir === 1) {
+    const dy = m.top.reduce((acc0, i) => acc0 + r.d[i * 3 + 1], 0) / m.top.length * (o.scale || 1) * k, yb = oy - (m.y1 + dy) * s;
+    rr(ox + x0 * s - 10, yb - 16, (x1 - x0) * s + 20, 12, 6, inkA(0.72), null, 0, a);
+  }
+  return P;
+}
+/** the pointer pushing straight down onto (x, y) from above, the push k in 0..1 sinking it by depth px */
+function shlPushPtr(t, t0, x, y, k, depth = 14) { const a = ep(t, t0 - 0.6, t0); cursorPtr(x + 4, y - 4 + k * depth - (1 - ep(t, t0 - 0.6, t0, E.out3)) * 120, { a, press: 0 }); }
+
+/* ============================== 3. the pick: strength or weight (Brock: "most mice make you pick") ==============================
+   left: four mice as RTINGS weighed and pressed them (their words); right: the plain wall's own trade-off, from the
+   3D study's two plain-wall solutions, with the pointer dragging the wall's mass along it */
+const SHL_PICK = [
+  { id: 'finalmouse-ulx', i: 2, name: 'Finalmouse ULX Pro Series', say: '"Flexes and creaks with pressure"', flex: true },
+  { id: 'finalmouse-ulx', i: 1, name: 'Finalmouse UltralightX Competition', say: '"Noticeable creaking, popping, and flexibility"', flex: true },
+  { id: 'ninjutso-sora-v2', name: 'Ninjutso Sora V2', say: '"Feels solid"', flex: false },
+  { id: 'logitech-gpx2', name: 'Logitech G Pro X Superlight 2', say: 'Build quality "much more consistent"', flex: false }
+];
+/** a mouse's measured weight from the dataset (entry i of a list), or null */
+function shlMouseG(id, i) { const m = typeof exMouse === 'function' ? exMouse(id) : null; if (!m) return null; const f = m.weight_measured_g, x = Array.isArray(f) ? f[i || 0] : f, v = x && typeof x === 'object' ? x.value : x; return v == null ? null : +v; }
+/** the plain wall's curve on an axes frame m: solid between the two solved walls, dashed where it is extrapolated */
+function shlCurve(m, p, o = {}) {
+  const seg = (g0, g1, dash) => { const pts = []; for (let g = g0; g <= g1 + 1e-6; g += 0.2) pts.push([m.X(g), m.Y(Math.min(o.ymax || 200, shlPlainFlex(g)))]); poly(pts, { color: o.color || C.ink, w: o.w || 3, dash, p, alpha: o.alpha }); };
+  seg(o.g0 || 8, SHL_FE.g.wall, [7, 7]); seg(SHL_FE.g.wall, SHL_FE.g.body, null); seg(SHL_FE.g.body, o.g1 || 24, [7, 7]);
+}
+S({
+  id: 'shlPick', ch: 'shell', theme: 'paper', title: 'Strength or weight: the trade-off', settle: 10, ideas: [15, 75],
+  src: ['shlRtingsSoraUlx', 'shlRtingsUlxcGpx2', 'exRtings', 'shlLattice'],
+  draw: t => {
+    header(t, 'Strength or weight: the trade-off');
+    captions(t, [[0.6, 'Most mice make you pick. The lightest flex and creak in reviews; the ones that feel solid weigh more.'], [5.2, 'A plain wall is why: thin it and it flexes, thicken it and it gets heavy. Each gram buys less stiffness than the last.']]);
+    const GS = golden(LM, RM - LM, 24, true), [lx, lw] = GS.b, [cx, cw] = GS.a, y = LAY.top, h = 660;
+    /* left: what reviewers found, lightest first, and the target */
+    { const hy = shlCard(t, 0.3, lx, y, lw, h, 'Reviewers\' verdicts', [{ ev: 'measured', by: 'RTINGS' }]);
+      const rows = SHL_PICK.map(r => Object.assign({ g: shlMouseG(r.id, r.i) }, r)).filter(r => r.g != null).sort((p, q) => p.g - q.g);
+      rows.unshift({ hero: true, name: 'Theseus', say: 'Solid, at the lightest weight here', g: THESEUS.mass });
+      const bx = lx + 26, bw = lw - 52 - 120, max = 62;
+      rows.forEach((r, i) => {
+        const yy = hy + 40 + i * 110, t0 = 0.9 + i * 0.32, a = ep(t, t0, t0 + 0.4), k = ep(t, t0 + 0.15, t0 + 1.0, E.snap);
+        if (i) line(lx + 26, yy - 46, lx + lw - 26, yy - 46, { color: C.hair, w: 1, alpha: a });
+        text(r.name, bx, yy, { role: 'small', size: 25, weight: 700, color: r.hero ? C.heroText : C.ink, grad: r.hero ? C.heroGrad : null, alpha: a });
+        text(r.say, bx, yy + 32, { role: 'small', size: 25, color: C.ink2, alpha: a, t, t0: t0 + 0.2, cps: 110 });
+        const verdict = r.hero ? 'Target' : r.flex ? 'Flexes' : 'Solid';
+        text(verdict, lx + lw - 26, yy, { role: 'label', size: 21, color: r.hero ? C.heroText : r.flex ? C.bad : C.ink, align: 'right', alpha: a });
+        const xe = shlBar({ x: bx, y: yy + 52, w: bw, max, v: r.g, col: r.hero ? C.hero : r.flex ? C.bad : C.comp, grad: r.hero ? C.heroGrad : null, h: 12, a, k });
+        text((r.hero ? THS.mass : fmtN(r.g, 1)) + ' g', xe + 12, yy + 59, { font: 'mono', size: 22, weight: r.hero ? 800 : 600, color: C.ink, alpha: clamp(k * 1.4 - 0.3) });
+      });
+      text('RTINGS weights and words; Theseus is my target.', lx + 26, y + h - 24, { role: 'small', size: 25, color: C.faint, alpha: ep(t, 3.0, 3.4) });
+    }
+    /* right: a plain wall, thinned and thickened, solved in the real shell */
+    { const hy = shlCard(t, 0.5, cx, y, cw, h, 'A plain wall: flex against grams', ['derived']);
+      const m = axes(t, { x: cx + 110, y: hy + 70, w: cw - 170, h: 360, xr: [8, 24], yr: [0, 200], xticks: [8, 12, 16, 20, 24], yticks: [0, 50, 100, 150, 200], xfmt: v => v + ' g', yfmt: v => String(v), t0: 0.9 });
+      const a0 = ep(t, 1.0, 1.4);
+      text('Flex at 10 N on the crown, {µm}', cx + 26, hy + 26, { role: 'label', size: 19, color: C.mute, alpha: a0 });
+      text('Shell body mass', m.X(24), hy + 70 + 360 + 66, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
+      /* the two ends of the pick */
+      const kz = ep(t, 2.2, 2.8);
+      rect(m.X(8), m.Y(200), m.X(11) - m.X(8), m.Y(0) - m.Y(200), { fill: rgba(C.bad, 0.08), alpha: kz });
+      rect(m.X(20), m.Y(200), m.X(24) - m.X(20), m.Y(0) - m.Y(200), { fill: inkA(0.04), alpha: kz });
+      text('Light: it flexes', m.X(8) + 12, m.Y(200) + 28, { role: 'label', size: 19, color: C.bad, alpha: kz });
+      text('Stiff: it\'s heavy', m.X(24) - 12, m.Y(200) + 28, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kz });
+      shlCurve(m, ep(t, 1.2, 2.6, E.lin), { color: C.ink, w: 3 });
+      /* the two solved walls */
+      [[SHL_FE.g.wall, 'Wall alone'], [SHL_FE.g.body, 'Wall thickened']].forEach(([g, lab], j) => { const kk = ep(t, 1.8 + j * 0.3, 2.2 + j * 0.3), X = m.X(g), Y = m.Y(shlPlainFlex(g)); circle(X, Y, 6, { fill: C.ink, alpha: kk }); text(lab + ', solved', X + 14, Y - 12, { role: 'label', size: 19, color: C.ink2, alpha: kk }); });
+      /* the pointer drags the wall's mass along the curve */
+      const keys = [[2.8, 15.18], [3.4, 15.18], [4.6, 9.2], [5.2, 9.2], [6.6, 22.5], [7.2, 22.5], [8.2, 15.18]], g = kf(t, keys, E.cam), fl = shlPlainFlex(g);
+      const hx = m.X(g), hyy = m.Y(Math.min(200, fl)), kh = ep(t, 2.6, 3.0);
+      line(hx, hyy, hx, m.Y(0), { color: C.heroText, w: 1.5, dash: [4, 4], alpha: kh * 0.8 }); line(m.X(8), hyy, hx, hyy, { color: C.heroText, w: 1.5, dash: [4, 4], alpha: kh * 0.8 });
+      circle(hx, hyy, 11, { fill: C.panel, color: C.heroText, w: 3, alpha: kh });
+      cursorPtr(hx + 6, hyy + 8, { a: kh * (1 - ep(t, 8.6, 9.0)), grab: true });
+      rich([{ s: fmtN(g, 1), font: 'disp', size: 44, weight: 800, color: C.ink, tnum: true }, { s: 'g', font: 'mono', size: 24, weight: 600, color: C.mute, gap: 8 }, { s: fmtN(fl, 0), font: 'disp', size: 44, weight: 800, color: C.ink, tnum: true, gap: 36 }, { s: 'µm of flex', font: 'mono', size: 24, weight: 600, color: C.mute, gap: 8 }], cx + cw - 30, hy + 26, { align: 'right', alpha: kh });
+      text('3D shell FE, PP-C-20A, 10 N on the crown. Two plain walls solved; flex falls with mass^2.37 between them, dashed beyond.', cx + 26, y + h - 56, { role: 'small', size: 25, color: C.faint, maxW: cw - 52, lh: 1.3, alpha: ep(t, 3.0, 3.4) });
+    }
+  }
+});
+
+/* ============================== 4. the turn: what if you didn't have to pick ==============================
+   the question types in, alone; it rises into the title; the trade-off redraws, and the lattice lands under it at the
+   same grams: the curve breaks, and the question changes from how much material to where it is */
+S({
+  id: 'shlNoPick', ch: 'shell', theme: 'night', title: 'What if you didn\'t have to pick', settle: 10, ideas: [75, 15], src: ['shlLattice', 'shlDoc'],
+  draw: t => {
+    header(t, '');
+    const q = 'What if you didn’t have to pick…', km = ep(t, 2.9, 3.9, E.cam), size = lerp(100, 62, km), wq = tw(q, { role: 'h1', size });
+    text(q, lerp(W / 2 - wq / 2, LM - 3, km), lerp(590, LAY.titleY, km), { role: 'h1', size, color: C.ink, t, t0: 0.4, cps: 22, caret: true });
+    if (t < 3.6) return;
+    captions(t, [[3.9, 'The trade-off assumes a plain wall. Keep the grams, move them into a triangle lattice, and the curve no longer holds.'], [7.0, 'The same 15.2 g flexes half as much. To match it, a plain wall would need about ' + fmtN(SHL_FE.match, 1) + ' g.']]);
+    const x = LM, y = LAY.top + 24, w = RM - LM, h = 660;
+    demoWindow(x, y, w, h, ep(t, 3.6, 4.1));
+    const m = axes(t, { x: x + 130, y: y + 90, w: 1060, h: 420, xr: [8, 24], yr: [0, 200], xticks: [8, 12, 16, 20, 24], yticks: [0, 50, 100, 150, 200], xfmt: v => v + ' g', yfmt: v => String(v), t0: 3.8 });
+    const a0 = ep(t, 3.9, 4.3);
+    text('Flex at 10 N on the crown, {µm}', x + 26, y + 46, { role: 'label', size: 19, color: C.mute, alpha: a0 });
+    text('Shell body mass', m.X(24), y + 90 + 420 + 66, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
+    /* the trade-off, and then the break: the curve splits at the body's mass, the far half drops out of focus */
+    const kb = ep(t, 5.9, 6.5, E.out3), gB = SHL_FE.g.body, fB = shlPlainFlex(gB);
+    if (kb <= 0) shlCurve(m, ep(t, 4.0, 5.0, E.lin), { color: C.ink, w: 3 });
+    else {
+      G.save(); G.beginPath(); G.rect(m.X(8) - 4, m.Y(200) - 20, m.X(gB) - 3 - m.X(8) + 4, m.Y(0) - m.Y(200) + 40); G.clip(); shlCurve(m, 1, { color: C.ink, w: 3 }); G.restore();
+      G.save(); G.beginPath(); G.rect(m.X(gB) + 3, m.Y(200) - 20, m.X(24) - m.X(gB), m.Y(0) - m.Y(200) + 60); G.clip(); G.translate(6 * kb, 14 * kb); shlCurve(m, 1, { color: mix(C.ink, C.bg, 0.55 * kb), w: 3 }); G.restore();
+      const sp = ep(t, 5.9, 6.4); if (sp < 1) for (let i = 0; i < 7; i++) { const an = -Math.PI / 2 + (i - 3) * 0.45, d = 8 + sp * 46; circle(m.X(gB) + Math.cos(an) * d, m.Y(fB) + Math.sin(an) * d, 2.4, { fill: C.ink, alpha: (1 - sp) * 0.9 }); }
+    }
+    /* the plain wall at the body's mass, and the lattice at the same grams */
+    const kp = ep(t, 4.8, 5.2), Xb = m.X(gB), Yp = m.Y(fB), Yl = m.Y(SHL_FE.tri.defl);
+    circle(Xb, Yp, 7, { fill: C.ink, alpha: kp });
+    text('Plain wall, ' + fmtN(fB, 1) + ' µm', Xb + 16, Yp - 14, { role: 'label', size: 21, color: C.ink, alpha: kp });
+    const kl = ep(t, 5.3, 5.9, E.out3), yDrop = lerp(m.Y(200) - 30, Yl, kl);
+    if (kl > 0) { heroMark(Xb, yDrop, 13, ep(t, 5.3, 5.45)); }
+    const kd = ep(t, 6.1, 6.6);
+    if (kd > 0) {
+      line(Xb - 34, Yp, Xb - 34, lerp(Yp, Yl, kd), { color: C.heroText, w: 2, alpha: kd }); line(Xb - 42, Yp, Xb - 26, Yp, { color: C.heroText, w: 2, alpha: kd }); line(Xb - 42, Yl, Xb - 26, Yl, { color: C.heroText, w: 2, alpha: kd });
+      text('−' + Math.round((1 - SHL_FE.tri.defl / fB) * 100) + '%', Xb - 50, (Yp + Yl) / 2 + 8, { font: 'mono', size: 26, weight: 800, color: C.heroText, align: 'right', alpha: kd });
+      text('Triangle lattice, same grams: ' + fmtN(SHL_FE.tri.defl, 1) + ' µm', Xb + 22, Yl + 8, { role: 'label', size: 21, color: C.heroText, alpha: kd });
+    }
+    /* where a plain wall would have to go to match it */
+    const kmm = ep(t, 7.2, 8.0, E.cam), Xm = m.X(SHL_FE.match);
+    if (kmm > 0) { line(Xb + 16, Yl, lerp(Xb + 16, Xm, kmm), Yl, { color: C.ink2, w: 1.5, dash: [5, 5], alpha: 0.9 }); const kq = ep(t, 7.9, 8.3); circle(Xm, Yl, 6, { fill: C.ink2, alpha: kq }); text('A plain wall: ' + fmtN(SHL_FE.match, 1) + ' g', Xm, Yl - 22, { role: 'label', size: 19, color: C.ink2, align: 'center', alpha: kq }); }
+    /* right: the question changes */
+    const rx = x + 1270, rw = w - 1270 - 40, kq1 = ep(t, 4.4, 4.9), flip = ep(t, 6.6, 7.4, E.cam);
+    text('The question was', rx, y + 150, { role: 'label', size: 21, color: C.mute, alpha: kq1 * (1 - flip) });
+    text('The question is', rx, y + 150, { role: 'label', size: 21, color: C.mute, alpha: flip });
+    const sy = 1 - 2 * Math.min(flip, 1 - flip) * 0.98, wordA = 'How much material', wordB = 'Where the material is';
+    G.save(); G.translate(0, y + 232); G.scale(1, Math.max(0.02, sy)); G.translate(0, -(y + 232));
+    text(flip < 0.5 ? wordA : wordB, rx, y + 232, { role: 'h2', size: 52, color: flip < 0.5 ? C.ink : C.heroText, grad: flip < 0.5 ? null : C.heroGrad, maxW: rw, lh: 1.04, alpha: kq1 });
+    G.restore();
+    const kn = ep(t, 7.6, 8.1);
+    text('Same 15.2 g body: ' + Math.round(SHL_FE.thick.press) + ' N/mm as a plain wall, ' + Math.round(SHL_FE.tri.press) + ' N/mm as a lattice. The ' + fmtN(SHL_FE.match, 1) + ' g is extrapolated along the plain wall\'s curve.', rx, y + 400, { role: 'small', size: 25, color: C.ink2, maxW: rw, lh: 1.34, alpha: kn, t, t0: 7.6, cps: 120 });
+    pill(rx, y + h - 40, 'derived', kn, { text: 'Derived, 3D shell FE' });
+  }
+});
+
+/* ============================== 5. stress hotspots: a solid plane breaks at one point (Brock's "cut material out of a solid plane") ==============================
+   the same grams across the same 60 mm span, solved as 2D frames: a solid plane (a beam of the full depth, thinner out
+   of the page) and triangles whose members are sized to their own force. The pointer presses each; the camera pushes
+   into the plane's hotspot; force runs through the triangles; the plane cracks where the tension peaks */
+S({
+  id: 'shlHotspot', ch: 'shell', theme: 'paper', title: 'Stress hotspots', settle: 10, ideas: [75, 93], src: ['shlHot2d', 'shlDoc', 'comsol'],
+  draw: t => {
+    header(t, 'Stress hotspots');
+    captions(t, [[0.6, 'A solid plane under a press: the stress piles into one spot under the finger, and that is where it cracks.'], [5.8, 'The same grams as triangles share the press along every member. The peak halves, and no spot runs hot.']]);
+    const R = shlHot(), smax = R.plate.peak, s = 15, sc = 12, H = SHL_HOT.H;
+    const tx = LM, tw0 = 1210, th = 300, ya = LAY.top, yb = LAY.top + th + 24;
+    const kA = ep(t, 1.8, 3.2, E.io3), kB = ep(t, 6.0, 7.2, E.io3);
+    /* tile A: the solid plane */
+    shlCard(t, 0.3, tx, ya, tw0, th, 'A solid plane', ['derived']);
+    const oxA = tx + 490, oyA = ya + 262, PA = p => [oxA + p[0] * s, oyA - p[1] * s];
+    const hot = PA([0, R.plate.d[R.plate.model.mid * 3 + 1] * sc * kA]), z = 1 + 0.85 * env(t, 3.5, 4.2, 4.7, 5.4, E.cam);
+    clipped(tx + 2, ya + 64, tw0 - 260, th - 66, () => {
+      G.save(); G.translate(hot[0], hot[1]); G.scale(z, z); G.translate(-hot[0], -hot[1]);
+      shlPlateField(R.plate, PA, kA, sc, smax, ep(t, 0.7, 1.2), { crack: ep(t, 8.0, 8.9) });
+      feSupport(PA([-30, 0]), 'pin', { alpha: ep(t, 0.8, 1.2) }); feSupport(PA([30, 0]), 'roll', { alpha: ep(t, 0.8, 1.2) });
+      G.restore();
+    });
+    const topA = PA([0, H + R.plate.d[R.plate.model.mid * 3 + 1] * sc * kA]);
+    if (z < 1.02) shlPress(t, 1.8, topA, kA);
+    /* the hotspot, named while the camera is in */
+    const kh = env(t, 3.9, 4.2, 4.7, 5.0);
+    if (kh > 0) { const r0 = 22 + 6 * Math.sin(t * 6); circle(hot[0], hot[1] - 4, r0, { color: C.bad, w: 2.5, alpha: kh }); text('Peak: ' + fmtN(R.plate.peak, 1) + ' MPa, here', hot[0] + 34, hot[1] - 30, { role: 'label', size: 21, color: C.bad, alpha: kh }); }
+    if (t > 8.0) callout(t, 8.0, [hot[0], hot[1] - 10], 'First crack, at one point', { to: [hot[0] + 170, ya + 96], side: 'r', color: C.bad, tcolor: C.bad });
+    /* tile B: the same grams as triangles, each member as thick as its force needs */
+    shlCard(t, 0.5, tx, yb, tw0, th, 'The same grams as triangles', ['derived']);
+    const oxB = tx + 490, oyB = yb + 262, PB = p => [oxB + p[0] * s, oyB - p[1] * s], aB = ep(t, 0.9, 1.4);
+    feDraw(R.sized, PB, { scale: sc, load: kB, smax, w: s * 0.92, alpha: aB, ghost: kB > 0.02, seg: 8 });
+    feFlow(R.sized, PB, t, { scale: sc, load: kB, alpha: aB });
+    feSupport(PB([-30, 0]), 'pin', { alpha: aB }); feSupport(PB([30, 0]), 'roll', { alpha: aB });
+    const md = R.sized.model.mid, topB = PB([R.sized.model.nodes[md][0], H + R.sized.d[md * 3 + 1] * sc * kB]);
+    shlPress(t, 6.0, topB, kB);
+    /* the pointer: onto the plane, a push, then across to the triangles */
+    cursorAt(t, [[1.0, [tx + 1060, ya + 250]], [1.7, [topA[0] + 2, topA[1] - 70]], [3.2, [topA[0] + 2, topA[1] - 62]], [5.3, [topA[0] + 2, topA[1] - 62]], [5.9, [topB[0] + 2, topB[1] - 70]], [7.2, [topB[0] + 2, topB[1] - 62]]], [1.8, 6.0], { a: ep(t, 0.7, 1.0) * (z < 1.02 ? 1 : 0) });
+    /* the readouts, right of each drawing */
+    const rx = tx + tw0 - 230;
+    [[R.plate, ya, kA, 1.9, false], [R.sized, yb, kB, 6.3, true]].forEach(([r, yy, k, t0, hero]) => {
+      const a = ep(t, t0, t0 + 0.4);
+      text('Peak stress', rx, yy + 100, { role: 'label', size: 19, color: C.mute, alpha: a });
+      rich([{ s: fmtN(r.peak, 1), font: 'disp', size: 56, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, tnum: true, count: [t0, 1.0] }, { s: 'MPa', font: 'mono', size: 22, weight: 600, color: C.mute, gap: 8 }], rx, yy + 160, { t, alpha: a });
+      text('Flex ' + fmtN(10000 / r.k, 0) + ' µm', rx, yy + 206, { font: 'mono', size: 22, weight: 600, color: C.ink2, alpha: a });
+      if (hero) text('−' + Math.round((1 - R.sized.peak / R.plate.peak) * 100) + '% peak, same grams', rx, yy + 244, { role: 'label', size: 19, color: C.heroText, alpha: ep(t, 7.4, 7.8) });
+      else text(Math.round((1 - r.work) * 100) + '% of its grams under half the peak', rx, yy + 244, { role: 'label', size: 19, color: C.bad, maxW: 210, lh: 1.25, alpha: ep(t, 4.4, 4.8) });
+    });
+    /* the words, in the right column */
+    const cx2 = tx + tw0 + 24, cw2 = RM - cx2;
+    const g1 = glossBox(t, 2.4, cx2, ya, cw2, 'Stress hotspot', 'A small spot where stress piles up far above the rest of the part. A crack starts there while the material round it barely works.', { size: 25 });
+    sourceBox(t, 5.0, cx2, ya + g1.h + 24, cw2, 'Brock, In Pursuit', 'On a solid plane the force usually converges onto one failure point, leaving lots of the material not structurally contributing.', { kind: 'estimate', label: 'Estimate', value: 'Brock', size: 25 });
+    text('2D frames solved in this page: PP-C-20A, 60 mm on a pin and a roller, 10 N on the middle. The plane has the same span, depth and grams. Flex drawn 12× real.', tx, yb + th + 40, { role: 'small', size: 25, color: C.faint, maxW: tw0, lh: 1.3, alpha: ep(t, 2.0, 2.4) });
+  }
+});
+
+/* ============================== 6. the grams that work (Brock: "the amount of grams a force will actually act on") ==============================
+   the same three frames, every gram coloured by how hard it works at the same press, most stressed first; the share
+   stressed to at least half of its own peak is the share that works */
+S({
+  id: 'shlWork', ch: 'shell', theme: 'night', title: 'The grams that work', settle: 10, ideas: [75, 93], src: ['shlHot2d', 'shlDoc', 'shlLattice'],
+  draw: t => {
+    header(t, 'The grams that work');
+    captions(t, [[0.6, 'Press each the same way and colour every gram by how hard it works. In the solid plane, most of them idle.'], [5.4, 'Sized to the force, triangles put nearly every gram to work. A solid plane needs about twice the grams to be as strong.']]);
+    const R = shlHot(), ref = R.plate.peak, rows = [[R.plate, 'Solid plane', 'plate'], [R.uni, 'Triangles, all one size', 'uni'], [R.sized, 'Triangles, sized to their force', 'sized']];
+    rows.forEach(([r, name, kind], i) => {
+      const y = LAY.top + 8 + i * 164, h = 140, t0 = 0.4 + i * 0.5, a = ep(t, t0, t0 + 0.45), k = ep(t, 1.4 + i * 0.5, 3.2 + i * 0.5, E.io3), hero = kind === 'sized';
+      demoWindow(LM, y, RM - LM, h, a);
+      /* a small picture of the frame, coloured the same way */
+      const s = 4.4, ox = LM + 166, oy = y + 104, P = p => [ox + p[0] * s, oy - p[1] * s];
+      if (kind === 'plate') shlPlateField(r, P, k, 0, ref, a, { ny: 8 }); else feDraw(r, P, { load: k, smax: ref, w: s * 0.95, alpha: a, seg: 4 });
+      /* the grams, as 52 cells of equal mass, most stressed first */
+      const bx = LM + 370, bw = 1040, by = y + 74, bh = 40, n = r.cells.length, gap = 3, cwid = (bw - gap * (n - 1)) / n;
+      text(name, bx, y + 46, { role: 'label', size: 21, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, alpha: a });
+      for (let c = 0; c < n; c++) { const kc = ep(k, c / n * 0.7, c / n * 0.7 + 0.3, E.lin); rr(bx + c * (cwid + gap), by, cwid, bh, 4, kc > 0 ? heatCol(r.cells[c] * kc / ref) : C.track, null, 0, a); }
+      /* where the cells drop under half this frame's own peak */
+      const cut = r.cells.findIndex(v => v < 0.5 * r.peak), xc = bx + (cut < 0 ? n : cut) * (cwid + gap) - gap / 2, kk = ep(t, 3.6 + i * 0.3, 4.0 + i * 0.3);
+      line(xc, by - 10, xc, by + bh + 10, { color: C.ink, w: 2, alpha: kk });
+      if (i === 0) text('Half its own peak', xc + 10, by - 12, { role: 'label', size: 19, color: C.mute, alpha: kk });
+      /* the share that works, and what that is on the study shell's body */
+      const nx = LM + 1450;
+      rich([{ s: String(Math.round(r.work * 100)), font: 'disp', size: 64, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, tnum: true, count: [3.6 + i * 0.3, 1.0] }, { s: '%', font: 'disp', size: 40, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, gap: 4 }], nx, y + 96, { t, alpha: kk });
+      text('of its grams work', nx + 140, y + 66, { role: 'label', size: 19, color: C.mute, alpha: kk });
+      text('≈ ' + fmtN(r.work * SHL_FE.g.body, 1) + ' of 15.2 g', nx + 140, y + 98, { font: 'mono', size: 22, weight: 600, color: C.ink2, alpha: kk });
+    });
+    /* the strength it buys, and the words */
+    const yb = LAY.top + 8 + 3 * 164, hb = 186;
+    statTile(t, 5.6, [LM, yb, 760, hb], { value: fmtN(R.match, 1), unit: '×', label: 'the grams a solid plane needs to be as strong', ev: 'derived', align: 'left' });
+    glossBox(t, 6.2, LM + 784, yb, RM - LM - 784, 'Grams that work', 'The share of a part stressed to at least half its own peak. ≈ g: that share of the 15.2 g study body, for scale; the rest only rides along.', { size: 25 });
+  }
+});
+
+/* ============================== 7. the real shell: the same grams as a triangle lattice; the meter starts here ============================== */
+const SHL_CROWN = [0, 37.67, -13.09];
+S({
+  id: 'shlShell3d', ch: 'shell', theme: 'paper', title: 'The same grams as a triangle lattice', settle: 10, ideas: [75, 15], src: ['shlLattice'], three: ['lattice'],
+  draw: t => {
+    header(t, 'The same grams as a triangle lattice');
+    captions(t, [[0.6, 'In the real shell: the body\'s 15.2 g as a plain wall, or as a thinner wall that carries a triangle lattice.'], [4.8, 'The lattice is twice as stiff on the crown, and its busiest rib runs below the plain wall\'s peak. The strip keeps score from here.']]);
+    /* left: the study shell, cut on its centre line, ribs growing, then the press colours them */
+    const x = LM, y = LAY.top, w = 1000, h = 660;
+    demoWindow(x, y, w, h, ep(t, 0.3, 0.7));
+    text('The study shell, cut on its centre line', x + 26, y + 46, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
+    const bx = x + 8, by = y + 64, bw = w - 16, bh = h - 72, st = { view: 'left', cut: 1, build: ep(t, 0.8, 3.0, E.io3), stress: ep(t, 3.4, 4.6), stressCase: 'press', zoom: in2D(1.62, 1.72), yaw: 0.1 * Math.sin(t * 0.4), pitch: 0.06 };
+    shl3D('lattice', t, bx, by, bw, bh, st, { alpha: ep(t, 0.5, 1.1) });
+    const pc = shlProj(st, [bx, by, bw, bh], SHL_CROWN), kp = ep(t, 3.2, 3.6);
+    shlPress(t, 3.2, pc, kp, { len: 70 });
+    cursorAt(t, [[2.6, [pc[0] + 140, pc[1] - 160]], [3.2, [pc[0] + 2, pc[1] - 84]], [4.0, [pc[0] + 2, pc[1] - 78]]], [3.3], { a: ep(t, 2.4, 2.7) });
+    if (!V2D.on) shlRamp(t, 3.8, x + 26, y + h - 62, 170, 6, 'Stress at 10 N');
+    /* right: the two numbers, the strip, and what the strip is */
+    const rx = x + w + 24, rw = RM - rx, cw2 = (rw - 24) / 2;
+    statTile(t, 1.0, [rx, y, cw2, 250], { head: 'Plain wall, 15.2 g', ev: 'derived', value: String(Math.round(SHL_FE.thick.press)), unit: 'N/mm', label: 'on the crown' });
+    statTile(t, 1.5, [rx + cw2 + 24, y, cw2, 250], { head: 'Triangle lattice', ev: 'derived', value: String(Math.round(SHL_FE.tri.press)), unit: 'N/mm', label: 'the same 15.2 g', hero: true });
+    shellMeter(t, 4.8, 'lattice', rx + 8, y + 290, rw - 16);
+    glossBox(t, 5.8, rx, y + 520, rw, 'The strip', 'Flex and peak stress at the same press and mass, against a plain thin wall at Theseus\'s mass with no ribs (100 %). Each gain from here multiplies in.', { size: 25 });
   }
 });
 

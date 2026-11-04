@@ -1,8 +1,8 @@
 /* ============================================================================================
    charts: the comparison components. Comparisons sell mice, so they get the most care.
-   One rule across all of them: Theseus is blue (C.hero, C.heroGrad), the best mouse shipping today (the reference, the
-   one to beat) is the second highlight, yellow (C.ref), every other mouse is grey (C.comp), and anything dominated or
-   out of scope is a lighter grey (C.comp2).
+   One rule across all of them: Theseus is blue (C.hero; its gradient only on its type), the best mouse shipping today
+   (the reference, the one to beat) is the second highlight, yellow (C.ref), every other mouse is grey (C.comp), and
+   anything dominated or out of scope is a lighter grey (C.comp2). Marks and bars are flat colour.
    Every chart animates from its own t0 and is a pure function of t. Every chart takes an `ev` (evidence kind)
    and prints it as a pill. Placeholder data must say so: pass placeholder: true and the chart stamps itself.
    APIs are documented in DESIGN.md with an example each.
@@ -10,13 +10,11 @@
 
 /** colour of a datum by its role: { hero, ref, dim, color } */
 function roleCol(d) { return d.color || (d.hero ? C.hero : d.ref ? C.ref : d.dim ? C.comp2 : C.comp); }
-/** the Theseus marker: a blue diamond with a soft glow (its shape, not only its colour, says Theseus) */
+/** the Theseus marker: a blue diamond, slightly rounded (its shape, not only its colour, says Theseus) */
 function heroMark(x, y, r = 12, a = 1, o = {}) {
   if (a <= 0.003) return;
   G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(Math.PI / 4);
-  G.shadowColor = rgba(C.hero, TH ? 0.35 : 0.6); G.shadowBlur = r * 1.6;
-  const g = G.createLinearGradient(-r, -r, r, r); C.heroGrad.forEach((c, j) => g.addColorStop(j / (C.heroGrad.length - 1), c));
-  G.fillStyle = o.fill || g; rrPath(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5, r * 0.22); G.fill(); G.shadowBlur = 0;
+  G.fillStyle = o.fill || C.hero; rrPath(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5, r * 0.22); G.fill();
   if (o.edge) { G.strokeStyle = o.edge; G.lineWidth = 2; G.strokeRect(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5); }
   G.restore();
 }
@@ -108,8 +106,8 @@ function barChart(t, o) {
     const d = 0.18 + i * (o.stagger == null ? 0.14 : o.stagger), k = ep(t, t0 + d, t0 + d + 0.9, E.snap), col = roleCol(b);
     const c = (H_ ? y : x) + slot * (i + 0.5), v1 = lo + (b.v - lo) * k;
     /* the bar */
-    if (H_) { const bx = x, by = c - bw / 2, bl = w * P(v1); if (bl > 0.5) { G.save(); rrPath(bx, by, bl, bw, Math.min(bw / 2, 10)); G.fillStyle = b.hero ? gradH(bx, Math.max(bl, 40), C.heroGrad) : col; G.fill(); G.restore(); } }
-    else { const bt = y + h - h * P(v1); if (y + h - bt > 0.5) { G.save(); rrPath(c - bw / 2, bt, bw, y + h - bt, Math.min(bw / 2, 10)); if (b.hero) { const g = G.createLinearGradient(0, y + h, 0, bt); C.heroGrad.forEach((cc, j) => g.addColorStop(j / (C.heroGrad.length - 1), cc)); G.fillStyle = g; } else G.fillStyle = col; G.fill(); G.restore(); } }
+    if (H_) { const bx = x, by = c - bw / 2, bl = w * P(v1); if (bl > 0.5) { G.save(); rrPath(bx, by, bl, bw, Math.min(bw / 2, 10)); G.fillStyle = col; G.fill(); G.restore(); } }
+    else { const bt = y + h - h * P(v1); if (y + h - bt > 0.5) { G.save(); rrPath(c - bw / 2, bt, bw, y + h - bt, Math.min(bw / 2, 10)); G.fillStyle = col; G.fill(); G.restore(); } }
     /* the samples: every measurement as a grey dot, jittered across the bar, landing one after another */
     const S = Array.isArray(b.samples) ? b.samples : b.samples ? synthSamples(b.v, b.samples) : null;
     if (S) {

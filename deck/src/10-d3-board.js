@@ -280,3 +280,235 @@ S({
     source(t, 'Gund NEMA FR4 sheet: 430 MPa tensile along the weave, 18 to 20 GPa flexural, 1.85 g/cm³. AZ91D: makeitfrom (160 to 220 MPa, 46 GPa), MatWeb (1.81 g/cm³).', { t0: 1.2 });
   }
 });
+
+/* ============================== 2. use the mass you already carry (#94) ==============================
+   Theseus's 29.31 g as one square per gram: the board (5.6 g, Brock's figure), the battery (a 7.5 g, 250 mAh pack), and
+   everything else (derived). The board's squares move from carried to structure; nothing is added. */
+const SHC_MASS = { total: THESEUS.mass, board: THESEUS.pcb, batt: 7.5 };
+SHC_MASS.rest = +(SHC_MASS.total - SHC_MASS.board - SHC_MASS.batt).toFixed(2);
+/** one square of the waffle: i = its gram, f = how much of it is filled (the last gram is 0.31), col = fill */
+function shcSquare(x, y, s, f, fill, a, o = {}) {
+  if (a <= 0.003 || f <= 0) return;
+  G.save(); G.globalAlpha = a;
+  rrPath(x, y, s, s, s * 0.22); G.clip();
+  G.fillStyle = o.track || C.track; G.fillRect(x, y, s, s);
+  G.fillStyle = fill; G.fillRect(x, y, s * f, s);
+  if (o.lattice) {
+    /* a triangle lattice laid over the board's squares: they are structure now */
+    G.globalAlpha = a * o.lattice; G.strokeStyle = TH ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.4)'; G.lineWidth = 1.4; G.beginPath();
+    const p = s / 3;
+    for (let k = -3; k <= 6; k++) { G.moveTo(x + k * p, y); G.lineTo(x + k * p + s * 0.577, y + s); G.moveTo(x + k * p, y + s); G.lineTo(x + k * p + s * 0.577, y); }
+    for (let k = 1; k < 3; k++) { G.moveTo(x, y + k * s / 3); G.lineTo(x + s, y + k * s / 3); }
+    G.stroke();
+  }
+  G.restore();
+}
+S({
+  id: 'shcCarry', after: 'shlPcbRib', ch: 'shell', theme: 'paper', title: 'Use the mass you already carry', settle: 9.5, ideas: [94],
+  src: ['shcBrock', 'exJauch', 'shlDoc', 'shlLattice'], three: ['lattice'],
+  draw: t => {
+    header(t, 'Use the mass you already carry');
+    captions(t, [[0.6, 'Every Theseus carries one board of about 5.6 g. Its mass is fixed, so the only question is whether it does any work.'], [4.8, 'In engineering you draw on every resource you have. Tie the side ribs to the board, and the same grams carry load.']]);
+    const y0 = LAY.top + 8, H0 = 960 - y0, M = SHC_MASS;
+    /* ---- left: the budget, one square per gram ---- */
+    { const [x, y, w, h] = [LM, y0, 1040, H0], a = shcTA(t, 0.25, 0);
+      demoWindow(x, y, w, h, a);
+      const hy = cardHead(t, 0.45, x, y, w, 'Theseus, ' + THS.massG + ', one square per gram', [{ ev: 'estimate', by: 'Brock' }, 'datasheet', 'derived']);
+      const s = 74, gp = 12, cols = 10, gx = x + 48, gy = hy + 70, mv = ep(t, 3.4, 4.6, E.cam);
+      /* a soft light rises behind the board's squares as they become structure */
+      glowField(t, gx + 3 * (s + gp), gy + s / 2, 330, { a: mv * a * 0.9 });
+      for (let i = 0; i < 30; i++) {
+        const c = i % cols, rw = Math.floor(i / cols), sx = gx + c * (s + gp), sy = gy + rw * (s + gp + 4);
+        const ka = ep(t, 0.8 + i * 0.035, 1.2 + i * 0.035, E.snap), dy = (1 - ka) * 16, f = clamp(M.total - i);
+        if (f <= 0 || ka <= 0.003) continue;
+        /* what this gram holds: the board, the battery or the rest (the 6th square is part board, part battery) */
+        const part = g => g < M.board ? 'board' : g < M.board + M.batt ? 'batt' : 'rest';
+        const segs = []; let gg = i; while (gg < Math.min(i + 1, M.total) - 1e-9) { const pt = part(gg), end = Math.min(i + 1, M.total, pt === 'board' ? M.board : pt === 'batt' ? M.board + M.batt : 1e9); segs.push([pt, gg - i, end - i]); gg = end; }
+        const kf = ep(t, 3.4 + i * 0.09, 3.9 + i * 0.09, E.snap);
+        G.save(); G.globalAlpha = a * ka; rrPath(sx, sy + dy, s, s, s * 0.22); G.clip(); G.fillStyle = C.track; G.fillRect(sx, sy + dy, s, s);
+        for (const [pt, u0, u1] of segs) {
+          G.globalAlpha = a * ka; G.fillStyle = pt === 'rest' ? C.comp2 : C.comp; G.fillRect(sx + s * u0, sy + dy, s * (u1 - u0), s);
+          if (pt === 'board' && kf > 0) { G.globalAlpha = a * ka * kf; G.fillStyle = gradH(gx, 6 * (s + gp), C.heroGrad); G.fillRect(sx + s * u0, sy + dy, s * (u1 - u0), s); }
+        }
+        G.restore();
+        if (segs[0][0] === 'board' && kf > 0) shcSquare(sx, sy + dy, s, Math.min(1, M.board - i), 'rgba(0,0,0,0)', a * ka, { lattice: kf, track: 'rgba(0,0,0,0)' });
+      }
+      /* the three groups, under the squares */
+      const ly = gy + 3 * (s + gp + 4) + 44, kl = ep(t, 2.0, 2.4);
+      const items = [['Board', THS.pcb, { ev: 'estimate', by: 'Brock' }, mv > 0.5 ? 'Structure now' : 'Carried'], ['Battery, 250 mAh', fmtN(M.batt, 1) + ' g', { ev: 'datasheet', by: 'Jauch' }, 'Carried'], ['Shell, buttons, wheel, skates, screws', fmtN(M.rest, 2) + ' g', { ev: 'derived' }, '']];
+      items.forEach(([nm, g, ev, st], i) => {
+        const xx = gx + [0, 330, 640][i], k = ep(t, 2.0 + i * 0.15, 2.4 + i * 0.15);
+        if (i === 0) heroTag(xx, ly, nm, g, { a: k }); else ltag(xx, ly, nm, g, { a: k, color: C.mute, vcolor: C.ink2 });
+        pill(xx, ly + 34, ev.ev, k, { by: ev.by });
+        if (st) text(st, xx, ly + 70, { role: 'label', size: 20, color: i === 0 && mv > 0.5 ? C.heroText : C.faint, alpha: k });
+      });
+      /* the stat: what the move is worth */
+      const ks = ep(t, 4.6, 5.2), sy = y + h - 60;
+      rich([{ s: fmtN(M.board / M.total * 100, 0), role: 'd1', size: 120, color: C.heroText, grad: C.heroGrad, tnum: true, count: [4.6, 1.0] }, { s: '%', font: 'disp', size: 56, weight: 800, color: C.heroText, grad: C.heroGrad, gap: 6, caps: false }], gx, sy, { t, alpha: ks });
+      text('of the mouse goes from riding along to carrying load.', gx + 250, sy - 50, { role: 'small', size: 26, weight: 600, color: C.ink2, maxW: 520, alpha: ks });
+      text('Mass added: 0 g.', gx + 250, sy - 6, { role: 'small', size: 26, weight: 600, color: C.heroText, alpha: ep(t, 5.0, 5.4) });
+    }
+    /* ---- right: where the ribs land on the board (the study shell, cut) ---- */
+    const rx = LM + 1040 + 24, rw = RM - rx;
+    { const [x, y, w, h] = [rx, y0, rw, 440], a = shcTA(t, 0.25, 1);
+      demoWindow(x, y, w, h, a);
+      text('Side ribs landing on the board', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
+      const bx = x + 8, by = y + 70, bw = w - 16, bh = h - 78;
+      const st = { view: [-0.75, 0.55, -0.25], target: in2D([0, 9, 9], [24, 9, 12]), cut: 1, zoom: lerp(in2D(2.9, 3.3), in2D(3.4, 4.0), ep(t, 0.4, 9, E.io3)), yaw: 0.05 * Math.sin(t * 0.35) };
+      clipped(bx, by, bw, bh, () => shc3D('lattice', t, bx, by, bw, bh, st, { alpha: ep(t, 0.5, 1.1) }));
+      /* the ties, lit one after another along the board's edge once it becomes structure */
+      const ties = [[25.24, 5.3, 9.17], [25.87, 5.3, -0.77], [25.14, 5.3, 19.25], [27.28, 5.3, -10.64], [25.34, 5.3, 29.76], [28.54, 5.3, -20.43], [25.1, 5.3, 41.16]];
+      ties.forEach((p, i) => {
+        const q = shcProj(st, [bx, by, bw, bh], p), k = ep(t, 3.6 + i * 0.12, 4.0 + i * 0.12, E.snap);
+        if (q[0] < bx + 10 || q[0] > bx + bw - 10 || q[1] < by + 10 || q[1] > by + bh - 10) return;
+        circle(q[0], q[1], 6 * k, { fill: C.hero, alpha: 0.95 * a }); circle(q[0], q[1], 6 + 14 * k, { color: C.hero, w: 2, alpha: (1 - k) * 0.8 + 0.25 });
+      });
+      const pT = shcProj(st, [bx, by, bw, bh], ties[0]), pB = shcProj(st, [bx, by, bw, bh], [14, 4.5, 14]);
+      callout(t, 4.4, pT, 'Rib meets the board', { to: [Math.min(bx + bw - 250, pT[0] + 90), by + 50], side: 'r', color: C.hero, tcolor: C.ink });
+      callout(t, 5.0, pB, 'The board, 1.0 mm FR4', { to: [Math.max(bx + 30, pB[0] - 40), by + bh - 34], side: 'r', color: C.ink, tcolor: C.ink });
+    }
+    { const y = y0 + 440 + 24;
+      sourceBox(t, 1.4, rx, y, rw, 'Brock, #94', 'The weight of the PCB is non-negotiable, so you may as well take advantage of it.', { h: 960 - y });
+    }
+  }
+});
+
+/* ============================== 3. small FR4 arms vs the whole board (#94, #91) ==============================
+   Three ways to hold the arches' feet, under the same press: the rim alone (the board left out), four small FR4 arms to the
+   screw bosses (how many mice reinforce: G-Wolves extends its boards at the sides), and the whole board tied by every side
+   rib. Seen from above at board height; the arch's thrust comes from the transverse model; one exaggeration for all three. */
+const SHC_CASES = [
+  { kind: 'none', name: 'Board left out', sub: 'Only the rim holds the arches' },
+  { kind: 'arms', name: 'Four small arms', sub: 'FR4 arms to the screw bosses' },
+  { kind: 'whole', name: 'The whole board', sub: 'Tied by every side rib', hero: true }
+];
+/** one case from above. c = shcBoard().cases[kind]; (cx, cy) = where the shell's centre lands, s = px per mm;
+   o = { k (0..1 of the press), a, crack (0..1) }. returns { P, root } (root: the hot arm's root on the stage, for the lens) */
+function shcPlanDraw(t, c, cx, cy, s, o) {
+  const R = shcBoard(), r = c.r, M = r.model, k = o.k * c.sc, a = o.a, exag = 26 / (R.cases.none.r.dmax * R.cases.none.sc * s);
+  const P = p => [cx - p[0] * s, cy - p[1] * s], out = { P };
+  if (a <= 0.003) return out;
+  /* the shell from above, quietly */
+  G.save(); G.globalAlpha = a; G.beginPath(); shcOutline().forEach((p, i) => { const q = P(p); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); }); G.closePath();
+  G.fillStyle = inkA(TH ? 0.03 : 0.04); G.fill(); G.strokeStyle = inkA(TH ? 0.14 : 0.16); G.lineWidth = 1.5; G.stroke(); G.restore();
+  /* the board's outline: dashed when it is left out of the structure */
+  const B = shcBoardOutline(), tracePath = () => { G.beginPath(); B.forEach((p, i) => { const q = P(p); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); }); G.closePath(); };
+  G.save(); G.globalAlpha = a; tracePath();
+  if (c.kind === 'none') { G.setLineDash([7, 6]); G.strokeStyle = inkA(0.32); G.lineWidth = 1.5; G.stroke(); G.setLineDash([]); }
+  else { G.fillStyle = c.kind === 'whole' ? C.heroSoft : inkA(TH ? 0.05 : 0.06); G.fill(); G.strokeStyle = c.kind === 'whole' ? rgba(C.hero, 0.55) : inkA(0.28); G.lineWidth = 1.5; G.stroke(); }
+  G.restore();
+  if (c.kind === 'none') { const q = P([0, 9]); text('Board, carried', q[0], q[1] + 8, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: a }); }
+  const only = part => e => M.els[e].part !== part, base = { load: k, scale: exag, smax: R.smax, alpha: a };
+  if (c.kind !== 'none') feDraw(r, P, Object.assign({}, base, { hide: only('board'), wpx: 1.4, alpha: a * 0.8 }));
+  feDraw(r, P, Object.assign({}, base, { hide: only('ring'), w: s }));
+  if (c.kind === 'arms') feDraw(r, P, Object.assign({}, base, { hide: only('arm'), w: s }));
+  if (c.kind === 'whole') feDraw(r, P, Object.assign({}, base, { hide: only('rib'), wpx: 3.2 }));
+  if (o.k > 0.25) feFlow(r, P, t, { load: k, scale: exag, nmax: R.nmax, alpha: a * 0.6 * ep(o.k, 0.25, 0.8, E.lin) });
+  /* the arches' thrust, where it arrives at the rim */
+  const Hm = Math.max(R.cases.none.H, R.cases.arms.H, R.cases.whole.H);
+  for (const [z, sh] of Object.entries(SHC.share)) for (const sd of [1, -1]) {
+    const i = M.rowNode[z + ':' + sd], n0 = M.nodes[i], q = P([n0[0] + r.d[i * 3] * k * exag, n0[1] + r.d[i * 3 + 1] * k * exag]);
+    const len = 46 * (sh / 0.75) * (c.H / Hm) * o.k, dir = -sd;           /* +x (the user's left) is to the stage's left */
+    if (len > 3) arrow(q[0] + dir * 10, q[1], q[0] + dir * (10 + len), q[1], { color: C.ink2, w: 2.6, hs: 10, alpha: a * 0.9 });
+  }
+  /* the hot arm: its root glows, then cracks */
+  if (c.kind === 'arms' && c.hot) {
+    const l = c.hot, nb = M.nodes[l.board], nr = M.nodes[l.ring];
+    const rb = P([nb[0] + r.d[l.board * 3] * k * exag, nb[1] + r.d[l.board * 3 + 1] * k * exag]), rr0 = P([nr[0] + r.d[l.ring * 3] * k * exag, nr[1] + r.d[l.ring * 3 + 1] * k * exag]);
+    const ux = rr0[0] - rb[0], uy = rr0[1] - rb[1], uL = Math.hypot(ux, uy) || 1, root = [rb[0] + ux / uL * 4, rb[1] + uy / uL * 4];
+    out.root = root;
+    if (o.k > 0.6) glow(root[0], root[1], 26, C.bad, 0.55 * a * (0.75 + 0.25 * Math.sin(t * 5)) * ep(o.k, 0.6, 1));
+    if (o.crack > 0) {
+      const nx = -uy / uL, ny = ux / uL, half = 2.0 * s + 5, pts = [];
+      for (let j = 0; j <= 6; j++) { const f = -1 + 2 * j / 6 * o.crack, wob = (j % 2 ? 2.2 : -2.2); pts.push([root[0] + nx * half * f + ux / uL * wob, root[1] + ny * half * f + uy / uL * wob]); }
+      poly(pts, { color: C.bad, w: 3, alpha: a });
+    }
+  }
+  return out;
+}
+/** the arm alone, edge on, as a fixed-guided FR4 beam: the board holds its root, the shell its tip. d = its tip's movement (mm) */
+function shcArmZoom(t, x, y, w, h, d, crack, a) {
+  const R = shcBoard(), A = R.arm, r = A.r, L = A.L, n = r.model.n, unit = r.d[n * 3 + 1];
+  const s = Math.min((w - 180) / (L + 3), 46), ox = x + 96, oy = y + h * 0.5 + 8, P = p => [ox + p[0] * s, oy - p[1] * s];
+  /* a soft light under the root */
+  glowField(t, ox + 10, oy, 160, { a: a * 0.7, cols: [C.bad, C.heat, C.heatL] });
+  feDraw(r, P, { load: d / unit, scale: 1, smax: 483, wpx: s * 1.0, alpha: a, seg: 14 });
+  /* the board's edge (it holds the root) and the shell's boss (it holds the tip), drawn over the beam's ends */
+  G.save(); G.globalAlpha = a;
+  rrPath(ox - 2.6 * s, oy - 0.5 * s, 2.6 * s, 1.0 * s, 4); G.fillStyle = C.comp; G.fill();
+  G.save(); rrPath(ox - 2.6 * s, oy - 0.5 * s, 2.6 * s, 1.0 * s, 4); G.clip(); G.strokeStyle = inkA(0.18); G.lineWidth = 1; G.beginPath(); for (let k = -6; k < 30; k++) { const xx = ox - 2.6 * s + k * 8; G.moveTo(xx, oy - 0.5 * s); G.lineTo(xx + 10, oy + 0.5 * s); } G.stroke(); G.restore();
+  const tip = P([L, d]); rrPath(tip[0], tip[1] - 1.4 * s, 1.6 * s, 2.8 * s, 6); G.fillStyle = C.comp2; G.fill();
+  G.restore();
+  text('Board', ox - 1.3 * s, oy + 0.5 * s + 30, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: a });
+  text('Shell boss', tip[0] + 0.8 * s, tip[1] + 1.4 * s + 30, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: a });
+  /* the crack: it starts on the stretched face at the root and runs across the 1 mm */
+  if (crack > 0) {
+    const pts = []; for (let j = 0; j <= 7; j++) { const f = j / 7 * crack; pts.push([ox + (0.08 + (j % 2 ? 0.07 : 0)) * s, oy + 0.5 * s - f * 1.0 * s]); }
+    poly(pts, { color: C.bad, w: 3.2, alpha: a });
+  }
+  return { ox, oy, s, P, tip };
+}
+S({
+  id: 'shcArms', after: 'shcCarry', ch: 'shell', theme: 'night', title: 'Small FR4 arms vs the whole board', settle: 10, ideas: [94, 91],
+  src: ['shcBoardFE', 'shcTpuHati', 'shcTpuHatiR', 'shcBrock', 'shlFr4', 'shcFr4Flex', 'shlPyrofil', 'shlLattice'],
+  draw: t => {
+    header(t, 'Small FR4 arms vs the whole board');
+    captions(t, [[0.6, 'Many mice reinforce the shell with small arms of FR4; G-Wolves extends its boards at the sides. Press the crown and follow the force.'], [5.6, 'Four arms hold the feet, but every newton goes through four roots. Tied by every rib, the whole board spreads it, and has nothing to snap off.']]);
+    const R = shcBoard(), y0 = LAY.top + 8, H0 = 960 - y0;
+    /* ---- the simulation, three ways, side by side ---- */
+    const [sx, sy, sw, sh] = [LM, y0, 1150, H0], a0 = shcTA(t, 0.25, 0);
+    demoWindow(sx, sy, sw, sh, a0);
+    const colW = (sw - 48) / 3, s = 3.25, press = [1.9, 2.55, 3.2], lens = { root: null };
+    SHC_CASES.forEach((cs, i) => {
+      const c = R.cases[cs.kind], cx = sx + 24 + colW * (i + 0.5), cy = sy + 372, a = ep(t, 0.5 + i * 0.18, 1.0 + i * 0.18, E.snap) * a0;
+      if (cs.hero) glowField(t, cx, cy, 250, { a: a * ep(t, press[i] + 0.4, press[i] + 1.6) * 0.8 });
+      const kL = ep(t, press[i], press[i] + 0.9, E.io3), crack = cs.kind === 'arms' ? ep(t, 6.2, 6.8, E.out3) : 0;
+      const o = shcPlanDraw(t, c, cx, cy, s, { k: kL, a, crack });
+      if (o.root) lens.root = o.root;
+      /* the press, held at the crown */
+      const pc = o.P([0, SHC.crown]);
+      if (t > press[i]) { circle(pc[0], pc[1], 9, { fill: cs.hero ? C.hero : C.ink, alpha: a * 0.9 }); circle(pc[0], pc[1], 16, { color: cs.hero ? C.hero : C.ink, w: 2, alpha: a * 0.35 }); }
+      /* the name over each, the numbers under */
+      if (cs.hero) text(cs.name, cx, sy + 62, { role: 'label', size: 22, color: C.heroText, align: 'center', alpha: a }); else text(cs.name, cx, sy + 62, { role: 'label', size: 22, color: C.ink, align: 'center', alpha: a });
+      text(cs.sub, cx, sy + 96, { role: 'small', size: 25, color: C.mute, align: 'center', alpha: a });
+      const kn = ep(t, press[i] + 0.9, press[i] + 1.5), ny = sy + sh - 112;
+      const sp = c.spread / R.cases.none.spread * 100, spS = sp >= 10 ? fmtN(sp, 0) : fmtN(sp, 1);
+      rich([{ s: spS, role: 'd1', size: 60, color: cs.hero ? C.heroText : C.ink, grad: cs.hero ? C.heroGrad : undefined, tnum: true, count: [press[i] + 0.9, 0.9] }, { s: '%', font: 'disp', size: 30, weight: 800, color: cs.hero ? C.heroText : C.ink, grad: cs.hero ? C.heroGrad : undefined, gap: 4, caps: false }], cx, ny, { t, align: 'center', alpha: kn });
+      text('Feet spread', cx, ny + 34, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kn });
+      const fr = cs.kind === 'none' ? 'FR4 carries nothing' : cs.kind === 'arms' ? 'FR4 peak ' + fmtN(c.arm, 1) + ' MPa, at the roots' : 'FR4 peak ' + fmtN(Math.max(c.board, 0.05), 1) + ' MPa';
+      text(fr, cx, ny + 70, { role: 'small', size: 25, weight: 600, color: cs.kind === 'arms' ? C.bad : cs.hero ? C.heroText : C.faint, align: 'center', alpha: kn });
+    });
+    /* the pointer presses each crown in turn */
+    { const c0 = i => [sx + 24 + colW * (i + 0.5), sy + 372 - SHC.crown * s];
+      cursorAt(t, [[1.3, [sx + sw * 0.2, sy + sh + 40]], [1.85, c0(0)], [2.05, c0(0)], [2.5, c0(1)], [2.7, c0(1)], [3.15, c0(2)], [3.4, c0(2)], [4.2, [sx + sw - 60, sy + sh - 160]]], press, { a: ep(t, 1.2, 1.5) * (1 - ep(t, 4.0, 4.4)) });
+    }
+    /* ---- right: the arm's root, close up ---- */
+    const rx = LM + 1150 + 24, rw = RM - rx;
+    { const [x, y, w, h] = [rx, y0, rw, 410], a = shcTA(t, 0.25, 1);
+      demoWindow(x, y, w, h, a);
+      const hy = cardHead(t, 0.6, x, y, w, 'One arm, edge on', ['derived']);
+      const dMax = R.arm.snap[0], d = dMax * ep(t, 4.4, 6.2, E.io3), crack = ep(t, 6.2, 6.8, E.out3);
+      const Z = shcArmZoom(t, x, y + 64, w, 200, d, crack, ep(t, 0.9, 1.4) * a);
+      const ks = ep(t, 6.4, 7.0);
+      rich([{ s: fmtN(R.arm.snap[0], 2), role: 'd1', size: 64, color: C.ink, tnum: true }, { s: 'mm', font: 'disp', size: 28, weight: 700, color: C.mute, gap: 8, caps: false }], x + 32, y + h - 72, { alpha: ks });
+      text('at its tip takes the root to FR4\'s 483 MPa bending strength: it snaps there.', x + 200, y + h - 100, { role: 'small', size: 25, color: C.ink2, maxW: w - 232, lh: 1.3, alpha: ks });
+      /* the lens: from the hot root in the middle panel to here */
+      if (lens.root) {
+        const kl = ep(t, 4.0, 4.7, E.cam), end = [x, y + 64 + 100];
+        if (kl > 0) { G.save(); G.globalAlpha = 0.6 * kl * (1 - 0.6 * ep(t, 7.5, 8.5)); G.setLineDash([5, 6]); G.strokeStyle = C.bad; G.lineWidth = 1.5; G.beginPath(); G.moveTo(lens.root[0], lens.root[1]); G.lineTo(lerp(lens.root[0], end[0], kl), lerp(lens.root[1], end[1], kl)); G.stroke(); G.setLineDash([]); G.restore(); circle(lens.root[0], lens.root[1], 18, { color: C.bad, w: 2, alpha: kl * 0.9 }); }
+      }
+    }
+    /* ---- the evidence for the arms ---- */
+    { const y = y0 + 410 + 24, h = 212, a = shcTA(t, 0.25, 2), x = rx, w = rw;
+      demoWindow(x, y, w, h, a);
+      const k1 = ep(t, 1.0, 1.4), k2 = ep(t, 1.4, 1.8);
+      pill(x + 32, y + 50, 'measured', k1, { by: 'TechPowerUp' });
+      text('G-Wolves boards are "extended at the sides to help with shell rigidity."', x + 32, y + 86, { role: 'small', size: 25, color: C.ink2, maxW: w - 64, lh: 1.3, alpha: k1 });
+      pill(x + 32, y + 150, 'estimate', k2, { by: 'Brock' });
+      text('The arms on my HTS Ultra broke in shipping.', x + 32, y + 186, { role: 'small', size: 25, color: C.ink2, maxW: w - 64, alpha: k2 });
+    }
+    /* ---- the meter: this step on the strip ---- */
+    shellMeter(t, 7.2, 'board', rx, y0 + 410 + 24 + 212 + 30, rw, { compact: true });
+    source(t, '2D frames solved in this page: the shell at board height from above (CF-PP rim 13.5 GPa, FR4 board 19 GPa, 1.0 mm); a transverse arch under 7.5 N of a 10 N crown press; the arm as a fixed-guided beam.', { t0: 1.6 });
+  }
+});
