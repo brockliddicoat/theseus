@@ -178,7 +178,7 @@ export async function buildShell(opts = {}) {
   const variant = opts.variant || 'theseus';
   // the Theseus shell ships with one seam from the nose to the rear (tools/one_seam.py); the first build had a centre cap
   const glbUrl = opts.glbUrl || HERE + (variant === 'theseus' ? 'shell-theseus-1seam.glb' : `shell-${variant}.glb`);
-  const metaUrl = opts.metaUrl || HERE + `shell-${variant}.json`;
+  const metaUrl = opts.metaUrl || HERE + (variant === 'theseus' ? 'shell-theseus-1seam.json' : `shell-${variant}.json`);
   const [gltf, meta] = await Promise.all([
     new GLTFLoader().loadAsync(glbUrl),
     fetch(metaUrl).then(r => r.json()),

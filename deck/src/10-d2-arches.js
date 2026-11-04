@@ -12,8 +12,8 @@
      shbMill      fillets make the mold easier to cut
      shbTol       a fillet loosens the tightest tolerance
      shbSides     the flatter low sides and the thumb rest: a thicker lattice band (the real section)
-   Every model number is DERIVED and the slide names its model in a line. Theseus is C.hero (blue), the next best C.second,
-   a problem C.bad; stress heat is heatCol. No colour is written as hex here. */
+   Every model number is DERIVED and the slide names its model in a line. Theseus is C.hero (blue), a problem C.bad, stress
+   heat heatCol; only neutral material greys (mold steel, melt, electrode) are written as hex. No meter steps: see shbBend. */
 
 Object.assign(SRC, {
   shbHiseasNasa: { t: 'NASA Goddard, HI-SEAS campaign page: "Crew members lived in a geodesic dome habitat"; HI-SEAS is "a long duration Mars analog simulation program" on Mauna Loa, run by the University of Hawai\'i at Mānoa', u: 'https://earth.gsfc.nasa.gov/acd/campaigns/hi-seas' },
@@ -234,7 +234,8 @@ S({
     demoWindow(tx, ty, tw0, th0, tileA(t, 0.25, 0));
     /* the camera: a slow drift and a gentle push toward the crown */
     const kz = ep(t, 0.4, 10.5, E.cam), drift = 0.05 * Math.sin(t * 0.22);
-    const nodeW = L.node, cam = shbCam({ yaw: -0.62 + drift + 0.06 * kz, pitch: lerp(0.6, 0.68, kz), s: lerp(6.9, 7.6, kz), cx: tx + tw0 * 0.47, cy: ty + th0 * 0.43, T: [lerp(0, nodeW[0], kz * 0.3), lerp(12, nodeW[1] * 0.4, kz * 0.3), lerp(-2, nodeW[2], kz * 0.3)] });
+    const nodeW = L.node, T0 = [0, 12, -2], fit = shbOnce('archFit', () => { const c = shbCam({ yaw: -0.59, pitch: 0.64, s: 1, cx: 0, cy: 0, T: T0 }); let a = 1e9, b = -1e9, u = 1e9, v = -1e9; L.lines.forEach(l => l.pts.forEach(p => { const q = c(p); a = Math.min(a, q[0]); b = Math.max(b, q[0]); u = Math.min(u, q[1]); v = Math.max(v, q[1]); })); return { a, b, u, v }; });
+    const sF = Math.min((tw0 - 140) / (fit.b - fit.a), (th0 - 190) / (fit.v - fit.u)) * lerp(0.97, 1.03, kz), cam = shbCam({ yaw: -0.62 + drift + 0.06 * kz, pitch: lerp(0.6, 0.68, kz), s: sF, cx: tx + tw0 / 2 - sF * (fit.a + fit.b) / 2, cy: ty + 60 + (th0 - 190) / 2 - sF * (fit.u + fit.v) / 2, T: T0 });
     const vis = n => n[0] * cam.view[0] + n[1] * cam.view[1] + n[2] * cam.view[2];
     clipped(tx + 2, ty + 2, tw0 - 4, th0 - 4, () => {
       /* the shell's outline: rim and widest line, quiet */
@@ -378,7 +379,7 @@ S({
         if (k < 1 && pts.length) { const tip = pts[pts.length - 1]; glow(tip[0], tip[1], 14, acc(), 0.5 * (1 - k)); }
       });
     });
-    shbFig(t, 1.0, tx + 32, ty + th0 - 32, '02', 'A geodesic dome: its struts chained into lines that run straight through each node');
+    shbFig(t, 1.0, tx + 32, ty + th0 - 32, '02', 'A geodesic dome: its struts chained into lines straight through each node');
     /* the column: the dome NASA's crews lived in, and Fuller's own words */
     const x2 = tx + tw0 + 40, w2 = RM - x2, B = bento(x2, ty, w2, 320, 2, 1);
     statTile(t, 1.2, B(0, 0), { value: '5', label: 'Mars missions, in a dome', ev: 'measured', by: 'HI-SEAS' });
@@ -392,6 +393,9 @@ S({
    thick; the arch is a parabola with a 20 mm rise, thinned so its 60 elements weigh the same (0.55 g). The press is 10 N
    over a 10 mm pad (a fingertip), or 10 N spread evenly over the span. Every number the slides print comes from these. */
 const SHB_A = { span: 60, rise: 20, h0: 0.9, w: 10, n: 60, P: 10, pad: 10 };
+/* No shell-meter step comes from this file. The meter's plain wall is the mouse's own dome, so the arch effect is already
+   inside Shell A's 'lattice' step (a triangle lattice on a dome is the interwoven arches); the fibre gain and the side band
+   can't be stated at the same press and the same mass without a mold-flow model and a 3D model of the band. */
 function shbArchModel(kind, load, xc) {
   const A = SHB_A, pts = [];
   for (let i = 0; i <= A.n; i++) { const x = -A.span / 2 + A.span * i / A.n; pts.push([x, kind === 'flat' ? 0 : A.rise * (1 - Math.pow(2 * x / A.span, 2))]); }
@@ -433,7 +437,7 @@ S({
     header(t, 'Arch action vs a flat plate');
     captions(t, [[0.6, 'Same span, same grams, same press. A flat plate can only carry it by bending. An arch turns it into compression along its curve.'],
       [4.4, 'At 10 N the plate gives ' + fmtN(dF, 1) + ' mm and peaks at ' + fmtN(pkF, 0) + ' MPa. The arch gives ' + fmtN(dA, 2) + ' mm and peaks at ' + fmtN(pkA, 0) + ' MPa.'],
-      [7.2, 'Press on. The plate cracks at ' + fmtN(brkF, 0) + ' N. The arch holds to ' + fmtN(brkA, 0) + ' N, on the same grams.']]);
+      [7.2, 'Press on. As with the plane before, the peak decides: the plate cracks at ' + fmtN(brkF, 0) + ' N, the arch holds to ' + fmtN(brkA, 0) + ' N, on the same grams.']]);
     const Fof = u => u < 1.9 ? 0 : u < 4.0 ? A.P * ep(u, 1.9, 4.0, E.io3) : u < 7.0 ? A.P : lerp(A.P, brkA, ep(u, 7.0, 9.8, E.io3));
     const F = Fof(t), tB = shbWhen(Fof, brkF, 7.0, 9.8), brokeF = t >= tB, kc = ep(t, tB, tB + 0.5);
     const x0 = LM, y0 = 280, w0 = 1760, h0 = 640, a0 = tileA(t, 0.3, 0);
@@ -526,7 +530,7 @@ S({
           const x = -A.span / 2 + q * 6, xg = lerp(x, xc + (q - 5) * 1.1, g), ya = A.rise * (1 - Math.pow(2 * xg / A.span, 2)), p = P([xg, ya]);
           arrow(p[0], p[1] - 46, p[0], p[1] - 10, { color: C.mute, w: 2, hs: 10, alpha: aD * kL * (1 - ep(t, 6.3, 6.6)) });
         }
-        if (g > 0.003) { const p = shbOnArch(R, P, xc, 3); shbPad(p[0], p[1] - 6, A.pad * s, 0.25, aD * ep(t, 6.2, 6.6), C.ink2); }
+        if (g > 0.003) { const p = shbOnArch(R, P, xc, 3); shbPad(p[0], p[1] - 2, A.pad * s, 0.25, aD * ep(t, 6.2, 6.6), C.ink2); }
         /* the thrust line, from the solve: inside the rib where |e| < h / 2 */
         const kT = ep(t, 4.1, 5.0), TL = shbThrustLine(R).map(q => { const p = P([q[0], q[1]]); return [p[0], p[1], q[2], q[3]]; });
         if (kT > 0.003) {
@@ -629,9 +633,477 @@ S({
       const bx = sx + sw + 24; line(bx, st - 6, bx, st + sh + 6, { color: C.mute, w: 1.5, alpha: a });
       for (let q = 0; q <= 8; q++) { const f = q / 8, sv = lerp(top, bot, f) * kk, L = sv * sc, yq = st + f * sh; if (Math.abs(L) > 3) arrow(L < 0 ? bx - L : bx, yq, L < 0 ? bx : bx + L, yq, { color: heatCol(Math.abs(sv) / ft), w: 3, hs: 9, alpha: a }); }
       if (top * bot < 0) { const f0 = top / (top - bot), yn = st + f0 * sh; line(sx - 8, yn, bx + 170, yn, { color: C.mute, w: 1.5, dash: [4, 4], alpha: a * kk }); text('Neutral axis: idle', bx + 190, yn + 8, { role: 'small', size: 22, color: C.mute, alpha: a * ep(t, t0 + 1.0, t0 + 1.4) }); }
-      const vx = bx + 190;
+      const vx = ld === 'uni' ? bx + 40 : bx + 190;
       text((top < 0 ? 'Squeezed ' : 'Stretched ') + fmtN(Math.abs(top * kk), Math.abs(top) < 10 ? 1 : 0) + ' MPa' + (ld === 'uni' ? ', all through' : ''), vx, ld === 'uni' ? syc + 8 : st + 6, { role: 'small', size: 22, color: C.ink2, alpha: a * ep(t, t0 + 1.0, t0 + 1.4) });
       if (ld !== 'uni') text((bot < 0 ? 'Squeezed ' : 'Stretched ') + fmtN(Math.abs(bot * kk), Math.abs(bot) < 10 ? 1 : 0) + ' MPa', vx, st + sh + 16, { role: 'small', size: 22, color: C.ink2, alpha: a * ep(t, t0 + 1.0, t0 + 1.4) });
     });
+  }
+});
+/* ---------- the melt at a lattice node: a 2D Stokes flow and the fibres it carries (illustrative) ----------
+   Three continuous ribs (1.0 mm wide) cross at 60°; the melt comes in along one of them and leaves by the other five.
+   Stream function and vorticity on a grid (h mm), solved by over-relaxation; the solid islands between the ribs hold
+   their own ψ (the flux each arm carries), the open ends carry a parabolic (Poiseuille) profile, the walls take Thom's
+   vorticity. Fillets round each island's tip (radius r). Fibres are rigid rods carried by the flow and turned by
+   Jeffery's equation (λ = 0.98, long fibres). Everything is computed once and kept. */
+function shbStokes(r, o = {}) {
+  const W = 1.0, Lr = o.L || 4.2, h = o.h || 1 / 14, N = Math.round(2 * Lr / h) + 1, c = (N - 1) / 2, n = N * N;
+  const X = i => (i - c) * h, Y = j => (j - c) * h;
+  const dirs = [0, 60, 120].map(a => [Math.cos(a * Math.PI / 180), Math.sin(a * Math.PI / 180)]);
+  const fluid = new Uint8Array(n), island = new Int8Array(n).fill(-1), half = W / 2, tipD = half / Math.sin(Math.PI / 6);
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const x = X(i), y = Y(j), k = j * N + i;
+    let f = dirs.some(d => Math.abs(-d[1] * x + d[0] * y) <= half + 1e-9);
+    const isl = Math.floor(((Math.atan2(y, x) + TAU) % TAU) / (Math.PI / 3));
+    if (!f && r > 0) {
+      const b = (30 + 60 * isl) * Math.PI / 180, ux = Math.cos(b), uy = Math.sin(b), sAl = x * ux + y * uy - tipD, nn = -x * uy + y * ux;
+      const dc = r / Math.sin(Math.PI / 6), tlen = r / Math.tan(Math.PI / 6);
+      if (sAl < tlen * Math.cos(Math.PI / 6) && Math.hypot(sAl - dc, nn) > r) f = true;
+    }
+    if (Math.hypot(x, y) > Lr) f = false;
+    fluid[k] = f ? 1 : 0; if (!f) island[k] = isl;
+  }
+  const flux = o.flux || [0.4, 0.22, 0.08, -1, 0.08, 0.22], psiIsl = new Float64Array(6);
+  for (let k = 0; k < 6; k++) psiIsl[k] = (k ? psiIsl[k - 1] : 0) + flux[k];
+  const psi = new Float64Array(n), om = new Float64Array(n), isB = new Uint8Array(n);
+  for (let k = 0; k < n; k++) if (!fluid[k]) psi[k] = psiIsl[island[k]];
+  const Rr = Lr - 1.5 * h;
+  for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const k = j * N + i; if (!fluid[k]) continue; const x = X(i), y = Y(j);
+    if (Math.hypot(x, y) > Rr) {
+      const arm = Math.round(((Math.atan2(y, x) + TAU) % TAU) / (Math.PI / 3)) % 6, th = arm * Math.PI / 3;
+      const eta = clamp((-Math.sin(th) * x + Math.cos(th) * y) / W + 0.5), p0 = psiIsl[(arm + 5) % 6], q = psiIsl[arm] - p0;
+      psi[k] = p0 + q * (3 * eta * eta - 2 * eta * eta * eta); om[k] = -q * (6 - 12 * eta) / (W * W); isB[k] = 1;
+    }
+  }
+  const inner = [], wallN = [];
+  for (let j = 1; j < N - 1; j++) for (let i = 1; i < N - 1; i++) {
+    const k = j * N + i;
+    if (fluid[k] && !isB[k]) inner.push(k);
+    if (!fluid[k]) { const nb = [k - 1, k + 1, k - N, k + N].filter(q => fluid[q]); if (nb.length) wallN.push([k, nb]); }
+  }
+  const h2 = h * h, wS = 1.6, wO = 1.0, relW = 0.1, its = o.iters || 2500;
+  for (let it = 0; it < its; it++) {
+    for (const [k, nb] of wallN) { let sm = 0; for (const q of nb) sm += -2 * (psi[q] - psi[k]) / h2; om[k] = om[k] * (1 - relW) + relW * sm / nb.length; }
+    for (const k of inner) { const v = 0.25 * (om[k - 1] + om[k + 1] + om[k - N] + om[k + N]); om[k] += wO * (v - om[k]); }
+    for (const k of inner) { const v = 0.25 * (psi[k - 1] + psi[k + 1] + psi[k - N] + psi[k + N] + h2 * om[k]); psi[k] += wS * (v - psi[k]); }
+  }
+  /* velocity, its gradient and the shear rate on the grid (zero in the steel) */
+  const u = new Float64Array(n), v = new Float64Array(n), gxx = new Float64Array(n), gxy = new Float64Array(n), gyx = new Float64Array(n), gyy = new Float64Array(n), sh = new Float64Array(n);
+  for (let j = 1; j < N - 1; j++) for (let i = 1; i < N - 1; i++) { const k = j * N + i; if (!fluid[k]) continue; u[k] = (psi[k + N] - psi[k - N]) / (2 * h); v[k] = -(psi[k + 1] - psi[k - 1]) / (2 * h); }
+  for (let j = 1; j < N - 1; j++) for (let i = 1; i < N - 1; i++) {
+    const k = j * N + i; if (!fluid[k]) continue;
+    gxx[k] = (u[k + 1] - u[k - 1]) / (2 * h); gxy[k] = (u[k + N] - u[k - N]) / (2 * h); gyx[k] = (v[k + 1] - v[k - 1]) / (2 * h); gyy[k] = (v[k + N] - v[k - N]) / (2 * h);
+    sh[k] = Math.sqrt(2 * (gxx[k] * gxx[k] + gyy[k] * gyy[k]) + (gxy[k] + gyx[k]) * (gxy[k] + gyx[k]));
+  }
+  const at = (F, x, y) => { const fi = x / h + c, fj = y / h + c, i0 = Math.floor(fi), j0 = Math.floor(fj); if (i0 < 0 || j0 < 0 || i0 >= N - 1 || j0 >= N - 1) return 0; const fx = fi - i0, fy = fj - j0, k = j0 * N + i0; return (1 - fx) * (1 - fy) * F[k] + fx * (1 - fy) * F[k + 1] + (1 - fx) * fy * F[k + N] + fx * fy * F[k + N + 1]; };
+  return { N, h, c, X, Y, fluid, psi, u, v, gxx, gxy, gyx, gyy, sh, at, Lr, W, r };
+}
+/** fibres through the node: seeded evenly across the inlet with a small scatter in angle, carried and turned.
+   Each comes back as samples every dt time units: [x, y, angle], and its exit arm and its misalignment there */
+function shbFibres(F, o = {}) {
+  const nf = o.n || 90, lam = 0.98, dt = o.dt || 0.05, R = rng(o.seed || 7), out = [];
+  for (let s = 0; s < nf; s++) {
+    let x = -(F.Lr - 0.35), y = (-0.44 + 0.88 * (s + 0.5) / nf), ang = (R() - 0.5) * 0.3, px = Math.cos(ang), py = Math.sin(ang), tt = 0, next = 0;
+    const smp = [];
+    for (let k = 0; k < 40000 && tt < 40; k++) {
+      const ux = F.at(F.u, x, y), uy = F.at(F.v, x, y), sp = Math.hypot(ux, uy); if (sp < 1e-4) break;
+      if (tt >= next) { smp.push([x, y, Math.atan2(py, px)]); next += dt; }
+      const st = Math.min(0.02, 0.006 / sp);
+      const a = F.at(F.gxx, x, y), b = F.at(F.gxy, x, y), cc = F.at(F.gyx, x, y), d = F.at(F.gyy, x, y);
+      const Dxy = (b + cc) / 2, Wxy = (b - cc) / 2, Dpx = a * px + Dxy * py, Dpy = Dxy * px + d * py, pDp = px * Dpx + py * Dpy;
+      const dpx = Wxy * py + lam * (Dpx - pDp * px), dpy = -Wxy * px + lam * (Dpy - pDp * py);
+      px += dpx * st; py += dpy * st; const l = Math.hypot(px, py); px /= l; py /= l;
+      const mx = x + ux * st / 2, my = y + uy * st / 2, ux2 = F.at(F.u, mx, my), uy2 = F.at(F.v, mx, my);
+      x += ux2 * st; y += uy2 * st; tt += st;
+      if (Math.hypot(x, y) > F.Lr - 0.3 && x > -(F.Lr - 0.6)) break;
+    }
+    const arm = Math.round(((Math.atan2(y, x) + TAU) % TAU) / (Math.PI / 3)) % 6, th = arm * Math.PI / 3, cs = Math.abs(px * Math.cos(th) + py * Math.sin(th));
+    smp.push([x, y, Math.atan2(py, px)]);
+    out.push({ smp, arm, mis: Math.acos(Math.min(1, cs)) * 180 / Math.PI, c4: cs * cs * cs * cs });
+  }
+  return out;
+}
+/** one flow case, solved and traced once: the field, 160 fibres, streamlines from the inlet, and the fibres' alignment
+   as they leave (Krenchel's cos⁴ to the rib they leave by), per rib and overall */
+function shbFlowCase(r) {
+  return shbOnce('flow' + r, () => {
+    const F = shbStokes(r), fb = shbFibres(F, { n: 160, dt: 0.04 });
+    const g = arms => fb.filter(f => arms.includes(f.arm)), c4 = L => L.length ? L.reduce((s, f) => s + f.c4, 0) / L.length : 0, w30 = L => L.length ? L.filter(f => f.mis <= 30).length / L.length : 0;
+    const arm = [0, 1, 2, 3, 4, 5].map(a => c4(g([a])));
+    const lines = [];
+    for (let q = 0; q < 15; q++) {
+      let x = -(F.Lr - 0.3), y = -0.45 + 0.9 * (q + 0.5) / 15; const pts = [[x, y]];
+      for (let k = 0; k < 6000; k++) { const ux = F.at(F.u, x, y), uy = F.at(F.v, x, y), sp = Math.hypot(ux, uy); if (sp < 1e-4) break; const st = 0.03 / sp; const mx = x + ux * st / 2, my = y + uy * st / 2; x += F.at(F.u, mx, my) * st; y += F.at(F.v, mx, my) * st; if (k % 3 === 0) pts.push([x, y]); if (Math.hypot(x, y) > F.Lr - 0.15 && x > -(F.Lr - 0.6)) break; }
+      lines.push(pts);
+    }
+    return { F, fb, lines, arm, all: c4(fb), w30: w30(fb), turn: c4(g([2, 4])), turnW: w30(g([2, 4])), straight: c4(g([0])) };
+  });
+}
+/** draw one case in a panel: the steel round the ribs, the melt, its streamlines and its fibres at flow time ft.
+   (cx, cy) the node's centre, s px per mm */
+function shbFlowDraw(t, FC, cx, cy, s, ft, a, o = {}) {
+  if (a <= 0.003) return;
+  const F = FC.F, P = p => [cx + p[0] * s, cy - p[1] * s], R = (F.Lr - 0.2) * s, angs = [0, 1, 2, 3, 4, 5].map(k => k * Math.PI / 3);
+  G.save(); G.beginPath(); G.arc(cx, cy, R, 0, TAU); G.clip();
+  /* the mold steel, hatched */
+  G.globalAlpha = a; G.fillStyle = TH ? '#D9D8D2' : '#2A2B2E'; G.fillRect(cx - R, cy - R, R * 2, R * 2);
+  G.strokeStyle = TH ? 'rgba(17,17,17,0.10)' : 'rgba(243,242,238,0.07)'; G.lineWidth = 1.5; G.beginPath();
+  for (let d = -2 * R; d < 2 * R; d += 14) { G.moveTo(cx + d, cy - R); G.lineTo(cx + d + R * 2, cy + R); } G.stroke();
+  /* the melt: the ribs and the node, with the fillet the case has */
+  shbFill(shbNodeOutline(angs, F.W, F.Lr + 0.5, F.r), P, TH ? '#FFFFFF' : '#17181B', a);
+  /* streamlines */
+  FC.lines.forEach(pts => shbPath(pts.map(P), C.mute, 1.2, a * 0.35));
+  /* the fibres: rods, ink when they lie along the flow, red as they turn across it */
+  const Lc = 16, flen = 0.17;
+  FC.fb.forEach((f, i) => {
+    const ph = ((i * 0.6180339887) % 1) * Lc, u = ((ft - ph) % Lc + Lc) % Lc, q = Math.floor(u / 0.04); if (ft < ph || q >= f.smp.length) return;
+    const [x, y, an] = f.smp[q], ux = F.at(F.u, x, y), uy = F.at(F.v, x, y);
+    let d = Math.abs(((an - Math.atan2(uy, ux)) % Math.PI + Math.PI) % Math.PI); d = Math.min(d, Math.PI - d) * 180 / Math.PI;
+    const p = P([x, y]), dx = Math.cos(an) * flen * s, dy = -Math.sin(an) * flen * s, fa = a * Math.min(1, (f.smp.length - q) / 8, q / 4 + 0.2);
+    G.globalAlpha = fa; G.strokeStyle = mix(TH ? '#3A3A38' : '#D8D7D2', C.bad, clamp((d - 18) / 30)); G.lineWidth = 2.6; G.lineCap = 'round';
+    G.beginPath(); G.moveTo(p[0] - dx, p[1] - dy); G.lineTo(p[0] + dx, p[1] + dy); G.stroke();
+  });
+  G.restore();
+  circle(cx, cy, R, { color: C.hair, w: 1.5, alpha: a });
+}
+
+/* ============================== 6. fibre alignment: the research (Brock: "bring up specific research on how high the potential strength increases are") ============================== */
+S({
+  id: 'shbFibres', ch: 'shell', theme: 'night', title: 'Fibre alignment', settle: 10.4, after: 'shbBend',
+  ideas: [53, 75], src: ['shbKrenchel', 'shbChoi', 'shbMerseburg', 'shbHexcel', 'shbWang', 'shlPyrofil'],
+  draw: t => {
+    header(t, 'Fibre alignment');
+    captions(t, [[0.6, 'In a carbon-filled plastic the fibres line up with the melt\'s flow. A continuous rib is one long, steady flow, so its fibres lie along it: the way its load runs.'], [4.4, 'Krenchel: a fibre at an angle θ to the load gives cos⁴θ of its stiffness. At 45° that is a quarter; scattered in the plane, 3/8.'], [7.6, 'Measured, it is as real: carbon nylon is 1.7× stronger along its flow than across, and a weld line leaves a third of the strength.']]);
+    const x0 = LM, y0 = 280, w0 = 1080, h0 = 640, a0 = tileA(t, 0.3, 0);
+    demoWindow(x0, y0, w0, h0, a0);
+    /* two ribs, close up: fibres along a continuous rib, and fibres scattered at random */
+    const R = rng(11), rows = [['A continuous rib', 'along', y0 + 120], ['Scattered at random', 'random', y0 + 270]];
+    rows.forEach(([nm, kind, ry], ri) => {
+      const a = ep(t, 0.8 + ri * 0.5, 1.4 + ri * 0.5) * a0, rx0 = x0 + 32, rx1 = x0 + w0 - 200, rh = 64;
+      text(nm, rx0, ry - 52, { role: 'label', size: 20, color: C.ink, alpha: a });
+      rr(rx0, ry - rh / 2, rx1 - rx0, rh, 6, TH ? '#ECEBE6' : '#1E1F22', null, 0, a);
+      G.save(); G.beginPath(); G.rect(rx0, ry - rh / 2, rx1 - rx0, rh); G.clip();
+      for (let q = 0; q < 70; q++) {
+        const u = R(), v = R(), an = kind === 'along' ? (R() - 0.5) * 0.25 : R() * Math.PI, sp = kind === 'along' ? 60 : 0;
+        const fx = rx0 + (((u * (rx1 - rx0) + t * sp) % (rx1 - rx0)) + (rx1 - rx0)) % (rx1 - rx0), fy = ry - rh / 2 + 8 + v * (rh - 16), L = 14;
+        G.globalAlpha = a * 0.95; G.strokeStyle = kind === 'along' ? C.hero : C.mute; G.lineWidth = 2.6; G.lineCap = 'round';
+        G.beginPath(); G.moveTo(fx - Math.cos(an) * L, fy - Math.sin(an) * L); G.lineTo(fx + Math.cos(an) * L, fy + Math.sin(an) * L); G.stroke();
+      }
+      G.restore();
+      /* the load runs along the rib */
+      const kl = ep(t, 2.2 + ri * 0.3, 2.8 + ri * 0.3) * a;
+      arrow(rx1 + 18, ry, rx1 + 84, ry, { color: C.ink2, w: 3, hs: 14, alpha: kl });
+      rich([{ s: kind === 'along' ? '1' : '3/8', font: 'disp', size: 40, weight: 800, color: kind === 'along' ? C.heroText : C.ink, grad: kind === 'along' ? C.heroGrad : null, tnum: true }], x0 + w0 - 32, ry + 14, { align: 'right', alpha: kl });
+    });
+    text('Krenchel factor', x0 + w0 - 32, y0 + 56, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ep(t, 2.2, 2.7) * a0 });
+    /* the curve: Krenchel's cos⁴θ, and the measured strengths of injection-moulded carbon nylon (Choi 2024) */
+    const cx0 = x0 + 110, cx1 = x0 + w0 - 60, cyb = y0 + h0 - 80, cyt = y0 + 380, Xa = th => cx0 + th / 90 * (cx1 - cx0), Ya = v => cyb - v * (cyb - cyt), ka = ep(t, 4.3, 5.8, E.io3), ag = ep(t, 4.0, 4.5) * a0;
+    line(cx0, cyb, cx1, cyb, { color: C.hair, w: 1.5, alpha: ag }); line(cx0, cyb, cx0, cyt - 10, { color: C.hair, w: 1.5, alpha: ag });
+    for (const th of [0, 30, 45, 60, 90]) text(th + '°', Xa(th), cyb + 32, { role: 'tick', color: C.faint, align: 'center', alpha: ag });
+    for (const v of [0, 0.5, 1]) text(String(v), cx0 - 14, Ya(v) + 7, { role: 'tick', color: C.faint, align: 'right', alpha: ag });
+    text('Stiffness share, by fibre angle to the load', cx1, cyt - 30, { role: 'label', size: 19, color: C.mute, alpha: ag, align: 'right' });
+    for (const [v, nm] of [[3 / 8, 'Random in the plane 3/8'], [1 / 5, 'Random in 3D 1/5']]) { line(cx0, Ya(v), cx1, Ya(v), { color: C.mute, w: 1.5, dash: [5, 6], alpha: ag * 0.8 }); text(nm, cx1, Ya(v) - 10, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ag }); }
+    const curve = []; for (let th = 0; th <= 90 * ka + 0.01; th += 1) curve.push([Xa(th), Ya(Math.pow(Math.cos(th * Math.PI / 180), 4))]);
+    shbPath(curve, C.ink, 4, ag);
+    const kc = ep(t, 7.6, 8.2) * a0;
+    [[0, 130.3], [45, 101.3], [90, 77.2]].forEach(([th, sMPa]) => { const p = [Xa(th), Ya(sMPa / 130.3)]; circle(p[0], p[1], 8, { fill: C.panel, color: C.ink, w: 3, alpha: kc }); if (th) text(fmtN(sMPa, 0) + ' MPa', p[0] + (th === 90 ? -16 : 16), p[1] - 14, { role: 'label', size: 19, color: C.ink2, alpha: kc, align: th === 90 ? 'right' : 'left' }); });
+    { const p = [Xa(0), Ya(1)]; G.save(); G.globalAlpha = ag; G.fillStyle = C.hero; G.beginPath(); G.moveTo(p[0], p[1] - 11); G.lineTo(p[0] + 11, p[1]); G.lineTo(p[0], p[1] + 11); G.lineTo(p[0] - 11, p[1]); G.closePath(); G.fill(); G.restore(); text('Along a continuous rib', p[0] + 22, p[1] - 14, { role: 'label', size: 19, color: C.heroText, alpha: ag }); }
+    text('Line: stiffness, Krenchel. Rings: strength of moulded 20% carbon nylon, along to across.', x0 + 32, y0 + h0 - 28, { role: 'small', size: 22, color: C.faint, alpha: kc, maxW: w0 - 64 });
+    /* the research, one number a tile */
+    const B = bento(x0 + w0 + 40, y0, RM - x0 - w0 - 40, h0, 2, 2);
+    statTile(t, 7.8, B(0, 0), { value: '1.7', unit: '×', label: 'stronger along the flow', ev: 'measured', by: 'Choi 2024' });
+    statTile(t, 8.0, B(1, 0), { value: '3', unit: '×', label: 'stiffer along it, up to', ev: 'measured', by: 'Polymer Service' });
+    statTile(t, 8.2, B(0, 1), { value: '33', unit: '×', label: 'continuous fibres', ev: 'datasheet', by: 'Hexcel' });
+    statTile(t, 8.4, B(1, 1), { value: '0.35', unit: '×', label: 'strength left at a weld line', ev: 'measured', by: 'Wang 2023' });
+  }
+});
+
+/* ============================== 7. melt through a node: the fluid simulation (Brock: "show a fluid simulation of how a filleted lattice helps align fibers") ============================== */
+S({
+  id: 'shbFlow', ch: 'shell', theme: 'paper', title: 'Fibre orientation through a node', settle: 10.4, after: 'filletsize',
+  ideas: [75, 'fillet'], src: ['shbJeffery', 'shbKrenchel', 'shbMoldflow', 'shbModel'],
+  draw: t => {
+    const S0 = shbFlowCase(0), S6 = shbFlowCase(0.6), gain = S6.turn / S0.turn - 1;
+    header(t, 'Fibre orientation through a node');
+    captions(t, [[0.6, 'An illustrative 2D model: the melt comes in along one rib and leaves by the other five, carrying its fibres.'], [3.8, 'Fibres that run straight through, along a continuous line, keep their alignment. The ones that turn 120° don\'t.'], [7.2, 'That turn is where the fillet earns its keep: its turning fibres leave ' + Math.round(gain * 100) + '% better aligned than at a sharp corner.']]);
+    const ft = Math.max(0, (t - 1.0) * 1.1);
+    [[S0, LM, 'Sharp corners', 0], [S6, 980, 'Filleted, {r} 0.6 mm', 1]].forEach(([FC, px, nm, i]) => {
+      const py = 280, pw = 860, ph = 600, a = tileA(t, 0.3, i);
+      demoWindow(px, py, pw, ph, a);
+      text(nm, px + 32, py + 52, { role: 'label', size: 22, color: C.ink, alpha: a });
+      const cx = px + 430, cy = py + 290, s = 52;
+      shbFlowDraw(t, FC, cx, cy, s, ft, a * ep(t, 0.6, 1.2));
+      text('Melt in', cx - 4.0 * s - 6, cy - 46, { role: 'label', size: 19, color: C.mute, alpha: a * ep(t, 1.0, 1.5) });
+      arrow(cx - 4.6 * s, cy, cx - 4.0 * s - 8, cy, { color: C.mute, w: 2.5, hs: 12, alpha: a * ep(t, 1.0, 1.5) });
+      /* the Krenchel factor of the fibres leaving each rib */
+      [0, 1, 2, 4, 5].forEach((arm, j) => {
+        const an = arm * Math.PI / 3, rr0 = 4.0 * s + 34, lx = cx + Math.cos(an) * rr0, ly = cy - Math.sin(an) * rr0, ka = ep(t, arm === 0 ? 4.0 : arm === 2 || arm === 4 ? 4.6 : 5.2, (arm === 0 ? 4.0 : arm === 2 || arm === 4 ? 4.6 : 5.2) + 0.5) * a;
+        const turn = arm === 2 || arm === 4;
+        text(fmtN(FC.arm[arm], 2), lx, ly + 9, { role: 'num', size: 26, weight: 800, color: turn ? (i ? C.heroText : C.bad) : C.ink, align: Math.cos(an) > 0.3 ? 'left' : Math.cos(an) < -0.3 ? 'right' : 'center', alpha: ka });
+      });
+      const kr = ep(t, 5.6, 6.2) * a;
+      rich([{ s: 'Leaving within 30°', role: 'label', size: 19, color: C.mute }, { s: Math.round(FC.w30 * 100) + '%', font: 'disp', size: 34, weight: 800, color: C.ink, tnum: true, gap: 12 }], px + 32, py + ph - 36, { alpha: kr });
+      rich([{ s: 'Krenchel, all', role: 'label', size: 19, color: C.mute }, { s: fmtN(FC.all, 2), font: 'disp', size: 34, weight: 800, color: C.ink, tnum: true, gap: 12 }], px + pw - 32, py + ph - 36, { alpha: kr, align: 'right' });
+    });
+    /* what the fillet buys, where the melt turns */
+    const kg = ep(t, 7.4, 8.0);
+    rich([{ s: '+' + Math.round(gain * 100), font: 'disp', size: 52, weight: 800, grad: C.heroGrad, color: C.heroText, tnum: true, count: [7.4, 0.8] }, { s: '%', font: 'disp', size: 28, weight: 700, grad: C.heroGrad, color: C.heroText, gap: 4 }], 980 + 860 - 32, 280 + 64, { align: 'right', alpha: kg, t });
+    text('turning fibres', 980 + 860 - 32, 280 + 98, { role: 'small', size: 22, color: C.ink2, align: 'right', alpha: kg });
+    const am = ep(t, 1.6, 2.1), pw0 = pillW('measured', { by: 'Jeffery 1922' });
+    text('Illustrative 2D model: Stokes flow (stream function and vorticity, 14 cells per mm) through three 1.0 mm ribs, 40% of the melt straight on; rigid fibres turned by Jeffery\'s equation.', LM, 962, { role: 'small', size: 22, color: C.faint, alpha: am, maxW: RM - LM - pw0 - 48 });
+    pill(RM - pw0, 962, 'measured', am, { by: 'Jeffery 1922' });
+  }
+});
+
+/* ============================== 8. gating, rib width and fillets: what else the lattice can do for its fibres (F2.18) ============================== */
+S({
+  id: 'shbGates', ch: 'shell', theme: 'night', title: 'Gating, rib width and fillets', settle: 10, after: 'shbFlow',
+  ideas: [75, 53], src: ['shbWang', 'shbMoldflow', 'shbModel'],
+  draw: t => {
+    const gain = shbFlowCase(0.6).turn / shbFlowCase(0).turn - 1;
+    header(t, 'Gating, rib width and fillets');
+    captions(t, [[0.6, 'Three things in the lattice\'s own design keep its fibres in line, and none of them costs a gram.'], [3.6, 'Gate the shell so the melt runs along the arches: a rib filled from one end has no weld line in it.'], [6.8, 'Keep every rib one width, so the flow never slows and fans out. And fillet every node.']]);
+    const B = bento(LM, 280, RM - LM, 640, 3, 1), R = rng(5);
+    const rod = (x, y, an, L, col, a) => { G.globalAlpha = a; G.strokeStyle = col; G.lineWidth = 2.6; G.lineCap = 'round'; G.beginPath(); G.moveTo(x - Math.cos(an) * L, y - Math.sin(an) * L); G.lineTo(x + Math.cos(an) * L, y + Math.sin(an) * L); G.stroke(); };
+    const fibreCol = an => mix(TH ? '#3A3A38' : '#D8D7D2', C.bad, clamp((Math.abs(Math.sin(an)) - 0.3) / 0.5));
+    const melt = TH ? '#FFFFFF' : '#4A4C52', steel = TH ? '#E2E1DB' : '#25262A';
+    /* 1. gate at one end: a rib filled from one end, and one filled from both */
+    { const [x, y, w, h] = B(0, 0), a = tileA(t, 0.3, 0); demoWindow(x, y, w, h, a);
+      text('1  Gate along the arches', x + 32, y + 52, { role: 'label', size: 21, color: C.ink, alpha: a });
+      [['Fed from one end', y + 150, false], ['Fed from both ends', y + 280, true]].forEach(([nm, ry, both], ri) => {
+        const x0 = x + 32, x1 = x + w - 32, rh = 40, k = ep(t, 1.6 + ri * 0.3, 4.6 + ri * 0.3, E.io3), mid = (x0 + x1) / 2;
+        text(nm, x0, ry - 36, { role: 'small', size: 22, color: C.mute, alpha: a });
+        rr(x0, ry - rh / 2, x1 - x0, rh, 6, steel, null, 0, a);
+        const xl = both ? lerp(x0, mid, k) : lerp(x0, x1, k), xr = both ? lerp(x1, mid, k) : x1;
+        rr(x0, ry - rh / 2, xl - x0, rh, 6, melt, null, 0, a); if (both) rr(xr, ry - rh / 2, x1 - xr, rh, 6, melt, null, 0, a);
+        G.save(); G.beginPath(); G.rect(x0, ry - rh / 2, x1 - x0, rh); G.clip();
+        for (let q = 0; q < 46; q++) { const fx = x0 + 8 + (x1 - x0 - 16) * ((q * 0.618034) % 1), fy = ry - rh / 2 + 7 + (rh - 14) * ((q * 0.4142) % 1); if (both ? fx > xl && fx < xr : fx > xl) continue;
+          const dw = both ? Math.abs(fx - mid) : 999, an = both && k > 0.98 ? lerp(Math.PI / 2, (R() - 0.5) * 0.2, clamp(dw / 26)) : (R() - 0.5) * 0.2; rod(fx, fy, an, 8, fibreCol(an), a); }
+        G.restore();
+        if (both && k > 0.98) { const kw = ep(t, 4.9, 5.4); line(mid, ry - rh / 2 - 10, mid, ry + rh / 2 + 10, { color: C.bad, w: 3, alpha: a * kw }); text('Weld line', mid, ry + rh / 2 + 36, { role: 'label', size: 19, color: C.bad, align: 'center', alpha: a * kw }); }
+        arrow(x0 - 2, ry, x0 + 24, ry, { color: C.ink2, w: 2.5, hs: 10, alpha: a * (1 - k) }); if (both) arrow(x1 + 2, ry, x1 - 24, ry, { color: C.ink2, w: 2.5, hs: 10, alpha: a * (1 - k) });
+      });
+      glossBox(t, 5.4, x + 32, y + 380, w - 64, 'Weld line', 'Where two melt fronts meet head-on. Its fibres lie across: carbon nylon keeps 32 to 38% of its strength there.');
+    }
+    /* 2. keep the width steady: a rib that widens turns its fibres across (long fibres follow the melt like a drawn line) */
+    { const [x, y, w, h] = B(1, 0), a = tileA(t, 0.3, 1); demoWindow(x, y, w, h, a);
+      text('2  One rib width', x + 32, y + 52, { role: 'label', size: 21, color: C.ink, alpha: a });
+      [['A rib that widens', y + 170, true], ['One width', y + 320, false]].forEach(([nm, ry, wide], ri) => {
+        const x0 = x + 32, x1 = x + w - 32, w1 = 36, wid = u => wide ? w1 * (1 + 1.6 * Math.exp(-Math.pow((u - 0.5) / 0.17, 2))) : w1, ka = a * ep(t, 1.4 + ri * 0.3, 1.9 + ri * 0.3);
+        text(nm, x0, ry - (wide ? 72 : 36), { role: 'small', size: 22, color: C.mute, alpha: ka });
+        G.save(); G.globalAlpha = ka; G.fillStyle = melt; G.beginPath();
+        for (let q = 0; q <= 60; q++) { const u = q / 60; G.lineTo(lerp(x0, x1, u), ry - wid(u) / 2); } for (let q = 60; q >= 0; q--) { const u = q / 60; G.lineTo(lerp(x0, x1, u), ry + wid(u) / 2); } G.closePath(); G.fill(); G.restore();
+        /* fibres carried along: slower where the rib is wide; tan of their angle grows with the width squared */
+        for (let q = 0; q < 26; q++) {
+          const u0 = (q * 0.618034) % 1, v = ((q * 0.4142) % 1) - 0.5, ph = (u0 + Math.max(0, t - 1.6) * 0.05) % 1;
+          let u = ph; if (wide) { /* travel time is longer through the wide part: map phase to position by the flux */ u = ph; }
+          const fx = lerp(x0, x1, u), fw = wid(u), fy = ry + v * (fw - 12), an0 = (((q * 0.7548) % 1) - 0.5) * 0.18, an = Math.atan(Math.tan(an0) * Math.pow(fw / w1, 2) + (wide ? 0.06 * Math.sign(v + 0.001) * Math.pow(fw / w1 - 1, 2) : 0));
+          rod(fx, fy, an, 8, fibreCol(an), ka);
+        }
+      });
+      shbNote(t, 5.8, x + 32, y + 420, w - 64, 'Where a rib widens, the melt slows and spreads and its fibres turn across it. Ribs of one width keep the flow steady and the fibres along.', { color: C.ink2 });
+      pill(x + 32, y + h - 32, 'datasheet', ep(t, 6.0, 6.5) * a, { text: 'Autodesk Moldflow' });
+    }
+    /* 3. fillet every node: the melt that turns, turns round a fillet */
+    { const [x, y, w, h] = B(2, 0), a = tileA(t, 0.3, 2); demoWindow(x, y, w, h, a);
+      text('3  A fillet at every node', x + 32, y + 52, { role: 'label', size: 21, color: C.ink, alpha: a });
+      const cx = x + w / 2, cy = y + 230, s = 44, P = p => [cx + p[0] * s, cy - p[1] * s], kf = ep(t, 6.8, 7.8, E.io3), angs = [0, 1, 2, 3, 4, 5].map(k => k * Math.PI / 3);
+      G.save(); G.beginPath(); G.arc(cx, cy, 3.4 * s, 0, TAU); G.clip();
+      G.globalAlpha = a; G.fillStyle = steel; G.fillRect(cx - 160, cy - 160, 320, 320);
+      shbFill(shbNodeOutline(angs, 1.0, 4.2, 0.6 * kf), P, melt, a);
+      /* the turning melt: one streamline from the inlet round into the 120° rib */
+      const turn = [], c0 = [-3.4, 0.22], c1 = [lerp(0.2, -0.45, kf), lerp(0.22, 0.5, kf)], c2 = [-1.75, 3.0];
+      for (let q = 0; q <= 40; q++) { const f = q / 40, g = 1 - f; turn.push(P([g * g * c0[0] + 2 * g * f * c1[0] + f * f * c2[0], g * g * c0[1] + 2 * g * f * c1[1] + f * f * c2[1]])); }
+      shbPath(turn, C.heroText, 3, a * ep(t, 7.0, 7.6), { dash: [10, 8], dashOff: -t * 30 });
+      G.restore();
+      circle(cx, cy, 3.4 * s, { color: C.hair, w: 1.5, alpha: a });
+      const kg = ep(t, 7.6, 8.2) * a;
+      rich([{ s: '+' + Math.round(gain * 100), font: 'disp', size: 72, weight: 800, grad: C.heroGrad, color: C.heroText, tnum: true, count: [7.6, 0.8] }, { s: '%', font: 'disp', size: 34, weight: 700, grad: C.heroGrad, color: C.heroText, gap: 4 }], x + 32, y + 470, { alpha: kg, t });
+      shbNote(t, 7.9, x + 32, y + 512, w - 64, 'better aligned, the fibres that turn 120° at a node: round a fillet, not a knife edge.', { color: C.ink2 });
+      pill(x + 32, y + h - 32, 'derived', kg, { text: 'The flow model, before' });
+    }
+  }
+});
+
+/* ============================== 9. fillets make the mold easier to cut (Brock: "the filets making milling the mold easier") ==============================
+   the electrode that burns the ribs into the steel by EDM is the lattice's positive: its pockets are 2 mm deep and their
+   corners at the nodes are inside corners. A round cutter can't make a sharp inside corner (Protolabs) or reach deeper
+   than about 4× its diameter (Core77). Sharp: the cutter leaves slivers it can't reach. Filleted at the cutter's radius:
+   the cutter makes the fillet as it passes. Numbers: rib 2.0 mm tall, fillet 0.6 mm (Shell A's choice) */
+S({
+  id: 'shbMill', ch: 'shell', theme: 'paper', title: 'Fillets make the mold easier to cut', settle: 10.4, after: 'shbGates',
+  ideas: [75, 'fillet'], src: ['shbProtoCorner', 'shbCore77', 'shbAutodeskEdm', 'shbCte'],
+  draw: t => {
+    const depth = 2.0, rf = 0.6, dMin = depth / 4, rGuide = depth / 3;
+    header(t, 'Fillets make the mold easier to cut');
+    captions(t, [[0.6, 'The mold is the part\'s negative. Burned in by EDM, its ribs come from an electrode: the lattice itself, milled as a positive.'], [3.8, 'A round cutter can\'t cut a sharp inside corner. At every sharp node it leaves six slivers it can\'t reach.'], [7.0, 'Filleted at 0.6 mm, a 1.2 mm cutter makes every fillet in the same pass it cuts the ribs with.']]);
+    const angs = [0, 1, 2, 3, 4, 5].map(k => k * Math.PI / 3 + Math.PI / 6), rc = 0.6, metal = TH ? '#B9BCC2' : '#5E636B', floor = TH ? '#F1F0EB' : '#1B1C1F';
+    [[0, LM, 'Sharp nodes'], [rf, 640, 'Filleted, {r} 0.6 mm']].forEach(([r, px, nm], i) => {
+      const py = 280, pw = 520, ph = 640, a = tileA(t, 0.3, i); demoWindow(px, py, pw, ph, a);
+      text(nm, px + 32, py + 52, { role: 'label', size: 22, color: C.ink, alpha: a });
+      const cx = px + pw / 2, cy = py + 240, s = 68, P = p => [cx + p[0] * s, cy - p[1] * s], Rv = 2.6 * s;
+      G.save(); G.beginPath(); G.arc(cx, cy, Rv, 0, TAU); G.clip();
+      G.globalAlpha = a; G.fillStyle = floor; G.fillRect(cx - Rv, cy - Rv, 2 * Rv, 2 * Rv);
+      /* what the cutter leaves: the blades as it can cut them (corners rounded to its radius), then the design over it */
+      const cutK = k => ep(t, 1.6 + k * 0.75 + 0.42, 1.6 + k * 0.75 + 0.72);
+      /* each corner's sliver shows as the cutter leaves it: the cuttable shape, clipped to that corner's slice */
+      if (r < rc) for (let q = 0; q < 6; q++) { const kq = cutK(q); if (kq <= 0.003) continue; G.save(); G.beginPath(); G.moveTo(cx, cy); G.arc(cx, cy, Rv, -angs[(q + 1) % 6], -angs[q]); G.closePath(); G.clip(); shbFill(shbNodeOutline(angs, 1.0, 4, rc), P, C.bad, a * 0.85 * kq); G.restore(); }
+      shbFill(shbNodeOutline(angs, 1.0, 4, r), P, metal, a);
+      /* the cutter, visiting the six corners in turn */
+      const tc = (t - 1.6) / 0.75, k = Math.floor(tc), f = tc - k;
+      if (tc >= 0 && k < 6) {
+        const A0 = angs[k], B0 = angs[(k + 1) % 6], half = Math.PI / 6, hw = 0.5, bis = A0 + half, dO = hw / Math.sin(half) + rc / Math.sin(half);
+        const ua = [Math.cos(A0), Math.sin(A0)], na = [-Math.sin(A0), Math.cos(A0)], ub = [Math.cos(B0), Math.sin(B0)], nb = [-Math.sin(B0), Math.cos(B0)];
+        const pA = [ua[0] * 2.0 + na[0] * (hw + rc), ua[1] * 2.0 + na[1] * (hw + rc)], O = [Math.cos(bis) * dO, Math.sin(bis) * dO], pB = [ub[0] * 2.0 - nb[0] * (hw + rc), ub[1] * 2.0 - nb[1] * (hw + rc)];
+        const g = f, q = g < 0.5 ? [lerp(pA[0], O[0], g * 2), lerp(pA[1], O[1], g * 2)] : [lerp(O[0], pB[0], g * 2 - 1), lerp(O[1], pB[1], g * 2 - 1)], c = P(q);
+        circle(c[0], c[1], rc * s, { fill: rgba(C.ink, 0.10), color: C.ink, w: 2.5, alpha: a });
+        for (let j = 0; j < 4; j++) { const an = t * 9 + j * Math.PI / 2; line(c[0], c[1], c[0] + Math.cos(an) * rc * s * 0.8, c[1] + Math.sin(an) * rc * s * 0.8, { color: C.ink, w: 1.5, alpha: a * 0.6 }); }
+      }
+      G.restore();
+      circle(cx, cy, Rv, { color: C.hair, w: 1.5, alpha: a });
+      /* what it takes */
+      const kr = ep(t, 6.6, 7.2) * a, yb = py + ph - 170;
+      if (r < rc) {
+        rich([{ s: 'Cutter radius it needs', role: 'label', size: 19, color: C.mute }, { s: '0', font: 'disp', size: 34, weight: 800, color: C.bad, gap: 12 }, { s: 'mm', role: 'label', size: 19, color: C.mute, caps: false, gap: 6 }], px + 32, yb, { alpha: kr });
+        shbNote(t, 6.8, px + 32, yb + 40, pw - 64, 'Ø' + fmtN(dMin, 1) + ' mm, the smallest that reaches 2 mm deep, still leaves {r} ' + fmtN(dMin / 2, 2) + ' mm: a second burn.', { color: C.ink2, alpha: a });
+      } else {
+        rich([{ s: 'Cutter', role: 'label', size: 19, color: C.mute }, { s: 'Ø' + fmtN(2 * rc, 1), font: 'disp', size: 34, weight: 800, color: C.heroText, grad: C.heroGrad, gap: 12 }, { s: 'mm', role: 'label', size: 19, color: C.mute, caps: false, gap: 6 }], px + 32, yb, { alpha: kr });
+        shbNote(t, 6.8, px + 32, yb + 40, pw - 64, '2 mm deep is ' + fmtN(depth / (2 * rc), 1) + ' diameters: a standard cutter, one pass, every corner.', { color: C.ink2, alpha: a });
+      }
+    });
+    /* the column: the toolmaker's numbers and where they come from */
+    const x2 = 1200, w2 = RM - x2, Bc = bento(x2, 280, w2, 280, 2, 1);
+    statTile(t, 7.4, Bc(0, 0), { value: fmtN(rGuide, 2), unit: 'mm', label: 'toolmaker\'s corner, 2 mm deep', ev: 'measured', by: 'Core77', quiet: true });
+    statTile(t, 7.6, Bc(1, 0), { value: '0.6', unit: 'mm', label: 'the fillet the stress asks for', hero: true });
+    sourceBox(t, 2.2, x2, 600, w2, 'Protolabs', '"The internal corners in any mold cavity cannot be smaller than the radius of the endmill used to machine them." EDM can, but is "prohibitively slow".');
+    shbNote(t, 8.4, x2, 856, w2, 'Milled straight into the steel instead, a sharp node is six 60° knife edges of steel. The fillet rounds those too.', { color: C.ink2 });
+  }
+});
+
+/* ============================== 10. a fillet loosens the tightest tolerance (Brock: "reduce the tightest tolerance") ==============================
+   Shell A's fillet study (09-fillet-data.js, plane-stress FE at equal mass): the node's peak over the panel's average
+   against the corner radius. Near sharp, the curve is steep, so the as-made radius (tool wear, polish) sets the peak;
+   at 0.6 mm it is flat. The tolerance on the radius that holds the peak within ±5% follows from the slope. */
+S({
+  id: 'shbTol', ch: 'shell', theme: 'night', title: 'A fillet loosens the tightest tolerance', settle: 10.4, after: 'shbMill',
+  ideas: [75, 'fillet'], src: ['filletFE', 'shbModel'],
+  draw: t => {
+    const rs = FILLET.rs, sc = FILLET.scfM, at = r => shbLerpTab(rs.map((v, i) => [v, sc[i]]), r);
+    const s0 = (sc[0] - sc[1]) / (rs[1] - rs[0]), tol0 = 0.05 * sc[0] / s0, s6 = (at(0.48) - at(0.75)) / (0.75 - 0.48), tol6 = 0.05 * at(0.6) / s6, ratio = tol6 / tol0;
+    header(t, 'A fillet loosens the tightest tolerance');
+    captions(t, [[0.6, 'At a sharp node the peak hangs on whatever radius the tool happens to leave. A few hundredths of a millimetre move it a lot.'], [4.6, 'At 0.6 mm the curve is flat. Tool wear and polish barely move the peak.'], [7.6, 'To hold the peak within 5%, a sharp corner needs its radius to ±' + Math.round(tol0 * 1000) + ' µm. The fillet takes ±' + fmtN(tol6, 2) + ' mm: ' + Math.round(ratio) + '× looser.']]);
+    const x0 = LM, y0 = 280, w0 = 1120, h0 = 640, a0 = tileA(t, 0.3, 0); demoWindow(x0, y0, w0, h0, a0);
+    const gx0 = x0 + 110, gx1 = x0 + w0 - 60, gy0 = y0 + 120, gy1 = y0 + h0 - 110, X = r => gx0 + r / 1.2 * (gx1 - gx0), Y = v => gy1 - (v - 6) / 12 * (gy1 - gy0), ag = ep(t, 0.6, 1.1) * a0;
+    line(gx0, gy1, gx1, gy1, { color: C.hair, w: 1.5, alpha: ag }); line(gx0, gy1, gx0, gy0 - 10, { color: C.hair, w: 1.5, alpha: ag });
+    for (const r of [0, 0.3, 0.6, 0.9, 1.2]) text(fmtN(r, 1) + (r === 1.2 ? ' mm' : ''), X(r), gy1 + 32, { role: 'tick', color: C.faint, align: r === 1.2 ? 'right' : 'center', alpha: ag });
+    for (const v of [8, 12, 16]) text(v + '×', gx0 - 14, Y(v) + 7, { role: 'tick', color: C.faint, align: 'right', alpha: ag });
+    text('Node peak over the average stress, by corner radius, same mass', gx0 - 14, gy0 - 34, { role: 'label', size: 19, color: C.mute, alpha: ag });
+    const kc = ep(t, 1.0, 2.6, E.io3), pts = []; for (let q = 0; q <= 60; q++) { const r = lerp(rs[0], rs[rs.length - 1], q / 60); if (r > lerp(rs[0], rs[rs.length - 1], kc)) break; pts.push([X(r), Y(at(r))]); }
+    shbPath(pts, C.ink2, 3.5, ag);
+    rs.forEach((r, i) => { if (r <= lerp(rs[0], rs[rs.length - 1], kc)) circle(X(r), Y(sc[i]), 4.5, { fill: C.ink2, alpha: ag }); });
+    /* two as-made windows the pointer swings through: near sharp, and at the fillet */
+    const win = [[rs[0], rs[1], 1.6, 4.4, 'Near sharp'], [0.48, 0.75, 4.8, 7.4, 'At 0.6 mm']];
+    let ptr = null;
+    win.forEach(([r0, r1, t0, t1, nm], i) => {
+      const a = ep(t, t0, t0 + 0.4) * a0, k = t < t0 ? 0 : t > t1 ? 0.5 : 0.5 - 0.5 * Math.cos((t - t0) / (t1 - t0) * TAU * 1.5), r = lerp(r0, r1, k), v = at(r), lo = Math.min(at(r0), at(r1)), hi = Math.max(at(r0), at(r1));
+      if (a <= 0.003) return;
+      G.save(); G.globalAlpha = a * 0.18; G.fillStyle = i ? C.hero : C.bad; G.fillRect(X(r0), gy0 - 10, X(r1) - X(r0), gy1 - gy0 + 10); G.fillRect(gx0, Y(hi), X(r1) - gx0, Y(lo) - Y(hi)); G.restore();
+      line(gx0, Y(hi), X(r1), Y(hi), { color: i ? C.heroText : C.bad, w: 1.5, dash: [4, 4], alpha: a }); line(gx0, Y(lo), X(r1), Y(lo), { color: i ? C.heroText : C.bad, w: 1.5, dash: [4, 4], alpha: a });
+      circle(X(r), Y(v), 9, { fill: i ? C.hero : C.bad, alpha: a });
+      if (t >= t0 && t <= t1 + 0.3) ptr = [X(r) + 4, Y(v) + 6];
+      const lx = i ? gx1 : X(r1) + 28, ly = i ? Y(hi) - 44 : Y(hi) + 8;
+      text(nm + ': ' + fmtN(r1 - r0, 2) + ' mm moves the peak ' + Math.round((hi - lo) / lo * 100) + '%', lx, ly, { role: 'label', size: 19, color: i ? C.heroText : C.bad, alpha: a, align: i ? 'right' : 'left' });
+    });
+    if (ptr) cursorPtr(ptr[0], ptr[1], { a: a0, grab: true });
+    text('Shell A\'s fillet study: plane-stress FE of the triangle lattice, 1.2 mm struts, at equal mass.', x0 + 32, y0 + h0 - 30, { role: 'small', size: 22, color: C.faint, alpha: ag });
+    /* the column: the tolerance each needs */
+    const x2 = x0 + w0 + 40, w2 = RM - x2, Bc = bento(x2, y0, w2, 280, 2, 1);
+    statTile(t, 7.8, Bc(0, 0), { value: '±' + Math.round(tol0 * 1000), unit: 'µm', label: 'sharp, to hold the peak to 5%', ev: 'derived', quiet: true });
+    statTile(t, 8.0, Bc(1, 0), { value: '±' + fmtN(tol6, 2), unit: 'mm', label: 'filleted at 0.6 mm', ev: 'derived', hero: true });
+    glossBox(t, 2.4, x2, y0 + 320, w2, 'Tolerance', 'How far a size may stray from the drawing. The tightest one in a tool sets how slowly, and how dearly, it has to be cut.');
+    shbNote(t, 8.4, x2, y0 + 560, w2, 'The same 0.6 mm fillet that halves the node\'s peak, lines up its fibres and lets a standard cutter reach.', { color: C.ink2 });
+  }
+});
+/* ---------- the real section across the hump: curvature, and the 2D frame under the grip ----------
+   SHB_SEC resampled into 72 elements along its arc, rim to rim; a 10 mm strip, 1.6 mm deep (the wall and its lattice
+   smeared into one depth), PP-C-20A, pinned at both rims. Grip: 10 N inward on each low side, 12 mm up (thumb and
+   fingers). The band: extra depth on the low sides (2 to 20 mm up), the same grams as 10% of the strip. */
+function shbSecPts(n) {
+  const P = SHB_SEC, d = [0]; for (let i = 1; i < P.length; i++) d.push(d[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
+  const L = d[d.length - 1], out = []; let j = 0;
+  for (let k = 0; k <= n; k++) { const s = L * k / n; while (j < d.length - 2 && d[j + 1] < s) j++; const f = (s - d[j]) / (d[j + 1] - d[j]); out.push([P[j][0] + (P[j + 1][0] - P[j][0]) * f, P[j][1] + (P[j + 1][1] - P[j][1]) * f]); }
+  return { pts: out, L };
+}
+const SHB_SN = 72, SHB_H0 = 1.6;
+const shbSm = (e0, e1, x) => { const k = clamp((x - e0) / (e1 - e0)); return k * k * (3 - 2 * k); };
+/** the low-side band's weight at an element's middle: 1 on the low sides (2 to 20 mm up), 0 above; side: +1 the thumb's (x > 0), −1 the fingers', 0 both */
+function shbBandW(m, side = 0) { const [x, y] = m; if (side && Math.sign(x) !== side) return 0; return shbSm(1.5, 3.5, y) * (1 - shbSm(18, 22, y)); }
+function shbSecModel(load, band) {
+  const S = shbSecPts(SHB_SN), mat = SIM_MAT.ppcf, nodes = S.pts.map(p => p.slice()), els = [];
+  const mids = []; let Lb = 0, Lt = 0;
+  for (let i = 0; i < SHB_SN; i++) { const a = nodes[i], b = nodes[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]), m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; mids.push([m, L]); Lt += L; Lb += L * (band ? shbBandW(m, band.side) : 0); }
+  /* extra depth in the band that adds band.add of the strip's grams (or the same grams spread evenly: band.even) */
+  const dh = band ? (band.even ? SHB_H0 * band.add : SHB_H0 * band.add * Lt / Lb) : 0;
+  mids.forEach(([m], i) => els.push({ i, j: i + 1, w: 10, h: SHB_H0 + (band ? (band.even ? dh : dh * shbBandW(m, band.side)) : 0), E: mat.E, rho: mat.rho }));
+  const near = (x, y) => { let b = 0, bd = 1e9; nodes.forEach((p, i) => { const d = Math.hypot(p[0] - x, p[1] - y); if (d < bd) { bd = d; b = i; } }); return b; };
+  const L = {}, add = (i, f) => { L[i] = L[i] ? L[i].map((v, q) => v + f[q]) : f; };
+  if (load === 'grip' || load === 'thumb') add(near(31, 12), [-10, 0, 0]);
+  if (load === 'grip') add(near(-31, 12), [10, 0, 0]);
+  if (load === 'crown') add(near(0, 40), [0, -10, 0]);
+  return { nodes, els, fix: { 0: 'xy', [SHB_SN]: 'xy' }, loads: L, near };
+}
+const shbSec = (load, band, key) => simSolve('shbSec:' + load + ':' + (key || 'base'), () => shbSecModel(load, band));
+/** the flex under a load: the largest move of a loaded node */
+const shbSecFlex = r => Math.max(...Object.keys(r.model.loads).map(Number).map(i => Math.hypot(r.d[i * 3], r.d[i * 3 + 1])));
+/** the curvature along the section (1/mm) at each inner node: the turn between neighbouring elements over their mean length */
+function shbSecKappa() {
+  return shbOnce('secK', () => { const P = shbSecPts(SHB_SN).pts, k = [0]; for (let i = 1; i < SHB_SN; i++) { const a = P[i - 1], p = P[i], c = P[i + 1]; let dt = Math.atan2(c[1] - p[1], c[0] - p[0]) - Math.atan2(p[1] - a[1], p[0] - a[0]); while (dt > Math.PI) dt -= TAU; while (dt < -Math.PI) dt += TAU; k.push(Math.abs(dt) / (0.5 * (Math.hypot(p[0] - a[0], p[1] - a[1]) + Math.hypot(c[0] - p[0], c[1] - p[1])))); } k.push(0); return k; });
+}
+
+/* ============================== 11. the flat low sides and the thumb rest (Brock: "the left and right sides ... near the bottom being flatter and less arched") ============================== */
+S({
+  id: 'shbSides', ch: 'shell', theme: 'paper', title: 'Flat low sides need a thicker lattice', settle: 10.4, after: 'shbTol',
+  ideas: [53, 75], src: ['shbModel', 'shlLattice'],
+  draw: t => {
+    const RB = shbSec('grip'), RX = shbSec('grip', { add: 0.1, side: 0 }, 'band'), RE = shbSec('grip', { add: 0.1, even: true }, 'even');
+    const RT = shbSec('thumb'), RTX = shbSec('thumb', { add: 0.1, side: 1 }, 'bandT'), RTE = shbSec('thumb', { add: 0.1, even: true }, 'evenT');
+    const f0 = shbSecFlex(RB), cutB = 1 - shbSecFlex(RX) / f0, cutE = 1 - shbSecFlex(RE) / f0, perG = cutB / cutE, pkG = (1 - RX.smax / RB.smax) / (1 - RE.smax / RB.smax);
+    const thG = (1 - shbSecFlex(RTX) / shbSecFlex(RT)) / (1 - shbSecFlex(RTE) / shbSecFlex(RT));
+    /* the section's own numbers: the hump arch above the widest line, and the low side's bulge over its chord */
+    const top = SHB_SEC.filter(p => p[1] >= 11.6), span = Math.max(...top.map(p => p[0])) - Math.min(...top.map(p => p[0])), rise = Math.max(...SHB_SEC.map(p => p[1])) - 11.6;
+    const low = SHB_SEC.filter(p => p[0] > 0 && p[1] >= 3.8 && p[1] <= 19.6), c0 = low[0], c1 = low[low.length - 1], cl = Math.hypot(c1[0] - c0[0], c1[1] - c0[1]);
+    const bulge = Math.max(...low.map(p => Math.abs((c1[0] - c0[0]) * (c0[1] - p[1]) - (c0[0] - p[0]) * (c1[1] - c0[1])) / cl));
+    header(t, 'Flat low sides need a thicker lattice');
+    captions(t, [[0.6, 'Cut the shell across its hump. Above the widest line it is an arch: ' + fmtN(rise, 1) + ' mm of rise over ' + fmtN(span, 1) + ' mm.'], [3.4, 'Below it the sides drop almost straight to the rim. That is where the thumb and fingers squeeze, and there is no arch there to help.'], [6.8, 'So the lattice runs thicker on the low sides, thickest where the thumb rests. Per gram, that cuts the grip\'s flex ' + fmtN(perG, 1) + '× more than spreading it evenly.']]);
+    const x0 = LM, y0 = 280, w0 = 1080, h0 = 640, a0 = tileA(t, 0.3, 0); demoWindow(x0, y0, w0, h0, a0);
+    /* seen from behind, as the hand sees it: the thumb's side (+x) on the left */
+    const s = 11, cx = x0 + 540, by = y0 + 540, P = p => [cx - p[0] * s, by - p[1] * s];
+    const kL = ep(t, 4.4, 5.6, E.io3), kB = ep(t, 6.9, 8.4, E.io3), aS = ep(t, 0.7, 1.4) * a0, smax = RB.smax;
+    if (kB < 1) feDraw(RB, P, { scale: 14, load: kL, smax, w: s, alpha: aS * (1 - kB), seg: 6, heat: kL > 0.01, color: C.ink2 });
+    if (kB > 0) feDraw(RX, P, { scale: 14, load: kL, smax, w: s, alpha: aS * kB, seg: 6 });
+    for (const xs of [-1, 1]) feSupport(P([xs * 25.5, 0.6]), 'pin', { alpha: aS });
+    /* the arch and the flat low sides, named */
+    const ka = ep(t, 1.6, 2.4) * a0, kl = ep(t, 3.4, 4.0) * a0;
+    shbPath(shbPart(top.slice().sort((p, q) => q[0] - p[0]).map(p => { const q = P(p); return [q[0], q[1] - 22]; }), ep(t, 1.4, 2.6)), C.hero, 3, ka, { dash: [8, 7] });
+    if (ka > 0.003) callout(t, 2.2, P([-8, 37.6 + 2]), 'An arch: ' + fmtN(rise, 1) + ' mm over ' + fmtN(span, 1) + ' mm', { to: [cx + 220, y0 + 70], side: 'r', color: C.heroText, tcolor: C.ink, prose: true, maxW: 270 });
+    for (const xs of [1, -1]) { const lowS = SHB_SEC.filter(p => Math.sign(p[0]) === xs && p[1] >= 3.8 && p[1] <= 19.6).map(p => { const q = P(p); return [q[0] - xs * 22, q[1]]; }); shbPath(lowS, C.bad, 3, kl, { dash: [6, 6] }); }
+    if (kl > 0.003) text('Nearly straight: ' + fmtN(bulge, 1) + ' mm of bulge over ' + fmtN(cl, 0) + ' mm', x0 + 32, y0 + 56, { role: 'label', size: 20, color: C.bad, alpha: kl });
+    /* the grip */
+    const kg = ep(t, 4.2, 4.8) * a0;
+    for (const [xs, nm] of [[1, 'Thumb'], [-1, 'Fingers']]) { const p = P([xs * 31.5, 12]); arrow(p[0] - xs * 96, p[1], p[0] - xs * 30, p[1], { color: C.ink2, w: 3, hs: 14, alpha: kg }); text(nm, p[0] - xs * 104, p[1] - 22, { role: 'label', size: 20, color: C.ink, align: xs > 0 ? 'right' : 'left', alpha: kg }); }
+    /* the peak, before and after */
+    const kp = ep(t, 5.4, 5.9) * a0, pkNow = lerp(RB.smax, RX.smax, kB) * kL;
+    rich([{ s: 'Peak', role: 'label', size: 20, color: C.mute }, { s: fmtN(pkNow, 1), font: 'disp', size: 40, weight: 800, color: C.ink, tnum: true, gap: 12 }, { s: 'MPa', role: 'label', size: 20, color: C.mute, caps: false, gap: 6 }], x0 + w0 - 32, y0 + h0 - 66, { align: 'right', alpha: kp });
+    text(kB > 0.5 ? 'Band: +10% of the grams, low sides' : 'A plain strip, 1.6 mm', x0 + w0 - 32, y0 + h0 - 30, { role: 'small', size: 22, color: C.mute, align: 'right', alpha: kp });
+    text('2D frame of the real section (sliced from the Theseus shell, z = −14 mm), a 10 mm strip, PP-C-20A, 10 N each side. Flex drawn 14× real.', x0 + 32, y0 + h0 - 86, { role: 'small', size: 22, color: C.faint, alpha: aS, maxW: 620 });
+    /* the column: what the band buys per gram, and where it goes */
+    const x2 = x0 + w0 + 40, w2 = RM - x2, Bc = bento(x2, y0, w2, 280, 2, 1);
+    statTile(t, 8.4, Bc(0, 0), { value: fmtN(perG, 1), unit: '×', label: 'flex cut per gram, low sides vs even', ev: 'derived', hero: true });
+    statTile(t, 8.6, Bc(1, 0), { value: fmtN(pkG, 1), unit: '×', label: 'peak cut per gram', ev: 'derived', quiet: true });
+    const ty2 = y0 + 320, th2 = h0 - 320, ak = tileA(t, 7.0, 0); demoWindow(x2, ty2, w2, th2, ak);
+    keyPlan(t, 7.2, x2 + 150, ty2 + th2 / 2, { s: 2.0, hi: 'sides', accent: C.hero, label: ' ' });
+    part(x2 + 150, ty2 + th2 / 2, 2.36, () => { G.save(); keyPath(); G.clip(); G.globalAlpha = ak * ep(t, 7.8, 8.4) * 0.8; G.fillStyle = C.hero; G.fillRect(-40, -12, 15, 40); G.restore(); });
+    text('From above', x2 + 300, ty2 + 66, { role: 'label', size: 20, color: C.ink, alpha: ak });
+    shbNote(t, 7.6, x2 + 300, ty2 + 108, w2 - 332, 'The band runs down both low sides, thickest under the thumb: per gram, ' + fmtN(thG, 1) + '× the thumb\'s flex cut of an even layer.', { alpha: ak, color: C.ink2 });
   }
 });

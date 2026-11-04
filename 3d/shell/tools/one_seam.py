@@ -11,7 +11,9 @@ with numpy only and writes shell-theseus-1seam.glb next to it (the original stay
 2. each half is merged into its trigger mesh (so it moves with that click);
 3. the old groove between the cap and each trigger is covered by a strip of skin, lofted between the cap's skin at
    x = ±XB and the trigger's skin at x = ±XT (cross-sections of the two meshes), 4 µm proud, with their normals;
-4. the 'bridge' node loses its mesh (the shell builder then skips it).
+4. the 'bridge' node loses its mesh (the shell builder then skips it);
+5. the rear cutout becomes one straight line across both triggers at the Sora's deepest smile point, the side seams
+   carrying on straight back to meet it (rear_seam.py), and shell-theseus-1seam.json gets the hinge 1.6 mm ahead of it.
 
     python3 -I shell/tools/one_seam.py          (from 3d/)
 """
@@ -271,5 +273,20 @@ if __name__ == '__main__':
         P, N, C, T, info = process(js, b, side)
         rep['trigger' + side] = (P, N, C, T)
         print(info)
+    # 5. the rear cutout: one straight line across both triggers, back to the Sora's smile (rear_seam.py)
+    import rear_seam
+    _, Bd = glbio.mesh_arrays(js, b, 'body')
+    meshes = {k: (v[0], v[1], v[2], np.asarray(v[3]).reshape(-1, 3).astype(np.int64)) for k, v in rep.items()}
+    meshes['body'] = (Bd['POSITION'], Bd['NORMAL'], Bd['COLOR_0'], Bd['indices'].reshape(-1, 3).astype(np.int64))
+    moved, _ = rear_seam.apply(meshes)
+    rep.update(moved)
     size = write(js, b, rep, ['bridge'], DST)
     print('wrote', DST, size // 1024, 'KB')
+    # its metadata: shell-theseus.json with the trigger hinge 1.6 mm ahead of the new cutout, as on both first builds
+    meta = json.load(open(SRC.replace('.glb', '.json')))
+    for s_ in ('L', 'R'): meta['hinge'][s_]['pivot'][2] = round(rear_seam.Z_NEW + 1.6, 4)
+    meta['rearCutoutZ'] = rear_seam.Z_NEW
+    meta['note'] = 'one seam nose to rear seam (one_seam.py); rear cutout straight at z = rearCutoutZ (rear_seam.py)'
+    dj = DST.replace('.glb', '.json'); tmp = dj + '.tmp'
+    open(tmp, 'w').write(json.dumps(meta, separators=(',', ':'))); os.replace(tmp, dj)
+    print('wrote', dj)

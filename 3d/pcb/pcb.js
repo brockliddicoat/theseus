@@ -442,6 +442,16 @@ export async function buildPcb(opts = {}) {
       sw.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
       node.add(sw); gt01[ref] = sw; owned.push(sw);
     }
+    // the parts GT01 has no locating peg any more (Brock: it read as a fourth pin): close the 1.0 mm peg hole that
+    // pcb.glb drilled beside each switch (+1.45, +2.54 from its centre), top and bottom, in the board's own masks
+    const core = root.getObjectByName('board_core'), host = core && core.parent;
+    for (const ref of ['SW1', 'SW2']) {
+      const c = host && gt01[ref] && (layout.components || []).find((k) => k.ref === ref); if (!c) continue;
+      for (const [y, m, up] of [[0.0235, M.mask, 1], [-1.0235, M.mask_b, -1]]) {
+        const g = new THREE.CircleGeometry(0.58, 24); g.rotateX(up > 0 ? -Math.PI / 2 : Math.PI / 2); g.translate(c.x + 1.45, y, c.z + 2.54);
+        const d = new THREE.Mesh(g, m); d.name = ref + '_pegHoleCap'; d.receiveShadow = true; host.add(d);
+      }
+    }
   }
   const buildMM = opts.millmax;
   if (buildMM) {

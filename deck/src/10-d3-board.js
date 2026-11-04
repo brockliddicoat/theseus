@@ -189,7 +189,7 @@ const shcTA = (t, t0, i) => typeof tileA === 'function' ? tileA(t, t0, i) : ep(t
 /* ============================== 1. FR4 vs magnesium alloy (#94) ============================== */
 const SHC_FR4 = { uts: 430, E: [18, 20], rho: 1.85 }, SHC_MG = { uts: [160, 220], E: 46, rho: 1.81 };
 S({
-  id: 'shlPcbRib', replaces: 'shlPcbRib', after: 'arches', ch: 'shell', theme: 'night', title: 'FR4 vs magnesium alloy', settle: 9.5, ideas: [94],
+  id: 'shlPcbRib', replaces: 'shlPcbRib', after: 'shbSides', ch: 'shell', theme: 'night', title: 'FR4 vs magnesium alloy', settle: 9.5, ideas: [94],
   src: ['shlFr4', 'shcFr4Flex', 'az91d', 'shcAz91', 'shlDoc'],
   draw: t => {
     header(t, 'FR4 vs magnesium alloy');

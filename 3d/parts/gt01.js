@@ -97,9 +97,7 @@ export function buildGT01(opts = {}) {
   const base = new THREE.Group(); base.name = 'base';
   const wedgeL = meshOf(mkSkin(-1), M.lcpBlack, 'wedgeSkinL'), wedgeC = meshOf(coreG, M.lcpBlack, 'wedgeCore'), wedgeR = meshOf(mkSkin(+1), M.lcpBlack, 'wedgeSkinR');
   base.add(wedgeL, wedgeC, wedgeR);
-  const peg = meshOf(lathe([[0, -0.72], [0.36, -0.72], [0.45, -0.63], [0.45, 0.2], [0, 0.2]], { segments: 32 }), M.lcpBlack, 'keyPeg');
-  peg.position.set(1.45, 0, 2.54);
-  base.add(peg);
+  // no locating peg under the wedge (Brock, 09:28: it read as "a 4th extra pin in the front"): the three terminals key it
   root.add(base);
 
   // ================================================================ the switch itself (S frame): a standard SPDT micro switch
@@ -298,7 +296,6 @@ export function buildGT01(opts = {}) {
     ...GT01_SPEC,
     tiltDeg: tilt / D2R,
     pins: pinsSpec.map(p => ({ ...p })),
-    keyPeg: { x: 1.45, z: 2.54, d: 0.9 },
     plungerTop: plTop.toArray().map(v => +v.toFixed(4)),
     plungerAxis: [0, +cT.toFixed(5), +sT.toFixed(5)],
     footprint: [[-W / 2, F[1]], [W / 2, F[1]], [W / 2, C[1]], [-W / 2, C[1]]],

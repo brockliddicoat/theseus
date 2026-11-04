@@ -105,7 +105,7 @@ Last updated: 2026-11-04 09:58 (Chicago).
   on depending on how optimized the structure is at dispersing force"
 - **F2.11 DONE** (`shlPick`, then `shlNoPick`: the question types alone and rises into the title) "show how most mice make you pick between strength and weight, when that shouldn't have to
   be the case. follow that up with a "what if you didn't have to pick…" but find a good transition"
-- **F2.12 DONE in Shell A, IN PROGRESS (shb, shc)** "show more force distribution animations, i think those will be really helpful"
+- **F2.12 DONE in Shell A and B, IN PROGRESS (shc)** "show more force distribution animations, i think those will be really helpful"
   - Built on 07-sim.js (feFlow, feDraw).
 - **F2.13 IN PROGRESS (srf)** "improve how the texture of the cerakote looks and make the fibers look more accurate"
 - **F2.14 IN PROGRESS (srf)** "visualize and show cerakote can be laser etched in different shapes and spacings to create
@@ -114,17 +114,17 @@ Last updated: 2026-11-04 09:58 (Chicago).
   direction"
 - **F2.15 IN PROGRESS (srf)** "show how this is the solid state solution that doesn't need adhesives that wear down over
   time or collect gunk"
-- **F2.16 IN PROGRESS (shb)** "talk about how triangles from continuous lines (and therefore arches in dome shape like a
+- **F2.16 DONE** (`shbArches`: arches drawn as continuous lines, triangles where they cross; `shbDome`: geodesic domes, the HI-SEAS Mars missions) "talk about how triangles from continuous lines (and therefore arches in dome shape like a
   mouse, show nasa mars base triangle domes) right now the presentation shows triangulated arches/ triangles forming
   arches, when it should show interwoven arches forming triangles)"
-- **F2.17 IN PROGRESS (shb)** "show how these continuous lines particularly increase strength for materials filled with
+- **F2.17 DONE** (`shbFibres`: Krenchel's curve, Choi 2024 1.7×, Hexcel 33×) "show how these continuous lines particularly increase strength for materials filled with
   fibers, because fiber alignments is extremely important (bring up specific research on how high the potential
   strength increases are)"
-- **F2.18 IN PROGRESS (shb)** "show a fluid simulation of how a filleted lattice helps sign fibers (if there is anything
+- **F2.18 DONE** (`shbFlow`: a melt-flow simulation, sharp against filleted; `shbGates`: gating, rib width, fillets) "show a fluid simulation of how a filleted lattice helps sign fibers (if there is anything
   else that can be down to the lattice to better align it show it)"
 - **F2.19 DONE** (`sealed`: "The encoder: the number one failure point") "talk about how no dust getting in the encoder is particularly important given the fact
   that the encoder is the number one failure point in a mouse"
-- **F2.20 IN PROGRESS (shb)** "show how the left and right sides of the mouse near the bottom being flatter and less
+- **F2.20 DONE** (`shbSides`: the flat low sides take the peak; a thicker band and the thumb rest) "show how the left and right sides of the mouse near the bottom being flatter and less
   arched, and how that means extra design intent has to be spent to make the lattice thicker in those wasted, as well as
   possibly specifically where the thumb rests"
 - **F2.21 IN PROGRESS (srf)** "talk about how the cerakote etching lets us do 2 tone designs without having to worry about
@@ -134,9 +134,9 @@ Last updated: 2026-11-04 09:58 (Chicago).
 - **F2.23 IN PROGRESS (srf)** "talk about how with most coatings it's very hard to tell if they will yellow over time, but
   cerakote is by far one of the safest because of its industry leading chemical and uv resistance (like how the ulx
   pros yellowed)"
-- **F2.24 IN PROGRESS (shb)** "i need an elaborate and in depth force simulation, bending simulation and and text
+- **F2.24 DONE** (`shbPress`: arch against flat plate, 21× stiffer, the plate cracks at 12 N, the arch holds to 45 N; `shbThrust`; `shbBend`) "i need an elaborate and in depth force simulation, bending simulation and and text
   explanation of why/how arches are so strong, as well as a comparison to flat planes"
-- **F2.25 IN PROGRESS (shb)** "talk and visually about how the filets making milling the mold easier and reduce the
+- **F2.25 DONE** (`shbMill`: one cutter pass at 0.6 mm fillets; `shbTol`: 19× looser tolerance) "talk and visually about how the filets making milling the mold easier and reduce the
   tightest tolerance"
 - **F2.26 IN PROGRESS (shc)** "i feel like the pcb being used as a reinforcement isn't demonstrated enough. i want to talk
   about how unexpectedly strong fr4 is (compared to even magnesium alloy directly). why in engineering it is so important
@@ -315,7 +315,7 @@ Last updated: 2026-11-04 09:58 (Chicago).
   a little taller than that though"
 - **F9.22 STANDING** "again this is just me giving you more guidance, do not abandon any of my old guidance unless i've
   intentionally overwritten it"
-- **F9.23 DONE in Shell A (`shlMargin`: the plane cracks at 67 N, the triangles hold to 126 N) and the heat scale, IN PROGRESS (shb, shc)** "you need to better explain how lower peak force hotspots are
+- **F9.23 DONE in Shell A (`shlMargin`) and B (`shbPress`, `shbSides`) and the heat scale, IN PROGRESS (shc)** "you need to better explain how lower peak force hotspots are
   better, and peak force areas should also be colored in red so the viewer knows they're bad. show the risk of breakage.
   this should tie in with a lot of the other advice i've given you, you should try to make as many concepts tie together
   as possible"
@@ -328,7 +328,7 @@ Last updated: 2026-11-04 09:58 (Chicago).
   f=ma, so mass means less inertia means quicker target switching when changing directions, there should also be other
   theories that are all but proven, the inertia thing means it should be objective easier to switch targets, even though
   there isn't a study to prove it, it feels pretty solid to me"
-- **F9.27 DONE in shared code (feDraw fillet) and Shell A, IN PROGRESS (shb, shc, r3d)** "we have slides about the
+- **F9.27 DONE in shared code (feDraw fillet) and Shells A and B, IN PROGRESS (shc, r3d)** "we have slides about the
   importance of filleting the lattice, but none of the lattices in our visualizations other than those slides are
   filleted, this is an issue"
 - **F9.28 DONE in the shared key plan and clicks, IN PROGRESS in 3D (r3d)** "we talk about how it's better to have 1 seam in our slides
