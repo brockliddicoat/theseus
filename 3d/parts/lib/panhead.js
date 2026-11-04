@@ -39,7 +39,7 @@ export class Soup {
 export const PAN_HEAD_DEFAULTS = {
   dk: 4.0, k: 1.6, rf: 3.2, fillet: 0.32,          // ISO 7045 M2: dk 4.0 max, k 1.6 max, rf ≈ 3.2
   shank: 0.87, underFillet: 0.1, bearingRound: 0.05, // blank ≈ pitch diameter under the head; r min 0.1
-  slotWidth: 0.5, slotDepth: 0.6,                    // ISO 1580 M2: n 0.5, t min 0.5
+  slotWidth: 0.5, slotDepth: 0.8,                    // ISO 1580 M2: n 0.5, t min 0.5 (deep enough to exit through the rim)
   crossSpan: 1.9, wing: 0.42, crossDepth: 1.0,       // cross recess No. 0 (H): m ≈ 1.9, penetration 0.85–1.2
   crossFlat: 0.3, coneRadius: 0.18, coneDepth: 0.16,
 };
@@ -185,10 +185,12 @@ export function panHeadGeometry(opts = {}) {
   for (let i = 1; i <= 4; i++) { const t = (i / 4) * Math.PI / 2; prof.push([R - eb + eb * Math.sin(t), eb - eb * Math.cos(t)]); }   // bearing edge round
   const yfc = fcy;                                              // side top = fillet centre height
   prof.push([R, yfc]);
-  const tA = Math.atan2(fcy - dc, fcx);                         // fillet arc: from the side (angle 0) to the dome tangent
-  for (let i = 1; i <= 10; i++) { const t = tA * i / 10; prof.push([fcx + rF * Math.cos(t), fcy + rF * Math.sin(t)]); }
-  // the dome from the tangent point to rs (rs < rt in the default sizes, so this is the last point)
-  if (rs < rt) prof.push([rs, ys]); else prof[prof.length - 1] = [rs, ys];
+  // the fillet arc, from the side (angle 0) toward the dome tangent, stopping where the slot floor cuts it (or at
+  // the tangent, then the dome on to rs, when the slot floor lies on the dome)
+  const tA = Math.atan2(fcy - dc, fcx), tS = rs > rt ? Math.asin(Math.min(1, (ys - fcy) / rF)) : tA;
+  for (let i = 1; i <= 12; i++) { const t = tS * i / 12; prof.push([fcx + rF * Math.cos(t), fcy + rF * Math.sin(t)]); }
+  prof[prof.length - 1] = [rs, ys];
+  if (rs < rt) { prof[prof.length - 1] = [rt, H0(rt)]; prof.push([rs, ys]); }
   const ring = (r, y, a) => [r * Math.sin(a), y, r * Math.cos(a)];
   for (let j = 0; j < prof.length - 1; j++) {
     const [r0, y0] = prof[j], [r1, y1] = prof[j + 1], dr = r1 - r0, dy = y1 - y0;
@@ -199,5 +201,25 @@ export function panHeadGeometry(opts = {}) {
     }
   }
   const geometry = S.geometry(o.crease ?? 32);
+  // exact normals on the dome and the fillet (the polar grid's long triangles otherwise shade in spokes), and a baked
+  // occlusion term in the vertex colours: the recess darkens with depth, as a real one does in a studio light
+  const pos = geometry.attributes.position, nor = geometry.attributes.normal, nv = pos.count;
+  const col = new Float32Array(nv * 3);
+  for (let i = 0; i < nv; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i), r = Math.hypot(x, z);
+    let ao = 1;
+    if (r <= rs + 1e-6 && y > 0.05) {
+      const h = H0(r), depth = h - y;
+      if (depth < 2e-5) {                                       // on the dome or the fillet: the analytic normal
+        let nx, ny, nz;
+        if (r <= rt) { nx = x / rf; ny = (y - dc) / rf; nz = z / rf; }
+        else { const ur = r > 1e-9 ? 1 / r : 0, dr = r - fcx; nx = x * ur * dr / rF; ny = (y - fcy) / rF; nz = z * ur * dr / rF; }
+        const l = Math.hypot(nx, ny, nz) || 1; nx /= l; ny /= l; nz /= l;
+        if (nx * nor.getX(i) + ny * nor.getY(i) + nz * nor.getZ(i) > 0.9) nor.setXYZ(i, nx, ny, nz);
+      } else ao = 1 - 0.62 * Math.min(1, Math.pow(depth / 0.75, 0.8));
+    }
+    col[i * 3] = col[i * 3 + 1] = col[i * 3 + 2] = ao;
+  }
+  geometry.setAttribute('color', new THREE.BufferAttribute(col, 3));
   return { geometry, spec: { dk: o.dk, k, rf, rs: +rs.toFixed(4), slot: [o.slotWidth, o.slotDepth], cross: { m: o.crossSpan, wing: o.wing, depth: o.crossDepth }, shank: rb, underFillet: ru, angles: A.length } };
 }

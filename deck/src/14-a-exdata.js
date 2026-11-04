@@ -23,7 +23,7 @@ Object.assign(SRC, {
   exL91: { t: 'Energizer L91 lithium AA datasheet: 15 g, about 3500 mAh at 25 mA', u: 'https://data.energizer.com/pdfs/l91.pdf' },
   exBu107: { t: 'Battery University BU-107, comparison table of secondary batteries (Li-ion 500 to 1000 cycles)', u: 'https://batteryuniversity.com/article/bu-107-comparison-table-of-secondary-batteries' },
   exBu409: { t: 'Battery University BU-409, charging lithium-ion: 0.5C to 1C, full in about 2 to 3 h', u: 'https://batteryuniversity.com/article/bu-409-charging-lithium-ion' },
-  exZk: { t: 'Zaunkoenig, "Optimal weight of a gaming mouse", 29 Dec 2018: "The optimal weight of a gaming mouse therefore is zero grams." (an argument, no experiment)', u: 'https://zaunkoenig.co/blog/optimal-weight-of-a-gaming-mouse' },
+  exZk: { t: 'Zaunkoenig, "Optimal weight of a gaming mouse", 29 Dec 2018: "The optimal weight of a gaming mouse therefore is zero grams.", from F = m · a', u: 'https://zaunkoenig.co/blog/optimal-weight-of-a-gaming-mouse' },
   exZkM1k: { t: 'Zaunkoenig, "M1K weight in review", 31 Aug 2020: 23.4 g mean of the first 333 units', u: 'https://zaunkoenig.co/blog/m1k-weight-in-review' },
   exConroy: { t: 'Conroy, Toth & Campbell 2022, Applied Ergonomics 99:103637: n = 72 gamers; 50, 60 and 90 g mice 4% faster and 9% more accurate than 100 g', u: 'https://pure.ul.ie/en/publications/the-effect-of-computer-mouse-mass-on-target-acquisition-performan/' },
   exYan: { t: 'Yan et al. 2022, Proc. HFES 66(1): n = 12, six mice 40 to 140 g; the 40 g mouse had the highest error rate, 60 g most preferred', u: 'https://www.coeh.berkeley.edu/node/1708' },

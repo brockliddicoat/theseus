@@ -37,6 +37,19 @@ const INSERT_PROFILE = isoInternal(P, I_MAJ, I_MIN, S_MAJ, 0.02);
 const S_MIN = Math.min(...SCREW_PROFILE.map(p => p[1]));
 const BLANK = 0.87;                                        // rolled-thread blank ≈ pitch diameter: the shank under the head
 
+/** a copy of a material that multiplies by the vertex colours (the baked occlusion); disposed with the tree */
+function aoMat(m) { const c = m.clone(); c.vertexColors = true; if (c.clearcoat) c.clearcoat = 0; return c; }   // no clearcoat: its highlight would ignore the occlusion
+/** occlusion as vertex colours from the radius: lo at r0, hi at r1 (interpolated, clamped) */
+function aoByRadius(geo, r0, r1, lo, hi = 1) {
+  const p = geo.attributes.position, n = p.count, c = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    const r = Math.hypot(p.getX(i), p.getZ(i)), t = Math.min(1, Math.max(0, (r - r0) / ((r1 - r0) || 1)));
+    const v = lo + (hi - lo) * t * t * (3 - 2 * t);
+    c[i * 3] = c[i * 3 + 1] = c[i * 3 + 2] = v;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(c, 3));
+}
+
 /** Screw meshes: head (exact recess), thread (helical, run-out and point), tip face. Origin: bearing face, shank −Y.
     o.detail: 'high' (deck close-ups, default) | 'low' (screws seen only by their heads, e.g. in the shell). */
 function screwMeshes(M, o = {}) {
@@ -44,7 +57,7 @@ function screwMeshes(M, o = {}) {
   const mat = { brass: M.brassPlated, steel: M.steel, black: M.blackOxide }[o.finish || 'brass'] || M.brassPlated;
   const tmat = { brass: M.brassPlatedRolled, steel: M.steel, black: M.blackOxide }[o.finish || 'brass'] || M.brassPlatedRolled;
   const headG = panHeadGeometry(low ? { nSlot: 14, nSide: 6, nEnd: 4, radial: 7, nTrench: 6 } : {});
-  const head = meshOf(headG.geometry, mat, 'head');
+  const head = meshOf(headG.geometry, aoMat(mat), 'head');
   const yTip = -len, y1 = -0.1;                            // thread from the point to the under-head fillet
   const rTipEnd = S_MIN - 0.1;
   const kCrest = (S_MAJ - BLANK) / 0.25, kRoot = (BLANK - S_MIN) / 0.85;   // run-out: crests in 0.25, roots in 0.85 (≤ x 1.0)
@@ -53,8 +66,11 @@ function screwMeshes(M, o = {}) {
     hi: (y) => Math.min(rTipEnd + (y - yTip) * 1.0, BLANK + (y1 - y) * kCrest),     // 45° point; crests rising out of the blank
     lo: (y) => BLANK - (y1 - y) * kRoot,                                             // roots filling to the blank under the head
     crease: 38,
-  }), tmat, 'thread');
-  const tip = meshOf(lathe([[0, yTip], [rTipEnd, yTip], [rTipEnd, yTip + 1e-4]], { segments: low ? 40 : 80 }), tmat, 'tip');
+  }), null, 'thread');
+  const tip = meshOf(lathe([[0, yTip], [rTipEnd, yTip], [rTipEnd, yTip + 1e-4]], { segments: low ? 40 : 80 }), null, 'tip');
+  // occlusion baked by radius: the roots sit in shadow between the flanks; the point's face a little
+  aoByRadius(thread.geometry, S_MIN, S_MAJ, 0.58); aoByRadius(tip.geometry, 0, 1, 0.9, 0.9);
+  thread.material = tip.material = aoMat(tmat);
   return { head, thread, tip, mat, headSpec: headG.spec };
 }
 
@@ -69,7 +85,9 @@ function insertMeshes(M, o = {}) {
   const loB = (y) => I_MIN + Math.max(0, (yB + 0.16) - y) * 1.6;
   const lo = (y) => Math.max(loT(y), loB(y));
   const rTopEnd = lo(0), rBotEnd = lo(yB);
-  const thread = meshOf(helixThread({ pitch: P, segments: 80, y0: yB, y1: 0, profile: INSERT_PROFILE, phase, internal: true, lo, crease: 38 }), M.brass, 'insertThread');
+  const brass = aoMat(M.brass), knurl = aoMat(M.brassKnurl);
+  const thread = meshOf(helixThread({ pitch: P, segments: 80, y0: yB, y1: 0, profile: INSERT_PROFILE, phase, internal: true, lo, crease: 38 }), brass, 'insertThread');
+  aoByRadius(thread.geometry, I_MIN, I_MAJ, 0.62, 0.42);           // inside the bore: dim, darkest in the grooves
   // body (lathe, material on the left): bottom face → pilot → lower band core → groove → upper band core → top face
   const prof = [
     [rBotEnd, yB], [rPilot - 0.12, yB], [rPilot, yB + 0.12],          // bottom face + pilot chamfer
@@ -77,9 +95,13 @@ function insertMeshes(M, o = {}) {
     [rBody, gBot], [rGroove, gBot], [rGroove, gTop], [rBody, gTop],     // groove between the bands
     [rBody, -1e-3], [rBody, 0], [rTopEnd, 0],                           // upper band core → top face → countersink
   ];
-  const body = meshOf(lathe(prof, { segments: 96, crease: 35 }), M.brass, 'insertBody');
-  const knA = meshOf(knurlTeeth({ rRoot, rTip, y0: pTop, y1: gBot, count: 18, lead: -19.6, rings: 30, per: 10 }), M.brassKnurl, 'knurlLower');
-  const knB = meshOf(knurlTeeth({ rRoot, rTip, y0: gTop, y1: 0, count: 18, lead: 19.6, rings: 40, per: 10 }), M.brassKnurl, 'knurlUpper');
+  const body = meshOf(lathe(prof, { segments: 96, crease: 35 }), brass, 'insertBody');
+  aoByRadius(body.geometry, rTopEnd - 0.05, rGroove, 0.62, 1.0);   // the countersink dim, the outside lit; the groove floor:
+  { const p = body.geometry.attributes.position, c = body.geometry.attributes.color;
+    for (let i = 0; i < p.count; i++) { const r = Math.hypot(p.getX(i), p.getZ(i)), y = p.getY(i); if (r > rGroove - 1e-4 && r < rBody - 1e-4 && y < gTop + 1e-4 && y > gBot - 1e-4) c.setXYZ(i, 0.66, 0.66, 0.66); } }
+  const knA = meshOf(knurlTeeth({ rRoot, rTip, y0: pTop, y1: gBot, count: 18, lead: -19.6, rings: 30, per: 10 }), knurl, 'knurlLower');
+  const knB = meshOf(knurlTeeth({ rRoot, rTip, y0: gTop, y1: 0, count: 18, lead: 19.6, rings: 40, per: 10 }), knurl, 'knurlUpper');
+  aoByRadius(knA.geometry, rRoot, rTip, 0.7); aoByRadius(knB.geometry, rRoot, rTip, 0.7);
   // mass: the body ring plus the teeth (half of the tooth annulus, near enough for trapezoids with small flats)
   const ring = (ro, ri, h) => Math.PI * (ro * ro - ri * ri) * h;
   const vol = ring(rBody, 0.92, L) - ring(rBody, rGroove, gTop - gBot) - ring(rBody, rPilot, pTop - yB)

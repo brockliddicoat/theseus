@@ -1,12 +1,12 @@
 /* ============================================================================================
    INTRO (chapter code ntr). The first impression, in this order:
-     cover (the 3D hero) · thesis (how every number is labelled) · targets, targets2 (the bar) · flagships
-     · zerograms · weightgap (listed against weighed) · pricefront (what a gram costs) · market (the empty corner)
-     · budget (the 29 g decision) · map (seven areas on the exploded 3D shell)
+     cover, thesis (how every number is labelled), targets, targets2, flagships, [ntr_stats: 14-d-intro.js],
+     zerograms (F = m · a), weightgap (listed against weighed), [ntr_density, ntr_sizewt, ntr_densrank: 14-d-intro.js],
+     pricefront (price against weight), market (battery life against weight), budget (29.31 g, 200 h), map
    The close is in 10-i-close.js. Data comes from research/data (RDATA, read with rv / evOf / exMouse / exWeight from
    14-a-exdata.js). Theseus numbers are PROPOSAL (a target) or PROJECTED (a forecast, formula on screen).
    Validation report 2026-11-03 applied: the sensor is a "next-gen PixArt FrameSync-class sensor (proposal)", the
-   Starlight X has no hour rating, the module is the Raytac AN54LM-20A, and the 29 g budget is an open decision.
+   Starlight X has no hour rating, the module is the Raytac AN54LM-20A. Theseus's numbers come from THS / THESEUS (05-data.js).
    ============================================================================================ */
 Object.assign(SRC, {
   exPrices: { t: 'US list prices: maker stores and product pages (Pulsar, Ninjutso, Lamzu, Keychron, Finalmouse, Razer, Logitech, WLMOUSE), via research/data/mice.json', n: 'A price range is plotted at its lowest price. Prices as listed when collected, 2026.' },
@@ -178,7 +178,7 @@ S({
     const SP = ntr_specimens(), cell = bento(LM, 280, RM - LM, 680, 4, 2);
     SP.forEach((s, i) => {
       const r = cell(i % 4, Math.floor(i / 4)), t0 = 0.8 + i * 0.22;
-      if (!s.rule) { statTile(t, t0, r, Object.assign({ quiet: !s.hero, align: 'center' }, s)); return; }
+      if (!s.rule) { statTile(t, t0, r, Object.assign({ quiet: !s.hero, align: 'center', size: s.hero ? 120 : 112 }, s)); return; }
       /* the rule, and what a gap looks like */
       const [x, y, w, h] = r, a = ep(t, t0, t0 + 0.55, E.snap); if (a <= 0.003) return;
       demoWindow(x, y, w, h, a);
@@ -255,10 +255,10 @@ function ntr_bar(t, rows) {
   return y + 14 + rh * n;
 }
 S({
-  id: 'targets', ch: 'intro', theme: 'night', title: 'The bar, part one: speed', settle: 9,
+  id: 'targets', ch: 'intro', theme: 'night', title: 'Targets, part one: speed', settle: 9,
   src: ['exPiaknow', 'kunai', 'xbab', 'xbabFw', 'xbabSensorLock', 'vgnClick', 'pcgSlx', 'usbHs', 'ntrTpuV4'],
   draw: t => {
-    header(t, 'The bar, part one: speed');
+    header(t, 'Targets, part one: speed');
     const yb = ntr_bar(t, NTR_BAR_SPEED);
     captions(t, [[0.6, 'Each row: the best number anyone has shown, who holds it, how we know it, and my target. Theseus matches or beats every one.'], [5.0, 'The big one is wireless motion: 0.14 ms, 59% under the fastest wireless mouse anyone has measured.']]);
     legend(t, 3.2, LM, yb + 58, [{ kind: 'dot', color: C.ink, label: 'Best shown' }, { kind: 'hero', label: 'My target' }]);
@@ -266,10 +266,10 @@ S({
   }
 });
 S({
-  id: 'targets2', ch: 'intro', theme: 'paper', title: 'The bar, part two: everything else', settle: 9,
+  id: 'targets2', ch: 'intro', theme: 'paper', title: 'Targets, part two: everything else', settle: 9,
   src: ['exNbcV4', 'ntrTpuV4', 'ntrB2g', 'tpuX2h', 'nbcUlx', 'razerFocus', 'mkb3955', 'xbabSmooth', 'slxPdf', 'slxXt', 'kunai', 'cerakoteH'],
   draw: t => {
-    header(t, 'The bar, part two: everything else');
+    header(t, 'Targets, part two: everything else');
     ntr_bar(t, NTR_BAR_REST);
     captions(t, [[0.6, 'The same rule for everything else: the best figure shown anywhere, and where Theseus sits against it.'], [5.0, 'Every Theseus is weighed; the 29 g here is only listed. And where Razer keeps its sensor to itself, mine is a next-gen PixArt FrameSync-class part.']]);
   }
@@ -407,6 +407,8 @@ S({
       line(x0 - 20, y + 46, x1 + 40, y + 46, { color: C.hair, w: 1.5, alpha: ka });
       /* the push: behind it while it speeds up, in front of it while it brakes; the same arrow in every lane */
       if (u > 0 && u < 1) { const k2 = Math.min(1, Math.min(u, 1 - u) * 12); if (u < 0.5) arrow(px - 118, y, px - 62, y, { color: C.ink2, w: 3, hs: 14, alpha: k2 }); else arrow(px + 100, y, px + 50, y, { color: C.ink2, w: 3, hs: 14, alpha: k2 }); }
+      /* the strobe: where it was every 0.2 s, so the settled frame still shows who was quicker */
+      for (let tk = 0.2; tk < Math.min(t - Z.t0, T); tk += 0.2) { const uk = tk / T, fk = uk < 0.5 ? 2 * uk * uk : 1 - 2 * (1 - uk) * (1 - uk); ntr_puck(lerp(x0, x1 - 32, fk), y, 0.5, col, ka * 0.16); }
       ntr_puck(px, y, 0.5, col, ka);
       /* the time, when it has stopped on the target: a share of the 100 g mouse's */
       const kd = ep(t, Z.t0 + T, Z.t0 + T + 0.35);
@@ -490,10 +492,10 @@ function exPricePoints() {
   }).filter(Boolean);
 }
 S({
-  id: 'pricefront', ch: 'intro', theme: 'paper', title: 'What a gram costs', settle: 10, ideas: ['weight'],
+  id: 'pricefront', ch: 'intro', theme: 'paper', title: 'Price against weight', settle: 10, ideas: ['weight'],
   src: ['exRtings', 'exEloshapes', 'exPrices', 'x2fCrazy', 'nbcUlx'],
   draw: t => {
-    header(t, 'What a gram costs');
+    header(t, 'Price against weight');
     captions(t, [[0.6, 'Every wireless mouse with a US list price, against its weight. No full shell has shipped past the black line.'],
       [5.4, 'Theseus goes past it: 29.31 g with the whole shell, for $189. That is what the ULX launched at, 8.7 g heavier.']]);
     const P = exPricePoints(), x2f = P.find(p => p.id === 'pulsar-x2f-crazylight'), full = P.filter(p => p !== x2f);
@@ -506,13 +508,13 @@ S({
       x, y: py, w, h: ph, t0: 0.6, xr: [25, 70], yr: [60, 200], xticks: [30, 40, 50, 60, 70], yticks: [60, 80, 100, 120, 140, 160, 180, 200],
       xfmt: v => v + ' g', yfmt: v => '$' + v, xlabel: 'Weight, {g}', better: { x: -1, y: -1 }, sweet: { label: 'Lighter and cheaper' }, frontier: true,
       points: pts.length ? pts : [{ name: 'placeholder', x: 40, y: 120 }], placeholder: !pts.length,
-      target: { x: THESEUS.mass, y: THESEUS.price, name: 'Theseus', sub: THS.massG + ', ' + THS.price + ', full shell', dx: 28, dy: 8 }
+      target: { x: THESEUS.mass, y: THESEUS.price, name: 'Theseus', sub: THS.massG + ', ' + THS.price, dx: 28, dy: 8 }
     });
     /* the X2F: lighter and cheaper, but half a shell, so it sits off the frontier of full shells */
     if (x2f) {
       const kx = ep(t, 3.0, 3.5), qx = sc.X(x2f.x), qy = sc.Y(x2f.y);
       circle(qx, qy, 9 * kx, { fill: C.panel }); circle(qx, qy, 9 * kx, { color: C.faint, w: 2.5, dash: [3, 3] });
-      text('X2F CrazyLight, front half only', qx + 18, qy + 8, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: kx });
+      text('X2F, half a shell', qx + 18, qy + 8, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: kx });
     }
     const F = full.filter(p => !full.some(q => q !== p && q.x <= p.x && q.y <= p.y && (q.x < p.x || q.y < p.y))).sort((a, b) => a.x - b.x);
     const tx0 = 1320, tw0 = RM - tx0, ty = py - 30;
@@ -536,18 +538,18 @@ S({
 /* ============================== 09. the empty corner: weight against listed battery life at 1 kHz ============================== */
 const ntr_mk = n => exShort(n).replace(/^(Razer|Logitech|ZOWIE|Lamzu|Pulsar|Ninjutso|Finalmouse|WLMOUSE|Hitscan|Scyrox) /, '').replace('Xiaomi Gaming Mouse 2', 'Xiaomi GM2').replace('Starlight X', 'Starlight X');
 S({
-  id: 'market', ch: 'intro', theme: 'night', title: 'The empty corner', settle: 10, ideas: ['weight', 'battery'],
+  id: 'market', ch: 'intro', theme: 'night', title: 'Battery life against weight', settle: 10, ideas: ['weight', 'battery'],
   src: ['exRtings', 'exEloshapes', 'exNbcV4', 'ntrKeychron', 'ntrDaV4', 'ntrXiaomi', 'ntrGpx2', 'ntrGpx2c', 'razerBatt', 'logiSuperstrike', 'ntrZowie', 'ntrB2g'],
   draw: t => {
-    header(t, 'The empty corner');
+    header(t, 'Battery life against weight');
     const mice = ((RD.mice || {}).mice || []).filter(m => m.connection !== 'wired');
     const rated = mice.filter(m => rv(m.battery_claim_1k_h) != null).map(m => { const w = exWeight(m.id); return w ? { id: m.id, name: ntr_mk(m.name) + (m.id === 'razer-deathadder-v4-pro' ? '*' : ''), x: w.g, y: rv(m.battery_claim_1k_h), hollow: w.ev !== 'measured', ref: m.id === 'razer-viper-v4-pro' } : null; }).filter(Boolean);
     const unr = mice.filter(m => rv(m.battery_claim_1k_h) == null && m.id !== 'mchose-l7-ultra').map(m => { const w = exWeight(m.id); return w && w.g <= 50 ? { id: m.id, name: NTR_SHORT[m.id] || exShort(m.name), g: w.g, ev: w.ev } : null; }).filter(Boolean).sort((a, b) => a.g - b.g);
     const light = rated.reduce((a, p) => (!a || p.x < a.x ? p : a), null);
     captions(t, [[0.6, `Every wireless mouse that lists hours at 1 kHz, against its weight. The lightest is the ${light ? light.name + ', ' + ntr_g(light.x) + ' g' : '–'} as weighed.`],
       [5.4, 'Nothing lighter comes with an hour rating. That corner is Theseus: 29.31 g and 200 h at 1 kHz, measured, for $189.']]);
-    const x = LM + 100, py = 330, w = 1150, ph = 480, xr = [25, 62], yr = [0, 220], X = g => x + w * (g - xr[0]) / (xr[1] - xr[0]);
-    cardHead(t, 0.5, LM - 32, py - 80, w + 132, 'Listed hours at 1 kHz against weight, wireless', [{ ev: 'measured', by: 'RTINGS' }, { ev: 'claim', by: 'Maker' }]);
+    const x = 720, py = 330, w = 1100, ph = 480, xr = [25, 62], yr = [0, 220], X = g => x + w * (g - xr[0]) / (xr[1] - xr[0]);
+    cardHead(t, 0.5, x - 120, py - 80, w + 120, 'Listed hours at 1 kHz against weight, wireless', [{ ev: 'measured', by: 'RTINGS' }, { ev: 'claim', by: 'Maker' }]);
     /* the corner nobody has rated: left of the lightest rated mouse */
     const kz = ep(t, 3.0, 3.8, E.io3);
     if (light && kz > 0) line(X(light.x), py, X(light.x), py + ph * kz, { color: C.red, w: 1.5, dash: [6, 6] });
@@ -562,17 +564,17 @@ S({
     unr.forEach((u, i) => { const ux = X(u.g); if (ux >= x && ux <= x + w) line(ux, py + ph - 22, ux, py + ph - 4, { color: C.red, w: 2.5, alpha: kt }); });
     if (light) text('No rating found', X(light.x) - 14, py + ph - 34, { role: 'label', size: 20, color: C.redL, align: 'right', alpha: kt });
     /* the list, so every red tick has a name */
-    const lx = 1400, ly = py - 30, lk = ep(t, 3.6, 4.0);
+    const lx = LM, lr = LM + 480, ly = py - 30, lk = ep(t, 3.6, 4.0);
     text('No 1 kHz rating found', lx, ly, { role: 'label', size: 21, color: C.redL, alpha: lk });
-    line(lx, ly + 16, RM, ly + 16, { color: C.hair, w: 1.5, alpha: lk });
+    line(lx, ly + 16, lr, ly + 16, { color: C.hair, w: 1.5, alpha: lk });
     unr.forEach((u, i) => {
       const yy = ly + 56 + i * 39, k = ep(t, 3.7 + i * 0.05, 4.1 + i * 0.05);
       line(lx, yy - 9, lx + 14, yy - 9, { color: C.red, w: 2.5, alpha: k });
       text(u.name + (u.id === 'finalmouse-slx' ? ' †' : ''), lx + 26, yy, { role: 'small', size: 24, weight: 600, color: C.ink, alpha: k });
-      text(ntr_g(u.g) + '\u00A0g', RM, yy, { font: 'mono', size: 22, weight: 600, color: u.ev === 'measured' ? C.ink2 : C.mute, align: 'right', alpha: k });
+      text(ntr_g(u.g) + '\u00A0g', lr, yy, { font: 'mono', size: 22, weight: 600, color: u.ev === 'measured' ? C.ink2 : C.mute, align: 'right', alpha: k });
     });
     const dc = TH ? '#5F5E59' : '#B9B8B2';
-    legend(t, 4.2, LM, 920, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'ref', label: 'The longest listed' }, { kind: 'hero', label: 'Theseus' }]);
+    legend(t, 4.2, x - 100, 920, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'ref', label: 'The longest listed' }, { kind: 'hero', label: 'Theseus' }]);
     const un = (sc.unnamed || []);
     source(t, (un.length ? 'Unnamed: ' + un.join(', ') + '. ' : '') + '* Report rate not stated. † Finalmouse publishes no hour rating (Back2Gaming). Hours are the makers\' own figures.', { t0: 4.4 });
   }
@@ -598,15 +600,15 @@ S({
     captions(t, [[0.6, `Where 29.31 g goes: one board instead of three, a ${B.cell.mAh} mAh cell for ${fmtN(B.hours, 0)} h at 1 kHz, and the small parts as XBAB weighed them.`],
       [5.6, `That leaves ${f2(B.shell)} g for the shell and skates, ${f2(B.cut)} g under the XA25's. My shell design takes that out, and the cell fits.`]]);
     const rows = [
-      { name: 'Shell and skates', g: B.shell, was: B.xa.shell, ev: 'derived', note: 'What the rest leaves', hero: true },
+      { name: 'Shell and skates', g: B.shell, was: B.xa.shell, ev: 'derived', hero: true },
       { name: 'Cell, ' + B.cell.mAh + ' mAh', g: B.cell.g, ev: 'datasheet', note: 'Jauch ' + B.cell.part },
-      { name: 'Board', g: THESEUS.pcb, was: B.xa.boards, note: 'One board, not three' },
+      { name: 'One board', g: THESEUS.pcb, was: B.xa.boards },
       { name: 'Buttons', g: B.xa.btn, ev: 'claim', note: 'As in the XA25' },
       { name: 'Scroll wheel', g: B.xa.wheel, ev: 'claim', note: 'As in the XA25' },
       { name: 'Screws', g: B.xa.screws, ev: 'claim', note: 'As in the XA25' },
       { name: 'Wires', g: B.xa.fpc, ev: 'claim', note: 'As in the XA25' }
     ];
-    breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 60, wasLabel: 'XA25', foot: ['Grey ghosts: the same part in the XA25, weighed by XBAB', ''] });
+    breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 60, wasLabel: 'XA25', foot: ['Dashed: the same part in the XA25 (its three boards for the board), as XBAB weighed it', ''] });
     /* the two things the plan rests on: the cell's hours, and the shell's grams */
     ntr_stack(t, 1200, 320, RM - 1200, [
       { t0: 5.0, gloss: true, a: 'Hours = Wh ÷ draw', b: `${B.cell.mAh} mAh at 3.7 V holds ${fmtN(B.cell.wh, 3)} Wh. A Viper V4 Pro draws ${fmtN(B.L.w1 * 1000, 2)} mW at 1 kHz (its ${fmtN(B.L.wh, 3)} Wh over Razer's ${B.L.h1} h), so the cell runs ${fmtN(B.hours, 0)} h.` },

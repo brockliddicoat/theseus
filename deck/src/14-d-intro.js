@@ -123,7 +123,7 @@ function ntr_cab(x, yb, L, Wd, H, k, o = {}) {
   return { fw, fh, dx, dy, F, Bk };
 }
 /** a soft shadow on the ground under something set down */
-function ntr_shadow(cx, cy, rx, ry, a) { if (a <= 0.003) return; G.save(); G.globalAlpha = a; const g = G.createRadialGradient(cx, cy, 0, cx, cy, rx); g.addColorStop(0, inkA(TH ? 0.16 : 0.5)); g.addColorStop(1, inkA(0)); G.fillStyle = g; G.translate(cx, cy); G.scale(1, ry / rx); G.translate(-cx, -cy); G.beginPath(); G.arc(cx, cy, rx, 0, TAU); G.fill(); G.restore(); }
+function ntr_shadow(cx, cy, rx, ry, a) { if (a <= 0.003) return; G.save(); G.globalAlpha = a; G.fillStyle = inkA(TH ? 0.07 : 0.25); G.beginPath(); G.ellipse(cx, cy, rx, ry, 0, 0, TAU); G.fill(); G.restore(); }
 
 /* ============================== the stats bento: Theseus's numbers, the next best under each ============================== */
 /* Apple's summary grid (bento) with this deck's extra data: each tile has its evidence at the top, one big number in
@@ -134,48 +134,46 @@ function ntr_statsData() {
   const mo = ntr_fv('razer-viper-v4-pro', 'motion_latency'), bt = ntr_fv('razer-viper-v4-pro', 'battery_claim_1k_h');
   const ulx = exMouse('finalmouse-ulx'), ulxP = ulx ? rv(ulx.price_usd) : null;
   return [
-    { value: THS.mass, unit: 'g', label: 'Weight, every unit weighed', ev: 'proposal', by: 'Brock', next: lw && { value: fmtN(lw.g, 1), unit: 'g', who: lw.name.replace('Finalmouse ', ''), ev: 'measured', by: 'RTINGS', head: 'Lightest weighed' } },
-    { value: ntr_rf(ntr_thsRho()), unit: 'g/cm³', label: 'Density: grams per {cm³} of its box', ev: 'derived', next: dn && { value: ntr_rf(dn.rho), unit: '', who: dn.name.replace('Pulsar ', ''), ev: 'derived', head: 'Next best' } },
-    { value: THS.price, unit: '', label: 'US list price', ev: 'proposal', by: 'Brock', next: ulxP && { value: '$' + ulxP, unit: '', who: 'ULX at launch, 2023', ev: 'datasheet', by: 'Notebookcheck', head: 'Same as', grey: true } },
-    { value: '0.14', unit: 'ms', label: 'Motion latency, wireless', ev: 'proposal', next: mo && { value: fmtN(mo.v, 2), unit: 'ms', who: 'Viper V4 Pro', ev: mo.ev, by: '{piaknow}', head: 'Fastest measured' } },
+    { value: THS.mass, unit: 'g', label: 'Weight, every unit weighed', hero: true, next: lw && { value: fmtN(lw.g, 1), unit: 'g', who: lw.name.replace('Finalmouse ', ''), ev: 'measured', by: 'RTINGS', head: 'Lightest weighed' } },
+    { value: ntr_rf(ntr_thsRho()), unit: 'g/cm³', label: 'Density, grams per {cm³} of its box', ev: 'derived', hero: true, next: dn && { value: ntr_rf(dn.rho), unit: '', who: dn.name.replace('Pulsar ', ''), ev: 'derived', head: 'Best wireless' } },
+    { value: THS.price, unit: '', label: 'US list price', quiet: true, next: ulxP && { value: '$' + ulxP, unit: '', who: 'Finalmouse ULX, at launch', ev: 'claim', text: 'Notebookcheck 2023', head: 'Same as', grey: true } },
+    { value: '0.14', unit: 'ms', label: 'Motion latency, wireless', hero: true, next: mo && { value: fmtN(mo.v, 2), unit: 'ms', who: 'Viper V4 Pro', ev: mo.ev, by: '{piaknow}', head: 'Fastest measured' } },
     { product: true },
-    { value: String(THESEUS.hours), unit: 'h', label: 'Battery at 1 kHz, measured', ev: 'proposal', next: bt && { value: fmtN(bt.v, 0), unit: 'h', who: 'Viper V4 Pro', ev: bt.ev, by: 'Razer', head: 'Longest listed' } }
+    { value: String(THESEUS.hours), unit: 'h', label: 'Battery at 1 kHz, measured', quiet: true, next: bt && { value: fmtN(bt.v, 0), unit: 'h', who: 'Viper V4 Pro', ev: bt.ev, by: 'Razer', head: 'Longest listed' } }
   ];
 }
-/** a stat tile, centred: evidence, the number, what it is, and the next best (smaller, darker, yellow) with its evidence */
+/** a stat tile, centred: evidence (when it isn't mine), the number, what it is, and at the foot the next best (smaller,
+   darker, yellow) with its own source. Laid out from the foot up. Headline tiles wear Theseus's gradient; quiet ones are ink */
 function ntr_statTile(t, t0, rect, d) {
   const [x, y, w, h] = rect, a = ep(t, t0, t0 + 0.55, E.snap); if (a <= 0.003) return;
   demoWindow(x, y, w, h, a);
-  const pad = 36, cx = x + w / 2, ka = ep(t, t0 + 0.15, t0 + 0.6);
-  { const pw = pillW(d.ev, { by: d.by }); pill(cx - pw / 2, y + pad + 18, d.ev, ka, { by: d.by }); }
-  /* the number, as big as the tile allows */
-  const uS = 0.34, uw = s => s ? tw(s, { font: 'disp', size: 100, weight: 700 }) / 100 : 0, nw = tw(d.value, { role: 'd1', size: 100, weight: 800, tnum: true }) / 100;
-  const vs = Math.round(Math.min(150, (w - pad * 2) / (nw + (d.unit ? uS * uw(d.unit) + 0.07 : 0))));
-  const ny = y + pad + 44 + vs * 0.76;
-  rich([{ s: d.value, role: 'd1', size: vs, weight: 800, track: -0.03, color: C.heroText, grad: C.heroGrad, tnum: true, count: [t0 + 0.3, 1.2] },
-    d.unit ? { s: d.unit, font: 'disp', size: Math.round(vs * uS), weight: 700, color: C.heroText, grad: C.heroGrad, gap: vs * 0.07, caps: false } : null], cx, ny, { t, align: 'center', alpha: ka });
-  text(d.label, cx, ny + 46, { role: 'small', size: 26, weight: 600, color: C.ink2, align: 'center', alpha: ka, maxW: w - pad * 2 });
+  const pad = 40, cx = x + w / 2, ka = ep(t, t0 + 0.15, t0 + 0.6);
+  const evW = d.ev ? pillW(d.ev, { by: d.by }) : 0; if (evW) pill(cx - evW / 2, y + pad + 16, d.ev, ka, { by: d.by });
+  const fyP = y + h - pad + 4, fy1 = fyP - 36, ly = d.next ? fy1 - 58 : y + h - pad - 10, nyMax = ly - 48, top = y + pad + (evW ? 40 : 14);
+  const uS = 0.34, uw = d.unit ? tw(d.unit, { font: 'disp', size: 100, weight: 700 }) / 100 : 0, nw = tw(d.value, { role: 'd1', size: 100, weight: 800, tnum: true }) / 100;
+  const vs = Math.round(Math.min(d.hero ? 150 : 120, (w - pad * 2) / (nw + (d.unit ? uS * uw + 0.07 : 0)), (nyMax - top) / 0.74));
+  const ny = nyMax, col = d.hero ? C.heroText : C.ink, grad = d.hero ? C.heroGrad : null;
+  rich([{ s: d.value, role: 'd1', size: vs, weight: 800, track: -0.03, color: col, grad, tnum: true, count: [t0 + 0.3, 1.2] },
+    d.unit ? { s: d.unit, font: 'disp', size: Math.round(vs * uS), weight: 700, color: d.hero ? col : C.mute, grad, gap: vs * 0.07, caps: false } : null], cx, ny, { t, align: 'center', alpha: ka });
+  text(d.label, cx, ly, { role: 'small', size: 26, weight: 600, color: C.ink2, align: 'center', alpha: ka, maxW: w - pad * 2 });
   if (d.next) {
-    const nx = d.next, kn = ep(t, t0 + 1.0, t0 + 1.45), fy = y + h - pad - 28;
+    const nx = d.next, kn = ep(t, t0 + 1.0, t0 + 1.45);
     rich([{ s: nx.head, role: 'label', size: 19, color: C.faint },
-      { s: nx.value + (nx.unit ? '\u00A0' + nx.unit : ''), font: 'disp', size: 34, weight: 800, color: nx.grey ? C.mute : C.secondText, tnum: true, gap: 14, caps: false, count: nx.grey ? null : [t0 + 1.05, 0.8] },
-      { s: nx.who, role: 'small', size: 23, weight: 600, color: C.mute, gap: 14, caps: false }], cx, fy, { t, align: 'center', alpha: kn });
-    const pw = pillW(nx.ev, { by: nx.by, size: 19 }); pill(cx - pw / 2, fy + 34, nx.ev, kn, { by: nx.by, size: 19 });
+      { s: nx.value + (nx.unit ? ' ' + nx.unit : ''), font: 'disp', size: 32, weight: 800, color: nx.grey ? C.mute : C.secondText, tnum: true, gap: 14, caps: false, count: nx.grey ? null : [t0 + 1.05, 0.8] },
+      { s: nx.who, role: 'small', size: 23, weight: 600, color: C.mute, gap: 14, caps: false }], cx, fy1, { t, align: 'center', alpha: kn });
+    const po = { by: nx.by, text: nx.text }, pw = pillW(nx.ev, po); pill(cx - pw / 2, fyP, nx.ev, kn, po);
   }
 }
 function ntr_productTile(t, t0, rect) {
   const [x, y, w, h] = rect, a = ep(t, t0, t0 + 0.6, E.snap); if (a <= 0.003) return;
   demoWindow(x, y, w, h, a, { hero: true });
-  if (typeof glowField === 'function') { G.save(); rrPath(x, y, w, h, 28); G.clip(); glowField(t, x + w / 2, y + h * 0.5, w * 0.5, { a: a * 0.85 }); G.restore(); }
-  /* the mouse, small, turning slowly the whole time the slide is up */
-  const vb = [x + 30, y + 40, w - 60, h - 140];
+  /* the mouse, turning slowly the whole time the slide is up */
+  const vb = [x + 20, y + 16, w - 40, h - 120];
   ntr_prime('shell', t, vb[2], vb[3]);
-  view3D('shell', t, vb[0], vb[1], vb[2], vb[3], { view: 'threeQuarter', view2d: 'right', yaw: -0.6 + 0.09 * t, pitch: 0.06, zoom: in2D(1.25, 1.2), colorway: 'black' }, { alpha: ep(t, t0 + 0.2, t0 + 0.9) });
+  view3D('shell', t, vb[0], vb[1], vb[2], vb[3], { view: 'threeQuarter', view2d: 'right', ground2d: false, yaw: -0.62 + 0.08 * t, pitch: 0.08, zoom: in2D(2.05, 1.55), colorway: 'black' }, { alpha: ep(t, t0 + 0.2, t0 + 0.9) });
   const ka = ep(t, t0 + 0.7, t0 + 1.2);
-  text('Theseus', x + w / 2, y + h - 66, { role: 'h2', size: 40, color: C.ink, align: 'center', alpha: ka, track: 0.14 });
-  const s2 = '8 kHz, wired and wireless', w2 = tw(s2, { role: 'label', size: 20 }), pw = pillW('proposal'), x2 = x + w / 2 - (w2 + 18 + pw) / 2;
-  text(s2, x2, y + h - 28, { role: 'label', size: 20, color: C.mute, alpha: ka });
-  pill(x2 + w2 + 18, y + h - 28, 'proposal', ka);
+  text('Theseus', x + w / 2, y + h - 66, { role: 'h2', size: 40, color: C.heroText, grad: C.heroGrad, align: 'center', alpha: ka, track: 0.14 });
+  text('8 kHz, wired and wireless', x + w / 2, y + h - 30, { role: 'small', size: 23, weight: 600, color: C.mute, align: 'center', alpha: ka });
 }
 S({
   id: 'ntr_stats', ch: 'intro', theme: 'paper', title: 'Theseus, by the numbers', settle: 9, after: 'flagships', three: ['shell'],
@@ -183,17 +181,15 @@ S({
   src: ['ntrRtUlxPro', 'exRtings', 'exEloshapes', 'ntrSoraDim', 'exPiaknow', 'exNbcV4', 'nbcUlx', 'usbHs', 'ntrScan'],
   draw: t => {
     header(t, 'Theseus, by the numbers');
-    captions(t, [[0.6, 'The targets, one tile each. At the foot of each, in yellow, the best shipping figure I could find.']]);
-    const D = ntr_statsData(), y0 = 276, y1 = 948, cell = bento(LM, y0, RM - LM, y1 - y0, 3, 2, 24);
+    captions(t, [[0.6, 'Theseus, one number a tile. Under each, in yellow, the best shipping figure I could find, and whose it is.']]);
+    const D = ntr_statsData(), y0 = 280, y1 = 960, cell = bento(LM, y0, RM - LM, y1 - y0, 3, 2);
     /* the mouse first, then the tiles round it */
     const order = [4, 1, 3, 5, 0, 2];
     D.forEach((d, i) => {
       const r = cell(i % 3, Math.floor(i / 3)), t0 = 0.3 + order.indexOf(i) * 0.14;
       if (d.product) ntr_productTile(t, t0, r); else ntr_statTile(t, t0, r, d);
     });
-    /* once everything has landed, one light passes over the whole grid */
-    ntr_sweep(t, 3.6, LM, y0, RM - LM, y1 - y0, { dur: 1.8, a: 0.45 });
-    source(t, 'Density: 29.31 g in the Sora V2\'s 119.2 × 62.0 × 37.7 mm box, a placeholder. Next best: RTINGS\'s weight in the maker\'s box.', { t0: 2.4 });
+    source(t, 'Density: 29.31 g in the Sora V2\'s 119.2 × 62.0 × 37.7 mm box (the shape is a placeholder); next best: RTINGS\'s weight in its maker\'s box.', { t0: 2.4 });
   }
 });
 
@@ -203,8 +199,8 @@ S({
   src: ['ntrPwnTrinity', 'ntrPwnVanta', 'ntrSoraDim', 'ntrScan'],
   draw: t => {
     header(t, 'Density, not weight');
-    captions(t, [[0.6, 'Weight alone rewards a small mouse. Density asks how much mouse you get for each gram.'],
-      [5.4, 'Pwnage divides the grams by the box the mouse fits in, as physics does. So do I: lower is lighter for its size.']]);
+    captions(t, [[0.6, 'Weight alone rewards a small mouse. Density says how much mouse you get for every gram.'],
+      [5.4, 'Grams over the box the mouse fits in, the way Pwnage and physics both do it. Lower is lighter for its size, and no wireless mouse is lower than Theseus.']]);
     const B = ntr_shellBox(), bx = ntr_thsBox(), k = 4.2, O = [530, 505], P = ntr_iso(O, k, B);
     const c = (X, Y, Z) => P([X, Y, Z]);
     /* the corners: back bottom (hidden) b0; the box is drawn edge by edge, then the three views land on its faces */
@@ -224,7 +220,6 @@ S({
     ntr_onFace(t, 'top', p => P([p[0], B.y1, p[2]]), k, ep(t, 1.8, 2.6));
     ntr_onFace(t, 'right', p => P([B.x1, p[1], p[2]]), k, ep(t, 2.2, 3.0));
     ntr_onFace(t, 'front', p => P([p[0], p[1], B.z1]), k, ep(t, 2.6, 3.4));
-    for (const f of ['top', 'side', 'end']) ntr_sweep(t, 3.2 + (f === 'side' ? 0.15 : f === 'end' ? 0.3 : 0), Math.min(...faces[f].map(q => q[0])), Math.min(...faces[f].map(q => q[1])), 760, 600, { path: () => ntr_quad(faces[f]), a: 0.09, dur: 1.3 });
     /* visible edges */
     const vis = [[bW, bLW], [bLW, bL], [bW, tW], [bLW, tLW], [bL, tL], [t0_, tL], [tL, tLW], [tLW, tW], [tW, t0_]];
     vis.forEach(([p, q], i) => line(p[0], p[1], lerp(p[0], q[0], kE(i + 3)), lerp(p[1], q[1], kE(i + 3)), { color: C.ink, w: 1.8, alpha: 0.9 }));
@@ -239,7 +234,7 @@ S({
       } }
     rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: 'Sora V2 shape and box, a placeholder', role: 'label', size: 21, color: C.faint, gap: 16 }], LM, 318, { alpha: ep(t, 4.4, 5.0) });
     /* the sum, in the right column: mass over the box's volume */
-    const fx = 1236, fw = RM - fx, a1 = ep(t, 4.2, 4.6), a2 = ep(t, 4.6, 5.0), a3 = ep(t, 5.2, 5.6);
+    const fx = 1240, fw = RM - fx, a1 = ep(t, 4.2, 4.6), a2 = ep(t, 4.6, 5.0), a3 = ep(t, 5.2, 5.6);
     text('Mass', fx, 324, { role: 'label', size: 21, color: C.mute, alpha: a1 });
     rich([{ s: THS.mass, role: 'stat', size: 66, color: C.ink, tnum: true, count: [4.25, 0.8] }, { s: 'g', font: 'mono', size: 26, weight: 600, color: C.mute, gap: 8 }], fx, 400, { t, alpha: a1 });
     pill(fx, 444, 'proposal', a1, { by: 'Brock' });
@@ -253,7 +248,7 @@ S({
     text('Density', fx, 586, { role: 'label', size: 21, color: C.mute, alpha: a3 });
     pill(RM - pillW('derived'), 586, 'derived', a3);
     rich([{ s: ntr_rf(ntr_thsRho()), role: 'd1', size: 118, color: C.hero, grad: C.heroGrad, tnum: true, count: [5.25, 1.1] }, { s: 'g/cm³', font: 'mono', size: 34, weight: 600, color: C.mute, gap: 12 }], fx - 4, 696, { t, alpha: a3 });
-    sourceBox(t, 6.2, fx, 752, fw, 'Pwnage', 'Its Trinity CF: 0.14 g/cm³. Its Vanta: 0.17. The average gaming mouse, by its count: 0.30.', { kind: 'claim', label: 'Maker claim', value: 'Pwnage' });
+    ntr_stack(t, fx, 760, fw, [{ t0: 6.2, a: 'Pwnage', b: 'Pwnage\'s own figures: its Trinity CF is 0.14 g/cm³, its Vanta 0.17, and the average gaming mouse 0.30.' }]);
     source(t, 'Pwnage\'s volumes are length × width × height to within 1 %. Volume per gram would rank the mice the same way, upside down.', { t0: 6.6, maxW: 1080 });
   }
 });
@@ -266,12 +261,12 @@ S({
     header(t, 'The size–weight illusion');
     const X2F = ntr_dens({ theseus: false }).find(r => r.id === 'pulsar-x2f-crazylight'), bx = ntr_thsBox(), rhoT = ntr_thsRho();
     const more = X2F ? 100 * (bx.v / X2F.v - 1) : 0;
-    captions(t, [[0.6, 'Two mice that weigh the same. The Pulsar X2F is light because there is less of it: the front half of a shell.'],
-      [5.6, `Theseus puts the same grams into ${fmtN(more, 0)}% more box. At equal mass, the bigger object feels lighter.`]]);
+    captions(t, [[0.6, 'Two mice that weigh the same. The Pulsar X2F gets there by being less mouse: the front half of a shell.'],
+      [5.6, `Theseus puts the same grams into ${fmtN(more, 0)}% more mouse, and at the same mass the bigger one feels lighter in the hand.`]]);
     const k = 3.45, gy = 700;
     const items = [
-      { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29, ev: 'claim', by: 'Pulsar', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 150, t0: 1.1 },
-      { key: 'ths', name: 'Theseus', g: THESEUS.mass, gs: THS.mass, ev: 'proposal', box: bx, rho: rhoT, x: 610, t0: 2.7, hero: true }
+      { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29, ev: 'claim', by: 'Pulsar', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 720, t0: 1.1 },
+      { key: 'ths', name: 'Theseus', g: THESEUS.mass, gs: THS.mass, ev: 'proposal', box: bx, rho: rhoT, x: 1200, t0: 2.7, hero: true }
     ];
     /* the pointer brings each box in and sets it down */
     const lift = 210;
@@ -300,13 +295,14 @@ S({
     const gp = it => [it.x + it.box.L * k * 0.5, y0 - it.box.H * k * 0.5];
     cursorAt(t, [[0.7, [P0.x + 120, y0 - 260]], [1.05, gp(P0)], [1.9, [gp(P0)[0], gp(P0)[1] + lift]], [2.3, [gp(P1)[0] - 60, y0 - 160]], [2.65, gp(P1)], [3.5, [gp(P1)[0], gp(P1)[1] + lift]], [4.3, [gp(P1)[0] + 260, gp(P1)[1] + lift + 40]]], [1.05, 2.65], { a: env(t, 0.5, 0.8, 4.1, 4.4) });
     /* the ground */
-    line(LM, gy + 1, 1140, gy + 1, { color: C.hair, w: 1.5, alpha: ep(t, 0.4, 0.9) });
+    line(680, gy + 1, RM, gy + 1, { color: C.hair, w: 1.5, alpha: ep(t, 0.4, 0.9) });
     /* the words, in the right column */
-    const cx = 1228, cw = RM - cx;
-    const g1 = glossBox(t, 5.8, cx, 300, cw, 'Size–weight illusion', 'Of two things with the same mass, the smaller one feels heavier. Charpentier showed it in 1891.');
-    const g2 = sourceBox(t, 6.3, cx, 300 + g1.h + 32, cw, 'Buckingham, 2014', 'The best-known weight illusion, and still not fully explained after 100 years of study. The studies lift objects: I found none on mice.');
-    sourceBox(t, 6.8, cx, 300 + g1.h + g2.h + 64, cw, 'Pwnage', '"Two mouses with the same weight can feel totally different."', { kind: 'claim', label: 'Maker claim', value: 'Pwnage' });
-    source(t, 'Weights: the X2F\'s is Pulsar\'s, Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is the Sora V2\'s, a placeholder.', { t0: 5.0, maxW: 1060 });
+    ntr_stack(t, LM, 280, 560, [
+      { t0: 5.8, gloss: true, a: 'Size–weight illusion', b: 'Of two things with the same mass, the smaller one feels heavier. Charpentier measured it in 1891.' },
+      { t0: 6.3, a: 'Buckingham 2014', b: 'The best known of the weight illusions, and over a century of studies keep finding it.' },
+      { t0: 6.8, a: 'Pwnage', b: '"Two mouses with the same weight can feel totally different."' }
+    ]);
+    source(t, 'Weights: the X2F\'s is Pulsar\'s, Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is the Sora V2\'s, a placeholder.', { t0: 5.0, x: 720, maxW: RM - 720 });
   }
 });
 
@@ -324,7 +320,7 @@ S({
     const ord = n => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
     captions(t, [[0.6, `The same ${R.length} wireless mice, ranked twice: by weight on the left, by density on the right.`],
       [5.8, (x2f ? `The X2F falls from ${ord(x2f.rw + 1)} to ${ord(x2f.rd + 1)}: it is light because it is short. ` : '') + (da ? `The DeathAdder V4 Pro climbs from ${ord(da.rw + 1)} to ${ord(da.rd + 1)}.` : '')]]);
-    const n = R.length, y0 = 330, y1 = 936, p = (y1 - y0) / (n - 1), xL = 560, xR = 1352, Y = i => y0 + i * p;
+    const n = R.length, y0 = 326, y1 = 920, p = (y1 - y0) / (n - 1), xL = 560, xR = 1352, Y = i => y0 + i * p;
     const a0 = ep(t, 0.3, 0.8);
     text('By weight, lightest first', xL - 14, y0 - 40, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: a0 });
     text('By density, lowest first', xR + 14, y0 - 40, { role: 'label', size: 21, color: C.mute, alpha: a0 });
@@ -338,8 +334,6 @@ S({
       const al = r.hero || r.ref || r.story ? 1 : lerp(0.95, 0.5, kH);
       poly(curve(r, kk), { color: col, w: wd, alpha: al });
     });
-    /* a light runs along Theseus's line now and then */
-    { const th = R.find(r => r.hero), c0 = cyc(t, 6.2, 3.2); if (th && c0 >= 0 && c0 < 0.5) { const pts = curve(th, 1), q = pts[Math.min(pts.length - 1, Math.floor(E.io3(c0 / 0.5) * (pts.length - 1)))]; glow(q[0], q[1], 26, C.hero, 0.55 * Math.sin(c0 / 0.5 * Math.PI)); } }
     /* the labels: name and weight on the left, density and name on the right, and how far each moved */
     R.forEach(r => {
       const kl = ep(t, 0.5 + r.rw * 0.05, 0.9 + r.rw * 0.05), kr = ep(t, lineT(r) + 0.8, lineT(r) + 1.2);
@@ -355,6 +349,6 @@ S({
       const mv = r.rw - r.rd, ms = mv > 0 ? '▲' + mv : mv < 0 ? '▼' + (-mv) : '–';
       text(ms, RM, yb, { font: 'mono', size: 19, weight: strong ? 700 : 500, color: strong ? (mv > 0 ? C.ink : C.ink2) : C.faint, align: 'right', alpha: kr });
     });
-    source(t, 'Weights: RTINGS where weighed; the X2F\'s is Pulsar\'s, Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes). Theseus: the Sora V2\'s box, a placeholder. Left out: the ULX (size not stated) and the MCHOSE L7 Ultra.', { t0: 6.0 });
+    source(t, 'Weights: RTINGS; the X2F\'s is Pulsar\'s. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is the Sora V2\'s, a placeholder. Left out: the ULX and the MCHOSE L7 Ultra.', { t0: 6.0 });
   }
 });

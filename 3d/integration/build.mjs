@@ -22,7 +22,7 @@ console.log('bundle', path.relative(ROOT, OUT_JS), (fs.statSync(OUT_JS).size / 1
 
 // runtime assets: everything the builders load by URL
 const want = [
-  ['shell', /^shell-(theseus|sora)\.(glb|json)$/],
+  ['shell', /^shell-(theseus|sora|theseus-1seam)\.(glb|json)$/],
   ['pcb', /^pcb(-layout)?\.(glb|json)$/],
   ['parts', /\.(glb|json|bin)$/],
   ['parts/assets', /\.(glb|json|bin|png|jpg)$/],

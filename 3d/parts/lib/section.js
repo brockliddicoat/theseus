@@ -58,6 +58,7 @@ export class SectionPlane {
       cm.transparent = false; cm.opacity = 1; cm.depthWrite = true;
       if ('anisotropy' in cm) cm.anisotropy = 0;
       cm.normalMap = null; cm.bumpMap = null;
+      cm.vertexColors = false;                                  // a cap is one flat colour, whatever the part's baked shading
       if ('clearcoatNormalMap' in cm) cm.clearcoatNormalMap = null;
       if (o.capColor !== undefined) cm.color = new THREE.Color(o.capColor);
       if (o.capRoughness !== undefined) cm.roughness = o.capRoughness;

@@ -116,7 +116,7 @@ function scene(key, build, base = {}) {
   });
 }
 
-scene('shell', () => buildShell({ variant: 'theseus', glbUrl: A('shell-theseus.glb'), metaUrl: A('shell-theseus.json'), parts: PARTS }), { view: 'threeQuarter' });
+scene('shell', () => buildShell({ variant: 'theseus', glbUrl: A('shell-theseus-1seam.glb'), metaUrl: A('shell-theseus.json'), parts: PARTS }), { view: 'threeQuarter' });
 scene('shell-sora', () => buildShell({ variant: 'sora', glbUrl: A('shell-sora.glb'), metaUrl: A('shell-sora.json'), parts: PARTS }), { view: 'threeQuarter' });
 scene('pcb', () => buildPcb({ glb: A('pcb.glb'), layout: A('pcb-layout.json'), useParts: false, gt01: PARTS.buildGT01, millmax: PARTS.buildMillMax3305, wheel: PARTS.buildScrollWheel }), { view: 'threeQuarter' });
 scene('gt01', () => PARTS.buildGT01(), { view: 'threeQuarter', margin: 1.25 });

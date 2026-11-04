@@ -176,7 +176,8 @@ function smooth(a, b, x) { const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
  */
 export async function buildShell(opts = {}) {
   const variant = opts.variant || 'theseus';
-  const glbUrl = opts.glbUrl || HERE + `shell-${variant}.glb`;
+  // the Theseus shell ships with one seam from the nose to the rear (tools/one_seam.py); the first build had a centre cap
+  const glbUrl = opts.glbUrl || HERE + (variant === 'theseus' ? 'shell-theseus-1seam.glb' : `shell-${variant}.glb`);
   const metaUrl = opts.metaUrl || HERE + `shell-${variant}.json`;
   const [gltf, meta] = await Promise.all([
     new GLTFLoader().loadAsync(glbUrl),

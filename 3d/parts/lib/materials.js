@@ -31,6 +31,8 @@ export function partMaterials(over = {}) {
     magnesiumLand: P({ color: 0xa6abb1, metalness: 1, roughness: 0.3 }),   // milled grouser lands
     magnesiumFace: P({ color: 0x9fa4aa, metalness: 1, roughness: 0.2, anisotropy: 0.6, anisotropyRotation: Math.PI / 2 }),
     aluminium: P({ color: 0xc9ccd0, metalness: 1, roughness: 0.32 }),
+    tinPlate: P({ color: 0xd3d6d9, metalness: 1, roughness: 0.33 }),             // tin-plated steel frame (encoder), satin
+    silverLead: P({ color: 0xd8d8d4, metalness: 1, roughness: 0.22 }),           // silver-plated lead frame (LED cup)
     maskBlack: P({ color: 0x08090a, roughness: 0.5, specularIntensity: 0.45, clearcoat: 0.35, clearcoatRoughness: 0.45 }),   // matte black solder mask (macro-safe)
     // --- polymers ---
     pom: P({ color: 0xece8de, roughness: 0.48, sheen: 0.4, sheenRoughness: 0.6, sheenColor: 0xffffff }),
@@ -39,6 +41,11 @@ export function partMaterials(over = {}) {
     lcpBlack: P({ color: 0x0b0c0d, roughness: 0.48, specularIntensity: 0.55, clearcoat: 0.12, clearcoatRoughness: 0.4 }),   // glass-filled LCP/PA switch base
     housingBlack: P({ color: 0x0d0e0f, roughness: 0.52, specularIntensity: 0.6, clearcoat: 0.1, clearcoatRoughness: 0.5 }),
     nylon: P({ color: 0xede6d4, roughness: 0.55, sheen: 0.3, sheenColor: 0xffffff }),               // natural PA (JST housings)
+    paWhite: P({ color: 0xf1efe9, roughness: 0.5, sheen: 0.3, sheenColor: 0xffffff }),               // white PA photo-interrupter holder
+    rotorOrange: P({ color: 0xc8742f, roughness: 0.42, sheen: 0.25, sheenRoughness: 0.5, sheenColor: 0xffc08a }),   // the encoder rotor (POM)
+    discBlack: P({ color: 0x0c0c0e, roughness: 0.32, specularIntensity: 0.7 }),                       // opaque PC code disc
+    dieDark: P({ color: 0x1c1d24, metalness: 0.3, roughness: 0.35 }),                                 // an LED die seen through clear epoxy
+    windowDark: new THREE.MeshBasicMaterial({ color: 0x0b0a0d, toneMapped: false }),                  // a detector aperture, lit by setHighlight
     pinkPC: P({ color: 0xfff3f5, roughness: 0.03, metalness: 0, transmission: 1, thickness: 0.5, ior: 1.585,
       attenuationColor: new THREE.Color(0xff8aa2), attenuationDistance: 2.4, specularIntensity: 1,
       sheen: 1.0, sheenRoughness: 0.22, sheenColor: new THREE.Color(0xff6a8c) }),
@@ -65,8 +72,6 @@ export function partMaterials(over = {}) {
     wireWhite: P({ color: 0xe9e6de, roughness: 0.5, sheen: 0.25, sheenColor: 0xffffff }),
     wireYellow: P({ color: 0xe8b21a, roughness: 0.5 }),
     // --- light ---
-    beamIR: new THREE.MeshBasicMaterial({ color: 0xff3a2a, transparent: true, opacity: 0.85, depthWrite: false, toneMapped: false }),
-    glowIR: new THREE.MeshBasicMaterial({ color: 0xff5040, toneMapped: false }),
     ghost: new THREE.MeshPhysicalMaterial({ color: 0xd8e6ee, roughness: 0.15, transparent: true, opacity: 0.12, depthWrite: false }),
     edge: new THREE.LineBasicMaterial({ color: 0x38d6c4, transparent: true, opacity: 0.9 }),
   };
