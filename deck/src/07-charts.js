@@ -190,7 +190,7 @@ function breakdown(t, o) {
     if (iw && r.icon) { G.save(); G.globalAlpha = a; r.icon(x + iw / 2, ry + rh / 2, Math.min(iw, rh) * 0.8, a); G.restore(); G.globalAlpha = 1; }
     text(pad2(i + 1), x + iw + 6, ry + rh * 0.44, { font: 'mono', size: 20, weight: 500, color: C.faint, alpha: a });
     const nm = rich([{ s: r.name, font: 'disp', size: o.nameS || 28, weight: 700, caps: true, track: 0.01, color: r.dim ? C.mute : C.ink }, r.count ? { s: `(${r.count})`, font: 'mono', size: 21, weight: 500, color: C.faint, gap: 12 } : null, r.ev ? null : null], barX, ry + rh * 0.47, { alpha: a });
-    if (r.ev) pill(barX + nm.w + 18, ry + rh * 0.47 + 1, r.ev, a * 0.95);
+    if (r.ev) pill(barX + nm.w + 18, ry + rh * 0.47 + 1, r.ev, a * 0.95, { by: r.by, text: r.evText });
     if (r.note) text(r.note, barX + barW, ry + rh * 0.47, { role: 'small', size: 21, color: C.faint, align: 'right', alpha: a * 0.9 });
     const bh = o.barH || 12, by = ry + rh * 0.72;
     rr(barX, by - bh / 2, barW, bh, bh / 2, C.track, null, 0, a);
@@ -247,7 +247,8 @@ function lollipop(t, o) {
          better: { x: -1 | 1, y: -1 | 1 } (which way is better on each axis: -1 = lower is better),
          sweet: true (a gradient toward the better corner) | { x, y, r } (centre in data units, radius in px),
          points: [{ name, x, y, ev, hollow, ref, dx, dy (fixed label offset), label: false (a dot with no name) }],
-         frontier: true (the Pareto frontier of the points, dominated points dimmed),
+         frontier: true (the Pareto frontier of the points, dominated points dimmed; a point with offFront: true is
+         drawn and named but kept out of the frontier, e.g. a mouse with half a shell),
          target: { x, y, name, dx, dy, sub } (Theseus, a point),
          targetX: { x, name, sub, t0 } (Theseus known on the x axis only: a dashed line, e.g. a weight with no price yet),
          looseLabels: true (a dominated point may be named on the far side of the frontier, with a leader),
@@ -292,7 +293,9 @@ function scatter(t, o) {
   o.points.forEach(p => { const q = pts.find(r => Math.abs(r.x - p.x) < 1e-6 && Math.abs(r.y - p.y) < 1e-6); if (q) q.name += ', ' + p.name; else pts.push(Object.assign({}, p)); });
   /* the Pareto frontier: no other point is better on both axes */
   const dom = (a, b) => (bx * (b.x - a.x) >= 0 && by * (b.y - a.y) >= 0) && (b.x !== a.x || b.y !== a.y);   /* b dominates a */
-  pts.forEach(p => { p.front = !pts.some(q => q !== p && dom(p, q)); });
+  /* a point marked offFront (a mouse that isn't comparable: half a shell) is drawn and named but neither joins the
+     frontier nor pushes others off it */
+  pts.forEach(p => { p.front = !p.offFront && !pts.some(q => q !== p && !q.offFront && dom(p, q)); });
   const kf2 = ep(t, t0 + 1.4, t0 + 2.4, E.io3);
   const obs = [], box = (x0, y0, x1, y1) => obs.push({ x0, y0, x1, y1 });
   let st = null;
@@ -351,7 +354,7 @@ function scatter(t, o) {
       const lx = ddx > 0 ? px + d : ddx < 0 ? px - d - lwid : px - lwid / 2;
       const ly = ddy < 0 ? py - d : ddy > 0 ? py + d + sz * 0.72 : py + sz * 0.36;
       const b = { x0: lx - 3, y0: ly - sz * 0.78, x1: lx + lwid + 3, y1: ly + sz * 0.22 };
-      if (!hit(b) && (!strict || p.front || domBox(b))) return { lx, ly, far: d > 20, b };
+      if (!hit(b) && (!strict || p.front || p.offFront || domBox(b))) return { lx, ly, far: d > 20, b };
     }
     return null;
   };
@@ -360,7 +363,7 @@ function scatter(t, o) {
     const px = X(p.x), py = Y(p.y), lwid = tw(p.name, { role: 'small', size: sz, weight: 600 }) + 2;
     let best = null;
     if (p.dx != null || p.dy != null) { const lx = px + (p.dx || 0), ly = py + (p.dy || 0); best = { lx: p.dx < 0 ? lx - lwid : lx, ly, far: true }; }
-    else best = seek(p, px, py, lwid, [16, 30, 48, 72, 100, 136, 176], true) || (o.looseLabels || p.front ? seek(p, px, py, lwid, [16, 30, 48, 72, 100, 136, 176, 220], false) : null);
+    else best = seek(p, px, py, lwid, [16, 30, 48, 72, 100, 136, 176], true) || (o.looseLabels || p.front || p.offFront ? seek(p, px, py, lwid, [16, 30, 48, 72, 100, 136, 176, 220], false) : null);
     /* a crowded dominated point goes unnamed rather than have its name run over a dot; a frontier point is always named */
     if (!best && !p.front) continue;
     if (!best) best = { lx: px + 16, ly: py + sz * 0.36, far: false };

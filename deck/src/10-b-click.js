@@ -189,7 +189,7 @@ clk_S({
   sfxLoop: [{ t0: 2.0, per: 3, cues: [[0.0, 'click'], [0.09, 'release']] }],
   draw: t => {
     header(t, 'A switch wedge, one flat board');
-    captions(t, [[0.6, 'I put the angle in the switch itself: the GT01 sits on its own 20° wedge, turned to the trigger\'s arc.'], [4.0, 'So the board stays one flat piece, and the angle can follow the measured arc. I\'ll publish both.']]);
+    captions(t, [[0.6, 'I put the angle in the switch itself: the GT01 sits on its own 20° wedge, turned to the trigger\'s arc.'], [4.0, 'So the board stays one flat piece, and the angle follows the measured arc. I will publish both.']]);
     const lx = LM, lw = 640, vx = 760, vw = RM - vx, wy = CLK_TOP, wh = CLK_BOT - wy;
     /* the shot, big, on the right: the right main switch, pressing, on its wedge */
     clk_tile(t, 0.3, vx, wy, vw, wh, 'Theseus, right main switch, side on', ['claim', 'proposal']);
@@ -669,6 +669,7 @@ clk_S({
     const by = 760, bw = 560;
     clk_gloss(t, 4.6, LM, by, bw, 'Dual rail', 'Two posts per trigger, far apart, each sliding in its own guide: two rails.');
     clk_src(t, 5.0, LM + bw + 40, by, bw, 'TechPowerUp', 'On the ULX, with one post and no pads: it "can move laterally quite a bit when pushed".');
+    text('Illustration: roll and travel exaggerated', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, 3.0, 3.4) });
     clk_box(t, 5.4, LM + 2 * (bw + 40), by, bw, { label: 'Shipping today', value: 'G-Wolves (#3)', body: 'Made two plungers popular. Finalmouse put POM pads in the SLX (#28).' });
   }
 });
@@ -683,7 +684,7 @@ clk_S({
     header(t, 'POM pad thickness sets the tolerance');
     captions(t, [[0.6, 'Every molded gap lands where its mold puts it. So the factory measures each trigger\'s gap.'], [3.9, 'Then it fits the pad that fills it. The pads come in steps of 0.05 mm.'], [6.6, 'Whatever the mold does, every trigger ends within 0.05 mm of a perfect fit, and no steel is recut.']]);
     const [wx, ww] = CLK_G.a, wy = CLK_TOP, wh = CLK_BOT - wy, s = 150, g = CLK_GAP, pick = CLK_PADS.filter(v => v <= g + 1e-9).pop(), left = g - pick;
-    clk_tile(t, 0.3, wx, wy, ww, wh, 'One rail, cut across, close up', []);
+    clk_tile(t, 0.3, wx, wy, ww, wh, 'One rail of an example trigger, cut across, close up', []);
     const fx = wx + 470, mouth = wy + 170, y1 = wy + 460, pfx = fx + g * s, ka = ep(t, 0.6, 1.2);
     /* the gauge: a taper, 0.30 mm at its tip, widening 0.25 mm per mm, riding the post's face; it stops where it fills the gap */
     const dTip = (g - 0.30) / 0.25, kin = ep(t, 1.6, 2.6, E.io3), kout = ep(t, 3.2, 3.8, E.io3);
@@ -862,7 +863,7 @@ clk_S({
     text('Two places it can land: NC and NO', xsP[4] + 4, 452, { role: 'small', size: 25, weight: 600, color: C.mute, alpha: ep(t, 1.6, 2.0) });
     /* the pole, abstract, and what each throw reads */
     const wy = 520, [wx, ww] = CLK_G.a, wh = CLK_BOT - wy, ms = clamp((t - 2.2) / 4.2) * CLK_PT.end, st = clk_pole(ms), kt = ep(t, 1.4, 1.9);
-    clk_tile(t, 1.4, wx, wy, ww, wh, 'One press, slowed down', []);
+    clk_tile(t, 1.4, wx, wy, ww, wh, 'One press, slowed down: an illustration', []);
     /* the pole: compact, on the left; the throws' wires run on into the traces */
     const px = wx + 96, py = wy + 250, L = 220, ang = 0.26 * st.a, tip = [px + L * Math.cos(ang), py + L * Math.sin(ang)];
     const ncP = [px + L * Math.cos(-0.26), py + L * Math.sin(-0.26)], noP = [px + L * Math.cos(0.26), py + L * Math.sin(0.26)];
@@ -922,7 +923,7 @@ clk_S({
   sfxLoop: [{ t0: 1.2, per: 2.6, cues: [[0, 'click'], [0.1, 'release']] }],
   draw: t => {
     header(t, 'Counted at first contact');
-    captions(t, [[0.6, 'A single-throw mouse reads one contact, so it has to wait out the bounce before it trusts a press.'], [4.2, 'The GT01 is double throw. It can count the moment the pole leaves NC: 1.5 ms before it even reaches NO.']]);
+    captions(t, [[0.6, 'A single-throw mouse reads one contact, so it has to wait out the bounce before it trusts a press.'], [4.2, 'The GT01 is double throw, so it counts the press the moment the pole leaves NC: 1.5 ms before it reaches NO.']]);
     const wy = CLK_TOP, lx = LM, lw = 680, sh = 440, rx = lx + lw + 40, rw = RM - rx, rh = CLK_BOT - wy;
     /* left: the GT01, cover clear, pressing */
     clk_tile(t, 0.3, lx, wy, lw, sh, 'Gateron GT01, cover clear', ['claim']);

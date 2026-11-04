@@ -20,13 +20,23 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 07:45 (Chicago).
+Last updated: 2026-11-04 08:32 (Chicago).
 
 ## Open with Brock
 
 - **Pushing:** this branch (claude/review-notes-rework) can't be pushed from the session. GitHub answers "not in this
   session's authorized repository set". Enabling the repo for Claude (claude.ai Settings → Connectors → GitHub) fixes
   it. Until then the work reaches him as the live link and a patch.
+- **Questions from the intro** (the deck uses the answer after "default" until Brock says otherwise):
+  - Does the 5.6 g board include the radio module, PMIC, antenna and USB-C? Default: yes, as the weight budget assumes.
+  - Keep the 3D shell on the cover and the close in 3D mode? Default: yes (2D mode shows none).
+  - Rank density among wireless mice only? Default: yes. The wired XA25 would rank first at 0.093 g/cm³.
+- **Questions from clicks:**
+  - With no side board, how is each full-size side switch held? It's drawn ending in a break line for now.
+  - The bridge tensioner's real width, span and crown thickness? The slide uses an example (10 mm wide, 8 mm span, 0.8 mm
+    plate, 0.4 mm crown) and says so; the bridge's advantage depends on the crown.
+  - Idea #59's "taller fulcrum": read as more free length for the arch. Right?
+  - The GT01's bottom housing is drawn from photos (Gateron publishes no drawing). Is its shape right?
 - **SPDT:** F9.4 says "single pull double throw". The standard term is **single pole, double throw**, and the deck uses
   that.
 
@@ -75,7 +85,7 @@ Last updated: 2026-11-04 07:45 (Chicago).
 - **F2.03 IN PROGRESS (gld)** "you effect show how the sensor works, and how it is just a camera, and show how the lens
   unfocuses just like a smartphone camera if it gets to close to a surface or too far away, i need a blurriness
   visualization"
-- **F2.04 IN PROGRESS (clk)** "the bridge click effect of controlling where the click bends needs to be a lot less
+- **F2.04 DONE** (`tensioner`, `clk_tenmat`) "the bridge click effect of controlling where the click bends needs to be a lot less
   subtle, the point of the bridge is not only to control where the force bends, but how easily and this is particularly
   important on a stiffer material"
 - **F2.05 DONE in shared code, IN PROGRESS per slide (all)** "the vocab and research source needs to be integrated into
@@ -83,10 +93,10 @@ Last updated: 2026-11-04 07:45 (Chicago).
   between slides so it doesn't feel repetitive, considered rounded boxes with padding and golden ratios"
   - Shared helpers: glossBox, sourceBox, golden(), bento().
   - The boxes are now barely rounded, per F9.19.
-- **F2.06 IN PROGRESS (clk)** "the dual rail main clicks needs to be better explained and visualized (right now you're
+- **F2.06 DONE** (`anchors`, now "Dual rail main clicks"; `clk_pomtune`) "the dual rail main clicks needs to be better explained and visualized (right now you're
   calling it something with anchors) also explain how the pom pad thickness allows for easy factory tolerance
   modification and perfection"
-- **F2.07 IN PROGRESS (clk), changed by F9.16** "the side button on rails slide (which should just be called dual rail
+- **F2.07 DONE as changed by F9.16** (`sidebuttons`) "the side button on rails slide (which should just be called dual rail
   side buttons should show the mini microswitch being used as as support by 2 additional arms as well to keep the
   button from bending in too far"
   - Now full-size SPDT switches with a glove (F9.16).
@@ -141,16 +151,17 @@ Last updated: 2026-11-04 07:45 (Chicago).
   to draw on all the resources you have access too. and how many mice just use small arms of fr4 to reinforce the pcb
   which are easy to break of or snap under force, but how we plan to use THE WHOLE PCB."
   - Decided: F6.3.
-- **F2.27 IN PROGRESS (ntr, elc, shl)** "also dont worry about weight compared to the xa25, i have that covered, we will be
+- **F2.27 DONE in the intro, IN PROGRESS (elc, shl)** "also dont worry about weight compared to the xa25, i have that covered, we will be
   able to cut weight elsewhere with my shell design to hit that 200hr"
 - **F2.28 IN PROGRESS (ntr)** "after the comparisons, i think our solution needs a stats slide of their own with a bunch of
   important numbers on big fonts that tick up with an animation, maybe sometimes the "next best" is in a smaller lore
   darker font"
-  - Shared helper: statTile with `next`.
+  - Done: `ntr_stats`, "Theseus, by the numbers", a bento whose tiles count up, with the next best smaller, darker and
+    in yellow, with its source. Shared helper: statTile with `next` (now with `next.ev` / `next.by` / `next.src`).
 - **F2.29 DONE in shared code, IN PROGRESS per slide (elc, r3d)** "we don't have a front and back pcb," / "it'll be a
   single ~5.6g pcb."
   - Shared constant: THS.pcb.
-- **F2.30 DONE in shared code, IN PROGRESS per slide (ntr)** "the price for the mouse is $189"
+- **F2.30 DONE** "the price for the mouse is $189"
   - Shared constant: THS.price.
 - **F2.31 OVERRIDDEN by F7.10** "the main accent color could be red first, before yellow"
 - **F2.32 DONE in shared code, IN PROGRESS per slide (all)** "the more specific weight if the mouse should be 29.31g"
@@ -179,11 +190,15 @@ Last updated: 2026-11-04 07:45 (Chicago).
   - Shared helper: cursorAt.
 - **F2.44 IN PROGRESS (own), STANDING for titles (all)** "i want you to specifically mention newtonian shape analysis, i'm
   not a fan of how the titles of the slides seem to beat around the bush if the concept names"
-- **F2.45 IN PROGRESS (ntr)** "the most important specification isn't weight, it's density, which is calculated by taking
+- **F2.45 DONE** "the most important specification isn't weight, it's density, which is calculated by taking
   length x width x height in millimeters and dividing by density in grams (or maybe the other way around, look at how
   pwnage doesn't and reference their research) also have a slide or slides explaining WHY density is much more
   important than shear weight"
   - Decided: F6.2.
+  - Done:
+    - `ntr_density`, "Density, not weight": the box, and 29.31 g ÷ 278.6 cm³ = 0.105 g/cm³, Pwnage's way.
+    - `ntr_sizewt`, "The size–weight illusion": why density beats weight.
+    - `ntr_densrank`, "Ranked by density": how the ranking changes.
 
 ## F3. Answers to the first questions (2026-11-04, ~04:00)
 
@@ -257,7 +272,7 @@ Last updated: 2026-11-04 07:45 (Chicago).
   - Theseus's tile has no outline.
 - **F9.3 DONE (F11.2)** "orange was not a proposed color and the green you used looks bad"
   - There is no orange, glide's green is gone, and evidence tags are grey.
-- **F9.4 IN PROGRESS (clk)** "the presentation needs to explain than spdt means "single pull double throw" in big letters
+- **F9.4 DONE** (`clk_spdt`) "the presentation needs to explain than spdt means "single pull double throw" in big letters
   and demonstrate what that means with an animation"
   - The term is single pole, double throw.
 - **F9.5 DONE in shared code, STANDING** "i dislike it when you separate words/concepts with a dot, not everything needs a
@@ -272,12 +287,12 @@ Last updated: 2026-11-04 07:45 (Chicago).
 - **F9.8 DONE in shared code** "use more apple style fonts, without looking vibe coded, or big and bold fonts look good
   right now, but the smaller skinnier ones look unprofessional"
   - Small type is Inter, and nothing at small sizes is lighter than 560.
-- **F9.9 IN PROGRESS (clk, all)** "remove anything about magnetic clicks for now, focus on the advantages of spdt. i am
+- **F9.9 DONE in clicks (`magbuttons` and the analog chart are gone); other chapters are checked at integration** "remove anything about magnetic clicks for now, focus on the advantages of spdt. i am
   unsure if i am doing magnetic clicks"
 - **F9.10 DONE in shared code, STANDING** "i dislike when you outline the primary selected color in black for graphs and
   things, it looks particularly bad in all the old slides where you outlined the yellow in black, i don't know what it
   looks like on the new colors yet but i'm assume it just won't look minimal enough"
-- **F9.11 IN PROGRESS (ntr)** "the form the first slide is in what i attached is very good, i dont want it to stray much
+- **F9.11 DONE** "the form the first slide is in what i attached is very good, i dont want it to stray much
   more than how it looks right now other than the actual content (i dont like the current form of the 2d mouse, it should
   be removed, and the numbers and text my change)"
 - **F9.12 DECIDED (F11.1)** "maybe you should let me choose between red, blue or yellow for the primary Theseus color"
@@ -285,16 +300,16 @@ Last updated: 2026-11-04 07:45 (Chicago).
   id lowk you to use the long antenna design i've attached"
 - **F9.14 IN PROGRESS (r3d, gld)** "the sensor and snap on lens are both not as accurate as id like, you need to squeak out
   a lot more accuracy using the images i've attached"
-- **F9.15 IN PROGRESS (r3d, clk)** "the internals on the gt01 switch are not right and it bothers me, before the old switch
+- **F9.15 DONE in 2D (`clk_switch`), IN PROGRESS in 3D (r3d)** "the internals on the gt01 switch are not right and it bothers me, before the old switch
   visualization was a lot more detailed, you should've used the same level of detail and accuracy on the gt01 switch. the
   gt01 switch is literally just a normal SPDT switch with a special bottom housing to rotate it. if you can i'd prefer the
   switch be even MORE detailed than the previous best."
-- **F9.16 IN PROGRESS (clk)** "for the side buttons i want to use full size spdt microswitch as well (not miniature
+- **F9.16 DONE** (`sidebuttons`: a glove over a full-size SPDT switch; "0 mice ship SPDT side buttons") "for the side buttons i want to use full size spdt microswitch as well (not miniature
   microswitches), this means our dual rail mechanism can be a glove that fits over the microswitch and gives us 2x the
   amount of practice to get the tolerancing right in the dual rail mechanism, and means we don't have to tolerance 2
   separate dual rail mechanism, advertise this and how no company has spdt side buttons yet"
   - F11.4: state it.
-- **F9.17 IN PROGRESS (clk)** "using full size microswitches on the side buttons should be explained as a testament of how
+- **F9.17 DONE** (`sidebuttons`: "29.31 g with four full-size switches") "using full size microswitches on the side buttons should be explained as a testament of how
   we have good weights without compromising ANYTHING to achieve that weight"
 - **F9.18 DONE** "fix the background grid spacing so it doesn't align improperly with the apple grid tile spacing"
   - Bento tiles snap to the 40 px grid with a 40 px gutter.
@@ -316,7 +331,7 @@ Last updated: 2026-11-04 07:45 (Chicago).
   depicting skin (it's hard to tell) skin tones should always been mono tone"
 - **F9.25 IN PROGRESS (r3d, elc)** "i'd like you to modify the way the raytac module looks, it should be black instead of
   blue"
-- **F9.26 IN PROGRESS (ntr)** "it feels like you're arguing against me when you say that there's no research to support zero
+- **F9.26 DONE** (zerograms argues it from F = m·a) "it feels like you're arguing against me when you say that there's no research to support zero
   grams is actually the optimal weight, it is well known in the enthusiast community that less weight feels better because
   f=ma, so mass means less inertia means quicker target switching when changing directions, there should also be other
   theories that are all but proven, the inertia thing means it should be objective easier to switch targets, even though
@@ -324,7 +339,7 @@ Last updated: 2026-11-04 07:45 (Chicago).
 - **F9.27 DONE in shared code (feDraw fillet), IN PROGRESS per slide (shl, shb, shc, r3d)** "we have slides about the
   importance of filleting the lattice, but none of the lattices in our visualizations other than those slides are
   filleted, this is an issue"
-- **F9.28 DONE in the shared key plan, IN PROGRESS (clk, r3d)** "we talk about how it's better to have 1 seam in our slides
+- **F9.28 DONE in the shared key plan and clicks, IN PROGRESS in 3D (r3d)** "we talk about how it's better to have 1 seam in our slides
   in front of the scroll wheel, but then all the visualizations show 2 seams, the seam shouldn't separate at the scroll
   wheel, our seam shouldn't shouldn't change from the sora"
   - F11.3.
