@@ -515,3 +515,15 @@ Answers to the Shell A questions:
 - **F19.2 DECIDED** The thumb side band against the fingers' side: "Same on both".
 - **F19.3 DECIDED** The heat scale on the plane-against-triangles drawings: "do what makes triangles look better". The
   squared scale stays: calm triangles, the red peak on the plane.
+
+## F20. Answers to the plate builder's questions (2026-11-04 ~15:20)
+
+- **F20.1 DECIDED** The plate's skates: "Inboard, plate only". They sit on the plate alone, about ±36 mm from the centre,
+  and come off with it. **TODO (plate v2).**
+- **F20.2 DECIDED** What carries the dot skates by the lens with the plate off: "part of the clip on lens line what g wolves
+  does". The dots are part of the clip-on lens, as on G-Wolves mice. **TODO (plate v2, Glide).**
+- **F20.3 DECIDED** The plate's skin: "Thicker skin", about 0.6 mm, so no rib is wider than the skin. **TODO (plate v2):**
+  rerun the FE study.
+- **F20.4 DECIDED** The skates' shape: "they shouldn't be pills, they should be half circles, with cutouts for the dots,
+  they should both look like the rear viper v4 skate, which i am attaching". **TODO (plate v2, Glide).** Waiting for his
+  photo of the Viper V4 Pro's rear skate.
