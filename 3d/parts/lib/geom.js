@@ -337,6 +337,69 @@ export function knurlBand(o) {
   return creaseNormals(g, o.crease ?? 30);
 }
 
+/** ISO 68-1 metric thread profiles in phase space (φ ∈ [0, 1) per pitch, φ = 0 at the external crest).
+    External (rolled): crest flat P/8 at rMaj, 60° flanks, root rounded with radius `root` (ISO 965 allows 0.125P and
+    up); internal: the mating groove with an axial gap `gap` on each flank and the radii given. Both return [[φ, r]]. */
+export function isoExternal(P, rMaj, root = 0.18 * P, nArc = 7) {
+  const t60 = Math.tan(Math.PI / 3), s0 = P / 16;                     // crest half-flat (P/8 wide)
+  const rApex = rMaj - (P / 2 - s0) * t60;                            // the sharp V's root
+  const rc = rApex + root / Math.sin(Math.PI / 6);                    // root circle centre (on the bisector)
+  const pts = [[0, rMaj], [s0 / P, rMaj]];
+  for (let i = 0; i <= nArc; i++) {                                   // root arc, tangent to both flanks (±60°)
+    const th = -Math.PI / 3 + (2 * Math.PI / 3) * i / nArc;
+    pts.push([(P / 2 + root * Math.sin(th)) / P, rc - root * Math.cos(th)]);
+  }
+  pts.push([1 - s0 / P, rMaj], [1, rMaj]);
+  return pts;
+}
+export function isoInternal(P, rMaj, rMin, refMaj, gap = 0.02) {
+  // flank position of the external thread (major refMaj, crest half-flat P/16) at radius r, from its crest centre
+  const t60 = Math.tan(Math.PI / 3), sAt = r => P / 16 + (refMaj - r) / t60 + gap;
+  const a = sAt(rMaj) / P, b = sAt(rMin) / P;
+  return [[0, rMaj], [a, rMaj], [b, rMin], [1 - b, rMin], [1 - a, rMaj], [1, rMaj]];
+}
+
+/** Knurled band of sharp helical teeth around +Y (a heat-set insert's knurl): `count` teeth from rRoot to rTip, each
+    tooth a trapezoid (root flat, flank, tip flat, flank) in angle, twisting with `lead` (mm of Y per turn; sign = hand).
+    The tooth tops are cut by 45° chamfer cones at both ends of the band (`chamfer`), so every tooth ends in a crisp
+    conical facet, as a rolled or cut knurl does; at the band's ends the surface sits at rRoot, against the body. */
+export function knurlTeeth(o) {
+  const { rRoot, rTip, y0, y1, count } = o;
+  const lead = o.lead ?? Infinity, rings = o.rings ?? 36, per = o.per ?? 10;
+  const tipFlat = o.tipFlat ?? 0.12, rootFlat = o.rootFlat ?? 0.1;   // fractions of the tooth period
+  const ch = o.chamfer ?? 1.0;                                         // chamfer slope (Δr per Δy), 1 = 45°
+  // one tooth period, as [u, r]: root flat, flank up, tip flat, flank down
+  const u1 = rootFlat / 2, u2 = 0.5 - tipFlat / 2, u3 = 0.5 + tipFlat / 2, u4 = 1 - rootFlat / 2;
+  const prof = u => (u < u1 || u > u4) ? 0 : u < u2 ? (u - u1) / (u2 - u1) : u <= u3 ? 1 : (u4 - u) / (u4 - u3);
+  const us = [0, u1];
+  const nf = Math.max(1, Math.round((per - 4) / 2));
+  for (let i = 1; i < nf; i++) us.push(u1 + (u2 - u1) * i / nf);
+  us.push(u2, u3);
+  for (let i = 1; i < nf; i++) us.push(u3 + (u4 - u3) * i / nf);
+  us.push(u4);
+  const ring = [];
+  for (let t = 0; t < count; t++) for (const u of us) ring.push((t + u) / count);
+  const m = ring.length;
+  const Pos = [], UV = [], I = [];
+  for (let j = 0; j <= rings; j++) {
+    const y = y0 + (y1 - y0) * j / rings;
+    const twist = Number.isFinite(lead) ? (y / lead) * TAU : 0;
+    const cap = rRoot + Math.max(0, Math.min(y - y0, y1 - y)) * ch;    // chamfer cones at both ends
+    for (let i = 0; i <= m; i++) {
+      const f = ring[i % m], u = (f * count) % 1;
+      const r = Math.min(cap, rRoot + (rTip - rRoot) * prof(u));
+      const a = f * TAU + twist;
+      Pos.push(r * Math.sin(a), y, r * Math.cos(a));
+      UV.push(i / m, y - y0);
+    }
+  }
+  for (let j = 0; j < rings; j++) for (let i = 0; i < m; i++) {
+    const a = j * (m + 1) + i, b = a + 1, c = a + (m + 1) + 1, d = a + (m + 1);
+    I.push(a, b, c, a, c, d);
+  }
+  return creaseNormals(makeGeometry(Pos, I, UV), o.crease ?? 28);
+}
+
 // ---------------------------------------------------------------------------------------------
 // Decode geometry produced by parts/tools/build_geo.py (quantized Uint16 positions + indices).
 export function decodeGeo(rec, creaseDeg) {

@@ -4,17 +4,54 @@ The deck is a canvas film: 1920 × 1080, every frame a pure function of slide ti
 system built from three sources:
 
 - **XBAB promo material**: light grey paper `#F7F6F2`, heavy grotesk headlines in caps, one word in the hero colour
-  (red now: Theseus is red, the next best is yellow), bar charts that show every sample as a jittered dot with a 95 % CI,
+  (blue now: Theseus is blue, the next best yellow), bar charts that show every sample as a jittered dot with a 95 % CI,
   and the weight breakdown.
 - **The film**: the 40 px grid with `+` marks, paper and night themes, iris, sweep and push transitions, one
   accent per chapter, typed narration, part drawings, the glossary and feature band.
 - **The Kunai guide**: Inter and JetBrains Mono, mono section labels with icons, stat cards, accent dashes, lollipop
   rankings, segmented bars, two-column text, page counters.
-- **Broadcast lower-thirds** (Brock's reference, 2026-11-04): every tag is a sharp box with a hairline edge and caps
-  inside, joined to a solid block that holds the value, inverted: `[ MEASURED ▐RTINGS▌ ]`. No rounded capsules, no dots.
+- **Apple's keynotes** (Brock's references, 2026-11-04: the M1 / M1 Pro / M1 Max summary grids, the iPhone 11 Pro
+  wall): rounded tiles in a bento grid with even gutters, one big number per tile with a few words of small type round
+  it, subtle gradients (on the numbers, inside the tiles, as glows behind the part), and the product shown small or as
+  a zoomed-in, abstract, beautiful close-up of the one part in question. See section 0.
 
 It has to be read on a phone, where the stage is shown about 844 px wide (0.44 ×). Most of the rules below
 follow from that.
+
+---
+
+## 0. Direction (Brock, 2026-11-04): Apple's keynote design, with more data
+
+What Brock asked for, after a first pass he called "a massive step backwards" (sharp boxes, a "super straight
+aesthetic", red for Theseus): go the Apple direction without straying far from the deck's first, vibrant colours;
+**blue is Theseus**; "LOTS of premium motion design"; keep giving simulations the screen; show a little more data than
+Apple does. What Apple does, from its keynotes and its own design tokens (research notes: `research/apple-keynote-design.md`):
+
+1. **One idea per slide, and room round it.** A few words of type, large; an image or a number carries the slide.
+   Many sparse slides beat a few crowded ones.
+2. **Bento summaries.** A grid of rounded tiles (Apple's cards: radius 28, padding 28 to 40, even gutters of 16 to 24
+   px, no shadows; tiles one shade off the ground). One or two tiles are big (2 × 2) and hold the product, small or
+   abstract; the rest hold one stat each: a small "Up to" over a huge number, a short label under it. Here: `bento()`,
+   `statTile()`, `demoWindow()` (the tile), `tileA()` (tiles coming in one after another).
+3. **Colour with intent, reused.** The chip's gradient is the chart line's gradient is the glow behind the part, so the
+   colour itself means the product without a legend. Here Theseus's gradient (`C.heroGrad`, cyan → blue → indigo) is
+   its big numbers, its bars, its line, its tile glow and the light behind its parts. Competitors are grey; the one to
+   beat is yellow; a problem is red.
+4. **Gradients, subtle.** On the big numbers (`text(..., { grad })`, `rich` runs with `grad`), inside a Theseus tile (a
+   glow rising from its foot), behind a part (`glowField`), on the stage itself (`stageLight`: a soft top light and a
+   slow drifting glow in the chapter's colour). Never behind body text.
+5. **Show little of the product.** A zoomed-in, abstract, well-lit close-up of the part in question (the node of a
+   lattice, a code disc with light through its slots, the thread's flank) does more than a full diagram. Use the 3D
+   camera close, or draw the part large and simple, lit by `glowField`.
+6. **Charts reduced to the message.** Few labels, the direction of "better" written on the axis, Theseus's line or bar
+   in its gradient with a soft glow, the rest grey; comparisons in relatable terms (2.4× stiffer, half the flex). We
+   keep our values on the chart and our evidence on every number: that is the "little more data".
+7. **Motion that serves the story.** Things appear when the narration reaches them; tiles settle in one after another
+   (a hair larger and lower, to place); numbers count up; a light passes once over a new tile; the camera pushes in
+   slowly on the part; force, current and light visibly flow. Smooth, confident easing (`E.snap`, `E.cam`, `E.io3`),
+   nothing bouncy, nothing that loops for no reason. Premium means slow enough to read and never static for long.
+8. **Type as the label.** No capsules, no dots, no boxes round labels: small mono caps in the kind's colour say how we
+   know a number (`pill`), a quiet label sits over or beside a value (`ltag`). The deck keeps its own fonts.
 
 ---
 
@@ -188,47 +225,49 @@ sentence, forceCaps, tnum, maxW, lh, t, t0, cps, caret, wipe, rise: [t0, dur] }`
 | `C.track` | `#E7E6E1` | `#1F2023` | The empty part of a bar |
 | `C.panel` | `#FFFFFF` | `#141517` | Card surface |
 | `C.comp` / `C.comp2` | `#B9B8B2` / `#D3D2CC` | `#55554F` / `#3A3A37` | Competitors / dimmed competitors |
-| `C.hero` (`HERO_P` / `HERO`) | `#D9343B` | `#E5484D` | **Theseus, only Theseus**: its bar, point, line, column, the hero word |
-| `C.heroText` | `#C8292F` | `#F25A5F` | Theseus red as small text or a thin line |
-| `C.heroChip` + `C.onHero` | `#D9343B` + white | same | A solid red block (a chip, a tag's value) and its ink |
-| `C.heroSoft` | red at 14 % | red at 16 % | A red field behind something (a sweet spot) |
-| `C.second` / `C.ref` | `#C29100` | `#FDC316` | **The next best**, the one to beat: the second highlight |
-| `C.secondText` | `#946E00` | `#FDC316` | The next best as small text |
-| `C.bad` (and `C.red`) | `#936A51` | `#AC8168` | A failure, a gap, a breakage, placeholder data: a dull orange-grey, never red |
-| `heatCol(k)` / `C.heat` | grey → amber → `#B34E00` | grey → amber → pale orange | Stress and load in a drawing (07-sim.js). Never red |
+| `C.hero` (`HERO_P` / `HERO`) | `#0A6CFF` | `#2F8CFF` | **Theseus, only Theseus**: its bar, point, line, column, the hero word |
+| `C.heroGrad` | `#1F9BFF → #0A6CFF → #3D4FE0` | `#7AD4FF → #2F8CFF → #6A63FF` | Theseus's gradient: big numbers, bars, its tile's glow, `glowField` |
+| `C.heroText` | `#0058D6` | `#64B0FF` | Theseus blue as small text or a thin line |
+| `C.heroSoft` | blue at 12 % | blue at 16 % | A blue field behind something (a sweet spot) |
+| `C.second` / `C.ref` | `#E3A800` | `#FDC316` | **The next best**, the one to beat: the second highlight (the deck's first yellow) |
+| `C.secondText` | `#8F6A00` | `#FDC316` | The next best as small text |
+| `C.red` / `C.bad` | `#E5484D` | `#E5484D` | A problem: a failure, a gap, a breakage, placeholder data |
+| `heatCol(k)` / `C.heat` | grey → amber → orange → red | grey → amber → orange → red | Stress and load in a drawing (07-sim.js) |
 
 Rules:
 
-1. **Theseus is red in every chart, and only Theseus is red.** Its bar, point (`heroMark`, a diamond), column
-   (`compareTable` with `hero: true`), target line (`targetX`) and tag (`heroTag`). The hero word in a headline is the
-   same claim. `C.yellow` and `C.gold` are old names that now answer red; true yellow is `C.yel` / `C.second`.
+1. **Theseus is blue in every chart, and only Theseus is blue** (red read as bad; green is Razer's). Its bar, point
+   (`heroMark`, a diamond with a glow), column (`compareTable` with `hero: true`), target line (`targetX`), tag
+   (`heroTag`) and tile (`demoWindow(..., { hero: true })`). The hero word in a headline is the same claim.
+   `C.yellow` and `C.gold` are old names that answer with the hero colour; true yellow is `C.yel` / `C.second`.
 2. **The next best is yellow** (`C.second`, `C.ref`, `secondTag`), and smaller or darker than Theseus: on the stats
    slide the next best sits in a smaller, darker figure under ours. Other competitors are grey; dominated or
    out-of-scope points fade to `C.comp2`.
-3. **One chapter accent** (`acc()`, from `ACCENTS`) for the section label, drawing highlights and the progress tick.
-   Intro and close use ink.
+3. **One chapter accent** (`acc()`, from `ACCENTS`, the old vibrant set: clicks orange, glide green, shell purple,
+   surface magenta, electronics teal, shape olive, ownership slate) for the section label, drawing highlights and the
+   progress tick. Intro and close use ink. No chapter accent is blue.
 4. **Evidence colours belong to evidence tags**, nowhere else (section 6).
-5. **A problem is dull orange-grey** (`C.bad`): a gap no one has filled, a failure, a crack, placeholder data. Old code
-   says `C.red` for it; it resolves to `C.bad`. Heat in a stress drawing is amber to pale orange (`heatCol`).
+5. **A problem is red** (`C.red`, `C.bad`): a gap no one has filled, a failure, a crack, placeholder data. Heat in a
+   stress drawing runs amber, orange, red (`heatCol`).
 
 ---
 
 ## 6. Evidence and tags
 
-Every number carries how we know it, as a **tag**: the lower-third from Brock's reference. A sharp box with a hairline
-edge holds the kind in mono caps; joined to its right, inside the same edge, a solid block in the kind's colour holds
-whose number it is when the slide says (`by`). With no `by`, a short solid end in the kind's colour stands in for it.
+Every number carries how we know it, as a **tag set in type**: the kind in small mono caps in its colour, and whose
+number it is when the slide says (`by`), quieter, after a dot: `MEASURED · RTINGS`, `MAKER CLAIM · RAZER`,
+`ESTIMATE · BROCK`. No capsule, no dot, no box (Brock disliked both the dot pills and the sharp lower-thirds).
 
 | Kind | Tag | Colour | Research label |
 |---|---|---|---|
-| `measured` (`study`) | MEASURED | teal | `IM` |
-| `datasheet` | DATASHEET | blue | `DS` |
+| `measured` (`study`) | MEASURED | green | `IM` |
+| `datasheet` | DATASHEET | teal | `DS` |
 | `claim` (`survey`) | MAKER CLAIM | orange | `MC`, `CA` |
 | `derived` | DERIVED | violet | `DV` |
-| `estimate` | ESTIMATE | violet | Brock's own estimate (`by: 'Brock'`): his judgement, not a measurement |
-| `proposal` | PROPOSAL | red | `PR` |
-| `projected` | PROJECTED | red | (our own forecasts) |
-| `placeholder` | PLACEHOLDER DATA | dull orange-grey | (no data yet) |
+| `estimate` | ESTIMATE | pink | Brock's own estimate (`by: 'Brock'`): his judgement, not a measurement |
+| `proposal` | PROPOSAL | Theseus blue | `PR` |
+| `projected` | PROJECTED | Theseus blue | (our own forecasts) |
+| `placeholder` | PLACEHOLDER DATA | red | (no data yet) |
 
 `EVMAP` and `evOf(field)` in `14-b-intro-ex.js` turn a research field's label into a kind. A maker's own test of its
 own product is a `claim`, even when the maker calls it measured. A number Brock states from experience is an
@@ -236,17 +275,16 @@ own product is a `claim`, even when the maker calls it measured. A number Brock 
 
 API (`04-ui.js`):
 
-- `ltag(x, y, label, value, o)`: the lower-third itself; (x, y) = left edge and text baseline (`o.right`: x is the right
-  edge); either half may be null. `o = { a, size (20), solid, on, edge, color, fill, stub }`. Returns its width;
-  `ltagW()` measures first, `tagRow(xr, y, items)` sets several right-aligned.
+- `ltag(x, y, label, value, o)`: a quiet label and a stronger value side by side, in type; (x, y) = left edge and text
+  baseline (`o.right`: x is the right edge); either may be null. `o = { a, size (20), color, vcolor, vgrad }`. Returns
+  its width; `ltagW()` measures first; `tagRow(xr, y, items)` sets several right-aligned.
 - `pill(x, y, kind, a, { by, text })`: an evidence tag; `pillW(kind, o)` measures it. `tag()` and `cardPills()` are old
-  names for the same thing. `evDot(x, y, kind)` is the kind's mark alone (a small square: filled, outlined or half),
-  for table cells and legends.
-- `cardHead(t, t0, x, y, w, label, kinds, o)`: a mono label on the left of a card, tags on the right (a kind may be
+  names for the same thing. `evDot(x, y, kind)` is the kind's mark alone (a small soft square), for table cells.
+- `cardHead(t, t0, x, y, w, label, kinds, o)`: a mono label on the left of a tile, tags on the right (a kind may be
   `{ ev, by }`). Returns the y below it.
-- `heroTag(x, y, label, value)`: Theseus's own, `[ THESEUS ▐29.31 g▌ ]` in red; `heroTag(x, y, null, 'Theseus target')`
-  is the red block alone. `secondTag(...)` is the next best's, in yellow and quieter.
-- Idea numbers in the header are one tag: `[ IDEAS ▐12 · 14▌ ]` (`chips()`).
+- `heroTag(x, y, label, value)`: Theseus's own, `THESEUS 29.31 g`, the value in its gradient. `secondTag(...)` is the
+  next best's, in yellow and quieter.
+- Idea numbers in the header are type: `IDEAS 12 · 14` (`chips()`).
 
 ---
 
@@ -277,8 +315,12 @@ S({
 | `header(t, title, { eyebrow, sub, size, maxW, noIdeas })` | Section label row (chapter icon, `CHAPTER nn / NN`, idea chips) and the `h1` title. Returns the y under the title |
 | `captions(t, [[t0, text], ...], o)` | The narration, typed under the title, one step at a time. Keep each step to two lines at 31 px |
 | `source(t, text, { t0, maxW, align })` | Mono footnote above the rule, wrapping upward |
-| `glossBox(t, t0, x, y, w, term, def, o)` | What a word means, in a rounded box anywhere on the slide: `[ VOCAB ▐TERM▌ ]` and the definition. Returns `{ h }` |
-| `sourceBox(t, t0, x, y, w, who, finding, { kind })` | Where a finding comes from, in a box: `[ RESEARCH ▐WHO, YEAR▌ ]` (or the evidence tag with `kind`) and what it found |
+| `bento(x, y, w, h, cols, rows, gap)` → `cell(c, r, cs, rs)` | Apple's grid of tiles: a tile's `[x, y, w, h]`, spanning cs columns and rs rows |
+| `statTile(t, t0, rect, { pre, value, unit, label, ev, by, hero, next: { value, unit, who }, align })` | A bento stat tile: evidence at the top, "Up to", the number (Theseus's in its gradient, counting up), its label, the next best smaller and darker at the foot. About 300 px tall for all of that |
+| `tileA(t, t0, i)` | The entrance of tile i of a set, one after another |
+| `glowField(t, x, y, r, { a, cols })` | A soft light in Theseus's colours behind a part, slowly turning |
+| `glossBox(t, t0, x, y, w, term, def, o)` | What a word means, in a rounded tile anywhere on the slide: `VOCAB TERM` and the definition. Returns `{ h }` |
+| `sourceBox(t, t0, x, y, w, who, finding, { kind })` | Where a finding comes from, in a tile: `RESEARCH · WHO, YEAR` (or the evidence tag with `kind`) and what it found |
 | `noteBox(t, t0, x, y, w, { label, value, kind, head, body, h })` | The base of both: a tag and a run-in paragraph in a padded box |
 | `golden(x, w, gap, flip)` / `golden2(h, gap)` | Golden-ratio splits: `{ a: [x, w], b: [x, w] }` / `[big, small]` |
 | `cursorPtr(x, y, { s, press })` / `cursorAt(t, keys, clicks)` | The on-screen pointer; `cursorAt` moves it along keyframes and rings each click |
@@ -286,11 +328,11 @@ S({
 | `callout(t, t0, [x, y], label, { to, side, elbow, sub, prose, color })` | A dot on a point, an elbow leader and a label. Short names are set as mono caps, phrases as sentences |
 | `chapterCard(t, { name, list, gloss, cx, cy, r })` | Chapter opener: name in `d2`, an XBAB-style idea count, the ideas as a numbered list, an iris round the chapter's part |
 | `slam(t, t0, x, y, num, unit, o)` / `bignum(...)` | A key number that drops in, or one that counts up |
-| `hbars(t, { x, y, w, rows: [{ label, v, hero, sub }], max, unit })` | Simple horizontal bars; the `hero` row is red |
+| `hbars(t, { x, y, w, rows: [{ label, v, hero, sub }], max, unit })` | Simple horizontal bars with round ends; the `hero` row is in Theseus's gradient |
 | `axes(t, o)` + `series(m, pts, o)` | A plain x-y frame for drawings that are not one of the charts below |
 | `dim(t, t0, a, b, label, off)` | A drafting dimension |
 | `regMark(x, y, a, s, col)` | A registration `+`, for the corners of a composition |
-| `demoWindow(x, y, w, h, a, { hero, plain, grid, fill, accent })` | A card: panel, hairline border, optional grid; `hero` adds the red edge |
+| `demoWindow(x, y, w, h, a, { hero, plain, grid, fill, r, flat })` | A tile: radius 28, a surface lit softly from the top, no hard border, an entrance that settles and a light that passes once; `hero` lights it from inside in Theseus's colours |
 
 ### Charts (`07-charts.js`)
 
@@ -409,14 +451,16 @@ Do:
 - Say what is not known: a target line with "not measured yet", a dull gap where nothing light publishes hours,
   a placeholder stamp where data is missing.
 - Name the source of every number in `src` and, where it matters on the slide, in a `sourceBox` or the source line.
-- Keep red for Theseus and yellow for the next best.
+- Keep blue for Theseus, yellow for the next best and red for a problem.
 - Print Theseus's own numbers from `THS` (`THS.massG` = '29.31 g', `THS.price` = '$189', `THS.pcb` = '5.6 g').
 
 Don't:
 
 - Don't use lowercase titles or labels, or set long sentences in mono caps.
-- Don't add a third highlight colour, gradients behind text, drop shadows or glows.
-- Don't use rounded capsules with a dot for tags: every tag is a lower-third (section 6).
+- Don't add a third highlight colour, gradients behind body text, or drop shadows under tiles. Glows are for light
+  behind a part and Theseus's tile, softly.
+- Don't put tags in capsules, dots or boxes: a tag is type (section 6). Don't use sharp-cornered boxes for anything;
+  tiles are rounded.
 - Don't round a claim up, or print a projected number without the PROJECTED tag.
 - Don't place text under the footer rule, or let a label run over a dot, a line or another label.
 - Don't use tan, beige or cream. The paper is `#F7F6F2`.

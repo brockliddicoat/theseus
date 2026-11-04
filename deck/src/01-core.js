@@ -9,39 +9,42 @@ const W = 1920, H = 1080;
 /* ---------- colour ----------
    Two grounds, from the old film: paper (TH = 1) and night (TH = 0). Paper is XBAB's light grey.
    Every neutral is a step on one ramp per ground; nothing warm, nothing tan.
-   Red is Theseus and only Theseus: in a chart it marks our number and nothing else (HERO, C.hero).
-   Yellow is the second highlight: the next best, the one to beat (C.second, C.ref).
-   A failure, a gap or a problem is a dull orange-grey (C.bad, and C.red, which old code used for it), never red.
+   Blue is Theseus and only Theseus (HERO, C.hero, its gradient C.heroGrad): in a chart it marks our number and nothing
+   else. Yellow, the deck's first hero colour, is now the second highlight: the next best, the one to beat (C.second,
+   C.ref). Red means a problem: a failure, a gap, a breakage (C.red, C.bad). Stress heat runs amber to red (heatCol).
+   The palette is the old vibrant one, pushed toward Apple's keynote colours (systemBlue, systemYellow, systemRed).
    Each chapter has one accent for its chrome (section label, chapter card, highlights in drawings). */
 let TH = 0;
 const PAPER = '#F7F6F2', NIGHT = '#0D0E0F';
-const HERO = '#E5484D', HERO_P = '#D9343B';   /* Theseus red: the fill on night, the fill on paper */
+const HERO = '#2F8CFF', HERO_P = '#0A6CFF';   /* Theseus blue: the fill on night, the fill on paper */
 const YEL = '#FDC316';                         /* the second highlight */
 const RAMP = {
   /*           ink        ink2       mute       faint      hair       track      panel      line                    comp       comp2    */
   paper: ['#111111', '#2E2E2C', '#66655F', '#8A8983', '#DDDCD6', '#E7E6E1', '#FFFFFF', 'rgba(17,17,17,0.10)', '#B9B8B2', '#D3D2CC'],
-  night: ['#F3F2EE', '#CFCEC9', '#96958F', '#6E6D68', '#26272A', '#1F2023', '#141517', 'rgba(255,255,255,0.09)', '#55554F', '#3A3A37']
+  night: ['#F3F2EE', '#CFCEC9', '#96958F', '#6E6D68', '#26272A', '#1F2023', '#151619', 'rgba(255,255,255,0.09)', '#55554F', '#3A3A37']
 };
 const rampOf = i => (TH ? RAMP.paper : RAMP.night)[i];
 const C = {
+  red: '#E5484D', redL: '#EF7275', redD: '#B8383D',
   blue: '#4385E4', blueL: '#609EFA', blueD: '#3466BF',
   purple: '#8A70DD', purpleL: '#A18BF3', purpleD: '#6F55C4',
   green: '#1FA466', greenL: '#46B86E', greenD: '#14824F',
   gray: '#9DA3AE', white: '#FFFFFF', yel: YEL,
-  onHero: '#FFFFFF', heroChip: HERO_P        /* a solid red block (a chip, a tag's value) and the ink on it, both themes */
+  onHero: '#FFFFFF', heroChip: HERO_P        /* a solid blue block and the ink on it, both themes */
 };
 Object.defineProperties(C, {
   hero: { get: () => (TH ? HERO_P : HERO) },                     /* Theseus: its bar, point, line, column */
-  heroText: { get: () => (TH ? '#C8292F' : '#F25A5F') },         /* Theseus red as small text or a thin line */
-  heroSoft: { get: () => (TH ? 'rgba(217,52,59,0.14)' : 'rgba(229,72,77,0.16)') },   /* a red field behind something */
-  second: { get: () => (TH ? '#C29100' : YEL) },                 /* the next best: its bar, point, line */
-  secondText: { get: () => (TH ? '#946E00' : YEL) },             /* the next best as small text or a thin line */
-  /* a problem: a failure, a gap, a breakage, placeholder data. Dull on purpose, so it never reads as Theseus */
-  bad: { get: () => (TH ? '#936A51' : '#AC8168') },
-  badL: { get: () => (TH ? '#B08A74' : '#C49C84') }, badD: { get: () => (TH ? '#74513C' : '#8E6850') },
-  red: { get: () => C.bad }, redL: { get: () => C.badL }, redD: { get: () => C.badD },
-  /* heat: stress and load in a drawing, low to high (amber to a hot orange, never red) */
-  heat: { get: () => (TH ? '#E07A10' : '#FF9A2E') }, heatL: { get: () => (TH ? '#E9A23A' : '#FFC266') },
+  heroText: { get: () => (TH ? '#0058D6' : '#64B0FF') },         /* Theseus blue as small text or a thin line */
+  heroSoft: { get: () => (TH ? 'rgba(10,108,255,0.12)' : 'rgba(47,140,255,0.16)') },   /* a blue field behind something */
+  /* Theseus's gradient, for its big numbers, its bars and its glows: cyan into blue into indigo, like Apple's chip art */
+  heroGrad: { get: () => (TH ? ['#1F9BFF', '#0A6CFF', '#3D4FE0'] : ['#7AD4FF', '#2F8CFF', '#6A63FF']) },
+  second: { get: () => (TH ? '#E3A800' : YEL) },                 /* the next best: its bar, point, line */
+  secondText: { get: () => (TH ? '#8F6A00' : YEL) },             /* the next best as small text or a thin line */
+  secondGrad: { get: () => (TH ? ['#F2B600', '#D98A00'] : ['#FFE066', '#FDC316', '#FF9F0A']) },
+  /* a problem: a failure, a gap, a breakage, placeholder data */
+  bad: { get: () => C.red }, badL: { get: () => C.redL }, badD: { get: () => C.redD },
+  /* heat: stress and load in a drawing, low to high (amber, orange, red) */
+  heat: { get: () => (TH ? '#E8590C' : '#FF7A2E') }, heatL: { get: () => (TH ? '#F0A020' : '#FFC24D') },
   bg: { get: () => (TH ? PAPER : NIGHT) },
   ink: { get: () => rampOf(0) },            /* headlines, hero numbers */
   ink2: { get: () => rampOf(1) },           /* body text */
@@ -49,29 +52,31 @@ Object.defineProperties(C, {
   faint: { get: () => rampOf(3) },          /* tertiary: ticks, notes that can be missed */
   hair: { get: () => rampOf(4) },           /* rules, gridlines */
   track: { get: () => rampOf(5) },          /* the empty part of a bar (XBAB) */
-  panel: { get: () => rampOf(6) },          /* card surface */
+  panel: { get: () => rampOf(6) },          /* card (tile) surface */
   line: { get: () => rampOf(7) },           /* card border */
   comp: { get: () => rampOf(8) },           /* a competitor's bar or point */
   comp2: { get: () => rampOf(9) },          /* a dimmed competitor (dominated, out of scope) */
   ref: { get: () => C.second },             /* the reference: the best one shipping today, the one to beat (yellow) */
-  heroEdge: { get: () => 'rgba(0,0,0,0)' }, /* the old black edge round yellow bars on paper; red needs none */
+  heroEdge: { get: () => 'rgba(0,0,0,0)' }, /* the old black edge round yellow bars on paper; blue needs none */
   dot: { get: () => (TH ? 'rgba(17,17,17,0.30)' : 'rgba(243,242,238,0.30)') }, /* one sample in a chart */
   good: { get: () => (TH ? '#14824F' : '#46B86E') },
-  /* old names: yellow and gold meant Theseus before red did, so they answer with the hero red; true yellow is C.yel / C.second */
+  /* old names: yellow and gold meant Theseus when Theseus was yellow, so they answer with the hero colour;
+     true yellow is C.yel / C.second */
   yellow: { get: () => C.hero }, gold: { get: () => C.hero },
   orange: { get: () => (TH ? '#D9701E' : '#F08A3C') },
   brown: { get: () => rampOf(2) }, brownL: { get: () => rampOf(2) },
-  loss: { get: () => C.bad }, steel: { get: () => C.gray }, cool: { get: () => C.blue }
+  loss: { get: () => C.red }, steel: { get: () => C.gray }, cool: { get: () => C.purple }
 });
 function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
 function rgba(hex, a) { if (hex.startsWith('rgb')) return hex; const c = hexRgb(hex); return `rgba(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)},${a})`; }
 function inkA(a) { return TH ? `rgba(17,17,17,${a})` : `rgba(243,242,238,${a})`; }
 /** mix two hex colours */
 function mix(a, b, k) { const x = hexRgb(a), y = hexRgb(b); return '#' + x.map((v, i) => Math.round((v + (y[i] - v) * k) * 255).toString(16).padStart(2, '0')).join(''); }
-/** chapter accents: OKLCH L 0.62 on paper, 0.70 on night, chroma 0.15 to 0.16, hues spaced away from yellow and red */
+/** chapter accents: the old vibrant set, OKLCH L 0.62 on paper, 0.70 on night; clicks moved from blue to orange and the
+   electronics from cyan to teal, so no chapter's chrome reads as Theseus blue */
 const ACCENTS = {
-  click: ['#4385E4', '#609EFA'], glide: ['#0EA053', '#46B86E'], shell: ['#8A70DD', '#A18BF3'], surface: ['#C35AA4', '#DA76BB'],
-  elec: ['#009DBD', '#00B5D4'], shape: ['#6E9A10', '#8FAC31'], own: ['#6F7C8F', '#8C98AA']
+  click: ['#D9701E', '#F59A4F'], glide: ['#0EA053', '#46B86E'], shell: ['#8A70DD', '#A18BF3'], surface: ['#C35AA4', '#DA76BB'],
+  elec: ['#0E9F8E', '#2CC7B4'], shape: ['#6E9A10', '#8FAC31'], own: ['#6F7C8F', '#8C98AA']
 };
 const ACC = Object.fromEntries(Object.keys(ACCENTS).map(k => [k, () => ACCENTS[k][TH ? 0 : 1]]));
 ACC.intro = () => C.ink; ACC.end = () => C.ink;
@@ -290,6 +295,9 @@ function text(s, x, y, o = {}) {
     const vis = L.slice(0, n), ly = y + i * lh;
     const fullW = measureStr(L, o); maxw = Math.max(maxw, fullW);
     const x0 = o.align === 'center' ? x - fullW / 2 : o.align === 'right' ? x - fullW : x;
+    /* a gradient across the line (Apple's big numbers): o.grad = [colours], left to right with a slight fall */
+    if (o.grad) { const gr = G.createLinearGradient(x0, ly - size * 0.8, x0 + Math.max(1, fullW), ly + size * 0.15); o.grad.forEach((c, j) => gr.addColorStop(o.grad.length > 1 ? j / (o.grad.length - 1) : 0, c)); G.fillStyle = gr; }
+    if (o.glow && n) { G.save(); G.shadowColor = o.glow; G.shadowBlur = o.glowR || size * 0.45; drawStr(vis, x0, ly, o); G.restore(); }
     if (o.rise) {
       const [r0, rd] = Array.isArray(o.rise) ? o.rise : [o.t0 || 0, 0.8], kk = E.rise(prog(o.t, r0 + i * 0.09, r0 + i * 0.09 + (rd || 0.8)));
       if (kk <= 0) continue;
@@ -306,7 +314,7 @@ function text(s, x, y, o = {}) {
       G.fillRect(x0 + cw + 3, ly - size * 0.74, Math.max(2, size * 0.09), size * 0.86);
     }
   }
-  G.globalAlpha = 1;
+  G.globalAlpha = 1; G.shadowBlur = 0;
   return { w: maxw, h: lines.length * lh, lines };
 }
 /**
@@ -334,8 +342,10 @@ function rich(runs, x, y, o = {}) {
     const cap = (r.size || 28) * (r.font === 'mono' ? 0.73 : 0.727);
     const dy = (r.dy || 0) + (r.valign === 'cap' ? -(capMax - cap) : r.valign === 'mid' ? -(capMax - cap) / 2 : 0);
     const a = (o.alpha == null ? 1 : o.alpha) * (r.alpha == null ? 1 : r.alpha);
-    if (r.chip && a > 0.003) { const pz = (r.size || 28) * 0.32; G.save(); G.globalAlpha = a; G.fillStyle = r.chip; G.fillRect(xx - pz, y + dy - cap - pz * 0.9, ws[i] + pz * 2, cap + pz * 1.8); G.restore(); }
-    text(strs[i], xx, y + dy, Object.assign({}, r, { role: undefined, caps: false, sentence: false, alpha: a, t: o.t, rise: r.rise }));
+    const heroChip = r.chip && (r.chip === C.heroChip || r.chip === HERO || r.chip === HERO_P || r.chip === C.hero);
+    if (r.chip && !heroChip && a > 0.003) { const pz = (r.size || 28) * 0.32; G.save(); G.globalAlpha = a * 0.9; G.fillStyle = rgba(r.chip, 0.18); rrPath(xx - pz, y + dy - cap - pz * 0.9, ws[i] + pz * 2, cap + pz * 1.8, (cap + pz * 1.8) * 0.3); G.fill(); G.restore(); }
+    const extra = heroChip ? { color: C.heroText, grad: C.heroGrad, weight: Math.max(700, r.weight || 700) } : r.chip ? { color: r.chip } : {};
+    text(strs[i], xx, y + dy, Object.assign({}, r, extra, { role: undefined, caps: false, sentence: false, alpha: a, t: o.t, rise: r.rise }));
     xx += ws[i];
   });
   return { w: total, x0, xs, ws };
@@ -407,24 +417,81 @@ function paper(a = 1) {
 /** rounded rectangle path */
 function rrPath(x, y, w, h, r) { r = Math.max(0, Math.min(r, w / 2, h / 2)); G.beginPath(); G.moveTo(x + r, y); G.arcTo(x + w, y, x + w, y + h, r); G.arcTo(x + w, y + h, x, y + h, r); G.arcTo(x, y + h, x, y, r); G.arcTo(x, y, x + w, y, r); G.closePath(); }
 function rr(x, y, w, h, r, fill, stroke, lw = 1.5, a = 1) { G.save(); G.globalAlpha = a; rrPath(x, y, w, h, r); if (fill) { G.fillStyle = fill; G.fill(); } if (stroke) { G.strokeStyle = stroke; G.lineWidth = lw; G.stroke(); } G.restore(); }
-/** a card: a demonstration's own window on the paper (nothing sits straight on the grid).
-   o = { r, fill, plain (no entrance), grid (a faint 40 px grid inside, as on the Kunai cards), hero (red edge), accent } */
+/** a card: a tile, as in Apple's keynotes. A big radius, a surface lit softly from the top, no hard edge (a whisper of
+   one on paper), and an entrance that settles. o = { r (28), fill, plain (no entrance), grid (a faint 40 px grid inside),
+   hero (a blue edge glow: Theseus), accent, flat (no gradient) } */
+const TILE = { r: 28 };
+function tileFill(x, y, w, h, o = {}) {
+  if (o.fill) return o.fill;
+  if (o.flat) return C.panel;
+  const g = G.createLinearGradient(x, y, x + w * 0.25, y + h);
+  if (TH) { g.addColorStop(0, '#FFFFFF'); g.addColorStop(1, '#FBFAF7'); }
+  else { g.addColorStop(0, '#1C1D21'); g.addColorStop(0.55, '#16171A'); g.addColorStop(1, '#131416'); }
+  return g;
+}
 function demoWindow(x, y, w, h, a = 1, o = {}) {
   if (a <= 0.003) return;
-  const r = o.r == null ? 12 : o.r;
+  const r = o.r == null ? Math.min(TILE.r, w / 6, h / 6) : o.r, p = E.out3(clamp(a));
   if (QA.on) QA.boxes.push({ x0: x, y0: y, x1: x + w, y1: y + h });
-  rr(x, y, w, h, r, o.fill || C.panel, o.hero ? C.hero : C.line, o.hero ? 2 : 1.5, a);
+  G.save(); G.globalAlpha = clamp(a * 1.4);
+  /* on the way in the tile settles from a hair larger and a little lower */
+  if (!o.plain && a < 1) { const sc = 1 + 0.015 * (1 - p), cx = x + w / 2, cy = y + h / 2; G.translate(cx, cy + (1 - p) * 14); G.scale(sc, sc); G.translate(-cx, -cy); }
+  rrPath(x, y, w, h, r); G.fillStyle = tileFill(x, y, w, h, o); G.fill();
+  /* the top edge catches the light; paper gets a hairline so white on light grey still reads */
+  G.save(); rrPath(x, y, w, h, r); G.clip();
+  const hl = G.createLinearGradient(x, y, x, y + Math.min(h, 160));
+  hl.addColorStop(0, TH ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.055)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+  G.strokeStyle = hl; G.lineWidth = 2; rrPath(x + 0.5, y + 0.5, w - 1, h - 1, r); G.stroke();
   if (o.grid) {
-    G.save(); G.globalAlpha = a; rrPath(x, y, w, h, r); G.clip(); G.strokeStyle = inkA(TH ? 0.035 : 0.03); G.lineWidth = 1; G.beginPath();
+    G.strokeStyle = inkA(TH ? 0.03 : 0.025); G.lineWidth = 1; G.beginPath();
     for (let gx = Math.ceil(x / 40) * 40; gx < x + w; gx += 40) { G.moveTo(gx + 0.5, y); G.lineTo(gx + 0.5, y + h); }
     for (let gy = Math.ceil(y / 40) * 40; gy < y + h; gy += 40) { G.moveTo(x, gy + 0.5); G.lineTo(x + w, gy + 0.5); }
-    G.stroke(); G.restore();
+    G.stroke();
   }
-  if (a >= 0.999 || o.plain) return;
-  /* on the way in: the border traces itself in the chapter's accent, and a soft light passes once */
-  const p = E.io3(a), bx = x - w * 0.3 + w * 1.6 * p, g = G.createLinearGradient(bx - 160, y, bx + 160, y + Math.min(h, 400) * 0.35);
-  g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, TH ? 'rgba(17,17,17,0.035)' : 'rgba(255,255,255,0.05)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-  G.save(); rrPath(x, y, w, h, r); G.clip(); G.globalAlpha = Math.sin(p * Math.PI); G.fillStyle = g; G.fillRect(x, y, w, h); G.restore();
-  const per = 2 * (w + h), L = per * p, col = o.accent || (typeof acc === 'function' ? acc() : C.ink);
-  G.save(); G.globalAlpha = 0.8 * (1 - p); G.strokeStyle = col; G.lineWidth = 2; G.setLineDash([L, per]); rrPath(x, y, w, h, r); G.stroke(); G.restore();
+  /* a soft light passes once on the way in */
+  if (!o.plain && a < 1) {
+    const bx = x - w * 0.4 + w * 1.8 * p, g = G.createLinearGradient(bx - 220, y, bx + 220, y + Math.min(h, 420) * 0.4);
+    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, TH ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.06)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    G.globalAlpha = Math.sin(p * Math.PI); G.fillStyle = g; G.fillRect(x, y, w, h);
+  }
+  G.restore();
+  if (TH) { G.strokeStyle = 'rgba(17,17,17,0.05)'; G.lineWidth = 1; rrPath(x + 0.5, y + 0.5, w - 1, h - 1, r); G.stroke(); }
+  /* Theseus's tile: lit from inside in its colours, a soft glow rising from the foot, and a faint blue rim */
+  if (o.hero) {
+    G.save(); rrPath(x, y, w, h, r); G.clip();
+    const cols = C.heroGrad, g = G.createRadialGradient(x + w * 0.5, y + h * 1.15, 0, x + w * 0.5, y + h * 1.15, Math.max(w, h) * 0.95);
+    g.addColorStop(0, rgba(cols[1], TH ? 0.14 : 0.26)); g.addColorStop(0.5, rgba(cols[cols.length - 1], TH ? 0.05 : 0.09)); g.addColorStop(1, rgba(cols[0], 0));
+    G.fillStyle = g; G.fillRect(x, y, w, h); G.restore();
+    G.save(); G.strokeStyle = rgba(C.hero, TH ? 0.22 : 0.32); G.lineWidth = 1.5; rrPath(x + 0.75, y + 0.75, w - 1.5, h - 1.5, r); G.stroke(); G.restore();
+  }
+  G.restore();
+}
+/** the stage's own light, under everything: a soft top light and a faint, slowly drifting glow in the chapter's colour */
+function stageLight(t, key) {
+  const A = (typeof acc === 'function' ? acc(key) : C.ink), tint = A === C.ink ? C.hero : A;
+  G.save();
+  if (TH) {
+    const g = G.createRadialGradient(W * 0.5, -H * 0.25, 0, W * 0.5, -H * 0.25, H * 1.3);
+    g.addColorStop(0, 'rgba(255,255,255,0.75)'); g.addColorStop(1, 'rgba(255,255,255,0)'); G.fillStyle = g; G.fillRect(0, 0, W, H);
+  } else {
+    const g = G.createRadialGradient(W * 0.5, -H * 0.3, 0, W * 0.5, -H * 0.3, H * 1.25);
+    g.addColorStop(0, 'rgba(255,255,255,0.045)'); g.addColorStop(1, 'rgba(255,255,255,0)'); G.fillStyle = g; G.fillRect(0, 0, W, H);
+  }
+  const dx = Math.sin((t || 0) * 0.13) * 90, dy = Math.cos((t || 0) * 0.11) * 50, cx = W * 0.86 + dx, cy = H * 0.08 + dy;
+  const g2 = G.createRadialGradient(cx, cy, 0, cx, cy, H * 0.95);
+  g2.addColorStop(0, rgba(tint, TH ? 0.07 : 0.085)); g2.addColorStop(1, rgba(tint, 0)); G.fillStyle = g2; G.fillRect(0, 0, W, H);
+  G.restore();
+}
+/** a soft glow of light in Theseus's colours (or o.cols) behind a part, as Apple lights a chip: o = { a, cols, spin (rad/s) } */
+function glowField(t, x, y, r, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
+  const cols = o.cols || C.heroGrad, n = cols.length, sp = o.spin == null ? 0.25 : o.spin;
+  G.save(); G.globalCompositeOperation = TH ? 'multiply' : 'lighter';
+  cols.forEach((c, i) => {
+    const ang = (t || 0) * sp + i * TAU / n, px = x + Math.cos(ang) * r * 0.28, py = y + Math.sin(ang) * r * 0.2;
+    const g = G.createRadialGradient(px, py, 0, px, py, r);
+    g.addColorStop(0, rgba(c, (TH ? 0.16 : 0.22) * a)); g.addColorStop(0.55, rgba(c, (TH ? 0.06 : 0.08) * a)); g.addColorStop(1, rgba(c, 0));
+    G.fillStyle = g; G.fillRect(px - r, py - r, r * 2, r * 2);
+  });
+  G.restore();
 }

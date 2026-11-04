@@ -11,7 +11,7 @@
 /* layout: one 16:9 stage, letterboxed on a graphite ground, a quiet transport bar under it. Dark by design: it is a film. */
 :root {
   --bg: #0D0E0F; --stage: #0D0E0F; --surface: #16171a; --surface2: #1e2023; --line: #2a2c30;
-  --ink: #F3F2EE; --mute: #96958F; --hero: #E5484D; --steel: #8f9aa8;
+  --ink: #F3F2EE; --mute: #96958F; --hero: #2F8CFF; --steel: #8f9aa8;
   --f-disp: "Inter", system-ui, sans-serif; --f-mono: "JetBrains Mono", "Inter", ui-monospace, monospace;
   color-scheme: dark;
 }
@@ -30,7 +30,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 #segs { flex: 1 1 auto; display: flex; gap: 3px; height: 36px; align-items: center; min-width: 60px; }
 .seg { flex: 1 1 0; height: 6px; border-radius: 3px; background: rgba(255,255,255,.09); border: 0; padding: 0; cursor: pointer; position: relative; overflow: hidden; }
 .seg i { position: absolute; inset: 0; width: 0; background: rgba(236,235,229,.85); }
-.seg.on { background: rgba(229,72,77,.28); }
+.seg.on { background: rgba(47,140,255,.30); }
 .seg.on i { background: var(--hero); }
 #count { flex: none; font: 500 12px/1 var(--f-mono); color: var(--mute); font-variant-numeric: tabular-nums; min-width: 54px; text-align: right; }
 #chap { flex: 0 1 auto; min-width: 0; max-width: 280px; font: 600 12px/1.2 var(--f-mono); color: var(--mute); text-transform: uppercase; letter-spacing: .1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

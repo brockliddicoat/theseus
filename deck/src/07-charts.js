@@ -1,8 +1,8 @@
 /* ============================================================================================
    charts: the comparison components. Comparisons sell mice, so they get the most care.
-   One rule across all of them: Theseus is red (C.hero), the best mouse shipping today (the reference, the one to beat)
-   is the second highlight, yellow (C.ref), every other mouse is grey (C.comp), and anything dominated or out of scope
-   is a lighter grey (C.comp2).
+   One rule across all of them: Theseus is blue (C.hero, C.heroGrad), the best mouse shipping today (the reference, the
+   one to beat) is the second highlight, yellow (C.ref), every other mouse is grey (C.comp), and anything dominated or
+   out of scope is a lighter grey (C.comp2).
    Every chart animates from its own t0 and is a pure function of t. Every chart takes an `ev` (evidence kind)
    and prints it as a pill. Placeholder data must say so: pass placeholder: true and the chart stamps itself.
    APIs are documented in DESIGN.md with an example each.
@@ -10,11 +10,13 @@
 
 /** colour of a datum by its role: { hero, ref, dim, color } */
 function roleCol(d) { return d.color || (d.hero ? C.hero : d.ref ? C.ref : d.dim ? C.comp2 : C.comp); }
-/** the Theseus marker: a red diamond (its shape, not only its colour, says Theseus) */
+/** the Theseus marker: a blue diamond with a soft glow (its shape, not only its colour, says Theseus) */
 function heroMark(x, y, r = 12, a = 1, o = {}) {
   if (a <= 0.003) return;
   G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(Math.PI / 4);
-  G.fillStyle = o.fill || C.hero; G.fillRect(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5);
+  G.shadowColor = rgba(C.hero, TH ? 0.35 : 0.6); G.shadowBlur = r * 1.6;
+  const g = G.createLinearGradient(-r, -r, r, r); C.heroGrad.forEach((c, j) => g.addColorStop(j / (C.heroGrad.length - 1), c));
+  G.fillStyle = o.fill || g; rrPath(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5, r * 0.22); G.fill(); G.shadowBlur = 0;
   if (o.edge) { G.strokeStyle = o.edge; G.lineWidth = 2; G.strokeRect(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5); }
   G.restore();
 }
@@ -46,8 +48,7 @@ function placeholderStamp(t, x, y, w, h, o = {}) {
   const a = ep(t, o.t0 || 0.3, (o.t0 || 0.3) + 0.4); if (a <= 0.003) return;
   G.save(); G.globalAlpha = a * 0.7; G.setLineDash([10, 8]); G.strokeStyle = C.bad; G.lineWidth = 2; rrPath(x - 6, y - 6, w + 12, h + 12, 14); G.stroke(); G.restore();
   const pw = pillW('placeholder');
-  rect(x + w - pw - 10, y - 22, pw + 4, 38, { fill: C.bg, alpha: a });
-  pill(x + w - pw - 8, y + 6, 'placeholder', a, { color: C.bad, edge: C.bad });
+  pill(x + w - pw - 8, y - 14, 'placeholder', a);
 }
 /** a legend row. items: [{ kind: 'hero' | 'ref' | 'comp' | 'dim' | 'ring' | 'line' | 'dash' | 'area', color, label }] → returns width */
 function legend(t, t0, x, y, items, o = {}) {
@@ -107,8 +108,8 @@ function barChart(t, o) {
     const d = 0.18 + i * (o.stagger == null ? 0.14 : o.stagger), k = ep(t, t0 + d, t0 + d + 0.9, E.snap), col = roleCol(b);
     const c = (H_ ? y : x) + slot * (i + 0.5), v1 = lo + (b.v - lo) * k;
     /* the bar */
-    if (H_) { const bx = x, by = c - bw / 2, bl = w * P(v1); rect(bx, by, bl, bw, { fill: col }); if (b.hero && TH) rect(bx, by, bl, bw, { color: C.heroEdge, w: 1.5 }); }
-    else { const bt = y + h - h * P(v1); rect(c - bw / 2, bt, bw, y + h - bt, { fill: col }); if (b.hero && TH) rect(c - bw / 2, bt, bw, y + h - bt, { color: C.heroEdge, w: 1.5 }); }
+    if (H_) { const bx = x, by = c - bw / 2, bl = w * P(v1); if (bl > 0.5) { G.save(); rrPath(bx, by, bl, bw, Math.min(bw / 2, 10)); G.fillStyle = b.hero ? gradH(bx, Math.max(bl, 40), C.heroGrad) : col; G.fill(); G.restore(); } }
+    else { const bt = y + h - h * P(v1); if (y + h - bt > 0.5) { G.save(); rrPath(c - bw / 2, bt, bw, y + h - bt, Math.min(bw / 2, 10)); if (b.hero) { const g = G.createLinearGradient(0, y + h, 0, bt); C.heroGrad.forEach((cc, j) => g.addColorStop(j / (C.heroGrad.length - 1), cc)); G.fillStyle = g; } else G.fillStyle = col; G.fill(); G.restore(); } }
     /* the samples: every measurement as a grey dot, jittered across the bar, landing one after another */
     const S = Array.isArray(b.samples) ? b.samples : b.samples ? synthSamples(b.v, b.samples) : null;
     if (S) {
@@ -487,12 +488,11 @@ function statCard(t, t0, x, y, w, h, o) {
   const a = ep(t, t0, t0 + 0.45); if (a <= 0.003) return;
   G.save(); G.translate(0, (1 - E.out3(a)) * 16);
   demoWindow(x, y, w, h, a, { hero: o.hero, plain: true, fill: o.fill });
-  if (o.hero) { G.save(); G.globalAlpha = a; rrPath(x, y, w, h, 12); G.clip(); rect(x, y, 6, h, { fill: C.hero }); G.restore(); }
   const hy = cardHead(t, t0 + 0.1, x, y, w, o.label, o.ev ? [o.ev] : [], { dy: 46 });
   const vs = o.size || T.stat.size, ff = o.font === 'mono' ? { font: 'mono', size: vs * 0.92, weight: 600, track: -0.02 } : { role: 'stat', size: vs };
   const runs = [];
   if (o.pre) runs.push({ s: o.pre, font: ff.font || 'disp', size: vs * 0.9, weight: 800, track: -0.02, color: C.ink });
-  runs.push(Object.assign({ s: o.value, color: o.valueColor || C.ink, tnum: true, count: o.count === false ? null : [t0 + 0.3, 1.0] }, ff, { gap: runs.length ? vs * 0.22 : 0 }));
+  runs.push(Object.assign({ s: o.value, color: o.valueColor || (o.hero ? C.heroText : C.ink), grad: o.hero && !o.valueColor ? C.heroGrad : undefined, tnum: true, count: o.count === false ? null : [t0 + 0.3, 1.0] }, ff, { gap: runs.length ? vs * 0.22 : 0 }));
   if (o.mid) runs.push({ s: o.mid, font: 'mono', size: Math.round(vs * 0.36), weight: 600, color: C.mute, gap: vs * 0.2 });
   if (o.value2) runs.push(Object.assign({ s: o.value2, color: o.valueColor || C.ink, tnum: true, count: o.count === false ? null : [t0 + 0.5, 1.0] }, ff, { gap: vs * 0.2 }));
   if (o.unit) runs.push({ s: o.unit, font: 'mono', size: Math.max(24, Math.round(vs * 0.36)), weight: 600, color: C.mute, gap: vs * 0.1 });

@@ -101,11 +101,11 @@ function feEngaged(r, frac = 0.3) {
   let g = 0, tot = 0; r.sig.forEach((s, e) => { tot += r.mass[e]; if (s >= frac * r.smax) g += r.mass[e]; });
   return { g, total: tot, share: tot ? g / tot : 0 };
 }
-/** heat: how hard a part of the frame works, 0..1, as a colour. Cool is the ground's grey; hot is amber, then a bright
-   pale orange. Never red: red is Theseus */
+/** heat: how hard a part of the frame works, 0..1, as a colour. Cool is the ground's grey; then amber, orange, and red
+   where it is about to fail (red is a problem in this deck; Theseus is blue) */
 function heatCol(k) {
   k = clamp(k);
-  const stops = TH ? ['#B9B8B2', '#C9A267', '#E07A10', '#B34E00'] : ['#4A4A46', '#9A7438', '#FF9A2E', '#FFE2B0'];
+  const stops = TH ? ['#C4C3BD', '#E9B44C', '#F07A1A', '#D7263D'] : ['#4A4A46', '#C98F2E', '#FF7A2E', '#FF3B4A'];
   const f = k * (stops.length - 1), i = Math.min(stops.length - 2, Math.floor(f));
   return mix(stops[i], stops[i + 1], f - i);
 }

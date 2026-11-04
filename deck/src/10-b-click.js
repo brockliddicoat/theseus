@@ -1,8 +1,8 @@
 /* ============================================================================================
    CHAPTER 01 · CLICKS. The path a press takes from the finger to the switch, and the microseconds after it.
-   Every new top-level name here starts with clk_. Mechanism drawings come from 03-parts.js; the few helpers
-   the intro file also defines are copied below, so this chapter never depends on another chapter's file.
-   Idea sheets for this chapter are in 12-10-click.js.
+   Every new top-level name here starts with clk_. Mechanism drawings come from 03-parts.js and from the clk_ painters
+   below; the force simulations use 07-sim.js. Rebuilt 2026-11-04 after Brock's review: concept titles, room, the vocabulary
+   and the research in boxes on the slide, the bridge tensioner as a frame model, dual rail main clicks and side buttons.
    ============================================================================================ */
 Object.assign(SRC, {
   clk_xbabClick: { t: 'XBAB Tech on X, 2026-06-30: XA25 vs OP1 8k v2 click latency on a Beagle USB 480 analyzer, four tests with means, 95% CIs and n (XBAB measured its own mouse: a maker claim)', u: 'https://x.com/xbabtech/status/2071972219211985258' },
@@ -14,7 +14,8 @@ Object.assign(SRC, {
   clk_millmax: { t: 'Mill-Max 3305 receptacle: takes 0.635 to 0.940 mm round leads, 1,000 insertions min, 10 mΩ max, BeCu C17200 contact (Cu 98.1 / Be 1.9) with 30 µin gold over nickel on the contact only', u: 'https://www.mill-max.com/products/receptacle/3305' },
   clk_eggSwap: { t: 'Endgame Gear store: OP1 Universal Switch Set (two switch PCBs, 14 switches) and seven switch packs for the OP1 8K', u: 'https://www.endgamegear.com/products.json' },
   clk_hwbSwap: { t: 'Hardware Busters, Epomaker Carbonis teardown: a hot-swap optical switch held by an alligator clip, no solder', u: 'https://hwbusters.com/peripherals/epomaker-carbonis-mouse-review/4/' },
-  clk_razerSide: { t: 'Razer Viper V4 Pro page: side-button click latency 0.33 ms against "Brand X" 1.65 ms (maker claim)', u: 'https://www.razer.com/gaming-mice/razer-viper-v4-pro' }
+  clk_razerSide: { t: 'Razer Viper V4 Pro page: side-button click latency 0.33 ms against "Brand X" 1.65 ms (maker claim)', u: 'https://www.razer.com/gaming-mice/razer-viper-v4-pro' },
+  clk_protolabs: { t: 'Protolabs, "Understanding injection molding tolerances" (2023): its mold tools are machined to ±0.003 in. (0.076 mm); resin tolerance ±0.002 in./in. or more (a molder on its own process: maker claim)', u: 'https://www.protolabs.com/resources/blog/understanding-injection-molding-tolerances/' }
 });
 
 /* ---------- local helpers ---------- */
@@ -29,30 +30,23 @@ function clk_spark(p, dt, col, s = 1, seed = 1) {
   const r = rng(seed); for (let i = 0; i < 7; i++) { const a = r() * TAU, d = (5 + dt * 280 * (0.6 + r() * 0.6)) * s; circle(p[0] + Math.cos(a) * d, p[1] + Math.sin(a) * d * 0.7, 1.6 * s, { fill: '#e8f2ff', alpha: k * 0.9 }); }
 }
 function clk_lamp(x, y, label, on, col, a = 1) { circle(x, y, 8, { fill: on ? col : 'rgba(0,0,0,0)', color: on ? col : C.faint, w: 2, alpha: a }); if (on) circle(x, y, 15, { color: col, w: 1.5, alpha: 0.35 * a }); text(label, x + 18, y + 8, { role: 'label', color: on ? col : C.faint, alpha: a }); }
-/** a figure label: Fig. nn, then the name */
-function clk_fig(t, t0, x, y, n, name) { rich([{ s: 'Fig. ' + pad2(n), role: 'label', size: 21, color: C.mute }, { s: name, role: 'small', size: 24, weight: 500, color: C.faint, sentence: true, gap: 16 }], x, y, { alpha: ep(t, t0, t0 + 0.4) }); }
-/** a card's title row: mono label, evidence pills on the right (the Kunai card head) */
-function clk_head(t, t0, x, y, w, label, ev) {
-  const a = ep(t, t0, t0 + 0.4), ly = y + 46, ks = (ev || []).map(k => typeof k === 'string' ? { ev: k } : k);
-  let xr = x + w - 24; for (let i = ks.length - 1; i >= 0; i--) { xr -= pillW(ks[i].ev, { text: ks[i].text }); pill(xr, ly + 2, ks[i].ev, a, { text: ks[i].text }); xr -= 10; }
-  text(label, x + 26, ly, { role: 'label', color: C.ink, t, t0: t0 + 0.05, cps: 80, alpha: a, maxW: xr - x - 40 });
-  return ly + 30;
+/** a tile: the deck's card with its head (label, evidence tags); returns the y under the head */
+function clk_tile(t, t0, x, y, w, h, label, ev, o = {}) {
+  demoWindow(x, y, w, h, ep(t, t0, t0 + 0.55), { grid: o.grid, hero: o.hero });
+  return label ? cardHead(t, t0 + 0.2, x, y, w, label, ev || [], o) : y + 24;
+}
+/** a stack of boxes down a column: items = [[fn(y) → { h }], ...], 40 px apart. returns the y under the last */
+function clk_stack(y, fns, gap = BOX.gap) { for (const f of fns) { const r = f(y); y += (r && r.h ? r.h : 0) + gap; } return y - gap; }
+/** a live readout: a mono label over a big display number and its unit */
+function clk_big(t, x, y, label, num, unit, o = {}) {
+  const a = o.alpha == null ? 1 : o.alpha; if (a <= 0.003) return 0;
+  if (label) text(label, x, y - (o.size || 72) - 18, { role: 'label', size: 21, color: o.lcolor || C.mute, alpha: a, align: o.align });
+  const r = rich([{ s: num, role: 'd1', size: o.size || 72, color: o.color || C.ink, tnum: true }, unit ? { s: unit, font: 'mono', size: Math.max(24, Math.round((o.size || 72) * 0.34)), weight: 600, color: o.ucolor || C.mute, gap: 10 } : null], x, y, { alpha: a, align: o.align });
+  return r.w;
 }
 
-/** a note under a drawing: a dot on the point, a leader that drops and runs to the note, the note in sentence case */
-function clk_note(t, t0, p, x, y, label, o = {}) {
-  const k = ep(t, t0, t0 + 0.5, E.snap); if (k <= 0 || !p) return;
-  const col = o.color || C.ink, ly = y - 38;
-  circle(p[0], p[1], 5 * k, { fill: col }); circle(p[0], p[1], 11 * k, { color: col, w: 1.5, alpha: 0.45 });
-  poly([[p[0], p[1]], [p[0], ly], [x, ly]], { color: col, w: 1.5, p: k, alpha: 0.85 });
-  const r = text(label, x, y, { role: 'small', size: 25, weight: 600, color: o.tcolor || col, t, t0: t0 + 0.3, cps: 80, maxW: o.maxW || 420, lh: 1.28 });
-  if (o.sub) text(o.sub, x, y + r.h + 2, { role: 'small', size: 25, color: C.mute, t, t0: t0 + 0.6, cps: 100, maxW: o.maxW || 420, lh: 1.3 });
-}
-
-/* 3D. Scene names and state keys are the stable API. The two asset bugs that held this chapter in placeholder boxes are
-   fixed in the bundle (2026-11-04): shell clickL/clickR gave NaN (hinge meta read per side, so the scene went blank) and the
-   section caps of gt01 cutaway / claw section failed to compile (local clipping switched on too late). In 2D mode every
-   shot here is the flat twin (08-v2d.js); dev2d brings back the labelled boxes for layout work. */
+/* 3D. Scene names and state keys are the stable API. In 2D mode every shot here is the flat twin (08-v2d.js); dev2d brings
+   back labelled boxes for layout work. */
 const CLK_3D = { click: true, cut: true, dev2d: false };
 /** register a slide; in dev2d mode its 3D scenes are not even loaded */
 const clk_S = o => S(CLK_3D.dev2d ? Object.assign(o, { three: undefined }) : o);
@@ -66,7 +60,7 @@ function clk_v3(key, t, x, y, w, h, st, o = {}) {
 
 /* ---------- step further: what ships today, and the step Theseus takes past it ----------
    rows: [{ n: '#3', who: 'G-Wolves', ev: 'claim', evText: 'Community', now: '...', step: '...' }]. Each row types the shipping
-   version, an arrow runs across, then the Theseus step wipes in on a yellow edge. clk_stepsH gives the strip's height. */
+   version, an arrow runs across, then the Theseus step wipes in on an edge in the Theseus colour. clk_stepsH gives the strip's height. */
 const CLK_ST = { hh: 46, lh: 33, pad: 22 };
 function clk_stepLines(rows, w) {
   const lw = Math.round(w * 0.45), rwid = w - lw - 96 - 46;
@@ -81,7 +75,6 @@ function clk_steps(t, t0, x, y, w, rows, o = {}) {
   if (a0 <= 0.003) return y + h;
   G.save(); G.translate(0, (1 - E.out3(a0)) * 14);
   demoWindow(x, y, w, h, a0, { plain: true });
-  /* header: shipping today (with the kinds of evidence behind it), Theseus one step further (a proposal) */
   text('Shipping today', x + 24, y + 32, { role: 'label', size: 21, color: C.mute, alpha: a0 });
   const kinds = []; rows.forEach(r => { if (!kinds.some(k => k.ev === r.ev && k.txt === r.evText)) kinds.push({ ev: r.ev, txt: r.evText }); });
   let px = x + lw - 6;
@@ -111,6 +104,9 @@ function clk_steps(t, t0, x, y, w, rows, o = {}) {
   return y + h;
 }
 
+/* the content area every slide here shares: the golden split of the stage width, and the bottom of the content (no band) */
+const CLK_G = golden(LM, RM - LM, 48), CLK_BOT = 960;
+
 /* ============================== 00. chapter card ============================== */
 clk_S({
   id: 'clicks', ch: 'click', card: true, theme: 'night', title: 'Clicks', settle: 6, three: ['gt01'],
@@ -118,8 +114,8 @@ clk_S({
   draw: t => {
     chapterCard(t, {
       name: 'Clicks', gloss: 'The path a press takes from your finger to the switch, and the microseconds after it.',
-      list: [['#2', 'Switches turned to the trigger\'s arc'], ['#17 #18 #46–48', 'Triggers cut straight, flat at the front'], ['#3 #28', 'Two anchors per trigger, on POM'], ['#4 #49 #50 #59', 'Tensioners that bend where I choose'],
-        ['#14', 'Switches that swap without solder'], ['#78 #79', 'Mechanical, counted at first contact'], ['Mag', 'A magnetic sensor under each button'], ['#80 #83 #29', 'Side buttons on rails']]
+      list: [['#2 #78', 'Direct Drive Actuation, on a mechanical switch'], ['#17 #18', 'Straight rear cutouts'], ['#49 #50 #59', 'A bridge tensioner'], ['#3 #28', 'Dual rail main clicks, on POM pads'],
+        ['#46–48', 'Flat front cutouts, flush walls'], ['#14', 'Switches that swap without solder'], ['#79 Mag', 'Counted at first contact, sensed under the button'], ['#80 #64', 'Dual rail side buttons']]
     });
     /* the part in the iris: the GT01, pressing */
     const pr = clk_curve(cyc(t, 2.4, 2.6)), a = ep(t, 1.0, 1.8);
@@ -129,58 +125,80 @@ clk_S({
   }
 });
 
-/* ============================== 01. rotate the switch to the trigger's arc (#2) ============================== */
-const CLK_ARC_STEP = [{ n: '#2', who: 'Endgame Gear', ev: 'claim', evText: 'Community', now: 'Angles its switches; voted best click feel (my doc, award unverified). No angle published.', step: 'The wedge is in the switch, so the board stays one flat piece. The angle follows the measured arc, and I publish it.' }];
+/* ============================== 01. Direct Drive Actuation (#2): push the switch along its own axis ============================== */
 clk_S({
-  id: 'arc', ch: 'click', theme: 'paper', title: 'Push the switch along its own axis', settle: 10, ideas: [2],
-  src: ['omronD2fPre', 'omronD2f', 'clk_gt01', 'clk_brock'], three: ['pcb'],
+  id: 'arc', ch: 'click', theme: 'paper', title: 'Direct Drive Actuation', settle: 10, ideas: [2],
+  src: ['omronD2fPre', 'omronD2f', 'clk_brock'],
   sfxLoop: [{ t0: 2.6, per: 3, cues: [[0.0, 'click'], [0.09, 'release']] }],
   draw: t => {
-    header(t, 'Push the switch along its own axis');
-    captions(t, [[0.6, 'The trigger turns about the bend in its tensioner, so at the switch it moves on an arc, not straight down.'], [3.6, 'A switch standing straight up takes only the part of that motion along its axis. The rest pushes its plunger sideways.'], [6.6, 'Turn the switch to the arc and the whole press drives the plunger. I call it Direct Drive Actuation.']]);
-    const A = acc(), sh = clk_stepsH(CLK_ARC_STEP, RM - LM), sy = 840 - sh, wx = LM, wy = LAY.top, ww = 900, wh = sy - 18 - wy;
-    demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    text('Example: plunger 31 mm from the bend', wx + 28, wy + 44, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.8, 1.2) });
-    const tilt = ep(t, 5.0, 6.4, E.io3), pr = clk_curve(cyc(t, 2.6, 3)) * 0.75;
-    const o = drawClick(wx + 196, wy + 118, 9.4, { press: pr, tilt, ghost: ep(t, 5.0, 5.6) * (tilt > 0.02 ? 1 : 0), pivot: ep(t, 1.0, 1.4), arc: ep(t, 1.6, 2.2), accent: A, alpha: Math.max(0.004, ep(t, 0.4, 1.0)) });
-    callout(t, 1.2, o.rc, 'The trigger turns about this bend', { to: [wx + 196, wy + 222], side: 'r', color: C.ink2, tcolor: C.ink2, maxW: 200, prose: true });
+    header(t, 'Direct Drive Actuation');
+    captions(t, [[0.6, 'The trigger turns about the bend in its tensioner, so at the switch it moves on an arc.'], [3.6, 'An upright switch takes only the part of that arc along its axis. The rest pushes its plunger sideways.'], [6.6, 'Turn the switch to the arc and the whole press drives the plunger. That is Direct Drive Actuation.']]);
+    const A = acc(), [wx, ww] = CLK_G.a, wy = LAY.top, wh = CLK_BOT - wy;
+    clk_tile(t, 0.3, wx, wy, ww, wh, 'One trigger, cut through · plunger 31 mm from the bend', ['derived']);
+    const tilt = ep(t, 5.0, 6.4, E.io3), c = cyc(t, 2.6, 3), pr = clk_curve(c) * 0.75, s = 13.5, ox = wx + 110 + 16 * s, oy = wy + 340;
+    const o = drawClick(ox, oy, s, { press: pr, tilt, ghost: ep(t, 5.0, 5.6) * (tilt > 0.02 ? 1 : 0), pivot: ep(t, 1.0, 1.4), arc: ep(t, 1.6, 2.2), accent: A, alpha: Math.max(0.004, ep(t, 0.4, 1.0)) });
+    callout(t, 1.2, o.rc, 'The trigger turns about this bend', { to: [wx + 70, wy + wh - 250], side: 'r', elbow: o.rc[0], color: C.ink2, tcolor: C.ink2, maxW: 260, prose: true });
+    /* the pointer presses the trigger's front */
+    if (o.trigTop) {
+      const tp = o.trigTop(36), ka = ep(t, 1.7, 2.4, E.cam), st = [tp[0] + 170, tp[1] - 150];
+      cursorPtr(lerp(st[0], tp[0], ka), lerp(st[1], tp[1], ka), { a: ep(t, 1.5, 1.9), press: c >= 0 && c < 0.1 ? c / 0.1 : 0 });
+    }
     /* the motion at the plunger, split along the switch axis and across it, in a magnifier */
     const g = o.geo || {}, mis = g.mis || 0, ax = o.axisDir, mv = o.motion;
-    const bx = wx + ww - 118, by = wy + 150, br = 86, kb = ep(t, 2.4, 2.9);
+    const bx = wx + ww - 170, by = wy + 210, br = 104, kb = ep(t, 2.4, 2.9);
     if (kb > 0 && o.footW) {
       line(o.footW[0], o.footW[1], bx - br * 0.72, by + br * 0.7, { color: C.faint, w: 1.2, dash: [4, 4], alpha: kb });
       circle(bx, by, br, { fill: C.panel, color: C.ink, w: 1.5, alpha: kb });
-      const L = 136, P0 = [bx - mv[0] * L * 0.5, by - mv[1] * L * 0.5], along = mv[0] * ax[0] + mv[1] * ax[1];
+      const L = 170, P0 = [bx - mv[0] * L * 0.5, by - mv[1] * L * 0.5], along = mv[0] * ax[0] + mv[1] * ax[1];
       const P1 = [P0[0] + mv[0] * L, P0[1] + mv[1] * L], Pa = [P0[0] + ax[0] * L * along, P0[1] + ax[1] * L * along];
       G.save(); G.beginPath(); G.arc(bx, by, br - 2, 0, TAU); G.clip();
-      line(P0[0] - ax[0] * 80, P0[1] - ax[1] * 80, P0[0] + ax[0] * 200, P0[1] + ax[1] * 200, { color: A, w: 1.5, dash: [5, 5], alpha: kb });
-      arrow(P0[0], P0[1], P1[0], P1[1], { color: C.ink, w: 3.5, hs: 14, alpha: kb });
-      arrow(P0[0], P0[1], Pa[0], Pa[1], { color: A, w: 4, hs: 14, alpha: kb });
-      if (Math.hypot(P1[0] - Pa[0], P1[1] - Pa[1]) > 4) arrow(Pa[0], Pa[1], P1[0], P1[1], { color: C.red, w: 3.5, hs: 11, alpha: kb });
+      line(P0[0] - ax[0] * 90, P0[1] - ax[1] * 90, P0[0] + ax[0] * 240, P0[1] + ax[1] * 240, { color: A, w: 1.5, dash: [5, 5], alpha: kb });
+      arrow(P0[0], P0[1], P1[0], P1[1], { color: C.ink, w: 3.5, hs: 15, alpha: kb });
+      arrow(P0[0], P0[1], Pa[0], Pa[1], { color: C.hero, w: 4, hs: 15, alpha: kb });
+      if (Math.hypot(P1[0] - Pa[0], P1[1] - Pa[1]) > 4) arrow(Pa[0], Pa[1], P1[0], P1[1], { color: C.bad, w: 3.5, hs: 12, alpha: kb });
       G.restore();
-      text('At the plunger', bx, by - br - 14, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: kb });
+      text('At the plunger', bx, by - br - 16, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: kb });
     }
     /* the numbers, live as the switch turns */
-    const deg = mis * 180 / Math.PI, k3 = ep(t, 3.0, 3.4);
-    [['Off-axis angle', deg.toFixed(1) + '°', C.ink], ['Along the axis', (Math.cos(mis) * 100).toFixed(1) + '%', A], ['Sideways, sin θ', (Math.sin(mis) * 100).toFixed(1) + '%', C.red]].forEach(([l, v, c], i) => {
-      const x = wx + 30 + i * 240; text(l, x, wy + wh - 70, { role: 'label', size: 21, color: C.mute, alpha: k3 }); text(v, x, wy + wh - 22, { font: 'disp', size: 48, weight: 800, track: -0.01, color: c, alpha: k3, tnum: true });
+    const deg = mis * 180 / Math.PI, k3 = ep(t, 3.0, 3.5);
+    [['Off-axis angle', deg.toFixed(1) + '°', C.ink], ['Along the axis', (Math.cos(mis) * 100).toFixed(1) + '%', C.hero], ['Sideways, sin θ', (Math.sin(mis) * 100).toFixed(1) + '%', C.bad]].forEach(([l, v, col], i) => {
+      const x = wx + 40 + i * 320, kk = ep(t, 3.0 + i * 0.15, 3.5 + i * 0.15);
+      G.save(); G.translate(0, (1 - E.out3(kk)) * 16); clk_big(t, x, wy + wh - 46, l, v, null, { size: 60, color: col, alpha: kk }); G.restore();
     });
-    pill(wx + ww - 24 - pillW('derived'), wy + wh - 68, 'derived', k3);
-    /* the Theseus way: the wedge is part of the switch, the board stays one flat piece */
-    const cx0 = 1004, cw = RM - cx0;
-    demoWindow(cx0, wy, cw, wh, ep(t, 0.5, 0.9));
-    clk_head(t, 0.9, cx0, wy, cw, 'The wedge is in the switch', ['claim', 'proposal']);
-    clk_v3('pcb', t, cx0 + 10, wy + 64, cw - 20, wh - 136, { pressR: clk_curve(cyc(t, 2.6, 3)), view: 'left', yaw: 0.5, pitch: -0.12, zoom: in2D(5.2, 4.2), target: in2D([-16, 9.5, 37.5], [-16, 9.5, 36.7]), hide2d: /\/WHEEL\//, hi2d: { re: /\/SW2\//, color: acc() } }, { alpha: ep(t, 1.2, 1.8) });
-    const kc = ep(t, 2.2, 2.6);
-    text('GT01 on its own 20° wedge; the board stays flat.', cx0 + 26, wy + wh - 52, { role: 'small', size: 25, weight: 600, color: C.ink, alpha: kc, maxW: cw - 52 });
-    text('Representative model: Gateron has published no datasheet', cx0 + 26, wy + wh - 18, { role: 'label', size: 19, color: C.faint, alpha: kc });
-    clk_steps(t, 7.0, LM, sy, RM - LM, CLK_ARC_STEP);
-    gloss(t, 3.0, 'Off-axis load', 'The part of a press that pushes the plunger sideways instead of down. It scrapes the plunger in its guide and adds nothing to the click.');
-    featureCard(t, 3.4, 'Direct Drive Actuation', ['derived', 'proposal'], 'The switch is turned to the trigger\'s arc at its plunger. Omron rates no off-axis load: it asks for a flat mount and a straight stroke.');
+    /* the vocabulary and the source, right */
+    const [cx, cw] = CLK_G.b;
+    clk_stack(wy, [
+      y => glossBox(t, 3.2, cx, y, cw, 'Off-axis load', 'The part of a press that pushes the plunger sideways instead of down. It scrapes the plunger in its guide and adds nothing to the click.'),
+      y => sourceBox(t, 4.4, cx, y, cw, 'Omron, D2F datasheet', 'Mount the switch on a flat surface and press it straight. Omron gives no rating at all for a press off its axis.', { kind: 'datasheet', label: 'Datasheet', value: 'Omron D2F' }),
+      y => noteBox(t, 7.0, cx, y, cw, { kind: 'claim', label: 'Shipping today', value: 'Endgame Gear', head: 'Angled switches (#2)', body: 'Voted best click feel in my notes; the award is unverified, and no angle is published.' })
+    ]);
   }
 });
 
-/* ============================== 02. the switch itself: mechanical, made to be pushed straight (#78) ============================== */
+/* ============================== 02. the wedge is in the switch: one flat board ============================== */
+clk_S({
+  id: 'clk_wedge', ch: 'click', theme: 'night', title: 'A switch wedge, one flat board', settle: 8, ideas: [2],
+  src: ['clk_gt01', 'clk_brock'], three: ['pcb'],
+  sfxLoop: [{ t0: 2.0, per: 3, cues: [[0.0, 'click'], [0.09, 'release']] }],
+  draw: t => {
+    header(t, 'A switch wedge, one flat board');
+    captions(t, [[0.6, 'I put the angle in the switch itself: the GT01 sits on its own 20° wedge, turned to the trigger\'s arc.'], [4.0, 'So the board stays one flat piece, and the angle can follow the measured arc. I\'ll publish both.']]);
+    const g = golden(LM, RM - LM, 48, true), [lx, lw] = g.b, [vx, vw] = g.a, wy = LAY.top, wh = CLK_BOT - wy;
+    /* the shot, big, on the right: the right main switch, pressing, on its wedge */
+    clk_tile(t, 0.3, vx, wy, vw, wh, 'Theseus, right main switch, side on', ['claim', 'proposal']);
+    const pr = clk_curve(cyc(t, 2.0, 3)), push = ep(t, 0.6, 3.2, E.cam);
+    clk_v3('pcb', t, vx + 10, wy + 70, vw - 20, wh - 140, { pressR: pr, view: 'left', yaw: 0.5 + 0.06 * (1 - push), pitch: -0.12, zoom: in2D(lerp(4.4, 5.2, push), lerp(3.6, 4.2, push)), target: in2D([-16, 9.5, 37.5], [-16, 9.5, 36.7]), hide2d: /\/WHEEL\//, hi2d: { re: /\/SW2\//, color: C.hero } }, { alpha: ep(t, 0.9, 1.5) });
+    text('Representative model: Gateron has published no datasheet', vx + 28, wy + wh - 26, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 1.6, 2.0) });
+    /* the left column: the step past what ships, and the one board */
+    clk_stack(wy, [
+      y => noteBox(t, 1.4, lx, y, lw, { kind: 'proposal', label: 'Theseus', value: 'One step further', head: 'The wedge is in the switch', body: 'The board stays one flat piece. The angle follows the measured arc, and I publish it.' }),
+      y => { statCard(t, 2.6, lx, y, lw, 236, { label: 'One board', ev: { ev: 'estimate', by: 'Brock' }, pre: 'About', value: String(THESEUS.pcb), unit: 'g', body: 'No second board for the switch: the wedge does the turning.' }); return { h: 236 }; },
+      y => glossBox(t, 3.8, lx, y, lw, 'Wedge', 'A sloped seat under the switch, so it stands at the angle of the arc while its legs stay square to the board.')
+    ]);
+  }
+});
+
+/* ============================== 03. a mechanical switch, pushed straight (#78) ============================== */
 /** rated life per switch, from mice.json (maker figures via EloShapes): computed on first use, since RDATA helpers load later */
 let CLK_LIFE = null;
 function clk_life() {
@@ -192,87 +210,98 @@ function clk_life() {
   return CLK_LIFE;
 }
 clk_S({
-  id: 'clk_switch', ch: 'click', theme: 'night', title: 'A mechanical switch, pushed straight', settle: 10, ideas: [78],
-  src: ['clk_gt01', 'omronD2f', 'clk_d2fp', 'omronD2fp', 'paw3395', 'logiHybrid', 'clk_elo', 'clk_brock'], three: ['gt01'],
+  id: 'clk_switch', ch: 'click', theme: 'paper', title: 'A mechanical switch: Gateron GT01', settle: 9, ideas: [78],
+  src: ['clk_gt01', 'clk_d2fp', 'omronD2fp', 'paw3395', 'logiHybrid'], three: ['gt01'],
   sfxLoop: [{ t0: 1.6, per: 2.4, cues: [[0.03, 'click'], [0.12, 'release']] }],
   draw: t => {
-    header(t, 'A mechanical switch, pushed straight');
-    captions(t, [[0.6, 'Gateron\'s GT01 is built to be pressed straight down its own axis, with no preload. No datasheet yet, so this model is representative.'], [4.2, 'It\'s mechanical: it draws no current until it\'s pressed. An optical switch keeps pulsing an LED the whole time the mouse is awake.'], [7.2, 'Against the switches in today\'s flagships: lighter than both Omrons, and rated for 100 million clicks by its maker.']]);
-    const A = acc(), wy = LAY.top, ax0 = LM, aw = 720, ah = 318;
-    /* A: the switch, pressing */
-    demoWindow(ax0, wy, aw, ah, ep(t, 0.3, 0.7));
-    clk_head(t, 0.6, ax0, wy, aw, 'Gateron GT01, pressed', ['claim']);
+    header(t, 'A mechanical switch: Gateron GT01');
+    captions(t, [[0.6, 'The GT01 is made to be pressed straight down its own axis, with no preload. It has no datasheet yet.'], [4.2, 'It is mechanical, so it draws no current until it is pressed. An optical switch keeps pulsing an LED.']]);
+    const A = acc(), [wx, ww] = CLK_G.a, wy = LAY.top, wh = CLK_BOT - wy;
+    /* the switch, pressing, cut open, with its travel */
+    clk_tile(t, 0.3, wx, wy, ww, wh, 'Gateron GT01, cut open, pressed', ['claim']);
     const c = cyc(t, 1.6, 2.4), pr = clk_curve(c), down = c >= 0 && c < 0.09, no = down ? pr >= 0.63 : pr > 0.5;
-    clk_v3('gt01', t, ax0 + 8, wy + 60, 470, ah - 96, { press: pr, cutaway: 1, view: 'left', yaw: 0.32, pitch: -0.06, zoom: 1.75 }, { alpha: ep(t, 0.8, 1.4) });
-    /* travel gauge: 0 to 0.35 mm, the snap to NO at 0.22 mm (k 0.63) */
-    const gx = ax0 + 548, gy0 = wy + 96, gy1 = wy + ah - 104, kg = ep(t, 1.2, 1.6), GY = mm => gy0 + (gy1 - gy0) * mm / 0.35;
-    rr(gx - 7, gy0, 14, gy1 - gy0, 7, C.track, null, 0, kg);
-    rr(gx - 7, gy0, 14, Math.max(14, (GY(0.35 * pr) - gy0)), 7, no ? A : C.comp, null, 0, kg);
-    for (const [mm, lab] of [[0, '0'], [0.22, '0.22 snap'], [0.35, '0.35 mm']]) { line(gx - 14, GY(mm), gx + 14, GY(mm), { color: mm === 0.22 ? A : C.faint, w: 2, alpha: kg }); text(lab, gx + 24, GY(mm) + 7, { role: 'label', size: 19, color: mm === 0.22 ? A : C.mute, alpha: kg }); }
-    text('Travel', gx - 14, gy0 - 16, { role: 'label', size: 19, color: C.faint, alpha: kg });
-    clk_lamp(gx - 4, gy1 + 44, 'NC', !no, A, kg); clk_lamp(gx + 74, gy1 + 44, 'NO', no, A, kg);
-    text('Representative model: Gateron has published no datasheet', ax0 + 26, wy + ah - 18, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 1.6, 2.0) });
-    /* D: idle current per switch (#78) */
-    const dy0 = wy + ah + 16, dh = 840 - dy0;
-    demoWindow(ax0, dy0, aw, dh, ep(t, 0.5, 0.9));
-    clk_head(t, 3.9, ax0, dy0, aw, 'Idle current', ['datasheet', 'derived']);
-    const rowsD = [['GT01, mechanical', 0, '0 mA', true], ['Optical, Omron\'s test pulse', 0.15, '0.15 mA']];
-    const bx0 = ax0 + 380, bw0 = aw - 380 - 140, BX = v => bx0 + bw0 * v / 0.2;
-    rowsD.forEach(([l, v, s2, hero], i) => {
-      const yy = dy0 + 96 + i * 44, k = ep(t, 4.2 + i * 0.25, 4.9 + i * 0.25, E.snap), a = ep(t, 4.1 + i * 0.25, 4.4 + i * 0.25);
-      text(l, ax0 + 26, yy + 8, { role: 'small', size: 25, weight: hero ? 700 : 500, color: C.ink, alpha: a });
-      rr(bx0, yy - 7, bw0, 14, 7, C.track, null, 0, a);
-      if (v > 0) rr(bx0, yy - 7, Math.max(14, (BX(v) - bx0) * k), 14, 7, C.comp, null, 0, a); else heroMark(bx0 + 7, yy, 10, a);
-      text(s2, ax0 + aw - 26, yy + 8, { role: 'num', size: 24, weight: 700, color: hero ? C.heroText : C.ink, align: 'right', alpha: a });
-    });
-    text('5 mA for 30 µs in every 1 ms = 0.15 mA. Two optical mains: 0.30 mA, 18% of a PAW3395\'s 1.7 mA.', ax0 + 26, dy0 + 180, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 5.0, 5.4), maxW: aw - 52, lh: 1.32 });
-    /* B: operating force */
-    const bxc = ax0 + aw + 24, bwc = RM - bxc, bh = 262;
-    demoWindow(bxc, wy, bwc, bh, ep(t, 0.6, 1.0));
-    clk_head(t, 6.6, bxc, wy, bwc, 'Operating force, gf', ['claim', 'datasheet', { ev: 'claim', text: 'Community' }]);
+    clk_v3('gt01', t, wx + 10, wy + 70, ww - 250, wh - 140, { press: pr, cutaway: 1, view: 'left', yaw: 0.32, pitch: -0.06, zoom: 1.75 }, { alpha: ep(t, 0.8, 1.4) });
+    const gx = wx + ww - 170, gy0 = wy + 150, gy1 = wy + wh - 190, kg = ep(t, 1.2, 1.6), GY = mm => gy0 + (gy1 - gy0) * mm / 0.35;
+    rr(gx - 8, gy0, 16, gy1 - gy0, 8, C.track, null, 0, kg);
+    rr(gx - 8, gy0, 16, Math.max(16, (GY(0.35 * pr) - gy0)), 8, no ? C.hero : C.comp, null, 0, kg);
+    for (const [mm, lab] of [[0, '0'], [0.22, '0.22 snap'], [0.35, '0.35 mm']]) { line(gx - 16, GY(mm), gx + 16, GY(mm), { color: mm === 0.22 ? A : C.faint, w: 2, alpha: kg }); text(lab, gx + 28, GY(mm) + 7, { role: 'label', size: 19, color: mm === 0.22 ? A : C.mute, alpha: kg }); }
+    text('Travel', gx - 16, gy0 - 20, { role: 'label', size: 19, color: C.faint, alpha: kg });
+    clk_lamp(gx - 6, gy1 + 50, 'NC', !no, A, kg); clk_lamp(gx - 6, gy1 + 92, 'NO', no, A, kg);
+    text('Representative model: Gateron has published no datasheet', wx + 28, wy + wh - 26, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 1.6, 2.0) });
+    /* right: idle current, the word, the source */
+    const [cx, cw] = CLK_G.b;
+    clk_stack(wy, [
+      y => {
+        const h = 268, hy = clk_tile(t, 0.5, cx, y, cw, h, 'Idle current per main switch', ['datasheet', 'derived']);
+        const rows = [['GT01, mechanical', 0, '0 mA', true], ['Optical, Omron\'s test pulse', 0.15, '0.15 mA']], bx0 = cx + 26, bw0 = cw - 52 - 120, BX = v => bx0 + bw0 * v / 0.2;
+        rows.forEach(([l, v, s2, hero], i) => {
+          const yy = hy + 40 + i * 74, k = ep(t, 4.4 + i * 0.25, 5.1 + i * 0.25, E.snap), a = ep(t, 4.3 + i * 0.25, 4.6 + i * 0.25);
+          text(l, bx0, yy, { role: 'small', size: 25, weight: hero ? 700 : 500, color: C.ink, alpha: a });
+          rr(bx0, yy + 16, bw0, 12, 6, C.track, null, 0, a);
+          if (v > 0) rr(bx0, yy + 16, Math.max(12, (BX(v) - bx0) * k), 12, 6, C.comp, null, 0, a); else heroMark(bx0 + 7, yy + 22, 10, a);
+          text(s2, cx + cw - 26, yy + 28, { role: 'num', size: 24, weight: 700, color: hero ? C.heroText : C.ink, align: 'right', alpha: a });
+        });
+        text('5 mA for 30 µs in every 1 ms = 0.15 mA', bx0, y + h - 26, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 5.2, 5.6) });
+        return { h };
+      },
+      y => glossBox(t, 4.8, cx, y, cw, 'Optical switch', 'An LED shines across a gap the plunger blocks. No contact to wear, but the LED needs current whenever the mouse is listening.'),
+      y => sourceBox(t, 5.6, cx, y, cw, 'Omron D2FP', 'Tested with 5 mA through the LED in 30 µs pulses every 1 ms. Two optical mains: 0.30 mA, 18% of a PAW3395\'s 1.7 mA.', { kind: 'datasheet', label: 'Datasheet', value: 'Omron D2FP' })
+    ]);
+  }
+});
+
+/* ============================== 04. operating force and rated life ============================== */
+clk_S({
+  id: 'clk_switch2', ch: 'click', theme: 'night', title: 'Operating force and rated life', settle: 9, ideas: [78],
+  src: ['clk_gt01', 'omronD2f', 'clk_d2fp', 'clk_elo', 'clk_brock'],
+  draw: t => {
+    header(t, 'Operating force and rated life');
+    captions(t, [[0.6, 'Against the switches in today\'s flagships, the GT01 is lighter than both Omrons.'], [3.6, 'And its maker rates it for 100 million clicks. Every life on this slide is the maker\'s own figure.']]);
+    const wy = LAY.top, gap = 40, w = (RM - LM - gap) / 2, h = 420, x2 = LM + w + gap;
+    /* operating force: ranges where the maker gives a tolerance */
+    const hy = clk_tile(t, 0.3, LM, wy, w, h, 'Operating force, gf', ['claim', 'datasheet']);
     const F = [
       { name: 'Gateron GT01', qual: 'Theseus', lo: 50, hi: 60, mid: 55, txt: '55 ± 5 gf', ev: 'claim', hero: true },
       { name: 'Omron D2FP, optical', qual: 'Sora V2', lo: 44.9, hi: 75.5, mid: 60.2, txt: '0.59 ± 0.15 N', ev: 'datasheet' },
-      { name: 'Logitech GPX2', qual: 'My notes', mid: 70, txt: '≈ 70 gf', ev: 'claim', ring: true },
-      { name: 'Omron D2F-01F', qual: 'Mechanical', hi: 75.5, txt: '0.74 N max', ev: 'datasheet', max: true }
+      { name: 'Logitech GPX2', qual: 'my notes', mid: 70, txt: '≈ 70 gf', ev: 'claim', ring: true },
+      { name: 'Omron D2F-01F', qual: 'mechanical', hi: 75.5, txt: '0.74 N max', ev: 'datasheet', max: true }
     ];
-    const fx0 = bxc + 470, fw = bwc - 470 - 236, FX = v => fx0 + fw * v / 80, fy0 = wy + 98;
-    for (const v of [0, 20, 40, 60, 80]) { line(FX(v), fy0 - 22, FX(v), fy0 + 4 * 38 - 18, { color: C.hair, w: 1.2, alpha: ep(t, 6.7, 7.1) }); text(String(v), FX(v), fy0 + 4 * 38 + 8, { role: 'tick', color: C.mute, align: 'center', alpha: ep(t, 6.7, 7.1) }); }
+    const fx0 = LM + 380, fw = w - 380 - 200, FX = v => fx0 + fw * v / 80, fy0 = hy + 64, rh = 72;
+    for (const v of [0, 20, 40, 60, 80]) { const a = ep(t, 0.8, 1.2); line(FX(v), fy0 - 30, FX(v), fy0 + 4 * rh - 40, { color: C.hair, w: 1.2, alpha: a }); text(String(v), FX(v), fy0 + 4 * rh - 6, { role: 'tick', color: C.mute, align: 'center', alpha: a }); }
     F.forEach((r, i) => {
-      const yy = fy0 + i * 38, k = ep(t, 6.9 + i * 0.2, 7.6 + i * 0.2, E.snap), a = ep(t, 6.8 + i * 0.2, 7.1 + i * 0.2);
-      evDot(bxc + 34, yy - 6, r.ev, 6, a);
-      const nm = text(r.name, bxc + 52, yy + 3, { role: 'small', size: 25, weight: r.hero ? 800 : 600, color: C.ink, alpha: a });
-      text(r.qual, bxc + 52 + nm.w + 12, yy + 2, { role: 'label', size: 19, color: r.hero ? C.heroText : C.faint, alpha: a });
+      const yy = fy0 + i * rh, k = ep(t, 1.0 + i * 0.2, 1.7 + i * 0.2, E.snap), a = ep(t, 0.9 + i * 0.2, 1.2 + i * 0.2);
+      evDot(LM + 34, yy - 8, r.ev, 6, a);
+      text(r.name, LM + 52, yy, { role: 'small', size: 25, weight: r.hero ? 800 : 600, color: C.ink, alpha: a });
+      text(r.qual, LM + 52, yy + 28, { role: 'label', size: 19, color: r.hero ? C.heroText : C.faint, alpha: a });
       const col = r.hero ? C.hero : C.comp;
-      if (r.max) { G.save(); G.globalAlpha = a; G.setLineDash([6, 5]); G.strokeStyle = C.comp; G.lineWidth = 2; G.strokeRect(FX(0), yy - 13, (FX(r.hi) - FX(0)) * k, 14); G.restore(); line(FX(r.hi), yy - 19, FX(r.hi), yy + 7, { color: C.ink2, w: 2.5, alpha: a * k }); }
-      else if (r.lo != null) { const xa = FX(lerp(r.mid, r.lo, k)), xb = FX(lerp(r.mid, r.hi, k)); rr(xa, yy - 13, Math.max(4, xb - xa), 14, 7, col, r.hero && TH ? '#111111' : null, 1.5, a); line(FX(r.mid), yy - 19, FX(r.mid), yy + 7, { color: r.hero ? C.ink : C.ink2, w: 2.5, alpha: a }); }
-      else { circle(FX(r.mid), yy - 6, 8 * k, { fill: C.panel, alpha: a }); circle(FX(r.mid), yy - 6, 8 * k, { color: C.comp, w: 3, alpha: a }); }
-      text(r.txt, bxc + bwc - 26, yy + 3, { role: 'num', size: 24, weight: r.hero ? 800 : 600, color: r.hero ? C.heroText : C.ink, align: 'right', alpha: a });
+      if (r.max) { G.save(); G.globalAlpha = a; G.setLineDash([6, 5]); G.strokeStyle = C.comp; G.lineWidth = 2; G.strokeRect(FX(0), yy - 15, (FX(r.hi) - FX(0)) * k, 14); G.restore(); line(FX(r.hi), yy - 21, FX(r.hi), yy + 5, { color: C.ink2, w: 2.5, alpha: a * k }); }
+      else if (r.lo != null) { const xa = FX(lerp(r.mid, r.lo, k)), xb = FX(lerp(r.mid, r.hi, k)); rr(xa, yy - 15, Math.max(4, xb - xa), 14, 7, col, null, 1.5, a); line(FX(r.mid), yy - 21, FX(r.mid), yy + 5, { color: r.hero ? C.ink : C.ink2, w: 2.5, alpha: a }); }
+      else { circle(FX(r.mid), yy - 8, 8 * k, { fill: C.panel, alpha: a }); circle(FX(r.mid), yy - 8, 8 * k, { color: C.comp, w: 3, alpha: a }); }
+      text(r.txt, LM + w - 26, yy, { role: 'num', size: 24, weight: r.hero ? 800 : 600, color: r.hero ? C.heroText : C.ink, align: 'right', alpha: a });
     });
-    /* C: rated life (maker figures) */
-    const cy0 = wy + bh + 16, ch2 = 840 - cy0;
-    demoWindow(bxc, cy0, bwc, ch2, ep(t, 0.7, 1.1));
-    clk_head(t, 7.6, bxc, cy0, bwc, 'Rated life, million clicks', ['claim']);
-    lollipop(t, { x: bxc + 26, y: cy0 + 112, w: bwc - 52, t0: 7.8, rows: clk_life(), xr: [0, 180], ticks: [0, 50, 100, 150], tfmt: v => v + ' M', fmt: v => v + ' M', labelW: 470, rowH: 31, valW: 96 });
-    gloss(t, 4.6, 'Optical switch', 'An LED shines across a gap the plunger blocks. No contact to wear or bounce, but the LED needs current whenever the mouse is listening.');
-    featureCard(t, 5.0, 'Mechanical mains', ['claim', 'proposal'], 'A GT01-class switch on its own wedge (#78). Rated life is the maker\'s figure for every switch on this slide.');
+    /* rated life (maker figures) */
+    const hy2 = clk_tile(t, 0.5, x2, wy, w, h, 'Rated life, million clicks', ['claim']);
+    lollipop(t, { x: x2 + 26, y: hy2 + 80, w: w - 52, t0: 3.6, rows: clk_life(), xr: [0, 180], ticks: [0, 50, 100, 150], tfmt: v => v + ' M', fmt: v => v + ' M', labelW: 400, rowH: 46, valW: 96 });
+    /* where the numbers come from */
+    const by = wy + h + 40;
+    sourceBox(t, 5.0, LM, by, w, 'EloShapes', 'Each mouse\'s main switch and the clicks its maker rates it for. A rating is a maker\'s test of its own part: a claim.', { kind: 'claim', label: 'Maker claim', value: 'EloShapes' });
+    noteBox(t, 5.6, x2, by, w, { kind: 'proposal', label: 'Theseus', value: 'Mechanical mains', head: 'A GT01-class switch on its wedge (#78)', body: 'Mechanical for the power it saves; pushed straight for the feel.' });
   }
 });
-/* ============================== 03. straight rear cutouts (#17), tensioners centred on their switches (#18) ============================== */
-const CLK_CUT_STEP = [{ n: '#17', who: 'Razer Viper V3 Pro', ev: 'claim', evText: 'Community', now: 'Went straight after the V2 Pro\'s angled cutouts drew click complaints (my doc).', step: 'Straight, with each tensioner centred on its switch (#18). I publish the click force at five points across each button.' }];
+
+/* ============================== 05. straight rear cutouts (#17), tensioners centred on their switches (#18) ============================== */
 clk_S({
-  id: 'cutouts', ch: 'click', theme: 'paper', title: 'Cut the rear cutouts straight', settle: 10, ideas: [17, 18],
+  id: 'cutouts', ch: 'click', theme: 'paper', title: 'Straight rear cutouts', settle: 10, ideas: [17, 18],
   src: ['clk_brock'], three: ['shell-sora', 'shell'],
   draw: t => {
-    header(t, 'Cut the rear cutouts straight');
+    header(t, 'Straight rear cutouts');
     captions(t, [[0.6, 'The tensioner bends along the rear cutout, so it takes the cutout\'s shape.'], [3.2, 'Curve the cutout into a smile and each arm bends on a diagonal: part of every press goes sideways.'], [6.2, 'Cut it straight and centre each tensioner on its switch, and the bend sits square to the press.']]);
-    const A = acc(), sh = clk_stepsH(CLK_CUT_STEP, RM - LM), sy = 840 - sh, wx = LM, wy = LAY.top, ww = 900, wh = sy - 18 - wy;
-    demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    clk_head(t, 0.8, wx, wy, ww, 'The tensioners, flat, from above', ['derived']);
-    const sm = 1 - ep(t, 3.4, 5.0, E.io3), k18 = ep(t, 6.2, 7.4, E.io3), s = 12, cx = wx + 330, cy = wy + 76 + 14.6 * s;
+    const A = acc(), [wx, ww] = CLK_G.a, wy = LAY.top, wh = CLK_BOT - wy;
+    clk_tile(t, 0.3, wx, wy, ww, wh, 'The two tensioners, flat, from above', ['derived']);
+    const sm = 1 - ep(t, 3.4, 5.0, E.io3), k18 = ep(t, 6.2, 7.4, E.io3), s = 18, cx = wx + ww / 2, cy = wy + 110 + 16 * s;
     const o = part(cx, cy, s, () => tensionerPlanMM({ smile: sm, accent: A }), { alpha: ep(t, 0.4, 0.9) });
     /* each arm swings square to its bend line: on a curve that is a diagonal */
-    const ka = ep(t, 1.6, 2.2), col = sm > 0.5 ? C.red : A;
+    const ka = ep(t, 1.6, 2.2), col = sm > 0.5 ? C.bad : C.hero;
     if (o.arms) for (const arm of o.arms) for (let i = 0; i < 4; i++) {
       const x = lerp(arm.xl + 3, arm.xr - 3, i / 3), slope = arm.slope(x), y = o.edgeY(x) - 1.6, nl = Math.hypot(slope, 1), nx = slope / nl, ny = -1 / nl;
       const p = o.P(x, y - 1.6), q = o.P(x + nx * 5.6, y - 1.6 + ny * 5.6);
@@ -282,464 +311,263 @@ clk_S({
     if (o.P) {
       const k = ep(t, 5.4, 5.9);
       for (const sgn of [-1, 1]) {
-        const hx = sgn * 10.7, ey = o.edgeY(hx), off = sgn * 5 * (1 - k18), st = o.P(hx, ey - 5.2), pl = o.P(hx + off, ey - 10.6);
-        line(st[0], st[1], pl[0], pl[1], { color: k18 > 0.95 ? A : C.red, w: 2, dash: [6, 5], alpha: k });
-        rr(pl[0] - 15, pl[1] - 15, 30, 30, 5, C.panel, k18 > 0.95 ? A : C.ink2, 2, k); circle(pl[0], pl[1], 5, { fill: k18 > 0.95 ? A : C.ink2, alpha: k });
+        const hx = sgn * 10.7, ey = o.edgeY(hx), off = sgn * 5 * (1 - k18), st = o.P(hx, ey - 5.2), pl = o.P(hx + off, ey - 10.6), on = k18 > 0.95;
+        line(st[0], st[1], pl[0], pl[1], { color: on ? C.hero : C.bad, w: 2, dash: [6, 5], alpha: k });
+        rr(pl[0] - 16, pl[1] - 16, 32, 32, 6, C.panel, on ? C.hero : C.ink2, 2, k); circle(pl[0], pl[1], 5, { fill: on ? C.hero : C.ink2, alpha: k });
       }
-      callout(t, 5.6, o.P(-10.7 - 5 * (1 - k18), o.edgeY(-10.7) - 10.6 - 1.4), 'Switch plunger', { to: [wx + 240, wy + 92], side: 'r', color: C.ink2, tcolor: C.ink2 });
+      callout(t, 5.6, o.P(-10.7 - 5 * (1 - k18), o.edgeY(-10.7) - 10.6 - 1.4), 'Switch plunger', { to: [wx + 110, wy + 120], side: 'r', color: C.ink2, tcolor: C.ink2 });
     }
     /* the readout: how far the bend line leans at the arm's outer end, and what that sends sideways */
-    const ang = Math.atan(0.4554 * sm), kr = ep(t, 2.6, 3.0), rx = wx + 630;
-    [['Bend lean, end', (ang * 180 / Math.PI).toFixed(1) + '°', C.ink], ['Sideways, sin θ', (Math.sin(ang) * 100).toFixed(1) + '%', sm > 0.02 ? C.red : A], ['Switch offset', (5 * (1 - k18)).toFixed(1) + ' mm', k18 > 0.98 ? A : C.ink]].forEach(([l, v, c2], i) => {
-      const yy = wy + 132 + i * 92; text(l, rx, yy, { role: 'label', size: 21, color: C.mute, alpha: kr }); text(v, rx, yy + 50, { font: 'disp', size: 46, weight: 800, track: -0.01, color: c2, tnum: true, alpha: kr });
+    const ang = Math.atan(0.4554 * sm);
+    [['Bend lean, end', (ang * 180 / Math.PI).toFixed(1) + '°', C.ink], ['Sideways, sin θ', (Math.sin(ang) * 100).toFixed(1) + '%', sm > 0.02 ? C.bad : C.hero], ['Switch offset', (5 * (1 - k18)).toFixed(1) + ' mm', k18 > 0.98 ? C.hero : C.ink]].forEach(([l, v, c2], i) => {
+      const kk = ep(t, 2.6 + i * 0.15, 3.1 + i * 0.15);
+      G.save(); G.translate(0, (1 - E.out3(kk)) * 16); clk_big(t, wx + 40 + i * 320, wy + wh - 46, l, v, null, { size: 56, color: c2, alpha: kk }); G.restore();
     });
-    text('Example: a 4.6 mm smile across a 40 mm pair', wx + 26, wy + wh - 22, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 2.8, 3.2) });
-    /* the shapes: the Sora V2's curved rear cutouts against Theseus's straight ones */
-    const bx0 = 1004, bw = RM - bx0, vw = (bw - 36) / 2, vh = wh - 112;
-    demoWindow(bx0, wy, bw, wh, ep(t, 0.5, 0.9));
-    clk_head(t, 1.0, bx0, wy, bw, 'Sora V2 against Theseus', []);
-    const cam = { view: [0, 1, -0.3], zoom: 1.32, target: [0, 18, 24] };
-    /* in 2D the triggers' outlines carry the point, so they are drawn in the colour of each label */
-    clk_v3('shell-sora', t, bx0 + 12, wy + 60, vw, vh, Object.assign({}, cam, { hi2d: { re: /^explode[LR]\/.*trigger[LR]$/, color: C.red, w: 3 } }), { alpha: ep(t, 1.2, 1.8) });
-    clk_v3('shell', t, bx0 + 24 + vw, wy + 60, vw, vh, Object.assign({}, cam, { hi2d: { re: /^explode[LR]\/.*trigger[LR]$/, color: A, w: 3 } }), { alpha: ep(t, 1.6, 2.2) });
-    text('Sora V2: a smile', bx0 + 12 + vw / 2, wy + wh - 26, { role: 'label', size: 21, color: C.red, align: 'center', alpha: ep(t, 2.2, 2.6) });
-    text('Theseus: straight', bx0 + 24 + vw * 1.5, wy + wh - 26, { role: 'label', size: 21, color: A, align: 'center', alpha: ep(t, 2.4, 2.8) });
-    clk_steps(t, 7.6, LM, sy, RM - LM, CLK_CUT_STEP);
-    gloss(t, 2.4, 'Tensioner', 'The spring arm under each button. It sets how hard the button presses and how fast it comes back.');
-    featureCard(t, 4.6, 'Straight rear cutouts', ['derived', 'proposal'], 'The bend sits square to the press (#17), and each tensioner sits on its switch\'s line (#18).');
+    text('Example: a 4.6 mm smile across a 40 mm pair', wx + ww - 28, wy + wh - 46, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 2.8, 3.2) });
+    /* right: the two shells, what ships today, the word */
+    const [bx0, bw] = CLK_G.b;
+    clk_stack(wy, [
+      y => {
+        const h = 270, vw = (bw - 36) / 2, vh = h - 112, cam = { view: [0, 1, -0.3], zoom: 1.32, target: [0, 18, 24] };
+        clk_tile(t, 0.5, bx0, y, bw, h, 'Sora V2 against Theseus', []);
+        /* in 2D the triggers' outlines carry the point, so they are drawn in the colour of each label */
+        clk_v3('shell-sora', t, bx0 + 12, y + 62, vw, vh, Object.assign({}, cam, { hi2d: { re: /^explode[LR]\/.*trigger[LR]$/, color: C.bad, w: 3 } }), { alpha: ep(t, 1.2, 1.8) });
+        clk_v3('shell', t, bx0 + 24 + vw, y + 62, vw, vh, Object.assign({}, cam, { hi2d: { re: /^explode[LR]\/.*trigger[LR]$/, color: C.hero, w: 3 } }), { alpha: ep(t, 1.6, 2.2) });
+        text('Sora V2: a smile', bx0 + 12 + vw / 2, y + h - 22, { role: 'label', size: 21, color: C.bad, align: 'center', alpha: ep(t, 2.2, 2.6) });
+        text('Theseus: straight', bx0 + 24 + vw * 1.5, y + h - 22, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, 2.4, 2.8) });
+        return { h };
+      },
+      y => glossBox(t, 2.4, bx0, y, bw, 'Tensioner', 'The spring arm under each button: it sets how hard the button presses back.'),
+      y => noteBox(t, 7.4, bx0, y, bw, { kind: 'claim', label: 'Shipping today', value: 'Viper V3 Pro', body: 'Razer went straight after the V2 Pro\'s angled cutouts drew complaints (my notes).' })
+    ]);
   }
 });
 
-/* ============================== 04. flat front cutouts (#46), grooves that run out (#47), flush walls (#48) ============================== */
-/** the comfort groove across the button, at a distance z (mm) from its front edge: depth runs from 0.6 mm to nothing at the edge.
-    profiles drawn with the depth exaggerated (o.ex) so a tenth of a millimetre reads */
-const clk_grooveD = z => 0.6 * smooth(clamp(z / 20));
-function clk_grooveMM(o = {}) {
-  const A = o.accent || acc(), ex = o.ex || 5, zs = o.zs || [24, 16, 8, 0], live = o.live, out = { tags: [] };
-  const prof = (z, x) => ex * clk_grooveD(z) * Math.pow(Math.cos(Math.PI * x / 26), 2);
-  zs.forEach((z, i) => {
-    const y0 = i * 7.2, a = o.k == null ? 1 : clamp((o.k - i * 0.22) / 0.3);
-    if (a <= 0) return;
-    xsave(); ga(a * 0.9);
-    const pts = []; for (let x = -13; x <= 13.01; x += 0.25) pts.push([x, y0 + prof(z, x)]);
-    solid(() => { G.beginPath(); pts.forEach((p, j) => j ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); for (let j = pts.length - 1; j >= 0; j--) G.lineTo(pts[j][0], pts[j][1] + 1.2); G.closePath(); }, MT.shell, [-13, y0 - 3, 26, 4.2], { hatch: true });
-    mmLine(pts.map(p => [p[0], p[1] + 0.05]), 'rgba(255,255,255,0.25)', 1);
-    if (z === 0) mmLine([[-13, y0 + prof(0, -13) - 0.05], [13, y0 + prof(0, 13) - 0.05]], A, 2.2, { dash: [6, 4] });
-    xrest();
-    out.tags.push({ z, p: SP(13.6, y0 + prof(z, 13) + 0.4), mid: SP(0, y0 + prof(z, 0)), a });
+/* ============================== 06. the bridge tensioner (#50): a frame model, the flat plane against the bridge ============================== */
+/* The model (07-sim.js), in mm, N and MPa, y up. The screw clamps the plate at x ≤ 0 (one screw per tensioner, #49); the tensioner runs
+   from 0 to S; the trigger, a stiff 2.4 mm beam, runs on to the fingertip at XP, the switch plunger under it at XS. Flat: 0.8 mm all
+   along. Bridge (#50): an arch with a 1.6 mm rise, 0.8 mm at its feet thinning to 0.4 mm at its crown. The press is a point load at the
+   fingertip; the click comes after 0.35 mm at the plunger (the GT01's pre-travel, a maker claim). The switch's own force comes on top.
+   The model is linear, so one solve per case gives every load: the force to the click is pre / (plunger travel per newton). */
+const CLK_TN = { S: 8, n: 32, h0: 0.8, hc: 0.4, rise: 1.6, b: 10, XP: 40, XS: 30, pre: 0.35, ht: 2.4, bt: 20 };
+const CLK_GF = 1000 / 9.80665;
+const clk_tenH = (kind, x, P) => kind === 'bridge' ? P.h0 - (P.h0 - P.hc) * Math.pow(Math.sin(Math.PI * clamp(x / P.S)), 2) : P.h0;
+function clk_tenModel(kind, E0, o = {}) {
+  const P = Object.assign({}, CLK_TN, o), br = kind === 'bridge', nodes = [], els = [], fix = { 0: 'xyr' };
+  for (let i = 0; i <= P.n; i++) { const x = P.S * i / P.n; nodes.push([x, br ? P.rise * Math.sin(Math.PI * x / P.S) : 0]); if (o.clampTo && x <= o.clampTo + 1e-9) fix[i] = 'xyr'; }
+  for (let i = 0; i < P.n; i++) els.push({ i, j: i + 1, w: P.b, h: clk_tenH(kind, P.S * (i + 0.5) / P.n, P), E: E0, rho: 1e-3 });
+  let prev = P.n, iS = -1, iP = -1;
+  for (let x = P.S + 2; x <= P.XP + 1e-9; x += 2) { nodes.push([x, 0]); const k = nodes.length - 1; els.push({ i: prev, j: k, w: P.bt, h: P.ht, E: E0, rho: 1e-3 }); prev = k; if (Math.abs(x - P.XS) < 1e-6) iS = k; if (Math.abs(x - P.XP) < 1e-6) iP = k; }
+  return { nodes, els, fix, loads: { [iP]: [0, -1, 0] }, iS, iP, nStrip: P.n, P, kind };
+}
+/** solve a case once (simSolve caches it) and derive what the slides print: plunger travel per newton (cS), the force to the click
+   (F, gf), the curvature along the tensioner per newton (kap), the shortest stretch that holds half its bend (half), and the peak
+   stress at the click (sig, MPa, at x = at) */
+function clk_ten(kind, mat, o = {}) {
+  const r = simSolve(['clk_ten', kind, mat, o.clampTo || 0, o.S || CLK_TN.S, o.rise || CLK_TN.rise].join(':'), () => clk_tenModel(kind, SIM_MAT[mat].E, o));
+  if (r.clk) return r;
+  const m = r.model, n = m.nStrip, cS = -r.d[m.iS * 3 + 1], kap = [];
+  for (let e = 0; e < n; e++) { const el = m.els[e]; kap.push(Math.abs(r.d[el.j * 3 + 2] - r.d[el.i * 3 + 2]) / r.L[e]); }
+  const tot = kap.reduce((a, k, e) => a + k * r.L[e], 0);
+  let half = { len: Infinity, a: 0, b: 0 };
+  for (let a = 0; a < n; a++) { let s = 0; for (let b = a; b < n; b++) { s += kap[b] * r.L[b]; if (s >= 0.5 * tot - 1e-12) { const len = m.nodes[b + 1][0] - m.nodes[a][0]; if (len < half.len - 1e-9) half = { len, a: m.nodes[a][0], b: m.nodes[b + 1][0] }; break; } } }
+  const F = m.P.pre / cS, sig = r.sig.slice(0, n), smax = Math.max(...sig);
+  r.clk = { cS, F, gf: F * CLK_GF, kap, kmax: Math.max(...kap), half, sig: smax * F, at: (m.nodes[sig.indexOf(smax)][0] + m.nodes[sig.indexOf(smax) + 1][0]) / 2 };
+  return r;
+}
+/** a point at (dx, dy) from node i, moved with it: its displacement and its turn, scaled by sc (small angles) */
+function clk_at(r, i, sc, dx = 0, dy = 0) { const m = r.model, th = r.d[i * 3 + 2] * sc; return [m.nodes[i][0] + dx + r.d[i * 3] * sc - dy * th, m.nodes[i][1] + dy + r.d[i * 3 + 1] * sc + dx * th]; }
+/** the tensioner as a ribbon of its true thickness, bent by the solved frame (feElPts) and coloured by stress (heatCol, never red).
+   P maps model mm (y up) to stage px; sc scales the displacements; kh turns the element stress per newton into heat */
+function clk_ribbon(r, P, sc, kh, o = {}) {
+  const m = r.model, n = m.nStrip, pts = [];
+  for (let e = 0; e < n; e++) { const q = feElPts(r, e, sc, 3), x0 = m.nodes[m.els[e].i][0], x1 = m.nodes[m.els[e].j][0]; q.forEach((p, j) => { if (e && !j) return; pts.push({ p, e, x: lerp(x0, x1, j / 3) }); }); }
+  const top = [], bot = [];
+  pts.forEach((q, i) => {
+    const p0 = pts[Math.max(0, i - 1)].p, p1 = pts[Math.min(pts.length - 1, i + 1)].p, l = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) || 1;
+    const nx = -(p1[1] - p0[1]) / l, ny = (p1[0] - p0[0]) / l, h = clk_tenH(m.kind, q.x, m.P) / 2;
+    top.push(P([q.p[0] + nx * h, q.p[1] + ny * h])); bot.push(P([q.p[0] - nx * h, q.p[1] - ny * h]));
   });
-  if (live != null) { const y0 = live.i * 7.2; out.live = SP(0, y0 + prof(live.z, 0)); }
-  return out;
+  G.save(); G.globalAlpha = o.alpha == null ? 1 : o.alpha;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const col = heatCol(r.sig[pts[i].e] * kh);
+    G.beginPath(); G.moveTo(top[i][0], top[i][1]); G.lineTo(top[i + 1][0], top[i + 1][1]); G.lineTo(bot[i + 1][0], bot[i + 1][1]); G.lineTo(bot[i][0], bot[i][1]); G.closePath();
+    G.fillStyle = col; G.fill(); G.strokeStyle = col; G.lineWidth = 1; G.stroke();
+  }
+  G.beginPath(); top.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); for (let i = bot.length - 1; i >= 0; i--) G.lineTo(bot[i][0], bot[i][1]); G.closePath();
+  G.strokeStyle = o.edge || inkA(0.55); G.lineWidth = 1.5; G.lineJoin = 'round'; G.stroke();
+  G.restore();
+  return { top, bot };
 }
-clk_S({
-  id: 'clk_front', ch: 'click', theme: 'night', title: 'Flat and flush at the front', settle: 10, ideas: [46, 47, 48],
-  src: ['clk_brock'],
-  sfxLoop: [{ t0: 1.6, per: 2.6, cues: [[0, 'click'], [0.1, 'release']] }],
-  draw: t => {
-    header(t, 'Flat and flush at the front');
-    captions(t, [[0.6, 'At the front two flat faces meet. The gap between them is the post-travel, and a flat face is the easiest thing to recut in a mold.'], [3.8, 'For the front to be flat, the comfort grooves must run out before it: they shallow to nothing at the edge.'], [6.8, 'Beside the button, the walls sit level with it when it\'s pressed, so a pressed finger feels no step.']]);
-    const A = acc(), wy = LAY.top, h = 840 - wy, gap = 24, w = (RM - LM - 2 * gap) / 3, X = i => LM + i * (w + gap);
-    /* 1: the front cutout in section */
-    demoWindow(X(0), wy, w, h, ep(t, 0.3, 0.7));
-    clk_head(t, 0.7, X(0), wy, w, 'Front cutout, section', ['proposal']);
-    const fp = clk_curve(cyc(t, 1.6, 2.6)), fo = part(X(0) + w / 2 - 10, wy + 236, 16, () => frontStopMM({ press: fp, gapMark: ep(t, 1.8, 2.2), accent: A }), { alpha: ep(t, 0.8, 1.3) });
-    if (fo.dimAt) text('Gap', fo.dimAt[0] - 10, fo.dimAt[1] + 7, { role: 'label', size: 21, color: A, align: 'right', alpha: ep(t, 2.0, 2.4) });
-    clk_note(t, 2.0, fo.stop, X(0) + 34, wy + 430, 'Both faces flat, level with the ground', { color: A, maxW: w - 68, sub: 'The gap is the post-travel. Cut steel off one face to tune it.' });
-    /* 2: the groove, front to back */
-    demoWindow(X(1), wy, w, h, ep(t, 0.5, 0.9));
-    clk_head(t, 3.4, X(1), wy, w, 'Groove, front to back', ['proposal']);
-    const kg = ep(t, 3.6, 5.6, E.lin), zs = [24, 16, 8, 0];
-    const go = part(X(1) + w / 2 - 50, wy + 150, 12, () => clk_grooveMM({ accent: A, k: kg * 1.2, zs }), { alpha: ep(t, 3.4, 3.8) });
-    (go.tags || []).forEach(g2 => { if (g2.a <= 0) return; text((g2.z ? g2.z + ' mm' : 'Edge'), g2.p[0] + 14, g2.p[1] + 4, { role: 'label', size: 21, color: g2.z ? C.mute : A, alpha: g2.a }); text(clk_grooveD(g2.z).toFixed(2) + ' mm', g2.p[0] + 14, g2.p[1] + 30, { role: 'num', size: 22, weight: 700, color: g2.z ? C.ink2 : A, alpha: g2.a }); });
-    text('Distance from the front edge, and depth', X(1) + 26, wy + h - 66, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 4.2, 4.6), maxW: w - 52 });
-    text('Depth drawn 5 times deeper', X(1) + 26, wy + h - 24, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 4.2, 4.6) });
-    /* 3: beside the button, from the front */
-    demoWindow(X(2), wy, w, h, ep(t, 0.7, 1.1));
-    clk_head(t, 6.4, X(2), wy, w, 'Beside the button', ['proposal']);
-    const lp = clk_curve(cyc(t, 6.8, 2.6)), lo = part(X(2) + 210, wy + 250, 17, () => flushMM({ press: lp, ref: ep(t, 7.0, 7.4), accent: A }), { alpha: ep(t, 6.5, 7.0) });
-    clk_note(t, 7.0, lo.wall, X(2) + 34, wy + 430, 'Wall level with the pressed button', { color: A, maxW: w - 68, sub: 'The front bottoms out first; the rear sits 0.4 mm higher, so the walls take the average.' });
-    gloss(t, 2.6, 'Post-travel', 'How far a button keeps moving after the switch has clicked. Too much feels mushy; none at all feels harsh.');
-    featureCard(t, 4.8, 'Flat front, flush walls', ['proposal'], 'Flat front faces (#46), grooves that run out before the edge (#47), walls level with a pressed button (#48).');
-  }
-});
-
-/* ============================== 05. two anchors per trigger (#3), POM pads beside the plunger (#28) ============================== */
-const CLK_ANC_STEP = [
-  { n: '#3', who: 'G-Wolves', ev: 'claim', evText: 'Community', now: 'Owners: "either super stiff or mushy".', step: 'POM-padded rails, no added preload; play published.' },
-  { n: '#28', who: 'Starlight X', ev: 'claim', evText: 'Community', now: 'POM pads; an LA-1 with pads still ground.', step: 'Front-post pads on 0.05 mm shims; rub force published.' }
-];
-clk_S({
-  id: 'anchors', ch: 'click', theme: 'paper', title: 'Two anchors per trigger', settle: 11, ideas: [3, 28],
-  src: ['tpuUlx', 'delrin150', 'delrinAF', 'clk_brock'],
-  sfxLoop: [{ t0: 2.2, per: 2.4, cues: [[0, 'click'], [0.09, 'release']] }],
-  draw: t => {
-    header(t, 'Two anchors per trigger');
-    captions(t, [[0.6, 'One plunger and one tensioner give a trigger a single line to roll about. Press near the edge and it rolls.'], [4.6, 'A second plunger far from the first takes that line away, so every part of the button presses the same way.'], [7.4, 'POM pads where the posts slide keep them square, without carbon-filled plastic\'s grinding.']]);
-    const A = acc(), sh = clk_stepsH(CLK_ANC_STEP, RM - LM), sy = 840 - sh, wx = LM, wy = LAY.top, ww = 880, wh = sy - 18 - wy;
-    demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    clk_head(t, 0.7, wx, wy, ww, 'One button, from above', ['measured', 'proposal']);
-    const dual = t > 4.6, c = cyc(t, 2.2, 2.4), pr = clk_curve(c), sway = dual ? 0 : 0.07 * pr;
-    const o = part(wx + 44, wy + 96, 7.6, () => plateMM({ accent: A }), { alpha: ep(t, 0.4, 0.9), rot: Math.PI / 2 + sway });
-    const hinge = o.hinge, a1 = o.p1, a2 = o.p2, press = o.edgePress;
-    if (hinge) {
-      circle(hinge[0], hinge[1], 8, { fill: C.ink, alpha: ep(t, 0.9, 1.3) });
-      circle(a1[0], a1[1], 9, { fill: A, alpha: ep(t, 1.0, 1.4) }); text('Plunger 1', a1[0], a1[1] - 20, { role: 'label', size: 21, color: '#F3F2EE', align: 'center', alpha: ep(t, 1.2, 1.6) });
-      const a2k = ep(t, 4.6, 5.1, E.snap); if (a2k > 0) { circle(a2[0], a2[1], 9 * a2k, { fill: A }); text('Plunger 2', a2[0] - 14, a2[1] + 36, { role: 'label', size: 21, color: '#F3F2EE', align: 'right', alpha: a2k }); }
-      const ex = [a1[0] + (a1[0] - hinge[0]) * 0.32, a1[1] + (a1[1] - hinge[1]) * 0.32], ex0 = [hinge[0] - (a1[0] - hinge[0]) * 0.06, hinge[1] - (a1[1] - hinge[1]) * 0.06];
-      line(ex0[0], ex0[1], ex[0], ex[1], { color: C.red, w: 2.5, dash: [6, 5], alpha: (1 - a2k) * ep(t, 1.6, 2.0) });
-      circle(press[0], press[1], 14 + 10 * pr, { color: C.ink, w: 2.5, alpha: ep(t, 2.0, 2.3) });
-      if (!dual && pr > 0.05) arrow(press[0], press[1] + 20, press[0], press[1] + 20 + 50 * pr, { color: C.red, w: 4, hs: 14 });
-      callout(t, 1.0, hinge, 'Tensioner', { to: [hinge[0] + 40, wy + wh - 30], side: 'r', color: C.ink2, tcolor: C.ink2 });
-    }
-    const tx = wx + 500;
-    text(dual ? 'Pressed near the edge, the button stays put' : 'Pressed near the edge, it rolls about one line', tx, wy + 112, { role: 'small', size: 26, weight: 700, color: dual ? A : C.red, alpha: ep(t, 2.2, 2.6), maxW: ww - 520, lh: 1.3 });
-    text('"Can move laterally quite a bit when pushed": TechPowerUp, on the ULX.', tx, wy + 220, { role: 'small', color: C.mute, alpha: ep(t, 3.0, 3.4), maxW: ww - 520, lh: 1.36 });
-    /* the plunger guide, cut across: POM pads, shimmed */
-    const sx = wx + ww + 24, sw = RM - sx;
-    demoWindow(sx, wy, sw, wh, ep(t, 0.5, 0.9));
-    clk_head(t, 0.9, sx, wy, sw, 'Section through the plunger guide', ['datasheet', 'proposal']);
-    const shim = t > 7.9 ? 0.5 : 0, pk = 1 + 0.0714 * shim * 2;
-    const gs = Math.min(24, (wh - 96) / 13.6), gp = clk_curve(cyc(t, 2.2, 2.4)), g = part(sx + 230, wy + 70 + 5.4 * gs, gs, () => guideMM({ press: gp, pads: ep(t, 6.8, 7.3, E.snap) * pk, accent: A }), { alpha: ep(t, 0.6, 1.1) });
-    callout(t, 7.0, g.padR, 'POM pads, both sides', { to: [sx + 430, wy + 130], side: 'r', color: A, maxW: 300, sub: 'Delrin 150: μ 0.20, dry' });
-    callout(t, 1.4, g.plunger, 'Switch plunger', { to: [sx + 430, wy + wh - 40], side: 'r', color: C.ink2, tcolor: C.ink2 });
-    if (t > 7.6) text('Pad ' + (0.70 + 0.05 * shim * 2).toFixed(2) + ' mm', sx + 442, wy + 236, { role: 'num', size: 24, weight: 700, color: A, alpha: ep(t, 7.6, 7.9) });
-    clk_steps(t, 8.2, LM, sy, RM - LM, CLK_ANC_STEP);
-    gloss(t, 2.6, 'Lateral play', 'How far a button moves sideways when pressed near its edge. It reads as wobble and moves the click.');
-    featureCard(t, 5.4, 'Dual Rail Triggers', ['measured', 'proposal'], 'A second plunger far from the first (#3), on POM pads where the posts slide (#28).');
-  }
-});
-
-/* ============================== 06. where the tensioner bends (#50) and how long it is (#59) ============================== */
-function clk_beam(n, bridge) {
-  /* cantilever, fixed at x = 0, tip load at x = 1. h(x): thickness; curvature k = M/EI with M = (1 - x), I ~ h^3. deflection by double integration. */
-  const xs = [], h = [], kap = [], y = [];
-  for (let i = 0; i <= n; i++) { const x = i / n; xs.push(x); const hh = bridge ? 1 - 0.5 * Math.exp(-Math.pow((x - 0.55) / 0.13, 2)) : 1; h.push(hh); kap.push((1 - x) / Math.pow(hh, 3)); }
-  let a = 0, d = 0; y.push(0);
-  for (let i = 1; i <= n; i++) { a += (kap[i] + kap[i - 1]) / 2 / n; d += a / n; y.push(d); }
-  return { xs, h, kap, y };
+/** a rounded box from model corners (x0, y0) to (x1, y1), y up, filled with a vertical gradient */
+function clk_mbox(P, x0, y0, x1, y1, r, cols, o = {}) {
+  const a = P([x0, Math.max(y0, y1)]), b = P([x1, Math.min(y0, y1)]), w = b[0] - a[0], h = b[1] - a[1]; if (w <= 0 || h <= 0) return;
+  const g = G.createLinearGradient(0, a[1], 0, b[1]); cols.forEach((c, i) => g.addColorStop(i / Math.max(1, cols.length - 1), c));
+  rrPath(a[0], a[1], w, h, Math.min(r * P.s, w / 2, h / 2)); G.fillStyle = g; G.fill();
+  if (o.edge !== false) { G.strokeStyle = o.edge || inkA(0.4); G.lineWidth = 1.2; G.stroke(); }
 }
-const CLK_BU = clk_beam(120, false), CLK_BB = clk_beam(120, true);
-const CLK_TEN_STEP = [{ n: '#59', who: 'Lamzu Atlantis', ev: 'claim', evText: 'Community', now: 'Its tensioners sit 10 mm below the peak, for leverage (my doc).', step: 'The fulcrum height comes from k = 3EI/L³, and the stiffness is published in N/mm.' }];
-clk_S({
-  id: 'tensioner', ch: 'click', theme: 'night', title: 'Decide where the tensioner bends', settle: 10, ideas: [50, 59],
-  src: ['clk_brock'],
-  draw: t => {
-    header(t, 'Decide where the tensioner bends');
-    captions(t, [[0.6, 'A flat tensioner bends hardest at its screw, so where it bends is set by the fastener, not by design.'], [2.8, 'Thin the middle into a bridge and the bend moves to the thin part. The curve under each arm is the bending, computed.'], [5.8, 'Stiffness falls with the cube of free length, so a taller fulcrum is the cheapest way to a lighter click.']]);
-    const A = acc(), sh = clk_stepsH(CLK_TEN_STEP, RM - LM), sy = 840 - sh, wx = LM, wy = LAY.top, ww = 900, wh = sy - 18 - wy;
-    demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    clk_head(t, 0.6, wx, wy, ww, 'The tensioner, side on, loaded at its tip', ['derived']);
-    const load = 0.5 + 0.5 * Math.sin(Math.max(0, t - 2.6) * 2.2 - Math.PI / 2), kmax = Math.max(...CLK_BB.kap);
-    const drawBeam = (B, y0, label, col, t0) => {
-      const x0 = wx + 120, L = 560, k = ep(t, t0, t0 + 0.6);
-      text(label, x0 - 64, y0 - 36, { role: 'label', size: 21, color: C.ink, t, t0, cps: 60 });
-      part(0, 0, 1, () => {
-        solid(() => { G.beginPath(); G.rect(x0 - 64, y0 + 6, 64, 30); }, MT.shell, [x0 - 64, y0 + 6, 64, 30], { hatch: true });
-        solid(() => { G.beginPath(); G.rect(x0 - 64, y0 - 26, 64, 16); }, MT.shell, [x0 - 64, y0 - 26, 64, 16], { hatch: true });
-        const top = [], bot = [];
-        for (let i = 0; i <= 120; i++) { const x = x0 + B.xs[i] * L, dy = B.y[i] / CLK_BU.y[120] * 40 * load; top.push([x, y0 - B.h[i] * 7 + dy]); bot.push([x, y0 + B.h[i] * 7 + dy]); }
-        solid(() => { G.beginPath(); G.moveTo(x0 - 64, y0 - 7); top.forEach(p => G.lineTo(p[0], p[1])); for (let i = bot.length - 1; i >= 0; i--) G.lineTo(bot[i][0], bot[i][1]); G.lineTo(x0 - 64, y0 + 7); G.closePath(); }, MT.spring, [x0, y0 - 9, L, 18], {});
-      }, { alpha: k });
-      /* curvature along the arm: where it actually bends */
-      const yb = y0 + 104;
-      G.save(); G.globalAlpha = ep(t, t0 + 0.8, t0 + 1.4); G.beginPath(); G.moveTo(x0, yb);
-      for (let i = 0; i <= 120; i++) G.lineTo(x0 + B.xs[i] * L, yb - B.kap[i] / kmax * 52);
-      G.lineTo(x0 + L, yb); G.closePath(); G.fillStyle = rgba(col, 0.3); G.fill(); G.strokeStyle = col; G.lineWidth = 2; G.stroke(); G.restore();
-      text('Bending', x0 + L + 16, yb - 4, { role: 'label', size: 21, color: C.mute, alpha: ep(t, t0 + 1.0, t0 + 1.4) });
-      arrow(x0 + L, y0 - 66, x0 + L, y0 - 12 + B.y[120] / CLK_BU.y[120] * 40 * load, { color: C.ink, w: 3, hs: 12, alpha: ep(t, 2.4, 2.8) });
-    };
-    const span = wh - 96;
-    drawBeam(CLK_BU, wy + 92 + span * 0.12, 'Flat arm: bends at the screw', C.gray, 0.6);
-    drawBeam(CLK_BB, wy + 92 + span * 0.62, 'Bridge arm: bends where it\'s thin', A, 1.4);
-    /* stiffness against free length */
-    const cx = wx + ww + 24, cw = RM - cx;
-    demoWindow(cx, wy, cw, wh, ep(t, 0.5, 0.9));
-    clk_head(t, 4.8, cx, wy, cw, 'Stiffness against free length', ['derived']);
-    const m = axes(t, { x: cx + 100, y: wy + 100, w: cw - 150, h: wh - 230, xr: [0.8, 1.3], yr: [0, 2], xticks: [0.8, 0.9, 1, 1.1, 1.2, 1.3], yticks: [0, 0.5, 1, 1.5, 2], xfmt: v => v.toFixed(1) + '×', yfmt: v => v.toFixed(1) + '×', xlabel: 'Free length, relative', t0: 5.0 });
-    const pts = []; for (let Lr = 0.8; Lr <= 1.301; Lr += 0.01) pts.push([Lr, 1 / (Lr * Lr * Lr)]);
-    series(m, pts, { color: A, w: 3, p: ep(t, 5.2, 6.2, E.lin) });
-    const k11 = ep(t, 6.4, 6.8); circle(m.X(1.1), m.Y(1 / 1.331), 7, { fill: A, alpha: k11 });
-    text('10% longer: 25% less stiff', m.X(1.1) + 14, m.Y(1 / 1.331) - 16, { role: 'label', size: 21, color: A, alpha: k11 });
-    text('k = 3EI / L³', cx + cw - 30, wy + 140, { font: 'mono', size: 28, weight: 700, color: C.ink, align: 'right', alpha: ep(t, 5.4, 5.8) });
-    clk_steps(t, 7.4, LM, sy, RM - LM, CLK_TEN_STEP);
-    gloss(t, 3.2, 'Free length', 'The part of the tensioner that can bend. A taller fulcrum gives it more, so the click gets lighter.');
-    featureCard(t, 3.6, 'Bridge tensioner', ['derived', 'proposal'], 'Thin in the middle, so it bends where I choose (#50); a taller fulcrum for leverage (#59).');
-  }
-});
-/* ============================== 07. switches that swap without solder (#14) ============================== */
-const CLK_HS_STEP = [
-  { n: '#14', who: 'Endgame Gear OP1 8K', ev: 'measured', evText: 'Review', now: 'Swappable; TechRadar: the terminal is "hard to remove and easy to insert backwards".', step: 'A keyed, moulded pin cover: a switch cannot go in backwards. Orientation errors: zero, by design.' },
-  { n: '#14', who: 'Epomaker Carbonis', ev: 'measured', evText: 'Review', now: 'An optical switch held by an alligator clip, no solder (Hardware Busters).', step: 'Firmware names the switch from its bounce and tracks spring health. Contact resistance after 100 swaps, published.' }
-];
-/** a pin in, a pause, a pin out: 0..1 over a 4.2 s loop */
-const clk_insert = t => { const u = ((t % 4.2) + 4.2) % 4.2; return u < 1.4 ? E.io3(u / 1.4) : u < 3.2 ? 1 : 1 - E.io3((u - 3.2) / 1.0); };
-clk_S({
-  id: 'clk_hotswap', ch: 'click', theme: 'night', title: 'Swap a switch without solder', settle: 10, ideas: [14],
-  src: ['clk_millmax', 'millmax', 'clk_eggSwap', 'trOp1', 'clk_hwbSwap', 'clk_brock'], three: ['claw'],
-  sfx: [[2.0, 'seat']],
-  draw: t => {
-    header(t, 'Swap a switch without solder');
-    captions(t, [[0.6, 'Each switch leg drops into a Mill-Max 3305: a sleeve soldered into the board, with a gold-plated beryllium-copper claw inside.'], [4.0, 'Rated for 1,000 insertions at 10 mΩ or less. Swap a switch every week and the socket lasts 19 years.'], [7.0, 'The OP1 8K already swaps switches. Mine adds a keyed pin cover, so a switch can\'t go in backwards.']]);
-    const A = acc(), sh = clk_stepsH(CLK_HS_STEP, RM - LM), sy = 840 - sh, wx = LM, wy = LAY.top, ww = 700, wh = sy - 18 - wy;
-    demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    clk_head(t, 0.6, wx, wy, ww, 'A switch leg entering its socket', ['datasheet']);
-    const ins = t < 1.2 ? 0 : clk_insert(t - 1.2);
-    clk_v3('claw', t, wx + 10, wy + 60, ww - 20, wh - 120, { insert: ins, section: 1, view: 'threeQuarter', yaw: 0.2, pitch: -0.05, zoom: in2D(2.6, 1.45), target: in2D([0, 0.8, 0], undefined) }, { alpha: ep(t, 0.8, 1.4) });
-    text('BeCu claw, 30 µin gold on the contact only', wx + 26, wy + wh - 52, { role: 'small', size: 25, weight: 600, color: C.ink, alpha: ep(t, 1.8, 2.2) });
-    text('Takes leads 0.635 to 0.940 mm across', wx + 26, wy + wh - 18, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 2.0, 2.4) });
-    /* the numbers */
-    const cx = wx + ww + 24, cw = RM - cx, gw = (cw - 20) / 2, gh = (wh - 20) / 2;
-    statCard(t, 2.4, cx, wy, gw, gh, { label: 'Rated insertions', ev: 'datasheet', value: '1,000', unit: 'min' });
-    statCard(t, 2.7, cx + gw + 20, wy, gw, gh, { label: 'Contact resistance', ev: 'datasheet', pre: '≤', value: '10', unit: 'mΩ' });
-    statCard(t, 4.2, cx, wy + gh + 20, gw, gh, { label: 'Swapped weekly', ev: 'derived', value: '19', unit: 'years', body: '1,000 insertions ÷ 52 a year', hero: true });
-    statCard(t, 4.6, cx + gw + 20, wy + gh + 20, gw, gh, { label: 'Six sockets, mass', ev: 'derived', pre: '≈', value: '0.66', unit: 'g', body: '6 × 0.11 g, my figure; Mill-Max lists none' });
-    clk_steps(t, 7.2, LM, sy, RM - LM, CLK_HS_STEP);
-    gloss(t, 3.0, 'Claw-spring socket', 'A sleeve soldered into the board with spring fingers inside that grip a lead, so a part plugs in instead of being soldered.');
-    featureCard(t, 3.4, 'Hot-swap mains', ['datasheet', 'derived', 'proposal'], 'Mill-Max 3305 sockets under both main switches (#14); the switch is a part you can replace.');
-  }
-});
-
-/* ============================== 08. SPDT: counted at first contact (#79) ============================== */
-/** a switch's signals (0..1) against time (ms). The common contact leaves NC at 1.0 ms and lands on NO 1.5 ms later: XBAB's figure for that gap */
-const CLK_E = { nc: 1.0, no: 2.5 };
-function clk_sig(kind, ms) {
-  if (kind === 'nc') return ms < CLK_E.nc ? 1 : 0;
-  if (kind === 'no') return ms < CLK_E.no ? 0 : 1;
-  const end = kind === 'worn' ? 12.6 : CLK_E.no + 0.7;
-  if (ms < CLK_E.no) return 0; if (ms > end) return 1;
-  const n = Math.floor((ms - CLK_E.no) / (kind === 'worn' ? 0.22 : 0.07));
-  return (Math.sin(n * 12.9898 + (kind === 'worn' ? 3 : 1)) * 43758.5453 % 1 + 1) % 1 > 0.42 ? 1 : 0;
+const clk_graph = () => TH ? ['#5d5e66', '#3a3b41'] : ['#4a4b53', '#2a2b30'];
+/** the clamp (the boss above, the one screw's head below, #49), the trigger beyond the tensioner with its post, and the switch, fixed */
+function clk_lever(r, P, sc, o = {}) {
+  const m = r.model, n = m.nStrip, P0 = m.P, hT = P0.ht / 2, a = o.alpha == null ? 1 : o.alpha; if (a <= 0.003) return {};
+  G.save(); G.globalAlpha = a;
+  /* the switch, fixed: a body fading out below, and its plunger, pushed down by the post */
+  const vS = r.d[m.iS * 3 + 1] * sc;
+  clk_mbox(P, P0.XS - 3.6, -3.7, P0.XS + 3.6, -6.2, 0.4, TH ? ['#3a3b41', 'rgba(58,59,65,0)'] : ['#3c3d44', 'rgba(60,61,68,0)'], { edge: false });
+  clk_mbox(P, P0.XS - 0.75, -3.7, P0.XS + 0.75, -3.0 + vS, 0.25, ['#f8f6f0', '#d6d4ce'], { edge: inkA(0.35) });
+  /* the clamp: the boss and the plate's clamped end, the screw head under them */
+  clk_mbox(P, -7.5, 0.4, 0, 2.6, 0.35, clk_graph());
+  clk_mbox(P, -7.5, -0.4, 0, 0.4, 0.05, TH ? ['#c9c8c2', '#b9b8b2'] : ['#55554f', '#4a4a46'], { edge: inkA(0.3) });
+  clk_mbox(P, -5.0, -0.4, -1.4, -1.5, 0.3, ['#eef1f4', '#9aa2ab'], { edge: inkA(0.4) });
+  const s1 = P([-4.0, -0.4]), s2 = P([-2.4, 2.0]);
+  G.setLineDash([5, 4]); G.strokeStyle = inkA(0.35); G.lineWidth = 1.2; G.strokeRect(s1[0], s2[1], s2[0] - s1[0], s1[1] - s2[1]); G.setLineDash([]);
+  /* the trigger: a dark lever from the tensioner's end to its nose, and its post on the plunger */
+  const ids = []; for (let i = n; i < m.nodes.length; i++) ids.push(i);
+  const last = ids[ids.length - 1], top = ids.map(i => P(clk_at(r, i, sc, 0, hT))), bot = ids.map(i => P(clk_at(r, i, sc, 0, -hT)));
+  const nt = P(clk_at(r, last, sc, 1.0, hT)), nn = P(clk_at(r, last, sc, 1.6, 0)), nb = P(clk_at(r, last, sc, 1.0, -hT));
+  const pc = [[-0.9, -hT + 0.1], [0.9, -hT + 0.1], [0.9, -3.0], [-0.9, -3.0]].map(([dx, dy]) => P(clk_at(r, m.iS, sc, dx, dy)));
+  const g = G.createLinearGradient(0, top[0][1], 0, bot[0][1]); clk_graph().forEach((c, i) => g.addColorStop(i, c));
+  G.beginPath(); G.moveTo(pc[0][0], pc[0][1]); pc.forEach(p => G.lineTo(p[0], p[1])); G.closePath(); G.fillStyle = g; G.fill(); G.strokeStyle = inkA(0.4); G.lineWidth = 1.2; G.stroke();
+  G.beginPath(); top.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.lineTo(nt[0], nt[1]); G.quadraticCurveTo(nn[0] + (nn[0] - nt[0]) * 0.2, nn[1], nb[0], nb[1]); for (let i = bot.length - 1; i >= 0; i--) G.lineTo(bot[i][0], bot[i][1]); G.closePath();
+  G.fillStyle = g; G.fill(); G.strokeStyle = inkA(0.45); G.lineWidth = 1.4; G.stroke();
+  /* a soft light along the lever's top */
+  G.beginPath(); top.forEach((p, i) => i ? G.lineTo(p[0], p[1] + 2) : G.moveTo(p[0], p[1] + 2)); G.strokeStyle = 'rgba(255,255,255,0.16)'; G.lineWidth = 1.5; G.stroke();
+  G.restore();
+  return { tip: P(clk_at(r, m.iP, sc, 0, hT)), sw: P([P0.XS + 3.6, -4.4]), screw: P([-3.2, -1.5]), plunger: P([P0.XS, -3.0 + vS]) };
 }
+/* the press, in time: the same press on both (to the bridge's click), then more on the flat plane until it clicks too; then the camera
+   pushes in on the two tensioners */
+const CLK_TT = { p0: 2.3, p1: 3.6, f0: 4.4, f1: 5.8, c0: 6.2, c1: 7.9, kap: 7.7, ex: 6 };
 clk_S({
-  id: 'latency', ch: 'click', theme: 'paper', title: 'Counted at first contact', settle: 11, ideas: [79],
-  src: ['tpuAtlantis', 'tomsBounce', 'tomsDebounce', 'tpuOp1', 'clk_xbabClick', 'clk_tpuV4', 'tpuHyper'],
-  sfx: [[8.2, 'snap']], sfxLoop: [{ t0: 1.2, per: 2.6, cues: [[0, 'click'], [0.1, 'release']] }],
-  jolt: t => joltAt(t, 8.1),
+  id: 'tensioner', ch: 'click', theme: 'night', title: 'Bridge tensioner: where it bends, how easily', settle: 10, ideas: [50, 4],
+  src: [SIM_MAT.ppcf.src, 'clk_gt01', 'clk_brock'],
+  sfx: [[CLK_TT.p1, 'click'], [CLK_TT.f1, 'click']],
   draw: t => {
-    header(t, 'Counted at first contact');
-    captions(t, [[0.6, 'A switch has two fixed contacts. A single-throw mouse reads one of them, so it has to wait out the bounce before it trusts a press.'], [4.2, 'A double-throw switch can be read the moment the common contact leaves NC: about 1.5 ms before it even reaches NO.'], [7.6, 'The wait is real time on every click. TechPowerUp measured it on one mouse: a 4 ms debounce made it 3 ms slower.']]);
-    const A = acc(), wx = LM, wy = LAY.top, ww = 700, wh = 840 - wy;
-    demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    clk_fig(t, 0.6, wx + 28, wy + 44, 1, 'Snap-action switch, cover clear');
-    const sc = clk_swc(t, 1.2, 2.6), X0 = wx + 40, Y0 = wy + 360, s = 31;
-    const o = drawSwitch(X0, Y0, s, { press: sc.pr, state: sc.state, clear: true, accent: A, alpha: ep(t, 0.4, 1.0) });
-    if (sc.c >= 0) { const ts = sc.c * 2.6, n = Math.floor((t - 1.2) / 2.6); clk_spark(o.contact, ts - CLK_SNAP.no * 2.6, A, 0.8, 11 + n); clk_spark(o.contact, ts - CLK_SNAP.nc * 2.6, A, 0.5, 53 + n); }
-    callout(t, 1.0, o.com, 'COM', { to: [X0 + 0.6 * s, Y0 - 8.2 * s], side: 'r', color: C.ink2, tcolor: C.ink2 });
-    callout(t, 1.2, o.nc, 'NC: closed at rest', { to: [X0 + 13.6 * s, Y0 - 8.6 * s], side: 'r', color: C.ink2, tcolor: C.ink2, maxW: 160, prose: true });
-    callout(t, 1.4, o.no, 'NO: closed when pressed', { to: [X0 + 13.6 * s, Y0 - 1.2 * s], side: 'r', color: C.ink2, tcolor: C.ink2, maxW: 160, prose: true });
-    clk_lamp(X0 + 2 * s, Y0 + 5.0 * s, 'NC', sc.state === 'nc', A, ep(t, 1.6, 2.0)); clk_lamp(X0 + 5.6 * s, Y0 + 5.0 * s, 'NO', sc.state === 'no', A, ep(t, 1.6, 2.0));
-    text('Single throw reads NO only. Double throw reads both.', wx + 28, wy + wh - 26, { role: 'small', color: C.mute, alpha: ep(t, 2.0, 2.4), maxW: ww - 56 });
-    /* the traces: one press, four ways of reading it */
-    const rx = wx + ww + 24, rw = RM - rx, th = 372;
-    demoWindow(rx, wy, rw, th, ep(t, 0.5, 0.9));
-    clk_head(t, 0.9, rx, wy, rw, 'One press, four ways to read it', ['derived']);
-    const x0 = rx + 250, x1 = rx + rw - 30, T = 14, X = ms => x0 + (x1 - x0) * ms / T, now = clamp((t - 1.6) / 3.4) * T;
-    for (let ms = 0; ms <= T; ms += 2) { line(X(ms), wy + 70, X(ms), wy + th - 50, { color: C.hair, w: 1, alpha: ep(t, 0.9, 1.3) }); text(ms + ' ms', X(ms), wy + th - 22, { role: 'tick', color: C.mute, align: 'center', alpha: ep(t, 0.9, 1.3) }); }
-    const lanes = [['SPST, new', ['new'], 5.5, 'After a 3 ms wait'], ['SPST, worn', ['worn'], 12.6, 'Still bouncing: a double click'], ['SPDT, latch on NO', ['no', 'nc'], CLK_E.no, 'At NO, no wait'], ['SPDT, NC release', ['no', 'nc'], CLK_E.nc, 'At NC: 1.5 ms sooner']];
-    lanes.forEach(([label, sig, reg, note], i) => {
-      const yb = wy + 120 + i * 64, amp = 34, spdt = sig.length > 1;
-      text(label, rx + 26, yb - 8, { role: 'label', size: 21, color: C.ink, t, t0: 1.0 + i * 0.15, cps: 70 });
-      sig.forEach((sg, j) => {
-        const pts = []; let prev = clk_sig(sg, 0);
-        for (let ms = 0; ms <= now; ms += 0.01) { const v = clk_sig(sg, ms); if (v !== prev) pts.push([X(ms), yb - prev * amp]); pts.push([X(ms), yb - v * amp]); prev = v; }
-        poly(pts, { color: j ? C.faint : (spdt ? A : C.ink), w: 2.2, dash: j ? [5, 4] : null });
-      });
-      if (now > reg) {
-        const good = i >= 2, col = i === 3 ? A : good ? C.ink : C.red;
-        line(X(reg), yb - amp - 10, X(reg), yb + 6, { color: col, w: 3 });
-        const right = X(reg) + 12 + tw(note, { role: 'small', size: 23, weight: 600 }) < x1;
-        text(note, right ? X(reg) + 12 : X(reg) - 12, yb - amp + 2, { role: 'small', size: 23, weight: 600, color: col, align: right ? 'left' : 'right' });
-      }
-    });
-    text('NO solid, NC dashed', rx + 26, wy + 120 + 3 * 64 + 26, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 1.6, 2.0) });
-    /* the measured cost of waiting, TechPowerUp's method throughout */
-    const by0 = wy + th + 16, bh = 840 - by0;
-    demoWindow(rx, by0, rw, bh, ep(t, 0.7, 1.1));
-    clk_head(t, 7.0, rx, by0, rw, 'Click latency, measured by TechPowerUp', ['measured']);
-    lollipop(t, { x: rx + 26, y: by0 + 110, w: rw - 300, t0: 7.2, xr: [0, 6], ticks: [0, 2, 4, 6], tfmt: v => v + ' ms', fmt: v => (v < 0.1 ? v.toFixed(3) : v.toFixed(1)) + ' ms', labelW: 470, rowH: 33, valW: 120,
-      rows: [{ name: 'Razer Viper V4 Pro', qual: 'Wired, 8 kHz', v: 0.079, ref: true }, { name: 'Hitscan Hyperlight', qual: '0 ms debounce', v: 0.4 }, { name: 'Lamzu Atlantis', qual: '0 ms debounce', v: 2.4 }, { name: 'Lamzu Atlantis', qual: '4 ms debounce', v: 5.4 }] });
-    slam(t, 8.1, RM - 40, by0 + bh - 46, '+3.0', 'ms', { size: 72, color: C.red, align: 'right' });
-    text('Atlantis: debounce 4 ms vs 0', RM - 40, by0 + bh - 18, { role: 'label', size: 19, color: C.red, align: 'right', alpha: ep(t, 8.4, 8.8) });
-    gloss(t, 2.4, 'Debounce', 'The wait a mouse adds after a contact closes, so the bouncing metal isn\'t read as extra clicks.');
-    featureCard(t, 5.0, 'SPDT, read on both throws', ['measured', 'derived', 'proposal'], 'The press counts when NC opens; the NO contact confirms it, so a worn switch can\'t double click (#79).');
-  }
-});
-
-/* ============================== 09. a click should never wait for motion (#79): XBAB's four tests ============================== */
-let CLK_XB = null;
-function clk_xbab() {
-  if (CLK_XB) return CLK_XB;
-  const X = (typeof RD !== 'undefined' && RD.latency) ? RD.latency.click_latency_xbab_vs_op1_8k_v2 : null;
-  CLK_XB = X ? X.panels.map(p => ({ mode: p.mode, still: p.state === 'stationary', xa: p.XA25, op: p.OP1_8k_v2 })) : [];
-  return CLK_XB;
-}
-const CLK_WAIT_STEP = [{ n: '#79', who: 'G-Wolves, Endgame Gear, Sora V3', ev: 'claim', evText: 'Maker claim', now: 'SPDT ships today. On XBAB\'s analyzer, the OP1 8k v2 adds 121 to 125 µs to a click while moving.', step: 'NC release on a path that never waits for motion: 75 µs or less, moving or still, published with n ≥ 300 and a 95% CI.' }];
-clk_S({
-  id: 'clk_wait', ch: 'click', theme: 'night', title: 'A click should never wait for motion', settle: 11, ideas: [79],
-  src: ['clk_xbabClick', 'xbab', 'tpuOp1', 'clk_brock'],
-  draw: t => {
-    header(t, 'A click should never wait for motion');
-    captions(t, [[0.6, 'XBAB put its XA25 against the OP1 8k v2 on a USB analyzer: two read modes, still and moving, each with its 95% confidence interval.'], [4.6, 'Still, the OP1\'s release mode is quick. Moving, the same click arrives 121 to 125 µs later: it waits behind motion.'], [8.0, 'My target: 75 µs or less, moving or still, published the same way, with n and the interval.']]);
-    const A = acc(), P = clk_xbab(), sh = clk_stepsH(CLK_WAIT_STEP, RM - LM), sy = 840 - sh;
-    const pw = 352, gap = 74, px0 = LM + 74, py = 360, ph = 210, top = 600, Y = v => py + ph - ph * v / top;
-    legend(t, 0.5, RM, 300, [{ kind: 'ref', label: 'XBAB XA25' }, { kind: 'comp', label: 'OP1 8k v2' }, { kind: 'dash', color: C.hero, label: 'Theseus target, 75 µs' }], { align: 'right' });
-    rich([{ s: 'Electrical latency, µs', role: 'label', size: 21, color: C.mute }, { s: 'Beagle USB 480 analyzer', role: 'label', size: 19, color: C.faint, gap: 18 }], LM, 300, { alpha: ep(t, 0.5, 0.9) });
-    pill(LM + 600, 302, 'claim', ep(t, 0.6, 1.0));
-    P.forEach((p, i) => {
-      const x = px0 + i * (pw + gap), t0 = 0.8 + i * 0.5, a = ep(t, t0, t0 + 0.4);
-      const mode = /NC/.test(p.mode) ? 'NC release · GX Speed' : 'SR latch · GX Safe';
-      text(mode, x, py - 44, { role: 'label', size: 21, color: C.mute, alpha: a });
-      text(p.still ? 'Still' : 'Moving', x, py - 14, { font: 'disp', size: 30, weight: 800, color: p.still ? C.ink2 : C.ink, caps: true, alpha: a });
-      barChart(t, { x, y: py, w: pw, h: ph, t0, yr: [0, top], ticks: i ? [] : [0, 200, 400, 600], unit: 'µs', dec: 1, foot: false, labelAt: 'ci', vsize: 28, nsize: 28, barW: 0.58,
-        bars: [{ name: 'XA25', v: rv(p.xa), ci: p.xa.ci95_us, n: p.xa.n, ref: true }, { name: 'OP1 8k v2', v: rv(p.op), ci: p.op.ci95_us, n: p.op.n }] });
-      if (i) for (const v of [200, 400]) line(x, Y(v), x + pw, Y(v), { color: C.hair, w: 1.2, alpha: a * 0.8 });
-      /* the foot: 95% CI and n, one decimal */
-      [p.xa, p.op].forEach((b, j) => {
-        const cx = x + pw * (j + 0.5) / 2, fa = ep(t, t0 + 0.6, t0 + 1.0);
-        text('[' + b.ci95_us.map(v => v.toFixed(1)).join(', ') + ']', cx, py + ph + 72, { font: 'mono', size: 20, weight: 500, color: C.mute, align: 'center', alpha: fa });
-        text('n = ' + fmt3(b.n), cx, py + ph + 98, { font: 'mono', size: 20, weight: 500, color: C.mute, align: 'center', alpha: fa });
-      });
-      /* the Theseus target, and what moving costs the OP1 */
-      const kt = ep(t, 8.2 + i * 0.12, 8.7 + i * 0.12, E.cam);
-      if (kt > 0) line(x, Y(75), x + pw * kt, Y(75), { color: C.hero, w: 3, dash: [10, 7] });
-      if (!p.still) {
-        const st = P.find(q => q.mode === p.mode && q.still), kd = ep(t, 5.0 + i * 0.3, 5.5 + i * 0.3);
-        if (st && kd > 0) {
-          const cx = x + pw * 0.75, bw2 = pw / 2 * 0.58, y0 = Y(rv(st.op)), y1 = Y(rv(p.op));
-          G.save(); G.globalAlpha = kd; G.setLineDash([6, 5]); G.strokeStyle = C.red; G.lineWidth = 2.5; G.strokeRect(cx - bw2 / 2, y0, bw2, Y(0) - y0); G.restore();
-          text('+' + (rv(p.op) - rv(st.op)).toFixed(1), cx, (y0 + y1) / 2 + 9, { font: 'mono', size: 24, weight: 800, color: C.red, align: 'center', alpha: kd });
+    const rF = clk_ten('flat', 'ppcf'), rB = clk_ten('bridge', 'ppcf'), cF = rF.clk, cB = rB.clk, TT = CLK_TT;
+    const sameF = cF.cS * cB.F, ratio = cF.F / cB.F;
+    header(t, 'Bridge tensioner: where it bends, how easily');
+    captions(t, [[0.6, 'A flat tensioner is a plane: it bends all along. The bridge is an arch that thins toward its crown.'],
+      [3.0, `The same ${cB.gf.toFixed(1)} gf on both: the bridge reaches the click. The flat plane has moved ${sameF.toFixed(2)} of 0.35 mm.`],
+      [5.0, `To reach the click the flat plane needs ${cF.gf.toFixed(1)} gf, ${ratio.toFixed(1)} times as much, and it bends hardest at its screw.`],
+      [8.0, 'Up close: the same bend in a different place. The bridge bends at its crown, where I put it.']]);
+    const wy = LAY.top, wh = CLK_BOT - wy, rowH = wh / 2, X0 = LM, XW = 1360, xr = 1470, kc = ep(t, TT.c0, TT.c1, E.cam);
+    demoWindow(LM, wy, RM - LM, wh, ep(t, 0.2, 0.7), {});
+    line(LM + 24, wy + rowH, RM - 24, wy + rowH, { color: C.hair, w: 1.2, alpha: ep(t, 0.6, 1.0) });
+    /* the camera: the crown (x = 4 mm) slides from 380 to 720 px while the scale grows from 25 to 62 px per mm */
+    const s = 25 * Math.pow(62 / 25, kc), X4 = lerp(X0 + 300, X0 + 640, kc);
+    const sref = Math.max(cF.sig, cB.sig), kref = cB.kmax * cB.F;
+    const rows = [
+      { r: rF, c: cF, name: 'Flat plane', spec: '0.8 mm all along', F: cB.F * ep(t, TT.p0, TT.p1) + (cF.F - cB.F) * ep(t, TT.f0, TT.f1), hero: false, t0: 0.5 },
+      { r: rB, c: cB, name: 'Bridge', spec: '0.8 to 0.4 mm, a 1.6 mm arch', F: cB.F * ep(t, TT.p0, TT.p1), hero: true, t0: 0.8 }
+    ];
+    rows.forEach((R, i) => {
+      const top = wy + i * rowH, cy = top + 200, P = p => [X4 + (p[0] - 4) * s, cy - p[1] * s], ka = ep(t, R.t0, R.t0 + 0.7); P.s = s;
+      const sc = R.F * TT.ex, tr = R.c.cS * R.F, clicked = tr >= CLK_TN.pre - 1e-6;
+      clipped(X0 + 2, top + 2, XW, rowH - 4, () => {
+        G.save(); G.translate((1 - E.out3(ka)) * -30, 0);
+        const L = clk_lever(R.r, P, sc, { alpha: ka });
+        clk_ribbon(R.r, P, sc, R.F / sref, { alpha: ka });
+        /* wide-shot labels, the click lamp, the pointer on the fingertip */
+        const kw = ka * (1 - ep(t, TT.c0, TT.c0 + 0.5));
+        if (kw > 0.01 && L.sw) {
+          text('Screw', L.screw[0], L.screw[1] + 34, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: kw });
+          clk_lamp(L.sw[0] + 26, L.sw[1] - 4, 'Click', clicked, R.hero ? C.hero : C.ink, kw);
         }
-      }
+        if (L.tip) {
+          const kp = ep(t, 1.5, 2.2, E.cam), st = [L.tip[0] + 150, L.tip[1] - 130];
+          cursorPtr(lerp(st[0], L.tip[0], kp), lerp(st[1], L.tip[1], kp), { a: ep(t, 1.3, 1.7), s: 1.1, press: prog(t, 2.25, 2.75) > 0 && prog(t, 2.25, 2.75) < 1 ? prog(t, 2.25, 2.75) : 0 });
+        }
+        /* up close: where it bends. Curvature along the tensioner, both rows on one scale, so equal areas mean an equal bend */
+        const kk = ep(t, TT.kap, TT.kap + 0.8);
+        if (kk > 0) {
+          const base = cy + 132, H = 70, n = R.r.model.nStrip, pts = [];
+          for (let e = 0; e < n; e++) { const xm = CLK_TN.S * (e + 0.5) / n; pts.push([P([xm, 0])[0], base - H * R.c.kap[e] * R.F / kref * kk]); }
+          const x0 = P([0, 0])[0], x1 = P([CLK_TN.S, 0])[0], col = R.hero ? C.hero : C.ink2;
+          G.save(); G.beginPath(); G.moveTo(x0, base); pts.forEach(p => G.lineTo(p[0], p[1])); G.lineTo(x1, base); G.closePath(); G.fillStyle = rgba(R.hero ? C.hero : '#9a9993', R.hero ? 0.28 : 0.22); G.fill(); G.restore();
+          poly([[x0, base]].concat(pts, [[x1, base]]), { color: col, w: 2.5, alpha: kk });
+          line(x0, base, x1, base, { color: C.faint, w: 1.2, alpha: kk });
+          const ha = P([R.c.half.a, 0])[0], hb = P([R.c.half.b, 0])[0];
+          line(ha, base + 12, hb, base + 12, { color: col, w: 3, alpha: kk }); line(ha, base + 6, ha, base + 18, { color: col, w: 2, alpha: kk }); line(hb, base + 6, hb, base + 18, { color: col, w: 2, alpha: kk });
+          text('Bend along the tensioner', x0 - 18, base - 8, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kk });
+          const hot = R.hero ? P([R.c.at, CLK_TN.rise + 0.2]) : P([0.25, 0.4]);
+          callout(t, TT.kap + 0.3, hot, R.hero ? 'Bends at the crown' : 'Hardest at the screw', { to: [R.hero ? P([CLK_TN.S, 0])[0] + 70 : hot[0] + 110, cy - 96], side: 'r', color: col, tcolor: R.hero ? C.heroText : C.ink });
+        }
+        G.restore();
+      });
+      /* the readout: force at the fingertip, live, and the travel to the click */
+      const kr = ep(t, R.t0 + 0.4, R.t0 + 0.9);
+      G.save(); G.translate(0, (1 - E.out3(kr)) * 14);
+      text(R.name, xr, cy - 118, { role: 'label', size: 22, color: R.hero ? C.heroText : C.ink, alpha: kr });
+      text(R.spec, xr, cy - 84, { role: 'small', size: 25, color: C.mute, alpha: kr });
+      clk_big(t, xr, cy + 4, null, (R.F * CLK_GF).toFixed(1), 'gf', { size: 76, color: R.hero ? C.hero : C.ink, alpha: kr });
+      text('Force at the fingertip', xr, cy + 40, { role: 'label', size: 19, color: C.faint, alpha: kr });
+      const by = cy + 70, bw = 330, kh = ep(t, TT.kap, TT.kap + 0.6);
+      rr(xr, by, bw, 10, 5, C.track, null, 0, kr * (1 - kh)); rr(xr, by, Math.max(10, bw * clamp(tr / CLK_TN.pre)), 10, 5, clicked ? (R.hero ? C.hero : C.ink) : C.comp, null, 0, kr * (1 - kh));
+      text(tr.toFixed(2) + ' of 0.35 mm to the click', xr, by + 40, { role: 'small', size: 25, color: C.mute, alpha: kr * (1 - kh) });
+      text('Half the bend in ' + R.c.half.len.toFixed(1) + ' mm', xr, by + 14, { role: 'small', size: 25, weight: 700, color: R.hero ? C.heroText : C.ink, alpha: kh });
+      text(`Peak ${R.c.sig.toFixed(1)} MPa, ${R.hero ? 'at the crown' : 'at the screw'}`, xr, by + 48, { role: 'small', size: 25, color: C.mute, alpha: kh });
+      G.restore();
     });
-    if (!P.length) placeholderStamp(t, LM, py, RM - LM, ph);
-    text('Red dashes: the same click, still. XA25 moving: no change within its interval.', LM, py + ph + 132, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 5.6, 6.0) });
-    pill(LM + 1010, py + ph + 134, 'derived', ep(t, 5.6, 6.0));
-    clk_steps(t, 8.6, LM, sy, RM - LM, CLK_WAIT_STEP);
-    gloss(t, 2.6, 'NC release', 'Counting the press when the common contact leaves NC, before it lands on NO. Endgame Gear calls it GX Speed.');
-    featureCard(t, 3.0, 'Clicks first', ['claim', 'proposal'], 'XBAB\'s numbers are its own test of its own mouse: a maker claim, with the method shown (#79).');
+    /* the heat scale, and the model in one line */
+    const lx = X0 + XW - 300, ly = wy + 40, kl = ep(t, 1.2, 1.6);
+    text('Stress', lx, ly + 6, { role: 'label', size: 19, color: C.faint, alpha: kl });
+    for (let i = 0; i < 40; i++) rect(lx + 90 + i * 4, ly - 6, 4.5, 12, { fill: heatCol(i / 39), alpha: kl });
+    text('low', lx + 90, ly + 32, { role: 'label', size: 19, color: C.faint, alpha: kl }); text('high', lx + 250, ly + 32, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kl });
+    pill(RM - 24 - pillW('derived'), ly + 6, 'derived', kl);
+    text(`2D frame model, ${SIM_MAT.ppcf.name} at ${(SIM_MAT.ppcf.E / 1000).toFixed(1)} GPa: tensioner 10 mm wide over an 8 mm span, pressed 40 mm out, plunger at 30 mm. Motion drawn ${CLK_TT.ex}×.`, LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, 1.0, 1.6) });
   }
 });
 
-/* ============================== 10. every click number, with its method ============================== */
+/* ============================== 07. why the bridge matters on a stiff trigger: PP-C-20A against ABS ============================== */
 clk_S({
-  id: 'clk_methods', ch: 'click', theme: 'paper', title: 'Every click number has a method', settle: 10, ideas: [79],
-  src: ['xbab', 'clk_xbabClick', 'vgnClick', 'clk_razerSide', 'slxPdf', 'pcgSlx'],
+  id: 'clk_tenmat', ch: 'click', theme: 'paper', title: 'A stiff trigger with a light click', settle: 9, ideas: [50, 49, 59],
+  src: [SIM_MAT.ppcf.src, SIM_MAT.abs.src, 'clk_gt01', 'clk_brock'],
   draw: t => {
-    header(t, 'Every click number has a method');
-    captions(t, [[0.6, 'Makers time their own clicks, each in its own way. Read a number only beside the way it was taken.'], [4.6, 'Timed from the start of the finger\'s press, analog sensing wins by milliseconds. That test was run by Finalmouse, on its own mouse.']]);
-    const wy = LAY.top, h = 840 - wy, lw = 1000, lx = LM, rx = lx + lw + 24, rw = RM - rx;
-    demoWindow(lx, wy, lw, h, ep(t, 0.3, 0.7));
-    clk_head(t, 0.6, lx, wy, lw, 'Switch to USB, each maker\'s own test', ['claim', 'proposal']);
-    lollipop(t, { x: lx + 26, y: wy + 140, w: lw - 52, t0: 0.9, xr: [0, 1.8], ticks: [0, 0.5, 1, 1.5], tfmt: v => v + ' ms', fmt: v => v.toFixed(3) + ' ms', labelW: 560, rowH: 50, valW: 130, target: { v: 0.075 },
-      rows: [{ name: 'XBAB XA25', qual: '"about 65 µs"', v: 0.065, ref: true }, { name: 'XBAB XA25', qual: 'NC release, still', v: 0.07204 }, { name: 'VGN Dragonfly 3 MGT', qual: '"as low as"', v: 0.175 },
-        { name: 'Finalmouse SLX', qual: '"end to end"', v: 0.223 }, { name: 'Endgame Gear OP1 8k v2', qual: 'GX Speed, by XBAB', v: 0.32029 }, { name: 'Razer Viper V4 Pro', qual: 'side buttons', v: 0.33 }, { name: '"Brand X"', qual: 'side buttons, per Razer', v: 1.65 }] });
-    const kt = ep(t, 2.2, 2.6);
-    rich([{ s: 'Theseus target', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }, { s: '75 µs, moving or still', role: 'label', size: 21, color: C.heroText, gap: 16 }], lx + 26 + 560 + (lw - 52 - 560 - 130 - 20) * 0.075 / 1.8 + 12, wy + 108, { alpha: kt });
-    text('Methods differ: the bars share an axis, not a test.', lx + 26, wy + h - 22, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 2.6, 3.0) });
-    /* end to end, from the start of the press */
-    demoWindow(rx, wy, rw, h, ep(t, 0.5, 0.9));
-    clk_head(t, 4.4, rx, wy, rw, 'From the start of the press', ['claim']);
-    barChart(t, { x: rx + 250, y: wy + 112, w: rw - 330, h: 300, dir: 'h', t0: 4.6, yr: [0, 8], ticks: [0, 2, 4, 6, 8], fmt: v => v + ' ms', unit: 'ms', dec: 1, barW: 0.62, foot: false,
-      bars: [{ name: 'Finalmouse SLX', sub: 'TMR-DS', v: 2.0, ref: true }, { name: 'Superstrike', sub: 'Inductive', v: 3.0 }, { name: 'OP1 8K V2', sub: 'Mechanical', v: 5.7 }, { name: 'Viper V4 Pro', sub: 'Optical', v: 7.5 }] });
-    text('Finalmouse\'s rig: copper tape and a press machine, 50 clicks each, a pre-production SLX at its shallowest setting.', rx + 26, wy + h - 92, { role: 'small', size: 25, color: C.mute, maxW: rw - 52, lh: 1.36, alpha: ep(t, 5.6, 6.0) });
-    gloss(t, 3.2, 'Click latency', 'The time from a press to its report reaching the computer. Where the clock starts, at the switch or at the finger, changes the number by milliseconds.');
-    featureCard(t, 6.2, 'Published, with the method', ['proposal'], 'I\'ll publish Theseus on XBAB\'s analyzer method and on a finger-press rig, with n and the interval for both.');
-  }
-});
-/* ============================== 11. a magnetic sensor under each main button ============================== */
-/** one press as a button sensor sees it: travel in mm against time in ms (an illustration on the example switch) */
-function clk_travel(ms) {
-  const seg = (a, b, v0, v1) => v0 + (v1 - v0) * E.io3(clamp((ms - a) / (b - a)));
-  if (ms < 10) return 0; if (ms < 18) return seg(10, 18, 0, 0.03); if (ms < 30) return 0.03;
-  if (ms < 48) return seg(30, 48, 0.03, 0.8); if (ms < 70) return 0.8; if (ms < 88) return seg(70, 88, 0.8, 0.03);
-  if (ms < 104) return 0.03; if (ms < 112) return seg(104, 112, 0.03, 0); return 0;
-}
-const CLK_MAG = (() => { let fire = 0, rel = 0, rt = 0; for (let ms = 0; ms < 120; ms += 0.05) { const d = clk_travel(ms); if (!fire && ms < 60 && d >= 0.5) fire = ms; if (!rt && ms > 60 && d <= 0.58) rt = ms; if (!rel && ms > 60 && d <= 0.3) rel = ms; } return { fire, rel, rt, t0: 1.4, dur: 4.4 }; })();
-const clk_magT = ms => CLK_MAG.t0 + CLK_MAG.dur * ms / 120;
-const CLK_MAG_STEP = [
-  { n: 'Mag', who: 'Finalmouse SLX, TMR-DS', ev: 'claim', evText: 'Maker claim', now: '40 steps of 0.01 mm; reviewers flag a learning curve and drop-only stock.', step: 'Each button learns its own switch\'s snap and fires there, nothing to tune; manual millimetres stay for experts.' },
-  { n: 'Mag', who: 'Logitech Superstrike', ev: 'claim', evText: 'Maker claim', now: 'Inductive, 0.6 mm, 10 levels and haptics; many players stay at level 3 or 4.', step: 'Actuation and release points published per button, in mm, with their spread over 1,000 clicks.' }
-];
-clk_S({
-  id: 'magbuttons', ch: 'click', theme: 'night', title: 'A sensor under each main button', settle: 11, ideas: ['magnetic'],
-  src: ['slxPdf', 'slxXt', 'slxB2g', 'logiSuperstrike', 'pcgSlx', 'kunai'],
-  sfx: [[clk_magT(CLK_MAG.fire), 'click'], [clk_magT(CLK_MAG.rel), 'release']],
-  draw: t => {
-    header(t, 'A sensor under each main button');
-    captions(t, [[0.6, 'A switch tells the mouse pressed or not. A magnetic sensor under the button tells it where the button is, all the time.'], [3.4, 'So the click can fire exactly at the snap, let go the instant it snaps back, or let go early for rapid trigger.'], [7.0, 'Finalmouse and Logitech already sense travel. The step past them: learn each switch\'s own snap, and publish how tightly clicks land.']]);
-    const A = acc(), sh = clk_stepsH(CLK_MAG_STEP, RM - LM), sy = 840 - sh, wx = LM, wy = LAY.top, ww = 1060, wh = sy - 18 - wy;
-    demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    clk_head(t, 0.8, wx, wy, ww, 'One press, as the sensor sees it', ['proposal']);
-    const px0 = wx + 150, px1 = wx + ww - 40, py0 = wy + 84, py1 = wy + wh - 72, X = ms => px0 + (px1 - px0) * ms / 120, Y = d => py0 + (py1 - py0) * d / 0.8, a0 = ep(t, 1.0, 1.4);
-    for (const ms of [0, 20, 40, 60, 80, 100, 120]) { line(X(ms), py0, X(ms), py1, { color: C.hair, w: 1, alpha: a0 }); text(ms + ' ms', X(ms), py1 + 30, { role: 'tick', color: C.mute, align: 'center', alpha: a0 }); }
-    for (const d of [0, 0.4, 0.8]) text(d.toFixed(1) + ' mm', px0 - 14, Y(d) + 7, { role: 'tick', color: C.mute, align: 'right', alpha: a0 });
-    text('Travel', px0 - 14, py1 + 30, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: a0 });
-    for (const [d, l] of [[0.5, 'Snaps closed, 0.5 mm'], [0.3, 'Snaps open, 0.3 mm']]) { line(px0, Y(d), px1, Y(d), { color: C.faint, w: 1.2, dash: [6, 5], alpha: ep(t, 1.2, 1.6) }); text(l, px1 - 8, Y(d) - 10, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 1.2, 1.6) }); }
-    const now = clamp((t - CLK_MAG.t0) / CLK_MAG.dur) * 120;
-    const tru = [], rd = []; for (let ms = 0; ms <= now; ms += 0.2) { const d = clk_travel(ms); tru.push([X(ms), Y(d)]); const q = Math.round(d / 0.01) * 0.01; if (rd.length) rd.push([X(ms), rd[rd.length - 1][1]]); rd.push([X(ms), Y(q)]); }
-    poly(tru, { color: inkA(0.35), w: 5 }); poly(rd, { color: A, w: 2 });
-    if (now > 0 && now < 120) { circle(X(now), Y(clk_travel(now)), 6, { fill: A }); circle(X(now), Y(clk_travel(now)), 12, { color: A, w: 1.5, alpha: 0.4 }); }
-    const mark = (ms, label, col, dash, ly, left) => { const k = ep(t, clk_magT(ms), clk_magT(ms) + 0.3); if (k <= 0) return; line(X(ms), py0, X(ms), py1, { color: col, w: 2.5, dash, alpha: k }); text(label, X(ms) + (left ? -10 : 10), ly, { role: 'small', size: 25, weight: 600, color: col, alpha: k, align: left ? 'right' : 'left' }); };
-    mark(CLK_MAG.fire, 'Fires at the snap', A, null, py0 + 26);
-    mark(CLK_MAG.rt, 'Rapid trigger lets go here', C.ink, [5, 4], py1 - 16, true);
-    mark(CLK_MAG.rel, 'Release at the snap back', A, null, Y(0.68));
-    const kf = ep(t, clk_magT(18), clk_magT(18) + 0.4); text('A finger resting on it', X(4), Y(0.03) + 40, { role: 'small', size: 25, weight: 600, color: C.ink2, alpha: kf });
-    /* the step: a marker locks onto the learned snap; later clicks land in a tight band (an illustration, no data yet) */
-    const kl = ep(t, 7.4, 8.0);
-    if (kl > 0) {
-      const r = rng(5), xs = X(CLK_MAG.fire);
-      for (let i = 0; i < 26; i++) { const dx = (r() - 0.5) * 9 * (1 - 0.6 * kl); circle(xs + dx, Y(0.5) + (r() - 0.5) * 6, 3.2, { fill: A, alpha: 0.5 * kl }); }
-      rr(xs - 10, Y(0.5) - 15, 20, 30, 4, null, A, 2.5, kl);
-      text('Learned snap', xs + 18, Y(0.5) + 36, { role: 'label', size: 21, color: A, alpha: kl });
-      text('Illustration: no data yet', px1 - 8, py0 + 26, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kl });
-    }
-    text('Colour: what the sensor reports, in 0.01 mm steps. Grey: the button.', wx + 26, wy + wh - 20, { role: 'small', size: 25, color: C.faint, alpha: ep(t, 2.0, 2.4), maxW: ww - 52 });
-    /* who already senses travel */
-    const rx = wx + ww + 24, rw = RM - rx;
-    demoWindow(rx, wy, rw, wh, ep(t, 0.5, 0.9));
-    clk_head(t, 0.9, rx, wy, rw, 'Who already reads the travel', ['claim']);
-    const blocks = [['Finalmouse SLX, TMR-DS', 'A magnet per button, 40 steps of 0.01 mm. A Huano switch still clicks.'], ['Logitech Superstrike', 'Inductive sensing over 0.6 mm, 10 levels, haptics for the click.'], ['Kunai, pre-production', 'Fires at each switch\'s own snap and learns it. Not shipping yet.']];
-    let yy = wy + 104;
-    blocks.forEach(([h2, b], i) => { const k = ep(t, 1.2 + i * 0.5, 1.6 + i * 0.5); text(h2, rx + 26, yy, { role: 'label', size: 21, color: A, alpha: k }); const r2 = text(b, rx + 26, yy + 38, { role: 'small', color: C.ink2, t, t0: 1.3 + i * 0.5, cps: 130, maxW: rw - 52, lh: 1.36 }); yy += 38 + r2.h + 24; });
-    clk_steps(t, 8.4, LM, sy, RM - LM, CLK_MAG_STEP);
-    gloss(t, 2.4, 'TMR', 'Tunnel magnetoresistance: a sensor whose resistance follows a magnet\'s field closely enough to read a hundredth of a millimetre.');
-    featureCard(t, 5.4, 'A sensor per button', ['claim', 'proposal'], 'Magnetic sensing for timing, rapid trigger and a resting finger; the switch stays for the snap you feel.');
-  }
-});
-
-/* ============================== 12. side buttons on rails (#80), through slots in the side PCB (#83) ============================== */
-clk_S({
-  id: 'sidebuttons', ch: 'click', theme: 'paper', title: 'Side buttons on rails', settle: 10, ideas: [80, 83],
-  src: ['clk_brock'], three: ['shell'],
-  sfxLoop: [{ t0: 2.4, per: 2.6, cues: [[0, 'click'], [0.1, 'release']] }],
-  draw: t => {
-    header(t, 'Side buttons on rails');
-    captions(t, [[0.6, 'A hinged side button is a lever: press near the hinge and it takes far more force than at the tip.'], [3.4, 'On rails the whole button slides straight in, so it feels the same wherever your thumb lands.'], [6.4, 'The rails run through slots in the side PCB, so the shell needs no rail features of its own.']]);
-    const A = acc(), wx = LM, wy = LAY.top, ww = 820, wh = 840 - wy;
-    demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    clk_fig(t, 0.6, wx + 28, wy + 44, 4, 'A side button in section, pressed downward');
-    const pr = clk_curve(cyc(t, 2.4, 2.6)), o = part(wx + 300, wy + 200, 19, () => railMM({ press: pr, accent: A }), { alpha: ep(t, 0.4, 0.9) });
-    callout(t, 1.2, o.rail, 'Two POM rails', { to: [wx + 580, wy + 170], side: 'r', color: A });
-    callout(t, 1.5, o.boardSlot, 'Slots in the side PCB guide them (#83)', { to: [wx + 580, wy + 300], side: 'r', color: A, maxW: 210, prose: true });
-    callout(t, 1.8, o.hook, 'Hooks set the end of travel', { to: [wx + 580, wy + 430], side: 'r', color: A, maxW: 210, prose: true });
-    keyPlan(t, 1.0, wx + 110, wy + wh - 120, { s: 0.55, hi: 'side', cut: { type: 'cross', y: -18, label: 'B' }, label: 'Section B' });
-    /* the shell's side buttons, sliding on their rails */
-    const cx = wx + ww + 24, cw = RM - cx, ch = 296;
-    demoWindow(cx, wy, cw, ch, ep(t, 0.5, 0.9));
-    clk_head(t, 0.9, cx, wy, cw, 'Theseus, left side', ['proposal']);
-    const s0 = clk_curve(cyc(t, 2.4, 2.6)), s1 = clk_curve(cyc(t, 3.7, 2.6));
-    clk_v3('shell', t, cx + 10, wy + 52, cw - 20, ch - 60, { view: 'right', yaw: -0.18, pitch: -0.08, zoom: in2D(2.3, 1.5), side0: s0, side1: s1, target: in2D([20, 19, 2], [20, 22, 4]), hi2d: { re: /^side(Front|Rear)/, color: A, w: 2.6 } }, { alpha: ep(t, 1.0, 1.6) });
-    /* force needed against where the thumb lands */
-    const fy = wy + ch + 16, fh = 840 - fy;
-    demoWindow(cx, fy, cw, fh, ep(t, 0.7, 1.1));
-    clk_head(t, 1.1, cx, fy, cw, 'Force needed, by where you press', ['derived']);
-    const m = axes(t, { x: cx + 96, y: fy + 76, w: cw - 140, h: fh - 176, xr: [0.15, 1], yr: [0, 4], xticks: [0.2, 0.4, 0.6, 0.8, 1], yticks: [0, 2, 4], xfmt: v => Math.round(v * 100) + '%', yfmt: v => v + '×', xlabel: 'Press position, from the hinge end', t0: 1.2 });
-    const hinge = []; for (let d = 0.15; d <= 1.001; d += 0.01) hinge.push([d, 0.6 / d]);
-    series(m, hinge, { color: C.red, w: 3, p: ep(t, 1.5, 2.6, E.lin) });
-    series(m, [[0.15, 1], [1, 1]], { color: A, w: 3.5, p: ep(t, 2.4, 3.2, E.lin) });
-    text('Hinged: F ∝ 1 / distance', m.X(0.3), m.Y(3.3), { role: 'small', size: 25, weight: 600, color: C.red, alpha: ep(t, 2.4, 2.8) });
-    text('On rails: the same everywhere', m.X(0.5), m.Y(1) - 16, { role: 'small', size: 25, weight: 600, color: A, alpha: ep(t, 3.0, 3.4) });
-    gloss(t, 3.4, 'Dual rail', 'The button slides straight in on two guides, like a keyboard switch, instead of bending on a hinge.');
-    featureCard(t, 6.0, 'Side buttons on rails', ['derived', 'proposal'], 'The buttons ride on rails (#80) through slots in the side PCB (#83). The divider, the PCB and its support are on the next sheet.');
+    const cA = clk_ten('flat', 'abs').clk, cP = clk_ten('flat', 'ppcf').clk, cB = clk_ten('bridge', 'ppcf').clk, ratio = SIM_MAT.ppcf.E / SIM_MAT.abs.E;
+    header(t, 'A stiff trigger with a light click');
+    captions(t, [[0.6, 'I want a stiff trigger: it has to be strong on its own, or it flexes into post-travel.'], [2.8, `But ${SIM_MAT.ppcf.name} is ${ratio.toFixed(1)} times as stiff as ABS, so the same flat plane clicks ${ratio.toFixed(1)} times as hard.`], [5.4, `The bridge brings it back: a stiff trigger, and a click ${(cB.gf - cA.gf).toFixed(1)} gf from an ABS one.`]]);
+    const [wx, ww] = CLK_G.a, wy = LAY.top, ch = 448;
+    clk_tile(t, 0.3, wx, wy, ww, ch, 'Tensioner force against travel at the plunger', ['derived']);
+    /* the two switches the pointer flips: material, then tensioner */
+    const t1 = 2.9, t2 = 5.3, mat = t < t1 ? 'ABS' : SIM_MAT.ppcf.name, ten = t < t2 ? 'Flat plane' : 'Bridge', ty = wy + 104, ka = ep(t, 0.8, 1.2);
+    const w1 = ltagW('Material', mat, { size: 20 }), w1max = ltagW('Material', SIM_MAT.ppcf.name, { size: 20 });
+    ltag(wx + 26, ty, 'Material', mat, { a: ka, size: 20, solid: t < t1 ? C.second : C.ink2, on: C.bg, color: C.mute });
+    ltag(wx + 26 + w1max + 24, ty, 'Tensioner', ten, { a: ka, size: 20, solid: t < t2 ? C.ink2 : C.heroChip, on: t < t2 ? C.bg : C.onHero, color: C.mute });
+    const p1 = [wx + 26 + w1 * 0.75, ty - 4], p2 = [wx + 26 + w1max + 24 + ltagW('Tensioner', ten, { size: 20 }) * 0.8, ty - 4];
+    cursorAt(t, [[1.8, [p1[0] + 140, p1[1] + 120]], [2.6, p1], [4.6, p1], [5.1, p2], [9, p2]], [t1, t2], { a: ep(t, 1.6, 2.0) });
+    const m = axes(t, { x: wx + 110, y: wy + 160, w: ww - 330, h: 200, xr: [0, 0.5], yr: [0, 30], xticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5], yticks: [0, 10, 20, 30], xfmt: v => v.toFixed(1), yfmt: v => v + ' gf', xlabel: 'Travel at the plunger, mm', t0: 0.6 });
+    const slope = c => c.gf / CLK_TN.pre, kx = 0.35, lineTo = (g, col, w, a, dash) => { const x1 = Math.min(0.5, 30 / g); series(m, [[0, 0], [x1, g * x1]], { color: col, w, alpha: a, dash }); };
+    /* the click: the GT01's 0.35 mm pre-travel */
+    const kv = ep(t, 1.0, 1.4); line(m.X(kx), m.Y(0), m.X(kx), m.Y(30) - 6, { color: C.ink2, w: 1.5, dash: [6, 5], alpha: kv });
+    text('The GT01 clicks, 0.35 mm', m.X(kx) + 10, m.Y(30) + 4, { role: 'label', size: 19, color: C.mute, alpha: kv });
+    /* the ghosts of the states the pointer left behind, then the live line */
+    const gA = slope(cA), gP = slope(cP), gB = slope(cB), k1 = ep(t, t1 + 0.1, t1 + 0.8, E.snap), k2 = ep(t, t2 + 0.1, t2 + 0.8, E.snap);
+    if (t > t1) lineTo(gA, C.second, 3, ep(t, t1, t1 + 0.4));
+    if (t > t2) lineTo(gP, C.bad, 3, ep(t, t2, t2 + 0.4));
+    const gL = t < t2 ? lerp(gA, gP, k1) : lerp(gP, gB, k2), colL = t < t1 ? C.second : t < t2 ? C.bad : C.hero;
+    lineTo(gL, colL, 5, ep(t, 0.9, 1.5));
+    /* the values at the click */
+    const dot = (g, col, lab, a, below) => { if (a <= 0.003) return; const px = m.X(kx), py = m.Y(g * kx); circle(px, py, 7, { fill: col, alpha: a }); text(lab, px - 14, py + (below ? 30 : -14), { role: 'num', size: 24, weight: 700, color: col, align: 'right', alpha: a }); };
+    dot(gA, C.secondText, cA.gf.toFixed(1) + ' gf', ep(t, 1.4, 1.8) * (t < t1 ? 1 : 1), true);
+    dot(gP, C.bad, cP.gf.toFixed(1) + ' gf', ep(t, t1 + 0.7, t1 + 1.0));
+    dot(gB, C.heroText, cB.gf.toFixed(1) + ' gf', ep(t, t2 + 0.7, t2 + 1.0));
+    /* the line names, set along each line where nothing else is */
+    const nm = (g, x, lab, col, a, dy) => { if (a > 0.003) text(lab, m.X(x) + 12, m.Y(g * x) + dy, { role: 'label', size: 19, color: col, alpha: a }); };
+    nm(gA, 0.47, 'Flat plane, ABS', C.secondText, ep(t, 1.6, 2.0), 30);
+    nm(gB, 0.47, 'Bridge, ' + SIM_MAT.ppcf.name, C.heroText, ep(t, t2 + 0.9, t2 + 1.3), -14);
+    if (t > t1 + 0.8) text('Flat plane, ' + SIM_MAT.ppcf.name, m.X(28 / gP) - 14, m.Y(28) + 8, { role: 'label', size: 19, color: C.bad, align: 'right', alpha: ep(t, t1 + 0.8, t1 + 1.2) });
+    /* the three cases, as numbers */
+    const sy = wy + ch + 40, sw = (ww - 48) / 3, sh = CLK_BOT - sy;
+    statCard(t, 1.4, wx, sy, sw, sh, { label: 'Flat, ABS', ev: 'derived', value: cA.gf.toFixed(1), unit: 'gf', valueColor: C.secondText });
+    statCard(t, t1 + 0.6, wx + sw + 24, sy, sw, sh, { label: 'Flat, ' + SIM_MAT.ppcf.name, ev: 'derived', value: cP.gf.toFixed(1), unit: 'gf', valueColor: C.bad });
+    statCard(t, t2 + 0.6, wx + 2 * (sw + 24), sy, sw, sh, { label: 'Bridge, ' + SIM_MAT.ppcf.name, ev: 'derived', value: cB.gf.toFixed(1), unit: 'gf', hero: true });
+    /* right: the word, and what the screw and the span do (#49, #59) */
+    const fl5 = clk_ten('flat', 'ppcf', { clampTo: 0.5 }).clk, br5 = clk_ten('bridge', 'ppcf', { clampTo: 0.5 }).clk, b10 = clk_ten('bridge', 'ppcf', { S: 10, rise: 2.0 }).clk;
+    const pc = (a, b) => '+' + ((b.F / a.F - 1) * 100).toFixed(1) + '%', [cx, cw] = CLK_G.b;
+    clk_stack(wy, [
+      y => glossBox(t, 2.6, cx, y, cw, 'Flexural modulus', `How hard a material is to bend: ${SIM_MAT.ppcf.name} ${(SIM_MAT.ppcf.E / 1000).toFixed(1)} GPa, ABS ${(SIM_MAT.abs.E / 1000).toFixed(2)} GPa.`),
+      y => noteBox(t, 6.4, cx, y, cw, { kind: 'derived', label: 'Derived', value: 'One screw (#49)', body: `If the screw clamps 0.5 mm more of the plate, the flat plane clicks ${pc(cP, fl5)} harder and the bridge ${pc(cB, br5)}.` }),
+      y => noteBox(t, 7.2, cx, y, cw, { kind: 'derived', label: 'Derived', value: 'More room (#59)', body: `A taller fulcrum lets the arch span 10 mm instead of 8: the bridge clicks at ${b10.gf.toFixed(1)} gf instead of ${cB.gf.toFixed(1)}.` })
+    ]);
   }
 });

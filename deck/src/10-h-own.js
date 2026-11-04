@@ -113,74 +113,7 @@ S({
   }
 });
 
-/* ============================== #9 one screw, any driver ============================== */
-/** where the settled 3D joint's head sits on stage (read off the render at t = settle) */
-const own_SCREWPT = { head: [300, 552] };
-/** horizontal bars for fastener masses: name, qualifier, a bar on a track, the value and its evidence dot */
-function own_massBars(t, t0, x, y, w, rows, o = {}) {
-  const lw = o.labelW || 300, vw = o.valW || 150, bx = x + lw, bw = w - lw - vw, max = o.max, rh = o.rh || 62;
-  rows.forEach((r, i) => {
-    const yy = y + i * rh, a = ep(t, t0 + i * 0.12, t0 + 0.35 + i * 0.12), k = ep(t, t0 + 0.2 + i * 0.12, t0 + 1.0 + i * 0.12, E.snap);
-    if (i) line(x, yy - rh * 0.55, x + w, yy - rh * 0.55, { color: C.hair, w: 1, alpha: a * 0.8 });
-    text(r.name, x, yy, { role: 'small', weight: r.hero ? 800 : r.ref ? 700 : 500, color: C.ink, alpha: a });
-    text(r.qual, x, yy + 26, { role: 'label', size: 19, color: r.hero ? C.heroText : C.faint, alpha: a });
-    const lo = Array.isArray(r.v) ? r.v[0] : r.v, hi = Array.isArray(r.v) ? r.v[1] : r.v, by = yy - 4, bh = 14;
-    rr(bx, by - bh / 2, bw, bh, bh / 2, C.track, null, 0, a);
-    const col = r.hero ? C.hero : r.ref ? C.ref : C.comp;
-    if (hi !== lo) rr(bx, by - bh / 2, Math.max(bh, bw * hi / max * k), bh, bh / 2, rgba(C.hero, 0.45), null, 0, a);
-    rr(bx, by - bh / 2, Math.max(bh, bw * lo / max * k), bh, bh / 2, col, r.hero && TH ? '#111111' : null, 1.3, a);
-    const vs = { font: 'mono', size: 25, weight: r.hero ? 800 : 600 };
-    text(r.label, x + w, yy + 2, Object.assign({ color: C.ink, align: 'right', alpha: a }, vs));
-    evDot(x + w - tw(r.label, vs) - 16, yy - 6, r.ev, 5.5, a);
-  });
-  return y + rows.length * rh;
-}
-S({
-  id: 'ownscrew', ch: 'own', theme: 'night', title: 'One screw, any driver', settle: 10, ideas: [9], three: ['screw'],
-  src: ['ownB2gSlx', 'exXbabWeight', 'exZkM1k', 'ownIso7045', 'gremlin'],
-  draw: t => {
-    header(t, 'One screw, any driver');
-    captions(t, [[0.6, 'Every screw an owner turns is an M2 machine screw into a brass insert, with a cross and a slot so any driver fits.'], [5.6, 'Brass and steel cost mass. The Starlight X holds its whole frame together with 0.30 g of titanium.']]);
-    const A = acc(), y0 = LAY.top, h0 = 580;
-    /* left: the joint in 3D, driving home; the section in 2D beside it */
-    const lx = LM, lw0 = 820;
-    let hy = own_card(t, 0.3, lx, y0, lw0, h0, 'M2 machine screw, brass insert', ['proposal']);
-    const drive = kf(t, [[0.9, 0], [4.0, 1]], E.io3);
-    const sst = { view: 'threeQuarter', drive, zoom: 1.24, yaw: 0.5 - 0.3 * ep(t, 0.5, 3.8), target: [0, 0.5, 0] };
-    view3D('screw', t, lx + 6, hy + 4, 420, 430, sst, { alpha: ep(t, 0.4, 1.0) });
-    const hp = (V2D.on && v2dAt('screw', sst, [lx + 6, hy + 4, 420, 430], /screw\/head$/, [0.5, 1, 0.5])) || own_SCREWPT.head;
-    callout(t, 4.3, hp, 'Cross and slot', { to: [hp[0] + 60, hy + 48], side: 'r', color: C.ink2, tcolor: C.ink });
-    /* the section: boss, knurled brass insert, the steel screw's machine thread, the board clamped */
-    const sx = lx + 610, sy = hy + 250, ks = ep(t, 1.6, 2.2);
-    text('Section', sx, hy + 26, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: ks });
-    const o = part(sx, sy, 20, () => insertMM({ k: 1, accent: A, hole: C.panel }), { alpha: ks }) || {};
-    if (o.insert) {
-      const kl = ep(t, 2.4, 2.8), num = (n, p) => { circle(p[0], p[1], 15, { fill: C.panel, alpha: kl }); circle(p[0], p[1], 15, { color: A, w: 2, alpha: kl }); text(String(n), p[0], p[1] + 7, { font: 'mono', size: 19, weight: 700, color: C.ink, align: 'center', alpha: kl }); };
-      num(1, [o.boss[0] - 18, o.boss[1]]); num(2, [o.insert[0] + 22, o.insert[1]]); num(3, [o.head[0] + 24, o.head[1] + 6]);
-      [['1', 'Boss in the shell'], ['2', 'Brass insert, knurled'], ['3', 'Steel screw, brass-plated']].forEach(([n, l2], i) => rich([{ s: n, font: 'mono', size: 21, weight: 700, color: A }, { s: l2, role: 'label', size: 21, color: C.ink2, gap: 12 }], lx + 450, hy + 326 + i * 32, { alpha: ep(t, 2.6 + i * 0.15, 3.0 + i * 0.15) }));
-    }
-    text('Steel into brass, not into plastic: it opens again and again.', lx + 26, y0 + h0 - 30, { role: 'small', color: C.ink2, maxW: lw0 - 52, lh: 1.32, t, t0: 3.0, cps: 120 });
-    /* right: what a screw weighs, against the lightest in mice */
-    const rx = lx + lw0 + 40, rw = RM - rx;
-    hy = own_card(t, 0.5, rx, y0, rw, h0, 'Mass per screw', ['claim', 'derived']);
-    const rows = [
-      { name: 'Finalmouse Starlight X', qual: 'Titanium, 15 per mouse', v: 0.02, label: '0.02 g', ev: 'claim', ref: true },
-      { name: 'XBAB XA25', qual: 'Thread-forming, 0.708 g ÷ 11', v: 0.064, label: '0.064 g', ev: 'derived' },
-      { name: 'Zaunkoenig M1K', qual: '1.5 g ÷ 9', v: 0.167, label: '0.167 g', ev: 'derived' },
-      { name: 'Theseus screw', qual: 'M2 × 5 steel: 27 {mm³} × 7.85 {g/cm³}', v: 0.21, label: '0.21 g', ev: 'derived', hero: true },
-      { name: 'Theseus joint', qual: 'Screw + insert 0.15 to 0.18 g', v: [0.36, 0.39], label: '0.36–0.39 g', ev: 'derived', hero: true }
-    ];
-    const yb = own_massBars(t, 1.0, rx + 26, hy + 30, rw - 52, rows, { max: 0.42, labelW: 330, valW: 200, rh: 60 });
-    /* the step: what the lightest does, what it leaves out, what I'll publish */
-    const ka = ep(t, 5.8, 6.2), sy0 = yb - 2;
-    line(rx + 26, sy0 - 12, rx + rw - 26, sy0 - 12, { color: C.hair, w: 1.5, alpha: ka });
-    rich([{ s: '6 joints', font: 'mono', size: 25, weight: 700, color: C.ink }, { s: '× 0.37 g = 2.22 g, 7.7% of 29 g', font: 'mono', size: 25, weight: 500, color: C.ink2, gap: 12 }], rx + 26, sy0 + 26, { alpha: ka });
-    pill(rx + rw - 26 - pillW('derived'), sy0 + 26, 'derived', ka);
-    text('So M2 and brass only where an owner opens it, the lightest screw elsewhere. I publish the total, and strip-out torque after 20 cycles.', rx + 26, sy0 + 68, { role: 'small', color: C.ink, maxW: rw - 52, lh: 1.32, t, t0: 6.2, cps: 130 });
-    gloss(t, 2.6, 'Combination drive', 'A cross for a Phillips bit and a slot for a flat blade in one head. If the cross strips, the slot still turns it.');
-    featureCard(t, 6.8, 'One screw size', ['claim', 'proposal'], 'M2 at every service point. A magnetic bit holds the steel core; the brass plating sits against the brass insert.');
-  }
-});
+/* ownscrew, own_insert, own_wear and own_mass (the screw, the insert, thread wear, fastener mass) are in 10-h2-own.js */
 
 /* ============================== #71 a battery that unplugs, held by bands ============================== */
 /** the pull on a plug, in section: a top-entry header peels its pads; a side-entry one pulls along them */

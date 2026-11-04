@@ -32,7 +32,7 @@ function go(i, opts = {}) {
     APP.trans = next.trans || (next.card ? 'iris' : themeOf(prev) !== themeOf(next) ? 'sweep' : 'push');
     APP.back = i < APP.i;
     TH = themeOf(next); APP.trAcc = next.card ? acc(next.ch) : (themeOf(next) ? '#111111' : '#F3F2EE');
-    if (APP.trans === 'sweep') APP.trAcc = acc(next.ch) === C.ink ? APP.trAcc : acc(next.ch);
+    if (APP.trans === 'sweep') APP.trAcc = acc(next.ch) === C.ink ? C.hero : acc(next.ch);
   } else APP.trStart = -1;
   APP.i = i; APP.t0 = now; APP.tPause = 0; APP.lastT = 0;
   if (APP.reduced) { APP.t0 = now - (next.settle || 9) * 1000; APP.tPause = next.settle || 9; }
@@ -84,6 +84,7 @@ function drawSlide(ctx, s, t) {
   ctx.setTransform(sc, 0, 0, sc, 0, 0);
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+  try { stageLight(t, s.ch); } catch (e) { /* the light is decoration */ }
   if (QA.on) { QA.text.length = 0; QA.boxes.length = 0; }
   const j = s.jolt ? s.jolt(t) : null; if (j) ctx.translate(j[0], j[1]);
   paper(s.paper == null ? 1 : (typeof s.paper === 'function' ? s.paper(t) : s.paper));
@@ -104,28 +105,44 @@ function compose(k) {
   if (k >= 1 || APP.trStart < 0) { fx.drawImage(OFF, 0, 0); return; }
   const A = SNAP, B = OFF, accent = APP.trAcc, dir = APP.back ? -1 : 1;
   if (APP.trans === 'iris') {
+    /* a soft iris: the new slide opens in a circle with a feathered ring of light in the chapter's colour, while the
+       old one swells a little and dims behind it (no solid colour fills the screen) */
     const x = (APP.irisX || 300) * sx, y = (APP.irisY || 760) * sx, R = Math.hypot(Math.max(x, w - x), Math.max(y, h - y)) + 8;
-    const ea = E.io3(clamp(k / 0.9)), eb = E.io3(clamp((k - 0.1) / 0.9));
-    fx.save(); fx.translate(x, y); fx.scale(1 + 0.07 * ea, 1 + 0.07 * ea); fx.translate(-x, -y); fx.drawImage(A, 0, 0); fx.restore();
-    fx.fillStyle = accent; fx.beginPath(); fx.arc(x, y, R * ea, 0, Math.PI * 2); fx.fill();
-    fx.save(); fx.beginPath(); fx.arc(x, y, Math.max(0.01, R * eb), 0, Math.PI * 2); fx.clip();
-    fx.translate(x, y); fx.scale(1.1 - 0.1 * eb, 1.1 - 0.1 * eb); fx.translate(-x, -y); fx.drawImage(B, 0, 0); fx.restore();
-    if (eb > 0 && eb < 1) { fx.strokeStyle = 'rgba(255,255,255,0.35)'; fx.lineWidth = 1.5 * sx; fx.beginPath(); fx.arc(x, y, R * eb, 0, Math.PI * 2); fx.stroke(); }
+    const ea = E.io3(clamp(k / 0.9)), eb = E.cam(clamp((k - 0.05) / 0.95));
+    fx.save(); fx.translate(x, y); fx.scale(1 + 0.06 * ea, 1 + 0.06 * ea); fx.translate(-x, -y); fx.drawImage(A, 0, 0); fx.restore();
+    fx.fillStyle = `rgba(0,0,0,${0.35 * ea})`; fx.fillRect(0, 0, w, h);
+    const rr0 = Math.max(0.01, R * eb);
+    fx.save(); fx.beginPath(); fx.arc(x, y, rr0, 0, Math.PI * 2); fx.clip();
+    fx.translate(x, y); fx.scale(1.06 - 0.06 * eb, 1.06 - 0.06 * eb); fx.translate(-x, -y); fx.drawImage(B, 0, 0); fx.restore();
+    if (eb > 0 && eb < 1) {
+      const ring = fx.createRadialGradient(x, y, Math.max(0, rr0 - 60 * sx), x, y, rr0 + 6 * sx);
+      ring.addColorStop(0, rgba(accent, 0)); ring.addColorStop(0.85, rgba(accent, 0.35 * (1 - eb))); ring.addColorStop(1, rgba(accent, 0));
+      fx.fillStyle = ring; fx.beginPath(); fx.arc(x, y, rr0 + 6 * sx, 0, Math.PI * 2); fx.fill();
+    }
   } else if (APP.trans === 'sweep') {
-    const sl = 0.36 * h, x0 = -sl - 40, x1 = w + 40;
-    const ea = E.io3(clamp(k / 0.88)), eb = E.io3(clamp((k - 0.12) / 0.88));
-    const xa = lerp(x0, x1, ea), xb = lerp(x0, x1, eb);
-    fx.drawImage(A, -60 * sx * ea, 0);
-    const band = xe => { fx.beginPath(); fx.moveTo(-10, 0); fx.lineTo(xe + sl, 0); fx.lineTo(xe, h); fx.lineTo(-10, h); fx.closePath(); };
-    fx.fillStyle = accent; band(xa); fx.fill();
-    fx.save(); band(xb); fx.clip(); fx.drawImage(B, 0, 0); fx.restore();
+    /* a wipe of light: a soft diagonal edge carries the new slide across, a thin glow on its leading edge; the old
+       slide drifts back and dims (no band of solid colour) */
+    const sl = 0.32 * h, x0 = -sl - 80 * sx, x1 = w + 80 * sx, e = E.cam(clamp(k));
+    const xe = lerp(x0, x1, e);
+    fx.save(); fx.translate(-50 * sx * e, 0); fx.drawImage(A, 0, 0); fx.restore();
+    fx.fillStyle = `rgba(0,0,0,${0.3 * e})`; fx.fillRect(0, 0, w, h);
+    const band = xx => { fx.beginPath(); fx.moveTo(-10, 0); fx.lineTo(xx + sl, 0); fx.lineTo(xx, h); fx.lineTo(-10, h); fx.closePath(); };
+    fx.save(); band(xe); fx.clip(); fx.translate(40 * sx * (1 - e), 0); fx.drawImage(B, 0, 0); fx.restore();
+    if (e > 0 && e < 1) {
+      fx.save(); fx.globalCompositeOperation = 'lighter';
+      for (const [wd, al] of [[26, 0.10], [8, 0.22], [2, 0.6]]) { fx.strokeStyle = rgba(accent, al * Math.sin(e * Math.PI)); fx.lineWidth = wd * sx; fx.beginPath(); fx.moveTo(xe + sl, 0); fx.lineTo(xe, h); fx.stroke(); }
+      fx.restore();
+    }
   } else if (APP.trans === 'push') {
     const e = E.io5(k);
     fx.drawImage(A, -0.38 * w * e * dir, 0);
     fx.fillStyle = `rgba(0,0,0,${0.32 * e})`; fx.fillRect(0, 0, w, h);
     const bx = dir > 0 ? w * (1 - e) : -w * (1 - e);
     fx.drawImage(B, bx, 0);
-    const lx = dir > 0 ? bx : bx + w; fx.strokeStyle = acc(DECK.slides[APP.i].ch) === C.ink ? C.hero : acc(DECK.slides[APP.i].ch); fx.lineWidth = 3 * sx; fx.beginPath(); fx.moveTo(lx, 0); fx.lineTo(lx, h); fx.stroke();
+    /* a soft shadow off the new slide's leading edge instead of a hard line */
+    const lx = dir > 0 ? bx : bx + w, sw = 60 * sx, gsh = fx.createLinearGradient(lx, 0, lx - dir * sw, 0);
+    gsh.addColorStop(0, `rgba(0,0,0,${0.35 * Math.sin(e * Math.PI)})`); gsh.addColorStop(1, 'rgba(0,0,0,0)');
+    fx.fillStyle = gsh; fx.fillRect(dir > 0 ? lx - sw : lx, 0, sw, h);
   } else { fx.drawImage(A, 0, 0); fx.globalAlpha = E.io3(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1; }
 }
 function frame() {

@@ -9,8 +9,9 @@ const rv = x => x == null ? null : Array.isArray(x) ? rv(x[0]) : (typeof x === '
 const EVMAP = { IM: 'measured', DS: 'datasheet', MC: 'claim', DV: 'derived', CA: 'claim', PR: 'proposal' };
 const evOf = x => { const l = x && (Array.isArray(x) ? x[0] : x).label; return EVMAP[String(l || '').split('/')[0]] || 'derived'; };
 function exMouse(id) { return ((RD.mice || {}).mice || []).find(m => m.id === id) || null; }
-/** a mouse's weight: measured (RTINGS) when there is one, else the maker's figure */
-function exWeight(id) { const m = exMouse(id); if (!m) return null; const me = rv(m.weight_measured_g), cl = rv(m.weight_claimed_g); return me != null ? { g: me, ev: 'measured', name: m.name } : cl != null ? { g: cl, ev: 'claim', name: m.name } : null; }
+/** a mouse's weight: measured (RTINGS) when there is one, else the maker's figure. A maker weighing its own mouse (the XA25,
+   XBAB's scale) is a claim, so the evidence follows the field's own label */
+function exWeight(id) { const m = exMouse(id); if (!m) return null; const me = rv(m.weight_measured_g), cl = rv(m.weight_claimed_g); return me != null ? { g: me, ev: evOf(m.weight_measured_g) === 'measured' ? 'measured' : 'claim', name: m.name } : cl != null ? { g: cl, ev: 'claim', name: m.name } : null; }
 const exShort = n => String(n).replace(/\s*\((?:[^()]*|\([^()]*\))*\)\s*$/, '').replace('Logitech G Pro X Superlight 2', 'Logitech GPX2').replace('Logitech G Pro X2 Superstrike', 'Logitech Superstrike').replace('Finalmouse UltralightX', 'Finalmouse ULX').replace('Finalmouse Starlight X', 'Finalmouse Starlight X');
 
 Object.assign(SRC, {

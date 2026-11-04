@@ -16,8 +16,13 @@ export function partMaterials(over = {}) {
     tin: P({ color: 0xc4c6c8, metalness: 1, roughness: 0.46 }),                 // 200–300 µin matte tin over nickel
     nickel: P({ color: 0xb9b5ab, metalness: 1, roughness: 0.3 }),
     becu: P({ color: 0xd99c6e, metalness: 1, roughness: 0.3 }),                 // bare beryllium copper
-    brass: P({ color: 0xcfa653, metalness: 1, roughness: 0.3, anisotropy: 0.35 }), // machined brass insert
-    brassPlated: P({ color: 0xe0bb62, metalness: 1, roughness: 0.2 }),          // brass-plated steel screw
+    // machined brass insert: turned, so the highlight runs along the axis (lathe UVs give a circumferential tangent;
+    // the rotation turns the anisotropy across it, as on the magnesium wheel)
+    brass: P({ color: 0xd2a852, metalness: 1, roughness: 0.27, anisotropy: 0.6, anisotropyRotation: Math.PI / 2 }),
+    brassKnurl: P({ color: 0xcca04a, metalness: 1, roughness: 0.34 }),          // formed knurl teeth: isotropic, a touch duller
+    // brass-plated steel screw: bright electroplate under a thin clear passivation (the crisp second highlight)
+    brassPlated: P({ color: 0xdcb866, metalness: 1, roughness: 0.22, clearcoat: 0.35, clearcoatRoughness: 0.08 }),
+    brassPlatedRolled: P({ color: 0xd6b05e, metalness: 1, roughness: 0.27, clearcoat: 0.25, clearcoatRoughness: 0.12 }),   // the rolled thread
     steel: P({ color: 0xc6cbd0, metalness: 1, roughness: 0.24 }),
     blackOxide: P({ color: 0x2a2b2d, metalness: 0.85, roughness: 0.42 }),
     stainless: P({ color: 0xc2c6ca, metalness: 1, roughness: 0.2 }),

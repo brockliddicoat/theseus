@@ -1,8 +1,36 @@
 /* ============================== surface and details (chapter code srf) ==============================
-   #16 baked ceramic coat, #60 etched sides, #36 #62 #61 #33 #32 the marks, #34 #82 engravings and gates,
-   #84 #30 the magnesium wheel and its tread, the optical encoder; #12 #7 #67 are on the idea sheet (12-30-surface.js).
+   #16 the baked ceramic coat (its film, its weight, its colour), #60 laser-etched directional grip (the grip map, no
+   adhesive, two-tone), #36 #62 #61 #33 #32 the marks, #34 #82 engravings and gates, #84 #30 the magnesium wheel and its
+   tread, #7 the optical encoder on a POM axle. New slides are in 10-e2-surface.js, placed with `after`.
+   The close-ups are height fields lit by a raking light (srf_field / srf_macro, below), drawn in their own canvas.
    Scan-derived numbers (Brock's Sora scan) are measured in this deck; competitor numbers carry their source. */
 Object.assign(SRC, {
+  /* the coat: Cerakote's own data (a maker's test of its own product is a claim; a published spec is a datasheet) */
+  srf_f110: { t: 'Cerakote F-110 Black Ink, F-Series (oven cure) technical data: recommended film 0.75 mil; theoretical coverage 604 ft²/gal at that film; 38% solids; 1.44 g/mL; pencil hardness 9H gouge, 7H scratch (ASTM D3363); crosscut 5B (D3359); impact 160/160 in-lb; UV stability "Excellent"; chemical resistance "Excellent", defined as a colour change under ΔE 2.5 (CIE76); results on blasted steel; cure 15 min at 250 °F, or 180 °F for 1 h', u: 'https://www.cerakoteeu.com/?p=20046', n: 'Mass per area derived here: 1.44 g/mL × 3.785 L × 38% ÷ 604 ft² (56.1 m²) = 36.9 g/m², taking the solids by weight (by volume, the coverage would be 813 ft²/gal, not 604).' },
+  srf_f130: { t: 'Cerakote F-130 Stainless, F-Series technical data: 0.75 mil recommended; 589 ft²/gal at that film; 28% solids; 1.39 g/mL; pencil 9H gouge and scratch; crosscut 5B; oven cure 15 min at 250 °F, or 180 °F for 1 h', u: 'https://www.cerakote.com/shop/cerakote-coating/F-130' },
+  srf_fManual: { t: 'Cerakote F-Series training manual: "The standard coating thickness for F-Series will be 0.75 mils"; metal is blasted with #100 aluminium oxide at 80 to 100 psi, while "carbon fiber, fiberglass, plastics, or polymers" get a light etch blast at 30 to 40 psi; plastics and polymers cure at 180 °F (82 °C) for 1 hour', u: 'https://images.nicindustries.com/cerakote/documents/7028/f-series-training-manual-dt20250115230026281906.pdf' },
+  srf_fNews: { t: 'Cerakote, F-Series launch: "Engineered for high-volume production, F-Series is a two-part, oven cure coating applied directly to substrate", with a fast cure and a low-temperature schedule', u: 'https://cerakote.com/news/136/cerakote-launches-new-game-changing-f-series' },
+  srf_micron: { t: 'Cerakote Europe, micron thickness of ceramic coatings: H-Series and F-Series thin films are "usually around 10 to 25 microns"', u: 'https://cerakoteeu.com/understanding-the-micron-thickness-of-ceramic-coatings-and-why-it-matters' },
+  srf_h167: { t: 'Cerakote H-167 technical data sheet: 1 mil recommended; 606 ft²/gal at 1.0 mil; 38% solids by weight; 1.36 g/mL; pencil 8H (ASTM D3363); UV stability (ASTM D4587) "Excellent"; chemical resistance (ASTM D4752) 100%; results on blasted steel cured at 250 °F for 2 h', u: 'https://images.nicindustries.com/cerakote/documents/4979/h-167-usmc-red-tds-dt20231127204218354071.pdf' },
+  srf_chem: { t: 'Cerakote testing, chemical resistance: coated panels soaked 24 h, rated by the average colour change; Elite was unaffected by all 13 chemicals, H-Series changed slightly in two', u: 'https://images.nicindustries.com/cerakote/documents/62/chemical-resistance-dt20200107192517592.pdf' },
+  srf_quv: { t: 'Cerakote testing, photopolymers: ASTM D4587, 1,000 h in a QUV accelerated-weathering chamber, C-7300 on COR Alpha: "no visible sign of degradation to the substrate material or coating" (a visual rating; no ΔE given)', u: 'https://images.nicindustries.com/cerakote/documents/1956/photopolymers-dt20220805212237648307.pdf' },
+  srf_laserImg: { t: 'Cerakote, Laser Imaging: three ways to laser a coat: remove it to reveal the substrate, remove a top layer to reveal a base layer, or Laser Imaging, which "produces varying color tones from a single color" and "does not etch, ablate or remove coating"; a 20 to 60 W fibre laser is recommended', u: 'https://www.cerakoteeu.com/cerakote-laser-imaging/' },
+  srf_soft: { t: 'RadTech 2016, UV-curable soft-touch coatings: tested at a final film of 2 mils (51 µm); pencil hardness 7B to H; RCA abrasion 31 to 300+ cycles', u: 'https://radtech.org/proceedings/2016/papers/technical-conference/Low-Gloss%20-%20Haptic%20Coatings/How%20does%20it%20feel%20-%20Recent%20Advances%20in%20UV-curable%20Soft%20Touch%20Coatings.pdf' },
+  /* the shell under it */
+  srf_ppc20: { t: 'Mitsubishi Chemical Pyrofil PP-C-20A datasheet (plabase): 20% carbon fibre, 1.01 g/cm³; mould shrinkage 0.1% along the flow, 0.4% across; thermal expansion 0.5 × 10⁻⁵/°C along, 12.6 × 10⁻⁵/°C across; heat deflection 155 °C at 1.8 MPa', u: 'https://en.plabase.com/plastic/items/6577ab7a86df1821ce54dafc' },
+  srf_hoft22: { t: 'Höftberger, Dietrich, Zitzenbacher & Burgstaller 2022, Polymers 14(22) 4877: short carbon fibre in PP, fibres about 7 µm across; after injection moulding the weight-average fibre length fell from 500 to 250 µm as the fibre content rose', u: 'https://www.mdpi.com/2073-4360/14/22/4877' },
+  srf_yama24: { t: 'Yamaguchi, Uematsu, Sakaguchi & Hashimoto 2024, Polymer Journal 56: 205-214: injection-moulded PP with 7 µm short carbon fibres; "the fibers were more oriented along the flow direction near the surface than in the central region"', u: 'https://www.nature.com/articles/s41428-023-00856-8' },
+  /* directional grip */
+  srf_zhang17: { t: 'Zhang, Zeng, Igartua, Rodriguez-Vidal & van der Heide 2017, Tribology Letters 65: 89: a fingertip on picosecond-laser-textured steel; grooves 20 µm wide and 10 µm deep gave μ 0.41 to 0.47 sliding along them and 0.50 to 0.53 across (0.42 and 0.53 at 1 N); a pillar texture was orientation-independent', u: 'https://link.springer.com/article/10.1007/s11249-017-0869-x' },
+  srf_serg22: { t: 'Sergachev, Matthews & van der Heide 2022, Friction 10: 762-771: skin in vivo on ellipsoidal micro-asperities (200 µm apart, 30 to 50 µm high): friction was higher sliding across their long axis, "up to a factor of 2" for the larger ones', u: 'https://link.springer.com/article/10.1007/s40544-021-0527-z' },
+  srf_ooze: { t: 'US 6,686,014 B1 (Standard Register, 2004): pressure-sensitive adhesives "cold flow, or ooze" under heat and pressure; the adhesive "creeps out from under the cut edges", and things stick to what comes out', u: 'https://patents.google.com/patent/US6686014B1/en' },
+  srf_lizard: { t: 'Lizard Skins DSP mouse grip, retailer listing: "a thickness of just 0.5mm", self-adhesive; owner reviews: "dead skin does get stuck in the triangles", and it absorbs skin oil over time', u: 'https://www.desertcart.co.za/products/223901387-lizard-skins-dsp-computer-mouse-grip-for-pc-gaming-compatible' },
+  /* two-tone and yellowing */
+  srf_prophecy: { t: 'Finalmouse ULX Prophecy (Finalmouse\'s text, Computer Lounge listing): "Specially formulated colors were developed exclusively for each Prophecy design"; the artwork is "applied using a new satin undercoat process", "with the paint protected by our new ULX competition UV matte top coat"; 33 g', u: 'https://computerlounge.co.nz/products/finalmouse-ulx-prophecy-tfue-small-wireless-gaming-mouse' },
+  srf_rdClix: { t: 'r/FinalMouse, "ULX Clix" (2025), owners comparing white editions: the Aceu "was a huge problem" for yellowing; a Tarik Pro Series "was known to yellow very badly"; one blames the staining on the Pro Series\' "grippier coating"', u: 'https://www.reddit.com/r/FinalMouse/comments/1kbw8sj/ulx_clix/', n: 'Owner reports, not a measurement.' },
+  srf_rdUlx: { t: 'r/FinalMouse, "Thoughts on the ULX?" (September 2024): "the staining of the coating" is the Pro Series\' one con; owners put grip tape on the main buttons "to avoid any discoloration"', u: 'https://www.reddit.com/r/FinalMouse/comments/1f6bl7h/', n: 'Owner reports, not a measurement.' },
+  /* the encoder */
+  srf_heds: { t: 'Avago HEDS-9700 optical encoder module datasheet: "a lensed LED source and a detector IC enclosed in a small C-shaped plastic package"; the codewheel "moves between the emitter and detector, causing the light beam to be interrupted"; channel A is in quadrature with B, 90° electrical, 4 states per cycle', u: 'https://docs.broadcom.com/doc/AV02-0511EN' },
   srf_doc: { t: 'Brock Liddicoat, "In Pursuit of an Objectively Better Mouse": numbered ideas, reasoning and brainstorm notes (private document, with its comment thread)', u: '', n: 'Brock\'s own statements and community reports: claim-level evidence, not measurements.' },
   srf_scan: { t: 'Brock Liddicoat\'s 3D scan of a Ninjutso Sora V3 (the Sora V2 shape), 119.2 × 62.5 × 38.1 mm: sections, widths, heights and areas measured from it in this deck', u: '', n: 'Measured here from the normalized scan (refs/scan). The scan is not watertight, so areas are approximate; lengths are good to about ±0.3 mm.' },
   srf_eloPmm: { t: 'EloShapes, PMM AIM 8K review: "a ceramic-based finish designed to enhance grip on their 3D-printed plastic"; "improves grip significantly"; 20 g', u: 'https://www.eloshapes.com/mouse/review/pmm-aim-8k' },
@@ -118,6 +146,169 @@ function srf_pencil(x, y, grade, a) {
   text(grade, x + 70, y - 82, { role: 'label', size: 21, color: C.ink2, alpha: a });
 }
 
+/* ============================== macro close-ups: a height field under a raking light ==============================
+   The chapter's close-ups (the coat, the etch, the tape, the two-tone) are height fields lit by one light: built once
+   from seeded noise, shaded per pixel into a small canvas when the light or the state moves, drawn scaled into a rounded
+   tile. Units are the field's own pixels; z is in the same units. Layer 1 (z1, a1, g1) is what the surface becomes:
+   k mixes toward it everywhere, or pixel by pixel as k passes th[p] (a laser scan, wear spreading) when th is set. */
+const SRF = { r: 22 };
+const SRF_F = new Map();
+function srf_hash(x, y, s) { let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(s | 0, 1442695041)) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; }
+function srf_vn(x, y, s) {
+  const xi = Math.floor(x), yi = Math.floor(y), u = x - xi, v = y - yi, su = u * u * (3 - 2 * u), sv = v * v * (3 - 2 * v);
+  const a = srf_hash(xi, yi, s), b = srf_hash(xi + 1, yi, s), c = srf_hash(xi, yi + 1, s), d = srf_hash(xi + 1, yi + 1, s);
+  return (a + (b - a) * su + (c - a) * sv + (a - b - c + d) * su * sv) * 2 - 1;
+}
+function srf_fbm(x, y, s, oct = 4) { let a = 0, f = 1, amp = 1, n = 0; for (let i = 0; i < oct; i++) { a += amp * srf_vn(x * f, y * f, s + i * 31); n += amp; f *= 2.03; amp *= 0.5; } return a / n; }
+/** a field, built once by gen(f) and kept: f = { w, h, n, z0, a0 (RGB), g0 (gloss 0..1), mat: { amb, kd, ks, sh, rz, aoR, aoK } } */
+function srf_field(key, w, h, gen) {
+  let f = SRF_F.get(key);
+  if (!f) { f = { key, w, h, n: w * h, z0: new Float32Array(w * h), a0: new Uint8ClampedArray(w * h * 3), g0: new Float32Array(w * h), mat: {} }; gen(f); SRF_F.set(key, f); }
+  return f;
+}
+/** give a field its second state, a copy of the first to edit; th = true adds per-pixel switch times */
+function srf_layer1(f, th) { f.z1 = new Float32Array(f.z0); f.a1 = new Uint8ClampedArray(f.a0); f.g1 = new Float32Array(f.g0); if (th) f.th = new Float32Array(f.n).fill(9); }
+function srf_blur(src, dst, tmp, w, h, r) {
+  const d = 2 * r + 1;
+  for (let y = 0; y < h; y++) { const o = y * w; let s = 0; for (let i = -r; i <= r; i++) s += src[o + Math.min(w - 1, Math.max(0, i))]; for (let x = 0; x < w; x++) { tmp[o + x] = s / d; s += src[o + Math.min(w - 1, x + r + 1)] - src[o + Math.max(0, x - r)]; } }
+  for (let x = 0; x < w; x++) { let s = 0; for (let i = -r; i <= r; i++) s += tmp[Math.min(h - 1, Math.max(0, i)) * w + x]; for (let y = 0; y < h; y++) { dst[y * w + x] = s / d; s += tmp[Math.min(h - 1, y + r + 1) * w + x] - tmp[Math.max(0, y - r) * w + x]; } }
+}
+/** shade a field. lt = { p: [x, y, z] } a point light in field px (a studio light that can sweep), or { az, el } a far light
+   (az 0 = from the right, π/2 = from the top); a cool fill light comes from the other side. k = the field's state.
+   returns its canvas, kept while nothing changes */
+function srf_shade(f, lt, k = 0) {
+  const pt = lt.p, q = (pt ? 'p' + Math.round(pt[0] * 3) + ',' + Math.round(pt[1] * 3) + ',' + Math.round(pt[2] * 3) : 'd' + Math.round(lt.az * 600) + ',' + Math.round(lt.el * 600)) + ',' + Math.round(k * 1200);
+  if (f.q === q && f.cv) return f.cv;
+  const { w, h, n } = f, M = f.mat;
+  if (!f.cv) { f.cv = document.createElement('canvas'); f.cv.width = w; f.cv.height = h; f.ctx = f.cv.getContext('2d'); f.img = f.ctx.createImageData(w, h); f.zz = new Float32Array(n); f.bl = new Float32Array(n); f.tm = new Float32Array(n); f.mm = new Float32Array(n); }
+  const zz = f.zz, mm = f.mm, two = !!f.z1;
+  if (two) { const ramp = f.ramp || 0.01; for (let p = 0; p < n; p++) { const m = f.th ? clamp((k - f.th[p]) / ramp) : k; mm[p] = m; zz[p] = f.z0[p] + (f.z1[p] - f.z0[p]) * m; } }
+  else zz.set(f.z0);
+  srf_blur(zz, f.bl, f.tm, w, h, M.aoR || 6);
+  const el = pt ? 0.5 : lt.el, az = pt ? 0 : lt.az, ce = Math.cos(el);
+  let Lx = ce * Math.cos(az), Ly = -ce * Math.sin(az), Lz = Math.sin(el);
+  /* the fill: from the opposite side, high and cool */
+  const fa = pt ? Math.atan2(-(pt[1] - h / 2), pt[0] - w / 2) + Math.PI : az + Math.PI, Fx = 0.55 * Math.cos(fa), Fy = -0.55 * Math.sin(fa), Fz = 0.83;
+  const rz = M.rz || 1, amb = M.amb == null ? 0.16 : M.amb, kd = M.kd == null ? 1.05 : M.kd, ks = M.ks == null ? 0.55 : M.ks, sh = M.sh || 28, aoK = M.aoK == null ? 0.16 : M.aoK, kf = M.kf == null ? 0.2 : M.kf;
+  const fall = M.fall || Math.max(w, h) * 0.85, d = f.img.data, a0 = f.a0, a1 = f.a1, g0 = f.g0, g1 = f.g1, bl = f.bl;
+  for (let y = 0; y < h; y++) {
+    const r0 = (y > 0 ? y - 1 : 0) * w, r1 = (y < h - 1 ? y + 1 : h - 1) * w, ro = y * w;
+    for (let x = 0; x < w; x++) {
+      const p = ro + x, dx = (zz[x < w - 1 ? p + 1 : p] - zz[x > 0 ? p - 1 : p]) * 0.5 * rz, dy = (zz[r1 + x] - zz[r0 + x]) * 0.5 * rz;
+      const il = 1 / Math.sqrt(dx * dx + dy * dy + 1), nx = -dx * il, ny = -dy * il, nz = il;
+      let I = 1;
+      if (pt) { const lx = pt[0] - x, ly = pt[1] - y, lz = pt[2] - zz[p], dd = Math.sqrt(lx * lx + ly * ly + lz * lz); Lx = lx / dd; Ly = ly / dd; Lz = lz / dd; I = 1.5 / (1 + (dd / fall) * (dd / fall)); }
+      let Hx = Lx, Hy = Ly, Hz = Lz + 1; const hl = 1 / Math.sqrt(Hx * Hx + Hy * Hy + Hz * Hz); Hx *= hl; Hy *= hl; Hz *= hl;
+      const nl = nx * Lx + ny * Ly + nz * Lz, nf = nx * Fx + ny * Fy + nz * Fz, nh = nx * Hx + ny * Hy + nz * Hz, m = two ? mm[p] : 0;
+      const gl = two ? g0[p] + (g1[p] - g0[p]) * m : g0[p];
+      const sp = nh > 0 ? Math.pow(nh, sh) * ks * gl * 255 * I : 0;
+      let ao = 1 + (zz[p] - bl[p]) * aoK; ao = ao < 0.4 ? 0.4 : ao > 1.3 ? 1.3 : ao;
+      const key = kd * (nl > 0 ? nl : 0) * I, fill = kf * (nf > 0 ? nf : 0), i3 = p * 3, i4 = p * 4;
+      const lr = (amb + key + fill * 0.85) * ao, lg = (amb + key * 0.98 + fill * 0.92) * ao, lb = (amb + key * 0.94 + fill * 1.05) * ao;
+      if (two && m > 0) { d[i4] = (a0[i3] + (a1[i3] - a0[i3]) * m) * lr + sp; d[i4 + 1] = (a0[i3 + 1] + (a1[i3 + 1] - a0[i3 + 1]) * m) * lg + sp; d[i4 + 2] = (a0[i3 + 2] + (a1[i3 + 2] - a0[i3 + 2]) * m) * lb + sp; }
+      else { d[i4] = a0[i3] * lr + sp; d[i4 + 1] = a0[i3 + 1] * lg + sp; d[i4 + 2] = a0[i3 + 2] * lb + sp; }
+      d[i4 + 3] = 255;
+    }
+  }
+  f.ctx.putImageData(f.img, 0, 0); f.q = q;
+  return f.cv;
+}
+/** a field drawn into a rounded tile, filling it (cover). o = { light: { p } or { az, el } (default: a far light from the upper
+   left), k, zoom (≥ 1, a push in), at: [u, v] (the centre, 0..1), r, alpha, vignette }. returns { map(fx, fy) → stage px, inv, sc } */
+function srf_macro(t, f, x, y, w, h, o = {}) {
+  const a = o.alpha == null ? 1 : o.alpha;
+  const z = Math.max(1, o.zoom || 1), [u, v] = o.at || [0.5, 0.5];
+  const sc = Math.max(w / f.w, h / f.h) * z, sw = w / sc, sh = h / sc;
+  const sx = clamp(u * f.w - sw / 2, 0, f.w - sw), sy = clamp(v * f.h - sh / 2, 0, f.h - sh);
+  const out = { sc, sx, sy, map: (fx, fy) => [x + (fx - sx) * sc, y + (fy - sy) * sc], inv: (px, py) => [(px - x) / sc + sx, (py - y) / sc + sy] };
+  if (a <= 0.003) return out;
+  const cv = srf_shade(f, o.light || { az: o.az == null ? 2.5 : o.az, el: o.el == null ? 0.42 : o.el }, o.k || 0);
+  G.save(); rrPath(x, y, w, h, o.r == null ? SRF.r : o.r); G.clip(); G.globalAlpha = a;
+  G.imageSmoothingEnabled = true; G.imageSmoothingQuality = 'high';
+  G.drawImage(cv, sx, sy, sw, sh, x, y, w, h);
+  if (o.vignette !== false) { const g = G.createRadialGradient(x + w / 2, y + h * 0.45, Math.min(w, h) * 0.3, x + w / 2, y + h / 2, Math.hypot(w, h) * 0.6); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.55)'); G.fillStyle = g; G.fillRect(x, y, w, h); }
+  G.restore();
+  return out;
+}
+/** a studio light that sweeps once across a field (left to right, above its top edge), then drifts: a point light in field px */
+function srf_sweep(t, f, t0 = 0.5, dur = 3.2, o = {}) {
+  const k = ep(t, t0, t0 + dur, E.io3), drift = Math.sin(Math.max(0, t - t0 - dur) * 0.35) * 0.08;
+  return { p: [f.w * (lerp(o.from == null ? -0.25 : o.from, o.to == null ? 0.62 : o.to, k) + drift), f.h * (o.y == null ? -0.35 : o.y), f.h * (o.z == null ? 0.42 : o.z)] };
+}
+/** the light's azimuth for a slide: it rakes in from the upper left and drifts slowly, so a still surface still moves */
+const srf_az = (t, t0 = 0.4, base = 2.35) => base + 0.55 * (1 - ep(t, t0, t0 + 2.6, E.out3)) + 0.16 * Math.sin(Math.max(0, t - t0 - 2.6) * 0.42);
+
+/** where a laser has cut at field px (x, y): [cut 0..1, rim 0..1]. Patterns: 'ridge' (grooves along ang), 'cross', 'chevron',
+   'dots' (a hex lattice of dimples), 'none'. P = pitch, Wd = cut width, both in field px */
+function srf_cut(pat, x, y, P, Wd, ang) {
+  if (pat === 'none') return [0, 0];
+  const ca = Math.cos(ang), sa = Math.sin(ang), across = -x * sa + y * ca, along = x * ca + y * sa;
+  const g = c => { const q = ((c % P) + P) % P - P / 2, hw = Wd / 2, dd = Math.abs(q); return [dd < hw ? 1 - (dd / hw) * (dd / hw) : 0, Math.exp(-Math.pow((dd - hw) / (0.2 * Wd + 0.7), 2))]; };
+  if (pat === 'ridge') return g(across);
+  if (pat === 'cross') { const A = g(across), B = g(along); return [Math.max(A[0], B[0]), Math.max(A[1], B[1])]; }
+  if (pat === 'chevron') { const L = P * 3.2, q = ((along % L) + L) % L; return g(across + Math.abs(q - L / 2) * 0.75); }
+  if (pat === 'dots') {
+    const py = P * 0.866, row = Math.round(y / py); let best = 1e9;
+    for (let r = row - 1; r <= row + 1; r++) { const xo = (r & 1) ? P / 2 : 0, c = Math.round((x - xo) / P); for (let cc = c - 1; cc <= c + 1; cc++) best = Math.min(best, Math.hypot(x - (cc * P + xo), y - r * py)); }
+    const hw = Wd / 2; return [best < hw ? 1 - (best / hw) * (best / hw) : 0, Math.exp(-Math.pow((best - hw) / (0.2 * Wd + 0.7), 2))];
+  }
+  return [0, 0];
+}
+/** a ceramic film, blasted then levelled, optionally laser-cut. o = { pat, pitch, width, depth, ang, col, ecol, seed, rough, mat } */
+function srf_genFilm(f, o = {}) {
+  const { w, h } = f, col = o.col || [25, 26, 30], ecol = o.ecol || [120, 122, 128], seed = o.seed || 3, D = o.depth == null ? 3 : o.depth, rough = o.rough == null ? 1 : o.rough;
+  const ang = o.ang || 0, ca = Math.cos(ang), sa = Math.sin(ang), P = o.pitch || 20;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const p = y * w + x, i = p * 3;
+    /* the film: a soft orange peel over the blast, and a fine grain */
+    let z = rough * (1.0 * srf_fbm(x / 44, y / 44, seed, 3) + 0.42 * srf_fbm(x / 8, y / 8, seed + 7, 2) + 0.16 * (srf_hash(x, y, seed + 3) - 0.5));
+    /* the laser: a cut with steep walls and a flat floor, a beaded recast rim, pulse marks along the floor */
+    const jx = 0.9 * srf_vn(x / 37, y / 37, seed + 21), [c0, rim] = srf_cut(o.pat || 'none', x + jx, y + jx, P, o.width || 9, ang);
+    let c = c0 > 0 ? Math.min(1, c0 / 0.42) : 0; c = c * c * (3 - 2 * c);
+    const along = x * ca + y * sa, pulse = 0.5 + 0.5 * Math.sin(along / 3.1 * TAU);
+    z += -D * c * (0.92 + 0.08 * pulse) + 0.3 * D * rim * (1 - c) * (0.6 + 0.8 * Math.max(0, srf_vn(x / 3.4, y / 3.4, seed + 8)));
+    f.z0[p] = z;
+    const sparkle = srf_hash(x, y, seed + 11) > 0.988, v = 5 * srf_vn(x / 3, y / 3, seed + 5);
+    for (let j = 0; j < 3; j++) f.a0[i + j] = col[j] + v + (sparkle ? 26 : 0) + (ecol[j] - col[j]) * c * (0.78 + 0.22 * pulse);
+    f.g0[p] = sparkle ? 1 : 0.34 * (1 - c) + 0.05;
+  }
+  Object.assign(f.mat, { amb: 0.14, kd: 1.1, ks: 0.6, sh: 26, rz: 1.35, aoR: 5, aoK: 0.24, kf: 0.22 }, o.mat || {});
+}
+/** a fingertip's contact patch seen from above, drawn as its print (abstract, not skin-coloured). (x, y) its centre, r px.
+   o = { a, rot, stretch (a drag that stretches it along rot), col } */
+function srf_tip(x, y, r, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
+  const col = o.col || '#FFFFFF', st = o.stretch || 0;
+  G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(o.rot || 0); G.scale(1 + st, 1 - st * 0.35);
+  G.beginPath(); G.ellipse(0, 0, r, r * 0.8, 0, 0, TAU); G.fillStyle = rgba(col, 0.1); G.fill();
+  G.save(); G.clip(); G.strokeStyle = rgba(col, 0.46); G.lineWidth = 1.6;
+  for (let i = 1; i < 13; i++) { G.beginPath(); G.ellipse(r * 0.08, -r * 0.04, r * 0.085 * i, r * 0.07 * i, 0.25, 0, TAU); G.stroke(); }
+  G.restore();
+  G.beginPath(); G.ellipse(0, 0, r, r * 0.8, 0, 0, TAU); G.strokeStyle = rgba(col, 0.9); G.lineWidth = 2.2; G.stroke();
+  G.restore();
+}
+/** friction by direction: the friction ellipse between μ along the ridges (a) and across them (b), at angle th from along */
+const srf_mu = (a, b, th) => a * b / Math.sqrt(Math.pow(b * Math.cos(th), 2) + Math.pow(a * Math.sin(th), 2));
+/** a polar plot of friction by direction. curves = [{ a, b, color, w, dash, p (0..1 drawn), th0, label }], R = px for r = 1.
+   Along is drawn left to right, across up and down, as on the surface beside it */
+function srf_polar(t, t0, cx, cy, R, curves, o = {}) {
+  const k = ep(t, t0, t0 + 0.6);
+  if (k <= 0.003) return;
+  for (const f of [0.5, 1]) circle(cx, cy, R * f * E.out3(k), { color: C.hair, w: 1.5 });
+  const lr = o.lr || 1.16;
+  line(cx - R * lr, cy, cx + R * lr, cy, { color: C.hair, w: 1.5, alpha: k }); line(cx, cy - R * lr, cx, cy + R * lr, { color: C.hair, w: 1.5, alpha: k });
+  text('Along', cx + R * lr + 10, cy + 7, { role: 'label', size: 19, color: C.mute, alpha: k });
+  text('Across', cx, cy - R * lr - 12, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: k });
+  for (const c of curves) {
+    const p = c.p == null ? 1 : c.p; if (p <= 0) continue;
+    const th0 = c.th0 || 0, pts = [];
+    for (let i = 0; i <= 120 * p; i++) { const th = th0 + (c.cw ? -1 : 1) * TAU * i / 120, r = srf_mu(c.a, c.b, th) * R / (o.norm || 1); pts.push([cx + r * Math.cos(th), cy - r * Math.sin(th)]); }
+    G.save(); G.globalAlpha = k * (c.alpha == null ? 1 : c.alpha); G.beginPath(); pts.forEach((q, i) => i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]));
+    if (c.fill && p >= 1) { G.closePath(); G.fillStyle = c.fill; G.fill(); }
+    G.strokeStyle = c.color; G.lineWidth = c.w || 3; G.lineJoin = 'round'; G.setLineDash(c.dash || []); G.stroke(); G.setLineDash([]); G.restore();
+  }
+}
+
 /* ============================== chapter card ============================== */
 S({
   id: 'surfacecard', ch: 'surface', card: true, theme: 'night', title: 'Surface and details', settle: 5, three: ['shell'],
@@ -214,49 +405,71 @@ function srf_stepBand(t, t0, best, step) {
   bandBlock(t, t0 + 0.7, x2, w2, 'Theseus, one step further', step.who, step.line, { color: C.hero, right: (y, a) => srf_pillsR(RM, y, step.ev || ['proposal'], a) });
 }
 
-/* ============================== #60 grip where the fingers lift ============================== */
+/* ============================== #60 directional grip: anisotropic friction ============================== */
+/** the drag on the grip slide, in the macro tile B = [x, y, w, h]: across the ridges, along them, then a full turn.
+   returns { p (the pointer), dir (the direction of motion, screen radians), mv (0..1, moving), ph ('in'|'across'|'along'|'turn'|'rest'), turn (0..1) } */
+function srf_gripPath(t, B) {
+  const [x, y, w, h] = B, S = [x + w * 0.3, y + h * 0.25], D = [x + w * 0.3, y + h * 0.75], E2 = [x + w * 0.68, y + h * 0.75], Cc = [x + w * 0.56, y + h * 0.5], rad = h * 0.25;
+  const Q0 = [Cc[0] + rad, Cc[1]], L = (a, b, k) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+  if (t < 2.4) return { p: L([x + w * 0.62, y + h * 0.06], S, ep(t, 1.7, 2.3, E.cam)), dir: Math.PI / 2, mv: 0, ph: 'in', turn: 0 };
+  if (t < 4.4) { const k = ep(t, 2.5, 4.3); return { p: L(S, D, k), dir: Math.PI / 2, mv: k > 0 && k < 1 ? 1 : 0, ph: 'across', turn: 0 }; }
+  if (t < 6.6) { const k = ep(t, 4.7, 6.5); return { p: L(D, E2, k), dir: 0, mv: k > 0 && k < 1 ? 1 : 0, ph: t < 4.7 ? 'across' : 'along', turn: 0 }; }
+  if (t < 7.3) { const k = ep(t, 6.7, 7.3); return { p: L(E2, Q0, k), dir: Math.atan2(Q0[1] - E2[1], Q0[0] - E2[0]), mv: 0, ph: 'along', turn: 0 }; }
+  const k = ep(t, 7.3, 10.3, E.io3), ps = TAU * k;
+  return { p: [Cc[0] + rad * Math.cos(ps), Cc[1] + rad * Math.sin(ps)], dir: ps + Math.PI / 2, mv: k > 0 && k < 1 ? 1 : 0, ph: k < 1 ? 'turn' : 'rest', turn: k };
+}
+const SRF_MU = { along: 0.42, across: 0.53, coarse: 2 };   /* Zhang 2017 at 1 N (laser grooves on steel); Sergachev 2022 (up to 2x) */
 S({
-  id: 'grip', ch: 'surface', theme: 'night', title: 'Grip where the fingers lift', settle: 10, ideas: [60, 'sides'],
-  src: ['derler', 'srf_eloPmm', 'srf_doc'],
+  id: 'grip', ch: 'surface', theme: 'paper', title: 'Directional grip', settle: 11.5, ideas: [60],
+  src: ['srf_zhang17', 'srf_serg22', 'srf_doc'],
   draw: t => {
-    header(t, 'Grip where the fingers lift');
-    captions(t, [[0.6, 'Sweat cuts a fingertip\'s grip on smooth glass to 28%. On rough glass, the same sweat nearly triples it.'], [5.4, 'So I etch the coat where the fingers lift the mouse, on the sides, and leave the hump smooth so it never holds the palm.']]);
-    const A = acc(), lx = LM, ly = LAY.top, lw = 960, lh = 580;
-    srf_card(t, 0.3, lx, ly, lw, lh, 'Skin on glass, dry and wet', ['study']);
-    /* two magnified sections: sweat floats the skin on a smooth film, drains into the pits of an etched one */
-    const wet = t < 9 ? ep(t, 2.0, 3.0) : 0.5 + 0.5 * Math.cos((t - 9) * TAU / 8), s = 7.0, sy = ly + 182;
-    [[lx + 40, 0, 'Smooth film'], [lx + 500, 1, 'Laser-etched film']].forEach(([px, etch, lab], i) => {
-      const a = ep(t, 0.5 + i * 0.2, 1.0 + i * 0.2);
-      part(px, sy, s, () => gripMM({ etch, wet, accent: A }), { alpha: a });
-      text(lab, px, ly + 98, { role: 'label', size: 22, color: i ? A : C.ink, alpha: a });
-      const st = wet > 0.5 ? (i ? 'Sweat drains into the pits' : 'Sweat floats the skin') : (i ? 'Dry: ridges meet the peaks' : 'Dry: full contact');
-      text(st, px, sy + 96, { role: 'label', size: 21, color: wet > 0.5 ? (i ? A : C.red) : C.mute, alpha: ep(t, 1.2, 1.6) });
+    header(t, 'Directional grip');
+    captions(t, [[0.6, 'Etched ridges hold a fingertip hardest when it slides across them, and let it slide along them.'], [6.4, 'Grip tape grips the same in every direction. An etch can grip one way and leave every other way free.']]);
+    const top = 296, gl = golden(LM, RM - LM, 24), [mx, mw] = gl.a, [px, pw] = gl.b, mh = 476, B = [mx, top, mw, mh];
+    /* the macro: laser-cut grooves in the coat; a studio light sweeps once across them; the camera pushes in slowly */
+    demoWindow(mx, top, mw, mh, tileA(t, 0.2, 0), { r: SRF.r });
+    const f = srf_field('grip:ridge', 1000, 450, ff => srf_genFilm(ff, { pat: 'ridge', pitch: 26, width: 14, depth: 4.2, ang: 0, seed: 5 }));
+    srf_macro(t, f, mx, top, mw, mh, { light: srf_sweep(t, f, 0.5, 3.4), zoom: 1 + 0.08 * ep(t, 0.5, 11.5, E.io3), alpha: ep(t, 0.35, 1.1) });
+    text('Laser-cut grooves in the coat (illustrative)', mx + 32, top + mh - 30, { role: 'small', size: 24, weight: 500, color: 'rgba(255,255,255,0.7)', alpha: ep(t, 1.0, 1.4) });
+    /* the fingertip, dragged by the pointer, and the friction that holds it back */
+    const gp = srf_gripPath(t, B), th = gp.dir, mu = srf_mu(SRF_MU.along, SRF_MU.across, th), ux = Math.cos(th), uy = Math.sin(th);
+    const lag = gp.mv * (8 + 18 * mu), tp = [gp.p[0] - ux * lag, gp.p[1] - uy * lag];
+    G.save(); rrPath(mx, top, mw, mh, SRF.r); G.clip();
+    srf_tip(tp[0], tp[1], 58, { a: ep(t, 1.9, 2.3), rot: th, stretch: gp.mv * 0.05 * mu / 0.5 });
+    if (gp.mv > 0) { const L = 104 * mu / 0.5; arrow(tp[0] - ux * 64, tp[1] - uy * 64, tp[0] - ux * (64 + L), tp[1] - uy * (64 + L), { color: C.hero, w: 5, hs: 18, alpha: 0.95 }); }
+    cursorPtr(gp.p[0] + 6, gp.p[1] + 6, { a: ep(t, 1.6, 1.9) * (1 - ep(t, 10.6, 11.0)), grab: gp.mv > 0, fill: '#FFFFFF', edge: '#111111' });
+    G.restore();
+    /* friction by direction: the live value, and its polar plot traced as the finger turns */
+    demoWindow(px, top, pw, mh, tileA(t, 0.2, 1), { r: SRF.r });
+    cardHead(t, 0.5, px, top, pw, 'By direction', [{ ev: 'study', by: 'Zhang 2017' }]);
+    const kr = ep(t, 2.5, 2.9), live = gp.ph === 'across' ? SRF_MU.across : gp.ph === 'along' ? SRF_MU.along : gp.ph === 'turn' ? mu : null;
+    if (live != null) {
+      rich([{ s: 'μ', role: 'stat', size: 80, color: C.ink }, { s: live.toFixed(2), role: 'stat', size: 80, color: C.heroText, grad: C.heroGrad, gap: 14, tnum: true }], px + 32, top + 168, { alpha: kr });
+      text(gp.ph === 'across' ? 'Across the ridges' : gp.ph === 'along' ? 'Along the ridges' : 'Turning', px + 32, top + 210, { role: 'small', size: 25, weight: 600, color: C.ink2, alpha: kr });
+    } else if (gp.ph === 'rest') {
+      const k = ep(t, 10.3, 10.7);
+      rich([{ s: '1.26', role: 'stat', size: 80, color: C.heroText, grad: C.heroGrad, tnum: true, count: [10.3, 0.8, 1] }, { s: '×', role: 'stat', size: 56, color: C.heroText, gap: 6 }], px + 32, top + 168, { t, alpha: k });
+      text('Across against along', px + 32, top + 210, { role: 'small', size: 25, weight: 600, color: C.ink2, alpha: k });
+    }
+    const pc = [px + pw - 178, top + 222], R = 84, nrm = c => ({ a: 2 * c.a / (c.a + c.b), b: 2 * c.b / (c.a + c.b) });
+    const fine = nrm({ a: SRF_MU.along, b: SRF_MU.across }), coarse = nrm({ a: 1, b: SRF_MU.coarse });
+    glowField(t, pc[0], pc[1], 170, { a: 0.6 * ep(t, 7.3, 9.0) });
+    srf_polar(t, 0.8, pc[0], pc[1], R, [
+      { a: 1, b: 1, color: C.second, w: 3 },
+      { a: coarse.a, b: coarse.b, color: C.heroText, w: 2.5, dash: [7, 6], alpha: ep(t, 10.4, 11.0) },
+      { a: fine.a, b: fine.b, color: C.hero, w: 4.5, p: gp.ph === 'turn' ? gp.turn : gp.ph === 'rest' ? 1 : 0, th0: -(Math.PI / 2), cw: true }
+    ], { lr: 1.62 });
+    text('Shape only', px + pw - 32, top + 372, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 1.2, 1.6) });
+    if (live != null) { const r = srf_mu(fine.a, fine.b, th) * R, q = [pc[0] + r * ux, pc[1] + r * uy]; line(pc[0], pc[1], q[0], q[1], { color: C.hero, w: 2.5, alpha: kr }); circle(q[0], q[1], 7, { fill: C.hero, alpha: kr }); }
+    /* the legend */
+    [[C.hero, null, 'Fine laser grooves', '0.42 along, 0.53 across', 2.6], [C.heroText, [7, 6], 'Coarser texture', 'Up to 2× across', 10.4], [C.second, null, 'Grip tape', 'The same every way', 0.9]].forEach(([c, dash, nm, sub, t0], i) => {
+      const k = ep(t, t0, t0 + 0.4), yy = top + 330 + i * 44;
+      line(px + 32, yy - 7, px + 62, yy - 7, { color: c, w: 4, dash: dash || [], alpha: k });
+      rich([{ s: nm, role: 'label', size: 19, color: C.ink }, { s: sub, role: 'small', size: 24, weight: 450, color: C.mute, gap: 12, caps: false }], px + 76, yy, { alpha: k });
     });
-    rule(lx + 26, ly + 304, lx + lw - 26, ep(t, 2.6, 3.0));
-    srf_bars(t, 2.8, { x: lx + 26, y: ly + 356, w: lw - 52, xr: [0, 3.5], labelW: 230, valW: 130, rowH: 46, dec: 2,
-      rows: [{ name: 'Smooth, dry', v: 2.18, err: 1.09 }, { name: 'Smooth, wet', v: 0.61, err: 0.37, color: C.red }, { name: 'Rough, dry', v: 0.53, err: 0.22 }, { name: 'Rough, wet', v: 1.43, err: 0.57, ref: true }].map(r => Object.assign(r, { label: 'μ ' + r.v.toFixed(2) })) });
-    text('Derler & Gerhardt 2012. Glass: smooth Rz 0.05 µm, rough Rz 45 µm. Bars ± 1 SD.', lx + 26, ly + lh - 22, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 3.6, 4.0) });
-    /* right: how hard you squeeze to lift 29 g */
-    const rx = 1064, rw = RM - rx;
-    srf_card(t, 0.5, rx, ly, rw, lh, 'Squeeze to lift 29 g', ['derived']);
-    text('Two fingers, each: N = m·g ÷ 2μ', rx + 26, ly + 90, { role: 'small', size: 24, color: C.mute, alpha: ep(t, 0.9, 1.3) });
-    const N = u => 0.029 * 9.81 / (2 * u);
-    const m = axes(t, { x: rx + 96, y: ly + 124, w: rw - 250, h: 176, xr: [0.25, 2.5], yr: [0, 0.6], xticks: [0.5, 1, 1.5, 2, 2.5], yticks: [0, 0.2, 0.4, 0.6], xfmt: v => 'μ ' + v, yfmt: v => v.toFixed(1) + ' N', t0: 1.0 });
-    const pts = []; for (let u = 0.25; u <= 2.5; u += 0.02) pts.push([u, Math.min(0.6, N(u))]);
-    series(m, pts, { color: C.ink2, w: 3, p: ep(t, 1.4, 2.6, E.lin) });
-    [[0.61, C.red, 'Smooth, wet'], [1.43, C.ink, 'Etched, wet']].forEach(([u, col, l], i) => {
-      const k = ep(t, 3.6 + i * 0.4, 4.0 + i * 0.4), v = N(u), ph = ((t - 4) % 2.4) / 2.4;
-      if (t > 4.4) circle(m.X(u), m.Y(v), 10 + ph * 16, { color: col, w: 1.5, alpha: k * (1 - ph) * 0.5 });
-      circle(m.X(u), m.Y(v), 8, { fill: col, alpha: k });
-      circle(m.X(1.0) + 30, ly + 150 + i * 34 - 7, 7, { fill: col, alpha: k });
-      rich([{ s: l, role: 'label', size: 21, color: col }, { s: v.toFixed(2) + ' N', font: 'mono', size: 24, weight: 800, color: col, gap: 12 }], m.X(1.0) + 46, ly + 150 + i * 34, { alpha: k });
-    });
-    keyPlan(t, 1.4, rx + rw - 74, ly + 196, { s: 0.62, hi: 'sides', label: 'Sides' });
-    srf_step(t, 5.0, rx + 26, ly + 404, rw - 52,
-      { who: 'PMM AIM 8K', line: 'A grippy coat everywhere, hump included.', lines: 1 },
-      { line: 'Etched sides, smooth hump: grip where you lift.', ev: ['proposal'], lines: 1 }, { gap: 14 });
-    gloss(t, 6.2, 'Friction coefficient', 'The sideways force a surface holds before it slips, divided by how hard you press into it. Higher means a lighter squeeze.');
-    featureCard(t, 6.6, 'Laser-etched sides', ['study', 'derived', 'proposal'], 'A texture etched into the coat where the fingers lift (#60). With wet hands it asks for less than half the squeeze: 0.10 N against 0.23 N.');
+    /* the word, under the drawing; the research, under the plot */
+    glossBox(t, 7.0, mx, top + mh + 24, mw, 'Anisotropic friction', 'Friction that changes with the direction of the slide: ridges catch a fingertip crossing them, and along them it glides.');
+    sourceBox(t, 3.0, px, top + mh + 24, pw, 'Zhang et al. 2017', 'Laser grooves 20 µm wide, 10 µm deep, on steel: a fingertip slid at μ 0.42 along, 0.53 across.', { kind: 'study', label: 'Measured' });
   }
 });
 
