@@ -1,6 +1,7 @@
 /* ============================================================================================
    chapter 02, glide and tracking: what touches the pad, and what sees it.
-   card · skate sets (plate off: ten dots on the rim's ledge; plate on: two mirrored pills and a ring round the lens) ·
+   card · skate sets (plate off: eight dots on the rim's ledges and two on the clip-on lens; plate on: two mirrored half-moons,
+   cut round the corner dots, and a ring round the lens) ·
    dot skates (the same weight on more area) · [10-c2-glide.js: the camera, correlation, defocus, the 0.2 mm window, the
    dots at the lens, the snap-on lens] · the sensor (past the PAW3395) · full reports · where the sensor sits · set in
    the mouse. The idea sheet (POM, screws, skate height) is in 12-15-glide.js.
@@ -9,6 +10,7 @@
 Object.assign(SRC, {
   gld_kim20: { t: 'Kim, Lee, van Gemert & Oulasvirta, "Optimal Sensor Position for a Computer Mouse", CHI 2020: 14 gamers; throughput 5.77 bits/s at the centre, 5.16 at the front (10.7% lower), 4.97 at the rear (14.0% lower); path deviation 18.0, 22.1 and 21.6 px; each player\'s own best position 6.034 against 5.798 bits/s at the centre (+4.1%)', u: 'https://arxiv.org/abs/2001.03352', n: 'Positions 14.4 mm apart (20% steps). A two-sensor mouse emulates any position in 1% steps: x = (1 − p)·front + p·rear. Their calibration took about an hour.' },
   gld_baek26: { t: 'Baek & Kim, arXiv 2608.03168 (4 Aug 2026): a dual-sensor mouse simulates the path for every sensor position, to "reduce the calibration time from an hour to just five minutes" (preliminary)', u: 'https://arxiv.org/abs/2608.03168' },
+  gld_next: { t: 'Brock Liddicoat, 2026-11-04 (F18.3): Theseus\'s sensor is an "Unannounced next part", PixArt\'s next flagship, named when PixArt announces it', u: '' },
   gld_paw3395: { t: 'PixArt PAW3395DM-T6QU datasheet v1.2 (15 Nov 2022): up to 26,000 cpi in 50-cpi steps; 650 ips, 50 g (HP mode); run current 1.7 mA HP and 1.3 mA LP at 1 ms polling, 10 mA in Corded Gaming mode at 0.125 ms (LED included); lift cut-off 1 mm or 2 mm, plus manual calibration; angle snapping and angle tunability; VDD 1.8 to 2.1 V; lens to surface 2.2 / 2.4 / 2.6 mm; round lens LM19-LSI (assembled 18.85 × 21.15 mm) or trim lens L0AE-LSI1 (10.90 × 16.80 mm)', u: 'https://atta.szlcsc.com/upload/public/pdf/source/20251201/5A54B75DA77586FABF8CEFBD8F21947D.pdf' },
   gld_eps3950: { t: 'EPS Global listing, PAW3950DM-T5QU: up to 30,000 cpi in 50-cpi steps; 750 ips and 50 g (HP mode); 1.3 mA typical run current, LED included; selectable lift height with manual calibration', u: 'https://www.epsglobal.com/products/semiconductors/sensing-and-haptics/optical-navigation/paw3950dm-t5qu-optical-gaming-navigation-chip', n: 'A distributor listing. Its PAW3395 currents (2.4 / 1.7 mA) did not match PixArt\'s datasheet (1.7 / 1.3 mA), so the 1.3 mA here is not confirmed.' },
   gld_nbcXm: { t: 'Notebookcheck, Xiaomi Gaming Mouse 2 (11 May 2026): "PixArt PAW3955XM sensor", 750 IPS, 60G', u: 'https://www.notebookcheck.net/Xiaomi-launches-new-affordable-8K-wireless-gaming-mouse-with-flagship-PixArt-sensor.1293650.0.html' },
@@ -23,7 +25,7 @@ Object.assign(SRC, {
   gld_ptfe: { t: 'Xometry, PTFE datasheet: density 2.16 g/cm³', u: 'https://xometry.asia/wp-content/uploads/2021/03/PTFE.pdf' },
   gld_zkLens: { t: 'Zaunkoenig, "M1K weight in review": the PMW3360\'s lens weighed 0.8 g, more than the sensor (0.6 g)', u: 'https://zaunkoenig.co/blog/m1k-weight-in-review' },
   gld_brock: { t: 'Brock Liddicoat, "In Pursuit of an Objectively Better Mouse", ideas #8, #10, #11, #27, #37, #52, #76, #87: skate cutouts caused tracking trouble on the WLMOUSE Huan and Ying and the G-Wolves HTM Plus; the V4 Pro\'s lens snaps on', u: '', n: 'research/brock-doc-in-pursuit.txt and its comment threads' },
-  gld_skateSets: { t: 'Brock Liddicoat, 2026-11-04 (F14.1, F14.2): with the bottom plate on, "Pills + sensor ring", the front and the back pill "a direct mirror, one shouldn\'t be more towards the center than the other", "a similar size of skates as the viper v4 pro uses"; with it off, a ledge for dots, "2 each corner, 1 or 2 on the sensor 9 or 10 total"', u: '' },
+  gld_skateSets: { t: 'Brock Liddicoat, 2026-11-04 (F14.1, F14.2, F20.1, F20.2, F20.4): with the bottom plate on, a sensor ring and two skates that are "a direct mirror"; "they shouldn\'t be pills, they should be half circles, with cutouts for the dots, they should both look like the rear viper v4 skate"; "Inboard, plate only"; with it off, a ledge for dots, "2 each corner, 1 or 2 on the sensor 9 or 10 total", the ones by the lens "part of the clip on lens like what g wolves does"', u: '', n: 'Half-moon size: the Viper V4 Pro rear skate measures about 53 x 24 mm off Brock\'s photo (scaled by its 63.9 mm width, EloShapes), an estimate; Theseus\'s are 40.3 x 19.4 mm, cut to its plate.' },
   gld_doc65: { t: 'Brock Liddicoat, "In Pursuit of an Objectively Better Mouse": "0.65mm is the optimal skate height, anything taller causes lod issues"; "0.1 mm LOD steps is a must for any future prod"; idea #10, two dots per corner, because "with only 1 dot per corner some softer pads cause the dots to sink in too much and the pad to scrape the bottom of the mouse"', u: '' },
   gld_shell3d: { t: 'This deck\'s 3D shell (3d/shell): Brock\'s Sora V2/V3 scan with eight 6.5 mm dots, four M2 screws and the lens at the middle of the length', u: '', n: 'Skate, screw and lens positions are read from assets/shell-theseus.json.' }
 });
@@ -100,13 +102,17 @@ function gld_tag(x, y, s, o = {}) {
 }
 
 
-/* ---------- the underside from below, drawn to Brock's skate decisions (F12.10, F14.1, F14.2) ----------
-   Plate off: a ledge in the shell's rim seats two dots at each corner, and two more sit at the lens (Brock: "1 or 2 on the
-   sensor"), in front of it and behind it, so a rock fore and aft pivots about the lens. Plate on: the corner dots join into
-   a front pill and a back pill, mirrored about the lens, and a ring circles the lens window. Corner dots are where the 3D
-   shell puts them (GLD.skates); the pills' size is Brock's "about the Viper V4 Pro's", drawn, not measured. */
-const GLD_SDOT = [[0, 11.5], [0, -11.5]];
-const GLD_PILL = { z: 44.8, half: 17, r: 3.25 };
+/* ---------- the underside from below, drawn to Brock's skate decisions (F12.10, F14.1, F14.2, F20.1, F20.2, F20.4) ----------
+   Plate off: a ledge in the shell's rim seats two dots at each corner, and the clip-on lens carries two more (Brock: "part of
+   the clip on lens like what g wolves does"), one on a pad at each of its ends, under its clip pegs, so the lens stays one dot
+   wide (#37). Plate on: a half-moon at each end, after the Viper V4 Pro's rear skate (straight edge toward the sensor),
+   mirrored about the lens and cut round the corner dots, which stay on the ledges; and a ring round the lens window. Corner
+   dots are where the 3D shell puts them (GLD.skates); GLD_HALF is the front half-moon as the plate layout cuts it
+   (3d/shell/plate-layout.json skates.front, the back one its mirror). */
+const GLD_SDOT = [[0, 6.3], [0, -6.7]];
+const GLD_HALF = [[1.29,49.97],[-2.16,49.91],[-3.21,49.76],[-4.08,49.4],[-4.53,49.07],[-5.17,48.3],[-5.5,47.49],[-5.71,46.35],[-6.16,45.3],[-6.64,44.58],[-7.5,43.73],[-8.1,43.31],[-8.82,42.95],[-9.54,42.68],[-10.71,42.41],[-11.52,41.96],[-12.16,41.28],[-12.67,40.32],[-13.18,39.57],[-13.86,38.87],[-14.43,38.42],[-15.33,37.94],[-15.93,37.73],[-16.47,37.6],[-17.34,37.55],[-17.94,37.4],[-18.45,37.16],[-18.9,36.83],[-19.42,36.24],[-19.75,35.64],[-20.17,34.02],[-20.17,33.09],[-20.05,32.58],[-19.78,31.98],[-19.45,31.53],[-18.72,30.92],[-18.21,30.68],[-17.61,30.53],[17.61,30.56],[18.33,30.74],[19.14,31.25],[19.76,31.98],[20.09,32.79],[20.15,34.02],[19.91,35.1],[19.52,36.06],[19.18,36.51],[18.87,36.83],[18.06,37.34],[17.31,37.55],[16.44,37.6],[15.9,37.73],[15.3,37.94],[14.19,38.57],[13.04,39.72],[12.14,41.28],[11.49,41.96],[10.68,42.41],[9.24,42.77],[8.07,43.31],[7.65,43.58],[6.83,44.34],[6.26,45.09],[5.84,45.93],[5.33,47.94],[5.03,48.48],[4.5,49.07],[4.05,49.4],[3.18,49.76]];
+const GLD_HALFZ = 30.5;                                     /* the half-moons' straight edges, z = +/-30.5 */
+function gld_halfPath(X, Y, sg) { GLD_HALF.forEach(([x, z], i) => { const px = X(x), py = Y(sg * z); if (i) G.lineTo(px, py); else G.moveTo(px, py); }); G.closePath(); }
 const GLD_WIN = { w: 6.4, h: 15.4 };
 const GLD_SKC = () => (TH ? '#FFFFFF' : '#D9D7D0');
 /** the underside, nose up; X(x) = cx + x·s (the user's left on the right, as seen from below), Y(z) = cy − z·s */
@@ -129,10 +135,14 @@ function gld_bottom(cx, cy, s, set, a, o = {}) {
   /* the skates */
   const sk = (fn, hero) => gld_shape(fn, hero ? C.hero : GLD_SKC(), hero ? null : inkA(0.45), 1.5, a);
   if (set === 'on') {
-    for (const sg of [1, -1]) { const k = sg > 0 ? kK : ep(k1, 0.42, 0.85); if (k > 0.003) gld_shape(() => rrPath(X(-GLD_PILL.half - GLD_PILL.r), Y(sg * GLD_PILL.z + GLD_PILL.r), (2 * GLD_PILL.half + 2 * GLD_PILL.r) * s, 2 * GLD_PILL.r * s, GLD_PILL.r * s), GLD_SKC(), inkA(0.45), 1.5, a * k); }
+    /* the corner dots stay on the rim's ledges, in the half-moons' cutouts */
+    GLD.skates.forEach(p => { if (kS > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), GLD.dot / 2 * s, 0, TAU), GLD_SKC(), inkA(0.45), 1.5, a * kS); });
+    for (const sg of [1, -1]) { const k = sg > 0 ? kK : ep(k1, 0.42, 0.85); if (k > 0.003) gld_shape(() => gld_halfPath(X, Y, sg), GLD_SKC(), inkA(0.45), 1.5, a * k); }
     if (kL > 0.003) gld_shape(() => { rrPath(X(-GLD_WIN.w / 2 - 2), Y(GLD_WIN.h / 2 + 2), (GLD_WIN.w + 4) * s, (GLD_WIN.h + 4) * s, (GLD_WIN.w / 2 + 2) * s); G.save(); G.restore(); }, null, C.hero, 2 * s, a * kL);
   } else {
     GLD.skates.forEach((p, i) => { const k = ep(k1, 0.3 + i * 0.04, 0.55 + i * 0.04); if (k > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), GLD.dot / 2 * s, 0, TAU), GLD_SKC(), inkA(0.45), 1.5, a * k); });
+    /* the clip-on lens's two dots, each on a clear pad at one end of the lens */
+    GLD_SDOT.forEach(p => { if (kL > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), 3.65 * s, 0, TAU), GLD_MAT.clear(), GLD_MAT.clearE(), 1.8, a * kL); });
     GLD_SDOT.forEach(p => { if (kL > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), GLD.dot / 2 * s, 0, TAU), C.hero, null, 0, a * kL); });
   }
   return { X, Y };
@@ -144,8 +154,8 @@ S({
   draw: t => {
     chapterCard(t, {
       name: 'glide', gloss: 'What touches the pad, and what sees it.', list: [
-        [10, 'Two dots per corner, two at the lens'], ['plate', 'With the plate: two pills and a ring'], [11, 'Solid skate pads, a 0.2 mm focus window'], [8, 'POM by default, PTFE in the box'],
-        [52, 'Screws clear of the skates'], [37, 'A snap-on lens, one dot wide'], [76, 'The newest PixArt sensor'], ['{16-bit}', 'Full reports, no smoothing'],
+        [10, 'Two dots per corner, two on the lens'], ['plate', 'With the plate: two half-moons and a ring'], [11, 'Solid skate pads, a 0.2 mm focus window'], [8, 'POM by default, PTFE in the box'],
+        [52, 'Screws clear of the skates'], [37, 'A snap-on lens, one dot wide'], [76, 'PixArt\'s next flagship sensor'], ['{16-bit}', 'Full reports, no smoothing'],
         [27, 'The sensor at the centre of the length'], [87, 'Virtual position, lift-off in 0.1 mm steps']
       ]
     });
@@ -156,14 +166,14 @@ S({
   }
 });
 
-/* ============================== skate sets: ten dots, or pills and a ring ============================== */
+/* ============================== skate sets: ten dots, or half-moons and a ring ============================== */
 S({
-  id: 'gld_under', ch: 'glide', theme: 'paper', title: 'Skate sets: ten dots, or pills and a ring', settle: 9, ideas: [10, 11, 52, 27],
+  id: 'gld_under', ch: 'glide', theme: 'paper', title: 'Skate sets: ten dots, or half-moons and a ring', settle: 9, ideas: [10, 11, 52, 27],
   src: ['gld_skateSets', 'gld_shell3d', 'gld_paw3395o', 'gld_brock'],
   draw: t => {
-    header(t, 'Skate sets: ten dots, or pills and a ring');
-    captions(t, [[0.6, 'Without the plate, a ledge in the rim takes two dots at each corner, and two more sit at the lens: ten in all.'], [5.2, 'With the plate on, the front dots join into one pill and the back dots into another, mirrored about the lens, and a ring circles it.']]);
-    const sets = [[LM, 'Plate off: ten dots', 'off', 0.8], [1000, 'Plate on: two pills and a ring', 'on', 4.6]];
+    header(t, 'Skate sets: ten dots, or half-moons and a ring');
+    captions(t, [[0.6, 'Without the plate, a ledge in the rim takes two dots at each corner, and the clip-on lens carries two more: ten in all.'], [5.2, 'With the plate on, a half-moon at each end, cut round the corner dots and mirrored about the lens, and a ring circles it.']]);
+    const sets = [[LM, 'Plate off: ten dots', 'off', 0.8], [1000, 'Plate on: two half-moons and a ring', 'on', 4.6]];
     sets.forEach(([x, nm, set, t0], i) => {
       const y = 280, w = 840, h = 680, s = 5.0, cx = x + 236, cy = y + 384;
       demoWindow(x, y, w, h, tileA(t, 0.15, i));
@@ -172,20 +182,20 @@ S({
       const lx = x + 488, C0 = (p, d) => [B.X(p[0]) + d, B.Y(p[1])];
       if (set === 'off') {
         callout(t, t0 + 0.6, C0(GLD.skates[1], GLD.dot / 2 * s), 'Two dots a corner', { to: [lx, y + 156], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'On a ledge in the rim', maxW: 320 });
-        callout(t, t0 + 1.6, C0(GLD_SDOT[0], GLD.dot / 2 * s), 'Two at the lens', { to: [lx, y + 300], side: 'r', color: C.heroText, tcolor: C.heroText, sub: 'In front of it and behind it', maxW: 320 });
+        callout(t, t0 + 1.6, C0(GLD_SDOT[0], 3.65 * s), 'Two on the lens', { to: [lx, y + 300], side: 'r', color: C.heroText, tcolor: C.heroText, sub: 'One at each end of it', maxW: 320 });
         callout(t, t0 + 2.0, C0(GLD.screws[0], 1.9 * s), 'Screws clear', { to: [lx, y + 444], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'Open it without lifting a skate', maxW: 320 });
         callout(t, t0 + 2.3, C0(GLD.skates[2], GLD.dot / 2 * s), '6.5 mm dots', { to: [lx, y + 588], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'POM, 0.65 mm tall', maxW: 320 });
       } else {
-        callout(t, t0 + 0.6, [B.X(GLD_PILL.half + GLD_PILL.r), B.Y(GLD_PILL.z)], 'Front pill', { to: [lx, y + 156], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'Two corner dots, joined', maxW: 320 });
+        callout(t, t0 + 0.6, [B.X(20.2), B.Y(GLD_HALFZ + 3)], 'Front half-moon', { to: [lx, y + 156], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'Cut round the corner dots', maxW: 320 });
         callout(t, t0 + 1.6, [B.X(GLD_WIN.w / 2 + 2), B.Y(0)], 'Ring round the lens', { to: [lx, y + 330], side: 'r', color: C.heroText, tcolor: C.heroText, sub: 'The skate at the lens', maxW: 320 });
-        callout(t, t0 + 1.1, [B.X(GLD_PILL.half + GLD_PILL.r), B.Y(-GLD_PILL.z)], 'Back pill', { to: [lx, y + 560], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'A mirror of the front', maxW: 320 });
-        /* the mirror: both pills the same distance from the lens */
+        callout(t, t0 + 1.1, [B.X(20.2), B.Y(-GLD_HALFZ - 3)], 'Back half-moon', { to: [lx, y + 560], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'A mirror of the front', maxW: 320 });
+        /* the mirror: both straight edges the same distance from the lens */
         const dx = B.X(-31.5), km = ep(t, t0 + 1.4, t0 + 2.0);
-        for (const sg of [1, -1]) { line(dx, B.Y(0), dx, B.Y(sg * GLD_PILL.z), { color: C.mute, w: 1.5, alpha: km }); line(dx - 8, B.Y(sg * GLD_PILL.z), dx + 8, B.Y(sg * GLD_PILL.z), { color: C.mute, w: 1.5, alpha: km }); text('d', dx - 14, B.Y(sg * GLD_PILL.z / 2) + 8, { role: 'label', size: 22, color: C.ink, align: 'right', alpha: km, caps: false }); }
+        for (const sg of [1, -1]) { line(dx, B.Y(0), dx, B.Y(sg * GLD_HALFZ), { color: C.mute, w: 1.5, alpha: km }); line(dx - 8, B.Y(sg * GLD_HALFZ), dx + 8, B.Y(sg * GLD_HALFZ), { color: C.mute, w: 1.5, alpha: km }); text('d', dx - 14, B.Y(sg * GLD_HALFZ / 2) + 8, { role: 'label', size: 22, color: C.ink, align: 'right', alpha: km, caps: false }); }
         line(dx - 12, B.Y(0), B.X(-GLD_WIN.w / 2 - 2.4), B.Y(0), { color: C.mute, w: 1.5, dash: [4, 4], alpha: km });
       }
     });
-    source(t, 'Corner dots, screws and lens: this deck\'s 3D shell. Pills drawn to Brock\'s "about the Viper V4 Pro\'s size"; the plate itself is still being designed.', { t0: 3 });
+    source(t, 'Corner dots, screws, lens and half-moons: this deck\'s 3D shell and plate. Half-moons after the Viper V4 Pro\'s rear skate, about 53 × 24 mm, estimated from Brock\'s photo.', { t0: 3 });
   }
 });
 
@@ -238,42 +248,51 @@ S({
   }
 });
 
-/* ============================== the sensor: past the PAW3395 (#76) ============================== */
+/* ============================== the sensor: PixArt's next flagship (#76) ============================== */
+/* Brock, F18.3: Theseus's sensor is an "Unannounced next part": PixArt's next flagship, with no part name. PixArt hasn't published
+   its figures, so the slide leads with what is certain: the PAW3395's datasheet (PixArt's flagship since 2022, and the newest
+   PixArt flagship with a public datasheet) is the floor. Theseus's bars stop at that floor and run on dashed: more, not yet a number. */
 const GLD_SPEC = [
-  { lab: 'Max speed', unit: 'ips', a: 650, b: 750, max: 800, ev: { ev: 'claim', by: 'Xiaomi' } },
-  { lab: 'Acceleration', unit: 'G', a: 50, b: 60, max: 70, ev: { ev: 'claim', by: 'Xiaomi' } },
-  { lab: 'Top CPI', unit: 'CPI', a: 26000, b: 40000, max: 44000, ev: { ev: 'claim', by: 'Akko' } }
+  { lab: 'Max speed', unit: 'ips', a: 650, max: 800 },
+  { lab: 'Acceleration', unit: 'G', a: 50, max: 70 },
+  { lab: 'Top CPI', unit: 'CPI', a: 26000, max: 44000 }
 ];
 S({
-  id: 'sensor', ch: 'glide', theme: 'paper', title: 'Next-gen sensor: past the PAW3395', settle: 10, ideas: [76],
-  src: ['gld_paw3395', 'gld_nbcXm', 'gld_akko3955', 'gld_razerFocus', 'gld_ithomeAim', 'gld_ninjaV3', 'gld_brock'],
+  id: 'sensor', ch: 'glide', theme: 'paper', title: 'Next-gen sensor: PixArt\'s next flagship', settle: 10, ideas: [76],
+  src: ['gld_paw3395', 'gld_next', 'gld_razerFocus', 'gld_ithomeAim', 'gld_ninjaV3', 'gld_brock'],
   draw: t => {
-    header(t, 'Next-gen sensor: past the PAW3395');
-    captions(t, [[0.6, 'The PAW3395 has been the flagship since 2022, and it struggles on some glass pads. Theseus takes PixArt\'s newest flagship, the PAW3955 today.'], [5.4, 'It tracks faster, takes harder flicks and goes higher in CPI. Razer\'s own sensor is faster still, and only Razer can buy it.']]);
-    const cut = Math.round((GLD_SPEC[0].b / GLD_SPEC[0].a - 1) * 100);
-    gld_head(t, 3.4, LM, 500, '+' + cut, '%', { label: 'Faster tracking', size: 176, uk: 0.42, sub: '750 ips on the PAW3955, against 650 on the PAW3395.', maxW: 560 });
-    gld_ba(t, 3.8, LM, 690, '650', '750 ips', { size: 64, who: ['PAW3395', 'Theseus, PAW3955'] });
-    /* the specs side by side: grey the PAW3395, blue the part Theseus takes. Higher is better on every row */
+    header(t, 'Next-gen sensor: PixArt\'s next flagship');
+    captions(t, [[0.6, 'The PAW3395 has been PixArt\'s flagship since 2022, and it struggles on some glass pads. Theseus takes PixArt\'s next flagship.'], [5.4, 'PixArt hasn\'t published its figures, so I count only what is certain: the PAW3395\'s datasheet is the floor, and every row starts there.']]);
+    const f = GLD_SPEC[0];
+    gld_head(t, 3.4, LM, 500, fmt(f.a) + '+', 'ips', { label: 'Tracking speed, at the least', size: 176, uk: 0.42, ucaps: false, sub: 'The floor: the PAW3395\'s datasheet. PixArt\'s next flagship starts there, and its own figures aren\'t out yet. Higher is better.', maxW: 560 });
+    /* the specs: the PAW3395 in grey, by its datasheet; Theseus in blue to the same floor, then dashed on: past it, by an amount PixArt
+       hasn't published. Higher is better on every row */
     const x = 720, y = 280, w = RM - x, h = 460;
     demoWindow(x, y, w, h, tileA(t, 0.15, 0));
-    cardHead(t, 0.35, x, y, w, 'PAW3395 against PAW3955. Higher is better', []);
-    const bx = x + 260, bw = w - 260 - 230;
+    cardHead(t, 0.35, x, y, w, 'The floor, by PixArt\'s datasheet. Dashed: not published yet. Higher is better', []);
+    const bx = x + 260, bw = w - 260 - 260;
     GLD_SPEC.forEach((r, i) => {
-      const yy = y + 130 + i * 108, a = ep(t, 0.8 + i * 0.3, 1.2 + i * 0.3), k = ep(t, 1.0 + i * 0.3, 1.9 + i * 0.3, E.snap);
+      const yy = y + 130 + i * 108, a = ep(t, 0.8 + i * 0.3, 1.2 + i * 0.3), k = ep(t, 1.0 + i * 0.3, 1.9 + i * 0.3, E.snap), La = bw * r.a / r.max;
       text(r.lab, x + 32, yy + 10, { role: 'h3', size: 30, color: C.ink, alpha: a });
       text(r.unit, x + 32, yy + 44, { role: 'label', size: 19, color: C.faint, alpha: a, caps: r.unit !== 'ips' });
-      rr(bx, yy - 22, Math.max(14, bw * r.a / r.max * k), 18, 9, C.comp, null, 0, a);
-      text(fmt(Math.round(r.a * k)), bx + bw * r.a / r.max * k + 14, yy - 6, { role: 'num', size: 24, weight: 700, color: C.ink2, alpha: a, tnum: true });
-      rr(bx, yy + 10, Math.max(14, bw * r.b / r.max * k), 18, 9, C.hero, null, 0, a);
-      text(fmt(Math.round(r.b * k)), bx + bw * r.b / r.max * k + 14, yy + 26, { role: 'num', size: 26, weight: 800, color: C.heroText, alpha: a, tnum: true });
-      pill(x + w - 32 - pillW(r.ev.ev, { by: r.ev.by }), yy + 26, r.ev.ev, a, { by: r.ev.by });
+      rr(bx, yy - 22, Math.max(14, La * k), 18, 9, C.comp, null, 0, a);
+      text(fmt(Math.round(r.a * k)), bx + La * k + 14, yy - 6, { role: 'num', size: 24, weight: 700, color: C.ink2, alpha: a, tnum: true });
+      rr(bx, yy + 10, Math.max(14, La * k), 18, 9, C.hero, null, 0, a);
+      /* past the floor: a dashed run and an arrow, no number on it */
+      const ke = ep(t, 2.4 + i * 0.25, 3.2 + i * 0.25, E.out3), Le = bw * 0.13 * ke;
+      if (ke > 0.003) {
+        G.save(); G.globalAlpha = a * ke; G.setLineDash([6, 5]); rrPath(bx + La - 9, yy + 10, Le + 9, 18, 9); G.strokeStyle = C.heroText; G.lineWidth = 2; G.stroke(); G.restore();
+        arrow(bx + La + Le + 6, yy + 19, bx + La + Le + 30, yy + 19, { color: C.heroText, w: 2.5, hs: 10, alpha: a * ke });
+      }
+      text(fmt(r.a) + '+', bx + La + Le + (ke > 0.003 ? 44 : 14), yy + 26, { role: 'num', size: 26, weight: 800, color: C.heroText, alpha: a, tnum: true });
+      pill(x + w - 32 - pillW('datasheet', { by: 'PixArt' }), yy - 6, 'datasheet', a, { by: 'PixArt' });
     });
-    legend(t, 1.4, x + w - 32, y + h - 34, [{ kind: 'comp', label: 'PAW3395, 2022' }, { kind: 'hero', label: 'PAW3955, Theseus' }], { size: 19, gap: 26, align: 'right' });
+    legend(t, 1.4, x + w - 32, y + h - 34, [{ kind: 'comp', label: 'PAW3395, 2022' }, { kind: 'hero', label: 'Theseus: PixArt\'s next flagship' }], { size: 19, gap: 26, align: 'right' });
     /* the others, said plainly */
     const ny = y + h + 40, nw = (w - 40) / 2;
     sourceBox(t, 5.6, x, ny, nw, 'Razer 2025', 'The Focus Pro 50K Gen-3 claims 930 ips. Razer\'s own part, sold to nobody else.', { h: 960 - ny });
     sourceBox(t, 5.9, x + nw + 40, ny, nw, 'IT Home 2026', 'Ninjutso\'s AIMNINJA 2 is a custom part. Its 52% is power, not speed.', { h: 960 - ny });
-    source(t, 'PixArt PAW3395 datasheet: 650 ips, 50 G, 26,000 CPI. PAW3955: Xiaomi (Notebookcheck) and Akko (IT Home); PixArt publishes no PAW3955 datasheet.', { t0: 3, maxW: 580, y: 960 });
+    source(t, 'PixArt PAW3395 datasheet: 650 ips, 50 G, 26,000 CPI. PixArt\'s next flagship has no published figures yet, so none are shown for it.', { t0: 3, maxW: 580, y: 960 });
   }
 });
 

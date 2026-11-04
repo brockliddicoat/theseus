@@ -52,19 +52,19 @@ function pltSolve(m) {
   for (let i = n - 1; i >= 0; i--) { let v = y[i]; for (let k = i + 1; k <= Math.min(n - 1, i + B - 1); k++) v -= K[i * B + (k - i)] * xx[k]; xx[i] = v / K[i * B]; }
   const d = new Float64Array(n); for (let o = 0; o < nn; o++) for (let q = 0; q < 3; q++) d[o * 3 + q] = xx[pos[o] * 3 + q];
   /* member forces: end moments, torque, peak stress (bending at the extreme fibre plus torsion, von Mises) */
-  const M = [], Tq = [], sig = [];
+  const M = [], Tq = [], sig = [], en = [];
   m.els.forEach((e, k) => {
     const { L, c, s, kb, kt } = info[k], g = i => [d[i * 3], d[i * 3 + 1], d[i * 3 + 2]];
     const [w1, tx1, tz1] = g(e.i), [w2, tx2, tz2] = g(e.j);
     const a1 = c * tx1 + s * tz1, b1 = -s * tx1 + c * tz1, a2 = c * tx2 + s * tz2, b2 = -s * tx2 + c * tz2, u = [w1, a1, w2, a2];
     const f = [0, 1, 2, 3].map(r => kb[r * 4] * u[0] + kb[r * 4 + 1] * u[1] + kb[r * 4 + 2] * u[2] + kb[r * 4 + 3] * u[3]);
     const Mm = Math.max(Math.abs(f[1]), Math.abs(f[3])), T0 = kt * (b2 - b1);
-    M.push(Mm); Tq.push(T0);
+    M.push(Mm); Tq.push(T0); en.push(0.5 * (u[0] * f[0] + u[1] * f[1] + u[2] * f[2] + u[3] * f[3]) + 0.5 * kt * (b2 - b1) ** 2);
     const sb = Mm * e.cy / e.EI * e.E, tau = e.GJ > 0 ? Math.abs(T0) * e.tt / (e.GJ / e.G) : 0;
     sig.push(Math.sqrt(sb * sb + 3 * tau * tau));
   });
   let comp = 0; for (let i = 0; i < n; i++) comp += F[i] * xx[i];
-  return { d, M, T: Tq, sig, smax: Math.max(...sig), comp, model: m, bw };
+  return { d, M, T: Tq, sig, en, smax: Math.max(...sig), comp, model: m, bw };
 }
 /* a section: a skin flange bf × ts with a rib w × h on it (either may be zero). Returns E I, G J, the distance to the
    extreme fibre, the thickest wall (for torsion), area */

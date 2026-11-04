@@ -27,6 +27,8 @@ function tributary(nodes, edges) {
 }
 const D = LAY.dims, OUT = LAY.outline, BOSS = Object.values(LAY.bosses), RING = LAY.ring;
 const inPoly = (p, poly) => { let c = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+/* the front skate (plate-layout.json skates.front, F20.4), or the old pill's box before the layout has one */
+const inSkate = p => (LAY.skates ? inPoly(p, LAY.skates.front) : (p[1] > 41.5 && Math.abs(p[0]) < 20.25));
 const ringD = p => { const q = [p[0] - RING.c[0], p[1] - RING.c[1]], qz = Math.max(-(RING.hl - RING.hw), Math.min(RING.hl - RING.hw, q[1])); return Math.hypot(q[0], q[1] - qz) - RING.hw; };
 /* build a model from nodes + members [{i, j, w, h}] with a skin ts, using the triangle (3.03) or square (Hambly) rule */
 function build(nodes, mem, ts, rule, opt = {}) {
@@ -42,7 +44,7 @@ function build(nodes, mem, ts, rule, opt = {}) {
   const inBoss = e => BOSS.some(b => [e.i, e.j].some(k => Math.hypot(nodes[k][0] - b[0], nodes[k][1] - b[1]) < D.boss.r));
   const cases = {
     lens: () => { const fix = {}; bossN.forEach(i => { fix[i] = 'w'; }); const loads = {}; ringN.forEach(i => { loads[i] = [10 / ringN.length, 0, 0]; }); return { fix, loads, meas: ringN }; },
-    pill: () => { const fix = {}; bossN.forEach(i => { fix[i] = 'w'; }); const pn = []; nodes.forEach((p, i) => { if (p[1] > 41.5 && Math.abs(p[0]) < 20.25) pn.push(i); }); const loads = {}; pn.forEach(i => { loads[i] = [10 / pn.length, 0, 0]; }); return { fix, loads, meas: pn }; },
+    pill: () => { const fix = {}; bossN.forEach(i => { fix[i] = 'w'; }); const pn = []; nodes.forEach((p, i) => { if (inSkate(p)) pn.push(i); }); const loads = {}; pn.forEach(i => { loads[i] = [10 / pn.length, 0, 0]; }); return { fix, loads, meas: pn }; },
     twist: () => { const fix = {}; bossN.slice(0, 3).forEach(i => { fix[i] = 'w'; }); return { fix, loads: { [bossN[3]]: [10, 0, 0] }, meas: [bossN[3]] }; },
   };
   const out = {};
@@ -68,7 +70,7 @@ function theseus(o = {}) {
   });
   return build(nodes, mem, o.ts || D.skin, 'tri', { cases: o.cases || ['lens', 'pill', 'twist'], kappa: o.kappa });
 }
-module.exports = { LAY, theseus, build, tributary, inPoly, ringD, RHO };
+module.exports = { LAY, theseus, build, tributary, inPoly, ringD, inSkate, RHO };
 if (require.main === module) {
   const T = theseus(), T0 = theseus({ noRibs: true });
   console.log('Theseus: w at lens %s um, k %s N/mm, peak %s MPa; members %d', (T.w * 1000).toFixed(1), T.k.toFixed(1), T.peak.toFixed(1), T.els.length);

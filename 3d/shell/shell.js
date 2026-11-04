@@ -296,6 +296,23 @@ export async function buildShell(opts = {}) {
     for (const [dz, r] of [[1.1, 1.05], [-1.9, 0.75]]) { const ag = new THREE.CylinderGeometry(r, r, 0.2, 32); owned.add(ag); const a = new THREE.Mesh(ag, M.lensDark); a.position.set(meta.sensor[0], 2.12, meta.sensor[1] + dz); lens.add(a); }
     body.add(lens); parts.lens = lens;
   }
+  /* plate off (F20.2, "part of the clip on lens like what g wolves does"): the clip-on lens carries the two dots by the sensor,
+     on pads at its own two ends, under its clip pegs and clear of both optics, so the lens stays one dot wide (#37). The pads'
+     faces sit on the base plane, so the dots glide with the corner dots. (SKATE_SETS.lensDots; a dot off the lens's axis
+     would get an arm from its side.) */
+  const lensDots = new THREE.Group(); lensDots.name = 'lensDots'; lens.add(lensDots);
+  {
+    const LD = (PARTS && PARTS.SKATE_SETS && PARTS.SKATE_SETS.lensDots) || [[0, 6.3], [0, -6.7]], yb = meta.yBase, tP = 1.0;
+    for (const [dx, dz] of LD) {
+      const sx = Math.sign(dx) || 1, x0 = 2.2, len = Math.abs(dx) - x0;
+      if (len > 0.2) { const armG = new THREE.BoxGeometry(len, tP, 3.4); owned.add(armG); const arm = new THREE.Mesh(armG, M.lens); arm.position.set(meta.sensor[0] + sx * (x0 + len / 2), yb + tP / 2, meta.sensor[1] + dz); lensDots.add(arm); }
+      const padG = new THREE.CylinderGeometry(3.65, 3.65, tP, 44); owned.add(padG);
+      const pad = new THREE.Mesh(padG, M.lens); pad.position.set(meta.sensor[0] + dx, yb + tP / 2, meta.sensor[1] + dz); lensDots.add(pad);
+      const d = lib.buildDotSkate({ material: opts.skates || 'POM', diameter: 6.5, height: meta.yBase }); d.position.set(meta.sensor[0] + dx, 0, meta.sensor[1] + dz); lensDots.add(d);
+      lensDots.userData.dots = (lensDots.userData.dots || []).concat([d]);
+    }
+    parts.lensDots = lensDots;
+  }
   const screws = [];
   for (const [x, z] of meta.screws) {
     const s = lib.buildM2Screw({ length: 4, finish: 'brass', detail: 'low' });   // seen by their heads only
@@ -305,27 +322,26 @@ export async function buildShell(opts = {}) {
     const g = new THREE.Group(); g.add(s); root.add(g); screws.push(g);
   }
   parts.screws = screws;
-  /* Brock's skate sets (F14.1, F14.2). Plate on: a front pill and a back pill mirrored about the lens, and a ring round its
-     window, on the plate's outer face. Plate off: two dots at each corner on the rim's ledge, and two at the lens, left and
-     right of it, on two posts down from the board (plate off only). */
+  /* Brock's skate sets (F14.1, F14.2, F20.1, F20.2, F20.4). Plate on: a half-moon at each end on the plate alone (after the
+     Viper V4 Pro's rear skate, straight edge toward the sensor, exact mirrors), with cutouts round the corner dots, and the
+     ring round the lens window. The eight corner dots stay on the rim's ledges in both states (the half-moons' cutouts are
+     theirs). Plate off: the two dots by the sensor ride on the clip-on lens (lensDots, above). */
   const skates = [];
   const plateSkates = new THREE.Group(); plateSkates.name = 'plateSkates'; plate.add(plateSkates);
   if (PARTS && PARTS.flatSkate && PARTS.SKATE_SETS) {
     const SS = PARTS.SKATE_SETS, mats = PARTS.partMaterials ? PARTS.partMaterials() : null;
     const gm = mats ? ((opts.skates || 'POM').toUpperCase() === 'PTFE' ? mats.ptfe : mats.pom) : M.pom;
-    for (const sgn of [1, -1]) { const p = PARTS.flatSkate(PARTS.skatePillPts(SS.pill.half, SS.pill.r), [], mats, gm); p.name = sgn > 0 ? 'pillFront' : 'pillBack'; p.position.set(meta.sensor[0], 0, meta.sensor[1] + sgn * SS.pill.z); plateSkates.add(p); }
+    const front = (meta.plate && meta.plate.skate) || (PARTS.skateHalfPts ? PARTS.skateHalfPts() : []);
+    for (const sgn of [1, -1]) { const pts = sgn > 0 ? front : front.map(([x, z]) => [x, -z]).reverse(); const p = PARTS.flatSkate(pts, [], mats, gm); p.name = sgn > 0 ? 'skateFront' : 'skateBack'; plateSkates.add(p); }
     const R = SS.ring, ring = PARTS.flatSkate(PARTS.skateStadium(R.hw + R.outer, R.hl + R.outer), [PARTS.skateStadium(R.hw + R.inner, R.hl + R.inner).reverse()], mats, gm);
     ring.name = 'lensRing'; ring.position.set(meta.sensor[0], 0, meta.sensor[1]); plateSkates.add(ring);
   }
   const dotSet = new THREE.Group(); dotSet.name = 'dotSet'; root.add(dotSet);
-  const lensDots = (PARTS && PARTS.SKATE_SETS) ? PARTS.SKATE_SETS.lensDots : [[0, 11.5], [0, -11.5]];
-  for (const [x, z] of [...meta.skates, ...lensDots.map(([dx, dz]) => [meta.sensor[0] + dx, meta.sensor[1] + dz])]) {
+  for (const [x, z] of meta.skates) {
     const s = lib.buildDotSkate({ material: opts.skates || 'POM', diameter: 6.5, height: meta.yBase });
     s.position.set(x, 0, z);
     const g = new THREE.Group(); g.add(s); dotSet.add(g); skates.push(g);
   }
-  const posts = new THREE.Group(); posts.name = 'lensPosts'; dotSet.add(posts);
-  for (const [dx, dz] of lensDots) { const pg = new THREE.CylinderGeometry(3.45, 3.45, 3.35, 40); owned.add(pg); const m = new THREE.Mesh(pg, M.bay); m.position.set(meta.sensor[0] + dx, meta.yBase + 3.35 / 2, meta.sensor[1] + dz); m.castShadow = true; posts.add(m); }
   parts.skates = skates; parts.plateSkates = plateSkates; parts.dotSet = dotSet;
   for (const n of ['engraveSerial', 'engraveLT', 'engraveRT', 'sideMark', 'usbC', 'wheelBay', 'bridge']) parts[n] = root.getObjectByName(n) || null;
 
@@ -363,7 +379,7 @@ export async function buildShell(opts = {}) {
     [root.getObjectByName('usbC'), 0.20, [0, 0, 16]],
     [plate, 0.08, [0, -18, 0]], [lens, 0.18, [0, -7, 0]],
     ...screws.map((s, i) => [s, 0.14 + 0.02 * i, [0, -32, 0]]),
-    ...skates.map((s, i) => [s, 0.20 + 0.012 * i, [0, -26, 0]]), [posts, 0.16, [0, -20, 0]],
+    ...skates.map((s, i) => [s, 0.20 + 0.012 * i, [0, -26, 0]]),
   ];
   const base = new Map(EXPLODE.map(([o]) => [o, o.position.clone()]));
   function setExplode(k) {
@@ -386,7 +402,7 @@ export async function buildShell(opts = {}) {
     plate.position.copy(base.get(plate)).add(new THREE.Vector3(0, -18 * smooth(0.08, 0.8, state.explode), 0)).add(new THREE.Vector3(0, -26 * e, 0));
     plate.rotation.set(0, 0, Math.PI * smooth(0.25, 1, k));
     plate.position.y += 2.0 * Math.sin(Math.PI * smooth(0.25, 1, k));    /* turning about its own middle, not the base plane */
-    plate.visible = state.plate > 0.5; dotSet.visible = state.plate <= 0.5;
+    plate.visible = state.plate > 0.5; lensDots.visible = state.plate <= 0.5;   /* the corner dots stay on in both */
     plateSkates.position.y = -8 * smooth(0.2, 0.92, state.explode);
   }
   function setPlate(k) { state.plate = k ? 1 : 0; placePlate(); }
@@ -420,7 +436,7 @@ export async function buildShell(opts = {}) {
     owned.forEach(g => g.dispose());
     Object.values(M).forEach(m => m.dispose()); gloveMat.dispose(); pocketMat.dispose(); sideSw.forEach(e => e.sw.dispose && e.sw.dispose());
     xrayMat.dispose();
-    [wheel, ...screws.map(s => s.children[0]), ...skates.map(s => s.children[0])].forEach(o => o && o.dispose && o.dispose());
+    [wheel, ...screws.map(s => s.children[0]), ...skates.map(s => s.children[0]), ...(lensDots.userData.dots || [])].forEach(o => o && o.dispose && o.dispose());
   };
   return root;
 }

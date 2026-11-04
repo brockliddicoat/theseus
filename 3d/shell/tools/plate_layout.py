@@ -5,14 +5,16 @@ Brock: "a fine triangle lattice, but you can only see it looking from inside the
 solid. also the bottom should be solid with no holes (even before mylar)"; "i like the X style designs, but they have to
 form triangles"; "the big cutouts have high walls on ther edges".
 
-The plate is a solid 0.5 mm skin. On its inner face:
-  - PRIMARY struts, 2 mm walls: an X from the lens ring to the four screw bosses, the keel down the centre line, two ties
-    across the screw lines, two side spokes, and a wall round the edge. They close twelve bays, every one a triangle:
-    eight round the lens (apex at the lens) and four caps at the nose and tail (one side along the edge).
-  - the FINE lattice, 0.7 mm ribs: every bay cut by a frequency-6 subdivision (lines parallel to its sides, as a
-    geodesic dome is cut), so every cell is a copy of its bay and the cells of neighbouring bays meet node to node. Round
-    the lens the lines close into concentric polygons, a web; by the edge they bend to follow it.
+The plate is a solid skin (v2, F20.3: 0.6 mm, from the FE's widths file). On its inner face, every rib 2.3 mm tall and no
+rib wider than the skin:
+  - PRIMARY struts: an X from the lens ring to the four screw bosses, the keel down the centre line, two ties across the
+    screw lines, two side spokes, and a wall round the edge. They close twelve bays, every one a triangle: eight round the
+    lens (apex at the lens) and four caps at the nose and tail (one side along the edge). A member the FE sizes wider than
+    the skin (the hub ring, the ties) is built as twin walls (TWIN, TGAP).
+  - the FINE lattice: every bay cut by a frequency-NSUB subdivision (lines parallel to its sides, as a geodesic dome is
+    cut), so every cell is a copy of its bay and the cells of neighbouring bays meet node to node.
   - an in-plan fillet at every corner, the hub ring round the lens window, half-bosses at the screws.
+  - and, on its outer face, the two half-moon skates (F20.1, F20.4), written into the layout's 'skates'.
 
 Writes 3d/shell/plate-layout.json: the outline, window, bosses, the frame (nodes and members, for the deck's solver) and
 the pockets and bays as polygons (for plate_mesh.mjs).            python3 -I 3d/shell/tools/plate_layout.py [preview.png]
@@ -225,15 +227,31 @@ if WFROM:
     D['wall']['h'] = J['dims']['wall']['h']; D['fine']['h'] = J['dims']['fine']['h']; FE = J.get('fe')
     print('frame and widths from', WFROM, len(MEMB), 'members')
 # ------------------------------------------------------------------ rasters: ribs (fine + primary), primary only
+# plate v2 (F20.3): no rib wider than the skin. A member the FE sizes wider (the lens hub ring, the ties) is built as twin
+# walls, each half the width, TGAP apart; the lattice members that meet the ring run on across the gap to its inner wall.
+TWIN_K = [k for k in os.environ.get('TWIN', 'ring,tie').split(',') if k]; WCAP_L = float(os.environ.get('WCAP', D['skin'])); TGAP = 0.8
+RINGSET = set(RING)
+def twin(i, j, kd):
+    return kd in TWIN_K and (i, j) in WIDTH and WIDTH[(i, j)][0] > WCAP_L + 1e-9
+ring_ws = [WIDTH[(i, j)][0] for (i, j, kd) in MEMB if kd == 'ring' and (i, j) in WIDTH]
+RING_DD = (np.mean(ring_ws) / 4 + TGAP / 2) if ring_ws and 'ring' in TWIN_K and max(ring_ws) > WCAP_L else 0.0
 def draw(kinds, width_of):
     m = np.zeros(XX.shape, np.uint8)
+    P16 = lambda q: (int(round((q[0] - xs[0]) / px * 16)), int(round((q[1] - zs[0]) / px * 16)))
     for (i, j, kd) in MEMB:
         if kd not in kinds: continue
-        a, b = NODES[i], NODES[j]
-        pa = (int(round((a[0] - xs[0]) / px * 16)), int(round((a[1] - zs[0]) / px * 16)))
-        pb = (int(round((b[0] - xs[0]) / px * 16)), int(round((b[1] - zs[0]) / px * 16)))
-        wd = (WIDTH[(i, j)][0] if (i, j) in WIDTH else width_of(kd)) * float(os.environ.get('WSCALE', 1))
-        cv2.line(m, pa, pb, 1, thickness=max(1, int(round(wd / px))), lineType=cv2.LINE_8, shift=4)
+        a, b = NODES[i].copy(), NODES[j].copy()
+        wfe = WIDTH[(i, j)][0] if (i, j) in WIDTH else width_of(kd)
+        ws = float(os.environ.get('WSCALE', 1))
+        if kd != 'ring' and RING_DD > 0:            # run on to the ring's inner wall
+            if i in RINGSET: a = a + (a - b) / np.linalg.norm(a - b) * (RING_DD + 0.2)
+            if j in RINGSET: b = b + (b - a) / np.linalg.norm(b - a) * (RING_DD + 0.2)
+        if twin(i, j, kd):
+            t = (b - a) / np.linalg.norm(b - a); nrm = np.array([-t[1], t[0]]); dd = wfe / 4 + TGAP / 2
+            for sg in (1, -1):
+                cv2.line(m, P16(a + sg * nrm * dd), P16(b + sg * nrm * dd), 1, thickness=max(1, int(round(wfe / 2 * ws / px))), lineType=cv2.LINE_8, shift=4)
+        else:
+            cv2.line(m, P16(a), P16(b), 1, thickness=max(1, int(round(wfe * ws / px))), lineType=cv2.LINE_8, shift=4)
     return m
 def disc(mask, c, r):
     cv2.circle(mask, (int(round((c[0] - xs[0]) / px * 16)), int(round((c[1] - zs[0]) / px * 16))), int(round(r / px * 16)), 1, -1, shift=4)
@@ -248,6 +266,8 @@ def closed(mask, r):           # morphological closing by a disc of radius r: fi
 prim = draw({'edge', 'tie', 'keel', 'spoke', 'ring'}, lambda k: WID[k])
 for c in BOSS.values(): disc(prim, c, D['boss']['r'])
 ringfill = (ring_sdf(np.c_[XX.ravel(), ZZ.ravel()]).reshape(XX.shape) < 0).astype(np.uint8)
+if RING_DD > 0:
+    qz_ = np.clip(ZZ - O[1], -(hl - hw), hl - hw); ringfill = (np.hypot(XX - O[0], ZZ - O[1] - qz_) < hw + 0.2).astype(np.uint8)
 edge_band = (PF > -float(os.environ.get('EDGEBAND', D['wall']['w'] + 0.04))).astype(np.uint8)   # the edge wall: a band inside the outline
 prim = closed(np.maximum(prim, edge_band) & 1, D['fil'])
 allr = closed(np.maximum(prim, draw({'fine'}, lambda k: WID[k])) & 1, D['fil'])
@@ -257,6 +277,27 @@ bay_f = sdist(((prim == 0) & INSIDE & (ringfill == 0)).astype(np.uint8))
 POCKETS = [p for p in contours_of(-pocket_f) if abs(area(p)) > 0.4]
 BAYPOLY = [p for p in contours_of(-bay_f) if abs(area(p)) > 2.0]
 print('pockets', len(POCKETS), 'bays', len(BAYPOLY), 'outline pts', len(OUTLINE), 'pocket pts', sum(len(p) for p in POCKETS))
+
+# ------------------------------------------------------------------ the plate's skates (F20.1, F20.4)
+# Brock: "they shouldn't be pills, they should be half circles, with cutouts for the dots, they should both look like the
+# rear viper v4 skate"; "Inboard, plate only". Each is a half-ellipse after the Viper V4 Pro's rear skate (about 53 x 24 mm
+# with ~3 mm corners, measured off Brock's photo), its straight edge toward the sensor, kept SK_MARG inside the plate's edge
+# so nothing crosses the seam. The plate's edge already steps round the shell's corner ledges, so the skate inherits a round
+# cutout at every corner dot: the eight dots stay on the ledges with the plate on. One shape, cut by both ends' outlines and
+# both sides', so the front and back skates are exact mirrors and each is symmetric left to right.
+SK = dict(z0=30.5, a=20.5, b=19.5, rc=3.0, fil=1.0, marg=0.8)
+dP = sdist(INSIDE.astype(np.uint8))
+Fk = dP < -SK['marg']
+Fk = Fk & Fk[::-1] & Fk[:, ::-1] & Fk[::-1, ::-1]
+uu = ZZ - SK['z0']
+half = (uu >= 0) & ((XX / SK['a']) ** 2 + (uu / SK['b']) ** 2 <= 1)
+def opening(m, r): d = sdist(m); return (sdist((d < -r).astype(np.uint8)) < r).astype(np.uint8)
+S_ = opening(closed((half & Fk).astype(np.uint8), SK['fil']), SK['rc']) & Fk.astype(np.uint8)
+S_ = S_ & S_[:, ::-1]
+SKATE = max(contours_of(-sdist(S_), tol=0.02), key=lambda p: abs(area(p)))
+if area(SKATE) < 0: SKATE = SKATE[::-1]
+A_sk = S_.sum() * px * px; zc_sk = float((ZZ * S_).sum() * px * px / A_sk)
+print('skates: %.0f mm2 each, centroid z +/-%.1f, %.1f x %.1f mm' % (A_sk, zc_sk, np.ptp(SKATE[:, 0]), np.ptp(SKATE[:, 1])))
 
 # ------------------------------------------------------------------ mass (g, PP-C-20A 1.01 g/cm3), from the rasters
 RHO = 1.01e-3
@@ -298,6 +339,10 @@ out = dict(
     pockets=[r2(p) for p in POCKETS], bays=[r2(p) for p in BAYPOLY],
     areas=dict(plate=round(A_plate, 1), skin=round(A_skin, 1), primary=round(A_prim, 1), fine=round(A_fine, 1)),
     mass=round(V * RHO, 3), mesh=MESH,
+    skates=dict(note='The plate\'s two skates (F20.1, F20.4): the front one as [x, z] (CCW from below is irrelevant: a '
+                     'closed outline); the back one is its mirror z -> -z. Half-ellipse after the Viper V4 Pro rear skate, '
+                     'straight edge toward the sensor, with a cutout at each corner dot; on the plate alone.',
+                front=r2(SKATE), area=round(A_sk, 1), centroid=round(zc_sk, 2), **SK),
 )
 if WFROM and FE: out['fe'] = FE
 tmp = OUT + '.tmp'; open(tmp, 'w').write(json.dumps(out, separators=(',', ':'))); os.replace(tmp, OUT)

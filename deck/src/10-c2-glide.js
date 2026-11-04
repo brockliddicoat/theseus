@@ -2,7 +2,7 @@
    chapter 02, glide and tracking, part two: the sensor is a camera, and its lens has a 0.2 mm window.
    gld_camera (LED, snap-on lens, image sensor, in section; the pad up close; one frame) · gld_corr (frame correlation:
    two pictures become a count) · gld_blur (defocus, the way a phone camera blurs too close) · focus (Brock's 0.2 mm
-   window against the 0.4 mm most makers design to) · gld_sag (dots at the lens keep the base from sagging out of the
+   window against the 0.4 mm most makers design to) · gld_sag (dots on the lens keep the base from sagging out of the
    window) · gld_module (the castellated module and the snap-on lens, drawn from Brock's photos and the 3D board).
    Everything here is computed, not drawn to look right: a procedural cloth (yarns, twisted filaments, stray fibres,
    dust) evaluated at the resolution it is shown at, a thin lens whose circle of confusion sets a disc blur, the
@@ -762,7 +762,8 @@ S({
 
 /* ============================== sensor dots: no sag at the lens ============================== */
 /* The base in side section as a 2D beam (07-sim.js): 100 mm, PP-C-20A, pressed evenly between the corner skates. With skates
-   only at the corners (z ±45 mm) the lens sits at mid-span; with a dot each side of it (z ±11 mm) it sits on a short span.
+   only at the corners (z ±45 mm) the lens sits at mid-span; with the clip-on lens's two dots (F20.2, one at each of its ends,
+   z +6.3 and -6.7, GLD_SDOT) it sits on its own supports.
    The beam is linear, so the share of the sag that reaches the lens holds at any press and any stiffness: that ratio is the
    number on the slide. The bow drawn is a 0.15 mm sag at the middle, for scale against the window. */
 function gld_sag(dots) {
@@ -770,7 +771,7 @@ function gld_sag(dots) {
     const n = 100, nodes = [], els = [], fix = {}, loads = {}, E0 = SIM_MAT.ppcf.E, rho = SIM_MAT.ppcf.rho;
     for (let i = 0; i <= n; i++) nodes.push([i - 50, 0]);
     for (let i = 0; i < n; i++) els.push({ i, j: i + 1, w: 30, h: 1.4, E: E0, rho });
-    fix[5] = 'xy'; fix[95] = 'y'; if (dots) { fix[39] = 'y'; fix[61] = 'y'; }
+    fix[5] = 'xy'; fix[95] = 'y'; if (dots) for (const [, z] of GLD_SDOT) fix[Math.round(50 + z)] = 'y';
     for (let i = 6; i < 95; i++) loads[i] = [0, -1 / 89, 0];
     return { nodes, els, fix, loads };
   });
@@ -781,10 +782,10 @@ S({
   src: ['gld_paw3395o', 'gld_brock02', 'shlPyrofil'],
   draw: t => {
     header(t, 'Sensor dots: no sag at the lens');
-    captions(t, [[0.6, 'With skates only at the corners, the lens sits halfway along an open span. Press the base and it bows, and the lens drops toward the pad.'], [6.4, 'A dot each side of the lens holds it at the skates\' height. PixArt\'s own datasheet says to put feet round the lens opening.']]);
+    captions(t, [[0.6, 'With skates only at the corners, the lens sits halfway along an open span. Press the base and it bows, and the lens drops toward the pad.'], [6.4, 'The clip-on lens carries a dot at each end, so it rides at the skates\' height. PixArt\'s own datasheet says to put feet round the lens opening.']]);
     const r0 = gld_sag(false), r2 = gld_sag(true), d0 = -r0.d[50 * 3 + 1], d2 = -r2.d[50 * 3 + 1], ratio = d2 / d0, cut = Math.round((1 - ratio) * 100);
     const press = ep(t, 2.0, 3.4, E.io3);
-    const rows = [{ y: 280, nm: 'Corner skates only', r: r0, dots: false, d: d0 }, { y: 640, nm: 'Theseus: a dot each side of the lens', r: r2, dots: true, d: d2 }];
+    const rows = [{ y: 280, nm: 'Corner skates only', r: r0, dots: false, d: d0 }, { y: 640, nm: 'Theseus: two dots on the clip-on lens', r: r2, dots: true, d: d2 }];
     const bx0 = LM + 50, bw = 900, Xz = z => bx0 + bw * (z + 50) / 100;
     rows.forEach((R, ri) => {
       const x = LM, y = R.y, w = 1200, h = 320, a = tileA(t, 0.15, ri), hero = R.dots;
@@ -793,16 +794,16 @@ S({
       const yb = y + 150, yPad = y + 262, ka = ep(t, 0.6 + ri * 0.2, 1.1 + ri * 0.2);
       /* the pad, and the skates on it */
       line(x + 32, yPad, Xz(50) + 30, yPad, { color: C.ink2, w: 2, alpha: ka });
-      const sk = [-45, 45].concat(R.dots ? [-11, 11] : []);
+      const sk = [-45, 45].concat(R.dots ? GLD_SDOT.map(p => p[1]) : []);
       /* the base, bowed by the press (drawn × vk), and the skates hanging from it */
       const dv = i => -R.r.d[i * 3 + 1] / d0 * GLD_SAG0 * (74 / GLD_SAG0) * press;
       const pts = []; for (let i = 0; i <= 100; i++) pts.push([Xz(i - 50), yb + dv(i)]);
       poly(pts, { color: C.ink, w: 9, alpha: ka, cap: 'round' });
-      for (const zs of sk) { const i = zs + 50, xx = Xz(zs), yy = yb + dv(i); rr(xx - 3.25 * bw / 100, yy + 5, 6.5 * bw / 100, yPad - yy - 5, 3, hero && Math.abs(zs) < 20 ? C.hero : C.comp, null, 0, ka); }
-      /* the lens under the middle, and the gap it keeps to the pad */
-      const yl = yb + dv(50), lc = Xz(0);
-      gld_shape(() => { rrPath(lc - 26, yl + 4, 52, 30, 6); }, TH ? 'rgba(222,232,236,0.9)' : 'rgba(214,226,232,0.3)', GLD_MAT.clearE(), 1.5, ka);
-      gld_shape(() => { G.moveTo(lc - 16, yl + 34); G.quadraticCurveTo(lc, yl + 48, lc + 16, yl + 34); G.closePath(); }, TH ? 'rgba(222,232,236,0.9)' : 'rgba(214,226,232,0.3)', GLD_MAT.clearE(), 1.5, ka);
+      /* the lens under the middle (14.2 mm long, its imaging dome 1.1 mm ahead), and on Theseus a dot under each of its ends */
+      const yl = yb + dv(50), lc = Xz(0), lw2 = 7.1 * bw / 100, lcI = Xz(1.1), clr = TH ? 'rgba(222,232,236,0.9)' : 'rgba(214,226,232,0.3)';
+      gld_shape(() => { rrPath(lc - lw2, yl + 4, 2 * lw2, 30, 6); }, clr, GLD_MAT.clearE(), 1.5, ka);
+      gld_shape(() => { G.moveTo(lcI - 16, yl + 34); G.quadraticCurveTo(lcI, yl + 48, lcI + 16, yl + 34); G.closePath(); }, clr, GLD_MAT.clearE(), 1.5, ka);
+      for (const zs of sk) { const i = Math.round(zs + 50), xx = Xz(zs), onLens = Math.abs(zs) < 20, yy = onLens ? yl + 34 - 5 : yb + dv(i); rr(xx - 3.25 * bw / 100, yy + 5, 6.5 * bw / 100, yPad - yy - 5, 3, hero && onLens ? C.hero : C.comp, null, 0, ka); }
       text('Lens', lc, yl + 74, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: ka });
       /* the press: arrows along the span, and the pointer pushing the middle */
       const kp = ep(t, 1.6, 2.2);
@@ -820,7 +821,7 @@ S({
       text('Lens drop', gxx - 52, y + h - 86, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kgg });
     });
     /* ---- the glance ---- */
-    gld_head(t, 4.2, 1320, 470, '0', 'µm', { label: 'Lens drop, dots at the lens', size: 176, uk: 0.36, ucaps: false, sub: 'The dots carry the press beside the lens, so the bow never reaches it. Lower is better.', maxW: 520 });
+    gld_head(t, 4.2, 1320, 470, '0', 'µm', { label: 'Lens drop, dots at the lens', size: 176, uk: 0.36, ucaps: false, sub: 'The dots ride on the lens itself, so the bow never reaches it. Lower is better.', maxW: 520 });
     gld_ba(t, 4.6, 1320, 680, fmtN(GLD_SAG0 * 1000, 0), Math.round(Math.max(0, ratio) * GLD_SAG0 * 1000) + ' µm', { size: 64, who: ['Corners only', 'Theseus'] });
     sourceBox(t, 5.4, 1320, 800, 520, 'PixArt PAW3395 datasheet', '"Place mouse feet around the base plate opening to stabilize mouse tracking."');
     source(t, '2D beam: the base in side section, PP-C-20A, pressed evenly between the corner skates; the bow drawn for a 0.15 mm sag at the middle.', { t0: 2 });
@@ -882,7 +883,7 @@ S({
   src: ['gld_r3dSensor', 'gld_paw3395', 'gld_zkLens', 'gld_brock'],
   draw: t => {
     header(t, 'Snap-on lens: one dot wide');
-    captions(t, [[0.6, 'The sensor rides on a castellated module, 8.4 by 9.8 mm, soldered along both edges. The lens snaps up through the board from below.'], [5.6, 'The lens is one dot wide. It covers a fifth of the board PixArt\'s round lens does, and leaves room for the dots beside it.']]);
+    captions(t, [[0.6, 'The sensor rides on a castellated module, 8.4 by 9.8 mm, soldered along both edges. The lens snaps up through the board from below.'], [5.6, 'The lens is one dot wide and covers a fifth of the board PixArt\'s round lens does. With the plate off, it carries a dot at each end.']]);
     const s = 32;
     /* ---- the module, from above ---- */
     const ax = LM, ay = 280, aw = 720, ah = 680;

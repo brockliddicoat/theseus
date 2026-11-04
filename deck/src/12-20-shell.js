@@ -72,9 +72,17 @@ S({
           /* plate off: the rim and its corner ledges, the board open behind them */
           G.save(); G.scale(0.86, 0.9); keyPath(); G.fillStyle = TH ? '#F7F6F2' : '#0D0E0F'; G.fill(); G.restore();
           G.fillStyle = TH ? '#3A3B40' : '#2B2C31'; pathRR(-15, -36, 30, 70, 3); G.fill();
-          for (const [dx, dz] of [[-15, -47], [15, -47], [-15, 47], [15, 47]]) { G.beginPath(); G.arc(dx * 1.05, dz * 0.96, 3.25, 0, TAU); G.fillStyle = TH ? '#CFCEC8' : '#4A4B50'; G.fill(); }
+          /* plate off: two dots at each corner on the rim's ledges (F14.1), at the shell's own positions (key plan y = -z) */
+          for (const [dx, dz] of PLT_GEO.dots) { G.beginPath(); G.arc(dx, -dz, 4.55, 0, TAU); G.fillStyle = inkA(TH ? 0.1 : 0.12); G.fill(); }
+          for (const [dx, dz] of PLT_GEO.dots) { G.beginPath(); G.arc(dx, -dz, 3.25, 0, TAU); G.fillStyle = TH ? '#CFCEC8' : '#4A4B50'; G.fill(); }
           /* the film, wiping on from the tail */
           if (film > 0) { G.fillStyle = rgba(TH ? '#2E2E2C' : '#CFCEC9', 0.55); G.fillRect(-40, 60 - 130 * film, 80, 130 * film); G.strokeStyle = rgba(C.hero, 0.9); G.lineWidth = lw(2.5); G.beginPath(); G.moveTo(-40, 60 - 130 * film); G.lineTo(40, 60 - 130 * film); G.stroke(); }
+          /* the clip-on lens carries the two dots by the sensor (F20.2), on pads at its own two ends; the film is cut round it */
+          G.fillStyle = TH ? '#9FA6AE' : '#5C636B';
+          for (const z of [6.3, -6.7]) { G.beginPath(); G.arc(0, -z, 3.65, 0, TAU); G.fill(); }
+          pathRR(-2.6, -7.1, 5.2, 14.2, 2.6); G.fill();
+          G.fillStyle = TH ? '#CFCEC8' : '#4A4B50'; for (const z of [6.3, -6.7]) { G.beginPath(); G.arc(0, -z, 3.25, 0, TAU); G.fill(); }
+          G.fillStyle = TH ? '#2A2B30' : '#0D0E10'; G.beginPath(); G.arc(0, -1.1, 1.1, 0, TAU); G.fill();
           G.restore();
           keyPath(); G.strokeStyle = inkA(0.6); G.lineWidth = lw(1.6); G.stroke();
         }, { alpha: a });
@@ -139,7 +147,7 @@ S({
         const per = 7, c = ((lt + 1.2) % per) / per, turn = c < 0.4 ? 0 : c < 0.5 ? E.io3((c - 0.4) / 0.1) : c < 0.9 ? 1 : 1 - E.io3((c - 0.9) / 0.1);
         const s = Math.min(1.9, (h - 40) / 108), cx = x + w * 0.3, cy = y + h / 2 + 10, sx = Math.cos(Math.PI * turn), inside = turn > 0.5;
         G.save(); G.translate(cx, 0); G.scale(Math.max(0.03, Math.abs(sx)), 1); G.translate(-cx, 0);
-        if (inside) plt_inner(cx, cy, s, a, { hi: C.hero, hk: 1 }); else plt_outer(cx, cy, s, a);
+        if (inside) plt_inner(cx, cy, s, a, { hi: C.hero, hk: 1 }); else plt_outer(cx, cy, s, a, { rim: 1 });
         G.restore();
         const rx = x + w * 0.54;
         dLabel(inside ? 'Inside' : 'Outside', rx, y + 64, { color: inside ? C.heroText : C.ink2, alpha: a, size: 21 });

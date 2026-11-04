@@ -27,7 +27,8 @@ print('plate: %d vertices, %d triangles; volume %.0f mm3 (%.2f g at 1.01 g/cm3, 
 meta_p = GLB.replace('.glb', '.json'); meta = json.load(open(meta_p))
 meta['triangles']['plate'] = int(len(T2))
 L = json.load(open(os.path.join(HERE, '..', 'plate-layout.json')))
-meta['plate'] = dict(note='Optional bottom plate (F12.10): solid outside, triangle lattice inside; plate-layout.json, plate_mesh.mjs',
-                     window=L['window'], ring=L['ring'], yTop=L['mesh']['yTop'], skin=L['dims']['skin'], mass=L['mass'])
+meta['plate'] = dict(note='Optional bottom plate (F12.10, F20): solid 0.6 mm skin outside, triangle lattice inside, twin walls on the lens ring and ties; the front half-moon skate in skate (the back one is its mirror z -> -z); plate-layout.json, plate_mesh.mjs',
+                     window=L['window'], ring=L['ring'], yTop=L['mesh']['yTop'], skin=L['dims']['skin'], mass=L['mass'],
+                     skate=L['skates']['front'], skateArea=L['skates']['area'], feMass=L.get('fe', {}).get('mass'))
 tmp = meta_p + '.tmp'; open(tmp, 'w').write(json.dumps(meta, separators=(',', ':'))); os.replace(tmp, meta_p)
 print('meta: plate block written')

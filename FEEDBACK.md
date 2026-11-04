@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 15:15 (Chicago).
+Last updated: 2026-11-04 17:30 (Chicago).
 
 ## Open with Brock
 
@@ -105,7 +105,7 @@ Last updated: 2026-11-04 15:15 (Chicago).
   on depending on how optimized the structure is at dispersing force"
 - **F2.11 DONE** (`shlPick`, then `shlNoPick`: the question types alone and rises into the title) "show how most mice make you pick between strength and weight, when that shouldn't have to
   be the case. follow that up with a "what if you didn't have to pick…" but find a good transition"
-- **F2.12 DONE in Shell A and B, IN PROGRESS (shc)** "show more force distribution animations, i think those will be really helpful"
+- **F2.12 DONE** (Shells A, B and C) "show more force distribution animations, i think those will be really helpful"
   - Built on 07-sim.js (feFlow, feDraw).
 - **F2.13 IN PROGRESS (srf)** "improve how the texture of the cerakote looks and make the fibers look more accurate"
 - **F2.14 IN PROGRESS (srf)** "visualize and show cerakote can be laser etched in different shapes and spacings to create
@@ -138,7 +138,7 @@ Last updated: 2026-11-04 15:15 (Chicago).
   explanation of why/how arches are so strong, as well as a comparison to flat planes"
 - **F2.25 DONE** (`shbMill`: one cutter pass at 0.6 mm fillets; `shbTol`: 19× looser tolerance) "talk and visually about how the filets making milling the mold easier and reduce the
   tightest tolerance"
-- **F2.26 IN PROGRESS (shc)** "i feel like the pcb being used as a reinforcement isn't demonstrated enough. i want to talk
+- **F2.26 DONE** (`shlPcbRib`: 1.8× stronger than magnesium at the same weight; `shcCarry`: 19 % of the weight already carried; `shcArms`: 18× lower peak than small arms, which snap) "i feel like the pcb being used as a reinforcement isn't demonstrated enough. i want to talk
   about how unexpectedly strong fr4 is (compared to even magnesium alloy directly). why in engineering it is so important
   to draw on all the resources you have access too. and how many mice just use small arms of fr4 to reinforce the pcb
   which are easy to break of or snap under force, but how we plan to use THE WHOLE PCB."
@@ -174,7 +174,7 @@ Last updated: 2026-11-04 15:15 (Chicago).
   - The benefits to show: F3.6.
 - **F2.39 STANDING, IN PROGRESS (all)** "whenever there is a simulation it needs to be given lots of screen real estate
   those are very convincing and a lot of work goes into them"
-- **F2.40 IN PROGRESS (shc)** "the keeping the mass low near the fingers slide needs to be revamped to be much better and
+- **F2.40 DONE** (`mass`, rethought: −93 % twist, the centre of mass drops onto the grip line) "the keeping the mass low near the fingers slide needs to be revamped to be much better and
   make a better argument/be more intuitive"
 - **F2.41 STANDING, IN PROGRESS (all)** "make sure no assets overlap where they shouldn't"
 - **F2.42 IN PROGRESS (elc)** "remove any slides about the dongle as i'm unsure if i want to do the side arm system or not"
@@ -315,7 +315,7 @@ Last updated: 2026-11-04 15:15 (Chicago).
   a little taller than that though"
 - **F9.22 STANDING** "again this is just me giving you more guidance, do not abandon any of my old guidance unless i've
   intentionally overwritten it"
-- **F9.23 DONE in Shell A (`shlMargin`) and B (`shbPress`, `shbSides`) and the heat scale, IN PROGRESS (shc)** "you need to better explain how lower peak force hotspots are
+- **F9.23 DONE** (Shells A, B and C, and the heat scale) "you need to better explain how lower peak force hotspots are
   better, and peak force areas should also be colored in red so the viewer knows they're bad. show the risk of breakage.
   this should tie in with a lot of the other advice i've given you, you should try to make as many concepts tie together
   as possible"
@@ -328,7 +328,7 @@ Last updated: 2026-11-04 15:15 (Chicago).
   f=ma, so mass means less inertia means quicker target switching when changing directions, there should also be other
   theories that are all but proven, the inertia thing means it should be objective easier to switch targets, even though
   there isn't a study to prove it, it feels pretty solid to me"
-- **F9.27 DONE in shared code (feDraw fillet) and Shells A and B, IN PROGRESS (shc); the 3D lattice insert is still a stand-in** "we have slides about the
+- **F9.27 DONE in 2D everywhere so far (feDraw fillet; Shells A, B, C, the plate); the 3D lattice insert is still a stand-in** "we have slides about the
   importance of filleting the lattice, but none of the lattices in our visualizations other than those slides are
   filleted, this is an issue"
 - **F9.28 DONE** (the shared key plan, clicks, and the 3D shell's one seam) "we talk about how it's better to have 1 seam in our slides
@@ -485,7 +485,7 @@ Answers to the Shell A questions:
 - **F17.1 DECIDED** The Raytac part: "AN54LM-20A, long antenna". Keep the name, and draw the long meander antenna. **TODO
   (elc).**
 - **F17.2 OPEN** The side seam meets the side seams about 30.5 mm above the base: "I'll check and say".
-- **F17.3 DONE in 3D, TODO (fixC): a 3D shot on `sidebuttons`.** A 3D shot of the full-size SPDT side switches in their
+- **F17.3 DONE** (3D, and the shot on `sidebuttons`) A 3D shot of the full-size SPDT side switches in their
   glove: "Yes, model it".
 - **F17.4 DECIDED** The GT01 cover's taller end walls from the photo: "No, it's fine".
 
@@ -496,16 +496,14 @@ Answers to the Shell A questions:
 - **F18.2 DECIDED** Where the dots by the sensor sit with the plate off: "research and decide". **DONE:** left and right of the
   lens at ±11.5 mm (a third less worst sag under a palm press; front and back would clash with the lens clip). **TODO
   (fixC):** move Glide's dots to match.
-- **F18.3 DECIDED** Theseus's sensor: "Unannounced next part". Call it PixArt's next flagship, with no part name. **TODO
-  (fixC):** the Glide `sensor` slide.
-- **F18.4 DECIDED** The price row on `flagships`: "Keep price charted". **TODO (fixC):** price goes back on the chart,
-  framed honestly.
-- **F18.5 DECIDED** The click-latency target against the XA25's measured 72 µs: "Tighten it". **TODO (fixC):** a target
-  under 72 µs. 70 µs, moving or still, unless Brock gives a number.
+- **F18.3 DECIDED** Theseus's sensor: "Unannounced next part". Call it PixArt's next flagship, with no part name. **DONE.**
+- **F18.4 DECIDED** The price row on `flagships`: "Keep price charted". **DONE:** one chart, price on each row, Theseus's
+  $189 ending on the ULX's launch price.
+- **F18.5 DECIDED** The click-latency target against the XA25's measured 72 µs: "Tighten it". **DONE:** 70 µs, moving or still, at NC
+  release.
 - **F18.6 DECIDED** The tensioner's stress colours: "scant to peak and also it's been bothering me that the bridge
-  tensioner doesn't properly connect the 2 pieces". **TODO (fixC):**
-  - scale the heat to the hotter part again;
-  - make the bridge tensioner drawing connect its two pieces properly.
+  tensioner doesn't properly connect the 2 pieces". **DONE:** the heat runs to the hotter part's peak, and
+  the plate, bridge and trigger are drawn as one continuous band with filleted roots.
 - **F18.7 OPEN** The Viper V4 Pro's skate sizes: "Estimate from photos". The photo hosts were blocked from this session, so the pills keep the drawn 40.5 × 6.5 mm, labelled an estimate.
 - **F18.8 DECIDED** Measured sag or sink figures: "No, keep the models". The labelled illustrations stay.
 
@@ -519,11 +517,11 @@ Answers to the Shell A questions:
 ## F20. Answers to the plate builder's questions (2026-11-04 ~15:20)
 
 - **F20.1 DECIDED** The plate's skates: "Inboard, plate only". They sit on the plate alone, about ±36 mm from the centre,
-  and come off with it. **TODO (plate v2).**
+  and come off with it. **DONE.**
 - **F20.2 DECIDED** What carries the dot skates by the lens with the plate off: "part of the clip on lens line what g wolves
-  does". The dots are part of the clip-on lens, as on G-Wolves mice. **TODO (plate v2, Glide).**
-- **F20.3 DECIDED** The plate's skin: "Thicker skin", about 0.6 mm, so no rib is wider than the skin. **TODO (plate v2):**
-  rerun the FE study.
+  does". The dots are part of the clip-on lens, as on G-Wolves mice. **DONE** (3D and Glide).
+- **F20.3 DECIDED** The plate's skin: "Thicker skin", about 0.6 mm, so no rib is wider than the skin. **DONE:** 0.60 mm, and the FE study rerun.
+  The plate is 4.5× as stiff as a solid plate of the same weight. A plain grid is 10 % stiffer, but peaks 12 % higher.
 - **F20.4 DECIDED** The skates' shape: "they shouldn't be pills, they should be half circles, with cutouts for the dots,
-  they should both look like the rear viper v4 skate, which i am attaching". **TODO (plate v2, Glide).** Waiting for his
-  photo of the Viper V4 Pro's rear skate.
+  they should both look like the rear viper v4 skate, which i am attaching". **DONE** (3D and Glide): two half-moons after the
+  Viper V4 Pro's rear skate, measured off his photo (an estimate), cut round the corner dots.

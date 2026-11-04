@@ -133,8 +133,9 @@ scene('gt01', () => PARTS.buildGT01(), { view: 'threeQuarter', margin: 1.25 });
 scene('wheel', (studio) => PARTS.buildScrollWheel({ theme: studio.themeName }), { view: 'threeQuarter', margin: 1.25 });
 scene('claw', () => PARTS.buildMillMax3305(), { view: 'threeQuarter', margin: 1.3 });
 scene('screw', () => PARTS.buildScrewJoint(), { view: 'front', margin: 1.3 });
-/* the skate sets on the Theseus shell's own base outline, corner dots and screws (plate: 1 pills and ring, 0 dots) */
-scene('skates', async () => { const m = await fetch(A('shell-theseus-1seam.json')).then(r => r.json()); return PARTS.buildSkateSets({ footprint: m.footprint, screws: m.screws, dots: m.skates }); }, { view: 'top' });
+/* the skate sets on the Theseus shell's own base outline, corner dots and screws (plate: 1 half-moons and ring, 0 the clip-on lens
+   with its two dots; the corner dots stay in both) */
+scene('skates', async () => { const m = await fetch(A('shell-theseus-1seam.json')).then(r => r.json()); return PARTS.buildSkateSets({ footprint: m.footprint, screws: m.screws, dots: m.skates, skate: m.plate && m.plate.skate }); }, { view: 'top' });
 scene('battery', (studio) => PARTS.buildBattery({ theme: studio.themeName }), { view: 'threeQuarter', margin: 1.2 });
 scene('lattice', (studio) => buildLattice({ assetBase: A(''), theme: studio.themeName }), { view: 'threeQuarter' });
 

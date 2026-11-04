@@ -1,23 +1,23 @@
 /* ============================== shell and structure, part C: the board as structure, and the mass near the fingers ==============================
-   Brock's notes (2026-11-04): using the board as a reinforcement wasn't demonstrated enough: how strong FR4 is against
-   magnesium alloy, why you draw on every resource you have, how mice reinforce with small FR4 arms that snap, and how
-   Theseus uses THE WHOLE board (one board, about 5.6 g); and the mass slide, rebuilt as an argument you can feel.
-     shlPcbRib   FR4 vs magnesium alloy (rebuilds the old shlPcbRib and keeps its id)                     #94
-     shcCarry    Use the mass you already carry                                                           #94
-     shcArms     Small FR4 arms vs the whole board: 2D frames solved here, and the meter's 'board' step   #94 #91
-     mass        Moment of inertia about the fingertips (rebuilds the old mass and keeps its id)           #95
-     shcLow      A low centre of mass                                                                     #95 #40
-   Every simulated number is derived here with 07-sim.js, and each slide names its model in a line.
-   Colours are tokens only: C.hero is Theseus, C.second the next best, C.bad a problem (the arm that snaps), heatCol stress. */
+   Brock's notes (2026-11-04; F2.26 with F6.3, F2.40, F2.12, F9.23, F9.27): using the board as a reinforcement wasn't
+   demonstrated enough: how strong FR4 is against magnesium alloy, why you draw on every resource you have, how mice
+   reinforce with small FR4 arms that snap, and how Theseus uses THE WHOLE board (one board, 5.6 g); and the mass slide,
+   rebuilt as an argument you can see.
+     shlPcbRib   FR4 vs magnesium alloy: the same weight of each, pulled to breaking (rebuilds Shell A's slide, keeps its id)   #94
+     shcCarry    Use the weight you already carry: 19 % of the mouse put to work for 0 g; one board, three jobs                     #94
+     shcArms     Small FR4 arms vs the whole board: 2D frames solved here; the meter's 'board' step                                    #94 #91
+     mass        Keep the mass low, near the fingers: the cell onto the board, the centre of mass down to the grip (rebuilds it)     #95 #40
+   At a glance (F14.10, F16.1): each slide leads with a huge number in Theseus's colour (shellHL, 10-d-0-meter.js) and keeps
+   the bad case beside the good one (shellBA). C.hero is Theseus, C.second the next best, C.bad a problem; stress heat only
+   on the worse designs. Every simulated number is derived here with 07-sim.js, and each slide names its model in a line. */
 
 Object.assign(SRC, {
-  shcAz91: { t: 'MatWeb data sheet, magnesium AZ91D-F as cast (data from Starmet), as hosted by TEKO: 1.81 g/cm³, 230 MPa ultimate tensile, 150 MPa yield, 44.8 GPa in tension', u: 'https://www.tekogehause.de/uploads/manuali/materiali/AZ91D.pdf' },
   shcFr4Flex: { t: 'The Gund Company, NEMA FR4 typical values: flexural strength 552 MPa lengthwise and 483 MPa crosswise (ASTM D790, 1.6 mm), tensile 430 MPa lengthwise (ASTM D638), 1.85 g/cm³', u: 'https://thegundcompany.com/wp-content/uploads/2024/03/NEMA-FR4-Glass-Epoxy-Laminate-by-The-Gund-Co.pdf' },
   shcTpuHati: { t: 'TechPowerUp, G-Wolves Hati-S Plus 4K review, 28 Mar 2023: "Everything else sits on the main PCB, which has been extended at the sides to help with shell rigidity"; "All PCBs are very thin to save as much weight as possible"; four screws hold it to the bottom shell', u: 'https://www.techpowerup.com/review/g-wolves-hati-s-plus-4k/4.html' },
   shcTpuHatiR: { t: 'TechPowerUp, G-Wolves Hati-R 8K review, 31 Oct 2024: "The very thin main PCB is affixed to the bottom with four screws, and has been extended such that it supports structural rigidity of the shell"', u: 'https://www.techpowerup.com/review/g-wolves-hati-r-8k/4.html' },
-  shcBrock: { t: 'Brock Liddicoat, review notes, 4 Nov 2026: one board of about 5.6 g; many mice reinforce with small arms of FR4 that are "easy to break off or snap under force"; "All G Wolves mice, I even had the arms on an HTS Ultra break during shipping once"; in engineering, draw on all the resources you have', u: '', n: 'his own account and figures' },
+  shcBrock: { t: 'Brock Liddicoat, review notes, 4 Nov 2026: one board of about 5.6 g, with the radio, PMIC, antenna and USB-C; many mice reinforce with small arms of FR4 that are "easy to break off or snap under force"; "All G Wolves mice, I even had the arms on an HTS Ultra break during shipping once"; in engineering, draw on all the resources you have', u: '', n: 'his own account and figures' },
   shcBoardFE: { t: 'This deck, 2D frames solved in the page (07-sim.js): the shell at board height seen from above (the Sora outline; its CF-PP rim and lower wall as one 4.0 × 3.6 mm beam, 13.5 GPa), the board in 1.0 mm FR4 (19 GPa) as a plate-equivalent truss 9 mm inside the rim, joined by four 4 mm FR4 arms at the screw-boss rows or by 16 CF-PP rib feet at the study\'s arch rows; a transverse arch (the wall and one arch rib per 9.8 mm, as an equivalent section) under its 7.5 N share of a 10 N crown press, its feet held by the plan frame; the arm alone, edge on, as a fixed-guided FR4 beam', n: 'derived, this model' },
-  shcMassModel: { t: 'This deck, mass model: 29.31 g in all; the board, 5.6 g, at its place on the base; a 7.5 g pack of the 250 mAh, 5 × 20 × 30 mm class (Jauch LP502030JH) either low and forward on the board or high and back in the hump; the other 16.21 g spread evenly over the shell\'s surface (Brock\'s Sora scan); the fingertips 7.5 mm ahead of centre, between the side buttons, and 11 mm up', n: 'derived, this model' }
+  shcMassModel: { t: 'This deck, mass model: Theseus\'s 29.31 g as its weight budget sets it (the cell, Jauch LP402535JU, 8 g and 4.0 mm thick; the board 5.6 g; buttons, wheel, screws and wires as XBAB weighed them in the XA25; shell and skates the rest), each part at its height above the pad: the shell and skates at the study shell\'s centre of mass (16.1 mm) and the buttons at theirs (23.3 mm), both integrated from the moulded geometry (3d/lattice); the board 4 to 5 mm up with its parts on top (5 mm); the cell flat on it (7 mm) or up in the hump (20 mm); wheel 22 mm, screws 8 mm, wires 10 mm (estimates); the grip 12 mm up, as in the side-wall study (shbSides)', n: 'derived, this model' }
 });
 
 /* ---------- small geometry, in the shell study's frame: x across (+ = the user's left), y up, z forward (mm) ---------- */
@@ -26,8 +26,7 @@ const SHC = {
   armRows: [-31.65, 9.17],                                              /* small arms at the screw-boss rows, as boards are usually screwed */
   crown: -13.09,                                                        /* the study's crown press point */
   share: { '-20.43': 0.25, '-10.64': 0.75 },                            /* a 10 N crown press splits between the arches either side, by the lever rule */
-  ring: { w: 4.0, h: 3.6 }, ringIn: 2.1, boardIn: 9.2, boardZ: [-36, 54], lat: 5,
-  primed: new Set(), cache: {}
+  ring: { w: 4.0, h: 3.6 }, ringIn: 2.1, boardIn: 9.2, boardZ: [-36, 54], lat: 5
 };
 /** the Sora's top outline (closed, as SORA_HALF in 03-parts.js gives it): [x, z] */
 function shcOutline() { return SHC.out || (SHC.out = SORA_HALF.map(p => [p[0], p[1]]).concat(SORA_HALF.slice(1, -1).reverse().map(p => [-p[0], p[1]]))); }
@@ -128,11 +127,9 @@ function shcBoard() {
   const none = C3.none, whole = C3.whole, arms = C3.arms;
   const armR = simSolve('shc-arm', () => shcArmModel(arms.armL)), tip = armR.d[armR.model.n * 3 + 1], perMM = armR.sig[0] / tip;
   const res = { cases: C3, flexF: whole.crown / none.crown, stressF: whole.pp / none.pp, armFlexF: arms.crown / none.crown,
-    spreadArms: arms.spread / none.spread, spreadWhole: whole.spread / none.spread, armVsBoard: arms.arm / Math.max(whole.board, whole.rib),
+    spreadArms: arms.spread / none.spread, spreadWhole: whole.spread / none.spread, fr4X: arms.fr4 / Math.max(1e-6, whole.fr4),
     arm: { r: armR, L: arms.armL, perMM, snap: [483 / perMM, 552 / perMM] },
     smax: Math.max(none.ring, arms.ring, arms.arm, whole.ring, whole.rib, whole.board) };
-  /* one exaggeration for all three, so they can be compared: the free rim's biggest move is 30 px at 1 px/mm */
-  res.exag = 30 / Math.max(1e-6, none.r.dmax * none.sc);
   res.nmax = Math.max(...['none', 'arms', 'whole'].map(k => Math.max(...C3[k].r.N.map(v => Math.abs(v) * C3[k].sc))));
   return (SHC.res = res);
 }
@@ -140,233 +137,159 @@ function shcBoard() {
 shellStep({ key: 'board', slide: 'shcArms', label: 'The whole board', get flex() { return shcBoard().flexF; }, get stress() { return shcBoard().stressF; }, ev: 'derived',
   how: '2D frames: a transverse arch under a 10 N crown press, its feet held by the board in plan (FR4 19 GPa, 1.0 mm; CF-PP rim 13.5 GPa)' });
 
-/* ---------- 3D: the lattice study, with one unseen first render (it frames the scene and switches on local clipping before the cut) ---------- */
-const SHC_DEF = { lattice: { cut: 0, build: 1, stress: 0, stressCase: 'press', compare: 'tri', filletZoom: 0 } };
-function shc3D(key, t, x, y, w, h, st, o = {}) {
-  const s = Object.assign({}, SHC_DEF[key] || {}, st), theme = o.theme || (TH ? 'paper' : 'night'), id = key + '|' + theme;
-  if (!V2D.on && !SHC.primed.has(id) && typeof R3D !== 'undefined' && R3D.has(key) && R3D.ready(key, theme)) {
-    const k = (APP.scale || 1) * (APP.dpr || 1) * (o.res || 1);
-    try { R3D.render(key, t, Object.assign({}, s, key === 'lattice' ? { compare: 'tri' } : {}), Math.max(64, Math.round(w * k)), Math.max(36, Math.round(h * k)), theme); } catch (e) { }
-    SHC.primed.add(id);
-  }
-  return view3D(key, t, x, y, w, h, s, o);
-}
-/** where a lattice point (mm) lands on that shot, in 2D or 3D (the camera rule of 3d/integration, framed on the single shell) */
-function shcProj(st, box, p) {
-  if (V2D.on) { const P2 = lattice2DProj(st, box); if (P2) return P2(p); }
-  const V = { top: [0, 1, 0.0001], front: [0, 0.12, 1], left: [-1, 0.08, 0], right: [1, 0.08, 0], threeQuarter: [-0.78, 0.62, 0.95] };
-  const nrm = v => { const l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; };
-  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-  let d = nrm(Array.isArray(st.view) ? st.view : V[st.view || 'threeQuarter']);
-  const yw = st.yaw || 0, cy = Math.cos(yw), sy = Math.sin(yw); d = [d[0] * cy + d[2] * sy, d[1], -d[0] * sy + d[2] * cy];
-  const L0 = (typeof GEO2D !== 'undefined' && GEO2D.lattice) || { r: 69.83, center: [0, 19.075, -0.04] };
-  const fov = st.fov || 22, T = st.target ? st.target.slice() : L0.center.slice();
-  const asp = box[2] / box[3], dist = L0.r * 1.12 / Math.sin(fov / 2 * Math.PI / 180) / Math.min(1, asp) / (st.zoom || 1);
-  const Cm = T.map((v, i) => v + d[i] * dist), up = Math.abs(d[1]) > 0.99 ? [0, 0, -Math.sign(d[1])] : [0, 1, 0];
-  const f = nrm(T.map((v, i) => v - Cm[i])), r = nrm(cross(f, up)), u = cross(r, f), q = p.map((v, i) => v - Cm[i]), th = Math.tan(fov / 2 * Math.PI / 180), zc = dot(q, f);
-  return [box[0] + (dot(q, r) / (zc * th * asp) + 1) / 2 * box[2], box[1] + (1 - dot(q, u) / (zc * th)) / 2 * box[3]];
-}
-
-/* ---------- drawing helpers ---------- */
-/** a rounded value bar centred on y: solid to lo, translucent to hi. col: a colour or a gradient (array). returns the x of its end */
-function shcBar(x, y, w, max, lo, hi, col, a, k, o = {}) {
-  const h = o.h || 14, X = v => x + w * clamp(v / max), r = h / 2;
-  if (o.track !== false) rr(x, y - h / 2, w, h, r, C.track, null, 0, a);
-  const fill = Array.isArray(col) ? gradH(x, Math.max(2, w * clamp(hi / max)), col) : col;
-  G.save();
-  if (hi > lo) { G.globalAlpha = a * 0.36; rrPath(x, y - h / 2, Math.max(h, (X(hi) - x) * k), h, r); G.fillStyle = fill; G.fill(); }
-  G.globalAlpha = a; rrPath(x, y - h / 2, Math.max(h, (X(lo) - x) * k), h, r); G.fillStyle = fill; G.fill();
-  G.restore();
-  return x + (X(hi) - x) * k;
-}
-/** a range as text: '160–220' or '430' */
-const shcRange = (lo, hi, d = 0) => (Math.abs(hi - lo) < 0.5 * Math.pow(10, -d) ? fmtN(lo, d) : fmtN(lo, d) + '–' + fmtN(hi, d));
-/** breaking length (km) of a strip that hangs from itself: σ / (ρ g), σ in MPa, ρ in g/cm³ */
-const shcKm = (s, rho) => s * 1e6 / (rho * 1000 * 9.80665) / 1000;
+/* ---------- small helpers ---------- */
 /** the slide's tiles one after another (tileA when the shared helper is there) */
 const shcTA = (t, t0, i) => typeof tileA === 'function' ? tileA(t, t0, i) : ep(t, t0 + i * 0.09, t0 + i * 0.09 + 0.55, E.snap);
+/** newtons, rounded to ten, with a thousands comma */
+const shcN = v => (Math.round(v / 10) * 10).toLocaleString('en-US');   /* to 10 N: no false precision */
+/** a value from RDATA ({ value } or plain) */
+const shcV = v => typeof rv === 'function' ? rv(v) : (v && typeof v === 'object' && 'value' in v ? v.value : v);
+/** a triangle lattice's openings over a box, each a triangle with filleted corners (the ribs between them read as filleted, F9.27):
+   n openings across a row; fills the current path style */
+function shcTriHoles(x, y, w, h, n) {
+  const p = w / n, rh = p * 0.866, kq = 0.74, rf = p * 0.1;
+  const tri = (a, b, c) => { const pts = [a, b, c].map(q => q.slice()), cx = (a[0] + b[0] + c[0]) / 3, cy = (a[1] + b[1] + c[1]) / 3; pts.forEach(q => { q[0] = cx + (q[0] - cx) * kq; q[1] = cy + (q[1] - cy) * kq; });
+    G.beginPath(); for (let i = 0; i < 3; i++) { const q0 = pts[(i + 2) % 3], q1 = pts[i], q2 = pts[(i + 1) % 3]; const m0 = [(q0[0] + q1[0]) / 2, (q0[1] + q1[1]) / 2]; if (!i) G.moveTo(m0[0], m0[1]); G.arcTo(q1[0], q1[1], q2[0], q2[1], rf); } G.closePath(); G.fill(); };
+  for (let r = -1; r * rh < h + rh; r++) for (let k = -1; k <= n + 1; k++) { const x0 = x + k * p + (r % 2 ? p / 2 : 0), y0 = y + r * rh; tri([x0, y0 + rh], [x0 + p, y0 + rh], [x0 + p / 2, y0]); tri([x0 + p / 2, y0], [x0 + p * 1.5, y0], [x0 + p, y0 + rh]); }
+}
+/** skin, in the deck's one grey (03-parts.js), never a peach tone (F9.24) */
+const shcSkin = () => TH ? ['#C9C8C2', '#B3B2AC'] : ['#6A6964', '#55554F'];
 
-/* ============================== 1. FR4 vs magnesium alloy (#94) ============================== */
-const SHC_FR4 = { uts: 430, E: [18, 20], rho: 1.85 }, SHC_MG = { uts: [160, 220], E: 46, rho: 1.81 };
+/* ============================== 1. FR4 vs magnesium alloy (#94) ==============================
+   The same weight of each, pulled until it breaks: strips 50 mm long, the FR4 one 10 × 1.0 mm (0.93 g), the magnesium one
+   1.0 mm thick and as wide as the same weight allows. Breaking pull = tensile strength × area. The figures are the ones
+   Shell A's ranking prints (shlSpecific: Gund for FR4, MatWeb for AZ91D-F); this slide is the head-to-head. */
+const SHC_FR4 = { uts: 430, E: [18, 20], rho: 1.85 }, SHC_MG = { uts: 230, E: 44.8, rho: 1.81 };
+const SHC_PULL = (() => { const L = 50, aF = 10, g = SHC_FR4.rho * aF * L / 1000, aM = g * 1000 / (SHC_MG.rho * L), fF = SHC_FR4.uts * aF, fM = SHC_MG.uts * aM; return { L, aF, aM, g, fF, fM, ratio: fF / fM }; })();
+/** a strip seen from above: (x, y) = its left end on its centre line, len px long, h px wide; kind 'fr4' (the glass weave)
+   or 'mg' (a cast face). from, to = the part of its length drawn (0..1); dx moves it */
+function shcStrip(x, y, len, h, kind, a, from = 0, to = 1, dx = 0) {
+  if (a <= 0.003 || to <= from) return;
+  const x0 = x + len * from + dx, x1 = x + len * to + dx;
+  G.save(); G.globalAlpha = a; rrPath(x0, y - h / 2, x1 - x0, h, 5); G.fillStyle = kind === 'fr4' ? C.hero : C.second; G.fill(); G.clip();
+  G.globalAlpha = a * (kind === 'fr4' ? 0.2 : 0.16); G.strokeStyle = '#FFFFFF'; G.lineWidth = 1.2; G.beginPath();
+  if (kind === 'fr4') for (let k = -h; k < len + h; k += 10) { G.moveTo(x + dx + k, y - h / 2); G.lineTo(x + dx + k + h, y + h / 2); G.moveTo(x + dx + k + h, y - h / 2); G.lineTo(x + dx + k, y + h / 2); }
+  else for (let k = 6; k < h; k += 7) { G.moveTo(x0, y - h / 2 + k); G.lineTo(x1, y - h / 2 + k); }
+  G.stroke(); G.restore();
+}
+/** a jagged break across a strip at x, in the problem colour */
+function shcBreak(x, y, h, a, dir = 1) {
+  const pts = []; for (let i = 0; i <= 8; i++) pts.push([x + dir * (i % 2 ? 5 : -3), y - h / 2 - 4 + (h + 8) * i / 8]);
+  poly(pts, { color: C.bad, w: 3.2, alpha: a });
+}
 S({
   id: 'shlPcbRib', replaces: 'shlPcbRib', after: 'shbSides', ch: 'shell', theme: 'night', title: 'FR4 vs magnesium alloy', settle: 9.5, ideas: [94],
-  src: ['shlFr4', 'shcFr4Flex', 'az91d', 'shcAz91', 'shlDoc'],
+  src: ['shlFr4', 'shlMg', 'shlDoc'],
   draw: t => {
+    const P = SHC_PULL, rx = fmtN(P.ratio, 1) + '×';
     header(t, 'FR4 vs magnesium alloy');
-    captions(t, [[0.6, 'FR4, the glass and epoxy core of a circuit board, is stronger than the magnesium alloy in metal shells, and stronger again per gram.'], [5.2, 'It is under half as stiff. So I don\'t ask the board to bend: I load it in its plane, as a tie.']]);
-    const y0 = LAY.top + 8, H0 = 960 - y0;
-    /* ---- the big tile: strength per gram, as the length of a strip that hangs from itself ---- */
-    { const [x, y, w, h] = [LM, y0, 1000, H0], a = shcTA(t, 0.25, 0);
-      demoWindow(x, y, w, h, a, { hero: true });
-      const hy = cardHead(t, 0.45, x, y, w, 'Strength per gram', ['derived']);
-      text('How far a strip can hang from itself before it breaks: {L} = σ ÷ ρg.', x + 32, hy + 14, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 0.8, 1.2), maxW: w - 64 });
-      const kmF = shcKm(SHC_FR4.uts, SHC_FR4.rho), kmM = SHC_MG.uts.map(s => shcKm(s, SHC_MG.rho));
-      const ceil = y + 186, pxk = 18.2, rate = 8.2, g0 = 1.3;            /* the ceiling, px per km, km per second while they grow */
-      const grown = Math.max(0, (t - g0) * rate);
-      /* the scale: km down the left */
-      const ka = ep(t, 0.9, 1.4);
-      for (const km of [0, 5, 10, 15, 20, 25]) { const yy = ceil + km * pxk; line(x + 92, yy, x + 470, yy, { color: C.hair, w: 1.2, alpha: ka }); text(km + (km ? '' : ' km'), x + 80, yy + 7, { role: 'tick', size: 19, color: C.faint, align: 'right', alpha: ka }); }
-      line(x + 92, ceil, x + 470, ceil, { color: C.ink2, w: 3, alpha: ka });
-      /* FR4: grows to its breaking length and holds */
-      const cxF = x + 190, cxM = x + 360, sw = 58;
-      const lenF = Math.min(kmF, grown), yF = ceil + lenF * pxk;
-      if (lenF > 0) { G.save(); G.globalAlpha = a; rrPath(cxF - sw / 2, ceil, sw, Math.max(sw * 0.5, lenF * pxk), 10); G.fillStyle = C.hero; G.fill(); G.restore(); }
-      /* magnesium: solid to its low figure, a lighter band to its high one, then it lets go */
-      const brk = kmM[1], tb = g0 + brk / rate, lenM = Math.min(brk, grown), fall = Math.max(0, t - tb);
-      if (lenM > 0) {
-        G.save(); G.globalAlpha = a;
-        rrPath(cxM - sw / 2, ceil, sw, Math.max(sw * 0.5, Math.min(lenM, kmM[0]) * pxk), 10); G.fillStyle = C.second; G.fill();
-        if (lenM > kmM[0]) { G.globalAlpha = a * 0.42; G.fillRect(cxM - sw / 2, ceil + kmM[0] * pxk - 10, sw, (lenM - kmM[0]) * pxk + 10); }
-        G.restore();
-        /* the piece that breaks off falls away and fades */
-        if (fall > 0) {
-          const dy = 0.5 * 2600 * fall * fall, fa = clamp(1 - fall / 0.7), py = ceil + brk * pxk + 6 + dy;
-          G.save(); G.globalAlpha = a * fa * 0.9; rrPath(cxM - sw / 2, py, sw, 3.2 * pxk, 10); G.fillStyle = C.second; G.fill(); G.restore();
-          /* the break, jagged, in the problem colour */
-          const yb = ceil + brk * pxk, kb = ep(t, tb, tb + 0.25);
-          const pts = []; for (let i = 0; i <= 8; i++) pts.push([cxM - sw / 2 - 6 + (sw + 12) * i / 8, yb + (i % 2 ? 5 : -4)]);
-          poly(pts, { color: C.bad, w: 3, alpha: a * kb });
-        }
-      }
-      text('FR4', cxF, ceil - 18, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ka });
-      text('AZ91D', cxM, ceil - 18, { role: 'label', size: 21, color: C.secondText, align: 'center', alpha: ka });
-      /* the numbers, in a column on the right */
-      const nx = x + 540, kF = clamp(lenF / kmF), kM = clamp(lenM / brk);
-      const r1 = rich([{ s: fmtN(kmF * kF, 1), role: 'd1', size: 132, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: 'km', font: 'disp', size: 46, weight: 700, color: C.heroText, grad: C.heroGrad, gap: 12, caps: false }], nx, y + 330, { alpha: ep(t, g0, g0 + 0.4) });
-      text('FR4, pulled along its weave: 430 MPa at 1.85 g/cm³', nx, y + 380, { role: 'small', size: 25, color: C.ink2, maxW: w - (nx - x) - 32, alpha: ep(t, g0 + 0.3, g0 + 0.7) });
-      rich([{ s: fmtN(kmM[0] * Math.min(1, kM * brk / kmM[0]), 1), role: 'd1', size: 76, color: C.secondText, tnum: true }, kM * brk > kmM[0] ? { s: '–' + fmtN(Math.min(brk, kM * brk), 1), role: 'd1', size: 76, color: C.secondText, tnum: true, gap: 0 } : null, { s: 'km', font: 'disp', size: 32, weight: 700, color: C.secondText, gap: 10, caps: false }], nx, y + 500, { alpha: ep(t, g0, g0 + 0.4) });
-      text('Magnesium AZ91D, die cast: 160 to 220 MPa at 1.81 g/cm³', nx, y + 544, { role: 'small', size: 25, color: C.ink2, maxW: w - (nx - x) - 32, alpha: ep(t, g0 + 0.3, g0 + 0.7) });
-      const lo = kmF / kmM[1], hi = kmF / kmM[0], kr = ep(t, 4.4, 4.9);
-      rule(nx, y + 590, x + w - 40, kr);
-      rich([{ s: fmtN(lo, 1) + '–' + fmtN(hi, 1) + '×', font: 'disp', size: 54, weight: 800, color: C.ink, grad: C.heroGrad, tnum: true }, { s: 'the strength per gram', role: 'small', size: 25, weight: 600, color: C.ink2, gap: 18, caps: false }], nx, y + 650, { alpha: kr });
+    captions(t, [[0.6, 'FR4 is the glass and epoxy core of a circuit board. Pull a strip of it against the same weight of the magnesium alloy in metal mice.'], [4.9, 'The magnesium lets go at ' + shcN(P.fM) + ' N. FR4 holds to ' + shcN(P.fF) + ' N: ' + rx + ' the pull for its weight, and every Theseus already carries ' + THS.pcb + ' of it.']]);
+    /* the pull: up to the magnesium's break, a beat, then on to FR4's own limit */
+    const tP0 = 2.2, tB = 4.6, tP2 = 6.2, F = t < tB ? P.fM * ep(t, tP0, tB, E.lin) : P.fM + (P.fF - P.fM) * ep(t, tB + 0.3, tP2, E.io3), broke = t >= tB;
+    const [X, Y, W, H] = [LM, 280, RM - LM, 480], a0 = shcTA(t, 0.25, 0);
+    demoWindow(X, Y, W, H, a0);
+    /* the headline: by how much, in Theseus's colour */
+    shellHL(t, tP2 + 0.1, X + 48, Y + 168, rx, 'stronger', { size: 140, sub: 'For its weight. The same 0.93 g of each, pulled until it breaks.', maxW: 820 });
+    /* the rig: a clamp at the left, the two strips, a bar the pointer pulls at the right */
+    const sx = X + 160, len = 880, sh = 44, yF = Y + 316, yM = Y + 420, ka = ep(t, 0.8, 1.3), kM = ep(t, 1.0, 1.5);
+    const dxF = 46 * F / P.fF, dxB = 46 * P.fM / P.fF, gap = broke ? 8 + (dxF - dxB) + 10 * ep(t, tB, tB + 0.25, E.out3) : 0, cut = 0.44;
+    text('FR4, 10 × 1.0 mm', sx + 44, yF - sh / 2 - 16, { role: 'label', size: 20, color: C.heroText, alpha: ka });
+    text('Magnesium AZ91D, ' + fmtN(P.aM, 1) + ' × 1.0 mm', sx + 44, yM - sh / 2 - 16, { role: 'label', size: 20, color: C.secondText, alpha: kM });
+    shcStrip(sx, yF, len, sh, 'fr4', ka, 0, 1, dxF);
+    if (!broke) shcStrip(sx, yM, len, sh, 'mg', kM, 0, 1, dxF);
+    else {
+      shcStrip(sx, yM, len, sh, 'mg', kM, 0, cut, 0); shcStrip(sx, yM, len, sh, 'mg', kM, cut, 1, gap);
+      const kb = ep(t, tB, tB + 0.2); shcBreak(sx + len * cut, yM, sh, kb, 1); shcBreak(sx + len * cut + gap, yM, sh, kb, -1);
     }
-    /* ---- right: strength, then stiffness and stiffness per gram, then the word ---- */
-    const rx = LM + 1000 + 24, rw = RM - rx;
-    { const [x, y, w, h] = [rx, y0, rw, 206], a = shcTA(t, 0.25, 1);
-      demoWindow(x, y, w, h, a);
-      const hy = cardHead(t, 0.6, x, y, w, 'Tensile strength, {MPa}', ['datasheet']);
-      const bx = x + 140, bw = 290, k = ep(t, 1.5, 2.4, E.snap);
-      [['FR4', SHC_FR4.uts, SHC_FR4.uts, C.hero, C.heroText], ['AZ91D', SHC_MG.uts[0], SHC_MG.uts[1], C.second, C.secondText]].forEach(([nm, lo, hi, col, tc], i) => {
-        const yy = hy + 44 + i * 50;
-        text(nm, x + 32, yy + 8, { role: 'label', size: 21, color: tc, alpha: a });
-        const xe = shcBar(bx, yy, bw, 500, lo, hi, col, a, k);
-        text(shcRange(lo, hi), xe + 12, yy + 9, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: clamp(k * 1.4 - 0.3) });
+    /* the clamp, over the strips' left ends */
+    G.save(); G.globalAlpha = a0; rrPath(sx - 70, yF - 44, 96, yM - yF + 88, 6); G.fillStyle = TH ? '#2B2B2E' : '#3A3B40'; G.fill(); G.clip();
+    G.strokeStyle = 'rgba(255,255,255,0.12)'; G.lineWidth = 2; G.beginPath(); for (let k = -200; k < 200; k += 14) { G.moveTo(sx - 70 + k, yF - 44); G.lineTo(sx - 70 + k + 140, yM + 44); } G.stroke(); G.restore();
+    /* the pull bar, pinned to both strips' right ends */
+    const bx = sx + len + dxF;
+    rr(bx - 6, yF - 40, 26, yM - yF + 80, 6, TH ? '#3A3B40' : '#5A5B61', null, 0, a0);
+    for (const yy of [yF, yM]) circle(bx + 7, yy, 5, { fill: C.bg, alpha: a0 });
+    /* the pointer: in, grabs the bar, pulls with it, leaves */
+    { const grab = [bx + 22, (yF + yM) / 2 + 18], k = t < 2.0 ? 0 : t < tP2 + 0.2 ? 1 : 2;
+      const p = k === 0 ? kf(t, [[1.3, [X + W - 140, Y + H - 30]], [2.0, [sx + len + 22, (yF + yM) / 2 + 18]]], E.cam) : k === 1 ? grab : kf(t, [[tP2 + 0.2, grab], [tP2 + 0.9, [grab[0] + 120, grab[1] + 90]]], E.cam);
+      cursorPtr(p[0], p[1], { a: ep(t, 1.2, 1.5) * (1 - ep(t, tP2 + 0.5, tP2 + 0.9)), grab: k === 1, press: t > 2.0 && t < 2.45 ? prog(t, 2.0, 2.45) : 0 });
+    }
+    /* the chart: the breaking pull, higher is better */
+    { const cx = X + 1180, cw = 420, kc = ep(t, 1.4, 1.8), Xb = v => cx + cw * v / P.fF;
+      text('Breaking pull, {N (higher is better)}', cx, Y + 248, { role: 'label', size: 19, color: C.mute, alpha: kc });
+      const rows = [[yF, Math.min(F, P.fF), C.hero, C.heroText, 'FR4', t >= tP2], [yM, Math.min(F, P.fM), C.second, C.secondText, 'AZ91D', broke]];
+      rows.forEach(([yy, v, col, tc, nm, done]) => {
+        rr(cx, yy - 9, cw, 18, 9, C.track, null, 0, kc);
+        if (v > 0) rr(cx, yy - 9, Math.max(18, Xb(v) - cx), 18, 9, col, null, 0, kc);
+        text(nm, cx, yy - 22, { role: 'label', size: 19, color: tc, alpha: kc });
+        const vs = shcN(v) + ' N';
+        text(vs, cx + cw, yy - 22, { font: 'disp', size: 30, weight: 800, tnum: true, color: nm === 'FR4' ? C.heroText : C.ink, grad: nm === 'FR4' && done ? C.heroGrad : null, align: 'right', alpha: kc });
+        if (nm === 'AZ91D' && done) { const xe = Xb(P.fM); line(xe + 6, yy - 14, xe + 6, yy + 14, { color: C.bad, w: 3, alpha: kc }); text('Breaks', xe + 16, yy + 7, { role: 'label', size: 19, color: C.bad, alpha: kc * ep(t, tB, tB + 0.3) }); }
       });
-      const kr = ep(t, 2.4, 2.8);
-      rich([{ s: fmtN(SHC_FR4.uts / SHC_MG.uts[1], 1) + '–' + fmtN(SHC_FR4.uts / SHC_MG.uts[0], 1) + '×', font: 'disp', size: 50, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }], x + w - 32, hy + 66, { align: 'right', alpha: kr });
-      text('FR4 stronger', x + w - 32, hy + 102, { role: 'label', size: 20, color: C.heroText, align: 'right', alpha: kr });
+      /* the margin FR4 still has when the magnesium breaks */
+      const km = ep(t, tB + 0.2, tB + 0.6) * (1 - ep(t, tP2 - 0.4, tP2)), xm = Xb(P.fM);
+      if (km > 0.003) { line(xm, yF - 14, xm, yF + 14, { color: C.ink, w: 2, alpha: km }); text(fmtN((1 - P.fM / P.fF) * 100, 0) + ' % margin left', xm, yF + 38, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: km }); }
+      if (t >= tP2) text('Holds ' + rx + ' the pull', cx + cw, yF + 38, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: ep(t, tP2, tP2 + 0.4) });
     }
-    { const [x, y, w, h] = [rx, y0 + 206 + 24, rw, 260], a = shcTA(t, 0.25, 2);
-      demoWindow(x, y, w, h, a);
-      const hy = cardHead(t, 0.7, x, y, w, 'Stiffness', ['datasheet', 'derived']);
-      const bx = x + 140, bw = 290, rows = [['Modulus, {GPa}', SHC_FR4.E, SHC_MG.E, 50, 0], ['Per gram, {GPa ÷ g/cm³}', SHC_FR4.E.map(e => e / SHC_FR4.rho), SHC_MG.E / SHC_MG.rho, 30, 1]];
-      rows.forEach(([lab, fr, mg, max, d], j) => {
-        const yy = hy + 26 + j * 104, k = ep(t, 2.1 + j * 0.4, 2.9 + j * 0.4, E.snap), ka = ep(t, 1.9 + j * 0.4, 2.3 + j * 0.4);
-        text(lab, x + 32, yy, { role: 'label', size: 19, color: C.mute, alpha: ka });
-        [['FR4', fr[0], fr[1], C.hero, C.heroText], ['AZ91D', mg, mg, C.second, C.secondText]].forEach(([nm, lo, hi, col, tc], i) => {
-          const yb = yy + 30 + i * 34;
-          text(nm, x + 32, yb + 8, { role: 'label', size: 19, color: tc, alpha: ka });
-          const xe = shcBar(bx, yb, bw, max, lo, hi, col, ka, k, { h: 12 });
-          text(shcRange(lo, hi, d), xe + 12, yb + 8, { font: 'mono', size: 22, weight: 700, color: C.ink, alpha: clamp(k * 1.4 - 0.3) });
-        });
-      });
-      const kr = ep(t, 3.3, 3.7), lo = SHC_MG.E / SHC_FR4.E[1], hi = SHC_MG.E / SHC_FR4.E[0];
-      rich([{ s: fmtN(lo, 1) + '–' + fmtN(hi, 1) + '×', font: 'disp', size: 50, weight: 800, color: C.secondText, tnum: true }], x + w - 32, hy + 106, { align: 'right', alpha: kr });
-      text('Magnesium stiffer', x + w - 32, hy + 142, { role: 'label', size: 20, color: C.secondText, align: 'right', alpha: kr });
-    }
-    { const y = y0 + 206 + 24 + 260 + 24;
-      glossBox(t, 5.6, rx, y, rw, 'Tie', 'A member that holds two points together by pulling, like a bowstring. Pulled, every fibre of the board works, and its low stiffness barely matters.', { h: 960 - y });
-    }
-    source(t, 'Gund NEMA FR4 sheet: 430 MPa tensile along the weave, 18 to 20 GPa flexural, 1.85 g/cm³. AZ91D: makeitfrom (160 to 220 MPa, 46 GPa), MatWeb (1.81 g/cm³).', { t0: 1.2 });
+    /* under it: the word, and the one place magnesium wins */
+    const by = Y + H + 40, bw = (W - 40) / 2, bh = 960 - by;
+    glossBox(t, 6.6, X, by, bw, 'Tie', 'A member that holds two points together by pulling, like a bowstring. Pulled is how FR4 is strongest, and how Theseus uses its board.', { h: bh, size: 24 });
+    noteBox(t, 7.0, X + bw + 40, by, bw, { label: 'Where magnesium wins', body: 'Bent, it is about 2.4× stiffer: 44.8 GPa against FR4\'s 18 to 20. So the board is never asked to bend. It is pulled, as a tie.', h: bh, size: 24 });
+    source(t, 'Gund NEMA FR4: 430 MPa along the weave, 1.85 g/cm³. MatWeb AZ91D-F: 230 MPa, 44.8 GPa, 1.81 g/cm³. Pull = strength × area, at the same weight and length.', { t0: 1.2 });
   }
 });
 
-/* ============================== 2. use the mass you already carry (#94) ==============================
-   Theseus's 29.31 g as one square per gram: the board (5.6 g, Brock's figure), the battery (a 7.5 g, 250 mAh pack), and
-   everything else (derived). The board's squares move from carried to structure; nothing is added. */
-const SHC_MASS = { total: THESEUS.mass, board: THESEUS.pcb, batt: 7.5 };
-SHC_MASS.rest = +(SHC_MASS.total - SHC_MASS.board - SHC_MASS.batt).toFixed(2);
-/** one square of the waffle: i = its gram, f = how much of it is filled (the last gram is 0.31), col = fill */
-function shcSquare(x, y, s, f, fill, a, o = {}) {
-  if (a <= 0.003 || f <= 0) return;
-  G.save(); G.globalAlpha = a;
-  rrPath(x, y, s, s, s * 0.22); G.clip();
-  G.fillStyle = o.track || C.track; G.fillRect(x, y, s, s);
-  G.fillStyle = fill; G.fillRect(x, y, s * f, s);
-  if (o.lattice) {
-    /* a triangle lattice laid over the board's squares: they are structure now */
-    G.globalAlpha = a * o.lattice; G.strokeStyle = TH ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.4)'; G.lineWidth = 1.4; G.beginPath();
-    const p = s / 3;
-    for (let k = -3; k <= 6; k++) { G.moveTo(x + k * p, y); G.lineTo(x + k * p + s * 0.577, y + s); G.moveTo(x + k * p, y + s); G.lineTo(x + k * p + s * 0.577, y); }
-    for (let k = 1; k < 3; k++) { G.moveTo(x, y + k * s / 3); G.lineTo(x + s, y + k * s / 3); }
-    G.stroke();
-  }
-  G.restore();
-}
+/* ============================== 2. use the weight you already carry (#94) ==============================
+   Theseus's 29.31 g as one square per gram. The board's 5.6 g (Brock's figure) go from carried to structure; nothing is
+   added. The board then has three jobs, tying this slide to the next (the tie) and to Glide (the sensor held at focus). */
 S({
-  id: 'shcCarry', after: 'shlPcbRib', ch: 'shell', theme: 'paper', title: 'Use the mass you already carry', settle: 9.5, ideas: [94],
-  src: ['shcBrock', 'exJauch', 'shlDoc', 'shlLattice'], three: ['lattice'],
+  id: 'shcCarry', after: 'shlPcbRib', ch: 'shell', theme: 'paper', title: 'Use the weight you already carry', settle: 9.5, ideas: [94],
+  src: ['shcBrock', 'shlDoc'],
   draw: t => {
-    header(t, 'Use the mass you already carry');
-    captions(t, [[0.6, 'Every Theseus carries one board of about 5.6 g. Its mass is fixed, so the only question is whether it does any work.'], [4.8, 'In engineering you draw on every resource you have. Tie the side ribs to the board, and the same grams carry load.']]);
-    const y0 = LAY.top + 8, H0 = 960 - y0, M = SHC_MASS;
-    /* ---- left: the budget, one square per gram ---- */
-    { const [x, y, w, h] = [LM, y0, 1040, H0], a = shcTA(t, 0.25, 0);
-      demoWindow(x, y, w, h, a);
-      const hy = cardHead(t, 0.45, x, y, w, 'Theseus, ' + THS.massG + ', one square per gram', [{ ev: 'estimate', by: 'Brock' }, 'datasheet', 'derived']);
-      const s = 74, gp = 12, cols = 10, gx = x + 48, gy = hy + 70, mv = ep(t, 3.4, 4.6, E.cam);
-      for (let i = 0; i < 30; i++) {
-        const c = i % cols, rw = Math.floor(i / cols), sx = gx + c * (s + gp), sy = gy + rw * (s + gp + 4);
-        const ka = ep(t, 0.8 + i * 0.035, 1.2 + i * 0.035, E.snap), dy = (1 - ka) * 16, f = clamp(M.total - i);
-        if (f <= 0 || ka <= 0.003) continue;
-        /* what this gram holds: the board, the battery or the rest (the 6th square is part board, part battery) */
-        const part = g => g < M.board ? 'board' : g < M.board + M.batt ? 'batt' : 'rest';
-        const segs = []; let gg = i; while (gg < Math.min(i + 1, M.total) - 1e-9) { const pt = part(gg), end = Math.min(i + 1, M.total, pt === 'board' ? M.board : pt === 'batt' ? M.board + M.batt : 1e9); segs.push([pt, gg - i, end - i]); gg = end; }
-        const kf = ep(t, 3.4 + i * 0.09, 3.9 + i * 0.09, E.snap);
-        G.save(); G.globalAlpha = a * ka; rrPath(sx, sy + dy, s, s, s * 0.22); G.clip(); G.fillStyle = C.track; G.fillRect(sx, sy + dy, s, s);
-        for (const [pt, u0, u1] of segs) {
-          G.globalAlpha = a * ka; G.fillStyle = pt === 'rest' ? C.comp2 : C.comp; G.fillRect(sx + s * u0, sy + dy, s * (u1 - u0), s);
-          if (pt === 'board' && kf > 0) { G.globalAlpha = a * ka * kf; G.fillStyle = C.hero; G.fillRect(sx + s * u0, sy + dy, s * (u1 - u0), s); }
+    const M = THESEUS.mass, Bg = THESEUS.pcb, share = Bg / M * 100, kMove = ep(t, 3.6, 4.8, E.io3);
+    header(t, 'Use the weight you already carry');
+    captions(t, [[0.6, 'Every Theseus carries one board of ' + THS.pcb + ', with the radio, PMIC, antenna and USB-C. Its weight is fixed. The question is whether it works.'], [4.6, 'In engineering you draw on every resource you have. Tie the side ribs to the board, and the same weight carries load.']]);
+    /* ---- left: the headline, before and after, and Brock's line ---- */
+    const lx = LM, lw0 = 600;
+    shellHL(t, 4.8, lx, 440, fmtN(share, 0) + '%', 'at work', { size: 150, sub: 'Of the mouse\'s weight joins the structure: the board, ' + THS.pcb + '. The mouse gets no heavier.', maxW: lw0 });
+    shellBA(t, lx, 680, { label: 'The board\'s weight that carries load', before: '0 g', after: fmtN(Bg * kMove, 1) + ' g', net: '+0 g on the scale', size: 72, k: kMove, a: ep(t, 1.4, 1.8), bad: C.ink });
+    sourceBox(t, 2.0, lx, 780, lw0, 'Brock, #94', 'The weight of the PCB is non-negotiable, so you may as well take advantage of it.', { size: 25 });
+    /* ---- right: one square per gram, then the board's three jobs ---- */
+    const [x, y, w, h] = [720, 280, RM - 720, 680], a = shcTA(t, 0.25, 0);
+    demoWindow(x, y, w, h, a);
+    cardHead(t, 0.45, x, y, w, 'Theseus, ' + THS.massG + ', one square per gram', []);
+    const s = 80, gp = 16, cols = 10, gx = x + (w - (cols * s + (cols - 1) * gp)) / 2, gy = y + 96;
+    for (let i = 0; i < Math.ceil(M); i++) {
+      const c = i % cols, r = Math.floor(i / cols), qx = gx + c * (s + gp), qy = gy + r * (s + gp);
+      const ka = ep(t, 0.7 + i * 0.03, 1.1 + i * 0.03, E.snap), f = clamp(M - i), fb = clamp(Bg - i), kf2 = ep(t, 3.6 + i * 0.12, 4.1 + i * 0.12, E.snap);
+      if (ka <= 0.003) continue;
+      const dy = (1 - ka) * 14;
+      G.save(); G.globalAlpha = a * ka; rrPath(qx, qy + dy, s, s, 6); G.clip();
+      G.fillStyle = C.track; G.fillRect(qx, qy + dy, s, s);
+      G.fillStyle = C.comp; G.fillRect(qx, qy + dy, s * f, s);
+      if (fb > 0) {
+        G.fillStyle = C.comp2; G.fillRect(qx, qy + dy, s * fb, s);
+        if (kf2 > 0) {
+          G.globalAlpha = a * ka * kf2; G.fillStyle = C.hero; G.fillRect(qx, qy + dy, s * fb, s);
+          /* a triangle lattice over the board's squares, its openings filleted as the shell's are (F9.27): they are structure now */
+          G.save(); G.beginPath(); G.rect(qx, qy + dy, s * fb, s); G.clip(); G.globalAlpha = a * ka * kf2 * 0.3; G.fillStyle = '#FFFFFF'; shcTriHoles(qx, qy + dy, s, s, 3); G.restore();
         }
-        G.restore();
-        if (segs[0][0] === 'board' && kf > 0) shcSquare(sx, sy + dy, s, Math.min(1, M.board - i), 'rgba(0,0,0,0)', a * ka, { lattice: kf, track: 'rgba(0,0,0,0)' });
       }
-      /* the three groups, under the squares */
-      const ly = gy + 3 * (s + gp + 4) + 44, kl = ep(t, 2.0, 2.4);
-      const items = [['Board', THS.pcb, { ev: 'estimate', by: 'Brock' }, mv > 0.5 ? 'Structure now' : 'Carried'], ['Battery, 250 mAh', fmtN(M.batt, 1) + ' g', { ev: 'datasheet', by: 'Jauch' }, 'Carried'], ['Shell, buttons, wheel, skates, screws', fmtN(M.rest, 2) + ' g', { ev: 'derived' }, '']];
-      items.forEach(([nm, g, ev, st], i) => {
-        const xx = gx + [0, 330, 640][i], k = ep(t, 2.0 + i * 0.15, 2.4 + i * 0.15);
-        if (i === 0) heroTag(xx, ly, nm, g, { a: k }); else ltag(xx, ly, nm, g, { a: k, color: C.mute, vcolor: C.ink2 });
-        pill(xx, ly + 34, ev.ev, k, { by: ev.by });
-        if (st) text(st, xx, ly + 70, { role: 'label', size: 20, color: i === 0 && mv > 0.5 ? C.heroText : C.faint, alpha: k });
-      });
-      /* the stat: what the move is worth */
-      const ks = ep(t, 4.6, 5.2), sy = y + h - 60;
-      rich([{ s: fmtN(M.board / M.total * 100, 0), role: 'd1', size: 120, color: C.heroText, grad: C.heroGrad, tnum: true, count: [4.6, 1.0] }, { s: '%', font: 'disp', size: 56, weight: 800, color: C.heroText, grad: C.heroGrad, gap: 6, caps: false }], gx, sy, { t, alpha: ks });
-      text('of the mouse goes from riding along to carrying load.', gx + 250, sy - 50, { role: 'small', size: 26, weight: 600, color: C.ink2, maxW: 520, alpha: ks });
-      text('Mass added: 0 g.', gx + 250, sy - 6, { role: 'small', size: 26, weight: 600, color: C.heroText, alpha: ep(t, 5.0, 5.4) });
+      G.restore();
     }
-    /* ---- right: where the ribs land on the board (the study shell, cut) ---- */
-    const rx = LM + 1040 + 24, rw = RM - rx;
-    { const [x, y, w, h] = [rx, y0, rw, 440], a = shcTA(t, 0.25, 1);
-      demoWindow(x, y, w, h, a);
-      text('Side ribs landing on the board', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
-      const bx = x + 8, by = y + 70, bw = w - 16, bh = h - 78;
-      const st = { view: [-0.75, 0.55, -0.25], target: in2D([0, 9, 9], [24, 9, 12]), cut: 1, zoom: lerp(in2D(2.9, 3.3), in2D(3.4, 4.0), ep(t, 0.4, 9, E.io3)), yaw: 0.05 * Math.sin(t * 0.35) };
-      clipped(bx, by, bw, bh, () => shc3D('lattice', t, bx, by, bw, bh, st, { alpha: ep(t, 0.5, 1.1) }));
-      /* the ties, lit one after another along the board's edge once it becomes structure */
-      const ties = [[25.24, 5.3, 9.17], [25.87, 5.3, -0.77], [25.14, 5.3, 19.25], [27.28, 5.3, -10.64], [25.34, 5.3, 29.76], [28.54, 5.3, -20.43], [25.1, 5.3, 41.16]];
-      ties.forEach((p, i) => {
-        const q = shcProj(st, [bx, by, bw, bh], p), k = ep(t, 3.6 + i * 0.12, 4.0 + i * 0.12, E.snap);
-        if (q[0] < bx + 10 || q[0] > bx + bw - 10 || q[1] < by + 10 || q[1] > by + bh - 10) return;
-        circle(q[0], q[1], 6 * k, { fill: C.hero, alpha: 0.95 * a }); circle(q[0], q[1], 6 + 14 * k, { color: C.hero, w: 2, alpha: (1 - k) * 0.8 + 0.25 });
-      });
-      const pT = shcProj(st, [bx, by, bw, bh], ties[0]), pB = shcProj(st, [bx, by, bw, bh], [14, 4.5, 14]);
-      callout(t, 4.4, pT, 'Rib meets the board', { to: [Math.min(bx + bw - 250, pT[0] + 90), by + 50], side: 'r', color: C.hero, tcolor: C.ink });
-      callout(t, 5.0, pB, 'The board, 1.0 mm FR4', { to: [Math.max(bx + 30, pB[0] - 40), by + bh - 34], side: 'r', color: C.ink, tcolor: C.ink });
+    /* what the squares hold */
+    { const ly = gy + 3 * (s + gp) + 30, kl = ep(t, 1.8, 2.2);
+      text(kMove > 0.5 ? 'Board, ' + THS.pcb + ': structure' : 'Board, ' + THS.pcb + ': carried', gx, ly, { role: 'label', size: 20, color: kMove > 0.5 ? C.heroText : C.ink2, alpha: kl });
+      text('Everything else, ' + fmtN(M - Bg, 2) + ' g', gx + cols * s + (cols - 1) * gp, ly, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: kl });
     }
-    { const y = y0 + 440 + 24;
-      sourceBox(t, 1.4, rx, y, rw, 'Brock, #94', 'The weight of the PCB is non-negotiable, so you may as well take advantage of it.', { h: 960 - y });
+    /* one board, three jobs: the middle one is new */
+    { const jy = y + 470, jw = (w - 64 - 80) / 3;
+      line(x + 32, jy - 24, x + w - 32, jy - 24, { color: C.hair, w: 1.5, alpha: ep(t, 5.4, 5.8) });
+      text('One board, three jobs', x + 32, jy + 14, { role: 'label', size: 20, color: C.mute, alpha: ep(t, 5.4, 5.8) });
+      [['The circuit', 'Radio, PMIC, antenna and USB-C. The job it always had.', false], ['The tie', 'It holds the arches\' feet together along its whole length.', true], ['The sensor\'s mount', 'Held flat by the ribs, it keeps the sensor at its focus height.', false]].forEach(([nm, b, hero], i) => {
+        const jx = x + 32 + i * (jw + 40), k = ep(t, 5.6 + i * 0.3, 6.0 + i * 0.3);
+        text(nm, jx, jy + 62, { role: 'label', size: 21, color: hero ? C.heroText : C.ink, alpha: k });
+        text(b, jx, jy + 100, { role: 'small', size: 24, weight: 560, color: C.ink2, maxW: jw, lh: 1.3, alpha: k });
+      });
     }
   }
 });
@@ -377,11 +300,11 @@ S({
    rib. Seen from above at board height; the arch's thrust comes from the transverse model; one exaggeration for all three. */
 const SHC_CASES = [
   { kind: 'none', name: 'Board left out', sub: 'Only the rim holds the arches' },
-  { kind: 'arms', name: 'Four small arms', sub: 'FR4 arms to the screw bosses' },
+  { kind: 'arms', name: 'Four small arms', sub: 'As G-Wolves extends its boards' },
   { kind: 'whole', name: 'The whole board', sub: 'Tied by every side rib', hero: true }
 ];
 /** one case from above. c = shcBoard().cases[kind]; (cx, cy) = where the shell's centre lands, s = px per mm;
-   o = { k (0..1 of the press), a, crack (0..1) }. returns { P, root } (root: the hot arm's root on the stage, for the lens) */
+   o = { k (0..1 of the press), a, crack (0..1) }. returns { P, root } (root: the hot arm's root on the stage) */
 function shcPlanDraw(t, c, cx, cy, s, o) {
   const R = shcBoard(), r = c.r, M = r.model, k = o.k * c.sc, a = o.a, exag = 26 / (R.cases.none.r.dmax * R.cases.none.sc * s);
   const P = p => [cx - p[0] * s, cy - p[1] * s], out = { P };
@@ -389,27 +312,27 @@ function shcPlanDraw(t, c, cx, cy, s, o) {
   /* the shell from above, quietly */
   G.save(); G.globalAlpha = a; G.beginPath(); shcOutline().forEach((p, i) => { const q = P(p); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); }); G.closePath();
   G.fillStyle = inkA(TH ? 0.03 : 0.04); G.fill(); G.strokeStyle = inkA(TH ? 0.14 : 0.16); G.lineWidth = 1.5; G.stroke(); G.restore();
-  /* the board's outline: dashed when it is left out of the structure */
+  /* the board: dashed when it is left out of the structure, Theseus's colour when all of it works */
   const B = shcBoardOutline(), tracePath = () => { G.beginPath(); B.forEach((p, i) => { const q = P(p); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); }); G.closePath(); };
   G.save(); G.globalAlpha = a; tracePath();
   if (c.kind === 'none') { G.setLineDash([7, 6]); G.strokeStyle = inkA(0.32); G.lineWidth = 1.5; G.stroke(); G.setLineDash([]); }
-  else { G.fillStyle = c.kind === 'whole' ? C.heroSoft : inkA(TH ? 0.05 : 0.06); G.fill(); G.strokeStyle = c.kind === 'whole' ? rgba(C.hero, 0.55) : inkA(0.28); G.lineWidth = 1.5; G.stroke(); }
+  else { G.fillStyle = c.kind === 'whole' ? C.heroSoft : inkA(TH ? 0.05 : 0.07); G.fill(); G.strokeStyle = c.kind === 'whole' ? rgba(C.hero, 0.6) : inkA(0.3); G.lineWidth = 1.5; G.stroke(); }
   G.restore();
   if (c.kind === 'none') { const q = P([0, 9]); text('Board, carried', q[0], q[1] + 8, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: a }); }
   const only = part => e => M.els[e].part !== part, base = { load: k, scale: exag, smax: R.smax, alpha: a };
-  if (c.kind !== 'none') feDraw(r, P, Object.assign({}, base, { hide: only('board'), wpx: 1.4, alpha: a * 0.8 }));
+  if (o.k > 0.2) feFlow(r, P, t, { load: k, scale: exag, nmax: R.nmax, alpha: a * 0.55 * ep(o.k, 0.2, 0.7, E.lin) });
   feDraw(r, P, Object.assign({}, base, { hide: only('ring'), w: s }));
   if (c.kind === 'arms') feDraw(r, P, Object.assign({}, base, { hide: only('arm'), w: s }));
-  if (c.kind === 'whole') feDraw(r, P, Object.assign({}, base, { hide: only('rib'), wpx: 3.2 }));
-  if (o.k > 0.25) feFlow(r, P, t, { load: k, scale: exag, nmax: R.nmax, alpha: a * 0.6 * ep(o.k, 0.25, 0.8, E.lin) });
+  /* Theseus's ties in its colour, filleted where they meet the rim (F9.27) */
+  if (c.kind === 'whole') feDraw(r, P, Object.assign({}, base, { hide: only('rib'), wpx: 3.4, heat: false, color: C.hero, fillet: 4 }));
   /* the arches' thrust, where it arrives at the rim */
   const Hm = Math.max(R.cases.none.H, R.cases.arms.H, R.cases.whole.H);
   for (const [z, sh] of Object.entries(SHC.share)) for (const sd of [1, -1]) {
     const i = M.rowNode[z + ':' + sd], n0 = M.nodes[i], q = P([n0[0] + r.d[i * 3] * k * exag, n0[1] + r.d[i * 3 + 1] * k * exag]);
-    const len = 46 * (sh / 0.75) * (c.H / Hm) * o.k, dir = -sd;           /* +x (the user's left) is to the stage's left */
-    if (len > 3) arrow(q[0] + dir * 10, q[1], q[0] + dir * (10 + len), q[1], { color: C.ink2, w: 2.6, hs: 10, alpha: a * 0.9 });
+    const len = 40 * (sh / 0.75) * (c.H / Hm) * o.k, dir = -sd;           /* +x (the user's left) is to the stage's left */
+    if (len > 3) arrow(q[0] + dir * 9, q[1], q[0] + dir * (9 + len), q[1], { color: C.ink2, w: 2.6, hs: 10, alpha: a * 0.9 });
   }
-  /* the hot arm: its root glows, then cracks */
+  /* the hot arm: its root rings, then cracks */
   if (c.kind === 'arms' && c.hot) {
     const l = c.hot, nb = M.nodes[l.board], nr = M.nodes[l.ring];
     const rb = P([nb[0] + r.d[l.board * 3] * k * exag, nb[1] + r.d[l.board * 3 + 1] * k * exag]), rr0 = P([nr[0] + r.d[l.ring * 3] * k * exag, nr[1] + r.d[l.ring * 3 + 1] * k * exag]);
@@ -427,16 +350,15 @@ function shcPlanDraw(t, c, cx, cy, s, o) {
 /** the arm alone, edge on, as a fixed-guided FR4 beam: the board holds its root, the shell its tip. d = its tip's movement (mm) */
 function shcArmZoom(t, x, y, w, h, d, crack, a) {
   const R = shcBoard(), A = R.arm, r = A.r, L = A.L, n = r.model.n, unit = r.d[n * 3 + 1];
-  const s = Math.min((w - 180) / (L + 3), 46), ox = x + 96, oy = y + h * 0.5 + 8, P = p => [ox + p[0] * s, oy - p[1] * s];
+  const s = Math.min((w - 190) / (L + 3), 40), ox = x + 100, oy = y + h * 0.5, P = p => [ox + p[0] * s, oy - p[1] * s];
   feDraw(r, P, { load: d / unit, scale: 1, smax: 483, wpx: s * 1.0, alpha: a, seg: 14 });
   /* the board's edge (it holds the root) and the shell's boss (it holds the tip), drawn over the beam's ends */
   G.save(); G.globalAlpha = a;
   rrPath(ox - 2.6 * s, oy - 0.5 * s, 2.6 * s, 1.0 * s, 4); G.fillStyle = C.comp; G.fill();
-  G.save(); rrPath(ox - 2.6 * s, oy - 0.5 * s, 2.6 * s, 1.0 * s, 4); G.clip(); G.strokeStyle = inkA(0.18); G.lineWidth = 1; G.beginPath(); for (let k = -6; k < 30; k++) { const xx = ox - 2.6 * s + k * 8; G.moveTo(xx, oy - 0.5 * s); G.lineTo(xx + 10, oy + 0.5 * s); } G.stroke(); G.restore();
   const tip = P([L, d]); rrPath(tip[0], tip[1] - 1.4 * s, 1.6 * s, 2.8 * s, 6); G.fillStyle = C.comp2; G.fill();
   G.restore();
-  text('Board', ox - 1.3 * s, oy + 0.5 * s + 30, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: a });
-  text('Shell boss', tip[0] + 0.8 * s, tip[1] + 1.4 * s + 30, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: a });
+  text('Board', ox - 1.3 * s, oy + 0.5 * s + 28, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: a });
+  text('Shell', tip[0] + 0.8 * s, tip[1] - 1.4 * s - 12, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: a });
   /* the crack: it starts on the stretched face at the root and runs across the 1 mm */
   if (crack > 0) {
     const pts = []; for (let j = 0; j <= 7; j++) { const f = j / 7 * crack; pts.push([ox + (0.08 + (j % 2 ? 0.07 : 0)) * s, oy + 0.5 * s - f * 1.0 * s]); }
@@ -448,62 +370,184 @@ S({
   id: 'shcArms', after: 'shcCarry', ch: 'shell', theme: 'night', title: 'Small FR4 arms vs the whole board', settle: 10, ideas: [94, 91],
   src: ['shcBoardFE', 'shcTpuHati', 'shcTpuHatiR', 'shcBrock', 'shlFr4', 'shcFr4Flex', 'shlPyrofil', 'shlLattice'],
   draw: t => {
+    const R = shcBoard(), Cn = R.cases, xF = fmtN(R.fr4X, 0) + '×';
     header(t, 'Small FR4 arms vs the whole board');
-    captions(t, [[0.6, 'Many mice reinforce the shell with small arms of FR4; G-Wolves extends its boards at the sides. Press the crown and follow the force.'], [5.6, 'Four arms hold the feet, but every newton goes through four roots. Tied by every rib, the whole board spreads it, and has nothing to snap off.']]);
-    const R = shcBoard(), y0 = LAY.top + 8, H0 = 960 - y0;
+    captions(t, [[0.6, 'Many mice reinforce the shell with small arms of FR4; G-Wolves extends its boards at the sides. The arms on my HTS Ultra broke in shipping.'], [5.0, 'Four arms put every newton through four roots. Tied by every rib, the whole board spreads the load along its length, with no arm to snap off.']]);
     /* ---- the simulation, three ways, side by side ---- */
-    const [sx, sy, sw, sh] = [LM, y0, 1150, H0], a0 = shcTA(t, 0.25, 0);
+    const [sx, sy, sw, sh] = [LM, 280, 1160, 560], a0 = shcTA(t, 0.25, 0);
     demoWindow(sx, sy, sw, sh, a0);
-    const colW = (sw - 48) / 3, s = 3.25, press = [1.9, 2.55, 3.2], lens = { root: null };
+    const colW = (sw - 48) / 3, s = 3.2, press = [1.9, 2.55, 3.2], cyP = sy + 312, lens = { root: null };
     SHC_CASES.forEach((cs, i) => {
-      const c = R.cases[cs.kind], cx = sx + 24 + colW * (i + 0.5), cy = sy + 372, a = ep(t, 0.5 + i * 0.18, 1.0 + i * 0.18, E.snap) * a0;
+      const c = Cn[cs.kind], cx = sx + 24 + colW * (i + 0.5), a = ep(t, 0.5 + i * 0.18, 1.0 + i * 0.18, E.snap) * a0;
       const kL = ep(t, press[i], press[i] + 0.9, E.io3), crack = cs.kind === 'arms' ? ep(t, 6.2, 6.8, E.out3) : 0;
-      const o = shcPlanDraw(t, c, cx, cy, s, { k: kL, a, crack });
+      const o = shcPlanDraw(t, c, cx, cyP, s, { k: kL, a, crack });
       if (o.root) lens.root = o.root;
       /* the press, held at the crown */
       const pc = o.P([0, SHC.crown]);
       if (t > press[i]) { circle(pc[0], pc[1], 9, { fill: cs.hero ? C.hero : C.ink, alpha: a * 0.9 }); circle(pc[0], pc[1], 16, { color: cs.hero ? C.hero : C.ink, w: 2, alpha: a * 0.35 }); }
-      /* the name over each, the numbers under */
-      if (cs.hero) text(cs.name, cx, sy + 62, { role: 'label', size: 22, color: C.heroText, align: 'center', alpha: a }); else text(cs.name, cx, sy + 62, { role: 'label', size: 22, color: C.ink, align: 'center', alpha: a });
-      text(cs.sub, cx, sy + 96, { role: 'small', size: 25, color: C.mute, align: 'center', alpha: a });
-      const kn = ep(t, press[i] + 0.9, press[i] + 1.5), ny = sy + sh - 112;
-      const sp = c.spread / R.cases.none.spread * 100, spS = sp >= 10 ? fmtN(sp, 0) : fmtN(sp, 1);
-      rich([{ s: spS, role: 'd1', size: 60, color: cs.hero ? C.heroText : C.ink, grad: cs.hero ? C.heroGrad : undefined, tnum: true, count: [press[i] + 0.9, 0.9] }, { s: '%', font: 'disp', size: 30, weight: 800, color: cs.hero ? C.heroText : C.ink, grad: cs.hero ? C.heroGrad : undefined, gap: 4, caps: false }], cx, ny, { t, align: 'center', alpha: kn });
-      text('Feet spread', cx, ny + 34, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kn });
-      const fr = cs.kind === 'none' ? 'FR4 carries nothing' : cs.kind === 'arms' ? 'FR4 peak ' + fmtN(c.arm, 1) + ' MPa, at the roots' : 'FR4 peak ' + fmtN(Math.max(c.board, 0.05), 1) + ' MPa';
-      text(fr, cx, ny + 70, { role: 'small', size: 25, weight: 600, color: cs.kind === 'arms' ? C.bad : cs.hero ? C.heroText : C.faint, align: 'center', alpha: kn });
+      /* the name over each, the board's peak under */
+      text(cs.name, cx, sy + 52, { role: 'label', size: 21, color: cs.hero ? C.heroText : C.ink, align: 'center', alpha: a });
+      text(cs.sub, cx, sy + 84, { role: 'small', size: 23, weight: 560, color: C.mute, align: 'center', alpha: a, maxW: colW - 16 });
+      const kn = ep(t, press[i] + 0.9, press[i] + 1.4), ny = sy + sh - 22;
+      const fr = cs.kind === 'none' ? 'The board carries nothing' : cs.kind === 'arms' ? 'FR4 peak ' + fmtN(c.fr4, 1) + ' MPa, at a root' : 'FR4 peak ' + fmtN(c.fr4, 2) + ' MPa';
+      text(fr, cx, ny, { role: 'small', size: 24, weight: 650, color: cs.kind === 'arms' ? C.bad : cs.hero ? C.heroText : C.faint, align: 'center', alpha: kn });
     });
     /* the pointer presses each crown in turn */
-    { const c0 = i => [sx + 24 + colW * (i + 0.5), sy + 372 - SHC.crown * s];
-      cursorAt(t, [[1.3, [sx + sw * 0.2, sy + sh + 40]], [1.85, c0(0)], [2.05, c0(0)], [2.5, c0(1)], [2.7, c0(1)], [3.15, c0(2)], [3.4, c0(2)], [4.2, [sx + sw - 60, sy + sh - 160]]], press, { a: ep(t, 1.2, 1.5) * (1 - ep(t, 4.0, 4.4)) });
+    { const c0 = i => [sx + 24 + colW * (i + 0.5), cyP - SHC.crown * s];
+      cursorAt(t, [[1.3, [sx + sw * 0.2, sy + sh + 40]], [1.85, c0(0)], [2.05, c0(0)], [2.5, c0(1)], [2.7, c0(1)], [3.15, c0(2)], [3.4, c0(2)], [4.2, [sx + sw - 60, sy + sh - 40]]], press, { a: ep(t, 1.2, 1.5) * (1 - ep(t, 4.0, 4.4)) });
     }
-    /* ---- right: the arm's root, close up ---- */
-    const rx = LM + 1150 + 24, rw = RM - rx;
-    { const [x, y, w, h] = [rx, y0, rw, 410], a = shcTA(t, 0.25, 1);
+    /* ---- right: the headline, before and after, then one arm close up ---- */
+    const rx = LM + 1160 + 40, rw = RM - rx;
+    shellHL(t, 4.6, rx, 400, xF, 'lower peak', { size: 130, sub: 'In the board, where the load comes in.', maxW: rw });
+    shellBA(t, rx, 556, { label: 'Peak experienced stress in the FR4 {(lower is better)}', before: fmtN(Cn.arms.fr4, 1), after: fmtN(lerp(Cn.arms.fr4, Cn.whole.fr4, ep(t, 4.6, 5.4)), 2), unit: 'MPa', size: 56, k: ep(t, 4.6, 5.4), a: ep(t, 4.4, 4.8), bad: C.ink });
+    { const [x, y, w, h] = [rx, 600, rw, 240], a = shcTA(t, 0.25, 1);
       demoWindow(x, y, w, h, a);
-      const hy = cardHead(t, 0.6, x, y, w, 'One arm, edge on', ['derived']);
-      const dMax = R.arm.snap[0], d = dMax * ep(t, 4.4, 6.2, E.io3), crack = ep(t, 6.2, 6.8, E.out3);
-      const Z = shcArmZoom(t, x, y + 64, w, 200, d, crack, ep(t, 0.9, 1.4) * a);
+      text('One arm, edge on', x + 32, y + 44, { role: 'label', size: 19, color: C.mute, alpha: a });
+      const d = R.arm.snap[0] * ep(t, 5.4, 6.2, E.io3), crack = ep(t, 6.2, 6.8, E.out3);
+      shcArmZoom(t, x, y + 62, w, 104, d, crack, ep(t, 0.9, 1.4) * a);
       const ks = ep(t, 6.4, 7.0);
-      rich([{ s: fmtN(R.arm.snap[0], 2), role: 'd1', size: 64, color: C.ink, tnum: true }, { s: 'mm', font: 'disp', size: 28, weight: 700, color: C.mute, gap: 8, caps: false }], x + 32, y + h - 72, { alpha: ks });
-      text('at its tip takes the root to FR4\'s 483 MPa bending strength: it snaps there.', x + 200, y + h - 100, { role: 'small', size: 25, color: C.ink2, maxW: w - 232, lh: 1.3, alpha: ks });
+      rich([{ s: fmtN(R.arm.snap[0], 2), font: 'disp', size: 52, weight: 800, color: C.ink, tnum: true }, { s: 'mm', font: 'disp', size: 24, weight: 700, color: C.mute, gap: 8, caps: false }], x + 32, y + 212, { alpha: ks });
+      text('at its tip takes the root to 483 MPa. It snaps.', x + 236, y + 186, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: w - 268, lh: 1.25, alpha: ks });
       /* the lens: from the hot root in the middle panel to here */
-      if (lens.root) {
-        const kl = ep(t, 4.0, 4.7, E.cam), end = [x, y + 64 + 100];
-        if (kl > 0) { G.save(); G.globalAlpha = 0.6 * kl * (1 - 0.6 * ep(t, 7.5, 8.5)); G.setLineDash([5, 6]); G.strokeStyle = C.bad; G.lineWidth = 1.5; G.beginPath(); G.moveTo(lens.root[0], lens.root[1]); G.lineTo(lerp(lens.root[0], end[0], kl), lerp(lens.root[1], end[1], kl)); G.stroke(); G.setLineDash([]); G.restore(); circle(lens.root[0], lens.root[1], 18, { color: C.bad, w: 2, alpha: kl * 0.9 }); }
+      if (lens.root) { const kl = ep(t, 5.0, 5.6, E.cam), end = [x, y + 114];
+        if (kl > 0) { G.save(); G.globalAlpha = 0.55 * kl * (1 - 0.6 * ep(t, 7.5, 8.5)); G.setLineDash([5, 6]); G.strokeStyle = C.bad; G.lineWidth = 1.5; G.beginPath(); G.moveTo(lens.root[0], lens.root[1]); G.lineTo(lerp(lens.root[0], end[0], kl), lerp(lens.root[1], end[1], kl)); G.stroke(); G.setLineDash([]); G.restore(); circle(lens.root[0], lens.root[1], 18, { color: C.bad, w: 2, alpha: kl * 0.9 }); }
       }
     }
-    /* ---- the evidence for the arms ---- */
-    { const y = y0 + 410 + 24, h = 212, a = shcTA(t, 0.25, 2), x = rx, w = rw;
-      demoWindow(x, y, w, h, a);
-      const k1 = ep(t, 1.0, 1.4), k2 = ep(t, 1.4, 1.8);
-      pill(x + 32, y + 50, 'measured', k1, { by: 'TechPowerUp' });
-      text('G-Wolves boards are "extended at the sides to help with shell rigidity."', x + 32, y + 86, { role: 'small', size: 25, color: C.ink2, maxW: w - 64, lh: 1.3, alpha: k1 });
-      pill(x + 32, y + 150, 'estimate', k2, { by: 'Brock' });
-      text('The arms on my HTS Ultra broke in shipping.', x + 32, y + 186, { role: 'small', size: 25, color: C.ink2, maxW: w - 64, alpha: k2 });
+    /* ---- the meter: this step on the strip, one line across the foot ---- */
+    shellMeter(t, 7.2, 'board', LM, 872, RM - LM, { row: true });
+    source(t, '2D frames solved in this page: the shell at board height from above (CF-PP rim 13.5 GPa; FR4 board 19 GPa, 1.0 mm), loaded by a transverse arch under 7.5 N of a 10 N crown press; one arm as a fixed-guided 4 × 1.0 mm FR4 beam (483 MPa, Gund).', { t0: 1.6 });
+  }
+});
+
+/* ============================== 4. keep the mass low, near the fingers (#95, #40) ==============================
+   The fingers push the mouse at its sides, 12 mm up (the grip of the side-wall study, shbSides); in a flick its mass pushes
+   back at its centre of mass. The height between the two is a lever: the twist is m · a · lever, so at any flick the twist
+   falls as the lever does. Theseus's 29.31 g, part by part at its height (shcMassModel); the pointer moves the 8 g cell from
+   the hump onto the board, and the centre of mass drops onto the grip. Drawn on the study shell, cut across at z = −14 mm. */
+const SHC_CG0 = { grip: 12, high: 20, low: 7, boardY: 5, shellY: 16.07, btnY: 23.31, wheelY: 22, screwY: 8, wireY: 10 };
+/** Theseus's weight budget as the intro's budget sets it: the cell from Jauch, the board Brock's figure, the small parts as
+   XBAB weighed them in the XA25, the shell and skates what is left */
+function shcBudget() {
+  if (SHC.bud) return SHC.bud;
+  const RD0 = typeof RDATA !== 'undefined' ? RDATA : {}, b = ((RD0.weights || {}).breakdowns || []).find(x => /XA25/.test(x.mouse));
+  const by = (re, d) => { const p = b && b.parts.find(q => re.test(q.part)); return p ? +shcV(p.mass) : d; };
+  const cr = (((RD0.batteries || {}).jauch_lipo_family || {}).rows || []).find(r => r.part === 'LP402535JU');
+  const cell = { part: 'LP402535JU', mAh: cr ? +shcV(cr.capacity) : 370, g: cr ? +shcV(cr.mass) : 8, t: 4.0 };
+  const btn = by(/^Button/, 3.328), wheel = by(/^Scroll/, 0.931), screws = by(/^Screws/, 0.708), wires = by(/^FPC/, 0.121);
+  return (SHC.bud = { cell, btn, wheel, screws, wires, shell: THESEUS.mass - cell.g - THESEUS.pcb - btn - wheel - screws - wires });
+}
+/** the centre of mass's height with the cell's centre at y (mm), and the two layouts */
+function shcCg() {
+  if (SHC.cg) return SHC.cg;
+  const B = shcBudget(), K = SHC_CG0, small = B.wheel + B.screws + B.wires;
+  const parts = [[B.shell, K.shellY], [B.btn, K.btnY], [THESEUS.pcb, K.boardY], [small, (B.wheel * K.wheelY + B.screws * K.screwY + B.wires * K.wireY) / small]];
+  const m0 = parts.reduce((s, p) => s + p[0], 0), my0 = parts.reduce((s, p) => s + p[0] * p[1], 0), at = y => (my0 + B.cell.g * y) / (m0 + B.cell.g);
+  const hi = at(K.high), lo = at(K.low), lvHi = hi - K.grip, lvLo = lo - K.grip;
+  return (SHC.cg = { B, at, hi, lo, lvHi, lvLo, cut: 1 - Math.abs(lvLo) / Math.abs(lvHi) });
+}
+/* the study shell cut across at z = −14 mm, as the side-wall study cuts it: its outer surface, right half, [x, y] mm, bottom
+   to top (sliced from 3d/lattice's moulded body; the widest line is 12 mm up) */
+const SHC_SEC = [[27.0, 0.6], [27.8, 1.6], [28.8, 2.6], [29.7, 3.6], [30.2, 4.6], [30.5, 6.6], [30.7, 8.6], [30.8, 10.6], [30.8, 12.6], [30.7, 14.6], [30.5, 16.6], [30.3, 18.6], [29.9, 20.6], [29.35, 22.6], [28.76, 24.6], [27.85, 26.6], [27.0, 28.4], [25.5, 30.0], [24.0, 31.1], [22.5, 32.2], [21.0, 33.3], [19.5, 34.05], [18.0, 34.7], [16.5, 35.16], [15.0, 35.84], [13.5, 36.3], [12.0, 36.7], [10.5, 36.96], [9.0, 37.2], [7.5, 37.53], [6.0, 37.78], [3.0, 38.03], [0, 38.12]];
+/** the wall band: the outer surface and the inner one, 1.2 mm thick at the foot to 0.9 at the crown (the study's grading) */
+function shcSecBand() {
+  if (SHC.band) return SHC.band;
+  const R = SHC_SEC, inner = R.map((p, i) => { const a = R[Math.max(0, i - 1)], b = R[Math.min(R.length - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, T = lerp(1.2, 0.9, clamp(p[1] / 38)); return [Math.max(0, p[0] - dy / L * T), p[1] + dx / L * T]; });
+  inner[inner.length - 1][0] = 0;
+  const outer = R.concat(R.slice(0, -1).reverse().map(p => [-p[0], p[1]])), inn = inner.concat(inner.slice(0, -1).reverse().map(p => [-p[0], p[1]]));
+  return (SHC.band = { outer, inner: inn });
+}
+/** the centre-of-mass mark: a circle quartered, two quarters filled */
+function shcCgMark(x, y, r, col, a, hollow) {
+  if (a <= 0.003) return;
+  G.save(); G.globalAlpha = a;
+  if (!hollow) { G.fillStyle = col; G.beginPath(); G.moveTo(x, y); G.arc(x, y, r, -Math.PI / 2, 0); G.closePath(); G.fill(); G.beginPath(); G.moveTo(x, y); G.arc(x, y, r, Math.PI / 2, Math.PI); G.closePath(); G.fill(); }
+  G.strokeStyle = col; G.lineWidth = 2.4; G.beginPath(); G.arc(x, y, r, 0, TAU); G.stroke();
+  G.restore();
+}
+/** a flick: the mouse slides D mm in T seconds, from rest to rest (x = D (u − sin 2πu / 2π)); returns [x, a], a in −1..1 */
+function shcFlick(t, t0, T, D) { const u = clamp((t - t0) / T); return [D * (u - Math.sin(TAU * u) / TAU), t > t0 && t < t0 + T ? Math.sign(D) * Math.sin(TAU * u) : 0]; }
+S({
+  id: 'mass', replaces: 'mass', after: 'shlGrams', ch: 'shell', theme: 'paper', title: 'Keep the mass low, near the fingers', settle: 9.5, ideas: [95],
+  src: ['shcMassModel', 'ntrJauch', 'exXbabWeight', 'shcBrock', 'shlLattice', 'shlDoc'],
+  draw: t => {
+    const Q = shcCg(), K = SHC_CG0, pct = Math.round(Q.cut * 100), kMove = ep(t, 4.4, 5.4, E.io3);
+    header(t, 'Keep the mass low, near the fingers');
+    captions(t, [[0.6, 'Your fingers push the mouse at its sides, 12 mm up. In a flick its mass pushes back at its centre of mass, higher up.'], [3.6, 'The height between them is a lever, and every flick twists the mouse around it. Move the 8 g cell down onto the board.'], [6.0, 'The centre of mass drops to the grip. The flick goes straight through it: no lever, almost no twist, at the same weight.']]);
+    /* ---- left: the headline and the two before → after rows ---- */
+    const lx = LM, lw0 = 560;
+    shellHL(t, 5.6, lx, 420, '−' + pct + '%', 'twist', { size: 140, sub: 'In every flick, at the same ' + THS.massG + '.', maxW: lw0 });
+    shellBA(t, lx, 600, { label: 'Lever, centre of mass to the grip {(lower is better)}', before: fmtN(Q.lvHi, 1), after: fmtN(lerp(Q.lvHi, Q.lvLo, kMove), 1), unit: 'mm', size: 60, k: kMove, a: ep(t, 1.6, 2.0), bad: C.bad });
+    shellBA(t, lx, 716, { label: 'Centre of mass, above the pad', before: fmtN(Q.hi, 1), after: fmtN(lerp(Q.hi, Q.lo, kMove), 1), unit: 'mm', size: 48, k: kMove, a: ep(t, 1.8, 2.2), bad: C.ink });
+    glossBox(t, 6.6, lx, 760, lw0, 'Centre of mass', 'The one point where the mouse\'s weight acts. Push through it and the mouse slides; push above or below it and it twists.', { h: 200, size: 23 });
+    /* ---- right: the section, the fingers, the cell, the flick ---- */
+    const [x, y, w, h] = [680, 280, RM - 680, 680], a = shcTA(t, 0.25, 0);
+    demoWindow(x, y, w, h, a);
+    const s = 13, cx0 = x + w / 2, padY = y + h - 86, cellY = lerp(K.high, K.low, kMove), hc = Q.at(cellY), lever = hc - K.grip;
+    /* two flicks before the move, two after: the mouse slides, and twists by its lever (drawn large to be seen) */
+    const fl = [shcFlick(t, 1.9, 0.8, 7), shcFlick(t, 2.7, 0.8, -7), shcFlick(t, 6.4, 0.8, 7), shcFlick(t, 7.2, 0.8, -7)];
+    const xo = fl.reduce((sm, f) => sm + f[0], 0), acc = fl.reduce((sm, f) => sm + f[1], 0), roll = 6 * Math.PI / 180 * acc * lever / Q.lvHi;
+    const X = (px, py) => [cx0 + (px + xo) * s, padY - py * s];
+    /* the pad */
+    { const kp = ep(t, 0.5, 0.9); rr(x + 24, padY, w - 48, 22, 4, inkA(TH ? 0.07 : 0.1), null, 0, kp * a); line(x + 24, padY, x + w - 24, padY, { color: inkA(0.3), w: 1.5, alpha: kp * a }); text('Mouse pad', x + w - 40, padY + 54, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kp * a }); }
+    G.save();
+    /* the roll pivots on the edge that presses down (the top lags, the far edge lifts) */
+    { const pv = X(roll > 0 ? -27 : 27, 0.6); G.translate(pv[0], pv[1]); G.rotate(-roll); G.translate(-pv[0], -pv[1]); }
+    const ks = ep(t, 0.6, 1.2, E.snap);
+    /* the shell wall, cut */
+    { const Bd = shcSecBand(); G.save(); G.globalAlpha = a * ks; G.beginPath(); Bd.outer.forEach((p, i) => { const q = X(p[0], p[1]); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); }); Bd.inner.slice().reverse().forEach(p => { const q = X(p[0], p[1]); G.lineTo(q[0], q[1]); }); G.closePath(); G.fillStyle = TH ? '#3B3C41' : '#8C8D93'; G.fill(); G.restore(); }
+    /* the board, with its parts on top */
+    { const kb = ep(t, 0.9, 1.3), b0 = X(-27.3, 5), b1 = X(27.3, 4);
+      rr(b0[0], b0[1], b1[0] - b0[0], b1[1] - b0[1], 2, C.comp2, null, 0, a * kb);
+      for (const [px, pw, ph] of [[-20, 7, 1.4], [-9, 4, 0.9], [12, 9.8, 3.2], [22, 3, 1.0]]) { const q = X(px - pw / 2, 5 + ph); rr(q[0], q[1], pw * s, ph * s, 2, C.comp, null, 0, a * kb); }
+      text('Board, ' + THS.pcb, X(-25, 0)[0], X(0, 4)[1] + 24, { role: 'label', size: 19, color: C.mute, alpha: a * kb });
     }
-    /* ---- the meter: this step on the strip ---- */
-    shellMeter(t, 7.2, 'board', rx, y0 + 410 + 24 + 212 + 30, rw, { compact: true });
-    source(t, '2D frames solved in this page: the shell at board height from above (CF-PP rim 13.5 GPa, FR4 board 19 GPa, 1.0 mm); a transverse arch under 7.5 N of a 10 N crown press; the arm as a fixed-guided beam.', { t0: 1.6 });
+    /* where the cell was, once it has moved */
+    if (kMove > 0.02) { const q0 = X(-12.5, K.high + 2), q1 = X(12.5, K.high - 2); G.save(); G.globalAlpha = a * 0.6 * kMove; G.setLineDash([6, 6]); rrPath(q0[0], q0[1], q1[0] - q0[0], q1[1] - q0[1], 5); G.strokeStyle = inkA(0.45); G.lineWidth = 1.6; G.stroke(); G.setLineDash([]); G.restore(); }
+    /* the cell */
+    const c0 = X(-12.5, cellY + 2), c1 = X(12.5, cellY - 2), kc = ep(t, 1.0, 1.4);
+    rr(c0[0], c0[1], c1[0] - c0[0], c1[1] - c0[1], 5, TH ? '#26272B' : '#D9D8D3', null, 0, a * kc);
+    text('Cell, ' + fmtN(Q.B.cell.g, 0) + ' g', (c0[0] + c1[0]) / 2, (c0[1] + c1[1]) / 2 + 7, { role: 'label', size: 19, color: TH ? '#F3F2EE' : '#111111', align: 'center', alpha: a * kc });
+    /* the fingers, grey, pressing the low sides at the grip */
+    { const kf3 = ep(t, 1.0, 1.5, E.snap), [g0, g1] = shcSkin();
+      for (const sd of [-1, 1]) {
+        const e = X(sd * 30.9, K.grip), L = 13 * s, hh = 9.5 * s, x0 = sd < 0 ? e[0] - L - (1 - kf3) * 60 : e[0] + (1 - kf3) * 60, xin = sd < 0 ? x0 + L : x0, xout = sd < 0 ? x0 : x0 + L;
+        G.save(); G.globalAlpha = a * kf3; rrPath(sd < 0 ? x0 - L : x0, e[1] - hh / 2, 2 * L, hh, hh / 2);
+        const gr = G.createLinearGradient(xin, 0, xout, 0); gr.addColorStop(0, g0); gr.addColorStop(0.55, g1); gr.addColorStop(1, rgba(g1, 0)); G.fillStyle = gr; G.fill(); G.restore();
+        /* the fingertip's rounded end, outlined where it meets the wall */
+        G.save(); G.globalAlpha = a * kf3 * 0.5; G.strokeStyle = inkA(0.35); G.lineWidth = 1.4; G.beginPath(); G.arc(xin + sd * hh / 2, e[1], hh / 2, sd < 0 ? -Math.PI / 2 : Math.PI / 2, sd < 0 ? Math.PI / 2 : Math.PI * 1.5); G.stroke(); G.restore();
+      }
+    }
+    G.restore();
+    /* the grip line, the lever and the centre of mass, drawn on the moving mouse (the roll is small, so they ride with xo) */
+    const gpL = X(-30.9, K.grip), gpR = X(30.9, K.grip), kg = ep(t, 1.2, 1.6);
+    line(gpL[0], gpL[1], gpR[0], gpR[1], { color: C.ink2, w: 1.6, dash: [7, 6], alpha: a * kg });
+    text('Grip, 12 mm up', X(-30.9 - 13, K.grip)[0], gpL[1] - 4.75 * s - 18, { role: 'label', size: 19, color: C.ink2, alpha: a * kg });
+    const pc = X(0, hc), kcm = ep(t, 1.3, 1.7), still = 1 - clamp(Math.min(kMove, 1 - kMove) / 0.06);   /* labels step aside while the cell moves */
+    /* the old centre, hollow, once it has moved */
+    if (kMove > 0.02) { const po = X(0, Q.hi); shcCgMark(po[0], po[1], 13, inkA(0.45), a * kMove, true); }
+    /* the lever: from the grip to the centre of mass */
+    { const xb = X(5.5, 0)[0], yg = gpR[1], kl = ep(t, 1.5, 1.9), bad = clamp(lever / Q.lvHi), col = bad > 0.5 ? C.bad : C.hero, tc = bad > 0.5 ? C.bad : C.heroText;
+      const kb2 = a * kl * still;
+      line(xb, yg, xb, pc[1], { color: col, w: 3, alpha: kb2 }); line(xb - 8, yg, xb + 8, yg, { color: col, w: 3, alpha: kb2 }); line(xb - 8, pc[1], xb + 8, pc[1], { color: col, w: 3, alpha: kb2 });
+      line(pc[0] + 16, pc[1], xb - 8, pc[1], { color: col, w: 1.4, dash: [4, 5], alpha: kb2 * 0.8 });
+      rich([{ s: fmtN(lever, 1), font: 'disp', size: 34, weight: 800, color: tc, tnum: true }, { s: 'mm lever', role: 'label', size: 19, color: tc, gap: 8 }], xb + 18, Math.min((yg + pc[1]) / 2 + 12, yg - 12), { alpha: a * kl * still });
+    }
+    shcCgMark(pc[0], pc[1], 14, kMove > 0.5 ? C.hero : C.ink, a * kcm);
+    text('Centre of mass', pc[0] - 26, pc[1] + 26, { role: 'label', size: 19, color: kMove > 0.5 ? C.heroText : C.ink, align: 'right', alpha: a * kcm * still });
+    /* in a flick: the push at the grip, the mass lagging at its centre */
+    if (Math.abs(acc) > 0.05) {
+      const kA = Math.abs(acc), dir = Math.sign(acc), fx = dir > 0 ? gpL : gpR;
+      /* the push, on the finger that pushes (it sits by the edge the mouse pivots on); the mass's lag, over its centre */
+      const f0 = X(-dir * (30.9 + 10), K.grip), f1 = X(-dir * (30.9 + 1.2), K.grip);
+      arrow(f0[0], f0[1], f1[0], f1[1], { color: C.ink, w: 3.4, hs: 13, alpha: a * kA });
+      arrow(pc[0], pc[1] - 24, pc[0] - dir * (30 + 50 * kA), pc[1] - 24, { color: C.ink2, w: 2.4, hs: 10, alpha: a * kA * 0.8 });
+    }
+    /* the pointer moves the cell down onto the board */
+    { const ch = X(0, K.high), cl = X(0, K.low), grab = t > 4.2 && t < 5.45;
+      const p = kf(t, [[3.5, [x + w - 120, y + 130]], [4.15, [ch[0] + 40, ch[1] + 4]], [4.4, [ch[0] + 40, ch[1] + 4]], [5.4, [cl[0] + 40, cl[1] + 4]], [5.6, [cl[0] + 40, cl[1] + 4]], [6.2, [x + w - 140, y + 140]]], E.cam);
+      cursorPtr(p[0], p[1], { a: ep(t, 3.4, 3.7) * (1 - ep(t, 5.9, 6.2)), grab, press: t > 4.15 && t < 4.6 ? prog(t, 4.15, 4.6) : 0 });
+    }
+    text('Twist drawn large to be seen', x + 32, y + 48, { role: 'label', size: 19, color: C.faint, alpha: a * ep(t, 2.0, 2.4) });
+    source(t, 'Mass model: the weight budget\'s parts at their heights (shell and skates 16.1 mm, buttons 23.3, board 5, cell 7, or 20 in the hump). Grip 12 mm up, as in the side-wall study.', { t0: 2.0 });
   }
 });

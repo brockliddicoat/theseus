@@ -1,6 +1,6 @@
 const { pltSolve, PLT_E, PLT_G, PLT_NU } = require('./fe.js');
 const { dktK, Dplate } = require('./dkt.js');
-const { LAY, tributary, inPoly, ringD, RHO } = require('./models.js');
+const { LAY, tributary, inPoly, ringD, inSkate, RHO } = require('./models.js');
 const { gridModel } = require('./grid.js');
 const D = LAY.dims, BOSS = Object.values(LAY.bosses);
 const fw = require('./models.js');
@@ -31,11 +31,11 @@ function solveDesign(nodes0, mem, ts, cases = ['lens', 'pill', 'twist']) {
     const L = Math.hypot(nodes[m.j][0] - nodes[m.i][0], nodes[m.j][1] - nodes[m.i][1]), At = trib.get(key(m.i, m.j)) || 0;
     const be = m.kind === 'fine' ? Math.max(m.w, Math.min(m.w + 12 * ts, 2 * At / L)) : (m.kind === 'grid' ? Math.min(m.w + 12 * ts, m.pitch || 1e9) : m.w + 12 * ts), Af = be * ts, Aw = m.w * m.h, yc = (Af * ts / 2 + Aw * (ts + m.h / 2)) / (Af + Aw);
     const IT = be * ts ** 3 / 12 + Af * (yc - ts / 2) ** 2 + m.w * m.h ** 3 / 12 + Aw * (ts + m.h / 2 - yc) ** 2, Ir = IT - be * ts ** 3 / 12;
-    return { i: m.i, j: m.j, kind: m.kind, L, EI: PLT_E * Ir, GJ: PLT_G * m.h * m.w ** 3 / 3, E: PLT_E, G: PLT_G, cy: Math.max(yc, ts + m.h - yc), tt: m.w, vol: Aw * L };
+    return { i: m.i, j: m.j, kind: m.kind, L, EI: PLT_E * Ir, GJ: PLT_G * m.h * m.w ** 3 / 3 / (m.split || 1) ** 2, E: PLT_E, G: PLT_G, cy: Math.max(yc, ts + m.h - yc), tt: m.w / (m.split || 1), vol: Aw * L, split: m.split || 1 };
   });
   const bossN = BOSS.map(b => { let best = -1, bd = 1e9; nodes0.forEach((p, i) => { const d = Math.hypot(p[0] - b[0], p[1] - b[1]); if (d < bd) { bd = d; best = i; } }); return best; });
   const ringN = []; nodes0.forEach((p, i) => { if (Math.abs(ringD(p)) < 0.3) ringN.push(i); });
-  const pillN = []; nodes0.forEach((p, i) => { if (p[1] > 41.5 && Math.abs(p[0]) < 20.25) pillN.push(i); });
+  const pillN = []; nodes0.forEach((p, i) => { if (inSkate(p)) pillN.push(i); });
   const near = (p) => BOSS.some(b => Math.hypot(p[0] - b[0], p[1] - b[1]) < D.boss.r);
   const out = {};
   for (const c of cases) {

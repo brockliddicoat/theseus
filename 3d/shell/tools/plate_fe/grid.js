@@ -38,7 +38,7 @@ function gridModel(p, w, h, ts, wallW, ringW) {
   bossC.forEach(c => { const near = nodes.map((q, i) => [Math.hypot(q[0] - nodes[c][0], q[1] - nodes[c][1]), i]).filter(([d, i]) => i !== c).sort((u, v) => u[0] - v[0]).slice(0, 3); near.forEach(([d, i]) => mem.push({ i: c, j: i, kind: 'edge', w: wallW, h })); });
   const ang = q => Math.atan2(q[1] - R.c[1], q[0] - R.c[0]);
   const rN = [...new Set(onR)].sort((u, v) => ang(nodes[u]) - ang(nodes[v]));
-  for (let k = 0; k < rN.length; k++) mem.push({ i: rN[k], j: rN[(k + 1) % rN.length], kind: 'ring', w: ringW, h });
+  for (let k = 0; k < rN.length; k++) mem.push({ i: rN[k], j: rN[(k + 1) % rN.length], kind: 'ring', w: ringW, h, split: ringW > (+process.env.WCAP || 0.6) + 1e-9 ? 2 : 1 });
   return { nodes, mem: mem.filter(m => m.i !== m.j) };
 }
 function gridAt(M0, p, h, ts, wallW, ringW, cases = ['lens', 'pill', 'twist'], kappa = 1) {

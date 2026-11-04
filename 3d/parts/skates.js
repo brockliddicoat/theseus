@@ -193,15 +193,30 @@ export function buildDotSkateSet(opts = {}) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Brock's two skate sets (F14.1, F14.2): with the bottom plate on, one wide front pill and one wide back pill, mirrored about
-// the lens, and a ring round the lens window; with the plate off, two dots at each corner on the rim's ledge and two at
-// the lens, in front of it and behind it. Same 0.65 mm stack as the dots (glide 0.38 + tape, PORON, tape 0.27).
-// Pills: 40.5 x 6.5 mm, an estimate after the Viper V4 Pro (its skates are not published; drawn, not measured).
+// Brock's two skate sets (F14.1, F14.2, F20.1, F20.2, F20.4). Plate on: a half-moon at each end, on the plate alone, shaped
+// after the Viper V4 Pro's rear skate (about 53 x 24 mm with 3 mm corners, an estimate measured off Brock's photo) with its
+// straight edge toward the sensor, front and back exact mirrors, and a cutout round each corner dot; plus the ring round
+// the lens window. The eight corner dots stay on the rim's ledges in both states. Plate off: the two dots by the sensor ride
+// on the clip-on lens, left and right of it. Same 0.65 mm stack as the dots (glide 0.38 + tape, PORON, tape 0.27).
+// The half-moon's real outline (with the cutouts) comes from the plate layout (shell meta plate.skate); `half` is the
+// half-ellipse it is cut from, the fallback without a layout.
 export const SKATE_SETS = {
-  pill: { z: 44.8, half: 17, r: 3.25 },                     // centres at z = +/-44.8, end caps r 3.25: 40.5 x 6.5 mm
+  half: { z0: 30.5, a: 20.5, b: 19.5, r: 3.0 },             // straight edge at z = +/-30.5, half-ellipse 41 x 19.5 mm (the layout cuts it to 40.3 x 19.4)
   ring: { hw: 3.2, hl: 7.7, inner: 1.0, outer: 3.0 },       // round the 6.4 x 15.4 lens window, 1 to 3 mm out from it
-  lensDots: [[11.5, 0], [-11.5, 0]],                        // plate off: left and right of the lens (the plate builder's FE: both pairs hold the lens; this one leaves a third less sag under a palm press, and clears the window and the lens's clip slots)
+  lensDots: [[0, 6.3], [0, -6.7]],                         // plate off, on the clip-on lens's own two ends, under its clip pegs and clear of both optics: the lens stays one dot wide (#37). On a solid plate-off base this holds a palm press within 4 % of arms out to +/-8.5 (171 vs 165 um worst sag) and a claw grip better (62 vs 66 um) (dots.js)
 };
+/** the half-moon after the V4 Pro's rear skate, as [x, z] (front end): a half-ellipse with rounded corners at its straight edge */
+function halfPts(o = SKATE_SETS.half, n = 40) {
+  const pts = [], { z0, a, b, r } = o;
+  for (let i = 0; i <= n; i++) {
+    const t = Math.PI * i / n, x = a * Math.cos(t), z = z0 + b * Math.sin(t);
+    pts.push([x, z]);
+  }
+  /* round the two corners on the straight edge: pull the end points in along the edge and up along the curve */
+  pts[0] = [a - r, z0]; pts[n] = [-(a - r), z0];
+  pts.splice(1, 0, [a - r * 0.29, z0 + r * 0.29]); pts.splice(pts.length - 1, 0, [-(a - r * 0.29), z0 + r * 0.29]);
+  return pts;
+}
 function stadium(hw, hl, n = 24, cx = 0, cz = 0) {           // a stadium (long along z) as [x, z] points, CCW seen from above
   const pts = [];
   for (let i = 0; i <= n; i++) { const a = Math.PI * i / n; pts.push([cx + hw * Math.cos(a), cz + (hl - hw) + hw * Math.sin(a)]); }
@@ -227,9 +242,10 @@ function flatSkate(outline, holes, M, glideMat, H = 0.65) {
   g.add(meshOf(glide, glideMat, 'glide'), meshOf(body, M.poron, 'poron'));
   return g;
 }
-/** the two sets on one base. opts: footprint, screws, dots (8 corner positions), material ('POM' | 'PTFE'), showFootprint.
- *  setPlate(k): 1 = the plate set (pills and ring), 0 = the dot set (corner dots and the lens dots); in between they cross-fade
- *  by dropping (the outgoing set falls away) */
+/** the two sets on one base. opts: footprint, screws, dots (8 corner positions), skate (the front half-moon's outline from the
+ *  plate layout), material ('POM' | 'PTFE'), showFootprint.
+ *  setPlate(k): 1 = the plate set (half-moons and ring), 0 = the clip-on lens with its two dots; in between they cross-fade by
+ *  dropping (the outgoing set falls away). The corner dots stay in both. */
 export function buildSkateSets(opts = {}) {
   const M = partMaterials(opts.materials);
   const userMats = new Set(Object.values(opts.materials || {}));
@@ -241,16 +257,25 @@ export function buildSkateSets(opts = {}) {
   const dotsAt = opts.dots || layoutDotSkates({ footprint: fp, screws });
   const G = skateGeometries(opts);
   const dotSet = new THREE.Group(); dotSet.name = 'dotSet';
-  for (const [x, z] of [...dotsAt, ...SKATE_SETS.lensDots]) {
-    const g = new THREE.Group(); g.position.set(x, 0, z);
-    g.add(meshOf(G.glide, glideMat, 'glide'), meshOf(G.tapeLower, M.adhesive, 'tapeLower'), meshOf(G.poron, M.poron, 'poron'), meshOf(G.tapeUpper, M.adhesive, 'tapeUpper'));
-    dotSet.add(g);
+  const dot = (x, z, parent) => { const g = new THREE.Group(); g.position.set(x, 0, z); g.add(meshOf(G.glide, glideMat, 'glide'), meshOf(G.tapeLower, M.adhesive, 'tapeLower'), meshOf(G.poron, M.poron, 'poron'), meshOf(G.tapeUpper, M.adhesive, 'tapeUpper')); parent.add(g); return g; };
+  for (const [x, z] of dotsAt) dot(x, z, dotSet);
+  /* plate off: the clip-on lens with its two dots on pads at its ends (the stand-in base keeps the lens window open) */
+  const lensSet = new THREE.Group(); lensSet.name = 'lensSet';
+  {
+    const lensMat = M.lensPC || M.pom, tP = 1.0;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(5.2, tP, 12.6), lensMat); body.position.set(0, G.H + tP / 2, 0); lensSet.add(body);
+    for (const [dx, dz] of SKATE_SETS.lensDots) {
+      const sx = Math.sign(dx) || 1, len = Math.abs(dx) - 2.2;
+      if (len > 0.2) { const arm = new THREE.Mesh(new THREE.BoxGeometry(len, tP, 3.4), lensMat); arm.position.set(sx * (2.2 + len / 2), G.H + tP / 2, dz); lensSet.add(arm); }
+      const pad = new THREE.Mesh(new THREE.CylinderGeometry(3.65, 3.65, tP, 44), lensMat); pad.position.set(dx, G.H + tP / 2, dz); lensSet.add(pad);
+      dot(dx, dz, lensSet);
+    }
   }
   const plateSet = new THREE.Group(); plateSet.name = 'plateSet';
-  const P = SKATE_SETS.pill, R = SKATE_SETS.ring;
-  for (const s of [1, -1]) { const p = flatSkate(pillPts(P.half, P.r), [], M, glideMat); p.name = s > 0 ? 'pillFront' : 'pillBack'; p.position.z = s * P.z; plateSet.add(p); }
+  const R = SKATE_SETS.ring, front = opts.skate || halfPts();
+  for (const s of [1, -1]) { const p = flatSkate(s > 0 ? front : front.map(([x, z]) => [x, -z]).reverse(), [], M, glideMat); p.name = s > 0 ? 'skateFront' : 'skateBack'; plateSet.add(p); }
   { const ring = flatSkate(stadium(R.hw + R.outer, R.hl + R.outer), [stadium(R.hw + R.inner, R.hl + R.inner).reverse()], M, glideMat); ring.name = 'lensRing'; plateSet.add(ring); }
-  root.add(dotSet, plateSet);
+  root.add(dotSet, lensSet, plateSet);
   let base = null;
   if (opts.showFootprint !== false) {
     const sh = new THREE.Shape(fp.map(([x, z]) => new THREE.Vector2(x, -z)));
@@ -262,15 +287,15 @@ export function buildSkateSets(opts = {}) {
   const state = { plate: 1, explode: 0 };
   function apply() {
     const k = state.plate, e = state.explode;
-    plateSet.visible = k > 0.001; dotSet.visible = k < 0.999;
-    plateSet.position.y = -(1 - k) * 6 - 3 * e; dotSet.position.y = -k * 6 - 3 * e;
+    plateSet.visible = k > 0.001; lensSet.visible = k < 0.999;
+    plateSet.position.y = -(1 - k) * 6 - 3 * e; lensSet.position.y = -k * 6 - 3 * e; dotSet.position.y = -3 * e;
   }
   root.setPlate = (k) => { state.plate = clamp01(k); apply(); };
   root.setExplode = (k) => { state.explode = clamp01(k); apply(); };
   apply();
-  root.userData.spec = { ...DOT_SKATE_SPEC, sets: SKATE_SETS, dots: dotsAt, pillSize: 'estimate: 40.5 x 6.5 mm after the Viper V4 Pro (not published)' };
-  root.userData.parts = { dotSet, plateSet, base };
+  root.userData.spec = { ...DOT_SKATE_SPEC, sets: SKATE_SETS, dots: dotsAt, halfMoon: 'after the Viper V4 Pro rear skate, about 53 x 24 mm (estimate from Brock\'s photo); Theseus 40.3 x 19.4 mm with cutouts for the corner dots' };
+  root.userData.parts = { dotSet, lensSet, plateSet, base };
   root.dispose = () => { M.poron.bumpMap = null; disposeTree(root, userMats); for (const m of own) m.dispose?.(); };
   return root;
 }
-export { stadium as skateStadium, pillPts as skatePillPts, flatSkate };
+export { stadium as skateStadium, pillPts as skatePillPts, halfPts as skateHalfPts, flatSkate };

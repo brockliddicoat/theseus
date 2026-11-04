@@ -1,6 +1,6 @@
 /* the plain-plate reference: a fine equilateral mesh on the real outline (free edges, one node per boss, the lens ring
    loaded), and the skin factor that makes each design's own mesh match it */
-const { LAY, build, inPoly, ringD, RHO } = require('./models.js');
+const { LAY, build, inPoly, ringD, inSkate, RHO } = require('./models.js');
 const D = LAY.dims, OUT = LAY.outline, W = LAY.window;
 const inWin = p => { const q = [p[0] - W.c[0], p[1] - W.c[1]], qz = Math.max(-(W.hl - W.hw), Math.min(W.hl - W.hw, q[1])); return Math.hypot(q[0], q[1] - qz) < W.hw; };
 function refMesh(a) {
@@ -29,7 +29,7 @@ function reference(a = 1.5) {
   const Db = Dplate(PLT_E, PLT_NU, tp), plates = T.tris.map(n => ({ n, K: dktK(n.map(k => T.nodes[k]), Db) }));
   const BOSS = Object.values(LAY.bosses), bossN = BOSS.map(b => { let best = -1, bd = 1e9; m.nodes.forEach((p, i) => { const d = Math.hypot(p[0] - b[0], p[1] - b[1]); if (d < bd) { bd = d; best = i; } }); return best; });
   const ringN = []; m.nodes.forEach((p, i) => { if (Math.abs(ringD(p)) < a * 0.34) ringN.push(i); });
-  const pillN = []; m.nodes.forEach((p, i) => { if (p[1] > 41.5 && Math.abs(p[0]) < 20.25) pillN.push(i); });
+  const pillN = []; m.nodes.forEach((p, i) => { if (inSkate(p)) pillN.push(i); });
   const out = {};
   for (const c of cases) { const fix = {}, loads = {}; let meas; if (c === 'twist') { bossN.slice(0, 3).forEach(i => { fix[i] = 'w'; }); loads[bossN[3]] = [10, 0, 0]; meas = [bossN[3]]; } else { bossN.forEach(i => { fix[i] = 'w'; }); const L = c === 'lens' ? ringN : pillN; L.forEach(i => { loads[i] = [10 / L.length, 0, 0]; }); meas = L; }
     const r = pltSolve({ nodes: T.nodes, els: [], plates, fix, loads }); out[c] = { w: meas.reduce((s, i) => s + r.d[i * 3], 0) / meas.length }; }
