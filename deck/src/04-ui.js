@@ -262,7 +262,8 @@ function statTile(t, t0, rect, o = {}) {
   const vs = Math.max(44, Math.round(Math.min(o.size || 999, room / 0.82, wFit)));
   /* only the specs that matter wear colour: Theseus's headline tiles (hero) get its gradient; the rest are ink on grey */
   const grad = o.grad || (o.hero ? C.heroGrad : null), col = o.color || (o.hero ? C.heroText : o.quiet ? C.ink2 : C.ink);
-  if (o.head) text(o.head, ctr ? cx : x + pad, y + pad + 18, { role: 'label', size: 20, color: C.mute, align: al, alpha: ka });
+  /* a head and a tag together read as a card head (head left, tag right) even in a centred tile, so they never collide */
+  if (o.head) text(o.head, ctr && !evS ? cx : x + pad, y + pad + 18, { role: 'label', size: 20, color: C.mute, align: ctr && !evS ? 'center' : 'left', alpha: ka, maxW: evS ? w - pad * 2 - pillW(o.ev, { by: o.by }) - 16 : w - pad * 2 });
   else if (evS) { const pw = pillW(o.ev, { by: o.by }); pill(ctr ? cx - pw / 2 : x + pad, y + pad + 18, o.ev, ka, { by: o.by }); }
   /* a big number's box runs about a quarter of its size under the baseline: the label clears it (qa.js reads boxes) */
   const labG = o.label ? Math.max(labH, Math.round(vs * 0.24 + 26)) : 0;
@@ -382,7 +383,7 @@ function callout(t, t0, p, label, o = {}) {
   const short = String(label).length <= 24 && String(label).split(' ').length <= 3 && !o.prose;
   const st = short ? { role: 'label', size: 22, color: o.tcolor || C.ink } : { role: 'small', size: o.size && o.size > 25 ? o.size : 25, weight: 600, color: o.tcolor || C.ink, sentence: true };
   const r = text(label, to[0] + (right ? 12 : -12), to[1] + 8, Object.assign(st, { align: right ? 'left' : 'right', t, t0: t0 + 0.3, cps: 80, alpha: a, maxW: o.maxW ? Math.max(o.maxW, 120) : 420, lh: 1.28 }));
-  if (o.sub) text(o.sub, to[0] + (right ? 12 : -12), to[1] + 8 + r.h + 2, { role: 'small', size: 24, color: C.mute, align: right ? 'left' : 'right', sentence: true, t, t0: t0 + 0.6, cps: 100, alpha: a, maxW: o.maxW ? Math.max(o.maxW, 120) : 420, lh: 1.3 });
+  if (o.sub) text(o.sub, to[0] + (right ? 12 : -12), to[1] + 8 + r.h + 2, { role: 'small', size: 24, color: o.scolor || o.tcolor || C.mute, align: right ? 'left' : 'right', sentence: true, t, t0: t0 + 0.6, cps: 100, alpha: a, maxW: o.maxW ? Math.max(o.maxW, 120) : 420, lh: 1.3 });
 }
 /** a key number that slams in: drops big, lands with an overshoot, a ripple runs out */
 function slam(t, t0, x, y, num, unit, o = {}) {

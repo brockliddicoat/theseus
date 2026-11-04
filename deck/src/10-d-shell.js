@@ -34,7 +34,6 @@ Object.assign(SRC, {
 /* ---------- helpers ---------- */
 const SHL = { R: 69.83, C0: [0, 19.075, -0.04], primed: new Set(), no3d: typeof location !== 'undefined' && /[?&]no3d=1/.test(location.search) };
 const SHL_DEF = { lattice: { cut: 0, build: 1, stress: 0, stressCase: 'press', compare: 'tri', filletZoom: 0 }, shell: { explode: 0, xray: 0, scroll: 0 } };
-const SHL_RAMP = ['#26272b', '#5b4314', '#a8730b', '#fdc316', '#fff2c2'];
 /** view3D with every state key given (a key left out would keep the last slide's value) and one unseen first render:
    that render frames the lattice as a single shell (so 'both' never changes the framing) and switches on three.js's
    local clipping before the cut is drawn. o.alpha fades it. */
@@ -68,7 +67,7 @@ function shlProj(st, box, p) {
 /** a yellow chip: the name of the Theseus thing on screen */
 function shlChip(x, y, s, a = 1, align) { return rich([{ s, role: 'label', size: 21, color: C.onHero, chip: C.heroChip }], x, y, { alpha: a, align }); }
 /** a figure label: mono number, then a sentence */
-function shlFig(t, t0, x, y, n, s, o = {}) { const a = ep(t, t0, t0 + 0.4); rich([{ s: 'Fig. ' + n, role: 'label', size: 21, color: o.color || C.mute }, { s, role: 'small', size: 25, weight: 500, color: C.faint, sentence: true, gap: 16 }], x, y, { alpha: a, align: o.align }); }
+function shlFig(t, t0, x, y, n, s, o = {}) { const a = ep(t, t0, t0 + 0.4); rich([{ s: 'Fig. ' + n, role: 'label', size: 21, color: o.color || C.mute }, { s, role: 'small', size: 25, weight: 560, color: C.faint, sentence: true, gap: 16 }], x, y, { alpha: a, align: o.align }); }
 /** a value bar on a track: o = { x, y (centre), w, max, v, lo, hi, col, h, a, k, dash, edge } → returns the x of its end */
 function shlBar(o) {
   const h = o.h || 14, a = o.a == null ? 1 : o.a, k = o.k == null ? 1 : o.k, X = v => o.x + o.w * clamp(v / o.max);
@@ -600,7 +599,7 @@ S({
     }
     /* where a plain wall would have to go to match it */
     const kmm = ep(t, 7.2, 8.0, E.cam), Xm = m.X(SHL_FE.match);
-    if (kmm > 0) { line(Xb + 18, Yl, lerp(Xb + 18, Xm, kmm), Yl, { color: C.ink2, w: 1.5, dash: [5, 5], alpha: 0.9 }); const kq = ep(t, 7.9, 8.3); circle(Xm, Yl, 6, { fill: C.ink2, alpha: kq }); text('A plain wall: ' + fmtN(SHL_FE.match, 1) + ' g', Xm + 16, Yl + 40, { role: 'label', size: 19, color: C.ink2, alpha: kq }); }
+    if (kmm > 0) { line(Xb + 18, Yl, lerp(Xb + 18, Xm, kmm), Yl, { color: C.ink2, w: 1.5, dash: [5, 5], alpha: 0.9 }); const kq = ep(t, 7.9, 8.3); circle(Xm, Yl, 6, { fill: C.ink2, alpha: kq }); text('A plain wall: ' + fmtN(SHL_FE.match, 1) + ' g', Xm + 12, Yl - 24, { role: 'label', size: 19, color: C.ink2, alpha: kq }); }
     /* right: the question changes */
     const rx = x + 1280, rw = w - 1280 - 40, kq1 = ep(t, 4.4, 4.9), flip = ep(t, 6.6, 7.4, E.cam);
     text('The question was', rx, y + 150, { role: 'label', size: 21, color: C.mute, alpha: kq1 * (1 - flip) });
@@ -642,7 +641,8 @@ S({
     if (z < 1.02) shlPress(t, 1.8, topA, kA);
     /* the hotspot, named while the camera is in */
     const kh = env(t, 3.9, 4.2, 4.7, 5.0);
-    if (kh > 0) { const r0 = 24 + 5 * Math.sin(t * 6); circle(hot[0], hot[1] - 4, r0, { color: C.bad, w: 2.5, alpha: kh }); text('Peak, ' + fmtN(R.plate.peak, 1) + ' MPa, here', hot[0] + 38, hot[1] - 32, { role: 'label', size: 21, color: C.bad, alpha: kh }); }
+    /* the ring is ink, so it reads on the red; a leader takes it to the peak's readout on the right */
+    if (kh > 0) { const r0 = 24 + 5 * Math.sin(t * 6); circle(hot[0], hot[1] - 4, r0, { color: C.ink, w: 3, alpha: kh }); line(hot[0] + r0 + 4, hot[1] - 8, tx + tw0 - 248, ya + 152, { color: C.ink, w: 2, alpha: kh }); }
     /* tile B: the same grams as triangles, each member as thick as its force needs */
     const aB0 = tileA(t, 0.3, 1); demoWindow(tx, yb, tw0, th, aB0);
     text('The same grams as triangles', tx + 32, yb + 52, { role: 'label', size: 21, color: C.mute, alpha: aB0 }); pill(tx + tw0 - 32 - pillW('derived'), yb + 52, 'derived', aB0);
@@ -740,7 +740,7 @@ S({
       const s = 4.0, ox = LM + 160, oy = y + 84, P = p => [ox + p[0] * s, oy - p[1] * s];
       if (kind === 'plate') shlPlateField(r, P, k, 0, ref, a, { ny: 8 }); else feDraw(r, P, { load: k, smax: ref, w: s * 0.95, alpha: a, seg: 4, fillet: 2 });
       /* the grams, as 52 cells of equal mass, most stressed first */
-      const bx = LM + 360, bw = 1040, by = y + 58, bh = 36, n = r.cells.length, gap = 3, cwid = (bw - gap * (n - 1)) / n;
+      const bx = LM + 360, bw = 1000, by = y + 58, bh = 36, n = r.cells.length, gap = 3, cwid = (bw - gap * (n - 1)) / n;
       text(name, bx, y + 42, { role: 'label', size: 21, color: hero ? C.heroText : C.ink, alpha: a });
       for (let c = 0; c < n; c++) { const kc = ep(k, c / n * 0.7, c / n * 0.7 + 0.3, E.lin); rr(bx + c * (cwid + gap), by, cwid, bh, 3, kc > 0 ? heatCol(r.cells[c] * kc / ref) : C.track, null, 0, a); }
       /* where the cells drop under half this frame's own peak */
@@ -748,13 +748,13 @@ S({
       line(xc, by - 8, xc, by + bh + 8, { color: C.ink, w: 2, alpha: kk });
       if (i === 0) text('Half its own peak', xc + 10, y + 42, { role: 'label', size: 19, color: C.mute, alpha: kk });
       /* the share that works, and what that is on the study shell's body */
-      const nx = LM + 1440;
+      const nx = LM + 1380;
       rich([{ s: String(Math.round(r.work * 100)), font: 'disp', size: 60, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, tnum: true, count: [3.6 + i * 0.3, 1.0] }, { s: '%', font: 'disp', size: 36, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, gap: 4 }], nx, y + 86, { t, alpha: kk });
       text('of its grams work', nx + 136, y + 52, { role: 'label', size: 19, color: C.mute, alpha: kk });
       text('≈ ' + fmtN(r.work * SHL_FE.g.body, 1) + ' g of 15.2 g', nx + 136, y + 86, { role: 'num', size: 22, weight: 650, color: C.ink2, alpha: kk });
     });
     /* the strength it buys, and the words */
-    const yb = 760, hb = 160;
+    const yb = 760, hb = 200;
     statTile(t, 5.6, [LM, yb, 680, hb], { value: fmtN(R.match, 1), unit: '×', label: 'the grams a solid plane needs to match', ev: 'derived', align: 'left' });
     glossBox(t, 6.2, LM + 720, yb, RM - LM - 720, 'Grams that work', 'The share of a part stressed to at least half its own peak. The grams on the right put that share on the 15.2 g study body, for scale; the rest only rides along.', { size: 24 });
   }
@@ -919,18 +919,18 @@ S({
     /* the two laws on one chart, the width on screen marked */
     const cy = 680, ch = 240, cw = 1080, a2 = tileA(t, 1.4, 0), px0 = LM + 200, px1 = LM + cw - 300;
     demoWindow(LM, cy, cw, ch, a2);
-    const lg = v => Math.log10(v), mX = v => px0 + (px1 - px0) * (1.2 - v) / 0.9, mY = v => cy + 186 - 130 * (lg(v) - 1) / 3;
+    const lg = v => Math.log10(v), mX = v => px0 + (px1 - px0) * (1.2 - v) / 0.9, mY = v => cy + 186 - 116 * (lg(v) - 1) / 3;
     for (const v of [10, 100, 1000, 10000]) { line(px0, mY(v), px1, mY(v), { color: C.hair, w: 1.2, alpha: a2 }); text(v >= 1000 ? (v / 1000) + 'k' : String(v), px0 - 14, mY(v) + 7, { role: 'tick', size: 19, color: C.mute, align: 'right', alpha: a2 }); }
     for (const v of [1.2, 0.9, 0.6, 0.3]) text(fmtN(v, 1) + ' mm', mX(v), cy + 216, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a2 });
     text('Stiffness, {N/mm}', LM + 32, cy + 44, { role: 'label', size: 19, color: C.mute, alpha: a2 });
     text('Rib width', LM + 32, cy + 216, { role: 'label', size: 19, color: C.mute, alpha: a2 });
     [['kt', true], ['kh', false]].forEach(([key, hero]) => {
       const pts = S0.map(q => [mX(q.t), mY(q[key])]), col = hero ? C.heroText : C.comp;
-      poly(pts, { color: col, w: 3.5, alpha: a2, p: 1 });
+      poly(pts, { color: col, w: 3.5, alpha: a2, p: 1, dash: hero ? null : [8, 6] });
       S0.forEach((q, j) => circle(pts[j][0], pts[j][1], 4.5, { fill: col, alpha: a2 }));
-      text(hero ? 'Triangles: with width' : 'Hexagons: near width cubed', pts[0][0] + 12, pts[0][1] + (hero ? -14 : 28), { role: 'label', size: 19, color: hero ? C.heroText : C.ink2, alpha: a2 });
     });
-    const xc = mX(tt); line(xc, cy + 50, xc, cy + 190, { color: C.ink, w: 1.5, dash: [4, 4], alpha: a2 * ep(t, 1.6, 2.0) });
+    legend(t, 1.6, LM + 300, cy + 44, [{ kind: 'line', color: C.heroText, label: 'Triangles: with width' }, { kind: 'dash', color: C.comp, label: 'Hexagons: near width cubed' }], { size: 19, gap: 28 });
+    const xc = mX(tt); line(xc, cy + 64, xc, cy + 190, { color: C.ink, w: 1.5, dash: [4, 4], alpha: a2 * ep(t, 1.6, 2.0) });
     const rT = shlThinAt(L, 'tri', tt), rt = rT.k / shlThinAt(L, 'hex', tt).k, kr = a2 * ep(t, 1.8, 2.2);
     rich([{ s: fmtN(rt, rt < 10 ? 1 : 0), font: 'disp', size: 64, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: '×', font: 'disp', size: 36, weight: 800, color: C.heroText, grad: C.heroGrad, gap: 4 }], LM + cw - 260, cy + 112, { alpha: kr });
     text('stiffer, same grams', LM + cw - 260, cy + 150, { role: 'label', size: 19, color: C.mute, alpha: kr });
@@ -951,8 +951,8 @@ S({
       const bx = x + 8, by = y + 64, bw = w - 16, bh = h - 72, st = { view: 'bottom', compare: 'both', stress: ep(t, 3.0, 4.2), stressCase: 'press', zoom: lerp(1.08, 1.16, ep(t, 0.5, 9, E.io3)) };
       shl3D('lattice', t, bx, by, bw, bh, st, { alpha: ep(t, 0.6, 1.2) });
       const pT = shlProj(st, [bx, by, bw, bh], [-36, 0, 0]), pH = shlProj(st, [bx, by, bw, bh], [36, 0, 0]);
-      shlChip(pT[0], y + 52, 'Triangles', ep(t, 1.4, 1.8), 'center');
-      text('Hexagons, same rib mass', pH[0], y + 52, { role: 'label', size: 21, color: C.ink2, align: 'center', alpha: ep(t, 1.6, 2.0) });
+      shlChip(Math.min(pT[0], x + w / 2 - 90), y + 52, 'Triangles', ep(t, 1.4, 1.8), 'center');
+      text('Hexagons', Math.max(pH[0], x + w / 2 + 90), y + 52, { role: 'label', size: 21, color: C.ink2, align: 'center', alpha: ep(t, 1.6, 2.0) });
       shlRamp(t, 3.4, x + 32, y + h - 56, 200, 6, 'Stress at 10 N');
       text('From below', x + w - 32, y + h - 30, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ep(t, 0.8, 1.2) });
       glossBox(t, 2.4, x, y + h + 40, w, 'N/mm', 'Newtons per millimetre: the force it takes to push the shell in by 1 mm. At ' + Math.round(SHL_FE.tri.press) + ' N/mm, 10 N moves the crown ' + fmtN(SHL_FE.tri.defl, 0) + ' µm.', { size: 24 });
@@ -963,8 +963,8 @@ S({
       const rows = [['tri', 'Triangles', '3.79 g of ribs', true], ['hex', 'Hexagons', 'Same rib mass'], ['thick', 'Plain wall', 'Same mass, no ribs'], ['none', 'Wall only', 'No ribs, 11.39 g']];
       cols.forEach(([k, l], j) => text(l, x + 32 + nw + j * cw, hy + 6, { role: 'label', size: 19, color: C.mute, alpha: ep(t, 1.0, 1.4) }));
       rows.forEach(([key, nm, sub, hero], i) => {
-        const yy = hy + 66 + i * 70, a = ep(t, 1.4 + i * 0.25, 1.8 + i * 0.25);
-        if (i) line(x + 32, yy - 40, x + w - 32, yy - 40, { color: C.hair, w: 1, alpha: a });
+        const yy = hy + 58 + i * 64, a = ep(t, 1.4 + i * 0.25, 1.8 + i * 0.25);
+        if (i) line(x + 32, yy - 38, x + w - 32, yy - 38, { color: C.hair, w: 1, alpha: a });
         text(nm, x + 32, yy, { role: 'small', size: 25, weight: hero ? 800 : 650, color: hero ? C.heroText : C.ink, alpha: a });
         text(sub, x + 32, yy + 26, { role: 'label', size: 19, color: C.mute, alpha: a });
         cols.forEach(([k], j) => {
@@ -973,10 +973,10 @@ S({
           shlBar({ x: cx, y: yy + 18, w: cw - 30, max: 700, v, col: hero ? C.hero : key === 'none' ? C.comp2 : C.comp, h: 10, a, k: kk });
         });
       });
-      const ka = ep(t, 5.4, 5.8), sy = hy + 66 + 4 * 70 - 6;
+      const ka = ep(t, 5.4, 5.8), sy = hy + 58 + 4 * 64 - 4;
       text('Busiest rib at 10 N on the crown', x + 32, sy, { role: 'label', size: 19, color: C.ink, alpha: ka });
       rich([{ s: 'Hexagons ' + fmtN(SHL_FE.hex.rib, 1) + ' MPa', role: 'num', size: 24, weight: 650, color: C.ink2 }, { s: 'Triangles ' + fmtN(SHL_FE.tri.rib, 1) + ' MPa', role: 'num', size: 24, weight: 800, color: C.heroText, gap: 26 }, { s: '−' + Math.round((1 - SHL_FE.tri.rib / SHL_FE.hex.rib) * 100) + '%', role: 'num', size: 24, weight: 800, color: C.ink, gap: 26 }], x + 32, sy + 38, { alpha: ka });
-      shellMeter(t, 6.0, 'lattice', x + 32, y + h - 200, w - 64, { compact: true, ghost: SHL_HEXGHOST });
+      shellMeter(t, 6.0, 'lattice', x + 32, sy + 64, w - 64, { compact: true, ghost: SHL_HEXGHOST });
     }
   }
 });
@@ -1025,8 +1025,8 @@ function shlFilletFrame(t, t0, i, x, y, w, h, lab, o = {}) {
   G.save(); rrPath(ix, iy, iw, ih, 4); G.clip(); G.globalAlpha = a; if (I) G.drawImage(I, ix, iy, iw, ih); G.restore(); G.globalAlpha = 1;
   const hs = FILLET.hot[i], hx = ix + hs[0] * FILLET.px * sc, hyy = iy + hs[1] * FILLET.px * sc, pul = 0.5 + 0.5 * Math.sin(t * 5 + i);
   circle(hx, hyy, 9 + 3 * pul, { color: C.ink, w: 2, alpha: a * 0.9 });
-  text(lab, x + 24, y + h - 26, { role: 'label', size: 19, color: C.mute, alpha: a });
-  rich([{ s: 'Peak', role: 'label', size: 19, color: C.mute }, { s: fmtN(FILLET.scfM[i], 1) + '×', role: 'num', size: 26, weight: 800, color: o.bad ? C.bad : C.heroText, gap: 12 }], x + w - 24, y + h - 26, { align: 'right', alpha: a });
+  text(lab, x + 24, y + h - 48, { role: 'label', size: 19, color: C.mute, alpha: a });
+  rich([{ s: 'Peak', role: 'label', size: 19, color: C.mute }, { s: fmtN(FILLET.scfM[i], 1) + '×', role: 'num', size: 26, weight: 800, color: o.bad ? C.bad : C.heroText, gap: 12 }], x + 24, y + h - 14, { alpha: a });
 }
 S({
   id: 'fillet', ch: 'shell', theme: 'paper', title: 'Fillets at every node', settle: 9.5, ideas: [75, 'fillet'],
@@ -1043,14 +1043,14 @@ S({
       const nd = SHL_NODE.root.map((v, i) => v + SHL_NODE.n[i] * 1.0), rb = SHL_NODE.rib.map((v, i) => v + SHL_NODE.n[i] * 1.0);
       const P1 = shlProj(st, [bx, by, bw, bh], nd), P2 = shlProj(st, [bx, by, bw, bh], rb);
       const inBox = p => p[0] > bx + 20 && p[0] < bx + bw - 20 && p[1] > by + 20 && p[1] < by + bh - 20;
-      if (inBox(P1)) callout(t, 2.0, P1, 'Three ribs meet on a 0.6 mm radius', { to: [Math.min(P1[0] + 120, bx + bw - 320), by + bh - 50], side: 'r', prose: true, color: C.hero, maxW: 280 });
-      if (inBox(P2)) callout(t, 2.6, P2, 'Rib: 1.0 mm wide, 2.0 mm tall', { to: [Math.max(P2[0] - 110, bx + 300), P2[1] + 60], side: 'l', prose: true, color: C.hero, maxW: 250 });
+      if (inBox(P1)) callout(t, 2.0, P1, 'Three ribs meet on a 0.6 mm radius', { to: [Math.min(P1[0] + 120, bx + bw - 320), by + bh - 50], side: 'r', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: 280 });
+      if (inBox(P2)) callout(t, 2.6, P2, 'Rib: 1.0 mm wide, 2.0 mm tall', { to: [Math.max(P2[0] - 110, bx + 300), P2[1] + 60], side: 'l', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: 250 });
     }
     glossBox(t, 2.8, LM, 720, 840, 'Fillet', 'A rounded inside corner: here where three ribs meet, and where each rib meets the wall. Beall: radiused corners also fill at lower pressure.', { size: 24 });
     /* right: the stress field before and after, at the same weight, and the strip */
     const rx = LM + 880, rw = RM - rx, fw = (rw - 40) / 2;
-    shlFilletFrame(t, 1.0, 0, rx, 280, fw, 340, 'Near-sharp, r 0.05 mm', { bad: true });
-    shlFilletFrame(t, 1.8, 7, rx + fw + 40, 280, fw, 340, 'Filleted, r 0.75 mm');
+    shlFilletFrame(t, 1.0, 0, rx, 280, fw, 360, 'Near-sharp, r 0.05 mm', { bad: true });
+    shlFilletFrame(t, 1.8, 7, rx + fw + 40, 280, fw, 360, 'Filleted, r 0.75 mm');
     shlRamp(t, 2.4, rx + 8, 692, 220, 'Peak, red', 'Stress, same weight');
     text('Peak: the hottest point over the panel\'s average stress.', rx + 260, 706, { role: 'small', size: 22, weight: 560, color: C.faint, maxW: rw - 268, alpha: ep(t, 2.4, 2.8) });
     shellMeter(t, 4.6, 'fillet', rx + 8, 760, rw - 16, { only: 'flex' });
@@ -1274,7 +1274,7 @@ const SHL_STRUCTS = [
   { id: 'ninjutso-sora-v3', name: 'Ninjutso Sora V3', how: 'Thin shell, endoskeleton', say: '"2x more rigid structure-wise"', who: 'Ninjutso claim', ev: 'claim' },
   { id: 'finalmouse-slx', name: 'Finalmouse Starlight X', how: 'Three-part unibody', say: '"Rigid unibody main shell"', who: 'Finalmouse, via Back2Gaming', ev: 'claim' },
   { id: 'lamzu-maya', name: 'Lamzu Maya', how: 'Front struts to the triggers', say: 'Low front propped on struts', who: 'Brock', ev: 'estimate' },
-  { hero: true, name: 'Theseus', how: 'Solid, triangle lattice, board tie', say: '', who: 'Derived, 3D shell FE; the rig will measure it', ev: 'derived' }
+  { hero: true, name: 'Theseus', how: 'Solid, triangle lattice, board tie', say: '', who: 'Derived, 3D shell FE', ev: 'derived' }
 ];
 S({
   id: 'shlStructs', ch: 'shell', theme: 'paper', title: 'A published deflection test', settle: 10, ideas: [15, 57, 53, 55],
@@ -1285,7 +1285,7 @@ S({
     /* left: the table */
     { const x = LM, y = 280, w = 1120, h = 640, a0 = tileA(t, 0.3, 0);
       demoWindow(x, y, w, h, a0);
-      const cN = x + 32, cW = x + 420, wW = 220, cS = x + 760;
+      const cN = x + 32, cW = x + 380, wW = 180, cS = x + 640;
       text('Mouse, structure', cN, y + 52, { role: 'label', size: 19, color: C.mute, alpha: a0 });
       text('Weight, {g}', cW, y + 52, { role: 'label', size: 19, color: C.mute, alpha: a0 });
       text('Stiff, says who', cS, y + 52, { role: 'label', size: 19, color: C.mute, alpha: a0 });
@@ -1496,14 +1496,14 @@ S({
     text('3D shell FE, 10 N on the crown; the plain wall\'s mass follows its own solved law past 15.2 g. Body only; the triggers are the same in both.', x + 32, y + h - 32, { role: 'small', size: 22, weight: 560, color: C.faint, maxW: w - 64, alpha: ep(t, 2.4, 2.8) });
     /* right: more grams to find, each its own idea */
     const rx = x + w + 40, rw = RM - rx, a2 = tileA(t, 1.0, 1);
-    demoWindow(rx, y, rw, 400, a2);
+    demoWindow(rx, y, rw, 440, a2);
     text('More grams the shell gives back', rx + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a2 });
     [['A base you can leave off', '#31', 'Zaunkoenig\'s M1K bases weigh 5.7 g, 4.1 g in the light build.'], ['A lighter resin', '#5', 'At the SLX\'s 0.9 g/cm³ this body is ' + fmtN(SHL_FE.g.body * (1 - 0.9 / 1.01), 1) + ' g lighter.'], ['Wall where the load is', '#93', 'Thick low on the sides, thin where the FE runs cool.']].forEach(([h2, tg, b], i) => {
-      const yy = y + 116 + i * 96, a = a2 * ep(t, 2.0 + i * 0.5, 2.4 + i * 0.5);
+      const yy = y + 116 + i * 112, a = a2 * ep(t, 2.0 + i * 0.5, 2.4 + i * 0.5);
       rich([{ s: h2, role: 'label', size: 21, color: C.ink }, { s: tg, role: 'label', size: 19, color: C.mute, gap: 14 }], rx + 32, yy, { alpha: a });
       text(b, rx + 32, yy + 34, { role: 'small', size: 24, weight: 560, color: C.ink2, maxW: rw - 64, lh: 1.3, alpha: a });
     });
-    sourceBox(t, 3.0, rx, y + 440, rw, 'Zaunkoenig 2020', 'M1K: carbon fibre shell 7.5 g; printed bottom shell 5.6 to 5.9 g, 4.0 to 4.2 g in the light build.', { size: 24 });
+    sourceBox(t, 3.0, rx, y + 480, rw, 'Zaunkoenig 2020', 'M1K: carbon fibre shell 7.5 g; printed bottom shell 5.6 to 5.9 g, 4.0 to 4.2 g in the light build.', { size: 24 });
   }
 });
 
@@ -1577,7 +1577,7 @@ S({
     captions(t, [[0.6, 'A separate bottom rim is easier to service, and every place two hard parts touch can grind.'], [3.2, 'Newer ULX batches are greased with Krytox. Grease quiets the rub for a while; the contact stays, so the noise comes back.'], [6.0, 'A thin Poron pad at the contact ends the rub for good, for about half a gram.']]);
     const wx = LM, wy = LAY.top, ww = RM - LM, wh = 580;
     demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    const cases = [[wx + 300, 'Plastic on plastic', 'The rim rubs the shell and squeaks', 1, 0, 'stick'], [wx + 870, 'Krytox 205 in the groove', 'Quiet until it wears or collects dust', 0.25, 0, 'wear'], [wx + 1440, 'A thin Poron pad at the contact', 'A soft stop: nothing rubs, about 0.5 g', 0, 1, 'none']];
+    const cases = [[wx + 300, 'Plastic on plastic', 'The rim rubs the shell and squeaks', 1, 0, 'stick'], [wx + 870, 'Krytox grease in the groove', 'Quiet until it wears or collects dust', 0.25, 0, 'wear'], [wx + 1440, 'A thin Poron pad at the contact', 'A soft stop: nothing rubs, about 0.5 g', 0, 1, 'none']];
     const per = 2.6, sq = u => { const c = ((u % per) + per) % per / per; return c < 0.14 ? E.io3(c / 0.14) : c < 0.5 ? 1 : c < 0.64 ? 1 - E.io3((c - 0.5) / 0.14) : 0; };
     cases.forEach(([cx, l1, l2, buzz, pad, mode], i) => {
       const t0 = 0.6 + i * 0.5, k = ep(t, t0, t0 + 0.5), load = t > t0 + 1.0 ? sq(t - t0 - 1.0) : 0;

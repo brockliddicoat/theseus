@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 08:32 (Chicago).
+Last updated: 2026-11-04 09:12 (Chicago).
 
 ## Open with Brock
 
@@ -37,6 +37,11 @@ Last updated: 2026-11-04 08:32 (Chicago).
     plate, 0.4 mm crown) and says so; the bridge's advantage depends on the crown.
   - Idea #59's "taller fulcrum": read as more free length for the arch. Right?
   - The GT01's bottom housing is drawn from photos (Gateron publishes no drawing). Is its shape right?
+- **Questions from Shell A:**
+  - Where should the shell count as broken: 120 MPa (PP-C-20A's tensile strength) or 207 MPa (its bending strength)?
+    Default: 120 MPa, the more cautious.
+  - Is there a source for "the encoder is the number one failure point"? It's stated as Brock's claim now, next to the
+    Pulsar and igor'sLAB findings.
 - **SPDT:** F9.4 says "single pull double throw". The standard term is **single pole, double throw**, and the deck uses
   that.
 
@@ -102,18 +107,18 @@ Last updated: 2026-11-04 08:32 (Chicago).
   - Now full-size SPDT switches with a glove (F9.16).
 - **F2.08 IN PROGRESS (r3d, srf, own)** "the encoder and screws need a massive revamp to look proper"
   - Encoder form: F9.21.
-- **F2.09 IN PROGRESS (shl)** "id like you to elaborate more and do more animations on how triangles are more helpful on a
+- **F2.09 DONE** (`shlThin`, `shlShell3d`, `shlLattice3d`, and the meter strip through the chapter) "id like you to elaborate more and do more animations on how triangles are more helpful on a
   lower weight mouse. throughout all the strength increases from industry standards i'd like to see a bar of flex or
   strength to weight dropping"
   - This is the shell meter (10-d-0-meter.js); its baseline is F6.4.
-- **F2.10 IN PROGRESS (shl)** "i'd also like you to better show of my concept of a lightweight mouse being able to be
+- **F2.10 DONE** (`shlHotspot`, `shlMargin`, `shlWork`: 18 / 25 / 90 % of the grams work) "i'd also like you to better show of my concept of a lightweight mouse being able to be
   stronger than heavier one by more optimally spreading force and using force among the material it has, demonstrate
   how solid or flat planes have a propensity to build up hotspots and have once breakage point that wastes the rest of
   the material, have a visualization of the amount of grams of material a force applied to a mouse will actually act
   on depending on how optimized the structure is at dispersing force"
-- **F2.11 IN PROGRESS (shl)** "show how most mice make you pick between strength and weight, when that shouldn't have to
+- **F2.11 DONE** (`shlPick`, then `shlNoPick`: the question types alone and rises into the title) "show how most mice make you pick between strength and weight, when that shouldn't have to
   be the case. follow that up with a "what if you didn't have to pick…" but find a good transition"
-- **F2.12 IN PROGRESS (shl, shb, shc)** "show more force distribution animations, i think those will be really helpful"
+- **F2.12 DONE in Shell A, IN PROGRESS (shb, shc)** "show more force distribution animations, i think those will be really helpful"
   - Built on 07-sim.js (feFlow, feDraw).
 - **F2.13 IN PROGRESS (srf)** "improve how the texture of the cerakote looks and make the fibers look more accurate"
 - **F2.14 IN PROGRESS (srf)** "visualize and show cerakote can be laser etched in different shapes and spacings to create
@@ -130,7 +135,7 @@ Last updated: 2026-11-04 08:32 (Chicago).
   strength increases are)"
 - **F2.18 IN PROGRESS (shb)** "show a fluid simulation of how a filleted lattice helps sign fibers (if there is anything
   else that can be down to the lattice to better align it show it)"
-- **F2.19 IN PROGRESS (shl)** "talk about how no dust getting in the encoder is particularly important given the fact
+- **F2.19 DONE** (`sealed`: "The encoder: the number one failure point") "talk about how no dust getting in the encoder is particularly important given the fact
   that the encoder is the number one failure point in a mouse"
 - **F2.20 IN PROGRESS (shb)** "show how the left and right sides of the mouse near the bottom being flatter and less
   arched, and how that means extra design intent has to be spent to make the lattice thicker in those wasted, as well as
@@ -151,7 +156,7 @@ Last updated: 2026-11-04 08:32 (Chicago).
   to draw on all the resources you have access too. and how many mice just use small arms of fr4 to reinforce the pcb
   which are easy to break of or snap under force, but how we plan to use THE WHOLE PCB."
   - Decided: F6.3.
-- **F2.27 DONE in the intro, IN PROGRESS (elc, shl)** "also dont worry about weight compared to the xa25, i have that covered, we will be
+- **F2.27 DONE in the intro and Shell A (`shlGrams`), IN PROGRESS (elc)** "also dont worry about weight compared to the xa25, i have that covered, we will be
   able to cut weight elsewhere with my shell design to hit that 200hr"
 - **F2.28 IN PROGRESS (ntr)** "after the comparisons, i think our solution needs a stats slide of their own with a bunch of
   important numbers on big fonts that tick up with an animation, maybe sometimes the "next best" is in a smaller lore
@@ -175,7 +180,7 @@ Last updated: 2026-11-04 08:32 (Chicago).
   - Tags are type now (F7.3, F9.5).
 - **F2.36 DONE in shared code, IN PROGRESS per slide (all)** "separation in the presentation needs to be vastly improved,
   thing are way to cranped by default and this is an animation for reason, you can't be afraid of black space"
-- **F2.37 IN PROGRESS (shl)** "it really bothers me that there's one line on the right that sticks way out into no mans
+- **F2.37 DONE** (`lattice`: whole cells, nothing sticks out; `shlDeterminate`) "it really bothers me that there's one line on the right that sticks way out into no mans
   land on the hexagon flexing animation, you need to polish that animation more as well as make an accompanying
   animation to show how hexagons distribute force versus triangles, talk about then being statically determinant"
 - **F2.38 IN PROGRESS (elc)** "show a simulation benefit of the and statistic of braiding the wires"
@@ -318,12 +323,12 @@ Last updated: 2026-11-04 08:32 (Chicago).
   - Radius 6.
 - **F9.20 IN PROGRESS (gld)** "we need to talk about the importance of having one or 2 dot skates by the sensor to prevent
   sag and keeping the sensor focused correctly"
-- **F9.21 IN PROGRESS (r3d, srf)** "the encoder you are using is wrong, optical encoders look no different than normal mouse
+- **F9.21 DONE in the shared 2D drawing (`encoderMM`, TTC's form) and `sealed`, IN PROGRESS (r3d, srf)** "the encoder you are using is wrong, optical encoders look no different than normal mouse
   encoders, i've attached picture of what the interior looks of an modern mouse optical encoder is like, usually they're
   a little taller than that though"
 - **F9.22 STANDING** "again this is just me giving you more guidance, do not abandon any of my old guidance unless i've
   intentionally overwritten it"
-- **F9.23 IN PROGRESS (shl, shb, shc); the heat scale is DONE** "you need to better explain how lower peak force hotspots are
+- **F9.23 DONE in Shell A (`shlMargin`: the plane cracks at 67 N, the triangles hold to 126 N) and the heat scale, IN PROGRESS (shb, shc)** "you need to better explain how lower peak force hotspots are
   better, and peak force areas should also be colored in red so the viewer knows they're bad. show the risk of breakage.
   this should tie in with a lot of the other advice i've given you, you should try to make as many concepts tie together
   as possible"
@@ -336,7 +341,7 @@ Last updated: 2026-11-04 08:32 (Chicago).
   f=ma, so mass means less inertia means quicker target switching when changing directions, there should also be other
   theories that are all but proven, the inertia thing means it should be objective easier to switch targets, even though
   there isn't a study to prove it, it feels pretty solid to me"
-- **F9.27 DONE in shared code (feDraw fillet), IN PROGRESS per slide (shl, shb, shc, r3d)** "we have slides about the
+- **F9.27 DONE in shared code (feDraw fillet) and Shell A, IN PROGRESS (shb, shc, r3d)** "we have slides about the
   importance of filleting the lattice, but none of the lattices in our visualizations other than those slides are
   filleted, this is an issue"
 - **F9.28 DONE in the shared key plan and clicks, IN PROGRESS in 3D (r3d)** "we talk about how it's better to have 1 seam in our slides

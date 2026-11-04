@@ -1,12 +1,15 @@
 """Turn an exported 3D scene (export.js) into 2D outlines for the deck's 2D mode.
 
-  python3 silhouettes.py <scene.json> <out.json>
+  python3 silhouettes.py <scene.json> <out.json> [tol] [--lines=<path regex>] [--crease=<deg, default 32>]
 
 For every mesh and each of the three world axes, the mesh is projected flat (orthographic) and rasterised; the outline
 of the result (outer rings and holes) is traced and simplified. Projections along +A and -A are the same shape, so a
 view from either side reads the same rings; only the drawing order differs (by depth, at run time).
 Also kept: each mesh's depth range along each axis, a look (fill tone) from its material, and how it moves with each
 state key (a delta transform per sampled value, or a rotation rate for 'scroll').
+With --lines, the meshes whose path matches also get `lines`: their visible feature lines (edges sharper than --crease,
+and open boundaries), hidden lines removed against the mesh itself (nearer parts cover the rest by drawing order), per axis AND side ('+0' … '-2', since what is hidden
+depends on the side), delta-coded like the rings. Readers that don't know the field ignore it.
 """
 import sys, json, base64, math
 import numpy as np, cv2

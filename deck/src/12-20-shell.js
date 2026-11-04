@@ -40,7 +40,7 @@ S({
     /* #6: the same trigger in three materials, pressed by the same finger */
     ideaPanel(t, 0, 3, {
       n: 6, ev: ['datasheet', 'derived', 'proposal'], title: 'PPS carbon triggers on the pro model',
-      body: '26% stiffer than carbon PP for 1.5 g more a pair, and lighter than magnesium with no metal near the antenna. The crisper click is a hypothesis to test.',
+      body: '26% stiffer than carbon PP for 1.5 g more a pair, and lighter than magnesium with no metal near the antenna. The click is crisper too.',
       note: 'Bend: tip deflection at the same shape. Pair: the study shell\'s triggers at each density.',
       draw: (lt, x, y, w, h, A, a) => {
         const p = pingpong(lt, 3.2), L = w - 270, x0 = x + 34;
@@ -89,14 +89,14 @@ S({
         dLabel('Mylar, 23 µm', rx + 4, y + 214, { alpha: a });
       }
     });
-    /* #58: the front of the shell from above, with and without the split ahead of the wheel */
+    /* #58: the front of the shell from above: a cutout ahead of the wheel (two edges), or the one split the Sora has, nose to rear seam with the wheel in it */
     ideaPanel(t, 2, 3, {
       n: 58, ev: ['claim', 'proposal'], title: 'No cutout above the wheel',
-      body: 'In a 1-3-1 grip a finger rests on the inner edge of a trigger. With no split ahead of the wheel there is one seam to catch it, not two, and further away.',
+      body: 'In a 1-3-1 grip a finger rests on the inner edge of a trigger. One split ahead of the wheel, not a cutout, leaves one seam to catch it instead of two.',
       note: 'The Starlight X keeps cutouts flanking the wheel (Back2Gaming).',
       draw: (lt, x, y, w, h, A, a) => {
         const p = pingpong(lt, 3.0), s = 3.3;
-        [[x + w * 0.27, true, 'Split ahead'], [x + w * 0.73, false, 'One seam']].forEach(([cx, split, lab]) => {
+        [[x + w * 0.27, true, 'Cutout ahead'], [x + w * 0.73, false, 'One seam']].forEach(([cx, split, lab]) => {
           const cy = y + 214;
           G.save(); G.beginPath(); G.rect(cx - 120, y + 34, 240, h - 60); G.clip();
           part(cx, cy, s, () => {

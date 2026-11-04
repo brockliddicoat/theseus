@@ -671,20 +671,30 @@ function guideMM(o = {}) {
   out.pad = SP(-2.65 + 0.35 * pk, -1.0); out.padR = SP(2.65 - 0.35 * pk, -1.0); out.wall = SP(-4.4, 1.8); out.plunger = SP(0.75, 4.9 + tr); out.sw = SP(4.2, 6.8);
   return out;
 }
-/** a wheel encoder, front-on: stamped steel frame, the rotor window, three legs; shell wall above with or without holes */
+/** the wheel's optical encoder, front-on, drawn as TTC's (a normal encoder's black housing in a stamped steel frame,
+   the axle bushing in its face, two bent legs and a row of pins), a little taller than their photo. Origin: the axle.
+   o = { clog (0..1: dust in the bushing and the frame's gaps) }. Returns { top, bush, left, right, base } in stage px.
+   (Brock, F9.21: "optical encoders look no different than normal mouse encoders". From Shell A's shlEncoderMM.) */
 function encoderMM(o = {}) {
-  const out = {};
-  for (const lx of [-2.6, 0, 2.6]) { G.fillStyle = grad(MT.tin, lx - 0.25, 0, lx + 0.25, 0); G.fillRect(lx - 0.25, 3.3, 0.5, 2.2); }
-  pcbSec(-8, 8, 5.0, 1.2, {});
-  solid(() => { G.beginPath(); G.rect(-3.8, -3.6, 7.6, 7.0); }, { g: ['#c9ced5', '#7f8790'] }, [-3.8, -3.6, 7.6, 7], {});
-  solid(() => { G.beginPath(); G.rect(-3.1, -2.9, 6.2, 5.6); }, MT.black, [-3.1, -2.9, 6.2, 5.6], { lw: 0.8 });
-  G.beginPath(); G.arc(0, -0.1, 1.5, 0, TAU); G.fillStyle = grad(MT.white, -1.5, -1.6, 1.5, 1.4); G.fill(); G.strokeStyle = edgeCol(MT.white); G.lineWidth = lw(1); G.stroke();
-  G.beginPath(); G.rect(-0.55, -0.65, 1.1, 1.1); G.fillStyle = '#141518'; G.fill();
-  for (const sx of [-3.8, 3.8]) { G.fillStyle = '#9aa1aa'; G.fillRect(sx - 0.3, -1.2, 0.6, 2.2); }
-  out.top = SP(0, -3.6); out.rotor = SP(1.5, -0.1); out.body = SP(3.8, 0);
+  const out = {}, steel = TH ? '#C9CDD3' : '#A7ADB5', steel2 = TH ? '#AEB3BA' : '#8C929B', tin = TH ? '#B9BEC5' : '#9AA0A8';
+  /* pins and legs under the housing */
+  for (const px of [-2.1, -0.7, 0.7, 2.1]) solid(() => { G.beginPath(); G.rect(px - 0.27, 5.4, 0.54, 3.9); }, MT.tin, [px - 0.27, 5.4, 0.54, 3.9], { fill: tin, lw: 0.8 });
+  for (const sx of [-1, 1]) solid(() => { G.beginPath(); G.moveTo(sx * 4.6, 5.0); G.lineTo(sx * 5.6, 5.0); G.lineTo(sx * 5.6, 7.2); G.lineTo(sx * 6.4, 8.9); G.lineTo(sx * 5.5, 9.3); G.lineTo(sx * 4.6, 7.4); G.closePath(); }, MT.steel, [4.6, 5, 1.8, 4.3], { fill: steel2, lw: 0.9 });
+  /* the black housing */
+  solid(() => pathRR(-5.9, -7.0, 11.8, 12.6, 0.45), MT.black, [-5.9, -7.0, 11.8, 12.6], { fill: TH ? '#26272B' : '#1B1C1F', lw: 1 });
+  /* the steel frame over its face: a plate with the bushing's hole, a tab folded over the top, two side clips */
+  solid(() => { G.beginPath(); G.moveTo(-5.3, -7.0); G.lineTo(5.3, -7.0); G.lineTo(5.3, 3.2); G.lineTo(-5.3, 3.2); G.closePath(); G.moveTo(2.75, -0.6); G.arc(0, -0.6, 2.75, 0, TAU, true); }, MT.steel, [-5.3, -7, 10.6, 10.2], { fill: steel, lw: 1 });
+  solid(() => { G.beginPath(); G.rect(-2.0, -7.9, 4.0, 0.9); }, MT.steel, [-2, -7.9, 4, 0.9], { fill: steel2, lw: 0.9 });
+  for (const sx of [-1, 1]) solid(() => { G.beginPath(); G.rect(sx > 0 ? 5.3 : -6.2, -4.4, 0.9, 3.0); }, MT.steel, [5.3, -4.4, 0.9, 3], { fill: steel2, lw: 0.8 });
+  /* the axle bushing and its D-shaped bore */
+  G.beginPath(); G.arc(0, -0.6, 2.3, 0, TAU); G.fillStyle = TH ? '#8E8C86' : '#6E6C67'; G.fill(); G.strokeStyle = edgeCol(MT.black); G.lineWidth = lw(1); G.stroke();
+  G.beginPath(); G.arc(0, -0.6, 1.15, -Math.PI * 0.82, Math.PI * 0.82); G.closePath(); G.fillStyle = '#141518'; G.fill();
+  /* dust caught round the bushing and in the frame's gaps */
+  const ck = o.clog || 0;
+  if (ck > 0) { const r = rng(23); for (let i = 0; i < Math.round(26 * ck); i++) { const an = r() * TAU, d = 2.35 + r() * 0.5; G.beginPath(); G.arc(Math.cos(an) * d, -0.6 + Math.sin(an) * d, 0.17 + r() * 0.12, 0, TAU); G.fillStyle = rgba(C.bad, 0.9); G.fill(); } }
+  out.top = SP(0, -7.9); out.bush = SP(0, -0.6); out.left = SP(-5.9, 0); out.right = SP(5.9, 0); out.base = SP(0, 9.3);
   return out;
 }
-
 /* =================================== 16. a fingertip on a surface, magnified section ===================================
    units are not to scale with the parts above: 60 across is about a millimetre of skin. o.etch: a laser-etched
    texture in the film; o.wet: sweat. on a smooth film the sweat spreads into a layer the skin floats on; on an
