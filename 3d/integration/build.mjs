@@ -37,7 +37,9 @@ for (const [dir, re] of want) {
   if (!fs.existsSync(d)) continue;
   for (const f of fs.readdirSync(d)) {
     if (!re.test(f) || /^shots?\.json$|package/.test(f)) continue;
-    const src = path.join(d, f), dst = path.join(OUT_ASSETS, f);
+    // lattice.js resolves './assets/' from its own module URL, which the bundle maps to the deck's assets/ folder
+    const sub = dir === 'lattice/assets' ? path.join(OUT_ASSETS, 'assets') : OUT_ASSETS; fs.mkdirSync(sub, { recursive: true });
+    const src = path.join(d, f), dst = path.join(sub, f);
     if (!fs.statSync(src).isFile()) continue;
     if (fs.existsSync(dst) && fs.statSync(dst).mtimeMs >= fs.statSync(src).mtimeMs) { total += fs.statSync(dst).size; continue; }
     if (f.endsWith('.glb')) {
