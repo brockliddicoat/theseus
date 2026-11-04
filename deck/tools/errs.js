@@ -14,7 +14,7 @@ const { pageUrl } = require('./serve.js');
     for (const t of times) {
       errs.length = 0;
       await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + t + (process.env.Q || ''), { waitUntil: 'domcontentloaded', timeout: 240000 });
-      await p.waitForFunction('window.__ready === true', null, { timeout: 8000 }).catch(() => errs.push('timeout'));
+      await p.waitForFunction('window.__ready === true', null, { timeout: +(process.env.READY_MS || 8000) }).catch(() => errs.push('timeout'));
       if (errs.length) found.push('t=' + t + ': ' + errs[0].slice(0, 160));
     }
     console.log(id, found.length ? found.slice(0, 2).join(' || ') : 'ok');
