@@ -15,14 +15,15 @@
    Each scene applies its full rest state under every call (3d/integration/entry.js REST), so a key left out is at rest.
    Every shot has a flat twin (08-v2d.js): drawn instead in 2D mode, while the scene streams in, and if it fails to build.
    ============================================================================================ */
-const V3 = { pending: 0, proj: null, failed: {} };
+const V3 = { pending: 0, proj: null, failed: {}, last: {} };
 function view3D(key, t, x, y, w, h, state = {}, o = {}) {
+  /* what this call drew, for r3dAt / v3At: the box, and whether it was the render or the flat twin */
+  const theme = o.theme || (TH ? 'paper' : 'night'), last = V3.last[key] = { box: [x, y, w, h], theme, state, twin: true };
   /* 2D mode (08-v2d.js): the flat twin, same box, same state; V3.proj is its projector for callouts */
   if (V2D.on) { V3.proj = view2D(key, t, x, y, w, h, state, o) || null; return !!V3.proj; }
   V3.proj = null;
   const ok = typeof R3D !== 'undefined' && R3D.has(key);
   if (!ok) { V3.proj = view2D(key, t, x, y, w, h, state, o) || null; if (!V3.proj) v3Wait(x, y, w, h, key, t); return !!V3.proj; }
-  const theme = o.theme || (TH ? 'paper' : 'night');
   const k = (APP.scale || 1) * (APP.dpr || 1) * (o.res || 1);
   const pw = Math.max(64, Math.round(w * k)), ph = Math.max(36, Math.round(h * k));
   let c = null;
@@ -40,7 +41,25 @@ function view3D(key, t, x, y, w, h, state = {}, o = {}) {
   /* the scene's canvas only grows; the shot is the top-left pw × ph of it (c.rect) */
   const R = c.rect || [0, 0, c.width, c.height];
   G.save(); G.globalAlpha *= a0 * kin; G.drawImage(c, R[0], R[1], R[2], R[3], x, y, w, h); G.restore();
+  last.twin = false;
   return true;
+}
+/** Where a part sits on the stage in the shot view3D last drew for `key`, or null: the 3D counterpart of v2dAt.
+    re matches the part's path (the 2D twins' paths: GEO2D[key].meshes[i].path), f a point in its box ([0.5, 0.5, 0.5]
+    the middle). Call it after that view3D call, before the scene is drawn again. */
+function r3dAt(key, re, f = [0.5, 0.5, 0.5]) {
+  const L = V3.last[key];
+  if (!L || L.twin || typeof R3D === 'undefined' || !R3D.anchor) return null;
+  const uv = R3D.anchor(key, re, f, L.theme); if (!uv) return null;
+  const [x, y, w, h] = L.box;
+  return [x + uv[0] * w, y + uv[1] * h];
+}
+/** A callout anchor that follows the part in either mode: v2dAt on the flat twin (2D mode, or while the scene streams
+    in), r3dAt on the render. st and box are the view3D call's (2D needs them; 3D reads what that call drew). */
+function v3At(key, st, box, re, f = [0.5, 0.5, 0.5]) {
+  const L = V3.last[key];
+  if (V2D.on || !L || L.twin) return typeof v2dAt === 'function' ? v2dAt(key, st || (L && L.state) || {}, box || (L && L.box), re, f) : null;
+  return r3dAt(key, re, f);
 }
 /** a quiet placeholder for a scene with no 2D twin while it streams in: corner marks, nothing that flashes */
 function v3Wait(x, y, w, h, key, t) {

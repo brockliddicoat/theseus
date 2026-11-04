@@ -3,8 +3,8 @@
    29.31 g, $189, one board of about 5.6 g (there is no front and back board), 200 h at 1 kHz.
    Print them through THS (strings) so a change here changes the deck.
    ============================================================================================ */
-const THESEUS = { mass: 29.31, price: 189, pcb: 5.6, hours: 200 };
-const THS = { mass: '29.31', massG: '29.31 g', price: '$189', pcb: '5.6 g', hours: '200 h' };
+const THESEUS = { mass: 29.31, price: 189, pcb: 5.6, hours: 200, dims: [119.3, 62.4, 39.9] };   /* dims: L x W x H, mm (Brock, F12.11) */
+const THS = { mass: '29.31', massG: '29.31 g', price: '$189', pcb: '5.6 g', hours: '200 h', dims: '119.3 × 62.4 × 39.9 mm' };
 
 /* ============================================================================================
    sources. Every number on screen points at one of these. n = what we took from it.

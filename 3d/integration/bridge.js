@@ -97,6 +97,26 @@ export const R3D = {
     e.canvas.rect = [0, 0, w, h];
     return e.canvas;
   },
+  /** Where a part sits in the last frame rendered for `key`: [u, v], 0..1 across and down that shot, or null.
+     re is tested against each mesh's path from the scene root ('/'-joined names, the paths the 2D twins carry; the first
+     match wins); f is the point in its world box, [fx, fy, fz] (0.5 = the middle), as v2dAt takes it. It uses the camera
+     of that render, so call it right after the view3D it refers to (the deck's r3dAt and v3At do). */
+  anchor(key, re, f = [0.5, 0.5, 0.5], theme = 'paper') {
+    const e = live.get(key + '|' + theme);
+    if (!e || !e.ready || !e.scene || !e.scene.root) return null;
+    const root = e.scene.root;
+    const pathOf = (o) => { const n = []; let q = o; while (q && q !== root) { n.unshift(q.name || q.type); q = q.parent; } return n.join('/'); };
+    let hit = null;
+    root.traverse((o) => { if (!hit && o.isMesh && re.test(pathOf(o))) hit = o; });
+    if (!hit) return null;
+    root.updateMatrixWorld(true);
+    const b = new THREE.Box3().setFromObject(hit);
+    if (b.isEmpty()) return null;
+    const p = new THREE.Vector3(b.min.x + (b.max.x - b.min.x) * f[0], b.min.y + (b.max.y - b.min.y) * f[1], b.min.z + (b.max.z - b.min.z) * f[2]);
+    p.project(e.studio.camera);
+    if (!(p.z > -1 && p.z < 1)) return null;              /* behind the camera or past its far plane */
+    return [(p.x + 1) / 2, (1 - p.y) / 2];
+  },
   /** Free WebGL contexts not used for `ms` (call once per frame). */
   gc(ms = 8000) {
     const now = performance.now();

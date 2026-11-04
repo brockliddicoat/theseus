@@ -49,18 +49,20 @@ export function buildRadioModule(opts = {}) {
   // substrate: black FR4, every edge broken
   const sub = meshOf(yFlip(extrude(roundedRectShape(W, Lm, 0.18), { depth: T, front: { r: 0.04, s: 1 }, back: { r: 0.03, s: 1 }, curveSegments: 6 })).translate(0, 0.04, 0), M.maskBlack, 'substrate');
   root.add(sub);
-  // castellated pads: both long sides under the shield, and the rear end; gold half-holes and pads
+  // castellated pads: both long sides under the shield, and the rear end; gold half-holes and pads, on the board's
+  // U1 footprint (pcb.glb, AN54LM-20A land pattern: 12 a side and 11 across the end, 0.8 mm pitch), so they land on its
+  // pads once the board has turned them with the module (pcb.js flipFootprint)
   const cast = new THREE.Group(); cast.name = 'castellations';
   const halfHole = (x, z, rot) => {
     const g = lathe([[0.24, T + 0.04], [0.24, 0.04]], { segments: 10, phiStart: rot, phiLength: Math.PI });   // faces the hole's axis
     g.translate(x, 0, z); return meshOf(g, M.gold, 'halfHole');
   };
   const padTop = (x, z, w, d) => meshOf(yFlip(extrude(roundedRectShape(w, d, 0.06), { depth: 0.02, curveSegments: 2 })).translate(x, T + 0.04, z), M.gold, 'pad');
-  for (let i = 0; i < 10; i++) {
-    const z = z0 + 0.75 + i * 0.9;
+  for (let i = 0; i < 12; i++) {
+    const z = z0 + 0.75 + i * 0.8;
     for (const s of [1, -1]) { cast.add(halfHole(s * W / 2, z, s > 0 ? -Math.PI : 0)); cast.add(padTop(s * (W / 2 - 0.28), z, 0.56, 0.5)); }
   }
-  for (let i = 0; i < 9; i++) { const x = -3.6 + i * 0.9; cast.add(halfHole(x, z0, -Math.PI / 2)); cast.add(padTop(x, z0 + 0.28, 0.5, 0.56)); }
+  for (let i = 0; i < 11; i++) { const x = -4.0 + i * 0.8; cast.add(halfHole(x, z0, -Math.PI / 2)); cast.add(padTop(x, z0 + 0.28, 0.5, 0.56)); }
   root.add(cast);
   // shield can: drawn nickel silver over the radio end, a laser-marked top
   const shW = 9.1, shZ0 = z0 + 0.35, shZ1 = zAnt - 0.25, shH = 1.15, yS = T + 0.04;

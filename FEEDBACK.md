@@ -20,28 +20,15 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 09:12 (Chicago).
+Last updated: 2026-11-04 09:58 (Chicago).
 
 ## Open with Brock
 
 - **Pushing:** this branch (claude/review-notes-rework) can't be pushed from the session. GitHub answers "not in this
   session's authorized repository set". Enabling the repo for Claude (claude.ai Settings → Connectors → GitHub) fixes
   it. Until then the work reaches him as the live link and a patch.
-- **Questions from the intro** (the deck uses the answer after "default" until Brock says otherwise):
-  - Does the 5.6 g board include the radio module, PMIC, antenna and USB-C? Default: yes, as the weight budget assumes.
-  - Keep the 3D shell on the cover and the close in 3D mode? Default: yes (2D mode shows none).
-  - Rank density among wireless mice only? Default: yes. The wired XA25 would rank first at 0.093 g/cm³.
-- **Questions from clicks:**
-  - With no side board, how is each full-size side switch held? It's drawn ending in a break line for now.
-  - The bridge tensioner's real width, span and crown thickness? The slide uses an example (10 mm wide, 8 mm span, 0.8 mm
-    plate, 0.4 mm crown) and says so; the bridge's advantage depends on the crown.
-  - Idea #59's "taller fulcrum": read as more free length for the arch. Right?
-  - The GT01's bottom housing is drawn from photos (Gateron publishes no drawing). Is its shape right?
-- **Questions from Shell A:**
-  - Where should the shell count as broken: 120 MPa (PP-C-20A's tensile strength) or 207 MPa (its bending strength)?
-    Default: 120 MPa, the more cautious.
-  - Is there a source for "the encoder is the number one failure point"? It's stated as Brock's claim now, next to the
-    Pulsar and igor'sLAB findings.
+- **Answered at 09:28 (F12):** the intro, clicks and Shell A questions. Only the tensioner's real dimensions are
+  still open (F12.5).
 - **SPDT:** F9.4 says "single pull double throw". The standard term is **single pole, double throw**, and the deck uses
   that.
 
@@ -233,7 +220,7 @@ Last updated: 2026-11-04 09:12 (Chicago).
 
 - **F6.1 DECIDED** Inserts: his 90 % is the chance the joint **feels different after it is unscrewed and screwed back**,
   for ABS. Carbon-filled is "a bit lower": 85 %, his estimate.
-- **F6.2 DECIDED** Density: use the Ninjutso Sora V2's L × W × H for Theseus, labelled a placeholder.
+- **F6.2 OVERRIDDEN by F12.11** Density: use the Ninjutso Sora V2's L × W × H for Theseus, labelled a placeholder.
 - **F6.3 DECIDED** FR4 arms: "All G Wolves mice, I even had the arms on an HTS Ultra break during shipping once".
 - **F6.4 DECIDED** The shell meter's baseline: a plain thin wall (no ribbing) at the same mass.
 
@@ -376,3 +363,45 @@ Last updated: 2026-11-04 09:12 (Chicago).
 - **F11.3 DECIDED** The seam: "it forks which it shouldn't, it has a center strip, which it shouldn't".
   - One split runs from the nose to the rear seam, with the wheel sitting in it, as on the Sora.
 - **F11.4 DECIDED** "No company has SPDT side buttons yet": "I've checked, state it".
+
+## F12. 2026-11-04 09:28 (answers, new notes, six reference photos of mouse bases)
+
+Answers to the intro and clicks questions:
+- **F12.1 DECIDED** "yes, that 5.6g includes everything": the board's 5.6 g includes the radio module, PMIC, antenna and
+  USB-C.
+- **F12.2 DECIDED** "the 3d mode should not show the shell cover". Asked whether that covers the close too: "Cover and
+  close". **DONE:** neither slide shows a shell in 3D mode.
+- **F12.3 DECIDED** "yes density should be ranked among wireless mice only, show the xa25 but shoe it not be taken into
+  account for be wired". **TODO (intro):** `ntr_densrank` shows the XA25, marked wired and not ranked.
+- **F12.4 DECIDED** "the shell holds the switched instead of a pcb". **TODO (clicks):** the full-size side switches are
+  held by the shell, not by a side board.
+- **F12.5 OPEN** The tensioner's real width, span and crown: "unknown yet". The slide keeps its labelled example.
+- **F12.6 DECIDED** "abandon idea #59". **TODO (clicks):** remove #59 (the taller fulcrum) everywhere.
+- **F12.7 TODO (clicks, r3d)** The GT01: "it looks fine besides the fact that everywhere you draw it looks like there's a 4
+  extra pin in the front and that's not right".
+
+New notes:
+- **F12.8 STANDING** "in the future use the question tool to ask me questions instead of doing it the old fashioned way"
+- **F12.9 TODO (clicks, r3d, shared key plan)** "right now the rear trigger cutouts have a sort of notch in both
+  visualizations instead of being an entirely straight line, which looks funny, also the straight light version needs
+  to go back future"
+  - Asked how far back: "To the smile's deepest point", level with the deepest point of the Sora V2's curved cutout.
+- **F12.10 TODO (new base-plate builder, after r3d)** "the optional bottom plate has big holes instead of tiny triangle
+  lattices, i've attached some reference designs for you to try to come up with your own design, i like the X style
+  designs, but they have to form triangles" / "the big cutouts have high walls on ther edges and are reinforced by
+  triangles on their underside" / "i want something that fits the arches and triangles, is as strung as possible, but
+  it also beautiful and geometric"
+  - Asked what fills the spaces between the struts: "a fine triangle lattice, but you can only see it looking from inside
+    the shell, on the outside it should look solid. also the bottom should be solid with no holes (even before mylar)
+    for a similar size of skates as the viper v4 pro uses".
+  - The references: ARYE FCC-1 FE, Xlite, Pulsar X2H, WLmouse Beast Mini, WLmouse Beast X V2, and two honeycomb bases.
+- **F12.11 DECIDED** "also the dimensions of theseus will be 119.3 x 62.4 x 39.9". Asked whether to resize the 3D shell:
+  "Use the numbers only".
+  - The scanned shape stays.
+  - Density and specs use 119.3 × 62.4 × 39.9 mm, which is 297.0 cm³ and 0.099 g/cm³.
+  - **DONE** in the shared constants (`THESEUS.dims`, `THS.dims`) and the intro's density slides.
+
+Answers to the Shell A questions:
+- **F12.12 DECIDED** "tensile strength": the shell counts as broken at 120 MPa.
+- **F12.13 DECIDED** "cite the finalmouse support staff" for "the encoder is the number one failure point". **DONE**
+  (`sealed`).

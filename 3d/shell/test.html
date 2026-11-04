@@ -20,6 +20,7 @@ try {
   const studio = createStudio({ canvas: document.querySelector('canvas'), theme, width: innerWidth, height: innerHeight });
   const view = Q.get('view') || 'hero';
   const shell = await buildShell({ variant: Q.get('variant') || 'theseus', colorway: Q.get('colorway') || 'black', theme,
+                                   ...(Q.has('glb') ? { glbUrl: new URL(Q.get('glb'), location.href).href } : {}),
                                    clickExaggeration: num('exag', 1), grain: num('grain', 1) });
   if (Q.get('shadows') === '0') { studio.renderer.shadowMap.enabled = false; studio.key.castShadow = false; }
   const holder = new THREE.Group(); holder.add(shell); studio.scene.add(holder);
@@ -46,6 +47,10 @@ try {
   applyView(studio.camera, SHELL_VIEWS[view] || SHELL_VIEWS.hero);
   if (view === 'bottom') studio.camera.up.set(0, 0, 1), studio.camera.lookAt(0, 0, 0);
   if (view === 'bottom') { studio.camera.position.set(0, 520, 0.001); studio.camera.lookAt(0, 20, 0); studio.camera.updateProjectionMatrix(); }
+  if (Q.has('cam')) {   // a camera of your own: cam=x,y,z&target=x,y,z[&up=x,y,z][&fov=deg]
+    const v = k => Q.get(k).split(',').map(Number);
+    applyView(studio.camera, { position: v('cam'), target: Q.has('target') ? v('target') : [0, 0, 0], up: Q.has('up') ? v('up') : [0, 1, 0], fov: num('fov', 20) });
+  }
   if (Q.get('hud') === '1') document.getElementById('hud').textContent = `${view} · ${Q.get('variant') || 'theseus'} · ${Q.get('colorway') || 'black'} · parts: ${shell.userData.partsSource}`;
   studio.render();
   if (Q.has('pick')) {   // debug: raycast pixel(s) "x,y;x,y" and log hit names

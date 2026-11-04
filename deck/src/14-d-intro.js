@@ -1,11 +1,13 @@
+/* Brock, F12.2: the cover and the close show no shell in 3D mode. Set true to bring the 3D shell back on both */
+const NTR_SHELL3D = false;
 /* ============================================================================================
    INTRO, the new slides (chapter code ntr):
      ntr_stats (Theseus, by the numbers: the bento, after the flagships)
      ntr_density (Density, not weight) · ntr_sizewt (The size–weight illusion) · ntr_densrank (Ranked by density),
      after the weight slides (zerograms, weightgap)
    Density is Pwnage's: grams over the volume of the box a mouse fits in, length × width × height, in g/cm³. Lower is
-   lighter for its size. Theseus's box is the Ninjutso Sora V2's published one (EloShapes, 119.2 × 62.0 × 37.7 mm): the
-   shape is a placeholder and the 3D model is built from the Sora V2 (Brock, 2026-11-04).
+   lighter for its size. Theseus's box is its own, 119.3 × 62.4 × 39.9 mm (Brock, F12.11); the drawn shape is still the
+   Sora-based model.
    ============================================================================================ */
 Object.assign(SRC, {
   ntrPwnVanta: { t: 'Pwnage, VANTA product page: total volume 288 cm³, total weight 49 g, density 0.17 g/cm³; "average gaming mouse density" 0.30 g/cm³; 120 × 61 × 39 mm. "Two mouses with the same weight can feel totally different ... because of the difference in density"', u: 'https://pwnage.com/products/vanta-gaming-mouse', n: 'A maker\'s figures for its own mice: claims. 120 × 61 × 39 mm is 285.5 cm³; Pwnage lists 288.' },
@@ -26,8 +28,8 @@ const NTR_DN = {
 const ntr_dname = m => NTR_DN.names[m.id] || exShort(m.name);
 /** a mouse's box: length × width × height as its maker lists them (EloShapes), and its volume in cm³ */
 function ntr_box(id) { const m = exMouse(id); if (!m) return null; const L = rv(m.length_mm), Wd = rv(m.width_mm), Hh = rv(m.height_mm); return L && Wd && Hh ? { L, W: Wd, H: Hh, v: L * Wd * Hh / 1000 } : null; }
-/** Theseus's box: the Sora V2's, published (a placeholder: the shape isn't final) */
-function ntr_thsBox() { return ntr_box('ninjutso-sora-v2') || { L: 119.2, W: 62.0, H: 37.7, v: 278.617 }; }
+/** Theseus's box: its own, 119.3 x 62.4 x 39.9 mm (Brock, F12.11). The drawn shape is still the Sora-based model */
+function ntr_thsBox() { const [L, W, H] = THESEUS.dims; return { L, W, H, v: L * W * H / 1000 }; }
 const ntr_thsRho = () => THESEUS.mass / ntr_thsBox().v;
 const ntr_rf = v => fmtN(v, 3);
 /** every wireless mouse with a box and a weight: { id, name, g, ev, box, v, rho }; o.measured keeps RTINGS-weighed ones
@@ -178,7 +180,7 @@ function ntr_productTile(t, t0, rect) {
 S({
   id: 'ntr_stats', ch: 'intro', theme: 'paper', title: 'Theseus, by the numbers', settle: 9, after: 'flagships', three: ['shell'],
   sfx: [[0.9, 'tick'], [1.0, 'tick'], [1.1, 'tick'], [1.2, 'tick'], [1.3, 'tick']],
-  src: ['ntrRtUlxPro', 'exRtings', 'exEloshapes', 'ntrSoraDim', 'exPiaknow', 'exNbcV4', 'nbcUlx', 'usbHs', 'ntrScan'],
+  src: ['ntrRtUlxPro', 'exRtings', 'exEloshapes', 'exPiaknow', 'exNbcV4', 'nbcUlx', 'usbHs', 'ntrScan'],
   draw: t => {
     header(t, 'Theseus, by the numbers');
     captions(t, [[0.6, 'Theseus, one number a tile. Under each, in yellow, the best shipping figure I could find, and whose it is.']]);
@@ -189,14 +191,14 @@ S({
       const r = cell(i % 3, Math.floor(i / 3)), t0 = 0.3 + order.indexOf(i) * 0.14;
       if (d.product) ntr_productTile(t, t0, r); else ntr_statTile(t, t0, r, d);
     });
-    source(t, 'Density: 29.31 g in the Sora V2\'s 119.2 × 62.0 × 37.7 mm box (the shape is a placeholder); next best: RTINGS\'s weight in its maker\'s box.', { t0: 2.4 });
+    source(t, 'Density: 29.31 g in Theseus\'s 119.3 × 62.4 × 39.9 mm box; next best: RTINGS\'s weight in its maker\'s box.', { t0: 2.4 });
   }
 });
 
 /* ============================== density 1: the definition, on the mouse's own box ============================== */
 S({
   id: 'ntr_density', ch: 'intro', theme: 'night', title: 'Density, not weight', settle: 10, after: 'weightgap', ideas: ['weight'],
-  src: ['ntrPwnTrinity', 'ntrPwnVanta', 'ntrSoraDim', 'ntrScan'],
+  src: ['ntrPwnTrinity', 'ntrPwnVanta', 'ntrScan'],
   draw: t => {
     header(t, 'Density, not weight');
     captions(t, [[0.6, 'Weight alone rewards a small mouse. Density says how much mouse you get for every gram.'],
@@ -223,7 +225,7 @@ S({
     /* visible edges */
     const vis = [[bW, bLW], [bLW, bL], [bW, tW], [bLW, tLW], [bL, tL], [t0_, tL], [tL, tLW], [tLW, tW], [tW, t0_]];
     vis.forEach(([p, q], i) => line(p[0], p[1], lerp(p[0], q[0], kE(i + 3)), lerp(p[1], q[1], kE(i + 3)), { color: C.ink, w: 1.8, alpha: 0.9 }));
-    /* the three dimensions, as published for the Sora V2 */
+    /* the three dimensions: Theseus's own (Brock, F12.11) */
     dim(t, 3.4, bW, bLW, 'L ' + fmtN(bx.L, 1) + ' mm', 46);
     dim(t, 3.6, bLW, bL, 'W ' + fmtN(bx.W, 1) + ' mm', 46);
     { const kh = ep(t, 3.8, 4.4, E.snap), xh = bW[0] - 44, yb = bW[1], yt = tW[1];
@@ -232,7 +234,7 @@ S({
         const ym = (yb + yt) / 2; line(xh, ym, xh, lerp(ym, yb, kh), { color: C.mute, w: 1.5 }); line(xh, ym, xh, lerp(ym, yt, kh), { color: C.mute, w: 1.5 });
         text('H ' + fmtN(bx.H, 1) + ' mm', xh - 16, ym + 8, { role: 'num', size: 22, weight: 700, color: C.ink, align: 'right', alpha: ep(t, 4.1, 4.5) });
       } }
-    rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: 'Sora V2 shape and box, a placeholder', role: 'label', size: 21, color: C.faint, gap: 16 }], LM, 318, { alpha: ep(t, 4.4, 5.0) });
+    rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: 'Theseus\'s box, 119.3 × 62.4 × 39.9 mm', role: 'label', size: 21, color: C.faint, gap: 16 }], LM, 318, { alpha: ep(t, 4.4, 5.0) });
     /* the sum, in the right column: mass over the box's volume */
     const fx = 1240, fw = RM - fx, a1 = ep(t, 4.2, 4.6), a2 = ep(t, 4.6, 5.0), a3 = ep(t, 5.2, 5.6);
     text('Mass', fx, 324, { role: 'label', size: 21, color: C.mute, alpha: a1 });
@@ -256,7 +258,7 @@ S({
 /* ============================== density 2: why it beats weight. Same grams, more mouse ============================== */
 S({
   id: 'ntr_sizewt', ch: 'intro', theme: 'paper', title: 'The size–weight illusion', settle: 10, after: 'ntr_density', ideas: ['weight'],
-  src: ['ntrSwi', 'ntrCharp', 'ntrPwnVanta', 'ntrX2f', 'ntrSoraDim', 'exEloshapes'],
+  src: ['ntrSwi', 'ntrCharp', 'ntrPwnVanta', 'ntrX2f', 'exEloshapes'],
   draw: t => {
     header(t, 'The size–weight illusion');
     const X2F = ntr_dens({ theseus: false }).find(r => r.id === 'pulsar-x2f-crazylight'), bx = ntr_thsBox(), rhoT = ntr_thsRho();
@@ -302,14 +304,14 @@ S({
       { t0: 6.3, a: 'Buckingham 2014', b: 'The best known of the weight illusions, and over a century of studies keep finding it.' },
       { t0: 6.8, a: 'Pwnage', b: '"Two mouses with the same weight can feel totally different."' }
     ]);
-    source(t, 'Weights: the X2F\'s is Pulsar\'s, Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is the Sora V2\'s, a placeholder.', { t0: 5.0, x: 720, maxW: RM - 720 });
+    source(t, 'Weights: the X2F\'s is Pulsar\'s, Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is 119.3 × 62.4 × 39.9 mm.', { t0: 5.0, x: 720, maxW: RM - 720 });
   }
 });
 
 /* ============================== density 3: the same mice ranked by weight, then by density ============================== */
 S({
   id: 'ntr_densrank', ch: 'intro', theme: 'night', title: 'Ranked by density', settle: 10, after: 'ntr_sizewt', ideas: ['weight'],
-  src: ['exRtings', 'exEloshapes', 'ntrX2f', 'ntrSoraDim', 'ntrPwnTrinity'],
+  src: ['exRtings', 'exEloshapes', 'ntrX2f', 'ntrPwnTrinity'],
   draw: t => {
     header(t, 'Ranked by density');
     const R = ntr_dens({ measured: true, keep: ['pulsar-x2f-crazylight'] });
@@ -349,6 +351,6 @@ S({
       const mv = r.rw - r.rd, ms = mv > 0 ? '▲' + mv : mv < 0 ? '▼' + (-mv) : '–';
       text(ms, RM, yb, { font: 'mono', size: 19, weight: strong ? 700 : 500, color: strong ? (mv > 0 ? C.ink : C.ink2) : C.faint, align: 'right', alpha: kr });
     });
-    source(t, 'Weights: RTINGS; the X2F\'s is Pulsar\'s. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is the Sora V2\'s, a placeholder. Left out: the ULX and the MCHOSE L7 Ultra.', { t0: 6.0 });
+    source(t, 'Weights: RTINGS; the X2F\'s is Pulsar\'s. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is 119.3 × 62.4 × 39.9 mm. Left out: the ULX and the MCHOSE L7 Ultra.', { t0: 6.0 });
   }
 });

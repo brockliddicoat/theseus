@@ -3,15 +3,15 @@
    → flat sides:
      shbArches    interwoven arches form triangles (replaces the old 'arches')      after shlLattice3d
      shbDome      geodesic domes: great circles make the triangles (Fuller, HI-SEAS)
-     shbPress     arch action against a flat plate: the force simulation
-     shbThrust    the thrust line: why a curve carries a press in compression
-     shbPerGram   thin curved shells are strong per gram
-     shbFibres    fibre alignment: continuous ribs keep the fibres along the load
-     shbFlow      fibres through a lattice node: the fluid simulation, sharp against filleted     after filletsize
-     shbGates     gate the melt along the arches
+     shbPress     arch action against a flat plate: the force simulation, the press ramped to the plate's break
+     shbThrust    the thrust line: Hooke's hanging chain, turned over; the press dragged off the crown
+     shbBend      the thrust cancels the bending moment (M = M0 - H y), and the stress through the depth
+     shbFibres    fibre alignment: continuous ribs keep the fibres along the load (the research)
+     shbFlow      melt through a lattice node: the fluid simulation, sharp against filleted     after filletsize
+     shbGates     gate the melt along the arches; weld lines
      shbMill      fillets make the mold easier to cut
      shbTol       a fillet loosens the tightest tolerance
-     shbSides     flatter sides need a thicker lattice (Newtonian shape analysis of the real section)
+     shbSides     the flatter low sides and the thumb rest: a thicker lattice band (the real section)
    Every model number is DERIVED and the slide names its model in a line. Theseus is C.hero (blue), the next best C.second,
    a problem C.bad; stress heat is heatCol. No colour is written as hex here. */
 
@@ -54,7 +54,7 @@ function shbLerpTab(tab, x) {
 /** a small mono figure label: number and sentence (the shell chapter's Fig. style) */
 function shbFig(t, t0, x, y, n, s, o = {}) {
   const a = ep(t, t0, t0 + 0.5) * (o.alpha == null ? 1 : o.alpha); if (a <= 0.003) return;
-  rich([{ s: 'Fig. ' + n, role: 'label', size: 20, color: C.faint }, { s, role: 'small', size: 25, weight: 500, color: C.mute, sentence: true, gap: 14 }], x, y, { alpha: a, align: o.align });
+  rich([{ s: 'Fig. ' + n, role: 'label', size: 20, color: C.faint }, { s, role: 'small', size: 25, weight: 560, color: C.mute, sentence: true, gap: 14 }], x, y, { alpha: a, align: o.align });
 }
 /** a numbered step in a column: a number in Theseus's gradient (or a colour), a label, a line of text. returns the height */
 function shbStep(t, t0, x, y, w, n, head, body, o = {}) {
@@ -68,7 +68,7 @@ function shbStep(t, t0, x, y, w, n, head, body, o = {}) {
 }
 /** a line of model or note text in a tile: small, muted, wrapped */
 function shbNote(t, t0, x, y, w, s, o = {}) {
-  return text(s, x, y, { role: 'small', size: o.size || 25, weight: o.weight || 500, color: o.color || C.mute, alpha: ep(t, t0, t0 + 0.5) * (o.alpha == null ? 1 : o.alpha), maxW: w, lh: 1.32, t: o.type ? t : undefined, t0: o.type ? t0 : undefined, cps: 130, align: o.align });
+  return text(s, x, y, { role: 'small', size: o.size || 25, weight: Math.max(560, o.weight || 560), color: o.color || C.mute, alpha: ep(t, t0, t0 + 0.5) * (o.alpha == null ? 1 : o.alpha), maxW: w, lh: 1.32, t: o.type ? t : undefined, t0: o.type ? t0 : undefined, cps: 130, align: o.align });
 }
 /** stroke a polyline of stage points */
 function shbPath(pts, col, w, a = 1, o = {}) {
@@ -91,6 +91,58 @@ function shbCam(o) {
   const P = p => { const x = p[0] - T[0], y = p[1] - T[1], z = p[2] - T[2], x1 = x * cy + z * sy, z1 = -x * sy + z * cy; return [o.cx + o.s * x1, o.cy - o.s * (y * cp - z1 * sp), y * sp + z1 * cp]; };
   P.view = [-sy * cp, sp, cy * cp];   /* toward the camera, in world axes */
   return P;
+}
+/** PP-C-20A's tensile strength, the one the whole chapter breaks at (Shell A's SHL_STR, from the Pyrofil datasheet) */
+const shbFt = () => (typeof SHL_STR !== 'undefined' ? SHL_STR.ft : 120);
+/** the first time in [a, b] at which fn(t) reaches v (fn rising) */
+function shbWhen(fn, v, a, b) { for (let i = 0; i < 40; i++) { const m = (a + b) / 2; if (fn(m) < v) a = m; else b = m; } return b; }
+/** the outline of a filleted lattice node in mm: arms at angles angs (rad), width w, length L, fillet radius r at every
+   corner between neighbouring arms (r = 0: the sharp corner). A closed polyline, counter-clockwise */
+function shbNodeOutline(angs, w, L, r, seg = 12) {
+  const out = [], n = angs.length, hw = w / 2;
+  for (let k = 0; k < n; k++) {
+    const a = angs[k], b = angs[(k + 1) % n]; let gap = b - a; if (gap <= 0) gap += TAU;
+    const ua = [Math.cos(a), Math.sin(a)], na = [-Math.sin(a), Math.cos(a)], ub = [Math.cos(b), Math.sin(b)], nb = [-Math.sin(b), Math.cos(b)];
+    const half = gap / 2, bis = [Math.cos(a + half), Math.sin(a + half)], dQ = hw / Math.sin(half), sQ = dQ * Math.cos(half);
+    out.push([ua[0] * L + na[0] * hw, ua[1] * L + na[1] * hw]);
+    if (r > 0.001) {
+      const tl = r / Math.tan(half), dO = dQ + r / Math.sin(half), O = [bis[0] * dO, bis[1] * dO];
+      const T1 = [ua[0] * (sQ + tl) + na[0] * hw, ua[1] * (sQ + tl) + na[1] * hw], T2 = [ub[0] * (sQ + tl) - nb[0] * hw, ub[1] * (sQ + tl) - nb[1] * hw];
+      const a1 = Math.atan2(T1[1] - O[1], T1[0] - O[0]), a2 = Math.atan2(T2[1] - O[1], T2[0] - O[0]);
+      let da = a2 - a1; while (da > Math.PI) da -= TAU; while (da < -Math.PI) da += TAU;
+      const mid = a1 + da / 2; if (Math.hypot(O[0] + Math.cos(mid) * r, O[1] + Math.sin(mid) * r) > dO) da = da > 0 ? da - TAU : da + TAU;
+      for (let q = 0; q <= seg; q++) { const an = a1 + da * q / seg; out.push([O[0] + Math.cos(an) * r, O[1] + Math.sin(an) * r]); }
+    } else out.push([bis[0] * dQ, bis[1] * dQ]);
+    out.push([ub[0] * L - nb[0] * hw, ub[1] * L - nb[1] * hw]);
+  }
+  return out;
+}
+/** fill a polyline of mm points through a mapping P */
+function shbFill(pts, P, fill, a = 1) { if (a <= 0.003) return; G.save(); G.globalAlpha = a; G.fillStyle = fill; G.beginPath(); pts.forEach((p, i) => { const q = P(p); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); }); G.closePath(); G.fill(); G.restore(); }
+/** a press pad sitting on a stage point (x, y = the surface), wpx wide, with an arrow from above; k = how hard (0..1) */
+function shbPad(x, y, wpx, k, a = 1, col) {
+  if (a <= 0.003) return; col = col || C.ink2;
+  rr(x - wpx / 2, y - 9, wpx, 7, 3, col, null, 0, a);
+  const L = 26 + 34 * clamp(k); arrow(x, y - 14 - L, x, y - 12, { color: col, w: 2 + 2.5 * clamp(k), hs: 14, alpha: a });
+}
+/** a horizontal gauge of the peak against the strength (frac = peak / strength): heat-coloured, red as it reaches the
+   strength, which is the red dashed tick at the right end; what is left of the track is the margin */
+function shbGauge(x, y, w, frac, a = 1) {
+  if (a <= 0.003) return; const h = 14, f = clamp(frac);
+  rr(x, y, w, h, h / 2, C.track, null, 0, a);
+  rr(x, y, Math.max(h, w * f), h, h / 2, heatCol(f), null, 0, a);
+  line(x + w, y - 9, x + w, y + h + 9, { color: C.bad, w: 2.5, dash: [5, 4], alpha: a });
+}
+/** a linear blend of solved frames of one model (the model is linear, so this is the frame under the blended load) */
+function shbBlend(rs, ws) {
+  const r0 = rs[0], nd = r0.d.length, ne = r0.N.length, d = new Float64Array(nd), N = [], M1 = [], M2 = [], sig = [];
+  for (let i = 0; i < nd; i++) { let v = 0; rs.forEach((r, q) => { v += r.d[i] * ws[q]; }); d[i] = v; }
+  for (let e = 0; e < ne; e++) {
+    let nn = 0, m1 = 0, m2 = 0; rs.forEach((r, q) => { nn += r.N[e] * ws[q]; m1 += r.M1[e] * ws[q]; m2 += r.M2[e] * ws[q]; });
+    const el = r0.model.els[e], A0 = el.w * el.h, I0 = el.w * el.h * el.h * el.h / 12;
+    N.push(nn); M1.push(m1); M2.push(m2); sig.push(Math.abs(nn) / A0 + Math.max(Math.abs(m1), Math.abs(m2)) * el.h / 2 / I0);
+  }
+  return { d, N, M1, M2, sig, smax: Math.max(...sig), model: r0.model, L: r0.L };
 }
 
 /* ============================== the dome: Theseus's top as a height field, and three families of arches over it ==============================
@@ -156,21 +208,35 @@ const SHB_LAT = (function () {
 })();
 
 /* ============================== 1. interwoven arches form triangles (#53, #75; Brock: "interwoven arches forming triangles") ============================== */
+/** one node of the lattice, close up: three continuous ribs crossing, filleted at all six corners (F9.27). (cx, cy) its
+   centre, s px per mm; the three lines are drawn in the three blues the dome uses, so each reads as one line through */
+function shbNodeClose(t, t0, cx, cy, s, o = {}) {
+  const a = ep(t, t0, t0 + 0.6) * (o.alpha == null ? 1 : o.alpha); if (a <= 0.003) return;
+  const w = 1.0, r = 0.6, L = o.L || 3.6, angs = [0, 1, 2, 3, 4, 5].map(k => k * Math.PI / 3 + (o.rot || 0));
+  const P = p => [cx + p[0] * s, cy - p[1] * s], kf = ep(t, t0 + 0.5, t0 + 1.4, E.io3);
+  G.save(); G.beginPath(); G.arc(cx, cy, L * s * 0.98, 0, TAU); G.clip();
+  shbFill(shbNodeOutline(angs, w, L + 1, r * kf), P, C.hero, a);
+  /* each family's centre line, continuous through the node */
+  [0, 1, 2].forEach(f => { const an = angs[f], dx = Math.cos(an) * (L + 1), dy = Math.sin(an) * (L + 1); shbPath([P([-dx, -dy]), P([dx, dy])], C.panel, 1.6, a * 0.5 * kf, { dash: [7, 7], cap: 'butt' }); });
+  G.restore();
+  /* the arms fade into the tile */
+  const g = G.createRadialGradient(cx, cy, L * s * 0.55, cx, cy, L * s); g.addColorStop(0, rgba(C.panel, 0)); g.addColorStop(1, rgba(C.panel, 1));
+  G.save(); G.globalAlpha = a; G.fillStyle = g; G.beginPath(); G.arc(cx, cy, L * s + 1, 0, TAU); G.fill(); G.restore();
+  return P;
+}
 S({
   id: 'shbArches', ch: 'shell', theme: 'paper', title: 'Interwoven arches form triangles', settle: 11, replaces: 'arches', after: 'shlLattice3d',
   ideas: [53, 75], src: ['shlDoc', 'shlLattice', 'shbModel'],
   draw: t => {
     header(t, 'Interwoven arches form triangles');
-    captions(t, [[0.6, 'My lattice isn\'t triangles bent into arches. It is continuous arches, rim to rim, that cross each other.'], [3.4, 'A second family of arches crosses the first at 60°. Then a third.'], [6.2, 'Where three arches cross, the crossings close into triangles. The triangles come out of the arches.'], [8.8, 'Every node is three continuous ribs passing through each other: no rib starts or stops there.']]);
-    const L = SHB_LAT, tx = LM, ty = LAY.top + 8, tw0 = 1160, th0 = 680;
+    captions(t, [[0.6, 'My lattice isn\'t triangles bent into arches. It is continuous arches, rim to rim, that cross each other.'], [3.4, 'A second family of arches crosses the first at 60°. Then a third.'], [6.2, 'Where three arches cross, the crossings close into triangles. The triangles come out of the arches.'], [8.8, 'Every node is three continuous ribs passing through each other, filleted at all six corners.']]);
+    const L = SHB_LAT, tx = LM, ty = 280, tw0 = 1120, th0 = 640;
     demoWindow(tx, ty, tw0, th0, tileA(t, 0.25, 0));
-    /* the camera: a slow drift, then a push in on the crossing at the crown */
-    const kz = ep(t, 8.6, 10.6, E.cam), drift = 0.05 * Math.sin(t * 0.22);
-    const nodeW = L.node, cam = shbCam({ yaw: -0.62 + drift + 0.1 * kz, pitch: lerp(0.62, 0.78, kz), s: lerp(7.6, 19, kz), cx: tx + tw0 * 0.5, cy: ty + th0 * lerp(0.56, 0.52, kz), T: [lerp(0, nodeW[0], kz), lerp(14, nodeW[1], kz), lerp(-2, nodeW[2], kz)] });
+    /* the camera: a slow drift and a gentle push toward the crown */
+    const kz = ep(t, 0.4, 10.5, E.cam), drift = 0.05 * Math.sin(t * 0.22);
+    const nodeW = L.node, cam = shbCam({ yaw: -0.62 + drift + 0.06 * kz, pitch: lerp(0.6, 0.68, kz), s: lerp(6.9, 7.6, kz), cx: tx + tw0 * 0.47, cy: ty + th0 * 0.43, T: [lerp(0, nodeW[0], kz * 0.3), lerp(12, nodeW[1] * 0.4, kz * 0.3), lerp(-2, nodeW[2], kz * 0.3)] });
     const vis = n => n[0] * cam.view[0] + n[1] * cam.view[1] + n[2] * cam.view[2];
     clipped(tx + 2, ty + 2, tw0 - 4, th0 - 4, () => {
-      const nodeP = cam(nodeW);
-      glowField(t, nodeP[0], nodeP[1], 420 + 160 * kz, { a: ep(t, 0.6, 2.0) * 0.9 });
       /* the shell's outline: rim and widest line, quiet */
       const ka = ep(t, 0.5, 1.6);
       shbPath(L.wide.map(cam), C.faint, 1.5, ka * 0.55);
@@ -179,45 +245,39 @@ S({
       L.tris.forEach((T, i) => {
         const k = ep(t, 6.3 + i * 0.012, 6.9 + i * 0.012); if (k <= 0.003) return;
         const v = vis(T.n); if (v < 0.05) return;
-        const P = T.ring.map(cam); G.save(); G.globalAlpha = k * clamp(v * 2.2) * 0.16; G.fillStyle = C.hero; G.beginPath(); P.forEach((p, q) => q ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.closePath(); G.fill(); G.restore();
+        const P = T.ring.map(cam); G.save(); G.globalAlpha = k * clamp(v * 2.2) * 0.14; G.fillStyle = C.hero; G.beginPath(); P.forEach((p, q) => q ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.closePath(); G.fill(); G.restore();
       });
       /* the arches: three families, each drawn rim to rim, the central ones first */
       const fam0 = [1.0, 3.4, 5.6];
       L.lines.forEach(ln => {
         const order = Math.abs(ln.k), t0 = fam0[ln.fam] + order * 0.16, k = ep(t, t0, t0 + 1.1, E.io3); if (k <= 0.003) return;
-        const col = C.heroGrad[ln.fam], P = ln.pts.map(cam), w = lerp(2.6, 4.2, kz);
-        /* split into visible and hidden runs by the surface normal (the side drops count as visible on the near side) */
+        const col = C.heroGrad[ln.fam], P = ln.pts.map(cam), w = 3.0;
         const part = shbPart(P, k), nTop = ln.n.length, off = (ln.pts.length - nTop) / 2;
         let run = [], runVis = null;
         const flush = () => { if (run.length > 1) shbPath(run, col, runVis ? w : w * 0.6, runVis ? 0.95 : 0.16); };
         part.forEach((p, q) => {
-          const ti = Math.min(nTop - 1, Math.max(0, q - off)), v = q < off || q >= off + nTop ? (p[0] > 0 ? 1 : 1) * (ln.pts[Math.min(q, ln.pts.length - 1)][0] * cam.view[0] > 0 ? 1 : -1) : vis(ln.n[ti]);
+          const ti = Math.min(nTop - 1, Math.max(0, q - off)), v = q < off || q >= off + nTop ? (ln.pts[Math.min(q, ln.pts.length - 1)][0] * cam.view[0] > 0 ? 1 : -1) : vis(ln.n[ti]);
           const on = v > 0.02; if (runVis === null) runVis = on;
           if (on !== runVis) { run.push(p); flush(); run = [p]; runVis = on; } else run.push(p);
         });
         flush();
-        /* a light runs along a fresh arch as it is drawn */
-        if (k < 1) { const tip = part[part.length - 1]; if (tip) glow(tip[0], tip[1], 16, col, 0.5 * (1 - k)); }
+        if (k < 1) { const tip = part[part.length - 1]; if (tip) glow(tip[0], tip[1], 14, col, 0.45 * (1 - k)); }
       });
-      /* the crossing at the crown: three continuous lines, six ribs */
-      const kn = ep(t, 9.4, 10.2);
-      if (kn > 0.003) {
-        circle(nodeP[0], nodeP[1], 12 + 30 * (1 - kn), { color: C.hero, w: 2, alpha: kn * 0.85 });
-        circle(nodeP[0], nodeP[1], 6, { fill: C.hero, alpha: kn });
-      }
+      /* the crossing at the crown: the node the close-up shows */
+      const kn = ep(t, 8.8, 9.6), nodeP = cam(nodeW);
+      if (kn > 0.003) { circle(nodeP[0], nodeP[1], 14 + 26 * (1 - kn), { color: C.ink, w: 2, alpha: kn * 0.8 }); circle(nodeP[0], nodeP[1], 5, { fill: C.ink, alpha: kn }); }
     });
-    if (ep(t, 9.6, 10.2) > 0.003) {
-      const nodeP = cam(nodeW), lx = Math.min(tx + tw0 - 360, nodeP[0] + 60), ly = nodeP[1] - 70;
-      callout(t, 9.6, [nodeP[0] + 6, nodeP[1] - 4], 'Three arches cross: six ribs, one node', { to: [lx + 10, ly], side: 'r', prose: true, color: C.hero, tcolor: C.ink, maxW: 300 });
-    }
-    shbFig(t, 1.2, tx + 32, ty + th0 - 30, '01', 'The Theseus top, from the front left: three families of arches, 12.5 mm apart');
-    /* the column: three steps, then what the word means */
-    const cx = tx + tw0 + 48, cw = RM - cx;
-    let yy = ty + 16;
-    yy += shbStep(t, 1.0, cx, yy, cw, 1, 'One family of arches', 'Continuous ribs, rim to rim, over the dome.', { swatch: C.heroGrad[0] }) + 30;
-    yy += shbStep(t, 3.4, cx, yy, cw, 2, 'A second, at 60°', 'It crosses the first family at every rib.', { swatch: C.heroGrad[1] }) + 30;
-    yy += shbStep(t, 5.6, cx, yy, cw, 3, 'A third, at 120°', 'Where all three cross, triangles close.', { swatch: C.heroGrad[2] }) + 40;
-    glossBox(t, 7.2, cx, Math.max(yy, ty + 430), cw, 'Interwoven arches', 'Continuous arches that cross one another. A triangle is three arches crossing; no strut begins or ends at a node.');
+    shbFig(t, 1.2, tx + 32, ty + th0 - 32, '01', 'The Theseus top from the front left: three families of arches, 12.5 mm apart');
+    /* the column: three steps, then the node close up */
+    const cx = tx + tw0 + 40, cw = RM - cx;
+    shbStep(t, 1.0, cx, ty + 16, cw, 1, 'One family of arches', 'Continuous ribs, rim to rim.', { swatch: C.heroGrad[0] });
+    shbStep(t, 3.4, cx, ty + 132, cw, 2, 'A second, at 60°', 'It crosses the first at every rib.', { swatch: C.heroGrad[1] });
+    shbStep(t, 5.6, cx, ty + 248, cw, 3, 'A third, at 120°', 'Where all three cross, triangles close.', { swatch: C.heroGrad[2] });
+    const ny = 640, nh = 280, an = tileA(t, 8.6, 0);
+    demoWindow(cx, ny, cw, nh, an);
+    shbNodeClose(t, 8.9, cx + 150, ny + nh / 2, 30, { alpha: an, rot: Math.PI / 6 });
+    text('The node at the crown', cx + 300, ny + 66, { role: 'label', size: 21, color: C.ink, alpha: an });
+    shbNote(t, 9.2, cx + 300, ny + 108, cw - 332, 'Three ribs run straight through it. No rib starts or stops; a 0.6 mm fillet rounds every corner.', { alpha: an, color: C.ink2 });
   }
 });
 
@@ -283,14 +343,13 @@ S({
   ideas: [75, 53], src: ['shbFuller', 'shbHiseasNasa', 'shbHiseas', 'shbHiseasWiki'],
   draw: t => {
     header(t, 'Geodesic domes: great circles make the triangles');
-    captions(t, [[0.6, 'NASA ran five long Mars simulations in HI-SEAS, on a Hawaiian volcano. The habitat is a geodesic dome.'], [3.2, 'Fuller didn\'t start from triangles. He ran great circles round a sphere and let them cross, three ways.'], [6.8, 'Same in my shell: continuous arches over the dome, and the triangles where they cross.']]);
-    const D = SHB_GEO, tx = LM, ty = LAY.top + 8, tw0 = 1080, th0 = 680;
+    captions(t, [[0.6, 'NASA ran five long Mars simulations in HI-SEAS, on a Hawaiian volcano. The crews lived in a geodesic dome.'], [3.2, 'Fuller didn\'t start from triangles. He ran great circles round a sphere and let them cross, three ways.'], [6.8, 'My shell does the same: continuous arches over the dome, and triangles where they cross.']]);
+    const D = SHB_GEO, tx = LM, ty = 280, tw0 = 1080, th0 = 640;
     demoWindow(tx, ty, tw0, th0, tileA(t, 0.25, 0));
-    const cx = tx + tw0 / 2, gy = ty + th0 - 150, R = 330 * lerp(0.92, 1.0, ep(t, 0.3, 9, E.cam)), yaw = 0.35 + t * 0.07, pitch = 0.2;
+    const cx = tx + tw0 / 2, gy = ty + th0 - 160, R = 320 * lerp(0.94, 1.0, ep(t, 0.3, 9, E.cam)), yaw = 0.35 + t * 0.07, pitch = 0.2;
     const cy0 = Math.cos(yaw), sy0 = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
     const P = p => { const x1 = p[0] * cy0 + p[2] * sy0, z1 = -p[0] * sy0 + p[2] * cy0; return [cx + R * x1, gy - R * (p[1] * cp - z1 * sp), p[1] * sp + z1 * cp]; };
     clipped(tx + 2, ty + 2, tw0 - 4, th0 - 4, () => {
-      glowField(t, cx, gy - R * 0.45, 520, { a: ep(t, 0.5, 2.2) * 0.8, cols: [acc(), C.heroGrad[1], acc()] });
       /* the ground: the dome's footing ring and a horizon */
       const kg = ep(t, 0.4, 1.4);
       const ring = []; for (let q = 0; q <= 72; q++) { const a = q / 72 * TAU; ring.push(P([Math.cos(a), 0, Math.sin(a)])); }
@@ -302,7 +361,7 @@ S({
       D.edges.forEach(([a, b]) => {
         const pa = P(D.pts[a]), pb = P(D.pts[b]), hgt = (D.pts[a][1] + D.pts[b][1]) / 2, k = clamp((ks * 1.3 - (1 - hgt) * 0.3) / 1.0); if (k <= 0) return;
         const front = (pa[2] + pb[2]) / 2 > -0.05;
-        G.globalAlpha = k * (front ? 0.55 : 0.14); G.strokeStyle = C.ink2; G.lineWidth = front ? 1.8 : 1.2;
+        G.globalAlpha = k * (front ? 0.5 : 0.13); G.strokeStyle = C.ink2; G.lineWidth = front ? 1.8 : 1.2;
         G.beginPath(); G.moveTo(pa[0], pa[1]); G.lineTo(pb[0], pb[1]); G.stroke();
       });
       G.restore();
@@ -316,14 +375,263 @@ S({
         const flush = () => { if (run.length > 1) shbPath(run, acc(), f0 ? 3.2 : 1.6, f0 ? 0.95 : 0.25); };
         pts.forEach((p, q) => { const f = frontF[q]; if (f0 === null) f0 = f; if (f !== f0) { run.push(p); flush(); run = [p]; f0 = f; } else run.push(p); });
         flush();
-        if (k < 1 && pts.length) { const tip = pts[pts.length - 1]; glow(tip[0], tip[1], 14, acc(), 0.6 * (1 - k)); }
+        if (k < 1 && pts.length) { const tip = pts[pts.length - 1]; glow(tip[0], tip[1], 14, acc(), 0.5 * (1 - k)); }
       });
     });
-    shbFig(t, 1.0, tx + 32, ty + th0 - 30, '02', 'A geodesic dome, drawn: struts chained into lines that run straight through each node');
-    /* the column: the dome NASA used, and Fuller's own words */
-    const x2 = tx + tw0 + 48, w2 = RM - x2, B = bento(x2, ty, w2, 300, 2, 1, 24);
-    statTile(t, 1.2, B(0, 0), { value: '11', unit: 'm', label: 'HI-SEAS dome, across', ev: 'datasheet', by: 'NASA, Wikipedia' });
+    shbFig(t, 1.0, tx + 32, ty + th0 - 32, '02', 'A geodesic dome: its struts chained into lines that run straight through each node');
+    /* the column: the dome NASA's crews lived in, and Fuller's own words */
+    const x2 = tx + tw0 + 40, w2 = RM - x2, B = bento(x2, ty, w2, 320, 2, 1);
+    statTile(t, 1.2, B(0, 0), { value: '5', label: 'Mars missions, in a dome', ev: 'measured', by: 'HI-SEAS' });
     statTile(t, 1.4, B(1, 0), { value: '7', unit: 'lb', label: 'carried per ounce of dome', ev: 'claim', by: 'Fuller 1954' });
-    sourceBox(t, 3.4, x2, ty + 324, w2, 'Fuller, US 2,682,235', 'A frame "in a geodesic pattern of approximate great circle arcs intersecting to form a three-way grid". The grid gives "substantially uniform stressing of all members".', { kind: 'claim', label: 'Patent', value: 'Fuller, 1954' });
+    sourceBox(t, 3.4, x2, ty + 360, w2, 'Fuller 1954', 'His patent: a frame "in a geodesic pattern of approximate great circle arcs intersecting to form a three-way grid", which gives "substantially uniform stressing of all members".');
+  }
+});
+
+/* ============================== the arch models: a flat plate and an arch, same span, same grams, same press ==============================
+   2D frames (07-sim.js), a 10 mm strip of PP-C-20A: 60 mm across (a mouse's width), pinned feet. The flat plate is 0.9 mm
+   thick; the arch is a parabola with a 20 mm rise, thinned so its 60 elements weigh the same (0.55 g). The press is 10 N
+   over a 10 mm pad (a fingertip), or 10 N spread evenly over the span. Every number the slides print comes from these. */
+const SHB_A = { span: 60, rise: 20, h0: 0.9, w: 10, n: 60, P: 10, pad: 10 };
+function shbArchModel(kind, load, xc) {
+  const A = SHB_A, pts = [];
+  for (let i = 0; i <= A.n; i++) { const x = -A.span / 2 + A.span * i / A.n; pts.push([x, kind === 'flat' ? 0 : A.rise * (1 - Math.pow(2 * x / A.span, 2))]); }
+  let L = 0; for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+  const h = kind === 'flat' ? A.h0 : A.h0 * A.span / L, mat = SIM_MAT.ppcf, nodes = [], c = feChain(nodes, pts, { w: A.w, h, E: mat.E, rho: mat.rho }), loads = {};
+  if (load === 'uni') for (let i = 0; i <= A.n; i++) loads[i] = [0, -A.P * (i === 0 || i === A.n ? 0.5 : 1) / A.n, 0];
+  else { const ids = []; for (let i = 0; i <= A.n; i++) if (Math.abs(pts[i][0] - xc) <= A.pad / 2 + 1e-9) ids.push(i); ids.forEach(i => { loads[i] = [0, -A.P / ids.length, 0]; }); }
+  return { nodes, els: c.els, fix: { 0: 'xy', [A.n]: 'xy' }, loads, h, kind, mid: A.n / 2 };
+}
+const shbArch = (kind, load = 'pad', xc = 0) => simSolve('shbA:' + kind + ':' + load + ':' + xc, () => shbArchModel(kind, load, xc));
+/** the arch with the pad anywhere from −24 to 24 mm: a blend of the two nearest solves (2 mm apart) */
+function shbArchAt(xc) { const u = clamp((xc + 24) / 2, 0, 24), i = Math.min(23, Math.floor(u)), f = u - i; return shbBlend([shbArch('para', 'pad', -24 + 2 * i), shbArch('para', 'pad', -22 + 2 * i)], [1 - f, f]); }
+/** the stage point on the bent arch at x (mm), its deflection drawn sc× real */
+function shbOnArch(r, P, x, sc) { const m = r.model, u = clamp((x + SHB_A.span / 2) / SHB_A.span * SHB_A.n, 0, SHB_A.n), i = Math.min(SHB_A.n - 1, Math.floor(u)), f = u - i, q = j => [m.nodes[j][0] + r.d[j * 3] * sc, m.nodes[j][1] + r.d[j * 3 + 1] * sc], a = q(i), b = q(i + 1); return P([lerp(a[0], b[0], f), lerp(a[1], b[1], f)]); }
+/** the arch's thrust at its feet: the axial force in its crown element, which lies flat */
+const shbThrustH = r => -r.N[SHB_A.n / 2];
+/** the thrust line of a solved arch: each element's centre moved out along its normal by e = M / |N| (mm) */
+function shbThrustLine(r) {
+  const m = r.model, out = [];
+  m.els.forEach((el, e) => {
+    const [x1, y1] = m.nodes[el.i], [x2, y2] = m.nodes[el.j], L = Math.hypot(x2 - x1, y2 - y1), nx = -(y2 - y1) / L, ny = (x2 - x1) / L;
+    const Mm = (r.M1[e] + r.M2[e]) / 2, ex = Math.abs(r.N[e]) > 1e-6 ? Mm / Math.abs(r.N[e]) : 0;
+    out.push([(x1 + x2) / 2 + nx * ex, (y1 + y2) / 2 + ny * ex, ex, el.h]);
+  });
+  out.unshift([m.nodes[0][0], m.nodes[0][1], 0, m.els[0].h]); out.push([m.nodes[m.nodes.length - 1][0], m.nodes[m.nodes.length - 1][1], 0, m.els[0].h]);
+  return out;
+}
+const SHB_MODEL_LINE = '2D frames, a 10 mm strip of PP-C-20A (13.5 GPa), 60 mm across on pinned feet, the same 0.55 g each; the press over a 10 mm pad.';
+
+/* ============================== 3. arch action vs a flat plate (Brock: "an elaborate and in depth force simulation ... comparison to flat planes") ==============================
+   the pointer drags the press up to 10 N and holds it, then on: the plate cracks at its peak (120 MPa, the chapter's
+   breaking stress), the arch carries on to its own. Flex drawn 2× real for both, so the comparison stays honest. */
+S({
+  id: 'shbPress', ch: 'shell', theme: 'paper', title: 'Arch action vs a flat plate', settle: 10.6, after: 'shbDome',
+  ideas: [53, 75], src: ['shbModel', 'shlPyrofil', 'shlDoc'],
+  draw: t => {
+    const A = SHB_A, RF = shbArch('flat'), RA = shbArch('para'), ft = shbFt(), mid = A.n / 2;
+    const pkF = RF.smax, pkA = RA.smax, dF = -RF.d[mid * 3 + 1], dA = -RA.d[mid * 3 + 1], brkF = ft / pkF * A.P, brkA = ft / pkA * A.P;
+    header(t, 'Arch action vs a flat plate');
+    captions(t, [[0.6, 'Same span, same grams, same press. A flat plate can only carry it by bending. An arch turns it into compression along its curve.'],
+      [4.4, 'At 10 N the plate gives ' + fmtN(dF, 1) + ' mm and peaks at ' + fmtN(pkF, 0) + ' MPa. The arch gives ' + fmtN(dA, 2) + ' mm and peaks at ' + fmtN(pkA, 0) + ' MPa.'],
+      [7.2, 'Press on. The plate cracks at ' + fmtN(brkF, 0) + ' N. The arch holds to ' + fmtN(brkA, 0) + ' N, on the same grams.']]);
+    const Fof = u => u < 1.9 ? 0 : u < 4.0 ? A.P * ep(u, 1.9, 4.0, E.io3) : u < 7.0 ? A.P : lerp(A.P, brkA, ep(u, 7.0, 9.8, E.io3));
+    const F = Fof(t), tB = shbWhen(Fof, brkF, 7.0, 9.8), brokeF = t >= tB, kc = ep(t, tB, tB + 0.5);
+    const x0 = LM, y0 = 280, w0 = 1760, h0 = 640, a0 = tileA(t, 0.3, 0);
+    demoWindow(x0, y0, w0, h0, a0);
+    const s = 9, by = 664, cxF = 520, cxA = 1400, PF = p => [cxF + p[0] * s, by - p[1] * s], PA = p => [cxA + p[0] * s, by - p[1] * s];
+    /* the two halves' names */
+    const aL = ep(t, 0.6, 1.1) * a0;
+    text('A flat plate', x0 + 32, y0 + 56, { role: 'label', size: 22, color: C.ink, alpha: aL });
+    text(fmtN(A.h0, 2) + ' mm thick', x0 + 32, y0 + 90, { role: 'small', size: 25, color: C.mute, alpha: aL });
+    text('An arch', x0 + w0 - 32, y0 + 56, { role: 'label', size: 22, color: C.ink, align: 'right', alpha: aL });
+    text(fmtN(RA.model.h, 2) + ' mm thick, ' + A.rise + ' mm rise', x0 + w0 - 32, y0 + 90, { role: 'small', size: 25, color: C.mute, align: 'right', alpha: aL });
+    /* the press: a slider the pointer drags */
+    const aS = ep(t, 0.8, 1.3) * a0, sx0 = 780, sx1 = 1140, sy = y0 + 96, Fmax = 50, kx = f => sx0 + (sx1 - sx0) * clamp(f / Fmax);
+    rich([{ s: 'Press', role: 'label', size: 21, color: C.mute }, { s: fmtN(F, 0), font: 'disp', size: 44, weight: 800, color: C.ink, tnum: true, gap: 14 }, { s: 'N', role: 'label', size: 22, color: C.mute, gap: 6, caps: false }], 960, y0 + 58, { align: 'center', alpha: aS });
+    rr(sx0, sy - 3, sx1 - sx0, 6, 3, C.track, null, 0, aS); rr(sx0, sy - 3, Math.max(6, kx(F) - sx0), 6, 3, C.ink2, null, 0, aS);
+    text('0', sx0, sy + 34, { role: 'tick', color: C.faint, align: 'center', alpha: aS }); text(Fmax + ' N', sx1, sy + 34, { role: 'tick', color: C.faint, align: 'center', alpha: aS });
+    circle(kx(F), sy, 11, { fill: C.panel, color: C.ink, w: 2.5, alpha: aS });
+    /* the vocabulary, over the plate's empty sky */
+    glossBox(t, 1.4, x0 + 32, y0 + 136, 560, 'Arch action', 'A curve turns a press into compression along itself and pushes out at its feet. A flat plate can only bend.');
+    /* the frames: the plate stops at its break, cracked; the arch carries on */
+    const kF = Math.min(F, brkF) / A.P, kA = F / A.P, aF = ep(t, 0.9, 1.5) * a0, aA = ep(t, 1.1, 1.7) * a0;
+    feDraw(RF, PF, { scale: 2, load: kF, smax: ft, w: s, alpha: aF * (1 - 0.45 * kc), seg: 8 });
+    feDraw(RA, PA, { scale: 2, load: kA, smax: ft, w: s, alpha: aA, seg: 8 });
+    feFlow(RA, PA, t, { scale: 2, load: kA, alpha: aA * 0.9 });
+    for (const [P, a] of [[PF, aF], [PA, aA]]) { feSupport(P([-A.span / 2, 0]), 'pin', { alpha: a }); feSupport(P([A.span / 2, 0]), 'pin', { alpha: a }); }
+    const topF = PF([0, RF.d[mid * 3 + 1] * 2 * kF]), topA = PA([0, A.rise + RA.d[mid * 3 + 1] * 2 * kA]);
+    shbPad(topF[0], topF[1] - A.h0 * s / 2, A.pad * s, F / Fmax, aF * (1 - kc));
+    shbPad(topA[0], topA[1] - RA.model.h * s / 2, A.pad * s, F / Fmax, aA);
+    if (kc > 0.003) { const yb = topF[1] + A.h0 * s / 2 + 2; shbPath([[topF[0] + 1, yb], [topF[0] - 4, yb - 4], [topF[0] + 3, yb - 8], [topF[0] - 2, yb - 13]], C.bad, 3, kc * aF); }
+    /* the pointer drags the press */
+    const pA = ep(t, 1.0, 1.4) * (1 - ep(t, 10.0, 10.4)) * a0, kp = ep(t, 1.0, 1.8, E.cam), pk = [kx(0) + 3, sy + 3];
+    cursorPtr(t < 1.8 ? lerp(960, pk[0], kp) : kx(F) + 3, t < 1.8 ? lerp(y0 + 330, pk[1], kp) : pk[1], { a: pA, press: t > 1.8 && t < 2.3 ? prog(t, 1.8, 2.3) : 0, grab: t >= 1.8 });
+    /* the readouts: flex, peak, and the peak against the strength */
+    const ry = by + 166;
+    [[RF, cxF, kF, brokeF, 'flat'], [RA, cxA, kA, false, 'arch']].forEach(([r, cx, k, broke, nm]) => {
+      const a = ep(t, 1.6, 2.1) * a0, pk = r.smax * k, fl = -r.d[mid * 3 + 1] * k, end = nm === 'arch' && t >= 9.75;
+      rich([{ s: 'Flex', role: 'label', size: 20, color: C.mute }, { s: fmtN(fl, 2), font: 'disp', size: 34, weight: 800, color: C.ink, tnum: true, gap: 12 }, { s: 'mm', role: 'label', size: 20, color: C.mute, caps: false, gap: 6 }], cx - 270, ry, { alpha: a });
+      rich([{ s: 'Peak', role: 'label', size: 20, color: C.mute }, { s: fmtN(pk, 0), font: 'disp', size: 34, weight: 800, color: broke || end ? C.bad : C.ink, tnum: true, gap: 12 }, { s: 'MPa', role: 'label', size: 20, color: C.mute, caps: false, gap: 6 }], cx + 40, ry, { alpha: a });
+      shbGauge(cx - 270, ry + 22, 540, pk / ft, a);
+      text(broke ? 'Cracked at ' + fmtN(brkF, 0) + ' N' : end ? 'Holds to ' + fmtN(brkA, 0) + ' N' : 'Margin ' + Math.round((1 - pk / ft) * 100) + '%', cx - 270, ry + 70, { role: 'label', size: 19, color: broke ? C.bad : end ? C.heroText : C.ink2, alpha: a });
+      text('Breaks at ' + ft + ' MPa', cx + 270, ry + 70, { role: 'label', size: 19, color: C.bad, align: 'right', alpha: a });
+    });
+    /* what it buys, between the two */
+    const k1 = ep(t, 4.6, 5.2), k2 = ep(t, 5.0, 5.6);
+    if (k1 > 0.003) { rich([{ s: fmtN(dF / dA, 0), font: 'disp', size: 92, weight: 800, grad: C.heroGrad, color: C.heroText, tnum: true, count: [4.6, 0.9] }, { s: '×', font: 'disp', size: 44, weight: 700, grad: C.heroGrad, color: C.heroText, gap: 4 }], 960, by - 120, { align: 'center', alpha: k1, t }); text('stiffer', 960, by - 80, { role: 'small', size: 25, color: C.ink2, align: 'center', alpha: k1 }); }
+    if (k2 > 0.003) { rich([{ s: fmtN(pkF / pkA, 1), font: 'disp', size: 92, weight: 800, grad: C.heroGrad, color: C.heroText, tnum: true, count: [5.0, 0.9] }, { s: '×', font: 'disp', size: 44, weight: 700, grad: C.heroGrad, color: C.heroText, gap: 4 }], 960, by + 46, { align: 'center', alpha: k2, t }); text('lower peak', 960, by + 86, { role: 'small', size: 25, color: C.ink2, align: 'center', alpha: k2 }); }
+    /* the model, in a line, and the datasheet the break comes from */
+    const am = ep(t, 1.8, 2.3);
+    text(SHB_MODEL_LINE + ' Flex drawn 2× real.', LM, 962, { role: 'small', size: 22, color: C.faint, alpha: am, maxW: RM - LM - pillW('datasheet', { by: 'Pyrofil' }) - 48 });
+    pill(RM - pillW('datasheet', { by: 'Pyrofil' }), 962, 'datasheet', am, { by: 'Pyrofil' });
+  }
+});
+
+/* ============================== 4. the thrust line (Brock: "text explanation of why/how arches are so strong") ==============================
+   Hooke's hanging chain under a spread load (pure tension), turned over into the arch (pure compression, the same
+   shape: the thrust line runs inside the rib). Then the load gathers into a fingertip press and the pointer drags it
+   off the crown: the thrust line (e = M / |N| off the rib's axis, from the solve) leaves the rib, and the bending shows. */
+S({
+  id: 'shbThrust', ch: 'shell', theme: 'night', title: 'The thrust line', settle: 10.6, after: 'shbPress',
+  ideas: [53, 75], src: ['shbHooke', 'shbModel'],
+  draw: t => {
+    const A = SHB_A, RU = shbArch('para', 'uni'), RC = shbArch('para', 'pad', 0), mid = A.n / 2;
+    header(t, 'The thrust line');
+    captions(t, [[0.6, 'Hang a chain under a spread load and it takes the one shape that is pure tension.'], [2.9, 'Turn it over and it is an arch in pure compression. Hooke, 1675. That shape is the load\'s thrust line.'], [5.7, 'Gather the load into a fingertip and the thrust line becomes a peak. Where it leaves the rib, the rib bends.'], [8.4, 'Move the press off the crown and the thrust line follows it. The arch still turns most of it into thrust at its feet.']]);
+    const x0 = LM, y0 = 280, w0 = 1080, h0 = 640, a0 = tileA(t, 0.3, 0);
+    demoWindow(x0, y0, w0, h0, a0);
+    const s = 14, cx = x0 + 540, by = y0 + 520, ym = by - A.rise * s / 2;
+    /* the flip: −1 the hanging chain, +1 the arch (mirrored about the middle line) */
+    const phi = lerp(-1, 1, ep(t, 2.7, 4.0, E.io3)), P = p => [cx + p[0] * s, ym + phi * (by - p[1] * s - ym)];
+    /* the load: spread (0) gathering into a pad at the crown (1), then dragged to xc */
+    const g = ep(t, 5.6, 6.5, E.io3), xc = lerp(0, -16, ep(t, 8.2, 9.8, E.cam));
+    const R = g < 1 ? shbBlend([RU, RC], [1 - g, g]) : shbArchAt(xc);
+    const aD = ep(t, 0.7, 1.3) * a0;
+    clipped(x0 + 2, y0 + 2, w0 - 4, h0 - 4, () => {
+      if (phi < 0) {
+        /* the chain: beads, the hangers at the pins, and the weights */
+        const pts = RU.model.nodes.map(P);
+        G.save(); G.globalAlpha = aD; G.strokeStyle = C.ink2; G.lineWidth = 7; G.lineCap = 'round'; G.setLineDash([0.1, 11]); G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.stroke(); G.restore();
+        for (const xs of [-1, 1]) { const p = P([xs * A.span / 2, 0]); line(p[0] - 22, p[1] - 12 * -phi, p[0] + 22, p[1] - 12 * -phi, { color: C.mute, w: 2, alpha: aD }); circle(p[0], p[1], 5, { fill: C.mute, alpha: aD }); }
+        for (let q = 1; q < 10; q++) { const i = q * 6, p = pts[i], dl = 34 * -phi; line(p[0], p[1], p[0], p[1] + dl, { color: C.mute, w: 1.5, alpha: aD }); rr(p[0] - 6, p[1] + dl, 12, 10 * -phi, 2, C.mute, null, 0, aD); }
+        /* tension runs out along the chain, toward the pins */
+        feFlow(Object.assign({}, RU, { N: RU.N.map(v => -v) }), P, t, { scale: 0, alpha: aD * 0.8 * -phi, nmax: 9 });
+      } else {
+        const kL = ep(t, 3.6, 4.2);
+        feDraw(R, P, { scale: 3, load: 1, smax: RC.smax * 1.25, w: s, alpha: aD * phi, seg: 8 });
+        feFlow(R, P, t, { scale: 3, load: 1, alpha: aD * phi * 0.8, nmax: 9 });
+        for (const xs of [-1, 1]) feSupport(P([xs * A.span / 2, 0]), 'pin', { alpha: aD * phi });
+        /* the load: small arrows spread along the top, gathering into the pad */
+        for (let q = 1; q < 10; q++) {
+          const x = -A.span / 2 + q * 6, xg = lerp(x, xc + (q - 5) * 1.1, g), ya = A.rise * (1 - Math.pow(2 * xg / A.span, 2)), p = P([xg, ya]);
+          arrow(p[0], p[1] - 46, p[0], p[1] - 10, { color: C.mute, w: 2, hs: 10, alpha: aD * kL * (1 - ep(t, 6.3, 6.6)) });
+        }
+        if (g > 0.003) { const p = shbOnArch(R, P, xc, 3); shbPad(p[0], p[1] - 6, A.pad * s, 0.25, aD * ep(t, 6.2, 6.6), C.ink2); }
+        /* the thrust line, from the solve: inside the rib where |e| < h / 2 */
+        const kT = ep(t, 4.1, 5.0), TL = shbThrustLine(R).map(q => { const p = P([q[0], q[1]]); return [p[0], p[1], q[2], q[3]]; });
+        if (kT > 0.003) {
+          const pts = shbPart(TL.map(q => [q[0], q[1]]), kT);
+          shbPath(pts, C.ink, 3, aD * phi);
+          if (kT >= 1) { let top = TL[0]; TL.forEach(q => { if (q[1] < top[1]) top = q; }); callout(t, 4.9, [top[0], top[1]], 'Thrust line', { to: [top[0] + 110, top[1] - 36], side: 'r', color: C.ink, alpha: aD * phi }); }
+        }
+        /* the thrust at the feet: the abutments push back on the arch */
+        const H = shbThrustH(R), kH = ep(t, 4.6, 5.2) * aD;
+        if (kH > 0.003) for (const xs of [-1, 1]) { const p = P([xs * A.span / 2, 0]); arrow(p[0] + xs * 92, p[1] - 3, p[0] + xs * 22, p[1] - 3, { color: C.heroText, w: 3, hs: 14, alpha: kH }); }
+        if (kH > 0.003) { const p = P([-A.span / 2, 0]); text('Thrust ' + fmtN(H, 1) + ' N', p[0] - 96, p[1] + 50, { role: 'label', size: 20, color: C.heroText, alpha: kH }); }
+      }
+    });
+    /* the press, held and moved by the pointer */
+    if (t > 6.4) {
+      const p = shbOnArch(R, P, xc, 3);
+      cursorPtr(p[0] + 6, p[1] - 74, { a: ep(t, 6.4, 6.9) * (1 - ep(t, 9.8, 10.2)) * a0, grab: t > 7.4, press: t > 7.0 && t < 7.45 ? prog(t, 7.0, 7.45) : 0 });
+    }
+    /* readouts: the peak now, against the strength */
+    const ka = ep(t, 4.4, 4.9) * a0;
+    rich([{ s: 'Peak', role: 'label', size: 20, color: C.mute }, { s: fmtN(R.smax, R.smax < 10 ? 1 : 0), font: 'disp', size: 40, weight: 800, color: C.ink, tnum: true, gap: 12 }, { s: 'MPa', role: 'label', size: 20, color: C.mute, caps: false, gap: 6 }], x0 + w0 - 32, y0 + 64, { align: 'right', alpha: ka });
+    text('Of ' + shbFt() + ' MPa it can take', x0 + w0 - 32, y0 + 98, { role: 'small', size: 22, color: C.mute, align: 'right', alpha: ka });
+    text('2D frame: a parabolic arch, 0.72 mm rib, 10 N spread, then on a 10 mm pad. Flex drawn 3× real.', x0 + 32, y0 + h0 - 30, { role: 'small', size: 22, color: C.faint, alpha: ep(t, 1.2, 1.7) * a0, maxW: w0 - 64 });
+    /* the column: three steps, and where the idea comes from */
+    const cx2 = x0 + w0 + 40, cw = RM - cx2;
+    shbStep(t, 0.7, cx2, y0 + 16, cw, 1, 'Hang it', 'A chain under a spread load: pure tension.');
+    shbStep(t, 2.9, cx2, y0 + 156, cw, 2, 'Turn it over', 'The same shape is an arch in pure compression.');
+    shbStep(t, 5.7, cx2, y0 + 296, cw, 3, 'Press it', 'The thrust line moves with the press. Outside the rib, the rib bends.');
+    sourceBox(t, 1.6, cx2, y0 + 440, cw, 'Block, DeJong and Ochsendorf 2006', '"As hangs the flexible line, so but inverted will stand the rigid arch": Hooke, 1675. The thrust line is still how arches are checked.');
+  }
+});
+
+/* ============================== 5. arch thrust cancels bending (Brock: "bending simulation"; "why/how arches are so strong") ==============================
+   the moment along the span: the flat plate's M0, the arch's thrust times its height H·y, and what is left, M = M0 − H·y
+   (the solver's own moments, which match the identity to 0.1 N·mm). Left: the stress through the depth at the worst
+   section of each: bending loads the skins and leaves the middle idle; the thrust loads all of it. */
+S({
+  id: 'shbBend', ch: 'shell', theme: 'paper', title: 'Arch thrust cancels bending', settle: 10.2, after: 'shbThrust',
+  ideas: [53, 75], src: ['shbModel', 'shlPyrofil'],
+  draw: t => {
+    const A = SHB_A, RF = shbArch('flat'), RA = shbArch('para'), RU = shbArch('para', 'uni'), H = shbThrustH(RA), ft = shbFt();
+    const els = RA.model.els, xm = e => (RA.model.nodes[els[e].i][0] + RA.model.nodes[els[e].j][0]) / 2, yA = e => (RA.model.nodes[els[e].i][1] + RA.model.nodes[els[e].j][1]) / 2;
+    const M0 = els.map((_, e) => (RF.M1[e] + RF.M2[e]) / 2), MA = els.map((_, e) => (RA.M1[e] + RA.M2[e]) / 2);
+    const m0 = Math.max(...M0), ma = Math.max(...MA.map(Math.abs)), cut = 1 - ma / m0;
+    header(t, 'Arch thrust cancels bending');
+    captions(t, [[0.6, 'A flat plate bends with the whole moment the press makes, M₀, biggest under the press.'], [3.8, 'An arch\'s feet push back with its thrust H. Times the arch\'s height y, that is a moment H·y, and it cancels most of M₀.'], [7.0, 'What is left bends the arch: ' + Math.round(cut * 100) + '% less. A dome does this every way round, which is why a thin curved shell is strong per gram.']]);
+    /* right: the moment along the span */
+    const x0 = 680, y0 = 280, w0 = 1160, h0 = 640, a0 = tileA(t, 0.3, 1);
+    demoWindow(x0, y0, w0, h0, a0);
+    const gx0 = x0 + 100, gx1 = x0 + w0 - 60, gz = y0 + 560, ky = 300 / 140, X = x => gx0 + (x + A.span / 2) / A.span * (gx1 - gx0), Y = m => gz - m * ky;
+    const kA = ep(t, 0.9, 2.6, E.io3), kH = ep(t, 4.0, 5.8, E.io3), kR = ep(t, 5.6, 6.4), aG = ep(t, 0.6, 1.1) * a0;
+    /* the small arch over the chart, with its thrust and its height */
+    const ps = 5.2, pcx = x0 + 300, pby = y0 + 190, PP = p => [pcx + p[0] * ps, pby - p[1] * ps];
+    shbPath(RA.model.nodes.map(PP), C.ink2, 4, aG);
+    for (const xs of [-1, 1]) { const p = PP([xs * 30, 0]); feSupport(p, 'pin', { alpha: aG, s: 10 }); if (kH > 0.003) arrow(p[0] + xs * (30 + 40 * kH), p[1] - 2, p[0] + xs * 14, p[1] - 2, { color: C.hero, w: 3, hs: 12, alpha: aG * kH }); }
+    { const p = PP([-14, 0]), q = PP([-14, A.rise * (1 - Math.pow(28 / 60, 2))]); line(p[0], p[1], q[0], q[1], { color: C.mute, w: 1.5, dash: [4, 4], alpha: aG }); text('y', p[0] + 10, (p[1] + q[1]) / 2 + 8, { role: 'label', size: 21, color: C.mute, caps: false, alpha: aG }); }
+    if (kH > 0.003) text('H', PP([30, 0])[0] + 52, PP([30, 0])[1] - 12, { role: 'label', size: 21, color: C.heroText, caps: false, alpha: aG * kH });
+    shbPad(pcx, PP([0, A.rise])[1] - 2, A.pad * ps, 0.2, aG);
+    glossBox(t, 1.6, x0 + 620, y0 + 40, 500, 'Bending moment', 'How hard a press tries to turn a section. Bending stresses a part\'s skins; thrust loads all of it.');
+    /* axes */
+    line(gx0, gz, gx1, gz, { color: C.hair, w: 1.5, alpha: aG }); line(gx0, Y(140), gx0, Y(-24), { color: C.hair, w: 1.5, alpha: aG });
+    for (const m of [0, 50, 100]) text(String(m), gx0 - 12, Y(m) + 7, { role: 'tick', color: C.faint, align: 'right', alpha: aG });
+    text('Moment, {N·mm}', gx0 - 12, Y(140) - 14, { role: 'label', size: 19, color: C.mute, alpha: aG });
+    text('Along the span', gx1, gz + 40, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: aG });
+    /* M0: the plate's moment, the danger */
+    const xsA = els.map((_, e) => X(xm(e))), clipX = gx0 + (gx1 - gx0) * kA;
+    G.save(); G.beginPath(); G.rect(gx0 - 2, y0, clipX - gx0 + 2, h0); G.clip();
+    G.globalAlpha = aG * 0.22; G.fillStyle = heatCol(0.9); G.beginPath(); G.moveTo(X(-30), gz); M0.forEach((m, e) => G.lineTo(xsA[e], Y(m))); G.lineTo(X(30), gz); G.closePath(); G.fill(); G.restore();
+    G.save(); G.beginPath(); G.rect(gx0 - 2, y0, clipX - gx0 + 2, h0); G.clip(); shbPath([[X(-30), gz]].concat(M0.map((m, e) => [xsA[e], Y(m)]), [[X(30), gz]]), heatCol(0.9), 3, aG); G.restore();
+    /* H·y rising as the thrust turns on, and what is left: M0 − k H y */
+    if (kH > 0.003) {
+      const hy = els.map((_, e) => H * yA(e) * kH), res = M0.map((m, e) => m - hy[e]);
+      shbPath(hy.map((v, e) => [xsA[e], Y(v)]), C.hero, 4, aG);
+      G.save(); G.globalAlpha = aG * 0.55; G.fillStyle = heatCol(Math.min(1, Math.max(...res.map(Math.abs)) / m0) * 0.9); G.beginPath(); G.moveTo(X(-30), gz); res.forEach((v, e) => G.lineTo(xsA[e], Y(v))); G.lineTo(X(30), gz); G.closePath(); G.fill(); G.restore();
+    }
+    /* labels at the peaks */
+    const kl = ep(t, 2.4, 2.9) * aG;
+    text('Flat plate {M₀} ' + fmtN(m0, 0), X(0) - 40, Y(m0) - 12, { role: 'label', size: 20, color: C.ink, alpha: kl, align: 'right' });
+    if (kH > 0.5) text('Arch thrust {H·y} ' + fmtN(H * A.rise, 0), X(-14), Y(H * yA(14)) - 26, { role: 'label', size: 20, color: C.heroText, alpha: ep(t, 5.2, 5.7) * aG, align: 'right' });
+    text('Left to bend the arch ' + fmtN(ma, 0), X(0), gz + 40, { role: 'label', size: 20, color: C.ink, alpha: kR * aG, align: 'center' });
+    rich([{ s: '−' + Math.round(cut * 100), font: 'disp', size: 84, weight: 800, grad: C.heroGrad, color: C.heroText, tnum: true }, { s: '%', font: 'disp', size: 40, weight: 700, grad: C.heroGrad, color: C.heroText, gap: 4 }], gx1, Y(118), { align: 'right', alpha: ep(t, 6.4, 7.0) * a0 });
+    text('bending, same press', gx1, Y(118) + 36, { role: 'small', size: 25, color: C.ink2, align: 'right', alpha: ep(t, 6.4, 7.0) * a0 });
+    text(SHB_MODEL_LINE + ' The solver\'s own moments: H = ' + fmtN(H, 2) + ' N, and M = M₀ − H·y to 0.1 N·mm.', LM, 962, { role: 'small', size: 22, color: C.faint, alpha: ep(t, 6.6, 7.1), maxW: RM - LM });
+    /* left: the stress through the depth of each section, as the bending simulation sees it */
+    const lx = LM, lw = 560, cards = [
+      ['The plate, under the press', RF, 'pad', 0.9, 1.2], ['The arch, at its worst point', RA, 'pad', 0, 3.4], ['The arch, a spread load', RU, 'uni', 0, 5.8]];
+    cards.forEach(([nm, r, ld, _, t0], i) => {
+      const cy = 280 + i * 220, ch = 200, a = tileA(t, t0, 0);
+      demoWindow(lx, cy, lw, ch, a);
+      if (a <= 0.003) return;
+      /* the worst element: its axial stress and its bending stress */
+      const e = r.sig.indexOf(r.smax), el = r.model.els[e], Ar = el.w * el.h, I = el.w * el.h * el.h * el.h / 12, Mm = Math.abs(r.M1[e]) > Math.abs(r.M2[e]) ? r.M1[e] : r.M2[e];
+      const sN = r.N[e] / Ar, sB = Mm * el.h / 2 / I, top = sN - sB, bot = sN + sB;
+      text(nm, lx + 32, cy + 44, { role: 'label', size: 20, color: C.ink, alpha: a });
+      const sx = lx + 52, sw = 44, dpx = 118, sh = el.h * dpx, syc = cy + 122, st = syc - sh / 2, kk = ep(t, t0 + 0.4, t0 + 1.3, E.io3), sc = 150 / 101;
+      /* the section, in layers coloured by their stress */
+      for (let q = 0; q < 12; q++) { const f = (q + 0.5) / 12, sv = lerp(top, bot, f) * kk; rect(sx, st + q * sh / 12, sw, sh / 12 + 0.5, { fill: heatCol(Math.abs(sv) / ft), alpha: a }); }
+      rr(sx, st, sw, sh, 2, null, C.ink2, 1.5, a * 0.6);
+      /* the stress block: an arrow per layer, squeezing in (compression) or pulling out (tension) */
+      const bx = sx + sw + 24; line(bx, st - 6, bx, st + sh + 6, { color: C.mute, w: 1.5, alpha: a });
+      for (let q = 0; q <= 8; q++) { const f = q / 8, sv = lerp(top, bot, f) * kk, L = sv * sc, yq = st + f * sh; if (Math.abs(L) > 3) arrow(L < 0 ? bx - L : bx, yq, L < 0 ? bx : bx + L, yq, { color: heatCol(Math.abs(sv) / ft), w: 3, hs: 9, alpha: a }); }
+      if (top * bot < 0) { const f0 = top / (top - bot), yn = st + f0 * sh; line(sx - 8, yn, bx + 170, yn, { color: C.mute, w: 1.5, dash: [4, 4], alpha: a * kk }); text('Neutral axis: idle', bx + 190, yn + 8, { role: 'small', size: 22, color: C.mute, alpha: a * ep(t, t0 + 1.0, t0 + 1.4) }); }
+      const vx = bx + 190;
+      text((top < 0 ? 'Squeezed ' : 'Stretched ') + fmtN(Math.abs(top * kk), Math.abs(top) < 10 ? 1 : 0) + ' MPa' + (ld === 'uni' ? ', all through' : ''), vx, ld === 'uni' ? syc + 8 : st + 6, { role: 'small', size: 22, color: C.ink2, alpha: a * ep(t, t0 + 1.0, t0 + 1.4) });
+      if (ld !== 'uni') text((bot < 0 ? 'Squeezed ' : 'Stretched ') + fmtN(Math.abs(bot * kk), Math.abs(bot) < 10 ? 1 : 0) + ' MPa', vx, st + sh + 16, { role: 'small', size: 22, color: C.ink2, alpha: a * ep(t, t0 + 1.0, t0 + 1.4) });
+    });
   }
 });

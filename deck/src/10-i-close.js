@@ -1,11 +1,11 @@
 /* ============================== close (chapter code ntr): Brock's line, the shell turning, THESEUS ============================== */
 S({
-  id: 'close', ch: 'end', theme: 'night', chrome: false, title: 'Close', settle: 9, three: ['shell'],
+  id: 'close', ch: 'end', theme: 'night', chrome: false, title: 'Close', settle: 9,
   src: ['ntrScan'],
   draw: t => {
     /* the hero: the shell, whole, on a slow low orbit */
-    /* in 3D only: Brock dropped the flat mouse from the cover, and the close answers the cover */
-    if (!V2D.on) {
+    /* Brock, F12.2: neither the cover nor the close shows a shell, in 2D or in 3D */
+    if (NTR_SHELL3D && !V2D.on) {
       const V = [820, 70, 1100, 800];
       ntr_prime('shell', t, V[2], V[3]);
       const kc = ep(t, 0.0, 9.0, E.io3), drift = t > 9 ? Math.sin((t - 9) * 0.2) : 0;

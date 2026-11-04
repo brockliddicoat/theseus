@@ -28,6 +28,7 @@ Object.assign(SRC, {
   shlZkM1k: { t: 'Zaunkoenig, "M1K weight in review", 31 Aug 2020: carbon fibre shell 7.5 g; 3D-printed bottom shell 5.6 to 5.9 g regular, 4.0 to 4.2 g lightweight (maker figures, first 333 units)', u: 'https://zaunkoenig.co/blog/m1k-weight-in-review' },
   shlNimbus: { t: 'Notebookcheck on Vaidemi\'s DIY Nimbus: 29 g with skates and paint, a hole-less SLA resin shell over an internal skeleton, 30 kg load (community build)', u: 'https://www.notebookcheck.net/YouTuber-embarrasses-big-gaming-mouse-brands-with-29-g-ultralight-mouse-with-no-holes.1011756.0.html' },
   shlZeromouse: { t: 'Notebookcheck on the Zeromouse V35 kit: the battery moved to reduce the moment arm (community build)', u: 'https://www.notebookcheck.net/YouTuber-builds-16-g-gaming-mouse-and-you-can-buy-one-sort-of.876113.0.html' },
+  shlFmSupport: { t: 'Finalmouse support staff, to Brock Liddicoat: the scroll encoder is the number one failure point in a mouse', u: '', n: 'Brock, 2026-11-04 (F12.13): "cite the finalmouse support staff"' },
   shlDoc: { t: 'Brock Liddicoat, "In Pursuit of an Objectively Better Mouse": ideas, reasoning and comment threads (Lamzu Maya front struts, G-Wolves HTS Plus bottom sticker, Krytox 205 on newer ULX batches, Poron pads, a mouse that works with no bottom plate)', u: '', n: 'research/brock-doc-in-pursuit.txt and brock-doc-comments.txt' }
 });
 
@@ -1394,7 +1395,7 @@ S({
    TTC's optical encoder, the form most new ones take) and the scroll signal starts to skip; on the solid shell it stays
    outside, where it wipes off */
 S({
-  id: 'sealed', ch: 'shell', theme: 'paper', title: 'The encoder: the number one failure point', settle: 9.5, ideas: [15, 98], src: ['pulsarEnc', 'shlIgorWheel', 'shlRazerWheel', 'shlDoc'],
+  id: 'sealed', ch: 'shell', theme: 'paper', title: 'The encoder: the number one failure point', settle: 9.5, ideas: [15, 98], src: ['shlFmSupport', 'pulsarEnc', 'shlIgorWheel', 'shlRazerWheel', 'shlDoc'],
   draw: t => {
     header(t, 'The encoder: the number one failure point');
     captions(t, [[0.6, 'The encoder is the number one failure point in a mouse, and dust is what kills it. Every cutout is an open path to it.'], [4.4, 'A solid shell keeps dust and sweat outside, where a wipe takes them off. It molds more easily too: no small, hard-to-reach areas.']]);
@@ -1447,8 +1448,9 @@ S({
     panel(wx + 40, true, 'Cutouts: dust reaches the encoder');
     panel(wx + 920, false, 'Solid: dust stays outside');
     /* the evidence, under the drawing */
-    sourceBox(t, 3.4, LM, 760, 560, 'Pulsar support', 'Jittery or skipping scrolling comes from dust, dirt or fluids in the encoder.', { size: 24 });
-    sourceBox(t, 3.9, LM + 600, 760, 560, 'igor\'sLAB teardown', 'A Basilisk V3 Pro\'s scroll jitter was hair and debris in the wheel, not a failed part.', { size: 24 });
+    /* Brock, F12.13: the number one failure point is the Finalmouse support staff's finding */
+    sourceBox(t, 3.4, LM, 760, 560, 'Finalmouse support staff', 'The scroll encoder is the number one failure point in a mouse.', { size: 24 });
+    sourceBox(t, 3.9, LM + 600, 760, 560, 'Pulsar support', 'Jittery or skipping scrolling comes from dust, dirt or fluids in the encoder.', { size: 24 });
     glossBox(t, 4.4, LM + 1200, 760, RM - LM - 1200, 'Optical encoder', 'Reads the wheel by light through a slotted disc. Razer claims 3.3× a mechanical one\'s reliability.', { size: 24 });
   }
 });

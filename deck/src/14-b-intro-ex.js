@@ -82,7 +82,7 @@ function ntr_hatch(x, y, w, h, col, a = 1, step = 14) { if (a <= 0.003 || w <= 0
    assembles beside the word; in 2D the word, the scale and the numbers carry the cover on their own. */
 const NTR_COV = { size: 280, x0: 64, yb: 462, v: [1222, 120, 730, 690], zoom: [1.06, 1.2] };
 S({
-  id: 'cover', first: true, ch: 'intro', theme: 'night', chrome: false, title: 'Theseus: in pursuit of an objectively better mouse', settle: 8, three: ['shell'],
+  id: 'cover', first: true, ch: 'intro', theme: 'night', chrome: false, title: 'Theseus: in pursuit of an objectively better mouse', settle: 8,
   sfx: [[2.15, 'tick'], [2.35, 'tick'], [2.55, 'tick'], [2.75, 'tick']],
   src: ['exPiaknow', 'kunai', 'usbHs', 'ntrScan'],
   draw: t => {
@@ -103,8 +103,8 @@ S({
       if (k > 0) { G.save(); G.beginPath(); G.rect(xx - 10, yb - C0.size * 0.8, advs[i] + 20, C0.size * 0.86); G.clip(); text(ch, xx, yb + (1 - k) * C0.size * 0.82, Object.assign({}, st, { caps: false, color: C.ink })); G.restore(); }
       xx += advs[i] + ls;
     });
-    /* in 3D, the hero in front of the word: the shell assembles out of its parts while the camera turns, slowly, and stops */
-    if (!V2D.on) {
+    /* Brock, F12.2: no shell on the cover in 3D mode either ("the 3d mode should not show the shell cover") */
+    if (NTR_SHELL3D && !V2D.on) {
       ntr_prime('shell', t, vw, vh);
       const as = ep(t, 0.6, 4.6, E.io3), cam = ep(t, 0.3, 7.6, E.io3), drift = t > 7.6 ? Math.sin((t - 7.6) * 0.22) : 0;
       view3D('shell', t, vx, vy, vw, vh, { view: 'threeQuarterRight', view2d: 'right', yaw: lerp(-0.5, 0.02, cam) + 0.05 * drift, pitch: 0.06 * (1 - cam), zoom: lerp(C0.zoom[0], C0.zoom[1], cam), explode: 0.72 * (1 - as), colorway: 'black' }, { alpha: ep(t, 0.35, 1.4) });
