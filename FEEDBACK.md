@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 13:15 (Chicago).
+Last updated: 2026-11-04 14:22 (Chicago).
 
 ## Open with Brock
 
@@ -412,13 +412,12 @@ Answers to the Shell A questions:
   Asked again more plainly: "Show it, holding".
   - The strip appears on those slides at the triangle lattice's value. The arch is already inside that number, because
     it's the same dome.
-  - **TODO (fix).**
-- **F13.2 DECIDED** How the mold is made: "Not decided yet". **TODO (fix):** `shbMill` holds for an EDM electrode or a
-  directly milled core.
-- **F13.3 DECIDED** Where the gate goes: "decide where you think is optimal". **TODO (fix):** `shbGates` chooses it, with
-  the reason.
-- **F13.4 DECIDED** The thumb band: "Both sides". **TODO (fix):** the thicker band runs along both low sides, with the thumb
-  rest on the left.
+  - **DONE.**
+- **F13.2 DECIDED** How the mold is made: "Not decided yet". **DONE:** `shbMill` (EDM) and a new `shbMillDirect`
+  (a milled core) both carry the fillet's advantage.
+- **F13.3 DECIDED** Where the gate goes: "decide where you think is optimal". **DONE:** `shbGates` puts one gate inside under the
+  crown, from the fill model: no weld line, the shortest flow, and fibres along the arches.
+- **F13.4 DECIDED** The thumb band: "Both sides". **DONE** (`shbSides`).
 
 ## F14. 2026-11-04 10:17 (with three Gateron GT01 images), and answers to the questions after it
 
@@ -437,21 +436,21 @@ Answers to the Shell A questions:
   can get it, i've given you multiple angles. another issue you had was the plunger looking like it was turned vertical
   or being tuned into a square for some reason when the gt01 has a fairly normal plunger"
 - **F14.4 DONE** (a procedural woven cloth, crisp at any size) "the image you used for the mousepad in how the sensor looks feels really low quality and uncanny"
-- **F14.5 TODO (fixB)** "what if you didn't have to chose shouldn't be the only words in the slide, and you should call
+- **F14.5 DONE** (`shlPick`: "The strength–weight fallacy"; `shlNoPick` answers "You don't", −51 % flex) "what if you didn't have to chose shouldn't be the only words in the slide, and you should call
   the slide before that one "strength weight fallacy" or something like that (just say fallacy at least to allude to a
   correction coming)"
-- **F14.6 TODO (fixB)** "i think we need a slide dedicated to specific strength and specific stiffness to show the sort of
+- **F14.6 DONE** (`shlSpecific`: six materials ranked five ways; PP-C-20A goes 4th → 1st for a thin shell) "i think we need a slide dedicated to specific strength and specific stiffness to show the sort of
   "value/efficiency" each material buys and how it's not just about who has the highest tensile strength or flexural
   modulus"
   - Asked which materials: "ABS and PC, Magnesium alloy, Aluminium and FR4", against PP-C-20A.
-- **F14.7 TODO (fixB)** "title one of the slides "putting that weight to work" there's a title that is close to that
+- **F14.7 DONE** "title one of the slides "putting that weight to work" there's a title that is close to that
   right now, but what i've typed here is better"
   - This is `shlWork`, "The grams that work".
-- **F14.8 STANDING, TODO (fixB, all)** "i think for peak stress you should put(lower is better) because it still feels
+- **F14.8 STANDING, DONE in the Shell chapter and its meter, IN PROGRESS (the remaining chapters)** "i think for peak stress you should put(lower is better) because it still feels
   unintuitive, maybe you say peak EXPERIENCED stress as well"
   - The label is "Peak experienced stress (lower is better)".
-- **F14.9 STANDING, TODO (all)** "sometimes you say "grams" where you should say "weight""
-- **F14.10 STANDING, DONE in Intro, Clicks and Glide, IN PROGRESS (fixB; the remaining chapters)** "in general i think youre not really doing the best at showing how are
+- **F14.9 STANDING, DONE in Intro, Clicks, Glide and Shell A/B, IN PROGRESS (the rest)** "sometimes you say "grams" where you should say "weight""
+- **F14.10 STANDING, DONE in Intro, Clicks, Glide and Shell A/B, IN PROGRESS (the remaining chapters)** "in general i think youre not really doing the best at showing how are
   techniques are better AT A GLANCE, and by how much, you shouldn't have to read the whole slide to understand why our
   methods are better, and if at a glance it can look like our methods add worse that is very dangerous, not everyone is
   going to have time to read the full thing, there eyes are going to get drawn to certain parts each slide. making sure
@@ -467,7 +466,7 @@ Answers to the Shell A questions:
 
 ## F16. 2026-11-04 10:30 (with a screenshot of `arc`, Direct Drive Actuation)
 
-- **F16.1 STANDING, DONE in Intro, Clicks and Glide, IN PROGRESS (fixB; the rest)** "in slides like this where you count down to zero, it's very hard to remember
+- **F16.1 STANDING, DONE in Intro, Clicks, Glide and Shell A/B, IN PROGRESS (the rest)** "in slides like this where you count down to zero, it's very hard to remember
   what the original numbers were and how much better they are now, you should find some way to always show the net
   change or the bad case at the same time"
   - Asked how: "Before → after". The bad value stays visible, greyed or struck, beside the live one (10.6° → 0°), with

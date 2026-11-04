@@ -1,7 +1,8 @@
 /* ============================================================================================
    idea sheets: shell and structure. Six ideas without a full slide of their own, three to a sheet:
-   #6 PPS carbon triggers, #26 a film-thin bottom sticker, #58 no cutout above the wheel;
-   #31 a bottom plate you can leave off, #93 walls graded thicker toward the rim, #55 front struts joined into arches.
+   #6 PPS carbon triggers, #26 a film-thin bottom sticker (now the plate-off cover: the plate itself is solid), #58 no cutout
+   above the wheel; #31 the solid bottom plate you can leave off (10-d4-plate.js has its own two slides), #93 walls graded
+   thicker toward the rim, #55 front struts joined into arches.
    Built with S() and ideaPanel() (not ideaSheet) so each sheet can carry a source line.
    ============================================================================================ */
 
@@ -58,19 +59,20 @@ S({
         dLabel('Bend', x + w - 112, y + 30, { align: 'right', alpha: a }); dLabel('Pair', x + w - 18, y + 30, { align: 'right', alpha: a });
       }
     });
-    /* #26: a film over a cutout base: liquid that fell through now beads off */
+    /* #26: the film covers the open bottom of the plate-off build (the plate itself is solid): liquid that fell onto the board now beads off */
     ideaPanel(t, 1, 3, {
       n: 26, ev: ['derived', 'claim'], title: 'A film-thin bottom sticker',
-      body: 'G-Wolves did it on the HTS Plus, per my notes. Over a cutout base it looks solid and keeps liquid out. Semi-permanent, with a printed warning not to peel it.',
-      note: '0.21 g = 1.39 g/cm³ × 23 µm × the 66 cm² footprint.',
+      body: 'G-Wolves did it on the HTS Plus, per my notes. My plate is already solid, so the film is for the plate-off build: it closes the open bottom and keeps liquid off the board.',
+      note: '0.13 g = 1.39 g/cm³ × 23 µm × the 40 cm² opening.',
       draw: (lt, x, y, w, h, A, a) => {
         const per = 8, c = ((lt + 4) % per) / per, film = c < 0.4 ? 0 : c < 0.55 ? E.io3((c - 0.4) / 0.15) : c < 0.92 ? 1 : 1 - E.io3((c - 0.92) / 0.08);
         const cx = x + w * 0.36, cy = y + h / 2 + 4, s = 2.35;
         part(cx, cy, s, () => {
           G.save(); keyPath(); G.fillStyle = inkA(TH ? 0.1 : 0.12); G.fill(); G.clip();
-          /* the cutout base: hexagonal holes */
-          G.fillStyle = TH ? '#F7F6F2' : '#0D0E0F';
-          for (let r = -7; r <= 7; r++) for (let q = -4; q <= 4; q++) { const hx = q * 8.6 + (r % 2 ? 4.3 : 0), hy = r * 7.4; if (Math.abs(hx) > 24 || Math.abs(hy) > 50) continue; G.beginPath(); for (let k = 0; k < 6; k++) { const an = Math.PI / 6 + k * Math.PI / 3; G[k ? 'lineTo' : 'moveTo'](hx + 3.2 * Math.cos(an), hy + 3.2 * Math.sin(an)); } G.closePath(); G.fill(); }
+          /* plate off: the rim and its corner ledges, the board open behind them */
+          G.save(); G.scale(0.86, 0.9); keyPath(); G.fillStyle = TH ? '#F7F6F2' : '#0D0E0F'; G.fill(); G.restore();
+          G.fillStyle = TH ? '#3A3B40' : '#2B2C31'; pathRR(-15, -36, 30, 70, 3); G.fill();
+          for (const [dx, dz] of [[-15, -47], [15, -47], [-15, 47], [15, 47]]) { G.beginPath(); G.arc(dx * 1.05, dz * 0.96, 3.25, 0, TAU); G.fillStyle = TH ? '#CFCEC8' : '#4A4B50'; G.fill(); }
           /* the film, wiping on from the tail */
           if (film > 0) { G.fillStyle = rgba(TH ? '#2E2E2C' : '#CFCEC9', 0.55); G.fillRect(-40, 60 - 130 * film, 80, 130 * film); G.strokeStyle = rgba(C.hero, 0.9); G.lineWidth = lw(2.5); G.beginPath(); G.moveTo(-40, 60 - 130 * film); G.lineTo(40, 60 - 130 * film); G.stroke(); }
           G.restore();
@@ -83,8 +85,8 @@ S({
           else { const yy = Math.min(dy, cy + 20); circle(dx + (dy > cy + 20 ? (dy - cy - 20) * 0.8 : 0), yy, 6, { fill: rgba(C.mute, 0.8 * (1 - clamp((ph - 0.85) / 0.15))), alpha: a }); }
         }
         const rx = x + w * 0.62;
-        dLabel(film > 0.98 ? 'Sealed' : 'Open base', rx, y + 64, { color: film > 0.98 ? C.ink : C.red, alpha: a, size: 21 });
-        text('0.21', rx, y + 150, { font: 'disp', size: 64, weight: 800, color: C.ink, alpha: a, tnum: true });
+        dLabel(film > 0.98 ? 'Sealed' : 'Plate off: open', rx, y + 64, { color: film > 0.98 ? C.ink : C.red, alpha: a, size: 21 });
+        text('0.13', rx, y + 150, { font: 'disp', size: 64, weight: 800, color: C.ink, alpha: a, tnum: true });
         dLabel('g of film', rx + 4, y + 182, { alpha: a });
         dLabel('Mylar, 23 µm', rx + 4, y + 214, { alpha: a });
       }
@@ -129,31 +131,28 @@ S({
     header(t, 'Optional base, graded walls, joined struts');
     /* #31: the base comes off and the mouse still works */
     ideaPanel(t, 0, 3, {
-      n: 31, ev: ['claim', 'proposal'], title: 'A bottom plate you can leave off',
-      body: 'Four screws hold a plate that keeps the slide-in rim in place (#97). The board is top-mounted and tied to the ribs (#94), so the mouse runs without it.',
-      note: 'Zaunkoenig M1K bases: 5.7 g, or 4.1 g light (maker figures).',
+      n: 31, ev: ['claim', 'derived'], title: 'A solid plate you can leave off',
+      body: 'Four screws hold it, and it keeps the slide-in rim in place (#97). Solid outside; inside, an X over a triangle lattice, ' + (PLT_FE.plain.lens / PLT_FE.theseus.lens).toFixed(1) + '× as stiff as a solid plate of its weight. The mouse runs without it (#94).',
+      note: 'Mine: ' + PLT_GEO.mass.toFixed(2) + ' g. Zaunkoenig M1K bases: 5.7 g, or 4.1 g light (maker figures).',
       draw: (lt, x, y, w, h, A, a) => {
-        const per = 7, c = (lt % per) / per, off = c < 0.2 ? 0 : c < 0.45 ? E.io3((c - 0.2) / 0.25) : c < 0.8 ? 1 : 1 - E.io3((c - 0.8) / 0.2);
-        const cx = x + w * 0.32, cy = y + h / 2 + 22, s = 1.95;
-        part(cx, cy, s, () => {
-          G.save(); keyPath(); G.fillStyle = inkA(0.1); G.fill(); G.restore(); keyPath(); G.strokeStyle = inkA(0.55); G.lineWidth = lw(1.5); G.stroke();
-          /* the board, seen through where the plate was */
-          G.save(); G.globalAlpha = PA * off; pathRR(-17, -34, 34, 72, 3); G.fillStyle = TH ? '#2E2E2C' : '#26272A'; G.fill(); G.strokeStyle = inkA(0.5); G.lineWidth = lw(1.2); G.stroke(); G.restore();
-        }, { alpha: a });
-        /* the plate, sliding off to the right */
-        const px = cx + off * (w * 0.42), pa = a * (1 - 0.35 * off);
-        part(px, cy, s, () => {
-          pathRR(-22, -44, 44, 92, 6); G.fillStyle = TH ? '#3a3b41' : '#2b2c31'; G.fill(); G.strokeStyle = 'rgba(236,235,231,0.5)'; G.lineWidth = lw(1.3); G.stroke();
-          for (const [sx, sy] of [[-17, -38], [17, -38], [-17, 42], [17, 42]]) { G.beginPath(); G.arc(sx, sy, 2.0, 0, TAU); G.fillStyle = '#c9ced5'; G.fill(); mmLine([[sx - 1.2, sy], [sx + 1.2, sy]], '#2a2b30', 0.9); mmLine([[sx, sy - 1.2], [sx, sy + 1.2]], '#2a2b30', 0.9); }
-        }, { alpha: pa });
-        dLabel(off > 0.5 ? 'Plate off: still runs' : 'Plate on', x + 18, y + 30, { color: off > 0.5 ? C.hero : C.ink2, alpha: a, size: 21 });
-        dLabel('Board', cx, cy + 6, { align: 'center', color: C.mute, alpha: a * off });
+        /* the plate itself (10-d4-plate.js), turning over: solid outside, then the X and the triangles inside */
+        const per = 7, c = ((lt + 1.2) % per) / per, turn = c < 0.4 ? 0 : c < 0.5 ? E.io3((c - 0.4) / 0.1) : c < 0.9 ? 1 : 1 - E.io3((c - 0.9) / 0.1);
+        const s = Math.min(1.9, (h - 40) / 108), cx = x + w * 0.3, cy = y + h / 2 + 10, sx = Math.cos(Math.PI * turn), inside = turn > 0.5;
+        G.save(); G.translate(cx, 0); G.scale(Math.max(0.03, Math.abs(sx)), 1); G.translate(-cx, 0);
+        if (inside) plt_inner(cx, cy, s, a, { hi: C.hero, hk: 1 }); else plt_outer(cx, cy, s, a);
+        G.restore();
+        const rx = x + w * 0.54;
+        dLabel(inside ? 'Inside' : 'Outside', rx, y + 64, { color: inside ? C.heroText : C.ink2, alpha: a, size: 21 });
+        dLabel(inside ? 'X and triangles' : 'Solid, no holes', rx, y + 92, { alpha: a });
+        text((PLT_FE.plain.lens / PLT_FE.theseus.lens).toFixed(1) + '×', rx, y + 170, { font: 'disp', size: 64, weight: 800, color: C.heroText, grad: C.heroGrad, alpha: a, tnum: true });
+        dLabel('Stiffer than', rx + 4, y + 202, { alpha: a });
+        dLabel('a solid plate', rx + 4, y + 230, { alpha: a });
       }
     });
-    /* #93: the same mass of wall, even or graded toward the rim, squeezed */
+    /* #93: the same weight of wall, even or graded toward the rim, squeezed */
     ideaPanel(t, 1, 3, {
       n: 93, ev: ['derived', 'proposal'], title: 'Walls thicker near the bottom',
-      body: 'At the same mass, walls graded toward the rim cut the squeeze deflection by ' + Math.round(-SHL_GRADE.squeeze * 100) + '% and soften the crown by ' + Math.round(SHL_GRADE.press * 100) + '%. So the crown gets arches and the sides get wall.',
+      body: 'At the same weight, walls graded toward the rim cut the squeeze deflection by ' + Math.round(-SHL_GRADE.squeeze * 100) + '% and soften the crown by ' + Math.round(SHL_GRADE.press * 100) + '%. So the crown gets arches and the sides get wall.',
       note: 'Arch slice solved as frames in this page; clamped at the rim.',
       draw: (lt, x, y, w, h, A, a) => {
         const G2 = SHL_GRADE, p = pingpong(lt, 3.0), mag = 5 / G2.ev.d, sc = 3.6;
@@ -168,7 +167,7 @@ S({
           dLabel(lab, ox, y + 30, { align: 'center', color: gr ? C.hero : C.ink2, alpha: a, size: 21 });
           text((R.d / G2.ev.d).toFixed(2) + '×', ox, y + 66, { font: 'mono', size: 24, weight: 800, color: C.ink, align: 'center', alpha: a });
         });
-        dLabel('Squeeze deflection, same mass', x + w / 2, y + h - 12, { align: 'center', alpha: a });
+        dLabel('Squeeze deflection, same weight', x + w / 2, y + h - 12, { align: 'center', alpha: a });
       }
     });
     /* #55: separate front struts, then the same material joined into an arch on the trigger underside */

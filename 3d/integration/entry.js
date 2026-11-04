@@ -2,6 +2,7 @@
 // Built by 3d/integration/build.mjs into deck/vendor/r3d.js; asset files are copied (and compressed) into
 // deck/dist/assets/ next to the page. Each scene adapts one builder to a uniform state object:
 //   asset state: explode, xray, clickL, clickR, pressL, pressR, press, scroll, side0, side1, power (+powerMode),
+//                plate (1 on / 0 off), plateFlip (the plate lifted off and turned over), sideSw (the side switches shown),
 //                reflow, cut, build, stress (+stressCase), compare, cutaway, section, insert, drive, colorway, filletZoom
 //   camera:      view (named, see lib/studio.js VIEWS), yaw / pitch (radians, orbit about the target), zoom (1 = framed),
 //                target [x,y,z] (mm), fov (deg), lift (mm, raises the target)
@@ -54,6 +55,9 @@ function applyState(o, s) {
   if (ch('drive')) call(o, 'setDrive', s.drive);
   if (ch('colorway')) call(o, 'setColorway', s.colorway);
   if (ch('filletZoom')) call(o, 'setFilletZoom', s.filletZoom);
+  if (ch('plate')) call(o, 'setPlate', s.plate);
+  if (ch('plateFlip')) call(o, 'setPlateFlip', s.plateFlip);
+  if (ch('sideSw')) call(o, 'setSideSwitches', s.sideSw);
   last.set(o, Object.assign({}, prev, next));
 }
 
@@ -86,17 +90,17 @@ function cameraFor(studio, root, base) {
    goes back to rest instead of keeping whatever the previous slide set (an exploded or recoloured shell turning up on the
    next slide that uses it, when the presenter moves faster than the idle scenes are freed). */
 const REST = {
-  shell: { explode: 0, xray: 0, clickL: 0, clickR: 0, side0: 0, side1: 0, scroll: 0, colorway: 'black' },
+  shell: { explode: 0, xray: 0, clickL: 0, clickR: 0, side0: 0, side1: 0, scroll: 0, colorway: 'black', plate: 1, plateFlip: 0, sideSw: 0 },
   pcb: { explode: 0, xray: 0, power: 0, powerMode: 'charge', powerT: 0, reflow: 0, pressL: 0, pressR: 0 },
   gt01: { press: 0, cutaway: 0, explode: 0 },
   wheel: { scroll: 0, explode: 0, xray: 0 },
   claw: { insert: 0, section: 0, explode: 0 },
   screw: { drive: 0, section: 0, explode: 0 },
-  skates: { explode: 0 },
+  skates: { explode: 0, plate: 1 },
   battery: { explode: 0 },
   lattice: { cut: 0, build: 1, stress: 0, stressCase: 'press', compare: 'tri', filletZoom: 0 },
 };
-REST['shell-sora'] = REST.shell;
+REST['shell-sora'] = { explode: 0, xray: 0, clickL: 0, clickR: 0, side0: 0, side1: 0, scroll: 0, colorway: 'black' };
 function scene(key, build, base = {}) {
   R3D.register(key, async (studio) => {
     const obj = await build(studio);
@@ -129,7 +133,8 @@ scene('gt01', () => PARTS.buildGT01(), { view: 'threeQuarter', margin: 1.25 });
 scene('wheel', (studio) => PARTS.buildScrollWheel({ theme: studio.themeName }), { view: 'threeQuarter', margin: 1.25 });
 scene('claw', () => PARTS.buildMillMax3305(), { view: 'threeQuarter', margin: 1.3 });
 scene('screw', () => PARTS.buildScrewJoint(), { view: 'front', margin: 1.3 });
-scene('skates', () => PARTS.buildDotSkateSet ? PARTS.buildDotSkateSet() : PARTS.buildDotSkate(), { view: 'top' });
+/* the skate sets on the Theseus shell's own base outline, corner dots and screws (plate: 1 pills and ring, 0 dots) */
+scene('skates', async () => { const m = await fetch(A('shell-theseus-1seam.json')).then(r => r.json()); return PARTS.buildSkateSets({ footprint: m.footprint, screws: m.screws, dots: m.skates }); }, { view: 'top' });
 scene('battery', (studio) => PARTS.buildBattery({ theme: studio.themeName }), { view: 'threeQuarter', margin: 1.2 });
 scene('lattice', (studio) => buildLattice({ assetBase: A(''), theme: studio.themeName }), { view: 'threeQuarter' });
 

@@ -109,7 +109,7 @@ function shellMeterVal(xr, y, now, a, kb) {
   line(xb - 2, y - 10, xb + wb + 2, y - 10, { color: C.mute, w: 2, alpha: a * kb });
   return xr - xb;
 }
-const SHELL_VALW = 178;
+const SHELL_VALW = 198;
 /* one bar: the plain wall's 100 % as the faint red track (the bad case stays on screen), Theseus's bar over it, a notch
    where it stood before this step, a notch per earlier step, and the ghost's hollow mark */
 function shellMeterBar(bx, by, bw, list, what, before, now, k, a, ga, o) {

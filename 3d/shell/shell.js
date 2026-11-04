@@ -11,6 +11,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as STANDIN from './standins.js';
+import { extrude as gExtrude } from '../parts/lib/geom.js';
 
 const HERE = new URL('.', import.meta.url).href;
 
@@ -234,6 +235,49 @@ export async function buildShell(opts = {}) {
   for (const sb of meta.sideButtons) {
     const g = new THREE.Group(); g.name = sb.name; g.add(mesh(sb.name)); root.add(g); sideBtns.push({ g, sb }); parts[sb.name] = g;
   }
+  /* the side switches (F9.16, F12.4, F17.3): behind each side button a full-size SPDT micro switch, the GT01's own switch
+     without its wedge (D2F class, 12.8 x 5.8 x 6.5), its plunger facing the button. The shell holds it: a pocket round its
+     back half with a floor its three legs pass through. The button carries a glove: two walls that ride the switch's long
+     sides (the dual rails), two arms that land on its shoulders after the 0.5 mm click (the end stop), and a nub on the
+     plunger. Switch frame: x across (5.8), y up its plunger axis (0 base, 6.5 top), z along (12.8), plunger at z 3.4. */
+  const sideSw = [];
+  const gloveMat = new THREE.MeshPhysicalMaterial({ color: 0x3a3c41, roughness: 0.5, clearcoat: 0.2, clearcoatRoughness: 0.5 });
+  const gloveRest = gloveMat.color.clone(), gloveHero = new THREE.Color(0x2f8cff);
+  const pocketMat = new THREE.MeshPhysicalMaterial({ color: 0x1c1d20, roughness: 0.65 });
+  if (PARTS && PARTS.buildGT01) {
+    const box = (w, h, d, x, y, z, mat, nm) => { const g = new THREE.BoxGeometry(w, h, d); owned.add(g); const m = new THREE.Mesh(g, mat); m.position.set(x, y, z); m.name = nm; m.castShadow = true; m.receiveShadow = true; return m; };
+    for (const [k, sb] of meta.sideButtons.entries()) {
+      const bm = geoms[sb.name]; if (!bm) continue;
+      bm.computeBoundingBox(); const bb = bm.boundingBox, yc = (bb.min.y + bb.max.y) / 2, zc = (bb.min.z + bb.max.z) / 2;
+      const xTop = Math.min(bb.max.x, 30.3) - 0.95 - 3.7;          /* the switch's top 3.7 mm inside the shell's outer face */
+      const sw = PARTS.buildGT01({ tilt: 0, cover: 'clear', marking: '' });
+      const sp = sw.userData.parts; sp.base.visible = false; sp.terminalRuns.visible = false; sp.body.position.y = 0;
+      for (const pin of sp.pins) pin.scale.y = 0.75;
+      /* switch frame -> world: y_s -> +X (toward the button), z_s -> along the button, following its slant */
+      const tiltG = new THREE.Group(); tiltG.rotation.x = 0.152;   /* the buttons' slant along the side, 8.7 degrees */
+      const axisG = new THREE.Group(); axisG.rotation.z = -Math.PI / 2; tiltG.add(axisG);
+      tiltG.position.set(xTop - 6.5, yc, zc - 1.2);
+      axisG.add(sw);
+      /* the shell's pocket round the switch's back half, and its floor */
+      const pocket = new THREE.Group(); pocket.name = 'switchPocket';
+      for (const sx of [-1, 1]) pocket.add(box(0.8, 4.5, 14.8, sx * 4.4, 1.0, 0, pocketMat, 'pocketWall'));
+      pocket.add(box(9.6, 1.1, 14.8, 0, -0.7, 0, pocketMat, 'pocketFloor'));
+      axisG.add(pocket);
+      /* the glove, on the button: it moves with it */
+      const glove = new THREE.Group(); glove.name = 'glove';
+      glove.add(box(8.1, 0.9, 13.6, 0, 8.45, 0, gloveMat, 'gloveCap'));
+      for (const sx of [-1, 1]) glove.add(box(0.8, 4.9, 12.0, sx * 3.35, 5.75, 0, gloveMat, 'gloveRail'));
+      for (const sx of [-1, 1]) glove.add(box(0.9, 1.0, 9.0, sx * 2.0, 7.5, -1.2, gloveMat, 'gloveArm'));
+      glove.add(box(1.7, 1.05, 2.0, 0, 7.48, 3.4, gloveMat, 'gloveNub'));
+      const gHold = new THREE.Group(); gHold.add(glove);
+      const gT = new THREE.Group(); gT.rotation.copy(tiltG.rotation); gT.position.copy(tiltG.position);
+      const gA = new THREE.Group(); gA.rotation.z = -Math.PI / 2; gT.add(gA); gA.add(gHold);
+      root.add(tiltG);
+      const btn = sideBtns.find(e => e.sb.name === sb.name); (btn ? btn.g : root).add(gT);   /* the glove rides its button */
+      sideSw.push({ sw, tiltG, glove: gT, sb });
+      parts['sideSwitch' + k] = sw; parts['glove' + k] = gT;
+    }
+  }
   // wheel (parts API frame: origin = PCB top under the wheel centre, centre at Y = axleHeight)
   const wc = meta.wheel.center, axleHeight = 12;
   const wheel = lib.buildScrollWheel({ diameter: 22.4, width: 7, axleHeight, encoder: opts.wheelEncoder ?? false, support: opts.wheelEncoder ?? false });
@@ -244,10 +288,12 @@ export async function buildShell(opts = {}) {
   const plate = new THREE.Group(); plate.name = 'plate'; plate.add(mesh('plate')); root.add(plate); parts.plate = plate;
   const lens = new THREE.Group(); lens.name = 'lens';
   {
-    const lg = new THREE.CylinderGeometry(2.9, 2.9, 0.9, 48); owned.add(lg);
-    const l = new THREE.Mesh(lg, M.lens); l.position.set(meta.sensor[0], 1.55, meta.sensor[1]); lens.add(l);
-    const ag = new THREE.CylinderGeometry(1.05, 1.05, 0.2, 32); owned.add(ag);
-    const a = new THREE.Mesh(ag, M.lensDark); a.position.set(meta.sensor[0], 2.1, meta.sensor[1]); lens.add(a);
+    /* the snap-on lens seen through the plate's window: 5.2 x 14.2 (Glide chapter, gld_lensBot), its optical axis 1.1 mm
+       ahead of the window's centre and the LED's 1.9 behind it */
+    const st = (hw, hl, n = 18) => { const sh = new THREE.Shape(); for (let i = 0; i <= n; i++) { const a = Math.PI * i / n; const x = hw * Math.cos(a), z = (hl - hw) + hw * Math.sin(a); i ? sh.lineTo(x, -z) : sh.moveTo(x, -z); } for (let i = 0; i <= n; i++) { const a = Math.PI + Math.PI * i / n; sh.lineTo(hw * Math.cos(a), -(-(hl - hw) + hw * Math.sin(a))); } return sh; };
+    const lg = gExtrude(st(2.6, 7.1), { depth: 1.1, back: { r: 0.25, s: 3 }, front: { r: 0.15, s: 2 }, curveSegments: 1 }); lg.rotateX(-Math.PI / 2); owned.add(lg);
+    const l = new THREE.Mesh(lg, M.lens); l.position.set(meta.sensor[0], 1.0, meta.sensor[1]); lens.add(l);
+    for (const [dz, r] of [[1.1, 1.05], [-1.9, 0.75]]) { const ag = new THREE.CylinderGeometry(r, r, 0.2, 32); owned.add(ag); const a = new THREE.Mesh(ag, M.lensDark); a.position.set(meta.sensor[0], 2.12, meta.sensor[1] + dz); lens.add(a); }
     body.add(lens); parts.lens = lens;
   }
   const screws = [];
@@ -259,13 +305,28 @@ export async function buildShell(opts = {}) {
     const g = new THREE.Group(); g.add(s); root.add(g); screws.push(g);
   }
   parts.screws = screws;
+  /* Brock's skate sets (F14.1, F14.2). Plate on: a front pill and a back pill mirrored about the lens, and a ring round its
+     window, on the plate's outer face. Plate off: two dots at each corner on the rim's ledge, and two at the lens, left and
+     right of it, on two posts down from the board (plate off only). */
   const skates = [];
-  for (const [x, z] of meta.skates) {
+  const plateSkates = new THREE.Group(); plateSkates.name = 'plateSkates'; plate.add(plateSkates);
+  if (PARTS && PARTS.flatSkate && PARTS.SKATE_SETS) {
+    const SS = PARTS.SKATE_SETS, mats = PARTS.partMaterials ? PARTS.partMaterials() : null;
+    const gm = mats ? ((opts.skates || 'POM').toUpperCase() === 'PTFE' ? mats.ptfe : mats.pom) : M.pom;
+    for (const sgn of [1, -1]) { const p = PARTS.flatSkate(PARTS.skatePillPts(SS.pill.half, SS.pill.r), [], mats, gm); p.name = sgn > 0 ? 'pillFront' : 'pillBack'; p.position.set(meta.sensor[0], 0, meta.sensor[1] + sgn * SS.pill.z); plateSkates.add(p); }
+    const R = SS.ring, ring = PARTS.flatSkate(PARTS.skateStadium(R.hw + R.outer, R.hl + R.outer), [PARTS.skateStadium(R.hw + R.inner, R.hl + R.inner).reverse()], mats, gm);
+    ring.name = 'lensRing'; ring.position.set(meta.sensor[0], 0, meta.sensor[1]); plateSkates.add(ring);
+  }
+  const dotSet = new THREE.Group(); dotSet.name = 'dotSet'; root.add(dotSet);
+  const lensDots = (PARTS && PARTS.SKATE_SETS) ? PARTS.SKATE_SETS.lensDots : [[0, 11.5], [0, -11.5]];
+  for (const [x, z] of [...meta.skates, ...lensDots.map(([dx, dz]) => [meta.sensor[0] + dx, meta.sensor[1] + dz])]) {
     const s = lib.buildDotSkate({ material: opts.skates || 'POM', diameter: 6.5, height: meta.yBase });
     s.position.set(x, 0, z);
-    const g = new THREE.Group(); g.add(s); root.add(g); skates.push(g);
+    const g = new THREE.Group(); g.add(s); dotSet.add(g); skates.push(g);
   }
-  parts.skates = skates;
+  const posts = new THREE.Group(); posts.name = 'lensPosts'; dotSet.add(posts);
+  for (const [dx, dz] of lensDots) { const pg = new THREE.CylinderGeometry(3.45, 3.45, 3.35, 40); owned.add(pg); const m = new THREE.Mesh(pg, M.bay); m.position.set(meta.sensor[0] + dx, meta.yBase + 3.35 / 2, meta.sensor[1] + dz); m.castShadow = true; posts.add(m); }
+  parts.skates = skates; parts.plateSkates = plateSkates; parts.dotSet = dotSet;
   for (const n of ['engraveSerial', 'engraveLT', 'engraveRT', 'sideMark', 'usbC', 'wheelBay', 'bridge']) parts[n] = root.getObjectByName(n) || null;
 
   // x-ray overlay meshes
@@ -279,7 +340,7 @@ export async function buildShell(opts = {}) {
   const xrayMeshes = xrayTargets.map(m => { const x = new THREE.Mesh(m.geometry, xrayMat); x.visible = false; x.renderOrder = 10; m.add(x); return x; });
 
   // ---------------- state setters (pure functions of their arguments)
-  const state = { click: { L: 0, R: 0 }, scroll: 0, side: [0, 0], explode: 0, xray: 0 };
+  const state = { click: { L: 0, R: 0 }, scroll: 0, side: [0, 0], explode: 0, xray: 0, plate: 1, flip: 0, sideSw: 0 };
   const exag = opts.clickExaggeration ?? 1;
   function setClick(side, k) {
     k = Math.min(1, Math.max(0, k)); const s = side === 'R' ? 'R' : 'L'; state.click[s] = k;
@@ -302,7 +363,7 @@ export async function buildShell(opts = {}) {
     [root.getObjectByName('usbC'), 0.20, [0, 0, 16]],
     [plate, 0.08, [0, -18, 0]], [lens, 0.18, [0, -7, 0]],
     ...screws.map((s, i) => [s, 0.14 + 0.02 * i, [0, -32, 0]]),
-    ...skates.map((s, i) => [s, 0.20 + 0.012 * i, [0, -26, 0]]),
+    ...skates.map((s, i) => [s, 0.20 + 0.012 * i, [0, -26, 0]]), [posts, 0.16, [0, -20, 0]],
   ];
   const base = new Map(EXPLODE.map(([o]) => [o, o.position.clone()]));
   function setExplode(k) {
@@ -314,12 +375,30 @@ export async function buildShell(opts = {}) {
       const t = smooth(d, d + 0.72, k);
       o.position.copy(base.get(o)).add(new THREE.Vector3(...v).multiplyScalar(t));
     }
+    placePlate();
     // side buttons keep their press offset on top of the explode offset
     sideBtns.forEach((e, i) => { const t = smooth(0.05, 0.77, k); e.g.position.set(17 * t, 0, 0).addScaledVector(new THREE.Vector3().fromArray(e.sb.press), state.side[i] * e.sb.travel * exag); });
   }
-  const coreOn = () => opts.core !== false && !!geoms.core && state.xray < 0.02 && state.explode < 0.02;
-  function setXray(k) {
-    k = Math.min(1, Math.max(0, k)); state.xray = k; core.visible = coreOn();
+  /* the plate: on (1) or off (0); flip lifts it 26 mm clear and turns it over about its long axis, so a view from below
+     looks at its inner face, the triangle lattice */
+  function placePlate() {
+    const k = state.flip, e = smooth(0, 1, k);
+    plate.position.copy(base.get(plate)).add(new THREE.Vector3(0, -18 * smooth(0.08, 0.8, state.explode), 0)).add(new THREE.Vector3(0, -26 * e, 0));
+    plate.rotation.set(0, 0, Math.PI * smooth(0.25, 1, k));
+    plate.position.y += 2.0 * Math.sin(Math.PI * smooth(0.25, 1, k));    /* turning about its own middle, not the base plane */
+    plate.visible = state.plate > 0.5; dotSet.visible = state.plate <= 0.5;
+    plateSkates.position.y = -8 * smooth(0.2, 0.92, state.explode);
+  }
+  function setPlate(k) { state.plate = k ? 1 : 0; placePlate(); }
+  function setPlateFlip(k) { state.flip = Math.min(1, Math.max(0, k)); placePlate(); }
+  const coreOn = () => opts.core !== false && !!geoms.core && state.xray < 0.02 && state.explode < 0.02 && state.sideSw < 0.02;
+  /* in the switches' shot the glove takes Theseus's colour (the deck's highlight), the rest stays the shell's */
+  function setSideSwitches(k) { state.sideSw = Math.min(1, Math.max(0, k)); gloveMat.color.copy(gloveRest).lerp(gloveHero, smooth(0.2, 1, state.sideSw)); applyXray(); }
+  function setHighlight(hex) { try { gloveHero.set(hex); setSideSwitches(state.sideSw); } catch (e) { /* not a colour */ } }
+  function setXray(k) { state.xray = Math.min(1, Math.max(0, k)); applyXray(); }
+  function applyXray() {
+    /* the side switches' shot (sideSw) looks through the shell the way x-ray does, and the core stand-in goes */
+    const k = Math.max(state.xray, 0.9 * state.sideSw); core.visible = coreOn();
     xrayMat.uniforms.k.value = k;
     xrayMeshes.forEach(x => { x.visible = k > 0.001; });
     for (const mat of [M.shell, M.button, M.plate, M.engrave, M.gold]) {
@@ -335,10 +414,11 @@ export async function buildShell(opts = {}) {
   root.userData.materials = M;
   root.userData.state = state;
   root.userData.partsSource = PARTS ? 'parts/parts.js' : 'standins.js';
-  Object.assign(root, { setClick, setScroll, setSideButton, setExplode, setXray, setColorway });
+  Object.assign(root, { setClick, setScroll, setSideButton, setExplode, setXray, setColorway, setPlate, setPlateFlip, setSideSwitches, setHighlight });
+  placePlate();
   root.dispose = () => {
     owned.forEach(g => g.dispose());
-    Object.values(M).forEach(m => m.dispose());
+    Object.values(M).forEach(m => m.dispose()); gloveMat.dispose(); pocketMat.dispose(); sideSw.forEach(e => e.sw.dispose && e.sw.dispose());
     xrayMat.dispose();
     [wheel, ...screws.map(s => s.children[0]), ...skates.map(s => s.children[0])].forEach(o => o && o.dispose && o.dispose());
   };

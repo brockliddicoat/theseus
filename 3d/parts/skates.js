@@ -191,3 +191,86 @@ export function buildDotSkateSet(opts = {}) {
   root.dispose = () => { M.poron.bumpMap = null; disposeTree(root, userMats); for (const m of own) m.dispose?.(); };
   return root;
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Brock's two skate sets (F14.1, F14.2): with the bottom plate on, one wide front pill and one wide back pill, mirrored about
+// the lens, and a ring round the lens window; with the plate off, two dots at each corner on the rim's ledge and two at
+// the lens, in front of it and behind it. Same 0.65 mm stack as the dots (glide 0.38 + tape, PORON, tape 0.27).
+// Pills: 40.5 x 6.5 mm, an estimate after the Viper V4 Pro (its skates are not published; drawn, not measured).
+export const SKATE_SETS = {
+  pill: { z: 44.8, half: 17, r: 3.25 },                     // centres at z = +/-44.8, end caps r 3.25: 40.5 x 6.5 mm
+  ring: { hw: 3.2, hl: 7.7, inner: 1.0, outer: 3.0 },       // round the 6.4 x 15.4 lens window, 1 to 3 mm out from it
+  lensDots: [[11.5, 0], [-11.5, 0]],                        // plate off: left and right of the lens (the plate builder's FE: both pairs hold the lens; this one leaves a third less sag under a palm press, and clears the window and the lens's clip slots)
+};
+function stadium(hw, hl, n = 24, cx = 0, cz = 0) {           // a stadium (long along z) as [x, z] points, CCW seen from above
+  const pts = [];
+  for (let i = 0; i <= n; i++) { const a = Math.PI * i / n; pts.push([cx + hw * Math.cos(a), cz + (hl - hw) + hw * Math.sin(a)]); }
+  for (let i = 0; i <= n; i++) { const a = Math.PI + Math.PI * i / n; pts.push([cx + hw * Math.cos(a), cz - (hl - hw) + hw * Math.sin(a)]); }
+  return pts;
+}
+function pillPts(half, r, n = 20) {                          // a pill across x (long along x), centred at the origin
+  const pts = [];
+  for (let i = 0; i <= n; i++) { const a = -Math.PI / 2 + Math.PI * i / n; pts.push([half + r * Math.cos(a), r * Math.sin(a)]); }
+  for (let i = 0; i <= n; i++) { const a = Math.PI / 2 + Math.PI * i / n; pts.push([-half + r * Math.cos(a), r * Math.sin(a)]); }
+  return pts;
+}
+/** a flat skate of any outline (and holes), the 0.65 mm stack: glide face at Y = 0 with a rounded leading edge, the PORON
+ *  and tape body above it inset 0.12 mm. outline / holes: [[x, z], ...] */
+function flatSkate(outline, holes, M, glideMat, H = 0.65) {
+  const V = ([x, z]) => new THREE.Vector2(x, -z);
+  const sh = (inset) => { const s = new THREE.Shape(outline.map(V)); for (const h of holes) s.holes.push(new THREE.Path(h.map(V))); return s; };
+  const g = new THREE.Group();
+  const glide = extrude(sh(), { depth: 0.38 * H / 0.65, back: { r: 0.2, t: 0.2, s: 4 }, front: { r: 0.03, t: 0.03, s: 1 }, curveSegments: 1, crease: 35 });
+  glide.rotateX(-Math.PI / 2);
+  const body = extrude(sh(), { depth: 0.27 * H / 0.65 - 0.004, back: { r: 0.12, t: 0.03, s: 1 }, front: { r: 0.12, t: 0.03, s: 1 }, curveSegments: 1, crease: 35 });
+  body.rotateX(-Math.PI / 2); body.translate(0, 0.38 * H / 0.65 + 0.002, 0);
+  g.add(meshOf(glide, glideMat, 'glide'), meshOf(body, M.poron, 'poron'));
+  return g;
+}
+/** the two sets on one base. opts: footprint, screws, dots (8 corner positions), material ('POM' | 'PTFE'), showFootprint.
+ *  setPlate(k): 1 = the plate set (pills and ring), 0 = the dot set (corner dots and the lens dots); in between they cross-fade
+ *  by dropping (the outgoing set falls away) */
+export function buildSkateSets(opts = {}) {
+  const M = partMaterials(opts.materials);
+  const userMats = new Set(Object.values(opts.materials || {}));
+  const own = new Set(Object.values(M).filter(m => !userMats.has(m)));
+  const glideMat = (opts.material || 'POM').toUpperCase() === 'PTFE' ? M.ptfe : M.pom;
+  M.poron.bumpMap = foamBump(); M.poron.bumpScale = 0.6;
+  const root = new THREE.Group(); root.name = 'SkateSets';
+  const fp = opts.footprint || SORA_FOOTPRINT, screws = opts.screws || STANDIN_SCREWS;
+  const dotsAt = opts.dots || layoutDotSkates({ footprint: fp, screws });
+  const G = skateGeometries(opts);
+  const dotSet = new THREE.Group(); dotSet.name = 'dotSet';
+  for (const [x, z] of [...dotsAt, ...SKATE_SETS.lensDots]) {
+    const g = new THREE.Group(); g.position.set(x, 0, z);
+    g.add(meshOf(G.glide, glideMat, 'glide'), meshOf(G.tapeLower, M.adhesive, 'tapeLower'), meshOf(G.poron, M.poron, 'poron'), meshOf(G.tapeUpper, M.adhesive, 'tapeUpper'));
+    dotSet.add(g);
+  }
+  const plateSet = new THREE.Group(); plateSet.name = 'plateSet';
+  const P = SKATE_SETS.pill, R = SKATE_SETS.ring;
+  for (const s of [1, -1]) { const p = flatSkate(pillPts(P.half, P.r), [], M, glideMat); p.name = s > 0 ? 'pillFront' : 'pillBack'; p.position.z = s * P.z; plateSet.add(p); }
+  { const ring = flatSkate(stadium(R.hw + R.outer, R.hl + R.outer), [stadium(R.hw + R.inner, R.hl + R.inner).reverse()], M, glideMat); ring.name = 'lensRing'; plateSet.add(ring); }
+  root.add(dotSet, plateSet);
+  let base = null;
+  if (opts.showFootprint !== false) {
+    const sh = new THREE.Shape(fp.map(([x, z]) => new THREE.Vector2(x, -z)));
+    sh.holes.push(new THREE.Path(stadium(R.hw, R.hl).map(([x, z]) => new THREE.Vector2(x, -z)).reverse()));
+    const bg = extrude(sh, { depth: 1.2, back: { r: 0.4, s: 4 }, front: { r: 0.3, s: 2 }, curveSegments: 48 });
+    bg.rotateX(-Math.PI / 2); bg.translate(0, G.H + 0.002, 0);
+    base = meshOf(bg, M.cfpp, 'baseStandIn'); root.add(base);
+  }
+  const state = { plate: 1, explode: 0 };
+  function apply() {
+    const k = state.plate, e = state.explode;
+    plateSet.visible = k > 0.001; dotSet.visible = k < 0.999;
+    plateSet.position.y = -(1 - k) * 6 - 3 * e; dotSet.position.y = -k * 6 - 3 * e;
+  }
+  root.setPlate = (k) => { state.plate = clamp01(k); apply(); };
+  root.setExplode = (k) => { state.explode = clamp01(k); apply(); };
+  apply();
+  root.userData.spec = { ...DOT_SKATE_SPEC, sets: SKATE_SETS, dots: dotsAt, pillSize: 'estimate: 40.5 x 6.5 mm after the Viper V4 Pro (not published)' };
+  root.userData.parts = { dotSet, plateSet, base };
+  root.dispose = () => { M.poron.bumpMap = null; disposeTree(root, userMats); for (const m of own) m.dispose?.(); };
+  return root;
+}
+export { stadium as skateStadium, pillPts as skatePillPts, flatSkate };
