@@ -38,10 +38,18 @@ Slide API: `S({ id, ch, theme: 'paper'|'night', title, settle, ideas: [#…], sr
   - Content: every idea gets an animated visualization; anything already in shipping mice also gets a "how Theseus goes a step further" beat; as many competitor comparisons as possible (bars, XY with sweet-spot gradients, Pareto frontiers).
   - Corrections from the 2026-11-03 research pass are in `research/validation-report-2026-11-03.md` (sensor naming, Raytac AN54LM-20A, nPM1300, Kim et al. CHI 2020 wording, no SLX battery-hour rating, single-sided reflow wording).
 
-## Status (update this section as work lands)
-- [x] Deck restored and published (v0, old look, XBAB grey).
-- [ ] Design system v2 + exemplar slides (cover, 29 g budget, battery chemistry, Zaunkoenig zero-gram, Pareto).
-- [ ] Sourced comparison datasets in `research/data/`.
-- [ ] 3D: shell from scan + Theseus features; PCB; small parts; lattice arches.
-- [ ] Chapter rebuild on the new system (step-further beats, comparisons, lost idea sheets, 3D integration).
-- [ ] End-to-end check, publish, push.
+## Status (2026-11-04)
+- [x] Deck restored and published on Brock's main account (see PUBLISHING.md).
+- [x] Design system v2 (`deck/DESIGN.md`): embedded Inter Display / Inter / JetBrains Mono, uppercase type roles, XBAB grey, chart components (bars with samples + CI, breakdown, lollipop, scatter with sweet spot + Pareto, compare table), Sora key plan, exemplar slides (cover, zero grams, 29 g budget, price Pareto, battery chemistry, frontiers, motion ranking).
+- [x] Sourced datasets in `research/data/` (35 mice, piaknow latency, XBAB click chart, weights, batteries, weight science, step-further for 30 features, claim checks, missing ideas).
+- [x] 3D parts finished (`3d/parts/`, README has the API). Shell (`3d/shell/`), PCB (`3d/pcb/`) and lattice (`3d/lattice/`) are usable but their builders were stopped mid-refinement when the session ended; read each README + shots.
+- [x] 3D in the deck: `deck/src/08-r3d.js` `view3D(key, t, x, y, w, h, state)`; bundle built by `cd 3d && npm install && node integration/build.mjs` (writes `deck/vendor/r3d.js` and compressed assets into `deck/dist/assets/`, both gitignored). The deck must be served over http (tools/serve.js does it for the checkers) and published as index.html + assets/.
+- [~] Chapter rebuilds: seven builders worked ~1–3 h each and were stopped by a session restart before reporting. Their work is committed (WIP). The deck builds, 94 slides. Remaining per chapter: finish step-further beats, check every slide settled/mid/phone-scale with `tools/qa.js` and `tools/errs.js`, fill any idea still without a visualization (list: `grep -o "ideas: \[[^]]*\]" src/*.js`).
+- [ ] Recommendations deck (`src/11-slides-rec.js`) restyle — partly done by the ownership builder; check.
+- [ ] Lattice assets are ~20 MB raw (`3d/lattice/assets/*.bin`); quantize/compress before final publish.
+- [ ] Push: create an empty GitHub repo `brockliddicoat/theseus` and push this repo (`git gc --prune=now` first).
+
+## Open decisions for Brock
+- 29 g budget vs 200 h target: built like the XA25, a 29 g wireless mouse leaves ~4.9 g for the battery (~140 mAh, ~146 h at 1 kHz); 250 mAh needs ~2.6 g cut elsewhere.
+- Theseus price (the price Pareto shows a line, not a point).
+- The raw Sora scan comes from findmymouse.com's viewer (sold there as a paid download, personal use). Brock says he made the scan; confirm with the site owner before publishing a mesh derived from it.
