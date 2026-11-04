@@ -40,11 +40,93 @@ function go(i, opts = {}) {
   updateBar(); renderSources();
   try { prepare3D(next); prepare3D(DECK.slides[i + 1]); } catch (e) { }
 }
+/* ---------- slide ratings (Brock, F16.2) ----------
+   Brock scores each slide's value from 1 to 10 (10 = most valuable). The scores show which information is safest to
+   condense or cut; they don't decide which slides go. They live in the artifact's db at ratings/<slide id>, which only
+   the owner and editors can write, and Claude reads them back. Nothing shows where the db isn't served (a local file, a
+   preview, a viewer who can't write). */
+const RATE = { db: null, all: {}, ready: false, ro: false, note: '', pend: {}, again: {} };
+const rateKey = id => String(id).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_');
+async function rateInit() {
+  const cl = window.claude;
+  if (!cl || typeof cl.use !== 'function') return;
+  let db = null, user = null;
+  try { db = await cl.use('db'); } catch (e) { db = null; }
+  if (!db) return;
+  try { user = await cl.use('user'); } catch (e) { user = null; }
+  if (user) { try { if (!(await user.canEdit())) return; } catch (e) { } }
+  RATE.db = db;
+  $('rateBtn').hidden = false;
+  const timer = setTimeout(() => { if (!RATE.ready) { RATE.note = 'Can’t reach the saved ratings yet'; rateSync(); } }, 10000);
+  db.collection('ratings').onSnapshot(snap => {
+    const all = {};
+    snap.docs.forEach(d => { const v = d.data(); if (v) all[d.id] = v; });
+    for (const k in RATE.pend) if (RATE.pend[k] && RATE.all[k]) all[k] = RATE.all[k];   /* keep our unsaved edit */
+    RATE.all = all;
+    if (!snap.metadata.fromCache) { RATE.ready = true; if (RATE.note.startsWith('Can')) RATE.note = ''; clearTimeout(timer); }
+    rateSync();
+  }, err => { clearTimeout(timer); RATE.ready = true; RATE.note = 'Ratings unavailable (' + (err && err.code) + ')'; rateSync(); });
+}
+function rateBuild(p) {
+  p.innerHTML = '<div class="top"><h2>How valuable is this slide? <span class="hint">1 least, 10 most</span></h2><span class="state" aria-live="polite"></span></div>' +
+    '<p class="slide"></p><div class="vals">' + Array.from({ length: 10 }, (_, i) => '<button type="button" data-v="' + (i + 1) + '" aria-label="Rate ' + (i + 1) + ' of 10">' + (i + 1) + '</button>').join('') + '</div>' +
+    '<div class="row"><textarea rows="1" placeholder="What matters most here, or what could go (optional)"></textarea><button class="pill" type="button" data-act="next">next unrated</button></div>';
+  p.title = 'The scores show which information is safest to condense, not which slides to cut';
+  p.querySelectorAll('.vals button').forEach(b => b.onclick = e => { e.stopPropagation(); rateSave({ value: +b.dataset.v }); });
+  const ta = p.querySelector('textarea');
+  let tmr = null;
+  ta.oninput = () => { clearTimeout(tmr); tmr = setTimeout(() => rateSave({ note: ta.value.trim() }), 1200); };
+  ta.onblur = () => { clearTimeout(tmr); rateSave({ note: ta.value.trim() }); };
+  p.querySelector('[data-act="next"]').onclick = e => {
+    e.stopPropagation();
+    const n = DECK.slides.length;
+    for (let k = 1; k <= n; k++) { const j = (APP.i + k) % n; const r = RATE.all[rateKey(DECK.slides[j].id)]; if (!r || !r.value) { go(j); return; } }
+  };
+  p.dataset.built = '1';
+}
+function rateSync() {
+  if (!RATE.db) return;
+  const s = DECK.slides[APP.i]; if (!s) return;
+  const r = RATE.all[rateKey(s.id)], done = DECK.slides.filter(x => { const v = RATE.all[rateKey(x.id)]; return v && v.value; }).length;
+  $('rateBtn').textContent = r && r.value ? 'rated ' + r.value : 'rate';
+  const p = $('rate'); if (p.hidden) return;
+  if (!p.dataset.built) rateBuild(p);
+  p.querySelector('.slide').textContent = (APP.i + 1) + '. ' + (s.title || s.id);
+  p.querySelectorAll('.vals button').forEach(b => { b.classList.toggle('on', !!(r && +b.dataset.v === r.value)); b.disabled = RATE.ro; });
+  const ta = p.querySelector('textarea'); ta.disabled = RATE.ro;
+  if (document.activeElement !== ta) ta.value = (r && r.note) || '';
+  p.querySelector('.state').textContent = RATE.note || (done + ' of ' + DECK.slides.length + ' rated');
+}
+function rateSave(patch) {
+  if (!RATE.db || RATE.ro) return;
+  const s = DECK.slides[APP.i], k = rateKey(s.id), old = RATE.all[k] || {};
+  const doc = { id: s.id, title: s.title || '', ch: s.ch || '', n: APP.i + 1, of: DECK.slides.length, value: old.value || null, note: old.note || '' };
+  Object.assign(doc, patch);
+  if (doc.value === (old.value || null) && doc.note === (old.note || '')) return;
+  doc.at = new Date().toISOString();
+  RATE.all[k] = doc; RATE.note = ''; rateSync();
+  /* one write at a time per document: a burst of clicks writes the latest state once the previous write lands */
+  if (RATE.pend[k]) { RATE.again[k] = true; return; }
+  RATE.pend[k] = true;
+  (async () => {
+    do {
+      RATE.again[k] = false;
+      try { await RATE.db.doc('ratings/' + k).set(RATE.all[k]); }
+      catch (e) {
+        if (e && e.code === 'invalid_argument') { RATE.ro = true; RATE.note = 'This view can’t save ratings'; }
+        else RATE.note = 'Not saved (' + ((e && e.code) || 'error') + '), try again';
+        break;
+      }
+    } while (RATE.again[k]);
+    RATE.pend[k] = false; rateSync();
+  })();
+}
 function updateBar() {
   const s = DECK.slides[APP.i];
   $('count').textContent = (APP.i + 1) + ' / ' + DECK.slides.length;
   const ch = DECK.chapters.find(c => c.key === s.ch); $('chap').textContent = ch ? ch.name : '';
   document.querySelectorAll('.seg').forEach(b => b.classList.toggle('on', b.dataset.ch === s.ch));
+  rateSync();
 }
 function buildBar() {
   const segs = $('segs'); segs.innerHTML = '';
@@ -178,6 +260,8 @@ async function start() {
   $('next').onclick = e => { e.stopPropagation(); go(APP.i + 1); };
   $('play').onclick = e => { e.stopPropagation(); togglePlay(); };
   $('fs').onclick = e => { e.stopPropagation(); const el = document.documentElement; const p = document.fullscreenElement ? document.exitFullscreen() : (el.requestFullscreen ? el.requestFullscreen() : null); if (p && p.catch) p.catch(() => { }); };
+  $('rateBtn').onclick = e => { e.stopPropagation(); const b = $('rate'); b.hidden = !b.hidden; $('rateBtn').setAttribute('aria-expanded', String(!b.hidden)); rateSync(); };
+  rateInit();
   $('srcBtn').onclick = e => { e.stopPropagation(); const b = $('src'); b.hidden = !b.hidden; $('srcBtn').setAttribute('aria-expanded', String(!b.hidden)); };
   $('sndBtn').onclick = e => { e.stopPropagation(); auInit(); AU.on = !AU.on; $('sndBtn').textContent = AU.on ? 'sound on' : 'sound off'; $('sndBtn').setAttribute('aria-pressed', String(AU.on)); if (AU.on) sfx('click'); };
   $('cleanBtn').onclick = e => { e.stopPropagation(); document.body.classList.toggle('clean'); fit(); };
@@ -187,6 +271,7 @@ async function start() {
   let tx = null; $('stage').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
   $('stage').addEventListener('touchend', e => { if (tx == null) return; const d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 40) go(APP.i + (d < 0 ? 1 : -1)); tx = null; });
   window.addEventListener('keydown', e => {
+    if (e.target && /^(TEXTAREA|INPUT|SELECT)$/.test(e.target.tagName)) return;   /* typing a rating note */
     if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
     const k = e.key;
     if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); go(APP.i + 1); }
@@ -200,7 +285,7 @@ async function start() {
     else if (k === 'd' || k === 'D') setView2D(!V2D.on);
     else if (k === '2') setView2D(true);
     else if (k === '3') setView2D(false);
-    else if (k === 'Escape') $('src').hidden = true;
+    else if (k === 'Escape') { $('src').hidden = true; $('rate').hidden = true; $('rateBtn').setAttribute('aria-expanded', 'false'); }
   });
   window.addEventListener('hashchange', () => {
     const hv = location.hash.slice(1);

@@ -47,6 +47,23 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 #viewBtn span { opacity: .42; }
 #viewBtn .vs { opacity: .25; }
 #viewBtn[aria-pressed="true"] .v2, #viewBtn[aria-pressed="false"] .v3 { opacity: 1; color: var(--hero); }
+#rate { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(64px + env(safe-area-inset-bottom, 0px)); width: min(600px, calc(100% - 32px));
+  background: rgba(20,21,23,.96); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; z-index: 6; box-shadow: 0 24px 60px -24px #000; }
+#rate .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+#rate h2 { margin: 0; font: 700 14px/1.3 var(--f-disp); }
+#rate .hint { margin-left: 6px; color: var(--mute); font: 500 11px/1 var(--f-mono); }
+#rate .state { color: var(--mute); font: 500 11px/1.3 var(--f-mono); white-space: nowrap; }
+#rate .slide { margin: 4px 0 8px; font: 600 12px/1.35 var(--f-disp); color: #bdbcb6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rate .vals { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 5px; }
+#rate .vals button { height: 34px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 700 14px/1 var(--f-disp); cursor: pointer; font-variant-numeric: tabular-nums; padding: 0; }
+#rate .vals button:hover { background: var(--surface2); }
+#rate .vals button.on { background: var(--hero); border-color: var(--hero); color: #fff; }
+#rate .vals button:disabled { opacity: .45; cursor: default; }
+#rate .row { display: flex; align-items: stretch; gap: 8px; margin-top: 8px; }
+#rate textarea { box-sizing: border-box; flex: 1 1 auto; min-width: 0; height: 32px; min-height: 32px; resize: vertical; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: 400 13px/1.3 var(--f-disp); }
+#rate .row .pill { height: 32px; padding: 0 12px; }
+#rateBtn[aria-expanded="true"] { border-color: var(--hero); }
+body.clean #rate { display: none; }
 body.clean #bar, body.clean #src { display: none; }
 body.clean #stage { border-radius: 0; box-shadow: none; }
 body.cap #app { padding: 0; }
@@ -66,9 +83,11 @@ body.cap #app { padding: 0; }
     <span id="count"></span>
     <button class="pill" id="sndBtn" type="button" aria-pressed="false" title="Mechanical sound design (S)">sound off</button>
     <button class="pill" id="viewBtn" type="button" aria-pressed="false" title="Show the drawings in 2D or 3D (D)"><span class="v2">2D</span><span class="vs">/</span><span class="v3">3D</span></button>
+    <button class="pill" id="rateBtn" type="button" aria-expanded="false" aria-controls="rate" hidden title="Rate how valuable this slide is, 1 to 10">rate</button>
     <button class="pill opt" id="srcBtn" type="button" aria-expanded="false" aria-controls="src">sources</button>
     <button class="pill opt" id="cleanBtn" type="button" title="Hide controls (H)">clean</button>
     <button class="btn" id="fs" type="button" aria-label="Full screen"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
   </nav>
   <aside id="src" hidden aria-label="Sources"></aside>
+  <aside id="rate" hidden aria-label="Rate this slide"></aside>
 </div>

@@ -71,17 +71,29 @@ export function buildGT01(opts = {}) {
   // ================================================================ the special bottom housing (world frame)
   // The GT01 is a normal SPDT micro switch on a moulded wedge that turns it 20° (Brock: "literally just a normal SPDT
   // switch with a special bottom housing to rotate it"). The wedge also covers the terminals down to the board.
+  // Gateron's photos (2026-11-04): ONE black block from the board up to the cover's edge, its bottom flat on the board and
+  // its top the switch's base plane, leaning with the switch; in each side, through the skin, a round hole high at the
+  // back, a triangle low at the back, a slot along the tilt in the middle and a round hole toward the plunger end.
   const C = S2W(0, L / 2), F = S2W(0, -L / 2);          // the switch's bottom corners (front low, back high)
-  const prof = [[F[1], 0], [C[1], 0], [C[1], C[0]], [F[1], F[0]]];
-  const pr = [0.12, 0.12, 0.18, 0.3];
+  const C2 = S2W(Y_SHOULDER - 0.004, L / 2), F2 = S2W(Y_SHOULDER - 0.004, -L / 2);   // the cover's edge, front and back
+  const prof = [[F[1], 0], [C[1], 0], [C[1], C[0]], [C2[1], C2[0]], [F2[1], F2[0]], [F[1], F[0]]];
+  const pr = [0.14, 0.14, 0.05, 0.2, 0.2, 0.05];
   const profShape = () => filletPolygon(prof, pr, false, 6);
-  const pockets = [];
-  {
-    // a triangular lightening pocket in each skin, parallel to the switch, and one round one under the plunger end
-    const zBack = F[1] + 0.9, yLow = 0.6, yTop = F[0] - 0.75;
-    const zr = zBack + (yTop - yLow) / Math.tan(Math.max(tilt, 1e-3)) - 0.9;
-    if (yTop - yLow > 1.1 && zr - zBack > 1.6) pockets.push(() => filletPolygon([[zBack, yLow], [Math.min(zr, C[1] - 2.2), yLow], [zBack, yTop]], 0.3, true, 5));
-  }
+  const yTopAt = (zw) => { const zs = (zw - Y_SHOULDER * sT) / cT; return Y_SHOULDER * cT - zs * sT + lift; };   // the cover's edge over world z
+  const circle = (cz, cy, r) => { const h = new THREE.Path(); h.absarc(cz, cy, r, 0, Math.PI * 2, true); return h; };
+  const slot = (cz, cy, len, wd) => {
+    const h = new THREE.Path(), r = wd / 2, dx = (len / 2 - r) * cT, dy = -(len / 2 - r) * sT;   // along the tilt, falling forward
+    const a = -tilt;
+    h.absarc(cz + dx, cy + dy, r, a - Math.PI / 2, a + Math.PI / 2, false);
+    h.absarc(cz - dx, cy - dy, r, a + Math.PI / 2, a + 1.5 * Math.PI, false);
+    h.closePath(); return h;
+  };
+  const tri = () => {
+    const zB = F[1] + 0.45, y0 = 0.75, z1 = -1.7;
+    return filletPolygon([[zB, y0], [z1 + 0.3, y0], [zB, 3.0]], 0.3, true, 5);   // a right triangle pointing forward, as photographed
+  };
+  const HOLES = { back: [-3.6, Math.min(4.75, yTopAt(-3.6) - 1.4), 0.95], front: [2.9, Math.min(2.2, yTopAt(2.9) - 1.5), 0.85], slot: [-0.4, 2.45, 1.8, 0.72] };
+  const pockets = [() => circle(...HOLES.back), () => circle(...HOLES.front), () => slot(...HOLES.slot), tri];
   const skinT = 1.0, coreHalf = W / 2 - skinT;
   const mkSkin = (s) => {
     const sh = profShape();
@@ -95,7 +107,9 @@ export function buildGT01(opts = {}) {
   const coreG = extrude(profShape(), { depth: 2 * coreHalf, curveSegments: 20 });
   coreG.rotateY(-Math.PI / 2); coreG.translate(coreHalf, 0, 0);
   const base = new THREE.Group(); base.name = 'base';
-  const wedgeL = meshOf(mkSkin(-1), M.lcpBlack, 'wedgeSkinL'), wedgeC = meshOf(coreG, M.lcpBlack, 'wedgeCore'), wedgeR = meshOf(mkSkin(+1), M.lcpBlack, 'wedgeSkinR');
+  // the core shows only at the bottom of the side cutouts: a deep matte black there, so they read as holes
+  const coreMat = M.lcpBlack.clone(); coreMat.color.multiplyScalar(0.35); coreMat.roughness = 0.95; if ('specularIntensity' in coreMat) coreMat.specularIntensity = 0.15; own.add(coreMat);
+  const wedgeL = meshOf(mkSkin(-1), M.lcpBlack, 'wedgeSkinL'), wedgeC = meshOf(coreG, coreMat, 'wedgeCore'), wedgeR = meshOf(mkSkin(+1), M.lcpBlack, 'wedgeSkinR');
   base.add(wedgeL, wedgeC, wedgeR);
   // no locating peg under the wedge (Brock, 09:28: it read as "a 4th extra pin in the front"): the three terminals key it
   root.add(base);
@@ -109,7 +123,7 @@ export function buildGT01(opts = {}) {
   // ---- the switch's own base (black LCP): the lower body and the pedestals that hold the terminals inside the cover
   const core = new THREE.Group(); core.name = 'switchBase';
   const sb = (g, nm) => { const m = meshOf(g, M.lcpBlack, nm); core.add(m); return m; };
-  sb(box(W, L, 0.0, Y_SHOULDER, 0.35, 0.06), 'baseBody');
+  sb(box(W - 0.24, L - 0.24, 0.02, Y_SHOULDER, 0.35, 0.06), 'baseBody');   // inside the black block (it carries the pedestals)
   sb(box(2.8, 1.25, Y_SHOULDER - 0.01, 3.0, 0.16, 0.06, 0, 5.32), 'comPedestal');
   sb(box(2.8, 0.75, Y_SHOULDER - 0.01, 4.62, 0.16, 0.06, 0, -5.62), 'ncPedestal');
   sb(box(1.7, 1.25, Y_SHOULDER - 0.01, 3.64, 0.14, 0.05, 0, -3.95), 'noPedestal');
@@ -157,7 +171,7 @@ export function buildGT01(opts = {}) {
   const bg = extrude(bladeShape, { depth: T_BLADE, front: { r: 0.015, s: 1 }, back: { r: 0.015, s: 1 }, curveSegments: 10, crease: 30 });
   bg.rotateX(-Math.PI / 2);                               // (x, y, e) → (x, e, −y)
   bg.translate(0, Y_BLADE, (zA0 + zA1) / 2);
-  const blade = meshOf(bg, M.becu, 'blade');
+  const blade = meshOf(bg, M.goldSatin, 'blade');               // gold-plated, as in Gateron's photos
   body.add(blade);
   const bladeRest = bg.attributes.position.array.slice();
   const bladeNRest = bg.attributes.normal.array.slice();
@@ -166,15 +180,17 @@ export function buildGT01(opts = {}) {
   const mrBot = meshOf(dome(0.42, 0.12), M.silverContact, 'movBot'); mrBot.rotation.x = Math.PI;
   movRivet.add(mrTop, mrBot);
   body.add(movRivet);
-  const tongue = new THREE.Mesh(new THREE.BufferGeometry(), M.becu); tongue.name = 'tongue'; tongue.castShadow = true;
+  const tongue = new THREE.Mesh(new THREE.BufferGeometry(), M.goldSatin); tongue.name = 'tongue'; tongue.castShadow = true;
   body.add(tongue);
 
-  // ---- plunger (black POM): a cap above the cover, a flange under its ceiling, a nose on the blade (no preload gap)
+  // ---- plunger (black POM), an ordinary micro-switch plunger (Brock: "a fairly normal plunger"): a low cap 0.45 mm
+  // proud of the cover with a softly domed top, a flange under the cover's ceiling, and a short nose on the leaf
   const plunger = new THREE.Group(); plunger.name = 'plunger';
-  plunger.add(meshOf(box(1.6, 2.2, 5.9, 7.25, 0.42, 0.3, 0, ZP), M.pomBlack, 'plungerCap'));
-  plunger.add(meshOf(box(2.5, 3.1, 5.45, 5.98, 0.3, 0.07, 0, ZP), M.pomBlack, 'plungerFlange'));
+  const Y_CAP = H + 0.45;
+  plunger.add(meshOf(box(1.5, 2.1, 5.95, Y_CAP, 0.4, 0.34, 0, ZP), M.pomBlack, 'plungerCap'));
+  plunger.add(meshOf(box(2.3, 2.9, 5.55, 5.98, 0.3, 0.07, 0, ZP), M.pomBlack, 'plungerFlange'));
   const yNose = Y_BLADE + T_BLADE + 0.002;
-  const nose = extrude(roundedRectShape(1.9, 0.72, 0.22), { depth: 5.46 - yNose, back: { r: 0.14, s: 4 }, curveSegments: 6 });
+  const nose = extrude(roundedRectShape(1.3, 1.1, 0.3), { depth: 5.56 - yNose, back: { r: 0.18, s: 4 }, curveSegments: 6 });
   nose.rotateX(-Math.PI / 2); nose.translate(0, yNose, ZP);
   plunger.add(meshOf(nose, M.pomBlack, 'plungerNose'));
   body.add(plunger);
@@ -246,7 +262,7 @@ export function buildGT01(opts = {}) {
     const P0 = new THREE.Vector3(0, Y_BLADE + T_BLADE / 2 + ay + lift2, zr);
     const P2 = new THREE.Vector3(0, Y_FULC + lift2 * 0.4, Z_FULC + 0.06);
     const snap = tip / -GAP;                 // 0 before, 1 after the snap
-    const bow = lerp(-0.34, 0.22, snap);
+    const bow = lerp(-0.12, 0.08, snap);     // a stamped strip under load: nearly straight, its slight arch turns over
     const mid = P0.clone().lerp(P2, 0.5); const dir = P2.clone().sub(P0).normalize();
     const nrm = new THREE.Vector3(0, dir.z, -dir.y); if (nrm.y < 0) nrm.multiplyScalar(-1);
     const P1 = mid.addScaledVector(nrm, bow);
@@ -256,7 +272,7 @@ export function buildGT01(opts = {}) {
       pts.push(new THREE.Vector3().addScaledVector(P0, a).addScaledVector(P1, b).addScaledVector(P2, c));
     }
     const old = tongue.geometry;
-    tongue.geometry = sweep(pts, rectSection(0.07, 0.8, 0.0), { up: [1, 0, 0], crease: 50 });
+    tongue.geometry = sweep(pts, rectSection(T_BLADE, 0.96, 0.0), { up: [1, 0, 0], crease: 50 });   // as wide as its window allows
     old.dispose();
   }
 
@@ -291,7 +307,7 @@ export function buildGT01(opts = {}) {
   root.getState = () => ({ ...state });
 
   // ================================================================ spec / parts / dispose
-  const plTop = new THREE.Vector3(0, 7.25, ZP).applyEuler(body.rotation).add(body.position);
+  const plTop = new THREE.Vector3(0, H + 0.45, ZP).applyEuler(body.rotation).add(body.position);
   root.userData.spec = {
     ...GT01_SPEC,
     tiltDeg: tilt / D2R,
@@ -299,7 +315,7 @@ export function buildGT01(opts = {}) {
     plungerTop: plTop.toArray().map(v => +v.toFixed(4)),
     plungerAxis: [0, +cT.toFixed(5), +sT.toFixed(5)],
     footprint: [[-W / 2, F[1]], [W / 2, F[1]], [W / 2, C[1]], [-W / 2, C[1]]],
-    heightMax: +Math.max(...[[H, -L / 2], [H, L / 2], [7.25, ZP]].map(([y, z]) => S2W(y, z)[0])).toFixed(3),
+    heightMax: +Math.max(...[[H, -L / 2], [H, L / 2], [H + 0.45, ZP]].map(([y, z]) => S2W(y, z)[0])).toFixed(3),
     mechanism: 'SPDT snap-action: BeCu frame anchored on COM, cut-out tongue on a fulcrum, AgNi contacts NC above / NO below',
   };
   root.userData.parts = { body, base, core, switchBase: core, cover, plunger, blade, tongue, contactNC: ncRivet, contactNO: noRivet, contactCOM: movRivet, terminals: term, terminalRuns: runs, pins };

@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 10:26 (Chicago).
+Last updated: 2026-11-04 11:00 (Chicago).
 
 ## Open with Brock
 
@@ -92,7 +92,7 @@ Last updated: 2026-11-04 10:26 (Chicago).
   side buttons should show the mini microswitch being used as as support by 2 additional arms as well to keep the
   button from bending in too far"
   - Now full-size SPDT switches with a glove (F9.16).
-- **F2.08 IN PROGRESS (r3d, srf, own)** "the encoder and screws need a massive revamp to look proper"
+- **F2.08 DONE in 3D (TTC-style optical encoder, ISO screws, a knurled insert), IN PROGRESS in 2D (srf, own)** "the encoder and screws need a massive revamp to look proper"
   - Encoder form: F9.21.
 - **F2.09 DONE** (`shlThin`, `shlShell3d`, `shlLattice3d`, and the meter strip through the chapter) "id like you to elaborate more and do more animations on how triangles are more helpful on a
   lower weight mouse. throughout all the strength increases from industry standards i'd like to see a bar of flex or
@@ -150,7 +150,7 @@ Last updated: 2026-11-04 10:26 (Chicago).
   darker font"
   - Done: `ntr_stats`, "Theseus, by the numbers", a bento whose tiles count up, with the next best smaller, darker and
     in yellow, with its source. Shared helper: statTile with `next` (now with `next.ev` / `next.by` / `next.src`).
-- **F2.29 DONE in shared code, IN PROGRESS per slide (elc, r3d)** "we don't have a front and back pcb," / "it'll be a
+- **F2.29 DONE in shared code and 3D (one board in every scene), IN PROGRESS per slide (elc)** "we don't have a front and back pcb," / "it'll be a
   single ~5.6g pcb."
   - Shared constant: THS.pcb.
 - **F2.30 DONE** "the price for the mouse is $189"
@@ -288,11 +288,11 @@ Last updated: 2026-11-04 10:26 (Chicago).
   more than how it looks right now other than the actual content (i dont like the current form of the 2d mouse, it should
   be removed, and the numbers and text my change)"
 - **F9.12 DECIDED (F11.1)** "maybe you should let me choose between red, blue or yellow for the primary Theseus color"
-- **F9.13 IN PROGRESS (r3d, elc)** "the raytac module needs to be flipped so it's further from the scroll wheels metal, and
+- **F9.13 DONE in 3D (turned 180°, the long meander antenna toward the rear), IN PROGRESS in 2D (elc)** "the raytac module needs to be flipped so it's further from the scroll wheels metal, and
   id lowk you to use the long antenna design i've attached"
-- **F9.14 IN PROGRESS (r3d, gld)** "the sensor and snap on lens are both not as accurate as id like, you need to squeak out
+- **F9.14 DONE in 3D (castellated 8.4 × 9.8 sensor module, snap-on lens), IN PROGRESS in 2D (gld)** "the sensor and snap on lens are both not as accurate as id like, you need to squeak out
   a lot more accuracy using the images i've attached"
-- **F9.15 DONE in 2D (`clk_switch`), IN PROGRESS in 3D (r3d)** "the internals on the gt01 switch are not right and it bothers me, before the old switch
+- **F9.15 DONE in 3D (standard SPDT internals in the rotating housing); the 2D redraw is F14.3 (fixA)** "the internals on the gt01 switch are not right and it bothers me, before the old switch
   visualization was a lot more detailed, you should've used the same level of detail and accuracy on the gt01 switch. the
   gt01 switch is literally just a normal SPDT switch with a special bottom housing to rotate it. if you can i'd prefer the
   switch be even MORE detailed than the previous best."
@@ -310,7 +310,7 @@ Last updated: 2026-11-04 10:26 (Chicago).
   - Radius 6.
 - **F9.20 IN PROGRESS (gld)** "we need to talk about the importance of having one or 2 dot skates by the sensor to prevent
   sag and keeping the sensor focused correctly"
-- **F9.21 DONE in the shared 2D drawing (`encoderMM`, TTC's form) and `sealed`, IN PROGRESS (r3d, srf)** "the encoder you are using is wrong, optical encoders look no different than normal mouse
+- **F9.21 DONE in the shared 2D drawing (`encoderMM`, TTC's form), `sealed` and 3D, IN PROGRESS (srf)** "the encoder you are using is wrong, optical encoders look no different than normal mouse
   encoders, i've attached picture of what the interior looks of an modern mouse optical encoder is like, usually they're
   a little taller than that though"
 - **F9.22 STANDING** "again this is just me giving you more guidance, do not abandon any of my old guidance unless i've
@@ -321,17 +321,17 @@ Last updated: 2026-11-04 10:26 (Chicago).
   as possible"
 - **F9.24 DONE in shared code, IN PROGRESS per slide** "i dislike anywhere where you use peach tones, especially if it's
   depicting skin (it's hard to tell) skin tones should always been mono tone"
-- **F9.25 IN PROGRESS (r3d, elc)** "i'd like you to modify the way the raytac module looks, it should be black instead of
+- **F9.25 DONE in 3D (black module), IN PROGRESS in 2D (elc)** "i'd like you to modify the way the raytac module looks, it should be black instead of
   blue"
 - **F9.26 DONE** (zerograms argues it from F = m·a) "it feels like you're arguing against me when you say that there's no research to support zero
   grams is actually the optimal weight, it is well known in the enthusiast community that less weight feels better because
   f=ma, so mass means less inertia means quicker target switching when changing directions, there should also be other
   theories that are all but proven, the inertia thing means it should be objective easier to switch targets, even though
   there isn't a study to prove it, it feels pretty solid to me"
-- **F9.27 DONE in shared code (feDraw fillet) and Shells A and B, IN PROGRESS (shc, r3d)** "we have slides about the
+- **F9.27 DONE in shared code (feDraw fillet) and Shells A and B, IN PROGRESS (shc); the 3D lattice insert is still a stand-in** "we have slides about the
   importance of filleting the lattice, but none of the lattices in our visualizations other than those slides are
   filleted, this is an issue"
-- **F9.28 DONE in the shared key plan and clicks, IN PROGRESS in 3D (r3d)** "we talk about how it's better to have 1 seam in our slides
+- **F9.28 DONE** (the shared key plan, clicks, and the 3D shell's one seam) "we talk about how it's better to have 1 seam in our slides
   in front of the scroll wheel, but then all the visualizations show 2 seams, the seam shouldn't separate at the scroll
   wheel, our seam shouldn't shouldn't change from the sora"
   - F11.3.
@@ -377,12 +377,12 @@ Answers to the intro and clicks questions:
   held by the shell, not by a side board.
 - **F12.5 OPEN** The tensioner's real width, span and crown: "unknown yet". The slide keeps its labelled example.
 - **F12.6 DECIDED** "abandon idea #59". **TODO (clicks):** remove #59 (the taller fulcrum) everywhere.
-- **F12.7 TODO (clicks, r3d)** The GT01: "it looks fine besides the fact that everywhere you draw it looks like there's a 4
+- **F12.7 DONE in 3D, TODO in 2D (fixA)** The GT01: "it looks fine besides the fact that everywhere you draw it looks like there's a 4
   extra pin in the front and that's not right".
 
 New notes:
 - **F12.8 STANDING** "in the future use the question tool to ask me questions instead of doing it the old fashioned way"
-- **F12.9 TODO (clicks, r3d, shared key plan)** "right now the rear trigger cutouts have a sort of notch in both
+- **F12.9 DONE in 3D and the shared key plan (one straight line at the Sora smile's deepest point: KEY.seam −4.84), TODO in the 2D cutouts drawing (fixA)** "right now the rear trigger cutouts have a sort of notch in both
   visualizations instead of being an entirely straight line, which looks funny, also the straight light version needs
   to go back future"
   - Asked how far back: "To the smile's deepest point", level with the deepest point of the Sora V2's curved cutout.
@@ -431,7 +431,7 @@ Answers to the Shell A questions:
     ledge on the shell rim.
 - **F14.2 TODO (plate)** "the front and the back skate pills should be a direct mirror, one shouldn't be more towards the
   center than the other"
-- **F14.3 TODO (r3d, fixA)** "your gt01 bottom housing design was wrong, which is confusing because you used it on the
+- **F14.3 DONE in 3D (housing, leaf, plunger, three pins; the cover's taller end walls not yet), TODO in 2D (fixA)** "your gt01 bottom housing design was wrong, which is confusing because you used it on the
   cover of the clicks section, please try to get more accurate with the pictures i've attached, also the current gt01
   has this weird noodle design on its interior which is not actuate, make sure you model the metal leaf as close as you
   can get it, i've given you multiple angles. another issue you had was the plunger looking like it was turned vertical
@@ -464,3 +464,19 @@ Answers to the Shell A questions:
 
 - **F15.1 STANDING, TODO (fixA, fixB, all)** "in order to make the reader/viewer understand immediately at a glance what is better, you may have to completely reformat/rethink some slides and visualizations"
   - Applies to F14.10: a slide that can't read at a glance gets rethought, not patched.
+
+## F16. 2026-11-04 10:30 (with a screenshot of `arc`, Direct Drive Actuation)
+
+- **F16.1 STANDING, TODO (fixA, fixB, all)** "in slides like this where you count down to zero, it's very hard to remember
+  what the original numbers were and how much better they are now, you should find some way to always show the net
+  change or the bad case at the same time"
+  - Asked how: "Before → after". The bad value stays visible, greyed or struck, beside the live one (10.6° → 0°), with
+    the net change in Theseus's colour.
+  - The screenshot also shows two overlaps on `arc`: a leader runs through "The trigger turns about this bend", and
+    "Sideways, sin θ" sits under the switch drawing. **TODO (fixA).**
+- **F16.2 DONE** (the "rate" pill in the player bar: 1 to 10 and a note per slide, saved in the artifact's database, which only Brock and editors can write) Asked about the deck's length (126 slides): "add a feature where i can rank each slides
+  value 1 to 10 (10 being the best) so you can decide how to condense the slides and which information is safest to
+  cut, these ratings shouldn't help determine slides to cut, but instead information"
+- **F16.3 DECIDED** Which chapter goes first after 12:00: "Glide". Shell C runs too.
+- **F16.4** "i can't fix the github thing right now". The branch stays local, and the live link and patch carry the
+  work.
