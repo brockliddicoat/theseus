@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 14:22 (Chicago).
+Last updated: 2026-11-04 15:15 (Chicago).
 
 ## Open with Brock
 
@@ -386,7 +386,7 @@ New notes:
   visualizations instead of being an entirely straight line, which looks funny, also the straight light version needs
   to go back future"
   - Asked how far back: "To the smile's deepest point", level with the deepest point of the Sora V2's curved cutout.
-- **F12.10 TODO (new base-plate builder, after r3d)** "the optional bottom plate has big holes instead of tiny triangle
+- **F12.10 DONE** (`pltPlate`, `pltSim`, `shlsheet2`; 3D: a solid skin outside, X struts and a frequency-3 triangle lattice inside; 6.6× stiffer than a solid plate of the same weight, 26 % lower peak than the best grid) "the optional bottom plate has big holes instead of tiny triangle
   lattices, i've attached some reference designs for you to try to come up with your own design, i like the X style
   designs, but they have to form triangles" / "the big cutouts have high walls on ther edges and are reinforced by
   triangles on their underside" / "i want something that fits the arches and triangles, is as strung as possible, but
@@ -421,16 +421,16 @@ Answers to the Shell A questions:
 
 ## F14. 2026-11-04 10:17 (with three Gateron GT01 images), and answers to the questions after it
 
-- **F14.1 TODO (plate)** "when you start on the bottom plate the 2 dot skates should join together to form a pill shape,
+- **F14.1 DONE** (3D and `gld_under`: wide front and back pills and a ring; plate off, two dots per corner plus two by the lens) "when you start on the bottom plate the 2 dot skates should join together to form a pill shape,
   not 2 independent circles like they do now, and without the bottom plate, there should only be be ledge to fit the 8
   dot skates"
   - Asked what the skates are with the plate on: "Pills + sensor ring". That means a front pill and a back pill,
     mirrored, plus a ring round the sensor.
   - Asked where the dots sit with the plate off: "2 each corner, 1 or 2 on the sensor 9 or 10 total". They sit on a
     ledge on the shell rim.
-- **F14.2 TODO (plate)** "the front and the back skate pills should be a direct mirror, one shouldn't be more towards the
+- **F14.2 DONE** (pills at z ±44.8, mirrored) "the front and the back skate pills should be a direct mirror, one shouldn't be more towards the
   center than the other"
-- **F14.3 DONE in 2D (redrawn from the photos and the 3D geometry); 3D TODO (plate builder): the tongue stands on its edge and reads as a bar** "your gt01 bottom housing design was wrong, which is confusing because you used it on the
+- **F14.3 DONE** (2D redrawn; 3D tongue now a flat strip, side holes full circles) "your gt01 bottom housing design was wrong, which is confusing because you used it on the
   cover of the clicks section, please try to get more accurate with the pictures i've attached, also the current gt01
   has this weird noodle design on its interior which is not actuate, make sure you model the metal leaf as close as you
   can get it, i've given you multiple angles. another issue you had was the plunger looking like it was turned vertical
@@ -485,16 +485,17 @@ Answers to the Shell A questions:
 - **F17.1 DECIDED** The Raytac part: "AN54LM-20A, long antenna". Keep the name, and draw the long meander antenna. **TODO
   (elc).**
 - **F17.2 OPEN** The side seam meets the side seams about 30.5 mm above the base: "I'll check and say".
-- **F17.3 DECIDED** A 3D shot of the full-size SPDT side switches in their glove: "Yes, model it". **TODO (the 3D
-  builder for the plate, then `sidebuttons`).**
+- **F17.3 DONE in 3D, TODO (fixC): a 3D shot on `sidebuttons`.** A 3D shot of the full-size SPDT side switches in their
+  glove: "Yes, model it".
 - **F17.4 DECIDED** The GT01 cover's taller end walls from the photo: "No, it's fine".
 
 ## F18. Answers to the Intro, Clicks and Glide builders' questions (2026-11-04 ~13:05)
 
 - **F18.1 DECIDED** The pills with the plate on: "One wide front, one wide back". Two pills, mirrored about the sensor,
-  each spanning most of the width, plus the ring. **TODO (plate).**
-- **F18.2 DECIDED** Where the dots by the sensor sit with the plate off: "research and decide". **TODO (plate):** decide it
-  with the reason. Glide's `gld_under` follows.
+  each spanning most of the width, plus the ring. **DONE.**
+- **F18.2 DECIDED** Where the dots by the sensor sit with the plate off: "research and decide". **DONE:** left and right of the
+  lens at ±11.5 mm (a third less worst sag under a palm press; front and back would clash with the lens clip). **TODO
+  (fixC):** move Glide's dots to match.
 - **F18.3 DECIDED** Theseus's sensor: "Unannounced next part". Call it PixArt's next flagship, with no part name. **TODO
   (fixC):** the Glide `sensor` slide.
 - **F18.4 DECIDED** The price row on `flagships`: "Keep price charted". **TODO (fixC):** price goes back on the chart,
@@ -505,5 +506,12 @@ Answers to the Shell A questions:
   tensioner doesn't properly connect the 2 pieces". **TODO (fixC):**
   - scale the heat to the hotter part again;
   - make the bridge tensioner drawing connect its two pieces properly.
-- **F18.7 DECIDED** The Viper V4 Pro's skate sizes: "Estimate from photos", labelled as estimates. **TODO (plate).**
+- **F18.7 OPEN** The Viper V4 Pro's skate sizes: "Estimate from photos". The photo hosts were blocked from this session, so the pills keep the drawn 40.5 × 6.5 mm, labelled an estimate.
 - **F18.8 DECIDED** Measured sag or sink figures: "No, keep the models". The labelled illustrations stay.
+
+## F19. Answers to the Shell at-a-glance builder's questions (2026-11-04 ~15:00)
+
+- **F19.1 DECIDED** The gate inside under the crown (needs a hot drop or a three-plate mold): "Fine, keep it".
+- **F19.2 DECIDED** The thumb side band against the fingers' side: "Same on both".
+- **F19.3 DECIDED** The heat scale on the plane-against-triangles drawings: "do what makes triangles look better". The
+  squared scale stays: calm triangles, the red peak on the plane.
