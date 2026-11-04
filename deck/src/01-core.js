@@ -16,8 +16,22 @@ const W = 1920, H = 1080;
    Each chapter has one accent for its chrome (section label, chapter card, highlights in drawings). */
 let TH = 0;
 const PAPER = '#F7F6F2', NIGHT = '#0D0E0F';
-const HERO = '#2F8CFF', HERO_P = '#0A6CFF';   /* Theseus blue: the fill on night, the fill on paper */
-const YEL = '#FDC316';                         /* the second highlight */
+/* Theseus's colour is a setting while Brock chooses: ?hue=blue | red | yellow (or THESEUS_HUE before the deck loads).
+   Each hue brings its next best and its problem colour, so the three never collide: blue Theseus → yellow next best, red
+   problems; red Theseus → yellow next best, problems in a flat grey; yellow Theseus (the deck's first) → blue next best,
+   red problems. [paper, night] pairs. */
+const HUES = {
+  blue: { hero: ['#0A6CFF', '#2F8CFF'], text: ['#0058D6', '#64B0FF'], grad: [['#1F9BFF', '#0A6CFF', '#3D4FE0'], ['#7AD4FF', '#2F8CFF', '#6A63FF']],
+          second: ['#E3A800', '#FDC316'], secondText: ['#8F6A00', '#FDC316'], bad: ['#E5484D', '#E5484D'] },
+  red: { hero: ['#D9343B', '#E5484D'], text: ['#C8292F', '#FF6369'], grad: [['#F2555A', '#D9343B', '#B81E3F'], ['#FF8A80', '#E5484D', '#D6336C']],
+         second: ['#E3A800', '#FDC316'], secondText: ['#8F6A00', '#FDC316'], bad: ['#8A8983', '#8E8D88'] },
+  yellow: { hero: ['#E3A800', '#FDC316'], text: ['#8F6A00', '#FDC316'], grad: [['#F2B600', '#D99000', '#C77700'], ['#FFE066', '#FDC316', '#FFAA00']],
+            second: ['#0A6CFF', '#4F9BFF'], secondText: ['#0058D6', '#7AB4FF'], bad: ['#E5484D', '#E5484D'] }
+};
+const HUE = (() => { try { const m = /[?&]hue=(red|blue|yellow)\b/.exec(location.search); if (m) return m[1]; } catch (e) { } return (typeof window !== 'undefined' && window.THESEUS_HUE) || 'blue'; })();
+const HU = HUES[HUE] || HUES.blue;
+const HERO = HU.hero[1], HERO_P = HU.hero[0];   /* Theseus: the fill on night, the fill on paper */
+const YEL = '#FDC316';                         /* the deck's first yellow */
 const RAMP = {
   /*           ink        ink2       mute       faint      hair       track      panel      line                    comp       comp2    */
   paper: ['#111111', '#2E2E2C', '#66655F', '#8A8983', '#DDDCD6', '#E7E6E1', '#FFFFFF', 'rgba(17,17,17,0.10)', '#B9B8B2', '#D3D2CC'],
@@ -25,24 +39,23 @@ const RAMP = {
 };
 const rampOf = i => (TH ? RAMP.paper : RAMP.night)[i];
 const C = {
-  red: '#E5484D', redL: '#EF7275', redD: '#B8383D',
+  redL: '#EF7275', redD: '#B8383D',
   blue: '#4385E4', blueL: '#609EFA', blueD: '#3466BF',
   purple: '#8A70DD', purpleL: '#A18BF3', purpleD: '#6F55C4',
   green: '#1FA466', greenL: '#46B86E', greenD: '#14824F',
   gray: '#9DA3AE', white: '#FFFFFF', yel: YEL,
-  onHero: '#FFFFFF', heroChip: HERO_P        /* a solid blue block and the ink on it, both themes */
+  onHero: HUE === 'yellow' ? '#111111' : '#FFFFFF', heroChip: HERO_P        /* a solid block of Theseus's colour and the ink on it */
 };
 Object.defineProperties(C, {
-  hero: { get: () => (TH ? HERO_P : HERO) },                     /* Theseus: its bar, point, line, column */
-  heroText: { get: () => (TH ? '#0058D6' : '#64B0FF') },         /* Theseus blue as small text or a thin line */
-  heroSoft: { get: () => (TH ? 'rgba(10,108,255,0.12)' : 'rgba(47,140,255,0.16)') },   /* a blue field behind something */
-  /* Theseus's gradient, for its big numbers, its bars and its glows: cyan into blue into indigo, like Apple's chip art */
-  heroGrad: { get: () => (TH ? ['#1F9BFF', '#0A6CFF', '#3D4FE0'] : ['#7AD4FF', '#2F8CFF', '#6A63FF']) },
-  second: { get: () => (TH ? '#E3A800' : YEL) },                 /* the next best: its bar, point, line */
-  secondText: { get: () => (TH ? '#8F6A00' : YEL) },             /* the next best as small text or a thin line */
-  secondGrad: { get: () => (TH ? ['#F2B600', '#D98A00'] : ['#FFE066', '#FDC316', '#FF9F0A']) },
-  /* a problem: a failure, a gap, a breakage, placeholder data */
-  bad: { get: () => C.red }, badL: { get: () => C.redL }, badD: { get: () => C.redD },
+  hero: { get: () => HU.hero[TH ? 0 : 1] },                      /* Theseus: its bar, point, line, column */
+  heroText: { get: () => HU.text[TH ? 0 : 1] },                  /* Theseus as small text or a thin line */
+  heroSoft: { get: () => rgba(HU.hero[TH ? 0 : 1], TH ? 0.12 : 0.16) },   /* a field of Theseus's colour behind something */
+  /* Theseus's gradient: for its type only (big numbers, its name). Everything else is flat */
+  heroGrad: { get: () => HU.grad[TH ? 0 : 1] },
+  second: { get: () => HU.second[TH ? 0 : 1] },                  /* the next best: its bar, point, line */
+  secondText: { get: () => HU.secondText[TH ? 0 : 1] },          /* the next best as small text or a thin line */
+  /* a problem: a failure, a gap, a breakage, placeholder data (red, unless Theseus is red) */
+  red: { get: () => HU.bad[TH ? 0 : 1] }, bad: { get: () => C.red }, badL: { get: () => C.redL }, badD: { get: () => C.redD },
   /* heat: stress and load in a drawing, low to high (amber, orange, red) */
   heat: { get: () => (TH ? '#E8590C' : '#FF7A2E') }, heatL: { get: () => (TH ? '#F0A020' : '#FFC24D') },
   bg: { get: () => (TH ? PAPER : NIGHT) },
@@ -72,25 +85,30 @@ function rgba(hex, a) { if (hex.startsWith('rgb')) return hex; const c = hexRgb(
 function inkA(a) { return TH ? `rgba(17,17,17,${a})` : `rgba(243,242,238,${a})`; }
 /** mix two hex colours */
 function mix(a, b, k) { const x = hexRgb(a), y = hexRgb(b); return '#' + x.map((v, i) => Math.round((v + (y[i] - v) * k) * 255).toString(16).padStart(2, '0')).join(''); }
-/** chapter accents: the old vibrant set, OKLCH L 0.62 on paper, 0.70 on night; clicks moved from blue to orange and the
-   electronics from cyan to teal, so no chapter's chrome reads as Theseus blue */
+/** chapter accents: the deck's old set (Brock, 07:35: "Old chapter colours"). Clicks was blue, which is Theseus now, and
+   glide's green is out ("the green you used looks bad"), so both are neutral, like the intro and the close */
 const ACCENTS = {
-  click: ['#D9701E', '#F59A4F'], glide: ['#0EA053', '#46B86E'], shell: ['#8A70DD', '#A18BF3'], surface: ['#C35AA4', '#DA76BB'],
-  elec: ['#0E9F8E', '#2CC7B4'], shape: ['#6E9A10', '#8FAC31'], own: ['#6F7C8F', '#8C98AA']
+  shell: ['#8A70DD', '#A18BF3'], surface: ['#C35AA4', '#DA76BB'], elec: ['#009DBD', '#00B5D4'], shape: ['#6E9A10', '#8FAC31'], own: ['#6F7C8F', '#8C98AA']
 };
 const ACC = Object.fromEntries(Object.keys(ACCENTS).map(k => [k, () => ACCENTS[k][TH ? 0 : 1]]));
-ACC.intro = () => C.ink; ACC.end = () => C.ink;
+ACC.intro = () => C.ink; ACC.end = () => C.ink; ACC.click = () => C.ink; ACC.glide = () => C.ink;
 function acc(key) { const f = ACC[key || (typeof curSlide === 'function' && curSlide() ? curSlide().ch : 'intro')]; return f ? f() : C.ink; }
 
 /* ---------- type ----------
    Inter Display (opsz 32) for display type, set in caps; Inter (opsz 14) for reading; JetBrains Mono for labels and numbers.
    Sizes are stage pixels on the 1920 × 1080 stage. A phone in landscape shows the stage at 844 px wide (× 0.44),
    so nothing a viewer must read goes below T.small (25 px → 11 px on the phone) and no label below T.label (22 → 9.7). */
+/* Brock: "use more apple style fonts ... big and bold fonts look good right now, but the smaller skinnier ones look
+   unprofessional". So labels, ticks and table values leave JetBrains Mono for Inter (Apple's SF is the model), and no
+   text at 30 px or under is set lighter than 560. 'mono' still names the role's face, so old calls keep working;
+   MONO_REAL says whether that face really is monospaced (it isn't now, so tabular figures are laid out by hand). */
 const FONT = {
   disp: '"Inter Display", "Inter", system-ui, sans-serif',
   sans: '"Inter", system-ui, sans-serif',
-  mono: '"JetBrains Mono", "Inter", ui-monospace, monospace'
+  mono: '"Inter", system-ui, sans-serif'
 };
+const MONO_REAL = false;
+const isMono = o => MONO_REAL && o.font === 'mono';
 const T = {
   hero: { font: 'disp', size: 300, weight: 900, track: -0.04, lh: 0.84, caps: true },   /* the cover word */
   d1: { font: 'disp', size: 200, weight: 800, track: -0.035, lh: 0.88 },                /* a number that is the slide */
@@ -98,16 +116,16 @@ const T = {
   h1: { font: 'disp', size: 62, weight: 800, track: -0.004, lh: 1.0, caps: true },      /* slide titles */
   h2: { font: 'disp', size: 44, weight: 800, track: -0.002, lh: 1.04, caps: true },      /* a title inside a slide */
   stat: { font: 'disp', size: 84, weight: 800, track: -0.025, lh: 1 },                  /* stat-card numbers */
-  h3: { font: 'sans', size: 32, weight: 700, track: -0.008, lh: 1.2, sentence: true },                  /* card titles, sentence case */
-  lead: { font: 'sans', size: 31, weight: 500, lh: 1.34, sentence: true },                              /* the narration under a title */
-  body: { font: 'sans', size: 28, weight: 450, lh: 1.42, sentence: true },                              /* reading text */
-  small: { font: 'sans', size: 25, weight: 500, lh: 1.36, sentence: true },                             /* the smallest reading text */
-  labelL: { font: 'mono', size: 26, weight: 600, track: 0.08, caps: true },             /* section labels */
-  label: { font: 'mono', size: 22, weight: 600, track: 0.1, caps: true },               /* every other label */
-  num: { font: 'mono', size: 28, weight: 700, track: 0 },                               /* values in tables and charts */
-  numS: { font: 'mono', size: 24, weight: 600, track: 0 },
-  tick: { font: 'mono', size: 21, weight: 500, track: 0.02 },                           /* axis ticks */
-  foot: { font: 'mono', size: 19, weight: 500, track: 0.04 }                            /* sources and the footer only */
+  h3: { font: 'sans', size: 32, weight: 700, track: -0.012, lh: 1.2, sentence: true },                  /* card titles, sentence case */
+  lead: { font: 'sans', size: 31, weight: 560, track: -0.006, lh: 1.34, sentence: true },               /* the narration under a title */
+  body: { font: 'sans', size: 28, weight: 560, track: -0.004, lh: 1.42, sentence: true },               /* reading text */
+  small: { font: 'sans', size: 25, weight: 600, lh: 1.36, sentence: true },                             /* the smallest reading text */
+  labelL: { font: 'sans', size: 26, weight: 700, track: 0.05, caps: true },             /* section labels */
+  label: { font: 'sans', size: 22, weight: 700, track: 0.055, caps: true },             /* every other label */
+  num: { font: 'sans', size: 28, weight: 700, track: -0.005, tnum: true },              /* values in tables and charts */
+  numS: { font: 'sans', size: 24, weight: 680, track: 0, tnum: true },
+  tick: { font: 'sans', size: 21, weight: 600, track: 0.01, tnum: true },               /* axis ticks */
+  foot: { font: 'sans', size: 19, weight: 600, track: 0.02 }                            /* sources and the footer only */
 };
 const TYPE_MIN = { read: 25, label: 21, foot: 19 };
 const NATIVE_LS = typeof CanvasRenderingContext2D !== 'undefined' && 'letterSpacing' in CanvasRenderingContext2D.prototype;
@@ -194,7 +212,7 @@ function sty(o = {}) {
   if (!r && !o.__legacy) return o;
   return r ? Object.assign({}, r, o) : o;
 }
-function fontStr(o) { return `${o.italic ? 'italic ' : ''}${o.weight || 400} ${o.size || 28}px ${FONT[o.font || 'sans'] || o.font}`; }
+function fontStr(o) { const sz = o.size || 28, wt = sz <= 30 ? Math.max(o.weight || 400, 560) : (o.weight || 400); return `${o.italic ? 'italic ' : ''}${wt} ${sz}px ${FONT[o.font || 'sans'] || o.font}`; }
 /** letter spacing in px: ls is px (old code), track is em (the system) */
 const lsPx = o => o.ls != null ? o.ls : (o.track || 0) * (o.size || 28);
 function setFont(o) {
@@ -219,15 +237,15 @@ function advances(s, tn) {
 /** width of a prepared string in the current font, with tracking and tabular figures */
 function measureStr(s, o) {
   const ls = lsPx(o), n = [...s].length;
-  if (o.tnum && o.font !== 'mono') return advances(s, true).reduce((a, b) => a + b, 0) + Math.max(0, n - 1) * ls;
+  if (o.tnum && !isMono(o)) return advances(s, true).reduce((a, b) => a + b, 0) + Math.max(0, n - 1) * ls;
   return G.measureText(s).width + Math.max(0, n - 1) * ls;
 }
 /** draw a prepared string left-aligned at x (font set) */
 function drawStr(s, x, y, o) {
   const ls = lsPx(o);
-  if (!ls && !(o.tnum && o.font !== 'mono')) { G.fillText(s, x, y); return; }
-  if (!(o.tnum && o.font !== 'mono') && NATIVE_LS) { G.letterSpacing = ls + 'px'; G.fillText(s, x, y); G.letterSpacing = '0px'; return; }
-  const chars = [...s], adv = advances(s, o.tnum && o.font !== 'mono'), dw = o.tnum ? digitW(G.font) : 0;
+  if (!ls && !(o.tnum && !isMono(o))) { G.fillText(s, x, y); return; }
+  if (!(o.tnum && !isMono(o)) && NATIVE_LS) { G.letterSpacing = ls + 'px'; G.fillText(s, x, y); G.letterSpacing = '0px'; return; }
+  const chars = [...s], adv = advances(s, o.tnum && !isMono(o)), dw = o.tnum ? digitW(G.font) : 0;
   let xx = x;
   for (let i = 0; i < chars.length; i++) {
     if (o.tnum && /\d/.test(chars[i])) { G.textAlign = 'center'; G.fillText(chars[i], xx + dw / 2, y); G.textAlign = 'left'; }
@@ -420,11 +438,11 @@ function rr(x, y, w, h, r, fill, stroke, lw = 1.5, a = 1) { G.save(); G.globalAl
 /** a card: a tile, as in Apple's keynotes. A big radius, a flat surface one step off the ground, no hard edge (a whisper
    of one on paper), and an entrance that settles. Flat on purpose: in this deck gradients live in type.
    o = { r (28), fill, plain (no entrance), grid (a faint 40 px grid inside), hero (a thin blue rim: Theseus) } */
-const TILE = { r: 28 };
+const TILE = { r: 6 };   /* Brock: tiles much less rounded, so the deck keeps its own language */
 function tileFill(x, y, w, h, o = {}) { return o.fill || C.panel; }   /* flat, as Apple's are: gradients belong to type */
 function demoWindow(x, y, w, h, a = 1, o = {}) {
   if (a <= 0.003) return;
-  const r = o.r == null ? Math.min(TILE.r, w / 6, h / 6) : o.r, p = E.out3(clamp(a));
+  const r = o.r == null ? Math.min(TILE.r, w / 6, h / 6) : Math.min(o.r, TILE.r * 2), p = E.out3(clamp(a));
   if (QA.on) QA.boxes.push({ x0: x, y0: y, x1: x + w, y1: y + h });
   G.save(); G.globalAlpha = clamp(a * 1.4);
   /* on the way in the tile settles from a hair larger and a little lower */
@@ -439,8 +457,7 @@ function demoWindow(x, y, w, h, a = 1, o = {}) {
   }
   G.restore();
   if (TH) { G.strokeStyle = 'rgba(17,17,17,0.05)'; G.lineWidth = 1; rrPath(x + 0.5, y + 0.5, w - 1, h - 1, r); G.stroke(); }
-  /* Theseus's tile: a thin blue rim, nothing more (its numbers carry the gradient) */
-  if (o.hero) { G.save(); G.strokeStyle = rgba(C.hero, TH ? 0.45 : 0.55); G.lineWidth = 1.5; rrPath(x + 0.75, y + 0.75, w - 1.5, h - 1.5, r); G.stroke(); G.restore(); }
+  /* Theseus's tile has no outline of its own (an outline in the type's colour looked bad): its numbers say it */
   G.restore();
 }
 /** the stage's own light: none. Brock: gradients belong in the type, and very sparingly anywhere else, so the ground

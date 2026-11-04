@@ -79,10 +79,10 @@ function sectionLabel(t, t0, x, y, o = {}) {
   ], x + 36, y, { t, alpha: a });
   return 36 + r.w;
 }
-/** the ideas on a slide, as type right-aligned at xr: IDEAS  12 · 14. returns the width used */
+/** the ideas on a slide, as type right-aligned at xr: IDEAS 12, 14. returns the width used */
 function chips(t, t0, xr, y, items, o = {}) {
   const nums = items.map(n => typeof n === 'number' ? String(n) : caps(String(n)));
-  const label = o.label || (items.length > 1 ? 'Ideas' : 'Idea'), value = nums.join('\u2002\u00B7\u2002');
+  const label = o.label || (items.length > 1 ? 'Ideas' : 'Idea'), value = nums.join(', ');
   const a = ep(t, t0, t0 + 0.35) * (o.alpha == null ? 1 : o.alpha);
   return ltag(xr, y, label, value, { a, right: true, size: o.size || 20, color: o.tcolor || C.faint, vcolor: C.ink2 });
 }
@@ -157,7 +157,7 @@ function golden(x, w, gap = 48, flip = false) {
 }
 /** a stack of heights in the golden ratio: golden2(h, gap) = [big, small] */
 function golden2(h, gap = 40) { const big = Math.round((h - gap) / PHI); return [big, h - gap - big]; }
-const BOX = { r: 24, pad: 32, gap: 40 };
+const BOX = { r: 6, pad: 32, gap: 40 };
 /** a rounded box with padding that holds a tag and a paragraph: the base of glossBox and sourceBox.
    (x, y) = its top left, w its width. o = { label, value, kind (an evidence kind for the tag), body (runs or a string),
    head (a bold run-in), size (26), lh, fill, edge, accent, plain, h (a fixed height), maxLines, alpha, valign }.
@@ -179,21 +179,26 @@ function noteBox(t, t0, x, y, w, o = {}) {
   let ty = y + pad;
   if (o.label || o.value) {
     const ts = o.tagSize || 20, base = ty + Math.round(ts * 0.76);
-    if (o.kind) pill(x + pad, base, o.kind, a, { text: o.label, by: o.value });
-    else ltag(x + pad, base, o.label, o.value, { a, size: ts, color: C.faint, vcolor: o.accent || (acc() === C.ink ? C.ink : acc()) });
+    if (o.src) {
+      /* a source: 'Zaunkoenig 2018' → the name, then the year in bold; a derivation adds its disclaimer */
+      const m = /^(.*?)[\s,]*((?:19|20)\d\d[a-z]?)$/.exec(String(o.value || '')), nm = m ? m[1] : String(o.value || ''), yr = m ? m[2] : null;
+      rich([{ s: nm, role: 'small', size: 24, weight: 600, color: C.ink2 }, yr ? { s: yr, role: 'small', size: 24, weight: 800, color: C.ink, gap: 9 } : null,
+            o.kind === 'derived' ? { s: 'Derived', role: 'label', size: 19, color: C.mute, gap: 16 } : null], x + pad, base + 2, { alpha: a });
+    } else ltag(x + pad, base, o.label, o.value, { a, size: ts, color: C.faint, vcolor: o.accent || (acc() === C.ink ? C.ink : acc()) });
     ty += tagH;
   }
   para(runs, x + pad, ty + size * 0.74, { maxW: w - pad * 2, lh, t, t0: t0 + 0.2, cps: o.cps || 140, alpha: a, maxLines: o.maxLines });
   G.restore();
   return { h };
 }
-/** what a word means, in a box anywhere on the slide: [ VOCAB | DEBOUNCE ] and the definition */
+/** what a word means, in a box anywhere on the slide: VOCAB DEBOUNCE and the definition */
 function glossBox(t, t0, x, y, w, term, def, o = {}) {
   return noteBox(t, t0, x, y, w, Object.assign({ label: o.label || 'Vocab', value: term, body: def }, o));
 }
-/** where a finding comes from, in a box: [ RESEARCH | ZAUNKOENIG 2018 ] and what it found. o.kind tags it with its evidence kind */
+/** where a finding comes from, in a box: the source's name with its year in bold (Zaunkoenig 2018), then what it found.
+   No 'Research' label. o.kind: 'derived' adds the one disclaimer the deck keeps */
 function sourceBox(t, t0, x, y, w, who, finding, o = {}) {
-  return noteBox(t, t0, x, y, w, Object.assign({ label: o.label || 'Research', value: who, body: finding, accent: o.accent || C.ink2 }, o));
+  return noteBox(t, t0, x, y, w, Object.assign({ value: who, body: finding, src: true }, o, { label: null }));
 }
 /** the pointer: the arrow on a screen, drawn at its tip (x, y). o = { a, s (scale, 1 = 30 px tall), press (0..1, a click ring),
    grab (true: a closed hand stand-in, the arrow tilted), color } */
@@ -216,11 +221,14 @@ function cursorAt(t, keys, clicks = [], o = {}) {
 
 /* ---------- the bento: a grid of tiles, as on Apple's summary slides ----------
    bento(x, y, w, h, cols, rows, gap) returns cell(c, r, cs = 1, rs = 1) → [x, y, w, h], a tile spanning cs columns and
-   rs rows. Keep the gap the same everywhere on a slide (24 by default); make one or two tiles big (2 × 2) and the rest
-   small, and put the part (zoomed in, abstract) in a big one. */
-function bento(x, y, w, h, cols, rows, gap = 24) {
+   rs rows. Tiles sit on the stage's 40 px grid: every edge lands on a grid line and the gutter is one grid cell (40), so
+   the background grid and the tiles agree. Make one or two tiles big (2 × 2), put the part (zoomed in) in a big one. */
+const GRID = 40;
+const snapG = v => Math.round(v / GRID) * GRID;
+function bento(x, y, w, h, cols, rows, gap = GRID) {
   const cw = (w - gap * (cols - 1)) / cols, rh = (h - gap * (rows - 1)) / rows;
-  return (c, r, cs = 1, rs = 1) => [x + c * (cw + gap), y + r * (rh + gap), cw * cs + gap * (cs - 1), rh * rs + gap * (rs - 1)];
+  const ex = i => snapG(x + i * (cw + gap)), ey = j => snapG(y + j * (rh + gap));
+  return (c, r, cs = 1, rs = 1) => { const x0 = ex(c), y0 = ey(r), x1 = snapG(x + (c + cs) * (cw + gap) - gap), y1 = snapG(y + (r + rs) * (rh + gap) - gap); return [x0, y0, x1 - x0, y1 - y0]; };
 }
 /** tiles that come in one after another: the alpha of tile i of a set that starts at t0 */
 const tileA = (t, t0, i, step = 0.09, dur = 0.55) => ep(t, t0 + i * step, t0 + i * step + dur, E.snap);
@@ -238,15 +246,16 @@ function statTile(t, t0, rect, o = {}) {
   const ka = ep(t, t0 + 0.15, t0 + 0.6), kc = [t0 + 0.25, o.countDur || 1.1];
   /* top to bottom: the evidence (small, at the top), pre, the number, the label, the next best (at the foot).
      A full tile needs about 300 px of height; with less, 'pre' goes first */
-  const evH = o.ev || o.head ? 34 : 0, labH = o.label ? 44 : 0, nextH = o.next ? 44 : 0;
+  const evS = o.ev ? evText(o.ev, { by: o.by }) : '', evH = evS || o.head ? 34 : 0, labH = o.label ? 44 : 0, nextH = o.next ? 44 : 0;
   let preH = o.pre ? 36 : 0;
   const len = String(o.value).length + (o.unit ? 0.5 * String(o.unit).length : 0), wFit = (w - pad * 2) / Math.max(1.6, len * 0.6);
   let room = h - pad * 2 - evH - preH - labH - nextH;
   if (room < 70 && preH) { room += preH; preH = 0; }
   const vs = Math.max(44, Math.round(Math.min(o.size || 999, room / 0.82, wFit)));
-  const grad = o.grad || (o.hero ? C.heroGrad : null), col = o.color || (o.hero ? C.heroText : C.ink);
+  /* only the specs that matter wear colour: Theseus's headline tiles (hero) get its gradient; the rest are ink on grey */
+  const grad = o.grad || (o.hero ? C.heroGrad : null), col = o.color || (o.hero ? C.heroText : o.quiet ? C.ink2 : C.ink);
   if (o.head) text(o.head, ctr ? cx : x + pad, y + pad + 18, { role: 'label', size: 20, color: C.mute, align: al, alpha: ka });
-  else if (o.ev) { const pw = pillW(o.ev, { by: o.by }); pill(ctr ? cx - pw / 2 : x + pad, y + pad + 18, o.ev, ka, { by: o.by }); }
+  else if (evS) { const pw = pillW(o.ev, { by: o.by }); pill(ctr ? cx - pw / 2 : x + pad, y + pad + 18, o.ev, ka, { by: o.by }); }
   const blockH = preH + vs * 0.76 + labH;
   let yy = y + pad + evH + Math.max(0, (h - pad * 2 - evH - nextH - blockH) / 2);
   if (preH) { text(o.pre, cx, yy + 25, { role: 'small', size: 25, weight: 500, color: C.mute, align: al, alpha: ka }); yy += preH; }
@@ -258,7 +267,7 @@ function statTile(t, t0, rect, o = {}) {
     const nx = o.next, kn = ep(t, t0 + 0.9, t0 + 1.3);
     rich([{ s: 'Next best', role: 'label', size: 19, color: C.faint }, { s: nx.value + (nx.unit ? ' ' + nx.unit : ''), font: 'disp', size: 28, weight: 700, color: C.secondText, gap: 12, caps: false, alpha: 0.8 }, nx.who ? { s: nx.who, role: 'small', size: 22, weight: 500, color: C.faint, gap: 12, caps: false } : null], cx, y + h - pad + 2, { align: al, alpha: kn });
   }
-  if (o.head && o.ev) { const pw = pillW(o.ev, { by: o.by }); pill(x + w - pad - pw, y + pad + 18, o.ev, ka, { by: o.by }); }
+  if (o.head && evS) { const pw = pillW(o.ev, { by: o.by }); pill(x + w - pad - pw, y + pad + 18, o.ev, ka, { by: o.by }); }
 }
 
 /* ---------- tags: labels set as type, no boxes ----------
@@ -268,11 +277,11 @@ function statTile(t, t0, rect, o = {}) {
    (x, y) = the left edge and the text baseline (o.right: x is the right edge). Returns the width.
    o = { a, size (20), weight, font, track, color (the label's ink), vcolor (the value's ink), vgrad (a gradient for the
          value), sep (between them: '  ' by default), right } */
-const TAG = { size: 20, track: 0.08 };
-function tagSt(o) { return { role: 'label', font: o.font || 'mono', size: o.size || TAG.size, weight: o.weight || 650, track: o.track == null ? TAG.track : o.track, caps: o.caps !== false }; }
+const TAG = { size: 20, track: 0.055 };
+function tagSt(o) { return { role: 'label', font: o.font || 'sans', size: o.size || TAG.size, weight: o.weight || 700, track: o.track == null ? (o.caps === false ? 0 : TAG.track) : o.track, caps: o.caps !== false }; }
 function tagParts(label, value, o = {}) {
   const st = tagSt(o), hasL = label != null && label !== '', hasV = value != null && value !== '';
-  const sep = !(hasL && hasV) ? '' : o.sep != null ? o.sep : ' ';
+  const sep = !(hasL && hasV) ? '' : o.sep != null && !/[\u00B7\u2022]/.test(o.sep) ? o.sep : '\u2002';
   const lw = hasL ? tw(label, st) : 0, sw = sep ? tw(sep, st) : 0, vst = Object.assign({}, st, { weight: o.vweight || 750 }), vw = hasV ? tw(value, vst) : 0;
   return { st, vst, sep, lw, sw, vw, w: lw + sw + vw, hasL, hasV };
 }
@@ -282,7 +291,6 @@ function ltag(x, y, label, value, o = {}) {
   if (o.right) x -= P.w;
   if (a <= 0.003 || P.w <= 0) return P.w;
   if (P.hasL) text(label, x, y, Object.assign({}, P.st, { color: o.color || C.mute, alpha: a }));
-  if (P.sep && P.sep.trim()) text(P.sep, x + P.lw, y, Object.assign({}, P.st, { color: C.faint, alpha: a, caps: false }));
   if (P.hasV) text(value, x + P.lw + P.sw, y, Object.assign({}, P.vst, { color: o.vcolor || o.solid || C.ink, grad: o.vgrad, alpha: a }));
   return P.w;
 }
@@ -294,42 +302,48 @@ function tagRow(xr, y, items, a = 1, gap = 22) {
 }
 
 /* ---------- evidence: how we know a number ----------
-   The kind, as a word in the kind's colour; and whose number it is when the slide says (o.by), quieter, after a dot:
-   MEASURED · RTINGS.  MAKER CLAIM · RAZER.  ESTIMATE · BROCK. */
+   Brock (07:20): "not everything needs a source, especially when comes from me it looks odd, prioritize only sources
+   where they are most needed/moving"; "i'd imagine only derivations need a disclaimer"; no dots between words. So a tag
+   is quiet grey type: the source when the slide names one ('RTINGS', 'Razer claim', 'PixArt datasheet'), else the kind
+   ('Measured', 'Maker claim', 'Derived'). Brock's own figures (proposal, projected, estimate) print nothing: they are his
+   targets and his plan, and the slide says so in words. Placeholder data still says so, in the problem colour. */
 const EVID = {
-  measured: { label: 'Measured', col: ['#14824F', '#46C278'] },
-  study: { label: 'Study', col: ['#14824F', '#46C278'] },
-  datasheet: { label: 'Datasheet', col: ['#0E8F80', '#3CCFBD'] },
-  claim: { label: 'Maker claim', col: ['#C9620F', '#FF9F43'] },
-  survey: { label: 'Survey', col: ['#C9620F', '#FF9F43'] },
-  derived: { label: 'Derived', col: ['#7454D6', '#A890F5'] },
-  estimate: { label: 'Estimate', col: ['#B4428F', '#E585C6'] },
-  proposal: { label: 'Proposal', col: ['#0058D6', '#64B0FF'] },
-  projected: { label: 'Projected', col: ['#0058D6', '#64B0FF'] },
-  placeholder: { label: 'Placeholder data', col: ['#C8292F', '#FF6B6E'] }
+  measured: { label: 'Measured' }, study: { label: 'Study' }, datasheet: { label: 'Datasheet', by: ' datasheet' },
+  claim: { label: 'Maker claim', by: ' claim' }, survey: { label: 'Survey', by: ' survey' }, derived: { label: 'Derived', by: ', derived' },
+  estimate: { label: 'Estimate', silent: true }, proposal: { label: 'Proposal', silent: true }, projected: { label: 'Projected', silent: true },
+  placeholder: { label: 'Placeholder data', bad: true }
 };
 const evKey = k => { k = String(k || '').toLowerCase().trim(); return k === 'maker claim' ? 'claim' : k === 'on paper' ? 'derived' : k; };
-const evCol = k => { const e = EVID[evKey(k)] || EVID.derived; return e.col[TH ? 0 : 1]; };
-function evLabel(k) { const e = EVID[evKey(k)]; return caps(e ? e.label : String(k)); }
-function evTagO(kind, o = {}) { return { size: o.size || TAG.size, color: o.color && o.color !== C.bad ? o.color : evCol(kind), vcolor: C.faint, vweight: 600, sep: ' · ' }; }
-const PILL = { size: 20, h: 30 };
-function pillW(kind, o = {}) { return ltagW(o.text || evLabel(kind), o.by, evTagO(kind, o)); }
+const evCol = k => { const e = EVID[evKey(k)]; return e && e.bad ? C.red : C.mute; };
+function evLabel(k) { const e = EVID[evKey(k)]; return e ? e.label : String(k); }
+/** what the tag says: the source if there is one ('RTINGS', 'Razer claim'), else the kind; '' when it says nothing */
+function evText(kind, o = {}) {
+  const e = EVID[evKey(kind)];
+  if (o.text) return o.text;
+  if (e && e.silent && !o.force) return '';
+  if (o.by) return o.by + (e && e.by ? e.by : '');
+  return e ? e.label : String(kind || '');
+}
+function evTagO(kind, o = {}) { return { size: o.size || 19, color: o.color || evCol(kind), weight: 600, caps: false }; }
+const PILL = { size: 19, h: 26 };
+function pillW(kind, o = {}) { const s0 = evText(kind, o); return s0 ? ltagW(s0, null, evTagO(kind, o)) : 0; }
 /** the kind's mark alone, for table cells and legends: a small soft square in its colour */
 function evDot(x, y, kind, r = 5.5, a = 1) {
-  const c = evCol(kind), s = r * 1.5;
-  G.save(); G.globalAlpha = a; G.fillStyle = c; rrPath(x - s / 2, y - s / 2, s, s, s * 0.3); G.fill(); G.restore();
+  const e = EVID[evKey(kind)]; if (e && e.silent) return;
+  const c = evCol(kind), s = r * 1.3;
+  G.save(); G.globalAlpha = a * 0.8; G.fillStyle = c; rrPath(x - s / 2, y - s / 2, s, s, 1.5); G.fill(); G.restore();
 }
-/** an evidence tag; (x, y) = left edge and text baseline. o = { text, by, size, color }. returns its width */
-function pill(x, y, kind, a = 1, o = {}) { return ltag(x, y, o.text || evLabel(kind), o.by, Object.assign(evTagO(kind, o), { a })); }
+/** an evidence tag; (x, y) = left edge and text baseline. o = { text, by, size, color, force }. returns its width (0 when silent) */
+function pill(x, y, kind, a = 1, o = {}) { const s0 = evText(kind, o); return s0 ? ltag(x, y, s0, null, Object.assign(evTagO(kind, o), { a })) : 0; }
 /** the old evidence tag; kept for every slide that calls tag(x, y, kind, a) */
 function tag(x, y, kind, a = 1) { return pill(x, y + 2, kind, a); }
 /** evidence tags at a card's top right, on the row of its mono title (the Kunai card head). (x, y, w) = the card. returns the width used */
-function cardPills(x, y, w, kinds, a = 1) { let xr = x + w - 32; const ks = Array.isArray(kinds) ? kinds : [kinds]; for (let i = ks.length - 1; i >= 0; i--) { xr -= pillW(ks[i]); pill(xr, y + 50, ks[i], a); xr -= 22; } return x + w - 32 - xr; }
+function cardPills(x, y, w, kinds, a = 1) { let xr = x + w - 32; const ks = Array.isArray(kinds) ? kinds : [kinds]; for (let i = ks.length - 1; i >= 0; i--) { const pw = pillW(ks[i]); if (!pw) continue; xr -= pw; pill(xr, y + 50, ks[i], a); xr -= 22; } return x + w - 32 - xr; }
 /** a card's header row: a mono label at the top left, evidence tags at the top right (a kind may be { ev, by }). returns the y below it */
 function cardHead(t, t0, x, y, w, label, ev, o = {}) {
   const a = ep(t, t0, t0 + 0.4) * (o.alpha == null ? 1 : o.alpha), ly = y + (o.dy || 50), pad = o.pad || 32;
   const evs = (Array.isArray(ev) ? ev : ev ? [ev] : []);
-  let xr = x + w - pad; for (let i = evs.length - 1; i >= 0; i--) { const e = evs[i], k = typeof e === 'object' ? e.ev : e, eo = typeof e === 'object' ? e : {}; xr -= pillW(k, eo); pill(xr, ly, k, a, eo); xr -= 22; }
+  let xr = x + w - pad; for (let i = evs.length - 1; i >= 0; i--) { const e = evs[i], k = typeof e === 'object' ? e.ev : e, eo = typeof e === 'object' ? e : {}, pw = pillW(k, eo); if (!pw) continue; xr -= pw; pill(xr, ly, k, a, eo); xr -= 22; }
   const r = text(label, x + pad, ly, { role: 'label', color: o.color || C.mute, t, t0: t0 + 0.05, cps: 80, alpha: a, maxW: xr - x - pad - 16 });
   const n = r && r.lines ? (Array.isArray(r.lines) ? r.lines.length : r.lines) : 1;
   return ly + 30 + Math.max(0, n - 1) * 28;
@@ -458,8 +472,9 @@ function hbars(t, o) {
 }
 /** a left-to-right gradient over [x, x + w]. For type; bars and marks stay flat (Brock: gradients in the font, sparingly anywhere else) */
 function gradH(x, w, cols) { const g = G.createLinearGradient(x, 0, x + w, 0); cols.forEach((c, j) => g.addColorStop(cols.length > 1 ? j / (cols.length - 1) : 0, c)); return g; }
-/** a soft band of light that runs along a finished bar now and then, so a settled chart still breathes */
+/** the old band of light along a finished bar: off (gradients live in type now); kept so old calls still work */
 function glint(x, y, w, h, t, t0, per = 7) {
+  return;
   if (w < 6 || t < t0) return;
   const c = ((t - t0) % per) / 1.1; if (c >= 1) return;
   const bx = x - 60 + (w + 120) * E.io3(c), g = G.createLinearGradient(bx - 50, 0, bx + 50, 0);

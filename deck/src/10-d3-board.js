@@ -210,7 +210,7 @@ S({
       /* FR4: grows to its breaking length and holds */
       const cxF = x + 190, cxM = x + 360, sw = 58;
       const lenF = Math.min(kmF, grown), yF = ceil + lenF * pxk;
-      if (lenF > 0) { if (lenF >= kmF - 0.01) glowField(t, cxF, yF - 40, 150, { a: ep(t, g0 + kmF / rate, g0 + kmF / rate + 0.8) * 0.8 }); G.save(); G.globalAlpha = a; rrPath(cxF - sw / 2, ceil, sw, Math.max(sw * 0.5, lenF * pxk), 10); const gF = G.createLinearGradient(0, ceil, 0, ceil + kmF * pxk); C.heroGrad.forEach((c, j) => gF.addColorStop(j / (C.heroGrad.length - 1), c)); G.fillStyle = gF; G.fill(); G.restore(); }
+      if (lenF > 0) { G.save(); G.globalAlpha = a; rrPath(cxF - sw / 2, ceil, sw, Math.max(sw * 0.5, lenF * pxk), 10); G.fillStyle = C.hero; G.fill(); G.restore(); }
       /* magnesium: solid to its low figure, a lighter band to its high one, then it lets go */
       const brk = kmM[1], tb = g0 + brk / rate, lenM = Math.min(brk, grown), fall = Math.max(0, t - tb);
       if (lenM > 0) {
@@ -246,7 +246,7 @@ S({
       demoWindow(x, y, w, h, a);
       const hy = cardHead(t, 0.6, x, y, w, 'Tensile strength, {MPa}', ['datasheet']);
       const bx = x + 140, bw = 290, k = ep(t, 1.5, 2.4, E.snap);
-      [['FR4', SHC_FR4.uts, SHC_FR4.uts, C.heroGrad, C.heroText], ['AZ91D', SHC_MG.uts[0], SHC_MG.uts[1], C.second, C.secondText]].forEach(([nm, lo, hi, col, tc], i) => {
+      [['FR4', SHC_FR4.uts, SHC_FR4.uts, C.hero, C.heroText], ['AZ91D', SHC_MG.uts[0], SHC_MG.uts[1], C.second, C.secondText]].forEach(([nm, lo, hi, col, tc], i) => {
         const yy = hy + 44 + i * 50;
         text(nm, x + 32, yy + 8, { role: 'label', size: 21, color: tc, alpha: a });
         const xe = shcBar(bx, yy, bw, 500, lo, hi, col, a, k);
@@ -263,7 +263,7 @@ S({
       rows.forEach(([lab, fr, mg, max, d], j) => {
         const yy = hy + 26 + j * 104, k = ep(t, 2.1 + j * 0.4, 2.9 + j * 0.4, E.snap), ka = ep(t, 1.9 + j * 0.4, 2.3 + j * 0.4);
         text(lab, x + 32, yy, { role: 'label', size: 19, color: C.mute, alpha: ka });
-        [['FR4', fr[0], fr[1], C.heroGrad, C.heroText], ['AZ91D', mg, mg, C.second, C.secondText]].forEach(([nm, lo, hi, col, tc], i) => {
+        [['FR4', fr[0], fr[1], C.hero, C.heroText], ['AZ91D', mg, mg, C.second, C.secondText]].forEach(([nm, lo, hi, col, tc], i) => {
           const yb = yy + 30 + i * 34;
           text(nm, x + 32, yb + 8, { role: 'label', size: 19, color: tc, alpha: ka });
           const xe = shcBar(bx, yb, bw, max, lo, hi, col, ka, k, { h: 12 });
@@ -315,8 +315,6 @@ S({
       demoWindow(x, y, w, h, a);
       const hy = cardHead(t, 0.45, x, y, w, 'Theseus, ' + THS.massG + ', one square per gram', [{ ev: 'estimate', by: 'Brock' }, 'datasheet', 'derived']);
       const s = 74, gp = 12, cols = 10, gx = x + 48, gy = hy + 70, mv = ep(t, 3.4, 4.6, E.cam);
-      /* a soft light rises behind the board's squares as they become structure */
-      glowField(t, gx + 3 * (s + gp), gy + s / 2, 330, { a: mv * a * 0.9 });
       for (let i = 0; i < 30; i++) {
         const c = i % cols, rw = Math.floor(i / cols), sx = gx + c * (s + gp), sy = gy + rw * (s + gp + 4);
         const ka = ep(t, 0.8 + i * 0.035, 1.2 + i * 0.035, E.snap), dy = (1 - ka) * 16, f = clamp(M.total - i);
@@ -328,7 +326,7 @@ S({
         G.save(); G.globalAlpha = a * ka; rrPath(sx, sy + dy, s, s, s * 0.22); G.clip(); G.fillStyle = C.track; G.fillRect(sx, sy + dy, s, s);
         for (const [pt, u0, u1] of segs) {
           G.globalAlpha = a * ka; G.fillStyle = pt === 'rest' ? C.comp2 : C.comp; G.fillRect(sx + s * u0, sy + dy, s * (u1 - u0), s);
-          if (pt === 'board' && kf > 0) { G.globalAlpha = a * ka * kf; G.fillStyle = gradH(gx, 6 * (s + gp), C.heroGrad); G.fillRect(sx + s * u0, sy + dy, s * (u1 - u0), s); }
+          if (pt === 'board' && kf > 0) { G.globalAlpha = a * ka * kf; G.fillStyle = C.hero; G.fillRect(sx + s * u0, sy + dy, s * (u1 - u0), s); }
         }
         G.restore();
         if (segs[0][0] === 'board' && kf > 0) shcSquare(sx, sy + dy, s, Math.min(1, M.board - i), 'rgba(0,0,0,0)', a * ka, { lattice: kf, track: 'rgba(0,0,0,0)' });
@@ -417,7 +415,7 @@ function shcPlanDraw(t, c, cx, cy, s, o) {
     const rb = P([nb[0] + r.d[l.board * 3] * k * exag, nb[1] + r.d[l.board * 3 + 1] * k * exag]), rr0 = P([nr[0] + r.d[l.ring * 3] * k * exag, nr[1] + r.d[l.ring * 3 + 1] * k * exag]);
     const ux = rr0[0] - rb[0], uy = rr0[1] - rb[1], uL = Math.hypot(ux, uy) || 1, root = [rb[0] + ux / uL * 4, rb[1] + uy / uL * 4];
     out.root = root;
-    if (o.k > 0.6) glow(root[0], root[1], 26, C.bad, 0.55 * a * (0.75 + 0.25 * Math.sin(t * 5)) * ep(o.k, 0.6, 1));
+    if (o.k > 0.6) { const kp = ep(o.k, 0.6, 1), ph = (t * 0.9) % 1; circle(root[0], root[1], 12 + 16 * ph, { color: C.bad, w: 2, alpha: a * kp * (1 - ph) * 0.9 }); circle(root[0], root[1], 11, { color: C.bad, w: 2.2, alpha: a * kp }); }
     if (o.crack > 0) {
       const nx = -uy / uL, ny = ux / uL, half = 2.0 * s + 5, pts = [];
       for (let j = 0; j <= 6; j++) { const f = -1 + 2 * j / 6 * o.crack, wob = (j % 2 ? 2.2 : -2.2); pts.push([root[0] + nx * half * f + ux / uL * wob, root[1] + ny * half * f + uy / uL * wob]); }
@@ -430,8 +428,6 @@ function shcPlanDraw(t, c, cx, cy, s, o) {
 function shcArmZoom(t, x, y, w, h, d, crack, a) {
   const R = shcBoard(), A = R.arm, r = A.r, L = A.L, n = r.model.n, unit = r.d[n * 3 + 1];
   const s = Math.min((w - 180) / (L + 3), 46), ox = x + 96, oy = y + h * 0.5 + 8, P = p => [ox + p[0] * s, oy - p[1] * s];
-  /* a soft light under the root */
-  glowField(t, ox + 10, oy, 160, { a: a * 0.7, cols: [C.bad, C.heat, C.heatL] });
   feDraw(r, P, { load: d / unit, scale: 1, smax: 483, wpx: s * 1.0, alpha: a, seg: 14 });
   /* the board's edge (it holds the root) and the shell's boss (it holds the tip), drawn over the beam's ends */
   G.save(); G.globalAlpha = a;
@@ -461,7 +457,6 @@ S({
     const colW = (sw - 48) / 3, s = 3.25, press = [1.9, 2.55, 3.2], lens = { root: null };
     SHC_CASES.forEach((cs, i) => {
       const c = R.cases[cs.kind], cx = sx + 24 + colW * (i + 0.5), cy = sy + 372, a = ep(t, 0.5 + i * 0.18, 1.0 + i * 0.18, E.snap) * a0;
-      if (cs.hero) glowField(t, cx, cy, 250, { a: a * ep(t, press[i] + 0.4, press[i] + 1.6) * 0.8 });
       const kL = ep(t, press[i], press[i] + 0.9, E.io3), crack = cs.kind === 'arms' ? ep(t, 6.2, 6.8, E.out3) : 0;
       const o = shcPlanDraw(t, c, cx, cy, s, { k: kL, a, crack });
       if (o.root) lens.root = o.root;

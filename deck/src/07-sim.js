@@ -114,7 +114,8 @@ function heatCol(k) {
  * o = { scale (deflection exaggeration), load (0..1, how much of the load is on now), heat (true: colour by stress),
  *       smax (the stress that reads as hot; default this frame's peak), w (px per mm of section depth, or a fixed px
  *       width with wpx), color, alpha, ghost (draw the unloaded frame faintly), nodes (dots at the joints),
- *       hide (e → true to skip an element), crack: e (draw that element breaking), crackK }
+ *       hide (e → true to skip an element), fillet (px: round every joint with a fillet of that radius, as the
+ *       Theseus lattice is everywhere, not only on the fillet slides) }
  */
 function feDraw(r, P, o = {}) {
   const m = r.model, k = o.load == null ? 1 : o.load, sc = (o.scale || 1) * k, a = o.alpha == null ? 1 : o.alpha, smax = o.smax || r.smax || 1;
@@ -135,6 +136,7 @@ function feDraw(r, P, o = {}) {
     G.lineWidth = o.wpx || Math.max(1.2, (o.w || 3) * el.h);
     G.beginPath(); pts.forEach((p, q) => q ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.stroke();
   }
+  if (o.fillet) feFillets(r, P, Object.assign({}, o, { sc, k, smax }));
   if (o.nodes) { G.globalAlpha = a; G.fillStyle = C.ink2; m.nodes.forEach((n0, i) => { const p = P([n0[0] + r.d[i * 3] * sc, n0[1] + r.d[i * 3 + 1] * sc]); G.beginPath(); G.arc(p[0], p[1], o.nodes === true ? 2.5 : o.nodes, 0, TAU); G.fill(); }); }
   G.restore();
 }
@@ -201,4 +203,44 @@ function feLattice(kind, x0, y0, w, h, s, sec) {
   }
   /* drop nodes no bar uses */
   return { nodes, els };
+}
+
+/** fillets at every joint of a drawn frame: between each pair of neighbouring members at a node, the corner fills with
+   an arc tangent to both members' edges (radius o.fillet px), in the colour of the harder-working member. Called by
+   feDraw with { fillet }; P maps model mm to stage px, members are drawn o.w px per mm of depth (or o.wpx) */
+function feFillets(r, P, o) {
+  const m = r.model, sc = o.sc, k = o.k == null ? 1 : o.k, smax = o.smax || r.smax || 1, rf = o.fillet;
+  const at = new Map();
+  m.els.forEach((el, e) => { if (o.hide && o.hide(e)) return; for (const [n, other] of [[el.i, el.j], [el.j, el.i]]) { if (!at.has(n)) at.set(n, []); at.get(n).push({ e, other }); } });
+  const pos = i => P([m.nodes[i][0] + r.d[i * 3] * sc, m.nodes[i][1] + r.d[i * 3 + 1] * sc]);
+  G.save(); G.globalAlpha = o.alpha == null ? 1 : o.alpha;
+  for (const [n, list] of at) {
+    if (list.length < 2) continue;
+    const p0 = pos(n);
+    const arms = list.map(({ e, other }) => {
+      const pts = feElPts(r, e, sc, 6).map(P), q = m.els[e].i === n ? pts[1] : pts[pts.length - 2];
+      const dx = q[0] - p0[0], dy = q[1] - p0[1], L = Math.hypot(dx, dy) || 1, hw = (o.wpx || Math.max(1.2, (o.w || 3) * m.els[e].h)) / 2;
+      return { e, ux: dx / L, uy: dy / L, ang: Math.atan2(dy, dx), hw };
+    }).sort((p, q) => p.ang - q.ang);
+    for (let i = 0; i < arms.length; i++) {
+      const A = arms[i], B = arms[(i + 1) % arms.length];
+      let th = B.ang - A.ang; if (th <= 0) th += TAU;
+      if (th >= Math.PI * 0.98 || th < 0.05) continue;
+      const hw = (A.hw + B.hw) / 2, half = th / 2;
+      /* the bisector, and the fillet circle tangent to both members' facing edges */
+      const bx = Math.cos(A.ang + half), by = Math.sin(A.ang + half), dC = (rf + hw) / Math.sin(half), cxp = p0[0] + bx * dC, cyp = p0[1] + by * dC;
+      const tl = dC * Math.cos(half);
+      const nA = [-A.uy, A.ux], nB = [B.uy, -B.ux];   /* the normals pointing into the corner */
+      const T1 = [p0[0] + A.ux * tl + nA[0] * hw, p0[1] + A.uy * tl + nA[1] * hw], T2 = [p0[0] + B.ux * tl + nB[0] * hw, p0[1] + B.uy * tl + nB[1] * hw];
+      const a1 = Math.atan2(T1[1] - cyp, T1[0] - cxp), a2 = Math.atan2(T2[1] - cyp, T2[0] - cxp);
+      const hk = Math.max(r.sig[A.e], r.sig[B.e]) * k / smax;
+      G.fillStyle = o.heat === false ? (o.color || C.ink2) : heatCol(hk);
+      G.beginPath(); G.moveTo(p0[0] + A.ux * hw * 0.2, p0[1] + A.uy * hw * 0.2); G.lineTo(T1[0], T1[1]);
+      /* the short way round, which is the side facing the node */
+      let da = a2 - a1; while (da > Math.PI) da -= TAU; while (da < -Math.PI) da += TAU;
+      G.arc(cxp, cyp, rf, a1, a1 + da, da < 0);
+      G.lineTo(p0[0], p0[1]); G.closePath(); G.fill();
+    }
+  }
+  G.restore();
 }

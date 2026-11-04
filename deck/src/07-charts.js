@@ -44,7 +44,7 @@ function monoCurve(P, step = 4) {
 /** stamp for charts built on placeholder numbers: a dashed frame in the problem colour and a tag. Remove when the data file lands */
 function placeholderStamp(t, x, y, w, h, o = {}) {
   const a = ep(t, o.t0 || 0.3, (o.t0 || 0.3) + 0.4); if (a <= 0.003) return;
-  G.save(); G.globalAlpha = a * 0.7; G.setLineDash([10, 8]); G.strokeStyle = C.bad; G.lineWidth = 2; rrPath(x - 6, y - 6, w + 12, h + 12, 14); G.stroke(); G.restore();
+  G.save(); G.globalAlpha = a * 0.7; G.setLineDash([10, 8]); G.strokeStyle = C.bad; G.lineWidth = 2; rrPath(x - 6, y - 6, w + 12, h + 12, 6); G.stroke(); G.restore();
   const pw = pillW('placeholder');
   pill(x + w - pw - 8, y - 14, 'placeholder', a);
 }

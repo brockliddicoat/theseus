@@ -52,11 +52,21 @@ function ntr_prime(key, t, w, h) {
   const k = (APP.scale || 1) * (APP.dpr || 1);
   try { R3D.render(key, t, { explode: 0, xray: 0 }, Math.max(64, Math.round(w * k)), Math.max(36, Math.round(h * k)), th); } catch (err) { console.error('ntr_prime', err); }
 }
-/** a chip in the Theseus yellow: mono caps on a yellow block */
-function ntr_chip(s, x, y, a = 1, o = {}) { return rich([{ s, role: 'label', size: o.size || 21, color: C.onHero, chip: C.heroChip }], x + 7, y, { alpha: a, align: o.align }); }
+/** Theseus's name or number as its own tag: type in Theseus's colour, no block */
+function ntr_chip(s, x, y, a = 1, o = {}) { return heroTag(x, y, null, s, { a, size: o.size || 21, right: o.align === 'right' }); }
 /** a short arrowhead pointing along (dx, dy) at (x, y) */
 function ntr_head(x, y, dx, dy, s, col, a = 1) { const l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l; G.save(); G.globalAlpha = a; G.fillStyle = col; G.beginPath(); G.moveTo(x, y); G.lineTo(x - ux * s - uy * s * 0.5, y - uy * s + ux * s * 0.5); G.lineTo(x - ux * s + uy * s * 0.5, y - uy * s - ux * s * 0.5); G.closePath(); G.fill(); G.restore(); }
-/** diagonal hatching inside a rectangle, for a region nobody has data for */
+/** a column of glossBox / sourceBox tiles on the stage's 40 px grid: each height rounded up to the grid, 40 between them.
+   items: [{ t0, gloss: true | source, a (term | who), b (definition | finding), o }]. returns the y under the last */
+function ntr_stack(t, x, y, w, items) {
+  let yy = y;
+  for (const it of items) {
+    const f = it.gloss ? glossBox : sourceBox, m = f(-1, 1e9, x, yy, w, it.a, it.b, it.o || {}), h = Math.ceil(m.h / 40) * 40;
+    f(t, it.t0, x, yy, w, it.a, it.b, Object.assign({}, it.o || {}, { h }));
+    yy += h + 40;
+  }
+  return yy;
+}
 /** the map's anchors on the flat, exploded elevation: one point on the part each chapter rebuilds */
 function ntr_mapAt(st, box) {
   const at = (re, f) => v2dAt('shell', st, box, re, f);
@@ -67,7 +77,9 @@ function ntr_mapAt(st, box) {
 }
 function ntr_hatch(x, y, w, h, col, a = 1, step = 14) { if (a <= 0.003 || w <= 0 || h <= 0) return; G.save(); G.beginPath(); G.rect(x, y, w, h); G.clip(); G.globalAlpha = a; G.strokeStyle = col; G.lineWidth = 1.2; G.beginPath(); for (let s = -h; s < w + h; s += step) { G.moveTo(x + s, y + h); G.lineTo(x + s + h, y); } G.stroke(); G.restore(); }
 
-/* ============================== 01. cover: THESEUS, and the shell assembling out of its parts ============================== */
+/* ============================== 01. cover: THESEUS, the gram scale under it, the line, four numbers ============================== */
+/* Brock (07:20): keep this form (his reference image), drop the flat 2D mouse, new numbers. In 3D the shell still
+   assembles beside the word; in 2D the word, the scale and the numbers carry the cover on their own. */
 const NTR_COV = { size: 280, x0: 64, yb: 462, v: [1222, 120, 730, 690], zoom: [1.06, 1.2] };
 S({
   id: 'cover', first: true, ch: 'intro', theme: 'night', chrome: false, title: 'Theseus: in pursuit of an objectively better mouse', settle: 8, three: ['shell'],
@@ -78,7 +90,7 @@ S({
     /* top row: the studio, and the rule the whole deck follows */
     chapterIcon('intro', LM, LAY.labelY - 19, 22, C.hero, ep(t, 0.1, 0.4));
     text('Nitrite Labs', LM + 36, LAY.labelY, { role: 'label', color: C.ink2, t, t0: 0.15, cps: 40 });
-    rich([{ s: 'Optimization', role: 'label', color: C.faint }, { s: 'over', role: 'label', color: C.faint, gap: 12 }, { s: 'opinion', role: 'label', color: C.hero, gap: 12 }], RM, LAY.labelY, { align: 'right', alpha: ep(t, 0.4, 0.8) });
+    rich([{ s: 'Optimization', role: 'label', color: C.faint }, { s: 'over', role: 'label', color: C.faint, gap: 12 }, { s: 'opinion', role: 'label', color: C.heroText, grad: C.heroGrad, gap: 12 }], RM, LAY.labelY, { align: 'right', alpha: ep(t, 0.4, 0.8) });
     text('A Nitrite Labs mouse, in development for years', LM, 196, { role: 'label', size: 22, color: C.mute, t, t0: 0.5, cps: 60 });
     /* THESEUS: each letter rises out of its own mask */
     const st = { role: 'hero', size: C0.size, track: -0.028 }, word = 'THESEUS', x0 = C0.x0, yb = C0.yb;
@@ -91,68 +103,69 @@ S({
       if (k > 0) { G.save(); G.beginPath(); G.rect(xx - 10, yb - C0.size * 0.8, advs[i] + 20, C0.size * 0.86); G.clip(); text(ch, xx, yb + (1 - k) * C0.size * 0.82, Object.assign({}, st, { caps: false, color: C.ink })); G.restore(); }
       xx += advs[i] + ls;
     });
-    /* the hero, in front of the word: the shell assembles out of its parts while the camera turns, slowly, and stops */
-    ntr_prime('shell', t, vw, vh);
-    const as = ep(t, 0.6, 4.6, E.io3), cam = ep(t, 0.3, 7.6, E.io3), drift = t > 7.6 ? Math.sin((t - 7.6) * 0.22) : 0;
-    /* in 2D: the side-button side, the parts coming together in elevation */
-    /* the flat elevation is long and low: a narrower box keeps its nose clear of the word */
-    const VB = V2D.on ? [1300, 150, 630, 640] : [vx, vy, vw, vh];
-    view3D('shell', t, VB[0], VB[1], VB[2], VB[3], { view: 'threeQuarterRight', view2d: 'right', yaw: lerp(-0.5, 0.02, cam) + 0.05 * drift, pitch: 0.06 * (1 - cam), zoom: in2D(lerp(1.12, 1.18, cam), lerp(C0.zoom[0], C0.zoom[1], cam)), explode: 0.72 * (1 - as), colorway: 'black' }, { alpha: ep(t, 0.35, 1.4) });
-    /* what you are looking at, said plainly: the shape is a placeholder */
-    const kf0 = ep(t, 4.8, 5.4);
-    rich([{ s: 'Fig. 00', role: 'label', size: 21, color: C.mute }, { s: 'Sora V2 shape, a placeholder', role: 'label', size: 21, color: C.faint, gap: 16 }], RM, 744, { align: 'right', alpha: kf0 });
-    /* a millimetre scale under the word, with a yellow segment for the 29 g */
-    const ry = yb + 44, kr = ep(t, 1.0, 1.9, E.cam), rx1 = x0 + 14 + (wordW - 14) * kr;
+    /* in 3D, the hero in front of the word: the shell assembles out of its parts while the camera turns, slowly, and stops */
+    if (!V2D.on) {
+      ntr_prime('shell', t, vw, vh);
+      const as = ep(t, 0.6, 4.6, E.io3), cam = ep(t, 0.3, 7.6, E.io3), drift = t > 7.6 ? Math.sin((t - 7.6) * 0.22) : 0;
+      view3D('shell', t, vx, vy, vw, vh, { view: 'threeQuarterRight', view2d: 'right', yaw: lerp(-0.5, 0.02, cam) + 0.05 * drift, pitch: 0.06 * (1 - cam), zoom: lerp(C0.zoom[0], C0.zoom[1], cam), explode: 0.72 * (1 - as), colorway: 'black' }, { alpha: ep(t, 0.35, 1.4) });
+      rich([{ s: 'Fig. 00', role: 'label', size: 21, color: C.mute }, { s: 'Sora V2 shape, a placeholder', role: 'label', size: 21, color: C.faint, gap: 16 }], RM, 744, { align: 'right', alpha: ep(t, 4.8, 5.4) });
+    }
+    /* the gram scale under the word, one tick a gram, with Theseus's 29.31 g in its colour */
+    const ry = yb + 44, kr = ep(t, 1.0, 1.9, E.cam), rx1 = x0 + 14 + (wordW - 14) * kr, gpx = 12, mx = x0 + 14 + THESEUS.mass * gpx;
     line(x0 + 14, ry, rx1, ry, { color: inkA(0.35), w: 1.5 });
-    for (let i = 0; x0 + 14 + i * 12 <= rx1; i++) { const X = x0 + 14 + i * 12, L = i % 10 === 0 ? 16 : i % 5 === 0 ? 10 : 6; line(X, ry, X, ry + L, { color: inkA(i % 10 === 0 ? 0.5 : 0.25), w: 1.2 }); }
-    rect(x0 + 14, ry - 3, 29 * 12 * ep(t, 1.6, 2.1, E.out3), 6, { fill: C.hero });
+    for (let i = 0; x0 + 14 + i * gpx <= rx1; i++) { const X = x0 + 14 + i * gpx, L = i % 10 === 0 ? 16 : i % 5 === 0 ? 10 : 6; line(X, ry, X, ry + L, { color: inkA(i % 10 === 0 ? 0.5 : 0.25), w: 1.2 }); }
+    rect(x0 + 14, ry - 3, THESEUS.mass * gpx * ep(t, 1.6, 2.1, E.out3), 6, { fill: C.hero });
     text('0', x0 + 14, ry + 40, { role: 'tick', size: 19, color: C.faint, alpha: ep(t, 1.4, 1.8) });
-    text('29', x0 + 14 + 29 * 12, ry + 40, { role: 'tick', size: 19, color: C.hero, align: 'center', alpha: ep(t, 1.9, 2.2) });
-    /* the subtitle in three voices: a mono run-in, the display claim, and the one yellow word */
+    text(THS.mass, mx, ry + 40, { role: 'tick', size: 19, weight: 700, color: C.heroText, align: 'center', alpha: ep(t, 1.9, 2.2) });
+    /* the subtitle in three voices: a quiet run-in, the display claim, and the one word in Theseus's colour */
     rich([
       { s: 'In pursuit of an', role: 'labelL', size: 28, color: C.mute, t0: 1.25, cps: 40 },
       { s: 'objectively better', role: 'h2', size: 60, color: C.ink, gap: 22, rise: [1.55, 0.8] },
-      { s: 'mouse', role: 'h2', size: 60, color: C.hero, gap: 18, rise: [1.7, 0.8] }
+      { s: 'mouse', role: 'h2', size: 60, color: C.heroText, grad: C.heroGrad, gap: 18, rise: [1.7, 0.8] }
     ], LM, 640, { t });
-    /* four numbers, XBAB-size next to mono units; each a target, so each carries its pill */
+    /* four numbers, display figures next to their units */
     const cols = [
-      { lab: 'Mass', n: '29', u: 'g', chip: 'Target', ev: 'proposal', sub: 'Weighed per unit' },
-      { lab: 'Motion latency, wireless', n: '0.14', u: 'ms', ev: 'proposal', sub: 'On {piaknow}\'s rig' },
-      { lab: 'Report rate', n: '8', u: 'kHz', ev: 'proposal', sub: 'Wired, wireless' },
+      { lab: 'Mass', n: THS.mass, u: 'g', sub: 'Weighed, every unit' },
+      { lab: 'Motion latency, wireless', n: '0.14', u: 'ms', sub: 'On {piaknow}\'s rig' },
+      { lab: 'Report rate', n: '8', u: 'kHz', sub: 'Wired and wireless' },
       { lab: 'Ideas', n: '100', u: '+', sub: 'Each with its evidence' }
     ];
     const cw = (RM - LM) / 4;
+    /* one size for all four, the widest one fitting its column */
+    const nw = c => tw(c.n, { role: 'd1', size: 100, tnum: true }) / 100 + (c.u === '+' ? 0.75 : tw(c.u, { font: 'mono', size: 38, weight: 600 }) / 100 + 0.1);
+    const nS = Math.min(132, Math.floor((cw - 44) / Math.max(...cols.map(nw))));
     cols.forEach((c, i) => {
       const x = LM + i * cw, t0 = 2.1 + i * 0.2, a = ep(t, t0, t0 + 0.4);
       if (i) line(x - 24, 770, x - 24, 770 + 190 * ep(t, t0 - 0.1, t0 + 0.5, E.cam), { color: inkA(0.14), w: 1.5 });
       text(c.lab, x, 786, { role: 'label', size: 21, color: C.mute, alpha: a, t, t0, cps: 60 });
-      const r = rich([{ s: c.n, role: 'd1', size: 132, color: C.ink, tnum: true, count: [t0, 1.0] }, { s: c.u, font: c.u === '+' ? 'disp' : 'mono', size: c.u === '+' ? 96 : 38, weight: c.u === '+' ? 800 : 600, color: c.u === '+' ? C.hero : C.mute, gap: c.u === '+' ? 2 : 10 }], x - 6, 916, { t, alpha: a });
-      if (c.chip) ntr_chip(c.chip, x - 6 + r.w + 20, 916, ep(t, t0 + 0.6, t0 + 0.9));
-      const ka = ep(t, t0 + 0.4, t0 + 0.8);
-      let sx = x; if (c.ev) sx += pill(x, 962, c.ev, ka) + 12;
-      text(c.sub, sx, 962, { role: 'label', size: 19, color: C.faint, alpha: ka });
+      rich([{ s: c.n, role: 'd1', size: nS, color: C.ink, tnum: true, count: [t0, 1.0] }, { s: c.u, font: c.u === '+' ? 'disp' : 'mono', size: c.u === '+' ? Math.round(nS * 0.73) : 38, weight: c.u === '+' ? 800 : 600, color: c.u === '+' ? C.heroText : C.mute, grad: c.u === '+' ? C.heroGrad : null, gap: c.u === '+' ? 2 : 10 }], x - 6, 916, { t, alpha: a });
+      text(c.sub, x, 962, { role: 'label', size: 19, color: C.faint, alpha: ep(t, t0 + 0.4, t0 + 0.8) });
     });
     /* the byline, on the chrome's rule */
     line(LM, LAY.ruleY, LM + (RM - LM) * ep(t, 0.3, 1.4, E.cam), LAY.ruleY, { color: C.hair, w: 1.5 });
     rich([{ s: 'Brock Liddicoat', role: 'foot', weight: 700, caps: true, track: 0.16, color: C.ink2 }, { s: '/', role: 'foot', color: C.faint, gap: 14 }, { s: 'Nitrite Labs', role: 'foot', caps: true, track: 0.12, color: C.mute, gap: 14 }, { s: '/', role: 'foot', color: C.faint, gap: 14 }, { s: 'Shape designer of the Finalmouse Starlight X', role: 'foot', caps: true, track: 0.12, color: C.faint, gap: 14 }], LM, LAY.footY, { alpha: ep(t, 2.6, 3.2) });
     text(`01 / ${pad2(DECK.slides.length)}`, RM, LAY.footY, { role: 'foot', weight: 600, color: C.mute, align: 'right', alpha: ep(t, 2.6, 3.2) });
-    for (const [mx, my] of [[40, 160], [40, 600]]) regMark(mx, my, ep(t, 0.8, 1.3) * 0.4, 8, C.ink);
+    for (const [mx2, my] of [[40, 160], [40, 600]]) regMark(mx2, my, ep(t, 0.8, 1.3) * 0.4, 8, C.ink);
   }
 });
 
-/* ============================== 02. thesis: optimization over opinion, the six labels as one designed object ============================== */
-/** the six specimens, all from this deck and one story: the Starlight X's weight, the cell it carries, the 29 g target */
+/* ============================== 02. thesis: optimization over opinion. How every number in the deck is labelled ============================== */
+/* Eight tiles. The top row: other people's numbers, each named by its source in quiet type (RTINGS, Jauch datasheet,
+   Finalmouse claim) or marked Derived with its sum. The bottom row: my own (a target, an estimate, a forecast), which
+   carry no tag: the words say whose they are. The last tile is the rule, and what missing data looks like. */
 function ntr_specimens() {
   const slx = id => ntr_fv('finalmouse-slx', id) || {}, me = slx('weight_measured_g').v, cl = slx('weight_claimed_g').v, gap = (ntr_fv('finalmouse-slx', 'weight_gap_pct') || {}).v;
   const ch = ((RD.batteries || {}).chemistries || []).find(c => c.id === 'li_polymer_pouch_mouse'), cell = ch ? rv(ch.mass) : null;
-  const p140 = ntr_pack('LP402025JU'), L = ntr_loads(), h79 = p140 ? p140.wh / L.w1 : null;
+  const p370 = ntr_pack('LP402535JU'), L = ntr_loads(), h370 = p370 ? p370.wh / L.w1 : null;
   return [
-    { ev: 'measured', who: 'Outside tester', shape: 'Filled', n: me != null ? fmtN(me, 1) : '–', u: 'g', what: 'Finalmouse Starlight X, on RTINGS\' scale', src: 'RTINGS, Oct 2026' },
-    { ev: 'datasheet', who: 'The part maker', shape: 'Filled', n: cell != null ? fmtN(cell, 1) : '–', u: 'g', what: 'A 250 mAh Jauch pouch cell, as packed', src: 'Jauch datasheet' },
-    { ev: 'claim', who: 'The mouse maker', shape: 'Ring', n: cl != null ? fmtN(cl, 0) : '–', u: 'g', what: 'Finalmouse Starlight X, as listed', src: 'Finalmouse listing' },
-    { ev: 'derived', who: 'My arithmetic', shape: 'Ring', n: gap != null ? '+' + fmtN(gap, 1) : '–', u: '%', what: 'Weighed vs listed', formula: [me, cl], src: 'Formula on screen' },
-    { ev: 'proposal', who: 'My target', shape: 'Dashed', n: '29', u: 'g', what: 'Theseus, the weight I am designing to', src: 'This deck' },
-    { ev: 'projected', who: 'My forecast', shape: 'Half', n: h79 != null ? fmtN(h79, 0) : '–', u: 'h', what: 'Theseus at 1 kHz on a 140 mAh cell', src: p140 ? fmtN(p140.wh, 3) + ' Wh ÷ ' + fmtN(L.w1 * 1000, 2) + ' mW' : '' }
+    { value: me != null ? fmtN(me, 1) : '–', unit: 'g', label: 'Starlight X, weighed', ev: 'measured', by: 'RTINGS' },
+    { value: cell != null ? fmtN(cell, 1) : '–', unit: 'g', label: 'A 250 mAh cell, packed', ev: 'datasheet', by: 'Jauch' },
+    { value: cl != null ? fmtN(cl, 0) : '–', unit: 'g', label: 'Starlight X, as listed', ev: 'claim', by: 'Finalmouse' },
+    { value: gap != null ? '+' + fmtN(gap, 1) : '–', unit: '%', label: `(${fmtN(me || 0, 1)} − ${fmtN(cl || 0, 1)}) ÷ ${fmtN(cl || 0, 1)}`, ev: 'derived' },
+    { value: THS.mass, unit: 'g', label: 'The weight I build to', head: 'My target', hero: true },
+    { value: fmtN(THESEUS.pcb, 1), unit: 'g', label: 'Its one board', head: 'My estimate' },
+    { value: h370 != null ? fmtN(h370, 0) : '–', unit: 'h', label: p370 ? `${fmtN(p370.wh, 3)} Wh ÷ ${fmtN(L.w1 * 1000, 2)} mW` : '', head: 'My forecast, 1 kHz' },
+    { rule: true }
   ];
 }
 S({
@@ -160,41 +173,21 @@ S({
   src: ['ntrRtSlx', 'ntrEloSlx', 'exJauch', 'ntrJauch', 'ntrTpuV4', 'exNbcV4'],
   draw: t => {
     header(t, 'Optimization over opinion');
-    captions(t, [[0.6, 'Every number in this deck says who stands behind it. Here is one of each kind, all from the pages ahead.'], [5.6, 'Same mouse, two weights: listed at 38 g, weighed at 41.7 g. The pill tells you which one you are reading.']]);
-    const SP = ntr_specimens(), n = SP.length, gap = 24, cw = (RM - LM - gap * (n - 1)) / n, y0 = 296, ch = 500;
-    /* who stands behind the number: the outside world on the left, me on the right */
-    const ka = ep(t, 0.5, 0.9), xMe = LM + 4 * (cw + gap);
-    line(LM, y0 - 6, xMe - gap, y0 - 6, { color: C.hair, w: 1.5, alpha: ka });
-    line(xMe, y0 - 6, RM, y0 - 6, { color: C.heroText, w: 2, alpha: ka });
-    text('Someone else', LM, y0 - 20, { role: 'label', size: 21, color: C.mute, alpha: ka });
-    text('Me, before it exists', RM, y0 - 20, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: ka });
+    captions(t, [[0.6, 'Every number in this deck names where it comes from: the tester who weighed it, the datasheet, the maker, or the sum.'],
+      [5.4, 'My own numbers carry no tag: they are my targets and my plan, and the words say so. No source, no number.']]);
+    const SP = ntr_specimens(), cell = bento(LM, 280, RM - LM, 680, 4, 2);
     SP.forEach((s, i) => {
-      const x = LM + i * (cw + gap), t0 = 0.8 + i * 0.35, a = ep(t, t0, t0 + 0.45), mine = s.ev === 'proposal' || s.ev === 'projected';
-      if (a <= 0.003) return;
-      G.save(); G.translate(0, (1 - E.out3(a)) * 18);
-      demoWindow(x, y0 + 20, cw, ch, a, { plain: true, hero: mine });
-      text(s.who, x + 22, y0 + 62, { role: 'label', size: 21, color: mine ? C.heroText : C.mute, alpha: a, maxW: cw - 40 });
-      pill(x + 22, y0 + 110, s.ev, a, { size: 21 });
-      /* the dot, large: its shape is the strength of the evidence */
-      const gx = x + 50, gy = y0 + 178, kg = ep(t, t0 + 0.2, t0 + 0.6, E.snap);
-      G.save(); G.translate(gx, gy); G.scale(kg * 3.4, kg * 3.4); evDot(0, 0, s.ev, 6, a); G.restore();
-      text(s.shape, x + 88, gy + 8, { role: 'label', size: 21, color: C.mute, alpha: a });
-      /* the specimen */
-      rich([{ s: s.n, role: 'stat', size: 88, color: C.ink, tnum: true, count: [t0 + 0.3, 0.9] }, { s: s.u, font: 'mono', size: 32, weight: 600, color: C.mute, gap: 8 }], x + 20, y0 + 314, { t, alpha: a });
-      text(s.what, x + 22, y0 + 362, { role: 'small', size: 25, color: C.ink2, maxW: cw - 40, lh: 1.3, alpha: a });
-      if (s.formula && s.formula[0] != null) {
-        /* the formula carries the evidence of its inputs: a measured 41.7 and a claimed 38.0 */
-        const fy = y0 + 424, kf = ep(t, t0 + 0.5, t0 + 0.9); let fx = x + 22;
-        const run = (str, w) => { text(str, fx, fy, { font: 'mono', size: 22, weight: 600, color: C.ink, alpha: kf }); fx += tw(str, { font: 'mono', size: 22, weight: 600 }) + (w || 6); };
-        run('('); evDot(fx + 6, fy - 8, 'measured', 5.5, kf); fx += 16; run(fmtN(s.formula[0], 1)); run('−'); evDot(fx + 6, fy - 8, 'claim', 5.5, kf); fx += 16; run(fmtN(s.formula[1], 1) + ')');
-        fx = x + 22; const fy2 = fy + 32; text('÷', fx, fy2, { font: 'mono', size: 22, weight: 600, color: C.ink, alpha: kf }); evDot(fx + 30, fy2 - 8, 'claim', 5.5, kf); text(fmtN(s.formula[1], 1), fx + 42, fy2, { font: 'mono', size: 22, weight: 600, color: C.ink, alpha: kf });
-      }
-      line(x + 22, y0 + ch - 22, x + cw - 22, y0 + ch - 22, { color: C.hair, w: 1.2, alpha: a });
-      text(s.src, x + 22, y0 + ch + 8, { role: 'foot', color: C.faint, alpha: a, maxW: cw - 40 });
-      G.restore();
+      const r = cell(i % 4, Math.floor(i / 4)), t0 = 0.8 + i * 0.22;
+      if (!s.rule) { statTile(t, t0, r, Object.assign({ quiet: !s.hero, align: 'center' }, s)); return; }
+      /* the rule, and what a gap looks like */
+      const [x, y, w, h] = r, a = ep(t, t0, t0 + 0.55, E.snap); if (a <= 0.003) return;
+      demoWindow(x, y, w, h, a);
+      const ka = ep(t, t0 + 0.2, t0 + 0.7);
+      text('The rule', x + 36, y + 58, { role: 'label', size: 20, color: C.mute, alpha: ka });
+      text('No source, no number.', x + 36, y + 122, { role: 'h2', size: 40, color: C.ink, alpha: ka, maxW: w - 72, lh: 1.05 });
+      text('Where nobody has the data, the slide says so, in red:', x + 36, y + h - 92, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: w - 72, lh: 1.3, alpha: ep(t, t0 + 0.5, t0 + 0.9) });
+      pill(x + 36, y + h - 34, 'placeholder', ep(t, t0 + 0.7, t0 + 1.1));
     });
-    gloss(t, 6.2, 'Maker claim', 'A maker\'s figure for its own product. It stays a claim even when the maker says it measured it.');
-    bandBlock(t, 6.6, W / 2 + 40, RM - (W / 2 + 40), 'The rule', 'No pill, no number', 'If I can\'t say how I know a number, it is not on a slide. Where data is missing, the slide says so.', { color: C.ink });
   }
 });
 
@@ -214,7 +207,7 @@ const NTR_BAR_REST = [
   { cat: 'Battery, 1 kHz', best: '180 h', bv: 180, who: 'Razer Viper V4 Pro, 49 g', note: 'Razer; SLX: no rating', ev: 'claim', tgt: '200 h', tv: 200, tq: 'measured, not listed', better: 'high' },
   { cat: 'Battery, 8 kHz', best: '40 h', bv: 40, who: 'Razer Viper V4 Pro', note: 'TechPowerUp', ev: 'measured', tgt: '45 h', tv: 45, tq: 'measured', better: 'high' },
   { cat: 'Charge current', best: '0.28 A', who: 'Pulsar X2H', note: 'TechPowerUp', ev: 'measured', tgt: '1C', tq: 'if the cell is rated for it' },
-  { cat: 'Weight, full shell', best: '29 g', bv: 29, who: 'Finalmouse ULX, small', note: 'Finalmouse, as listed', ev: 'claim', tgt: '29 g', tv: 29, tq: 'weighed, every unit', better: 'low' },
+  { cat: 'Weight, full shell', best: '29 g', bv: 29, who: 'Finalmouse ULX, small', note: 'Listed, not weighed', ev: 'claim', tgt: THS.massG, tv: THESEUS.mass, tq: 'weighed, every unit', better: 'low' },
   { cat: 'Sensor', best: '930 IPS', who: 'Razer Focus Pro 50K', note: '90 G; Razer only', ev: 'claim', tgt: 'FrameSync-class', tq: 'next-gen PixArt, proposal' },
   { cat: 'Lift-off', best: '0.7 mm', bv: 0.7, who: 'PAW3955 mice, the SLX', note: '11 steps, 0.7 to 1.7 mm', ev: 'datasheet', tgt: '0.7 mm', tv: 0.7, tq: 'or less, measured', better: 'low' },
   { cat: 'Set-down smoothing', best: '12 ms', bv: 12, who: 'XBAB XA25, 2 frames', note: 'A 3950 by default: 450 ms', ev: 'claim', tgt: '12 ms', tv: 12, tq: 'or less, by default', better: 'low' },
@@ -253,8 +246,8 @@ function ntr_bar(t, rows) {
       const xt = lerp(X(r.bv), X(r.tv), km), same = Math.abs(r.tv - r.bv) < 1e-9;
       if (!same && km > 0.05) { line(X(r.bv), ty, xt, ty, { color: C.heroText, w: 3, alpha: kt }); }
       heroMark(xt, ty, 11 * kt, 1);
-      const ch2 = same ? 'Same' : (r.tv > r.bv ? '+' : '−') + fmtN(Math.abs(100 * (r.tv - r.bv) / r.bv), 0) + '%';
-      text(ch2, tx - 36, ty + 7, { font: 'mono', size: 21, weight: 700, color: same ? C.mute : C.heroText, align: 'right', alpha: ep(t, t0 + 1.2, t0 + 1.6) });
+      const ch2 = same ? 'Same' : (r.tv > r.bv ? '+' : '−') + fmtN(Math.abs(100 * (r.tv - r.bv) / r.bv), 0) + '%', gain = !same && (r.better === 'low' ? r.tv < r.bv : r.tv > r.bv);
+      text(ch2, tx - 36, ty + 7, { font: 'mono', size: 21, weight: 700, color: gain ? C.heroText : C.mute, align: 'right', alpha: ep(t, t0 + 1.2, t0 + 1.6) });
     }
     text(r.tgt, tx, bt + rh / 2 - 1, { role: 'small', size: 26, weight: 800, color: C.ink, t, t0: t0 + 0.2, cps: 100 });
     text(r.tq, tx, bt + rh / 2 + 22, { role: 'label', size: 19, color: C.mute, alpha: ep(t, t0 + 0.3, t0 + 0.6) });
@@ -267,9 +260,9 @@ S({
   draw: t => {
     header(t, 'The bar, part one: speed');
     const yb = ntr_bar(t, NTR_BAR_SPEED);
-    captions(t, [[0.6, 'Each row: the best number anyone has shown, who holds it, how we know, and my target. A maker\'s claim is labelled as one.'], [5.0, 'The hard one is wireless motion: 0.14 ms is 59% below the fastest wireless mouse anyone has measured.']]);
-    legend(t, 3.2, LM, yb + 58, [{ kind: 'dot', color: C.ink, label: 'Best shown' }, { kind: 'hero', label: 'My target, a proposal' }]);
-    source(t, 'Change = (target − best) ÷ best. Targets are proposals: none is measured yet.', { t0: 3.4 });
+    captions(t, [[0.6, 'Each row: the best number anyone has shown, who holds it, how we know it, and my target. Theseus matches or beats every one.'], [5.0, 'The big one is wireless motion: 0.14 ms, 59% under the fastest wireless mouse anyone has measured.']]);
+    legend(t, 3.2, LM, yb + 58, [{ kind: 'dot', color: C.ink, label: 'Best shown' }, { kind: 'hero', label: 'My target' }]);
+    source(t, 'Change = (target − best) ÷ best.', { t0: 3.4 });
   }
 });
 S({
@@ -278,7 +271,7 @@ S({
   draw: t => {
     header(t, 'The bar, part two: everything else');
     ntr_bar(t, NTR_BAR_REST);
-    captions(t, [[0.6, 'The same rule for the rest: the best figure shown anywhere, and a target at or past it.'], [5.0, 'One row I can\'t win outright: Razer\'s sensor is Razer\'s alone. Mine is a next-gen PixArt FrameSync-class part, a proposal.']]);
+    captions(t, [[0.6, 'The same rule for everything else: the best figure shown anywhere, and where Theseus sits against it.'], [5.0, 'Every Theseus is weighed; the 29 g here is only listed. And where Razer keeps its sensor to itself, mine is a next-gen PixArt FrameSync-class part.']]);
   }
 });
 
@@ -303,7 +296,7 @@ function ntr_flagCells() {
   const mo = (id, sub) => { const m = ntr_fv(id, 'motion_latency'); return m ? { v: m.v, s: fmtN(m.v, 2), u: 'ms', ev: m.ev, sub } : { na: 'Not tested' }; };
   const v4c = ntr_fv('razer-viper-v4-pro', 'click_latency'), v48 = ntr_fv('razer-viper-v4-pro', 'battery_measured_h');
   return {
-    w: [{ v: 29, s: '29', u: 'g', ev: 'proposal', sub: 'Weighed' }, wt('razer-viper-v4-pro'), wt('finalmouse-slx'), wt('logitech-gpx2'), wt('ninjutso-sora-v3'), wt('xbab-xa25'), wt('endgame-op1-8k-v2')],
+    w: [{ v: THESEUS.mass, s: THS.mass, u: 'g', ev: 'proposal', sub: 'Weighed' }, wt('razer-viper-v4-pro'), wt('finalmouse-slx'), wt('logitech-gpx2'), wt('ninjutso-sora-v3'), wt('xbab-xa25'), wt('endgame-op1-8k-v2')],
     b: [{ v: 200, s: '200', u: 'h', ev: 'proposal', sub: 'Measured' }, Object.assign(hr('razer-viper-v4-pro'), { sub: v48 ? fmtN(v48.v, 0) + ' h at 8 kHz' : '' }),
       { na: 'None listed', sub: '250 mAh cell' }, hr('logitech-gpx2'), { na: 'None found' }, { na: 'Wired' }, { na: 'Wired' }],
     m: [{ v: 0.14, s: '0.14', u: 'ms', ev: 'proposal', sub: 'Wireless' }, mo('razer-viper-v4-pro', 'Wireless'), { na: 'Not tested' }, mo('logitech-gpx2', 'Wireless'), { na: 'Not tested' }, mo('xbab-xa25', 'Wired'), mo('endgame-op1-8k-v2', 'Wired')],
@@ -311,7 +304,7 @@ function ntr_flagCells() {
       xbXa != null ? { s: fmtN(xbXa, 0), u: 'µs', ev: 'claim', sub: 'XBAB rig' } : { na: 'Not tested' }, xbOp != null ? { s: fmtN(xbOp, 0), u: 'µs', ev: 'claim', sub: 'XBAB rig' } : { na: 'Not tested' }],
     s: [{ s: 'Next-gen PixArt,\nFrameSync-class', ev: 'proposal' }, { s: 'Focus Pro 50K Gen-3' }, { s: 'Finalmouse F1' }, { s: 'HERO 2' }, { s: 'AimNinja 2 Pro 45K' }, { s: 'PAW3950' }, { s: 'PAW3950' }],
     r: [{ s: 'Raytac AN54LM-20A\n{nRF54LM20A}', ev: 'proposal' }, { s: 'Airoha AB1623' }, { s: 'Nordic {nRF54LM20}' }, { s: 'Nordic {nRF52840}' }, { s: 'PixArt PAR2862' }, { s: 'Nuvoton M483' }, { s: 'Nuvoton M483' }],
-    p: [{ s: 'Not set' }, { s: '$159.99' }, { s: '$179' }, { s: '$159', sub: '2023 list' }, { s: '$119.99' }, { s: '$169' }, { s: '$89.99' }]
+    p: [{ s: THS.price, ev: 'proposal' }, { s: '$159.99' }, { s: '$179' }, { s: '$159', sub: '2023 list' }, { s: '$119.99' }, { s: '$169' }, { s: '$89.99' }]
   };
 }
 /** evidence dots as a legend line */
@@ -325,14 +318,14 @@ S({
   src: ['exRtings', 'exEloshapes', 'exXbabWeight', 'exNbcV4', 'ntrTpuV4', 'ntrGpx2', 'ntrB2g', 'exPiaknow', 'ntrXbabClick', 'ntrRazerV4', 'ntrStores', 'raytac', 'slxPdf'],
   draw: t => {
     header(t, 'Theseus against the flagships');
-    captions(t, [[0.6, 'Six of the best mice you can buy, against my targets. A blank cell means nobody has published that number.'], [5.4, 'Theseus doesn\'t lead every row: the wired XA25 is lighter, and 0.01 ms quicker in motion.']]);
-    const D = ntr_flagCells(), n = NTR_FLAG.length, lw = 214, c0w = 290, cw = (RM - LM - lw - c0w) / (n - 1), y0 = 268, hh = 84;
+    captions(t, [[0.6, 'Six of the best mice you can buy, against my targets. A blank means nobody has published that number.'], [5.4, 'Against the wireless flagships Theseus leads every row but price. The wired XA25 is lighter and 0.01 ms quicker, with no battery to carry.']]);
+    const D = ntr_flagCells(), n = NTR_FLAG.length, lw = 214, c0w = 290, cw = (RM - LM - lw - c0w) / (n - 1), y0 = 280, hh = 92;
     const rows = [
-      { k: 'w', label: 'Weight', sub: 'As weighed', bar: 60, best: 'min', h: 100 },
-      { k: 'b', label: 'Battery, 1 kHz', sub: 'Hours, listed', bar: 200, best: 'max', h: 100 },
-      { k: 'm', label: 'Motion latency', sub: '{piaknow}, 8 kHz', bar: 1.0, best: 'min', h: 100 },
-      { k: 'c', label: 'Click latency', sub: 'Contact to USB', h: 66 },
-      { k: 's', label: 'Sensor', h: 70, wrap: true }, { k: 'r', label: 'Radio, MCU', h: 70, wrap: true }, { k: 'p', label: 'Price, US', h: 52 }
+      { k: 'w', label: 'Weight', sub: 'RTINGS\' scale', bar: 60, best: 'min', h: 120 },
+      { k: 'b', label: 'Battery, 1 kHz', sub: 'The makers\' hours', bar: 200, best: 'max', h: 120 },
+      { k: 'm', label: 'Motion latency', sub: '{piaknow}, 8 kHz', bar: 1.0, best: 'min', h: 120 },
+      { k: 'c', label: 'Click latency', sub: 'Contact to USB', h: 96 },
+      { k: 'p', label: 'Price, US', sub: 'List', h: 80 }
     ];
     const colX = j => LM + lw + (j ? c0w + (j - 1) * cw : 0), colW = j => j ? cw : c0w, total = hh + rows.reduce((a, r) => a + r.h, 0), a0 = ep(t, 0.3, 0.7);
     /* the Theseus column: a yellow cap and a rule */
@@ -349,7 +342,7 @@ S({
     rows.forEach((R, i) => {
       const t0 = 0.9 + i * 0.32, k = ep(t, t0, t0 + 0.4), cells = D[R.k];
       if (i) line(LM, ry, RM, ry, { color: C.hair, w: 1, alpha: k });
-      const vy = ry + (R.bar ? 48 : 34), sy = vy + (R.bar ? 27 : 24);
+      const vy = ry + (R.bar ? 54 : 42), sy = vy + (R.bar ? 30 : 28);
       text(R.label, LM, vy, { role: 'small', size: 25, weight: 700, color: C.ink, alpha: k });
       if (R.sub) text(R.sub, LM, sy, { role: 'label', size: 19, color: C.faint, alpha: k });
       /* the best of the six (not Theseus), in ink */
@@ -364,77 +357,71 @@ S({
           return;
         }
         let vx = x;
-        if (c.ev) { evDot(x + 6, vy - (R.bar ? 13 : 8), c.ev, 6, kj); vx += 20; }
         if (R.bar) {
           const cu = c.v != null ? (countUp(c.s, ep(t, t0 + 0.1 + 0.08 * j, t0 + 1.0 + 0.08 * j, E.out3)) || c.s) : c.s;
           rich([{ s: cu, font: 'disp', size: 40, weight: 800, track: -0.01, color: C.ink, tnum: true }, { s: c.u, font: 'mono', size: 21, weight: 600, color: C.mute, gap: 8 }], vx, vy, { alpha: kj });
         } else text(c.s + (c.u ? '\u00A0' + c.u : ''), vx, vy, { role: 'small', size: R.wrap ? 23 : 25, weight: hero || best ? (R.wrap ? 700 : 800) : 600, color: C.ink, alpha: kj, maxW: colW(j) - (vx - x) - 30, lh: 1.2 });
         if (c.sub) text(c.sub, x, sy, { role: 'label', size: 19, color: hero ? C.heroText : C.mute, alpha: kj });
         if (R.bar && c.v != null) {
-          const bw = colW(j) - 40, by = ry + R.h - 18, kb = ep(t, t0 + 0.2 + 0.08 * j, t0 + 1.1 + 0.08 * j, E.snap), L = bw * clamp(c.v / R.bar) * kb;
+          const bw = colW(j) - 40, by = ry + R.h - 24, kb = ep(t, t0 + 0.2 + 0.08 * j, t0 + 1.1 + 0.08 * j, E.snap), L = bw * clamp(c.v / R.bar) * kb;
           rr(x, by, bw, 8, 4, C.track, null, 0, kj);
-          rr(x, by, Math.max(8, L), 8, 4, hero ? C.hero : best ? C.ref : C.comp, hero && TH ? '#111111' : null, 1.2, kj);
+          rr(x, by, Math.max(8, L), 8, 4, hero ? C.hero : best ? C.ref : C.comp, null, 0, kj);
         }
       });
       ry += R.h;
     });
     line(LM, ry, RM, ry, { color: C.hair, w: 1.5, alpha: a0 });
-    ntr_evLegend(t, 3.6, LM, ry + 44, ['measured', 'claim', 'proposal']);
-    text('Ink bar: the best of the six', RM, ry + 44, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: ep(t, 3.8, 4.2) });
-    source(t, 'Weights: RTINGS, the XA25 by XBAB. Hours: the makers. Motion: piaknow 2026-09-15. Click: TechPowerUp\'s rig (V4 Pro), XBAB\'s (XA25, OP1).', { t0: 4.0 });
+    legend(t, 3.6, LM, ry + 44, [{ kind: 'hero', label: 'Theseus' }, { kind: 'comp', color: C.ref, label: 'The best of the six' }, { kind: 'comp', color: C.comp, label: 'The rest' }]);
+    source(t, 'Weights: RTINGS, the XA25 by XBAB. Hours: the makers. Motion: piaknow. Click: TechPowerUp, XBAB. Sensors and radios: the electronics chapter.', { t0: 4.0 });
   }
 });
 
-/* ============================== 06. zero grams: the claim, and what has been measured ============================== */
+/* ============================== 06. zero grams: F = m · a. The same push, three masses, and who stops on the target first ============================== */
+/* Brock (07:20): argue for it. Less mass is less inertia: the same push accelerates and brakes a lighter mouse harder, so
+   it reaches the target and stops on it sooner (bang-bang: full push to halfway, full brake after, t = 2 √(d · m ÷ F)).
+   Its own weight on the skates falls with it, and so does the friction it makes. Times are the mouse's share alone. */
+const NTR_ZG = { T100: 3.2, t0: 1.5, lanes: [{ m: 100, sub: 'Conroy\'s heavy mouse' }, { m: 60, sub: 'About a Logitech GPX2' }, { m: THESEUS.mass, sub: 'Theseus', hero: true }] };
+/** the mouse from above, nose to the right, s px per mm */
+function ntr_puck(x, y, s, col, a = 1) { if (a <= 0.003) return; G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(Math.PI / 2); G.scale(s, s); keyPath(); G.fillStyle = col; G.fill(); G.restore(); }
 S({
-  id: 'zerograms', ch: 'intro', theme: 'paper', title: 'The optimal weight is zero grams', settle: 10, ideas: ['weight'],
-  src: ['exZk', 'exZkM1k', 'exConroy', 'exYan', 'exWang', 'exChen', 'exXbabWeight'],
+  id: 'zerograms', ch: 'intro', theme: 'night', title: 'The optimal weight is zero grams', settle: 10, ideas: ['weight'],
+  src: ['exZk', 'exZkM1k', 'exConroy'],
   draw: t => {
     header(t, 'The optimal weight is zero grams');
-    { const a = ep(t, 0.9, 1.3), w1 = tw('The optimal weight is zero grams', { role: 'h1' }); pill(LM + w1 + 28, LAY.titleY - 8, 'claim', a, { text: 'Maker claim, Zaunkoenig 2018' }); }
-    captions(t, [[0.6, 'Zaunkoenig argued it in 2018, from physics, without a study. Here is everything that has been measured.'], [5.6, 'Lighter beat heavier down to the lightest mouse tested. Below 40 g, nobody has measured anything.']]);
-    const ws = RD['weight-science'] || {}, studies = (ws.studies || []);
-    const X0 = LM + 330, X1 = RM - 20, M = g => X0 + (X1 - X0) * g / 200, y0 = 352, a0 = ep(t, 0.4, 0.9);
-    for (let g = 0; g <= 200; g += 20) { line(M(g), y0 - 6, M(g), 852, { color: C.hair, w: 1, alpha: a0 * (g % 100 ? 0.6 : 1) }); text(String(g), M(g), y0 - 18, { role: 'tick', color: C.mute, align: 'center', alpha: a0 }); }
-    text('Mouse mass, {g}', LM, y0 - 18, { role: 'label', size: 21, color: C.mute, alpha: a0 });
-    /* the gap: 0 to 40 g, where Theseus is and nobody has data. Red: a gap no one has filled */
-    const kg = ep(t, 3.6, 4.4, E.io3);
-    if (kg > 0) {
-      G.save(); G.beginPath(); G.rect(M(0), y0, (M(40) - M(0)) * kg, 852 - y0); G.clip();
-      G.fillStyle = rgba(C.red, TH ? 0.05 : 0.07); G.fillRect(M(0), y0, M(40) - M(0), 852 - y0); G.restore();
-      ntr_hatch(M(0), y0, (M(40) - M(0)) * kg, 852 - y0, rgba(C.red, TH ? 0.22 : 0.3), 1, 16);
-      line(M(40), y0, M(40), 852, { color: C.red, w: 1.5, dash: [5, 5], alpha: kg });
-      text('No published data', M(20), y0 + 40, { role: 'label', size: 21, color: TH ? C.redD : C.redL, align: 'center', alpha: kg });
-    }
-    const rowsDef = [
-      { id: 'conroy2022', name: 'Conroy et al. 2022', who: 'n = 72, gamers', pts: [[50, 'w'], [60, 'w'], [90, 'w'], [100, 'l']], note: '50, 60 and 90 g: 4% faster, 9% more accurate than 100 g' },
-      { id: 'yan2022', name: 'Yan et al. 2022', who: 'n = 12, gamers', pts: [[40, 'l'], [60, 'w'], [140, 'n']], span: [40, 140], note: '40 g: the highest error rate. 60 g: most preferred' },
-      { id: 'wang2023', name: 'Wang et al. 2023', who: 'n = 16, pros', pts: [[80, 'n'], [87, 'n']], note: '80 vs 87 g: no significant difference' },
-      { id: 'chen2012', name: 'Chen et al. 2012', who: 'n = 25, office task', pts: [[70, 'n'], [100, 'n'], [130, 'w'], [160, 'n'], [190, 'n']], note: 'Least wrist motion and muscle activity at 130 g' }
-    ];
-    const rh = 90;
-    rowsDef.forEach((r, i) => {
-      const y = y0 + 70 + i * rh, t0 = 1.0 + i * 0.45, a = ep(t, t0, t0 + 0.4), found = studies.find(s => s.id === r.id);
-      line(LM, y + 40, X1, y + 40, { color: C.hair, w: 1, alpha: a });
-      text(r.name, LM, y - 2, { role: 'small', size: 26, weight: 700, color: C.ink, alpha: a });
-      text(found ? 'n = ' + found.n + ', ' + r.who.split(', ')[1] : r.who, LM, y + 28, { role: 'label', size: 19, color: C.mute, alpha: a });
-      if (r.span) line(M(r.span[0]), y - 10, M(r.span[1]), y - 10, { color: inkA(0.25), w: 6, cap: 'round', alpha: a * ep(t, t0 + 0.2, t0 + 0.6) });
-      r.pts.forEach(([g, kind], j) => {
-        const k = ep(t, t0 + 0.2 + j * 0.07, t0 + 0.5 + j * 0.07, E.snap), x = M(g), yy = y - 10;
-        if (kind === 'w') circle(x, yy, 11 * k, { fill: C.good });
-        else if (kind === 'l') { circle(x, yy, 10 * k, { fill: C.panel }); circle(x, yy, 10 * k, { color: C.red, w: 3 }); }
-        else circle(x, yy, 8 * k, { fill: C.comp });
-      });
-      text(r.note, X1, y + 28, { role: 'small', size: 23, weight: 500, color: C.ink2, align: 'right', alpha: ep(t, t0 + 0.5, t0 + 0.9) });
+    captions(t, [[0.6, 'The same push, three masses. F = m · a: the lighter the mouse, the sooner it reaches the target and stops on it.'],
+      [5.4, 'Every gram I take out is a gram your hand never has to start, stop or turn. Theseus is 29.31 g, with the whole shell.']]);
+    const Z = NTR_ZG, x0 = 360, x1 = 920, ys = [440, 600, 760], a0 = ep(t, 0.4, 0.9);
+    text('Mass', LM, 332, { role: 'label', size: 20, color: C.mute, alpha: a0 });
+    text('The same push, the same distance', x0, 332, { role: 'label', size: 20, color: C.mute, alpha: a0 });
+    text('Time', 1080, 332, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: a0 });
+    /* the target: one line through every lane */
+    const kT = ep(t, 0.8, 1.4, E.cam);
+    line(x1, 380, x1, 380 + (ys[2] + 60 - 380) * kT, { color: inkA(0.5), w: 1.5, dash: [6, 6] });
+    text('Target', x1, 372, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kT });
+    Z.lanes.forEach((L, i) => {
+      const y = ys[i], T = Z.T100 * Math.sqrt(L.m / 100), u = clamp((t - Z.t0) / T), ka = ep(t, 0.6 + i * 0.15, 1.0 + i * 0.15);
+      const f = u < 0.5 ? 2 * u * u : 1 - 2 * (1 - u) * (1 - u), px = lerp(x0, x1 - 32, f), col = L.hero ? C.hero : C.comp;
+      /* the lane */
+      rich([{ s: L.hero ? THS.mass : String(L.m), role: 'stat', size: 52, color: L.hero ? C.heroText : C.ink, grad: L.hero ? C.heroGrad : null, tnum: true }, { s: 'g', font: 'disp', size: 22, weight: 700, color: C.mute, gap: 6 }], LM, y + 10, { alpha: ka });
+      text(L.sub, LM, y + 46, { role: 'small', size: 23, weight: 600, color: L.hero ? C.heroText : C.mute, alpha: ka });
+      line(x0 - 20, y + 46, x1 + 40, y + 46, { color: C.hair, w: 1.5, alpha: ka });
+      /* the push: behind it while it speeds up, in front of it while it brakes; the same arrow in every lane */
+      if (u > 0 && u < 1) { const k2 = Math.min(1, Math.min(u, 1 - u) * 12); if (u < 0.5) arrow(px - 118, y, px - 62, y, { color: C.ink2, w: 3, hs: 14, alpha: k2 }); else arrow(px + 100, y, px + 50, y, { color: C.ink2, w: 3, hs: 14, alpha: k2 }); }
+      ntr_puck(px, y, 0.5, col, ka);
+      /* the time, when it has stopped on the target: a share of the 100 g mouse's */
+      const kd = ep(t, Z.t0 + T, Z.t0 + T + 0.35);
+      if (kd > 0) rich([{ s: fmtN(100 * Math.sqrt(L.m / 100), 0), role: 'stat', size: 52, color: L.hero ? C.heroText : C.ink2, grad: L.hero ? C.heroGrad : null, tnum: true }, { s: '%', font: 'disp', size: 24, weight: 700, color: C.mute, gap: 4 }], 1080, y + 10, { align: 'right', alpha: kd });
     });
-    const ym = y0 + 70 + 4 * rh - 2;
-    const k1 = ep(t, 4.3, 4.7, E.snap), k2 = ep(t, 4.55, 4.95, E.snap), k3 = ep(t, 4.8, 5.2, E.snap);
-    circle(M(0), ym, 9 * k1, { color: C.ink2, w: 2.5 }); text('Zaunkoenig: 0 {g}', M(0) + 2, ym - 26, { role: 'label', size: 19, color: C.ink2, alpha: k1 });
-    circle(M(23.4), ym, 9 * k2, { color: C.ink2, w: 2.5 }); text('M1K 23.4 g', M(23.4) - 4, ym + 44, { role: 'label', size: 19, color: C.ink2, align: 'right', alpha: k2 });
-    heroMark(M(29), ym, 14 * k3, 1); ntr_chip('Theseus 29 g', M(29) + 8, ym + 44, k3);
-    legend(t, 5.2, X0, 296, [{ kind: 'dot', color: C.good, label: 'Did better' }, { kind: 'ring', color: C.red, label: 'Did worse' }, { kind: 'dot', color: C.comp, label: 'No difference' }]);
-    gloss(t, 6.0, 'F = m · a', 'At the same acceleration, your hand adds force in proportion to the mouse\'s mass. At 29 g that is 48% of what a 60 g mouse asks for.');
-    featureCard(t, 6.4, 'Theseus, tested below 40 g', ['study', 'claim', 'proposal'], 'Nobody has measured aim between 20 and 40 g. I will, on the same task as Conroy et al., and publish it.');
+    /* the sum, under the lanes */
+    const kf = ep(t, 5.2, 5.8);
+    text('a = F ÷ m, so the time to the target is 2 √(d · m ÷ F): it falls with the square root of the mass. The hand is the same in every lane.', LM, 892, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: 1000, lh: 1.32, alpha: kf });
+    pill(LM, 966, 'derived', kf);
+    /* the words: the physics, the man who said it first, and the biggest study */
+    ntr_stack(t, 1160, 320, RM - 1160, [
+      { t0: 5.8, gloss: true, a: 'F = m · a', b: 'The same push gives half the mass twice the acceleration: it starts, stops and turns sooner, and presses half as hard on its skates.' },
+      { t0: 6.3, a: 'Zaunkoenig 2018', b: 'The optimal weight of a gaming mouse is zero grams. Its M1K got to 23.4 g, wired.' },
+      { t0: 6.8, a: 'Conroy et al. 2022', b: '72 gamers aimed 4% faster and 9% more accurately with 50, 60 and 90 g mice than with a 100 g one.' }
+    ]);
   }
 });
 
@@ -450,7 +437,7 @@ function ntr_gapRows() {
   }).filter(Boolean).sort((a, b) => b.gap - a.gap);
 }
 S({
-  id: 'weightgap', ch: 'intro', theme: 'night', title: 'Listed against weighed', settle: 10, ideas: ['weight'],
+  id: 'weightgap', ch: 'intro', theme: 'paper', title: 'Listed against weighed', settle: 10, ideas: ['weight'],
   src: ['exRtings', 'exEloshapes', 'ntrB2g', 'ntrRtSlx', 'ntrEloSlx'],
   draw: t => {
     header(t, 'Listed against weighed');
@@ -473,7 +460,7 @@ S({
         text(r.name, x0, y + 8, { role: 'small', size: 24, weight: r.big ? 700 : 500, color: C.ink, alpha: k });
         text(ntr_g(r.c) + ' → ' + ntr_g(r.w) + '\u00A0g', x0 + 448, y + 8, { font: 'mono', size: 21, weight: 500, color: C.ink2, align: 'right', alpha: k });
         const xa = X(0), xb = X(r.gap * kb);
-        rect(Math.min(xa, xb), y - 7, Math.abs(xb - xa), 14, { fill: r.big ? C.ref : C.comp, alpha: k });
+        rect(Math.min(xa, xb), y - 7, Math.abs(xb - xa), 14, { fill: r.big ? C.ink2 : C.comp, alpha: k });
         text((r.gap > 0 ? '+' : r.gap < 0 ? '−' : '') + fmtN(Math.abs(r.gap), 1) + '%', x0 + colW, y + 8, { font: 'mono', size: 24, weight: out ? 800 : 500, color: out ? C.ink : C.mute, align: 'right', alpha: k });
       });
       if (ci === 1) {
@@ -485,7 +472,7 @@ S({
         heroMark(X(0), y, 12 * k, 1);
         text('0.0%', x0 + colW, y + 8, { font: 'mono', size: 24, weight: 800, color: C.heroText, align: 'right', alpha: k });
       } else {
-        legend(t, 4.4, x0, yb1 + rh / 2 + 8, [{ kind: 'comp', color: C.ref, label: 'Razer and Logitech' }, { kind: 'comp', color: C.comp, label: 'Every other brand' }]);
+        legend(t, 4.4, x0, yb1 + rh / 2 + 8, [{ kind: 'comp', color: C.ink2, label: 'Razer and Logitech' }, { kind: 'comp', color: C.comp, label: 'Every other brand' }]);
       }
     });
     gloss(t, 6.2, 'Gap', '(Weighed − listed) ÷ listed. Weighed: RTINGS\' default weight. Listed: the maker\'s own figure, via EloShapes.');
@@ -504,46 +491,44 @@ function exPricePoints() {
 }
 S({
   id: 'pricefront', ch: 'intro', theme: 'paper', title: 'What a gram costs', settle: 10, ideas: ['weight'],
-  src: ['exRtings', 'exEloshapes', 'exPrices', 'x2fCrazy'],
+  src: ['exRtings', 'exEloshapes', 'exPrices', 'x2fCrazy', 'nbcUlx'],
   draw: t => {
     header(t, 'What a gram costs');
-    captions(t, [[0.6, 'Every wireless mouse with a US list price, against its weight. Nothing has shipped past the black line.'], [5.4, 'The only 29 g wireless mouse gets there by leaving off the back half of the shell. Theseus aims for 29 g with the whole shell.']]);
-    const P = exPricePoints();
-    const named = ['pulsar-x2f-crazylight', 'pulsar-x2-crazylight-m', 'ninjutso-sora-v2', 'lamzu-maya', 'keychron-g3', 'finalmouse-slx', 'finalmouse-ulx', 'razer-viper-v4-pro', 'logitech-gpx2'];
-    const pts = P.map(p => Object.assign({}, p, { label: named.includes(p.id) ? undefined : false, name: p.name.replace('Finalmouse Starlight X', 'Starlight X').replace('Finalmouse ULX', 'ULX') }));
-    const x = LM + 110, py = 344, w = 1000, ph = 470;
-    cardHead(t, 0.5, LM - 26, py - 80, w + 136, 'Weight against US list price, wireless', ['measured', 'claim']);
+    captions(t, [[0.6, 'Every wireless mouse with a US list price, against its weight. No full shell has shipped past the black line.'],
+      [5.4, 'Theseus goes past it: 29.31 g with the whole shell, for $189. That is what the ULX launched at, 8.7 g heavier.']]);
+    const P = exPricePoints(), x2f = P.find(p => p.id === 'pulsar-x2f-crazylight'), full = P.filter(p => p !== x2f);
+    const named = ['pulsar-x2-crazylight-m', 'ninjutso-sora-v2', 'lamzu-maya', 'keychron-g3', 'finalmouse-slx', 'finalmouse-ulx', 'razer-viper-v4-pro', 'logitech-gpx2'];
+    const nm = p => p.name.replace('Finalmouse Starlight X', 'Starlight X').replace('Finalmouse ULX', 'ULX');
+    const pts = full.map(p => Object.assign({}, p, { label: named.includes(p.id) ? undefined : false, name: nm(p), ref: p.id === 'finalmouse-ulx' }));
+    const x = LM + 120, py = 360, w = 1000, ph = 480;
+    cardHead(t, 0.5, LM - 32, py - 84, w + 152, 'Weight against US list price, wireless', [{ ev: 'measured', by: 'RTINGS' }]);
     const sc = scatter(t, {
       x, y: py, w, h: ph, t0: 0.6, xr: [25, 70], yr: [60, 200], xticks: [30, 40, 50, 60, 70], yticks: [60, 80, 100, 120, 140, 160, 180, 200],
       xfmt: v => v + ' g', yfmt: v => '$' + v, xlabel: 'Weight, {g}', better: { x: -1, y: -1 }, sweet: { label: 'Lighter and cheaper' }, frontier: true,
       points: pts.length ? pts : [{ name: 'placeholder', x: 40, y: 120 }], placeholder: !pts.length,
-      targetX: { x: 29, name: 'Theseus, 29 g', sub: 'Price not set', t0: 2.6 }
+      target: { x: THESEUS.mass, y: THESEUS.price, name: 'Theseus', sub: THS.massG + ', ' + THS.price + ', full shell', dx: 28, dy: 8 }
     });
-    const F = P.filter(p => !P.some(q => q !== p && q.x <= p.x && q.y <= p.y && (q.x < p.x || q.y < p.y))).sort((a, b) => a.x - b.x);
-    const tx0 = 1290, tw0 = RM - tx0, ty = py - 34;
+    /* the X2F: lighter and cheaper, but half a shell, so it sits off the frontier of full shells */
+    if (x2f) {
+      const kx = ep(t, 3.0, 3.5), qx = sc.X(x2f.x), qy = sc.Y(x2f.y);
+      circle(qx, qy, 9 * kx, { fill: C.panel }); circle(qx, qy, 9 * kx, { color: C.faint, w: 2.5, dash: [3, 3] });
+      text('X2F CrazyLight, front half only', qx + 18, qy + 8, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: kx });
+    }
+    const F = full.filter(p => !full.some(q => q !== p && q.x <= p.x && q.y <= p.y && (q.x < p.x || q.y < p.y))).sort((a, b) => a.x - b.x);
+    const tx0 = 1320, tw0 = RM - tx0, ty = py - 30;
     const yEnd = compareTable(t, {
       x: tx0, y: ty, w: tw0, t0: 1.6, rowH: 60,
-      cols: [{ key: 'm', label: 'On the frontier', w: 2.1 }, { key: 'g', label: 'Weight', w: 1, align: 'right' }, { key: 'p', label: 'Price', w: 1.15, align: 'right' }],
-      rows: F.map(p => ({
-        cells: {
-          m: p.id === 'pulsar-x2f-crazylight' ? { v: p.name.replace('Pulsar ', ''), sub: 'Front half only' } : p.name.replace('Pulsar ', '').replace('Ninjutso ', ''),
-          g: fmtN(p.x, p.x % 1 ? 1 : 0) + ' g',
-          p: p.range ? { v: '$' + p.y.toFixed(2), sub: 'Lowest' } : '$' + (p.y % 1 ? p.y.toFixed(2) : p.y)
-        },
-        ev: { g: p.hollow ? 'claim' : 'measured' }
-      }))
+      cols: [{ key: 'm', label: 'Full shells, on the frontier', w: 2.1 }, { key: 'g', label: 'Weight', w: 1, align: 'right' }, { key: 'p', label: 'Price', w: 1.15, align: 'right' }],
+      rows: F.map(p => ({ cells: { m: nm(p).replace('Pulsar ', '').replace('Ninjutso ', ''), g: fmtN(p.x, p.x % 1 ? 1 : 0) + ' g', p: p.range ? { v: '$' + p.y.toFixed(2), sub: 'Lowest' } : '$' + (p.y % 1 ? p.y.toFixed(2) : p.y) } }))
     });
-    const kr = ep(t, 3.6, 4.1), ry = yEnd + 54;
+    const kr = ep(t, 3.6, 4.1), ry = yEnd + 56;
     if (kr > 0) {
-      rect(tx0, yEnd + 8, 6, 74 * kr, { fill: C.hero });
-      ntr_chip('Theseus target', tx0 + 20, ry, kr);
-      text('29 g', tx0 + tw0 * 3.1 / 4.25 - 16, ry, { font: 'mono', size: 25, weight: 800, color: C.ink, align: 'right', alpha: kr });
-      text('Not set', RM - 16, ry, { font: 'mono', size: 25, weight: 500, color: C.mute, align: 'right', alpha: kr });
+      ntr_chip('Theseus', tx0, ry, kr, { size: 24 });
+      text(THS.massG, tx0 + tw0 * 3.1 / 4.25 - 16, ry, { role: 'small', size: 25, weight: 800, color: C.heroText, align: 'right', alpha: kr });
+      text(THS.price, RM - 16, ry, { role: 'small', size: 25, weight: 800, color: C.heroText, align: 'right', alpha: kr });
     }
-    const un = pts.filter(p => p.label === false || (sc.unnamed || []).includes(p.name)).map(p => p.name.replace('Razer ', '').replace('Logitech ', '').replace('Ninjutso ', '').replace('Lamzu ', ''));
-    if (un.length) text('Also plotted: ' + un.join(', ') + '.', tx0, yEnd + 150, { role: 'small', size: 22, color: C.mute, maxW: tw0, lh: 1.36, alpha: ep(t, 4.4, 4.9) });
-    const dc = TH ? '#5F5E59' : '#B9B8B2';
-    legend(t, 4.2, LM, 930, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'dash', color: C.heroText, label: 'Theseus target' }]);
+    if (x2f) text(`Off it: the X2F CrazyLight, ${ntr_g(x2f.x)} g and $${x2f.y}, is the front half of a shell.`, tx0, yEnd + 130, { role: 'small', size: 23, weight: 600, color: C.mute, maxW: tw0, lh: 1.36, alpha: ep(t, 4.2, 4.7) });
+    legend(t, 4.2, LM, 940, [{ kind: 'dot', color: C.comp, label: 'Weighed by RTINGS' }, { kind: 'ring', color: C.comp, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier, full shells' }, { kind: 'ref', label: 'The lightest full shell' }, { kind: 'hero', label: 'Theseus' }]);
     source(t, 'Prices: US list, maker stores and reviews; a range is plotted at its lowest. Weights: RTINGS where weighed, else the maker.', { t0: 3 });
   }
 });
@@ -556,13 +541,13 @@ S({
   draw: t => {
     header(t, 'The empty corner');
     const mice = ((RD.mice || {}).mice || []).filter(m => m.connection !== 'wired');
-    const rated = mice.filter(m => rv(m.battery_claim_1k_h) != null).map(m => { const w = exWeight(m.id); return w ? { id: m.id, name: ntr_mk(m.name) + (m.id === 'razer-deathadder-v4-pro' ? '*' : ''), x: w.g, y: rv(m.battery_claim_1k_h), hollow: w.ev !== 'measured' } : null; }).filter(Boolean);
+    const rated = mice.filter(m => rv(m.battery_claim_1k_h) != null).map(m => { const w = exWeight(m.id); return w ? { id: m.id, name: ntr_mk(m.name) + (m.id === 'razer-deathadder-v4-pro' ? '*' : ''), x: w.g, y: rv(m.battery_claim_1k_h), hollow: w.ev !== 'measured', ref: m.id === 'razer-viper-v4-pro' } : null; }).filter(Boolean);
     const unr = mice.filter(m => rv(m.battery_claim_1k_h) == null && m.id !== 'mchose-l7-ultra').map(m => { const w = exWeight(m.id); return w && w.g <= 50 ? { id: m.id, name: NTR_SHORT[m.id] || exShort(m.name), g: w.g, ev: w.ev } : null; }).filter(Boolean).sort((a, b) => a.g - b.g);
     const light = rated.reduce((a, p) => (!a || p.x < a.x ? p : a), null);
     captions(t, [[0.6, `Every wireless mouse that lists hours at 1 kHz, against its weight. The lightest is the ${light ? light.name + ', ' + ntr_g(light.x) + ' g' : '–'} as weighed.`],
-      [5.4, 'Nothing lighter comes with an hour rating I could find. That corner is my target: 29 g and 200 h at 1 kHz, measured.']]);
+      [5.4, 'Nothing lighter comes with an hour rating. That corner is Theseus: 29.31 g and 200 h at 1 kHz, measured, for $189.']]);
     const x = LM + 100, py = 330, w = 1150, ph = 480, xr = [25, 62], yr = [0, 220], X = g => x + w * (g - xr[0]) / (xr[1] - xr[0]);
-    cardHead(t, 0.5, LM - 26, py - 76, w + 126, 'Listed hours at 1 kHz against weight, wireless', ['measured', 'claim']);
+    cardHead(t, 0.5, LM - 32, py - 80, w + 132, 'Listed hours at 1 kHz against weight, wireless', [{ ev: 'measured', by: 'RTINGS' }, { ev: 'claim', by: 'Maker' }]);
     /* the corner nobody has rated: left of the lightest rated mouse */
     const kz = ep(t, 3.0, 3.8, E.io3);
     if (light && kz > 0) line(X(light.x), py, X(light.x), py + ph * kz, { color: C.red, w: 1.5, dash: [6, 6] });
@@ -570,7 +555,7 @@ S({
       x, y: py, w, h: ph, t0: 0.6, xr, yr, xticks: [30, 40, 50, 60], yticks: [0, 50, 100, 150, 200],
       xfmt: v => v + ' g', yfmt: v => v + ' h', xlabel: 'Weight, {g}', better: { x: -1, y: 1 }, sweet: true, frontier: true,
       points: rated.length ? rated : [{ name: 'placeholder', x: 49, y: 180 }], placeholder: !rated.length,
-      target: { x: 29, y: 200, name: 'Theseus target', sub: '29 g, 200 h, measured', dx: 26, dy: 10 }
+      target: { x: THESEUS.mass, y: THESEUS.hours, name: 'Theseus', sub: THS.massG + ', ' + THS.hours + ', ' + THS.price, dx: 26, dy: 10 }
     });
     /* every light mouse with no rating: a red tick on the axis where it sits */
     const kt = ep(t, 3.4, 3.9);
@@ -587,97 +572,50 @@ S({
       text(ntr_g(u.g) + '\u00A0g', RM, yy, { font: 'mono', size: 22, weight: 600, color: u.ev === 'measured' ? C.ink2 : C.mute, align: 'right', alpha: k });
     });
     const dc = TH ? '#5F5E59' : '#B9B8B2';
-    legend(t, 4.2, LM, 920, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'hero', label: 'Theseus target' }]);
+    legend(t, 4.2, LM, 920, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'ref', label: 'The longest listed' }, { kind: 'hero', label: 'Theseus' }]);
     const un = (sc.unnamed || []);
     source(t, (un.length ? 'Unnamed: ' + un.join(', ') + '. ' : '') + '* Report rate not stated. † Finalmouse publishes no hour rating (Back2Gaming). Hours are the makers\' own figures.', { t0: 4.4 });
   }
 });
 
-/* ============================== 10. 29 g: the decision. Built like the XA25, the cell gets 4.9 g ============================== */
+/* ============================== 10. the weight budget: where 29.31 g goes, with a cell for 200 h ============================== */
+/* Brock decided (2026-11-04): his shell design takes weight out elsewhere so the cell for 200 h fits. The budget, part
+   by part: the cell from Jauch's datasheet, the one board his estimate, the buttons, wheel, screws and wires as XBAB
+   weighed them in the XA25, and the shell and skates what is left (derived), against the XA25's 12.16 g. */
 function ntr_budget() {
-  const P = ntr_xa25() || [], cable = P.find(p => /cable \(interior\)/i.test(p.name)), total = P.reduce((a, p) => a + p.g, 0);
-  const body = P.filter(p => p !== cable).map(p => ({ name: p.name.replace(/\s*\(main-button part\)/, '').replace(/^Button$/, 'Buttons'), g: p.g }));
-  const base = total - (cable ? cable.g : 0), room = 29 - base, L = ntr_loads();
-  const fam = (((RD.batteries || {}).jauch_lipo_family || {}).rows || []).map(r => ({ part: r.part, mAh: rv(r.capacity), g: rv(r.mass), wh: rv(r.energy_Wh) })).map(p => Object.assign(p, { h1: p.wh / L.w1, h8: p.wh / L.w8 }));
-  const opt = ['LP402025JU', 'LP502030JH', 'LP402535JU'].map((id, i) => { const p = fam.find(q => q.part === id); return p ? Object.assign({ key: 'ABC'[i] }, p) : null; }).filter(Boolean);
-  return { body, base, room, total, cable, L, fam, opt, ok: P.length > 0 && fam.length > 0 };
-}
-/** a band block with my own label and its pills on the right */
-function ntr_band(t, t0, label, head, body, kinds) {
-  const x = W / 2 + 40, w = RM - x;
-  bandBlock(t, t0, x, w, label, head, body, { right: (y, a) => { let xr = x + w; for (let i = kinds.length - 1; i >= 0; i--) { const pw = pillW(kinds[i]); xr -= pw; pill(xr, y + 1, kinds[i], a); xr -= 10; } } });
+  const P = ntr_xa25() || [], by = re => (P.find(p => re.test(p.name)) || {}).g || 0;
+  const xa = { shell: by(/^Shell/), btn: by(/^Button/), wheel: by(/^Scroll/), screws: by(/^Screws/), fpc: by(/^FPC/), boards: by(/^Front PCB/) + by(/^Main PCB/) + by(/^Side PCB/) };
+  const cell = ntr_pack('LP402535JU') || { part: 'LP402535JU', mAh: 370, g: 8, wh: 1.369 }, L = ntr_loads();
+  const ref = xa.btn + xa.wheel + xa.screws + xa.fpc, shell = THESEUS.mass - cell.g - THESEUS.pcb - ref;
+  return { xa, cell, L, ref, shell, cut: xa.shell - shell, hours: cell.wh / L.w1, ok: P.length > 0 };
 }
 S({
-  id: 'budget', ch: 'intro', theme: 'paper', title: '29 g: the decision', settle: 11, ideas: ['weight', 'battery'],
-  src: ['exXbabWeight', 'exJauch', 'ntrJauch', 'ntrTpuV4', 'exNbcV4', 'x2fCrazy'],
+  id: 'budget', ch: 'intro', theme: 'paper', title: 'Weight budget: 29.31 g, 200 h', settle: 11, ideas: ['weight', 'battery'],
+  src: ['exXbabWeight', 'ntrJauch', 'exJauch', 'ntrTpuV4', 'exNbcV4'],
   draw: t => {
-    header(t, '29 g: the decision');
-    const B = ntr_budget();
-    const A = B.opt[0], Bo = B.opt[1], Co = B.opt[2], fmt1 = v => fmtN(v, 1), cut = p => p.g - B.room;
-    const drop = p => 100 * (1 - p.wh / 200 / B.L.w1);
-    captions(t, [[0.6, `Built like the XBAB XA25, a 29 g wireless Theseus has ${fmt1(B.room)} g left for its cell: a ${A ? A.mAh : '–'} mAh pack, about ${A ? fmtN(A.h1, 0) : '–'} h at 1 kHz. My target is 200 h.`],
-      [5.8, `Three ways to 200 h: cut ${Co ? fmt1(cut(Co)) : '–'} g from the shell for a ${Co ? Co.mAh : '–'} mAh cell, draw ${A ? fmtN(drop(A), 0) : '–'}% less than a Viper V4 Pro, or let it weigh ${Co ? fmtN(B.base + Co.g, 0) : '–'} g. I haven't chosen.`]]);
-    /* left: everything but the cell, part by part, as XBAB weighed it */
-    const lx = LM, lw = 640, y0 = 300, rh = 42, scale = 13;
-    cardHead(t, 0.4, lx - 26, y0 - 46, lw + 26, 'An XA25 without its cable', ['claim']);
-    B.body.forEach((p, i) => {
-      const y = y0 + 40 + i * rh, t0 = 0.6 + i * 0.08, k = ep(t, t0, t0 + 0.35), kb = ep(t, t0 + 0.1, t0 + 0.9, E.snap);
-      text(p.name, lx, y, { role: 'small', size: 25, weight: 600, color: C.ink, alpha: k });
-      text(fmtN(p.g, 2) + '\u00A0g', lx + lw, y, { font: 'mono', size: 24, weight: 700, color: C.ink, align: 'right', alpha: k });
-      rr(lx, y + 9, lw - 130, 7, 3.5, C.track, null, 0, k);
-      rr(lx, y + 9, Math.max(7, (lw - 130) * p.g / scale * kb), 7, 3.5, C.ink, null, 0, k);
-    });
-    const ys = y0 + 40 + B.body.length * rh + 8, ks = ep(t, 1.6, 2.0);
-    line(lx, ys - 22, lx + lw, ys - 22, { color: C.ink, w: 1.5, alpha: ks });
-    rich([{ s: 'Before a cell', role: 'small', size: 25, weight: 700, color: C.ink }], lx, ys + 8, { alpha: ks });
-    text(fmtN(B.base, 2) + '\u00A0g', lx + lw, ys + 8, { font: 'mono', size: 26, weight: 800, color: C.ink, align: 'right', alpha: ks });
-    text(`${fmtN(B.total, 2)} − ${fmtN(B.cable ? B.cable.g : 0, 2)} cable`, lx, ys + 36, { role: 'label', size: 19, color: C.faint, alpha: ks });
-    const yc = ys + 76, kc = ep(t, 2.0, 2.5);
-    rect(lx - 16, yc - 34, 6, 52 * kc, { fill: C.hero });
-    text('Left for a cell at 29 g', lx, yc, { role: 'small', size: 25, weight: 800, color: C.ink, alpha: kc });
-    rich([{ s: fmtN(B.room, 2), role: 'stat', size: 52, color: C.ink, tnum: true, count: [2.0, 0.8] }, { s: 'g', font: 'mono', size: 24, weight: 600, color: C.mute, gap: 8 }], lx + lw, yc + 6, { t, align: 'right', alpha: kc });
-    pill(lx, yc + 32, 'derived', kc);
-    text('29 − ' + fmtN(B.base, 2), lx + pillW('derived') + 12, yc + 32, { font: 'mono', size: 21, weight: 600, color: C.mute, alpha: kc });
-    /* right: every Jauch pouch cell, mass against hours at 1 kHz; the 29 g line and the 200 h line cross in an empty corner */
-    const px = 930, py = 392, pw = RM - px - 30, ph = 356, xr = [0, 13], yr = [0, 350];
-    const PX = g => px + pw * (g - xr[0]) / (xr[1] - xr[0]), PY = h => py + ph - ph * (h - yr[0]) / (yr[1] - yr[0]);
-    cardHead(t, 0.8, px - 110, y0 - 46, RM - px + 110, 'Cell mass against hours, 1 kHz', ['datasheet', 'projected']);
-    const a0 = ep(t, 1.0, 1.5);
-    for (const v of [0, 100, 200, 300]) { line(px, PY(v), px + pw, PY(v), { color: C.hair, w: 1.2, alpha: a0 }); text(v + ' h', px - 14, PY(v) + 7, { role: 'tick', color: C.mute, align: 'right', alpha: a0 }); }
-    for (const v of [2, 4, 6, 8, 10, 12]) { line(PX(v), py + ph, PX(v), py + ph + 8, { color: C.faint, w: 1.5, alpha: a0 }); text(v + ' g', PX(v), py + ph + 34, { role: 'tick', color: C.mute, align: 'center', alpha: a0 }); }
-    rect(px, py, pw, ph, { color: inkA(0.7), w: 1.5, alpha: a0 });
-    text('Cell mass', px - 14, py + ph + 34, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: a0 });
-    /* the top axis: the same grams, as the whole mouse built like the XA25 */
-    text('Whole mouse', px - 14, py - 16, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: a0 });
-    for (const m of [26, 32, 34, 36]) { const g = m - B.base; if (g < xr[0] || g > xr[1]) continue; line(PX(g), py - 8, PX(g), py, { color: C.faint, w: 1.5, alpha: a0 }); text(String(m), PX(g), py - 16, { role: 'tick', size: 20, color: C.mute, align: 'center', alpha: a0 }); }
-    const k29 = ep(t, 1.8, 2.6, E.cam), k200 = ep(t, 2.2, 3.0, E.cam), xr29 = PX(B.room), y200 = PY(200);
-    /* the empty corner: lighter than 29 g and longer than 200 h. No cell is there */
-    const kz = ep(t, 3.0, 3.6);
-    ntr_hatch(px, py, (xr29 - px), (y200 - py), rgba(C.red, 0.28), kz, 14);
-    text('No cell here', px + 16, py + 40, { role: 'label', size: 20, color: C.redD, alpha: kz });
-    line(xr29, py + ph, xr29, py + ph - ph * k29, { color: C.heroText, w: 2.5, dash: [9, 7] });
-    line(px, y200, px + pw * k200, y200, { color: C.heroText, w: 2.5, dash: [9, 7] });
-    ntr_chip('29 g', xr29 - 34, py - 16, ep(t, 2.4, 2.8));
-    text('200 h target', px + pw - 12, y200 - 14, { role: 'label', size: 20, color: C.heroText, align: 'right', alpha: ep(t, 2.8, 3.2) });
-    /* every pack in the family, grey; my three candidates, yellow */
-    B.fam.forEach((p, i) => { if (B.opt.some(o => o.part === p.part)) return; const k = ep(t, 1.2 + i * 0.05, 1.6 + i * 0.05, E.snap); circle(PX(p.g), PY(p.h1), 8 * k, { fill: '#5F5E59' }); });
-    const labs = { A: { dx: 18, dy: 30, al: 'left' }, B: { dx: 18, dy: 12, al: 'left' }, C: { dx: -18, dy: -30, al: 'right' } };
-    B.opt.forEach((o, i) => {
-      const k = ep(t, 3.4 + i * 0.35, 3.9 + i * 0.35, E.snap), ox = PX(o.g), oy = PY(o.h1), L = labs[o.key], lx2 = ox + L.dx, ly2 = oy + L.dy;
-      heroMark(ox, oy, 13 * k, 1);
-      const c2 = cut(o), fits = c2 <= 0.2;
-      rich([{ s: o.key, font: 'disp', size: 30, weight: 800, color: C.ink }, { s: o.mAh + ' mAh', font: 'mono', size: 22, weight: 700, color: C.ink, gap: 10 }], lx2, ly2, { alpha: k, align: L.al });
-      text(fmtN(o.h1, 0) + ' h, ' + (fits ? 'fits at ' + fmtN(B.base + o.g, 1) + ' g' : 'cut ' + fmtN(c2, 1) + ' g'), lx2, ly2 + 28, { role: 'small', size: 23, weight: 600, color: C.ink2, align: L.al, alpha: k });
-    });
-    /* the third lever: the same cell, a lower draw */
-    if (Bo) {
-      const kd = ep(t, 5.0, 5.8, E.io3), bx = PX(Bo.g) - 4, by0 = PY(Bo.h1) - 18, by1 = y200 + 10;
-      if (kd > 0) { line(bx, by0, bx, lerp(by0, by1, kd), { color: C.heroText, w: 2, dash: [5, 5] }); if (kd > 0.95) ntr_head(bx, by1, 0, -1, 12, C.heroText); }
-      text('−' + fmtN(drop(Bo), 0) + '% draw', bx - 14, (by0 + by1) / 2 + 6, { role: 'label', size: 20, color: C.heroText, align: 'right', alpha: ep(t, 5.6, 6.0) });
-    }
-    gloss(t, 6.4, 'Hours = Wh ÷ draw', `At 1 kHz, ${fmtN(B.L.w1 * 1000, 2)} mW: a Viper V4 Pro's ${fmtN(B.L.wh, 3)} Wh cell over Razer's ${B.L.h1} h. A cell: 3.7 V × its listed mAh.`);
-    ntr_band(t, 6.8, 'The decision', 'Not made yet', `A fits, at ${A ? fmtN(A.h1, 0) : '–'} h. C makes ${Co ? fmtN(Co.h1, 0) : '–'} h if ${Co ? fmt1(cut(Co)) : '–'} g comes out of ${fmtN((B.body[0] || {}).g || 0, 1)} g of shell and skates. B needs ${Bo ? fmt1(cut(Bo)) : '–'} g out and ${Bo ? fmtN(drop(Bo), 0) : '–'}% less draw.`, ['proposal', 'projected']);
-    source(t, 'XA25 parts: XBAB\'s own scale. Cells: Jauch via Endrich, rounded. Radio, PMIC, antenna and USB-C are not counted: every total is a floor.', { t0: 3 });
+    header(t, 'Weight budget: 29.31 g, 200 h');
+    const B = ntr_budget(), f2 = v => fmtN(v, 2);
+    captions(t, [[0.6, `Where 29.31 g goes: one board instead of three, a ${B.cell.mAh} mAh cell for ${fmtN(B.hours, 0)} h at 1 kHz, and the small parts as XBAB weighed them.`],
+      [5.6, `That leaves ${f2(B.shell)} g for the shell and skates, ${f2(B.cut)} g under the XA25's. My shell design takes that out, and the cell fits.`]]);
+    const rows = [
+      { name: 'Shell and skates', g: B.shell, was: B.xa.shell, ev: 'derived', note: 'What the rest leaves', hero: true },
+      { name: 'Cell, ' + B.cell.mAh + ' mAh', g: B.cell.g, ev: 'datasheet', note: 'Jauch ' + B.cell.part },
+      { name: 'Board', g: THESEUS.pcb, was: B.xa.boards, note: 'One board, not three' },
+      { name: 'Buttons', g: B.xa.btn, ev: 'claim', note: 'As in the XA25' },
+      { name: 'Scroll wheel', g: B.xa.wheel, ev: 'claim', note: 'As in the XA25' },
+      { name: 'Screws', g: B.xa.screws, ev: 'claim', note: 'As in the XA25' },
+      { name: 'Wires', g: B.xa.fpc, ev: 'claim', note: 'As in the XA25' }
+    ];
+    breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 60, wasLabel: 'XA25', foot: ['Grey ghosts: the same part in the XA25, weighed by XBAB', ''] });
+    /* the two things the plan rests on: the cell's hours, and the shell's grams */
+    ntr_stack(t, 1200, 320, RM - 1200, [
+      { t0: 5.0, gloss: true, a: 'Hours = Wh ÷ draw', b: `${B.cell.mAh} mAh at 3.7 V holds ${fmtN(B.cell.wh, 3)} Wh. A Viper V4 Pro draws ${fmtN(B.L.w1 * 1000, 2)} mW at 1 kHz (its ${fmtN(B.L.wh, 3)} Wh over Razer's ${B.L.h1} h), so the cell runs ${fmtN(B.hours, 0)} h.` },
+      { t0: 5.8, a: 'XBAB 2026', b: `The XA25, weighed part by part: 24.94 g in nine parts, shell and skates ${f2(B.xa.shell)} g. Its buttons, wheel, screws and wires stand in for mine.` }
+    ]);
+    { const ka = ep(t, 6.6, 7.2), y = 868;
+      rich([{ s: f2(B.cut), role: 'stat', size: 64, color: C.heroText, grad: C.heroGrad, tnum: true, count: [6.7, 0.8] }, { s: 'g', font: 'disp', size: 26, weight: 700, color: C.mute, gap: 6 }], 1200, y, { t, alpha: ka });
+      text('out of the shell: the one number the plan asks of my design', 1200 + 210, y - 22, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: RM - 1410, lh: 1.3, alpha: ka }); }
+    source(t, 'Not counted separately: the antenna and USB-C sit on the one board. Draw: the Viper V4 Pro\'s, from its cell and Razer\'s hours.', { t0: 3 });
   }
 });
 

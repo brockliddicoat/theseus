@@ -707,8 +707,9 @@ function gripMM(o = {}) {
   const lift = etch > 0.5 ? 0 : wet * 0.9;
   const skinB = x => -lift - 0.05 - 0.55 * (1 + Math.cos(x / 2.6 * TAU)) / 2;
   const skin = () => { G.beginPath(); G.moveTo(0, skinB(0)); for (let x = 0; x <= wdt; x += 0.1) G.lineTo(x, skinB(x)); G.lineTo(wdt, -9); G.bezierCurveTo(wdt * 0.66, -9.4, wdt * 0.33, -8.6, 0, -9); G.closePath(); };
-  solid(skin, { g: ['#d9a48b', '#c98f75'] }, [0, -9, wdt, 9], { lw: 1.1, ec: 'rgba(120,70,50,0.8)' });
-  G.save(); skin(); G.clip(); G.strokeStyle = 'rgba(120,70,50,0.35)'; G.lineWidth = lw(1); G.beginPath(); for (let x = 0; x <= wdt; x += 0.1) G.lineTo(x, skinB(x) - 1.6 - 0.3 * Math.sin(x * 0.7)); G.stroke(); G.restore();
+  /* skin in a single grey, never a peach tone (Brock: skin tones always monotone) */
+  solid(skin, { g: TH ? ['#C9C8C2', '#B3B2AC'] : ['#6A6964', '#55554F'] }, [0, -9, wdt, 9], { lw: 1.1, ec: TH ? 'rgba(40,40,38,0.6)' : 'rgba(230,230,225,0.45)' });
+  G.save(); skin(); G.clip(); G.strokeStyle = TH ? 'rgba(40,40,38,0.3)' : 'rgba(230,230,225,0.25)'; G.lineWidth = lw(1); G.beginPath(); for (let x = 0; x <= wdt; x += 0.1) G.lineTo(x, skinB(x) - 1.6 - 0.3 * Math.sin(x * 0.7)); G.stroke(); G.restore();
   out.skin = SP(wdt * 0.5, -5); out.film = SP(wdt * 0.8, 1.6); out.sweat = SP(wdt * 0.35, etch > 0.5 ? 0.5 : -0.45); out.peak = SP(Math.PI / 1.2 * 2.5, 0);
   return out;
 }
@@ -767,12 +768,13 @@ function keyPlanMM(o = {}) {
   if (H.includes('sides')) hiFill(() => { G.fillRect(-40, -22, 15, 72); G.fillRect(25, -22, 15, 72); });
   if (H.includes('hump')) hiFill(() => { G.beginPath(); G.ellipse(0, 20, 16, 22, 0, 0, TAU); G.fill(); });
   keyPath(); G.strokeStyle = H.includes('rim') ? A : inkA(TH ? 0.7 : 0.62); G.lineWidth = lw(H.includes('rim') ? 2.6 : 1.6); G.lineJoin = 'round'; G.stroke();
-  /* seams: the centre split, the straight rear trigger seam, the wheel slot */
+  /* seams, as on the Sora: one centre split from the nose to the straight rear trigger seam. It does not fork round the
+     wheel and there is no centre strip (Brock, 07:35): the wheel sits in the split, drawn as the wheel itself, no slot */
   const seam = inkA(TH ? 0.5 : 0.45), hw = keyHalfW(sy);
   mmLine([[0, KEY.nose + 0.4], [0, sy]], seam, 1.1); mmLine([[-hw + 0.3, sy], [hw - 0.3, sy]], seam, 1.1);
-  const [wx, wy, ww, wh] = KEY.wheel;
-  G.beginPath(); pathRR(wx, wy, ww, wh, 3.6); G.fillStyle = H.includes('wheel') ? A : (TH ? '#E7E6E1' : '#1F2023'); G.fill(); G.strokeStyle = H.includes('wheel') ? A : seam; G.lineWidth = lw(1.1); G.stroke();
-  if (!H.includes('wheel')) for (let k = 0; k < 6; k++) mmLine([[wx + 1.6, wy + 3.4 + k * 2.6], [wx + ww - 1.6, wy + 3.4 + k * 2.6]], inkA(0.22), 0.8);
+  const [wx, wy, ww, wh] = KEY.wheel, wcx = wx + ww / 2, wwid = ww * 0.62;
+  G.beginPath(); pathRR(wcx - wwid / 2, wy + 1, wwid, wh - 2, wwid / 2); G.fillStyle = H.includes('wheel') ? A : (TH ? '#CFCEC9' : '#3A3B3F'); G.fill();
+  if (!H.includes('wheel')) for (let k = 0; k < 6; k++) mmLine([[wcx - wwid / 2 + 0.8, wy + 3.4 + k * 2.6], [wcx + wwid / 2 - 0.8, wy + 3.4 + k * 2.6]], inkA(0.28), 0.8);
   /* side buttons, on the left */
   for (const [y0, y1] of [[-23.5, -10.7], [-4.3, 9.7]]) { const x0 = -keyHalfW((y0 + y1) / 2); G.beginPath(); pathRR(x0 - 1.6, y0, 3.2, y1 - y0, 1.4); G.fillStyle = H.includes('side') ? A : inkA(TH ? 0.32 : 0.36); G.fill(); }
   /* hidden features underneath, dashed */

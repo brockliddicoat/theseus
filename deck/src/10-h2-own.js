@@ -157,11 +157,12 @@ function own_jointMM(o = {}) {
     W = own_wallTF(o.reach1 || 0, o.reach2 || 0, o.tilt || 0, o.ph2 || 0);
     const N = W.N, poly2 = (L, R, open) => { G.beginPath(); G.moveTo(L[0], 0); for (let i = 1; i <= N; i++) G.lineTo(L[i], i * OWN_DY); G.lineTo(0, OWN_HOLE + 0.35); for (let i = N; i >= 0; i--) G.lineTo(R[i], i * OWN_DY); if (!open) G.closePath(); };
     poly2(W.L2, W.R2); G.fillStyle = hole; G.fill();
-    /* what the second drive shaved off the first one's thread: a problem, in the problem colour */
+    /* the first drive's thread, which the second (on another helix) leaves empty beside its own: the joint is loose there.
+       Tinted in the problem colour under the screw, so only the empty part shows */
     const rc = clamp(o.recut || 0);
     if (rc > 0.01) {
-      G.save(); ga(rc * 0.9); G.fillStyle = C.bad;
-      for (const [A, B] of [[W.L1, W.L2], [W.R1, W.R2]]) { G.beginPath(); G.moveTo(A[0], 0); for (let i = 1; i <= N; i++) G.lineTo(A[i], i * OWN_DY); for (let i = N; i >= 0; i--) G.lineTo(B[i], i * OWN_DY); G.closePath(); G.fill(); }
+      G.save(); ga(rc * 0.8); G.fillStyle = C.bad;
+      for (const [A, sg] of [[W.L1, -1], [W.R1, 1]]) { G.beginPath(); G.moveTo(sg * OWN_RP, 0); for (let i = 0; i <= N; i++) G.lineTo(A[i], i * OWN_DY); G.lineTo(sg * OWN_RP, N * OWN_DY); G.closePath(); G.fill(); }
       G.restore(); ga(1);
     }
     poly2(W.L2, W.R2, true); G.strokeStyle = edgeCol(bossM); G.lineWidth = lw(1); G.stroke();
@@ -173,31 +174,35 @@ function own_jointMM(o = {}) {
   const pass2 = o.pass === 2, a = pass2 ? (o.tilt || 0) : 0;
   xsave(); xturn(a);
   const s = own_screwMM(ins ? 'm2' : 'tf', o.z == null ? -1 : o.z, pass2 ? (o.ph2 || 0) : 0, {});
-  if (o.driver && o.driver.a > 0.003) own_driverMM((o.z == null ? -1 : o.z) - OWN_M2.k + OWN_M2.pen - 0.15, o.driver);
+  if (o.driver && o.driver.a > 0.003) own_driverMM((o.z == null ? -1 : o.z) - OWN_M2.k + OWN_M2.pen - 0.15, Object.assign({ bg: hole }, o.driver));
   xrest();
   Object.assign(out, s, { boss: SP(-rB, 2.6), plate: SP(fw - 0.6, -0.5), floor: SP(0, hB + 0.6), axisTop: SP(0, (o.z == null ? -1 : o.z) - OWN_M2.k) });
   if (W) { let best = 0, bi = 0; for (let i = 0; i <= W.N; i++) { const d = W.R2[i] - W.R1[i]; if (d > best) { best = d; bi = i; } } out.recutPt = SP(W.R2[bi], bi * OWN_DY); out.recutMax = best; }
   return out;
 }
-/** a Phillips bit in a driver, from the side, its tip at y = ty (on the axis), going up off the drawing. o = { turn, a, flat } */
+/** a Phillips bit (or a flat blade) from the side, its tip at y = ty on the axis, the shank going up and fading into the
+   tile. o = { turn, a, flat, fade (mm above the tip where it has gone), bg (the tile's colour) } */
 function own_driverMM(ty, o = {}) {
   ga(o.a == null ? 1 : o.a);
-  const rS = 1.25, tl = o.flat ? 1.2 : 2.2, flat = !!o.flat;
+  const rS = 1.0, flat = !!o.flat, tl = flat ? 1.0 : 1.9, top = ty - 9;
   const path = () => {
     G.beginPath();
-    if (flat) { G.moveTo(-1.55, ty); G.lineTo(1.55, ty); G.lineTo(rS, ty - tl); G.lineTo(rS, ty - 40); G.lineTo(-rS, ty - 40); G.lineTo(-rS, ty - tl); }
-    else { G.moveTo(0, ty); G.lineTo(0.95, ty - 1.0); G.lineTo(rS, ty - tl); G.lineTo(rS, ty - 40); G.lineTo(-rS, ty - 40); G.lineTo(-rS, ty - tl); G.lineTo(-0.95, ty - 1.0); }
+    if (flat) { G.moveTo(-1.55, ty); G.lineTo(1.55, ty); G.lineTo(1.3, ty - 0.35); G.lineTo(rS, ty - tl); G.lineTo(rS, top); G.lineTo(-rS, top); G.lineTo(-rS, ty - tl); G.lineTo(-1.3, ty - 0.35); }
+    else { G.moveTo(-0.1, ty); G.lineTo(0.1, ty); G.lineTo(0.86, ty - 0.95); G.lineTo(rS, ty - tl); G.lineTo(rS, top); G.lineTo(-rS, top); G.lineTo(-rS, ty - tl); G.lineTo(-0.86, ty - 0.95); }
     G.closePath();
   };
   path(); G.fillStyle = own_finish('zinc', -rS, rS); G.fill();
-  /* flutes (or the blade's grind) and a band of knurl that runs round as it turns */
   G.save(); path(); G.clip();
-  G.strokeStyle = 'rgba(20,22,26,0.4)'; G.lineWidth = lw(1.2); G.beginPath();
-  if (!flat) { G.moveTo(0, ty); G.lineTo(-0.4, ty - tl); G.moveTo(0, ty); G.lineTo(0.4, ty - tl); }
+  G.strokeStyle = 'rgba(20,22,26,0.42)'; G.lineWidth = lw(1.2); G.beginPath();
+  if (!flat) { G.moveTo(0, ty); G.lineTo(-0.34, ty - tl); G.moveTo(0, ty); G.lineTo(0.34, ty - tl); }
   const ph = ((o.turn || 0) % 1 + 1) % 1;
-  for (let i = -6; i <= 6; i++) { const x = (i + ph) * 0.5; G.moveTo(x - 0.3, ty - tl - 0.4); G.lineTo(x + 0.3, ty - tl - 3.4); }
-  G.stroke(); G.restore();
-  path(); G.strokeStyle = 'rgba(16,17,20,0.7)'; G.lineWidth = lw(1); G.stroke();
+  for (let i = -5; i <= 5; i++) { const x = (i + ph) * 0.42; G.moveTo(x - 0.25, ty - tl - 0.5); G.lineTo(x + 0.25, ty - tl - 3.0); }
+  G.stroke();
+  /* the shank fades into the tile, so the bit reads as coming from above */
+  const fz = o.fade || 4.2, fg = G.createLinearGradient(0, ty - fz + 2.2, 0, ty - fz);
+  fg.addColorStop(0, rgba(o.bg || C.panel, 0)); fg.addColorStop(1, rgba(o.bg || C.panel, 1)); G.fillStyle = fg; G.fillRect(-2, top - 1, 4, (ty - fz + 2.2) - top + 1);
+  G.restore();
+  G.save(); G.beginPath(); G.rect(-3, ty - fz + 1.6, 6, fz + 1); G.clip(); path(); G.strokeStyle = 'rgba(16,17,20,0.6)'; G.lineWidth = lw(1); G.stroke(); G.restore();
   ga(1);
 }
 
@@ -232,8 +237,8 @@ function own_headCutMM(o = {}) {
   out.plating = SP(-R, -0.45); out.thread = SP(T.rc, 1.4);
   if (o.bit && o.bit.a > 0.003) {
     const b = o.bit, ty = (b.kind === 'flat' ? yF : yC) - (b.lift || 0);
-    own_driverMM(ty, { flat: b.kind === 'flat', turn: b.turn, a: b.a });
-    out.bitTip = SP(0, ty); out.bitTop = SP(0, ty - 6);
+    own_driverMM(ty, { flat: b.kind === 'flat', turn: b.turn, a: b.a, bg: o.bg, fade: 4.4 });
+    out.bitTip = SP(0, ty); out.bitTop = SP(0, ty - 3.2);
   }
   return out;
 }
@@ -304,246 +309,3 @@ function own_flankTFMM(k, o = {}) {
   return { sliver: SP(bx, (cut(bx, 0) + wall(bx)) / 2), first: SP(x0 + P * 0.5, cut(x0 + P * 0.5, 0)), bottom: SP(0, bot), left: SP(x0, 0), right: SP(x1, 0), depth };
 }
 
-/* ---------- small slide helpers ---------- */
-/** a bit's state on a timeline of phases [{ kind, t0, stay }]: it comes down (0.7 s), turns (0.8 s), and goes back up */
-function own_bitAt(t, phases) {
-  for (let i = phases.length - 1; i >= 0; i--) {
-    const p = phases[i]; if (t < p.t0) continue;
-    const u = t - p.t0, out = p.stay ? 0 : ep(u, 1.75, 2.25, E.cam);
-    if (!p.stay && u > 2.3) return null;
-    return { kind: p.kind, lift: 2.0 * (1 - ep(u, 0.05, 0.75, E.cam)) + 2.0 * out, turn: 1.6 * ep(u, 0.8, 1.6), a: ep(u, 0, 0.3) * (1 - ep(u, 2.0, 2.3)) + (p.stay ? ep(u, 2.0, 2.3) : 0), seat: u > 0.75 && u < 1.75, u };
-  }
-  return null;
-}
-/** a short label with a hairline leader from a point (stage px), right or left of it */
-function own_tagLine(t, t0, p, to, s, o = {}) {
-  const k = ep(t, t0, t0 + 0.45, E.snap); if (k <= 0 || !p) return;
-  const right = to[0] >= p[0], col = o.color || C.mute;
-  circle(p[0], p[1], 4 * k, { fill: o.dot || C.ink2, alpha: k });
-  poly([[p[0], p[1]], [to[0], to[1]]], { color: col, w: 1.4, p: k, alpha: 0.8 });
-  text(s, to[0] + (right ? 10 : -10), to[1] + 7, { role: o.role || 'label', size: o.size || 21, color: o.tcolor || C.ink2, align: right ? 'left' : 'right', alpha: k, maxW: o.maxW, lh: 1.3, sentence: o.role === 'small' });
-}
-
-/* ============================== #9 combination drive screws ============================== */
-S({
-  id: 'ownscrew', ch: 'own', theme: 'night', title: 'Combination drive screws', settle: 10, ideas: [9], after: 'repair',
-  src: ['ownIso7045w', 'ownIso1580', 'ownBrock', 'gremlin'],
-  draw: t => {
-    header(t, 'Combination drive screws');
-    captions(t, [[0.6, 'Every screw an owner turns is the same M2 pan head, with a cross for a Phillips bit and a slot for any flat blade.'], [5.6, 'The cross centres the bit on a small, low-torque screw. If it ever strips, the slot still turns it.']]);
-    const y0 = LAY.top, h0 = 688, g = golden(LM, RM - LM, 48), [ax, aw] = g.a, [bx, bw] = g.b;
-    /* which driver is in the head: the cross first, the slot as the fallback, then the cross again, and so on */
-    const lt = t < 10 ? t : 10 + ((t - 10) % 9.2);
-    const bit = own_bitAt(lt, t < 10 ? [{ kind: 'ph', t0: 2.2 }, { kind: 'flat', t0: 4.6 }, { kind: 'ph', t0: 7.0, stay: true }] : [{ kind: 'ph', t0: 7.0, stay: true }, { kind: 'flat', t0: 10.4 }, { kind: 'ph', t0: 13.0 }, { kind: 'ph', t0: 15.6, stay: true }]);
-    const hi = bit && bit.a > 0.5 && bit.lift < 0.6 ? (bit.kind === 'ph' ? 'cross' : 'slot') : null;
-    /* A · the head cut along its slot; the camera pushes in on the recess */
-    demoWindow(ax, y0, aw, h0, ep(t, 0.2, 0.7), { grid: true });
-    cardHead(t, 0.35, ax, y0, aw, 'Section A–A, along the slot', [{ ev: 'datasheet', by: 'ISO 7045' }]);
-    const push = ep(t, 0.5, 2.4, E.cam), s = lerp(66, 116, push), fx = ax + aw * 0.43, fy = y0 + 330, ox = fx, oy = fy + 0.55 * s;
-    let P = {};
-    clipped(ax + 2, y0 + 80, aw - 4, h0 - 82, () => { P = part(ox, oy, s, () => own_headCutMM({ shank: 1.9, bit, hatchSp: 9 }), { alpha: ep(t, 0.4, 1.1) }) || {}; });
-    if (bit && P.bitTip) {
-      /* the pointer holds the driver; a ring when it seats */
-      const py = Math.max(y0 + 104, P.bitTip[1] - 250), px = P.bitTip[0] + 30;
-      cursorPtr(px, py, { grab: true, a: bit.a, press: bit.seat ? clamp((bit.u - 0.75) / 0.45) : 0, color: acc() });
-    }
-    const kc = ep(t, 7.4, 7.9);
-    if (kc > 0 && P.cone) {
-      own_tagLine(t, 7.4, P.cone, [ax + 150, P.cone[1] + 60], 'Cone, 1.05 mm deep');
-      own_tagLine(t, 7.6, P.floorL, [ax + 150, P.floorL[1] - 70], 'Slot floor, 0.55 mm');
-      own_tagLine(t, 7.8, P.plating, [ax + 150, P.plating[1] + 150], 'Brass plating');
-      own_tagLine(t, 8.0, P.side, [ax + aw - 250, P.side[1] + 40], 'Ø 4.0 × 1.6 mm');
-      own_tagLine(t, 8.2, P.thread, [ax + aw - 250, P.thread[1] + 40], 'M2 × 0.4, steel');
-    }
-    sourceBox(t, 6.4, ax + aw - 384, y0 + 96, 356, 'BikeGremlin', 'A Phillips bit in a JIS or Pozidriv head cams out and strips it. So the driver in the box is the one that fits.', { size: 25 });
-    /* B · the head from above; the recess the driver is in lights up */
-    const bh = 320;
-    demoWindow(bx, y0, bw, bh, ep(t, 0.4, 0.9));
-    cardHead(t, 0.55, bx, y0, bw, 'From above', [{ ev: 'datasheet', by: 'ISO 7045' }]);
-    const tx = bx + 160, ty = y0 + 190, T0 = part(tx, ty, 56, () => own_headTopMM({ hi, accent: C.hero }), { alpha: ep(t, 0.8, 1.4) }) || {};
-    const kb = ep(t, 1.4, 1.9);
-    if (T0.crossEnd) {
-      rich([{ s: 'Cross', role: 'label', size: 21, color: hi === 'cross' ? C.heroText : C.ink }, { s: 'Phillips H, No. 0, 1.9 mm', role: 'small', size: 25, color: C.ink2, gap: 14 }], bx + 296, y0 + 160, { alpha: kb });
-      rich([{ s: 'Slot', role: 'label', size: 21, color: hi === 'slot' ? C.heroText : C.ink }, { s: 'any flat blade, 0.5 mm', role: 'small', size: 25, color: C.ink2, gap: 14 }], bx + 296, y0 + 226, { alpha: ep(t, 1.6, 2.1) });
-      line(bx + 296, y0 + 190, bx + bw - 28, y0 + 190, { color: C.hair, w: 1.2, alpha: kb });
-    }
-    glossBox(t, 2.8, bx, y0 + bh + 40, bw, 'Combination drive', 'A cross for a Phillips bit and a slot for a flat blade, in one head. The cross centres the bit; the slot takes a blade of any width, so a stripped cross is not the end of the screw.');
-  }
-});
-
-/* ============================== #101 brass heat-set inserts, against screwing straight into plastic ============================== */
-/** one joint's in, out and in again, on its own clock lt: the screw's bearing face, which pass it is on, how deep each went */
-function own_cycle(lt) {
-  const k1 = ep(lt, 0.2, 1.0, E.io3), kOut = ep(lt, 1.15, 1.65, E.io3), k2 = ep(lt, 1.8, 2.7, E.io3);
-  const pass = lt < 1.72 ? 1 : 2, k = pass === 1 ? k1 * (1 - kOut) : k2;
-  return { k, pass, z: -1 - (1 - k) * 4.0, reach1: 4.0 * k1, reach2: pass === 2 ? 4.0 * k2 : 0, k2, active: lt > -0.2 && lt < 3.0, turn: (pass === 1 ? (k1 + kOut) : 2 + k2) * 4.0 / 0.4 };
-}
-S({
-  id: 'own_insert', ch: 'own', theme: 'paper', title: 'Brass heat-set inserts', settle: 11, ideas: [101, 9], after: 'ownscrew',
-  src: ['ownBrock', 'ownCovestro', 'ownAmtec', 'ownSpirol'],
-  draw: t => {
-    header(t, 'Brass heat-set inserts');
-    captions(t, [[0.6, 'A screw driven into plastic cuts its own thread. Take it out and drive it back at the slightest angle, and it cuts another.'], [6.4, 'Brass is harder than anything the screw can cut, so it runs back down the same thread, every time.']]);
-    const y0 = LAY.top, h0 = 688, g = golden(LM, RM - LM, 48), [ax, aw] = g.a, [bx, bw] = g.b;
-    demoWindow(ax, y0, aw, h0, ep(t, 0.2, 0.7));
-    const cols = [
-      { kind: 'abs', name: 'Straight into ABS', v: OWN_FEEL.abs, tilt: 0.052, ph2: 0.3 },
-      { kind: 'cf', name: 'Straight into carbon-filled PP', v: OWN_FEEL.cf, tilt: 0.052, ph2: 0.3 },
-      { kind: 'insert', name: 'Brass insert', hero: true, tilt: 0.052, ph2: 0 }
-    ];
-    const cw = aw / 3, s = 38, jy = y0 + 352, T0 = 1.2, DT = 2.95;
-    let ptr = null;
-    cols.forEach((c, i) => {
-      const cx = ax + cw * (i + 0.5), lt = t - (T0 + i * DT), cy = own_cycle(Math.max(-1, lt)), ka = ep(t, 0.5 + i * 0.15, 1.0 + i * 0.15);
-      if (i) line(ax + cw * i, y0 + 36, ax + cw * i, y0 + h0 - 36, { color: C.hair, w: 1.2, alpha: ka });
-      const lr = rich([{ s: c.name, role: 'label', size: 21, color: c.hero ? C.heroText : C.ink }], cx, y0 + 50, { align: 'center', alpha: ka });
-      /* the second drive comes in tilted; in brass the thread steers it straight again */
-      const tilt = c.kind === 'insert' ? c.tilt * (1 - ep(cy.k2, 0.04, 0.22)) : c.tilt, dA = cy.active ? ep(lt, -0.2, 0.15) * (1 - ep(lt, 2.75, 3.0)) : 0;
-      let J = {};
-      clipped(ax + cw * i + 6, y0 + 74, cw - 12, 520, () => {
-        J = part(cx, jy, s, () => own_jointMM({ kind: c.kind, z: cy.z, pass: cy.pass, reach1: cy.reach1, reach2: cy.reach2, tilt, ph2: c.ph2, fw: 3.5, recut: clamp((cy.reach2 - 0.6) / 1.2), hole: C.panel, driver: { a: dA, turn: cy.turn } }), { alpha: ka }) || {};
-      });
-      if (dA > 0.02 && J.axisTop) ptr = { x: J.axisTop[0] + 34, y: Math.max(y0 + 96, J.axisTop[1] - 150), a: dA, press: cy.k > 0.97 && cy.pass === 1 ? 1 - ep(lt, 1.0, 1.4) : 0 };
-      /* what happened: a re-cut thread in plastic; the same thread in brass */
-      const done = ep(lt, 2.75, 3.15);
-      if (done > 0) {
-        if (c.kind !== 'insert') own_tagLine(t, T0 + i * DT + 2.75, J.recutPt, [cx + cw * 0.36, jy - 30], 'Re-cut', { tcolor: C.bad, dot: C.bad });
-        else own_tagLine(t, T0 + i * DT + 2.75, J.insert, [cx + cw * 0.36, jy - 30], 'Same thread', { tcolor: C.heroText, dot: C.hero });
-      }
-      /* Brock's estimate under each joint, as it finishes; the insert's has no published figure */
-      const ny = y0 + 600, kn = ep(lt, 2.9, 3.4);
-      if (c.v != null) {
-        rich([{ s: String(c.v), role: 'stat', size: 76, color: C.ink, tnum: true, count: [T0 + i * DT + 2.9, 0.9] }, { s: '%', font: 'mono', size: 30, weight: 600, color: C.mute, gap: 6 }], cx - 112, ny, { t, alpha: kn });
-        pill(cx + 30, ny - 30, 'estimate', kn, { by: 'Brock' });
-        text('Feel different after one re-assembly', cx - 112, ny + 44, { role: 'small', size: 25, color: C.ink2, maxW: cw - 40, alpha: kn });
-      } else {
-        text('No published figure', cx - 130, ny - 20, { role: 'h3', size: 30, color: C.ink, alpha: kn });
-        pill(cx - 130, ny + 18, 'placeholder', kn, { text: 'Gap' });
-        text('Makers say "as often as required" (Böllhoff, a claim)', cx - 130, ny + 62, { role: 'small', size: 25, color: C.ink2, maxW: cw - 30, alpha: kn, lh: 1.3 });
-      }
-    });
-    if (ptr) cursorPtr(ptr.x, ptr.y, { grab: true, a: ptr.a, press: ptr.press, color: acc() });
-    /* the right column: what an insert is, what the guides say, and the measure nobody publishes */
-    const gb = glossBox(t, 1.6, bx, y0, bw, 'Heat-set insert', 'A knurled brass sleeve pressed into its boss hot. The plastic melts into the knurls and sets round them, so the screw\'s thread is brass, not plastic.');
-    const sb = sourceBox(t, 3.6, bx, y0 + gb.h + 40, bw, 'Covestro guide', 'A screw that cuts its own thread suits once-only assembly, or a few re-assemblies, and then only if it is run back into its own thread carefully, by hand.');
-    noteBox(t, 9.6, bx, y0 + gb.h + sb.h + 80, bw, { kind: 'placeholder', label: 'Gap', head: 'Right on the first assembly', body: 'No one publishes this rate, for any of the three. An insert moves the risk to the factory: up to 75% of its hold comes from how it was put in (SPIROL, a maker\'s claim).' });
-  }
-});
-
-/* ============================== thread wear: the published tests ============================== */
-S({
-  id: 'own_wear', ch: 'own', theme: 'night', title: 'Thread wear in plastic bosses', settle: 10, ideas: [101], after: 'own_insert',
-  src: ['ownCumbicus', 'ownHios', 'ownCovestro', 'ownAmtec', 'ownPemM2', 'ownIso68', 'ownBrock'],
-  draw: t => {
-    header(t, 'Thread wear in plastic bosses');
-    captions(t, [[0.6, 'Each time a screw goes back into plastic it trims the thread it left. Measured, the joint loses torque from the third assembly on.'], [5.8, 'No maker publishes a count for brass; they say "as often as required". I\'ll publish mine: torque logged over 50 cycles.']]);
-    const y0 = LAY.top, g = golden(LM, RM - LM, 48), [ax, aw] = g.a, [bx, bw] = g.b, r1 = 392, y1 = y0 + r1 + 40, r2 = 688 - r1 - 40;
-    /* A · the flank, close up: plastic after one re-assembly, and brass */
-    demoWindow(ax, y0, aw, r1, ep(t, 0.2, 0.7), { grid: true });
-    cardHead(t, 0.35, ax, y0, aw, 'The flank, close up', []);
-    const push = ep(t, 0.5, 2.3, E.cam), half = aw / 2, kcut = ep(t, 2.6, 4.4, E.io3);
-    clipped(ax + 2, y0 + 70, half - 4, r1 - 72, () => {
-      const F = part(ax + half / 2, y0 + 210, lerp(130, 190, push), () => own_flankTFMM(kcut, { mat: OWN_MAT.abs, n: 1.25 }), { alpha: ep(t, 0.5, 1.0) }) || {};
-      if (F.sliver && kcut > 0.5) own_tagLine(t, 4.4, F.sliver, [F.sliver[0] + 120, y0 + 120], 'Shaved off', { tcolor: C.bad, dot: C.bad });
-    });
-    text('ABS, after one re-assembly', ax + half / 2, y0 + r1 - 30, { role: 'small', size: 25, color: C.ink2, align: 'center', alpha: ep(t, 1.0, 1.4) });
-    line(ax + half, y0 + 70, ax + half, y0 + r1 - 26, { color: C.hair, w: 1.2, alpha: ep(t, 0.6, 1.0) });
-    let I = {};
-    clipped(ax + half + 2, y0 + 70, half - 4, r1 - 72, () => {
-      I = part(ax + half * 1.5, y0 + 208, lerp(300, 440, push), () => own_isoMM({ n: 2.6 }), { alpha: ep(t, 0.7, 1.2) }) || {};
-      /* a light passes along the brass, once, when it has settled */
-      const ls = ep(t, 4.6, 5.8, E.io3);
-      if (ls > 0 && ls < 1) { const lx = ax + half + 2 + (half - 4) * ls, lg = G.createLinearGradient(lx - 70, 0, lx + 70, 0); lg.addColorStop(0, 'rgba(255,255,255,0)'); lg.addColorStop(0.5, 'rgba(255,248,225,0.22)'); lg.addColorStop(1, 'rgba(255,255,255,0)'); G.fillStyle = lg; G.fillRect(lx - 70, y0 + 70, 140, r1 - 72); }
-    });
-    if (I.apex) {
-      const ki = ep(t, 3.0, 3.5);
-      text('60°', I.apex[0], I.apex[1] - 14, { font: 'mono', size: 24, weight: 700, color: C.ink, align: 'center', alpha: ki });
-      text('P 0.4 mm', I.pitch[1][0] + 16, I.pitch[1][1] - 12, { font: 'mono', size: 22, weight: 600, color: C.ink2, alpha: ki });
-    }
-    text('Brass and steel, ISO 60° thread, after any number', ax + half * 1.5, y0 + r1 - 30, { role: 'small', size: 25, color: C.ink2, align: 'center', alpha: ep(t, 1.2, 1.6) });
-    /* B · measured: loosening torque kept over ten assemblies (Cumbicus et al. 2023) */
-    demoWindow(bx, y0, bw, r1, ep(t, 0.4, 0.9));
-    cardHead(t, 0.55, bx, y0, bw, 'Torque kept, 10 assemblies', [{ ev: 'measured', by: 'Cumbicus 2023' }]);
-    const m = axes(t, { x: bx + 96, y: y0 + 100, w: bw - 150, h: r1 - 196, xr: [1, 10], yr: [40, 100], xticks: [1, 3, 5, 10], yticks: [40, 70, 100], yfmt: v => v + '%', t0: 0.9 });
-    const ser = [{ name: 'PF-30', pts: [[1, 100], [3, 88.05], [5, 84.69], [10, 82.84]], col: C.ink, ring: false }, { name: 'Delta PT', pts: [[1, 100], [5, 43.27], [10, 58.07]], col: C.comp, ring: true }];
-    ser.forEach((sr, si) => {
-      const k = ep(t, 1.4 + si * 0.5, 2.6 + si * 0.5, E.io3), P2 = sr.pts.map(([x, y]) => [m.X(x), m.Y(y)]);
-      poly(P2, { color: sr.col, w: 2.5, p: k, dash: si ? [7, 6] : null });
-      sr.pts.forEach(([x, y], j) => { const kk = ep(t, 1.4 + si * 0.5 + j * 0.25, 1.7 + si * 0.5 + j * 0.25); if (sr.ring) circle(m.X(x), m.Y(y), 7 * kk, { color: sr.col, w: 2.5, fill: C.panel }); else circle(m.X(x), m.Y(y), 7 * kk, { fill: sr.col }); if (j) text(fmtN(y, 0) + '%', m.X(x) + (j === sr.pts.length - 1 ? -10 : 12), m.Y(y) + (si ? 30 : -14), { font: 'mono', size: 21, weight: 700, color: C.ink, align: j === sr.pts.length - 1 ? 'right' : 'left', alpha: kk }); });
-      const last = P2[P2.length - 1];
-      text(sr.name, last[0] + 12, last[1] + 7, { role: 'label', size: 21, color: sr.col === C.comp ? C.mute : C.ink, alpha: ep(t, 2.6 + si * 0.5, 3.0 + si * 0.5) });
-    });
-    text('Assembly', bx + bw - 54, y0 + r1 - 26, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ep(t, 1.0, 1.4) });
-    text('5 mm screws in glass-filled PEI', bx + 28, y0 + r1 - 26, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 1.0, 1.4) });
-    /* C · how many times, by the makers' own counts; brass has none */
-    demoWindow(ax, y1, aw, r2, ep(t, 0.6, 1.1));
-    cardHead(t, 0.75, ax, y1, aw, 'Assemblies before damage', [{ ev: 'claim' }]);
-    const rows = [['Another maker\'s tapping screw', 7, 'HIOS'], ['VDE 0700 asks for', 10, 'Covestro'], ['DELTA PT', 40, 'HIOS'], ['Brass insert', null, 'Böllhoff: "as often as required"']];
-    const lx2 = ax + 28, bx2 = ax + 330, bw2 = aw - 330 - 210;
-    rows.forEach(([name, v, who], i) => {
-      const yy = y1 + 86 + i * 36, k = ep(t, 1.2 + i * 0.15, 2.0 + i * 0.15, E.snap), a = ep(t, 1.1 + i * 0.15, 1.4 + i * 0.15);
-      text(name, lx2, yy + 8, { role: 'small', size: 25, color: v == null ? C.heroText : C.ink, weight: v == null ? 700 : 500, alpha: a });
-      if (v != null) { rect(bx2, yy - 7, bw2 * v / 40 * k, 14, { fill: name === 'VDE 0700 asks for' ? C.ink2 : C.comp, alpha: a }); text(String(v), bx2 + bw2 * v / 40 * k + 10, yy + 8, { font: 'mono', size: 23, weight: 700, color: C.ink, alpha: a }); text(who, ax + aw - 28, yy + 8, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: a }); }
-      else { G.save(); G.globalAlpha = a; G.setLineDash([7, 6]); G.strokeStyle = C.hero; G.lineWidth = 1.8; G.strokeRect(bx2, yy - 7, bw2 * k, 14); G.restore(); text(who, ax + aw - 28, yy + 8, { role: 'small', size: 25, color: C.ink2, align: 'right', alpha: a }); }
-    });
-    /* D · what a brass insert holds in ABS, and Brock's way to keep the screw from backing out */
-    const sw = (bw - 40) / 2;
-    statCard(t, 1.8, bx, y1, bw, r2, { label: 'PEM M2 insert, in ABS', ev: 'claim', value: '255', unit: 'N', body: 'To pull it out; 0.5 N·m to turn it.', size: 72 });
-  }
-});
-
-/* ============================== what the joints weigh ============================== */
-/** horizontal bars for fastener masses: name, qualifier, a bar on a track, the value and its evidence mark */
-function own_massBars(t, t0, x, y, w, rows, o = {}) {
-  const lw0 = o.labelW || 300, vw = o.valW || 150, bx = x + lw0, bw = w - lw0 - vw, max = o.max, rh = o.rh || 62;
-  rows.forEach((r, i) => {
-    const yy = y + i * rh, a = ep(t, t0 + i * 0.12, t0 + 0.35 + i * 0.12), k = ep(t, t0 + 0.2 + i * 0.12, t0 + 1.0 + i * 0.12, E.snap);
-    if (i) line(x, yy - rh * 0.5, x + w, yy - rh * 0.5, { color: C.hair, w: 1, alpha: a * 0.8 });
-    text(r.name, x, yy, { role: 'small', weight: r.hero ? 800 : r.ref ? 700 : 500, color: C.ink, alpha: a });
-    text(r.qual, x, yy + 28, { role: 'label', size: 19, color: r.hero ? C.heroText : C.faint, alpha: a });
-    const lo = Array.isArray(r.v) ? r.v[0] : r.v, hi = Array.isArray(r.v) ? r.v[1] : r.v, by = yy - 4, bh = 14;
-    rr(bx, by - bh / 2, bw, bh, bh / 2, C.track, null, 0, a);
-    const col = r.hero ? C.hero : r.ref ? C.ref : C.comp;
-    if (hi !== lo) rr(bx, by - bh / 2, Math.max(bh, bw * hi / max * k), bh, bh / 2, rgba(col, 0.42), null, 0, a);
-    rr(bx, by - bh / 2, Math.max(bh, bw * lo / max * k), bh, bh / 2, col, null, 0, a);
-    const vs = { font: 'mono', size: 25, weight: r.hero ? 800 : 600 };
-    text(r.label, x + w, yy + 2, Object.assign({ color: C.ink, align: 'right', alpha: a }, vs));
-    evDot(x + w - tw(r.label, vs) - 16, yy - 6, r.ev, 5.5, a);
-  });
-  return y + rows.length * rh;
-}
-S({
-  id: 'own_mass', ch: 'own', theme: 'paper', title: 'Fastener mass', settle: 10, ideas: [9, 101], after: 'own_wear',
-  src: ['ownB2gSlx', 'exXbabWeight', 'exZkM1k', 'ownIso7045w', 'ownBrock'],
-  draw: t => {
-    header(t, 'Fastener mass');
-    captions(t, [[0.6, 'Brass and steel cost mass. The Starlight X holds its whole frame together with 0.30 g of titanium.'], [5.6, 'So M2 and brass go only where an owner opens the mouse, as far from the antenna as the layout allows.']]);
-    const y0 = LAY.top, h0 = 688, g = golden(LM, RM - LM, 48), [ax, aw] = g.a, [bx, bw] = g.b;
-    demoWindow(ax, y0, aw, h0, ep(t, 0.2, 0.7));
-    cardHead(t, 0.35, ax, y0, aw, 'Mass per fastener', ['claim', 'datasheet', { ev: 'estimate', by: 'Brock' }, 'derived']);
-    const rows = [
-      { name: 'Finalmouse Starlight X', qual: 'Titanium, 15 per mouse', v: 0.02, label: '0.02 g', ev: 'claim', ref: true },
-      { name: 'XBAB XA25', qual: 'Thread-forming, 0.708 g ÷ 11', v: 0.064, label: '0.064 g', ev: 'derived' },
-      { name: 'Zaunkoenig M1K', qual: '1.5 g ÷ 9', v: 0.167, label: '0.167 g', ev: 'derived' },
-      { name: 'M2 × 5 pan head', qual: 'Steel, ISO 7045 table', v: 0.215, label: '0.215 g', ev: 'datasheet', hero: true },
-      { name: 'M2 brass insert', qual: 'Brock\'s figure', v: [0.16, 0.18], label: '0.16–0.18 g', ev: 'estimate', hero: true },
-      { name: 'One Theseus joint', qual: 'Screw + insert', v: [0.375, 0.395], label: '0.38–0.40 g', ev: 'derived', hero: true }
-    ];
-    own_massBars(t, 0.9, ax + 28, y0 + 136, aw - 56, rows, { max: 0.42, labelW: 330, valW: 200, rh: 84 });
-    /* the total, if six joints are serviceable (an assumption) */
-    const n = 6, lo = n * 0.375, hiM = n * 0.395, mid = (lo + hiM) / 2, pct = mid / THESEUS.mass * 100;
-    statCard(t, 5.2, bx, y0, bw, 300, { label: 'Six service joints', ev: 'derived', value: fmtN(mid, 1), unit: 'g', body: fmtN(pct, 1) + '% of ' + THS.massG + ' (6 assumed × 0.385 g)', hero: true, size: 84 });
-    /* where they go: far from the antenna (#101) */
-    const ky = y0 + 340, kh = h0 - 340;
-    demoWindow(bx, ky, bw, kh, ep(t, 5.6, 6.1));
-    cardHead(t, 5.75, bx, ky, bw, 'Away from the antenna (#101)', ['proposal']);
-    const kx = bx + 170, kcy = ky + kh / 2 + 18, ks = 2.3, kk = ep(t, 6.0, 6.5);
-    part(kx, kcy, ks, () => {
-      keyPlanMM({ hi: ['antenna'], accent: C.bad });
-      for (const [x, y] of [[-20, 40], [20, 40], [-24, 8], [24, 8], [-13, 26], [13, 26]]) { G.beginPath(); G.arc(x, y, 2.6, 0, TAU); G.fillStyle = C.hero; G.fill(); }
-    }, { alpha: kk });
-    rich([{ s: 'Antenna', role: 'label', size: 21, color: C.bad }], kx + 120, ky + 120, { alpha: kk });
-    text('At the nose. Metal near it detunes it, so the six inserts sit in the rear two thirds.', kx + 120, ky + 158, { role: 'small', size: 25, color: C.ink2, maxW: bw - 310, lh: 1.32, alpha: kk });
-    text('Positions are illustrative', kx + 120, ky + kh - 30, { role: 'label', size: 19, color: C.faint, alpha: kk });
-  }
-});

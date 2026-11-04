@@ -179,7 +179,7 @@ S({
     captions(t, [[0.6, 'Most mice reach the battery and the side buttons with a ribbon: copper printed on a film. Nick its edge, and a pull piles up at the nick until it tears across.'], [6.6, 'Theseus braids three wires on a JST plug. Pulled, the strands share the load. Cut one, and the other two still carry it.']]);
     const X = LM, Y = 272, Wd = 1340, Ht = 440, ka = ep(t, 0.2, 0.7, E.snap);
     demoWindow(X, Y, Wd, Ht, ka);
-    const yA = Y + 138, yB = Y + 330, bx = X + 30, bw = 140, xc0 = bx + bw, xEnd = X + 1180, tabW = 56, wR = 90;
+    const yA = Y + 132, yB = Y + 340, bx = X + 30, bw = 140, xc0 = bx + bw, xEnd = X + 1180, tabW = 56, wR = 90;
     elc_slab(bx, Y + 30, bw, Ht - 60, ep(t, 0.4, 0.9), { routes: [yA - 60, yB - 50] });
     text('One board', bx + bw / 2, Y + Ht - 52, { role: 'label', size: 21, color: '#E8E6E0', align: 'center', alpha: ep(t, 0.9, 1.3) });
     text('Pulls: illustration', X + Wd - 32, Y + 50, { role: 'label', size: 20, color: C.faint, align: 'right', alpha: ep(t, 3.0, 3.4) });
@@ -187,7 +187,7 @@ S({
     const xn = xc0 + 120, tabX = xEnd + tabW / 2, cutX = xc0 + 540, sleeveX = xEnd + 30;
     const L2 = ep(t, 8.7, 10.1, E.io3), layPx = 190 * (1 + 0.06 * L2), Ab = 8 * (1 - 0.18 * L2);
     const sY = elc_strandY(cutX, xc0 + 8, yB, Ab, layPx, 1);
-    const keys = [[1.9, [xn + 70, yA - 96]], [2.4, [xn, yA - wR / 2 - 2]], [2.7, [xn, yA - wR / 2 - 2]], [3.3, [tabX, yA + 4]], [3.5, [tabX, yA + 4]], [4.7, [tabX + 26, yA - 18]], [6.0, [tabX + 34, yA - 24]], [6.4, [tabX + 96, yA - 46]],
+    const keys = [[1.9, [xn + 70, yA - 96]], [2.4, [xn, yA - wR / 2 - 2]], [2.7, [xn, yA - wR / 2 - 2]], [3.3, [tabX, yA + 4]], [3.5, [tabX, yA + 4]], [4.7, [tabX + 26, yA - 18]], [6.0, [tabX + 34, yA - 20]], [6.4, [tabX + 84, yA - 6]],
       [7.0, [cutX + 60, yB - 84]], [7.4, [cutX, sY]], [7.7, [cutX, sY]], [8.5, [sleeveX, yB + 2]], [8.7, [sleeveX, yB + 2]], [10.1, [sleeveX + 26, yB - 18]], [12.5, [sleeveX + 26, yB - 18]]];
     const P = t > 1.6 ? kf(t, keys, E.cam) : keys[0][1], Pr = kf(Math.min(t, 6.4), keys, E.cam);
     /* ---- the ribbon ---- */
@@ -203,7 +203,7 @@ S({
     } else {
       /* torn through: the near half stays in the latch; the far half went with the pointer and stays where it let go */
       elc_ribbon(xc0 + 6, xn, yA, wR, { k: 24, xn, load: 0, alpha: ka });
-      const ox = Pr[0] - tabX, oy = Pr[1] - (yA + 4), rot = -0.05 * ep(t, 6.0, 6.6);
+      const ox = Pr[0] - tabX, oy = Pr[1] - (yA + 4), rot = 0.03 * ep(t, 6.0, 6.6);
       G.save(); G.translate(xn + ox, yA + oy); G.rotate(rot); G.translate(-xn, -yA);
       elc_ribbon(xn + 5, xEnd, yA, wR, { k: 0, xn: -1e4, load: 0, alpha: ka }); rr(xEnd, yA - wR / 2, tabW, wR, 8, tabCol, null, 1, ka);
       G.restore();
@@ -211,7 +211,7 @@ S({
     const la = ep(t, 1.2, 1.6);
     text('Ribbon cable (FPC)', xc0 + 24, yA - wR / 2 - 24, { role: 'label', size: 22, color: C.ink, alpha: la });
     text('Polyimide film, three copper traces', xc0 + 24 + tw('Ribbon cable (FPC)', { role: 'label', size: 22 }) + 22, yA - wR / 2 - 24, { role: 'small', size: 25, color: C.mute, alpha: la });
-    if (kRows && t < 6.0) callout(t, 2.8, [xn, yA - wR / 2 + 4 * wR / 24], 'Kt ≈ 11 at the nick\'s tip', { to: [xn + 170, yA + wR / 2 + 44], side: 'r', color: C.bad, sub: '1 + 2√(a/ρ): a 0.5 mm deep, ρ 0.02 mm (Inglis)' });
+    if (kRows && t < 6.0) callout(t, 2.8, [xn, yA - wR / 2 + 4 * wR / 24], 'Kt ≈ 11 at the nick\'s tip', { to: [xn + 170, yA + wR / 2 + 34], side: 'r', color: C.bad, sub: 'a 0.5 mm nick, its tip 0.02 mm round' });
     if (t > 3.5 && t < 6.4) text(fmtN(0.07 * L1, 2) + ' N', P[0] + 28, P[1] + 46, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: ep(t, 3.5, 3.8) });
     /* ---- the braid ---- */
     const kB = ep(t, 1.0, 2.0, E.cam), xb1 = lerp(xc0 + 8, xEnd, kB), cut = t >= 7.6, gap = cut ? 6 + 30 * E.out3(prog(t, 7.6, 8.0)) : 0;
@@ -223,9 +223,9 @@ S({
     elc_braid(xc0 + 8, xb1, yB, Ab, layPx, 13, { heat, cut: cut ? { i: 1, x: cutX, gap } : null, alpha: ka, sweep: t > 10.4 ? lerp(xc0 - 200, xEnd + 200, ((t - 10.4) % 3.2) / 3.2) : null });
     if (kB > 0.98) elc_sleeve(xEnd - 4, yB, 64, 34, ka);
     G.restore();
-    const lb = ep(t, 1.5, 1.9), hw = heroTag(xc0 + 24, yB - 54, 'Theseus', 'braided', { a: lb });
-    text('Three 32 AWG wires on a JST plug', xc0 + 24 + hw + 18, yB - 54, { role: 'small', size: 25, color: C.mute, alpha: lb });
-    if (cut) callout(t, 7.8, [cutX, sY], 'One strand cut', { to: [cutX + 150, yB + 62], side: 'r', color: C.bad });
+    const lb = ep(t, 1.5, 1.9), hw = heroTag(xc0 + 24, yB - 50, 'Theseus', 'braided', { a: lb });
+    text('Three 32 AWG wires on a JST plug', xc0 + 24 + hw + 18, yB - 50, { role: 'small', size: 25, color: C.mute, alpha: lb });
+    if (cut) callout(t, 7.8, [cutX, sY], 'One strand cut', { to: [cutX + 150, yB + 58], side: 'r', color: C.bad });
     if (t > 8.7) text(fmtN(FB, 2) + ' N', P[0] + 28, P[1] + 46, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: ep(t, 8.7, 9.0) });
     const down = (t > 3.5 && t < 6.4) || t > 8.7;
     if (t > 1.6) cursorAt(t, keys, [2.5, 3.5, 7.6, 8.7], { grab: down, ease: E.cam });
@@ -254,7 +254,7 @@ S({
     cardHead(t, 0.4, X, Y, Wd, 'A 60 mm lead, a coil 5 mm beside it', ['derived']);
     const S0 = 15, xL = X + 120, xR = xL + ELB.leadL * S0, ys = Y + 250, yP = ys - ELB.h * S0 - 6, yT = ys + ELB.h * S0 + 6, sep = 16;
     /* the source: the pointer drags it along the lead */
-    const keys = [[2.0, [xL + 300, ys + 110]], [2.6, [xL + 470, ys + 6]], [2.8, [xL + 470, ys + 6]], [4.0, [xL + 200, ys + 6]], [5.2, [xL + 760, ys + 6]], [5.9, [xL + 470, ys + 6]], [6.4, [xL + 470, ys + 6]], [7.2, [xL + 700, ys + 120]], [11.5, [xL + 700, ys + 120]]];
+    const keys = [[2.0, [xL + 300, ys + 110]], [2.6, [xL + 470, ys + 6]], [2.8, [xL + 470, ys + 6]], [4.0, [xL + 200, ys + 6]], [5.2, [xL + 760, ys + 6]], [5.9, [xL + 470, ys + 6]], [6.4, [xL + 470, ys + 6]], [7.2, [xL + 980, ys + 150]], [11.5, [xL + 980, ys + 150]]];
     const P = kf(t, keys, E.cam), xsPx = t < 2.8 ? xL + 470 : t > 6.4 ? xL + 470 : P[0], xs = (xsPx - xL) / S0;
     const ks = ep(t, 2.0, 2.5), osc = Math.sin(t * 4.2), vis = 0.45 + 0.55 * Math.abs(osc);
     for (let i = 0; i < 7; i++) { const ph = ((t * 0.5 + i / 7) % 1), r = 14 + ph * 240; circle(xsPx, ys, r, { color: A, w: 2, alpha: ks * 0.4 * Math.pow(1 - ph, 1.6) }); }
@@ -312,7 +312,7 @@ S({
     const X = LM, Y = 272, ka = ep(t, 0.2, 0.7, E.snap);
     /* the lead at the lay the pointer sets, drawn big along the top */
     const Hl = 140; demoWindow(X, Y, RM - X, Hl, ka);
-    const cy0 = Y + Hl + 24, cw = 1140, ch = 968 - cy0;
+    const cy0 = Y + Hl + 24, cw = 1140, ch = 948 - cy0;
     const Lmin = 1.5, Lmax = 24, px0 = X + 124, pw = 900, py0 = cy0 + 96, ph = ch - 96 - 96;
     const LX = p => px0 + pw * Math.log(p / Lmin) / Math.log(Lmax / Lmin), PX = x => Lmin * Math.pow(Lmax / Lmin, (x - px0) / pw);
     const keys = [[3.4, [LX(6) + 60, py0 + ph + 70]], [3.9, [LX(6), py0 + ph + 2]], [4.1, [LX(6), py0 + ph + 2]], [5.0, [LX(20), py0 + ph + 2]], [5.4, [LX(20), py0 + ph + 2]], [6.6, [LX(1.6), py0 + ph + 2]], [7.0, [LX(1.6), py0 + ph + 2]], [8.4, [LX(6), py0 + ph + 2]], [8.8, [LX(6), py0 + ph + 2]], [9.6, [LX(6) + 90, py0 + ph + 80]], [13, [LX(6) + 90, py0 + ph + 80]]];
@@ -341,7 +341,7 @@ S({
     poly(Rp, { color: C.ink, w: 3.5, p: kc });
     poly(Tp, { color: C.bad, w: 3, dash: [9, 6], p: kc });
     const kl = ep(t, 2.6, 3.0);
-    text('Noise, from a coil 5 mm away', LX(9.5), RY(elc_rejDB(9.5)) + 36, { role: 'label', size: 21, color: C.ink, alpha: kl });
+    text('Noise, from a coil 5 mm away', px0 + pw - 16, RY(-34), { role: 'label', size: 21, color: C.ink, align: 'right', alpha: kl });
     text('Copper added', LX(2.2) + 20, TY(100 * elc_takeup(2.2)) - 16, { role: 'label', size: 21, color: C.bad, alpha: kl });
     text('−60 dB or less', px0 + 12, RY(FLOOR) - 14, { role: 'label', size: 19, color: C.faint, alpha: kl });
     const kk = ep(t, 3.2, 3.6), kx = LX(lay), dNow = elc_rejDB(lay);
@@ -356,20 +356,25 @@ S({
     statTile(t, 1.6, [rx, cy0, sw, sh], { value: dNow < FLOOR ? '< −60' : fmtN(dNow, 0), unit: 'dB', label: 'noise picked up', ev: 'derived', hero: true, count: false });
     statTile(t, 1.8, [rx + sw + 24, cy0, sw, sh], { value: '+' + fmtN(mg, mg < 10 ? 1 : 0), unit: 'mg', label: 'copper, both leads', ev: 'derived', color: C.bad, count: false });
     noteBox(t, 9.0, rx, cy0 + sh + 24, rw, { kind: 'estimate', label: 'Estimate', value: 'Brock', size: 25, body: 'Logitech braids these wires in every GPX (#69), and publishes no lay. Braided too tight, the weight adds up: wires are heavy.' });
-    source(t, 'Model: two 60 mm leads of three 32 AWG wires, copper only (' + fmtN(ELB.cuMg, 0) + ' mg at 9.0 g/cm³). Wire = √(1 + (2πr/lay)²), r 0.23 mm. Noise: a coil 5 mm beside the lead.', { t0: 2, maxW: cw });
+    source(t, 'Model: two 60 mm leads of three 32 AWG wires, copper only (' + fmtN(ELB.cuMg, 0) + ' mg at 9.0 g/cm³). Wire = √(1 + (2πr/lay)²), r 0.23 mm. Noise: a coil 5 mm beside the lead.', { t0: 2 });
   }
 });
 
 /* ============================== 4. the bend: a crease against fine strands (#69, #51) ============================== */
-/** a lead clamped at (ex, y) heading right, swung by ang (rad, + is up): an arc of radius rb, then straight; returns { pts, arc } */
-function elc_bendPts(ex, y, ang, rb, len, N = 90) {
-  const sg = ang >= 0 ? 1 : -1, th = Math.abs(ang), arcL = th * rb, pts = [], arc = [];
-  for (let i = 0; i <= N; i++) {
-    const s = i / N * len;
-    if (s <= arcL) { const q = s / rb; pts.push([ex + rb * Math.sin(q), y - sg * rb * (1 - Math.cos(q))]); arc.push(pts[pts.length - 1]); }
-    else { const s2 = s - arcL; pts.push([ex + rb * Math.sin(th) + s2 * Math.cos(th), y - sg * (rb * (1 - Math.cos(th)) + s2 * Math.sin(th))]); }
-  }
+/** a lead leaving a clamp at (ex, y) along the board's tilt a (rad, screen: + turns the exit downward), bending back to
+   horizontal over a radius rb, then straight to ex + len. returns { pts, arc } */
+function elc_bendPts(ex, y, a, rb, len) {
+  const pts = [[ex, y]], arc = [[ex, y]], sg = Math.sign(a) || 1, arcL = Math.abs(a) * rb, n = Math.max(2, Math.ceil(arcL / 2));
+  let x = ex, yy = y, psi = a;
+  for (let i = 0; i < n; i++) { const ds = arcL / n; psi -= sg * ds / rb; x += Math.cos(psi) * ds; yy += Math.sin(psi) * ds; pts.push([x, yy]); arc.push([x, yy]); }
+  pts.push([ex + len, yy]);
   return { pts, arc };
+}
+/** the board, rotated about its clamp by a: a slab of length Ls to the left of (ex, y) */
+function elc_tiltSlab(ex, y, a, Ls, al) {
+  if (al <= 0.003) return [ex - Ls, y];
+  G.save(); G.translate(ex, y); G.rotate(a); elc_slab(-Ls, -34, Ls, 68, al); G.restore();
+  return [ex - Ls * Math.cos(a), y - Ls * Math.sin(a)];
 }
 S({
   id: 'elc_flex', ch: 'elec', theme: 'night', title: 'Flex life: fine strands, no crease', settle: 12, ideas: [69, 51], after: 'elc_lay',
@@ -377,48 +382,55 @@ S({
   draw: t => {
     header(t, 'Flex life: fine strands, no crease');
     captions(t, [[0.6, 'Every battery swap bends these leads. A ribbon bends one way only, and folded hard it creases: its copper takes the whole bend on one line.'], [6.2, 'A braid has no flat side. Its fine strands slide past each other, so each one bends only as hard as its own thickness.']]);
-    const A = acc(), X = LM, Y = 272, Wd = 1180, Ht = 696, ka = ep(t, 0.2, 0.7, E.snap);
+    const X = LM, Y = 272, Wd = 1180, Ht = 696, ka = ep(t, 0.2, 0.7, E.snap);
     demoWindow(X, Y, Wd, Ht, ka);
     cardHead(t, 0.4, X, Y, Wd, 'Lifting the board out, over and over', ['derived']);
-    const c0 = 2.4, per = 1.8, swing = t < c0 ? 0 : Math.sin(TAU * (t - c0) / per) * 1.05 * ep(t, c0, c0 + 0.9), bends = t < c0 ? 0 : Math.floor((t - c0) / per * 2 + 0.25);
-    const ex = X + 300, len = 560, yR = Y + 250, yBr = Y + 500, hk = clamp(Math.abs(swing) / 1.05);
-    /* the board edges */
-    elc_slab(X + 40, yR - 36, ex - X - 40, 72, ep(t, 0.6, 1.1)); elc_slab(X + 40, yBr - 36, ex - X - 40, 72, ep(t, 0.8, 1.3));
+    /* the pointer lifts the board by its far end; each lead bends where it leaves the clamp */
+    const c0 = 2.6, per = 2.0, tilt = t < c0 ? 0 : -Math.sin(TAU * (t - c0) / per) * 0.8 * ep(t, c0, c0 + 1.0), bends = t < c0 ? 0 : Math.floor((t - c0) / per * 2 + 0.25);
+    const ex = X + 380, Ls = 270, len = 660, yR = Y + 300, yBr = Y + 520, hk = clamp(Math.abs(tilt) / 0.8);
     const kR = ep(t, 0.8, 1.6, E.cam), kB = ep(t, 1.0, 1.8, E.cam);
-    /* the ribbon: a thin film that bends at the clamp's edge, all of it on one line */
-    const R = elc_bendPts(ex, yR, swing, 3, len * kR);
+    /* the ribbon: a thin film; all of the bend lands on the clamp's edge */
+    const hR = elc_tiltSlab(ex, yR, tilt, Ls, ep(t, 0.6, 1.1));
+    const R = elc_bendPts(ex, yR, tilt, 3, len * kR);
     poly(R.pts, { color: TH ? '#C9A86A' : '#A9874C', w: 14, alpha: kR, cap: 'butt' }); poly(R.pts, { color: '#E0A060', w: 3, alpha: kR, cap: 'butt' });
-    warm(ex + 2, yR, 40 + 30 * hk, heatCol(1), 0.75 * hk * kR); circle(ex + 2, yR, 7, { fill: heatCol(hk), alpha: kR });
-    /* the braid: a round lead that rolls round a radius of its own; the bend spread over the arc */
-    const Bp = elc_bendPts(ex, yBr, swing, 64, len * kB);
-    glowField(t, ex + 200, yBr, 300, { a: 0.6 * kB });
+    warm(ex, yR, 36 + 34 * hk, heatCol(1), 0.8 * hk * kR); circle(ex, yR, 7, { fill: heatCol(hk), alpha: kR });
+    text('All of the bend on one line', ex + 40, yR + 58, { role: 'label', size: 21, color: C.bad, alpha: kR * ep(t, 3.0, 3.4) });
+    /* the braid: a round lead that rolls round a radius of its own, the bend spread over the arc */
+    const hB = elc_tiltSlab(ex, yBr, tilt, Ls, ep(t, 0.8, 1.3));
+    const Bp = elc_bendPts(ex, yBr, tilt, 76, len * kB);
+    glowField(t, ex + 260, yBr, 320, { a: 0.6 * kB });
     poly(Bp.pts, { color: TH ? '#2F3035' : '#6A6B70', w: 30, alpha: kB, cap: 'butt' });
-    if (Bp.arc.length > 1) poly(Bp.arc, { color: heatCol(hk * 0.32), w: 30, alpha: kB * 0.85, cap: 'butt' });
-    for (const off of [-8, 0, 8]) poly(Bp.pts.map((p, i) => { const q = Bp.pts[Math.min(Bp.pts.length - 1, i + 1)], r0 = Bp.pts[Math.max(0, i - 1)], dx = q[0] - r0[0], dy = q[1] - r0[1], l = Math.hypot(dx, dy) || 1; return [p[0] - dy / l * off, p[1] + dx / l * off]; }), { color: 'rgba(255,255,255,0.16)', w: 2, alpha: kB });
-    /* the pointer holds both free ends */
-    const eR = R.pts[R.pts.length - 1], eB = Bp.pts[Bp.pts.length - 1];
-    if (t > 1.8) { line(eR[0], eR[1], eB[0], eB[1], { color: C.faint, w: 2, dash: [4, 6], alpha: ep(t, 1.8, 2.2) }); cursorPtr((eR[0] + eB[0]) / 2, (eR[1] + eB[1]) / 2, { a: ep(t, 1.8, 2.2), grab: t > c0 }); }
-    text('Ribbon: it folds on the edge', X + 40, yR - 64, { role: 'label', size: 22, color: C.bad, alpha: ep(t, 1.0, 1.4) });
-    const hw = heroTag(X + 40, yBr - 64, 'Theseus', 'the braid', { a: ep(t, 1.3, 1.7) });
-    text('rolls round it', X + 40 + hw + 14, yBr - 64, { role: 'label', size: 22, color: C.mute, alpha: ep(t, 1.3, 1.7) });
-    rich([{ s: String(bends), role: 'stat', size: 64, color: C.ink, tnum: true }, { s: 'bends', font: 'mono', size: 22, weight: 600, color: C.mute, gap: 10 }], X + Wd - 40, Y + 120, { align: 'right', alpha: ep(t, 2.4, 2.8) });
+    if (Bp.arc.length > 2) poly(Bp.arc, { color: heatCol(hk * 0.32), w: 30, alpha: kB * 0.85, cap: 'butt' });
+    /* its strands: fine lines along it that slide against each other as it bends */
+    for (const off of [-9, -3, 3, 9]) {
+      const pts = Bp.pts.map((p, i) => { const q = Bp.pts[Math.min(Bp.pts.length - 1, i + 1)], r0 = Bp.pts[Math.max(0, i - 1)], dx = q[0] - r0[0], dy = q[1] - r0[1], l = Math.hypot(dx, dy) || 1; return [p[0] - dy / l * off, p[1] + dx / l * off]; });
+      G.save(); G.setLineDash([22, 10]); G.lineDashOffset = off * tilt * 6; G.strokeStyle = 'rgba(255,255,255,0.2)'; G.lineWidth = 2; G.globalAlpha = kB; G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.stroke(); G.restore();
+    }
+    text('Spread over the arc', ex + 120, yBr + 74, { role: 'label', size: 21, color: C.heroText, alpha: kB * ep(t, 3.0, 3.4) });
+    /* the pointer lifts both boards by their far ends */
+    if (t > 1.8) { const hx = (hR[0] + hB[0]) / 2 + 20, hy = (hR[1] + hB[1]) / 2; line(hR[0] + 20, hR[1], hB[0] + 20, hB[1], { color: C.faint, w: 2, dash: [4, 6], alpha: ep(t, 1.8, 2.2) }); cursorPtr(hx, hy, { a: ep(t, 1.8, 2.2), grab: t > c0 }); }
+    text('Ribbon: it creases on the edge', X + 40, yR - 70, { role: 'label', size: 22, color: C.bad, alpha: ep(t, 1.0, 1.4) });
+    const hw = heroTag(X + 40, yBr - 70, 'Theseus', 'braid', { a: ep(t, 1.3, 1.7) });
+    text('it rolls round the edge', X + 40 + hw + 16, yBr - 70, { role: 'label', size: 22, color: C.mute, alpha: ep(t, 1.3, 1.7) });
+    rich([{ s: String(bends), role: 'stat', size: 64, color: C.ink, tnum: true }, { s: 'bends', font: 'mono', size: 22, weight: 600, color: C.mute, gap: 10 }], X + Wd - 40, Y + 130, { align: 'right', alpha: ep(t, 2.6, 3.0) });
     /* the strain, in one line: a 40 AWG strand against a solid 32 AWG wire */
-    const sy = Y + Ht - 70, ks = ep(t, 6.6, 7.2), dS = 0.202, dF = 0.0799;
-    rule(X + 32, sy - 74, X + Wd - 32, ks);
-    rich([{ s: fmtN(dS / dF, 1) + '×', role: 'stat', size: 60, color: C.hero, grad: C.heroGrad, tnum: true }, { s: 'less strain in each 40 AWG strand than in a solid 32 AWG wire, at the same bend (ε = d / 2R)', role: 'small', size: 25, weight: 600, color: C.ink2, gap: 18 }], X + 40, sy, { alpha: ks });
+    const sy = Y + Ht - 56, ks = ep(t, 6.6, 7.2), dS = 0.202, dF = 0.0799;
+    rule(X + 32, sy - 70, X + Wd - 32, ks);
+    rich([{ s: fmtN(dS / dF, 1) + '×', role: 'stat', size: 60, color: C.hero, grad: C.heroGrad, tnum: true }, { s: 'less strain in a 40 AWG strand than a solid 32 AWG wire (ε = d / 2R)', role: 'small', size: 25, weight: 600, color: C.ink2, gap: 18 }], X + 40, sy, { alpha: ks });
     /* right column: Alexander's strands, and the fold rating */
     const rx = X + Wd + 24, rw = RM - rx, ch = 420;
     demoWindow(rx, Y, rw, ch, ep(t, 0.6, 1.1, E.snap));
-    cardHead(t, 0.8, rx, Y, rw, 'Bends to failure, 18 AWG wire', [{ ev: 'study', by: 'Alexander 1953' }]);
-    const rows = [['7 strands', 351], ['19', 874], ['65', 2892], ['105', 2908]], bx0 = rx + 200, bw0 = rw - 200 - 130;
+    cardHead(t, 0.8, rx, Y, rw, 'Bends to failure', [{ ev: 'study', by: 'Alexander 1953' }]);
+    text('18 AWG hook-up wire, by strand count', rx + 32, Y + 92, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 0.9, 1.3) });
+    const rows = [['7', 351], ['19', 874], ['65', 2892], ['105', 2908]], bx0 = rx + 100, bw0 = rw - 100 - 140;
     rows.forEach(([l, v], i) => {
-      const yy = Y + 150 + i * 60, k = ep(t, 1.2 + i * 0.25, 2.2 + i * 0.25, E.snap);
+      const yy = Y + 160 + i * 54, k = ep(t, 1.2 + i * 0.25, 2.2 + i * 0.25, E.snap);
       text(l, rx + 32, yy + 8, { role: 'label', size: 22, color: C.ink, alpha: ep(t, 1.0 + i * 0.25, 1.4 + i * 0.25) });
       rr(bx0, yy - 9, bw0, 18, 9, C.track, null, 1, k);
       G.save(); G.globalAlpha = k; rrPath(bx0, yy - 9, Math.max(18, bw0 * v / 3000 * k), 18, 9); G.fillStyle = i >= 2 ? gradH(bx0, bw0, C.heroGrad) : C.comp; G.fill(); G.restore();
       text(countUp(fmt(v), k) || fmt(v), rx + rw - 32, yy + 8, { font: 'mono', size: 24, weight: 700, color: C.ink, align: 'right', alpha: k });
     });
-    text('A 90° bend each way, same gauge. Finer strands: about 8× the life, then it levels off.', rx + 32, Y + ch - 72, { role: 'small', size: 25, color: C.ink2, maxW: rw - 64, lh: 1.3, alpha: ep(t, 2.6, 3.0) });
-    sourceBox(t, 4.0, rx, Y + ch + 24, rw, 'Shengyi SF202', 'Copper-clad film folded over 0.38 mm: rated for at least 50 folds. The film alone lasts 285,000 (Kapton HN): the copper is what cracks.', { kind: 'datasheet', size: 25 });
+    text('A 90° bend each way. Finer strands: about 8× the life, then it levels off.', rx + 32, Y + ch - 72, { role: 'small', size: 25, color: C.ink2, maxW: rw - 64, lh: 1.3, alpha: ep(t, 2.6, 3.0) });
+    sourceBox(t, 4.0, rx, Y + ch + 24, rw, 'Shengyi SF202', 'Copper-clad film folded over 0.38 mm is rated for at least 50 folds. The film alone lasts 285,000 (Kapton HN): the copper is what cracks.', { kind: 'datasheet', size: 25 });
   }
 });
