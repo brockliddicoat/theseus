@@ -45,7 +45,7 @@ S({
       draw: (lt, x, y, w, h, A, a) => {
         const p = pingpong(lt, 3.2), L = w - 270, x0 = x + 34;
         SHL_TRIG.forEach((m, i) => {
-          const yy = y + 78 + i * 92, col = m.hero ? YEL : m.ref ? C.ink : C.comp, tip = 26 * m.d * p;
+          const yy = y + 78 + i * 92, col = m.hero ? C.hero : m.ref ? C.ink : C.comp, tip = 26 * m.d * p;
           dLabel(m.nm, x0, yy - 34, { color: m.hero ? C.heroText : C.ink2, alpha: a });
           rect(x0 - 16, yy - 14, 16, 28, { fill: C.mute, alpha: a });
           G.save(); G.globalAlpha = a; G.strokeStyle = col; G.lineWidth = 7; G.lineCap = 'round'; G.beginPath();
@@ -72,7 +72,7 @@ S({
           G.fillStyle = TH ? '#F7F6F2' : '#0D0E0F';
           for (let r = -7; r <= 7; r++) for (let q = -4; q <= 4; q++) { const hx = q * 8.6 + (r % 2 ? 4.3 : 0), hy = r * 7.4; if (Math.abs(hx) > 24 || Math.abs(hy) > 50) continue; G.beginPath(); for (let k = 0; k < 6; k++) { const an = Math.PI / 6 + k * Math.PI / 3; G[k ? 'lineTo' : 'moveTo'](hx + 3.2 * Math.cos(an), hy + 3.2 * Math.sin(an)); } G.closePath(); G.fill(); }
           /* the film, wiping on from the tail */
-          if (film > 0) { G.fillStyle = rgba(TH ? '#2E2E2C' : '#CFCEC9', 0.55); G.fillRect(-40, 60 - 130 * film, 80, 130 * film); G.strokeStyle = rgba(YEL, 0.9); G.lineWidth = lw(2.5); G.beginPath(); G.moveTo(-40, 60 - 130 * film); G.lineTo(40, 60 - 130 * film); G.stroke(); }
+          if (film > 0) { G.fillStyle = rgba(TH ? '#2E2E2C' : '#CFCEC9', 0.55); G.fillRect(-40, 60 - 130 * film, 80, 130 * film); G.strokeStyle = rgba(C.hero, 0.9); G.lineWidth = lw(2.5); G.beginPath(); G.moveTo(-40, 60 - 130 * film); G.lineTo(40, 60 - 130 * film); G.stroke(); }
           G.restore();
           keyPath(); G.strokeStyle = inkA(0.6); G.lineWidth = lw(1.6); G.stroke();
         }, { alpha: a });
@@ -146,7 +146,7 @@ S({
           pathRR(-22, -44, 44, 92, 6); G.fillStyle = TH ? '#3a3b41' : '#2b2c31'; G.fill(); G.strokeStyle = 'rgba(236,235,231,0.5)'; G.lineWidth = lw(1.3); G.stroke();
           for (const [sx, sy] of [[-17, -38], [17, -38], [-17, 42], [17, 42]]) { G.beginPath(); G.arc(sx, sy, 2.0, 0, TAU); G.fillStyle = '#c9ced5'; G.fill(); mmLine([[sx - 1.2, sy], [sx + 1.2, sy]], '#2a2b30', 0.9); mmLine([[sx, sy - 1.2], [sx, sy + 1.2]], '#2a2b30', 0.9); }
         }, { alpha: pa });
-        dLabel(off > 0.5 ? 'Plate off: still runs' : 'Plate on', x + 18, y + 30, { color: off > 0.5 ? YEL : C.ink2, alpha: a, size: 21 });
+        dLabel(off > 0.5 ? 'Plate off: still runs' : 'Plate on', x + 18, y + 30, { color: off > 0.5 ? C.hero : C.ink2, alpha: a, size: 21 });
         dLabel('Board', cx, cy + 6, { align: 'center', color: '#6fae86', alpha: a * off });
       }
     });
@@ -160,12 +160,12 @@ S({
         [[G2.ev, x + w * 0.27, 'Even, 1.2 mm', false], [G2.gr, x + w * 0.73, 'Graded', true]].forEach(([R, ox, lab, gr]) => {
           const oy = y + h - 48, P = (i, f) => [ox + (G2.nodes[i][0] + R.U[i * 3] * mag * f) * sc, oy + (G2.nodes[i][1] + R.U[i * 3 + 1] * mag * f) * sc];
           G.save(); G.globalAlpha = a; G.lineCap = 'round';
-          for (const e of R.els) { const q0 = P(e.n[0], p), q1 = P(e.n[1], p); G.lineWidth = e.t * sc * 1.5; G.strokeStyle = gr ? YEL : (TH ? '#5F5E59' : '#B9B8B2'); G.beginPath(); G.moveTo(q0[0], q0[1]); G.lineTo(q1[0], q1[1]); G.stroke(); }
+          for (const e of R.els) { const q0 = P(e.n[0], p), q1 = P(e.n[1], p); G.lineWidth = e.t * sc * 1.5; G.strokeStyle = gr ? C.hero : (TH ? '#5F5E59' : '#B9B8B2'); G.beginPath(); G.moveTo(q0[0], q0[1]); G.lineTo(q1[0], q1[1]); G.stroke(); }
           G.restore();
           line(ox - 34 * sc, oy + 6, ox + 34 * sc, oy + 6, { color: C.faint, w: 2, alpha: a });
           const l = P(G2.sqL, p), r = P(G2.sqR, p);
           arrow(l[0] - 46, l[1], l[0] - 8, l[1], { color: C.ink, w: 2.5, hs: 9, alpha: a * (0.4 + 0.6 * p) }); arrow(r[0] + 46, r[1], r[0] + 8, r[1], { color: C.ink, w: 2.5, hs: 9, alpha: a * (0.4 + 0.6 * p) });
-          dLabel(lab, ox, y + 30, { align: 'center', color: gr ? YEL : C.ink2, alpha: a, size: 21 });
+          dLabel(lab, ox, y + 30, { align: 'center', color: gr ? C.hero : C.ink2, alpha: a, size: 21 });
           text((R.d / G2.ev.d).toFixed(2) + '×', ox, y + 66, { font: 'mono', size: 24, weight: 800, color: C.ink, align: 'center', alpha: a });
         });
         dLabel('Squeeze deflection, same mass', x + w / 2, y + h - 12, { align: 'center', alpha: a });
@@ -185,7 +185,7 @@ S({
           poly(pts, { color: TH ? C.ink2 : '#CFCEC9', w: 4, alpha: a });
           line(X(-30), Y(roof(-30)), X(-30), Y(0), { color: TH ? C.ink2 : '#CFCEC9', w: 4, alpha: a }); line(X(30), Y(roof(30)), X(30), Y(0), { color: TH ? C.ink2 : '#CFCEC9', w: 4, alpha: a });
           line(X(-34), Y(0), X(34), Y(0), { color: C.faint, w: 2, alpha: a });
-          const col = arch ? YEL : C.comp;
+          const col = arch ? C.hero : C.comp;
           if (!arch) for (const sx of [-12, 12]) line(X(sx), Y(roof(sx)), X(sx), Y(0), { color: col, w: 4, alpha: a });
           else { const ap = []; for (let xx = -30; xx <= 30; xx += 2) ap.push([X(xx), Y(-17 * (1 - (xx / 30) ** 2) + 0.6)]); poly(ap, { color: col, w: 4, alpha: a }); for (const sx of [-18, -6, 6, 18]) line(X(sx), Y(roof(sx)), X(sx), Y(-17 * (1 - (sx / 30) ** 2) + 0.6), { color: col, w: 2.5, alpha: a }); }
           /* the load path: a pulse from the press to the floor */
@@ -193,8 +193,8 @@ S({
           arrow(X(fx), Y(py0) - 44, X(fx), Y(py0) - 6, { color: C.ink, w: 2.5, hs: 9, alpha: a });
           const path = arch ? [[0, py0], [0, -16.4], [-15, -12.8], [-30, 0]] : [[0, py0], [-12, roof(-12)], [-12, 0]];
           const L2 = path.slice(1).reduce((acc2, q, i) => acc2 + Math.hypot(q[0] - path[i][0], q[1] - path[i][1]), 0); let d = p * L2;
-          for (let i = 1; i < path.length; i++) { const sl = Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]); if (d <= sl) { const k = d / sl; circle(X(lerp(path[i - 1][0], path[i][0], k)), Y(lerp(path[i - 1][1], path[i][1], k)), 6, { fill: arch ? YEL : C.ink2, alpha: a }); break; } d -= sl; }
-          dLabel(lab, ox, y + 30, { align: 'center', color: arch ? YEL : C.ink2, alpha: a, size: 21 });
+          for (let i = 1; i < path.length; i++) { const sl = Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]); if (d <= sl) { const k = d / sl; circle(X(lerp(path[i - 1][0], path[i][0], k)), Y(lerp(path[i - 1][1], path[i][1], k)), 6, { fill: arch ? C.hero : C.ink2, alpha: a }); break; } d -= sl; }
+          dLabel(lab, ox, y + 30, { align: 'center', color: arch ? C.hero : C.ink2, alpha: a, size: 21 });
         });
       }
     });

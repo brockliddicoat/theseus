@@ -49,10 +49,11 @@ function clk_note(t, t0, p, x, y, label, o = {}) {
   if (o.sub) text(o.sub, x, y + r.h + 2, { role: 'small', size: 25, color: C.mute, t, t0: t0 + 0.6, cps: 100, maxW: o.maxW || 420, lh: 1.3 });
 }
 
-/* 3D. Scene names and state keys are the stable API. Two asset fixes are pending (see the chapter report):
-   shell clickL/clickR (the shell renders blank) and the section caps of gt01 cutaway / claw section (shader error).
-   Until the bundle is rebuilt those keys are held back here; flip the flags and the slides use them. */
-const CLK_3D = { click: false, cut: false, dev2d: true };
+/* 3D. Scene names and state keys are the stable API. The two asset bugs that held this chapter in placeholder boxes are
+   fixed in the bundle (2026-11-04): shell clickL/clickR gave NaN (hinge meta read per side, so the scene went blank) and the
+   section caps of gt01 cutaway / claw section failed to compile (local clipping switched on too late). In 2D mode every
+   shot here is the flat twin (08-v2d.js); dev2d brings back the labelled boxes for layout work. */
+const CLK_3D = { click: true, cut: true, dev2d: false };
 /** register a slide; in dev2d mode its 3D scenes are not even loaded */
 const clk_S = o => S(CLK_3D.dev2d ? Object.assign(o, { three: undefined }) : o);
 function clk_v3(key, t, x, y, w, h, st, o = {}) {
@@ -86,7 +87,7 @@ function clk_steps(t, t0, x, y, w, rows, o = {}) {
   let px = x + lw - 6;
   for (let i = kinds.length - 1; i >= 0; i--) { const pw = pillW(kinds[i].ev, { text: kinds[i].txt }); px -= pw; pill(px, y + 34, kinds[i].ev, a0, { text: kinds[i].txt }); px -= 10; }
   const ka = ep(t, t0 + 0.5, t0 + 0.9);
-  rich([{ s: 'Theseus', role: 'label', size: 21, color: '#111111', chip: YEL }, { s: 'One step further', role: 'label', size: 21, color: C.heroText, gap: 18 }], rx + 26, y + 32, { alpha: ka });
+  rich([{ s: 'Theseus', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }, { s: 'One step further', role: 'label', size: 21, color: C.heroText, gap: 18 }], rx + 26, y + 32, { alpha: ka });
   pill(x + w - 24 - pillW('proposal'), y + 34, 'proposal', ka);
   line(x + 18, y + hh, x + w - 18, y + hh, { color: C.hair, w: 1.2, alpha: a0 });
   let yy = y + hh;
@@ -97,10 +98,10 @@ function clk_steps(t, t0, x, y, w, rows, o = {}) {
     text(r.n, x + 24, yy + 33, { role: 'label', size: 21, color: C.faint, alpha: ka2 });
     evDot(x + 84, yy + 26, r.ev, 6, ka2);
     para([{ s: r.who + '. ', role: 'small', weight: 700, color: C.ink }, { s: r.now, role: 'small', color: C.ink2 }], x + 102, yy + 33, { maxW: lw - 92, lh: CLK_ST.lh, t, t0: tr, cps: 150, alpha: ka2 });
-    if (kb > 0) { const ax0 = x + lw + 14, ax1 = rx - 14; arrow(ax0, cy, lerp(ax0, ax1, kb), cy, { color: TH ? '#A87C00' : YEL, w: 3, hs: 13 }); }
+    if (kb > 0) { const ax0 = x + lw + 14, ax1 = rx - 14; arrow(ax0, cy, lerp(ax0, ax1, kb), cy, { color: C.heroText, w: 3, hs: 13 }); }
     if (kc > 0) {
       G.save(); G.beginPath(); G.rect(rx, yy + 2, (x + w - rx) * E.out3(kc), rh - 4); G.clip();
-      rect(rx, yy + 9, 6, rh - 18, { fill: YEL });
+      rect(rx, yy + 9, 6, rh - 18, { fill: C.hero });
       para([{ s: r.step, role: 'small', weight: 600, color: C.ink }], rx + 26, yy + 33, { maxW: rwid, lh: CLK_ST.lh, t, t0: tr + 0.75, cps: 150 });
       G.restore();
     }
@@ -169,7 +170,7 @@ clk_S({
     const cx0 = 1004, cw = RM - cx0;
     demoWindow(cx0, wy, cw, wh, ep(t, 0.5, 0.9));
     clk_head(t, 0.9, cx0, wy, cw, 'The wedge is in the switch', ['claim', 'proposal']);
-    clk_v3('pcb', t, cx0 + 10, wy + 64, cw - 20, wh - 136, { pressR: clk_curve(cyc(t, 2.6, 3)), view: 'left', yaw: 0.5, pitch: -0.12, zoom: 4.2, target: [-16, 9.5, 36.7] }, { alpha: ep(t, 1.2, 1.8) });
+    clk_v3('pcb', t, cx0 + 10, wy + 64, cw - 20, wh - 136, { pressR: clk_curve(cyc(t, 2.6, 3)), view: 'left', yaw: 0.5, pitch: -0.12, zoom: in2D(5.2, 4.2), target: in2D([-16, 9.5, 37.5], [-16, 9.5, 36.7]), hide2d: /\/WHEEL\//, hi2d: { re: /\/SW2\//, color: acc() } }, { alpha: ep(t, 1.2, 1.8) });
     const kc = ep(t, 2.2, 2.6);
     text('GT01 on its own 20° wedge; the board stays flat.', cx0 + 26, wy + wh - 52, { role: 'small', size: 25, weight: 600, color: C.ink, alpha: kc, maxW: cw - 52 });
     text('Representative model: Gateron has published no datasheet', cx0 + 26, wy + wh - 18, { role: 'label', size: 19, color: C.faint, alpha: kc });
@@ -242,7 +243,7 @@ clk_S({
       evDot(bxc + 34, yy - 6, r.ev, 6, a);
       const nm = text(r.name, bxc + 52, yy + 3, { role: 'small', size: 25, weight: r.hero ? 800 : 600, color: C.ink, alpha: a });
       text(r.qual, bxc + 52 + nm.w + 12, yy + 2, { role: 'label', size: 19, color: r.hero ? C.heroText : C.faint, alpha: a });
-      const col = r.hero ? YEL : C.comp;
+      const col = r.hero ? C.hero : C.comp;
       if (r.max) { G.save(); G.globalAlpha = a; G.setLineDash([6, 5]); G.strokeStyle = C.comp; G.lineWidth = 2; G.strokeRect(FX(0), yy - 13, (FX(r.hi) - FX(0)) * k, 14); G.restore(); line(FX(r.hi), yy - 19, FX(r.hi), yy + 7, { color: C.ink2, w: 2.5, alpha: a * k }); }
       else if (r.lo != null) { const xa = FX(lerp(r.mid, r.lo, k)), xb = FX(lerp(r.mid, r.hi, k)); rr(xa, yy - 13, Math.max(4, xb - xa), 14, 7, col, r.hero && TH ? '#111111' : null, 1.5, a); line(FX(r.mid), yy - 19, FX(r.mid), yy + 7, { color: r.hero ? C.ink : C.ink2, w: 2.5, alpha: a }); }
       else { circle(FX(r.mid), yy - 6, 8 * k, { fill: C.panel, alpha: a }); circle(FX(r.mid), yy - 6, 8 * k, { color: C.comp, w: 3, alpha: a }); }
@@ -298,8 +299,9 @@ clk_S({
     demoWindow(bx0, wy, bw, wh, ep(t, 0.5, 0.9));
     clk_head(t, 1.0, bx0, wy, bw, 'Sora V2 against Theseus', []);
     const cam = { view: [0, 1, -0.3], zoom: 1.32, target: [0, 18, 24] };
-    clk_v3('shell-sora', t, bx0 + 12, wy + 60, vw, vh, cam, { alpha: ep(t, 1.2, 1.8) });
-    clk_v3('shell', t, bx0 + 24 + vw, wy + 60, vw, vh, cam, { alpha: ep(t, 1.6, 2.2) });
+    /* in 2D the triggers' outlines carry the point, so they are drawn in the colour of each label */
+    clk_v3('shell-sora', t, bx0 + 12, wy + 60, vw, vh, Object.assign({}, cam, { hi2d: { re: /^explode[LR]\/.*trigger[LR]$/, color: C.red, w: 3 } }), { alpha: ep(t, 1.2, 1.8) });
+    clk_v3('shell', t, bx0 + 24 + vw, wy + 60, vw, vh, Object.assign({}, cam, { hi2d: { re: /^explode[LR]\/.*trigger[LR]$/, color: A, w: 3 } }), { alpha: ep(t, 1.6, 2.2) });
     text('Sora V2: a smile', bx0 + 12 + vw / 2, wy + wh - 26, { role: 'label', size: 21, color: C.red, align: 'center', alpha: ep(t, 2.2, 2.6) });
     text('Theseus: straight', bx0 + 24 + vw * 1.5, wy + wh - 26, { role: 'label', size: 21, color: A, align: 'center', alpha: ep(t, 2.4, 2.8) });
     clk_steps(t, 7.6, LM, sy, RM - LM, CLK_CUT_STEP);
@@ -482,7 +484,7 @@ clk_S({
     demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
     clk_head(t, 0.6, wx, wy, ww, 'A switch leg entering its socket', ['datasheet']);
     const ins = t < 1.2 ? 0 : clk_insert(t - 1.2);
-    clk_v3('claw', t, wx + 10, wy + 60, ww - 20, wh - 120, { insert: ins, section: 1, view: 'threeQuarter', yaw: 0.2, pitch: -0.05, zoom: 1.45 }, { alpha: ep(t, 0.8, 1.4) });
+    clk_v3('claw', t, wx + 10, wy + 60, ww - 20, wh - 120, { insert: ins, section: 1, view: 'threeQuarter', yaw: 0.2, pitch: -0.05, zoom: in2D(2.6, 1.45), target: in2D([0, 0.8, 0], undefined) }, { alpha: ep(t, 0.8, 1.4) });
     text('BeCu claw, 30 µin gold on the contact only', wx + 26, wy + wh - 52, { role: 'small', size: 25, weight: 600, color: C.ink, alpha: ep(t, 1.8, 2.2) });
     text('Takes leads 0.635 to 0.940 mm across', wx + 26, wy + wh - 18, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 2.0, 2.4) });
     /* the numbers */
@@ -580,7 +582,7 @@ clk_S({
     captions(t, [[0.6, 'XBAB put its XA25 against the OP1 8k v2 on a USB analyzer: two read modes, still and moving, each with its 95% confidence interval.'], [4.6, 'Still, the OP1\'s release mode is quick. Moving, the same click arrives 121 to 125 µs later: it waits behind motion.'], [8.0, 'My target: 75 µs or less, moving or still, published the same way, with n and the interval.']]);
     const A = acc(), P = clk_xbab(), sh = clk_stepsH(CLK_WAIT_STEP, RM - LM), sy = 840 - sh;
     const pw = 352, gap = 74, px0 = LM + 74, py = 360, ph = 210, top = 600, Y = v => py + ph - ph * v / top;
-    legend(t, 0.5, RM, 300, [{ kind: 'ref', label: 'XBAB XA25' }, { kind: 'comp', label: 'OP1 8k v2' }, { kind: 'dash', color: YEL, label: 'Theseus target, 75 µs' }], { align: 'right' });
+    legend(t, 0.5, RM, 300, [{ kind: 'ref', label: 'XBAB XA25' }, { kind: 'comp', label: 'OP1 8k v2' }, { kind: 'dash', color: C.hero, label: 'Theseus target, 75 µs' }], { align: 'right' });
     rich([{ s: 'Electrical latency, µs', role: 'label', size: 21, color: C.mute }, { s: 'Beagle USB 480 analyzer', role: 'label', size: 19, color: C.faint, gap: 18 }], LM, 300, { alpha: ep(t, 0.5, 0.9) });
     pill(LM + 600, 302, 'claim', ep(t, 0.6, 1.0));
     P.forEach((p, i) => {
@@ -599,7 +601,7 @@ clk_S({
       });
       /* the Theseus target, and what moving costs the OP1 */
       const kt = ep(t, 8.2 + i * 0.12, 8.7 + i * 0.12, E.cam);
-      if (kt > 0) line(x, Y(75), x + pw * kt, Y(75), { color: YEL, w: 3, dash: [10, 7] });
+      if (kt > 0) line(x, Y(75), x + pw * kt, Y(75), { color: C.hero, w: 3, dash: [10, 7] });
       if (!p.still) {
         const st = P.find(q => q.mode === p.mode && q.still), kd = ep(t, 5.0 + i * 0.3, 5.5 + i * 0.3);
         if (st && kd > 0) {
@@ -632,7 +634,7 @@ clk_S({
       rows: [{ name: 'XBAB XA25', qual: '"about 65 µs"', v: 0.065, ref: true }, { name: 'XBAB XA25', qual: 'NC release, still', v: 0.07204 }, { name: 'VGN Dragonfly 3 MGT', qual: '"as low as"', v: 0.175 },
         { name: 'Finalmouse SLX', qual: '"end to end"', v: 0.223 }, { name: 'Endgame Gear OP1 8k v2', qual: 'GX Speed, by XBAB', v: 0.32029 }, { name: 'Razer Viper V4 Pro', qual: 'side buttons', v: 0.33 }, { name: '"Brand X"', qual: 'side buttons, per Razer', v: 1.65 }] });
     const kt = ep(t, 2.2, 2.6);
-    rich([{ s: 'Theseus target', role: 'label', size: 21, color: '#111111', chip: YEL }, { s: '75 µs, moving or still', role: 'label', size: 21, color: C.heroText, gap: 16 }], lx + 26 + 560 + (lw - 52 - 560 - 130 - 20) * 0.075 / 1.8 + 12, wy + 108, { alpha: kt });
+    rich([{ s: 'Theseus target', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }, { s: '75 µs, moving or still', role: 'label', size: 21, color: C.heroText, gap: 16 }], lx + 26 + 560 + (lw - 52 - 560 - 130 - 20) * 0.075 / 1.8 + 12, wy + 108, { alpha: kt });
     text('Methods differ: the bars share an axis, not a test.', lx + 26, wy + h - 22, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 2.6, 3.0) });
     /* end to end, from the start of the press */
     demoWindow(rx, wy, rw, h, ep(t, 0.5, 0.9));
@@ -726,7 +728,7 @@ clk_S({
     demoWindow(cx, wy, cw, ch, ep(t, 0.5, 0.9));
     clk_head(t, 0.9, cx, wy, cw, 'Theseus, left side', ['proposal']);
     const s0 = clk_curve(cyc(t, 2.4, 2.6)), s1 = clk_curve(cyc(t, 3.7, 2.6));
-    clk_v3('shell', t, cx + 10, wy + 52, cw - 20, ch - 60, { view: 'right', yaw: -0.18, pitch: -0.08, zoom: 1.5, side0: s0, side1: s1, target: [20, 22, 4] }, { alpha: ep(t, 1.0, 1.6) });
+    clk_v3('shell', t, cx + 10, wy + 52, cw - 20, ch - 60, { view: 'right', yaw: -0.18, pitch: -0.08, zoom: in2D(2.3, 1.5), side0: s0, side1: s1, target: in2D([20, 19, 2], [20, 22, 4]), hi2d: { re: /^side(Front|Rear)/, color: A, w: 2.6 } }, { alpha: ep(t, 1.0, 1.6) });
     /* force needed against where the thumb lands */
     const fy = wy + ch + 16, fh = 840 - fy;
     demoWindow(cx, fy, cw, fh, ep(t, 0.7, 1.1));

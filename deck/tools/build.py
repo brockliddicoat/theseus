@@ -6,6 +6,10 @@ data_dir = root.parent / 'research' / 'data'
 #   main = 10-slides-main.js + every src/12-*.js idea sheet (sorted by name) + 14-exemplars.js + 13-sort.js
 #   --only keeps 12-00-ideas.js (the framework) and the one named sheet file, for an isolated preview
 #   --out writes dev|dist/main-<name>.html instead of main.html
+#   --own=a.js,b.js builds with those src/ files as they are now and every other file (shared or slide) as it is in the
+#     snapshot (--base=dir, default deck/.snapshot/src): a builder working on one chapter is never broken by another
+#     builder's half-saved file. A file that exists only in src/ and is not yours is left out. The 2D twins (geo2d/) and the
+#     3D bundle (vendor/r3d.js) come from the snapshot too, unless 'geo2d' / 'vendor' is in the list.
 # research/data/*.json is embedded as RDATA (RDATA.batteries, RDATA['weight-science'], ...), so slides read sourced data.
 def rdata():
     out = {}
@@ -14,16 +18,24 @@ def rdata():
             try: out[p.stem] = json.loads(p.read_text())
             except Exception as e: print('skipping', p.name, e)
     return 'const RDATA = ' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ';\n'
+def geo2d():
+    """the 2D twins' outlines (deck/geo2d/*.json, made by tools/geo2d), embedded as GEO2D[scene]"""
+    d = root / 'geo2d' if OWN is None or 'geo2d' in OWN else BASE.parent / 'geo2d'
+    out = {}
+    if d.exists():
+        for p in sorted(d.glob('*.json')):
+            out[p.stem] = json.loads(p.read_text())
+    return 'const GEO2D = ' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ';\n'
 def r3d_tag():
     """the 3D bundle (built by 3d/integration/build.mjs); assets load from ./assets/ next to the page"""
-    v = root / 'vendor' / 'r3d.js'
+    v = root / 'vendor' / 'r3d.js' if OWN is None or 'vendor' in OWN else BASE.parent / 'vendor' / 'r3d.js'
     if not v.exists(): return ''
     return ("\n<script>window.R3D_MODURL = new URL('assets/', location.href).href;</script>\n<script>\n"
             + v.read_text() + "\n</script>")
-def build(name, title, slides, dev=False):
-    head = (src/'00-head.html').read_text().replace('%%TITLE%%', title)
-    parts = ['01-core.js', '03-parts.js', '04-ui.js', '07-charts.js', '08-r3d.js', '05-data.js', '06-audio.js'] + slides + ['20-app.js']
-    js = rdata() + '\n'.join((src/p).read_text() for p in parts)
+def build(name, title, slides, dev=False, flat=True):
+    head = read_src('00-head.html').replace('%%TITLE%%', title)
+    parts = ['01-core.js', '03-parts.js', '04-ui.js', '07-charts.js', '07-sim.js', '08-r3d.js', '08-v2d.js', '05-data.js', '06-audio.js'] + slides + ['20-app.js']
+    js = rdata() + (geo2d() if flat else 'const GEO2D = {};\n') + '\n'.join(read_src(p) for p in parts)
     i = head.index('<div id="app">')
     head_part, body_part = head[:i], head[i:]
     if 'name="viewport"' not in head_part:
@@ -36,14 +48,20 @@ def build(name, title, slides, dev=False):
 args = sys.argv[1:]
 dev = '--dev' in args
 opt = dict(a[2:].split('=', 1) for a in args if a.startswith('--') and '=' in a)
+OWN = set(f.strip() for f in opt['own'].split(',') if f.strip()) if 'own' in opt else None
+BASE = pathlib.Path(opt['base']) if 'base' in opt else root / '.snapshot' / 'src'
+def read_src(name):
+    if OWN is None or name in OWN: return (src / name).read_text()
+    b = BASE / name
+    return b.read_text() if b.exists() else ''
 which = [a for a in args if not a.startswith('--')] or ['main', 'rec']
 sheets = sorted(p.name for p in src.glob('12-*.js'))
 if 'only' in opt: sheets = [s for s in sheets if s == '12-00-ideas.js' or s == opt['only']]
 extra = sorted(p.name for p in src.glob('14-*.js'))
 main_slides = (['09-fillet-data.js'] if (src/'09-fillet-data.js').exists() else []) + sorted(p.name for p in src.glob('10-*.js')) + sheets + extra + (['13-sort.js'] if (src/'13-sort.js').exists() else [])
 out = ('main-' + opt['out'] + '.html') if 'out' in opt else 'main.html'
-if 'main' in which: build(out, 'THESEUS — In Pursuit of an Objectively Better Mouse', main_slides, dev)
+if 'main' in which: build(out, 'Theseus', main_slides, dev)
 if 'parts' in which: build('parts.html', 'Parts test', ['19-parts-test.js'], dev)
 if 'comps' in which: build('components.html', 'Component test', ['19-components-test.js'], dev)
 if 'three' in which: build('three.html', '3D test', ['18-three-test.js'], dev)
-if 'rec' in which: build('rec.html', 'THESEUS — Recommendations', ['11-slides-rec.js'], dev)
+if 'rec' in which: build('rec.html', 'THESEUS — Recommendations', ['11-slides-rec.js'], dev, flat=False)

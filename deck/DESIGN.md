@@ -3,12 +3,15 @@
 The deck is a canvas film: 1920 × 1080, every frame a pure function of slide time `t`. It reads as one
 system built from three sources:
 
-- **XBAB promo material**: light grey paper `#F7F6F2`, heavy grotesk headlines in caps, one word in yellow
-  `#FDC316`, bar charts that show every sample as a jittered dot with a 95 % CI, and the weight breakdown.
+- **XBAB promo material**: light grey paper `#F7F6F2`, heavy grotesk headlines in caps, one word in the hero colour
+  (red now: Theseus is red, the next best is yellow), bar charts that show every sample as a jittered dot with a 95 % CI,
+  and the weight breakdown.
 - **The film**: the 40 px grid with `+` marks, paper and night themes, iris, sweep and push transitions, one
   accent per chapter, typed narration, part drawings, the glossary and feature band.
-- **The Kunai guide**: Inter and JetBrains Mono, mono section labels with icons, stat cards with evidence pills,
-  accent dashes, lollipop rankings, segmented bars, two-column text, page counters.
+- **The Kunai guide**: Inter and JetBrains Mono, mono section labels with icons, stat cards, accent dashes, lollipop
+  rankings, segmented bars, two-column text, page counters.
+- **Broadcast lower-thirds** (Brock's reference, 2026-11-04): every tag is a sharp box with a hairline edge and caps
+  inside, joined to a solid block that holds the value, inverted: `[ MEASURED ▐RTINGS▌ ]`. No rounded capsules, no dots.
 
 It has to be read on a phone, where the stage is shown about 844 px wide (0.44 ×). Most of the rules below
 follow from that.
@@ -22,8 +25,13 @@ follow from that.
 | `src/00-head.html` | Page shell, CSS, and the three embedded fonts (base64 woff2) |
 | `src/01-core.js` | Palette (`RAMP`, `C`, `YEL`, `ACCENTS`, `acc()`), fonts (`FONT`), type roles (`T`), `text()`, `rich()`, `caps()`, `sentence()`, drawing primitives, `demoWindow()` |
 | `src/03-parts.js` | Part drawings in mm (`part()`, materials `MT`), and the Sora V2 key plan (`keyPlan`, `keyPlanMM`) |
-| `src/04-ui.js` | Layout constants (`LM`, `RM`, `LAY`), slide furniture: `header`, `captions`, `source`, evidence pills, `cardHead`, `callout`, band blocks, `chapterCard`, `slideChrome`, `hbars`, `axes`, `dim`, `countUp` |
-| `src/07-charts.js` | Charts: `barChart`, `breakdown`, `lollipop`, `scatter`, `lineChart`, `compareTable`, `statCard`, `legend`, `heroMark`, `placeholderStamp` |
+| `src/04-ui.js` | Layout constants (`LM`, `RM`, `LAY`), `PHI`, `golden()`, slide furniture: `header`, `captions`, `source`, tags (`ltag`, `pill`, `heroTag`, `secondTag`, `tagRow`), `cardHead`, boxes (`noteBox`, `glossBox`, `sourceBox`), the pointer (`cursorPtr`, `cursorAt`), `callout`, band blocks, `chapterCard`, `slideChrome`, `hbars`, `axes`, `dim`, `countUp` |
+| `src/07-charts.js` | Charts: `barChart`, `breakdown`, `lollipop`, `scatter` (rounded Pareto frontier, `monoCurve`), `lineChart`, `compareTable`, `statCard`, `legend`, `heroMark`, `placeholderStamp` |
+| `src/07-sim.js` | Force simulations: a 2D frame solver (`feSolve`, `simSolve` caches a load case), `feDraw` (the bent frame coloured by stress), `feFlow` (force running through the members), `feEngaged` (grams of material that work), `feLattice`, `feChain`, `feSupport`, `heatCol`, materials `SIM_MAT` with their sources |
+| `src/10-d-0-meter.js` | The shell chapter's running meter: `shellStep()` registers a strength step, `shellMeter()` draws the strip (flex and peak stress at the same press and mass; a plain thin wall, no ribbing, = 100 %) |
+| `src/08-r3d.js` | `view3D()`: a 3D shot from the bundle (`vendor/r3d.js`, scenes in `3d/integration/entry.js`), composited into the stage |
+| `src/08-v2d.js` | 2D mode: `view2D()`, the flat twin of every 3D shot, drawn from `geo2d/*.json`; the setting (`setView2D`, the 2D / 3D pill, `D`, `?2d=1`) |
+| `geo2d/*.json` | Outlines traced off the 3D scenes, per part and per axis, with how each state key moves them (`tools/geo2d/build.sh`) |
 | `src/10-slides-main.js` | The film's slides; `S()` registers a slide |
 | `src/12-*.js` | Idea sheets (`12-00-ideas.js` is their framework: `ideaPanel`, `IDEA`, `dLabel`, `miniAxes`) |
 | `src/14-exemplars.js` | Data-driven slides that show the system: cover, zero grams, 29 g budget, what a gram costs, the cell, the frontier, the fastest mice |
@@ -57,6 +65,34 @@ follow from that.
 - The footer, rule and progress tick are drawn by `slideChrome()` for every slide. Set `chrome: false` on
   a slide to drop them (the cover does). Never put text below `LAY.ruleY`.
 - Content lives between `LAY.top` and `LAY.bottom` (to about 960 when a slide has no band).
+- The diagram above is the frame, not a template. The band at the foot (gloss + feature card) is one option among
+  several, and no longer the default: see section 2b.
+
+## 2b. Space and composition (Brock's notes, 2026-11-04)
+
+This is an animation, so it can take its time: **don't be afraid of black space.** A slide that feels full is two
+slides.
+
+1. **One idea per slide, and room round it.** At least 40 px between any two blocks, 28 px of padding inside a box,
+   and no more than about half the content area covered by text. When a slide gets crowded, split it.
+2. **Simulations and big drawings get the stage.** A force, bending, fluid or optics simulation takes at least 60 % of
+   the content area, often the full width (1760 px) or a 1100+ px panel, with the words beside or under it. A lot of
+   work goes into them and they are the most convincing thing in the deck.
+3. **Move things round.** The vocabulary (`glossBox`) and the research (`sourceBox`) sit inside the slide, next to
+   what they explain, and not in the same place every time: left column, right column, over the empty corner of a
+   drawing, under a chart. Two slides in a row never share a layout (drawing left / text right, then text left /
+   drawing right, then a full-width drawing with a strip of boxes under it, then a 3-up, ...).
+4. **The golden ratio** sets the splits: `golden(x, w, gap)` returns a big part (w / φ) and a small part; `golden2(h)`
+   does the same for heights. Boxes are rounded (r 16) with 28 px padding (`noteBox`, `glossBox`, `sourceBox`).
+5. **Titles name the concept.** "Dual rail main clicks", "Newtonian shape analysis", "Statically determinate
+   triangles", "Density, not weight": the name a reader can repeat, not a riddle round it.
+6. **Nothing overlaps that shouldn't.** Text never runs over a drawing's lines, a dot, another label or a card edge.
+   `qa.js` catches text against text and cards; look at the screenshot for text against drawings.
+7. **The pointer.** When something is moved, pressed or dragged, show the pointer doing it (`cursorAt`): it reads
+   instantly, and Brock likes it.
+8. **The shell's running meter.** Every structural gain in the shell chapter shows the strip (`shellMeter`): flex and
+   peak stress at the same press and the same mass, against a plain thin wall (no ribbing) as 100 %, so the gains add up
+   from slide to slide.
 
 ---
 
@@ -68,7 +104,7 @@ Three faces, embedded in `src/00-head.html` so every machine and every headless 
 |---|---|---|
 | `Inter Display` | Inter 4 variable pinned at opsz 32, wght 400 to 900, case-sensitive forms baked into the cmap | Display: titles, chapter names, big numbers |
 | `Inter` | Inter 4 variable pinned at opsz 14, wght 300 to 800 | Reading text: leads, body, cards |
-| `JetBrains Mono` | Variable, latin subset, wght 300 to 800 | Labels, pills, ticks, values in tables, sources |
+| `JetBrains Mono` | Variable, latin subset, wght 300 to 800 | Labels, tags, ticks, values in tables, sources |
 
 `20-app.js` waits on `document.fonts.load()` for all three before the first frame, so nothing is drawn in a
 fallback face. There is no system-font substitution any more.
@@ -98,7 +134,7 @@ Set type by role, not by size. A role fixes font, size, weight, tracking, line h
 | `body` | sans | 28 | 450 | Sentence | Reading text |
 | `small` | sans | 25 | 500 | Sentence | The smallest reading text |
 | `labelL` | mono | 26 | 600 | CAPS, +0.08 em | Section labels |
-| `label` | mono | 22 | 600 | CAPS, +0.10 em | Every other label, pills, card heads |
+| `label` | mono | 22 | 600 | CAPS, +0.10 em | Every other label, tags, card heads |
 | `num` / `numS` | mono | 28 / 24 | 700 / 600 | as written | Values in tables and charts |
 | `tick` | mono | 21 | 500 | as written | Axis ticks |
 | `foot` | mono | 19 | 500 | Sentence | Sources and the footer only |
@@ -122,7 +158,7 @@ Floors (`TYPE_MIN`): reading text 25 px, labels 21 px (19 in dense charts), foot
   Display numbers get it automatically.
 - Counting up: `rich([{ s: '0.14', count: [t0, dur, from] }])` or `countUp(s, k, from)`.
 - Mixed size and colour on one baseline: `rich(runs, x, y, o)`. Each run takes a role or font settings plus
-  `color`, `gap`, `dy`, `valign: 'cap' | 'mid'`, `chip` (a colour block behind it, used for the yellow word),
+  `color`, `gap`, `dy`, `valign: 'cap' | 'mid'`, `chip` (a colour block behind it: `C.heroChip` with `color: C.onHero` for the red word),
   `count`, `rise`, `alpha`.
 - Run-in paragraphs (a bold lead-in, then the text): `para(runs, x, y, { maxW, lh, maxLines, t, t0, cps })`.
 
@@ -152,51 +188,65 @@ sentence, forceCaps, tnum, maxW, lh, t, t0, cps, caret, wipe, rise: [t0, dur] }`
 | `C.track` | `#E7E6E1` | `#1F2023` | The empty part of a bar |
 | `C.panel` | `#FFFFFF` | `#141517` | Card surface |
 | `C.comp` / `C.comp2` | `#B9B8B2` / `#D3D2CC` | `#55554F` / `#3A3A37` | Competitors / dimmed competitors |
-| `C.ref` | ink | ink | The best shipping today, the one to beat |
-| `YEL` | `#FDC316` | `#FDC316` | Theseus, only Theseus |
-| `C.heroText` | `#A87C00` | `#FDC316` | Yellow as small text or a thin line on paper |
+| `C.hero` (`HERO_P` / `HERO`) | `#D9343B` | `#E5484D` | **Theseus, only Theseus**: its bar, point, line, column, the hero word |
+| `C.heroText` | `#C8292F` | `#F25A5F` | Theseus red as small text or a thin line |
+| `C.heroChip` + `C.onHero` | `#D9343B` + white | same | A solid red block (a chip, a tag's value) and its ink |
+| `C.heroSoft` | red at 14 % | red at 16 % | A red field behind something (a sweet spot) |
+| `C.second` / `C.ref` | `#C29100` | `#FDC316` | **The next best**, the one to beat: the second highlight |
+| `C.secondText` | `#946E00` | `#FDC316` | The next best as small text |
+| `C.bad` (and `C.red`) | `#936A51` | `#AC8168` | A failure, a gap, a breakage, placeholder data: a dull orange-grey, never red |
+| `heatCol(k)` / `C.heat` | grey → amber → `#B34E00` | grey → amber → pale orange | Stress and load in a drawing (07-sim.js). Never red |
 
 Rules:
 
-1. **Theseus is yellow in every chart, and only Theseus is yellow.** Its bar, point (`heroMark`), column
-   (`compareTable` with `hero: true`), target line (`targetX`) and chip label. The cover word and the yellow
-   word in a headline are the same claim.
-2. **Competitors are grey.** The one to beat is ink (`ref: true`). Dominated or out-of-scope points fade to
-   `C.comp2`.
-3. **One chapter accent** (`acc()`, from `ACCENTS`, a light and a dark tone per theme) for the section label,
-   the band dashes, drawing highlights and the progress tick. Intro and close use ink.
-4. **Evidence colours belong to pills** and their dots, nowhere else (section 6).
-5. **Red means a problem**: a gap no one has filled, a failure, placeholder data. Not decoration.
+1. **Theseus is red in every chart, and only Theseus is red.** Its bar, point (`heroMark`, a diamond), column
+   (`compareTable` with `hero: true`), target line (`targetX`) and tag (`heroTag`). The hero word in a headline is the
+   same claim. `C.yellow` and `C.gold` are old names that now answer red; true yellow is `C.yel` / `C.second`.
+2. **The next best is yellow** (`C.second`, `C.ref`, `secondTag`), and smaller or darker than Theseus: on the stats
+   slide the next best sits in a smaller, darker figure under ours. Other competitors are grey; dominated or
+   out-of-scope points fade to `C.comp2`.
+3. **One chapter accent** (`acc()`, from `ACCENTS`) for the section label, drawing highlights and the progress tick.
+   Intro and close use ink.
+4. **Evidence colours belong to evidence tags**, nowhere else (section 6).
+5. **A problem is dull orange-grey** (`C.bad`): a gap no one has filled, a failure, a crack, placeholder data. Old code
+   says `C.red` for it; it resolves to `C.bad`. Heat in a stress drawing is amber to pale orange (`heatCol`).
 
 ---
 
-## 6. Evidence
+## 6. Evidence and tags
 
-Every number carries how we know it. The pill reads in caps; the dot shape repeats the meaning for anyone who
-cannot tell the colours apart.
+Every number carries how we know it, as a **tag**: the lower-third from Brock's reference. A sharp box with a hairline
+edge holds the kind in mono caps; joined to its right, inside the same edge, a solid block in the kind's colour holds
+whose number it is when the slide says (`by`). With no `by`, a short solid end in the kind's colour stands in for it.
 
-| Kind | Pill | Dot | Research label |
+| Kind | Tag | Colour | Research label |
 |---|---|---|---|
-| `measured` (`study`) | MEASURED | filled, teal | `IM` |
-| `datasheet` | DATASHEET | filled, blue | `DS` |
-| `claim` (`survey`) | MAKER CLAIM | ring, orange | `MC`, `CA` |
-| `derived` | DERIVED | ring, violet | `DV` |
-| `proposal` | PROPOSAL | dashed, yellow | `PR` |
-| `projected` | PROJECTED | half, yellow | (our own forecasts) |
-| `placeholder` | PLACEHOLDER DATA | ring, red | (no data yet) |
+| `measured` (`study`) | MEASURED | teal | `IM` |
+| `datasheet` | DATASHEET | blue | `DS` |
+| `claim` (`survey`) | MAKER CLAIM | orange | `MC`, `CA` |
+| `derived` | DERIVED | violet | `DV` |
+| `estimate` | ESTIMATE | violet | Brock's own estimate (`by: 'Brock'`): his judgement, not a measurement |
+| `proposal` | PROPOSAL | red | `PR` |
+| `projected` | PROJECTED | red | (our own forecasts) |
+| `placeholder` | PLACEHOLDER DATA | dull orange-grey | (no data yet) |
 
-`EVMAP` and `evOf(field)` in `14-exemplars.js` turn a research field's label into a kind. A maker's own test
-of its own product is a `claim`, even when the maker calls it measured.
+`EVMAP` and `evOf(field)` in `14-b-intro-ex.js` turn a research field's label into a kind. A maker's own test of its
+own product is a `claim`, even when the maker calls it measured. A number Brock states from experience is an
+`estimate` with `by: 'Brock'`.
 
-API:
+API (`04-ui.js`):
 
-- `pill(x, y, kind, a, o)`: a pill with its left edge at `x` and text baseline at `y`; returns its width.
-  `pillW(kind)` measures one first.
-- `evDot(x, y, kind, r, a)`: the dot alone, for table cells and legends.
-- `cardPills(x, y, w, kinds, a)`: pills right-aligned in a card's head row.
-- `cardHead(t, t0, x, y, w, label, kinds, o)`: the Kunai card head, a mono label on the left and pills on the
-  right. Returns the y below it.
-- `tag(x, y, kind, a)`: kept for old call sites; it is a pill.
+- `ltag(x, y, label, value, o)`: the lower-third itself; (x, y) = left edge and text baseline (`o.right`: x is the right
+  edge); either half may be null. `o = { a, size (20), solid, on, edge, color, fill, stub }`. Returns its width;
+  `ltagW()` measures first, `tagRow(xr, y, items)` sets several right-aligned.
+- `pill(x, y, kind, a, { by, text })`: an evidence tag; `pillW(kind, o)` measures it. `tag()` and `cardPills()` are old
+  names for the same thing. `evDot(x, y, kind)` is the kind's mark alone (a small square: filled, outlined or half),
+  for table cells and legends.
+- `cardHead(t, t0, x, y, w, label, kinds, o)`: a mono label on the left of a card, tags on the right (a kind may be
+  `{ ev, by }`). Returns the y below it.
+- `heroTag(x, y, label, value)`: Theseus's own, `[ THESEUS ▐29.31 g▌ ]` in red; `heroTag(x, y, null, 'Theseus target')`
+  is the red block alone. `secondTag(...)` is the next best's, in yellow and quieter.
+- Idea numbers in the header are one tag: `[ IDEAS ▐12 · 14▌ ]` (`chips()`).
 
 ---
 
@@ -227,15 +277,20 @@ S({
 | `header(t, title, { eyebrow, sub, size, maxW, noIdeas })` | Section label row (chapter icon, `CHAPTER nn / NN`, idea chips) and the `h1` title. Returns the y under the title |
 | `captions(t, [[t0, text], ...], o)` | The narration, typed under the title, one step at a time. Keep each step to two lines at 31 px |
 | `source(t, text, { t0, maxW, align })` | Mono footnote above the rule, wrapping upward |
-| `gloss(t, t0, term, def)` / `featureCard(t, t0, name, kinds, line)` | The band: what a word means (left), the feature on screen with its pills (right) |
+| `glossBox(t, t0, x, y, w, term, def, o)` | What a word means, in a rounded box anywhere on the slide: `[ VOCAB ▐TERM▌ ]` and the definition. Returns `{ h }` |
+| `sourceBox(t, t0, x, y, w, who, finding, { kind })` | Where a finding comes from, in a box: `[ RESEARCH ▐WHO, YEAR▌ ]` (or the evidence tag with `kind`) and what it found |
+| `noteBox(t, t0, x, y, w, { label, value, kind, head, body, h })` | The base of both: a tag and a run-in paragraph in a padded box |
+| `golden(x, w, gap, flip)` / `golden2(h, gap)` | Golden-ratio splits: `{ a: [x, w], b: [x, w] }` / `[big, small]` |
+| `cursorPtr(x, y, { s, press })` / `cursorAt(t, keys, clicks)` | The on-screen pointer; `cursorAt` moves it along keyframes and rings each click |
+| `gloss(t, t0, term, def)` / `featureCard(t, t0, name, kinds, line)` | The old band at the foot: what a word means (left), the feature (right). Use it sometimes, not on every slide |
 | `callout(t, t0, [x, y], label, { to, side, elbow, sub, prose, color })` | A dot on a point, an elbow leader and a label. Short names are set as mono caps, phrases as sentences |
 | `chapterCard(t, { name, list, gloss, cx, cy, r })` | Chapter opener: name in `d2`, an XBAB-style idea count, the ideas as a numbered list, an iris round the chapter's part |
 | `slam(t, t0, x, y, num, unit, o)` / `bignum(...)` | A key number that drops in, or one that counts up |
-| `hbars(t, { x, y, w, rows: [{ label, v, hero, sub }], max, unit })` | Simple horizontal bars; the `hero` row is yellow |
+| `hbars(t, { x, y, w, rows: [{ label, v, hero, sub }], max, unit })` | Simple horizontal bars; the `hero` row is red |
 | `axes(t, o)` + `series(m, pts, o)` | A plain x-y frame for drawings that are not one of the charts below |
 | `dim(t, t0, a, b, label, off)` | A drafting dimension |
 | `regMark(x, y, a, s, col)` | A registration `+`, for the corners of a composition |
-| `demoWindow(x, y, w, h, a, { hero, plain, grid, fill, accent })` | A card: panel, hairline border, optional grid; `hero` adds the yellow edge |
+| `demoWindow(x, y, w, h, a, { hero, plain, grid, fill, accent })` | A card: panel, hairline border, optional grid; `hero` adds the red edge |
 
 ### Charts (`07-charts.js`)
 
@@ -248,27 +303,43 @@ All charts take one options object; each documents it in a comment above the fun
   frame for names and the CI foot; a horizontal one writes names right-aligned to the left of `x`. No film
   slide uses it yet: no dataset has per-run samples (see `src/19-components-test.js` for a working call).
 - **`breakdown(t, o)`**, the XBAB weight breakdown. One row per part: icon, name, a bar on a shared scale, grams
-  and share of the total, an evidence pill; the total underneath. `was` draws a ghost bar for a part's weight
+  and share of the total, an evidence tag; the total underneath. `was` draws a ghost bar for a part's weight
   before a change.
 - **`lollipop(t, o)`**, the Kunai ranking. Sorted rows, a stem and a dot each, value at the end; `target: { v }`
-  draws Theseus's target as a yellow line through the ranking. Wireless rows can be hollow.
+  draws Theseus's target as a red line through the ranking. Wireless rows can be hollow.
 - **`scatter(t, o)`**, XY with a sweet spot and a Pareto frontier. `better: { x, y }` sets which corner is
-  better, `sweet` draws a yellow field toward it, `frontier: true` draws the staircase of points no other point
-  beats on both axes and hatches the region it closes off. Theseus is `target: { x, y, name }` (a point) or
+  better, `sweet` draws a red field toward it, `frontier: true` draws the frontier of points no other point
+  beats on both axes, as a rounded curve through them (`monoCurve`: it never overshoots a point), and hatches the region it closes off. Theseus is `target: { x, y, name }` (a point) or
   `targetX: { x, name, sub }` (known on x only: a dashed line, e.g. a weight with no price yet). Labels are
   placed so they never cover a dot, a line or another label; a dominated point with no free spot goes unnamed,
   and the call returns `{ unnamed }` so the slide can list them. `label: false` leaves a point unnamed on
   purpose.
 - **`lineChart(t, o)`**, series with end labels, `bands` (shaded x ranges, e.g. a sweet spot) and `markers`.
   An end label with no room past the line sits above its end instead.
-- **`compareTable(t, o)`**, rows of specs, one column per mouse or per field; a `hero` column gets the yellow
+- **`compareTable(t, o)`**, rows of specs, one column per mouse or per field; a `hero` column gets the red
   cap and rule; cells take `{ v, sub }`; `ev` puts an evidence dot by a value; `best` sets a cell in bold.
-- **`statCard(t, t0, x, y, w, h, o)`**, the Kunai stat card: mono label, pill, a big number with its unit,
-  one or two lines of body. `hero: true` adds the yellow edge. About 170 px tall for a label and a value, 240
-  with a line of body; keep the label to one line beside its pill.
+- **`statCard(t, t0, x, y, w, h, o)`**, the Kunai stat card: mono label, tag, a big number with its unit,
+  one or two lines of body. `hero: true` adds the red edge. About 170 px tall for a label and a value, 240
+  with a line of body; keep the label to one line beside its tag.
 - **`legend(t, t0, x, y, items, { align })`**, kinds `hero`, `ref`, `comp`, `dim`, `ring`, `line`, `dash`, `area`.
 - **`placeholderStamp(t, x, y, w, h)`**, a red PLACEHOLDER DATA stamp over a chart whose data is missing. Every
   chart takes `placeholder: true` and draws it.
+
+### Simulations (`07-sim.js`)
+
+A 2D frame solver (linear, Euler-Bernoulli beams with rigid joints, or bars with `truss: true`), in mm, N and MPa.
+Build a model, solve it once per load case with `simSolve(key, () => model)`, and animate the result: the model is
+linear, so a load scaled by k scales every displacement, force and stress by k (`feDraw(r, P, { load: k })`).
+
+- `feLattice('tri' | 'hex' | 'sq', x0, y0, w, h, s, sec)` and `feChain(nodes, pts, sec)` build models; `sec` is
+  `{ w, h, E, rho }` (section width out of the plane, depth in the plane, MPa, g/mm³). `SIM_MAT` holds the deck's
+  materials with their source keys (PP-C-20A, ABS, Mg AZ91D, FR4).
+- `feDraw(r, P, o)` draws the bent frame, members coloured by stress (`heatCol`, amber, never red), `feFlow(r, P, t)`
+  runs dashes along each member at a speed set by its force, `feSupport(p, kind)` draws a pin, a roller or a wall.
+- `feEngaged(r, frac)` is the grams of material stressed above `frac` of the peak: the "how much of the mouse works"
+  number. A frame that cannot carry the load (a pin-jointed hexagon) comes back with `mech: true`.
+- Every number from it is `derived`, and the slide names the model in a line: "2D frame, PP-C-20A (13.5 GPa),
+  0.9 mm ribs, 10 N at the crown".
 
 ### Drawings
 
@@ -279,6 +350,31 @@ All charts take one options object; each documents it in a comment above the fun
   the wheel slot (`KEY.wheel`). `hi` highlights any of `shell`, `rim`, `sides`, `side`, `hump`, `rear`,
   `wheel`, `sensor`, `battery`, `board`, `antenna`, `skates`. Its front is a flatter curve and its sides run
   nearly straight, which is what makes it read as that mouse and not a generic one.
+
+### 3D shots and their 2D twins
+
+`view3D(key, t, x, y, w, h, state, o)` draws a scene into a box (scenes, state keys and camera keys are listed in
+`08-r3d.js`). A scene applies its full rest state under each call, so a key a slide leaves out returns to rest; set
+the keys the shot needs and nothing else. Scenes frame themselves at rest when built, so `zoom: 1` always means the
+same thing.
+
+Every 3D shot has a flat twin, drawn instead when the deck is in 2D mode, when the browser has no WebGL, or when a
+scene fails to build (assets missing). It is the same parts, traced off the same assets, as an orthographic
+elevation along the world axis nearest the shot's camera, filled flat and outlined in the ink of the ground; a
+camera between two axes cross-fades the two views. In a slide:
+
+- `in2D(a, b)` picks a value for 2D or 3D: a tighter `zoom`, another `target`, another callout position.
+- `view2d: 'top' | 'bottom' | 'left' | 'right' | 'front' | 'back'` names the flat view (the scene's +X is the
+  user's left, so `right` is the side-button side). Name it whenever the camera turns across an axis.
+- `hi2d: { re, color, w }` outlines the parts whose path matches `re` in a colour (the triggers on the cutout slide).
+  `hide2d: re` leaves parts out of the flat view.
+- Callouts: `V3.proj` (after a `view3D` call) or `v2dProj(key, state, box)` maps mm to stage px on the flat view;
+  `v2dAt(key, state, box, re, f)` finds a point on a named part (`f` = fractions of its box, or `'c'` for the
+  centre of its outline in that view). `elc_v3`, `srf_proj` and `shlProj` already switch.
+- Parts that move straight toward the viewer fade instead; x-ray, cutaway and section states turn the covering
+  parts into dashed phantoms; the board's current and the reflow front are drawn on top.
+
+After changing a 3D asset, rebuild the twins: `sh tools/geo2d/build.sh` (needs the 3D bundle built first).
 
 ### Data
 
@@ -310,16 +406,18 @@ Do:
 
 - Show the comparison. A Theseus number appears next to the best shipping number, or on the same axis.
 - Label the evidence on every number. Keep a maker's self-test as a claim.
-- Say what is not known: a target line with "price not set", a red gap where nothing light publishes hours,
+- Say what is not known: a target line with "not measured yet", a dull gap where nothing light publishes hours,
   a placeholder stamp where data is missing.
-- Name the source of every number in `src` and, where it matters on the slide, in the source line.
-- Keep yellow for Theseus.
+- Name the source of every number in `src` and, where it matters on the slide, in a `sourceBox` or the source line.
+- Keep red for Theseus and yellow for the next best.
+- Print Theseus's own numbers from `THS` (`THS.massG` = '29.31 g', `THS.price` = '$189', `THS.pcb` = '5.6 g').
 
 Don't:
 
 - Don't use lowercase titles or labels, or set long sentences in mono caps.
-- Don't add a second hero colour, gradients behind text, drop shadows or glows.
-- Don't round a claim up, or print a projected number without the PROJECTED pill.
+- Don't add a third highlight colour, gradients behind text, drop shadows or glows.
+- Don't use rounded capsules with a dot for tags: every tag is a lower-third (section 6).
+- Don't round a claim up, or print a projected number without the PROJECTED tag.
 - Don't place text under the footer rule, or let a label run over a dot, a line or another label.
 - Don't use tan, beige or cream. The paper is `#F7F6F2`.
 
@@ -336,6 +434,8 @@ T=mid node tools/qa.js $PWD/dist/main.html          # the same mid-animation (0.
 node tools/shoot.js $PWD/dist/main.html shots/x settle [ids]   # screenshots; DSF=2 PAR=1 for 2×
 python3 tools/sheet.py sheet.png 5 384 shots/x/*.png           # contact sheet
 ```
+
+Every checker takes `Q='&2d=1'` to run in 2D mode (`Q='&2d=0'` forces 3D). Check a slide with a 3D shot in both.
 
 `?qa=1` makes `text()` and `demoWindow()` record their boxes in `window.__qa`; `qa.js` reads them. It cannot
 see a label over a dot or a line, so look at the screenshots too. A slide is done when `errs.js` prints `ok`,

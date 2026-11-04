@@ -125,7 +125,7 @@ function compose(k) {
     fx.fillStyle = `rgba(0,0,0,${0.32 * e})`; fx.fillRect(0, 0, w, h);
     const bx = dir > 0 ? w * (1 - e) : -w * (1 - e);
     fx.drawImage(B, bx, 0);
-    const lx = dir > 0 ? bx : bx + w; fx.strokeStyle = acc(DECK.slides[APP.i].ch) === C.ink ? YEL : acc(DECK.slides[APP.i].ch); fx.lineWidth = 3 * sx; fx.beginPath(); fx.moveTo(lx, 0); fx.lineTo(lx, h); fx.stroke();
+    const lx = dir > 0 ? bx : bx + w; fx.strokeStyle = acc(DECK.slides[APP.i].ch) === C.ink ? C.hero : acc(DECK.slides[APP.i].ch); fx.lineWidth = 3 * sx; fx.beginPath(); fx.moveTo(lx, 0); fx.lineTo(lx, h); fx.stroke();
   } else { fx.drawImage(A, 0, 0); fx.globalAlpha = E.io3(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1; }
 }
 function frame() {
@@ -155,7 +155,7 @@ async function start() {
   try { await Promise.race([Promise.all(faces.map(f => document.fonts.load(f, 'THESEUS 0123456789 µs →'))).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 8000))]); } catch (e) { }
   try { await Promise.race([Promise.all((window.IMGS || []).map(im => im.decode ? im.decode().catch(() => { }) : null)), new Promise(r => setTimeout(r, 3000))]); } catch (e) { }
   buildBar();
-  let first = 0; const h = (q.get('s') || location.hash.slice(1));
+  let first = 0; const h0 = (q.get('s') || location.hash.slice(1)), h = /^(2d|3d)$/i.test(h0) ? '' : h0;
   if (h) { const n = DECK.slides.findIndex(s => s.id === h); first = n >= 0 ? n : (parseInt(h) || 0); }
   APP.i = -1; go(first, { instant: true, force: true });
   if (q.get('t') != null) {
@@ -172,6 +172,8 @@ async function start() {
   $('srcBtn').onclick = e => { e.stopPropagation(); const b = $('src'); b.hidden = !b.hidden; $('srcBtn').setAttribute('aria-expanded', String(!b.hidden)); };
   $('sndBtn').onclick = e => { e.stopPropagation(); auInit(); AU.on = !AU.on; $('sndBtn').textContent = AU.on ? 'sound on' : 'sound off'; $('sndBtn').setAttribute('aria-pressed', String(AU.on)); if (AU.on) sfx('click'); };
   $('cleanBtn').onclick = e => { e.stopPropagation(); document.body.classList.toggle('clean'); fit(); };
+  $('viewBtn').onclick = e => { e.stopPropagation(); setView2D(!V2D.on); };
+  v2dButton();
   $('stage').addEventListener('click', e => { const r = $('stage').getBoundingClientRect(); go(APP.i + ((e.clientX - r.left) < r.width * 0.3 ? -1 : 1)); });
   let tx = null; $('stage').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
   $('stage').addEventListener('touchend', e => { if (tx == null) return; const d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 40) go(APP.i + (d < 0 ? 1 : -1)); tx = null; });
@@ -186,9 +188,16 @@ async function start() {
     else if (k === 'r' || k === 'R') go(APP.i, { force: true, instant: true });
     else if (k === 'f' || k === 'F') $('fs').click();
     else if (k === 's' || k === 'S') $('sndBtn').click();
+    else if (k === 'd' || k === 'D') setView2D(!V2D.on);
+    else if (k === '2') setView2D(true);
+    else if (k === '3') setView2D(false);
     else if (k === 'Escape') $('src').hidden = true;
   });
-  window.addEventListener('hashchange', () => { const n = DECK.slides.findIndex(s => s.id === location.hash.slice(1)); if (n >= 0 && n !== APP.i) go(n); });
+  window.addEventListener('hashchange', () => {
+    const hv = location.hash.slice(1);
+    if (/^(2d|3d)$/i.test(hv)) { setView2D(hv.toLowerCase() === '2d'); try { history.replaceState(null, '', '#' + DECK.slides[APP.i].id); } catch (e) { } return; }
+    const n = DECK.slides.findIndex(s => s.id === hv); if (n >= 0 && n !== APP.i) go(n);
+  });
   requestAnimationFrame(loop);
 }
 window.addEventListener('DOMContentLoaded', start);

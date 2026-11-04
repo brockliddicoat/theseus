@@ -35,6 +35,7 @@ function srf_3d(t, t0, key, x, y, w, h, st, o = {}) {
    r is the scene's framing radius (half its bounding-box diagonal), measured from renders: shell 71.4 mm. */
 const SRF_VIEWS = { top: [0, 1, 0.0001], bottom: [0, -1, 0.0001], front: [0, 0.12, 1], back: [0, 0.12, -1], left: [-1, 0.08, 0], right: [1, 0.08, 0], threeQuarter: [-0.78, 0.62, 0.95], threeQuarterRight: [0.78, 0.62, 0.95], low: [-0.9, 0.22, 0.75] };
 function srf_proj(x, y, w, h, st, r, margin = 1.12) {
+  if (V2D.on) { const P2 = v2dProj(st.key2d || 'shell', st, [x, y, w, h]); return (X, Y, Z) => P2([X, Y, Z]); }
   const nrm = v => { const l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; };
   const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
   let d = nrm(Array.isArray(st.view) ? st.view : SRF_VIEWS[st.view || 'threeQuarter']);
@@ -56,8 +57,8 @@ function srf_step(t, t0, x, y, w, best, step, o = {}) {
   const y2 = y + 38 + r1.h + (o.gap || 26);
   if (k2 > 0.003) {
     const r2l = wrap(step.line, { role: 'small', size: sz, weight: 500 }, w - 20).length;
-    rect(x, y2 - 22, 5, (38 + lh * Math.min(step.lines || 3, r2l)) * E.out3(k2), { fill: YEL });
-    rich([{ s: o.stepLabel || 'Theseus', role: 'label', size: 21, color: '#111111', chip: YEL }], x + 26, y2, { alpha: k2 });
+    rect(x, y2 - 22, 5, (38 + lh * Math.min(step.lines || 3, r2l)) * E.out3(k2), { fill: C.hero });
+    rich([{ s: o.stepLabel || 'Theseus', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }], x + 26, y2, { alpha: k2 });
     pillsR(step.ev || ['proposal'], y2, k2);
     const r2 = para([{ s: step.line, role: 'small', size: sz, weight: 500, color: C.ink }], x + 20, y2 + 38, { maxW: w - 20, lh, t, t0: t0 + 1.05, cps: 150, alpha: k2, maxLines: step.lines || 3 });
     return y2 + 38 + r2.h;
@@ -74,7 +75,7 @@ function srf_bars(t, t0, o) {
     const nm = text(r.name, x, yy + 7, { role: 'small', size: o.nsize || 24, weight: r.hero || r.ref ? 800 : 600, color: C.ink, alpha: a, maxW: lw - 14 });
     if (r.sub) text(r.sub, x, yy + 32, { role: 'label', size: 19, color: r.hero ? C.heroText : C.mute, alpha: a, maxW: lw - 14 });
     rr(bx, yy - bh / 2, bw, bh, bh / 2, C.track, null, 0, a);
-    const col = r.color || (r.hero ? YEL : r.ref ? C.ink : C.comp);
+    const col = r.color || (r.hero ? C.hero : r.ref ? C.ink : C.comp);
     if (r.dash) { G.save(); G.globalAlpha = a; G.setLineDash([6, 5]); rrPath(bx, yy - bh / 2, (X(r.v) - bx) * k, bh, bh / 2); G.strokeStyle = r.hero ? C.heroText : C.ink2; G.lineWidth = 2; G.stroke(); G.restore(); }
     else if (r.lo != null) { const xa = X(r.lo), xb = X(lo + (r.hi - lo) * k); rr(Math.min(xa, xb), yy - bh / 2, Math.max(bh, Math.abs(xb - xa)), bh, bh / 2, col, null, 0, a); }
     else { const L = Math.max(bh, (X(r.v) - bx) * k); rr(bx, yy - bh / 2, L, bh, bh / 2, col, r.hero && TH ? '#111111' : null, 1.3, a); glint(bx, yy - bh / 2, L, bh, t, d + 3.5 + i * 0.2, 9); }
@@ -125,7 +126,7 @@ S({
     const cx = 1380, cy = 580, R = ep(t, 0.2, 1.4, E.cam) * 400;
     if (R > 6) {
       G.save(); G.beginPath(); G.arc(cx, cy, R - 3, 0, TAU); G.clip();
-      view3D('shell', t, cx - 420, cy - 300, 840, 600, { view: 'threeQuarterRight', yaw: -0.25 + 0.22 * Math.sin(t * 0.32), zoom: 1.25, target: [0, 17, 2], colorway: 'forged', xray: 0, explode: 0 }, { alpha: ep(t, 0.5, 1.3) });
+      view3D('shell', t, cx - 420, cy - 300, 840, 600, { view: 'threeQuarterRight', view2d: 'right', yaw: -0.25 + 0.22 * Math.sin(t * 0.32), zoom: in2D(1.42, 1.25), target: in2D([0, 19, 0], [0, 17, 2]), colorway: 'forged', xray: 0, explode: 0 }, { alpha: ep(t, 0.5, 1.3) });
       G.restore();
     }
     chapterCard(t, {
@@ -191,7 +192,7 @@ S({
       text(lab, GX(b) + 14, y + 8, { font: 'mono', size: 24, weight: 800, color: C.ink, alpha: ep(t, 1.8 + i * 0.25, 2.2 + i * 0.25) });
     });
     const ty = y0 + 4 * rg, kt = ep(t, 3.0, 3.5);
-    rect(rx, ty - 26, 6, 56, { fill: YEL, alpha: kt });
+    rect(rx, ty - 26, 6, 56, { fill: C.hero, alpha: kt });
     evDot(rx + 30, ty - 6, 'proposal', 5, kt);
     text('Theseus, on CF-PP', rx + 46, ty + 2, { role: 'small', size: 24, weight: 800, color: C.ink, alpha: kt });
     text('150–180 °F cure', rx + 46, ty + 28, { role: 'label', size: 19, color: C.heroText, alpha: kt });
@@ -210,7 +211,7 @@ function srf_pillsR(xr, y, kinds, a) { for (let i = kinds.length - 1; i >= 0; i-
 function srf_stepBand(t, t0, best, step) {
   const w = 820, x2 = W / 2 + 40, w2 = RM - x2;
   bandBlock(t, t0, LM, w, 'Best today', best.who, best.line, { color: C.comp, right: (y, a) => srf_pillsR(LM + w, y, best.ev || [], a) });
-  bandBlock(t, t0 + 0.7, x2, w2, 'Theseus, one step further', step.who, step.line, { color: YEL, right: (y, a) => srf_pillsR(RM, y, step.ev || ['proposal'], a) });
+  bandBlock(t, t0 + 0.7, x2, w2, 'Theseus, one step further', step.who, step.line, { color: C.hero, right: (y, a) => srf_pillsR(RM, y, step.ev || ['proposal'], a) });
 }
 
 /* ============================== #60 grip where the fingers lift ============================== */
@@ -275,7 +276,7 @@ S({
     if (wp > 0) { G.save(); G.beginPath(); G.rect(lx, ly, wx - lx, lh); G.clip(); srf_3d(t, 0.4, 'shell', lx, ly, lw, lh, tv); G.restore(); }
     if (wp > 0 && wp < 1) {
       line(wx, ly + 8, wx, ly + lh - 8, { color: C.ink, w: 2 });
-      rich([{ s: 'Theseus', role: 'label', size: 21, color: '#111111', chip: YEL }], wx - 14, ly + 50, { align: 'right' });
+      rich([{ s: 'Theseus', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }], wx - 14, ly + 50, { align: 'right' });
       text('Sora V2 base', wx + 14, ly + 50, { role: 'label', size: 21, color: C.mute });
     }
     const pj = srf_proj(lx, ly, lw, lh, tv, 71.4), kz = ep(t, 3.4, 3.9);
@@ -397,24 +398,35 @@ S({
     const lx = LM, ly = LAY.top, lw = 900, lh = 580;
     demoWindow(lx, ly, lw, lh, ep(t, 0.3, 0.7));
     const wv = { view: [0.55, 0.45, 0.9], zoom: 1.75, scroll: 0.22 * t, xray: 0, explode: 0.3 * env(t, 1.6, 2.6, 4.2, 5.2) };
-    srf_3d(t, 0.4, 'wheel', lx, ly, lw, lh, wv);
-    text('Fig. 01', lx + 26, ly + 46, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
-    text('Magnesium wheel, POM axle, optical encoder (render)', lx + 120, ly + 46, { role: 'small', size: 24, color: C.faint, alpha: ep(t, 0.6, 1.0) });
-    callout(t, 2.0, [lx + 520, ly + 180], '48 curved grousers', { to: [lx + 690, ly + 120], side: 'r', color: C.ink });
-    callout(t, 2.4, [lx + 470, ly + 360], 'Six spokes', { to: [lx + 690, ly + 420], side: 'r', color: C.ink, sub: 'Triangular windows' });
-    callout(t, 2.8, [lx + 400, ly + 250], 'Crown, R 11 mm both ways', { to: [lx + 60, ly + 140], side: 'r', color: C.ink, prose: true, maxW: 260 });
-    callout(t, 3.2, [lx + 560, ly + 300], 'POM axle', { to: [lx + 690, ly + 300], side: 'r', color: C.ink });
+    const pt = { g: [lx + 520, ly + 180], sp: [lx + 470, ly + 360], cr: [lx + 400, ly + 250], ax: [lx + 560, ly + 300] };
+    if (V2D.on) {
+      /* two views of one wheel: from the side (the spokes and the treads, turning) and from the front (the crown, the axle) */
+      const sb = [lx + 24, ly + 84, 380, 440], fb = [lx + 396, ly + 84, 236, 440];
+      const sv = Object.assign({}, wv, { view2d: 'right', zoom: 1.34, target: [0, 11, 0], explode: 0, hide2d: /encoder|support/ }), fv = Object.assign({}, wv, { view2d: 'front', zoom: 1.32, target: [-1.85, 11, 0] });
+      srf_3d(t, 0.4, 'wheel', sb[0], sb[1], sb[2], sb[3], sv);
+      srf_3d(t, 0.6, 'wheel', fb[0], fb[1], fb[2], fb[3], fv);
+      const k = ep(t, 0.6, 1.0);
+      text('Side', sb[0] + sb[2] / 2, sb[1] + sb[3] + 22, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: k });
+      text('Front', fb[0] + fb[2] / 2, fb[1] + fb[3] + 22, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: k });
+      pt.g = v2dAt('wheel', sv, sb, /wheel\/grousers$/, [0.5, 1, 0.5]) || pt.g; pt.sp = v2dAt('wheel', sv, sb, /wheel\/web$/, [0.5, 0.3, 0.5]) || pt.sp;
+      pt.cr = v2dAt('wheel', fv, fb, /wheel\/tread$/, [0.5, 1, 0.5]) || pt.cr; pt.ax = v2dAt('wheel', fv, fb, /axle\/axleR$/, [0.5, 0.5, 0.5]) || pt.ax;
+    } else srf_3d(t, 0.4, 'wheel', lx, ly, lw, lh, wv);
+    rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: V2D.on ? 'Magnesium wheel and POM axle, two views' : 'Magnesium wheel, POM axle, optical encoder (render)', role: 'small', size: 24, color: C.faint, gap: 16 }], lx + 26, ly + 46, { alpha: ep(t, 0.6, 1.0) });
+    callout(t, 2.0, pt.g, '48 curved grousers', { to: [lx + 610, ly + 120], side: 'r', color: C.ink });
+    callout(t, 2.4, pt.sp, 'Six spokes', { to: [lx + 648, ly + 420], side: 'r', color: C.ink, sub: 'Triangular windows' });
+    callout(t, 2.8, pt.cr, 'Crown, R 11 mm both ways', { to: in2D([lx + 648, ly + 220], [lx + 60, ly + 140]), side: 'r', color: C.ink, prose: true, maxW: in2D(220, 260) });
+    callout(t, 3.2, pt.ax, 'POM axle', { to: [lx + 648, ly + 330], side: 'r', color: C.ink });
     /* right top: rover treads, unrolled */
     const rx = 1004, rw = RM - rx, th = 262;
     srf_card(t, 0.5, rx, ly, rw, th, 'Rover treads, unrolled', ['datasheet']);
-    const sx = rx + 250, swd = rw - 276, rowsT = [['Curiosity', '24 chevrons', 24, 'chevron', C.comp], ['Perseverance', '48 curved', 48, 'curve', C.ink], ['Theseus wheel', '48 curved', 48, 'curve', YEL]];
+    const sx = rx + 250, swd = rw - 276, rowsT = [['Curiosity', '24 chevrons', 24, 'chevron', C.comp], ['Perseverance', '48 curved', 48, 'curve', C.ink], ['Theseus wheel', '48 curved', 48, 'curve', C.hero]];
     rowsT.forEach(([nm, sub, n, kind, col], i) => {
       const y = ly + 92 + i * 56, a = ep(t, 1.0 + i * 0.3, 1.4 + i * 0.3);
-      if (i === 2) rect(rx, y - 6, 6, 50, { fill: YEL, alpha: a });
+      if (i === 2) rect(rx, y - 6, 6, 50, { fill: C.hero, alpha: a });
       text(nm, rx + 26, y + 18, { role: 'small', size: 24, weight: i === 2 ? 800 : 700, color: C.ink, alpha: a });
       text(sub, rx + 26, y + 42, { role: 'label', size: 19, color: i === 2 ? C.heroText : C.mute, alpha: a });
       srf_tread(sx, y, swd, 44, n, kind, (t * 0.35) % 1, i === 2 ? (TH ? '#9A9890' : '#C9C8C2') : col, a);
-      if (i === 2) rr(sx, y, swd, 44, 6, null, YEL, 2.5, a);
+      if (i === 2) rr(sx, y, swd, 44, 6, null, C.hero, 2.5, a);
     });
     /* right bottom: the same wheel in other materials */
     const my = ly + th + 24, mh = LAY.bottom - my;
@@ -442,12 +454,14 @@ S({
     captions(t, [[0.6, 'A mechanical encoder counts with sliding contacts, and dust or a spill makes them skip. An optical one counts with light, and nothing touches.'], [5.4, 'Four of the 35 mice in my data use one: two Razers, two ZOWIEs. Razer calls its own 3.3 times more reliable, without saying how it measured that.']]);
     const A = acc(), lx = LM, ly = LAY.top, lw = 1000, lh = 580, th = srf_scrollAt(t);
     demoWindow(lx, ly, lw, lh, ep(t, 0.3, 0.7));
-    srf_3d(t, 0.4, 'wheel', lx, ly, lw, lh, { view: [-0.35, 0.32, 1], target: [-5.5, 10.5, 0], zoom: 2.25, scroll: th, xray: ep(t, 0.8, 2.0), explode: 0 });
+    const ev = { view: [-0.35, 0.32, 1], target: [-5.5, 10.5, 0], zoom: 2.25, scroll: th, xray: ep(t, 0.8, 2.0), explode: 0 };
+    srf_3d(t, 0.4, 'wheel', lx, ly, lw, lh, ev);
     text('X-ray, encoder side', lx + 26, ly + 46, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
-    callout(t, 2.2, [lx + 300, ly + 250], 'IR emitter', { to: [lx + 120, ly + 150], side: 'r', color: C.ink });
-    callout(t, 2.5, [lx + 330, ly + 330], 'Code disc, 24 slots', { to: [lx + 90, ly + 430], side: 'r', color: C.ink });
-    callout(t, 2.8, [lx + 420, ly + 270], 'Detectors A and B', { to: [lx + 560, ly + 120], side: 'r', color: C.ink });
-    callout(t, 3.1, [lx + 520, ly + 360], 'POM axle', { to: [lx + 760, ly + 500], side: 'r', color: C.ink });
+    const eb = [lx, ly, lw, lh], ea = (re, f, p) => (V2D.on && v2dAt('wheel', ev, eb, re, f)) || p;
+    callout(t, 2.2, ea(/emitter\/emitterBody$/, [0.5, 0.5, 0.5], [lx + 300, ly + 250]), 'IR emitter', { to: [lx + 120, ly + 150], side: 'r', color: C.ink });
+    callout(t, 2.5, ea(/encoderRotor\/disc$/, [0.5, 0.12, 0.5], [lx + 330, ly + 330]), 'Code disc, 24 slots', { to: [lx + 90, ly + 430], side: 'r', color: C.ink });
+    callout(t, 2.8, ea(/detector\/detectorBody$/, [0.5, 0.5, 0.5], [lx + 420, ly + 270]), 'Detectors A and B', { to: [lx + 560, ly + 120], side: 'r', color: C.ink });
+    callout(t, 3.1, ea(/axle\/axleR$/, [0.6, 0.5, 0.5], [lx + 520, ly + 360]), 'POM axle', { to: [lx + 760, ly + 500], side: 'r', color: C.ink });
     /* right top: the two light gates, a quarter-step apart, as a logic trace */
     const rx = 1104, rw = RM - rx, sh = 270;
     srf_card(t, 0.6, rx, ly, rw, sh, 'Two light gates, a quarter-step apart', ['derived']);

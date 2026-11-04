@@ -61,7 +61,7 @@ function own_twistPanel(lt, x, y, w, h, A, a) {
   rich([{ s: 'Lay', role: 'label', size: 21, color: C.mute }, { s: fmtN(p, 1) + ' mm', font: 'mono', size: 25, weight: 700, color: C.ink, gap: 10 }, { s: '+' + fmtN(own_lay(p) * 100, 1) + '% wire', font: 'mono', size: 25, weight: 700, color: C.ink, gap: 22 }], x + 30, y + 132, { alpha: a });
   /* the cost of a tighter lay */
   const m = miniAxes(x + 82, y + 170, w - 120, 104, { xr: [2, 12], yr: [0, 36], xticks: [2, 4, 6, 8, 10, 12], yticks: [0, 15, 30], yfmt: v => v + '%', alpha: a });
-  G.save(); G.globalAlpha = a * 0.22; G.fillStyle = YEL; G.fillRect(m.X(5), y + 170, m.X(10) - m.X(5), 104); G.restore();
+  G.save(); G.globalAlpha = a * 0.22; G.fillStyle = C.hero; G.fillRect(m.X(5), y + 170, m.X(10) - m.X(5), 104); G.restore();
   text('Proposed', m.X(7.5), y + 192, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: a });
   const pts = []; for (let q = 2; q <= 12.001; q += 0.1) pts.push([m.X(q), m.Y(own_lay(q) * 100)]);
   poly(pts, { color: C.ink, w: 2.5, alpha: a });
@@ -94,7 +94,7 @@ function own_skatePanel(lt, x, y, w, h, A, a) {
   }
   /* Theseus dots land in their pockets */
   const k3 = clamp((c - 0.46) / 0.16);
-  own_DOTS.forEach((d, i) => { const kk = E.out3(clamp(k3 * 8 - i * 0.8)); if (kk <= 0) return; const q = P(d); circle(q[0], q[1] - (1 - kk) * 30, 3.25 * s, { fill: rgba(YEL, 0.85), alpha: a * kk }); circle(q[0], q[1] - (1 - kk) * 30, 3.25 * s, { color: TH ? '#111111' : YEL, w: 1.5, alpha: a * kk }); });
+  own_DOTS.forEach((d, i) => { const kk = E.out3(clamp(k3 * 8 - i * 0.8)); if (kk <= 0) return; const q = P(d); circle(q[0], q[1] - (1 - kk) * 30, 3.25 * s, { fill: rgba(C.hero, 0.85), alpha: a * kk }); circle(q[0], q[1] - (1 - kk) * 30, 3.25 * s, { color: C.hero, w: 1.5, alpha: a * kk }); });
   if (k3 >= 1) text('Day one: the file is public', x + 18, y + h - 18, { role: 'label', size: 21, color: C.heroText, alpha: a });
 }
 /** the key plan outline alone, in mm (no fills), for drawings at a small scale */
@@ -143,7 +143,7 @@ function own_gmkPanel(lt, x, y, w, h, A, a) {
   }, { alpha: a });
   /* a spectrophotometer reading, cap against shell */
   const kd = own_seg(c, 0.3, 0.38);
-  if (kd > 0) { circle(kx + 22, ky + 22, 26, { color: C.ink, w: 2, alpha: a * kd }); circle(mx, my + 20, 26, { color: C.ink, w: 2, alpha: a * kd }); line(kx + 48, ky + 22, mx - 26, my + 20, { color: C.ink, w: 1.5, dash: [5, 5], alpha: a * kd }); rich([{ s: 'ΔE ≤ 1.0', role: 'small', size: 25, weight: 700, sentence: false, color: C.ink }, { s: 'Target', role: 'label', size: 19, color: '#111111', chip: YEL, gap: 16 }], kx, ky + 96, { alpha: a * kd }); }
+  if (kd > 0) { circle(kx + 22, ky + 22, 26, { color: C.ink, w: 2, alpha: a * kd }); circle(mx, my + 20, 26, { color: C.ink, w: 2, alpha: a * kd }); line(kx + 48, ky + 22, mx - 26, my + 20, { color: C.ink, w: 1.5, dash: [5, 5], alpha: a * kd }); rich([{ s: 'ΔE ≤ 1.0', role: 'small', size: 25, weight: 700, sentence: false, color: C.ink }, { s: 'Target', role: 'label', size: 19, color: C.onHero, chip: C.heroChip, gap: 16 }], kx, ky + 96, { alpha: a * kd }); }
   /* Knight & Haslam: work done in an office by who arranged it */
   const bars = [['Lean office', 0], ['Decorated for you', 17], ['Arranged by you', 32]], b0 = y + 196;
   bars.forEach(([l, v], i) => { const yy = b0 + i * 38, kk = own_seg(c, 0.36 + i * 0.03, 0.46 + i * 0.03); text(l, kx, yy + 7, { role: 'label', size: 19, color: C.ink2, alpha: a }); const bw2 = (w - 330) * v / 35; rect(kx + 236, yy - 7, Math.max(3, bw2 * kk), 14, { fill: i === 2 ? C.ink : C.comp, alpha: a }); text(v ? '+' + v + '%' : 'Baseline', kx + 246 + bw2 * kk, yy + 7, { font: 'mono', size: 21, weight: 700, color: C.ink, alpha: a }); });
@@ -192,7 +192,7 @@ function own_coverPanel(lt, x, y, w, h, A, a) {
   text('Satin paper, 120 {g/m²}', lx + 8, ly + 92, { role: 'label', size: 19, color: C.ink2, alpha: a });
   /* the masses */
   const rows = [['Paper + PET', 0.101, true], ['PC, 0.2 {mm}', 0.156], ['CF-PP, 0.5 {mm}', 0.329]], b0 = y + 200;
-  rows.forEach(([l, v, hero], i) => { const yy = b0 + i * 38, kk = own_seg(c, 0.28 + i * 0.03, 0.38 + i * 0.03), bw2 = (w - 330) * v / 0.35; text(l, x + 22, yy + 7, { role: 'label', size: 19, color: hero ? C.ink : C.ink2, alpha: a }); rr(x + 250, yy - 7, Math.max(10, bw2 * kk), 14, 3, hero ? YEL : C.comp, hero && TH ? '#111111' : null, 1.2, a); text(fmtN(v, 2) + ' g', x + 260 + bw2 * kk, yy + 7, { font: 'mono', size: 21, weight: 700, color: C.ink, alpha: a }); });
+  rows.forEach(([l, v, hero], i) => { const yy = b0 + i * 38, kk = own_seg(c, 0.28 + i * 0.03, 0.38 + i * 0.03), bw2 = (w - 330) * v / 0.35; text(l, x + 22, yy + 7, { role: 'label', size: 19, color: hero ? C.ink : C.ink2, alpha: a }); rr(x + 250, yy - 7, Math.max(10, bw2 * kk), 14, 3, hero ? C.hero : C.comp, hero && TH ? '#111111' : null, 1.2, a); text(fmtN(v, 2) + ' g', x + 260 + bw2 * kk, yy + 7, { font: 'mono', size: 21, weight: 700, color: C.ink, alpha: a }); });
 }
 
 ideaSheet({

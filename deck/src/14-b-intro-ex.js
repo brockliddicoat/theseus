@@ -45,7 +45,7 @@ function ntr_xa25() { const b = ((RD.weights || {}).breakdowns || []).find(x => 
    instance one render of the mouse at rest first, so an exploded first frame doesn't shrink every later shot. The instance is
    the key: R3D frees idle scenes and builds them again, and a rebuilt scene needs priming again */
 function ntr_prime(key, t, w, h) {
-  if (typeof R3D === 'undefined' || !R3D.has(key) || !NTR.primed) return;
+  if (V2D.on || typeof R3D === 'undefined' || !R3D.has(key) || !NTR.primed) return;
   const th = TH ? 'paper' : 'night', e = R3D.prepare(key, th);
   if (!e || !e.ready || e.error || NTR.primed.has(e)) return;
   NTR.primed.add(e);
@@ -53,10 +53,18 @@ function ntr_prime(key, t, w, h) {
   try { R3D.render(key, t, { explode: 0, xray: 0 }, Math.max(64, Math.round(w * k)), Math.max(36, Math.round(h * k)), th); } catch (err) { console.error('ntr_prime', err); }
 }
 /** a chip in the Theseus yellow: mono caps on a yellow block */
-function ntr_chip(s, x, y, a = 1, o = {}) { return rich([{ s, role: 'label', size: o.size || 21, color: '#111111', chip: YEL }], x + 7, y, { alpha: a, align: o.align }); }
+function ntr_chip(s, x, y, a = 1, o = {}) { return rich([{ s, role: 'label', size: o.size || 21, color: C.onHero, chip: C.heroChip }], x + 7, y, { alpha: a, align: o.align }); }
 /** a short arrowhead pointing along (dx, dy) at (x, y) */
 function ntr_head(x, y, dx, dy, s, col, a = 1) { const l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l; G.save(); G.globalAlpha = a; G.fillStyle = col; G.beginPath(); G.moveTo(x, y); G.lineTo(x - ux * s - uy * s * 0.5, y - uy * s + ux * s * 0.5); G.lineTo(x - ux * s + uy * s * 0.5, y - uy * s - ux * s * 0.5); G.closePath(); G.fill(); G.restore(); }
 /** diagonal hatching inside a rectangle, for a region nobody has data for */
+/** the map's anchors on the flat, exploded elevation: one point on the part each chapter rebuilds */
+function ntr_mapAt(st, box) {
+  const at = (re, f) => v2dAt('shell', st, box, re, f);
+  return {
+    click: at(/^explodeL\/.*\/triggerL$/, 'c'), surface: at(/\/wheel\/tread$/, [0.5, 0.75, 0.5]), elec: at(/^body\/lens/, [0.5, 0.5, 0.5]),
+    glide: at(/DotSkate\/glide$/, [0.5, 0.2, 0.5]), shape: at(/^body\/body$/, [0.5, 0.97, 0.36]), shell: at(/^body\/body$/, [1, 0.42, 0.5]), own: at(/M2Screw\/head$/, [0.5, 0.5, 0.5])
+  };
+}
 function ntr_hatch(x, y, w, h, col, a = 1, step = 14) { if (a <= 0.003 || w <= 0 || h <= 0) return; G.save(); G.beginPath(); G.rect(x, y, w, h); G.clip(); G.globalAlpha = a; G.strokeStyle = col; G.lineWidth = 1.2; G.beginPath(); for (let s = -h; s < w + h; s += step) { G.moveTo(x + s, y + h); G.lineTo(x + s + h, y); } G.stroke(); G.restore(); }
 
 /* ============================== 01. cover: THESEUS, and the shell assembling out of its parts ============================== */
@@ -68,9 +76,9 @@ S({
   draw: t => {
     const C0 = NTR_COV, [vx, vy, vw, vh] = C0.v;
     /* top row: the studio, and the rule the whole deck follows */
-    chapterIcon('intro', LM, LAY.labelY - 19, 22, YEL, ep(t, 0.1, 0.4));
+    chapterIcon('intro', LM, LAY.labelY - 19, 22, C.hero, ep(t, 0.1, 0.4));
     text('Nitrite Labs', LM + 36, LAY.labelY, { role: 'label', color: C.ink2, t, t0: 0.15, cps: 40 });
-    rich([{ s: 'Optimization', role: 'label', color: C.faint }, { s: 'over', role: 'label', color: C.faint, gap: 12 }, { s: 'opinion', role: 'label', color: YEL, gap: 12 }], RM, LAY.labelY, { align: 'right', alpha: ep(t, 0.4, 0.8) });
+    rich([{ s: 'Optimization', role: 'label', color: C.faint }, { s: 'over', role: 'label', color: C.faint, gap: 12 }, { s: 'opinion', role: 'label', color: C.hero, gap: 12 }], RM, LAY.labelY, { align: 'right', alpha: ep(t, 0.4, 0.8) });
     text('A Nitrite Labs mouse, in development for years', LM, 196, { role: 'label', size: 22, color: C.mute, t, t0: 0.5, cps: 60 });
     /* THESEUS: each letter rises out of its own mask */
     const st = { role: 'hero', size: C0.size, track: -0.028 }, word = 'THESEUS', x0 = C0.x0, yb = C0.yb;
@@ -86,7 +94,10 @@ S({
     /* the hero, in front of the word: the shell assembles out of its parts while the camera turns, slowly, and stops */
     ntr_prime('shell', t, vw, vh);
     const as = ep(t, 0.6, 4.6, E.io3), cam = ep(t, 0.3, 7.6, E.io3), drift = t > 7.6 ? Math.sin((t - 7.6) * 0.22) : 0;
-    view3D('shell', t, vx, vy, vw, vh, { view: 'threeQuarterRight', yaw: lerp(-0.5, 0.02, cam) + 0.05 * drift, pitch: 0.06 * (1 - cam), zoom: lerp(C0.zoom[0], C0.zoom[1], cam), explode: 0.72 * (1 - as), colorway: 'black' }, { alpha: ep(t, 0.35, 1.4) });
+    /* in 2D: the side-button side, the parts coming together in elevation */
+    /* the flat elevation is long and low: a narrower box keeps its nose clear of the word */
+    const VB = V2D.on ? [1300, 150, 630, 640] : [vx, vy, vw, vh];
+    view3D('shell', t, VB[0], VB[1], VB[2], VB[3], { view: 'threeQuarterRight', view2d: 'right', yaw: lerp(-0.5, 0.02, cam) + 0.05 * drift, pitch: 0.06 * (1 - cam), zoom: in2D(lerp(1.12, 1.18, cam), lerp(C0.zoom[0], C0.zoom[1], cam)), explode: 0.72 * (1 - as), colorway: 'black' }, { alpha: ep(t, 0.35, 1.4) });
     /* what you are looking at, said plainly: the shape is a placeholder */
     const kf0 = ep(t, 4.8, 5.4);
     rich([{ s: 'Fig. 00', role: 'label', size: 21, color: C.mute }, { s: 'Sora V2 shape, a placeholder', role: 'label', size: 21, color: C.faint, gap: 16 }], RM, 744, { align: 'right', alpha: kf0 });
@@ -94,14 +105,14 @@ S({
     const ry = yb + 44, kr = ep(t, 1.0, 1.9, E.cam), rx1 = x0 + 14 + (wordW - 14) * kr;
     line(x0 + 14, ry, rx1, ry, { color: inkA(0.35), w: 1.5 });
     for (let i = 0; x0 + 14 + i * 12 <= rx1; i++) { const X = x0 + 14 + i * 12, L = i % 10 === 0 ? 16 : i % 5 === 0 ? 10 : 6; line(X, ry, X, ry + L, { color: inkA(i % 10 === 0 ? 0.5 : 0.25), w: 1.2 }); }
-    rect(x0 + 14, ry - 3, 29 * 12 * ep(t, 1.6, 2.1, E.out3), 6, { fill: YEL });
+    rect(x0 + 14, ry - 3, 29 * 12 * ep(t, 1.6, 2.1, E.out3), 6, { fill: C.hero });
     text('0', x0 + 14, ry + 40, { role: 'tick', size: 19, color: C.faint, alpha: ep(t, 1.4, 1.8) });
-    text('29', x0 + 14 + 29 * 12, ry + 40, { role: 'tick', size: 19, color: YEL, align: 'center', alpha: ep(t, 1.9, 2.2) });
+    text('29', x0 + 14 + 29 * 12, ry + 40, { role: 'tick', size: 19, color: C.hero, align: 'center', alpha: ep(t, 1.9, 2.2) });
     /* the subtitle in three voices: a mono run-in, the display claim, and the one yellow word */
     rich([
       { s: 'In pursuit of an', role: 'labelL', size: 28, color: C.mute, t0: 1.25, cps: 40 },
       { s: 'objectively better', role: 'h2', size: 60, color: C.ink, gap: 22, rise: [1.55, 0.8] },
-      { s: 'mouse', role: 'h2', size: 60, color: YEL, gap: 18, rise: [1.7, 0.8] }
+      { s: 'mouse', role: 'h2', size: 60, color: C.hero, gap: 18, rise: [1.7, 0.8] }
     ], LM, 640, { t });
     /* four numbers, XBAB-size next to mono units; each a target, so each carries its pill */
     const cols = [
@@ -115,7 +126,7 @@ S({
       const x = LM + i * cw, t0 = 2.1 + i * 0.2, a = ep(t, t0, t0 + 0.4);
       if (i) line(x - 24, 770, x - 24, 770 + 190 * ep(t, t0 - 0.1, t0 + 0.5, E.cam), { color: inkA(0.14), w: 1.5 });
       text(c.lab, x, 786, { role: 'label', size: 21, color: C.mute, alpha: a, t, t0, cps: 60 });
-      const r = rich([{ s: c.n, role: 'd1', size: 132, color: C.ink, tnum: true, count: [t0, 1.0] }, { s: c.u, font: c.u === '+' ? 'disp' : 'mono', size: c.u === '+' ? 96 : 38, weight: c.u === '+' ? 800 : 600, color: c.u === '+' ? YEL : C.mute, gap: c.u === '+' ? 2 : 10 }], x - 6, 916, { t, alpha: a });
+      const r = rich([{ s: c.n, role: 'd1', size: 132, color: C.ink, tnum: true, count: [t0, 1.0] }, { s: c.u, font: c.u === '+' ? 'disp' : 'mono', size: c.u === '+' ? 96 : 38, weight: c.u === '+' ? 800 : 600, color: c.u === '+' ? C.hero : C.mute, gap: c.u === '+' ? 2 : 10 }], x - 6, 916, { t, alpha: a });
       if (c.chip) ntr_chip(c.chip, x - 6 + r.w + 20, 916, ep(t, t0 + 0.6, t0 + 0.9));
       const ka = ep(t, t0 + 0.4, t0 + 0.8);
       let sx = x; if (c.ev) sx += pill(x, 962, c.ev, ka) + 12;
@@ -218,8 +229,8 @@ function ntr_bar(t, rows) {
   const x = LM, y = 304, w = RM - LM, n = rows.length, rh = Math.min(68, 640 / n);
   const cx = [x, x + 340, x + 530, x + 880, x + 1085, x + 1380], tx = cx[5], trW = 185;
   const a0 = ep(t, 0.4, 0.8), kc = ep(t, 0.6, 1.2, E.snap);
-  rect(tx - 20, y - 46, RM - tx + 20, 6 * kc, { fill: YEL });
-  rect(tx - 20, y - 46, 2, (rh * n + 60) * kc, { fill: TH ? '#111111' : YEL, alpha: 0.9 });
+  rect(tx - 20, y - 46, RM - tx + 20, 6 * kc, { fill: C.hero });
+  rect(tx - 20, y - 46, 2, (rh * n + 60) * kc, { fill: C.hero, alpha: 0.9 });
   ['Category', 'Best shown', 'Who, and on what', 'How we know', 'Best against mine'].forEach((h, i) => text(h, cx[i], y - 4, { role: 'label', size: 21, color: C.mute, alpha: a0 }));
   ntr_chip('Theseus target', tx, y - 4, a0);
   line(x, y + 14, RM, y + 14, { color: C.hair, w: 1.5, alpha: a0 });
@@ -240,7 +251,7 @@ function ntr_bar(t, rows) {
       line(X(0), ty - 7, X(0), ty + 7, { color: C.faint, w: 1.5, alpha: kt });
       circle(X(r.bv), ty, 8 * kt, { fill: C.ink });
       const xt = lerp(X(r.bv), X(r.tv), km), same = Math.abs(r.tv - r.bv) < 1e-9;
-      if (!same && km > 0.05) { line(X(r.bv), ty, xt, ty, { color: TH ? '#A87C00' : YEL, w: 3, alpha: kt }); }
+      if (!same && km > 0.05) { line(X(r.bv), ty, xt, ty, { color: C.heroText, w: 3, alpha: kt }); }
       heroMark(xt, ty, 11 * kt, 1);
       const ch2 = same ? 'Same' : (r.tv > r.bv ? '+' : '−') + fmtN(Math.abs(100 * (r.tv - r.bv) / r.bv), 0) + '%';
       text(ch2, tx - 36, ty + 7, { font: 'mono', size: 21, weight: 700, color: same ? C.mute : C.heroText, align: 'right', alpha: ep(t, t0 + 1.2, t0 + 1.6) });
@@ -326,8 +337,8 @@ S({
     const colX = j => LM + lw + (j ? c0w + (j - 1) * cw : 0), colW = j => j ? cw : c0w, total = hh + rows.reduce((a, r) => a + r.h, 0), a0 = ep(t, 0.3, 0.7);
     /* the Theseus column: a yellow cap and a rule */
     const kc = ep(t, 0.5, 1.1, E.snap);
-    rect(colX(0), y0, c0w - 14, 6 * kc, { fill: YEL });
-    rect(colX(0), y0, 2, total * kc, { fill: TH ? '#111111' : YEL, alpha: 0.9 });
+    rect(colX(0), y0, c0w - 14, 6 * kc, { fill: C.hero });
+    rect(colX(0), y0, 2, total * kc, { fill: C.hero, alpha: 0.9 });
     NTR_FLAG.forEach((f, j) => {
       const x = colX(j) + 18, a = ep(t, 0.4 + j * 0.08, 0.8 + j * 0.08);
       text(f.brand, x, y0 + 38, { role: 'label', size: 19, color: f.hero ? C.heroText : C.faint, alpha: a });
@@ -362,7 +373,7 @@ S({
         if (R.bar && c.v != null) {
           const bw = colW(j) - 40, by = ry + R.h - 18, kb = ep(t, t0 + 0.2 + 0.08 * j, t0 + 1.1 + 0.08 * j, E.snap), L = bw * clamp(c.v / R.bar) * kb;
           rr(x, by, bw, 8, 4, C.track, null, 0, kj);
-          rr(x, by, Math.max(8, L), 8, 4, hero ? YEL : best ? C.ref : C.comp, hero && TH ? '#111111' : null, 1.2, kj);
+          rr(x, by, Math.max(8, L), 8, 4, hero ? C.hero : best ? C.ref : C.comp, hero && TH ? '#111111' : null, 1.2, kj);
         }
       });
       ry += R.h;
@@ -524,7 +535,7 @@ S({
     });
     const kr = ep(t, 3.6, 4.1), ry = yEnd + 54;
     if (kr > 0) {
-      rect(tx0, yEnd + 8, 6, 74 * kr, { fill: YEL });
+      rect(tx0, yEnd + 8, 6, 74 * kr, { fill: C.hero });
       ntr_chip('Theseus target', tx0 + 20, ry, kr);
       text('29 g', tx0 + tw0 * 3.1 / 4.25 - 16, ry, { font: 'mono', size: 25, weight: 800, color: C.ink, align: 'right', alpha: kr });
       text('Not set', RM - 16, ry, { font: 'mono', size: 25, weight: 500, color: C.mute, align: 'right', alpha: kr });
@@ -622,7 +633,7 @@ S({
     text(fmtN(B.base, 2) + '\u00A0g', lx + lw, ys + 8, { font: 'mono', size: 26, weight: 800, color: C.ink, align: 'right', alpha: ks });
     text(`${fmtN(B.total, 2)} − ${fmtN(B.cable ? B.cable.g : 0, 2)} cable`, lx, ys + 36, { role: 'label', size: 19, color: C.faint, alpha: ks });
     const yc = ys + 76, kc = ep(t, 2.0, 2.5);
-    rect(lx - 16, yc - 34, 6, 52 * kc, { fill: YEL });
+    rect(lx - 16, yc - 34, 6, 52 * kc, { fill: C.hero });
     text('Left for a cell at 29 g', lx, yc, { role: 'small', size: 25, weight: 800, color: C.ink, alpha: kc });
     rich([{ s: fmtN(B.room, 2), role: 'stat', size: 52, color: C.ink, tnum: true, count: [2.0, 0.8] }, { s: 'g', font: 'mono', size: 24, weight: 600, color: C.mute, gap: 8 }], lx + lw, yc + 6, { t, align: 'right', alpha: kc });
     pill(lx, yc + 32, 'derived', kc);
@@ -644,8 +655,8 @@ S({
     const kz = ep(t, 3.0, 3.6);
     ntr_hatch(px, py, (xr29 - px), (y200 - py), rgba(C.red, 0.28), kz, 14);
     text('No cell here', px + 16, py + 40, { role: 'label', size: 20, color: C.redD, alpha: kz });
-    line(xr29, py + ph, xr29, py + ph - ph * k29, { color: '#A87C00', w: 2.5, dash: [9, 7] });
-    line(px, y200, px + pw * k200, y200, { color: '#A87C00', w: 2.5, dash: [9, 7] });
+    line(xr29, py + ph, xr29, py + ph - ph * k29, { color: C.heroText, w: 2.5, dash: [9, 7] });
+    line(px, y200, px + pw * k200, y200, { color: C.heroText, w: 2.5, dash: [9, 7] });
     ntr_chip('29 g', xr29 - 34, py - 16, ep(t, 2.4, 2.8));
     text('200 h target', px + pw - 12, y200 - 14, { role: 'label', size: 20, color: C.heroText, align: 'right', alpha: ep(t, 2.8, 3.2) });
     /* every pack in the family, grey; my three candidates, yellow */
@@ -694,9 +705,13 @@ S({
     const M0 = NTR_MAP, [vx, vy, vw, vh] = M0.v, c = M0.cam;
     ntr_prime('shell', t, vw, vh);
     const ke = ep(t, 0.5, 3.0, E.io3), kc = ep(t, 0.2, 3.4, E.cam);
-    view3D('shell', t, vx, vy, vw, vh, { view: c.view, yaw: c.yaw - 0.35 * (1 - kc), pitch: c.pitch - 0.05 * (1 - kc), zoom: lerp(c.zoom * 0.9, c.zoom, kc), explode: ke, colorway: 'black' }, { alpha: ep(t, 0.2, 0.9) });
+    const mst = { view: c.view, view2d: 'right', yaw: c.yaw - 0.35 * (1 - kc), pitch: c.pitch - 0.05 * (1 - kc), zoom: lerp(c.zoom * 0.9, c.zoom, kc), explode: ke, colorway: 'black' };
+    view3D('shell', t, vx, vy, vw, vh, mst, { alpha: ep(t, 0.2, 0.9) });
+    /* in 2D the leaders land on the parts of the exploded elevation, wherever the explode has carried them */
+    const AT2 = V2D.on ? ntr_mapAt(mst, M0.v) : null;
     /* the chapters, as callouts: number and icon in the chapter's colour, the name, the part it rebuilds, its idea count */
-    M0.items.forEach((it, i) => {
+    M0.items.forEach((it0, i) => {
+      const it = AT2 && AT2[it0.key] ? Object.assign({}, it0, { at: AT2[it0.key] }) : it0;
       const t0 = 3.4 + i * 0.16, k = ep(t, t0, t0 + 0.45), A = acc(it.key), ci = DECK.chapters.findIndex(ch => ch.key === it.key), ch = DECK.chapters[ci] || {};
       if (k <= 0.003) return;
       const n = chapterIdeaCount(it.key), cnt = n ? n + (n === 1 ? ' idea' : ' ideas') : '';

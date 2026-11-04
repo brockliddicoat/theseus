@@ -15,3 +15,8 @@ deck/shots/
 **/tmp/
 deck/dist/assets/
 deck/vendor/
+
+# the builders' isolated-build snapshot (tools/build.py --own)
+deck/.snapshot/
+# builders' isolated test builds (tools/build.py --out=<code>)
+deck/dist/main-*.html

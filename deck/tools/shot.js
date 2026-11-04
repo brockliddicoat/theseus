@@ -10,7 +10,7 @@ const { pageUrl } = require('./serve.js');
   p.on('pageerror', e => errs.push('PAGEERR ' + e.message));
   for (const s of shots) {
     const [id, t] = s.split(':');
-    await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + (t || 8), { waitUntil: 'domcontentloaded', timeout: 240000 });
+    await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + (t || 8) + (process.env.Q || ''), { waitUntil: 'domcontentloaded', timeout: 240000 });
     await p.waitForFunction('window.__ready === true', null, { timeout: 240000 }).catch(() => errs.push('timeout ' + s));
     await p.screenshot({ path: `${out}/${id}_${t || 8}.png` });
   }

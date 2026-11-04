@@ -47,7 +47,40 @@ Slide API: `S({ id, ch, theme: 'paper'|'night', title, settle, ideas: [#…], sr
 - [~] Chapter rebuilds: seven builders worked ~1–3 h each and were stopped by a session restart before reporting. Their work is committed (WIP). The deck builds, 94 slides. Remaining per chapter: finish step-further beats, check every slide settled/mid/phone-scale with `tools/qa.js` and `tools/errs.js`, fill any idea still without a visualization (list: `grep -o "ideas: \[[^]]*\]" src/*.js`).
 - [ ] Recommendations deck (`src/11-slides-rec.js`) restyle — partly done by the ownership builder; check.
 - [ ] Lattice assets are ~20 MB raw (`3d/lattice/assets/*.bin`); quantize/compress before final publish.
-- [ ] Push: create an empty GitHub repo `brockliddicoat/theseus` and push this repo (`git gc --prune=now` first).
+- [x] Pushed to `brockliddicoat/theseus`.
+- [x] 3D fixes and 2D mode (2026-11-04, below). Not yet pushed: this session had no GitHub write access, so the change
+  went to Brock as a patch (`git apply theseus-3d-fixes-and-2d-mode.patch`, then rebuild `deck/dist`).
+
+## Session 2026-11-04 (the 3D fixes and 2D mode)
+Brock: "the 3D visualizations are broken in a lot of areas, and I want a setting to do 2D only for the presentation."
+- **Fixed in the 3D bundle** (`3d/`): `shell.setClick` read `frontZ`/`travelFront` per side from `meta.hinge` (they live on
+  `meta.hinge` itself) and gave NaN, so any click blanked the whole shell scene; local clipping was switched on too late,
+  so the section caps of `gt01` cutaway, `claw` section, `screw` section failed to compile (`'clippingPlanes' :
+  undeclared identifier`); every scene now applies its full rest state under each call (`REST` in
+  `integration/entry.js`), so a key one slide leaves out no longer keeps the last slide's value (an exploded or
+  recoloured shell on the next slide); scenes frame themselves at rest when built, so live playback (which enters at
+  t = 0, often exploded) and screenshots frame a shot the same way.
+- **Fixed in the deck**: the Clicks chapter had all its 3D switched off (labelled placeholder boxes: `CLK_3D.dev2d`) while
+  those asset bugs stood; it is back on. The two `lab` framing slides were in the film; they now build only with `?lab=1`
+  (92 slides). A scene that fails to build (assets missing, a shader error) now shows its 2D twin instead of a hole.
+- **2D mode** (`deck/src/08-v2d.js`, documented in `deck/DESIGN.md` §7): a `2D / 3D` pill in the bar, the `D` key (`2` / `3`
+  set it), `?2d=1` or `?2d=0` in the URL; the bar choice is remembered per browser. In 2D no WebGL context is made and no
+  3D asset is fetched. Each 3D shot becomes a flat, outlined elevation of the same parts, traced off the same assets
+  (`deck/geo2d/*.json`, ~1 MB, rebuilt by `sh deck/tools/geo2d/build.sh`); states (explode, press, insert, drive,
+  scroll, x-ray, cutaway, section, power, reflow, colourway, the lattice's cut, build, stress, compare and fillet zoom)
+  all show, and the callouts follow through `V3.proj` / `v2dAt`. Checkers take `Q='&2d=1'`.
+- **Faster and safer 3D**: a scene's canvas now only grows and each shot renders into its corner (it was resized on every
+  call, several times a frame on slides that draw one scene twice); while a scene streams in, its 2D twin stands in and
+  the render fades in over it; binary assets also ship as `.gz.b64.txt` (the artifact host serves no `.glb` or `.bin`), and
+  the bundle's fetch decodes them, so the builders are unchanged.
+- **This machine**: npm's registry is blocked from this session, so `3d/node_modules` holds three r187 cloned from
+  GitHub and a link to a preinstalled esbuild; `@gltf-transform` is missing, so `integration/build.mjs` copies the .glb
+  files uncompressed (`deck/dist/assets/` is ~36 MB). Run `npm install` in `3d/` where the registry works to get the
+  meshopt-compressed assets back.
+- Published on the account this session ran on (brockabomb@gmail.com) as a new artifact: see `PUBLISHING.md`. The link on
+  the main account (`BM6ym7q1adWFaNP6u5cTQv`) is not reachable from this account and was not updated.
+- The old deck on this account (`claude.ai/artifact/A7oboZ7PVeA6MMgAqLb8eo`, artifact 49d56dc9) is the pre-design-system
+  version; per the history above, its HTML is where the lost idea-sheet code lives.
 
 ## Open decisions for Brock
 - 29 g budget vs 200 h target: built like the XA25, a 29 g wireless mouse leaves ~4.9 g for the battery (~140 mAh, ~146 h at 1 kHz); 250 mAh needs ~2.6 g cut elsewhere.

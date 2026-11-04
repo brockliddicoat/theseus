@@ -9,11 +9,14 @@ const W = 1920, H = 1080;
 /* ---------- colour ----------
    Two grounds, from the old film: paper (TH = 1) and night (TH = 0). Paper is XBAB's light grey.
    Every neutral is a step on one ramp per ground; nothing warm, nothing tan.
-   Yellow is Theseus and only Theseus: in a chart it marks our number and nothing else.
+   Red is Theseus and only Theseus: in a chart it marks our number and nothing else (HERO, C.hero).
+   Yellow is the second highlight: the next best, the one to beat (C.second, C.ref).
+   A failure, a gap or a problem is a dull orange-grey (C.bad, and C.red, which old code used for it), never red.
    Each chapter has one accent for its chrome (section label, chapter card, highlights in drawings). */
 let TH = 0;
 const PAPER = '#F7F6F2', NIGHT = '#0D0E0F';
-const YEL = '#FDC316';
+const HERO = '#E5484D', HERO_P = '#D9343B';   /* Theseus red: the fill on night, the fill on paper */
+const YEL = '#FDC316';                         /* the second highlight */
 const RAMP = {
   /*           ink        ink2       mute       faint      hair       track      panel      line                    comp       comp2    */
   paper: ['#111111', '#2E2E2C', '#66655F', '#8A8983', '#DDDCD6', '#E7E6E1', '#FFFFFF', 'rgba(17,17,17,0.10)', '#B9B8B2', '#D3D2CC'],
@@ -21,13 +24,24 @@ const RAMP = {
 };
 const rampOf = i => (TH ? RAMP.paper : RAMP.night)[i];
 const C = {
-  red: '#E5484D', redL: '#EF7275', redD: '#B8383D',
   blue: '#4385E4', blueL: '#609EFA', blueD: '#3466BF',
   purple: '#8A70DD', purpleL: '#A18BF3', purpleD: '#6F55C4',
   green: '#1FA466', greenL: '#46B86E', greenD: '#14824F',
-  gray: '#9DA3AE', white: '#FFFFFF', hero: YEL, yel: YEL
+  gray: '#9DA3AE', white: '#FFFFFF', yel: YEL,
+  onHero: '#FFFFFF', heroChip: HERO_P        /* a solid red block (a chip, a tag's value) and the ink on it, both themes */
 };
 Object.defineProperties(C, {
+  hero: { get: () => (TH ? HERO_P : HERO) },                     /* Theseus: its bar, point, line, column */
+  heroText: { get: () => (TH ? '#C8292F' : '#F25A5F') },         /* Theseus red as small text or a thin line */
+  heroSoft: { get: () => (TH ? 'rgba(217,52,59,0.14)' : 'rgba(229,72,77,0.16)') },   /* a red field behind something */
+  second: { get: () => (TH ? '#C29100' : YEL) },                 /* the next best: its bar, point, line */
+  secondText: { get: () => (TH ? '#946E00' : YEL) },             /* the next best as small text or a thin line */
+  /* a problem: a failure, a gap, a breakage, placeholder data. Dull on purpose, so it never reads as Theseus */
+  bad: { get: () => (TH ? '#936A51' : '#AC8168') },
+  badL: { get: () => (TH ? '#B08A74' : '#C49C84') }, badD: { get: () => (TH ? '#74513C' : '#8E6850') },
+  red: { get: () => C.bad }, redL: { get: () => C.badL }, redD: { get: () => C.badD },
+  /* heat: stress and load in a drawing, low to high (amber to a hot orange, never red) */
+  heat: { get: () => (TH ? '#E07A10' : '#FF9A2E') }, heatL: { get: () => (TH ? '#E9A23A' : '#FFC266') },
   bg: { get: () => (TH ? PAPER : NIGHT) },
   ink: { get: () => rampOf(0) },            /* headlines, hero numbers */
   ink2: { get: () => rampOf(1) },           /* body text */
@@ -39,16 +53,15 @@ Object.defineProperties(C, {
   line: { get: () => rampOf(7) },           /* card border */
   comp: { get: () => rampOf(8) },           /* a competitor's bar or point */
   comp2: { get: () => rampOf(9) },          /* a dimmed competitor (dominated, out of scope) */
-  ref: { get: () => rampOf(0) },            /* the reference: the best one shipping today */
-  heroText: { get: () => (TH ? '#A87C00' : YEL) },   /* yellow that is still readable as small text on paper */
-  heroEdge: { get: () => (TH ? '#111111' : 'rgba(0,0,0,0)') }, /* XBAB outlines its yellow bars in black on paper */
+  ref: { get: () => C.second },             /* the reference: the best one shipping today, the one to beat (yellow) */
+  heroEdge: { get: () => 'rgba(0,0,0,0)' }, /* the old black edge round yellow bars on paper; red needs none */
   dot: { get: () => (TH ? 'rgba(17,17,17,0.30)' : 'rgba(243,242,238,0.30)') }, /* one sample in a chart */
   good: { get: () => (TH ? '#14824F' : '#46B86E') },
-  bad: { get: () => C.red },
-  yellow: { get: () => YEL }, gold: { get: () => YEL },
+  /* old names: yellow and gold meant Theseus before red did, so they answer with the hero red; true yellow is C.yel / C.second */
+  yellow: { get: () => C.hero }, gold: { get: () => C.hero },
   orange: { get: () => (TH ? '#D9701E' : '#F08A3C') },
   brown: { get: () => rampOf(2) }, brownL: { get: () => rampOf(2) },
-  loss: { get: () => C.red }, steel: { get: () => C.gray }, cool: { get: () => C.blue }
+  loss: { get: () => C.bad }, steel: { get: () => C.gray }, cool: { get: () => C.blue }
 });
 function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
 function rgba(hex, a) { if (hex.startsWith('rgb')) return hex; const c = hexRgb(hex); return `rgba(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)},${a})`; }
@@ -395,12 +408,12 @@ function paper(a = 1) {
 function rrPath(x, y, w, h, r) { r = Math.max(0, Math.min(r, w / 2, h / 2)); G.beginPath(); G.moveTo(x + r, y); G.arcTo(x + w, y, x + w, y + h, r); G.arcTo(x + w, y + h, x, y + h, r); G.arcTo(x, y + h, x, y, r); G.arcTo(x, y, x + w, y, r); G.closePath(); }
 function rr(x, y, w, h, r, fill, stroke, lw = 1.5, a = 1) { G.save(); G.globalAlpha = a; rrPath(x, y, w, h, r); if (fill) { G.fillStyle = fill; G.fill(); } if (stroke) { G.strokeStyle = stroke; G.lineWidth = lw; G.stroke(); } G.restore(); }
 /** a card: a demonstration's own window on the paper (nothing sits straight on the grid).
-   o = { r, fill, plain (no entrance), grid (a faint 40 px grid inside, as on the Kunai cards), hero (yellow edge), accent } */
+   o = { r, fill, plain (no entrance), grid (a faint 40 px grid inside, as on the Kunai cards), hero (red edge), accent } */
 function demoWindow(x, y, w, h, a = 1, o = {}) {
   if (a <= 0.003) return;
   const r = o.r == null ? 12 : o.r;
   if (QA.on) QA.boxes.push({ x0: x, y0: y, x1: x + w, y1: y + h });
-  rr(x, y, w, h, r, o.fill || C.panel, o.hero ? (TH ? '#111111' : YEL) : C.line, o.hero ? 2 : 1.5, a);
+  rr(x, y, w, h, r, o.fill || C.panel, o.hero ? C.hero : C.line, o.hero ? 2 : 1.5, a);
   if (o.grid) {
     G.save(); G.globalAlpha = a; rrPath(x, y, w, h, r); G.clip(); G.strokeStyle = inkA(TH ? 0.035 : 0.03); G.lineWidth = 1; G.beginPath();
     for (let gx = Math.ceil(x / 40) * 40; gx < x + w; gx += 40) { G.moveTo(gx + 0.5, y); G.lineTo(gx + 0.5, y + h); }

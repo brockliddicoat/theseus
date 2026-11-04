@@ -51,3 +51,16 @@ for (const [dir, re] of want) {
   }
 }
 console.log('assets total', (total / 1048576).toFixed(2) + ' MB in', path.relative(ROOT, OUT_ASSETS));
+
+// artifact hosting serves no .glb or .bin, so every binary asset also ships as <name>.gz.b64.txt (gzip, then base64);
+// the bridge fetches those and decodes them (3d/integration/bridge.js, assetFetch), so the builders load as before
+import zlib from 'node:zlib';
+let packed = 0;
+const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
+for (const f of walk(OUT_ASSETS)) {
+  if (!/\.(glb|bin)$/.test(f)) continue;
+  const out = f + '.gz.b64.txt';
+  if (!fs.existsSync(out) || fs.statSync(out).mtimeMs < fs.statSync(f).mtimeMs) fs.writeFileSync(out, zlib.gzipSync(fs.readFileSync(f), { level: 9 }).toString('base64'));
+  packed += fs.statSync(out).size;
+}
+console.log('packed for hosting', (packed / 1048576).toFixed(2) + ' MB (.gz.b64.txt)');

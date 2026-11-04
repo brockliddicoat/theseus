@@ -30,14 +30,16 @@ const ELC = {
   /* every key the pcb scene takes: the scene keeps whatever a call leaves out, so each call sets them all */
   pcb0: { explode: 0, xray: 0, power: 0, powerMode: 'charge', powerT: 0, reflow: 0, pressL: 0, pressR: 0 },
   top: [0, 0.98, -0.2],          /* from above with the nose at the top (the named 'top' view puts the nose at the bottom) */
-  run: '#6FDCFF', chg: YEL       /* the colours of the scene's current flow, for the 2D keys that point at it */
+  run: '#6FDCFF', chg: C.hero       /* the colours of the scene's current flow, for the 2D keys that point at it */
 };
 /** board-local mm (x, z, height above the top copper) to the mouse frame the scene uses (3d/pcb/pcb.js PCB_INFO) */
 const elc_W = (x, z, dy = 0) => [x, 5.03 + dy, z - 2.88];
 /** a 3D shot with every state key set; returns a projector (mouse-frame mm → stage px) once the scene has rendered, else null */
 function elc_v3(key, t, x, y, w, h, st, o = {}) {
   const s = Object.assign({}, key === 'pcb' ? ELC.pcb0 : key === 'battery' ? { explode: 0 } : {}, st);
-  if (!view3D(key, t, x, y, w, h, s, o) || typeof R3D === 'undefined' || !R3D.prepare) return null;
+  if (!view3D(key, t, x, y, w, h, s, o)) return null;
+  if (V3.proj) return V3.proj;                       /* the 2D twin's projector (08-v2d.js) */
+  if (typeof R3D === 'undefined' || !R3D.prepare) return null;
   const e = R3D.prepare(key, o.theme || (TH ? 'paper' : 'night')), cam = e && e.studio && e.studio.camera;
   if (!cam) return null;
   const V = R3D.THREE.Vector3;
@@ -66,7 +68,7 @@ function elc_step(t, t0, x, y, w, h, o) {
   const x2 = v ? x : x + hw + gap, y2 = v ? y + h1 : y, w2 = v ? w : hw, h2 = v ? h - h1 : h;
   if (!v) arrow(x + hw + 12, y + h / 2, x + hw + gap - 10, y + h / 2, { color: C.heroText, w: 3, hs: 13, p: kb });
   else line(x + 26, y2, x + w - 26, y2, { color: C.hair, w: 1.5, alpha: kb });
-  if (kb > 0.01) rect(x2, y2 + 14, 5, (h2 - 28) * kb, { fill: YEL });
+  if (kb > 0.01) rect(x2, y2 + 14, 5, (h2 - 28) * kb, { fill: C.hero });
   cardHead(t, t0 + 1.1, x2, y2, w2, 'Theseus, one step further', o.stepEv || ['proposal'], { dy: 40, color: C.heroText });
   text(o.step, x2 + 26, y2 + 84, { role: 'small', size: 26, weight: 600, color: C.ink, maxW: w2 - 52, lh: 1.3, t, t0: t0 + 1.3, cps: 120 });
 }
@@ -107,7 +109,7 @@ S({
   id: 'eleccard', ch: 'elec', card: true, theme: 'night', title: 'Electronics', settle: 5, three: ['pcb'],
   draw: t => {
     chapterCard(t, { name: 'Electronics', gloss: 'The radio, the power, the board and the receiver, and what each one costs in battery and latency.', list: [[102, 'A pre-certified radio module (intended)'], [77, 'Radio and 8 kHz USB in one chip'], ['pmic', 'A PMIC: charger, rails and fuel gauge'], [92, 'Every part on one side: one reflow'], ['sync', 'Each frame captured just before it is sent'], ['link', 'A spare copy of every report'], [68, 'The antenna forward, clear of carbon'], [85, 'A screen on the receiver'], [23, 'Software in the browser']] });
-    const P = elc_v3('pcb', t, 990, 250, 780, 660, { view: [-0.62, 0.7, 0.5], yaw: 0.26 * Math.sin(t * 0.33), zoom: 1.7, target: elc_W(0, 23, 4), power: ep(t, 2.2, 3.0), powerMode: 'run', powerT: t }, { alpha: ep(t, 0.8, 1.7) });
+    const P = elc_v3('pcb', t, 990, 250, 780, 660, { view: [-0.62, 0.7, 0.5], view2d: 'top', yaw: 0.26 * Math.sin(t * 0.33), zoom: 1.7, target: elc_W(0, 23, 4), power: ep(t, 2.2, 3.0), powerMode: 'run', powerT: t }, { alpha: ep(t, 0.8, 1.7) });
     if (P) { const a0 = P(elc_W(0, 26.2, 2.2)), a1 = P(elc_W(0, 46, 2.2)); elc_waves(t, 2.8, a0, Math.atan2(a1[1] - a0[1], a1[0] - a0[0]), { R: 280, spread: 0.65 }); }
   }
 });
@@ -429,7 +431,7 @@ S({
     text('The LED flashes once per frame. Synced, every read gets a fresh frame, so the sensor can flash less often.', rx + 26, wy + 112, { role: 'small', color: C.ink2, maxW: rw - 52, lh: 1.32, t, t0: 1.2, cps: 130 });
     const items = [['Smart sleep, Kunai', 'Sleeps 10 s after the hand leaves; wakes on a touch.'], ['Head start, Kunai', 'The first move after a rest goes out in the next 125 µs slot.'], ['Second Shot, Kunai', 'The spare copy runs only while packets are being lost.']];
     items.forEach(([h2, b], i) => { const y = wy + 248 + i * 96, k = ep(t, 2.6 + i * 0.4, 3.0 + i * 0.4); rule(rx + 26, y - 34, rx + rw - 26, k); text(h2, rx + 26, y, { role: 'label', size: 21, color: TH ? C.ink : A, alpha: k }); text(b, rx + 26, y + 34, { role: 'small', color: C.ink2, alpha: k, maxW: rw - 52, lh: 1.3 }); });
-    rich([{ s: 'Theseus, as budgeted', role: 'label', size: 21, color: '#111111', chip: YEL }], rx + 32, wy + wh - 30, { alpha: ep(t, 4.4, 4.8) });
+    rich([{ s: 'Theseus, as budgeted', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }], rx + 32, wy + wh - 30, { alpha: ep(t, 4.4, 4.8) });
     text('146 h at 1 kHz, 32 h at 8 kHz', rx + 330, wy + wh - 30, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: ep(t, 4.6, 5.0) });
     gloss(t, 2.8, 'Frame', 'One picture of the pad taken by the sensor\'s camera. The LED flashes once per frame, and the sensor works out motion by comparing frames.');
     featureCard(t, 5.6, 'Battery from sync and sleep', ['claim', 'derived', 'proposal'], 'Frames captured only when they\'re needed, sleep driven by the button sensors, a spare copy only when the room needs it.');
@@ -552,7 +554,7 @@ S({
       const yy = y + 138 + i * 54, k = ep(t, 1.0 + i * 0.2, 1.8 + i * 0.2, E.snap), hero = ev === 'proposal';
       text(nm, lx + 26, yy + (sub ? 0 : 8), { role: 'small', weight: hero ? 800 : 600, color: C.ink, alpha: ep(t, 0.9 + i * 0.2, 1.3 + i * 0.2) });
       if (sub) text(sub, lx + 26, yy + 26, { role: 'label', size: 21, color: hero ? C.heroText : C.mute, alpha: ep(t, 0.9 + i * 0.2, 1.3 + i * 0.2) });
-      if (hero) { G.save(); G.globalAlpha = 1; G.setLineDash([6, 5]); G.strokeStyle = C.heroText; G.lineWidth = 2; G.strokeRect(x0, yy - 10, (X(hi) - x0) * k, 20); G.restore(); rect(x0, yy - 10, (X(hi) - x0) * k, 20, { fill: rgba(YEL, 0.55) }); }
+      if (hero) { G.save(); G.globalAlpha = 1; G.setLineDash([6, 5]); G.strokeStyle = C.heroText; G.lineWidth = 2; G.strokeRect(x0, yy - 10, (X(hi) - x0) * k, 20); G.restore(); rect(x0, yy - 10, (X(hi) - x0) * k, 20, { fill: rgba(C.hero, 0.55) }); }
       else { rect(x0, yy - 10, (X(lo) - x0) * k, 20, { fill: i === 1 ? C.ink : C.comp }); if (hi > lo) rect(X(lo), yy - 10, (X(hi) - X(lo)) * k, 20, { fill: C.comp, alpha: 0.5 }); }
       text(hi > lo ? lo.toFixed(2) + '–' + hi.toFixed(2) + ' A' : hi.toFixed(3).replace(/0$/, '') + ' A', X(hi) * 1 + 12, yy + 8, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: k });
       evDot(lx + lw - 20, yy, ev, 5.5, k);
@@ -571,12 +573,12 @@ S({
     const m = axes(t, { x: rx + 110, y: y + 100, w: rw - 160, h: 178, t0: 1.0, xr: [0, 120], yr: [0, 100], xticks: [0, 30, 60, 90, 120], yticks: [0, 50, 100], xfmt: v => v + ' min', yfmt: v => v + '%' });
     const kS = ep(t, 1.4, 3.0, E.io3), kF = ep(t, 1.8, 3.4, E.io3);
     series(m, Sl.pts.map(p => [p[0], p[1] * 100]), { color: C.ink, w: 3, p: kS });
-    series(m, F.pts.map(p => [p[0], p[1] * 100]), { color: YEL, w: 5, p: kF });
+    series(m, F.pts.map(p => [p[0], p[1] * 100]), { color: C.hero, w: 5, p: kF });
     const kd = ep(t, 3.6, 4.0);
-    for (const [Q, col, lab, dy] of [[F, YEL, '1C: CC ends', -16], [Sl, C.ink, '0.55C: CC ends', 30]]) {
+    for (const [Q, col, lab, dy] of [[F, C.hero, '1C: CC ends', -16], [Sl, C.ink, '0.55C: CC ends', 30]]) {
       const px = m.X(Q.cc[0]), py = m.Y(Q.cc[1] * 100);
-      if (col === YEL) heroMark(px, py, 9, kd); else circle(px, py, 7, { fill: col, alpha: kd });
-      text(lab, px + (col === YEL ? -14 : 14), py + dy, { role: 'label', size: 21, color: C.ink, align: col === YEL ? 'right' : 'left', alpha: kd });
+      if (col === C.hero) heroMark(px, py, 9, kd); else circle(px, py, 7, { fill: col, alpha: kd });
+      text(lab, px + (col === C.hero ? -14 : 14), py + dy, { role: 'label', size: 21, color: C.ink, align: col === C.hero ? 'right' : 'left', alpha: kd });
     }
     /* the gauge's time to full, as the receiver would show it */
     const tp = clamp(((t - 4.6) * 9) % 76, 0, 70), soc = (F.pts.find(p => p[0] >= tp) || F.end)[1], ttf = Math.max(0, Math.round(F.end[0] - tp)), kr = ep(t, 4.4, 4.8);
@@ -631,7 +633,7 @@ S({
     const rx = 1110, rw = RM - rx;
     demoWindow(rx, y, rw, 300, ep(t, 0.4, 0.8));
     cardHead(t, 0.6, rx, y, rw, 'The cell\'s third wire', ['proposal']);
-    const PB = elc_v3('battery', t, rx + 2, y + 60, rw - 4, 238, { view: 'threeQuarter', zoom: 1.55, yaw: 0.15 * Math.sin(t * 0.4), explode: 0.35 * ep(t, 1.2, 2.4) });
+    const PB = elc_v3('battery', t, rx + 2, y + 60, rw - 4, 238, { view: 'threeQuarter', view2d: 'top', zoom: in2D(1.25, 1.55), yaw: 0.15 * Math.sin(t * 0.4), explode: 0.35 * ep(t, 1.2, 2.4) });
     if (PB) {
       callout(t, 2.4, PB([13.5, 1.2, 23.5]), 'NTC lead', { to: [rx + rw - 230, y + 110], side: 'r', color: A, sub: 'Read by the PMIC' });
       callout(t, 2.9, PB([0, 4.8, 15.2]), 'Protection board', { to: [rx + 30, y + 270], side: 'r', color: A });

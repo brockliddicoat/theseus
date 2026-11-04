@@ -89,7 +89,7 @@ S({
     hy = own_card(t, 0.5, bx, y0, bw, hh, 'A switch comes out by hand', []);
     own_ref('#14, in Clicks', bx + bw - 26, y0 + 46, ep(t, 0.8, 1.2));
     const ins = t < 10 ? kf(t, [[1.6, 0], [3.4, 1]]) : 1 - pingpong(t - 10, 6);
-    view3D('claw', t, bx + 20, hy + 6, bw - 40, 420, { view: 'threeQuarter', insert: ins, zoom: 1.5, yaw: -0.25 + 0.2 * ep(t, 0.6, 8), pitch: -0.12 }, { alpha: ep(t, 0.6, 1.2) });
+    view3D('claw', t, bx + 20, hy + 6, bw - 40, 420, { view: 'threeQuarter', view2d: 'front', insert: ins, zoom: in2D(1.75, 1.5), yaw: -0.25 + 0.2 * ep(t, 0.6, 8), pitch: -0.12 }, { alpha: ep(t, 0.6, 1.2) });
     const kb = ep(t, 3.6, 4.0);
     text('Mill-Max 3305 claw socket', bx + 26, hy + 470, { role: 'h3', size: 30, color: C.ink, alpha: kb });
     rich([{ s: '1,000', font: 'mono', size: 28, weight: 700, color: C.ink }, { s: 'insertions, minimum', role: 'small', sentence: false, color: C.ink2, gap: 12 }], bx + 26, hy + 516, { alpha: kb });
@@ -107,7 +107,7 @@ S({
       own_ref(p[3], cx + cw - 26, y + 22, a);
       text(p[1], cx + 116, y + 58, { role: 'small', color: C.ink2, maxW: cw - 140, alpha: a });
       const tool = p[2] === 'No tool';
-      rich([{ s: p[2], role: 'label', size: 21, color: tool ? C.ink : '#111111', chip: tool ? null : YEL }], cx + 116, y + 100, { alpha: a });
+      rich([{ s: p[2], role: 'label', size: 21, color: tool ? C.ink : '#111111', chip: tool ? null : C.hero }], cx + 116, y + 100, { alpha: a });
     });
     source(t, 'iFixit\'s sample is its own readers, people who already repair. The IKEA effect disappeared when the build failed (Norton et al.).', { t0: 5.0 });
   }
@@ -126,8 +126,8 @@ function own_massBars(t, t0, x, y, w, rows, o = {}) {
     text(r.qual, x, yy + 26, { role: 'label', size: 19, color: r.hero ? C.heroText : C.faint, alpha: a });
     const lo = Array.isArray(r.v) ? r.v[0] : r.v, hi = Array.isArray(r.v) ? r.v[1] : r.v, by = yy - 4, bh = 14;
     rr(bx, by - bh / 2, bw, bh, bh / 2, C.track, null, 0, a);
-    const col = r.hero ? YEL : r.ref ? C.ref : C.comp;
-    if (hi !== lo) rr(bx, by - bh / 2, Math.max(bh, bw * hi / max * k), bh, bh / 2, rgba(YEL, 0.45), null, 0, a);
+    const col = r.hero ? C.hero : r.ref ? C.ref : C.comp;
+    if (hi !== lo) rr(bx, by - bh / 2, Math.max(bh, bw * hi / max * k), bh, bh / 2, rgba(C.hero, 0.45), null, 0, a);
     rr(bx, by - bh / 2, Math.max(bh, bw * lo / max * k), bh, bh / 2, col, r.hero && TH ? '#111111' : null, 1.3, a);
     const vs = { font: 'mono', size: 25, weight: r.hero ? 800 : 600 };
     text(r.label, x + w, yy + 2, Object.assign({ color: C.ink, align: 'right', alpha: a }, vs));
@@ -146,8 +146,10 @@ S({
     const lx = LM, lw0 = 820;
     let hy = own_card(t, 0.3, lx, y0, lw0, h0, 'M2 machine screw, brass insert', ['proposal']);
     const drive = kf(t, [[0.9, 0], [4.0, 1]], E.io3);
-    view3D('screw', t, lx + 6, hy + 4, 420, 430, { view: 'threeQuarter', drive, zoom: 1.24, yaw: 0.5 - 0.3 * ep(t, 0.5, 3.8), target: [0, 0.5, 0] }, { alpha: ep(t, 0.4, 1.0) });
-    callout(t, 4.3, own_SCREWPT.head, 'Cross and slot', { to: [own_SCREWPT.head[0] + 60, hy + 48], side: 'r', color: C.ink2, tcolor: C.ink });
+    const sst = { view: 'threeQuarter', drive, zoom: 1.24, yaw: 0.5 - 0.3 * ep(t, 0.5, 3.8), target: [0, 0.5, 0] };
+    view3D('screw', t, lx + 6, hy + 4, 420, 430, sst, { alpha: ep(t, 0.4, 1.0) });
+    const hp = (V2D.on && v2dAt('screw', sst, [lx + 6, hy + 4, 420, 430], /screw\/head$/, [0.5, 1, 0.5])) || own_SCREWPT.head;
+    callout(t, 4.3, hp, 'Cross and slot', { to: [hp[0] + 60, hy + 48], side: 'r', color: C.ink2, tcolor: C.ink });
     /* the section: boss, knurled brass insert, the steel screw's machine thread, the board clamped */
     const sx = lx + 610, sy = hy + 250, ks = ep(t, 1.6, 2.2);
     text('Section', sx, hy + 26, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: ks });
@@ -224,12 +226,16 @@ S({
     const lx = LM, lw0 = 980;
     let hy = own_card(t, 0.3, lx, y0, lw0, h0, 'The cell, the bands, the plug', ['proposal']);
     const ex = t < 11 ? kf(t, [[2.2, 0], [4.2, 1]], E.io3) : 1 - pingpong(t - 11, 8);
-    view3D('battery', t, lx + 10, hy - 20, lw0 - 20, h0 - (hy - y0) + 14, { view: 'threeQuarter', explode: ex, zoom: 1.9, yaw: 0.15 - 0.2 * ep(t, 0.5, 4.2), target: [3, 4, 4] }, { alpha: ep(t, 0.4, 1.0) });
+    const bst = { view: 'threeQuarter', view2d: 'front', explode: ex, zoom: in2D(1.5, 1.9), yaw: 0.15 - 0.2 * ep(t, 0.5, 4.2), target: in2D([4, 5, 4], [3, 4, 4]) }, bb = [lx + 10, hy - 20, lw0 - 20, h0 - (hy - y0) + 14];
+    view3D('battery', t, bb[0], bb[1], bb[2], bb[3], bst, { alpha: ep(t, 0.4, 1.0) });
     const kc = ep(t, 4.4, 4.8);
     if (kc > 0) {
-      callout(t, 4.4, [470, 432], 'Two silicone bands, no adhesive', { to: [560, 384], side: 'r', color: C.ink2, tcolor: C.ink, prose: true, maxW: 300 });
-      callout(t, 4.7, [956, 690], 'Side-entry JST SH', { to: [930, 812], side: 'l', color: C.ink2, tcolor: C.ink });
-      callout(t, 5.0, [762, 662], 'Twisted lead (#69)', { to: [610, 770], side: 'l', color: C.ink2, tcolor: C.ink });
+      /* in 2D the drawing is a plan from above: the leaders find the bands, the header and the lead on it */
+      const at = (re, f, p) => (V2D.on && v2dAt('battery', bst, bb, re, f)) || p;
+      const pB = at(/bands\/band$/, [0.15, 1, 0.5], [470, 432]), pJ = at(/headerShell$/, [0.5, 1, 0.5], [956, 690]), pW = at(/wires\/wire0$/, [0.5, 0.5, 0.5], [762, 662]);
+      callout(t, 4.4, pB, 'Two silicone bands, no adhesive', { to: in2D([pB[0] - 50, hy + 76], [560, 384]), side: in2D('l', 'r'), color: C.ink2, tcolor: C.ink, prose: true, maxW: 300 });
+      callout(t, 4.7, pJ, 'Side-entry JST SH', { to: in2D([pJ[0] + 40, hy + 76], [930, 812]), side: in2D('r', 'l'), color: C.ink2, tcolor: C.ink });
+      callout(t, 5.0, pW, 'Twisted lead (#69)', { to: in2D([pW[0] + 70, y0 + h0 - 70], [610, 770]), side: in2D('r', 'l'), color: C.ink2, tcolor: C.ink });
     }
     /* right top: which way the plug pulls */
     const rx = lx + lw0 + 40, rw = RM - rx, rh1 = 300;
@@ -288,7 +294,7 @@ S({
     const cols = [rx + 26, rx + rw * 0.55, rx + rw * 0.8];
     const kh = ep(t, 5.4, 5.8);
     text('XPanel', cols[1], hy + 18, { role: 'label', size: 21, color: C.ink, alpha: kh });
-    rich([{ s: 'Theseus', role: 'label', size: 21, color: '#111111', chip: YEL }], cols[2], hy + 18, { alpha: kh });
+    rich([{ s: 'Theseus', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }], cols[2], hy + 18, { alpha: kh });
     const rows = [['Works without the dongle', 'No', 'Yes'], ['Opens from the board', 'No', 'QR'], ['Updates both ends at once', 'Not stated', 'Yes']];
     rows.forEach((r, i) => {
       const yy = hy + 74 + i * 54, k = ep(t, 5.6 + i * 0.2, 6.0 + i * 0.2);
@@ -379,13 +385,13 @@ S({
     D.mice.forEach((m, i) => {
       const y = ty + 30 + i * rh, a = ep(t, 1.1 + i * 0.1, 1.5 + i * 0.1);
       line(rx + 26, y - rh / 2 - 2, rx + rw - 26, y - rh / 2 - 2, { color: C.hair, w: 1, alpha: a });
-      if (m.hero) { const kk = ep(t, 2.6, 3.0, E.snap); rect(rx + 14, y - rh / 2 + 2, rw - 28, rh - 6, { fill: rgba(YEL, TH ? 0.14 : 0.1), alpha: kk }); rect(rx + 14, y - rh / 2 + 2, 6, rh - 6, { fill: YEL, alpha: kk }); }
+      if (m.hero) { const kk = ep(t, 2.6, 3.0, E.snap); rect(rx + 14, y - rh / 2 + 2, rw - 28, rh - 6, { fill: rgba(C.hero, TH ? 0.14 : 0.1), alpha: kk }); rect(rx + 14, y - rh / 2 + 2, 6, rh - 6, { fill: C.hero, alpha: kk }); }
       if (m.ref) rect(rx + 14, y - rh / 2 + 2, 6, rh - 6, { fill: C.ink, alpha: a });
       evDot(rx + 36, y, m.ev, 5.5, a);
       text(m.name, rx + 54, y + 9, { role: 'small', weight: m.hero || m.ref ? 800 : 500, color: C.ink, alpha: a });
       m.v.forEach((v, j) => {
         const X = gx(j), kk = ep(t, 1.4 + i * 0.1 + j * 0.05, 1.8 + i * 0.1 + j * 0.05);
-        if (v === 1) own_tick(X, y, 24, m.hero && !TH ? YEL : C.ink, kk);
+        if (v === 1) own_tick(X, y, 24, m.hero && !TH ? C.hero : C.ink, kk);
         else if (v === 0) own_dash(X, y, 24, C.faint, kk);
         else text('n/a', X, y + 7, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: kk });
       });
@@ -421,7 +427,7 @@ S({
     const glyph = (s2, a2) => { G.save(); G.globalAlpha = k * a2; G.fillStyle = 'rgba(236,235,231,0.16)'; G.fillText(s2, px + pw2 / 2, py + 180); G.fillStyle = 'rgba(0,0,0,0.25)'; G.fillText(s2, px + pw2 / 2 + 2, py + 182); G.fillStyle = 'rgba(236,235,231,0.10)'; G.fillText(s2, px + pw2 / 2, py + 180); G.restore(); };
     if (lc >= 0 && lc < 0.6) glyph(sn(idx - 1), 1 - ep(lc, 0, 0.55));
     G.save(); G.beginPath(); G.rect(px, py, pw2 * engr + 1, ph2); G.clip(); glyph(num, 1); G.restore();
-    if (engr > 0 && engr < 1) { const ex = px + pw2 * engr, ey = py + 120 + 50 * Math.sin(t * 38); warm(ex, ey, 46, '#ffffff', 0.35); warm(ex, ey, 18, YEL, 0.9); line(ex, py, ex, py + ph2, { color: YEL, w: 1.5, alpha: 0.5 }); const rs = rng(Math.floor(t * 30)); for (let i = 0; i < 7; i++) { const ang = -Math.PI / 2 + (rs() - 0.5) * 2.2, d = 6 + rs() * 26; circle(ex + Math.cos(ang) * d, ey + Math.sin(ang) * d, 1.6, { fill: '#ffe7b0', alpha: 0.8 * (1 - d / 34) }); } }
+    if (engr > 0 && engr < 1) { const ex = px + pw2 * engr, ey = py + 120 + 50 * Math.sin(t * 38); warm(ex, ey, 46, '#ffffff', 0.35); warm(ex, ey, 18, C.hero, 0.9); line(ex, py, ex, py + ph2, { color: C.hero, w: 1.5, alpha: 0.5 }); const rs = rng(Math.floor(t * 30)); for (let i = 0; i < 7; i++) { const ang = -Math.PI / 2 + (rs() - 0.5) * 2.2, d = 6 + rs() * 26; circle(ex + Math.cos(ang) * d, ey + Math.sin(ang) * d, 1.6, { fill: '#ffe7b0', alpha: 0.8 * (1 - d / 34) }); } }
     G.restore();
     keyPlan(t, 1.0, lx + lw0 - 120, y0 + 190, { s: 0.62, hi: 'trigR', label: 'Right click' });
     /* the section: the engraving, filled flush by the clear coat */
@@ -448,7 +454,7 @@ S({
     /* Theseus: the card prints the measured weight, so its gap is zero by construction */
     const yT = ty + 8 + R.length * rh + 14, kT = ep(t, 3.0, 3.5);
     heroMark(X(0), yT, 12, kT);
-    rich([{ s: 'Theseus', role: 'label', size: 21, color: '#111111', chip: YEL }], rx + 26, yT + 8, { alpha: kT });
+    rich([{ s: 'Theseus', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }], rx + 26, yT + 8, { alpha: kT });
     text('0%: measured, printed', X(0) + 24, yT + 8, { font: 'mono', size: 21, weight: 700, color: C.ink, alpha: kT });
     text('Gap = (measured − claimed) ÷ claimed, RTINGS scale', rx + 26, y0 + h0 - 22, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 3.4, 3.8) });
     gloss(t, 4.0, 'Step further', 'Finalmouse numbered 10,000 ULX Competition units. I put the number on top, where you see it, and print the unit\'s measured weight on its card.');

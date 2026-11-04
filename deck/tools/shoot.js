@@ -29,7 +29,7 @@ const fs = require('fs');
     p.on('console', m => { if (m.type() === 'error' && !m.text().includes('Failed to load resource') && !m.text().includes('ERR_TUN')) errs.push(m.text().slice(0, 200)); });
     while (jobs.length) {
       const [id, t, idx] = jobs.shift();
-      await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + t, { waitUntil: 'domcontentloaded', timeout: 240000 });
+      await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + t + (process.env.Q || ''), { waitUntil: 'domcontentloaded', timeout: 240000 });
       await p.waitForFunction('window.__ready === true', null, { timeout: 240000 }).catch(() => errs.push('timeout ' + id));
       await p.screenshot({ path: `${out}/${String(idx).padStart(2, '0')}_${id}_${t}.png` });
     }

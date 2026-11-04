@@ -1,29 +1,53 @@
 /* ============================================================================================
    charts: the comparison components. Comparisons sell mice, so they get the most care.
-   One rule across all of them: Theseus is yellow (YEL), the best mouse shipping today (the reference) is ink,
-   every other mouse is grey (C.comp), and anything dominated or out of scope is a lighter grey (C.comp2).
+   One rule across all of them: Theseus is red (C.hero), the best mouse shipping today (the reference, the one to beat)
+   is the second highlight, yellow (C.ref), every other mouse is grey (C.comp), and anything dominated or out of scope
+   is a lighter grey (C.comp2).
    Every chart animates from its own t0 and is a pure function of t. Every chart takes an `ev` (evidence kind)
    and prints it as a pill. Placeholder data must say so: pass placeholder: true and the chart stamps itself.
    APIs are documented in DESIGN.md with an example each.
    ============================================================================================ */
 
 /** colour of a datum by its role: { hero, ref, dim, color } */
-function roleCol(d) { return d.color || (d.hero ? YEL : d.ref ? C.ref : d.dim ? C.comp2 : C.comp); }
-/** the Theseus marker: a yellow diamond with an ink edge on paper */
+function roleCol(d) { return d.color || (d.hero ? C.hero : d.ref ? C.ref : d.dim ? C.comp2 : C.comp); }
+/** the Theseus marker: a red diamond (its shape, not only its colour, says Theseus) */
 function heroMark(x, y, r = 12, a = 1, o = {}) {
   if (a <= 0.003) return;
   G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(Math.PI / 4);
-  G.fillStyle = o.fill || YEL; G.fillRect(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5);
-  if (TH || o.edge) { G.strokeStyle = o.edge || '#111111'; G.lineWidth = 2; G.strokeRect(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5); }
+  G.fillStyle = o.fill || C.hero; G.fillRect(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5);
+  if (o.edge) { G.strokeStyle = o.edge; G.lineWidth = 2; G.strokeRect(-r * 0.75, -r * 0.75, r * 1.5, r * 1.5); }
   G.restore();
 }
-/** stamp for charts built on placeholder numbers: a red dashed frame and a pill. Remove when the data file lands */
+/** a smooth curve through points sorted by x that never overshoots them (monotone cubic, Fritsch-Carlson), sampled
+   every ~4 px: the frontier is a rounded edge, not a staircase, and it never bulges past a point it joins */
+function monoCurve(P, step = 4) {
+  const n = P.length; if (n < 2) return P.slice();
+  const h = [], d = [], m = new Array(n);
+  for (let i = 0; i < n - 1; i++) { h.push(Math.max(1e-6, P[i + 1][0] - P[i][0])); d.push((P[i + 1][1] - P[i][1]) / h[i]); }
+  m[0] = d[0]; m[n - 1] = d[n - 2];
+  for (let i = 1; i < n - 1; i++) {
+    if (d[i - 1] * d[i] <= 0) { m[i] = 0; continue; }
+    const w1 = 2 * h[i] + h[i - 1], w2 = h[i] + 2 * h[i - 1];
+    m[i] = (w1 + w2) / (w1 / d[i - 1] + w2 / d[i]);
+  }
+  const out = [];
+  for (let i = 0; i < n - 1; i++) {
+    const x0 = P[i][0], y0 = P[i][1], y1 = P[i + 1][1], hh = h[i], N = Math.max(2, Math.ceil(Math.hypot(hh, y1 - y0) / step));
+    for (let j = 0; j < N; j++) {
+      const u = j / N, u2 = u * u, u3 = u2 * u;
+      out.push([x0 + hh * u, (2 * u3 - 3 * u2 + 1) * y0 + (u3 - 2 * u2 + u) * hh * m[i] + (-2 * u3 + 3 * u2) * y1 + (u3 - u2) * hh * m[i + 1]]);
+    }
+  }
+  out.push(P[n - 1].slice());
+  return out;
+}
+/** stamp for charts built on placeholder numbers: a dashed frame in the problem colour and a tag. Remove when the data file lands */
 function placeholderStamp(t, x, y, w, h, o = {}) {
   const a = ep(t, o.t0 || 0.3, (o.t0 || 0.3) + 0.4); if (a <= 0.003) return;
-  G.save(); G.globalAlpha = a * 0.7; G.setLineDash([10, 8]); G.strokeStyle = C.red; G.lineWidth = 2; rrPath(x - 6, y - 6, w + 12, h + 12, 14); G.stroke(); G.restore();
+  G.save(); G.globalAlpha = a * 0.7; G.setLineDash([10, 8]); G.strokeStyle = C.bad; G.lineWidth = 2; rrPath(x - 6, y - 6, w + 12, h + 12, 14); G.stroke(); G.restore();
   const pw = pillW('placeholder');
-  rr(x + w - pw - 10, y - 24, pw + 4, 40, 20, C.bg, null, 0, a);
-  pill(x + w - pw - 8, y + 6, 'placeholder', a, { color: C.red, edge: C.red });
+  rect(x + w - pw - 10, y - 22, pw + 4, 38, { fill: C.bg, alpha: a });
+  pill(x + w - pw - 8, y + 6, 'placeholder', a, { color: C.bad, edge: C.bad });
 }
 /** a legend row. items: [{ kind: 'hero' | 'ref' | 'comp' | 'dim' | 'ring' | 'line' | 'dash' | 'area', color, label }] → returns width */
 function legend(t, t0, x, y, items, o = {}) {
@@ -140,7 +164,7 @@ function synthSamples(mean, s) { const r = rng(s.seed || 11), out = []; for (let
 /* ---------- XBAB weight breakdown: a huge name and total, numbered rows, bars on light tracks, grams and percent in mono ----------
    o = { x, y, w, t0, name: 'Theseus', sub: 'Weight budget', total (number), unit: 'g', totalLabel: 'Total', dec (3),
          rows: [{ name, count, g, ev, note, icon: (cx, cy, s, a) => draw, hero, dim }], rowH (66), max (bar scale, default the largest row / 0.55),
-         barCol (default ink; YEL for a Theseus budget), iconW (0 = no icons), foot: [left, right], placeholder } returns the y under it */
+         barCol (default ink; C.hero for a Theseus budget), iconW (0 = no icons), foot: [left, right], placeholder } returns the y under it */
 function breakdown(t, o) {
   const t0 = o.t0 || 0, { x, w } = o, rh = o.rowH || 66, iw = o.iconW || 0;
   let y = o.y;
@@ -177,7 +201,7 @@ function breakdown(t, o) {
       G.save(); G.globalAlpha = a * kg; G.setLineDash([5, 4]); rrPath(barX, by - bh / 2 - 3, gw, bh + 6, (bh + 6) / 2); G.strokeStyle = C.ink2; G.lineWidth = 1.5; G.stroke(); G.restore();
       text((o.wasLabel || 'Was') + ' ' + fmtN(r.was, 2) + ' g', barX + gw + 12, by + 7, { role: 'label', size: 19, color: C.mute, alpha: a * kg });
     }
-    rr(barX, by - bh / 2, bl, bh, bh / 2, r.hero ? YEL : (r.color || o.barCol || C.ink), r.hero && TH ? '#111111' : null, 1.5, a);
+    rr(barX, by - bh / 2, bl, bh, bh / 2, r.hero ? C.hero : (r.color || o.barCol || C.ink), null, 1.5, a);
     /* grams, then the share, on one line (XBAB stacks them; a slide has less height than a poster) */
     const gs = countUp(fmtN(r.g, o.dec == null ? 3 : o.dec), k) || fmtN(r.g, o.dec == null ? 3 : o.dec), vy = ry + rh * 0.6;
     rich([{ s: gs, font: 'mono', size: 30, weight: 700, color: C.ink }, { s: o.unit || 'g', font: 'mono', size: 20, weight: 500, color: C.faint, gap: 8 }], x + w, vy, { align: 'right', alpha: a });
@@ -200,15 +224,15 @@ function lollipop(t, o) {
   for (const v of ticks) { line(X(v), y0 - 18, X(v), y0 + rh * o.rows.length - rh * 0.4, { color: C.hair, w: 1.2, alpha: a0 }); text(o.tfmt ? o.tfmt(v) : String(v), X(v), y0 - 30, { role: 'tick', size: 20, color: C.mute, align: 'center', alpha: a0 }); }
   if (o.target) {
     const k = ep(t, t0 + 0.6, t0 + 1.2), tx = X(o.target.v);
-    line(tx, y0 - 18, tx, y0 - 18 + (rh * o.rows.length) * k, { color: TH ? '#A87C00' : YEL, w: 2, dash: [6, 5] });
+    line(tx, y0 - 18, tx, y0 - 18 + (rh * o.rows.length) * k, { color: C.heroText, w: 2, dash: [6, 5] });
   }
   o.rows.forEach((r, i) => {
     const y = y0 + i * rh, d = 0.15 + i * (o.stagger || 0.05), k = ep(t, t0 + d, t0 + d + 0.8, E.snap), a = ep(t, t0 + d - 0.1, t0 + d + 0.25);
     line(o.x, y + rh * 0.5, o.x + o.w, y + rh * 0.5, { color: C.hair, w: 1, alpha: a * 0.7 });
     const nm = text(r.name, o.x, y + 9, { role: 'small', size: o.nsize || 25, weight: r.hero ? 800 : r.ref ? 700 : 500, color: r.dim ? C.mute : C.ink, alpha: a });
     if (r.qual) text(r.qual, o.x + nm.w + 12, y + 8, { role: 'label', size: 19, track: 0.08, color: r.hero ? C.heroText : C.faint, alpha: a });
-    const col = r.hero ? YEL : r.ref ? C.ref : r.dim ? C.comp2 : (TH ? '#9F9E98' : '#8E8D88'), xe = lerp(X(lo), X(r.v), k);
-    line(X(lo), y, xe, y, { color: r.hero ? YEL : col, w: r.hero ? 6 : 3, alpha: a, cap: 'round' });
+    const col = r.hero ? C.hero : r.ref ? C.ref : r.dim ? C.comp2 : (TH ? '#9F9E98' : '#8E8D88'), xe = lerp(X(lo), X(r.v), k);
+    line(X(lo), y, xe, y, { color: r.hero ? C.hero : col, w: r.hero ? 6 : 3, alpha: a, cap: 'round' });
     if (r.hero) { heroMark(xe, y, 13, a); }
     else if (r.hollow) { circle(xe, y, 9, { fill: C.panel, alpha: a }); circle(xe, y, 9, { color: col, w: 3, alpha: a }); }
     else circle(xe, y, 9, { fill: col, alpha: a });
@@ -244,9 +268,9 @@ function scatter(t, o) {
     const cx = o.sweet.x != null ? X(o.sweet.x) : (bx < 0 ? x : x + w), cy = o.sweet.y != null ? Y(o.sweet.y) : (by > 0 ? y : y + h), R = o.sweet.r || Math.hypot(w, h) * 0.62;
     G.save(); G.beginPath(); G.rect(x, y, w, h); G.clip();
     const g = G.createRadialGradient(cx, cy, 0, cx, cy, R * ks);
-    g.addColorStop(0, rgba(YEL, TH ? 0.34 : 0.26)); g.addColorStop(0.45, rgba(YEL, TH ? 0.12 : 0.09)); g.addColorStop(1, rgba(YEL, 0));
+    g.addColorStop(0, rgba(C.hero, TH ? 0.34 : 0.26)); g.addColorStop(0.45, rgba(C.hero, TH ? 0.12 : 0.09)); g.addColorStop(1, rgba(C.hero, 0));
     G.fillStyle = g; G.fillRect(x, y, w, h);
-    G.strokeStyle = TH ? 'rgba(168,124,0,0.28)' : 'rgba(253,195,22,0.22)'; G.lineWidth = 1.2; G.setLineDash([3, 6]);
+    G.strokeStyle = TH ? rgba(C.heroText, 0.28) : rgba(C.hero, 0.22); G.lineWidth = 1.2; G.setLineDash([3, 6]);
     for (let q = 1; q <= 4; q++) { G.beginPath(); G.arc(cx, cy, R * ks * q / 4.6, 0, TAU); G.stroke(); }
     G.setLineDash([]); G.restore();
     if (o.sweet.label) text(o.sweet.label, swX(cx), cy + (by > 0 ? 40 : -24), { role: 'label', size: 21, color: C.heroText, align: bx < 0 ? 'left' : 'right', alpha: ks });
@@ -276,18 +300,23 @@ function scatter(t, o) {
   if (o.frontier) {
     const F = pts.filter(p => p.front).sort((a, b) => a.x - b.x);
     if (F.length) {
-      /* a staircase through the frontier, run out to the frame: the edge of what has shipped */
-      st = []; const seq = bx < 0 ? F : F.slice().reverse(), first = seq[0];
-      st.push([X(first.x), by > 0 ? y + h : y]);
-      seq.forEach((p, j) => { st.push([X(p.x), Y(p.y)]); const nx = seq[j + 1]; if (nx) st.push([X(nx.x), Y(p.y)]); });
-      st.push([bx < 0 ? x + w : x, Y(seq[seq.length - 1].y)]);
+      /* a rounded edge through the frontier, run out to the frame: the edge of what has shipped. It starts at the frame
+         a little to the better side of the first point (so it can bend into it, not kink), passes through every
+         frontier point without overshooting, and leaves the last point flat, out to the far side of the frame */
+      const seq = bx < 0 ? F : F.slice().reverse(), first = seq[0], last = seq[seq.length - 1];
+      const fx = X(first.x), fy = Y(first.y), edgeY = by > 0 ? y + h : y, edgeX = bx < 0 ? x + w : x;
+      const gap0 = seq.length > 1 ? Math.abs(X(seq[1].x) - fx) : w * 0.3, r0 = clamp(gap0 * 0.35, 14, 60) * (bx < 0 ? -1 : 1);
+      const knots = [[clamp(fx + r0, x, x + w), edgeY]].concat(seq.map(p => [X(p.x), Y(p.y)]), [[edgeX, Y(last.y)]]);
+      if (knots[0][0] === knots[1][0]) knots[0][0] += bx < 0 ? -1 : 1;
+      const asc = knots.slice().sort((a, b) => a[0] - b[0]);
+      st = monoCurve(asc, 4); if (bx > 0) st.reverse();
       if (kf2 > 0.98) {
         G.save(); G.beginPath(); G.moveTo(st[0][0], st[0][1]); st.forEach(p => G.lineTo(p[0], p[1]));
-        G.lineTo(bx < 0 ? x + w : x, by > 0 ? y + h : y); G.closePath(); G.clip();
+        G.lineTo(edgeX, edgeY); G.closePath(); G.clip();
         G.strokeStyle = inkA(TH ? 0.07 : 0.08); G.lineWidth = 1; G.beginPath(); for (let s2 = -h; s2 < w + h; s2 += 14) { G.moveTo(x + s2, y); G.lineTo(x + s2 - h, y + h); } G.stroke(); G.restore();
       }
       poly(st, { color: C.ink, w: 2.5, p: kf2 });
-      for (let i = 1; i < st.length; i++) { const [x0, y0] = st[i - 1], [x1, y1] = st[i], L = Math.hypot(x1 - x0, y1 - y0); for (let d = 0; d <= L; d += 8) { const px = lerp(x0, x1, d / L), py = lerp(y0, y1, d / L); box(px - 5, py - 5, px + 5, py + 5); } }
+      for (let i = 0; i < st.length; i += 2) box(st[i][0] - 5, st[i][1] - 5, st[i][0] + 5, st[i][1] + 5);
     }
   }
   /* obstacles for labels: points, the target and its chip, the sweet-spot label */
@@ -350,18 +379,24 @@ function scatter(t, o) {
     text(p.name, L.lx, L.ly, { role: 'small', size: sz, weight: p.front || p.ref ? 700 : 500, color: dimmed ? C.faint : C.ink, alpha: k });
   });
   if (st && kf2 > 0.6 && o.frontierLabel !== false) {
-    /* name the frontier along its longest flat step */
-    let bi = 1, bl = 0; for (let i = 1; i < st.length; i++) { const L = Math.abs(st[i][0] - st[i - 1][0]); if (st[i][1] === st[i - 1][1] && L > bl) { bl = L; bi = i; } }
+    /* name the frontier where it runs flattest over the label's width: above it first, then under it */
     const lab = o.frontierLabel || 'Pareto frontier', lw2 = tw(lab, { role: 'label', size: 19 });
-    const mx = (st[bi][0] + st[bi - 1][0]) / 2, my = st[bi][1];
-    const cand = [[mx - lw2 / 2, my - 12], [mx - lw2 / 2, my + 28]].map(([lx, ly]) => ({ lx, ly, b: { x0: lx - 2, y0: ly - 18, x1: lx + lw2 + 2, y1: ly + 4 } })).find(c => !hit(c.b));
-    if (cand) text(lab, cand.lx, cand.ly, { role: 'label', size: 19, color: C.ink, alpha: ep(t, t0 + 2.0, t0 + 2.4) });
+    const asc = st.slice().sort((a, b) => a[0] - b[0]), yAt = (x0, x1) => { let lo = Infinity, hi = -Infinity; for (const q of asc) if (q[0] >= x0 && q[0] <= x1) { lo = Math.min(lo, q[1]); hi = Math.max(hi, q[1]); } return [lo, hi]; };
+    const cands = [];
+    for (let sx = x + 10; sx + lw2 < x + w - 10; sx += 12) { const [lo, hi] = yAt(sx, sx + lw2); if (lo === Infinity) continue; cands.push({ sx, lo, hi, flat: hi - lo }); }
+    cands.sort((a, b) => a.flat - b.flat);
+    let placed = null;
+    for (const c of cands.slice(0, 40)) {
+      for (const ly of [c.lo - 12, c.hi + 28]) { const b = { x0: c.sx - 2, y0: ly - 18, x1: c.sx + lw2 + 2, y1: ly + 4 }; if (!hit(b)) { placed = { lx: c.sx, ly }; break; } }
+      if (placed) break;
+    }
+    if (placed) text(lab, placed.lx, placed.ly, { role: 'label', size: 19, color: C.ink, alpha: ep(t, t0 + 2.0, t0 + 2.4) });
   }
   if (TX) {
     const d0 = t0 + (o.targetX.t0 != null ? o.targetX.t0 : 2.6), k = ep(t, d0, d0 + 0.8, E.cam), ka = ep(t, d0 + 0.6, d0 + 1.0);
-    if (k > 0) line(TX.lx, y + h, TX.lx, y + h - h * k, { color: TH ? '#A87C00' : YEL, w: 3, dash: [10, 8] });
+    if (k > 0) line(TX.lx, y + h, TX.lx, y + h - h * k, { color: C.heroText, w: 3, dash: [10, 8] });
     if (ka > 0 && TX.cy != null) {
-      rich([{ s: TX.nm, role: 'label', size: 22, color: '#111111', chip: YEL }], TX.lx + 20, TX.cy, { alpha: ka });
+      rich([{ s: TX.nm, role: 'label', size: 22, color: C.onHero, chip: C.heroChip }], TX.lx + 20, TX.cy, { alpha: ka });
       if (TX.sub) text(TX.sub, TX.lx + 20, TX.cy + 36, { role: 'small', size: 22, color: C.ink2, alpha: ka });
     }
   }
@@ -369,10 +404,10 @@ function scatter(t, o) {
   if (o.target) {
     const d = 0.8 + pts.length * 0.07 + 0.4, k = ep(t, t0 + d, t0 + d + 0.6, E.snap), tx = X(o.target.x), ty = Y(o.target.y);
     if (k > 0) {
-      const ph = ((t - t0 - d) % 2.4) / 2.4; circle(tx, ty, 16 + ph * 26, { color: TH ? '#A87C00' : YEL, w: 2, alpha: (1 - ph) * 0.6 * k });
+      const ph = ((t - t0 - d) % 2.4) / 2.4; circle(tx, ty, 16 + ph * 26, { color: C.heroText, w: 2, alpha: (1 - ph) * 0.6 * k });
       heroMark(tx, ty, 15 * k, 1);
       const nm = o.target.name || 'Theseus target', dl = o.target.dx < 0, tl = tx + (o.target.dx != null ? o.target.dx : 26) + (dl ? -8 : 8), tyy = ty + (o.target.dy != null ? o.target.dy : -14);
-      rich([{ s: nm, role: 'label', size: 22, color: '#111111', chip: YEL }], tl, tyy, { alpha: k, align: dl ? 'right' : 'left' });
+      rich([{ s: nm, role: 'label', size: 22, color: C.onHero, chip: C.heroChip }], tl, tyy, { alpha: k, align: dl ? 'right' : 'left' });
       if (o.target.sub) text(o.target.sub, tl, tyy + 34, { role: 'small', size: 22, color: C.ink2, alpha: k, align: dl ? 'right' : 'left' });
     }
   }
@@ -391,7 +426,7 @@ function lineChart(t, o) {
   const a0 = ep(t, t0 + 0.2, t0 + 0.8);
   for (const b of o.bands || []) {
     const xa = m.X(b.x0), xb = m.X(b.x1);
-    rect(xa, o.y, xb - xa, o.h, { fill: b.color || (b.hero ? rgba(YEL, TH ? 0.22 : 0.16) : inkA(0.05)), alpha: a0 });
+    rect(xa, o.y, xb - xa, o.h, { fill: b.color || (b.hero ? rgba(C.hero, TH ? 0.22 : 0.16) : inkA(0.05)), alpha: a0 });
     if (b.label) text(b.label, xa + 10, o.y + 30, { role: 'label', size: 20, color: b.hero ? C.heroText : C.mute, alpha: a0 });
   }
   o.series.forEach((s, i) => {
@@ -403,7 +438,7 @@ function lineChart(t, o) {
       let lx = m.X(P[0]) + (s.ldx || 12), ly = m.Y(P[1]) + (s.ldy || 7), al = 'left';
       /* no room past the end of the line: the label sits above its end, right-aligned, still on stage */
       if (s.ldx == null && lx + lw > W - 40) { lx = m.X(P[0]) - 12; ly = m.Y(P[1]) - 16; al = 'right'; }
-      if (s.hero) rich([{ s: nm, role: 'label', size: 21, color: C.ink, chip: YEL }], al === 'left' ? lx + 6 : lx - 6, ly, { alpha: ep(t, t0 + d + 1.0, t0 + d + 1.4), align: al });
+      if (s.hero) rich([{ s: nm, role: 'label', size: 21, color: C.ink, chip: C.heroChip }], al === 'left' ? lx + 6 : lx - 6, ly, { alpha: ep(t, t0 + d + 1.0, t0 + d + 1.4), align: al });
       else text(nm, lx, ly, { role: 'label', size: 21, color: s.ref ? C.ink : C.mute, align: al, alpha: ep(t, t0 + d + 1.0, t0 + d + 1.4) });
     }
   });
@@ -425,7 +460,7 @@ function compareTable(t, o) {
   const a0 = ep(t, t0, t0 + 0.4), y0 = o.y;
   o.cols.forEach((c, j) => {
     const X0 = cx[j].x + (j ? 18 : 0);
-    if (c.hero) { const k = ep(t, t0 + 0.3, t0 + 0.8, E.snap); rect(cx[j].x, y0 - 40, cx[j].w, 6 * k, { fill: YEL }); rect(cx[j].x, y0 - 40, 2, (rh * o.rows.length + 52) * k, { fill: TH ? '#111111' : YEL, alpha: 0.9 }); }
+    if (c.hero) { const k = ep(t, t0 + 0.3, t0 + 0.8, E.snap); rect(cx[j].x, y0 - 40, cx[j].w, 6 * k, { fill: C.hero }); rect(cx[j].x, y0 - 40, 2, (rh * o.rows.length + 52) * k, { fill: C.hero, alpha: 0.9 }); }
     text(c.label, c.align === 'right' ? cx[j].x + cx[j].w - 16 : X0, y0, { role: 'label', size: 21, color: c.hero ? C.ink : C.mute, align: c.align === 'right' ? 'right' : 'left', alpha: a0, maxW: cx[j].w - 30 });
   });
   line(o.x, y0 + 22, o.x + o.w * a0, y0 + 22, { color: C.hair, w: 1.5 });
@@ -452,7 +487,7 @@ function statCard(t, t0, x, y, w, h, o) {
   const a = ep(t, t0, t0 + 0.45); if (a <= 0.003) return;
   G.save(); G.translate(0, (1 - E.out3(a)) * 16);
   demoWindow(x, y, w, h, a, { hero: o.hero, plain: true, fill: o.fill });
-  if (o.hero) { G.save(); G.globalAlpha = a; rrPath(x, y, w, h, 12); G.clip(); rect(x, y, 6, h, { fill: YEL }); G.restore(); }
+  if (o.hero) { G.save(); G.globalAlpha = a; rrPath(x, y, w, h, 12); G.clip(); rect(x, y, 6, h, { fill: C.hero }); G.restore(); }
   const hy = cardHead(t, t0 + 0.1, x, y, w, o.label, o.ev ? [o.ev] : [], { dy: 46 });
   const vs = o.size || T.stat.size, ff = o.font === 'mono' ? { font: 'mono', size: vs * 0.92, weight: 600, track: -0.02 } : { role: 'stat', size: vs };
   const runs = [];

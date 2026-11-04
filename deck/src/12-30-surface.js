@@ -1,8 +1,8 @@
 /* ============================================================================================
    idea sheets: surface and details, and shape (chapter code srf)
    ============================================================================================ */
-/* TEMP lab slide for 3D framing (removed before hand-off) */
-['a', 'b'].forEach(v => S({
+/* lab slides for 3D framing: not part of the presentation, only built in with ?lab=1 */
+(typeof location !== 'undefined' && /[?&]lab=1/.test(location.search) ? ['a', 'b'] : []).forEach(v => S({
   id: 'srf_lab' + v, ch: 'surface', theme: 'paper', title: 'lab', settle: 4, three: ['wheel', 'shell', 'shell-sora'],
   draw: t => {
     if (v === 'a') {

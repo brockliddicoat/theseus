@@ -13,7 +13,7 @@ const { pageUrl } = require('./serve.js');
     const found = [];
     for (const t of times) {
       errs.length = 0;
-      await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + t, { waitUntil: 'domcontentloaded', timeout: 240000 });
+      await p.goto((await pageUrl(file)) + '?cap=1&s=' + id + '&t=' + t + (process.env.Q || ''), { waitUntil: 'domcontentloaded', timeout: 240000 });
       await p.waitForFunction('window.__ready === true', null, { timeout: 8000 }).catch(() => errs.push('timeout'));
       if (errs.length) found.push('t=' + t + ': ' + errs[0].slice(0, 160));
     }

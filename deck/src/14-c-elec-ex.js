@@ -74,7 +74,7 @@ S({
     ends.forEach(e => {
       const lx2 = X(8000) + 22;
       if (Math.abs(e.ly - e.y) > 2) line(X(8000) + 8, e.y, lx2 - 4, e.ly - 7, { color: C.faint, w: 1.2, alpha: e.k });
-      if (e.hero) rich([{ s: 'Theseus target', role: 'label', size: 21, color: '#111111', chip: YEL }, { s: '0.14', font: 'mono', size: 22, weight: 700, color: C.ink, gap: 16 }], lx2 + 4, e.ly, { alpha: e.k });
+      if (e.hero) rich([{ s: 'Theseus target', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }, { s: '0.14', font: 'mono', size: 22, weight: 700, color: C.ink, gap: 16 }], lx2 + 4, e.ly, { alpha: e.k });
       else rich([{ s: e.s.name, role: 'small', size: 25, weight: e.s.ref ? 700 : 500, color: C.ink }, { s: e.v.toFixed(2), font: 'mono', size: 22, weight: 700, color: C.ink, gap: 12 }], lx2, e.ly, { alpha: e.k });
     });
     legend(t, 2.6, lx + 26, ly + lh - 22, [{ kind: 'dot', color: '#8E8D88', label: 'Wired' }, { kind: 'ring', color: '#8E8D88', label: 'Wireless' }, { kind: 'dash', color: C.ink, label: 'Half the interval' }]);
@@ -92,7 +92,7 @@ S({
       text(p.name, dx0, yy - 22, { role: 'small', weight: p.hero ? 800 : 600, color: C.ink, alpha: ka });
       if (p.hero) text('Targets, projected', dx0 + tw('Theseus', { role: 'small', weight: 800 }) + 14, yy - 23, { role: 'label', size: 21, color: C.heroText, alpha: ka });
       const xa = DX(p.a), xb = lerp(xa, DX(p.b), k);
-      line(xa, yy, xb, yy, { color: p.hero ? YEL : C.ink, w: p.hero ? 5 : 3, alpha: ka });
+      line(xa, yy, xb, yy, { color: p.hero ? C.hero : C.ink, w: p.hero ? 5 : 3, alpha: ka });
       if (p.hero) { heroMark(xa, yy, 10, ka); heroMark(xb, yy, 10, k); }
       else { circle(xa, yy, 8, { fill: C.ink, alpha: ka }); circle(xb, yy, 8, { fill: C.panel, alpha: k }); circle(xb, yy, 8, { color: C.ink, w: 2.5, alpha: k }); }
       text('+' + p.d.toFixed(2) + ' ms', Math.max(xb, xa) + 18, yy + 8, { font: 'mono', size: 24, weight: 700, color: p.hero ? C.heroText : C.ink, alpha: k });
@@ -139,7 +139,7 @@ S({
     const load = ep(t, 5.4, 6.6) * (1 - ep(t, 7.6, 8.6));
     D.rows.forEach((r, i) => {
       const y = y0 + i * rh, t0 = 0.9 + i * 0.16, a = ep(t, t0, t0 + 0.4);
-      if (r.hero) rect(x - 18, y + 4, 6, rh - 12, { fill: YEL, alpha: a });
+      if (r.hero) rect(x - 18, y + 4, 6, rh - 12, { fill: C.hero, alpha: a });
       line(x, y + rh - 4, RM, y + rh - 4, { color: C.hair, w: 1, alpha: a });
       text(r.name, x, y + 42, { role: 'h3', size: 30, color: C.ink, alpha: a });
       text(r.sub, x, y + 74, { role: 'label', size: 21, color: r.hero ? C.heroText : C.mute, alpha: a });
@@ -150,8 +150,8 @@ S({
         const v = c.energy && r.whkgLow ? lerp(v0, r.whkgLow, load) : v0;
         const P = q => c.log ? clamp(Math.log10(q / c.log[0]) / Math.log10(c.log[1] / c.log[0])) : clamp(q / c.max);
         const lo = Array.isArray(v) ? v[0] : v, hi = Array.isArray(v) ? v[1] : v;
-        const col = r.hero ? YEL : r.ref ? C.ink : C.comp, wHi = Math.max(bh, cw * P(hi) * k), wLo = Math.max(bh, cw * P(lo) * k);
-        if (hi !== lo) rr(cx, by - bh / 2, wHi, bh, bh / 2, rgba(r.hero ? YEL : '#111111', r.hero ? 0.45 : 0.18), null, 0, a);
+        const col = r.hero ? C.hero : r.ref ? C.ink : C.comp, wHi = Math.max(bh, cw * P(hi) * k), wLo = Math.max(bh, cw * P(lo) * k);
+        if (hi !== lo) rr(cx, by - bh / 2, wHi, bh, bh / 2, rgba(r.hero ? C.hero : '#111111', r.hero ? 0.45 : 0.18), null, 0, a);
         rr(cx, by - bh / 2, wLo, bh, bh / 2, col, r.hero ? '#111111' : null, 1.3, a);
         if (r.whkgLow && c.energy) {
           const wl = cw * P(r.whkgLow) * k; rr(cx, by - bh / 2, Math.max(bh, wl), bh, bh / 2, C.red, null, 0, a);

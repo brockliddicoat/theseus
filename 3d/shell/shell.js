@@ -282,8 +282,11 @@ export async function buildShell(opts = {}) {
   const exag = opts.clickExaggeration ?? 1;
   function setClick(side, k) {
     k = Math.min(1, Math.max(0, k)); const s = side === 'R' ? 'R' : 'L'; state.click[s] = k;
-    const h = meta.hinge[s]; const arm = h.frontZ - h.pivot[2];
-    parts['trigger' + s].rotation.x = Math.asin(Math.min(1, k * h.travelFront * exag / arm));
+    /* frontZ and travelFront live on meta.hinge itself (pivot and axis per side): reading them per side gave NaN, which
+       blanked the whole scene (its bounding box, so its camera) the first time a click was set */
+    const h = meta.hinge[s], frontZ = h.frontZ ?? meta.hinge.frontZ ?? 58.5, travel = h.travelFront ?? meta.hinge.travelFront ?? 0.5;
+    const arm = Math.max(1, frontZ - h.pivot[2]);
+    parts['trigger' + s].rotation.x = Math.asin(Math.min(1, k * travel * exag / arm));
   }
   function setScroll(rad) { state.scroll = rad; if (wheel.setScroll) wheel.setScroll(rad); }
   function setSideButton(i, k) {

@@ -29,7 +29,7 @@ ideaSheet({
           const yy = by + i * 40, kk = ep(lt, 0.3 + i * 0.2, 1.1 + i * 0.2, E.snap);
           dLabel(nm, x + 20, yy + 7, { color: hero ? C.ink : C.mute, alpha: a, size: 21 });
           rr(bx, yy - 7, bw, 14, 7, C.track, null, 0, a);
-          rr(bx, yy - 7, Math.max(14, bw * g / 0.5 * kk), 14, 7, hero ? YEL : C.comp, null, 0, a);
+          rr(bx, yy - 7, Math.max(14, bw * g / 0.5 * kk), 14, 7, hero ? C.hero : C.comp, null, 0, a);
           text(fmtN(g, 2) + ' g', bx + bw + 14, yy + 8, { font: 'mono', size: 23, weight: 700, color: hero ? C.heroText : C.ink, alpha: a });
         });
         dLabel('Density 1.42 and 2.16 g/cm³', x + 20, by + 76, { color: C.faint, alpha: a, size: 19 });
@@ -74,7 +74,7 @@ ideaSheet({
         G.save(); G.globalAlpha = a; G.setLineDash([5, 4]); G.strokeStyle = C.faint; G.lineWidth = 1.5;
         for (const f of F.slice(0, 2)) { pathRR(cx - f[0] * s / 2, cy - f[1] * s / 2, f[0] * s, f[1] * s, f[2] * s); G.stroke(); }
         G.restore();
-        G.save(); G.globalAlpha = a; pathRR(cx - cur[0] * s / 2, cy - cur[1] * s / 2, cur[0] * s, cur[1] * s, cur[2] * s); G.fillStyle = st === 2 ? rgba(YEL, 0.55) : 'rgba(205,235,250,0.32)'; G.fill(); G.strokeStyle = st === 2 ? YEL : 'rgba(150,200,228,0.95)'; G.lineWidth = 2; G.stroke(); G.restore();
+        G.save(); G.globalAlpha = a; pathRR(cx - cur[0] * s / 2, cy - cur[1] * s / 2, cur[0] * s, cur[1] * s, cur[2] * s); G.fillStyle = st === 2 ? rgba(C.hero, 0.55) : 'rgba(205,235,250,0.32)'; G.fill(); G.strokeStyle = st === 2 ? C.hero : 'rgba(150,200,228,0.95)'; G.lineWidth = 2; G.stroke(); G.restore();
         circle(cx, cy, 1.1 * s, { fill: 'rgba(30,40,50,0.8)', alpha: a });
         /* readout, right of the drawing */
         const tx = x + 268, labs = [['Round lens', '18.85 × 21.15 mm', '399 mm²'], ['Trim lens', '10.90 × 16.80 mm', '183 mm², −54%'], ['Clip-on target', 'One dot wide', 'Proposal']];

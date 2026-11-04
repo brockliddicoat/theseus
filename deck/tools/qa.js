@@ -15,7 +15,7 @@ const { pageUrl } = require('./serve.js');
   for (const id of ids) {
     const s = all.find(a => a[0] === id); if (!s) { console.log(id, 'not found'); continue; }
     const t = spec === 'settle' ? s[1] : spec === 'mid' ? +(s[1] * 0.4).toFixed(2) : parseFloat(spec);
-    await p.goto((await pageUrl(file)) + '?cap=1&qa=1&s=' + id + '&t=' + t, { waitUntil: 'domcontentloaded', timeout: 240000 });
+    await p.goto((await pageUrl(file)) + '?cap=1&qa=1&s=' + id + '&t=' + t + (process.env.Q || ''), { waitUntil: 'domcontentloaded', timeout: 240000 });
     await p.waitForFunction('window.__ready === true', null, { timeout: 240000 }).catch(() => {});
     const qa = await p.evaluate(() => window.__qa);
     if (!qa) { console.log(id, 'no qa data'); continue; }

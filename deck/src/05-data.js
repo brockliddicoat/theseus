@@ -1,4 +1,12 @@
 /* ============================================================================================
+   Theseus's own numbers, in one place, so every slide says the same thing. Brock's targets (2026-11-04):
+   29.31 g, $189, one board of about 5.6 g (there is no front and back board), 200 h at 1 kHz.
+   Print them through THS (strings) so a change here changes the deck.
+   ============================================================================================ */
+const THESEUS = { mass: 29.31, price: 189, pcb: 5.6, hours: 200 };
+const THS = { mass: '29.31', massG: '29.31 g', price: '$189', pcb: '5.6 g', hours: '200 h' };
+
+/* ============================================================================================
    sources. Every number on screen points at one of these. n = what we took from it.
    ============================================================================================ */
 const SRC = {

@@ -63,8 +63,8 @@ function gld_bar(t, t0, x, y, w, v, max, o = {}) {
   const k = ep(t, t0, t0 + 0.8, E.snap), a = ep(t, t0 - 0.1, t0 + 0.3) * (o.alpha == null ? 1 : o.alpha), bh = o.bh || 14;
   rr(x, y - bh / 2, w, bh, bh / 2, C.track, null, 0, a);
   if (v != null) {
-    const col = o.hero ? YEL : o.color || (o.ref ? C.ink : C.comp), wv = Math.max(bh, w * clamp(v / max) * k);
-    if (o.v2 != null) rr(x, y - bh / 2, Math.max(bh, w * clamp(o.v2 / max) * k), bh, bh / 2, rgba(o.hero ? YEL : TH ? '#111111' : '#F3F2EE', o.hero ? 0.4 : 0.16), null, 0, a);
+    const col = o.hero ? C.hero : o.color || (o.ref ? C.ink : C.comp), wv = Math.max(bh, w * clamp(v / max) * k);
+    if (o.v2 != null) rr(x, y - bh / 2, Math.max(bh, w * clamp(o.v2 / max) * k), bh, bh / 2, rgba(o.hero ? C.hero : TH ? '#111111' : '#F3F2EE', o.hero ? 0.4 : 0.16), null, 0, a);
     if (o.dash) { G.save(); G.globalAlpha = a; G.setLineDash([5, 4]); rrPath(x, y - bh / 2, wv, bh, bh / 2); G.strokeStyle = o.hero ? C.heroText : col; G.lineWidth = 2; G.stroke(); G.restore(); }
     else rr(x, y - bh / 2, wv, bh, bh / 2, col, o.hero && TH ? '#111111' : null, 1.3, a);
   }
@@ -79,7 +79,7 @@ function gld_steps(t, t0, cols, o = {}) {
   cols.forEach((c, i) => {
     const x = LM + i * (w + gap), tt = t0 + i * 0.35, a = ep(t, tt, tt + 0.45); if (a <= 0.003) return;
     const hero = i === n - 1;
-    rect(x, y - 26, 28 * E.out3(a), 3, { fill: hero ? YEL : acc(), alpha: a });
+    rect(x, y - 26, 28 * E.out3(a), 3, { fill: hero ? C.hero : acc(), alpha: a });
     const lw0 = text(c[0], x + 40, y - 14, { role: 'label', size: 21, color: hero ? C.heroText : C.faint, alpha: a });
     pill(x + w - pillW(c[2]), y - 13, c[2], a);
     text(c[1], x, y + 24, { role: 'small', size: 25, weight: hero ? 700 : 500, color: hero ? C.ink : C.ink2, maxW: w, lh: 1.3, t, t0: tt + 0.15, cps: 120, alpha: a });
@@ -173,7 +173,7 @@ S({
     demoWindow(lx, ly, lw0, lh0, ep(t, 0.2, 0.6));
     cardHead(t, 0.4, lx, ly, lw0, 'Eight dots, 6.5 mm, two per corner', ['proposal']);
     const drop = 1 - ep(t, 0.7, 2.3, E.out3);
-    view3D('skates', t, lx + 10, ly + 64, lw0 - 20, 318, { view: [-0.8, -1, 0.06], yaw: 0.1 * Math.sin(t * 0.45), zoom: 1.9, explode: drop }, { alpha: ep(t, 0.4, 0.9) });
+    view3D('skates', t, lx + 10, ly + 64, lw0 - 20, 318, { view: [-0.8, -1, 0.06], view2d: 'bottom', yaw: 0.1 * Math.sin(t * 0.45), zoom: 1.9, explode: drop }, { alpha: ep(t, 0.4, 0.9) });
     text('Base plate: a stand-in', lx + lw0 - 26, ly + 390, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 2.4, 2.8) });
     /* the same load on one dot per corner and on two: the pad gives twice as much under the first (drawn to the ratio) */
     const sk = ep(t, 2.6, 3.4, E.io3), load = 1 + 0.25 * Math.sin(Math.max(0, t - 3.6) * 1.6) * ep(t, 3.6, 4.4), sy = ly + 516;
@@ -250,7 +250,7 @@ S({
       if (t < r.t0) return;
       const y = top + i * rh, a = ep(t, r.t0, r.t0 + 0.4), k = ep(t, r.t0, r.t0 + 0.9, E.snap);
       text(r.nm, bx, y + 4, { role: 'small', size: 25, weight: r.hero ? 700 : 500, color: C.ink, alpha: a });
-      const col = r.hero ? YEL : r.bad ? C.red : C.comp, bh = 16, yb = y + 32;
+      const col = r.hero ? C.hero : r.bad ? C.red : C.comp, bh = 16, yb = y + 32;
       rr(bx, yb - bh / 2, Math.max(bh, (X(r.v) - bx) * k), bh, bh / 2, col, r.hero && TH ? '#111111' : null, 1.3, a);
       text(fmtN(r.v, 2), X(3.0) + 18, yb + 9, { font: 'mono', size: 25, weight: 700, color: r.bad ? C.red : C.ink, alpha: ep(t, r.t0 + 0.6, r.t0 + 1.0) });
       if (r.bad || r.edge) text(r.bad ? 'Out' : 'Edge', RM - 26, yb + 9, { role: 'label', size: 19, color: r.bad ? C.red : C.mute, align: 'right', alpha: ep(t, r.t0 + 0.6, r.t0 + 1.0) });
@@ -289,7 +289,7 @@ S({
     rowsAll.forEach((r, i) => {
       const y = y0 + i * rh, t0 = r.hero ? 4.6 : 0.9 + i * 0.16, a = ep(t, t0, t0 + 0.4);
       if (a <= 0.003) return;
-      if (r.hero) rect(x - 18, y + 4, 6, rh - 10, { fill: YEL, alpha: a });
+      if (r.hero) rect(x - 18, y + 4, 6, rh - 10, { fill: C.hero, alpha: a });
       line(x, y + rh - 3, RM, y + rh - 3, { color: C.hair, w: 1, alpha: a });
       text(r.name, x, y + 32, { role: 'h3', size: 29, color: C.ink, alpha: a });
       text(r.sub, x, y + 58, { role: 'label', size: 19, color: r.hero ? C.heroText : C.mute, alpha: a });
@@ -329,7 +329,7 @@ S({
     /* the sensor lifts off its pads and settles back; below the board, the clip-on lens drops and returns */
     const sep = 0.3 * env(t, 1.6, 2.6, 3.6, 4.6) + 0.3 * env(t, 6.2, 7.2, 8.0, 9.0);
     const b1 = [lx + 10, ly + 74, lw0 - 20, 276], b2 = [lx + 10, ly + 404, lw0 - 20, 156];
-    view3D('pcb', t, b1[0], b1[1], b1[2], b1[3], { view: 'threeQuarter', target: [0, 6.2, 1.12], zoom: 8.2, yaw: 0.12 * Math.sin(t * 0.35), explode: sep, xray: 0 }, { alpha: ep(t, 0.4, 0.9) });
+    view3D('pcb', t, b1[0], b1[1], b1[2], b1[3], { view: 'threeQuarter', view2d: 'top', target: [0, 6.2, 1.12], zoom: in2D(5.6, 8.2), yaw: 0.12 * Math.sin(t * 0.35), explode: sep, xray: 0 }, { alpha: ep(t, 0.4, 0.9) });
     view3D('pcb', t, b2[0], b2[1], b2[2], b2[3], { view: [-0.3, -1, 0.42], target: [0, 3.2, 1.12], zoom: 7.0, explode: sep, xray: 0 }, { alpha: ep(t, 0.8, 1.3) });
     gld_tag(lx + lw0 - 30, ly + 334, 'FrameSync-class, package not final', { align: 'right', alpha: ep(t, 1.4, 1.8) });
     line(lx + 26, ly + 360, lx + lw0 - 26, ly + 360, { color: C.hair, w: 1.5, alpha: ep(t, 0.8, 1.2) });
@@ -476,7 +476,7 @@ S({
         const yy = by + 46 + i * 44, a = ep(t, 2.2 + i * 0.2, 2.6 + i * 0.2), hero = nm === 'Theseus', bx = x + 236, bw = w - 236 - 110;
         text(nm, x + 26, yy + 8, { role: 'small', size: 25, weight: hero ? 800 : 600, color: C.ink, alpha: a });
         if (v == null) { G.save(); G.globalAlpha = a; G.setLineDash([5, 4]); rrPath(bx, yy - 6, bw * 0.5, 12, 6); G.strokeStyle = C.faint; G.lineWidth = 1.5; G.stroke(); G.restore(); text('26 levels', bx + bw * 0.5 + 12, yy + 7, { role: 'label', size: 19, color: C.faint, alpha: a }); }
-        else { const bl = Math.max(10, bw * v * ep(t, 2.3 + i * 0.2, 3.0 + i * 0.2, E.snap)); rr(bx, yy - 6, bl, 12, 6, hero ? YEL : C.comp, null, 0, a); text(fmtN(v, v < 0.1 ? 2 : 1), bx + bl + 12, yy + 8, { font: 'mono', size: 23, weight: 700, color: hero ? C.heroText : C.ink, alpha: a }); }
+        else { const bl = Math.max(10, bw * v * ep(t, 2.3 + i * 0.2, 3.0 + i * 0.2, E.snap)); rr(bx, yy - 6, bl, 12, 6, hero ? C.hero : C.comp, null, 0, a); text(fmtN(v, v < 0.1 ? 2 : 1), bx + bl + 12, yy + 8, { font: 'mono', size: 23, weight: 700, color: hero ? C.heroText : C.ink, alpha: a }); }
         evDot(x + w - 30, yy, ev, 5, a);
       });
     }

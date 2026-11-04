@@ -57,12 +57,15 @@ function applyState(o, s) {
   last.set(o, Object.assign({}, prev, next));
 }
 
-/** camera: frame the root once per view, then orbit/zoom from state (deterministic in state) */
+/** camera: frame the root at rest, then orbit/zoom from state (deterministic in state).
+   The framing is measured once, when the scene is built and nothing has moved yet. (It used to be measured on the first
+   frame drawn, so a scene whose first frame was exploded framed itself larger and every later zoom came out smaller:
+   live playback, which enters at t = 0, and screenshots at the settled time framed the same shot differently.) */
 function cameraFor(studio, root, base) {
   const box = new THREE.Box3(), c = new THREE.Vector3(), size = new THREE.Vector3();
-  let framed = null;
+  root.updateMatrixWorld(true); box.setFromObject(root); box.getCenter(c); box.getSize(size);
+  const framed = { c: c.clone(), r: 0.5 * size.length() };
   return (cam, s) => {
-    if (!framed) { box.setFromObject(root); box.getCenter(c); box.getSize(size); framed = { c: c.clone(), r: 0.5 * size.length() }; }
     const view = s.view || base.view || 'threeQuarter';
     const d0 = new THREE.Vector3(...(Array.isArray(view) ? view : (VIEWS[view] || VIEWS.threeQuarter))).normalize();
     const yaw = (s.yaw || 0), pitch = (s.pitch || 0);
@@ -79,6 +82,21 @@ function cameraFor(studio, root, base) {
   };
 }
 
+/* every state key each scene takes, at rest. A frame applies these under the slide's own state, so a key a slide leaves out
+   goes back to rest instead of keeping whatever the previous slide set (an exploded or recoloured shell turning up on the
+   next slide that uses it, when the presenter moves faster than the idle scenes are freed). */
+const REST = {
+  shell: { explode: 0, xray: 0, clickL: 0, clickR: 0, side0: 0, side1: 0, scroll: 0, colorway: 'black' },
+  pcb: { explode: 0, xray: 0, power: 0, powerMode: 'charge', powerT: 0, reflow: 0, pressL: 0, pressR: 0 },
+  gt01: { press: 0, cutaway: 0, explode: 0 },
+  wheel: { scroll: 0, explode: 0, xray: 0 },
+  claw: { insert: 0, section: 0, explode: 0 },
+  screw: { drive: 0, section: 0, explode: 0 },
+  skates: { explode: 0 },
+  battery: { explode: 0 },
+  lattice: { cut: 0, build: 1, stress: 0, stressCase: 'press', compare: 'tri', filletZoom: 0 },
+};
+REST['shell-sora'] = REST.shell;
 function scene(key, build, base = {}) {
   R3D.register(key, async (studio) => {
     const obj = await build(studio);
@@ -88,11 +106,11 @@ function scene(key, build, base = {}) {
     studio.scene.add(root);
     if (base.ground === false) studio.ground.visible = false;
     const cam = cameraFor(studio, root, base);
-    const api = obj.api || obj;
+    const api = obj.api || obj, rest = REST[key] || {};
     if (base.init) applyState(api, base.init);
     return {
       root,
-      update(state, t) { applyState(api, Object.assign({}, base.init || {}, state)); if (api.tick) api.tick(t); },
+      update(state, t) { applyState(api, Object.assign({}, rest, base.init || {}, state)); if (api.tick) api.tick(t); },
       camera(c, state) { cam(c, Object.assign({}, base.cam || {}, state)); },
     };
   });
