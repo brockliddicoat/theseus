@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 10:30 (Chicago).
+Last updated: 2026-11-04 10:26 (Chicago).
 
 ## Open with Brock
 
@@ -459,3 +459,8 @@ Answers to the Shell A questions:
   - Asked what each comparison slide should lead with: "Both". That means a huge headline number in Theseus blue (for
     example 21× STIFFER), plus a chart where Theseus visibly wins, with which way is better written on it.
 - **F14.11** "do you have any more questions for me?" Answered with the four questions above.
+
+## F15. 2026-11-04 10:24
+
+- **F15.1 STANDING, TODO (fixA, fixB, all)** "in order to make the reader/viewer understand immediately at a glance what is better, you may have to completely reformat/rethink some slides and visualizations"
+  - Applies to F14.10: a slide that can't read at a glance gets rethought, not patched.

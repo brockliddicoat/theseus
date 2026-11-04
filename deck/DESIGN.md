@@ -90,6 +90,8 @@ Apple does. What Apple does, from its keynotes and its own design tokens (resear
         LOAD`.
       - A chart or simulation where Theseus visibly wins, with which way is better written on it.
     - The narration and the boxes explain why. They are never the only place the win is stated.
+    - Brock, 10:24: "in order to make the reader/viewer understand immediately at a glance what is better, you may have to completely reformat/rethink some slides and visualizations". A slide that can't read at a glance is rethought (new layout, a different
+      visualization, two slides), not patched.
     - Never let a glance read as Theseus losing. Avoid:
       - a longer bar for a worse number, unless "lower is better" is written right there;
       - red or the heat colours on Theseus's side;
