@@ -480,3 +480,12 @@ Answers to the Shell A questions:
 - **F16.3 DECIDED** Which chapter goes first after 12:00: "Glide". Shell C runs too.
 - **F16.4** "i can't fix the github thing right now". The branch stays local, and the live link and patch carry the
   work.
+
+## F17. Answers to the 3D builder's questions (2026-11-04 ~11:00)
+
+- **F17.1 DECIDED** The Raytac part: "AN54LM-20A, long antenna". Keep the name, and draw the long meander antenna. **TODO
+  (elc).**
+- **F17.2 OPEN** The side seam meets the side seams about 30.5 mm above the base: "I'll check and say".
+- **F17.3 DECIDED** A 3D shot of the full-size SPDT side switches in their glove: "Yes, model it". **TODO (the 3D
+  builder for the plate, then `sidebuttons`).**
+- **F17.4 DECIDED** The GT01 cover's taller end walls from the photo: "No, it's fine".
