@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 11:00 (Chicago).
+Last updated: 2026-11-04 13:15 (Chicago).
 
 ## Open with Brock
 
@@ -72,9 +72,9 @@ Last updated: 2026-11-04 11:00 (Chicago).
   feeling different after unscrewing it (it should be like a 90% chance for abs plastic, and slightly lower for carbon
   filled plastic, which be the other material you're comparing to)"
   - Decided: F3.3, F6.1.
-- **F2.02 IN PROGRESS (gld)** "the sensors window to focus is actually only 0.2mm optimally but you should talk about how
+- **F2.02 DONE** (`focus`: +26 pts sharper in the worst case, 0.2 against 0.4 mm) "the sensors window to focus is actually only 0.2mm optimally but you should talk about how
   most manufacturers only optimize for 0.4mm which can lead to issues"
-- **F2.03 IN PROGRESS (gld)** "you effect show how the sensor works, and how it is just a camera, and show how the lens
+- **F2.03 DONE** (`gld_camera`: just a camera; `gld_blur`: computed defocus, the phone camera analogy) "you effect show how the sensor works, and how it is just a camera, and show how the lens
   unfocuses just like a smartphone camera if it gets to close to a surface or too far away, i need a blurriness
   visualization"
 - **F2.04 DONE** (`tensioner`, `clk_tenmat`) "the bridge click effect of controlling where the click bends needs to be a lot less
@@ -290,7 +290,7 @@ Last updated: 2026-11-04 11:00 (Chicago).
 - **F9.12 DECIDED (F11.1)** "maybe you should let me choose between red, blue or yellow for the primary Theseus color"
 - **F9.13 DONE in 3D (turned 180°, the long meander antenna toward the rear), IN PROGRESS in 2D (elc)** "the raytac module needs to be flipped so it's further from the scroll wheels metal, and
   id lowk you to use the long antenna design i've attached"
-- **F9.14 DONE in 3D (castellated 8.4 × 9.8 sensor module, snap-on lens), IN PROGRESS in 2D (gld)** "the sensor and snap on lens are both not as accurate as id like, you need to squeak out
+- **F9.14 DONE** (3D, and 2D on `gld_camera` and `gld_module`) "the sensor and snap on lens are both not as accurate as id like, you need to squeak out
   a lot more accuracy using the images i've attached"
 - **F9.15 DONE in 3D (standard SPDT internals in the rotating housing); the 2D redraw is F14.3 (fixA)** "the internals on the gt01 switch are not right and it bothers me, before the old switch
   visualization was a lot more detailed, you should've used the same level of detail and accuracy on the gt01 switch. the
@@ -308,7 +308,7 @@ Last updated: 2026-11-04 11:00 (Chicago).
 - **F9.19 DONE** "the tiles need to be significantly less rounded or not rounded at all so we can maintain cohesive and
   unique design language"
   - Radius 6.
-- **F9.20 IN PROGRESS (gld)** "we need to talk about the importance of having one or 2 dot skates by the sensor to prevent
+- **F9.20 DONE** (`gld_sag`: 0 µm lens drop with the sensor dots, 150 → 0 µm; `dots`) "we need to talk about the importance of having one or 2 dot skates by the sensor to prevent
   sag and keeping the sensor focused correctly"
 - **F9.21 DONE in the shared 2D drawing (`encoderMM`, TTC's form), `sealed` and 3D, IN PROGRESS (srf)** "the encoder you are using is wrong, optical encoders look no different than normal mouse
   encoders, i've attached picture of what the interior looks of an modern mouse optical encoder is like, usually they're
@@ -371,18 +371,18 @@ Answers to the intro and clicks questions:
   USB-C.
 - **F12.2 DECIDED** "the 3d mode should not show the shell cover". Asked whether that covers the close too: "Cover and
   close". **DONE:** neither slide shows a shell in 3D mode.
-- **F12.3 DECIDED** "yes density should be ranked among wireless mice only, show the xa25 but shoe it not be taken into
+- **F12.3 DONE** (`ntr_densrank`: the XA25 ghost row, "Wired: not ranked") "yes density should be ranked among wireless mice only, show the xa25 but shoe it not be taken into
   account for be wired". **TODO (intro):** `ntr_densrank` shows the XA25, marked wired and not ranked.
-- **F12.4 DECIDED** "the shell holds the switched instead of a pcb". **TODO (clicks):** the full-size side switches are
+- **F12.4 DONE** (`sidebuttons`: "Held by the shell: no side board") "the shell holds the switched instead of a pcb". **TODO (clicks):** the full-size side switches are
   held by the shell, not by a side board.
 - **F12.5 OPEN** The tensioner's real width, span and crown: "unknown yet". The slide keeps its labelled example.
-- **F12.6 DECIDED** "abandon idea #59". **TODO (clicks):** remove #59 (the taller fulcrum) everywhere.
-- **F12.7 DONE in 3D, TODO in 2D (fixA)** The GT01: "it looks fine besides the fact that everywhere you draw it looks like there's a 4
+- **F12.6 DONE** "abandon idea #59". **TODO (clicks):** remove #59 (the taller fulcrum) everywhere.
+- **F12.7 DONE** (3D and 2D) The GT01: "it looks fine besides the fact that everywhere you draw it looks like there's a 4
   extra pin in the front and that's not right".
 
 New notes:
 - **F12.8 STANDING** "in the future use the question tool to ask me questions instead of doing it the old fashioned way"
-- **F12.9 DONE in 3D and the shared key plan (one straight line at the Sora smile's deepest point: KEY.seam −4.84), TODO in the 2D cutouts drawing (fixA)** "right now the rear trigger cutouts have a sort of notch in both
+- **F12.9 DONE in 3D and the shared key plan (one straight line at the Sora smile's deepest point: KEY.seam −4.84), and in the 2D cutouts drawing** "right now the rear trigger cutouts have a sort of notch in both
   visualizations instead of being an entirely straight line, which looks funny, also the straight light version needs
   to go back future"
   - Asked how far back: "To the smile's deepest point", level with the deepest point of the Sora V2's curved cutout.
@@ -431,12 +431,12 @@ Answers to the Shell A questions:
     ledge on the shell rim.
 - **F14.2 TODO (plate)** "the front and the back skate pills should be a direct mirror, one shouldn't be more towards the
   center than the other"
-- **F14.3 DONE in 3D (housing, leaf, plunger, three pins; the cover's taller end walls not yet), TODO in 2D (fixA)** "your gt01 bottom housing design was wrong, which is confusing because you used it on the
+- **F14.3 DONE in 2D (redrawn from the photos and the 3D geometry); 3D TODO (plate builder): the tongue stands on its edge and reads as a bar** "your gt01 bottom housing design was wrong, which is confusing because you used it on the
   cover of the clicks section, please try to get more accurate with the pictures i've attached, also the current gt01
   has this weird noodle design on its interior which is not actuate, make sure you model the metal leaf as close as you
   can get it, i've given you multiple angles. another issue you had was the plunger looking like it was turned vertical
   or being tuned into a square for some reason when the gt01 has a fairly normal plunger"
-- **F14.4 TODO (gld)** "the image you used for the mousepad in how the sensor looks feels really low quality and uncanny"
+- **F14.4 DONE** (a procedural woven cloth, crisp at any size) "the image you used for the mousepad in how the sensor looks feels really low quality and uncanny"
 - **F14.5 TODO (fixB)** "what if you didn't have to chose shouldn't be the only words in the slide, and you should call
   the slide before that one "strength weight fallacy" or something like that (just say fallacy at least to allude to a
   correction coming)"
@@ -451,7 +451,7 @@ Answers to the Shell A questions:
   unintuitive, maybe you say peak EXPERIENCED stress as well"
   - The label is "Peak experienced stress (lower is better)".
 - **F14.9 STANDING, TODO (all)** "sometimes you say "grams" where you should say "weight""
-- **F14.10 STANDING, TODO (fixA, fixB, all)** "in general i think youre not really doing the best at showing how are
+- **F14.10 STANDING, DONE in Intro, Clicks and Glide, IN PROGRESS (fixB; the remaining chapters)** "in general i think youre not really doing the best at showing how are
   techniques are better AT A GLANCE, and by how much, you shouldn't have to read the whole slide to understand why our
   methods are better, and if at a glance it can look like our methods add worse that is very dangerous, not everyone is
   going to have time to read the full thing, there eyes are going to get drawn to certain parts each slide. making sure
@@ -467,13 +467,13 @@ Answers to the Shell A questions:
 
 ## F16. 2026-11-04 10:30 (with a screenshot of `arc`, Direct Drive Actuation)
 
-- **F16.1 STANDING, TODO (fixA, fixB, all)** "in slides like this where you count down to zero, it's very hard to remember
+- **F16.1 STANDING, DONE in Intro, Clicks and Glide, IN PROGRESS (fixB; the rest)** "in slides like this where you count down to zero, it's very hard to remember
   what the original numbers were and how much better they are now, you should find some way to always show the net
   change or the bad case at the same time"
   - Asked how: "Before → after". The bad value stays visible, greyed or struck, beside the live one (10.6° → 0°), with
     the net change in Theseus's colour.
   - The screenshot also shows two overlaps on `arc`: a leader runs through "The trigger turns about this bend", and
-    "Sideways, sin θ" sits under the switch drawing. **TODO (fixA).**
+    "Sideways, sin θ" sits under the switch drawing. **DONE.**
 - **F16.2 DONE** (the "rate" pill in the player bar: 1 to 10 and a note per slide, saved in the artifact's database, which only Brock and editors can write) Asked about the deck's length (126 slides): "add a feature where i can rank each slides
   value 1 to 10 (10 being the best) so you can decide how to condense the slides and which information is safest to
   cut, these ratings shouldn't help determine slides to cut, but instead information"
@@ -489,3 +489,22 @@ Answers to the Shell A questions:
 - **F17.3 DECIDED** A 3D shot of the full-size SPDT side switches in their glove: "Yes, model it". **TODO (the 3D
   builder for the plate, then `sidebuttons`).**
 - **F17.4 DECIDED** The GT01 cover's taller end walls from the photo: "No, it's fine".
+
+## F18. Answers to the Intro, Clicks and Glide builders' questions (2026-11-04 ~13:05)
+
+- **F18.1 DECIDED** The pills with the plate on: "One wide front, one wide back". Two pills, mirrored about the sensor,
+  each spanning most of the width, plus the ring. **TODO (plate).**
+- **F18.2 DECIDED** Where the dots by the sensor sit with the plate off: "research and decide". **TODO (plate):** decide it
+  with the reason. Glide's `gld_under` follows.
+- **F18.3 DECIDED** Theseus's sensor: "Unannounced next part". Call it PixArt's next flagship, with no part name. **TODO
+  (fixC):** the Glide `sensor` slide.
+- **F18.4 DECIDED** The price row on `flagships`: "Keep price charted". **TODO (fixC):** price goes back on the chart,
+  framed honestly.
+- **F18.5 DECIDED** The click-latency target against the XA25's measured 72 µs: "Tighten it". **TODO (fixC):** a target
+  under 72 µs. 70 µs, moving or still, unless Brock gives a number.
+- **F18.6 DECIDED** The tensioner's stress colours: "scant to peak and also it's been bothering me that the bridge
+  tensioner doesn't properly connect the 2 pieces". **TODO (fixC):**
+  - scale the heat to the hotter part again;
+  - make the bridge tensioner drawing connect its two pieces properly.
+- **F18.7 DECIDED** The Viper V4 Pro's skate sizes: "Estimate from photos", labelled as estimates. **TODO (plate).**
+- **F18.8 DECIDED** Measured sag or sink figures: "No, keep the models". The labelled illustrations stay.

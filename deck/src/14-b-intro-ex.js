@@ -194,84 +194,84 @@ S({
 /* ============================== 03, 04. the bar: the best figure anyone has shown, who holds it, how we know, my target ============================== */
 /* each row: cat, best (as shown), bv (its value), who, note, ev, tgt (my target), tv, tq (the target's qualifier), better ('low' | 'high') */
 const NTR_BAR_SPEED = [
-  { cat: 'Motion latency, wired', best: '0.13 ms', bv: 0.13, who: 'XBAB XA25', note: '{piaknow}, 8 kHz, fw 1.08', ev: 'measured', tgt: '0.13 ms', tv: 0.13, tq: 'or less', better: 'low' },
+  { cat: 'Motion latency, wired', sub: 'Same as the XBAB XA25', best: '0.13 ms', bv: 0.13, who: 'XBAB XA25', note: '{piaknow}, 8 kHz, fw 1.08', ev: 'measured', tgt: '0.13 ms', tv: 0.13, tq: 'or less', better: 'low' },
   { cat: 'Motion latency, wireless', best: '0.34 ms', bv: 0.34, who: 'Razer Viper V4 Pro', note: '{piaknow}, 8 kHz', ev: 'measured', tgt: '0.14 ms', tv: 0.14, tq: 'on the same rig', better: 'low' },
-  { cat: 'Frame sync', best: '163 µs', who: 'SensorLock vs FrameSync', note: 'XBAB and its developer', ev: 'claim', tgt: 'Every report', tq: 'synced, shown on a scope' },
-  { cat: 'Click latency, wired', best: '65 µs', bv: 65, who: 'XBAB XA25', note: 'Contact to USB, own rig', ev: 'claim', tgt: '65 µs', tv: 65, tq: 'on an outside rig', better: 'low' },
+  { cat: 'Frame sync', sub: 'Synced, shown on a scope', best: '163 µs', who: 'SensorLock vs FrameSync', note: 'XBAB and its developer', ev: 'claim', tgt: 'Every report', tq: 'synced, shown on a scope' },
+  { cat: 'Click latency, wired', sub: 'Same as the XBAB XA25', best: '65 µs', bv: 65, who: 'XBAB XA25', note: 'Contact to USB, own rig', ev: 'claim', tgt: '65 µs', tv: 65, tq: 'on an outside rig', better: 'low' },
   { cat: 'Click latency, wireless', best: '0.175 ms', bv: 0.175, who: 'VGN Dragonfly 3 Master GT', note: 'VGN, "as low as"', ev: 'claim', tgt: '0.1 ms', tv: 0.1, tq: 'or less', better: 'low' },
-  { cat: 'Press to PC, with travel', best: '2.0 ms', bv: 2.0, who: 'Finalmouse Starlight X', note: 'Own rig, pre-release', ev: 'claim', tgt: '2.0 ms', tv: 2.0, tq: 'on an outside rig', better: 'low' },
-  { cat: 'Report rate', best: '8 kHz', bv: 8, who: 'Wired and wireless', note: 'USB high speed, 125 µs', ev: 'datasheet', tgt: '8 kHz', tv: 8, tq: 'wired and wireless', better: 'high' },
-  { cat: 'Lost reports rescued', best: '99 to 100%', bv: 99, who: 'Kunai Second Shot, 4 kHz', note: 'Its developer, unreleased', ev: 'claim', tgt: '99%', tv: 99, tq: 'or more, at every rate', better: 'high' }
+  { cat: 'Press to PC, with travel', sub: 'Same as the Starlight X', best: '2.0 ms', bv: 2.0, who: 'Finalmouse Starlight X', note: 'Own rig, pre-release', ev: 'claim', tgt: '2.0 ms', tv: 2.0, tq: 'on an outside rig', better: 'low' },
+  { cat: 'Report rate', sub: 'Wired and wireless', best: '8 kHz', bv: 8, who: 'Wired and wireless', note: 'USB high speed, 125 µs', ev: 'datasheet', tgt: '8 kHz', tv: 8, tq: 'wired and wireless', better: 'high' },
+  { cat: 'Lost reports rescued', sub: 'Same as Kunai Second Shot', best: '99 to 100%', bv: 99, who: 'Kunai Second Shot, 4 kHz', note: 'Its developer, unreleased', ev: 'claim', tgt: '99%', tv: 99, tq: 'or more, at every rate', better: 'high' }
 ];
 const NTR_BAR_REST = [
   { cat: 'Battery, 1 kHz', best: '180 h', bv: 180, who: 'Razer Viper V4 Pro, 49 g', note: 'Razer; SLX: no rating', ev: 'claim', tgt: '200 h', tv: 200, tq: 'measured, not listed', better: 'high' },
   { cat: 'Battery, 8 kHz', best: '40 h', bv: 40, who: 'Razer Viper V4 Pro', note: 'TechPowerUp', ev: 'measured', tgt: '45 h', tv: 45, tq: 'measured', better: 'high' },
-  { cat: 'Charge current', best: '0.28 A', who: 'Pulsar X2H', note: 'TechPowerUp', ev: 'measured', tgt: '1C', tq: 'if the cell is rated for it' },
+  { cat: 'Charge current', sub: 'If the cell is rated for it', best: '0.28 A', who: 'Pulsar X2H', note: 'TechPowerUp', ev: 'measured', tgt: '1C', tq: 'if the cell is rated for it' },
   { cat: 'Weight, full shell', best: '29 g', bv: 29, who: 'Finalmouse ULX, small', note: 'Listed, not weighed', ev: 'claim', tgt: THS.massG, tv: THESEUS.mass, tq: 'weighed, every unit', better: 'low' },
-  { cat: 'Sensor', best: '930 IPS', who: 'Razer Focus Pro 50K', note: '90 G; Razer only', ev: 'claim', tgt: 'FrameSync-class', tq: 'next-gen PixArt, proposal' },
-  { cat: 'Lift-off', best: '0.7 mm', bv: 0.7, who: 'PAW3955 mice, the SLX', note: '11 steps, 0.7 to 1.7 mm', ev: 'datasheet', tgt: '0.7 mm', tv: 0.7, tq: 'or less, measured', better: 'low' },
-  { cat: 'Set-down smoothing', best: '12 ms', bv: 12, who: 'XBAB XA25, 2 frames', note: 'A 3950 by default: 450 ms', ev: 'claim', tgt: '12 ms', tv: 12, tq: 'or less, by default', better: 'low' },
-  { cat: 'Button sensing', best: '40 × 0.01 mm', who: 'Finalmouse SLX, TMR-DS', note: 'Finalmouse', ev: 'claim', tgt: 'Analog, in mm', tq: 'on GT01-class switches' },
-  { cat: 'Idle sleep', best: '10 s', bv: 10, who: 'Kunai Smart sleep', note: 'Its developer, unreleased', ev: 'claim', tgt: '10 s', tv: 10, tq: 'woken by a touch', better: 'low' },
-  { cat: 'Software', best: 'Browser tab', who: 'XBAB Xpanel', note: 'Settings on the mouse', ev: 'claim', tgt: 'A browser tab', tq: 'every OS, no install' },
-  { cat: 'Coating hardness', best: '8H pencil', who: 'Cerakote H-167', note: 'On steel, cured at 250 °F', ev: 'datasheet', tgt: '8H', tq: 'tested on the shell itself' }
+  { cat: 'Sensor', sub: 'Next-gen PixArt, proposed', best: '930 IPS', who: 'Razer Focus Pro 50K', note: '90 G; Razer only', ev: 'claim', tgt: 'FrameSync-class', tq: 'next-gen PixArt, proposal' },
+  { cat: 'Lift-off', sub: 'Same as the PAW3955 mice', best: '0.7 mm', bv: 0.7, who: 'PAW3955 mice, the SLX', note: '11 steps, 0.7 to 1.7 mm', ev: 'datasheet', tgt: '0.7 mm', tv: 0.7, tq: 'or less, measured', better: 'low' },
+  { cat: 'Set-down smoothing', sub: 'Same as the XBAB XA25', best: '12 ms', bv: 12, who: 'XBAB XA25, 2 frames', note: 'A 3950 by default: 450 ms', ev: 'claim', tgt: '12 ms', tv: 12, tq: 'or less, by default', better: 'low' },
+  { cat: 'Button sensing', sub: 'On GT01-class switches', best: '40 × 0.01 mm', who: 'Finalmouse SLX, TMR-DS', note: 'Finalmouse', ev: 'claim', tgt: 'Analog, in mm', tq: 'on GT01-class switches' },
+  { cat: 'Idle sleep', sub: 'Same as Kunai Smart sleep', best: '10 s', bv: 10, who: 'Kunai Smart sleep', note: 'Its developer, unreleased', ev: 'claim', tgt: '10 s', tv: 10, tq: 'woken by a touch', better: 'low' },
+  { cat: 'Software', sub: 'Every OS, no install', best: 'Browser tab', who: 'XBAB Xpanel', note: 'Settings on the mouse', ev: 'claim', tgt: 'A browser tab', tq: 'every OS, no install' },
+  { cat: 'Coating hardness', sub: 'Tested on the shell itself', best: '8H pencil', who: 'Cerakote H-167', note: 'On steel, cured at 250 °F', ev: 'datasheet', tgt: '8H', tq: 'tested on the shell itself' }
 ];
-/** the bar, as a table. A numeric row carries a gap track: the best shown (ink dot) and my target (yellow diamond), which
-   slides out from the best to where I want it, with the change written at the end */
-function ntr_bar(t, rows) {
-  const x = LM, y = 304, w = RM - LM, n = rows.length, rh = Math.min(68, 640 / n);
-  const cx = [x, x + 340, x + 530, x + 880, x + 1085, x + 1380], tx = cx[5], trW = 185;
-  const a0 = ep(t, 0.4, 0.8), kc = ep(t, 0.6, 1.2, E.snap);
-  rect(tx - 20, y - 46, RM - tx + 20, 6 * kc, { fill: C.hero });
-  rect(tx - 20, y - 46, 2, (rh * n + 60) * kc, { fill: C.hero, alpha: 0.9 });
-  ['Category', 'Best shown', 'Who, and on what', 'How we know', 'Best against mine'].forEach((h, i) => text(h, cx[i], y - 4, { role: 'label', size: 21, color: C.mute, alpha: a0 }));
-  ntr_chip('Theseus target', tx, y - 4, a0);
-  line(x, y + 14, RM, y + 14, { color: C.hair, w: 1.5, alpha: a0 });
-  rows.forEach((r, i) => {
-    const bt = y + 14 + rh * i, yy = bt + rh / 2 + 9, t0 = 0.9 + i * 0.12, k = ep(t, t0, t0 + 0.3);
-    if (i) line(x, bt, RM, bt, { color: C.hair, w: 1, alpha: k });
-    const cur = t > 6.2 ? Math.floor((t - 6.2) / 1.7) % n : -1, hl = cur === i ? Math.sin(clamp(((t - 6.2) % 1.7) / 1.7) * Math.PI) : 0;
-    if (hl > 0) rect(x - 12, bt + 2, w + 24, rh - 4, { fill: inkA(0.035 * hl) });
-    text(r.cat, cx[0], yy, { role: 'small', size: 25, weight: 600, color: C.ink, sentence: true, t, t0, cps: 130, maxW: 330 });
-    text(r.best, cx[1], yy, { font: 'mono', size: 25, weight: 700, color: C.ink, t, t0: t0 + 0.08, cps: 100 });
-    text(r.who, cx[2], bt + rh / 2 - 1, { role: 'small', size: 24, weight: 500, color: C.ink2, t, t0: t0 + 0.12, cps: 150 });
-    text(r.note, cx[2], bt + rh / 2 + 22, { role: 'label', size: 19, color: C.faint, alpha: ep(t, t0 + 0.15, t0 + 0.45) });
-    pill(cx[3], yy + 2, r.ev, ep(t, t0 + 0.15, t0 + 0.45));
-    /* the gap track */
-    if (r.bv != null && r.tv != null) {
-      const hi = Math.max(r.bv, r.tv) * 1.18, X = v => cx[4] + 12 + (trW - 24) * v / hi, ty = bt + rh / 2, kt = ep(t, t0 + 0.3, t0 + 0.7), km = ep(t, t0 + 0.7, t0 + 1.5, E.io3);
-      line(cx[4], ty, cx[4] + trW, ty, { color: C.hair, w: 2, alpha: kt });
-      line(X(0), ty - 7, X(0), ty + 7, { color: C.faint, w: 1.5, alpha: kt });
-      circle(X(r.bv), ty, 8 * kt, { fill: C.ink });
-      const xt = lerp(X(r.bv), X(r.tv), km), same = Math.abs(r.tv - r.bv) < 1e-9;
-      if (!same && km > 0.05) { line(X(r.bv), ty, xt, ty, { color: C.heroText, w: 3, alpha: kt }); }
-      heroMark(xt, ty, 11 * kt, 1);
-      const ch2 = same ? 'Same' : (r.tv > r.bv ? '+' : '−') + fmtN(Math.abs(100 * (r.tv - r.bv) / r.bv), 0) + '%', gain = !same && (r.better === 'low' ? r.tv < r.bv : r.tv > r.bv);
-      text(ch2, tx - 36, ty + 7, { font: 'mono', size: 21, weight: 700, color: gain ? C.heroText : C.mute, align: 'right', alpha: ep(t, t0 + 1.2, t0 + 1.6) });
-    }
-    text(r.tgt, tx, bt + rh / 2 - 1, { role: 'small', size: 26, weight: 800, color: C.ink, t, t0: t0 + 0.2, cps: 100 });
-    text(r.tq, tx, bt + rh / 2 + 22, { role: 'label', size: 19, color: C.mute, alpha: ep(t, t0 + 0.3, t0 + 0.6) });
+/* at a glance (Brock, F14.10, F16.1): the helpers live with the clicks chapter (10-b-click.js); the intro calls them by these names */
+const ntr_hl = (...a) => clk_hl(...a), ntr_ba = (...a) => clk_ba(...a);
+/** the targets, rethought for a glance (F14.10): the rows where Theseus moves past the best figure anyone has shown get a headline and
+   a before → after chart (the best shown in grey, my target in blue under it, which way is better on every row); the rows where it
+   matches the best, or where the target is a method, sit to the right as quiet tiles. rows: as NTR_BAR_*; o = { head: [num, word, sub],
+   headRow: the category the headline comes from } */
+function ntr_targets(t, rows, o) {
+  const win = rows.filter(r => r.bv != null && r.tv != null && (r.better === 'low' ? r.tv < r.bv : r.tv > r.bv)).sort((p, q) => (q.cat === o.first) - (p.cat === o.first)), rest = rows.filter(r => !win.includes(r));
+  const [lx, lw] = [LM, 940], [rx, rw] = [1060, RM - 1060], y0 = 280;
+  /* the headline */
+  ntr_hl(t, 0.5, lx, y0 + 150, o.head[0], o.head[1], { size: 150, sub: o.head[2], maxW: lw });
+  /* the chart: two bars a row on the row's own scale, the change at its right end */
+  const cy0 = y0 + 300, rh = Math.min(150, (960 - cy0) / Math.max(1, win.length)), bx0 = lx + 4, bw = lw - 520;
+  win.forEach((r, i) => {
+    const y = cy0 + i * rh, t0 = 1.0 + i * 0.35, a = ep(t, t0, t0 + 0.4), kb = ep(t, t0 + 0.2, t0 + 1.0, E.snap), kt = ep(t, t0 + 0.7, t0 + 1.5, E.snap);
+    const hi = Math.max(r.bv, r.tv), Lb = bw * r.bv / hi, Lt = bw * r.tv / hi, dir = r.better === 'low' ? 'lower is better' : 'higher is better';
+    rich([{ s: r.cat, role: 'label', size: 21, color: C.ink }, { s: '(' + dir + ')', role: 'label', size: 19, color: C.faint, gap: 12 }], bx0, y + 4, { alpha: a });
+    rr(bx0, y + 22, Math.max(10, Lb * kb), 22, 4, C.comp, null, 0, a);
+    rich([{ s: r.best, role: 'num', size: 25, weight: 700, color: C.ink2 }, { s: r.who, role: 'small', size: 21, weight: 600, color: C.mute, gap: 12 }], bx0 + Lb * kb + 14, y + 41, { alpha: a });
+    rr(bx0, y + 58, Math.max(10, Lt * kt), 22, 4, C.hero, null, 0, a);
+    rich([{ s: r.tgt, role: 'num', size: 25, weight: 800, color: C.heroText }, { s: 'Theseus, ' + r.tq, role: 'small', size: 21, weight: 600, color: C.heroText, gap: 12 }], bx0 + Lt * kt + 14, y + 77, { alpha: a * ep(t, t0 + 1.0, t0 + 1.4) });
+    const ch = (r.tv > r.bv ? '+' : '−') + fmtN(Math.abs(100 * (r.tv - r.bv) / r.bv), 0) + '%';
+    text(ch, lx + lw, y + 77, { role: 'd1', size: 44, weight: 800, color: C.heroText, grad: C.heroGrad, align: 'right', alpha: ep(t, t0 + 1.2, t0 + 1.6) });
   });
-  return y + 14 + rh * n;
+  /* the rest: quiet tiles, two a row, on the 40 px grid */
+  const cols = 2, rowsN = Math.ceil(rest.length / cols), th = Math.floor((680 - 40 * (rowsN - 1)) / rowsN / 20) * 20, tw2 = (rw - 40) / 2;
+  text(o.restHead || 'Matches the best shown', rx, y0 - 14, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 2.0, 2.4) });
+  rest.forEach((r, i) => {
+    const x = rx + (i % cols) * (tw2 + 40), y = y0 + Math.floor(i / cols) * (th + 40), t0 = 2.2 + i * 0.12, a = ep(t, t0, t0 + 0.5, E.snap);
+    demoWindow(x, y, tw2, th, a);
+    const ka = ep(t, t0 + 0.2, t0 + 0.6), big = th >= 160, mw = tw2 - 56, vs0 = big ? 46 : 36, vs = Math.min(vs0, Math.floor(vs0 * mw / Math.max(1, tw(r.tgt, { role: 'd1', size: vs0, weight: 800 }))));
+    text(r.cat, x + 28, y + 40, { role: 'label', size: 19, color: C.mute, alpha: ka, maxW: mw });
+    text(r.tgt, x + 28, y + th - (big ? 62 : 46), { role: 'd1', size: vs, weight: 800, color: C.ink, alpha: ka });
+    text(r.sub || r.tq, x + 28, y + th - (big ? 24 : 16), { role: 'small', size: 21, weight: 600, color: C.faint, alpha: ka });
+  });
 }
 S({
   id: 'targets', ch: 'intro', theme: 'night', title: 'Targets, part one: speed', settle: 9,
   src: ['exPiaknow', 'kunai', 'xbab', 'xbabFw', 'xbabSensorLock', 'vgnClick', 'pcgSlx', 'usbHs', 'ntrTpuV4'],
   draw: t => {
     header(t, 'Targets, part one: speed');
-    const yb = ntr_bar(t, NTR_BAR_SPEED);
-    captions(t, [[0.6, 'Each row: the best number anyone has shown, who holds it, how we know it, and my target. Theseus matches or beats every one.'], [5.0, 'The big one is wireless motion: 0.14 ms, 59% under the fastest wireless mouse anyone has measured.']]);
-    legend(t, 3.2, LM, yb + 58, [{ kind: 'dot', color: C.ink, label: 'Best shown' }, { kind: 'hero', label: 'My target' }]);
-    source(t, 'Change = (target − best) ÷ best.', { t0: 3.4 });
+    captions(t, [[0.6, 'For every speed figure, the best anyone has shown, and my target. Theseus matches or beats every one.'], [5.0, 'The big one is wireless motion: 0.14 ms, 59% under the fastest wireless mouse anyone has measured.']]);
+    const m = NTR_BAR_SPEED.find(r => /wireless/.test(r.cat) && /Motion/.test(r.cat));
+    ntr_targets(t, NTR_BAR_SPEED, { head: ['−' + fmtN(100 * (m.bv - m.tv) / m.bv, 0) + '%', 'latency', 'Wireless motion: ' + m.tgt + ' against ' + m.best + ', the fastest measured ({piaknow}, 8 kHz)'] });
+    source(t, 'Change = (target − best) ÷ best. Best shown: piaknow, Razer, VGN and Finalmouse rigs as named; Kunai and XBAB by their developers.', { t0: 3.4 });
   }
 });
 S({
   id: 'targets2', ch: 'intro', theme: 'paper', title: 'Targets, part two: everything else', settle: 9,
-  src: ['exNbcV4', 'ntrTpuV4', 'ntrB2g', 'tpuX2h', 'nbcUlx', 'razerFocus', 'mkb3955', 'xbabSmooth', 'slxPdf', 'slxXt', 'kunai', 'cerakoteH'],
+  src: ['exNbcV4', 'ntrTpuV4', 'ntrB2g', 'tpuX2h', 'nbcUlx', 'ntrRtUlxPro', 'razerFocus', 'mkb3955', 'xbabSmooth', 'slxPdf', 'slxXt', 'kunai', 'cerakoteH'],
   draw: t => {
     header(t, 'Targets, part two: everything else');
-    ntr_bar(t, NTR_BAR_REST);
-    captions(t, [[0.6, 'The same rule for everything else: the best figure shown anywhere, and where Theseus sits against it.'], [5.0, 'Every Theseus is weighed; the 29 g here is only listed. And where Razer keeps its sensor to itself, mine is a next-gen PixArt FrameSync-class part.']]);
+    const lw0 = ntr_lightest(), rows = NTR_BAR_REST.map(r => r.cat !== 'Weight, full shell' || !lw0 ? r : Object.assign({}, r, { best: fmtN(lw0.g, 1) + ' g', bv: lw0.g, who: lw0.name.replace('Finalmouse ', '') + ', RTINGS' }));
+    const w = rows.find(r => r.cat === 'Weight, full shell');
+    captions(t, [[0.6, 'The same rule for everything else: the best figure shown anywhere, and where Theseus sits against it.'], [5.0, 'Weighed against weighed: the ULX small lists 29 g, but no one has put it on a scale.']]);
+    ntr_targets(t, rows, { head: ['−' + fmtN(100 * (w.bv - w.tv) / w.bv, 0) + '%', 'weight', 'Weighed, against the lightest wireless full shell anyone has weighed: ' + w.who.replace(', RTINGS', '') + ', ' + w.best + ' (RTINGS)'], restHead: 'Matches the best, or my method', first: 'Weight, full shell' });
   }
 });
 
@@ -313,66 +313,52 @@ function ntr_evLegend(t, t0, x, y, kinds, o = {}) {
   kinds.forEach(k => { evDot(xx + 7, y - 7, k, 6, a); text(evLabel(k), xx + 22, y, { role: 'label', size: 20, color: C.mute, alpha: a }); xx += 22 + tw(evLabel(k), { role: 'label', size: 20 }) + 30; });
   return xx - x;
 }
+/** one comparison as a tile: a label with which way is better, a headline in Theseus's colour, and a bar a mouse (Theseus first,
+   in blue; the wireless flagships in grey, the best of them yellow; the wired ones dimmed, shown and not ranked). rect = [x, y, w, h];
+   o = { label, dir: 'low' | 'high', head: [num, word, sub], rows: [{ name, v, s, u, sub, hero, wired }], max, note, hs (headline size) } */
+function ntr_flagTile(t, t0, rect, o) {
+  const [x, y, w, h] = rect, a = ep(t, t0, t0 + 0.55, E.snap); if (a <= 0.003) return;
+  demoWindow(x, y, w, h, a);
+  const ka = ep(t, t0 + 0.2, t0 + 0.6), hs = o.hs || 96;
+  text(o.label + (o.dir === 'low' ? ' (lower is better)' : ' (higher is better)'), x + 32, y + 46, { role: 'label', size: 19, color: C.mute, alpha: ka });
+  ntr_hl(t, t0 + 0.5, x + 32, y + 60 + hs * 0.74, o.head[0], o.head[1], { size: hs, count: false, sub: o.head[2], subSize: 22, maxW: w - 64 });
+  const top = y + 60 + hs * 0.74 + (o.head[2] ? 74 : 30), bot = y + h - (o.note ? 64 : 28), n = o.rows.length, rh = Math.min(56, (bot - top) / n);
+  const nx = x + 32, bx = x + 250, bw = w - 250 - 200, wl = o.rows.filter(r => !r.hero && !r.wired && r.v != null), bestV = wl.length ? (o.dir === 'low' ? Math.min(...wl.map(r => r.v)) : Math.max(...wl.map(r => r.v))) : null;
+  o.rows.forEach((r, i) => {
+    const yy = top + i * rh + rh / 2, k = ep(t, t0 + 0.6 + i * 0.08, t0 + 1.4 + i * 0.08, E.snap), al = ka * (r.wired ? 0.75 : 1), best = !r.hero && !r.wired && r.v === bestV;
+    if (r.wired && (i === 0 || !o.rows[i - 1].wired)) line(nx, yy - rh / 2, x + w - 32, yy - rh / 2, { color: C.hair, w: 1.2, dash: [5, 5], alpha: ka });
+    text(r.name, nx, yy + 8, { role: 'small', size: 23, weight: r.hero ? 800 : 600, color: r.hero ? C.heroText : r.wired ? C.mute : C.ink, alpha: al });
+    const L = bw * clamp(r.v / o.max) * k;
+    rr(bx, yy - 8, Math.max(8, L), 16, 4, r.hero ? C.hero : best ? C.ref : r.wired ? C.comp2 : C.comp, null, 0, al);
+    rich([{ s: r.s, role: 'num', size: 24, weight: r.hero ? 800 : 700, color: r.hero ? C.heroText : r.wired ? C.mute : C.ink }, { s: r.u, role: 'label', size: 19, color: C.mute, gap: 6 },
+      r.sub ? { s: r.sub, role: 'small', size: 19, weight: 600, color: C.faint, gap: 12 } : null], bx + Math.max(8, L) + 12, yy + 8, { alpha: al * ep(t, t0 + 1.0 + i * 0.08, t0 + 1.4 + i * 0.08) });
+  });
+  if (o.note) text(o.note, nx, y + h - 30, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: ka, maxW: w - 64 });
+}
 S({
   id: 'flagships', ch: 'intro', theme: 'night', title: 'Theseus against the flagships', settle: 10,
   src: ['exRtings', 'exEloshapes', 'exXbabWeight', 'exNbcV4', 'ntrTpuV4', 'ntrGpx2', 'ntrB2g', 'exPiaknow', 'ntrXbabClick', 'ntrRazerV4', 'ntrStores', 'raytac', 'slxPdf'],
   draw: t => {
     header(t, 'Theseus against the flagships');
-    captions(t, [[0.6, 'Six of the best mice you can buy, against my targets. A blank means nobody has published that number.'], [5.4, 'Against the wireless flagships Theseus leads every row but price. The wired XA25 is lighter and 0.01 ms quicker, with no battery to carry.']]);
-    const D = ntr_flagCells(), n = NTR_FLAG.length, lw = 214, c0w = 290, cw = (RM - LM - lw - c0w) / (n - 1), y0 = 280, hh = 92;
-    const rows = [
-      { k: 'w', label: 'Weight', sub: 'RTINGS\' scale', bar: 60, best: 'min', h: 120 },
-      { k: 'b', label: 'Battery, 1 kHz', sub: 'The makers\' hours', bar: 200, best: 'max', h: 120 },
-      { k: 'm', label: 'Motion latency', sub: '{piaknow}, 8 kHz', bar: 1.0, best: 'min', h: 120 },
-      { k: 'c', label: 'Click latency', sub: 'Contact to USB', h: 96 },
-      { k: 'p', label: 'Price, US', sub: 'List', h: 80 }
-    ];
-    const colX = j => LM + lw + (j ? c0w + (j - 1) * cw : 0), colW = j => j ? cw : c0w, total = hh + rows.reduce((a, r) => a + r.h, 0), a0 = ep(t, 0.3, 0.7);
-    /* the Theseus column: a yellow cap and a rule */
-    const kc = ep(t, 0.5, 1.1, E.snap);
-    rect(colX(0), y0, c0w - 14, 6 * kc, { fill: C.hero });
-    rect(colX(0), y0, 2, total * kc, { fill: C.hero, alpha: 0.9 });
-    NTR_FLAG.forEach((f, j) => {
-      const x = colX(j) + 18, a = ep(t, 0.4 + j * 0.08, 0.8 + j * 0.08);
-      text(f.brand, x, y0 + 38, { role: 'label', size: 19, color: f.hero ? C.heroText : C.faint, alpha: a });
-      text(f.name, x, y0 + 72, { role: 'h3', size: 27, weight: 800, color: C.ink, alpha: a });
-    });
-    line(LM, y0 + hh, RM, y0 + hh, { color: C.hair, w: 1.5, alpha: a0 });
-    let ry = y0 + hh;
-    rows.forEach((R, i) => {
-      const t0 = 0.9 + i * 0.32, k = ep(t, t0, t0 + 0.4), cells = D[R.k];
-      if (i) line(LM, ry, RM, ry, { color: C.hair, w: 1, alpha: k });
-      const vy = ry + (R.bar ? 54 : 42), sy = vy + (R.bar ? 30 : 28);
-      text(R.label, LM, vy, { role: 'small', size: 25, weight: 700, color: C.ink, alpha: k });
-      if (R.sub) text(R.sub, LM, sy, { role: 'label', size: 19, color: C.faint, alpha: k });
-      /* the best of the six (not Theseus), in ink */
-      const have = cells.slice(1).map(c => c && c.v != null ? c.v : null).filter(v => v != null);
-      const bestV = !have.length ? null : R.best === 'min' ? Math.min(...have) : R.best === 'max' ? Math.max(...have) : null;
-      cells.forEach((c, j) => {
-        if (!c) return;
-        const x = colX(j) + 18, kj = ep(t, t0 + 0.08 * j, t0 + 0.08 * j + 0.4), hero = j === 0, best = !hero && R.best && c.v === bestV;
-        if (c.na) {
-          text(c.na, x, vy - (R.bar ? 6 : 0), { role: 'label', size: 20, color: C.faint, alpha: kj });
-          if (c.sub) text(c.sub, x, sy, { role: 'label', size: 19, color: C.faint, alpha: kj * 0.8 });
-          return;
-        }
-        let vx = x;
-        if (R.bar) {
-          const cu = c.v != null ? (countUp(c.s, ep(t, t0 + 0.1 + 0.08 * j, t0 + 1.0 + 0.08 * j, E.out3)) || c.s) : c.s;
-          rich([{ s: cu, font: 'disp', size: 40, weight: 800, track: -0.01, color: C.ink, tnum: true }, { s: c.u, font: 'mono', size: 21, weight: 600, color: C.mute, gap: 8 }], vx, vy, { alpha: kj });
-        } else text(c.s + (c.u ? '\u00A0' + c.u : ''), vx, vy, { role: 'small', size: R.wrap ? 23 : 25, weight: hero || best ? (R.wrap ? 700 : 800) : 600, color: C.ink, alpha: kj, maxW: colW(j) - (vx - x) - 30, lh: 1.2 });
-        if (c.sub) text(c.sub, x, sy, { role: 'label', size: 19, color: hero ? C.heroText : C.mute, alpha: kj });
-        if (R.bar && c.v != null) {
-          const bw = colW(j) - 40, by = ry + R.h - 24, kb = ep(t, t0 + 0.2 + 0.08 * j, t0 + 1.1 + 0.08 * j, E.snap), L = bw * clamp(c.v / R.bar) * kb;
-          rr(x, by, bw, 8, 4, C.track, null, 0, kj);
-          rr(x, by, Math.max(8, L), 8, 4, hero ? C.hero : best ? C.ref : C.comp, null, 0, kj);
-        }
-      });
-      ry += R.h;
-    });
-    line(LM, ry, RM, ry, { color: C.hair, w: 1.5, alpha: a0 });
-    legend(t, 3.6, LM, ry + 44, [{ kind: 'hero', label: 'Theseus' }, { kind: 'comp', color: C.ref, label: 'The best of the six' }, { kind: 'comp', color: C.comp, label: 'The rest' }]);
-    source(t, 'Weights: RTINGS, the XA25 by XBAB. Hours: the makers. Motion: piaknow. Click: TechPowerUp, XBAB. Sensors and radios: the electronics chapter.', { t0: 4.0 });
+    captions(t, [[0.6, 'Six of the best mice you can buy, against my targets, where someone has published the number.'], [5.4, 'Against the wireless flagships Theseus leads on weight, hours and motion. The two wired mice carry no battery: shown, not ranked.']]);
+    const D = ntr_flagCells(), F = NTR_FLAG, wired = j => /wired/.test(F[j].brand), nm = j => F[j].hero ? 'Theseus' : F[j].name;
+    const rowsOf = (k, dir) => {
+      const all = F.map((f, j) => ({ j, c: D[k][j] })).filter(e => e.c && e.c.v != null).map(e => ({ name: nm(e.j), v: e.c.v, s: e.c.s, u: e.c.u, hero: !!F[e.j].hero, wired: wired(e.j), sub: F[e.j].hero ? 'target' : (e.c.sub || '') }));
+      const srt = (p, q) => dir === 'low' ? p.v - q.v : q.v - p.v;
+      return all.filter(r => r.hero).concat(all.filter(r => !r.hero && !r.wired).sort(srt), all.filter(r => r.wired).sort(srt).map(r => Object.assign(r, { sub: 'wired, not ranked' })));
+    };
+    const pct = (rs, dir) => { const th = rs.find(r => r.hero), wl = rs.filter(r => !r.hero && !r.wired); if (!th || !wl.length) return null; const b = dir === 'low' ? wl.reduce((m, r) => r.v < m.v ? r : m) : wl.reduce((m, r) => r.v > m.v ? r : m); return { b, p: 100 * (th.v - b.v) / b.v }; };
+    const W = rowsOf('w', 'low'), Bt = rowsOf('b', 'high').filter(r => !r.wired), M = rowsOf('m', 'low').filter(r => !r.wired);
+    const pw = pct(W, 'low'), pb = pct(Bt, 'high'), pm = pct(M, 'low'), sg = p => (p >= 0 ? '+' : '−') + fmtN(Math.abs(p), 0) + '%';
+    const noB = F.map((f, j) => j).filter(j => !F[j].hero && !wired(j) && D.b[j] && D.b[j].na).map(nm), wm = F.map((f, j) => j).filter(j => wired(j) && D.m[j] && D.m[j].v != null).map(j => nm(j) + ' ' + D.m[j].s + ' ms');
+    const y0 = 280, lw = 860, rx = LM + lw + 40, rw = RM - rx;
+    ntr_flagTile(t, 0.4, [LM, y0, lw, 680], { label: 'Weight, as weighed', dir: 'low', max: 62, hs: 150, rows: W,
+      head: pw ? [sg(pw.p), 'weight', 'Against the lightest wireless flagship on a scale: the ' + pw.b.name + ', ' + pw.b.s + ' g'] : ['', '', ''] });
+    ntr_flagTile(t, 1.2, [rx, y0, rw, 320], { label: 'Battery at 1 kHz', dir: 'high', max: 220, hs: 84, rows: Bt,
+      head: pb ? [sg(pb.p), 'hours', ''] : ['', '', ''], note: noB.length ? 'No rating found: ' + noB.join(', ') + '. The wired two carry none.' : '' });
+    ntr_flagTile(t, 2.0, [rx, y0 + 360, rw, 320], { label: 'Motion latency, wireless', dir: 'low', max: 0.4, hs: 84, rows: M,
+      head: pm ? [sg(pm.p), 'latency', ''] : ['', '', ''], note: wm.length ? 'Wired: Theseus 0.13 ms (target), ' + wm.join(', ') + '.' : '' });
+    source(t, 'Weights: RTINGS, the XA25 by XBAB part by part. Hours: the makers. Motion: piaknow. Price, US list: Theseus $189, the six $89.99 to $179. Click latency: the clicks chapter.', { t0: 4.0 });
   }
 });
 
@@ -389,8 +375,8 @@ S({
   draw: t => {
     header(t, 'The optimal weight is zero grams');
     captions(t, [[0.6, 'The same push, three masses. F = m · a: the lighter the mouse, the sooner it reaches the target and stops on it.'],
-      [5.4, 'Every gram I take out is a gram your hand never has to start, stop or turn. Theseus is 29.31 g, with the whole shell.']]);
-    const Z = NTR_ZG, x0 = 360, x1 = 920, ys = [440, 600, 760], a0 = ep(t, 0.4, 0.9);
+      [5.4, 'Every bit of weight I take out is weight your hand never has to start, stop or turn. Theseus is 29.31 g, with the whole shell.']]);
+    const Z = NTR_ZG, x0 = 360, x1 = 920, ys = [420, 560, 700], a0 = ep(t, 0.4, 0.9);
     text('Mass', LM, 332, { role: 'label', size: 20, color: C.mute, alpha: a0 });
     text('The same push, the same distance', x0, 332, { role: 'label', size: 20, color: C.mute, alpha: a0 });
     text('Time', 1080, 332, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: a0 });
@@ -415,9 +401,9 @@ S({
       if (kd > 0) rich([{ s: fmtN(100 * Math.sqrt(L.m / 100), 0), role: 'stat', size: 52, color: L.hero ? C.heroText : C.ink2, grad: L.hero ? C.heroGrad : null, tnum: true }, { s: '%', font: 'disp', size: 24, weight: 700, color: C.mute, gap: 4 }], 1080, y + 10, { align: 'right', alpha: kd });
     });
     /* the sum, under the lanes */
-    const kf = ep(t, 5.2, 5.8);
-    text('a = F ÷ m, so the time to the target is 2 √(d · m ÷ F): it falls with the square root of the mass. The hand is the same in every lane.', LM, 892, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: 1000, lh: 1.32, alpha: kf });
-    pill(LM, 966, 'derived', kf);
+    /* the headline: Theseus's time against the 100 g mouse's, from the same push (F14.10) */
+    const zT = NTR_ZG.lanes.find(l => l.hero), cut = 100 * (1 - Math.sqrt(zT.m / 100));
+    ntr_hl(t, 5.2, LM, 900, '−' + fmtN(cut, 0) + '%', 'time', { size: 112, count: false, sub: 'Derived: t = 2 √(d · m ÷ F), the same push as the 100 g mouse. Lower is better.', maxW: 1000 });
     /* the words: the physics, the man who said it first, and the biggest study */
     ntr_stack(t, 1160, 320, RM - 1160, [
       { t0: 5.8, gloss: true, a: 'F = m · a', b: 'The same push gives half the mass twice the acceleration: it starts, stops and turns sooner, and presses half as hard on its skates.' },
@@ -447,7 +433,7 @@ S({
     const slx = R.find(r => r.id === 'finalmouse-slx'), scy = R.find(r => r.id === 'scyrox-v8');
     captions(t, [[0.6, `Razer and Logitech: ${nb} of ${big.length} mice within 3% of the weight they list. ${nh} of the other ${oth.length} weigh more than 3% over.`],
       [5.6, 'So every Theseus gets weighed after assembly, and the weight on its card is the scale\'s, not mine.']]);
-    const half = Math.ceil(R.length / 2), cols = [R.slice(0, half), R.slice(half)], colW = (RM - LM - 40) / 2, y0 = 300, rh = 42, lo = -7, hi = 13;
+    const half = Math.ceil(R.length / 2), cols = [R.slice(0, half), R.slice(half)], colW = (RM - LM - 40) / 2, y0 = 300, rh = 38, lo = -7, hi = 13;
     cols.forEach((rows, ci) => {
       const x0 = LM + ci * (colW + 40), bx0 = x0 + 470, bw = colW - 470 - 92, X = v => bx0 + bw * (v - lo) / (hi - lo), a0 = ep(t, 0.4 + ci * 0.2, 0.8 + ci * 0.2);
       text('Mouse', x0, y0, { role: 'label', size: 21, color: C.mute, alpha: a0 });
@@ -477,9 +463,11 @@ S({
         legend(t, 4.4, x0, yb1 + rh / 2 + 8, [{ kind: 'comp', color: C.ink2, label: 'Razer and Logitech' }, { kind: 'comp', color: C.comp, label: 'Every other brand' }]);
       }
     });
-    gloss(t, 6.2, 'Gap', '(Weighed − listed) ÷ listed. Weighed: RTINGS\' default weight. Listed: the maker\'s own figure, via EloShapes.');
-    featureCard(t, 6.6, 'The weight on the card', ['proposal'], 'Each Theseus weighed after assembly, and its own weight printed on its serial card, to 0.01 g.');
-    source(t, 'Left out: the ULX (RTINGS doesn\'t say which size), the MCHOSE L7 Ultra (+17.7%, likely another variant), the XA25 (weighed by its maker).', { t0: 4.8 });
+    /* at a glance: the worst listed gap against Theseus's, which is zero because every unit is weighed (F14.10, F16.1) */
+    { const worst = R.reduce((m, r) => (!m || r.gap > m.gap ? r : m), null), a = ep(t, 6.2, 6.7);
+      if (worst) { text('Gap between the weight on the card and the scale, worst listed against Theseus (lower is better)', LM, 818, { role: 'label', size: 21, color: C.mute, alpha: a });
+        ntr_ba(t, LM, 916, { before: '+' + fmtN(worst.gap, 1) + '%', after: '0.0%', net: 'Every Theseus weighed after assembly: its own weight on its card, to 0.01 g.', netRight: true, netW: 980, netSize: 26, size: 86, k: ep(t, 6.4, 7.0), a, hero: true }); } }
+    source(t, 'Gap = (weighed − listed) ÷ listed. Weighed: RTINGS\' default weight; listed: the maker\'s, via EloShapes. Left out: the ULX (RTINGS doesn\'t say which size), the MCHOSE L7 Ultra (+17.7%, likely another variant), the XA25 (weighed by its maker).', { t0: 4.8 });
   }
 });
 
@@ -529,9 +517,11 @@ S({
       text(THS.massG, tx0 + tw0 * 3.1 / 4.25 - 16, ry, { role: 'small', size: 25, weight: 800, color: C.heroText, align: 'right', alpha: kr });
       text(THS.price, RM - 16, ry, { role: 'small', size: 25, weight: 800, color: C.heroText, align: 'right', alpha: kr });
     }
-    if (x2f) text(`Off it: the X2F CrazyLight, ${ntr_g(x2f.x)} g and $${x2f.y}, is the front half of a shell.`, tx0, yEnd + 130, { role: 'small', size: 23, weight: 600, color: C.mute, maxW: tw0, lh: 1.36, alpha: ep(t, 4.2, 4.7) });
+    /* the headline: Theseus against the ULX at the ULX's own launch price (F14.10) */
+    { const ulx = P.find(p => p.id === 'finalmouse-ulx');
+      if (ulx) ntr_hl(t, 5.4, tx0, 852, '−' + fmtN(100 * (ulx.x - THESEUS.mass) / ulx.x, 0) + '%', 'weight', { size: 100, count: false, sub: 'The ULX\'s own ' + THS.price + ': ' + THS.massG + ' against ' + ntr_g(ulx.x) + ' g', maxW: tw0, subSize: 23 }); }
     legend(t, 4.2, LM, 940, [{ kind: 'dot', color: C.comp, label: 'Weighed by RTINGS' }, { kind: 'ring', color: C.comp, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier, full shells' }, { kind: 'ref', label: 'The lightest full shell' }, { kind: 'hero', label: 'Theseus' }]);
-    source(t, 'Prices: US list, maker stores and reviews; a range is plotted at its lowest. Weights: RTINGS where weighed, else the maker.', { t0: 3 });
+    source(t, 'Prices: US list, maker stores and reviews; a range is plotted at its lowest. Weights: RTINGS where weighed, else the maker.' + (x2f ? ` Off the frontier: the X2F CrazyLight, ${ntr_g(x2f.x)} g and $${x2f.y}, is the front half of a shell.` : ''), { t0: 3 });
   }
 });
 
@@ -568,11 +558,14 @@ S({
     text('No 1 kHz rating found', lx, ly, { role: 'label', size: 21, color: C.redL, alpha: lk });
     line(lx, ly + 16, lr, ly + 16, { color: C.hair, w: 1.5, alpha: lk });
     unr.forEach((u, i) => {
-      const yy = ly + 56 + i * 39, k = ep(t, 3.7 + i * 0.05, 4.1 + i * 0.05);
+      const yy = ly + 50 + i * 31, k = ep(t, 3.7 + i * 0.05, 4.1 + i * 0.05);
       line(lx, yy - 9, lx + 14, yy - 9, { color: C.red, w: 2.5, alpha: k });
-      text(u.name + (u.id === 'finalmouse-slx' ? ' †' : ''), lx + 26, yy, { role: 'small', size: 24, weight: 600, color: C.ink, alpha: k });
+      text(u.name + (u.id === 'finalmouse-slx' ? ' †' : ''), lx + 26, yy, { role: 'small', size: 22, weight: 600, color: C.ink, alpha: k });
       text(ntr_g(u.g) + '\u00A0g', lr, yy, { font: 'mono', size: 22, weight: 600, color: u.ev === 'measured' ? C.ink2 : C.mute, align: 'right', alpha: k });
     });
+    /* the headline: Theseus's hours against the longest listed, under the list (F14.10) */
+    { const lng = rated.reduce((m, p) => (!m || p.y > m.y ? p : m), null), hy = Math.max(ly + 50 + unr.length * 31 + 96, 820);
+      if (lng) ntr_hl(t, 5.6, lx, hy, '+' + fmtN(100 * (THESEUS.hours - lng.y) / lng.y, 0) + '%', 'hours', { size: 92, count: false, sub: THS.hours + ' at 1 kHz against the longest listed, the ' + lng.name.replace('*', '') + ': ' + fmtN(lng.y, 0) + ' h at ' + ntr_g(lng.x) + ' g.', maxW: 520, subSize: 22 }); }
     const dc = TH ? '#5F5E59' : '#B9B8B2';
     legend(t, 4.2, x - 100, 920, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'ref', label: 'The longest listed' }, { kind: 'hero', label: 'Theseus' }]);
     const un = (sc.unnamed || []);

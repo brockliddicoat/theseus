@@ -123,7 +123,7 @@ export function buildGT01(opts = {}) {
   // ---- the switch's own base (black LCP): the lower body and the pedestals that hold the terminals inside the cover
   const core = new THREE.Group(); core.name = 'switchBase';
   const sb = (g, nm) => { const m = meshOf(g, M.lcpBlack, nm); core.add(m); return m; };
-  sb(box(W - 0.24, L - 0.24, 0.02, Y_SHOULDER, 0.35, 0.06), 'baseBody');   // inside the black block (it carries the pedestals)
+  sb(box(2 * coreHalf - 0.04, L - 0.24, 0.02, Y_SHOULDER, 0.35, 0.06), 'baseBody');   // inside the black block's core, clear of the skins, so the side holes stay open (they read as crescents when it filled them)
   sb(box(2.8, 1.25, Y_SHOULDER - 0.01, 3.0, 0.16, 0.06, 0, 5.32), 'comPedestal');
   sb(box(2.8, 0.75, Y_SHOULDER - 0.01, 4.62, 0.16, 0.06, 0, -5.62), 'ncPedestal');
   sb(box(1.7, 1.25, Y_SHOULDER - 0.01, 3.64, 0.14, 0.05, 0, -3.95), 'noPedestal');
@@ -272,7 +272,7 @@ export function buildGT01(opts = {}) {
       pts.push(new THREE.Vector3().addScaledVector(P0, a).addScaledVector(P1, b).addScaledVector(P2, c));
     }
     const old = tongue.geometry;
-    tongue.geometry = sweep(pts, rectSection(T_BLADE, 0.96, 0.0), { up: [1, 0, 0], crease: 50 });   // as wide as its window allows
+    tongue.geometry = sweep(pts, rectSection(0.96, T_BLADE, 0.0), { up: [1, 0, 0], crease: 50 });   // flat in the leaf's plane: 0.96 wide (x) by the leaf's 0.08 (F14.3)
     old.dispose();
   }
 

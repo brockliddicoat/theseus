@@ -575,9 +575,12 @@ function tensionerPlanMM(o = {}) {
   const edgeY = x => -sm * 4.6 * (1 - Math.pow(x / (w + gap / 2), 2));
   for (const s of [-1, 1]) {
     const xa = s * gap / 2, xb = s * (gap / 2 + w), xl = Math.min(xa, xb), xr = Math.max(xa, xb);
-    const tab = () => { G.beginPath(); G.moveTo(xl, 9); G.lineTo(xr, 9); G.lineTo(xr, edgeY(xr)); for (let x = xr; x >= xl; x -= 0.25) G.lineTo(x, edgeY(x)); G.closePath(); };
+    /* the edge sampled at exact, shared x positions from xl to xr, so the arm and the tab meet along one line with square ends
+       (stepping x by 0.25 in floating point stopped short of xr, which left a slanted end and a notch: Brock, F12.9) */
+    const N = Math.round(w / 0.25), ex = Array.from({ length: N + 1 }, (_, i) => xl + (xr - xl) * i / N);
+    const tab = () => { G.beginPath(); G.moveTo(xl, 9); G.lineTo(xr, 9); for (let i = N; i >= 0; i--) G.lineTo(ex[i], edgeY(ex[i])); G.closePath(); };
     solid(tab, MT.spring, [xl, -5, w, 14], { lw: 1 });
-    const arm = () => { G.beginPath(); for (let x = xl; x <= xr; x += 0.25) G.lineTo(x, edgeY(x)); for (let x = xr; x >= xl; x -= 0.25) G.lineTo(x, edgeY(x) - 7.5); G.closePath(); };
+    const arm = () => { G.beginPath(); for (let i = 0; i <= N; i++) G.lineTo(ex[i], edgeY(ex[i])); for (let i = N; i >= 0; i--) G.lineTo(ex[i], edgeY(ex[i]) - 7.5); G.closePath(); };
     solid(arm, { g: ['#e8ebef', '#a3aab3'] }, [xl, -13, w, 9], { lw: 1 });
     G.save(); arm(); G.clip(); G.strokeStyle = 'rgba(0,0,0,0.06)'; G.lineWidth = lw(1); G.beginPath(); for (let x = xl; x < xr; x += 0.35) { G.moveTo(x, -16); G.lineTo(x, 10); } G.stroke(); G.restore();
     const hx = s * (gap / 2 + w * 0.5);

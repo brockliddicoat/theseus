@@ -57,6 +57,7 @@ function ntr_lightest() {
   return best;
 }
 
+const ntr_ord = n => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
 /* ---------- drawing helpers ---------- */
 /** a light that passes over a region once (o.per: again every per seconds): the keynote sweep */
 function ntr_sweep(t, t0, x, y, w, h, o = {}) {
@@ -137,7 +138,7 @@ function ntr_statsData() {
   const ulx = exMouse('finalmouse-ulx'), ulxP = ulx ? rv(ulx.price_usd) : null;
   return [
     { value: THS.mass, unit: 'g', label: 'Weight, every unit weighed', hero: true, next: lw && { value: fmtN(lw.g, 1), unit: 'g', who: lw.name.replace('Finalmouse ', ''), ev: 'measured', by: 'RTINGS', head: 'Lightest weighed' } },
-    { value: ntr_rf(ntr_thsRho()), unit: 'g/cm³', label: 'Density, grams per {cm³} of its box', ev: 'derived', hero: true, next: dn && { value: ntr_rf(dn.rho), unit: '', who: dn.name.replace('Pulsar ', ''), ev: 'derived', head: 'Best wireless' } },
+    { value: ntr_rf(ntr_thsRho()), unit: 'g/cm³', label: 'Density: weight per {cm³} of its box', ev: 'derived', hero: true, next: dn && { value: ntr_rf(dn.rho), unit: '', who: dn.name.replace('Pulsar ', ''), ev: 'derived', head: 'Best wireless' } },
     { value: THS.price, unit: '', label: 'US list price', quiet: true, next: ulxP && { value: '$' + ulxP, unit: '', who: 'Finalmouse ULX, at launch', ev: 'claim', text: 'Notebookcheck 2023', head: 'Same as', grey: true } },
     { value: '0.14', unit: 'ms', label: 'Motion latency, wireless', hero: true, next: mo && { value: fmtN(mo.v, 2), unit: 'ms', who: 'Viper V4 Pro', ev: mo.ev, by: '{piaknow}', head: 'Fastest measured' } },
     { product: true },
@@ -201,8 +202,8 @@ S({
   src: ['ntrPwnTrinity', 'ntrPwnVanta', 'ntrScan'],
   draw: t => {
     header(t, 'Density, not weight');
-    captions(t, [[0.6, 'Weight alone rewards a small mouse. Density says how much mouse you get for every gram.'],
-      [5.4, 'Grams over the box the mouse fits in, the way Pwnage and physics both do it. Lower is lighter for its size, and no wireless mouse is lower than Theseus.']]);
+    captions(t, [[0.6, 'Weight alone rewards a small mouse. Density says how much mouse you get for the weight.'],
+      [5.4, 'Mass over the box the mouse fits in, the way Pwnage and physics both do it. Lower is lighter for its size, and no wireless mouse is lower than Theseus.']]);
     const B = ntr_shellBox(), bx = ntr_thsBox(), k = 4.2, O = [530, 505], P = ntr_iso(O, k, B);
     const c = (X, Y, Z) => P([X, Y, Z]);
     /* the corners: back bottom (hidden) b0; the box is drawn edge by edge, then the three views land on its faces */
@@ -250,8 +251,16 @@ S({
     text('Density', fx, 586, { role: 'label', size: 21, color: C.mute, alpha: a3 });
     pill(RM - pillW('derived'), 586, 'derived', a3);
     rich([{ s: ntr_rf(ntr_thsRho()), role: 'd1', size: 118, color: C.hero, grad: C.heroGrad, tnum: true, count: [5.25, 1.1] }, { s: 'g/cm³', font: 'mono', size: 34, weight: 600, color: C.mute, gap: 12 }], fx - 4, 696, { t, alpha: a3 });
-    ntr_stack(t, fx, 760, fw, [{ t0: 6.2, a: 'Pwnage', b: 'Pwnage\'s own figures: its Trinity CF is 0.14 g/cm³, its Vanta 0.17, and the average gaming mouse 0.30.' }]);
-    source(t, 'Pwnage\'s volumes are length × width × height to within 1 %. Volume per gram would rank the mice the same way, upside down.', { t0: 6.6, maxW: 1080 });
+    /* at a glance: Theseus against Pwnage's own figures and the best wireless mouse weighed, one bar each (lower is better) */
+    { const nb = ntr_dens({ measured: true, theseus: false }).sort((a, b) => a.rho - b.rho)[0], ka = ep(t, 6.2, 6.6);
+      const R = [{ n: 'Average gaming mouse', v: 0.30 }, { n: 'Pwnage Vanta', v: 0.17 }, { n: 'Pwnage Trinity CF', v: 0.14 }].concat(nb ? [{ n: nb.name.replace(/^Pulsar /, ''), v: nb.rho, ref: true }] : [], [{ n: 'Theseus', v: ntr_thsRho(), hero: true }]);
+      text('Density, g/{cm³} (lower is lighter for its size)', fx, 778, { role: 'label', size: 19, color: C.mute, alpha: ka });
+      const bx = fx + 300, bw = fw - 300 - 78;
+      R.forEach((r, i) => { const y = 812 + i * 34, k = ep(t, 6.3 + i * 0.1, 7.0 + i * 0.1, E.snap), a = ep(t, 6.2 + i * 0.1, 6.6 + i * 0.1);
+        text(r.n, fx, y + 7, { role: 'small', size: 21, weight: r.hero ? 800 : 600, color: r.hero ? C.heroText : r.ref ? C.secondText : C.ink2, alpha: a, maxW: 290 });
+        rr(bx, y - 6, Math.max(6, bw * r.v / 0.30 * k), 12, 3, r.hero ? C.hero : r.ref ? C.ref : C.comp, null, 0, a);
+        text(ntr_rf(r.v), RM, y + 7, { role: 'num', size: 21, weight: r.hero ? 800 : 600, color: r.hero ? C.heroText : C.ink, align: 'right', alpha: a }); }); }
+    source(t, 'Pwnage\'s own figures for its Trinity CF, its Vanta and the average gaming mouse; its volumes are length × width × height to within 1 %. The best wireless: RTINGS\'s weight in its maker\'s box.', { t0: 6.6, maxW: 1080 });
   }
 });
 
@@ -264,7 +273,7 @@ S({
     const X2F = ntr_dens({ theseus: false }).find(r => r.id === 'pulsar-x2f-crazylight'), bx = ntr_thsBox(), rhoT = ntr_thsRho();
     const more = X2F ? 100 * (bx.v / X2F.v - 1) : 0;
     captions(t, [[0.6, 'Two mice that weigh the same. The Pulsar X2F gets there by being less mouse: the front half of a shell.'],
-      [5.6, `Theseus puts the same grams into ${fmtN(more, 0)}% more mouse, and at the same mass the bigger one feels lighter in the hand.`]]);
+      [5.6, `Theseus puts the same weight into ${fmtN(more, 0)}% more mouse, and at the same mass the bigger one feels lighter in the hand.`]]);
     const k = 3.45, gy = 700;
     const items = [
       { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29, ev: 'claim', by: 'Pulsar', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 720, t0: 1.1 },
@@ -280,25 +289,23 @@ S({
         a, edge: it.hero ? C.hero : inkA(0.62), lw: it.hero ? 2 : 1.6,
         face: it.hero ? aa => { const S0 = ntr_shellBox(); ntr_onFace(t, 'right', p => [it.x + (S0.z1 - p[2]) * k * (B.L / (S0.z1 - S0.z0)), y - (p[1] - S0.y0) * k * (B.H / (S0.y1 - S0.y0))], k, aa); } : null
       });
-      /* above: the name and the weight, with its evidence */
-      const ka = ep(t, it.t0 + 0.7, it.t0 + 1.1), ty = 340;
-      text(it.name, it.x, ty, { role: 'h3', size: 30, weight: 800, color: it.hero ? C.heroText : C.ink, alpha: ka });
-      const r = rich([{ s: it.gs || ntr_g(it.g), role: 'stat', size: 72, color: it.hero ? C.hero : C.ink, grad: it.hero ? C.heroGrad : null, tnum: true, count: [it.t0 + 0.8, 0.7] }, { s: 'g', font: 'mono', size: 26, weight: 600, color: C.mute, gap: 8 }], it.x - 3, ty + 84, { t, alpha: ka });
-      pill(it.x, ty + 124, it.ev, ka, { by: it.by });
-      /* under: the box and what it gives */
-      const kb = ep(t, 4.3 + (it.hero ? 0.3 : 0), 4.8 + (it.hero ? 0.3 : 0)), uy = gy + 66;
-      text(fmtN(B.L, 1) + ' × ' + fmtN(B.W, 1) + ' × ' + fmtN(B.H, 1) + ' mm', it.x, uy, { font: 'mono', size: 21, weight: 500, color: C.mute, alpha: kb });
-      rich([{ s: fmtN(B.v, 1), font: 'mono', size: 30, weight: 700, color: C.ink, tnum: true, count: [4.4 + (it.hero ? 0.3 : 0), 0.7] }, { s: '{cm³}', font: 'mono', size: 21, weight: 600, color: C.mute, gap: 8 }], it.x, uy + 46, { t, alpha: kb });
+      /* under each box: the name, the weight and the box in one quiet line (the weights are the same: they do not lead), then the
+         density, Theseus's in its colour (lower is better) */
+      const ka = ep(t, it.t0 + 0.7, it.t0 + 1.1), kb = ep(t, 4.3 + (it.hero ? 0.3 : 0), 4.8 + (it.hero ? 0.3 : 0)), uy = gy + 58;
+      text(it.name, it.x, uy, { role: 'h3', size: 27, weight: 800, color: it.hero ? C.heroText : C.ink, alpha: ka });
+      rich([{ s: (it.gs || ntr_g(it.g)) + ' g', role: 'small', size: 23, weight: 700, color: C.ink2 }, { s: 'in ' + fmtN(B.L, 1) + ' × ' + fmtN(B.W, 1) + ' × ' + fmtN(B.H, 1) + ' mm, ' + fmtN(B.v, 1) + ' {cm³}', role: 'small', size: 21, weight: 600, color: C.mute, gap: 10 }], it.x, uy + 36, { alpha: kb });
       const kd2 = ep(t, 5.0 + (it.hero ? 0.35 : 0), 5.5 + (it.hero ? 0.35 : 0));
-      const rd = rich([{ s: ntr_rf(it.rho), role: 'stat', size: 64, color: it.hero ? C.hero : C.ink2, grad: it.hero ? C.heroGrad : null, tnum: true, count: [5.05 + (it.hero ? 0.35 : 0), 0.8] }, { s: 'g/cm³', font: 'mono', size: 22, weight: 600, color: C.mute, gap: 8 }], it.x - 2, uy + 126, { t, alpha: kd2 });
-      pill(it.x + rd.w + 18, uy + 126, 'derived', kd2);
+      const rd = rich([{ s: ntr_rf(it.rho), role: 'stat', size: it.hero ? 76 : 56, color: it.hero ? C.hero : C.ink2, grad: it.hero ? C.heroGrad : null, tnum: true, count: [5.05 + (it.hero ? 0.35 : 0), 0.8] }, { s: 'g/cm³', font: 'mono', size: 22, weight: 600, color: C.mute, gap: 8 }], it.x - 2, uy + 124, { t, alpha: kd2 });
+      pill(it.x + rd.w + 18, uy + 124, 'derived', kd2);
     });
     const P0 = items[0], P1 = items[1], y0 = gy - lift;
     const gp = it => [it.x + it.box.L * k * 0.5, y0 - it.box.H * k * 0.5];
     cursorAt(t, [[0.7, [P0.x + 120, y0 - 260]], [1.05, gp(P0)], [1.9, [gp(P0)[0], gp(P0)[1] + lift]], [2.3, [gp(P1)[0] - 60, y0 - 160]], [2.65, gp(P1)], [3.5, [gp(P1)[0], gp(P1)[1] + lift]], [4.3, [gp(P1)[0] + 260, gp(P1)[1] + lift + 40]]], [1.05, 2.65], { a: env(t, 0.5, 0.8, 4.1, 4.4) });
     /* the ground */
     line(680, gy + 1, RM, gy + 1, { color: C.hair, w: 1.5, alpha: ep(t, 0.4, 0.9) });
-    /* the words, in the right column */
+    /* the headline over the two boxes: how much more mouse the same weight makes (F14.10) */
+    ntr_hl(t, 5.6, 720, 400, '+' + fmtN(more, 0) + '%', 'more mouse', { size: 136, count: false, sub: `The same weight, ${X2F ? ntr_g(X2F.g) : 29} g and ${THS.mass} g: Theseus's density is ${fmtN(100 * (1 - rhoT / (X2F ? X2F.rho : 0.1717)), 0)}% lower. Lower is better.`, maxW: RM - 720 });
+    /* the words, in the left column */
     ntr_stack(t, LM, 280, 560, [
       { t0: 5.8, gloss: true, a: 'Size–weight illusion', b: 'Of two things with the same mass, the smaller one feels heavier. Charpentier measured it in 1891.' },
       { t0: 6.3, a: 'Buckingham 2014', b: 'The best known of the weight illusions, and over a century of studies keep finding it.' },
@@ -311,7 +318,7 @@ S({
 /* ============================== density 3: the same mice ranked by weight, then by density ============================== */
 S({
   id: 'ntr_densrank', ch: 'intro', theme: 'night', title: 'Ranked by density', settle: 10, after: 'ntr_sizewt', ideas: ['weight'],
-  src: ['exRtings', 'exEloshapes', 'ntrX2f', 'ntrPwnTrinity'],
+  src: ['exRtings', 'exEloshapes', 'ntrX2f', 'ntrPwnTrinity', 'exXbabWeight'],
   draw: t => {
     header(t, 'Ranked by density');
     const R = ntr_dens({ measured: true, keep: ['pulsar-x2f-crazylight'] });
@@ -319,13 +326,22 @@ S({
     byW.forEach((r, i) => { r.rw = i; }); byD.forEach((r, i) => { r.rd = i; });
     const nb = byD.find(r => !r.hero), x2f = R.find(r => r.id === 'pulsar-x2f-crazylight'), da = R.find(r => r.id === 'razer-deathadder-v4-pro');
     if (nb) nb.ref = true; if (x2f) x2f.story = true; if (da) da.story = true;
-    const ord = n => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+    const ord = ntr_ord;
     captions(t, [[0.6, `The same ${R.length} wireless mice, ranked twice: by weight on the left, by density on the right.`],
       [5.8, (x2f ? `The X2F falls from ${ord(x2f.rw + 1)} to ${ord(x2f.rd + 1)}: it is light because it is short. ` : '') + (da ? `The DeathAdder V4 Pro climbs from ${ord(da.rw + 1)} to ${ord(da.rd + 1)}.` : '')]]);
-    const n = R.length, y0 = 326, y1 = 920, p = (y1 - y0) / (n - 1), xL = 560, xR = 1352, Y = i => y0 + i * p;
-    const a0 = ep(t, 0.3, 0.8);
-    text('By weight, lightest first', xL - 14, y0 - 40, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: a0 });
-    text('By density, lowest first', xR + 14, y0 - 40, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+    const n = R.length, y0 = 374, y1 = 926, p = (y1 - y0) / (n - 1), xL = 560, xR = 1352, Y = i => y0 + i * p;
+    const a0 = ep(t, 0.3, 0.8), th = R.find(r => r.hero);
+    text('By weight, lightest first', xL - 14, 300, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: a0 });
+    text('By density, lowest first', xR + 14, 300, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+    /* the headline, over the middle of the chart, where no line runs yet (F14.10) */
+    if (th) ntr_hl(t, 5.8, (xL + xR) / 2 - 150, 360, ntr_ord(th.rd + 1), 'by density', { size: 96, count: false });
+    /* the XBAB XA25, shown above the density column and kept out of the ranking: it is wired (Brock, F12.3). Its density from
+       XBAB's own scale weight in its maker's box */
+    { const xb = ntr_box('xbab-xa25'), xw = exWeight('xbab-xa25'), rho = xb && xw ? xw.g / xb.v : 0.093, kx = ep(t, 6.2, 6.7), gy = y0 - 46;
+      if (kx > 0) { text(ntr_rf(rho), xR + 14, gy + 8, { font: 'mono', size: 21, weight: 600, color: C.faint, alpha: kx });
+        text('XBAB XA25', xR + 96, gy + 8, { role: 'small', size: 24, weight: 600, color: C.faint, alpha: kx });
+        text('Wired: not ranked', RM, gy + 8, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kx });
+        line(xR + 14, gy + 24, RM, gy + 24, { color: C.faint, w: 1.5, dash: [6, 6], alpha: kx }); } }
     const kH = ep(t, 4.8, 5.6), lineT = r => 1.5 + r.rw * 0.09;
     /* the lines: an S from each mouse's weight rank to its density rank, drawn left to right */
     const order = R.slice().sort((a, b) => (a.hero ? 3 : a.ref ? 2 : a.story ? 1 : 0) - (b.hero ? 3 : b.ref ? 2 : b.story ? 1 : 0));
@@ -340,7 +356,7 @@ S({
     R.forEach(r => {
       const kl = ep(t, 0.5 + r.rw * 0.05, 0.9 + r.rw * 0.05), kr = ep(t, lineT(r) + 0.8, lineT(r) + 1.2);
       const strong = r.hero || r.ref || r.story;
-      const st = { role: 'small', size: 24, weight: strong ? 700 : 500, color: r.hero ? C.heroText : r.ref ? C.secondText : strong ? C.ink : C.mute };
+      const st = { role: 'small', size: 22, weight: strong ? 700 : 560, color: r.hero ? C.heroText : r.ref ? C.secondText : strong ? C.ink : C.mute };
       const ya = Y(r.rw) + 8, yb = Y(r.rd) + 8;
       text(pad2(r.rw + 1), LM, ya, { font: 'mono', size: 19, weight: 500, color: C.faint, alpha: kl });
       text(r.name, LM + 40, ya, Object.assign({ alpha: kl }, st));
@@ -351,6 +367,6 @@ S({
       const mv = r.rw - r.rd, ms = mv > 0 ? '▲' + mv : mv < 0 ? '▼' + (-mv) : '–';
       text(ms, RM, yb, { font: 'mono', size: 19, weight: strong ? 700 : 500, color: strong ? (mv > 0 ? C.ink : C.ink2) : C.faint, align: 'right', alpha: kr });
     });
-    source(t, 'Weights: RTINGS; the X2F\'s is Pulsar\'s. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is 119.3 × 62.4 × 39.9 mm. Left out: the ULX and the MCHOSE L7 Ultra.', { t0: 6.0 });
+    source(t, 'Weights: RTINGS; the X2F\'s is Pulsar\'s, the XA25\'s XBAB\'s own scale. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is 119.3 × 62.4 × 39.9 mm. Left out: the ULX and the MCHOSE L7 Ultra.', { t0: 6.0 });
   }
 });
