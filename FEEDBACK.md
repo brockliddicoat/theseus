@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 09:58 (Chicago).
+Last updated: 2026-11-04 10:30 (Chicago).
 
 ## Open with Brock
 
@@ -419,3 +419,43 @@ Answers to the Shell A questions:
   the reason.
 - **F13.4 DECIDED** The thumb band: "Both sides". **TODO (fix):** the thicker band runs along both low sides, with the thumb
   rest on the left.
+
+## F14. 2026-11-04 10:17 (with three Gateron GT01 images), and answers to the questions after it
+
+- **F14.1 TODO (plate)** "when you start on the bottom plate the 2 dot skates should join together to form a pill shape,
+  not 2 independent circles like they do now, and without the bottom plate, there should only be be ledge to fit the 8
+  dot skates"
+  - Asked what the skates are with the plate on: "Pills + sensor ring". That means a front pill and a back pill,
+    mirrored, plus a ring round the sensor.
+  - Asked where the dots sit with the plate off: "2 each corner, 1 or 2 on the sensor 9 or 10 total". They sit on a
+    ledge on the shell rim.
+- **F14.2 TODO (plate)** "the front and the back skate pills should be a direct mirror, one shouldn't be more towards the
+  center than the other"
+- **F14.3 TODO (r3d, fixA)** "your gt01 bottom housing design was wrong, which is confusing because you used it on the
+  cover of the clicks section, please try to get more accurate with the pictures i've attached, also the current gt01
+  has this weird noodle design on its interior which is not actuate, make sure you model the metal leaf as close as you
+  can get it, i've given you multiple angles. another issue you had was the plunger looking like it was turned vertical
+  or being tuned into a square for some reason when the gt01 has a fairly normal plunger"
+- **F14.4 TODO (gld)** "the image you used for the mousepad in how the sensor looks feels really low quality and uncanny"
+- **F14.5 TODO (fixB)** "what if you didn't have to chose shouldn't be the only words in the slide, and you should call
+  the slide before that one "strength weight fallacy" or something like that (just say fallacy at least to allude to a
+  correction coming)"
+- **F14.6 TODO (fixB)** "i think we need a slide dedicated to specific strength and specific stiffness to show the sort of
+  "value/efficiency" each material buys and how it's not just about who has the highest tensile strength or flexural
+  modulus"
+  - Asked which materials: "ABS and PC, Magnesium alloy, Aluminium and FR4", against PP-C-20A.
+- **F14.7 TODO (fixB)** "title one of the slides "putting that weight to work" there's a title that is close to that
+  right now, but what i've typed here is better"
+  - This is `shlWork`, "The grams that work".
+- **F14.8 STANDING, TODO (fixB, all)** "i think for peak stress you should put(lower is better) because it still feels
+  unintuitive, maybe you say peak EXPERIENCED stress as well"
+  - The label is "Peak experienced stress (lower is better)".
+- **F14.9 STANDING, TODO (all)** "sometimes you say "grams" where you should say "weight""
+- **F14.10 STANDING, TODO (fixA, fixB, all)** "in general i think youre not really doing the best at showing how are
+  techniques are better AT A GLANCE, and by how much, you shouldn't have to read the whole slide to understand why our
+  methods are better, and if at a glance it can look like our methods add worse that is very dangerous, not everyone is
+  going to have time to read the full thing, there eyes are going to get drawn to certain parts each slide. making sure
+  the reader / watcher understands why/how/by how much only we're better only AT A GLANCE is EXTREMELY important"
+  - Asked what each comparison slide should lead with: "Both". That means a huge headline number in Theseus blue (for
+    example 21× STIFFER), plus a chart where Theseus visibly wins, with which way is better written on it.
+- **F14.11** "do you have any more questions for me?" Answered with the four questions above.

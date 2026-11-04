@@ -81,6 +81,23 @@ Apple does. What Apple does, from its keynotes and its own design tokens (resear
 11. **Theseus's colour is a setting.** `HUES` in `01-core.js` holds blue (Brock's choice, F11.1), red and yellow. To
     preview the others, use `?hue=red` or `?hue=yellow`, or set `window.THESEUS_HUE`. Use the tokens and never a hex for
     Theseus, and every slide follows.
+12. **Better at a glance: this comes first** (Brock, F14.10: "making sure the reader / watcher understands why/how/by how
+    much only we're better only AT A GLANCE is EXTREMELY important").
+    - A viewer who only glances must see that Theseus is better, how, and by how much. Most won't read the slide; their
+      eyes land on its biggest, brightest things.
+    - Every comparison slide leads with both of these (his choice, F14.10):
+      - One huge headline number in Theseus's colour that says by how much: `21× STIFFER`, `−51 % FLEX`, `1.9× THE
+        LOAD`.
+      - A chart or simulation where Theseus visibly wins, with which way is better written on it.
+    - The narration and the boxes explain why. They are never the only place the win is stated.
+    - Never let a glance read as Theseus losing. Avoid:
+      - a longer bar for a worse number, unless "lower is better" is written right there;
+      - red or the heat colours on Theseus's side;
+      - an unlabelled axis where lower wins;
+      - a competitor's number set bigger than ours.
+    - Peak stress is labelled **"Peak experienced stress (lower is better)"** (F14.8).
+    - Say **"weight"**, not "grams", for the idea ("putting that weight to work", "the same weight"). Grams stay as the
+      unit beside a number (F14.9).
 
 ---
 
@@ -512,6 +529,8 @@ its key in the slide's `src`.
 
 Do:
 
+- Lead every comparison slide with a huge headline number in Theseus's colour and a chart where Theseus visibly wins,
+  with which way is better written on it (section 0, item 12).
 - Show the comparison. A Theseus number appears next to the best shipping number, or on the same axis.
 - Name the source where it matters: a competitor's figure, a study, a derivation. Keep a maker's self-test as a
   claim. Brock's own figures carry no tag.

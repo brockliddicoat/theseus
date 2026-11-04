@@ -252,7 +252,7 @@ export async function buildShell(opts = {}) {
   }
   const screws = [];
   for (const [x, z] of meta.screws) {
-    const s = lib.buildM2Screw({ length: 4, finish: 'brass' });
+    const s = lib.buildM2Screw({ length: 4, finish: 'brass', detail: 'low' });   // seen by their heads only
     // head top recessed 0.1 mm inside the bottom face: bearing face up, shank up (+Y)
     const k = (s.userData.parts && s.userData.parts.head && s.userData.standIn) ? 0.9 : 1.6;
     s.rotation.x = Math.PI; s.position.set(x, meta.yBase + 0.1 + k, z);
