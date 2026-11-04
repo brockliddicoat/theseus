@@ -32,11 +32,11 @@ const SHL_GRADE = (function () {
 })();
 
 S({
-  id: 'shlsheet1', ch: 'shell', theme: 'paper', title: 'Three shell details', settle: 10, sheet: true, ideas: [6, 26, 58],
+  id: 'shlsheet1', ch: 'shell', theme: 'paper', title: 'PPS triggers, film sticker, closed wheel well', settle: 10, sheet: true, ideas: [6, 26, 58],
   src: ['cfpps', 'shlPyrofil', 'az91d', 'shlLattice', 'shlMylar', 'shlB2gSlx', 'shlDoc'],
   sfx: [[0.45, 'tick'], [1.15, 'tick'], [1.85, 'tick']],
   draw: t => {
-    header(t, 'Three shell details');
+    header(t, 'PPS triggers, film sticker, closed wheel well');
     /* #6: the same trigger in three materials, pressed by the same finger */
     ideaPanel(t, 0, 3, {
       n: 6, ev: ['datasheet', 'derived', 'proposal'], title: 'PPS carbon triggers on the pro model',
@@ -50,7 +50,7 @@ S({
           rect(x0 - 16, yy - 14, 16, 28, { fill: C.mute, alpha: a });
           G.save(); G.globalAlpha = a; G.strokeStyle = col; G.lineWidth = 7; G.lineCap = 'round'; G.beginPath();
           for (let k = 0; k <= 30; k++) { const xi = k / 30, v = xi * xi * (3 - xi) / 2; const px = x0 + L * xi, py = yy + tip * v; k ? G.lineTo(px, py) : G.moveTo(px, py); }
-          G.stroke(); if (TH && m.hero) { G.strokeStyle = '#111111'; G.lineWidth = 1.2; G.stroke(); } G.restore();
+          G.stroke(); G.restore();
           arrow(x0 + L, yy - 40 + tip, x0 + L, yy - 8 + tip, { color: C.ink, w: 2.5, hs: 9, alpha: a * (0.4 + 0.6 * p) });
           text(m.d.toFixed(2) + '×', x + w - 112, yy - 4, { font: 'mono', size: 24, weight: 800, color: C.ink, align: 'right', alpha: a });
           text(m.g.toFixed(1) + ' g', x + w - 18, yy - 4, { font: 'mono', size: 24, weight: 600, color: C.mute, align: 'right', alpha: a });
@@ -79,8 +79,8 @@ S({
         /* drops: through a hole before the film, beading and rolling off after */
         for (let i = 0; i < 3; i++) {
           const ph = ((lt * 0.7 + i / 3) % 1), dx = cx + (i - 1) * 34, sealed = film > 0.98, dy = cy - 120 + ph * 150;
-          if (!sealed) circle(dx, dy, 6, { fill: rgba(C.blue, 0.8 * (1 - clamp((ph - 0.8) / 0.2))), alpha: a });
-          else { const yy = Math.min(dy, cy + 20); circle(dx + (dy > cy + 20 ? (dy - cy - 20) * 0.8 : 0), yy, 6, { fill: rgba(C.blue, 0.8 * (1 - clamp((ph - 0.85) / 0.15))), alpha: a }); }
+          if (!sealed) circle(dx, dy, 6, { fill: rgba(C.mute, 0.8 * (1 - clamp((ph - 0.8) / 0.2))), alpha: a });
+          else { const yy = Math.min(dy, cy + 20); circle(dx + (dy > cy + 20 ? (dy - cy - 20) * 0.8 : 0), yy, 6, { fill: rgba(C.mute, 0.8 * (1 - clamp((ph - 0.85) / 0.15))), alpha: a }); }
         }
         const rx = x + w * 0.62;
         dLabel(film > 0.98 ? 'Sealed' : 'Open base', rx, y + 64, { color: film > 0.98 ? C.ink : C.red, alpha: a, size: 21 });
@@ -112,7 +112,7 @@ S({
           G.restore();
           /* the fingertip on the left trigger's inner edge, pressing */
           const fx = cx + (split ? -5.2 : -6.5) * s, fy = cy - 44 * s, sink = split ? p : 0;
-          G.save(); G.globalAlpha = a * 0.85; G.fillStyle = split && p > 0.5 ? rgba(C.red, 0.5) : rgba(TH ? '#C9A27E' : '#D8B08C', 0.75); G.beginPath(); G.ellipse(fx, fy + sink * 6, 15, 21, 0, 0, TAU); G.fill(); G.restore();
+          G.save(); G.globalAlpha = a * 0.85; G.fillStyle = split && p > 0.5 ? rgba(C.red, 0.5) : rgba(C.comp, 0.75); G.beginPath(); G.ellipse(fx, fy + sink * 6, 15, 21, 0, 0, TAU); G.fill(); G.restore();
           dLabel(lab, cx, y + 30, { align: 'center', color: split ? C.red : C.ink, alpha: a, size: 21 });
           dLabel(split ? '2 gaps' : '1 gap', cx, y + h - 16, { align: 'center', color: split ? C.red : C.ink, alpha: a, size: 21 });
         });
@@ -122,11 +122,11 @@ S({
 });
 
 S({
-  id: 'shlsheet2', ch: 'shell', theme: 'night', title: 'Three more on the structure', settle: 10, sheet: true, ideas: [31, 93, 55],
+  id: 'shlsheet2', ch: 'shell', theme: 'night', title: 'Optional base, graded walls, joined struts', settle: 10, sheet: true, ideas: [31, 93, 55],
   src: ['shlZkM1k', 'shlDoc', 'shlLattice'],
   sfx: [[0.45, 'tick'], [1.15, 'tick'], [1.85, 'tick']],
   draw: t => {
-    header(t, 'Three more on the structure');
+    header(t, 'Optional base, graded walls, joined struts');
     /* #31: the base comes off and the mouse still works */
     ideaPanel(t, 0, 3, {
       n: 31, ev: ['claim', 'proposal'], title: 'A bottom plate you can leave off',
@@ -138,7 +138,7 @@ S({
         part(cx, cy, s, () => {
           G.save(); keyPath(); G.fillStyle = inkA(0.1); G.fill(); G.restore(); keyPath(); G.strokeStyle = inkA(0.55); G.lineWidth = lw(1.5); G.stroke();
           /* the board, seen through where the plate was */
-          G.save(); G.globalAlpha = PA * off; pathRR(-17, -34, 34, 72, 3); G.fillStyle = '#1c3a29'; G.fill(); G.strokeStyle = '#6fae86'; G.lineWidth = lw(1.2); G.stroke(); G.restore();
+          G.save(); G.globalAlpha = PA * off; pathRR(-17, -34, 34, 72, 3); G.fillStyle = TH ? '#2E2E2C' : '#26272A'; G.fill(); G.strokeStyle = inkA(0.5); G.lineWidth = lw(1.2); G.stroke(); G.restore();
         }, { alpha: a });
         /* the plate, sliding off to the right */
         const px = cx + off * (w * 0.42), pa = a * (1 - 0.35 * off);
@@ -147,7 +147,7 @@ S({
           for (const [sx, sy] of [[-17, -38], [17, -38], [-17, 42], [17, 42]]) { G.beginPath(); G.arc(sx, sy, 2.0, 0, TAU); G.fillStyle = '#c9ced5'; G.fill(); mmLine([[sx - 1.2, sy], [sx + 1.2, sy]], '#2a2b30', 0.9); mmLine([[sx, sy - 1.2], [sx, sy + 1.2]], '#2a2b30', 0.9); }
         }, { alpha: pa });
         dLabel(off > 0.5 ? 'Plate off: still runs' : 'Plate on', x + 18, y + 30, { color: off > 0.5 ? C.hero : C.ink2, alpha: a, size: 21 });
-        dLabel('Board', cx, cy + 6, { align: 'center', color: '#6fae86', alpha: a * off });
+        dLabel('Board', cx, cy + 6, { align: 'center', color: C.mute, alpha: a * off });
       }
     });
     /* #93: the same mass of wall, even or graded toward the rim, squeezed */

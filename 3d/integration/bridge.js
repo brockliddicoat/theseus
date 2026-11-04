@@ -37,8 +37,13 @@ let assetBase = '';            // where .glb/.bin files live (relative to the pa
 
 function mats() { return M.cache || (M.cache = materials()); }
 
+const colors = { hero: null };   // the deck's live highlight (C.hero), set before each render by 08-r3d.js
+
 export const R3D = {
   THREE, VIEWS,
+  /** the deck's colours: { hero: '#rrggbb' } (C.hero, whatever hue the presenter picked); the scenes follow them */
+  setColors(c) { if (c && c.hero) colors.hero = c.hero; },
+  get colors() { return colors; },
   setAssetBase(b) { assetBase = b; },
   assetUrl(name) { return assetBase + name; },
   register(key, factory) { factories.set(key, factory); },

@@ -7,6 +7,7 @@
 // connectorSide: 'left' (default, header on +X = the user's left) or 'right' (−X, exact mirror of the lead side).
 import * as THREE from 'three';
 import { partMaterials } from './lib/materials.js';
+import { HIGHLIGHT } from '../lib/studio.js';
 import { extrude, lathe, sweep, arc, rectSection, roundedRectShape, roundedRectPath, circleSection, meshOf, disposeTree, clamp01, smooth, lerp } from './lib/geom.js';
 
 export const BATTERY_SPEC = {
@@ -54,7 +55,8 @@ export function buildBattery(opts = {}) {
   cell.add(meshOf(tsg, M.pouch, 'topSeal'));
 
   // ---------------------------------------------------------------- label (printed wrap on the top face)
-  const tex = labelTexture(opts);
+  const hiHex = '#' + new THREE.Color(opts.highlight ?? HIGHLIGHT[opts.theme] ?? HIGHLIGHT.night).getHexString();   // the deck's C.hero via setHighlight
+  let tex = labelTexture(opts, hiHex);
   const labelMat = M.label.clone(); labelMat.map = tex; labelMat.roughness = 0.5; labelMat.clearcoat = 0.08; labelMat.specularIntensity = 0.35; own.add(labelMat);
   const lw = bodyW - 2.6, ll = zSeal - zBack - 3.0;
   const lg = new THREE.PlaneGeometry(lw, ll, 1, 1);
@@ -115,7 +117,9 @@ export function buildBattery(opts = {}) {
   // ---------------------------------------------------------------- silicone bands
   const bands = new THREE.Group(); bands.name = 'bands';
   if (opts.bands !== false) {
-    const bandMat = opts.bandColor === 'accent' ? M.siliconeAccent : M.silicone;
+    // 'accent' bands take Theseus's highlight (a copy of the accent silicone, so setHighlight can recolour it)
+    const bandMat = opts.bandColor === 'accent' ? M.siliconeAccent.clone() : M.silicone;
+    if (opts.bandColor === 'accent') { bandMat.color.set(hiHex); bandMat.sheenColor.set(hiHex).lerp(new THREE.Color(1, 1, 1), 0.5); own.add(bandMat); root.userData.accentBands = bandMat; }
     for (const z of [-10.6, 7.2]) {
       const g = bandGeometry(W + 0.5, T + 0.12, 0.62, 2.6);
       const m = meshOf(g, bandMat, 'band'); m.position.z = z; bands.add(m);
@@ -163,10 +167,17 @@ export function buildBattery(opts = {}) {
     layWires(pp, lift);
   }
   root.setExplode = (k) => { st.explode = clamp01(k); apply(); };
+  /** the label's printed stripe is Theseus's colour (C.hero from the deck, whatever hue is chosen) */
+  root.setHighlight = (c) => {
+    const h = '#' + new THREE.Color(c).getHexString(); if (h === root.userData.highlight) return; root.userData.highlight = h;
+    const old = tex; tex = labelTexture(opts, h); labelMat.map = tex; labelMat.needsUpdate = true; old && old.dispose();
+    const bm = root.userData.accentBands; if (bm) { bm.color.set(h); bm.sheenColor.set(h).lerp(new THREE.Color(1, 1, 1), 0.5); }
+  };
   root.setPlug = (k) => { st.plug = clamp01(k); apply(); };
   root.setBands = (k) => { st.bands = clamp01(k); apply(); };
   root.getState = () => ({ ...st });
   root.userData.spec = { ...BATTERY_SPEC, connectorSide: sx > 0 ? 'left (+X)' : 'right (−X)', headerAt: [sx * H0.x, H0.y, H0.z] };
+  root.userData.highlight = hiHex;
   root.userData.parts = { cell, pouch, label, pcm, kapton, tabs, wires, plug, header, bands };
   root.dispose = () => { for (const g of wireGeoms) g.dispose(); disposeTree(root, userMats); for (const m of own) m.dispose?.(); tex.dispose(); header.dispose?.(); };
   apply();
@@ -260,21 +271,21 @@ function twistedStrands(curve, n, r, pitch, samples, fan, fanLen = 0.1) {
   return out;
 }
 
-function labelTexture(o) {
+function labelTexture(o, hi = '#2f8cff') {
   const c = document.createElement('canvas'); c.width = 1440; c.height = 1024;
   const x = c.getContext('2d');
   x.fillStyle = '#0f1011'; x.fillRect(0, 0, c.width, c.height);
-  // accent stripe (XBAB yellow)
-  x.fillStyle = '#fdc316'; x.fillRect(0, c.height - 30, c.width, 30);
+  // the printed stripe: Theseus's colour
+  x.fillStyle = hi; x.fillRect(0, c.height - 30, c.width, 30);
   x.fillStyle = '#f2f1ec';
   const F = (w, s) => `${w} ${s}px Inter, "Helvetica Neue", Arial, sans-serif`;
   x.textBaseline = 'alphabetic';
   x.font = F(800, 96); x.fillText('LITHIUM', 96, 260);
   x.fillText('POLYMER', 96, 370);
   x.font = F(500, 50); x.fillStyle = '#cfcdc6';
-  x.fillText(o.labelLine1 || '3.7 V  ·  250 mAh  ·  0.93 Wh', 96, 500);
-  x.fillText(o.labelLine2 || 'Li-Po 502030  ·  PCM  ·  NTC', 96, 570);
-  if (o.weight) { x.font = F(700, 70); x.fillStyle = '#fdc316'; x.fillText(o.weight, 96, 700); }
+  x.fillText(o.labelLine1 || '3.7 V   250 mAh   0.93 Wh', 96, 500);
+  x.fillText(o.labelLine2 || 'Li-Po 502030   PCM   NTC', 96, 570);
+  if (o.weight) { x.font = F(700, 70); x.fillStyle = hi; x.fillText(o.weight, 96, 700); }
   x.fillStyle = '#6d6c68'; x.font = F(600, 40);
   x.fillText('THESEUS', 96, 900);
   x.strokeStyle = '#3a3b3e'; x.lineWidth = 3; x.strokeRect(1100, 840, 230, 80);

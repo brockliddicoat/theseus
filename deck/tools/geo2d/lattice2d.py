@@ -175,5 +175,6 @@ except Exception as e:
     print('node skipped', e)
 
 js = json.dumps(out, separators=(',', ':'))
-open(dst, 'w').write(js)
+import os
+open(dst + '.tmp', 'w').write(js); os.replace(dst + '.tmp', dst)
 print('lattice', len(js) // 1024, 'KB')

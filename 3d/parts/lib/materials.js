@@ -2,7 +2,7 @@
 // Every call returns NEW instances, owned by the builder that asked (so dispose() is safe).
 // Calibrated by eye against the reference photos under the studio's AgX + RoomEnvironment rig.
 import * as THREE from 'three';
-import { materials as studioMaterials } from '../../lib/studio.js';
+import { materials as studioMaterials, HIGHLIGHT } from '../../lib/studio.js';
 
 const P = (o) => new THREE.MeshPhysicalMaterial(o);
 
@@ -16,6 +16,7 @@ export function partMaterials(over = {}) {
     tin: P({ color: 0xc4c6c8, metalness: 1, roughness: 0.46 }),                 // 200–300 µin matte tin over nickel
     nickel: P({ color: 0xb9b5ab, metalness: 1, roughness: 0.3 }),
     becu: P({ color: 0xd99c6e, metalness: 1, roughness: 0.3 }),                 // bare beryllium copper
+    silverContact: P({ color: 0xe6e4df, metalness: 1, roughness: 0.18 }),       // AgNi contact rivets
     // machined brass insert: turned, so the highlight runs along the axis (lathe UVs give a circumferential tangent;
     // the rotation turns the anisotropy across it, as on the magnesium wheel)
     brass: P({ color: 0xd2a852, metalness: 1, roughness: 0.27, anisotropy: 0.6, anisotropyRotation: Math.PI / 2 }),
@@ -34,6 +35,11 @@ export function partMaterials(over = {}) {
     tinPlate: P({ color: 0xd3d6d9, metalness: 1, roughness: 0.33 }),             // tin-plated steel frame (encoder), satin
     silverLead: P({ color: 0xd8d8d4, metalness: 1, roughness: 0.22 }),           // silver-plated lead frame (LED cup)
     maskBlack: P({ color: 0x08090a, roughness: 0.5, specularIntensity: 0.45, clearcoat: 0.35, clearcoatRoughness: 0.45 }),   // matte black solder mask (macro-safe)
+    maskRelief: P({ color: 0x0b0c0e, roughness: 0.4, specularIntensity: 0.5, clearcoat: 0.45, clearcoatRoughness: 0.35 }), // mask over a copper trace (the antenna relief)
+    shieldNickel: P({ color: 0xcdcecb, metalness: 1, roughness: 0.27 }),         // drawn nickel-silver shield can
+    solder: P({ color: 0xd9dbde, metalness: 1, roughness: 0.15 }),               // SAC solder fillets
+    lensPC: P({ color: 0xffffff, roughness: 0.04, transmission: 1, thickness: 1.6, ior: 1.585, attenuationColor: new THREE.Color(0xeef4ff), attenuationDistance: 8, specularIntensity: 1 }),   // the clear PC lens
+    lensSlit: P({ color: 0x15171a, roughness: 0.6 }),
     // --- polymers ---
     pom: P({ color: 0xece8de, roughness: 0.48, sheen: 0.4, sheenRoughness: 0.6, sheenColor: 0xffffff }),
     pomBlack: P({ color: 0x0e0f10, roughness: 0.4, specularIntensity: 0.6, sheen: 0.25, sheenRoughness: 0.6, sheenColor: 0x303134 }),
@@ -66,7 +72,7 @@ export function partMaterials(over = {}) {
     kapton: P({ color: 0xe0a040, roughness: 0.22, transmission: 0.55, thickness: 0.05, ior: 1.7,
       attenuationColor: new THREE.Color(0xb05a00), attenuationDistance: 0.4 }),
     silicone: P({ color: 0x2b2d30, roughness: 0.62, sheen: 0.35, sheenRoughness: 0.5, sheenColor: 0x55585c }),
-    siliconeAccent: P({ color: 0xfdc316, roughness: 0.6, sheen: 0.3, sheenColor: 0xfff0b0 }),
+    siliconeAccent: P({ color: HIGHLIGHT.night, roughness: 0.6, sheen: 0.3, sheenColor: 0xbfdcff }),   // Theseus's highlight; the battery recolours its copy to C.hero
     wireRed: P({ color: 0xb8241f, roughness: 0.5, sheen: 0.25, sheenColor: 0xff9a90 }),
     wireBlack: P({ color: 0x1a1b1d, roughness: 0.5, sheen: 0.25, sheenColor: 0x4a4b50 }),
     wireWhite: P({ color: 0xe9e6de, roughness: 0.5, sheen: 0.25, sheenColor: 0xffffff }),

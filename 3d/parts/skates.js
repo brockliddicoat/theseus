@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { partMaterials } from './lib/materials.js';
 import { lathe, arc, extrude, meshOf, disposeTree, clamp01, lerp, rng } from './lib/geom.js';
+import { panHeadGeometry } from './lib/panhead.js';
 
 export const DOT_SKATE_SPEC = {
   name: 'Dot skate', label: 'representative (stack split); diameter/height per Brock',
@@ -25,6 +26,7 @@ export const DOT_SKATE_SPEC = {
 export const SORA_FOOTPRINT = [[-28.41,-24.84],[-28.2,-29.29],[-27.56,-33.7],[-25.98,-37.87],[-23.87,-41.8],[-21.19,-45.36],[-17.96,-48.42],[-14.32,-51],[-10.31,-52.93],[-6.03,-54.17],[-1.62,-54.79],[2.84,-54.72],[7.23,-53.98],[11.41,-52.47],[15.3,-50.31],[18.85,-47.61],[21.9,-44.36],[24.39,-40.67],[26.42,-36.7],[27.75,-32.45],[28.36,-28.04],[28.36,-23.58],[28.14,-19.12],[27.92,-14.67],[27.69,-10.21],[27.47,-5.75],[27.24,-1.3],[27.02,3.16],[26.79,7.62],[26.57,12.08],[26.34,16.53],[26.12,20.99],[25.9,25.45],[25.67,29.9],[25.45,34.36],[25.18,38.81],[24.35,43.18],[22.32,47.11],[18.82,49.82],[14.74,51.6],[10.48,52.92],[6.09,53.7],[1.65,54.05],[-2.81,54.02],[-7.23,53.44],[-11.6,52.52],[-15.84,51.13],[-19.84,49.18],[-22.97,46.09],[-24.61,41.97],[-25.15,37.55],[-25.42,33.09],[-25.65,28.63],[-25.88,24.18],[-26.11,19.72],[-26.34,15.26],[-26.57,10.81],[-26.8,6.35],[-27.03,1.9],[-27.26,-2.56],[-27.49,-7.02],[-27.72,-11.47],[-27.95,-15.93],[-28.18,-20.39]];
 // Stand-in screw positions (X, Z) until the shell publishes its own: inboard of every skate pair.
 export const STANDIN_SCREWS = [[-13.5, -31], [13.5, -31], [-12.5, 30], [12.5, 30]];
+const CB_R = 2.25, HEAD_SINK = 0.15;                     // counterbore radius (head Ø4.0 + 0.25 a side); dome below the plate face
 
 let _foamTex = null;
 function foamBump() {
@@ -156,7 +158,8 @@ export function buildDotSkateSet(opts = {}) {
   if (opts.showFootprint !== false) {
     // stand-in base plate: the outline at pad level, 1.6 mm thick, sitting on the skates (Y = 0.65)
     const sh = new THREE.Shape(fp.map(([x, z]) => new THREE.Vector2(x, -z)));
-    const bg = extrude(sh, { depth: 1.6, back: { r: 0.5, s: 4 }, front: { r: 0.3, s: 2 }, curveSegments: 4 });
+    for (const [x, z] of screws) { const h = new THREE.Path(); h.absarc(x, -z, CB_R, 0, Math.PI * 2, true); sh.holes.push(h); }   // counterbores
+    const bg = extrude(sh, { depth: 1.6, back: { r: 0.5, s: 4 }, front: { r: 0.3, s: 2 }, curveSegments: 48 });
     bg.rotateX(-Math.PI / 2); bg.translate(0, G.H + 0.002, 0);
     base = meshOf(bg, M.cfpp, 'baseStandIn');
     root.add(base);
@@ -166,11 +169,21 @@ export function buildDotSkateSet(opts = {}) {
       const ring = meshOf(lathe([[3.55, G.H - 0.0], [3.55, G.H - 0.004], [3.68, G.H - 0.004], [3.68, G.H]], { segments: 96 }), M.pomBlack, 'guideRing');
       ring.position.set(x, 0.0005, z); root.add(ring);
     }
-    // screw heads (stand-ins)
-    for (const [x, z] of screws) {
-      const h = meshOf(lathe([[0, 0], [2.0, 0], [2.0, 0.05], [0, 0.05]], { segments: 48 }), M.blackOxide, 'screwStandIn');
-      h.position.set(x, G.H - 0.6, z); root.add(h);
-    }
+    // screw heads: the M2 pan head of the parts' screw (ISO 7045, exact cross + slot recess, lib/panhead.js; brass-plated
+    // steel as in fasteners.js), sunk in Ø4.5 counterbores with the dome 0.15 mm inside the plate face, so a worn skate
+    // never puts a head on the pad. The bores' floors carry the bearing faces; a short collar closes them on top.
+    const yF = G.H + 0.002 + HEAD_SINK + 1.6;                         // bearing face (head height k = 1.6)
+    const headG = panHeadGeometry({ nSlot: 14, nSide: 6, nEnd: 4, radial: 7, nTrench: 6 }).geometry;
+    const headMat = M.brassPlated.clone(); headMat.vertexColors = true; headMat.clearcoat = 0;   // baked occlusion in the recess
+    const boreMat = M.cfpp.clone(); boreMat.color.multiplyScalar(0.8);                          // the bore a little in shadow
+    const boreG = lathe([[0, yF], [CB_R, yF], [CB_R, G.H + 1.45]], { segments: 48 });
+    const collarG = lathe([[CB_R + 0.15, G.H + 1.5], [CB_R + 0.15, yF + 0.3], [0, yF + 0.3]], { segments: 48 });
+    screws.forEach(([x, z], i) => {
+      const h = meshOf(headG, headMat, 'screwHead');
+      h.rotation.set(Math.PI, 0.7 + 1.9 * i, 0); h.position.set(x, yF, z); h.castShadow = true; root.add(h);
+      const b = meshOf(boreG, boreMat, 'counterbore'); b.position.set(x, 0, z); root.add(b);
+      const c = meshOf(collarG, M.cfpp, 'bossCollar'); c.position.set(x, 0, z); root.add(c);
+    });
   }
   root.setExplode = (k) => { k = clamp01(k); skates.forEach((g, i) => { g.position.y = -(3 + 0.4 * i) * k; }); };
   root.userData.spec = { ...DOT_SKATE_SPEC, positions: pos, screws, footprint: opts.footprint ? 'custom' : 'SORA_FOOTPRINT (scan-derived stand-in)' };

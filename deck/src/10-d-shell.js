@@ -19,7 +19,7 @@ Object.assign(SRC, {
   shlMaxwell: { t: 'Ashby 2006, The properties of foams and lattices, Phil. Trans. R. Soc. A 364, section 4: Maxwell\'s criterion for a pin-jointed 2D frame, M = b − 2j + 3 (b struts, j joints); M < 0 is a mechanism, M = 0 statically and kinematically determinate; stretch-dominated lattices stiffen with relative density, bending-dominated ones far faster than that', u: 'https://eclass.aegean.gr/modules/document/file.php/511165/projects/foams_lattices.pdf' },
   shlHot2d: { t: 'This deck: 2D frames solved in the page (07-sim.js), Pyrofil PP-C-20A (13.5 GPa, 1.01 g/cm³), a 60 mm span on a pin and a roller, 10 N on the middle of the top; triangles of 12 mm sides, 1.2 mm thick; the solid plane is a beam of the same span, depth and grams; stress through the depth from beam theory', n: 'derived, this model' },
   shlLat2d: { t: 'This deck: 2D frames solved in the page (07-sim.js), Pyrofil PP-C-20A, lattices of 12.5 mm cells with 2.0 mm tall ribs, triangles and hexagons at the same mass; bottom edge clamped, 10 N spread over the top; pin-jointed cells checked with the same solver (a hexagon comes back as a mechanism)', n: 'derived, this model' },
-  shlPyrofil: { t: 'PlaBase (Mitsubishi Chemical), Pyrofil PP-C-20A: 1.01 g/cm³, flexural modulus 13,500 MPa, MVR 13 cm³/10 min, notched Charpy 6 kJ/m²; strength values behind a login', u: 'https://en.plabase.com/plastic/items/6577ab7a86df1821ce54dafc' },
+  shlPyrofil: { t: 'PlaBase (Mitsubishi Chemical), Pyrofil PP-C-20A datasheet: 1.01 g/cm³; flexural modulus 13,500 MPa; tensile breaking stress 120 MPa (JIS K7162), bending strength 207 MPa (JIS K7171), strain at break 3%; Charpy 6 kJ/m² notched, 36 unnotched; MVR 13 cm³/10 min', u: 'https://en.plabase.com/plastic/items/6577ab7a86df1821ce54dafc' },
   shlKyron: { t: 'Mitsubishi Chemical America: KyronMAX compounds with "tensile strengths that exceed 60,000 psi (414 MPa)" (maker claim)', u: 'https://us.mitsubishi-chemical.com/injection-moldable-material-exceeds-60000-psi-tensile-strength/' },
   shlFr4: { t: 'The Gund Company, NEMA FR4: 1.85 g/cm³, tensile 430 MPa lengthwise, flexural modulus 20 GPa lengthwise and 18 GPa crosswise', u: 'https://thegundcompany.com/wp-content/uploads/2024/03/NEMA-FR4-Glass-Epoxy-Laminate-by-The-Gund-Co.pdf' },
   shlEnvalior: { t: 'Envalior (resin maker), radii and chamfers: inside radius 25 to 60% of the nominal wall, the upper end for load-bearing parts, at least 0.5 mm; stress concentration about 1.5 at r = 0.5 t, about 3 at r = 0.1 t', u: 'https://www.envalior.com/en-us/radii-and-chamfers' },
@@ -78,19 +78,20 @@ function shlBar(o) {
   else {
     if (hi !== lo) rr(o.x, o.y - h / 2, Math.max(h, (X(hi) - o.x) * k), h, h / 2, rgba(o.col, 0.38), null, 0, a);
     const bl = Math.max(h, (X(lo) - o.x) * k);
-    if (o.grad) { G.save(); G.globalAlpha = a; rrPath(o.x, o.y - h / 2, bl, h, h / 2); G.fillStyle = gradH(o.x, Math.max(bl, 60), o.grad); G.fill(); G.restore(); }
-    else rr(o.x, o.y - h / 2, bl, h, h / 2, o.col, null, 0, a);
+    /* flat: gradients live only in the type (F8.1), and nothing of Theseus's is outlined (F9.10) */
+    rr(o.x, o.y - h / 2, bl, h, h / 2, o.col, null, 0, a);
   }
   return o.x + (xe - o.x) * k;
 }
-/** the stress scale of the lattice study, drawn in 2D beside the render */
+/** the stress scale (the deck's heat scale, as the 3D lattice draws it: grey, amber, orange, red at the peak), as a
+   key beside a drawing; max = the stress at the red end, or a word ('Peak') */
 function shlRamp(t, t0, x, y, w, max, title) {
   const a = ep(t, t0, t0 + 0.4); if (a <= 0.003) return;
-  const g = G.createLinearGradient(x, 0, x + w, 0); SHL_RAMP.forEach((c, i) => g.addColorStop(i / 4, c));
+  const g = G.createLinearGradient(x, 0, x + w, 0); for (let i = 0; i <= 6; i++) g.addColorStop(i / 6, heatCol(i / 6));
   G.save(); G.globalAlpha = a; G.fillStyle = g; rrPath(x, y, w, 10, 5); G.fill(); G.strokeStyle = inkA(0.25); G.lineWidth = 1; G.stroke(); G.restore();
   text(title, x, y - 14, { role: 'label', size: 19, color: C.mute, alpha: a });
   text('0', x, y + 34, { role: 'tick', size: 19, color: C.mute, alpha: a });
-  text(max + ' MPa', x + w, y + 34, { role: 'tick', size: 19, color: C.mute, align: 'right', alpha: a });
+  text(typeof max === 'number' ? max + ' MPa' : max, x + w, y + 34, { role: 'tick', size: 19, color: typeof max === 'number' ? C.mute : C.bad, align: 'right', alpha: a });
 }
 /** a card: panel and its Kunai head. returns the y under the head */
 function shlCard(t, t0, x, y, w, h, label, kinds, o = {}) {
@@ -121,60 +122,47 @@ S({
 
 /* ============================== 1. materials: stiffness per gram for a panel (#5, #6, #94) ============================== */
 const SHL_MATS = [
-  { name: 'KyronMAX, 30% carbon', sub: 'ULX-class · 21–41 GPa', E: [21, 41], rho: [1.33, 1.28], dash: true, star: true },
-  { name: 'Pyrofil PP-C-20A', sub: 'Theseus · 13.5 GPa', E: [13.5], rho: [1.01], hero: true },
-  { name: 'Magnesium AZ91D', sub: 'Metal shells · 46 GPa', E: [46], rho: [1.81, 1.7], ref: true },
-  { name: 'PPS, 30% carbon', sub: 'Pro triggers, #6 · 17 GPa', E: [17], rho: [1.4] },
-  { name: 'FR4 board core', sub: 'The PCB, #94 · 18–20 GPa', E: [18, 20], rho: [1.85] },
-  { name: 'ABS', sub: 'Most mice · 2.55 GPa', E: [2.55], rho: [1.05] },
+  { name: 'KyronMAX, 30% carbon', sub: 'ULX-class, 21–41 GPa', E: [21, 41], rho: [1.33, 1.28], dash: true, star: true },
+  { name: 'Pyrofil PP-C-20A', sub: 'Theseus, 13.5 GPa', E: [13.5], rho: [1.01], hero: true },
+  { name: 'Magnesium AZ91D', sub: 'Metal shells, 46 GPa', E: [46], rho: [1.81, 1.7], ref: true },
+  { name: 'PPS, 30% carbon', sub: 'Pro triggers, #6, 17 GPa', E: [17], rho: [1.4] },
+  { name: 'FR4 board core', sub: 'The PCB, #94, 18–20 GPa', E: [18, 20], rho: [1.85] },
+  { name: 'ABS', sub: 'Most mice, 2.55 GPa', E: [2.55], rho: [1.05] },
   { name: 'SLX composite', sub: 'Below 0.9 g/cm³, claimed', none: true }
 ];
 const shlIdx = m => { const v = []; for (const e of m.E) for (const r of m.rho) v.push(Math.cbrt(e) / r); return [Math.min(...v), Math.max(...v)]; };
 S({
-  id: 'materials', ch: 'shell', theme: 'paper', title: 'Stiffness per gram, for a thin shell', settle: 9, ideas: [5, 6, 94],
+  id: 'materials', ch: 'shell', theme: 'paper', title: 'Specific stiffness: carbon PP leads', settle: 9, ideas: [5, 6, 94],
   src: ['shlPyrofil', 'denkaAbs', 'shlKyron', 'kyron', 'az91d', 'shlFr4', 'cfpps', 'shlB2gSlx', 'ashby06'],
   draw: t => {
-    header(t, 'Stiffness per gram, for a thin shell');
-    captions(t, [[0.6, 'A shell is a thin curved panel, so the fair comparison is stiffness at equal mass, not stiffness alone.'], [4.6, 'By that measure 20% carbon PP leads every material with published numbers, and it is 5.3× stiffer than ABS by modulus.']]);
-    const A = acc();
-    /* left: the Ashby index, every bar computed from its datasheet inputs */
-    { const x = LM, y = LAY.top, w = 1060, h = 580, hy = shlCard(t, 0.3, x, y, w, h, 'Panel stiffness at equal mass, {E^(1/3)/ρ}', ['datasheet', 'derived']);
+    header(t, 'Specific stiffness: carbon PP leads');
+    captions(t, [[0.6, 'A shell is a thin curved panel, so the fair test is stiffness at equal mass, not stiffness alone.'], [4.6, 'By that measure 20% carbon PP leads every material with published numbers, and its modulus is 5.3× ABS\'s.']]);
+    /* left: the panel index, every bar computed from its datasheet inputs */
+    { const x = LM, y = 280, w = 1080, h = 640, a0 = tileA(t, 0.3, 0);
+      demoWindow(x, y, w, h, a0);
+      text('Panel stiffness at equal mass, {E^(1/3)/ρ}', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+      { const p2 = pillW('derived'), p1 = pillW('datasheet'); pill(x + w - 32 - p2, y + 52, 'derived', a0); pill(x + w - 32 - p2 - 28 - p1, y + 52, 'datasheet', a0); }
       const k0 = ep(t, 0.9, 1.3);
-      text('E: flexural modulus, GPa. ρ: density, g/cm³. Longer is stiffer per gram.', x + 26, hy + 14, { role: 'small', size: 25, color: C.mute, alpha: k0 });
-      const nx = x + 26, bx = x + 460, bw = w - 460 - 170, y0 = hy + 96, rh = 56, max = 2.8;
-      for (const v of [0, 1, 2]) { const gx = bx + bw * v / max; line(gx, y0 - 38, gx, y0 + rh * SHL_MATS.length - 34, { color: C.hair, w: 1.2, alpha: k0 }); text(String(v), gx, y0 - 46, { role: 'tick', size: 19, color: C.faint, align: 'center', alpha: k0 }); }
+      text('E: flexural modulus, GPa. ρ: density, g/cm³. Longer is stiffer per gram.', x + 32, y + 96, { role: 'small', size: 24, weight: 560, color: C.mute, alpha: k0 });
+      const nx = x + 32, bx = x + 460, bw = w - 460 - 170, y0 = y + 190, rh = 60, max = 2.8;
+      for (const v of [0, 1, 2]) { const gx = bx + bw * v / max; line(gx, y0 - 40, gx, y0 + rh * SHL_MATS.length - 36, { color: C.hair, w: 1.2, alpha: k0 }); text(String(v), gx, y0 - 48, { role: 'tick', size: 19, color: C.faint, align: 'center', alpha: k0 }); }
       SHL_MATS.forEach((m, i) => {
         const yy = y0 + i * rh, t0 = 1.2 + i * 0.14, a = ep(t, t0, t0 + 0.4), k = ep(t, t0 + 0.1, t0 + 0.9, E.snap);
-        text(m.name, nx, yy - 2, { role: 'small', size: 25, weight: m.hero ? 800 : 600, color: C.ink, alpha: a });
-        text(m.sub, nx, yy + 22, { role: 'label', size: 19, color: m.hero ? C.heroText : C.mute, alpha: a });
+        text(m.name, nx, yy - 2, { role: 'small', size: 25, weight: m.hero ? 800 : 650, color: m.hero ? C.heroText : C.ink, alpha: a });
+        text(m.sub, nx, yy + 22, { role: 'label', size: 19, color: C.mute, alpha: a });
         if (m.none) { text('No modulus published', bx, yy, { role: 'label', size: 19, color: C.faint, alpha: a }); return; }
-        const [lo, hi] = shlIdx(m), col = m.hero ? C.hero : m.ref ? C.ink : C.comp;
-        const xe = shlBar({ x: bx, y: yy - 8, w: bw, max, lo, hi, col, h: 16, a, k, dash: m.dash, edge: m.hero ? '#111111' : null });
+        const [lo, hi] = shlIdx(m), col = m.hero ? C.hero : m.ref ? C.second : C.comp;
+        const xe = shlBar({ x: bx, y: yy - 8, w: bw, max, lo, hi, col, h: 16, a, k, dash: m.dash });
         const lab = lo.toFixed(2) === hi.toFixed(2) ? hi.toFixed(2) : lo.toFixed(2) + '–' + hi.toFixed(2) + (m.star ? '*' : '');
-        text(lab, xe + 12, yy, { font: 'mono', size: 24, weight: m.hero ? 800 : 600, color: C.ink, alpha: clamp(k * 1.4 - 0.3) });
+        text(lab, xe + 12, yy, { role: 'num', size: 24, weight: m.hero ? 800 : 650, color: m.hero ? C.heroText : C.ink, alpha: clamp(k * 1.4 - 0.3) });
       });
-      text('* KyronMAX density unpublished: 1.28 to 1.33 g/cm³ assumed.', x + 26, y + h - 18, { role: 'small', size: 25, color: C.faint, alpha: ep(t, 2.6, 3.0) });
+      text('* KyronMAX density unpublished: 1.28 to 1.33 g/cm³ assumed.', x + 32, y + h - 32, { role: 'small', size: 22, weight: 560, color: C.faint, alpha: ep(t, 2.6, 3.0) });
     }
-    /* right: carbon PP against ABS, and what is not verified */
-    { const x = 1180, y = LAY.top, w = RM - 1180, h = 580, hy = shlCard(t, 0.5, x, y, w, h, 'Carbon PP vs ABS', ['datasheet', 'derived']);
-      const kb = ep(t, 1.6, 2.0);
-      const big = rich([{ s: '5.3', role: 'd1', size: 120, color: C.ink, tnum: true, count: [1.6, 1.0] }, { s: '×', font: 'disp', size: 80, weight: 800, color: C.ink, gap: 6 }], x + 26, hy + 104, { t, alpha: kb });
-      text('Stiffer by modulus', x + 26 + big.w + 28, hy + 50, { role: 'label', size: 21, color: C.ink, alpha: ep(t, 2.0, 2.4) });
-      text('13.5 ÷ 2.55 GPa', x + 26 + big.w + 28, hy + 90, { font: 'mono', size: 25, weight: 600, color: C.mute, alpha: ep(t, 2.1, 2.5) });
-      const rows = [['Pyrofil PP-C-20A, 1.01 g/cm³', 13.5, true], ['Denka ABS GR-2000, 1.05 g/cm³', 2.55, false]];
-      rows.forEach(([nm, v, hero], i) => {
-        const yy = hy + 156 + i * 54, a = ep(t, 2.2 + i * 0.15, 2.6 + i * 0.15), k = ep(t, 2.3 + i * 0.15, 3.1 + i * 0.15, E.snap);
-        text(nm, x + 26, yy - 12, { role: 'label', size: 19, color: hero ? C.heroText : C.mute, alpha: a });
-        const xe = shlBar({ x: x + 26, y: yy + 6, w: w - 170, max: 15, v, col: hero ? C.hero : C.comp, h: 14, a, k, edge: hero ? '#111111' : null });
-        text(v + ' GPa', xe + 12, yy + 14, { font: 'mono', size: 24, weight: hero ? 800 : 600, color: C.ink, alpha: clamp(k * 1.4 - 0.3) });
-      });
-      rule(x + 26, hy + 290, x + w - 26, ep(t, 3.3, 3.7));
-      text('Not verified yet', x + 26, hy + 330, { role: 'label', size: 21, color: C.red, alpha: ep(t, 3.6, 4.0) });
-      text('Strength: Pyrofil\'s figures sit behind a login, so "three times stronger" stays a claim.', x + 26, hy + 368, { role: 'small', size: 25, color: C.ink2, t, t0: 3.8, cps: 120, maxW: w - 52, lh: 1.32 });
-      text('Impact: notched Charpy 6 kJ/m², low, so the drop test comes first.', x + 26, hy + 442, { role: 'small', size: 25, color: C.ink2, t, t0: 4.4, cps: 120, maxW: w - 52, lh: 1.32 });
-    }
-    gloss(t, 3.4, '{E^(1/3)/ρ}', 'Ashby\'s index for a light, stiff panel: at equal mass a lighter material is thicker, and a panel\'s stiffness grows with thickness cubed.');
-    featureCard(t, 5.2, 'Carbon-filled polypropylene', ['datasheet', 'derived'], 'The SLX claims a composite below 0.9 g/cm³ and publishes no modulus. I\'ll publish density, modulus and a drop test together (#5).');
+    /* right: the modulus against ABS, the strength, and what the index means */
+    const rx = LM + 1120, rw = RM - rx;
+    statTile(t, 1.6, [rx, 280, rw, 240], { value: '5.3', unit: '×', label: 'the modulus of ABS: 13.5 vs 2.55 GPa', ev: 'datasheet', hero: true, align: 'left' });
+    statTile(t, 2.4, [rx, 560, rw, 200], { value: String(SHL_STR.ft), unit: 'MPa', label: 'tensile strength; ' + SHL_STR.fb + ' MPa in bending', ev: 'datasheet', by: 'Pyrofil', quiet: true, align: 'left' });
+    glossBox(t, 3.4, rx, 800, rw, '{E^(1/3)/ρ}', 'Ashby\'s index for a light, stiff panel: at equal mass a lighter material is thicker, and a panel\'s stiffness grows with thickness cubed.', { size: 22 });
   }
 });
 
@@ -189,11 +177,11 @@ const SHL_TOLDOTS = (function () {
   return [0.99, 0.552].map(t0 => Array.from({ length: 150 }, () => { const tt = t0 + g() * TW.tol / 3; return { d: Math.pow(tt / t0, 3) - 1, j: r() }; }));
 })();
 S({
-  id: 'thinwall', ch: 'shell', theme: 'night', title: 'A mold only goes so thin', settle: 10, ideas: [5, 'wall'],
+  id: 'thinwall', ch: 'shell', theme: 'night', title: 'Minimum wall thickness', settle: 10, ideas: [5, 'wall'],
   src: ['protoWall', 'thixoDN', 'shlYizumi', 'beall102', 'shlPyrofil', 'az91d', 'shlB2gSlx'],
   draw: t => {
-    header(t, 'A mold only goes so thin');
-    captions(t, [[0.6, 'A mold can only fill a wall so thin, and the thinner the wall, the harder its size is to hold.'], [3.9, 'At the same weight a denser material gets a thinner wall: magnesium\'s is 0.56 as thick as carbon PP\'s.'], [7.0, 'That is why a lighter material can win with worse strength per gram: its wall molds, holds its size and bends less.']]);
+    header(t, 'Minimum wall thickness');
+    captions(t, [[0.6, 'A mold can only fill a wall so thin, and the thinner the wall, the harder its size is to hold.'], [3.9, 'At the same weight a denser material gets a thinner wall: magnesium\'s is 0.56 as thick as carbon PP\'s.'], [7.0, 'So the lighter resin wins even with less strength per gram: its wall molds, holds its size and bends less.']]);
     const A = acc();
     /* left: the same grams over the same area, live */
     { const x = LM, y = LAY.top, w = 880, h = 580, hy = shlCard(t, 0.3, x, y, w, h, 'Same grams, same area', ['datasheet', 'derived']);
@@ -428,7 +416,7 @@ function shlLatDraw(r, ox, oy, s, o = {}) {
   const m = r.model, xs = m.nodes.map(p => p[0]), x0 = Math.min(...xs), x1 = Math.max(...xs);
   /* the clamped base */
   part(0, 0, 1, () => solid(() => { G.beginPath(); G.rect(ox + x0 * s - 14, oy + 2, (x1 - x0) * s + 28, 12); }, MT.shell, [ox + x0 * s - 14, oy + 2, (x1 - x0) * s + 28, 12], { hatch: true }), { alpha: a });
-  feDraw(r, P, { scale: o.scale, load: k, smax: o.smax, w: s * 0.92, alpha: a, ghost: o.ghost !== false, seg: 12 });
+  feDraw(r, P, { scale: o.scale, load: k, smax: o.smax, w: s * 0.92, alpha: a, ghost: o.ghost !== false, seg: 12, fillet: o.fillet == null ? Math.max(3, 0.6 * s) : o.fillet });
   if (o.flow) feFlow(r, P, o.t, { scale: o.scale, load: k, alpha: a * o.flow, nmax: o.nmax });
   /* the press bar rides on the top row's mean deflection */
   if (o.bar !== false && m.dir === 1) {
@@ -440,8 +428,71 @@ function shlLatDraw(r, ox, oy, s, o = {}) {
 /** the pointer pushing straight down onto (x, y) from above, the push k in 0..1 sinking it by depth px */
 function shlPushPtr(t, t0, x, y, k, depth = 14) { const a = ep(t, t0 - 0.6, t0); cursorPtr(x + 4, y - 4 + k * depth - (1 - ep(t, t0 - 0.6, t0, E.out3)) * 120, { a, press: 0 }); }
 
+/** snap to the stage's 40 px grid: tiles sit on it (F9.18) */
+const shlG = v => Math.round(v / 40) * 40;
+/** the material's strength (datasheet): PP-C-20A breaks at 120 MPa in tension (207 MPa in bending). The gauges use the
+   lower, the one a crack opens against */
+const SHL_STR = { ft: 120, fb: 207 };
+/** a vertical gauge of the peak stress against the strength: (x, y) its top left, h tall. frac = peak ÷ strength.
+   The fill runs on the heat scale and turns red as it reaches the strength (the dashed line at the top); what is left
+   under the line is the margin. o = { a, w } */
+function shlGauge(x, y, h, frac, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
+  const w = o.w || 24, f = clamp(frac), fh = Math.max(w, h * f);
+  rr(x, y, w, h, w / 2, C.track, null, 0, a);
+  rr(x, y + h - fh, w, fh, w / 2, heatCol(f), null, 0, a);
+  line(x - 12, y, x + w + 12, y, { color: C.bad, w: 2.5, dash: [7, 5], alpha: a });
+}
+/** the wheel's optical encoder, front-on, drawn as TTC's (a normal encoder's black housing in a stamped steel frame,
+   the axle bushing in its face, two bent legs and a row of pins), a little taller than their photo. Origin: the axle.
+   o = { clog (0..1: dust in the bushing and the frame's gaps) }. Returns { top, bush, left, right } in stage px */
+function shlEncoderMM(o = {}) {
+  const out = {}, steel = TH ? '#C9CDD3' : '#A7ADB5', steel2 = TH ? '#AEB3BA' : '#8C929B', tin = TH ? '#B9BEC5' : '#9AA0A8';
+  /* pins and legs under the housing */
+  for (const px of [-2.1, -0.7, 0.7, 2.1]) solid(() => { G.beginPath(); G.rect(px - 0.27, 5.4, 0.54, 3.9); }, MT.tin, [px - 0.27, 5.4, 0.54, 3.9], { fill: tin, lw: 0.8 });
+  for (const sx of [-1, 1]) solid(() => { G.beginPath(); G.moveTo(sx * 4.6, 5.0); G.lineTo(sx * 5.6, 5.0); G.lineTo(sx * 5.6, 7.2); G.lineTo(sx * 6.4, 8.9); G.lineTo(sx * 5.5, 9.3); G.lineTo(sx * 4.6, 7.4); G.closePath(); }, MT.steel, [4.6, 5, 1.8, 4.3], { fill: steel2, lw: 0.9 });
+  /* the black housing */
+  solid(() => pathRR(-5.9, -7.0, 11.8, 12.6, 0.45), MT.black, [-5.9, -7.0, 11.8, 12.6], { fill: TH ? '#26272B' : '#1B1C1F', lw: 1 });
+  /* the steel frame over its face: a plate with the bushing's hole, a tab folded over the top, two side clips */
+  solid(() => { G.beginPath(); G.moveTo(-5.3, -7.0); G.lineTo(5.3, -7.0); G.lineTo(5.3, 3.2); G.lineTo(-5.3, 3.2); G.closePath(); G.moveTo(2.75, -0.6); G.arc(0, -0.6, 2.75, 0, TAU, true); }, MT.steel, [-5.3, -7, 10.6, 10.2], { fill: steel, lw: 1 });
+  solid(() => { G.beginPath(); G.rect(-2.0, -7.9, 4.0, 0.9); }, MT.steel, [-2, -7.9, 4, 0.9], { fill: steel2, lw: 0.9 });
+  for (const sx of [-1, 1]) solid(() => { G.beginPath(); G.rect(sx > 0 ? 5.3 : -6.2, -4.4, 0.9, 3.0); }, MT.steel, [5.3, -4.4, 0.9, 3], { fill: steel2, lw: 0.8 });
+  /* the axle bushing and its D-shaped bore */
+  G.beginPath(); G.arc(0, -0.6, 2.3, 0, TAU); G.fillStyle = TH ? '#8E8C86' : '#6E6C67'; G.fill(); G.strokeStyle = edgeCol(MT.black); G.lineWidth = lw(1); G.stroke();
+  G.beginPath(); G.arc(0, -0.6, 1.15, -Math.PI * 0.82, Math.PI * 0.82); G.closePath(); G.fillStyle = '#141518'; G.fill();
+  /* dust caught round the bushing and in the frame's gaps */
+  const ck = o.clog || 0;
+  if (ck > 0) { const r = rng(23); for (let i = 0; i < Math.round(26 * ck); i++) { const an = r() * TAU, d = 2.35 + r() * 0.5; G.beginPath(); G.arc(Math.cos(an) * d, -0.6 + Math.sin(an) * d, 0.17 + r() * 0.12, 0, TAU); G.fillStyle = rgba(C.bad, 0.9); G.fill(); } }
+  out.top = SP(0, -7.9); out.bush = SP(0, -0.6); out.left = SP(-5.9, 0); out.right = SP(5.9, 0); out.base = SP(0, 9.3);
+  return out;
+}
+/* the fillet study's stress frames (09-fillet-data.js), recoloured once onto the deck's heat scale, so the peak at a
+   sharp corner reads red (F9.23). The frames were drawn dark → yellow → white; luminance maps back to the stress */
+const SHL_FIMG = new Map();
+function shlFilletImg(i) {
+  const I = FILLET.img[i]; if (!I || !I.complete || !I.naturalWidth) return null;
+  const key = i + (TH ? 'p' : 'n'); if (SHL_FIMG.has(key)) return SHL_FIMG.get(key);
+  const stops = [[0, '#2a2c33'], [0.45, '#6e5a1f'], [0.62, '#c9a630'], [0.78, '#f2d860'], [1, '#ffffff']].map(([v, c]) => [v, hexRgb(c)]);
+  const Lum = c => 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2], LS = stops.map(([v, c]) => [v, Lum(c)]);
+  const vOf = L => { if (L <= LS[0][1]) return 0; for (let q = 0; q < LS.length - 1; q++) if (L <= LS[q + 1][1]) return lerp(LS[q][0], LS[q + 1][0], (L - LS[q][1]) / (LS[q + 1][1] - LS[q][1])); return 1; };
+  const lut = Array.from({ length: 256 }, (_, q) => hexRgb(heatCol(q / 255)).map(v => Math.round(v * 255)));
+  let c;
+  try {
+    c = document.createElement('canvas'); c.width = I.naturalWidth; c.height = I.naturalHeight; const g = c.getContext('2d'); g.drawImage(I, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height), px = d.data;
+    for (let p = 0; p < px.length; p += 4) {
+      if (px[p + 3] < 8) continue;
+      const L = Lum([px[p] / 255, px[p + 1] / 255, px[p + 2] / 255]);
+      if (L < LS[0][1] * 0.72) { px[p + 3] = 0; continue; }
+      const q = lut[Math.round(clamp(vOf(L)) * 255)]; px[p] = q[0]; px[p + 1] = q[1]; px[p + 2] = q[2];
+    }
+    g.putImageData(d, 0, 0);
+  } catch (e) { c = I; }
+  SHL_FIMG.set(key, c); return c;
+}
+
 /* ============================== 3. the pick: strength or weight (Brock: "most mice make you pick") ==============================
-   left: four mice as RTINGS weighed and pressed them (their words); right: the plain wall's own trade-off, from the
+   left: five mice as RTINGS weighed and pressed them (their words); right: the plain wall's own trade-off, from the
    3D study's two plain-wall solutions, with the pointer dragging the wall's mass along it */
 const SHL_PICK = [
   { id: 'finalmouse-ulx', i: 2, name: 'Finalmouse ULX Pro Series', say: '"Flexes and creaks with pressure"', flex: true },
@@ -453,56 +504,58 @@ const SHL_PICK = [
 function shlMouseG(id, i) { const m = typeof exMouse === 'function' ? exMouse(id) : null; if (!m) return null; const f = m.weight_measured_g, x = Array.isArray(f) ? f[i || 0] : f, v = x && typeof x === 'object' ? x.value : x; return v == null ? null : +v; }
 /** the plain wall's curve on an axes frame m: solid between the two solved walls, dashed where it is extrapolated */
 function shlCurve(m, p, o = {}) {
-  const seg = (g0, g1, dash) => { const pts = []; for (let g = g0; g <= g1 + 1e-6; g += 0.2) pts.push([m.X(g), m.Y(Math.min(o.ymax || 200, shlPlainFlex(g)))]); poly(pts, { color: o.color || C.ink, w: o.w || 3, dash, p, alpha: o.alpha }); };
+  const ym = o.ymax || 200, seg = (g0, g1, dash) => { const pts = []; for (let g = g0; g <= g1 + 1e-6; g += 0.2) pts.push([m.X(g), m.Y(Math.min(ym, shlPlainFlex(g)))]); poly(pts, { color: o.color || C.ink, w: o.w || 3, dash, p, alpha: o.alpha }); };
   seg(o.g0 || 8, SHL_FE.g.wall, [7, 7]); seg(SHL_FE.g.wall, SHL_FE.g.body, null); seg(SHL_FE.g.body, o.g1 || 24, [7, 7]);
 }
 S({
-  id: 'shlPick', ch: 'shell', theme: 'paper', title: 'Strength or weight: the trade-off', settle: 10, ideas: [15, 75],
+  id: 'shlPick', ch: 'shell', theme: 'paper', title: 'The strength–weight trade-off', settle: 10, ideas: [15, 75],
   src: ['shlRtingsSoraUlx', 'shlRtingsUlxcGpx2', 'exRtings', 'shlLattice'],
   draw: t => {
-    header(t, 'Strength or weight: the trade-off');
-    captions(t, [[0.6, 'Most mice make you pick. The lightest flex and creak in reviews; the ones that feel solid weigh more.'], [5.2, 'A plain wall is why: thin it and it flexes, thicken it and it gets heavy. Each gram buys less stiffness than the last.']]);
-    const GS = golden(LM, RM - LM, 24, true), [lx, lw] = GS.b, [cx, cw] = GS.a, y = LAY.top, h = 660;
-    /* left: what reviewers found, lightest first, and the target */
-    { const hy = shlCard(t, 0.3, lx, y, lw, h, 'Reviewers\' verdicts', [{ ev: 'measured', by: 'RTINGS' }]);
+    header(t, 'The strength–weight trade-off');
+    captions(t, [[0.6, 'Most mice make you pick. The lightest flex and creak in reviews; the ones that feel solid weigh more.'], [5.2, 'A plain wall is why: thin it and it flexes, thicken it and it gets heavy. Every gram buys less stiffness than the last.']]);
+    const y = 280, h = 640, lx = LM, lw = 640, cx = LM + 680, cw = RM - cx;
+    /* left: what the reviewers found, lightest first, and Theseus's target */
+    { const a0 = tileA(t, 0.3, 0); demoWindow(lx, y, lw, h, a0);
+      text('Reviewers\' verdicts', lx + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+      pill(lx + lw - 32 - pillW('measured', { by: 'RTINGS' }), y + 52, 'measured', a0, { by: 'RTINGS' });
       const rows = SHL_PICK.map(r => Object.assign({ g: shlMouseG(r.id, r.i) }, r)).filter(r => r.g != null).sort((p, q) => p.g - q.g);
-      rows.unshift({ hero: true, name: 'Theseus', say: 'Solid, at the lightest weight here', g: THESEUS.mass });
-      const bx = lx + 26, bw = lw - 52 - 120, max = 62;
+      rows.unshift({ hero: true, name: 'Theseus', say: 'A solid shell, no holes', g: THESEUS.mass });
+      const bx = lx + 32, bw = lw - 64 - 110, max = 62;
       rows.forEach((r, i) => {
-        const yy = hy + 40 + i * 110, t0 = 0.9 + i * 0.32, a = ep(t, t0, t0 + 0.4), k = ep(t, t0 + 0.15, t0 + 1.0, E.snap);
-        if (i) line(lx + 26, yy - 46, lx + lw - 26, yy - 46, { color: C.hair, w: 1, alpha: a });
-        text(r.name, bx, yy, { role: 'small', size: 25, weight: 700, color: r.hero ? C.heroText : C.ink, grad: r.hero ? C.heroGrad : null, alpha: a });
-        text(r.say, bx, yy + 32, { role: 'small', size: 25, color: C.ink2, alpha: a, t, t0: t0 + 0.2, cps: 110 });
-        const verdict = r.hero ? 'Target' : r.flex ? 'Flexes' : 'Solid';
-        text(verdict, lx + lw - 26, yy, { role: 'label', size: 21, color: r.hero ? C.heroText : r.flex ? C.bad : C.ink, align: 'right', alpha: a });
-        const xe = shlBar({ x: bx, y: yy + 52, w: bw, max, v: r.g, col: r.hero ? C.hero : r.flex ? C.bad : C.comp, grad: r.hero ? C.heroGrad : null, h: 12, a, k });
-        text((r.hero ? THS.mass : fmtN(r.g, 1)) + ' g', xe + 12, yy + 59, { font: 'mono', size: 22, weight: r.hero ? 800 : 600, color: C.ink, alpha: clamp(k * 1.4 - 0.3) });
+        const yy = y + 124 + i * 100, t0 = 0.9 + i * 0.32, a = ep(t, t0, t0 + 0.4), k = ep(t, t0 + 0.15, t0 + 1.0, E.snap);
+        if (i) line(lx + 32, yy - 44, lx + lw - 32, yy - 44, { color: C.hair, w: 1, alpha: a });
+        text(r.name, bx, yy, { role: 'small', size: 25, weight: 700, color: r.hero ? C.heroText : C.ink, alpha: a });
+        text(r.say, bx, yy + 32, { role: 'small', size: 24, weight: 560, color: C.ink2, alpha: a, t, t0: t0 + 0.2, cps: 110 });
+        text(r.hero ? 'Target' : r.flex ? 'Flexes' : 'Solid', lx + lw - 32, yy, { role: 'label', size: 21, color: r.hero ? C.heroText : r.flex ? C.bad : C.ink, align: 'right', alpha: a });
+        const xe = shlBar({ x: bx, y: yy + 56, w: bw, max, v: r.g, col: r.hero ? C.hero : r.flex ? C.bad : C.comp, h: 12, a, k });
+        text((r.hero ? THS.mass : fmtN(r.g, 1)) + ' g', xe + 12, yy + 63, { role: 'num', size: 22, weight: r.hero ? 800 : 650, color: r.hero ? C.heroText : C.ink, alpha: clamp(k * 1.4 - 0.3) });
       });
-      text('RTINGS weights and words; Theseus is my target.', lx + 26, y + h - 24, { role: 'small', size: 25, color: C.faint, alpha: ep(t, 3.0, 3.4) });
     }
     /* right: a plain wall, thinned and thickened, solved in the real shell */
-    { const hy = shlCard(t, 0.5, cx, y, cw, h, 'A plain wall: flex against grams', ['derived']);
-      const m = axes(t, { x: cx + 110, y: hy + 70, w: cw - 170, h: 360, xr: [8, 24], yr: [0, 200], xticks: [8, 12, 16, 20, 24], yticks: [0, 50, 100, 150, 200], xfmt: v => v + ' g', yfmt: v => String(v), t0: 0.9 });
-      const a0 = ep(t, 1.0, 1.4);
-      text('Flex at 10 N on the crown, {µm}', cx + 26, hy + 26, { role: 'label', size: 19, color: C.mute, alpha: a0 });
-      text('Shell body mass', m.X(24), hy + 70 + 360 + 66, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
+    { const a0 = tileA(t, 0.3, 1); demoWindow(cx, y, cw, h, a0);
+      text('A plain wall: flex against grams', cx + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+      const m = axes(t, { x: cx + 120, y: y + 130, w: cw - 190, h: 360, xr: [8, 24], yr: [0, 200], xticks: [8, 12, 16, 20, 24], yticks: [0, 50, 100, 150, 200], xfmt: v => v + ' g', yfmt: v => String(v), t0: 0.9 });
+      const k0 = ep(t, 1.0, 1.4);
+      text('Flex at 10 N on the crown, {µm}', cx + 32, y + 106, { role: 'label', size: 19, color: C.mute, alpha: k0 });
+      text('Shell body mass', m.X(24), y + 130 + 360 + 64, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: k0 });
       /* the two ends of the pick */
       const kz = ep(t, 2.2, 2.8);
       rect(m.X(8), m.Y(200), m.X(11) - m.X(8), m.Y(0) - m.Y(200), { fill: rgba(C.bad, 0.08), alpha: kz });
       rect(m.X(20), m.Y(200), m.X(24) - m.X(20), m.Y(0) - m.Y(200), { fill: inkA(0.04), alpha: kz });
-      text('Light: it flexes', m.X(8) + 12, m.Y(200) + 28, { role: 'label', size: 19, color: C.bad, alpha: kz });
-      text('Stiff: it\'s heavy', m.X(24) - 12, m.Y(200) + 28, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kz });
+      text('Light: it flexes', m.X(8) + 14, m.Y(200) + 30, { role: 'label', size: 19, color: C.bad, alpha: kz });
+      text('Stiff: it\'s heavy', m.X(24) - 14, m.Y(200) + 30, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kz });
       shlCurve(m, ep(t, 1.2, 2.6, E.lin), { color: C.ink, w: 3 });
       /* the two solved walls */
-      [[SHL_FE.g.wall, 'Wall alone'], [SHL_FE.g.body, 'Wall thickened']].forEach(([g, lab], j) => { const kk = ep(t, 1.8 + j * 0.3, 2.2 + j * 0.3), X = m.X(g), Y = m.Y(shlPlainFlex(g)); circle(X, Y, 6, { fill: C.ink, alpha: kk }); text(lab + ', solved', X + 14, Y - 12, { role: 'label', size: 19, color: C.ink2, alpha: kk }); });
+      [[SHL_FE.g.wall, 'Wall alone'], [SHL_FE.g.body, 'Wall thickened']].forEach(([g, lab], j) => { const kk = ep(t, 1.8 + j * 0.3, 2.2 + j * 0.3), X = m.X(g), Y = m.Y(shlPlainFlex(g)); circle(X, Y, 6, { fill: C.ink, alpha: kk }); text(lab + ', solved', X + 14, Y - 14, { role: 'label', size: 19, color: C.ink2, alpha: kk }); });
       /* the pointer drags the wall's mass along the curve */
       const keys = [[2.8, 15.18], [3.4, 15.18], [4.6, 9.2], [5.2, 9.2], [6.6, 22.5], [7.2, 22.5], [8.2, 15.18]], g = kf(t, keys, E.cam), fl = shlPlainFlex(g);
       const hx = m.X(g), hyy = m.Y(Math.min(200, fl)), kh = ep(t, 2.6, 3.0);
       line(hx, hyy, hx, m.Y(0), { color: C.heroText, w: 1.5, dash: [4, 4], alpha: kh * 0.8 }); line(m.X(8), hyy, hx, hyy, { color: C.heroText, w: 1.5, dash: [4, 4], alpha: kh * 0.8 });
       circle(hx, hyy, 11, { fill: C.panel, color: C.heroText, w: 3, alpha: kh });
       cursorPtr(hx + 6, hyy + 8, { a: kh * (1 - ep(t, 8.6, 9.0)), grab: true });
-      rich([{ s: fmtN(g, 1), font: 'disp', size: 44, weight: 800, color: C.ink, tnum: true }, { s: 'g', font: 'mono', size: 24, weight: 600, color: C.mute, gap: 8 }, { s: fmtN(fl, 0), font: 'disp', size: 44, weight: 800, color: C.ink, tnum: true, gap: 36 }, { s: 'µm of flex', font: 'mono', size: 24, weight: 600, color: C.mute, gap: 8 }], cx + cw - 30, hy + 26, { align: 'right', alpha: kh });
-      text('3D shell FE, PP-C-20A, 10 N on the crown. Two plain walls solved; flex falls with mass^2.37 between them, dashed beyond.', cx + 26, y + h - 56, { role: 'small', size: 25, color: C.faint, maxW: cw - 52, lh: 1.3, alpha: ep(t, 3.0, 3.4) });
+      rich([{ s: fmtN(g, 1), font: 'disp', size: 44, weight: 800, color: C.ink, tnum: true }, { s: 'g', role: 'label', size: 22, color: C.mute, gap: 8 }, { s: fmtN(fl, 0), font: 'disp', size: 44, weight: 800, color: C.ink, tnum: true, gap: 36 }, { s: 'µm of flex', role: 'label', size: 22, color: C.mute, gap: 8, caps: false }], cx + cw - 32, y + 56, { align: 'right', alpha: kh });
+      text('3D shell FE, PP-C-20A, 10 N on the crown. Two plain walls solved; between them flex falls with mass^2.37, dashed beyond.', cx + 32, y + h - 60, { role: 'small', size: 24, color: C.faint, maxW: cw - 64, lh: 1.3, alpha: ep(t, 3.0, 3.4) });
+      pill(cx + cw - 32 - pillW('derived'), y + 106, 'derived', k0);
     }
   }
 });
@@ -515,71 +568,73 @@ S({
   draw: t => {
     header(t, '');
     const q = 'What if you didn’t have to pick…', km = ep(t, 2.9, 3.9, E.cam), size = lerp(100, 62, km), wq = tw(q, { role: 'h1', size });
-    text(q, lerp(W / 2 - wq / 2, LM - 3, km), lerp(590, LAY.titleY, km), { role: 'h1', size, color: C.ink, t, t0: 0.4, cps: 22, caret: true });
+    text(q, lerp(W / 2 - wq / 2, LM - 3, km), lerp(590, LAY.titleY, km), { role: 'h1', size, color: C.ink, t, t0: 0.4, cps: 22, caret: t < 3.0 });
     if (t < 3.6) return;
-    captions(t, [[3.9, 'The trade-off assumes a plain wall. Keep the grams, move them into a triangle lattice, and the curve no longer holds.'], [7.0, 'The same 15.2 g flexes half as much. To match it, a plain wall would need about ' + fmtN(SHL_FE.match, 1) + ' g.']]);
-    const x = LM, y = LAY.top + 24, w = RM - LM, h = 660;
-    demoWindow(x, y, w, h, ep(t, 3.6, 4.1));
-    const m = axes(t, { x: x + 130, y: y + 90, w: 1060, h: 420, xr: [8, 24], yr: [0, 200], xticks: [8, 12, 16, 20, 24], yticks: [0, 50, 100, 150, 200], xfmt: v => v + ' g', yfmt: v => String(v), t0: 3.8 });
-    const a0 = ep(t, 3.9, 4.3);
-    text('Flex at 10 N on the crown, {µm}', x + 26, y + 46, { role: 'label', size: 19, color: C.mute, alpha: a0 });
-    text('Shell body mass', m.X(24), y + 90 + 420 + 66, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
+    captions(t, [[3.9, 'The trade-off assumes a plain wall. Keep the grams, move them into a triangle lattice, and the curve stops holding.'], [7.0, 'The same 15.2 g flexes half as much. To match it, a plain wall needs about ' + fmtN(SHL_FE.match, 1) + ' g.']]);
+    const x = LM, y = 280, w = RM - LM, h = 640, a0 = ep(t, 3.6, 4.1);
+    demoWindow(x, y, w, h, a0);
+    const m = axes(t, { x: x + 130, y: y + 110, w: 1060, h: 420, xr: [10, 24], yr: [0, 120], xticks: [10, 12, 16, 20, 24], yticks: [0, 40, 80, 120], xfmt: v => v + ' g', yfmt: v => String(v), t0: 3.8 });
+    const ka = ep(t, 3.9, 4.3);
+    text('Flex at 10 N on the crown, {µm}', x + 40, y + 60, { role: 'label', size: 19, color: C.mute, alpha: ka });
+    text('Shell body mass', m.X(24), y + 110 + 420 + 64, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ka });
     /* the trade-off, and then the break: the curve splits at the body's mass, the far half drops out of focus */
-    const kb = ep(t, 5.9, 6.5, E.out3), gB = SHL_FE.g.body, fB = shlPlainFlex(gB);
-    if (kb <= 0) shlCurve(m, ep(t, 4.0, 5.0, E.lin), { color: C.ink, w: 3 });
+    const kb = ep(t, 5.9, 6.5, E.out3), gB = SHL_FE.g.body, fB = shlPlainFlex(gB), cO = { color: C.ink, w: 3, g0: 10, ymax: 120 };
+    if (kb <= 0) shlCurve(m, ep(t, 4.0, 5.0, E.lin), cO);
     else {
-      G.save(); G.beginPath(); G.rect(m.X(8) - 4, m.Y(200) - 20, m.X(gB) - 3 - m.X(8) + 4, m.Y(0) - m.Y(200) + 40); G.clip(); shlCurve(m, 1, { color: C.ink, w: 3 }); G.restore();
-      G.save(); G.beginPath(); G.rect(m.X(gB) + 3, m.Y(200) - 20, m.X(24) - m.X(gB), m.Y(0) - m.Y(200) + 60); G.clip(); G.translate(6 * kb, 14 * kb); shlCurve(m, 1, { color: mix(C.ink, C.bg, 0.55 * kb), w: 3 }); G.restore();
+      G.save(); G.beginPath(); G.rect(m.X(10) - 4, m.Y(120) - 20, m.X(gB) - 3 - m.X(10) + 4, m.Y(0) - m.Y(120) + 40); G.clip(); shlCurve(m, 1, cO); G.restore();
+      G.save(); G.beginPath(); G.rect(m.X(gB) + 3, m.Y(120) - 20, m.X(24) - m.X(gB), m.Y(0) - m.Y(120) + 60); G.clip(); G.translate(6 * kb, 14 * kb); shlCurve(m, 1, Object.assign({}, cO, { color: mix(C.ink, C.bg, 0.6 * kb) })); G.restore();
       const sp = ep(t, 5.9, 6.4); if (sp < 1) for (let i = 0; i < 7; i++) { const an = -Math.PI / 2 + (i - 3) * 0.45, d = 8 + sp * 46; circle(m.X(gB) + Math.cos(an) * d, m.Y(fB) + Math.sin(an) * d, 2.4, { fill: C.ink, alpha: (1 - sp) * 0.9 }); }
     }
     /* the plain wall at the body's mass, and the lattice at the same grams */
     const kp = ep(t, 4.8, 5.2), Xb = m.X(gB), Yp = m.Y(fB), Yl = m.Y(SHL_FE.tri.defl);
     circle(Xb, Yp, 7, { fill: C.ink, alpha: kp });
-    text('Plain wall, ' + fmtN(fB, 1) + ' µm', Xb + 16, Yp - 14, { role: 'label', size: 21, color: C.ink, alpha: kp });
-    const kl = ep(t, 5.3, 5.9, E.out3), yDrop = lerp(m.Y(200) - 30, Yl, kl);
-    if (kl > 0) { heroMark(Xb, yDrop, 13, ep(t, 5.3, 5.45)); }
+    text('Plain wall, ' + fmtN(fB, 1) + ' µm', Xb + 18, Yp - 16, { role: 'label', size: 21, color: C.ink, alpha: kp });
+    const kl = ep(t, 5.3, 5.9, E.out3), yDrop = lerp(m.Y(120) - 30, Yl, kl);
+    if (kl > 0) heroMark(Xb, yDrop, 13, ep(t, 5.3, 5.45));
     const kd = ep(t, 6.1, 6.6);
     if (kd > 0) {
-      line(Xb - 34, Yp, Xb - 34, lerp(Yp, Yl, kd), { color: C.heroText, w: 2, alpha: kd }); line(Xb - 42, Yp, Xb - 26, Yp, { color: C.heroText, w: 2, alpha: kd }); line(Xb - 42, Yl, Xb - 26, Yl, { color: C.heroText, w: 2, alpha: kd });
-      text('−' + Math.round((1 - SHL_FE.tri.defl / fB) * 100) + '%', Xb - 50, (Yp + Yl) / 2 + 8, { font: 'mono', size: 26, weight: 800, color: C.heroText, align: 'right', alpha: kd });
-      text('Triangle lattice, same grams: ' + fmtN(SHL_FE.tri.defl, 1) + ' µm', Xb + 22, Yl + 8, { role: 'label', size: 21, color: C.heroText, alpha: kd });
+      const bxk = Xb - 40;
+      line(bxk, Yp, bxk, lerp(Yp, Yl, kd), { color: C.heroText, w: 2, alpha: kd }); line(bxk - 8, Yp, bxk + 8, Yp, { color: C.heroText, w: 2, alpha: kd }); line(bxk - 8, Yl, bxk + 8, Yl, { color: C.heroText, w: 2, alpha: kd });
+      text('−' + Math.round((1 - SHL_FE.tri.defl / fB) * 100) + '%', bxk - 16, (Yp + Yl) / 2 + 9, { font: 'disp', size: 30, weight: 800, color: C.heroText, grad: C.heroGrad, align: 'right', alpha: kd });
+      text('Triangle lattice, ' + fmtN(SHL_FE.tri.defl, 1) + ' µm', Xb + 22, Yl + 40, { role: 'label', size: 21, color: C.heroText, alpha: kd });
     }
     /* where a plain wall would have to go to match it */
     const kmm = ep(t, 7.2, 8.0, E.cam), Xm = m.X(SHL_FE.match);
-    if (kmm > 0) { line(Xb + 16, Yl, lerp(Xb + 16, Xm, kmm), Yl, { color: C.ink2, w: 1.5, dash: [5, 5], alpha: 0.9 }); const kq = ep(t, 7.9, 8.3); circle(Xm, Yl, 6, { fill: C.ink2, alpha: kq }); text('A plain wall: ' + fmtN(SHL_FE.match, 1) + ' g', Xm, Yl - 22, { role: 'label', size: 19, color: C.ink2, align: 'center', alpha: kq }); }
+    if (kmm > 0) { line(Xb + 18, Yl, lerp(Xb + 18, Xm, kmm), Yl, { color: C.ink2, w: 1.5, dash: [5, 5], alpha: 0.9 }); const kq = ep(t, 7.9, 8.3); circle(Xm, Yl, 6, { fill: C.ink2, alpha: kq }); text('A plain wall: ' + fmtN(SHL_FE.match, 1) + ' g', Xm + 16, Yl + 40, { role: 'label', size: 19, color: C.ink2, alpha: kq }); }
     /* right: the question changes */
-    const rx = x + 1270, rw = w - 1270 - 40, kq1 = ep(t, 4.4, 4.9), flip = ep(t, 6.6, 7.4, E.cam);
+    const rx = x + 1280, rw = w - 1280 - 40, kq1 = ep(t, 4.4, 4.9), flip = ep(t, 6.6, 7.4, E.cam);
     text('The question was', rx, y + 150, { role: 'label', size: 21, color: C.mute, alpha: kq1 * (1 - flip) });
     text('The question is', rx, y + 150, { role: 'label', size: 21, color: C.mute, alpha: flip });
-    const sy = 1 - 2 * Math.min(flip, 1 - flip) * 0.98, wordA = 'How much material', wordB = 'Where the material is';
+    const sy = 1 - 2 * Math.min(flip, 1 - flip) * 0.98;
     G.save(); G.translate(0, y + 232); G.scale(1, Math.max(0.02, sy)); G.translate(0, -(y + 232));
-    text(flip < 0.5 ? wordA : wordB, rx, y + 232, { role: 'h2', size: 52, color: flip < 0.5 ? C.ink : C.heroText, grad: flip < 0.5 ? null : C.heroGrad, maxW: rw, lh: 1.04, alpha: kq1 });
+    text(flip < 0.5 ? 'How much material' : 'Where the material is', rx, y + 232, { role: 'h2', size: 52, color: flip < 0.5 ? C.ink : C.heroText, grad: flip < 0.5 ? null : C.heroGrad, maxW: rw, lh: 1.04, alpha: kq1 });
     G.restore();
     const kn = ep(t, 7.6, 8.1);
-    text('Same 15.2 g body: ' + Math.round(SHL_FE.thick.press) + ' N/mm as a plain wall, ' + Math.round(SHL_FE.tri.press) + ' N/mm as a lattice. The ' + fmtN(SHL_FE.match, 1) + ' g is extrapolated along the plain wall\'s curve.', rx, y + 400, { role: 'small', size: 25, color: C.ink2, maxW: rw, lh: 1.34, alpha: kn, t, t0: 7.6, cps: 120 });
+    text('Same 15.2 g body: ' + Math.round(SHL_FE.thick.press) + ' N/mm as a plain wall, ' + Math.round(SHL_FE.tri.press) + ' N/mm as a lattice. The ' + fmtN(SHL_FE.match, 1) + ' g follows the plain wall\'s own curve past its last solved point.', rx, y + 400, { role: 'small', size: 25, color: C.ink2, maxW: rw, lh: 1.34, alpha: kn, t, t0: 7.6, cps: 120 });
     pill(rx, y + h - 40, 'derived', kn, { text: 'Derived, 3D shell FE' });
   }
 });
 
-/* ============================== 5. stress hotspots: a solid plane breaks at one point (Brock's "cut material out of a solid plane") ==============================
+/* ============================== 5. stress hotspots: a solid plane piles its stress into one spot (Brock, #75: "the force ... converges onto one failure point") ==============================
    the same grams across the same 60 mm span, solved as 2D frames: a solid plane (a beam of the full depth, thinner out
    of the page) and triangles whose members are sized to their own force. The pointer presses each; the camera pushes
-   into the plane's hotspot; force runs through the triangles; the plane cracks where the tension peaks */
+   into the plane's hotspot; force runs through the triangles. Both on one heat scale: red is the plane's peak */
 S({
-  id: 'shlHotspot', ch: 'shell', theme: 'paper', title: 'Stress hotspots', settle: 10, ideas: [75, 93], src: ['shlHot2d', 'shlDoc', 'comsol'],
+  id: 'shlHotspot', ch: 'shell', theme: 'paper', title: 'Stress hotspots', settle: 10, ideas: [75, 93], src: ['shlHot2d', 'shlDoc'],
   draw: t => {
     header(t, 'Stress hotspots');
-    captions(t, [[0.6, 'A solid plane under a press: the stress piles into one spot under the finger, and that is where it cracks.'], [5.8, 'The same grams as triangles share the press along every member. The peak halves, and no spot runs hot.']]);
-    const R = shlHot(), smax = R.plate.peak, s = 15, sc = 12, H = SHL_HOT.H;
-    const tx = LM, tw0 = 1210, th = 300, ya = LAY.top, yb = LAY.top + th + 24;
+    captions(t, [[0.6, 'Press a solid plane and the stress piles into one spot under the finger. That red spot is a hotspot.'], [5.8, 'The same grams as triangles share the press along every member. The peak drops ' + Math.round((1 - shlHot().sized.peak / shlHot().plate.peak) * 100) + '%, and nothing runs red.']]);
+    const R = shlHot(), smax = R.plate.peak, s = 15.5, sc = 12, H = SHL_HOT.H;
+    const tx = LM, tw0 = 1240, th = 300, ya = 280, yb = 620;
     const kA = ep(t, 1.8, 3.2, E.io3), kB = ep(t, 6.0, 7.2, E.io3);
     /* tile A: the solid plane */
-    shlCard(t, 0.3, tx, ya, tw0, th, 'A solid plane', ['derived']);
-    const oxA = tx + 490, oyA = ya + 262, PA = p => [oxA + p[0] * s, oyA - p[1] * s];
+    const aA = tileA(t, 0.3, 0); demoWindow(tx, ya, tw0, th, aA);
+    text('A solid plane', tx + 32, ya + 52, { role: 'label', size: 21, color: C.mute, alpha: aA }); pill(tx + tw0 - 32 - pillW('derived'), ya + 52, 'derived', aA);
+    const oxA = tx + 40 + 465, oyA = ya + 254, PA = p => [oxA + p[0] * s, oyA - p[1] * s];
     const hot = PA([0, R.plate.d[R.plate.model.mid * 3 + 1] * sc * kA]), z = 1 + 0.85 * env(t, 3.5, 4.2, 4.7, 5.4, E.cam);
-    clipped(tx + 2, ya + 64, tw0 - 260, th - 66, () => {
+    clipped(tx + 2, ya + 70, tw0 - 260, th - 72, () => {
       G.save(); G.translate(hot[0], hot[1]); G.scale(z, z); G.translate(-hot[0], -hot[1]);
-      shlPlateField(R.plate, PA, kA, sc, smax, ep(t, 0.7, 1.2), { crack: ep(t, 8.0, 8.9) });
+      shlPlateField(R.plate, PA, kA, sc, smax, ep(t, 0.7, 1.2));
       feSupport(PA([-30, 0]), 'pin', { alpha: ep(t, 0.8, 1.2) }); feSupport(PA([30, 0]), 'roll', { alpha: ep(t, 0.8, 1.2) });
       G.restore();
     });
@@ -587,12 +642,12 @@ S({
     if (z < 1.02) shlPress(t, 1.8, topA, kA);
     /* the hotspot, named while the camera is in */
     const kh = env(t, 3.9, 4.2, 4.7, 5.0);
-    if (kh > 0) { const r0 = 22 + 6 * Math.sin(t * 6); circle(hot[0], hot[1] - 4, r0, { color: C.bad, w: 2.5, alpha: kh }); text('Peak: ' + fmtN(R.plate.peak, 1) + ' MPa, here', hot[0] + 34, hot[1] - 30, { role: 'label', size: 21, color: C.bad, alpha: kh }); }
-    if (t > 8.0) callout(t, 8.0, [hot[0], hot[1] - 10], 'First crack, at one point', { to: [hot[0] + 170, ya + 96], side: 'r', color: C.bad, tcolor: C.bad });
+    if (kh > 0) { const r0 = 24 + 5 * Math.sin(t * 6); circle(hot[0], hot[1] - 4, r0, { color: C.bad, w: 2.5, alpha: kh }); text('Peak, ' + fmtN(R.plate.peak, 1) + ' MPa, here', hot[0] + 38, hot[1] - 32, { role: 'label', size: 21, color: C.bad, alpha: kh }); }
     /* tile B: the same grams as triangles, each member as thick as its force needs */
-    shlCard(t, 0.5, tx, yb, tw0, th, 'The same grams as triangles', ['derived']);
-    const oxB = tx + 490, oyB = yb + 262, PB = p => [oxB + p[0] * s, oyB - p[1] * s], aB = ep(t, 0.9, 1.4);
-    feDraw(R.sized, PB, { scale: sc, load: kB, smax, w: s * 0.92, alpha: aB, ghost: kB > 0.02, seg: 8 });
+    const aB0 = tileA(t, 0.3, 1); demoWindow(tx, yb, tw0, th, aB0);
+    text('The same grams as triangles', tx + 32, yb + 52, { role: 'label', size: 21, color: C.mute, alpha: aB0 }); pill(tx + tw0 - 32 - pillW('derived'), yb + 52, 'derived', aB0);
+    const oxB = tx + 40 + 465, oyB = yb + 254, PB = p => [oxB + p[0] * s, oyB - p[1] * s], aB = ep(t, 0.9, 1.4);
+    feDraw(R.sized, PB, { scale: sc, load: kB, smax, w: s * 0.92, alpha: aB, ghost: kB > 0.02, seg: 8, fillet: 5 });
     feFlow(R.sized, PB, t, { scale: sc, load: kB, alpha: aB });
     feSupport(PB([-30, 0]), 'pin', { alpha: aB }); feSupport(PB([30, 0]), 'roll', { alpha: aB });
     const md = R.sized.model.mid, topB = PB([R.sized.model.nodes[md][0], H + R.sized.d[md * 3 + 1] * sc * kB]);
@@ -600,87 +655,333 @@ S({
     /* the pointer: onto the plane, a push, then across to the triangles */
     cursorAt(t, [[1.0, [tx + 1060, ya + 250]], [1.7, [topA[0] + 2, topA[1] - 70]], [3.2, [topA[0] + 2, topA[1] - 62]], [5.3, [topA[0] + 2, topA[1] - 62]], [5.9, [topB[0] + 2, topB[1] - 70]], [7.2, [topB[0] + 2, topB[1] - 62]]], [1.8, 6.0], { a: ep(t, 0.7, 1.0) * (z < 1.02 ? 1 : 0) });
     /* the readouts, right of each drawing */
-    const rx = tx + tw0 - 230;
-    [[R.plate, ya, kA, 1.9, false], [R.sized, yb, kB, 6.3, true]].forEach(([r, yy, k, t0, hero]) => {
+    const rx = tx + tw0 - 232;
+    [[R.plate, ya, 1.9, false], [R.sized, yb, 6.3, true]].forEach(([r, yy, t0, hero]) => {
       const a = ep(t, t0, t0 + 0.4);
-      text('Peak stress', rx, yy + 100, { role: 'label', size: 19, color: C.mute, alpha: a });
-      rich([{ s: fmtN(r.peak, 1), font: 'disp', size: 56, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, tnum: true, count: [t0, 1.0] }, { s: 'MPa', font: 'mono', size: 22, weight: 600, color: C.mute, gap: 8 }], rx, yy + 160, { t, alpha: a });
-      text('Flex ' + fmtN(10000 / r.k, 0) + ' µm', rx, yy + 206, { font: 'mono', size: 22, weight: 600, color: C.ink2, alpha: a });
-      if (hero) text('−' + Math.round((1 - R.sized.peak / R.plate.peak) * 100) + '% peak, same grams', rx, yy + 244, { role: 'label', size: 19, color: C.heroText, alpha: ep(t, 7.4, 7.8) });
-      else text(Math.round((1 - r.work) * 100) + '% of its grams under half the peak', rx, yy + 244, { role: 'label', size: 19, color: C.bad, maxW: 210, lh: 1.25, alpha: ep(t, 4.4, 4.8) });
+      text('Peak stress', rx, yy + 112, { role: 'label', size: 19, color: C.mute, alpha: a });
+      rich([{ s: fmtN(r.peak, 1), font: 'disp', size: 56, weight: 800, color: hero ? C.heroText : C.bad, grad: hero ? C.heroGrad : null, tnum: true, count: [t0, 1.0] }, { s: 'MPa', role: 'label', size: 21, color: C.mute, gap: 8, caps: false }], rx, yy + 172, { t, alpha: a });
+      text('Flex ' + fmtN(10000 / r.k, 0) + ' µm', rx, yy + 214, { role: 'num', size: 22, weight: 650, color: C.ink2, alpha: a });
+      if (hero) text('−' + Math.round((1 - R.sized.peak / R.plate.peak) * 100) + '% peak', rx, yy + 250, { role: 'label', size: 19, color: C.heroText, alpha: ep(t, 7.4, 7.8) });
+      else text('One hot spot', rx, yy + 250, { role: 'label', size: 19, color: C.bad, alpha: ep(t, 4.4, 4.8) });
     });
-    /* the words, in the right column */
-    const cx2 = tx + tw0 + 24, cw2 = RM - cx2;
-    const g1 = glossBox(t, 2.4, cx2, ya, cw2, 'Stress hotspot', 'A small spot where stress piles up far above the rest of the part. A crack starts there while the material round it barely works.', { size: 25 });
-    sourceBox(t, 5.0, cx2, ya + g1.h + 24, cw2, 'Brock, In Pursuit', 'On a solid plane the force usually converges onto one failure point, leaving lots of the material not structurally contributing.', { kind: 'estimate', label: 'Estimate', value: 'Brock', size: 25 });
-    text('2D frames solved in this page: PP-C-20A, 60 mm on a pin and a roller, 10 N on the middle. The plane has the same span, depth and grams. Flex drawn 12× real.', tx, yb + th + 40, { role: 'small', size: 25, color: C.faint, maxW: tw0, lh: 1.3, alpha: ep(t, 2.0, 2.4) });
+    /* the words, and how to read the colours, in the right column */
+    const cx2 = tx + tw0 + 40, cw2 = RM - cx2;
+    glossBox(t, 2.4, cx2, ya, cw2, 'Stress hotspot', 'A spot where stress piles up far above the rest of the part. A crack starts there, while the material round it barely works.', { size: 25 });
+    const ak = tileA(t, 3.0, 0); demoWindow(cx2, yb, cw2, th, ak);
+    shlRamp(t, 3.0, cx2 + 32, yb + 76, cw2 - 64, 'Peak, red', 'Stress at 10 N, one scale for both');
+    text('2D frames, PP-C-20A: a 60 mm span on a pin and a roller, 10 N in the middle. Same span, depth and grams for both. Flex drawn 12× real.', cx2 + 32, yb + 160, { role: 'small', size: 22, weight: 560, color: C.faint, maxW: cw2 - 64, lh: 1.32, alpha: ak });
   }
 });
 
-/* ============================== 6. the grams that work (Brock: "the amount of grams a force will actually act on") ==============================
+/* ============================== 6. peak stress decides the break (Brock, F9.23: "show the risk of breakage") ==============================
+   the same two frames, the press rising from 10 N: each frame's peak against PP-C-20A's strength, as a gauge. The
+   model is linear, so the peak scales with the press; the plane's hotspot reaches 120 MPa first and cracks there, at
+   one point, while the rest of it idles; the triangles carry the press on until their own peak gets there */
+S({
+  id: 'shlMargin', ch: 'shell', theme: 'night', title: 'Peak stress decides the break', settle: 10.5, ideas: [75, 93], after: 'shlHotspot', src: ['shlHot2d', 'shlPyrofil'],
+  draw: t => {
+    const R = shlHot(), FB = R.plate.peak, FT = R.sized.peak, brkP = SHL_STR.ft / FB * 10, brkT = SHL_STR.ft / FT * 10;
+    header(t, 'Peak stress decides the break');
+    captions(t, [[0.6, 'A part breaks where its peak reaches the material\'s strength, not its average. So the peak sets how hard you can press.'], [4.6, 'The plane\'s hotspot hits ' + SHL_STR.ft + ' MPa at ' + Math.round(brkP) + ' N and cracks at one point. The same grams as triangles hold to ' + Math.round(brkT) + ' N.']]);
+    const F = lerp(10, brkT, ep(t, 2.0, 8.4, E.lin)), tAt = f => 2.0 + 6.4 * (f - 10) / (brkT - 10), x = LM, y = 280, w = 1080, h = 640, a0 = tileA(t, 0.3, 0), s = 12.5, sc = 2, H = SHL_HOT.H;
+    demoWindow(x, y, w, h, a0);
+    /* the press, live */
+    rich([{ s: 'Press', role: 'label', size: 21, color: C.mute }, { s: fmtN(F, 0), font: 'disp', size: 44, weight: 800, color: C.ink, tnum: true, gap: 14 }, { s: 'N', role: 'label', size: 22, color: C.mute, gap: 6, caps: false }], x + 32, y + 64, { alpha: a0 });
+    const rows = [[R.plate, y + 290, 'A solid plane', brkP, false], [R.sized, y + 566, 'The same grams as triangles', brkT, true]];
+    rows.forEach(([r, oy, name, brk, tri], i) => {
+      const Fi = Math.min(F, brk), kL = Fi / 10, ox = x + 40 + 375, P = p => [ox + p[0] * s, oy - p[1] * s], a = ep(t, 0.8 + i * 0.2, 1.3 + i * 0.2);
+      const broke = F >= brk - 0.05, kc = tri ? 0 : ep(t, tAt(brk), tAt(brk) + 0.6);
+      text(name, x + 32, oy - 190, { role: 'label', size: 19, color: C.mute, alpha: a });
+      if (!tri) shlPlateField(r, P, kL, sc, SHL_STR.ft, a * (broke ? 1 - 0.45 * kc : 1), { crack: kc });
+      else feDraw(r, P, { scale: sc, load: kL, smax: SHL_STR.ft, w: s * 0.92, alpha: a, seg: 8, fillet: 4 });
+      if (tri) feFlow(r, P, t, { scale: sc, load: kL, alpha: a * 0.8 });
+      feSupport(P([-30, 0]), 'pin', { alpha: a }); feSupport(P([30, 0]), 'roll', { alpha: a });
+      const md = r.model.mid, top = P([r.model.nodes[md][0], H + r.d[md * 3 + 1] * sc * kL]);
+      shlPress(t, 1.6, top, clamp(F / 130 + 0.2), { len: 54 });
+      /* the gauge: the peak now against the strength */
+      const gx = x + 790, gy = oy - 186, gh = 180, frac = r.peak * kL / SHL_STR.ft;
+      shlGauge(gx, gy, gh, frac, { a });
+      text(SHL_STR.ft + ' MPa', gx + 44, gy + 7, { role: 'label', size: 19, color: C.bad, alpha: a, caps: false });
+      text('Peak', gx + 44, gy + 70, { role: 'label', size: 19, color: C.mute, alpha: a });
+      text(fmtN(r.peak * kL, 0) + ' MPa', gx + 44, gy + 104, { role: 'num', size: 26, weight: 800, color: broke ? C.bad : C.ink, alpha: a });
+      text(broke ? (tri ? 'Holds to ' : 'Cracked at ') + Math.round(brk) + ' N' : 'Margin ' + Math.round((1 - frac) * 100) + '%', gx + 44, gy + 140, { role: 'label', size: 19, color: broke ? C.bad : tri ? C.heroText : C.ink2, alpha: a });
+      if (!tri && broke) callout(t, tAt(brk) + 0.3, [ox, oy - 4], 'Cracks at one point; the rest of it idles', { to: [ox + 150, oy + 46], side: 'r', color: C.bad, tcolor: C.bad, prose: true, maxW: 300 });
+    });
+    /* the pointer, pressing harder: on the plane, then on the triangles once the plane has gone */
+    const pT = rows.map(([r, oy, , , tri]) => { const ox = x + 40 + 375; return [ox, oy - H * s - 70]; });
+    cursorAt(t, [[1.0, [x + 700, y + 120]], [1.5, [pT[0][0] + 2, pT[0][1] - 10]], [5.0, [pT[0][0] + 2, pT[0][1] - 4]], [5.6, [pT[1][0] + 2, pT[1][1] - 10]], [8.4, [pT[1][0] + 2, pT[1][1] - 4]]], [1.6, 3.0, 4.4, 6.0, 7.4], { a: ep(t, 0.8, 1.1) * (1 - ep(t, 9.0, 9.4)) });
+    text('2D frames, flex drawn 2× real. PP-C-20A breaks at ' + SHL_STR.ft + ' MPa in tension.', x + 32, y + h - 28, { role: 'small', size: 22, weight: 560, color: C.faint, alpha: ep(t, 1.4, 1.8) });
+    pill(x + w - 32 - pillW('datasheet', { by: 'Pyrofil' }), y + h - 28, 'datasheet', ep(t, 1.4, 1.8), { by: 'Pyrofil' });
+    /* right: what it buys, and every idea in this chapter that lowers the peak */
+    const rx = x + w + 40, rw = RM - rx;
+    statTile(t, 8.4, [rx, y, rw, 240], { value: fmtN(brkT / brkP, 1), unit: '×', label: 'the press, same grams, before it cracks', ev: 'derived', hero: true, align: 'left' });
+    const a2 = tileA(t, 1.2, 1), ty = y + 280, th2 = h - 280; demoWindow(rx, ty, rw, th2, a2);
+    text('Every idea here lowers the peak', rx + 32, ty + 52, { role: 'label', size: 21, color: C.ink, alpha: a2 });
+    [['Triangles', 'the press runs along the members'], ['Fillets', 'no sharp corner to crowd into'], ['Arches', 'curved ribs carry it in compression'], ['Fibres', 'aligned with the load they carry'], ['The whole board', 'a tie across the base'], ['Thicker low sides', 'wall where the stress is']].forEach(([n, d], j) => {
+      const yy = ty + 104 + j * 40, kk = ep(t, 1.6 + j * 0.18, 2.0 + j * 0.18);
+      rich([{ s: n, role: 'label', size: 19, color: j ? C.ink : C.heroText }, { s: d, role: 'small', size: 22, weight: 560, color: C.mute, gap: 14 }], rx + 32, yy, { alpha: a2 * kk });
+    });
+  }
+});
+
+/* ============================== 7. the grams that work (Brock: "the amount of grams a force will actually act on") ==============================
    the same three frames, every gram coloured by how hard it works at the same press, most stressed first; the share
    stressed to at least half of its own peak is the share that works */
 S({
-  id: 'shlWork', ch: 'shell', theme: 'night', title: 'The grams that work', settle: 10, ideas: [75, 93], src: ['shlHot2d', 'shlDoc', 'shlLattice'],
+  id: 'shlWork', ch: 'shell', theme: 'paper', title: 'The grams that work', settle: 10, ideas: [75, 93], src: ['shlHot2d', 'shlDoc', 'shlLattice'],
   draw: t => {
     header(t, 'The grams that work');
-    captions(t, [[0.6, 'Press each the same way and colour every gram by how hard it works. In the solid plane, most of them idle.'], [5.4, 'Sized to the force, triangles put nearly every gram to work. A solid plane needs about twice the grams to be as strong.']]);
+    captions(t, [[0.6, 'Press each the same way and colour every gram by how hard it works. In the solid plane most of them idle.'], [5.4, 'Sized to the force, triangles put ' + Math.round(shlHot().sized.work * 100) + '% of their grams to work. A solid plane needs ' + fmtN(shlHot().match, 1) + '× the grams to match their peak.']]);
     const R = shlHot(), ref = R.plate.peak, rows = [[R.plate, 'Solid plane', 'plate'], [R.uni, 'Triangles, all one size', 'uni'], [R.sized, 'Triangles, sized to their force', 'sized']];
     rows.forEach(([r, name, kind], i) => {
-      const y = LAY.top + 8 + i * 164, h = 140, t0 = 0.4 + i * 0.5, a = ep(t, t0, t0 + 0.45), k = ep(t, 1.4 + i * 0.5, 3.2 + i * 0.5, E.io3), hero = kind === 'sized';
+      const y = 280 + i * 160, h = 120, a = tileA(t, 0.4, i), k = ep(t, 1.4 + i * 0.5, 3.2 + i * 0.5, E.io3), hero = kind === 'sized';
       demoWindow(LM, y, RM - LM, h, a);
       /* a small picture of the frame, coloured the same way */
-      const s = 4.4, ox = LM + 166, oy = y + 104, P = p => [ox + p[0] * s, oy - p[1] * s];
-      if (kind === 'plate') shlPlateField(r, P, k, 0, ref, a, { ny: 8 }); else feDraw(r, P, { load: k, smax: ref, w: s * 0.95, alpha: a, seg: 4 });
+      const s = 4.0, ox = LM + 160, oy = y + 84, P = p => [ox + p[0] * s, oy - p[1] * s];
+      if (kind === 'plate') shlPlateField(r, P, k, 0, ref, a, { ny: 8 }); else feDraw(r, P, { load: k, smax: ref, w: s * 0.95, alpha: a, seg: 4, fillet: 2 });
       /* the grams, as 52 cells of equal mass, most stressed first */
-      const bx = LM + 370, bw = 1040, by = y + 74, bh = 40, n = r.cells.length, gap = 3, cwid = (bw - gap * (n - 1)) / n;
-      text(name, bx, y + 46, { role: 'label', size: 21, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, alpha: a });
-      for (let c = 0; c < n; c++) { const kc = ep(k, c / n * 0.7, c / n * 0.7 + 0.3, E.lin); rr(bx + c * (cwid + gap), by, cwid, bh, 4, kc > 0 ? heatCol(r.cells[c] * kc / ref) : C.track, null, 0, a); }
+      const bx = LM + 360, bw = 1040, by = y + 58, bh = 36, n = r.cells.length, gap = 3, cwid = (bw - gap * (n - 1)) / n;
+      text(name, bx, y + 42, { role: 'label', size: 21, color: hero ? C.heroText : C.ink, alpha: a });
+      for (let c = 0; c < n; c++) { const kc = ep(k, c / n * 0.7, c / n * 0.7 + 0.3, E.lin); rr(bx + c * (cwid + gap), by, cwid, bh, 3, kc > 0 ? heatCol(r.cells[c] * kc / ref) : C.track, null, 0, a); }
       /* where the cells drop under half this frame's own peak */
       const cut = r.cells.findIndex(v => v < 0.5 * r.peak), xc = bx + (cut < 0 ? n : cut) * (cwid + gap) - gap / 2, kk = ep(t, 3.6 + i * 0.3, 4.0 + i * 0.3);
-      line(xc, by - 10, xc, by + bh + 10, { color: C.ink, w: 2, alpha: kk });
-      if (i === 0) text('Half its own peak', xc + 10, by - 12, { role: 'label', size: 19, color: C.mute, alpha: kk });
+      line(xc, by - 8, xc, by + bh + 8, { color: C.ink, w: 2, alpha: kk });
+      if (i === 0) text('Half its own peak', xc + 10, y + 42, { role: 'label', size: 19, color: C.mute, alpha: kk });
       /* the share that works, and what that is on the study shell's body */
-      const nx = LM + 1450;
-      rich([{ s: String(Math.round(r.work * 100)), font: 'disp', size: 64, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, tnum: true, count: [3.6 + i * 0.3, 1.0] }, { s: '%', font: 'disp', size: 40, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, gap: 4 }], nx, y + 96, { t, alpha: kk });
-      text('of its grams work', nx + 140, y + 66, { role: 'label', size: 19, color: C.mute, alpha: kk });
-      text('≈ ' + fmtN(r.work * SHL_FE.g.body, 1) + ' of 15.2 g', nx + 140, y + 98, { font: 'mono', size: 22, weight: 600, color: C.ink2, alpha: kk });
+      const nx = LM + 1440;
+      rich([{ s: String(Math.round(r.work * 100)), font: 'disp', size: 60, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, tnum: true, count: [3.6 + i * 0.3, 1.0] }, { s: '%', font: 'disp', size: 36, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, gap: 4 }], nx, y + 86, { t, alpha: kk });
+      text('of its grams work', nx + 136, y + 52, { role: 'label', size: 19, color: C.mute, alpha: kk });
+      text('≈ ' + fmtN(r.work * SHL_FE.g.body, 1) + ' g of 15.2 g', nx + 136, y + 86, { role: 'num', size: 22, weight: 650, color: C.ink2, alpha: kk });
     });
     /* the strength it buys, and the words */
-    const yb = LAY.top + 8 + 3 * 164, hb = 186;
-    statTile(t, 5.6, [LM, yb, 760, hb], { value: fmtN(R.match, 1), unit: '×', label: 'the grams a solid plane needs to be as strong', ev: 'derived', align: 'left' });
-    glossBox(t, 6.2, LM + 784, yb, RM - LM - 784, 'Grams that work', 'The share of a part stressed to at least half its own peak. ≈ g: that share of the 15.2 g study body, for scale; the rest only rides along.', { size: 25 });
+    const yb = 760, hb = 160;
+    statTile(t, 5.6, [LM, yb, 680, hb], { value: fmtN(R.match, 1), unit: '×', label: 'the grams a solid plane needs to match', ev: 'derived', align: 'left' });
+    glossBox(t, 6.2, LM + 720, yb, RM - LM - 720, 'Grams that work', 'The share of a part stressed to at least half its own peak. The grams on the right put that share on the 15.2 g study body, for scale; the rest only rides along.', { size: 24 });
   }
 });
 
-/* ============================== 7. the real shell: the same grams as a triangle lattice; the meter starts here ============================== */
+/* ============================== 8. the real shell: the same grams as a triangle lattice; the meter starts here ============================== */
 const SHL_CROWN = [0, 37.67, -13.09];
 S({
-  id: 'shlShell3d', ch: 'shell', theme: 'paper', title: 'The same grams as a triangle lattice', settle: 10, ideas: [75, 15], src: ['shlLattice'], three: ['lattice'],
+  id: 'shlShell3d', ch: 'shell', theme: 'night', title: 'The triangle lattice, same grams', settle: 10, ideas: [75, 15], src: ['shlLattice'], three: ['lattice'],
   draw: t => {
-    header(t, 'The same grams as a triangle lattice');
-    captions(t, [[0.6, 'In the real shell: the body\'s 15.2 g as a plain wall, or as a thinner wall that carries a triangle lattice.'], [4.8, 'The lattice is twice as stiff on the crown, and its busiest rib runs below the plain wall\'s peak. The strip keeps score from here.']]);
+    header(t, 'The triangle lattice, same grams');
+    captions(t, [[0.6, 'Now the real shell: its 15.2 g body as a plain wall, or as a thinner wall carrying a triangle lattice.'], [4.8, 'Same grams, twice as stiff on the crown, and its busiest rib runs ' + Math.round((1 - SHL_FE.tri.ribP99 / SHL_FE.thick.wallP99) * 100) + '% under the plain wall\'s peak. The strip keeps score from here.']]);
     /* left: the study shell, cut on its centre line, ribs growing, then the press colours them */
-    const x = LM, y = LAY.top, w = 1000, h = 660;
-    demoWindow(x, y, w, h, ep(t, 0.3, 0.7));
-    text('The study shell, cut on its centre line', x + 26, y + 46, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
-    const bx = x + 8, by = y + 64, bw = w - 16, bh = h - 72, st = { view: 'left', cut: 1, build: ep(t, 0.8, 3.0, E.io3), stress: ep(t, 3.4, 4.6), stressCase: 'press', zoom: in2D(1.62, 1.72), yaw: 0.1 * Math.sin(t * 0.4), pitch: 0.06 };
+    const x = LM, y = 280, w = 960, h = 640, a0 = tileA(t, 0.3, 0);
+    demoWindow(x, y, w, h, a0);
+    text('The study shell, cut on its centre line', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
+    const bx = x + 8, by = y + 72, bw = w - 16, bh = h - 80, st = { view: 'left', cut: 1, build: ep(t, 0.8, 3.0, E.io3), stress: ep(t, 3.4, 4.6), stressCase: 'press', zoom: in2D(1.62, 1.72), yaw: 0.1 * Math.sin(t * 0.4), pitch: 0.06 };
     shl3D('lattice', t, bx, by, bw, bh, st, { alpha: ep(t, 0.5, 1.1) });
     const pc = shlProj(st, [bx, by, bw, bh], SHL_CROWN), kp = ep(t, 3.2, 3.6);
     shlPress(t, 3.2, pc, kp, { len: 70 });
     cursorAt(t, [[2.6, [pc[0] + 140, pc[1] - 160]], [3.2, [pc[0] + 2, pc[1] - 84]], [4.0, [pc[0] + 2, pc[1] - 78]]], [3.3], { a: ep(t, 2.4, 2.7) });
-    if (!V2D.on) shlRamp(t, 3.8, x + 26, y + h - 62, 170, 6, 'Stress at 10 N');
+    if (!V2D.on) shlRamp(t, 3.8, x + 32, y + h - 62, 200, 6, 'Stress at 10 N');
     /* right: the two numbers, the strip, and what the strip is */
-    const rx = x + w + 24, rw = RM - rx, cw2 = (rw - 24) / 2;
-    statTile(t, 1.0, [rx, y, cw2, 250], { head: 'Plain wall, 15.2 g', ev: 'derived', value: String(Math.round(SHL_FE.thick.press)), unit: 'N/mm', label: 'on the crown' });
-    statTile(t, 1.5, [rx + cw2 + 24, y, cw2, 250], { head: 'Triangle lattice', ev: 'derived', value: String(Math.round(SHL_FE.tri.press)), unit: 'N/mm', label: 'the same 15.2 g', hero: true });
+    const rx = x + w + 40, rw = RM - rx, cw2 = (rw - 40) / 2;
+    statTile(t, 1.0, [rx, y, cw2, 240], { head: 'Plain wall', ev: 'derived', value: String(Math.round(SHL_FE.thick.press)), unit: 'N/mm', label: 'on the crown, 15.2 g', align: 'left', quiet: true });
+    statTile(t, 1.5, [rx + cw2 + 40, y, cw2, 240], { head: 'Triangle lattice', ev: 'derived', value: String(Math.round(SHL_FE.tri.press)), unit: 'N/mm', label: 'the same 15.2 g', hero: true, align: 'left' });
     shellMeter(t, 4.8, 'lattice', rx + 8, y + 290, rw - 16);
-    glossBox(t, 5.8, rx, y + 520, rw, 'The strip', 'Flex and peak stress at the same press and mass, against a plain thin wall at Theseus\'s mass with no ribs (100 %). Each gain from here multiplies in.', { size: 25 });
+    glossBox(t, 5.8, rx, y + 540, rw, 'The strip', 'Flex and peak stress at the same press and mass, against a plain thin wall with no ribs: 100 %.', { size: 24 });
   }
 });
 
-/* ============================== 3. triangles against hexagons, in a flat panel (#75) ============================== */
-/* a 2D frame solver: Euler-Bernoulli beams, 3 dof per node, dense Gaussian elimination */
+/* ============================== 9. triangle and hexagon lattices at the same grams (#75) ==============================
+   two panels of 12.5 mm cells, whole cells only, so no wall hangs free; the same rib mass, the base clamped, the same
+   press on top through a bar the pointer pushes. Solved as rigid-jointed frames; deflection drawn at one exaggeration
+   for both, chosen so the hexagons move about 20 px; members coloured on one stress scale (the hexagons' peak is red),
+   force running in them; every joint filleted, as the real lattice is */
+function shlLatK(r, s, px = 20) { const raw = px / (s * r.dmax), e = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / e; return (m >= 5 ? 5 : m >= 2 ? 2 : 1) * e; }
+/** one lattice tile: the name and the readout on one line over the drawing, the pointer on the press bar */
+function shlLatTile(t, r, x, y, w, h, s, o) {
+  const a = tileA(t, 0.3, o.i), hero = o.i === 0;
+  demoWindow(x, y, w, h, a);
+  text(o.name, x + 32, y + 52, { role: 'label', size: 22, color: hero ? C.heroText : C.ink2, alpha: a });
+  const m = r.model, xs = m.nodes.map(p => p[0]), ox = x + (w - (Math.max(...xs) - Math.min(...xs)) * s) / 2, oy = y + h - 36;
+  shlLatDraw(r, ox, oy, s, { load: o.k, scale: o.K, smax: o.smax, alpha: ep(t, 0.9, 1.4), flow: o.flow == null ? 1 : o.flow, t, nmax: o.nmax, fillet: o.fillet });
+  if (o.tp != null) {
+    const dy = m.top.reduce((acc0, q) => acc0 + r.d[q * 3 + 1], 0) / m.top.length * o.K * o.k, bx = ox + (Math.max(...xs) + Math.min(...xs)) / 2 * s, byy = oy - (m.y1 + dy) * s - 16;
+    cursorPtr(bx + 2, byy - 2 - (1 - ep(t, o.tp - 0.7, o.tp, E.cam)) * 90, { a: ep(t, o.tp - 0.9, o.tp - 0.5) * (1 - ep(t, o.tp + 1.4, o.tp + 1.8)), press: t > o.tp && t < o.tp + 0.45 ? prog(t, o.tp, o.tp + 0.45) : 0 });
+  }
+  const kd = ep(t, o.t1, o.t1 + 0.4);
+  rich([{ s: o.lab, role: 'label', size: 19, color: C.mute }, { s: o.val, font: 'disp', size: 40, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, tnum: true, gap: 14 }, { s: o.unit, role: 'label', size: 21, color: C.mute, gap: 8, caps: false }], x + w - 32, y + 56, { align: 'right', alpha: kd });
+}
+S({
+  id: 'lattice', ch: 'shell', theme: 'paper', title: 'Triangle vs hexagon lattices', settle: 10, ideas: [75], src: ['shlLat2d', 'mitHoney', 'shlMaxwell'],
+  draw: t => {
+    const L = shlLat(), pr = L.modes.press, s = 6.0, K = shlLatK(pr.hex, s), nmax = Math.max(...pr.tri.N.map(Math.abs)), smax = pr.hex.smax;
+    header(t, 'Triangle vs hexagon lattices');
+    captions(t, [[0.6, 'Two lattices, the same grams of rib, the same press on top. The hexagons give: every wall bends at its joints.'], [5.4, 'The triangles barely move: ' + fmtN(pr.ratio, 1) + '× stiffer for the same weight. Flex drawn ' + K + '× real, the same for both.']]);
+    const kT = ep(t, 2.3, 3.4, E.io3), kH = ep(t, 4.1, 5.2, E.io3), br = t > 5.4 ? 0.88 + 0.12 * Math.cos((t - 5.4) * 1.6) : 1;
+    [[pr.tri, LM, 880, 'Triangles', kT * br, 0, 2.2, 3.2], [pr.hex, LM + 920, RM - LM - 920, 'Hexagons, the same grams', kH * br, 1, 4.0, 5.0]].forEach(([r, x, w, name, k, i, tp, t1]) => {
+      shlLatTile(t, r, x, 280, w, 400, s, { i, name, k, K, smax, nmax, tp, t1, lab: 'Top moves', val: fmtN(shlLatD(r) * 1000, 1), unit: 'µm at 10 N' });
+    });
+    /* the strip: the gap under three loads, what the word means, and where the law comes from */
+    const ys = 720, hs = 200, a1 = tileA(t, 5.6, 0);
+    demoWindow(LM, ys, 560, hs, a1);
+    text('Hexagons give more, same grams', LM + 32, ys + 50, { role: 'label', size: 19, color: C.mute, alpha: a1 });
+    [['press', 'Pressed evenly'], ['point', 'One fingertip'], ['shear', 'Pushed sideways']].forEach(([md, nm], j) => {
+      const yy = ys + 96 + j * 40, k = ep(t, 5.9 + j * 0.15, 6.7 + j * 0.15, E.snap), v = L.modes[md].ratio;
+      text(nm, LM + 32, yy + 8, { role: 'small', size: 24, weight: 600, color: C.ink2, alpha: a1 });
+      const xe = shlBar({ x: LM + 270, y: yy, w: 180, max: 8, v, col: C.hero, h: 12, a: a1, k });
+      text(fmtN(v, 1) + '×', xe + 12, yy + 8, { role: 'num', size: 22, weight: 750, color: C.ink, alpha: clamp(k * 1.4 - 0.3) * a1 });
+    });
+    glossBox(t, 6.0, LM + 600, ys, 560, 'Bending-dominated', 'A lattice that carries load by bending its walls, like a honeycomb: soft for its weight. Triangles are stretch-dominated: the load runs along them.', { size: 24 });
+    sourceBox(t, 6.6, LM + 1200, ys, RM - LM - 1200, 'Ashby 2006', 'In the plane a hexagon honeycomb\'s stiffness goes with its density cubed: its walls bend. A triangulated lattice\'s goes with its density: its members stretch.', { size: 24 });
+  }
+});
+
+/* ============================== 10. statically determinate triangles (#75, Brock: "talk about them being statically determinate") ==============================
+   one cell each, pin-jointed: the triangle holds the push in tension and compression (07-sim.js, truss); the hexagon is
+   a mechanism (the solver says mech: true) and folds with every member keeping its length (drawn by its exact folding
+   motion). Then the rigid-jointed lattices: how much of the strain energy each puts into bending. The cells are drawn
+   with pins on purpose: a pin is the joint that turns freely, the case the rule is about */
+S({
+  id: 'shlDeterminate', ch: 'shell', theme: 'night', title: 'Statically determinate triangles', settle: 10, ideas: [75], src: ['shlMaxwell', 'shlLat2d'],
+  draw: t => {
+    const L = shlLat(), s = 8, l = 20;
+    header(t, 'Statically determinate triangles');
+    captions(t, [[0.6, 'Pin the joints so they turn freely. Push a triangle and it holds: no side can move unless a member changes length.'], [4.4, 'Push a hexagon and it folds, every member the same length: a mechanism. Mold its joints solid and only their bending resists.']]);
+    const x = LM, y = 280, w = 1080, h = 640;
+    demoWindow(x, y, w, h, tileA(t, 0.3, 0));
+    const base = y + 470, pinCol = C.ink2;
+    const drawPins = pts => pts.forEach(p => { circle(p[0], p[1], 7, { fill: C.panel, color: pinCol, w: 2.2 }); });
+    /* the triangle: a push on its apex, the solver's forces running in it */
+    { const cx = x + 270, P = p => [cx + p[0] * s, base - p[1] * s], r = L.pinTri, kp = ep(t, 1.6, 2.4, E.io3), a = ep(t, 0.7, 1.1);
+      const pts = r.model.nodes.map(P);
+      G.save(); G.globalAlpha = a; G.lineCap = 'round'; G.strokeStyle = C.hero; G.lineWidth = 9; G.beginPath(); r.model.els.forEach(el => { G.moveTo(pts[el.i][0], pts[el.i][1]); G.lineTo(pts[el.j][0], pts[el.j][1]); }); G.stroke(); G.restore();
+      feFlow(r, P, t, { load: kp, alpha: a, color: TH ? '#FFFFFF' : '#111111' });
+      drawPins(pts); feSupport([pts[0][0], pts[0][1] + 7], 'pin', { alpha: a }); feSupport([pts[1][0], pts[1][1] + 7], 'roll', { alpha: a });
+      shlPress(t, 1.6, [pts[2][0], pts[2][1] - 8], kp, { len: 60 });
+      cursorAt(t, [[1.0, [cx + 160, y + 120]], [1.6, [pts[2][0] + 2, pts[2][1] - 78]]], [1.7], { a: ep(t, 0.8, 1.1) * (1 - ep(t, 3.0, 3.4)) });
+      const kl = ep(t, 2.4, 2.8);
+      text('Tension', (pts[0][0] + pts[1][0]) / 2, pts[0][1] + 52, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kl });
+      text('Compression', pts[1][0] - 30, (pts[1][1] + pts[2][1]) / 2 - 10, { role: 'label', size: 19, color: C.mute, alpha: kl });
+      text('Triangle', cx, y + 64, { role: 'label', size: 22, color: C.heroText, align: 'center', alpha: a });
+      text('3 members, 3 joints', cx, base + 110, { role: 'small', size: 25, weight: 700, color: C.ink, align: 'center', alpha: ep(t, 2.6, 3.0) });
+      text('Needs 2 × 3 − 3 = 3: rigid', cx, base + 146, { role: 'small', size: 25, weight: 560, color: C.ink2, align: 'center', alpha: ep(t, 2.8, 3.2) });
+      ltag(cx - ltagW('Solver', r.mech ? 'mechanism' : 'rigid', { size: 19 }) / 2, base + 186, 'Solver', r.mech ? 'mechanism' : 'rigid', { a: ep(t, 3.0, 3.4), size: 19, vcolor: C.heroText });
+    }
+    /* the hexagon: the same push folds it, exactly, no member changing length */
+    { const cx = x + 800, th = Math.PI / 3 - ep(t, 3.8, 5.6, E.io3) * 0.42, nd = shlHexCell(l, th), P = p => [cx + p[0] * s, base - p[1] * s], pts = nd.map(P), a = ep(t, 0.9, 1.3);
+      if (t > 3.8) { const g0 = shlHexCell(l, Math.PI / 3).map(P); G.save(); G.globalAlpha = a * 0.35; G.strokeStyle = C.faint; G.lineWidth = 1.5; G.setLineDash([5, 5]); G.beginPath(); g0.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.closePath(); G.stroke(); G.restore(); }
+      G.save(); G.globalAlpha = a; G.lineCap = 'round'; G.lineJoin = 'round'; G.strokeStyle = C.comp; G.lineWidth = 9; G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.closePath(); G.stroke(); G.restore();
+      drawPins(pts); feSupport([pts[0][0], pts[0][1] + 7], 'pin', { alpha: a }); feSupport([pts[1][0], pts[1][1] + 7], 'roll', { alpha: a });
+      const top = [(pts[3][0] + pts[4][0]) / 2, pts[3][1]], kp = ep(t, 3.6, 4.0);
+      shlPress(t, 3.6, [top[0], top[1] - 8], kp, { len: 60 });
+      cursorAt(t, [[3.0, [cx + 170, y + 130]], [3.6, [top[0] + 2, top[1] - 78]], [5.6, [top[0] + 2, top[1] - 78]]], [3.7], { a: ep(t, 2.9, 3.2) * (1 - ep(t, 6.4, 6.8)) });
+      text('Hexagon', cx, y + 64, { role: 'label', size: 22, color: C.ink2, align: 'center', alpha: a });
+      text('Folds: every member keeps its length', cx, y + 104, { role: 'label', size: 19, color: C.bad, align: 'center', alpha: ep(t, 5.0, 5.4) });
+      text('6 members, 6 joints', cx, base + 110, { role: 'small', size: 25, weight: 700, color: C.ink, align: 'center', alpha: ep(t, 5.2, 5.6) });
+      text('Needs 2 × 6 − 3 = 9: three short', cx, base + 146, { role: 'small', size: 25, weight: 560, color: C.ink2, align: 'center', alpha: ep(t, 5.4, 5.8) });
+      ltag(cx - ltagW('Solver', L.pinHex.mech ? 'mechanism' : 'rigid', { size: 19 }) / 2, base + 186, 'Solver', L.pinHex.mech ? 'mechanism' : 'rigid', { a: ep(t, 5.6, 6.0), size: 19, vcolor: C.bad });
+    }
+    /* right: the word, and what molded joints change */
+    const rx = x + w + 40, rw = RM - rx;
+    const g1 = glossBox(t, 2.8, rx, y, rw, 'Statically determinate', 'A pin-jointed frame with just the members it needs to hold its shape. In a plane that is m = 2j − 3 (Maxwell\'s rule): a triangle has 3 of 3, a hexagon 6 of the 9 it needs.', { size: 24 });
+    const ty = shlG(y + g1.h + 40), thh = y + h - ty, a2 = tileA(t, 6.2, 0);
+    demoWindow(rx, ty, rw, thh, a2);
+    text('Molded joints: the press goes into', rx + 32, ty + 52, { role: 'label', size: 19, color: C.mute, alpha: a2 });
+    [['Triangles', L.bend.tri, true], ['Hexagons', L.bend.hex, false]].forEach(([nm, v, hero], j) => {
+      const yy = ty + 116 + j * 96, k = ep(t, 6.6 + j * 0.3, 7.6 + j * 0.3, E.snap);
+      text(nm, rx + 32, yy, { role: 'label', size: 21, color: hero ? C.heroText : C.ink2, alpha: a2 });
+      rich([{ s: fmtN(v * 100, v < 0.1 ? 1 : 0), font: 'disp', size: 48, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, tnum: true, count: [6.6 + j * 0.3, 1.0] }, { s: '% bending', role: 'label', size: 21, color: C.mute, gap: 10, caps: false }], rx + rw - 32, yy + 6, { t, align: 'right', alpha: a2 });
+      shlBar({ x: rx + 32, y: yy + 34, w: rw - 64, max: 1, v: Math.max(0.012, v), col: hero ? C.hero : C.comp, h: 12, a: a2, k });
+    });
+    text('Share of the strain energy: the same lattices, grams and press as the slide before.', rx + 32, ty + thh - 40, { role: 'small', size: 22, weight: 560, color: C.faint, maxW: rw - 64, lh: 1.3, alpha: ep(t, 7.4, 7.8) });
+  }
+});
+
+/* ============================== 11. triangles matter more on a light mouse (Brock: "how triangles are more helpful on a lower weight mouse") ==============================
+   the same two lattices with their ribs thinned from 1.2 to 0.3 mm at the same grams, solved at six widths and drawn at
+   one fixed exaggeration; a rib's bending stiffness goes with its width cubed, its stretching with its width */
+function shlThinAt(L, kind, tt) {
+  const S0 = L.sweep, i = Math.max(0, Math.min(S0.length - 2, S0.findIndex((q, j) => j < S0.length - 1 && tt <= q.t && tt >= S0[j + 1].t)));
+  const A0 = S0[i][kind], B0 = S0[i + 1][kind], f = clamp((S0[i].t - tt) / (S0[i].t - S0[i + 1].t));
+  const d = new Float64Array(A0.d.length); for (let q = 0; q < d.length; q++) d[q] = lerp(A0.d[q], B0.d[q], f);
+  const sig = A0.sig.map((v, q) => lerp(v, B0.sig[q], f)), N = A0.N.map((v, q) => lerp(v, B0.N[q], f)), h = kind === 'tri' ? tt : L.hOf(tt);
+  const model = Object.assign({}, A0.model, { els: A0.model.els.map(el => Object.assign({}, el, { h })) });
+  const k = Math.exp(lerp(Math.log(kind === 'tri' ? S0[i].kt : S0[i].kh), Math.log(kind === 'tri' ? S0[i + 1].kt : S0[i + 1].kh), f));
+  return { model, d, sig, N, L: A0.L, smax: Math.max(...sig), dmax: lerp(A0.dmax, B0.dmax, f), k, g: lerp(S0[i].g, S0[i + 1].g, f) };
+}
+S({
+  id: 'shlThin', ch: 'shell', theme: 'paper', title: 'Triangles on a light mouse', settle: 11, ideas: [75, 5], src: ['shlLat2d', 'mitHoney', 'shlMaxwell'],
+  draw: t => {
+    const L = shlLat(), S0 = L.sweep, tt = lerp(1.2, 0.3, ep(t, 1.8, 7.4, E.io3)), s = 5.0, last = S0[S0.length - 1], K = shlLatK(last.hex, s, 38);
+    header(t, 'Triangles on a light mouse');
+    captions(t, [[0.6, 'A lighter shell means thinner ribs. A rib\'s bending stiffness falls with its width cubed, its stretching only with its width.'], [6.4, 'So the hexagons, which bend, fall away as the ribs thin. At 0.3 mm the triangles are ' + fmtN(last.kt / last.kh, 0) + '× stiffer for the same grams.']]);
+    const smax = shlThinAt(L, 'hex', 0.3).smax;
+    [['tri', LM, 880, 'Triangles'], ['hex', LM + 920, RM - LM - 920, 'Hexagons, the same grams']].forEach(([kind, x, w, name], i) => {
+      const r = shlThinAt(L, kind, tt);
+      Object.assign(r.model, { top: S0[0][kind].model.top, y1: S0[0][kind].model.y1, dir: 1 });
+      shlLatTile(t, r, x, 280, w, 360, s, { i, name, k: ep(t, 0.9, 1.6), K, smax, flow: 0.7, t1: 1.2, lab: 'Stiffness', val: fmtN(r.k, 0), unit: 'N/mm', fillet: Math.max(1, 0.55 * s * (kind === 'tri' ? tt : L.hOf(tt))) });
+    });
+    /* the two laws on one chart, the width on screen marked */
+    const cy = 680, ch = 240, cw = 1080, a2 = tileA(t, 1.4, 0), px0 = LM + 200, px1 = LM + cw - 300;
+    demoWindow(LM, cy, cw, ch, a2);
+    const lg = v => Math.log10(v), mX = v => px0 + (px1 - px0) * (1.2 - v) / 0.9, mY = v => cy + 186 - 130 * (lg(v) - 1) / 3;
+    for (const v of [10, 100, 1000, 10000]) { line(px0, mY(v), px1, mY(v), { color: C.hair, w: 1.2, alpha: a2 }); text(v >= 1000 ? (v / 1000) + 'k' : String(v), px0 - 14, mY(v) + 7, { role: 'tick', size: 19, color: C.mute, align: 'right', alpha: a2 }); }
+    for (const v of [1.2, 0.9, 0.6, 0.3]) text(fmtN(v, 1) + ' mm', mX(v), cy + 216, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a2 });
+    text('Stiffness, {N/mm}', LM + 32, cy + 44, { role: 'label', size: 19, color: C.mute, alpha: a2 });
+    text('Rib width', LM + 32, cy + 216, { role: 'label', size: 19, color: C.mute, alpha: a2 });
+    [['kt', true], ['kh', false]].forEach(([key, hero]) => {
+      const pts = S0.map(q => [mX(q.t), mY(q[key])]), col = hero ? C.heroText : C.comp;
+      poly(pts, { color: col, w: 3.5, alpha: a2, p: 1 });
+      S0.forEach((q, j) => circle(pts[j][0], pts[j][1], 4.5, { fill: col, alpha: a2 }));
+      text(hero ? 'Triangles: with width' : 'Hexagons: near width cubed', pts[0][0] + 12, pts[0][1] + (hero ? -14 : 28), { role: 'label', size: 19, color: hero ? C.heroText : C.ink2, alpha: a2 });
+    });
+    const xc = mX(tt); line(xc, cy + 50, xc, cy + 190, { color: C.ink, w: 1.5, dash: [4, 4], alpha: a2 * ep(t, 1.6, 2.0) });
+    const rT = shlThinAt(L, 'tri', tt), rt = rT.k / shlThinAt(L, 'hex', tt).k, kr = a2 * ep(t, 1.8, 2.2);
+    rich([{ s: fmtN(rt, rt < 10 ? 1 : 0), font: 'disp', size: 64, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: '×', font: 'disp', size: 36, weight: 800, color: C.heroText, grad: C.heroGrad, gap: 4 }], LM + cw - 260, cy + 112, { alpha: kr });
+    text('stiffer, same grams', LM + cw - 260, cy + 150, { role: 'label', size: 19, color: C.mute, alpha: kr });
+    text('Ribs ' + fmtN(tt, 2) + ' mm, ' + fmtN(rT.g, 2) + ' g', LM + cw - 260, cy + 190, { role: 'num', size: 22, weight: 650, color: C.ink2, alpha: kr });
+    glossBox(t, 2.4, LM + cw + 40, cy, RM - LM - cw - 40, 'Cubed against linear', 'Halve a rib\'s width and its bending stiffness drops to an eighth, its stretching stiffness only to a half. Hexagons bend; triangles stretch.', { size: 24 });
+  }
+});
+
+/* ============================== 12. triangles against hexagons inside the real shell: the 3D study at equal rib mass (#75) ============================== */
+S({
+  id: 'shlLattice3d', ch: 'shell', theme: 'night', title: 'Triangles vs hexagons in the real shell', settle: 10, ideas: [75, 53], src: ['shlLattice'], three: ['lattice'],
+  draw: t => {
+    header(t, 'Triangles vs hexagons in the real shell');
+    captions(t, [[0.6, 'The same shell, the same wall, the same 3.79 g of ribs: once as triangles, once as hexagons. Then 10 N on the crown.'], [5.0, 'Triangles: ' + Math.round((SHL_FE.tri.press / SHL_FE.hex.press - 1) * 100) + '% stiffer on the crown, ' + Math.round((1 - SHL_FE.tri.rib / SHL_FE.hex.rib) * 100) + '% less stress in the busiest rib, for no extra weight. The wall shares the load, so the gap is smaller than in a flat panel.']]);
+    /* left: both lattices from below, the same rib mass; then the press colours them */
+    { const x = LM, y = 280, w = 920, h = 480;
+      demoWindow(x, y, w, h, tileA(t, 0.3, 0));
+      const bx = x + 8, by = y + 64, bw = w - 16, bh = h - 72, st = { view: 'bottom', compare: 'both', stress: ep(t, 3.0, 4.2), stressCase: 'press', zoom: lerp(1.08, 1.16, ep(t, 0.5, 9, E.io3)) };
+      shl3D('lattice', t, bx, by, bw, bh, st, { alpha: ep(t, 0.6, 1.2) });
+      const pT = shlProj(st, [bx, by, bw, bh], [-36, 0, 0]), pH = shlProj(st, [bx, by, bw, bh], [36, 0, 0]);
+      shlChip(pT[0], y + 52, 'Triangles', ep(t, 1.4, 1.8), 'center');
+      text('Hexagons, same rib mass', pH[0], y + 52, { role: 'label', size: 21, color: C.ink2, align: 'center', alpha: ep(t, 1.6, 2.0) });
+      shlRamp(t, 3.4, x + 32, y + h - 56, 200, 6, 'Stress at 10 N');
+      text('From below', x + w - 32, y + h - 30, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ep(t, 0.8, 1.2) });
+      glossBox(t, 2.4, x, y + h + 40, w, 'N/mm', 'Newtons per millimetre: the force it takes to push the shell in by 1 mm. At ' + Math.round(SHL_FE.tri.press) + ' N/mm, 10 N moves the crown ' + fmtN(SHL_FE.tri.defl, 0) + ' µm.', { size: 24 });
+    }
+    /* right: stiffness by design and load, N/mm; the busiest rib; the strip with the hexagons marked */
+    { const x = LM + 960, y = 280, w = RM - x, h = 640, hy = shlCard(t, 0.5, x, y, w, h, 'Stiffness at 10 N, {N/mm}', ['derived']);
+      const cols = [['press', 'Crown'], ['press_off', 'Off-centre'], ['squeeze', 'Squeezed']], nw = 240, cw = (w - 32 - nw - 32) / 3;
+      const rows = [['tri', 'Triangles', '3.79 g of ribs', true], ['hex', 'Hexagons', 'Same rib mass'], ['thick', 'Plain wall', 'Same mass, no ribs'], ['none', 'Wall only', 'No ribs, 11.39 g']];
+      cols.forEach(([k, l], j) => text(l, x + 32 + nw + j * cw, hy + 6, { role: 'label', size: 19, color: C.mute, alpha: ep(t, 1.0, 1.4) }));
+      rows.forEach(([key, nm, sub, hero], i) => {
+        const yy = hy + 66 + i * 70, a = ep(t, 1.4 + i * 0.25, 1.8 + i * 0.25);
+        if (i) line(x + 32, yy - 40, x + w - 32, yy - 40, { color: C.hair, w: 1, alpha: a });
+        text(nm, x + 32, yy, { role: 'small', size: 25, weight: hero ? 800 : 650, color: hero ? C.heroText : C.ink, alpha: a });
+        text(sub, x + 32, yy + 26, { role: 'label', size: 19, color: C.mute, alpha: a });
+        cols.forEach(([k], j) => {
+          const v = SHL_FE[key][k], cx = x + 32 + nw + j * cw, kk = ep(t, 1.6 + i * 0.25 + j * 0.1, 2.4 + i * 0.25 + j * 0.1, E.snap);
+          text(countUp(String(Math.round(v)), kk) || String(Math.round(v)), cx, yy - 2, { role: 'num', size: 24, weight: hero ? 800 : 650, color: hero ? C.heroText : C.ink, alpha: a });
+          shlBar({ x: cx, y: yy + 18, w: cw - 30, max: 700, v, col: hero ? C.hero : key === 'none' ? C.comp2 : C.comp, h: 10, a, k: kk });
+        });
+      });
+      const ka = ep(t, 5.4, 5.8), sy = hy + 66 + 4 * 70 - 6;
+      text('Busiest rib at 10 N on the crown', x + 32, sy, { role: 'label', size: 19, color: C.ink, alpha: ka });
+      rich([{ s: 'Hexagons ' + fmtN(SHL_FE.hex.rib, 1) + ' MPa', role: 'num', size: 24, weight: 650, color: C.ink2 }, { s: 'Triangles ' + fmtN(SHL_FE.tri.rib, 1) + ' MPa', role: 'num', size: 24, weight: 800, color: C.heroText, gap: 26 }, { s: '−' + Math.round((1 - SHL_FE.tri.rib / SHL_FE.hex.rib) * 100) + '%', role: 'num', size: 24, weight: 800, color: C.ink, gap: 26 }], x + 32, sy + 38, { alpha: ka });
+      shellMeter(t, 6.0, 'lattice', x + 32, y + h - 200, w - 64, { compact: true, ghost: SHL_HEXGHOST });
+    }
+  }
+});
+
+/* ---------- the old dense frame solver, kept for the arches slide (part B replaces it) and the idea sheets (12-20-shell.js) ---------- */
 function frameSolve(nodes, els, fixed, loads) {
   const n = nodes.length * 3, K = Array.from({ length: n }, () => new Float64Array(n)), F = new Float64Array(n);
   for (const e of els) {
@@ -707,204 +1008,56 @@ function frameSolve(nodes, els, fixed, loads) {
   for (let r = n - 1; r >= 0; r--) { let v = F[r]; for (let q = r + 1; q < n; q++) v -= K[r][q] * U[q]; U[r] = K[r][r] ? v / K[r][r] : 0; }
   return U;
 }
-const LATTICE = (function () {
-  const Wd = 300, Hd = 150, a = 40, h = a * Math.sqrt(3) / 2;
-  const tri = { nodes: [], els: [] }, idx = {};
-  for (let r = 0; r * h <= Hd + 0.1; r++) for (let c = 0; c * a + (r % 2) * a / 2 <= Wd + 0.1; c++) { idx[r + ',' + c] = tri.nodes.length; tri.nodes.push([c * a + (r % 2) * a / 2, r * h]); }
-  for (const key in idx) { const [r, c] = key.split(',').map(Number), i = idx[key]; const nb = [[r, c + 1]].concat(r % 2 ? [[r + 1, c], [r + 1, c + 1]] : [[r + 1, c], [r + 1, c - 1]]); for (const [rr2, cc] of nb) { const j = idx[rr2 + ',' + cc]; if (j != null) tri.els.push({ n: [i, j] }); } }
-  const hex = { nodes: [], els: [] }, key = p => Math.round(p[0] * 10) + ',' + Math.round(p[1] * 10), map = {};
-  const R = 23.1, hw = Math.sqrt(3) * R;
-  const addN = p => { const k = key(p); if (map[k] == null) { map[k] = hex.nodes.length; hex.nodes.push(p); } return map[k]; };
-  for (let row = -1; row < 8; row++) for (let col = -1; col < 10; col++) {
-    const cx = col * hw + (row % 2 ? hw / 2 : 0), cy = row * 1.5 * R; const vs = [];
-    for (let k = 0; k < 6; k++) { const an = Math.PI / 6 + k * Math.PI / 3; vs.push([cx + R * Math.cos(an), cy + R * Math.sin(an)]); }
-    for (let k = 0; k < 6; k++) { const p = vs[k], q = vs[(k + 1) % 6]; const inside = z => z[0] >= -0.1 && z[0] <= Wd + 0.1 && z[1] >= -0.1 && z[1] <= Hd + 0.1; if (inside(p) && inside(q)) { const i = addN(p), j = addN(q); if (!hex.els.some(e => (e.n[0] === i && e.n[1] === j) || (e.n[0] === j && e.n[1] === i))) hex.els.push({ n: [i, j] }); } }
-  }
-  const len = L => L.els.reduce((s2, e) => s2 + Math.hypot(L.nodes[e.n[1]][0] - L.nodes[e.n[0]][0], L.nodes[e.n[1]][1] - L.nodes[e.n[0]][1]), 0);
-  const tt = 2.4, th = tt * len(tri) / len(hex);
-  const solve = (L, t) => {
-    for (const e of L.els) { e.A = t; e.I = t * t * t / 12; }
-    const ys = L.nodes.map(p => p[1]), y0 = Math.min(...ys), y1 = Math.max(...ys);
-    const used = new Set(); L.els.forEach(e => { used.add(e.n[0]); used.add(e.n[1]); });
-    const fixed = [], top = []; L.nodes.forEach((p, i) => { if (!used.has(i)) fixed.push(i); else if (p[1] < y0 + 1) fixed.push(i); else if (p[1] > y1 - 1) top.push(i); });
-    const U = frameSolve(L.nodes, L.els, fixed, top.map(i => [i, 0, -1 / top.length]));
-    const dmax = Math.max(...top.map(i => -U[i * 3 + 1]));
-    return { U, top, dmean: top.reduce((s2, i) => s2 - U[i * 3 + 1], 0) / top.length, dmax, len: len(L), t };
-  };
-  const st = solve(tri, tt), sh = solve(hex, th);
-  return { tri, hex, st, sh, ratio: sh.dmean / st.dmean, Wd, Hd };
-})();
-/* the same panels at every density and under three loads */
-function latSolve(L, t, mode) {
-  for (const e of L.els) { e.A = t; e.I = t * t * t / 12; }
-  const ys = L.nodes.map(p => p[1]), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const used = new Set(); L.els.forEach(e => { used.add(e.n[0]); used.add(e.n[1]); });
-  const fixed = [], top = []; L.nodes.forEach((p, i) => { if (!used.has(i)) fixed.push(i); else if (p[1] < y0 + 1) fixed.push(i); else if (p[1] > y1 - 1) top.push(i); });
-  let loads, meas;
-  if (mode === 'shear') { loads = top.map(i => [i, 1 / top.length, 0]); meas = U => top.reduce((a, i) => a + U[i * 3], 0) / top.length; }
-  else if (mode === 'point') { const mid = top.reduce((b, i) => Math.abs(L.nodes[i][0] - 150) < Math.abs(L.nodes[b][0] - 150) ? i : b, top[0]); loads = [[mid, 0, -1]]; meas = U => -U[mid * 3 + 1]; }
-  else { loads = top.map(i => [i, 0, -1 / top.length]); meas = U => -top.reduce((a, i) => a + U[i * 3 + 1], 0) / top.length; }
-  const U = frameSolve(L.nodes, L.els, fixed, loads);
-  return { U, d: meas(U) };
-}
-let LAT2 = null;
-function lat2() {
-  if (LAT2) return LAT2;
-  const tri = LATTICE.tri, hex = LATTICE.hex, lt = LATTICE.st.len, lh = LATTICE.sh.len, area = LATTICE.Wd * LATTICE.Hd;
-  const ts = [0.4, 0.6, 0.9, 1.3, 1.9, 2.7];
-  const sweep = ts.map(t => { const a = latSolve(tri, t, 'press'), b = latSolve(hex, t * lt / lh, 'press'); return { rho: lt * t / area, kt: 1 / a.d, kh: 1 / b.d }; });
-  const modes = ['press', 'shear', 'point'].map(m => { const a = latSolve(tri, 2.4, m), b = latSolve(hex, 2.4 * lt / lh, m); return { m, ratio: b.d / a.d }; });
-  latSolve(tri, LATTICE.st.t, 'press'); latSolve(hex, LATTICE.sh.t, 'press');
-  return (LAT2 = { sweep, modes });
-}
-S({
-  id: 'lattice', ch: 'shell', theme: 'paper', title: 'Triangles don\'t bend', settle: 10, ideas: [75], src: ['mitHoney', 'ashby06'],
-  sfx: [[3.2, 'seat']],
-  draw: t => {
-    header(t, 'Triangles don\'t bend');
-    captions(t, [[0.6, 'Two panels with the same outline, the same mass of material and the same load pressing on top.'], [4.0, 'Triangles carry it along their struts. Hexagons have to bend at every joint, and give 5.2× more for the same weight.'], [7.4, 'It is very confusing why most mice cut hexagons, when triangles are this much stiffer for the same weight.']]);
-    const D = lat2();
-    /* left: both panels solved as frames, the same load and mass */
-    { const x = LM, y = LAY.top, w = 1100, h = 580, hy = shlCard(t, 0.3, x, y, w, h, 'Same panel, same mass, same load', ['derived']);
-      text('Solved as frames in this page; deflection drawn at the same scale for both.', x + 26, hy + 12, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 1.0, 1.4) });
-      const ld = ep(t, 2.4, 4.0, E.io3) * (t > 4.0 ? 0.82 + 0.18 * Math.cos((t - 4.0) * 1.9) : 1), mag = 46 / LATTICE.sh.dmean;
-      const tri = C.heroText, hexc = TH ? '#5F5E59' : '#B9B8B2';
-      const drawL = (L, R, ox, oy, col, t0) => {
-        const k = ep(t, t0, t0 + 0.8), sc = 1.42;
-        const P = (i, f) => [ox + (L.nodes[i][0] + R.U[i * 3] * mag * f) * sc, oy - (L.nodes[i][1] + R.U[i * 3 + 1] * mag * f) * sc];
-        G.save(); G.globalAlpha = k * 0.35; G.strokeStyle = C.faint; G.lineWidth = 1; G.beginPath(); for (const e of L.els) { const p = P(e.n[0], 0), q = P(e.n[1], 0); G.moveTo(p[0], p[1]); G.lineTo(q[0], q[1]); } G.stroke(); G.restore();
-        G.save(); G.globalAlpha = k; G.strokeStyle = col; G.lineWidth = Math.max(2, R.t * sc * 0.9); G.lineCap = 'round'; G.beginPath(); for (const e of L.els) { const p = P(e.n[0], ld), q = P(e.n[1], ld); G.moveTo(p[0], p[1]); G.lineTo(q[0], q[1]); } G.stroke(); G.restore();
-        part(0, 0, 1, () => solid(() => { G.beginPath(); G.rect(ox - 10, oy + 6, LATTICE.Wd * sc + 20, 12); }, MT.shell, [ox - 10, oy + 6, LATTICE.Wd * sc + 20, 12], { hatch: true }), { alpha: k });
-        for (let xx = 0; xx <= LATTICE.Wd; xx += 50) { const p = [ox + xx * sc, oy - LATTICE.Hd * sc - 66]; arrow(p[0], p[1], p[0], p[1] + 42, { color: C.ink, w: 2.5, hs: 10, alpha: ep(t, 2.0, 2.4) }); }
-      };
-      clipped(x + 4, y + 120, w - 8, h - 124, () => { drawL(LATTICE.tri, LATTICE.st, x + 70, y + 470, tri, 1.2); drawL(LATTICE.hex, LATTICE.sh, x + 610, y + 470, hexc, 1.5); });
-      shlChip(x + 70, y + 528, 'Triangles', ep(t, 1.4, 1.8));
-      text('Hexagons, same mass', x + 610, y + 528, { role: 'label', size: 21, color: C.ink2, alpha: ep(t, 1.7, 2.1) });
-    }
-    /* right: the ratio, under three loads, and how it grows as the panel gets lighter */
-    { const x = 1220, y = LAY.top, w = RM - 1220, h = 580, hy = shlCard(t, 0.5, x, y, w, h, 'The gap, same mass', ['derived']);
-      text('Hexagons\' deflection over triangles\'', x + 26, hy + 8, { role: 'label', size: 19, color: C.mute, alpha: ep(t, 4.4, 4.8) });
-      rich([{ s: LATTICE.ratio.toFixed(1), role: 'd1', size: 104, color: C.ink, tnum: true, count: [4.2, 1.0] }, { s: '×', font: 'disp', size: 68, weight: 800, color: C.ink, gap: 6 }], x + 26, hy + 106, { t, alpha: ep(t, 4.2, 4.4) });
-      const names = { press: 'Pressed evenly', shear: 'Pushed sideways', point: 'One fingertip' };
-      D.modes.forEach((md, i) => {
-        const yy = hy + 154 + i * 42, a = ep(t, 4.8 + i * 0.2, 5.2 + i * 0.2), k = ep(t, 4.9 + i * 0.2, 5.7 + i * 0.2, E.snap);
-        text(names[md.m], x + 26, yy, { role: 'small', size: 25, color: C.ink2, alpha: a });
-        const xe = shlBar({ x: x + 250, y: yy - 8, w: w - 250 - 110, max: 6, v: md.ratio, col: C.ink2, h: 12, a, k });
-        text(md.ratio.toFixed(1) + '×', xe + 10, yy, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: clamp(k * 1.4 - 0.3) });
-      });
-      rule(x + 26, hy + 264, x + w - 26, ep(t, 5.6, 6.0));
-      text('The lighter the panel, the wider the gap', x + 26, hy + 302, { role: 'label', size: 19, color: C.ink, alpha: ep(t, 5.8, 6.2) });
-      const pick = [D.sweep[5], D.sweep[3], D.sweep[0]];
-      pick.forEach((r, i) => {
-        const cx = x + 26 + i * ((w - 52) / 3), a = ep(t, 6.0 + i * 0.2, 6.4 + i * 0.2);
-        text(Math.round(r.rho * 100) + '% material', cx, hy + 340, { role: 'label', size: 19, color: C.mute, alpha: a });
-        text((r.kt / r.kh).toFixed(r.kt / r.kh < 10 ? 1 : 0) + '×', cx, hy + 388, { font: 'disp', size: 44, weight: 800, color: C.ink, alpha: a, tnum: true });
-      });
-      text('Triangles stiffen with density, hexagons with its cube (Gibson and Ashby).', x + 26, hy + 436, { role: 'small', size: 25, color: C.ink2, t, t0: 6.6, cps: 110, maxW: w - 52, lh: 1.32 });
-    }
-    gloss(t, 2.6, 'Statically determinate', 'A triangle can\'t change shape without stretching a side. A hexagon can, by bending at its joints.');
-    featureCard(t, 6.4, 'Triangles, not hexagons', ['derived'], 'A cutout shell is the lattice, so for a honeycomb shell these factors are real. Mine keeps the wall: next slide (#75).');
-  }
-});
 
-/* ============================== 4. triangles inside the real shell: the 3D study at equal rib mass (#75) ============================== */
-const SHL_FE = (function () {
-  const fe = { tri: { press: 465.3, press_off: 311.9, squeeze: 638.6, rib: 4.4 }, hex: { press: 390.8, press_off: 266.9, squeeze: 547.8, rib: 6.79 }, thick: { press: 286.6, press_off: 177.7, squeeze: 573.5 }, none: { press: 116.9, press_off: 70.0, squeeze: 236.8 } };
-  return fe;
-})();
-S({
-  id: 'shlLattice3d', ch: 'shell', theme: 'night', title: 'Triangles inside the real shell', settle: 10, ideas: [75, 53], src: ['shlLattice'], three: ['lattice'],
-  draw: t => {
-    header(t, 'Triangles inside the real shell');
-    captions(t, [[0.6, 'My shell keeps a solid wall and carries the lattice inside it, as ribs. So I solved the whole shell, not a flat panel.'], [5.0, 'With the same 5.2 g of ribs, triangles are 17 to 19% stiffer than hexagons. The wall carries much of the load, so the 5× shrinks; it is still free.']]);
-    /* left: both lattices from below, the same rib mass; then the press colours them */
-    { const x = LM, y = LAY.top, w = 880, h = 580;
-      demoWindow(x, y, w, h, ep(t, 0.3, 0.7));
-      const bx = x + 8, by = y + 60, bw = w - 16, bh = h - 66, st = { view: 'bottom', compare: 'both', stress: ep(t, 3.0, 4.2), stressCase: 'press', zoom: 1.15 };
-      shl3D('lattice', t, bx, by, bw, bh, st, { alpha: ep(t, 0.6, 1.2) });
-      const pT = shlProj(st, [bx, by, bw, bh], [-36, 0, 0]), pH = shlProj(st, [bx, by, bw, bh], [36, 0, 0]);
-      shlChip(pT[0], y + 46, 'Triangles', ep(t, 1.4, 1.8), 'center');
-      text('Hexagons, same rib mass', pH[0], y + 46, { role: 'label', size: 21, color: C.ink2, align: 'center', alpha: ep(t, 1.6, 2.0) });
-      shlRamp(t, 3.4, x + 26, y + h - 62, 160, 6, 'Stress at 10 N');
-      text('From below', x + 26, y + 98, { role: 'label', size: 19, color: C.mute, alpha: ep(t, 0.8, 1.2) });
-      pill(x + w - 22 - pillW('derived'), y + h - 22, 'derived', ep(t, 3.6, 4.0));
-    }
-    /* right: stiffness by design and load, N/mm */
-    { const x = 1000, y = LAY.top, w = RM - 1000, h = 580, hy = shlCard(t, 0.5, x, y, w, h, 'Stiffness at 10 N, {N/mm}', ['derived']);
-      const cols = [['press', 'On the crown'], ['press_off', 'Off-centre'], ['squeeze', 'Squeezed']], nw = 270, cw = (w - 26 - nw - 26) / 3;
-      const rows = [['tri', 'Triangles', '5.2 g of ribs', true], ['hex', 'Hexagons', 'Same rib mass'], ['thick', 'Thicker wall', 'Same mass, no ribs'], ['none', 'Wall only', 'No ribs']];
-      cols.forEach(([k, l], j) => text(l, x + 26 + nw + j * cw, hy + 6, { role: 'label', size: 19, color: C.mute, alpha: ep(t, 1.0, 1.4) }));
-      line(x + 26, hy + 22, x + w - 26, hy + 22, { color: C.hair, w: 1.5, alpha: ep(t, 1.0, 1.4) });
-      rows.forEach(([key, nm, sub, hero], i) => {
-        const yy = hy + 74 + i * 76, a = ep(t, 1.4 + i * 0.25, 1.8 + i * 0.25);
-        if (i) line(x + 26, yy - 40, x + w - 26, yy - 40, { color: C.hair, w: 1, alpha: a });
-        if (hero) rect(x + 12, yy - 30, 5, 62, { fill: C.hero, alpha: a });
-        text(nm, x + 26, yy, { role: 'small', size: 25, weight: hero ? 800 : 600, color: C.ink, alpha: a });
-        text(sub, x + 26, yy + 26, { role: 'label', size: 19, color: hero ? C.heroText : C.mute, alpha: a });
-        cols.forEach(([k], j) => {
-          const v = SHL_FE[key][k], cx = x + 26 + nw + j * cw, kk = ep(t, 1.6 + i * 0.25 + j * 0.1, 2.4 + i * 0.25 + j * 0.1, E.snap);
-          text(countUp(String(Math.round(v)), kk) || String(Math.round(v)), cx, yy - 2, { font: 'mono', size: 24, weight: hero ? 800 : 600, color: C.ink, alpha: a });
-          shlBar({ x: cx, y: yy + 18, w: cw - 30, max: 700, v, col: hero ? C.hero : key === 'none' ? C.comp2 : C.comp, h: 10, a, k: kk });
-        });
-      });
-      const ka = ep(t, 5.4, 5.8);
-      rule(x + 26, y + h - 122, x + w - 26, ka);
-      text('Peak rib stress at 10 N on the crown', x + 26, y + h - 84, { role: 'label', size: 19, color: C.ink, alpha: ka });
-      rich([{ s: 'Hexagons 6.8 MPa', font: 'mono', size: 24, weight: 600, color: C.ink2 }, { s: 'Triangles 4.4 MPa', font: 'mono', size: 24, weight: 800, color: C.hero, gap: 26 }, { s: '−35%', font: 'mono', size: 24, weight: 800, color: C.ink, gap: 26 }], x + 26, y + h - 40, { alpha: ka });
-    }
-    gloss(t, 2.4, 'N/mm', 'Newtons per millimetre: the force it takes to push the shell in by 1 mm. At 465 N/mm, 10 N moves the crown 21 µm.');
-    featureCard(t, 6.0, 'Triangles, solved in the real shell', ['derived'], 'Same 5.2 g of ribs: 19% stiffer under a press on the crown, 17% squeezed, a third less peak stress (#75).');
-  }
-});
-
-/* ============================== 5. why round the lattice's corners (#75, Brock: "the advantages of filleting") ==============================
+/* ============================== 13. fillets at every node (#75, Brock: "the advantages of filleting") ==============================
    the 3D close-up is the study shell's own filleted node; the stress fields are the 2D study in 09-fillet-data.js:
-   one triangle lattice solved at eleven fillet radii at the same mass (the struts thin as the fillets grow). */
+   one triangle lattice solved at eleven fillet radii at the same mass (the struts thin as the fillets grow), recoloured
+   onto the deck's heat scale so a sharp corner's peak reads red. The meter's step is the stiffness the fillet buys at
+   the same mass; the node's own peak (halved) is a local one the shell model has no corners for, so the strip's
+   stress row does not take it */
 const SHL_NODE = { root: [6.26, 36.02, -22.42], n: [-0.168, -0.971, 0.170], rib: [3.01, 36.43, -22.49], cam: { view: [-14.23, -7.71, -6.65], target: [3.55, 35.58, -22.34], fov: 26, zoom: 19.95 } };
+shellStep({ key: 'fillet', slide: 'fillet', label: 'Fillets', flex: FILLET.ExM[0] / FILLET.ExM[7], ev: 'derived', how: '2D plane-stress triangle lattice at the same mass, fillet r 0.05 → 0.75 mm: ' + fmtN((FILLET.ExM[7] / FILLET.ExM[0] - 1) * 100, 1) + '% stiffer; the node\'s own peak halves, a local peak the shell model has no corners for' });
+/** one fillet-study frame in a tile: the stress field (heat scale, red peak), the hotspot ringed, its label and peak */
+function shlFilletFrame(t, t0, i, x, y, w, h, lab, o = {}) {
+  const a = tileA(t, t0, 0); if (a <= 0.003) return;
+  demoWindow(x, y, w, h, a);
+  const iw = w - 16, ih = iw * 354 / 512, ix = x + 8, iy = y + 8, sc = iw / 512, I = shlFilletImg(i);
+  G.save(); rrPath(ix, iy, iw, ih, 4); G.clip(); G.globalAlpha = a; if (I) G.drawImage(I, ix, iy, iw, ih); G.restore(); G.globalAlpha = 1;
+  const hs = FILLET.hot[i], hx = ix + hs[0] * FILLET.px * sc, hyy = iy + hs[1] * FILLET.px * sc, pul = 0.5 + 0.5 * Math.sin(t * 5 + i);
+  circle(hx, hyy, 9 + 3 * pul, { color: C.ink, w: 2, alpha: a * 0.9 });
+  text(lab, x + 24, y + h - 26, { role: 'label', size: 19, color: C.mute, alpha: a });
+  rich([{ s: 'Peak', role: 'label', size: 19, color: C.mute }, { s: fmtN(FILLET.scfM[i], 1) + '×', role: 'num', size: 26, weight: 800, color: o.bad ? C.bad : C.heroText, gap: 12 }], x + w - 24, y + h - 26, { align: 'right', alpha: a });
+}
 S({
-  id: 'fillet', ch: 'shell', theme: 'paper', title: 'Round every corner of the lattice', settle: 9, ideas: [75, 'fillet'],
+  id: 'fillet', ch: 'shell', theme: 'paper', title: 'Fillets at every node', settle: 9.5, ideas: [75, 'fillet'],
   src: ['filletFE', 'shlLattice', 'beall106', 'doutre23', 'shlEnvalior'], three: ['lattice'],
   draw: t => {
-    header(t, 'Round every corner of the lattice');
-    captions(t, [[0.6, 'A sharp corner in a lattice is a notch: the load running down a strut has to turn there, and it crowds into the corner.'], [4.4, 'Round it and the same load turns gradually. At the same weight the peak stress halves and the panel gets 5.5% stiffer.']]);
+    header(t, 'Fillets at every node');
+    captions(t, [[0.6, 'A sharp corner in a lattice is a hotspot: the load running down a rib has to turn there, and it crowds into the corner.'], [4.0, 'Round it and the load turns gradually. At the same weight the corner\'s peak halves and the lattice gets ' + fmtN((FILLET.ExM[7] / FILLET.ExM[0] - 1) * 100, 1) + '% stiffer.'], [7.0, 'The same round corner lines up the fibres in the melt and lets the mold be milled. One fillet, three gains.']]);
     /* left: the filleted node of the study shell, close up */
-    { const x = LM, y = LAY.top, w = 900, h = 580;
-      demoWindow(x, y, w, h, ep(t, 0.3, 0.7));
-      text('A node of the study shell, about 20× closer', x + 26, y + 46, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
-      pill(x + w - 24 - pillW('proposal'), y + 50, 'proposal', ep(t, 0.7, 1.1));
+    { const x = LM, y = 280, w = 840, h = 400, a0 = tileA(t, 0.3, 0);
+      demoWindow(x, y, w, h, a0);
+      text('A node of the study shell, about 20× closer', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
       const bx = x + 8, by = y + 72, bw = w - 16, bh = h - 80, st = Object.assign({}, SHL_NODE.cam, { cut: 1, filletZoom: 1, yaw: 0.1 * Math.sin(t * 0.5) });
       clipped(bx, by, bw, bh, () => shl3D('lattice', t, bx, by, bw, bh, st, { alpha: ep(t, 0.5, 1.1) }));
       const nd = SHL_NODE.root.map((v, i) => v + SHL_NODE.n[i] * 1.0), rb = SHL_NODE.rib.map((v, i) => v + SHL_NODE.n[i] * 1.0);
-      const P1 = shlProj(st, [bx, by, bw, bh], nd), P2 = shlProj(st, [bx, by, bw, bh], rb), P3 = shlProj(st, [bx, by, bw, bh], [0.3, 37.6, -24.5]);
-      callout(t, 2.0, P1, 'Three ribs meet on a 0.6 mm radius', { to: [P1[0] + 120, by + bh - 56], side: 'r', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: 300 });
-      callout(t, 2.6, P2, 'Rib: 1.0 mm wide, 2.0 mm tall', { to: [P2[0] - 110, P2[1] + 60], side: 'l', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: 260 });
-      callout(t, 3.2, P3, 'Shell wall, cut', { to: [P3[0] - 120, by + 44], side: 'l', color: C.hero, tcolor: '#F3F2EE' });
+      const P1 = shlProj(st, [bx, by, bw, bh], nd), P2 = shlProj(st, [bx, by, bw, bh], rb);
+      const inBox = p => p[0] > bx + 20 && p[0] < bx + bw - 20 && p[1] > by + 20 && p[1] < by + bh - 20;
+      if (inBox(P1)) callout(t, 2.0, P1, 'Three ribs meet on a 0.6 mm radius', { to: [Math.min(P1[0] + 120, bx + bw - 320), by + bh - 50], side: 'r', prose: true, color: C.hero, maxW: 280 });
+      if (inBox(P2)) callout(t, 2.6, P2, 'Rib: 1.0 mm wide, 2.0 mm tall', { to: [Math.max(P2[0] - 110, bx + 300), P2[1] + 60], side: 'l', prose: true, color: C.hero, maxW: 250 });
     }
-    /* right: the stress field before and after, at the same weight, and what the radius buys */
-    { const x = 1020, y = LAY.top, w = RM - 1020, h = 580, hy = shlCard(t, 0.5, x, y, w, h, 'What the radius buys, same weight', ['derived']);
-      const iw = 340, ih = iw * 354 / 512, sc = iw / 512;
-      [[0, 0.05, 'Near-sharp, r 0.05 mm'], [7, 0.75, 'Filleted, r 0.75 mm']].forEach(([i, r, lab], j) => {
-        const ix = x + 26 + j * (iw + 36), iy = hy + 6, a = ep(t, 1.0 + j * 0.8, 1.6 + j * 0.8), I = FILLET.img[i];
-        G.save(); rrPath(ix, iy, iw, ih, 8); G.clip(); G.globalAlpha = a; G.fillStyle = '#121316'; G.fillRect(ix, iy, iw, ih); if (I && I.complete) G.drawImage(I, ix, iy, iw, ih); G.restore(); G.globalAlpha = 1;
-        const hs = FILLET.hot[i], hx = ix + hs[0] * FILLET.px * sc, hyy = iy + hs[1] * FILLET.px * sc, pul = 0.5 + 0.5 * Math.sin(t * 5 + j);
-        circle(hx, hyy, 7 + 3 * pul, { color: '#ffffff', w: 2, alpha: a * 0.9 });
-        text(lab, ix, iy + ih + 32, { role: 'label', size: 19, color: C.mute, alpha: a });
-        rich([{ s: 'Peak', role: 'label', size: 19, color: C.mute }, { s: FILLET.scfM[i].toFixed(1) + '×', font: 'mono', size: 26, weight: 800, color: j ? C.ink : C.red, gap: 12 }], ix, iy + ih + 66, { alpha: a });
-      });
-      const rows = [['−50%', 'Peak stress: 16.6× to 8.3× the average'], ['+5.5%', 'Stiffness, for no added material'], ['Fill', 'The melt turns a round corner at lower pressure'], ['Cost', 'At equal mass, fillets weakened printed lattices']];
-      rows.forEach(([v, s2], i) => {
-        const yy = hy + 342 + i * 46, a = ep(t, 3.0 + i * 0.4, 3.4 + i * 0.4);
-        if (i) line(x + 26, yy - 31, x + w - 26, yy - 31, { color: C.hair, w: 1, alpha: a });
-        text(v, x + 26, yy, { font: 'disp', size: 30, weight: 800, color: i === 3 ? C.red : C.ink, alpha: a, tnum: true });
-        text(s2, x + 150, yy, { role: 'small', size: 25, color: C.ink2, t, t0: 3.0 + i * 0.4, cps: 120, alpha: a });
-      });
-    }
-    gloss(t, 2.8, 'Fillet', 'A rounded inside corner: here where three ribs meet, and where each rib meets the wall. Beall: radiused corners fill at lower pressure.');
-    featureCard(t, 5.4, 'Filleted lattice corners', ['derived', 'study'], 'Fillets can cost strength at equal mass (Doutre and colleagues, 2023), so I solve the size: next slide (#75).');
+    glossBox(t, 2.8, LM, 720, 840, 'Fillet', 'A rounded inside corner: here where three ribs meet, and where each rib meets the wall. Beall: radiused corners also fill at lower pressure.', { size: 24 });
+    /* right: the stress field before and after, at the same weight, and the strip */
+    const rx = LM + 880, rw = RM - rx, fw = (rw - 40) / 2;
+    shlFilletFrame(t, 1.0, 0, rx, 280, fw, 340, 'Near-sharp, r 0.05 mm', { bad: true });
+    shlFilletFrame(t, 1.8, 7, rx + fw + 40, 280, fw, 340, 'Filleted, r 0.75 mm');
+    shlRamp(t, 2.4, rx + 8, 692, 220, 'Peak, red', 'Stress, same weight');
+    text('Peak: the hottest point over the panel\'s average stress.', rx + 260, 706, { role: 'small', size: 22, weight: 560, color: C.faint, maxW: rw - 268, alpha: ep(t, 2.4, 2.8) });
+    shellMeter(t, 4.6, 'fillet', rx + 8, 760, rw - 16, { only: 'flex' });
   }
 });
 
-/* ============================== 6. how big the fillet should be (#75, Brock: "how the fillet size is chosen") ============================== */
+/* ============================== 14. fillet size, solved at equal mass (#75, Brock: "how the fillet size is chosen") ============================== */
 function filAt(r) {
   const R = FILLET.rs; let i = 0; while (i < R.length - 2 && R[i + 1] < r) i++;
   const k = clamp((r - R[i]) / (R[i + 1] - R[i])), L = a => lerp(a[i], a[i + 1], k);
@@ -918,65 +1071,57 @@ function filR(t) {
   return u < 3 ? lerp(0.75, 1.2, E.io3(u / 3)) : u < 4 ? 1.2 : u < 7 ? lerp(1.2, 0.05, E.io3((u - 4) / 3)) : u < 8 ? 0.05 : u < 11 ? lerp(0.05, 0.75, E.io3((u - 8) / 3)) : 0.75;
 }
 S({
-  id: 'filletsize', ch: 'shell', theme: 'night', title: 'How big the fillet should be', settle: 10, ideas: [75, 'fillet'],
+  id: 'filletsize', ch: 'shell', theme: 'night', title: 'Fillet size, solved at equal mass', settle: 10, ideas: [75, 'fillet'],
   src: ['filletFE', 'shlEnvalior', 'beall106', 'protoWall', 'doutre23', 'shlLattice'],
   draw: t => {
-    header(t, 'How big the fillet should be');
+    header(t, 'Fillet size, solved at equal mass');
     captions(t, [[0.6, 'Held at the same weight, a fillet trades corner stress against strut width, so the curve has a bottom.'], [4.0, 'Most of the gain comes in the first 0.6 mm. Past 1.05 mm the struts drop under the 0.89 mm floor and the peak climbs again.'], [7.4, 'So I take the small end of the bottom: 0.6 to 0.75 mm, nearly all the gain, with the widest struts.']]);
-    const A = acc(), r = filR(t), f = filAt(r);
+    const r = filR(t), f = filAt(r);
     /* left: the stress field at the radius on screen, and its readout */
-    { const x = LM, y = LAY.top, w = 1000, h = 580, hy = shlCard(t, 0.3, x, y, w, h, 'Stress in the lattice, pulled along its struts', ['derived']);
-      const sc = 1.1, ix = x + 26, iy = hy + 8, iw = 512 * sc, ih = 354 * sc, ka = ep(t, 0.7, 1.4);
-      const I0 = FILLET.img[f.i], I1 = FILLET.img[f.i + 1];
-      G.save(); rrPath(ix, iy, iw, ih, 8); G.clip();
-      G.globalAlpha = ka; G.fillStyle = '#121316'; G.fillRect(ix, iy, iw, ih);
-      if (I0 && I0.complete) { G.globalAlpha = ka * (1 - f.k); G.drawImage(I0, ix, iy, iw, ih); }
-      if (I1 && I1.complete && f.k > 0.001) { G.globalAlpha = ka * f.k; G.drawImage(I1, ix, iy, iw, ih); }
+    { const x = LM, y = 280, w = 1000, h = 640, a0 = tileA(t, 0.3, 0);
+      demoWindow(x, y, w, h, a0);
+      text('Stress in the lattice, pulled along its struts', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+      const sc = 1.1, ix = x + 32, iy = y + 80, iw = 512 * sc, ih = 354 * sc, ka = ep(t, 0.7, 1.4);
+      const I0 = shlFilletImg(f.i), I1 = shlFilletImg(f.i + 1);
+      G.save(); rrPath(ix, iy, iw, ih, 4); G.clip();
+      if (I0) { G.globalAlpha = ka * (1 - f.k); G.drawImage(I0, ix, iy, iw, ih); }
+      if (I1 && f.k > 0.001) { G.globalAlpha = ka * f.k; G.drawImage(I1, ix, iy, iw, ih); }
       G.restore(); G.globalAlpha = 1;
-      rr(ix, iy, iw, ih, 8, null, inkA(0.14), 1.2, ka);
       const hs = FILLET.hot[f.k < 0.5 ? f.i : f.i + 1], hx = ix + hs[0] * FILLET.px * sc, hyy = iy + hs[1] * FILLET.px * sc, kh = ep(t, 1.6, 2.0) * ka, pul = 0.5 + 0.5 * Math.sin(t * 5);
-      circle(hx, hyy, 9 + 4 * pul, { color: '#ffffff', w: 2, alpha: kh * 0.9 }); circle(hx, hyy, 22 + 6 * pul, { color: C.hero, w: 1.2, alpha: kh * 0.5 });
-      const k2 = ep(t, 1.2, 1.6); line(ix + 16, iy + ih - 18, ix + 16 + FILLET.px * sc, iy + ih - 18, { color: '#ffffff', w: 2, alpha: k2 * 0.85 }); text('1 mm', ix + 24 + FILLET.px * sc, iy + ih - 11, { role: 'label', size: 19, color: '#ffffff', alpha: k2 * 0.85 });
-      const gx = ix + iw - 200, gy = iy + ih - 24, gw = 184, gr = G.createLinearGradient(gx, 0, gx + gw, 0);
-      [[0, '#2a2c33'], [0.45, '#6e5a1f'], [0.62, '#c9a630'], [0.78, '#f2d860'], [1, '#ffffff']].forEach(([o, c]) => gr.addColorStop(o, c));
-      G.save(); G.globalAlpha = k2; G.fillStyle = gr; G.fillRect(gx, gy, gw, 8); G.restore();
-      text('0', gx, gy - 8, { role: 'tick', size: 19, color: '#c9c8c2', alpha: k2 }); text('12×', gx + gw, gy - 8, { role: 'tick', size: 19, color: '#c9c8c2', align: 'right', alpha: k2 });
-      text('Same mass at every radius: the struts thin as the fillets grow.', x + 26, y + h - 22, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 1.4, 1.8) });
+      circle(hx, hyy, 10 + 4 * pul, { color: C.ink, w: 2, alpha: kh * 0.9 });
+      const k2 = ep(t, 1.2, 1.6); line(ix, iy + ih + 28, ix + FILLET.px * sc, iy + ih + 28, { color: C.ink2, w: 2, alpha: k2 }); text('1 mm', ix + 10 + FILLET.px * sc, iy + ih + 35, { role: 'label', size: 19, color: C.mute, alpha: k2 });
+      shlRamp(t, 1.2, ix + iw - 220, iy + ih + 28, 220, 'Peak, red', '');
+      text('Same mass at every radius: the struts thin as the fillets grow.', x + 32, y + h - 32, { role: 'small', size: 24, weight: 560, color: C.mute, alpha: ep(t, 1.4, 1.8) });
       /* the readout */
-      const ox = ix + iw + 34, kr = ep(t, 1.0, 1.5), bw0 = x + w - 26 - ox;
+      const ox = ix + iw + 40, kr = ep(t, 1.0, 1.5), bw0 = x + w - 32 - ox;
       const ro = (lab, yy) => text(lab, ox, yy, { role: 'label', size: 19, color: C.mute, alpha: kr });
-      ro('Fillet radius', hy + 30); text(r.toFixed(2) + ' mm', ox, hy + 82, { font: 'disp', size: 50, weight: 800, color: C.hero, alpha: kr, tnum: true });
-      ro('Strut width', hy + 134); text(f.w.toFixed(2) + ' mm', ox, hy + 176, { font: 'disp', size: 38, weight: 800, color: f.w < 0.89 ? C.red : C.ink, alpha: kr, tnum: true });
-      ro('Peak stress', hy + 228); text(f.scf.toFixed(1) + '×', ox + bw0, hy + 228, { font: 'mono', size: 24, weight: 800, color: f.scf > 12 ? C.red : C.ink, align: 'right', alpha: kr });
-      rr(ox, hy + 244, bw0, 12, 6, inkA(0.1), null, 0, kr); rr(ox, hy + 244, Math.max(12, bw0 * f.scf / 17), 12, 6, f.scf > 12 ? C.red : C.hero, null, 0, kr);
-      ro('Stiffness, same mass', hy + 306); const dE = (f.E / FILLET.ExM[0] - 1) * 100; text((dE >= 0 ? '+' : '') + dE.toFixed(1) + '%', ox, hy + 350, { font: 'disp', size: 38, weight: 800, color: dE > 0.5 ? C.ink : C.mute, alpha: kr, tnum: true });
-      text('vs near-sharp', ox, hy + 382, { role: 'label', size: 19, color: C.faint, alpha: kr });
+      ro('Fillet radius', iy + 20); text(fmtN(r, 2) + ' mm', ox, iy + 72, { font: 'disp', size: 50, weight: 800, color: C.heroText, grad: C.heroGrad, alpha: kr, tnum: true });
+      ro('Strut width', iy + 124); text(fmtN(f.w, 2) + ' mm', ox, iy + 166, { font: 'disp', size: 38, weight: 800, color: f.w < 0.89 ? C.bad : C.ink, alpha: kr, tnum: true });
+      ro('Peak stress', iy + 218); text(fmtN(f.scf, 1) + '×', ox + bw0, iy + 218, { role: 'num', size: 24, weight: 800, color: f.scf > 12 ? C.bad : C.ink, align: 'right', alpha: kr });
+      rr(ox, iy + 234, bw0, 12, 6, C.track, null, 0, kr); rr(ox, iy + 234, Math.max(12, bw0 * f.scf / 17), 12, 6, heatCol(f.scf / 16.6), null, 0, kr);
+      ro('Stiffness, same mass', iy + 296); const dE = (f.E / FILLET.ExM[0] - 1) * 100; text((dE >= 0 ? '+' : '') + fmtN(dE, 1) + '%', ox, iy + 340, { font: 'disp', size: 38, weight: 800, color: dE > 0.5 ? C.ink : C.mute, alpha: kr, tnum: true });
+      text('vs near-sharp', ox, iy + 372, { role: 'label', size: 19, color: C.faint, alpha: kr });
     }
-    /* right: the sweep as a curve, and how I pick the radius */
-    { const x = 1120, y = LAY.top, w = RM - 1120, h = 580, hy = shlCard(t, 0.5, x, y, w, h, 'Peak stress against radius', ['derived']);
-      const m = axes(t, { x: x + 88, y: hy + 14, w: w - 120, h: 178, xr: [0, 1.25], yr: [5, 17], xticks: [0, 0.25, 0.5, 0.75, 1.0, 1.25], yticks: [6, 10, 14], xfmt: v => v.toFixed(2), yfmt: v => v + '×', t0: 0.9 });
+    /* right: the sweep as a curve, and how the pick lines up with the resin maker's rule */
+    { const x = LM + 1040, y = 280, w = RM - x, h = 360, a0 = tileA(t, 0.5, 1);
+      demoWindow(x, y, w, h, a0);
+      text('Peak stress against radius', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+      pill(x + w - 32 - pillW('derived'), y + 52, 'derived', a0);
+      const m = axes(t, { x: x + 96, y: y + 90, w: w - 136, h: 190, xr: [0, 1.25], yr: [5, 17], xticks: [0, 0.25, 0.5, 0.75, 1.0, 1.25], yticks: [6, 10, 14], xfmt: v => v.toFixed(2), yfmt: v => v + '×', t0: 0.9 });
       const R = FILLET.rs, kz = ep(t, 3.6, 4.2);
-      rect(m.X(0.6), m.Y(17), m.X(1.05) - m.X(0.6), m.Y(5) - m.Y(17), { fill: rgba(C.hero, 0.05), alpha: kz });
-      rect(m.X(0.6), m.Y(17), m.X(0.75) - m.X(0.6), m.Y(5) - m.Y(17), { fill: rgba(C.hero, 0.16), alpha: ep(t, 4.6, 5.2) });
-      rect(m.X(1.05), m.Y(17), m.X(1.25) - m.X(1.05), m.Y(5) - m.Y(17), { fill: rgba(C.red, 0.12), alpha: ep(t, 5.4, 6.0) });
-      text('Pick', m.X(0.675), m.Y(17) - 10, { role: 'label', size: 19, color: C.hero, align: 'center', alpha: ep(t, 4.6, 5.2) });
-      text('Thin', m.X(1.15), m.Y(17) - 10, { role: 'label', size: 19, color: C.red, align: 'center', alpha: ep(t, 5.4, 6.0) });
+      rect(m.X(0.6), m.Y(17), m.X(0.75) - m.X(0.6), m.Y(5) - m.Y(17), { fill: C.heroSoft, alpha: ep(t, 4.6, 5.2) });
+      rect(m.X(1.05), m.Y(17), m.X(1.25) - m.X(1.05), m.Y(5) - m.Y(17), { fill: rgba(C.bad, 0.12), alpha: ep(t, 5.4, 6.0) });
+      text('Pick', m.X(0.675), m.Y(17) - 10, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: ep(t, 4.6, 5.2) });
+      text('Too thin', m.X(1.15), m.Y(17) - 10, { role: 'label', size: 19, color: C.bad, align: 'center', alpha: ep(t, 5.4, 6.0) });
       series(m, R.map((r2, i) => [r2, FILLET.scfW[i]]), { color: C.comp, w: 2, dash: [6, 5], p: ep(t, 2.0, 3.2, E.lin) });
       series(m, R.map((r2, i) => [r2, FILLET.scfM[i]]), { color: C.hero, w: 3, p: ep(t, 1.2, 2.6, E.lin) });
       R.forEach((r2, i) => { const k = ep(t, 1.2 + i * 0.12, 1.6 + i * 0.12); circle(m.X(r2), m.Y(FILLET.scfM[i]), 4, { fill: C.hero, alpha: k }); });
       const kp = ep(t, 2.4, 2.8); circle(m.X(r), m.Y(f.scf), 11, { color: C.ink, w: 1.5, alpha: kp * 0.5 }); circle(m.X(r), m.Y(f.scf), 5, { fill: C.ink, alpha: kp });
-      text('Fillet radius, {mm}', m.X(1.25), hy + 252, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ep(t, 1.0, 1.4) });
-      legend(t, 2.6, x + 26, hy + 252, [{ kind: 'line', color: C.hero, label: 'Same mass' }, { kind: 'dash', color: C.comp, label: 'Same struts' }], { size: 19, gap: 20 });
-      const steps = [['Hold the weight', 'Every radius at the same mass'], ['Find the bottom', 'The peak flattens past 0.6 mm'], ['Take its small end', '0.6 to 0.75 mm, widest struts'], ['Check the mold', 'Struts over the 0.89 mm floor']];
-      steps.forEach(([h2, b], i) => {
-        const yy = hy + 300 + i * 50, k = ep(t, 3.4 + i * 0.6, 3.8 + i * 0.6);
-        text(pad2(i + 1), x + 26, yy, { font: 'mono', size: 24, weight: 800, color: C.hero, alpha: k });
-        text(h2, x + 70, yy - 2, { role: 'label', size: 19, color: C.ink, alpha: k });
-        text(b, x + 70, yy + 24, { role: 'small', size: 25, color: C.ink2, alpha: k });
-      });
+      legend(t, 2.6, x + 32, y + h - 26, [{ kind: 'line', color: C.hero, label: 'Same mass' }, { kind: 'dash', color: C.comp, label: 'Same struts' }], { size: 19, gap: 20 });
+      text('Radius, {mm}', x + w - 32, y + h - 26, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ep(t, 1.0, 1.4) });
+      void kz;
     }
-    gloss(t, 2.6, 'Same mass', 'Every radius is compared at the same weight, so the gain is not bought with grams. The mouse has a weight target.');
-    featureCard(t, 6.0, 'A fillet sized by solving', ['derived', 'datasheet'], '0.6 mm on the 1.0 mm top ribs, 0.75 on the 1.2 mm low ribs: 60% of the rib, the top of Envalior\'s 25–60% (#75).');
+    sourceBox(t, 5.6, LM + 1040, 680, RM - LM - 1040, 'Envalior', 'Inside radius 25 to 60% of the wall, the upper end for parts that carry load. Mine: 0.6 mm on the 1.0 mm top ribs, 0.75 mm on the 1.2 mm low ribs, 60% of each.', { size: 24 });
   }
 });
 
@@ -1122,72 +1267,68 @@ S({
   }
 });
 
-/* ============================== 9. shell structures that ship, and the test none of them publishes (#15, #57, #53, #55) ============================== */
+/* ============================== 15. a published deflection test: the shell structures that ship, and the number none of them publishes (#15, #57, #53, #55) ============================== */
 const SHL_STRUCTS = [
   { id: 'finalmouse-ulx', name: 'Finalmouse ULX', how: 'Honeycomb cutouts', say: '"Flexes and creaks with pressure"', who: 'RTINGS', ev: 'measured' },
   { id: 'ninjutso-sora-v2', name: 'Ninjutso Sora V2', how: 'Solid shell', say: '"Feels solid"', who: 'RTINGS', ev: 'measured' },
-  { id: 'ninjutso-sora-v3', name: 'Ninjutso Sora V3', how: 'Thin shell, endoskeleton', say: '"2x more rigid structure-wise"', who: 'Ninjutso', ev: 'claim' },
+  { id: 'ninjutso-sora-v3', name: 'Ninjutso Sora V3', how: 'Thin shell, endoskeleton', say: '"2x more rigid structure-wise"', who: 'Ninjutso claim', ev: 'claim' },
   { id: 'finalmouse-slx', name: 'Finalmouse Starlight X', how: 'Three-part unibody', say: '"Rigid unibody main shell"', who: 'Finalmouse, via Back2Gaming', ev: 'claim' },
-  { id: 'lamzu-maya', name: 'Lamzu Maya', how: 'Front struts to the triggers', say: 'Low front propped on struts', who: 'per Brock', ev: 'claim' },
-  { hero: true, name: 'Theseus', how: 'Solid, triangle arches, board tie', g: 29, say: '465 N/mm at the crown', who: 'study model, to be measured', ev: 'derived' }
+  { id: 'lamzu-maya', name: 'Lamzu Maya', how: 'Front struts to the triggers', say: 'Low front propped on struts', who: 'Brock', ev: 'estimate' },
+  { hero: true, name: 'Theseus', how: 'Solid, triangle lattice, board tie', say: '', who: 'Derived, 3D shell FE; the rig will measure it', ev: 'derived' }
 ];
 S({
-  id: 'shlStructs', ch: 'shell', theme: 'paper', title: 'Shell structures that ship', settle: 10, ideas: [15, 57, 53, 55],
+  id: 'shlStructs', ch: 'shell', theme: 'paper', title: 'A published deflection test', settle: 10, ideas: [15, 57, 53, 55],
   src: ['shlRtingsSoraUlx', 'shlSoraV3', 'shlB2gSlx', 'shlDoc', 'exRtings', 'shlLattice'],
   draw: t => {
-    header(t, 'Shell structures that ship');
-    captions(t, [[0.6, 'RTINGS found the Sora V2 solid and the ULX flexing and creaking. The Starlight X and the Sora V3 claim rigidity.'], [5.2, 'None of them publishes a number. Mine will be in N/mm at five points, measured on the same rig against both.']]);
+    header(t, 'A published deflection test');
+    captions(t, [[0.6, 'RTINGS found the Sora V2 solid and the ULX flexing and creaking. The Starlight X and the Sora V3 claim rigidity.'], [5.2, 'None of them publishes a number. I will: N/mm at five points, on the same rig, against both.']]);
     /* left: the table */
-    { const x = LM, y = LAY.top, w = 1200, h = 580, a0 = ep(t, 0.6, 1.0);
-      demoWindow(x, y, w, h, ep(t, 0.3, 0.7));
-      const cN = x + 26, cW = x + 430, wW = 230, cS = x + 790;
-      text('Mouse, structure', cN, y + 46, { role: 'label', size: 19, color: C.mute, alpha: a0 });
-      text('Weight, {g}', cW, y + 46, { role: 'label', size: 19, color: C.mute, alpha: a0 });
-      text('Stiff, says who', cS, y + 46, { role: 'label', size: 19, color: C.mute, alpha: a0 });
-
-      line(x + 26, y + 62, x + w - 26, y + 62, { color: C.hair, w: 1.5, alpha: a0 });
+    { const x = LM, y = 280, w = 1120, h = 640, a0 = tileA(t, 0.3, 0);
+      demoWindow(x, y, w, h, a0);
+      const cN = x + 32, cW = x + 420, wW = 220, cS = x + 760;
+      text('Mouse, structure', cN, y + 52, { role: 'label', size: 19, color: C.mute, alpha: a0 });
+      text('Weight, {g}', cW, y + 52, { role: 'label', size: 19, color: C.mute, alpha: a0 });
+      text('Stiff, says who', cS, y + 52, { role: 'label', size: 19, color: C.mute, alpha: a0 });
+      line(x + 32, y + 70, x + w - 32, y + 70, { color: C.hair, w: 1.5, alpha: a0 });
       SHL_STRUCTS.forEach((r, i) => {
-        const yy = y + 110 + i * 74, t0 = 0.9 + i * 0.3, a = ep(t, t0, t0 + 0.4), k = ep(t, t0 + 0.1, t0 + 0.9, E.snap);
-        if (i) line(x + 26, yy - 42, x + w - 26, yy - 44, { color: C.hair, w: 1, alpha: a });
-        if (r.hero) rect(x + 10, yy - 34, 5, 66, { fill: C.hero, alpha: a });
-        const W0 = r.hero ? { g: r.g, ev: 'proposal' } : exWeight(r.id) || { g: null };
-        text(r.name, cN, yy - 2, { role: 'small', size: 25, weight: r.hero ? 800 : 700, color: C.ink, alpha: a });
-        text(r.how, cN, yy + 24, { role: 'label', size: 19, color: r.hero ? C.heroText : C.mute, alpha: a });
+        const yy = y + 124 + i * 80, t0 = 0.9 + i * 0.3, a = ep(t, t0, t0 + 0.4), k = ep(t, t0 + 0.1, t0 + 0.9, E.snap);
+        if (i) line(x + 32, yy - 44, x + w - 32, yy - 44, { color: C.hair, w: 1, alpha: a });
+        const W0 = r.hero ? { g: THESEUS.mass } : exWeight(r.id) || { g: null };
+        text(r.name, cN, yy - 2, { role: 'small', size: 25, weight: r.hero ? 800 : 700, color: r.hero ? C.heroText : C.ink, alpha: a });
+        text(r.how, cN, yy + 26, { role: 'label', size: 19, color: C.mute, alpha: a });
         if (W0.g != null) {
-          const xe = shlBar({ x: cW, y: yy - 8, w: wW, max: 50, v: W0.g, col: r.hero ? C.hero : C.comp, h: 14, a, k, edge: r.hero ? '#111111' : null });
-          text(fmtN(W0.g, 1), xe + 10, yy, { font: 'mono', size: 24, weight: r.hero ? 800 : 600, color: C.ink, alpha: clamp(k * 1.4 - 0.3) });
+          const xe = shlBar({ x: cW, y: yy - 8, w: wW, max: 50, v: W0.g, col: r.hero ? C.hero : C.comp, h: 14, a, k });
+          text(fmtN(W0.g, r.hero ? 2 : 1), xe + 10, yy, { role: 'num', size: 24, weight: r.hero ? 800 : 650, color: r.hero ? C.heroText : C.ink, alpha: clamp(k * 1.4 - 0.3) });
         }
-        evDot(cS - 14, yy - 8, r.ev, 5, a);
-        text(r.say, cS, yy - 2, { role: 'small', size: 25, weight: r.hero ? 700 : 500, color: C.ink, alpha: a, t, t0: t0 + 0.2, cps: 120 });
-        text(r.who, cS, yy + 24, { role: 'label', size: 19, color: r.hero ? C.heroText : C.faint, alpha: a });
+        const say = r.hero ? Math.round(SHL_FE.tri.press) + ' N/mm at the crown' : r.say;
+        text(say, cS, yy - 2, { role: 'small', size: 25, weight: r.hero ? 800 : 560, color: r.hero ? C.heroText : C.ink, alpha: a, t, t0: t0 + 0.2, cps: 120 });
+        text(r.who, cS, yy + 26, { role: 'label', size: 19, color: C.faint, alpha: a });
       });
-      text('RTINGS weights; Theseus is the target.', x + 26, y + h - 22, { role: 'small', size: 25, color: C.faint, alpha: ep(t, 3.0, 3.4) });
-      text('Published N/mm: none', x + w - 26, y + h - 22, { role: 'label', size: 21, color: C.red, align: 'right', alpha: ep(t, 2.6, 3.0) });
+      text('Published N/mm: none', x + w - 32, y + h - 32, { role: 'label', size: 21, color: C.bad, align: 'right', alpha: ep(t, 2.6, 3.0) });
+      text('RTINGS weights; Theseus\'s is its target.', x + 32, y + h - 32, { role: 'small', size: 22, weight: 560, color: C.faint, alpha: ep(t, 3.0, 3.4) });
     }
-    /* right: the deflection test, on the key plan */
-    { const x = 1320, y = LAY.top, w = RM - 1320, h = 580, hy = shlCard(t, 0.5, x, y, w, h, 'Published test', ['proposal']);
-      const kx = x + w / 2, ky = hy + 164, s = 1.75, S2 = s * 1.18;
-      keyPlan(t, 1.0, kx, ky, { s, label: 'Top view' });
+    /* right: the deflection test, on the key plan, the pointer pressing each point in turn */
+    { const x = LM + 1160, y = 280, w = RM - x, h = 440, a0 = tileA(t, 0.5, 1);
+      demoWindow(x, y, w, h, a0);
+      text('The test I\'ll publish', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+      const kx = x + w / 2, ky = y + 220, s = 1.6, S2 = s * 1.18;
+      keyPlan(t, 1.0, kx, ky, { s, label: '' });
       const pts = [[0, 13, 'Crown'], [-14, -35, 'Left button'], [14, -35, 'Right button'], [-28.5, 8, 'Left side'], [28.5, 8, 'Right side']];
       const cur = t < 3 ? -1 : Math.floor((t - 3) / 1.4) % 5, ph = t < 3 ? 0 : ((t - 3) % 1.4) / 1.4;
       pts.forEach(([px, py], i) => {
         const X = kx + px * S2, Y = ky + py * S2, a = ep(t, 1.6 + i * 0.15, 2.0 + i * 0.15), on = i === cur;
         circle(X, Y, 15, { fill: on ? C.hero : C.panel, alpha: a }); circle(X, Y, 15, { color: C.ink, w: 1.8, alpha: a });
-        text(String(i + 1), X, Y + 7, { font: 'mono', size: 19, weight: 800, color: '#111111', align: 'center', alpha: a });
+        text(String(i + 1), X, Y + 7, { role: 'num', size: 19, weight: 800, color: on ? '#FFFFFF' : C.ink, align: 'center', alpha: a });
         if (on) circle(X, Y, 15 + 22 * ph, { color: C.ink, w: 1.5, alpha: (1 - ph) * 0.6 });
       });
-      const ka = ep(t, 3.0, 3.4), nm = cur >= 0 ? pts[cur][2] : 'Crown';
-      text('10 N at each of five points', x + 26, hy + 362, { role: 'small', size: 25, color: C.ink2, maxW: w - 52, alpha: ka });
-      rich([{ s: '465', font: 'disp', size: 50, weight: 800, color: C.ink, tnum: true }, { s: 'N/mm at the crown', role: 'label', size: 19, color: C.mute, gap: 12 }], x + 26, hy + 428, { alpha: ep(t, 3.4, 3.8) });
-      pill(x + 26, y + h - 20, 'derived', ep(t, 3.6, 4.0), { text: 'Derived, this model' });
-      void nm;
+      if (cur >= 0) { const [px, py] = pts[cur]; cursorPtr(kx + px * S2 + 8, ky + py * S2 + 6, { a: ep(t, 2.6, 3.0), press: ph < 0.3 ? ph / 0.3 : 0 }); }
+      text('10 N at each of five points' + (cur >= 0 ? ': ' + pts[cur][2].toLowerCase() : ''), x + 32, y + h - 32, { role: 'small', size: 24, weight: 600, color: C.ink2, alpha: ep(t, 3.0, 3.4) });
     }
-    gloss(t, 2.6, 'Deflection test', 'Push the shell with a known force at a marked point and measure how far it moves. Force over distance: N/mm.');
-    featureCard(t, 6.0, 'A published deflection test', ['measured', 'proposal'], 'Five points, 10 N each, the Starlight X and the Sora V3 on the same rig, raw numbers published (#15, #57).');
+    glossBox(t, 2.6, LM + 1160, 760, RM - LM - 1160, 'Deflection test', 'Push the shell with a known force at a marked point and measure how far it moves. Force over distance: N/mm.', { size: 24 });
   }
 });
 
-/* ============================== 10. fewer parts, tighter gaps (#57) ============================== */
+/* ============================== 16. tolerance stack-up: fewer parts, tighter gaps (#57) ============================== */
 let TOL = null;
 function tolSim() {
   if (TOL) return TOL;
@@ -1197,172 +1338,172 @@ function tolSim() {
   return (TOL = { sets, sigma, spec, n });
 }
 S({
-  id: 'tolerance', ch: 'shell', theme: 'night', title: 'Fewer parts, tighter gaps', settle: 10, ideas: [57], src: ['dfma', 'shlB2gSlx', 'xt1', 'rtingsUlx'], three: ['shell'],
+  id: 'tolerance', ch: 'shell', theme: 'night', title: 'Tolerance stack-up', settle: 10, ideas: [57], src: ['dfma', 'shlB2gSlx', 'xt1', 'rtingsUlx'], three: ['shell'],
   draw: t => {
-    header(t, 'Fewer parts, tighter gaps');
-    captions(t, [[0.6, 'Every part is a little off its drawing. One part\'s error I can measure and correct in the steel.'], [3.9, 'Stack the same seam through six parts and a fifth of the mice fall outside the gap, with every part in spec.'], [7.0, 'The Starlight X went from four shell parts to three. I want the rim, hump and sides as one body.']]);
+    header(t, 'Tolerance stack-up');
+    captions(t, [[0.6, 'Every part is a little off its drawing. One part\'s error I can measure and correct in the steel.'], [3.9, 'Stack the same seam through six parts and a fifth of the mice fall outside the gap, with every part in spec.'], [7.0, 'The Starlight X went from four shell parts to three. Mine has the rim, hump and sides as one body.']]);
     const T = tolSim();
-    /* left: 2,400 simulated mice per build */
-    { const x = LM, y = LAY.top, w = 1180, h = 580, hy = shlCard(t, 0.3, x, y, w, h, '2,400 simulated mice: one seam\'s gap', ['derived']);
-      text('Each part off by up to ±0.05 mm at 3σ; the seam allows ±0.05 mm.', x + 26, hy + 12, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 0.9, 1.3) });
+    /* left: the parts of the shell, apart */
+    { const x = LM, y = 280, w = 640, h = 440, a0 = tileA(t, 0.3, 0);
+      demoWindow(x, y, w, h, a0);
+      text('Theseus, taken apart', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+      const ex = t < 1.6 ? 0 : 0.8 * (0.5 - 0.5 * Math.cos((t - 1.6) * TAU / 8));
+      shl3D('shell', t, x + 8, y + 70, w - 16, 250, { view: 'threeQuarter', view2d: 'right', explode: ex, zoom: in2D(1.5, 1.25), yaw: 0.1 * Math.sin(t * 0.3) }, { alpha: ep(t, 0.6, 1.2) });
+      const notes = [['Starlight X', 'Three shell parts, down from four', 'claim'], ['Theseus', 'Rim, hump and sides in one body', null]];
+      notes.forEach(([who, s2, ev], i) => {
+        const a = ep(t, 3.2 + i * 0.8, 3.6 + i * 0.8), ny = y + 350 + i * 44;
+        rich([{ s: who, role: 'label', size: 19, color: i ? C.heroText : C.ink }, { s: s2, role: 'small', size: 23, weight: 600, color: C.ink2, gap: 14 }], x + 32, ny, { alpha: a });
+      });
+    }
+    glossBox(t, 2.8, LM, 760, 640, 'Tolerance stack', 'Every part is made slightly off. Where parts meet, their errors add up at the seam you see and feel.', { size: 24 });
+    /* right: 2,400 simulated mice per build */
+    { const x = LM + 680, y = 280, w = RM - x, h = 640, a0 = tileA(t, 0.5, 1);
+      demoWindow(x, y, w, h, a0);
+      text('2,400 simulated mice: one seam\'s gap', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+      pill(x + w - 32 - pillW('derived'), y + 52, 'derived', a0);
+      text('Each part off by up to ±0.05 mm at 3σ; the seam allows ±0.05 mm.', x + 32, y + 96, { role: 'small', size: 24, weight: 560, color: C.mute, alpha: ep(t, 0.9, 1.3) });
       const fill = ep(t, 1.4, 4.4, E.lin);
       T.sets.forEach((st, ci) => {
-        const ox = x + 40 + ci * 380, oy = y + 470, bw = 330, bins = 31, lo = -0.155, hi = 0.155, X = v => ox + bw * (v - lo) / (hi - lo), cnt = new Array(bins).fill(0);
+        const ox = x + 48 + ci * 360, oy = y + 500, bw = 320, bins = 31, lo = -0.155, hi = 0.155, X = v => ox + bw * (v - lo) / (hi - lo), cnt = new Array(bins).fill(0);
         const shown = Math.floor(st.g.length * fill);
         for (let i = 0; i < shown; i++) { const b = Math.floor((st.g[i] - lo) / (hi - lo) * bins); if (b >= 0 && b < bins) cnt[b]++; }
         const cmax = T.n * 0.42, k = ep(t, 1.0 + ci * 0.2, 1.4 + ci * 0.2), inCol = ci ? C.comp : C.hero;
         rect(X(-T.spec), oy - 240, X(T.spec) - X(-T.spec), 240, { fill: inkA(0.06), alpha: k });
-        for (let b = 0; b < bins; b++) { const v0 = lo + (hi - lo) * b / bins, v1 = v0 + (hi - lo) / bins, hb = Math.min(240, 240 * cnt[b] / cmax), inSpec = Math.abs((v0 + v1) / 2) <= T.spec; rect(X(v0) + 1, oy - hb, X(v1) - X(v0) - 2, hb, { fill: inSpec ? inCol : C.red }); }
+        for (let b = 0; b < bins; b++) { const v0 = lo + (hi - lo) * b / bins, v1 = v0 + (hi - lo) / bins, hb = Math.min(240, 240 * cnt[b] / cmax), inSpec = Math.abs((v0 + v1) / 2) <= T.spec; rect(X(v0) + 1, oy - hb, X(v1) - X(v0) - 2, hb, { fill: inSpec ? inCol : C.bad }); }
         if (t > 5) {
           const per = 0.42, j = Math.floor((t - 5) / per), ph = ((t - 5) % per) / per, v = st.g[(j * 7 + ci * 13) % st.g.length], b = Math.floor((v - lo) / (hi - lo) * bins);
           if (b >= 0 && b < bins) {
             const hb = Math.min(240, 240 * cnt[b] / cmax), xx = X(lo + (hi - lo) * (b + 0.5) / bins), y1 = oy - hb - 6, yy = lerp(oy - 240, y1, E.in3(clamp(ph / 0.7))), bad = Math.abs(v) > T.spec, la = ep(t, 5, 5.4);
-            circle(xx, yy, 5, { fill: bad ? C.red : inCol, alpha: la * (1 - clamp((ph - 0.85) / 0.15)) });
-            if (ph > 0.7) circle(xx, y1, 5 + (ph - 0.7) * 40, { color: bad ? C.red : inCol, w: 1.5, alpha: la * (1 - (ph - 0.7) / 0.3) * 0.7 });
+            circle(xx, yy, 5, { fill: bad ? C.bad : inCol, alpha: la * (1 - clamp((ph - 0.85) / 0.15)) });
+            if (ph > 0.7) circle(xx, y1, 5 + (ph - 0.7) * 40, { color: bad ? C.bad : inCol, w: 1.5, alpha: la * (1 - (ph - 0.7) / 0.3) * 0.7 });
           }
         }
         line(ox, oy, ox + bw, oy, { color: C.faint, w: 1.5, alpha: k });
-        for (const v of [-0.1, 0, 0.1]) text((v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1), X(v), oy + 26, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: k });
-        if (ci === 0) shlChip(ox, oy - 262, 'One part', k); else text(st.N + ' parts', ox, oy - 262, { role: 'label', size: 21, color: C.ink, alpha: k });
+        for (const v of [-0.1, 0, 0.1]) text((v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1), X(v), oy + 28, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: k });
+        if (ci === 0) shlChip(ox, oy - 264, 'One part', k); else text(st.N + ' parts', ox, oy - 264, { role: 'label', size: 21, color: C.ink, alpha: k });
         const outNow = shown ? st.g.slice(0, shown).filter(v => Math.abs(v) > T.spec).length / shown : 0;
-        text((outNow * 100).toFixed(1) + '% out', ox, oy + 66, { font: 'mono', size: 26, weight: 800, color: outNow > 0.05 ? C.red : C.ink, alpha: ep(t, 1.8, 2.2) });
+        text(fmtN(outNow * 100, 1) + '% out', ox, oy + 72, { font: 'disp', size: 30, weight: 800, color: outNow > 0.05 ? C.bad : ci ? C.ink : C.heroText, alpha: ep(t, 1.8, 2.2), tnum: true });
       });
-      text('Gap error, {mm}', x + w - 26, y + h - 22, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 1.4, 1.8) });
+      text('Gap error, {mm}', x + w - 32, y + h - 32, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 1.4, 1.8) });
     }
-    /* right: the parts of the shell, apart */
-    { const x = 1300, y = LAY.top, w = RM - 1300, h = 580;
-      demoWindow(x, y, w, h, ep(t, 0.5, 0.9));
-      text('Theseus, taken apart', x + 26, y + 46, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.8, 1.2) });
-      const ex = t < 1.6 ? 0 : 0.8 * (0.5 - 0.5 * Math.cos((t - 1.6) * TAU / 8));
-      shl3D('shell', t, x + 8, y + 64, w - 16, 300, { view: 'threeQuarter', view2d: 'right', explode: ex, zoom: in2D(1.5, 1.25), yaw: 0.1 * Math.sin(t * 0.3) }, { alpha: ep(t, 0.6, 1.2) });
-      const notes = [['Starlight X', 'Three shell parts, down from four', 'claim'], ['Theseus', 'Rim, hump and sides in one body; two triggers; a plate you can leave off', 'proposal']];
-      let ny = y + 404;
-      notes.forEach(([who, s2, ev], i) => {
-        const a = ep(t, 3.2 + i * 0.8, 3.6 + i * 0.8);
-        if (i) shlChip(x + 26, ny, who, a); else text(who, x + 26, ny, { role: 'label', size: 21, color: C.ink, alpha: a });
-        evDot(x + w - 32, ny - 8, ev, 5, a);
-        const r2 = text(s2, x + 26, ny + 36, { role: 'small', size: 25, color: C.ink2, maxW: w - 52, lh: 1.3, t, t0: 3.3 + i * 0.8, cps: 120, alpha: a });
-        ny += 36 + r2.h + 20;
-      });
-    }
-    gloss(t, 2.8, 'Tolerance stack', 'Every part is made slightly off. Where parts meet, their errors add up at the seam you see and feel.');
-    featureCard(t, 6.2, 'One body for rim, hump and sides', ['derived', 'claim', 'proposal'], 'Each seam then holds one part\'s error, tuned in the steel. I\'ll publish the panel gaps (#57).');
   }
 });
 
-/* ============================== 11. a solid shell keeps the encoder clean (#15, #98) ============================== */
+/* ============================== 17. the encoder, the number one failure point (#15, #98; Brock: "no dust getting in the encoder is particularly important") ==============================
+   the same dust falling on a shell with cutouts and on a solid one: through the holes it reaches the encoder (drawn as
+   TTC's optical encoder, the form most new ones take) and the scroll signal starts to skip; on the solid shell it stays
+   outside, where it wipes off */
 S({
-  id: 'sealed', ch: 'shell', theme: 'paper', title: 'A solid shell keeps the encoder clean', settle: 9, ideas: [15, 98], src: ['pulsarEnc', 'shlDoc'],
+  id: 'sealed', ch: 'shell', theme: 'paper', title: 'The encoder: the number one failure point', settle: 9.5, ideas: [15, 98], src: ['pulsarEnc', 'shlIgorWheel', 'shlRazerWheel', 'shlDoc'],
   draw: t => {
-    header(t, 'A solid shell keeps the encoder clean');
-    captions(t, [[0.6, 'Cutouts save weight, but each one is an open path to the encoder, one of the most common failure points in a mouse.'], [3.8, 'A solid shell also molds more easily: no small isolated areas for the plastic to reach.'], [6.4, 'Sweat shows a little more on a solid surface, and a good coating handles that. Gunk in holes doesn\'t wipe off.']]);
-    const wx = LM, wy = LAY.top, ww = RM - LM, wh = 580;
-    demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
-    const r = rng(11), parts = [];
-    for (let i = 0; i < 170; i++) parts.push([r(), r(), 0.6 + r() * 0.8]);
-    const S2 = 19, pile = clamp((t - 2.2) / 7);
+    header(t, 'The encoder: the number one failure point');
+    captions(t, [[0.6, 'The encoder is the number one failure point in a mouse, and dust is what kills it. Every cutout is an open path to it.'], [4.4, 'A solid shell keeps dust and sweat outside, where a wipe takes them off. It molds more easily too: no small, hard-to-reach areas.']]);
+    const wx = LM, wy = 280, ww = RM - LM, wh = 440;
+    demoWindow(wx, wy, ww, wh, tileA(t, 0.3, 0));
+    const r = rng(11), parts = []; for (let i = 0; i < 170; i++) parts.push([r(), r(), 0.6 + r() * 0.8]);
+    const S2 = 14, pile = clamp((t - 2.2) / 6);
     const panel = (ox, holes, label) => {
-      const w = 780, y0 = wy + 220, k = ep(t, 0.6, 1.2), hx = [], ex = ox + 230, ey = y0 + 150;
+      const w = 820, y0 = wy + 110, k = ep(t, 0.6, 1.2), hx = [], ex = ox + 260, ey = y0 + 26 + 40 + 7.9 * S2;
       if (holes) for (let x = ox + 34; x < ox + w - 40; x += 48) hx.push(x);
-      part(0, 0, 1, () => {
-        const xs = [ox].concat(hx.flatMap(h => [h, h + 22])).concat([ox + w]);
-        for (let i = 0; i < xs.length; i += 2) { const a = xs[i], b = xs[i + 1]; solid(() => { G.beginPath(); G.rect(a, y0, b - a, 26); }, MT.shell, [a, y0, b - a, 26], { hatch: true }); }
-      }, { alpha: k });
-      part(ex, ey, S2, () => encoderMM({}), { alpha: k });
-      text('Encoder', ex, ey + 5.0 * S2 + 56, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: k });
-      const eTop = ey - 3.6 * S2, eL = ex - 3.8 * S2, eR = ex + 3.8 * S2;
+      /* the shell wall, cut through: with cutouts, or solid */
+      part(0, 0, 1, () => { const xs = [ox].concat(hx.flatMap(h => [h, h + 22])).concat([ox + w]); for (let i = 0; i < xs.length; i += 2) { const a = xs[i], b = xs[i + 1]; solid(() => { G.beginPath(); G.rect(a, y0, b - a, 26); }, MT.shell, [a, y0, b - a, 26], { hatch: true }); } }, { alpha: k });
+      /* the encoder under it, and the board it stands on (#98: a thin urethane coat on the board) */
+      const E2 = part(ex, ey, S2, () => shlEncoderMM({ clog: holes ? pile : 0 }), { alpha: k });
+      const by = ey + 7.6 * S2, kc = ep(t, 5.0, 5.6);
+      line(ex - 9 * S2, by, ex + 9 * S2, by, { color: C.ink2, w: 3, alpha: k });
+      if (!holes) { line(ex - 9 * S2, by - 3, ex + 9 * S2, by - 3, { color: C.hero, w: 2.5, alpha: kc }); text('Coated board, #98', ex + 9 * S2 + 14, by + 7, { role: 'label', size: 19, color: C.heroText, alpha: kc }); }
+      text('Optical encoder', ex - 6.6 * S2 - 16, ey + 8, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: k });
+      const eTop = E2.top ? E2.top[1] : ey - 7.9 * S2, eL = ex - 5.9 * S2, eR = ex + 5.9 * S2;
+      /* the dust: it falls, stops on the wall unless there's a hole, and through a hole lands on the encoder */
       for (const [u, v, sp] of parts) {
         if (t < 1.6) continue;
         const tt = (t - 1.6) * sp * 0.45 + v, ph = tt % 1, cyc2 = Math.floor(tt);
-        const x = ox + 20 + ((u * 7.31 + cyc2 * 0.37) % 1) * (w - 40); let y = wy + 80 + ph * 330;
+        const x = ox + 20 + ((u * 7.31 + cyc2 * 0.37) % 1) * (w - 40); let y = wy + 70 + ph * 300;
         const overHole = hx.some(h2 => x > h2 + 2 && x < h2 + 20);
         if (y > y0 - 3 && !(holes && overHole)) y = y0 - 3;
-        else if (y > y0 + 26) { if (!(x > eL && x < eR) && y > y0 + 70) continue; y = Math.min(y, x > eL && x < eR ? eTop - 3 : y); }
-        circle(x, y, 2.2, { fill: y >= y0 + 26 ? C.red : C.ink2, alpha: 0.8 * (y >= y0 + 26 && !(x > eL && x < eR) ? 1 - clamp((y - y0 - 26) / 44) : 1) });
+        else if (y > y0 + 26) { const onEnc = x > eL && x < eR; if (!onEnc && y > y0 + 80) continue; if (onEnc) y = Math.min(y, eTop - 3); }
+        const inside = y >= y0 + 26;
+        circle(x, y, 2.2, { fill: inside ? C.bad : C.ink2, alpha: 0.8 * (inside && !(x > eL && x < eR) ? 1 - clamp((y - y0 - 26) / 54) : 1) });
       }
       const rp = rng(holes ? 5 : 9), n = Math.floor(pile * 46);
-      for (let i = 0; i < n; i++) { const u = rp(), v2 = rp(); const px = holes ? lerp(eL + 10, eR - 10, u) : lerp(ox + 240, ox + 520, u), py = (holes ? eTop : y0) - 3 - v2 * 7 * Math.sin(u * Math.PI); circle(px, py, 2.6, { fill: holes ? C.red : C.ink2, alpha: k * 0.9 }); }
+      for (let i = 0; i < n; i++) { const u = rp(), v2 = rp(); const px = holes ? lerp(eL + 10, eR - 10, u) : lerp(ox + 240, ox + 520, u), py = (holes ? eTop : y0) - 3 - v2 * 7 * Math.sin(u * Math.PI); circle(px, py, 2.6, { fill: holes ? C.bad : C.ink2, alpha: k * 0.9 }); }
       if (!holes && pile > 0.4) text('On the outside: wipe it off', ox + 380, y0 - 26, { role: 'label', size: 21, color: C.ink, align: 'center', alpha: ep(t, 4.6, 5.0) });
-      /* #98: the board under the encoder carries a thin urethane coat; a drop that gets in beads on it */
-      if (!holes) { const by = ey + 5.0 * S2, kc = ep(t, 5.2, 5.8); line(ex - 8 * S2, by - 2, ex + 8 * S2, by - 2, { color: C.hero, w: 3, alpha: kc }); const dph = ((t - 5.2) % 3) / 3, dx = ex + 5.2 * S2; if (t > 5.2) { circle(dx, by - 10 - 4 * Math.sin(dph * Math.PI), 7, { fill: rgba(C.blue, 0.75), alpha: kc }); } text('Coated board, #98', ex + 8 * S2 + 14, by + 6, { role: 'label', size: 19, color: C.heroText, alpha: kc }); }
-      const sx = ox + 410, sy = y0 + 92, sw2 = 340, sh2 = 44, kk = ep(t, 1.4, 1.8);
+      /* the scroll signal: steps go missing as the dust gets in */
+      const sx = ox + 470, sy = y0 + 110, sw2 = 320, sh2 = 44, kk = ep(t, 1.4, 1.8);
       text('Scroll signal', sx, sy - 14, { role: 'label', size: 19, color: C.mute, alpha: kk });
-      rr(sx, sy, sw2, sh2 + 14, 6, inkA(0.04), inkA(0.14), 1, kk);
+      rr(sx, sy, sw2, sh2 + 14, 6, inkA(0.04), null, 0, kk);
       const off = (t * 70) % 22, pts = [];
       for (let j = -1; j < sw2 / 22 + 1; j++) {
-        const x0 = sx + 8 + j * 22 - off, id = Math.floor((t * 70) / 22) + j, h = Math.abs(Math.sin(id * 12.9898) * 43758.5453) % 1, bad = holes && h < pile * 0.42;
+        const x0 = sx + 8 + j * 22 - off, id = Math.floor((t * 70) / 22) + j, hh = Math.abs(Math.sin(id * 12.9898) * 43758.5453) % 1, bad = holes && hh < pile * 0.42;
         const hi = sy + 10, lo = sy + sh2 + 2;
         pts.push([x0, lo], [x0, bad ? lo : hi], [x0 + 11, bad ? lo : hi], [x0 + 11, lo]);
-        if (bad) { G.save(); G.beginPath(); G.rect(sx + 2, sy, sw2 - 4, sh2 + 14); G.clip(); rect(x0 - 2, sy + 4, 15, sh2 + 4, { fill: rgba(C.red, 0.16), alpha: kk }); G.restore(); }
+        if (bad) { G.save(); G.beginPath(); G.rect(sx + 2, sy, sw2 - 4, sh2 + 14); G.clip(); rect(x0 - 2, sy + 4, 15, sh2 + 4, { fill: rgba(C.bad, 0.16), alpha: kk }); G.restore(); }
       }
-      G.save(); G.beginPath(); G.rect(sx + 2, sy, sw2 - 4, sh2 + 14); G.clip(); poly(pts, { color: holes ? C.red : C.ink, w: 2, alpha: kk }); G.restore();
-      text(holes ? (pile > 0.15 ? 'Missed steps' : 'Clean, for now') : 'Clean', sx + sw2, sy + sh2 + 42, { role: 'label', size: 19, color: holes && pile > 0.15 ? C.red : C.ink, align: 'right', alpha: kk });
-      if (holes) text(label, ox, wy + 56, { role: 'label', size: 21, color: C.red, t, t0: 1.0, cps: 60 });
+      G.save(); G.beginPath(); G.rect(sx + 2, sy, sw2 - 4, sh2 + 14); G.clip(); poly(pts, { color: holes ? C.bad : C.ink, w: 2, alpha: kk }); G.restore();
+      text(holes ? (pile > 0.15 ? 'Missed steps' : 'Clean, for now') : 'Clean', sx + sw2, sy + sh2 + 44, { role: 'label', size: 19, color: holes && pile > 0.15 ? C.bad : C.ink, align: 'right', alpha: kk });
+      if (holes) text(label, ox, wy + 56, { role: 'label', size: 21, color: C.bad, t, t0: 1.0, cps: 60 });
       else shlChip(ox, wy + 56, label, ep(t, 1.0, 1.4));
     };
-    panel(wx + 50, true, 'Cutouts: dust and liquid reach the encoder');
-    panel(wx + 900, false, 'Solid: they stay outside, where you can wipe them');
-    text('An illustration. Pulsar\'s support page blames jittery scrolling on dust, dirt or fluids in the encoder.', wx + 26, wy + wh - 22, { role: 'small', size: 25, color: C.faint, alpha: ep(t, 2.4, 2.8), maxW: ww - 52 });
-    gloss(t, 3.0, 'Encoder', 'The part that reads the wheel turning. It is open, so dirt inside shows up as skipped or jittery scrolling.');
-    featureCard(t, 4.6, 'A fully solid shell', ['claim', 'proposal'], 'No path for dust or sweat to the encoder (#15), and a urethane coat on the board for whatever gets in (#98).');
+    panel(wx + 40, true, 'Cutouts: dust reaches the encoder');
+    panel(wx + 920, false, 'Solid: dust stays outside');
+    /* the evidence, under the drawing */
+    sourceBox(t, 3.4, LM, 760, 560, 'Pulsar support', 'Jittery or skipping scrolling comes from dust, dirt or fluids in the encoder.', { size: 24 });
+    sourceBox(t, 3.9, LM + 600, 760, 560, 'igor\'sLAB teardown', 'A Basilisk V3 Pro\'s scroll jitter was hair and debris in the wheel, not a failed part.', { size: 24 });
+    glossBox(t, 4.4, LM + 1200, 760, RM - LM - 1200, 'Optical encoder', 'Reads the wheel by light through a slotted disc. Razer claims 3.3× a mechanical one\'s reliability.', { size: 24 });
   }
 });
 
-/* ============================== 12. what a solid shell weighs (#15, #31, #93) ============================== */
+/* ============================== 18. the lattice frees grams for the cell (#15, #31, #93; Brock: "we will be able to cut weight elsewhere with my shell design to hit that 200hr") ==============================
+   to be as stiff on the crown as the lattice, a plain wall of the same shape needs 20.4 g (along its own solved law);
+   the lattice body is 15.2 g. The difference goes to the cell */
 S({
-  id: 'shlGrams', ch: 'shell', theme: 'night', title: 'What a solid shell weighs', settle: 10, ideas: [15, 31, 93],
-  src: ['exXbabWeight', 'shlZkM1k', 'shlLattice', 'shlB2gSlx', 'shlNimbus', 'exJauch', 'shlDoc'],
+  id: 'shlGrams', ch: 'shell', theme: 'night', title: 'The lattice frees grams for the cell', settle: 10, ideas: [15, 31, 93],
+  src: ['shlLattice', 'shlZkM1k', 'shlB2gSlx', 'shlDoc'],
   draw: t => {
-    header(t, 'What a solid shell weighs');
-    captions(t, [[0.6, 'The shell is the biggest line in a light mouse: 12.16 g of the XA25\'s 24.94 g. My 29 g budget leaves it 9.55 g.'], [5.0, 'My structure study weighs 16.4 g: it was built to compare lattices, not to make weight. Closing that gap is the next pass.']]);
-    /* left: shell masses, one scale */
-    { const x = LM, y = LAY.top, w = 1080, h = 580, hy = shlCard(t, 0.3, x, y, w, h, 'Shell and skates, {g}', ['claim', 'derived']);
-      const bx = x + 400, bw = w - 400 - 150, max = 18, X = g => bx + bw * g / max, a0 = ep(t, 0.8, 1.2);
-      for (const g of [0, 5, 10, 15]) { line(X(g), hy + 20, X(g), hy + 410, { color: C.hair, w: 1.2, alpha: a0 }); text(String(g), X(g), hy + 8, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a0 }); }
-      const rows = [
-        { name: 'Theseus budget', sub: '29 g minus the other parts', seg: [[9.55, C.hero]], ev: 'derived', hero: true, lab: '9.55' },
-        { name: 'XBAB XA25', sub: 'Wired, 24.94 g in all', seg: [[12.16, C.comp]], ev: 'claim', lab: '12.16' },
-        { name: 'Zaunkoenig M1K', sub: 'Carbon shell + printed base', seg: [[7.5, C.comp], [5.7, C.comp2]], ghost: 11.6, ev: 'claim', lab: '13.2' },
-        { name: 'Theseus study shell', sub: 'Walls + ribs, no base, no skates', seg: [[11.19, rgba(C.hero, 0.5)], [5.17, rgba(C.hero, 0.28)]], ev: 'derived', lab: '16.4', over: true }
-      ];
-      rows.forEach((r, i) => {
-        const yy = hy + 74 + i * 96, t0 = 1.0 + i * 0.35, a = ep(t, t0, t0 + 0.4), k = ep(t, t0 + 0.1, t0 + 1.0, E.snap);
-        if (r.hero) rect(x + 10, yy - 32, 5, 64, { fill: C.hero, alpha: a });
-        text(r.name, x + 26, yy - 2, { role: 'small', size: 25, weight: r.hero ? 800 : 700, color: C.ink, alpha: a });
-        text(r.sub, x + 26, yy + 24, { role: 'label', size: 19, color: r.hero || r.over ? C.heroText : C.mute, alpha: a });
-        let gx = 0; const bh = 22;
-        r.seg.forEach(([g, col], j) => { const x0 = X(gx), x1 = X(gx + g * k); rect(x0, yy - bh / 2 - 4, Math.max(0, x1 - x0 - (j < r.seg.length - 1 ? 2 : 0)), bh, { fill: col, alpha: a }); gx += g; });
-        if (r.hero) rect(X(0), yy - bh / 2 - 4, X(9.55 * k) - X(0), bh, { color: TH ? '#111111' : 'rgba(0,0,0,0)', w: 1.5, alpha: a });
-        if (r.ghost) { G.save(); G.globalAlpha = a * ep(t, 3.0, 3.4); G.setLineDash([5, 4]); G.strokeStyle = C.ink2; G.lineWidth = 1.5; G.strokeRect(X(0), yy - bh / 2 - 8, X(r.ghost) - X(0), bh + 8); G.restore(); text('11.6 with its light base', X(r.ghost) + 10, yy + 32, { role: 'label', size: 19, color: C.mute, alpha: a * ep(t, 3.0, 3.4) }); }
-        if (r.over) { text('Walls 11.2', X(0) + 10, yy + 2, { role: 'label', size: 19, color: '#111111', alpha: a * k }); text('Ribs 5.2', X(11.19) + 10, yy + 2, { role: 'label', size: 19, color: '#111111', alpha: a * k }); }
-        text(r.lab, X(gx * k) + 12, yy + 4, { font: 'mono', size: 26, weight: 800, color: C.ink, alpha: clamp(k * 1.4 - 0.3) });
-        evDot(x + w - 30, yy - 6, r.ev, 5, a);
-      });
-      /* the budget line through every row, and the gap */
-      const kb = ep(t, 2.6, 3.2);
-      line(X(9.55), hy + 30, X(9.55), hy + 30 + 380 * kb, { color: C.hero, w: 2.5, dash: [8, 6] });
-      const kg = ep(t, 3.6, 4.2), gy = hy + 74 + 3 * 96 + 52;
-      if (kg > 0) { line(X(9.55), gy, X(9.55) + (X(16.36) - X(9.55)) * kg, gy, { color: C.red, w: 2.5 }); line(X(16.36), gy - 8, X(16.36), gy + 8, { color: C.red, w: 2.5, alpha: kg }); text('6.8 g over', X(16.36) + 14, gy + 8, { role: 'label', size: 21, color: C.red, alpha: kg }); }
+    const freed = SHL_FE.match - SHL_FE.g.body;
+    header(t, 'The lattice frees grams for the cell');
+    captions(t, [[0.6, 'To be as stiff on the crown as my lattice, a plain wall of the same shape needs ' + fmtN(SHL_FE.match, 1) + ' g. The lattice body is ' + fmtN(SHL_FE.g.body, 1) + ' g.'], [5.0, 'Those ' + fmtN(freed, 1) + ' g go where they buy the most: into the cell, for ' + THS.hours + ' at 1 kHz.']]);
+    const x = LM, y = 280, w = 1080, h = 640, a0 = tileA(t, 0.3, 0);
+    demoWindow(x, y, w, h, a0);
+    text('Shell body, the same crown stiffness, {g}', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
+    pill(x + w - 32 - pillW('derived'), y + 52, 'derived', a0);
+    const bx = x + 32, bw = w - 64 - 120, max = 22, X = g => bx + bw * g / max, a1 = ep(t, 0.8, 1.2);
+    for (const g of [0, 5, 10, 15, 20]) { line(X(g), y + 110, X(g), y + 380, { color: C.hair, w: 1.2, alpha: a1 }); text(String(g), X(g), y + 100, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a1 }); }
+    /* the plain wall that would match, and the lattice */
+    const kP = ep(t, 1.2, 2.2, E.snap), kL = ep(t, 2.2, 3.2, E.snap), bh = 40;
+    text('A plain wall, as stiff', bx, y + 170, { role: 'label', size: 19, color: C.ink2, alpha: a1 });
+    rr(X(0), y + 186, Math.max(bh, (X(SHL_FE.match) - X(0)) * kP), bh, 6, C.comp, null, 0, a1);
+    text(fmtN(SHL_FE.match, 1), X(SHL_FE.match * kP) + 14, y + 216, { role: 'num', size: 26, weight: 700, color: C.ink, alpha: clamp(kP * 1.4 - 0.3) });
+    text('The triangle lattice', bx, y + 290, { role: 'label', size: 19, color: C.heroText, alpha: a1 });
+    const xw = X(0) + (X(SHL_FE.g.wall) - X(0)) * kL, xr = xw + (X(SHL_FE.g.body) - X(SHL_FE.g.wall)) * kL;
+    rr(X(0), y + 306, Math.max(bh, xr - X(0)), bh, 6, C.hero, null, 0, a1);
+    if (kL > 0.6) { line(xw, y + 306, xw, y + 306 + bh, { color: C.bg, w: 3, alpha: a1 }); text('Wall ' + fmtN(SHL_FE.g.wall, 1), X(0) + 16, y + 333, { role: 'label', size: 19, color: '#FFFFFF', alpha: ep(t, 3.0, 3.4) }); text('Ribs ' + fmtN(SHL_FE.g.ribs, 1), xw + 12, y + 333, { role: 'label', size: 19, color: '#FFFFFF', alpha: ep(t, 3.0, 3.4) }); }
+    text(fmtN(SHL_FE.g.body, 1), xr + 14, y + 336, { role: 'num', size: 26, weight: 800, color: C.heroText, alpha: clamp(kL * 1.4 - 0.3) });
+    /* the freed grams: a bracket, then five gram blocks that travel down into the cell */
+    const kb = ep(t, 3.6, 4.2), gx0 = X(SHL_FE.g.body), gx1 = X(SHL_FE.match), gy = y + 410;
+    if (kb > 0) {
+      line(gx0, gy, gx0 + (gx1 - gx0) * kb, gy, { color: C.heroText, w: 2.5 }); line(gx0, gy - 8, gx0, gy + 8, { color: C.heroText, w: 2.5, alpha: kb }); line(gx1, gy - 8, gx1, gy + 8, { color: C.heroText, w: 2.5, alpha: kb });
+      rich([{ s: fmtN(freed, 1), font: 'disp', size: 44, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true, count: [3.8, 0.9] }, { s: 'g freed', role: 'label', size: 21, color: C.mute, gap: 10, caps: false }], (gx0 + gx1) / 2, gy + 56, { align: 'center', t, alpha: kb });
     }
-    /* right: where the grams can come from */
-    { const x = 1200, y = LAY.top, w = RM - 1200, h = 580, hy = shlCard(t, 0.5, x, y, w, h, 'Where the grams can come from', []);
-      const items = [
-        ['A base you can leave off', '#31', 'M1K bases: 5.7 g, or 4.1 g light.', 'claim'],
-        ['A lighter resin', '#5', 'At the SLX\'s 0.9 g/cm³: 1.8 g off the study.', 'derived'],
-        ['Wall where the load is', '#93', '0.9 to 1.2 mm now; less where the FE allows.', 'proposal'],
-        ['A smaller cell', 'Battery', '140 mAh frees 2.5 g, for 44% fewer hours.', 'derived']
-      ];
-      let yy = hy + 16;
-      items.forEach(([h2, tag2, b, ev], i) => {
-        const a = ep(t, 2.0 + i * 0.5, 2.4 + i * 0.5);
-        rich([{ s: h2, role: 'label', size: 21, color: C.ink }, { s: tag2, role: 'label', size: 19, color: C.mute, gap: 14 }], x + 26, yy, { alpha: a });
-        evDot(x + w - 32, yy - 8, ev, 5, a);
-        const r2 = text(b, x + 26, yy + 34, { role: 'small', size: 25, color: C.ink2, maxW: w - 52, lh: 1.3, t, t0: 2.1 + i * 0.5, cps: 130, alpha: a });
-        yy += 34 + r2.h + 26;
-      });
+    const cx = x + 220, cy = y + 520, cw = 300, chh = 70, kc = ep(t, 4.6, 5.0);
+    if (kc > 0) {
+      rr(cx, cy, cw, chh, 8, null, C.ink2, 2, kc); rr(cx + cw, cy + 22, 10, 26, 3, C.ink2, null, 0, kc);
+      const fillK = ep(t, 5.2, 7.6, E.io3); rr(cx + 6, cy + 6, Math.max(12, (cw - 12) * (0.62 + 0.38 * fillK)), chh - 12, 5, C.hero, null, 0, kc);
+      text('The cell', cx - 20, cy + 44, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: kc });
+      rich([{ s: String(THESEUS.hours), font: 'disp', size: 44, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: 'h at 1 kHz', role: 'label', size: 21, color: C.mute, gap: 10, caps: false }], cx + cw + 40, cy + 52, { alpha: ep(t, 6.6, 7.0) });
+      for (let i = 0; i < 5; i++) { const kk = ep(t, 5.0 + i * 0.32, 5.9 + i * 0.32, E.io3); if (kk <= 0 || kk >= 1) continue; const sx = lerp(gx0 + (gx1 - gx0) * (i + 0.5) / 5, cx + cw * (0.66 + i * 0.06), kk), sy = lerp(gy + 4, cy + 20, kk) - Math.sin(kk * Math.PI) * 60; rr(sx - 9, sy - 9, 18, 18, 3, C.hero, null, 0, 1 - kk * 0.3); }
     }
-    gloss(t, 3.0, 'Shell and skates', 'Every housing part plus the feet: top, sides, base and skates. The buttons, boards and battery are counted elsewhere.');
-    featureCard(t, 6.0, 'A solid shell at 29 g', ['derived', 'proposal'], 'A hole-less 29 g build exists as a resin prototype (Vaidemi). Mine has to mold it: the next pass solves the shell at 9.55 g (#15).');
+    text('3D shell FE, 10 N on the crown; the plain wall\'s mass follows its own solved law past 15.2 g. Body only; the triggers are the same in both.', x + 32, y + h - 32, { role: 'small', size: 22, weight: 560, color: C.faint, maxW: w - 64, alpha: ep(t, 2.4, 2.8) });
+    /* right: more grams to find, each its own idea */
+    const rx = x + w + 40, rw = RM - rx, a2 = tileA(t, 1.0, 1);
+    demoWindow(rx, y, rw, 400, a2);
+    text('More grams the shell gives back', rx + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a2 });
+    [['A base you can leave off', '#31', 'Zaunkoenig\'s M1K bases weigh 5.7 g, 4.1 g in the light build.'], ['A lighter resin', '#5', 'At the SLX\'s 0.9 g/cm³ this body is ' + fmtN(SHL_FE.g.body * (1 - 0.9 / 1.01), 1) + ' g lighter.'], ['Wall where the load is', '#93', 'Thick low on the sides, thin where the FE runs cool.']].forEach(([h2, tg, b], i) => {
+      const yy = y + 116 + i * 96, a = a2 * ep(t, 2.0 + i * 0.5, 2.4 + i * 0.5);
+      rich([{ s: h2, role: 'label', size: 21, color: C.ink }, { s: tg, role: 'label', size: 19, color: C.mute, gap: 14 }], rx + 32, yy, { alpha: a });
+      text(b, rx + 32, yy + 34, { role: 'small', size: 24, weight: 560, color: C.ink2, maxW: rw - 64, lh: 1.3, alpha: a });
+    });
+    sourceBox(t, 3.0, rx, y + 440, rw, 'Zaunkoenig 2020', 'M1K: carbon fibre shell 7.5 g; printed bottom shell 5.6 to 5.9 g, 4.0 to 4.2 g in the light build.', { size: 24 });
   }
 });
 
@@ -1430,10 +1571,10 @@ function rimMM(o = {}) {
   return out;
 }
 S({
-  id: 'grind', ch: 'shell', theme: 'night', title: 'Fix the grind instead of greasing it', settle: 9, ideas: [97, 96], src: ['poron4701', 'shlDoc'],
+  id: 'grind', ch: 'shell', theme: 'night', title: 'Poron pads, not grease', settle: 9, ideas: [97, 96], src: ['poron4701', 'shlDoc'],
   draw: t => {
-    header(t, 'Fix the grind instead of greasing it');
-    captions(t, [[0.6, 'A separate bottom rim is easier to service, and every place two hard parts touch can grind.'], [3.2, 'Newer ULX batches are greased with Krytox. Grease quiets the rub for a while; the contact stays, so the noise comes back.'], [6.0, 'A thin Poron pad at the contact stops the parts rubbing at all, for about half a gram.']]);
+    header(t, 'Poron pads, not grease');
+    captions(t, [[0.6, 'A separate bottom rim is easier to service, and every place two hard parts touch can grind.'], [3.2, 'Newer ULX batches are greased with Krytox. Grease quiets the rub for a while; the contact stays, so the noise comes back.'], [6.0, 'A thin Poron pad at the contact ends the rub for good, for about half a gram.']]);
     const wx = LM, wy = LAY.top, ww = RM - LM, wh = 580;
     demoWindow(wx, wy, ww, wh, ep(t, 0.3, 0.7));
     const cases = [[wx + 300, 'Plastic on plastic', 'The rim rubs the shell and squeaks', 1, 0, 'stick'], [wx + 870, 'Krytox 205 in the groove', 'Quiet until it wears or collects dust', 0.25, 0, 'wear'], [wx + 1440, 'A thin Poron pad at the contact', 'A soft stop: nothing rubs, about 0.5 g', 0, 1, 'none']];
@@ -1456,12 +1597,12 @@ S({
         const saw = ((u * 23) % 1) - 0.5, v = amp * (saw * 0.9 + 0.25 * Math.sin(u * 151)) + (mode === 'none' ? 0.03 * Math.sin(u * 40) : 0);
         pts.push([mx + 8 + (mw - 16) * j / 160, my + mh / 2 - v * (mh * 0.8)]);
       }
-      poly(pts, { color: mode === 'none' ? C.hero : mode === 'wear' ? C.orange : C.red, w: 1.8, alpha: k });
-      if (mode === 'wear') text('Louder as it wears', mx + mw, my - 10, { role: 'label', size: 19, color: C.orange, align: 'right', alpha: k * ep(t, t0 + 3, t0 + 3.4) });
+      poly(pts, { color: mode === 'none' ? C.hero : mode === 'wear' ? C.mute : C.bad, w: 1.8, alpha: k });
+      if (mode === 'wear') text('Louder as it wears', mx + mw, my - 10, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: k * ep(t, t0 + 3, t0 + 3.4) });
       text(l2, cx, wy + 516, { role: 'small', size: 25, color: C.mute, align: 'center', t, t0: t0 + 0.4, cps: 90, maxW: 460 });
     });
-    text('The rim slides into the top shell (#97). Noise traces are an illustration, not a recording.', wx + 26, wy + wh - 22, { role: 'small', size: 25, color: C.faint, alpha: ep(t, 2.4, 2.8) });
+    text('The rim slides into the top shell (#97). Noise traces drawn to show the pattern.', wx + 26, wy + wh - 22, { role: 'small', size: 25, color: C.faint, alpha: ep(t, 2.4, 2.8) });
     gloss(t, 2.6, 'Poron', 'A microcellular urethane foam for gaskets, a third as dense as the shell. A thin layer stops hard parts rubbing.');
-    featureCard(t, 3.6, 'A slide-in rim with a pad', ['proposal'], 'Krytox only hides the rub, per Brock and Josh\'s thread (#96). A foam pad removes it, with the rim slid in (#97).');
+    featureCard(t, 3.6, 'A slide-in rim with a pad', ['proposal'], 'Grease only hides the rub (#96). A foam pad removes it, with the rim slid in (#97).');
   }
 });

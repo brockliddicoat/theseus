@@ -26,6 +26,8 @@ function view3D(key, t, x, y, w, h, state = {}, o = {}) {
   const k = (APP.scale || 1) * (APP.dpr || 1) * (o.res || 1);
   const pw = Math.max(64, Math.round(w * k)), ph = Math.max(36, Math.round(h * k));
   let c = null;
+  /* the 3D highlights (light gates, section caps, tie points, the battery's stripe) follow the deck's Theseus colour */
+  if (R3D.setColors) R3D.setColors({ hero: C.hero });
   try { c = R3D.render(key, t, state, pw, ph, theme); } catch (e) { console.error('view3D', key, e); V3.failed[key] = true; }
   /* a scene that failed to build falls back to its flat twin rather than leaving a hole in the slide */
   if (!c && (V3.failed[key] || (R3D.failed && R3D.failed(key, theme)))) { V3.failed[key] = true; V3.proj = view2D(key, t, x, y, w, h, state, o) || null; if (V3.proj) return true; }

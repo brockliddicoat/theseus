@@ -2,9 +2,11 @@
 
 The Theseus main board as a detailed, animatable 3D asset: the **Ninjutso Sora V2 PCB outline and layout**, traced
 from Brock's photo (`refs/photos/sora-v2-pcb-8.29g.jpg`), rebuilt with Brock's changes: **Gateron GT01** switches in
-**Mill-Max 3305** sockets on their wedge (#2, #14), a **Raytac AN54LM-20A** (nRF54LM20A, chip antenna) moved forward
-to the wheel bay with a real antenna keep-out (#68, #77, #102), a **Nordic nPM1300** PMIC with only its real external
-parts, a **next-gen PixArt FrameSync-class sensor (proposal)** near the centre with a smaller clip-on lens (#37),
+**Mill-Max 3305** sockets on their wedge (#2, #14), a **Raytac nRF54LM20A module** moved forward to the wheel bay,
+drawn black with the long meander PCB antenna of the MDBT50Q-style modules (Brock, 2026-11-04) and turned so the antenna
+end points away from the wheel, with a real antenna keep-out under it (#68, #77, #102), a **Nordic nPM1300** PMIC with
+only its real external parts, a **next-gen PixArt FrameSync-class sensor (proposal)** as a castellated module near the
+centre with a smaller snap-on lens (#37),
 **every part on the top side** (#92), the battery JST turned sideways (#71), side-button **wires instead of an FPC**
 (#51, lightly braided #69), ENIG gold trim, all the copper routed on four layers, an ON/OFF-marked power switch
 (#100), a QR to the web software, and triangle art + QR on the component-free bottom (#63).
@@ -40,8 +42,11 @@ finals: `bash tools/render_finals.sh` (skips existing files).
 
 ```js
 import { buildPcb, PCB_INFO } from './pcb/pcb.js';
-import { buildGT01, buildMillMax3305, buildScrollWheel } from './parts/parts.js';
-const pcb = await buildPcb({ placement: 'mouse', gt01: buildGT01, millmax: buildMillMax3305, wheel: buildScrollWheel });
+import { buildGT01, buildMillMax3305, buildScrollWheel, buildRadioModule, buildSensorModule, buildSnapLens } from './parts/parts.js';
+const pcb = await buildPcb({ placement: 'mouse', gt01: buildGT01, millmax: buildMillMax3305, wheel: buildScrollWheel,
+  radio: buildRadioModule, sensor: buildSensorModule, lens: buildSnapLens });   // optional: the parts' module, sensor and lens
+// with `radio`, U1 turns 180° (antenna to the rear) and the keep-out follows it: copper on every layer inside the new
+// rectangle is dropped at load, the silk keep-out marking moves, U.layout.antennaKeepout is updated (the GLB is unchanged)
 scene.add(pcb);
 const U = pcb.userData;
 U.setExplode(k);                      // 0..1 layers lift in a cascade: passives, PMIC + inductors, sensor (lens drops),
@@ -118,13 +123,13 @@ Labels: [MEAS] traced from the photo · [DS] datasheet · [REP] representative �
 
 | Ref | Part | Size (mm) | Label |
 |---|---|---|---|
-| U1 | Raytac **AN54LM-20A** (nRF54LM20A, chip antenna, HS USB), castellated, nickel can with laser label (no FCC ID: certifications "intended") | 9.9 × 13.3 × 2.0 | [DS]; antenna keep-out 13.2 × 3.7 mm all layers, no copper under the antenna end |
+| U1 | Raytac nRF54LM20A module (footprint of the **AN54LM-20A**, HS USB), castellated, black substrate, nickel-silver can (no logos, no FCC ID: certifications "intended"), the long meander PCB antenna at the end facing the board's rear (`parts/boardparts.js` `buildRadioModule`, turned 180°) | 9.9 × 13.3 × 2.0 | [DS] footprint; [REP] antenna form (MDBT50Q-style, per Brock); keep-out 13.2 × 3.7 mm all layers under the antenna end, board z 13.75 → 17.45 (mouse z 10.87 → 14.57) |
 | U2 | Nordic **nPM1300** QFN32 with exposed pad + 9 thermal vias | 5.0 × 5.0 × 0.85 | [DS] package, [REP] pin map |
 | L1, L2 | 2.2 µH buck inductors, Isat > 350 mA, far from the antenna feed | 2.0 × 1.6 × 1.0 | [REP] part, [DS] requirement |
 | C30–C36, C10–C11, C20–C22, C1–C2 | MLCCs (VBUS 1 µF / 2.2 µF + 100 nF, VBUSOUT 1 µF, VSYS + VBAT 10 µF 0603, buck outputs 10 µF, module 4.7 µF + 100 nF, sensor 1 µF ×2 + 100 nF) | 0402: 1.0 × 0.5 × 0.5; 0603: 1.6 × 0.8 × 0.8 | [REP] values |
 | R1–R4 | 4.7 k TWI pull-ups, 5.1 k USB-C CC Rd | 0402 | [REP] |
-| U3 | **next-gen PixArt FrameSync-class sensor (proposal)**, generic 16-lead package, marked "FS-NEXT / ES / PROPOSAL" | 9.0 × 11.0 × 2.2 | [PR]; board z 4.0 (near the centre) |
-| LENS | smaller clip-on lens, PC, clips through two slots | 7.6 × 8.6 × 2.2 (under the board) | [PR] (#37) |
+| U3 | **next-gen PixArt FrameSync-class sensor (proposal)** as a small module board on 2 × 8 castellated half-holes, 1.2 mm pitch, label with a 2D code (`buildSensorModule`, from Brock's four photos) | 8.4 × 9.8 × 0.6 | [PR]; board z 4.0 (near the centre) |
+| LENS | smaller snap-on lens, clear PC: imaging + illumination domes, a boss into the sensor aperture, a Ø1.7 peg with a split snap head at each end through the board (`buildSnapLens`) | body 5.2 × 9.6 × 2.2 (under the board) | [PR] (#37) |
 | SW1, SW2 | Gateron **GT01** (parts builder model), on its 20° wedge, keyed peg; 55 ± 5 gf, 0.35 ± 0.10 mm, 100 M clicks | 12.8 × 5.8 × 6.5 envelope | [REP] ([MC] figures); positions [MEAS] |
 | SW1_MM1–3, SW2_MM1–3 | **Mill-Max 3305** claw receptacles (gold BeCu contact, tin shell) on 5.08 mm pitch | flange Ø1.956, body Ø1.473 × 2.667, hole Ø1.575 | [DS] dims (parts model) |
 | J1 | USB-C 16-pin receptacle, 4 shell legs | 8.94 × 7.35 × 3.16 | [REP] part, [MEAS] position |
@@ -177,6 +182,11 @@ real copper areas), mask 2 × 20 µm. Component masses are typical values for th
 
 Leads and plugs are excluded (not in the Sora's 8.29 g either). The board is ~40 % of it; a 0.8 mm board would save
 ≈ 0.5 g of laminate, and the wheel + encoder estimate is the least certain line.
+
+**One board.** Brock: "we don't have a front and back pcb, it'll be a single ~5.6g pcb." Every scene has exactly one
+board: `pcb.glb` (one outline, top-side assembly), the lattice's single PCB stand-in, none in the shell. The model's
+board + on-board parts estimate (6.28 g) sits within the component-mass uncertainty of Brock's ~5.6 g (the two GT01s
+alone are "typical micro switch" guesses at 1.0 g), so nothing in the geometry changed for it.
 
 ## Shots (`shots/`, 2×)
 

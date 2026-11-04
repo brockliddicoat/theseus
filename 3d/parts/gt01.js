@@ -1,4 +1,7 @@
-// Gateron GT01 mouse micro switch — REPRESENTATIVE model (no public datasheet).
+// Gateron GT01 mouse micro switch — REPRESENTATIVE model (no public datasheet). Brock: "the gt01 switch is literally
+// just a normal SPDT switch with a special bottom housing to rotate it" — so this is a standard D2F-class SPDT micro
+// switch (base, terminals, snap-action moving spring with its tongue and fulcrum, silver contacts, plunger, cover) on
+// the GT01's moulded wedge, which turns it 20° and covers its terminals down to the board.
 // Manufacturer claims (MechKeys / ZFX Shenzhen launch): 55 ± 5 gf, travel 0.35 ± 0.10 mm, 100 M clicks,
 // "Zero Preload and Zero Delay", "Special Shape for Vertical Pressing".
 // Envelope: Omron D2F class 12.8 × 5.8 × 6.5 mm (D2F datasheet), body tilted on a molded wedge
@@ -36,13 +39,17 @@ export const GT01_SPEC = {
   },
 };
 
-// switch-frame layout (mm)
+// switch-frame layout (mm): a standard SPDT micro switch, D2F class
 const L = 12.8, W = 5.8, H = 6.5;
-const Y_SHOULDER = 2.0, COVER_WALL = 0.45, CEIL = 6.0;
+const Y_SHOULDER = 2.0, COVER_WALL = 0.45, CEIL = 6.0;   // base / cover joint, cover wall, cavity ceiling
 const ZP = 3.4;                    // plunger axis
-const Z_CLAMP = 4.75, Z_TIP = -4.0;
-const Y_BLADE = 4.366, T_BLADE = 0.08;   // 6 µm above the COM plate: no coplanar faces
+const PITCH = 5.08;                // COM at +PITCH, NO at 0, NC at −PITCH (D2F)
+const Z_CLAMP = 4.25, Z_TIP = -4.0;   // the blade leaves the COM anchor tab at Z_CLAMP; the moving contact sits at Z_TIP
+const Y_ANCHOR = 4.45, T_BLADE = 0.08, Y_BLADE = Y_ANCHOR + 0.006;   // blade 6 µm above the tab: no coplanar faces
+const Z_FULC = 4.0, Y_FULC = 3.2;  // the tongue's fulcrum: the V notch at the tip of the COM terminal's lower tab
 const GAP = 0.30;                  // contact gap NC→NO (representative)
+const Y_NCARM = Y_BLADE + T_BLADE + 0.12 + 0.14;   // NC arm underside: its rivet's crown meets the moving contact at rest
+const Y_NOTAB = Y_BLADE - GAP - 0.12 - 0.14;        // NO tab top: its rivet's crown meets the moving contact after the snap
 const H_MIN = 0.5;                 // wedge thickness under the low (plunger) end
 
 export function buildGT01(opts = {}) {
@@ -61,128 +68,127 @@ export function buildGT01(opts = {}) {
   root.add(body);
   const S2W = (y, z) => [y * cT - z * sT + lift, y * sT + z * cT];   // switch (y, z) → world (Y, Z)
 
-  // ---------------------------------------------------------------- base (black, world frame)
-  // side profile in world (Z, Y): lower base band (S y ∈ [0, 2]) + the wedge down to the PCB.
-  const A = S2W(Y_SHOULDER, -L / 2), B = S2W(Y_SHOULDER, L / 2), C = S2W(0, L / 2), F = S2W(0, -L / 2);
-  const prof = [[F[1], 0], [C[1], 0], [C[1], C[0]], [B[1], B[0]], [A[1], A[0]], [F[1], F[0]]];
-  const pr = [0.12, 0.12, 0.3, 0.32, 0.32, 0.3];
+  // ================================================================ the special bottom housing (world frame)
+  // The GT01 is a normal SPDT micro switch on a moulded wedge that turns it 20° (Brock: "literally just a normal SPDT
+  // switch with a special bottom housing to rotate it"). The wedge also covers the terminals down to the board.
+  const C = S2W(0, L / 2), F = S2W(0, -L / 2);          // the switch's bottom corners (front low, back high)
+  const prof = [[F[1], 0], [C[1], 0], [C[1], C[0]], [F[1], F[0]]];
+  const pr = [0.12, 0.12, 0.18, 0.3];
   const profShape = () => filletPolygon(prof, pr, false, 6);
-  // pockets (holes in the two skins): positions given in S, converted to world
   const pockets = [];
-  const at = (y, z) => { const p = S2W(y, z); return [p[1], p[0]]; };   // → (Z, Y) shape coords
-  const circ = (y, z, r) => { const [u, v] = at(y, z); return circlePath(r, u, v); };
-  pockets.push(() => circ(1.0, 4.35, 0.62));
-  pockets.push(() => { const [u, v] = at(1.0, 1.45); const p = stadiumPath(2.05, 0.74, u, v, -tilt); return p; });
-  pockets.push(() => circ(1.0, -1.55, 0.62));
-  pockets.push(() => circ(1.0, -4.55, 0.42));
-  // wedge triangle (only when the wedge is tall enough): legs on the PCB and the back wall, hypotenuse ∥ body
-  const zBack = F[1] + 0.85, yLow = 0.62;
-  const yTopAtBack = (F[0] - 1.25) ;             // stay 1.25 below the body bottom at the back wall
-  const triRight = zBack + (yTopAtBack - yLow) / Math.tan(Math.max(tilt, 1e-3));
-  const triOK = yTopAtBack - yLow > 1.2 && triRight - zBack > 1.8;
-  if (triOK) {
-    const zr = Math.min(triRight, C[1] - 1.6);
-    const yt = yLow + (zr - zBack) * 0 + (yTopAtBack - yLow) * 1;
-    pockets.push(() => filletPolygon([[zBack, yLow], [zr, yLow], [zBack, yt]], 0.35, true, 5));
+  {
+    // a triangular lightening pocket in each skin, parallel to the switch, and one round one under the plunger end
+    const zBack = F[1] + 0.9, yLow = 0.6, yTop = F[0] - 0.75;
+    const zr = zBack + (yTop - yLow) / Math.tan(Math.max(tilt, 1e-3)) - 0.9;
+    if (yTop - yLow > 1.1 && zr - zBack > 1.6) pockets.push(() => filletPolygon([[zBack, yLow], [Math.min(zr, C[1] - 2.2), yLow], [zBack, yTop]], 0.3, true, 5));
   }
   const skinT = 1.0, coreHalf = W / 2 - skinT;
-  const mkSkin = (side) => {
-    const s = profShape();
-    for (const h of pockets) s.holes.push(h());
-    const bev = { r: 0.24, t: 0.24, s: 4 };
-    const g = extrude(s, { depth: skinT, front: side < 0 ? bev : null, back: side > 0 ? bev : null, curveSegments: 20 });
+  const mkSkin = (s) => {
+    const sh = profShape();
+    for (const h of pockets) sh.holes.push(h());
+    const bev = { r: 0.22, t: 0.22, s: 4 };
+    const g = extrude(sh, { depth: skinT, front: s < 0 ? bev : null, back: s > 0 ? bev : null, curveSegments: 20 });
     g.rotateY(-Math.PI / 2);                       // shape (Z,Y), extrusion e → −X
-    g.translate(side < 0 ? -coreHalf : W / 2, 0, 0);
+    g.translate(s < 0 ? -coreHalf : W / 2, 0, 0);
     return g;
   };
   const coreG = extrude(profShape(), { depth: 2 * coreHalf, curveSegments: 20 });
   coreG.rotateY(-Math.PI / 2); coreG.translate(coreHalf, 0, 0);
   const base = new THREE.Group(); base.name = 'base';
-  base.add(meshOf(mkSkin(-1), M.lcpBlack, 'baseSkinL'), meshOf(coreG, M.lcpBlack, 'baseCore'), meshOf(mkSkin(+1), M.lcpBlack, 'baseSkinR'));
-  // key peg (keyed orientation) under the base
+  const wedgeL = meshOf(mkSkin(-1), M.lcpBlack, 'wedgeSkinL'), wedgeC = meshOf(coreG, M.lcpBlack, 'wedgeCore'), wedgeR = meshOf(mkSkin(+1), M.lcpBlack, 'wedgeSkinR');
+  base.add(wedgeL, wedgeC, wedgeR);
   const peg = meshOf(lathe([[0, -0.72], [0.36, -0.72], [0.45, -0.63], [0.45, 0.2], [0, 0.2]], { segments: 32 }), M.lcpBlack, 'keyPeg');
   peg.position.set(1.45, 0, 2.54);
   base.add(peg);
   root.add(base);
 
-  // ---------------------------------------------------------------- upper core (inside the cover, S frame)
-  const core = new THREE.Group(); core.name = 'upperCore';
+  // ================================================================ the switch itself (S frame): a standard SPDT micro switch
   const box = (w, d, y0, y1, r, bev, x = 0, z = 0) => {
-    const g = extrude(roundedRectShape(w, d, r), { depth: y1 - y0, front: bev ? { r: bev, s: 3 } : null, curveSegments: 6 });
-    g.rotateX(-Math.PI / 2); g.translate(x, y0, z);   // shape (x, −z)… rotateX(−90°): (x, y, z) → (x, z, −y)
+    const g = extrude(roundedRectShape(w, d, r), { depth: y1 - y0, front: bev ? { r: bev, s: 3 } : null, back: bev ? { r: bev * 0.6, s: 2 } : null, curveSegments: 6 });
+    g.rotateX(-Math.PI / 2); g.translate(x, y0, z);   // (shape x, shape y, e) → (x, e, −y): footprint w along X, d along Z
     return g;
   };
-  // rotateX(-90°) maps shape y → −z; boxes are symmetric so only offsets matter (z passed separately)
-  const coreParts = [
-    box(W - 2 * COVER_WALL - 0.02, L - 2 * COVER_WALL - 0.02, Y_SHOULDER - 0.01, 2.7, 0.24, 0.08),  // floor
-    box(3.0, 1.15, 2.69, 4.06, 0.18, 0.08, 0, 5.32),        // COM pedestal
-    box(3.0, 0.95, 2.69, 5.36, 0.18, 0.08, 0, -5.42),       // NC pedestal (back)
-    box(1.8, 1.0, 2.69, 3.45, 0.16, 0.06, 0, -4.0),         // NO pedestal
-    box(1.0, 0.5, 2.69, 3.98, 0.12, 0.05, 0, 1.85),         // tongue fulcrum post
-  ];
-  for (const s of [1, -1]) coreParts.push(box(2.1, 0.5, 2.62, 3.56, 0.12, 0.08, 0, s * 6.12));  // latch bumps
-  coreParts.forEach((g, i) => core.add(meshOf(g, M.lcpBlack, 'core' + i)));
+  // ---- the switch's own base (black LCP): the lower body and the pedestals that hold the terminals inside the cover
+  const core = new THREE.Group(); core.name = 'switchBase';
+  const sb = (g, nm) => { const m = meshOf(g, M.lcpBlack, nm); core.add(m); return m; };
+  sb(box(W, L, 0.0, Y_SHOULDER, 0.35, 0.06), 'baseBody');
+  sb(box(2.8, 1.25, Y_SHOULDER - 0.01, 3.0, 0.16, 0.06, 0, 5.32), 'comPedestal');
+  sb(box(2.8, 0.75, Y_SHOULDER - 0.01, 4.62, 0.16, 0.06, 0, -5.62), 'ncPedestal');
+  sb(box(1.7, 1.25, Y_SHOULDER - 0.01, 3.64, 0.14, 0.05, 0, -3.95), 'noPedestal');
+  for (const s of [1, -1]) sb(box(0.42, 7.4, Y_SHOULDER - 0.01, 2.55, 0.1, 0.05, s * 2.1, 0.2), 'guideRail');   // the plunger/blade guides
   body.add(core);
 
-  // ---------------------------------------------------------------- terminals + contacts (gold, S frame)
+  // ---- terminals (stamped brass, gold-plated): COM with the blade's anchor tab and the tongue's fulcrum, NC over the
+  // tip, NO under it; each runs straight down out of the base at the D2F pitch
   const term = new THREE.Group(); term.name = 'terminals';
-  const strip = (pts, w, t) => sweep(roundPath(pts, 0.12), rectSection(t, w, 0.04, 2), { up: [0, 1, 0] });
-  // COM: plate on its pedestal + a down-strip on the +x face
-  const comPlate = box(2.4, 1.05, 4.06, 4.36, 0.12, 0.04, 0, 5.3);
-  term.add(meshOf(comPlate, M.goldSatin, 'comPlate'));
-  term.add(meshOf(strip([[1.2, 4.21, 5.3], [1.58, 4.21, 5.3], [1.66, 4.1, 5.3], [1.66, 2.75, 5.3]], 0.7, 0.3), M.goldSatin, 'comStrip'));
-  // NC: up the back pedestal's −x face, arm forward over the blade tip
-  const ncArm = box(1.3, 2.3, 4.70, 5.0, 0.2, 0.05, 0, -4.35);
-  term.add(meshOf(ncArm, M.goldSatin, 'ncArm'));
-  term.add(meshOf(strip([[-0.5, 4.85, -5.45], [-1.58, 4.85, -5.45], [-1.66, 4.74, -5.45], [-1.66, 2.75, -5.45]], 0.7, 0.3), M.goldSatin, 'ncStrip'));
-  // NO: pad on its pedestal with a down-strip
-  const noPad = box(1.3, 1.1, 3.5, 3.8, 0.18, 0.04, 0, -4.0);
-  term.add(meshOf(noPad, M.goldSatin, 'noPad'));
-  term.add(meshOf(strip([[0.55, 3.65, -4.0], [0.98, 3.65, -4.0], [1.06, 3.55, -4.0], [1.06, 2.75, -4.0]], 0.6, 0.3), M.goldSatin, 'noStrip'));
+  const tm = (g, nm) => { const m = meshOf(g, M.goldSatin, nm); term.add(m); return m; };
+  const ZC = PITCH, ZN = -PITCH;
+  tm(box(2.2, 0.3, 0.0, Y_ANCHOR, 0.06, 0.02, 0, ZC), 'comPost');
+  tm(box(2.2, 0.98, Y_ANCHOR - 0.25, Y_ANCHOR, 0.08, 0.02, 0, ZC - 0.34), 'comAnchor');
+  {
+    // the fulcrum: a narrow tab with a V notch at its tip, where the tongue's end seats
+    const fz0 = Z_FULC, fz1 = ZC - 0.15, fy0 = Y_FULC - 0.13, fy1 = Y_FULC + 0.13;
+    const sh = new THREE.Shape(); sh.moveTo(fz1, fy0); sh.lineTo(fz1, fy1); sh.lineTo(fz0, fy1); sh.lineTo(fz0 + 0.12, Y_FULC); sh.lineTo(fz0, fy0); sh.lineTo(fz1, fy0);
+    const g = extrude(sh, { depth: 0.9, front: { r: 0.02, s: 1 }, back: { r: 0.02, s: 1 }, curveSegments: 2 });
+    g.rotateY(-Math.PI / 2); g.translate(0.45, 0, 0);    // shape (Z, Y), extrusion → −X, centred
+    tm(g, 'comFulcrum');
+  }
+  tm(box(2.0, 0.3, 0.0, Y_NCARM + 0.25, 0.06, 0.02, 0, ZN), 'ncPost');
+  { const a0 = ZN - 0.15, a1 = Z_TIP + 0.6; tm(box(1.4, a1 - a0, Y_NCARM, Y_NCARM + 0.25, 0.1, 0.02, 0, (a0 + a1) / 2), 'ncArm'); }
+  tm(box(1.4, 1.3, Y_NOTAB - 0.25, Y_NOTAB, 0.1, 0.02, 0, Z_TIP), 'noTab');
+  tm(box(1.4, 0.3, 1.0, Y_NOTAB - 0.2, 0.05, 0.02, 0, Z_TIP + 0.5), 'noRiser');
+  tm(box(1.4, Math.abs(Z_TIP + 0.65) + 0.15, 0.7, 1.0, 0.05, 0.02, 0, (Z_TIP + 0.65) / 2 + 0.075), 'noRun');
+  tm(box(0.7, 0.3, 0.0, 0.72, 0.04, 0.02, 0, 0), 'noExit');
   body.add(term);
-  // contact rivets (fine gold)
-  const dome = (r, h) => lathe([[0, 0], [r, 0], ...Array.from({ length: 7 }, (_, i) => { const a = (i + 1) / 7 * Math.PI / 2; return [r * Math.cos(a), h * Math.sin(a)]; })], { segments: 32 });
-  const ncRivet = meshOf(dome(0.45, 0.14), M.gold, 'contactNC'); ncRivet.rotation.x = Math.PI; ncRivet.position.set(0, 4.70, Z_TIP);
-  const noRivet = meshOf(dome(0.45, 0.14), M.gold, 'contactNO'); noRivet.position.set(0, 3.80, Z_TIP);
+  // fixed contacts: silver-alloy rivets, crowned
+  const dome = (r, h) => lathe([[0, 0], [r, 0], ...Array.from({ length: 8 }, (_, i) => { const a = (i + 1) / 8 * Math.PI / 2; return [r * Math.cos(a), h * Math.sin(a)]; })], { segments: 40 });
+  const ncRivet = meshOf(dome(0.42, 0.14), M.silverContact, 'contactNC'); ncRivet.rotation.x = Math.PI; ncRivet.position.set(0, Y_NCARM, Z_TIP);
+  const noRivet = meshOf(dome(0.42, 0.14), M.silverContact, 'contactNO'); noRivet.position.set(0, Y_NOTAB, Z_TIP);
   body.add(ncRivet, noRivet);
+  // riveted anchor: the blade is fixed to the COM tab by a small rivet
+  const anchorRivet = meshOf(dome(0.3, 0.07), M.silverContact, 'anchorRivet'); anchorRivet.position.set(0, Y_BLADE + T_BLADE, ZC - 0.42);
+  body.add(anchorRivet);
 
-  // ---------------------------------------------------------------- moving blade (deformable) + rivet + tongue
-  const bladeShape = roundedRectShape(2.2, 10.3, 0.55, 0, 0);
-  bladeShape.holes.push(roundedRectPath(1.25, 5.2, 0.3, 0, 0.4));   // window z ∈ [−2.4, 2.8]
-  const bg = extrude(bladeShape, { depth: T_BLADE, front: { r: 0.02, s: 1 }, back: { r: 0.02, s: 1 }, curveSegments: 8, crease: 30 });
-  // shape centre z: blade spans z ∈ [−4.55, 5.75] → centre 0.6; window centre at z = −0.2
-  bg.rotateX(-Math.PI / 2);                         // (x, y, e) → (x, e, −y)
-  bg.translate(0, Y_BLADE, 0.6);
-  const blade = meshOf(bg, M.goldSatin, 'blade');
+  // ---- the moving spring (beryllium copper): a frame anchored on COM, a tongue cut out of it and bent onto the
+  // fulcrum; pressing the frame near the anchor carries the tongue's line of force past the fulcrum and the free end
+  // snaps from NC down to NO (and back on release, a little later: the hysteresis)
+  const zA0 = Z_TIP - 0.55, zA1 = ZC + 0.12;             // blade from just past the contact to over the anchor
+  const bladeShape = roundedRectShape(2.2, zA1 - zA0, 0.5, 0, 0);
+  const wz0 = Z_TIP + 0.9, wz1 = Z_FULC - 0.25;          // the tongue's window
+  bladeShape.holes.push(roundedRectPath(1.16, wz1 - wz0, 0.22, 0, -((wz0 + wz1) / 2 - (zA0 + zA1) / 2)));
+  const bg = extrude(bladeShape, { depth: T_BLADE, front: { r: 0.015, s: 1 }, back: { r: 0.015, s: 1 }, curveSegments: 10, crease: 30 });
+  bg.rotateX(-Math.PI / 2);                               // (x, y, e) → (x, e, −y)
+  bg.translate(0, Y_BLADE, (zA0 + zA1) / 2);
+  const blade = meshOf(bg, M.becu, 'blade');
   body.add(blade);
   const bladeRest = bg.attributes.position.array.slice();
   const bladeNRest = bg.attributes.normal.array.slice();
   const movRivet = new THREE.Group(); movRivet.name = 'contactCOM';
-  const mrTop = meshOf(dome(0.45, 0.12), M.gold, 'movTop'); mrTop.position.y = T_BLADE;
-  const mrBot = meshOf(dome(0.45, 0.12), M.gold, 'movBot'); mrBot.rotation.x = Math.PI;
+  const mrTop = meshOf(dome(0.42, 0.12), M.silverContact, 'movTop'); mrTop.position.y = T_BLADE;
+  const mrBot = meshOf(dome(0.42, 0.12), M.silverContact, 'movBot'); mrBot.rotation.x = Math.PI;
   movRivet.add(mrTop, mrBot);
   body.add(movRivet);
-  const tongue = new THREE.Mesh(new THREE.BufferGeometry(), M.goldSatin); tongue.name = 'tongue'; tongue.castShadow = true;
+  const tongue = new THREE.Mesh(new THREE.BufferGeometry(), M.becu); tongue.name = 'tongue'; tongue.castShadow = true;
   body.add(tongue);
 
-  // ---------------------------------------------------------------- plunger (black POM, S frame)
+  // ---- plunger (black POM): a cap above the cover, a flange under its ceiling, a nose on the blade (no preload gap)
   const plunger = new THREE.Group(); plunger.name = 'plunger';
-  plunger.add(meshOf(box(1.6, 2.2, 5.9, 7.4, 0.42, 0.28, 0, ZP), M.pomBlack, 'plungerCap'));
+  plunger.add(meshOf(box(1.6, 2.2, 5.9, 7.25, 0.42, 0.3, 0, ZP), M.pomBlack, 'plungerCap'));
   plunger.add(meshOf(box(2.5, 3.1, 5.45, 5.98, 0.3, 0.07, 0, ZP), M.pomBlack, 'plungerFlange'));
-  const nose = extrude(roundedRectShape(2.0, 0.72, 0.2), { depth: 5.46 - (Y_BLADE + T_BLADE), back: { r: 0.12, s: 4 }, curveSegments: 6 });
-  nose.rotateX(-Math.PI / 2); nose.translate(0, Y_BLADE + T_BLADE, ZP);
+  const yNose = Y_BLADE + T_BLADE + 0.002;
+  const nose = extrude(roundedRectShape(1.9, 0.72, 0.22), { depth: 5.46 - yNose, back: { r: 0.14, s: 4 }, curveSegments: 6 });
+  nose.rotateX(-Math.PI / 2); nose.translate(0, yNose, ZP);
   plunger.add(meshOf(nose, M.pomBlack, 'plungerNose'));
   body.add(plunger);
 
-  // ---------------------------------------------------------------- cover (baked CSG, S frame)
+  // ---- cover (baked CSG, S frame): translucent, plunger hole, label recess with the raised marking
   const mk = opts.marking === undefined ? 'GT01' : opts.marking;
   const rec = GEO['cover_' + (mk ? mk : 'plain')] || GEO.cover_plain;
   const coverGeo = decodeGeo(rec, 30);
   const cover = meshOf(coverGeo, coverMat, 'cover');
   body.add(cover);
 
-  // ---------------------------------------------------------------- pins (world frame) + footprint data
-  const PITCH = GT01_SPEC.pitch;
+  // ================================================================ pins (world) and the terminals' run through the wedge
   const pinsSpec = [{ name: 'COM', x: 0, z: PITCH }, { name: 'NO', x: 0, z: 0 }, { name: 'NC', x: 0, z: -PITCH }];
   const pins = pinsSpec.map(p => {
     const m = meshOf(gt01PinGeometry(pinLen), M.goldSatin, 'pin' + p.name);
@@ -190,16 +196,26 @@ export function buildGT01(opts = {}) {
     root.add(m);
     return m;
   });
+  const runs = new THREE.Group(); runs.name = 'terminalRuns';
+  for (const [zs, zw] of [[ZC, PITCH], [0, 0], [ZN, -PITCH]]) {
+    const E = S2W(0.05, zs), E2 = S2W(-0.3, zs);           // out of the switch's bottom, along its −y
+    const yMid = E2[0] - 0.6 > 0.6 ? E2[0] - 0.6 : (E2[0] + 0.3) / 2;
+    const pts = [[0, E[0], E[1]], [0, E2[0], E2[1]], [0, yMid, zw], [0, 0.3, zw]];
+    runs.add(meshOf(sweep(roundPath(pts, 0.28), rectSection(0.3, 0.6, 0.04, 2), { up: [1, 0, 0] }), M.goldSatin, 'run'));
+  }
+  root.add(runs);
 
-  // ---------------------------------------------------------------- cutaway (section + ghost edges)
+  // ================================================================ cutaway: cover, the switch's base and the wedge, cut on x = 0
   const section = new SectionPlane(body, { normal: [1, 0, 0], from: -W / 2 - 0.6, to: 0.02 });
   section.add(cover, { capColor: 0xf7a3ae, capRoughness: 0.35 });
+  core.children.forEach(m => section.add(m, { capColor: 0x2a2b2f, capRoughness: 0.75 }));
+  for (const m of [wedgeL, wedgeC, wedgeR]) section.add(m, { capColor: 0x2a2b2f, capRoughness: 0.75 });
   const { lines: coverEdges, material: edgeMat } = addEdges(cover, { color: opts.edgeColor ?? 0x2fd3c0, width: 1.4, threshold: 25, clippingPlanes: [section.plane] });
   own.add(edgeMat);
   coverEdges.visible = false;
   section.set(0);
 
-  // ---------------------------------------------------------------- state
+  // ================================================================ state
   const state = { press: 0, explode: 0, cutaway: 0, closed: false, travel: 0 };
   const bladeDelta = (z, d, tip) => {
     // Hermite: clamp (s=0, δ=0, δ'=0) → plunger (s_p, −d, m) → straight to the tip (s_t, tip)
@@ -218,7 +234,6 @@ export function buildGT01(opts = {}) {
       const z = bladeRest[i + 2];
       const [dy, slope] = bladeDelta(z, d, tip);
       p[i + 1] = bladeRest[i + 1] + dy + lift2;
-      // rotate normals about x by the local slope (dδ/ds with s = Z_CLAMP − z ⇒ dδ/dz = −slope)
       const a = Math.atan(-slope), ca = Math.cos(a), sa = Math.sin(a);
       const ny = bladeNRest[i + 1], nz = bladeNRest[i + 2];
       n[i + 1] = ny * ca + nz * sa; n[i + 2] = -ny * sa + nz * ca;
@@ -228,19 +243,18 @@ export function buildGT01(opts = {}) {
     const [ty, ts] = bladeDelta(Z_TIP, d, tip);
     movRivet.position.set(0, Y_BLADE + ty + lift2, Z_TIP);
     movRivet.rotation.x = Math.atan(ts);
-    // tongue: from the window's back edge on the blade to the fulcrum post, bowed up before the snap
-    const zA = -2.45, [ay] = bladeDelta(zA, d, tip);
-    const P0 = new THREE.Vector3(0, Y_BLADE + T_BLADE / 2 + ay + lift2, zA);
-    const P2 = new THREE.Vector3(0, 3.98 + 0.04 + lift2 * 0.5, 1.85);
+    // the tongue: from its root at the frame's free end, bowed, to the fulcrum notch; the bow turns over at the snap
+    const zr = wz0 - 0.05, [ay] = bladeDelta(zr, d, tip);
+    const P0 = new THREE.Vector3(0, Y_BLADE + T_BLADE / 2 + ay + lift2, zr);
+    const P2 = new THREE.Vector3(0, Y_FULC + lift2 * 0.4, Z_FULC + 0.06);
     const snap = tip / -GAP;                 // 0 before, 1 after the snap
-    const bow = lerp(0.62, -0.18, snap);
+    const bow = lerp(-0.34, 0.22, snap);
     const mid = P0.clone().lerp(P2, 0.5); const dir = P2.clone().sub(P0).normalize();
-    const nrm = new THREE.Vector3(0, dir.z, -dir.y);   // perpendicular in the y-z plane (up-ish)
-    if (nrm.y < 0) nrm.multiplyScalar(-1);
+    const nrm = new THREE.Vector3(0, dir.z, -dir.y); if (nrm.y < 0) nrm.multiplyScalar(-1);
     const P1 = mid.addScaledVector(nrm, bow);
     const pts = [];
-    for (let i = 0; i <= 24; i++) {
-      const t = i / 24, a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, c = t * t;
+    for (let i = 0; i <= 28; i++) {
+      const t = i / 28, a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, c = t * t;
       pts.push(new THREE.Vector3().addScaledVector(P0, a).addScaledVector(P1, b).addScaledVector(P2, c));
     }
     const old = tongue.geometry;
@@ -252,10 +266,10 @@ export function buildGT01(opts = {}) {
     const k = state.press, e = state.explode;
     const d = k * GT01_SPEC.travel;
     const tip = state.closed ? -GAP : 0;
-    // explode offsets along switch +y
     const eC = 11.5 * e, eP = 6.6 * e, eB = 3.0 * e;
     cover.position.y = eC + 0.004;     // hairline above the shoulder: no coplanar faces in the cutaway
     plunger.position.y = -d + eP;
+    anchorRivet.position.y = Y_BLADE + T_BLADE + eB;
     poseBlade(d, tip, eB);
     state.travel = d;
   }
@@ -278,8 +292,8 @@ export function buildGT01(opts = {}) {
   };
   root.getState = () => ({ ...state });
 
-  // ---------------------------------------------------------------- spec / parts / dispose
-  const plTop = new THREE.Vector3(0, 7.4, ZP).applyEuler(body.rotation).add(body.position);
+  // ================================================================ spec / parts / dispose
+  const plTop = new THREE.Vector3(0, 7.25, ZP).applyEuler(body.rotation).add(body.position);
   root.userData.spec = {
     ...GT01_SPEC,
     tiltDeg: tilt / D2R,
@@ -288,11 +302,11 @@ export function buildGT01(opts = {}) {
     plungerTop: plTop.toArray().map(v => +v.toFixed(4)),
     plungerAxis: [0, +cT.toFixed(5), +sT.toFixed(5)],
     footprint: [[-W / 2, F[1]], [W / 2, F[1]], [W / 2, C[1]], [-W / 2, C[1]]],
-    heightMax: +Math.max(...[[H, -L / 2], [H, L / 2], [7.4, ZP]].map(([y, z]) => S2W(y, z)[0])).toFixed(3),
+    heightMax: +Math.max(...[[H, -L / 2], [H, L / 2], [7.25, ZP]].map(([y, z]) => S2W(y, z)[0])).toFixed(3),
+    mechanism: 'SPDT snap-action: BeCu frame anchored on COM, cut-out tongue on a fulcrum, AgNi contacts NC above / NO below',
   };
-  root.userData.parts = { body, base, core, cover, plunger, blade, tongue, contactNC: ncRivet, contactNO: noRivet, contactCOM: movRivet, terminals: term, pins };
+  root.userData.parts = { body, base, core, switchBase: core, cover, plunger, blade, tongue, contactNC: ncRivet, contactNO: noRivet, contactCOM: movRivet, terminals: term, terminalRuns: runs, pins };
   root.dispose = () => { section.dispose(); disposeTree(root, userMats); for (const m of own) m.dispose?.(); };
-
   root.traverse(o => { if (o.isMesh) { o.castShadow = o.castShadow !== false; } });
   root.setPress(0);
   return root;

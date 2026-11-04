@@ -468,6 +468,27 @@ export async function buildPcb(opts = {}) {
     }
   }
 
+  // ---------------------------------------------------------------- board parts from Brock's photos (3d/parts/boardparts.js)
+  // the radio module: black, the long meander antenna, turned so the antenna end sits away from the wheel's metal;
+  // the sensor as a castellated module on the 2 × 8 pads; the clear snap-on lens through the aperture and clip holes
+  const swap = (ref, factory) => {
+    const node = parts[ref]; if (!factory || !node) return null;
+    const m = factory({ materials: Object.assign({ maskBlack: M.mask, maskRelief: M.mask_cu, solder: M.solder }, opts.partMaterials || {}) }); if (!m) return null;
+    node.children.forEach((c) => { c.visible = false; });
+    m.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    node.add(m); owned.push(m); return m;
+  };
+  const radio = swap('U1', opts.radio);
+  if (radio) {
+    radio.rotation.y = Math.PI;                       // its antenna band (+z in the part) to the board's rear
+    const oldK = layout.antennaKeepout, zc = parts.U1.position.z;
+    const newK = [oldK[0], 2 * zc - oldK[3], oldK[2], 2 * zc - oldK[1]];
+    moveKeepout(root, oldK, newK);
+    layout.antennaKeepout = newK;
+  }
+  const sensor = swap('U3', opts.sensor);
+  const lens = swap('LENS', opts.lens);
+
   function dispose() {
     for (const o of owned) o.dispose?.();
     group.traverse((o) => { if (o.isMesh) { o.geometry?.dispose(); } });
@@ -482,6 +503,36 @@ export async function buildPcb(opts = {}) {
     info: PCB_INFO,
   });
   return group;
+}
+
+/** The antenna keep-out moves with the antenna: copper on every layer (pours, traces, pads, vias, inner planes) inside
+    the new rectangle goes; the silk keep-out marking moves with it. Board-local (x, z) rectangles [x0, z0, x1, z1]. */
+function moveKeepout(root, oldK, newK) {
+  const inside = (x, z, k) => x > k[0] && x < k[2] && z > k[1] && z < k[3];
+  const COPPER = new Set(['mask_cu', 'mask_tr', 'cu_l2', 'cu_l3', 'cu_via', 'cu_inner', 'mask_cub', 'enig']);
+  const dz = newK[1] - oldK[1];
+  root.traverse((o) => {
+    if (!o.isMesh || !o.geometry || !o.geometry.index) return;
+    const name = o.material && o.material.name, g = o.geometry, idx = g.index.array, P = g.attributes.position;
+    if (o.parent && /^(U|J|SW|L|C|R|D|TP|FID|WHEEL|ENC|WB|LENS|BAT|SIDE)/.test(o.parent.name || '')) return;   // components keep theirs
+    const cen = (t) => [(P.getX(idx[t]) + P.getX(idx[t + 1]) + P.getX(idx[t + 2])) / 3, (P.getZ(idx[t]) + P.getZ(idx[t + 1]) + P.getZ(idx[t + 2])) / 3];
+    if (COPPER.has(name)) {
+      const keep = [];
+      for (let t = 0; t < idx.length; t += 3) { const [x, z] = cen(t); if (!inside(x, z, newK)) keep.push(idx[t], idx[t + 1], idx[t + 2]); }
+      if (keep.length !== idx.length) { g.setIndex(keep); g.computeBoundingSphere(); }
+    } else if (name === 'silk' && /top_silk/.test(o.name || o.parent?.name || '')) {
+      const ng = g.toNonIndexed(), Q = ng.attributes.position, out = [], nOut = [], N = ng.attributes.normal;
+      for (let v = 0; v < Q.count; v += 3) {
+        const x = (Q.getX(v) + Q.getX(v + 1) + Q.getX(v + 2)) / 3, z = (Q.getZ(v) + Q.getZ(v + 1) + Q.getZ(v + 2)) / 3;
+        if (inside(x, z, newK)) continue;                // whatever was printed where the antenna now is
+        const sh = inside(x, z, oldK) ? dz : 0;           // the keep-out marking moves with the antenna
+        for (let k = 0; k < 3; k++) { out.push(Q.getX(v + k), Q.getY(v + k), Q.getZ(v + k) + sh); if (N) nOut.push(N.getX(v + k), N.getY(v + k), N.getZ(v + k)); }
+      }
+      const r = new THREE.BufferGeometry(); r.setAttribute('position', new THREE.Float32BufferAttribute(out, 3));
+      if (N) r.setAttribute('normal', new THREE.Float32BufferAttribute(nOut, 3));
+      o.geometry = r; g.dispose(); ng.dispose();
+    }
+  });
 }
 
 function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return Math.abs(h); }

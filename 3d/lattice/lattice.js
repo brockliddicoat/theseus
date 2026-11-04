@@ -10,13 +10,15 @@
 // Setters are pure functions of their arguments (k clamped to [0, 1]); they can be called before the data has
 // loaded and are applied on arrival. dispose() frees everything this builder created.
 import * as THREE from 'three';
+import { HIGHLIGHT } from '../lib/studio.js';
 
 const ASSETS = new URL('./assets/', import.meta.url).href;
 const clamp01 = k => Math.min(1, Math.max(0, +k || 0));
 const ease = k => k * k * (3 - 2 * k);
 
-// stress ramp: one hue (the deck's accent), receding to the raw CF-PP tone at zero (sequential, lightness-monotonic)
-const RAMP = ['#26272b', '#5b4314', '#a8730b', '#fdc316', '#fff2c2'];
+// stress ramp: the deck's heat scale (heatCol: grey → amber → orange → red at the peak, "so the viewer knows they're bad"),
+// from the raw CF-PP tone at zero. Red here is the peak stress, a problem; Theseus's own colour is the cut and the ties.
+const RAMP = ['#26272b', '#6e5021', '#c98f2e', '#ff7a2e', '#ff3b4a'];
 
 async function fetchBin(url) { const r = await fetch(url); if (!r.ok) throw new Error(url + ' ' + r.status); return r.arrayBuffer(); }
 function view(buf, it) {
@@ -64,7 +66,7 @@ function patchShell(mat, U, { cap = false, patch = false } = {}) {
         vec3 sc = nodata ? baseC * 0.55 : rampAt(vStress * 255.0 / 254.0);
         diffuseColor.rgb = mix(baseC, sc, uStressK);`}`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
-        ${cap ? 'totalEmissiveRadiance += mix(uCap, vec3(0.42), uStressK) * 0.55;' : 'if (vStress <= 0.998) totalEmissiveRadiance += rampAt(vStress * 255.0 / 254.0) * 0.38 * uStressK;'}`);
+        ${cap ? '' : 'if (vStress <= 0.998) totalEmissiveRadiance += rampAt(vStress * 255.0 / 254.0) * 0.38 * uStressK;'}`);
   };
   mat.customProgramCacheKey = () => 'theseus-lattice-' + (cap ? 'cap' : '') + (patch ? 'patch' : '') + 'v1';
   return mat;
@@ -90,12 +92,14 @@ export function buildLattice(opts = {}) {
   const group = new THREE.Group(); group.name = 'theseus-lattice';
   const parts = {}; group.userData.parts = parts;
   const disposables = [];
+  const hiMats = [];
   const M = opts.materials || {};
+  const hi0 = new THREE.Color(opts.capColor ?? HIGHLIGHT[opts.theme] ?? HIGHLIGHT.night);   // Theseus's colour; the deck's C.hero arrives via setHighlight
   const state = { cut: 0, cutMode: opts.cutMode || 'half', build: 1, stress: 0, case: 'press', compare: 'tri', fillet: 0, flow: 0, pcb: 0.85, triggers: 1, ghost: 0 };
   const U = {
     uBuild: { value: 1 }, uBuildWin: { value: 0.09 }, uCase: { value: 0 }, uStressK: { value: 0 },
     uRamp: { value: RAMP.map(c => new THREE.Color(c)) }, uInterior: { value: new THREE.Color(opts.interior || 0x1f2023) },
-    uCap: { value: new THREE.Color(opts.capColor || 0xfdc316) }, uPatchK: { value: 0 }, uBoxMin: { value: new THREE.Vector3() }, uBoxMax: { value: new THREE.Vector3() }, uIsPatch: { value: 0 },
+    uCap: { value: hi0.clone() }, uPatchK: { value: 0 }, uBoxMin: { value: new THREE.Vector3() }, uBoxMax: { value: new THREE.Vector3() }, uIsPatch: { value: 0 },
   };
   // clipping: planes live in each variant's local frame and are re-expressed in world space every frame,
   // so the deck can move the group (and 'both' puts the two lattices side by side, each cut on its own midplane)
@@ -108,9 +112,10 @@ export function buildLattice(opts = {}) {
     const update = () => { owner.updateWorldMatrix(true, false); localPlanes.forEach((p, i) => planes[i].copy(p).applyMatrix4(owner.matrixWorld)); };
     const coat = baseCoat.clone(); coat.clippingPlanes = planes; coat.clipIntersection = true; coat.clipShadows = true; coat.side = THREE.FrontSide;
     patchShell(coat, U);
-    const cap = patchShell(new THREE.MeshStandardMaterial({ color: 0xfdc316, roughness: 1.0, envMapIntensity: 0.3, side: THREE.BackSide, clippingPlanes: planes, clipIntersection: true }), U, { cap: true });
+    // section caps: the highlight, flat (unlit, untoned): the cut face reads as the deck's colour, not as a lit surface
+    const cap = patchShell(new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.BackSide, clippingPlanes: planes, clipIntersection: true, toneMapped: false }), U, { cap: true });
     const patch = patchShell(baseCoat.clone(), U, { patch: true });
-    const patchCap = patchShell(new THREE.MeshStandardMaterial({ color: 0xfdc316, roughness: 1.0, envMapIntensity: 0.3, side: THREE.BackSide, clippingPlanes: planes, clipIntersection: true }), U, { cap: true, patch: true });
+    const patchCap = patchShell(new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.BackSide, clippingPlanes: planes, clipIntersection: true, toneMapped: false }), U, { cap: true, patch: true });
     patch.clippingPlanes = planes; patch.clipIntersection = true; patch.clipShadows = true; patch.polygonOffset = true; patch.polygonOffsetFactor = -1; patch.polygonOffsetUnits = -2;
     disposables.push(coat, cap, patch, patchCap);
     return { planes, update, coat, cap, patch, patchCap };
@@ -195,9 +200,9 @@ export function buildLattice(opts = {}) {
     const edge = new THREE.LineSegments(new THREE.EdgesGeometry(pg, 30), new THREE.LineBasicMaterial({ color: 0x6fae86, transparent: true, opacity: 0.8, clippingPlanes: worldPlanes, clipIntersection: true }));
     disposables.push(pm, edge.geometry, edge.material);
     const pcbG = new THREE.Group(); pcbG.add(pcb, edge); group.add(pcbG); parts.pcb = pcbG;
-    // tie points: the side ribs land on the board edge (yellow), bosses ringed
+    // tie points: the side ribs land on the board edge (the highlight, flat), bosses ringed
     const tg = new THREE.Group(); tg.name = 'ties';
-    const tieGeo = new THREE.TorusGeometry(0.75, 0.22, 10, 28); const tieMat = clipIt(new THREE.MeshStandardMaterial({ color: 0xfdc316, emissive: 0xfdc316, emissiveIntensity: 0.35, roughness: 0.4 }));
+    const tieGeo = new THREE.TorusGeometry(0.75, 0.22, 10, 28); const tieMat = clipIt(new THREE.MeshBasicMaterial({ color: U.uCap.value.clone(), toneMapped: false })); hiMats.push(tieMat);
     disposables.push(tieGeo, tieMat);
     for (const t of layout.ties) {
       if (!t.p.every(Number.isFinite)) continue;
@@ -242,7 +247,7 @@ export function buildLattice(opts = {}) {
     U.uBoxMin.value.set(...info.box[0]).addScalar(0.18); U.uBoxMax.value.set(...info.box[1]).addScalar(-0.18);
     // section marks: the true rib profile (root fillets) and the node outline at mid-height, traced from the patch
     const marks = new THREE.Group(); marks.name = 'fillet-marks'; marks.visible = false;
-    const mm = new THREE.MeshBasicMaterial({ color: opts.markColor || 0xfdc316, clippingPlanes: ms.planes, clipIntersection: true }); disposables.push(mm);
+    const mm = new THREE.MeshBasicMaterial({ color: opts.markColor ?? U.uCap.value.clone(), clippingPlanes: ms.planes, clipIntersection: true, toneMapped: false }); disposables.push(mm); if (opts.markColor == null) hiMats.push(mm);
     for (const pl of info.marks || []) {
       if (pl.length < 2) continue;
       const curve = new THREE.CatmullRomCurve3(pl.map(p => new THREE.Vector3(...p)));
@@ -279,6 +284,8 @@ export function buildLattice(opts = {}) {
   group.setPcb = (k) => { state.pcb = clamp01(k); applyContext(); return group; };
   group.setTriggers = (k) => { state.triggers = clamp01(k); applyContext(); return group; };
   group.setTime = (t) => { flowU.uTime.value = t; return group; };
+  /** Theseus's colour from the deck (C.hero): the section caps, the tie points, the fillet marks */
+  group.setHighlight = (c) => { U.uCap.value.set(c); for (const m of hiMats) m.color.set(c); return group; };
 
   function applyCompare() {
     const both = state.compare === 'both', gap = opts.compareGap ?? 72;

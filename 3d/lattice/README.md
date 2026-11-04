@@ -88,7 +88,7 @@ processes shared the machine. Avoid `pkill -f` with patterns that also match you
 | nose | 6 vertical struts (x = ±7.7, ±12.2, ±16.6), clear of the USB-C port (9.8 × 3.9, r 1.7, centre y 6.1) |
 | bosses | 4 × M2 heat-set: OD 6.2, bore Ø3.2 × 3.6 from below, y 5.0 → 11.2, at (±25.6, −31.8) and (±23.7, 9.3) on the arch feet; nearest skate centre 12.2 mm (5.8 mm edge to edge), so no screw sits under a skate (#52) |
 | inserts | brass stand-ins OD 3.5 × 3.0 (parts API `buildHeatSetInsert` sizes), top face at y = 8.05 |
-| PCB stand-in | 1.0 FR4 at y 4.0–5.0, edge = inner wall at mid-board inset 1.22 so it bears on the rib tips; 24 tie points (yellow rings) where arch legs and nose struts meet it (#94) |
+| PCB stand-in | 1.0 FR4 at y 4.0–5.0, edge = inner wall at mid-board inset 1.22 so it bears on the rib tips; 24 tie points (rings in Theseus's colour) where arch legs and nose struts meet it (#94) |
 | skates | 8 × Ø6.5 × 0.65 (parts API sizes), two per corner |
 | triggers | separate parts, cut by the seams: same wall, lattice heights 1.15 / 1.0, 1.0 × 1.2 edge ribs, wheel slot 8.8 × 20.2 |
 
@@ -135,7 +135,7 @@ At equal rib mass the triangle lattice is **1.21×** as stiff as the hexagons un
 import { buildLattice } from '../lattice/lattice.js';
 const g = buildLattice({ materials: M });     // M = materials() from lib/studio.js (shell, brass, pom are reused)
 await g.userData.ready;                       // the builder returns the group at once; data streams in
-g.setCut(k, { mode: 'half' | 'quarter' | 'top', x: 0 });   // section plane sweeps from the −X side to x (yellow cap, hatch-free)
+g.setCut(k, { mode: 'half' | 'quarter' | 'top', x: 0 });   // section plane sweeps from the −X side to x (flat cap in Theseus's colour, hatch-free)
 g.setBuild(k);                                // ribs grow out of the wall: arches (centre out), front arch, diagonals, rails, struts, triggers, bosses last
 g.setStress(k, 'press' | 'squeeze');          // blend to the FE stress map (shared MPa range for both lattices; rim flange = no data)
 g.setFlow(k, 'press' | 'squeeze');            // white load-path pulses along compressed ribs; g.setTime(t) animates them
@@ -143,6 +143,7 @@ g.setCompare('tri' | 'hex' | 'both');         // 'both' puts them side by side (
 g.setFilletZoom(k);                           // swaps in the 0.035 mm patch; g.getFilletCamera(k, {position, target, fov}) → eased camera
 g.setFilletMarks(true);                       // optional: traces of the node outline at mid-rib height
 g.setPcb(k); g.setTriggers(k); g.setUnderLight(k); g.setLights(k);   // context and the asset's interior lights
+g.setHighlight(color);                        // Theseus's colour for the caps, ties and fillet marks (the deck passes C.hero, so it follows ?hue)
 g.dispose();
 ```
 `g.userData`: `parts` (`tri`, `hex`, `triMeshes`, `hexMeshes`, `inserts`, `pcb`, `ties`, `skates`, `lights`,
@@ -165,11 +166,17 @@ R3D.register('lattice', async (studio, THREE, M) => {
 
 ## Shots (`shots/`, 3200 × 1800, `_paper` / `_night`)
 `hero_cutaway` (quarter cut, ghost PCB, ties), `section_side` (half cut: arches from the crown onto the bosses),
-`underside` (through the bottom opening, inserts and skates), `fillet_macro` (yellow section through the arch shows the
+`underside` (through the bottom opening, inserts and skates), `fillet_macro` (the section through the arch, in the highlight colour, shows the
 root fillets; the 6-way node in front), `tri_vs_hex` (same mass, from below), `stress_press` (half cut, stress + load
 paths, legend), `stress_compare` (both lattices, same MPa scale, from below).
 
 ## Known gaps / notes
+- **Colours** (2026-11-04): the section caps, PCB ties and fillet marks are flat (unlit, no emissive glow) in Theseus's
+  colour: `opts.capColor`, else `HIGHLIGHT[opts.theme]` from `lib/studio.js`, then whatever `setHighlight` passes (the
+  deck's `C.hero`). They were XBAB yellow before. The stress ramp is a heat ramp, near-black → amber → orange → red
+  (`RAMP`, `stressScale.ramp`); red is the top of the range.
+- **Fillets** are in the 3D asset: every rib-to-rib and rib-to-wall junction is a smooth SDF union (radius 0.60–0.75 mm)
+  of the meshed field, and the fillet macro swaps in a 0.035 mm patch, so there is nothing to add for them.
 - **Axes:** the scan is right-handed with its side buttons on **+X**, i.e. the user's *left*; CONVENTIONS.md says
   "+X = user's right" and "side buttons on −X", which is the mirrored (left-handed) reading. This asset is mirror-
   symmetric about x = 0 (built from the scan's button-free half), so it is valid either way, but whoever places the

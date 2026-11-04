@@ -6392,7 +6392,15 @@ function statTile(t, t0, rect, o = {}) {
   const ka = ep(t, t0 + 0.15, t0 + 0.6), kc = [t0 + 0.25, o.countDur || 1.1];
   /* top to bottom: the evidence (small, at the top), pre, the number, the label, the next best (at the foot).
      A full tile needs about 300 px of height; with less, 'pre' goes first */
-  const evS = o.ev ? evText(o.ev, { by: o.by }) : '', evH = evS || o.head ? 34 : 0, labH = o.label ? 44 : 0, nextH = o.next ? 44 : 0;
+  const evS = o.ev ? evText(o.ev, { by: o.by }) : '', evH = evS || o.head ? 34 : 0, labH = o.label ? 44 : 0;
+  /* the next best at the foot: 'Next best', its number and whose it is on one line; its source (next.src, or next.ev with
+     next.by) on a second line under it, which also takes the name when the first line would not fit the tile */
+  const NX = o.next ? (() => {
+    const nx = o.next, vS = nx.value + (nx.unit ? ' ' + nx.unit : ''), srcS = nx.src || (nx.ev ? evText(nx.ev, { by: nx.by }) : '');
+    const wL = tw('Next best', { role: 'label', size: 19 }), wV = tw(vS, { font: 'disp', size: 28, weight: 700 }), wW = nx.who ? tw(nx.who, { role: 'small', size: 22, weight: 500 }) : 0;
+    const whoUp = !!nx.who && wL + wV + wW + 24 <= w - pad * 2, l2 = [!whoUp && nx.who ? nx.who : '', srcS].filter(Boolean).join(', ');
+    return { vS, whoUp, l2 };
+  })() : null, nextH = NX ? (NX.l2 ? 72 : 44) : 0;
   let preH = o.pre ? 36 : 0;
   const len = String(o.value).length + (o.unit ? 0.5 * String(o.unit).length : 0), wFit = (w - pad * 2) / Math.max(1.6, len * 0.6);
   let room = h - pad * 2 - evH - preH - labH - nextH;
@@ -6402,16 +6410,20 @@ function statTile(t, t0, rect, o = {}) {
   const grad = o.grad || (o.hero ? C.heroGrad : null), col = o.color || (o.hero ? C.heroText : o.quiet ? C.ink2 : C.ink);
   if (o.head) text(o.head, ctr ? cx : x + pad, y + pad + 18, { role: 'label', size: 20, color: C.mute, align: al, alpha: ka });
   else if (evS) { const pw = pillW(o.ev, { by: o.by }); pill(ctr ? cx - pw / 2 : x + pad, y + pad + 18, o.ev, ka, { by: o.by }); }
-  const blockH = preH + vs * 0.76 + labH;
+  /* a big number's box runs about a quarter of its size under the baseline: the label clears it (qa.js reads boxes) */
+  const labG = o.label ? Math.max(labH, Math.round(vs * 0.24 + 26)) : 0;
+  const blockH = preH + vs * 0.76 + labG;
   let yy = y + pad + evH + Math.max(0, (h - pad * 2 - evH - nextH - blockH) / 2);
   if (preH) { text(o.pre, cx, yy + 25, { role: 'small', size: 25, weight: 500, color: C.mute, align: al, alpha: ka }); yy += preH; }
   yy += vs * 0.76;
   rich([{ s: o.value, role: 'd1', size: vs, weight: 800, track: -0.03, color: col, grad, tnum: true, count: o.count === false ? null : kc },
         o.unit ? { s: o.unit, font: 'disp', size: Math.round(vs * 0.4), weight: 700, color: grad ? col : C.mute, grad, gap: vs * 0.07, caps: false } : null], cx, yy, { t, align: al, alpha: ka });
-  if (o.label) { yy += labH; text(o.label, cx, yy, { role: 'small', size: 26, weight: 600, color: C.ink2, align: al, alpha: ka, maxW: w - pad * 2 }); }
-  if (o.next) {
-    const nx = o.next, kn = ep(t, t0 + 0.9, t0 + 1.3);
-    rich([{ s: 'Next best', role: 'label', size: 19, color: C.faint }, { s: nx.value + (nx.unit ? ' ' + nx.unit : ''), font: 'disp', size: 28, weight: 700, color: C.secondText, gap: 12, caps: false, alpha: 0.8 }, nx.who ? { s: nx.who, role: 'small', size: 22, weight: 500, color: C.faint, gap: 12, caps: false } : null], cx, y + h - pad + 2, { align: al, alpha: kn });
+  if (o.label) { yy += labG; text(o.label, cx, yy, { role: 'small', size: 26, weight: 600, color: C.ink2, align: al, alpha: ka, maxW: w - pad * 2 }); }
+  if (NX) {
+    const nx = o.next, kn = ep(t, t0 + 0.9, t0 + 1.3), yb = y + h - pad + 2, y1 = NX.l2 ? yb - 28 : yb;
+    rich([{ s: 'Next best', role: 'label', size: 19, color: C.faint }, { s: NX.vS, font: 'disp', size: 28, weight: 700, color: C.secondText, gap: 12, caps: false, alpha: 0.8 },
+          NX.whoUp ? { s: nx.who, role: 'small', size: 22, weight: 500, color: C.faint, gap: 12, caps: false } : null], cx, y1, { align: al, alpha: kn });
+    if (NX.l2) text(NX.l2, cx, yb, { role: 'small', size: 19, weight: 600, color: C.faint, align: al, alpha: kn, caps: false, sentence: false, maxW: w - pad * 2 });
   }
   if (o.head && evS) { const pw = pillW(o.ev, { by: o.by }); pill(x + w - pad - pw, y + pad + 18, o.ev, ka, { by: o.by }); }
 }
@@ -6515,8 +6527,8 @@ function callout(t, t0, p, label, o = {}) {
   poly([[p[0], p[1]], [midx, to[1]], [to[0], to[1]]], { color: col, w: 1.5, p: k, alpha: a * 0.85 });
   const short = String(label).length <= 24 && String(label).split(' ').length <= 3 && !o.prose;
   const st = short ? { role: 'label', size: 22, color: o.tcolor || C.ink } : { role: 'small', size: o.size && o.size > 25 ? o.size : 25, weight: 600, color: o.tcolor || C.ink, sentence: true };
-  const r = text(label, to[0] + (right ? 12 : -12), to[1] + 8, Object.assign(st, { align: right ? 'left' : 'right', t, t0: t0 + 0.3, cps: 80, alpha: a, maxW: o.maxW ? Math.max(o.maxW, 240) : 420, lh: 1.28 }));
-  if (o.sub) text(o.sub, to[0] + (right ? 12 : -12), to[1] + 8 + r.h + 2, { role: 'small', size: 24, color: C.mute, align: right ? 'left' : 'right', sentence: true, t, t0: t0 + 0.6, cps: 100, alpha: a, maxW: o.maxW ? Math.max(o.maxW, 240) : 420, lh: 1.3 });
+  const r = text(label, to[0] + (right ? 12 : -12), to[1] + 8, Object.assign(st, { align: right ? 'left' : 'right', t, t0: t0 + 0.3, cps: 80, alpha: a, maxW: o.maxW ? Math.max(o.maxW, 120) : 420, lh: 1.28 }));
+  if (o.sub) text(o.sub, to[0] + (right ? 12 : -12), to[1] + 8 + r.h + 2, { role: 'small', size: 24, color: C.mute, align: right ? 'left' : 'right', sentence: true, t, t0: t0 + 0.6, cps: 100, alpha: a, maxW: o.maxW ? Math.max(o.maxW, 120) : 420, lh: 1.3 });
 }
 /** a key number that slams in: drops big, lands with an overshoot, a ripple runs out */
 function slam(t, t0, x, y, num, unit, o = {}) {
@@ -6856,7 +6868,7 @@ function breakdown(t, o) {
     if (iw && r.icon) { G.save(); G.globalAlpha = a; r.icon(x + iw / 2, ry + rh / 2, Math.min(iw, rh) * 0.8, a); G.restore(); G.globalAlpha = 1; }
     text(pad2(i + 1), x + iw + 6, ry + rh * 0.44, { font: 'mono', size: 20, weight: 500, color: C.faint, alpha: a });
     const nm = rich([{ s: r.name, font: 'disp', size: o.nameS || 28, weight: 700, caps: true, track: 0.01, color: r.dim ? C.mute : C.ink }, r.count ? { s: `(${r.count})`, font: 'mono', size: 21, weight: 500, color: C.faint, gap: 12 } : null, r.ev ? null : null], barX, ry + rh * 0.47, { alpha: a });
-    if (r.ev) pill(barX + nm.w + 18, ry + rh * 0.47 + 1, r.ev, a * 0.95);
+    if (r.ev) pill(barX + nm.w + 18, ry + rh * 0.47 + 1, r.ev, a * 0.95, { by: r.by, text: r.evText });
     if (r.note) text(r.note, barX + barW, ry + rh * 0.47, { role: 'small', size: 21, color: C.faint, align: 'right', alpha: a * 0.9 });
     const bh = o.barH || 12, by = ry + rh * 0.72;
     rr(barX, by - bh / 2, barW, bh, bh / 2, C.track, null, 0, a);
@@ -6913,7 +6925,8 @@ function lollipop(t, o) {
          better: { x: -1 | 1, y: -1 | 1 } (which way is better on each axis: -1 = lower is better),
          sweet: true (a gradient toward the better corner) | { x, y, r } (centre in data units, radius in px),
          points: [{ name, x, y, ev, hollow, ref, dx, dy (fixed label offset), label: false (a dot with no name) }],
-         frontier: true (the Pareto frontier of the points, dominated points dimmed),
+         frontier: true (the Pareto frontier of the points, dominated points dimmed; a point with offFront: true is
+         drawn and named but kept out of the frontier, e.g. a mouse with half a shell),
          target: { x, y, name, dx, dy, sub } (Theseus, a point),
          targetX: { x, name, sub, t0 } (Theseus known on the x axis only: a dashed line, e.g. a weight with no price yet),
          looseLabels: true (a dominated point may be named on the far side of the frontier, with a leader),
@@ -6958,7 +6971,9 @@ function scatter(t, o) {
   o.points.forEach(p => { const q = pts.find(r => Math.abs(r.x - p.x) < 1e-6 && Math.abs(r.y - p.y) < 1e-6); if (q) q.name += ', ' + p.name; else pts.push(Object.assign({}, p)); });
   /* the Pareto frontier: no other point is better on both axes */
   const dom = (a, b) => (bx * (b.x - a.x) >= 0 && by * (b.y - a.y) >= 0) && (b.x !== a.x || b.y !== a.y);   /* b dominates a */
-  pts.forEach(p => { p.front = !pts.some(q => q !== p && dom(p, q)); });
+  /* a point marked offFront (a mouse that isn't comparable: half a shell) is drawn and named but neither joins the
+     frontier nor pushes others off it */
+  pts.forEach(p => { p.front = !p.offFront && !pts.some(q => q !== p && !q.offFront && dom(p, q)); });
   const kf2 = ep(t, t0 + 1.4, t0 + 2.4, E.io3);
   const obs = [], box = (x0, y0, x1, y1) => obs.push({ x0, y0, x1, y1 });
   let st = null;
@@ -7017,7 +7032,7 @@ function scatter(t, o) {
       const lx = ddx > 0 ? px + d : ddx < 0 ? px - d - lwid : px - lwid / 2;
       const ly = ddy < 0 ? py - d : ddy > 0 ? py + d + sz * 0.72 : py + sz * 0.36;
       const b = { x0: lx - 3, y0: ly - sz * 0.78, x1: lx + lwid + 3, y1: ly + sz * 0.22 };
-      if (!hit(b) && (!strict || p.front || domBox(b))) return { lx, ly, far: d > 20, b };
+      if (!hit(b) && (!strict || p.front || p.offFront || domBox(b))) return { lx, ly, far: d > 20, b };
     }
     return null;
   };
@@ -7026,7 +7041,7 @@ function scatter(t, o) {
     const px = X(p.x), py = Y(p.y), lwid = tw(p.name, { role: 'small', size: sz, weight: 600 }) + 2;
     let best = null;
     if (p.dx != null || p.dy != null) { const lx = px + (p.dx || 0), ly = py + (p.dy || 0); best = { lx: p.dx < 0 ? lx - lwid : lx, ly, far: true }; }
-    else best = seek(p, px, py, lwid, [16, 30, 48, 72, 100, 136, 176], true) || (o.looseLabels || p.front ? seek(p, px, py, lwid, [16, 30, 48, 72, 100, 136, 176, 220], false) : null);
+    else best = seek(p, px, py, lwid, [16, 30, 48, 72, 100, 136, 176], true) || (o.looseLabels || p.front || p.offFront ? seek(p, px, py, lwid, [16, 30, 48, 72, 100, 136, 176, 220], false) : null);
     /* a crowded dominated point goes unnamed rather than have its name run over a dot; a frontier point is always named */
     if (!best && !p.front) continue;
     if (!best) best = { lx: px + 16, ly: py + sz * 0.36, far: false };
@@ -8279,7 +8294,7 @@ function clk_stack(y, fns, gap = BOX.gap) { for (const f of fns) { const r = f(y
 function clk_big(t, x, y, label, num, unit, o = {}) {
   const a = o.alpha == null ? 1 : o.alpha; if (a <= 0.003) return 0;
   if (label) text(label, x, y - (o.size || 72) - 18, { role: 'label', size: 21, color: o.lcolor || C.mute, alpha: a, align: o.align });
-  const r = rich([{ s: num, role: 'd1', size: o.size || 72, color: o.color || C.ink, tnum: true }, unit ? { s: unit, font: 'mono', size: Math.max(24, Math.round((o.size || 72) * 0.34)), weight: 600, color: o.ucolor || C.mute, gap: 10 } : null], x, y, { alpha: a, align: o.align });
+  const r = rich([{ s: num, role: 'd1', size: o.size || 72, color: o.color || C.ink, tnum: true }, unit ? { s: unit, font: 'sans', size: Math.max(24, Math.round((o.size || 72) * 0.34)), weight: 650, color: o.ucolor || C.mute, gap: 10 } : null], x, y, { alpha: a, align: o.align });
   return r.w;
 }
 
@@ -8426,7 +8441,7 @@ clk_S({
   sfxLoop: [{ t0: 2.0, per: 3, cues: [[0.0, 'click'], [0.09, 'release']] }],
   draw: t => {
     header(t, 'A switch wedge, one flat board');
-    captions(t, [[0.6, 'I put the angle in the switch itself: the GT01 sits on its own 20° wedge, turned to the trigger\'s arc.'], [4.0, 'So the board stays one flat piece, and the angle can follow the measured arc. I\'ll publish both.']]);
+    captions(t, [[0.6, 'I put the angle in the switch itself: the GT01 sits on its own 20° wedge, turned to the trigger\'s arc.'], [4.0, 'So the board stays one flat piece, and the angle follows the measured arc. I will publish both.']]);
     const lx = LM, lw = 640, vx = 760, vw = RM - vx, wy = CLK_TOP, wh = CLK_BOT - wy;
     /* the shot, big, on the right: the right main switch, pressing, on its wedge */
     clk_tile(t, 0.3, vx, wy, vw, wh, 'Theseus, right main switch, side on', ['claim', 'proposal']);
@@ -8488,16 +8503,16 @@ clk_S({
     /* the switch, big, cover clear, pressing: the camera settles in slowly */
     clk_tile(t, 0.3, wx, wy, ww, wh, 'Gateron GT01, cover clear, side on', ['claim']);
     const c = cyc(t, 2.0, 2.6), sw = clk_swc(t, 2.0, 2.6), push = ep(t, 0.4, 6.0, E.cam), s = lerp(27, 31, push);
-    const o = part(wx + 400, wy + 540 + lerp(10, 0, push), s, () => clk_gt01MM({ press: sw.pr, state: sw.state }), { alpha: ep(t, 0.6, 1.2) });
+    const o = part(wx + 360, wy + 540 + lerp(10, 0, push), s, () => clk_gt01MM({ press: sw.pr, state: sw.state }), { alpha: ep(t, 0.6, 1.2) });
     if (o.contact && sw.c >= 0) { const ts = sw.c * 2.6, n = Math.floor((t - 2.0) / 2.6); clk_spark(o.contact, ts - CLK_SNAP.no * 2.6, C.hero, 0.9, 11 + n); clk_spark(o.contact, ts - CLK_SNAP.nc * 2.6, C.ink2, 0.6, 53 + n); }
     /* the parts, named, in one column on the right, in the order they sit top to bottom: one pole, two throws */
     if (o.plunger) {
-      const lab = [['Plunger', o.plunger], ['NC, closed at rest', o.nc], ['Moving contact: the pole', o.contact], ['Leaf spring', o.leaf], ['NO, closed when pressed', o.no], ['COM', o.com], ['Bottom housing, 20°', o.housing]]
+      const lab = [['Plunger', o.plunger], ['NC: closed at rest', o.nc], ['Pole: the moving contact', o.contact], ['Leaf spring', o.leaf], ['NO: closed when pressed', o.no], ['COM', o.com], ['Bottom housing, 20°', o.housing]]
         .sort((p, q) => p[1][1] - q[1][1]);
-      let ly = wy + 110;
-      lab.forEach(([l, p], i) => { ly = Math.max(ly, Math.min(p[1], wy + wh - 150 - (lab.length - 1 - i) * 62)); callout(t, 1.4 + i * 0.18, p, l, { to: [wx + 770, ly], side: 'r', elbow: wx + 720, color: C.ink2, tcolor: C.ink, maxW: 240, prose: true }); ly += 62; });
+      let ly = wy + 120;
+      lab.forEach(([l, p], i) => { ly = Math.max(ly, Math.min(p[1], wy + wh - 120 - (lab.length - 1 - i) * 64)); callout(t, 1.4 + i * 0.18, p, l, { to: [wx + 720, ly], side: 'r', elbow: wx + 690, color: C.ink2, tcolor: C.ink, maxW: 300, prose: true }); ly += 64; });
     }
-    clk_lamp(wx + 48, wy + wh - 92, 'NC', sw.state === 'nc', C.ink, ep(t, 1.8, 2.2)); clk_lamp(wx + 168, wy + wh - 92, 'NO', sw.state === 'no', C.hero, ep(t, 1.8, 2.2));
+    clk_lamp(wx + 48, wy + 118, 'NC', sw.state === 'nc', C.ink, ep(t, 1.8, 2.2)); clk_lamp(wx + 168, wy + 118, 'NO', sw.state === 'no', C.hero, ep(t, 1.8, 2.2));
     text('Drawn from a standard microswitch: Gateron has published no datasheet', wx + 32, wy + wh - 36, { role: 'small', size: 22, color: C.faint, alpha: ep(t, 1.6, 2.0) });
     /* right: idle current, the word, the source */
     const [cx, cw] = CLK_G.b;
@@ -8533,7 +8548,7 @@ clk_S({
       { name: 'Logitech GPX2', qual: 'my notes', mid: 70, txt: '≈ 70 gf', ev: 'claim', ring: true },
       { name: 'Omron D2F-01F', qual: 'mechanical', hi: 75.5, txt: '0.74 N max', ev: 'datasheet', max: true }
     ];
-    const fx0 = LM + 360, fw = w - 360 - 200, FX = v => fx0 + fw * v / 80, fy0 = hy + 64, rh = 68;
+    const fx0 = LM + 360, fw = w - 360 - 200, FX = v => fx0 + fw * v / 80, fy0 = hy + 54, rh = 60;
     for (const v of [0, 20, 40, 60, 80]) { const a = ep(t, 0.8, 1.2); line(FX(v), fy0 - 30, FX(v), fy0 + 4 * rh - 40, { color: C.hair, w: 1.2, alpha: a }); text(String(v), FX(v), fy0 + 4 * rh - 6, { role: 'tick', color: C.mute, align: 'center', alpha: a }); }
     F.forEach((r, i) => {
       const yy = fy0 + i * rh, k = ep(t, 1.0 + i * 0.2, 1.7 + i * 0.2, E.snap), a = ep(t, 0.9 + i * 0.2, 1.2 + i * 0.2);
@@ -8753,7 +8768,7 @@ clk_S({
           line(x0, base, x1, base, { color: C.faint, w: 1.2, alpha: kk });
           const ha = P([R.c.half.a, 0])[0], hb = P([R.c.half.b, 0])[0];
           line(ha, base + 12, hb, base + 12, { color: col, w: 3, alpha: kk }); line(ha, base + 6, ha, base + 18, { color: col, w: 2, alpha: kk }); line(hb, base + 6, hb, base + 18, { color: col, w: 2, alpha: kk });
-          text('Bend along the tensioner', x0 - 18, base - 8, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kk });
+          text('Bend along the tensioner', x0 - 18, base + 6, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kk });
           const hot = R.hero ? P([R.c.at, CLK_TN.rise + 0.2]) : P([0.25, 0.4]);
           callout(t, TT.kap + 0.3, hot, R.hero ? 'Bends at the crown' : 'Hardest at the screw', { to: [R.hero ? P([CLK_TN.S, 0])[0] + 70 : hot[0] + 110, cy - 96], side: 'r', color: col, tcolor: R.hero ? C.heroText : C.ink });
         }
@@ -8804,7 +8819,7 @@ clk_S({
     const slope = c => c.gf / CLK_TN.pre, kx = 0.35, lineTo = (g, col, w, a, dash) => { const x1 = Math.min(0.5, 30 / g); series(m, [[0, 0], [x1, g * x1]], { color: col, w, alpha: a, dash }); };
     /* the click: the GT01's 0.35 mm pre-travel */
     const kv = ep(t, 1.0, 1.4); line(m.X(kx), m.Y(0), m.X(kx), m.Y(30) - 6, { color: C.ink2, w: 1.5, dash: [6, 5], alpha: kv });
-    text('The GT01 clicks, 0.35 mm', m.X(kx) + 10, m.Y(30) + 4, { role: 'label', size: 19, color: C.mute, alpha: kv });
+    text('The GT01 clicks, 0.35 mm', m.X(kx) + 10, m.Y(30) - 12, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: kv });
     /* the ghosts of the states the pointer left behind, then the live line */
     const gA = slope(cA), gP = slope(cP), gB = slope(cB), k1 = ep(t, t1 + 0.1, t1 + 0.8, E.snap), k2 = ep(t, t2 + 0.1, t2 + 0.8, E.snap);
     if (t > t1) lineTo(gA, C.second, 3, ep(t, t1, t1 + 0.4));
@@ -8820,7 +8835,7 @@ clk_S({
     const nm = (g, x, lab, col, a, dy) => { if (a > 0.003) text(lab, m.X(x) + 12, m.Y(g * x) + dy, { role: 'label', size: 19, color: col, alpha: a }); };
     nm(gA, 0.47, 'Flat plane, ABS', C.secondText, ep(t, 1.6, 2.0), 30);
     nm(gB, 0.47, 'Bridge, ' + SIM_MAT.ppcf.name, C.heroText, ep(t, t2 + 0.9, t2 + 1.3), -14);
-    if (t > t1 + 0.8) text('Flat plane, ' + SIM_MAT.ppcf.name, m.X(28 / gP) - 14, m.Y(28) + 8, { role: 'label', size: 19, color: C.bad, align: 'right', alpha: ep(t, t1 + 0.8, t1 + 1.2) });
+    if (t > t1 + 0.8) text('Flat plane, ' + SIM_MAT.ppcf.name, m.X(0.24) - 12, m.Y(gP * 0.24) - 4, { role: 'label', size: 19, color: C.bad, align: 'right', alpha: ep(t, t1 + 0.8, t1 + 1.2) });
     /* the three cases, as numbers */
     const sy = wy + ch + 40, sw = 320, sh = CLK_BOT - sy;
     statTile(t, 1.4, [wx, sy, sw, sh], { value: cA.gf.toFixed(1), unit: 'gf', label: 'Flat plane, ABS', ev: 'derived', color: C.secondText });
@@ -8894,11 +8909,11 @@ clk_S({
       /* the pointer presses the outer edge */
       if (o.edge) { const ka = ep(t, 1.6, 2.3, E.cam), st = [o.edge[0] + 90, o.edge[1] - 110]; cursorPtr(lerp(st[0], o.edge[0], ka), lerp(st[1], o.edge[1], ka), { a: ep(t, 1.4, 1.8), press: prog(t, 2.4, 2.9) > 0 && prog(t, 2.4, 2.9) < 1 ? prog(t, 2.4, 2.9) : 0 }); }
       if (!dual) {
-        callout(t, 3.4, o.edge, 'It rolls about its one post', { to: [x + 590, wy + 110], side: 'r', color: C.bad, tcolor: C.ink, maxW: 240, prose: true });
+        callout(t, 3.4, o.edge, 'It rolls about its one post', { to: [x + 576, wy + 110], side: 'r', color: C.bad, tcolor: C.ink, maxW: 240, prose: true });
         if (pr > 0.8 && o.rub) { circle(o.rub[0], o.rub[1], 9 + 5 * Math.sin(t * 9), { color: C.bad, w: 2.5 }); }
-        callout(t, 3.7, o.rub, 'Grinds its bare guide', { to: [x + 600, wy + 330], side: 'r', color: C.bad, tcolor: C.ink, maxW: 220, prose: true });
+        callout(t, 3.7, o.rub, 'Grinds its bare guide', { to: [x + 576, wy + 330], side: 'r', color: C.bad, tcolor: C.ink, maxW: 240, prose: true });
       } else {
-        callout(t, 7.2, o.post2, 'A second post, on its own rail', { to: [x + 590, wy + 110], side: 'r', color: C.hero, tcolor: C.ink, maxW: 240, prose: true });
+        callout(t, 7.2, o.post2, 'A second post, on its own rail', { to: [x + 576, wy + 110], side: 'r', color: C.hero, tcolor: C.ink, maxW: 240, prose: true });
         callout(t, 7.5, o.guide1, 'POM pads', { to: [x + 250, wy + 330], side: 'l', color: C.hero, tcolor: C.ink });
       }
     });
@@ -8906,6 +8921,7 @@ clk_S({
     const by = 760, bw = 560;
     clk_gloss(t, 4.6, LM, by, bw, 'Dual rail', 'Two posts per trigger, far apart, each sliding in its own guide: two rails.');
     clk_src(t, 5.0, LM + bw + 40, by, bw, 'TechPowerUp', 'On the ULX, with one post and no pads: it "can move laterally quite a bit when pushed".');
+    text('Illustration: roll and travel exaggerated', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, 3.0, 3.4) });
     clk_box(t, 5.4, LM + 2 * (bw + 40), by, bw, { label: 'Shipping today', value: 'G-Wolves (#3)', body: 'Made two plungers popular. Finalmouse put POM pads in the SLX (#28).' });
   }
 });
@@ -8920,7 +8936,7 @@ clk_S({
     header(t, 'POM pad thickness sets the tolerance');
     captions(t, [[0.6, 'Every molded gap lands where its mold puts it. So the factory measures each trigger\'s gap.'], [3.9, 'Then it fits the pad that fills it. The pads come in steps of 0.05 mm.'], [6.6, 'Whatever the mold does, every trigger ends within 0.05 mm of a perfect fit, and no steel is recut.']]);
     const [wx, ww] = CLK_G.a, wy = CLK_TOP, wh = CLK_BOT - wy, s = 150, g = CLK_GAP, pick = CLK_PADS.filter(v => v <= g + 1e-9).pop(), left = g - pick;
-    clk_tile(t, 0.3, wx, wy, ww, wh, 'One rail, cut across, close up', []);
+    clk_tile(t, 0.3, wx, wy, ww, wh, 'One rail of an example trigger, cut across, close up', []);
     const fx = wx + 470, mouth = wy + 170, y1 = wy + 460, pfx = fx + g * s, ka = ep(t, 0.6, 1.2);
     /* the gauge: a taper, 0.30 mm at its tip, widening 0.25 mm per mm, riding the post's face; it stops where it fills the gap */
     const dTip = (g - 0.30) / 0.25, kin = ep(t, 1.6, 2.6, E.io3), kout = ep(t, 3.2, 3.8, E.io3);
@@ -8971,12 +8987,12 @@ clk_S({
     clk_stack(wy, [
       y => {
         const h = 200; clk_tile(t, 0.5, cx, y, cw, h, 'Gap left after fitting', [{ ev: 'derived', text: 'Derived' }]);
-        const x0 = cx + 300, xw = cw - 300 - 40, X = v => x0 + xw * v / 0.32;
+        const x0 = cx + 32, xw = cw - 64 - 170, X = v => x0 + xw * v / band;
         [['One pad for every trigger', band, C.comp, 6.8], ['A pad fitted to each', 0.05, C.hero, 7.2]].forEach(([l, v, col, t0], i) => {
-          const yy = y + 100 + i * 50, k = ep(t, t0, t0 + 0.6, E.snap), a = ep(t, t0 - 0.1, t0 + 0.3);
-          text(l, cx + 32, yy + 8, { role: 'small', size: 24, weight: 600, color: C.ink, alpha: a });
-          rr(x0, yy - 7, Math.max(14, (X(v) - x0) * k), 14, 3, col, null, 0, a);
-          text('0 to ' + v.toFixed(2) + ' mm', X(v) + 12, yy + 8, { role: 'num', size: 22, weight: 700, color: i ? C.heroText : C.mute, alpha: a * k });
+          const yy = y + 104 + i * 64, k = ep(t, t0, t0 + 0.6, E.snap), a = ep(t, t0 - 0.1, t0 + 0.3);
+          text(l, x0, yy - 14, { role: 'small', size: 22, weight: 600, color: C.ink2, alpha: a });
+          rr(x0, yy - 2, Math.max(12, (X(v) - x0) * k), 12, 3, col, null, 0, a);
+          text('0 to ' + v.toFixed(2) + ' mm', X(v) + 14, yy + 10, { role: 'num', size: 22, weight: 700, color: i ? C.heroText : C.mute, alpha: a * k });
         });
         return { h };
       },
@@ -9099,44 +9115,44 @@ clk_S({
     text('Two places it can land: NC and NO', xsP[4] + 4, 452, { role: 'small', size: 25, weight: 600, color: C.mute, alpha: ep(t, 1.6, 2.0) });
     /* the pole, abstract, and what each throw reads */
     const wy = 520, [wx, ww] = CLK_G.a, wh = CLK_BOT - wy, ms = clamp((t - 2.2) / 4.2) * CLK_PT.end, st = clk_pole(ms), kt = ep(t, 1.4, 1.9);
-    clk_tile(t, 1.4, wx, wy, ww, wh, 'One press, slowed down', []);
-    const px = wx + 110, py = wy + 250, L = 290, ang = 0.21 * st.a, tip = [px + L * Math.cos(ang), py + L * Math.sin(ang)];
-    const ncP = [px + L * Math.cos(-0.21), py + L * Math.sin(-0.21)], noP = [px + L * Math.cos(0.21), py + L * Math.sin(0.21)];
+    clk_tile(t, 1.4, wx, wy, ww, wh, 'One press, slowed down: an illustration', []);
+    /* the pole: compact, on the left; the throws' wires run on into the traces */
+    const px = wx + 96, py = wy + 250, L = 220, ang = 0.26 * st.a, tip = [px + L * Math.cos(ang), py + L * Math.sin(ang)];
+    const ncP = [px + L * Math.cos(-0.26), py + L * Math.sin(-0.26)], noP = [px + L * Math.cos(0.26), py + L * Math.sin(0.26)];
     const live = st.nc ? 'nc' : st.no ? 'no' : null, flow = (pts, on) => { poly(pts, { color: on ? C.hero : inkA(0.32), w: on ? 3.5 : 2, alpha: kt }); if (on) { G.save(); G.globalAlpha = kt; G.strokeStyle = C.onHero; G.lineWidth = 2; G.setLineDash([5, 14]); G.lineDashOffset = -t * 60; G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.stroke(); G.restore(); } };
-    const lanes = { nc: wy + 150, no: wy + 260, click: wy + 370 }, x0 = wx + 560, x1 = wx + ww - 40, X = m => x0 + (x1 - x0) * m / CLK_PT.end, amp = 44;
-    flow([[ncP[0] + 18, ncP[1] - 6], [ncP[0] + 70, ncP[1] - 6], [ncP[0] + 70, lanes.nc - amp / 2], [x0 - 14, lanes.nc - amp / 2]], live === 'nc');
-    flow([[noP[0] + 18, noP[1] + 6], [noP[0] + 70, noP[1] + 6], [noP[0] + 70, lanes.no - amp / 2], [x0 - 14, lanes.no - amp / 2]], live === 'no');
+    const amp = 40, lanes = { nc: wy + 170, no: wy + 280, click: wy + 390 }, x0 = wx + 420, x1 = wx + ww - 48, X = m => x0 + (x1 - x0) * m / CLK_PT.end;
+    flow([[ncP[0] + 22, ncP[1] - 8], [ncP[0] + 50, ncP[1] - 8], [ncP[0] + 50, lanes.nc - amp], [x0, lanes.nc - amp]], live === 'nc');
+    flow([[noP[0] + 22, noP[1] + 8], [noP[0] + 50, noP[1] + 8], [noP[0] + 50, lanes.no - amp], [x0, lanes.no - amp]], live === 'no');
     flow([[px, py], [px, py + 120]], !!live);
-    /* the two throws: contact pads */
     for (const [p, nm, on] of [[ncP, 'NC', live === 'nc'], [noP, 'NO', live === 'no']]) {
-      rr(p[0] - 4, p[1] + (nm === 'NC' ? -26 : 8), 26, 18, 3, on ? C.hero : CLK_PC.steel(), null, 0, kt);
-      text(nm, p[0] + 30, p[1] + (nm === 'NC' ? -38 : 50), { role: 'label', size: 22, color: on ? C.heroText : C.mute, alpha: kt });
+      rr(p[0] - 2, p[1] + (nm === 'NC' ? -30 : 10), 26, 20, 3, on ? C.hero : CLK_PC.steel(), null, 0, kt);
+      text(nm, p[0] - 14, p[1] + (nm === 'NC' ? -16 : 32), { role: 'label', size: 22, color: on ? C.heroText : C.mute, align: 'right', alpha: kt });
     }
-    /* the pole: one moving contact on its pivot */
     line(px, py, tip[0], tip[1], { color: live ? C.hero : C.ink2, w: 12, cap: 'round', alpha: kt });
     circle(px, py, 16, { fill: C.panel, color: C.ink2, w: 3, alpha: kt }); circle(tip[0], tip[1], 8, { fill: live ? C.hero : C.ink2, alpha: kt });
-    text('COM', px - 22, py + 54, { role: 'label', size: 22, color: C.mute, alpha: kt });
-    text('Pole', px + 90, py - 30 + 60 * st.a * 0.21, { role: 'label', size: 22, color: C.ink2, alpha: kt });
+    text('COM', px - 26, py + 8, { role: 'label', size: 22, color: C.mute, align: 'right', alpha: kt });
+    text('Pole', px + 70, py - 30 + 52 * st.a * 0.26, { role: 'label', size: 22, color: C.ink2, alpha: kt });
     /* the traces: what the mouse reads on each throw, and the click it builds from them */
-    for (const m of [0, 2, 4, 6, 8, 10, 12]) { line(X(m), wy + 96, X(m), wy + wh - 40, { color: C.hair, w: 1, alpha: kt }); text(m + ' ms', X(m), wy + wh - 12, { role: 'tick', color: C.mute, align: 'center', alpha: kt }); }
-    for (const [key, nm] of [['nc', 'NC'], ['no', 'NO'], ['click', 'Click']]) {
+    for (const m of [0, 4, 8, 12]) { line(X(m), wy + 110, X(m), wy + wh - 44, { color: C.hair, w: 1, alpha: kt }); text(m + ' ms', X(m), wy + wh - 16, { role: 'tick', color: C.mute, align: 'center', alpha: kt }); }
+    for (const key of ['nc', 'no', 'click']) {
       const yb = lanes[key], pts = []; let prev = clk_pole(0)[key];
       for (let m = 0; m <= ms; m += 0.01) { const v = clk_pole(m)[key]; if (v !== prev) pts.push([X(m), yb - prev * amp]); pts.push([X(m), yb - v * amp]); prev = v; }
       poly(pts, { color: key === 'click' ? C.hero : C.ink2, w: key === 'click' ? 4 : 2.4, alpha: kt });
-      text(nm, x0 - 14, yb + 7 - amp / 2 + (key === 'click' ? 0 : 30), { role: 'label', size: 21, color: key === 'click' ? C.heroText : C.mute, align: 'right', alpha: kt });
     }
-    const mk = (m, lane, label, col, up) => { const k = ep(t, 2.2 + 4.2 * m / CLK_PT.end, 2.5 + 4.2 * m / CLK_PT.end); if (k <= 0) return; line(X(m), lanes[lane] - amp - 8, X(m), lanes[lane] + 6, { color: col, w: 2.5, alpha: k }); text(label, X(m) + 10, lanes[lane] + (up ? -amp - 14 : 30), { role: 'small', size: 22, weight: 700, color: col, alpha: k }); };
-    mk(CLK_PT.on, 'click', 'Counts at the first touch', C.heroText, false);
-    mk(CLK_PT.on + 0.2, 'no', 'Bounce: never counted', C.mute, true);
-    mk(CLK_PT.back, 'click', 'Release counts here', C.heroText, false);
+    text('Click', x0 - 14, lanes.click - 12, { role: 'label', size: 22, color: C.heroText, align: 'right', alpha: kt });
+    /* where it counts: the press at NO's first touch, the release at NC's; the bounce on NO counts for nothing */
+    const mk = (m, label) => { const k = ep(t, 2.2 + 4.2 * m / CLK_PT.end, 2.5 + 4.2 * m / CLK_PT.end); if (k <= 0) return; line(X(m), wy + 112, X(m), lanes.click + 8, { color: C.hero, w: 2, dash: [6, 5], alpha: k }); text(label, X(m), wy + 100, { role: 'small', size: 22, weight: 700, color: C.heroText, align: 'center', alpha: k }); };
+    mk(CLK_PT.on, 'Click counts'); mk(CLK_PT.back, 'Release counts');
+    const kb = ep(t, 2.2 + 4.2 * CLK_PT.bo / CLK_PT.end, 2.5 + 4.2 * CLK_PT.bo / CLK_PT.end);
+    text('Bounce, not counted', X(CLK_PT.bo) + 12, lanes.no - amp - 12, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: kb });
     /* right: what the second throw buys */
-    const [cx, cw] = CLK_G.b, items = [['No debounce wait', 'The click counts at the first touch on NO. There is no timer to wait out.'], ['No false double clicks', 'A bounce on NO cannot count twice: the pole has to get back to NC first.'], ['An active release', 'The release counts the instant the pole lands on NC, not when a timer guesses.']];
+    const [cx, cw] = CLK_G.b, items = [['No debounce wait', 'It counts at the first touch on NO.'], ['No false double clicks', 'A bounce on NO cannot count twice.'], ['An active release', 'It counts the instant the pole lands on NC.']];
     clk_tile(t, 1.8, cx, wy, cw, wh, 'What the second throw buys', []);
     items.forEach(([hd, bd], i) => {
-      const yy = wy + 120 + i * 104, k = ep(t, 7.2 + i * 0.35, 7.7 + i * 0.35);
+      const yy = wy + 130 + i * 112, k = ep(t, 7.2 + i * 0.35, 7.7 + i * 0.35);
       G.save(); G.translate(0, (1 - E.out3(k)) * 12);
-      text(hd, cx + 32, yy, { role: 'h3', size: 30, weight: 700, color: C.ink, alpha: k });
-      text(bd, cx + 32, yy + 36, { role: 'small', size: 24, weight: 560, color: C.mute, alpha: k, maxW: cw - 64, lh: 1.3 });
+      text(hd, cx + 32, yy, { role: 'h3', size: 32, weight: 700, color: C.ink, alpha: k });
+      text(bd, cx + 32, yy + 40, { role: 'small', size: 25, weight: 560, color: C.mute, alpha: k, maxW: cw - 64 });
       G.restore();
     });
   }
@@ -9159,7 +9175,7 @@ clk_S({
   sfxLoop: [{ t0: 1.2, per: 2.6, cues: [[0, 'click'], [0.1, 'release']] }],
   draw: t => {
     header(t, 'Counted at first contact');
-    captions(t, [[0.6, 'A single-throw mouse reads one contact, so it has to wait out the bounce before it trusts a press.'], [4.2, 'The GT01 is double throw. It can count the moment the pole leaves NC: 1.5 ms before it even reaches NO.']]);
+    captions(t, [[0.6, 'A single-throw mouse reads one contact, so it has to wait out the bounce before it trusts a press.'], [4.2, 'The GT01 is double throw, so it counts the press the moment the pole leaves NC: 1.5 ms before it reaches NO.']]);
     const wy = CLK_TOP, lx = LM, lw = 680, sh = 440, rx = lx + lw + 40, rw = RM - rx, rh = CLK_BOT - wy;
     /* left: the GT01, cover clear, pressing */
     clk_tile(t, 0.3, lx, wy, lw, sh, 'Gateron GT01, cover clear', ['claim']);
@@ -9222,7 +9238,7 @@ function clk_xbab() {
   CLK_XB = X ? X.panels.map(p => ({ mode: p.mode, still: p.state === 'stationary', xa: p.XA25, op: p.OP1_8k_v2 })) : [];
   return CLK_XB;
 }
-const CLK_WAIT_STEP = [{ n: '#79', who: 'G-Wolves, Endgame Gear, Sora V3', ev: 'claim', evText: 'XBAB', now: 'SPDT ships in their mains. On XBAB\'s analyzer the OP1 8k v2 adds 121 to 125 µs to a click while moving.', step: 'NC release on a path that never waits for motion: 75 µs or less, moving or still, published with n and a 95% CI.' }];
+const CLK_WAIT_STEP = [{ n: '#79', who: 'Endgame Gear OP1 8k v2', ev: 'claim', evText: 'XBAB', now: 'Moving, it adds 121 to 125 µs to a click.', step: 'NC release that never waits for motion: 75 µs or less.' }];
 clk_S({
   id: 'clk_wait', ch: 'click', theme: 'paper', title: 'Clicks that never wait for motion', settle: 11, ideas: [79],
   src: ['clk_xbabClick', 'xbab', 'tpuOp1', 'clk_brock'],
@@ -9350,19 +9366,19 @@ clk_S({
       if (pp) { const ka = ep(t, 1.6, 2.3, E.cam), st = [pp[0] + 90, pp[1] - 100]; cursorPtr(lerp(st[0], pp[0], ka), lerp(st[1], pp[1], ka), { a: ep(t, 1.4, 1.8), press: prog(t, 2.4, 2.9) > 0 && prog(t, 2.4, 2.9) < 1 ? prog(t, 2.4, 2.9) : 0 }); }
       if (glove) {
         const trm = o.tr || 0, k = ep(t, 3.6, 4.0);
-        callout(t, 4.0, o.rail, 'The rails: the switch\'s own sides', { to: [x + 620, wy + 250], side: 'r', color: C.hero, tcolor: C.ink, maxW: 200, prose: true });
+        callout(t, 4.0, o.rail, 'The rails: the switch\'s own sides', { to: [x + 568, wy + 250], side: 'r', color: C.hero, tcolor: C.ink, maxW: 240, prose: true });
         callout(t, 7.0, o.arm, 'Arms on the shoulders: the stop', { to: [x + 260, wy + 270], side: 'l', color: C.hero, tcolor: C.ink, maxW: 200, prose: true });
         rich([{ s: 'Travel', role: 'label', size: 21, color: C.mute }, { s: trm.toFixed(2) + ' mm', role: 'num', size: 28, weight: 800, color: C.heroText, gap: 14 }, { s: trm >= 0.5 - 1e-6 ? 'held by the arms' : trm >= 0.35 ? 'clicked' : '', role: 'small', size: 22, weight: 600, color: C.mute, gap: 14 }], x + w - 32, wy + 92, { alpha: k, align: 'right' });
       } else {
-        callout(t, 3.2, o.bend, 'It bends past the click', { to: [x + 640, wy + 300], side: 'r', color: C.bad, tcolor: C.ink, maxW: 180, prose: true });
+        callout(t, 3.2, o.bend, 'It bends past the click', { to: [x + 570, wy + 300], side: 'r', color: C.bad, tcolor: C.ink, maxW: 240, prose: true });
         callout(t, 1.4, o.hinge, 'Hinge', { to: [x + 150, wy + 220], side: 'l', color: C.ink2, tcolor: C.ink2 });
         if (o.over) circle(o.sw[0], o.sw[1], 30 + 4 * Math.sin(t * 8), { color: C.bad, w: 2.5 });
         text('Only the switch stops it', x + 32, wy + h - 36, { role: 'small', size: 24, weight: 700, color: C.bad, alpha: ep(t, 3.4, 3.8) });
       }
     });
-    text('Travel drawn twice. The arms follow Hitscan\'s Hyperlight (#64), on the switch itself.', LM + w + 80 + 32, wy + h + 30, { role: 'small', size: 22, color: C.faint, alpha: ep(t, 7.6, 8.0) });
+    text('Travel drawn twice. The arms rest on the switch, as on Hitscan\'s Hyperlight (#64).', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, 7.6, 8.0) });
     /* what it buys, in three numbers */
-    const by = 800, bw = 560, bh = 160;
+    const by = 760, bw = 560, bh = 200;
     statTile(t, 7.4, [LM, by, bw, bh], { pre: 'Mice that ship SPDT side buttons', value: '0', label: 'Theseus is the first', quiet: true });
     statTile(t, 7.6, [LM + bw + 40, by, bw, bh], { pre: 'One rail design, four switches', value: '2×', label: 'The practice at its tolerance', hero: true });
     statTile(t, 7.8, [LM + 2 * (bw + 40), by, bw, bh], { pre: 'Four full-size switches, and still', value: THESEUS.mass.toFixed(2), unit: 'g', label: 'Nothing traded for the weight', hero: true });
@@ -16085,13 +16101,13 @@ Object.assign(SRC, {
 
 /* ============================================================================================
    INTRO (chapter code ntr). The first impression, in this order:
-     cover (the 3D hero) · thesis (how every number is labelled) · targets, targets2 (the bar) · flagships
-     · zerograms · weightgap (listed against weighed) · pricefront (what a gram costs) · market (the empty corner)
-     · budget (the 29 g decision) · map (seven areas on the exploded 3D shell)
+     cover, thesis (how every number is labelled), targets, targets2, flagships, [ntr_stats: 14-d-intro.js],
+     zerograms (F = m · a), weightgap (listed against weighed), [ntr_density, ntr_sizewt, ntr_densrank: 14-d-intro.js],
+     pricefront (price against weight), market (battery life against weight), budget (29.31 g, 200 h), map
    The close is in 10-i-close.js. Data comes from research/data (RDATA, read with rv / evOf / exMouse / exWeight from
    14-a-exdata.js). Theseus numbers are PROPOSAL (a target) or PROJECTED (a forecast, formula on screen).
    Validation report 2026-11-03 applied: the sensor is a "next-gen PixArt FrameSync-class sensor (proposal)", the
-   Starlight X has no hour rating, the module is the Raytac AN54LM-20A, and the 29 g budget is an open decision.
+   Starlight X has no hour rating, the module is the Raytac AN54LM-20A. Theseus's numbers come from THS / THESEUS (05-data.js).
    ============================================================================================ */
 Object.assign(SRC, {
   exPrices: { t: 'US list prices: maker stores and product pages (Pulsar, Ninjutso, Lamzu, Keychron, Finalmouse, Razer, Logitech, WLMOUSE), via research/data/mice.json', n: 'A price range is plotted at its lowest price. Prices as listed when collected, 2026.' },
@@ -16340,10 +16356,10 @@ function ntr_bar(t, rows) {
   return y + 14 + rh * n;
 }
 S({
-  id: 'targets', ch: 'intro', theme: 'night', title: 'The bar, part one: speed', settle: 9,
+  id: 'targets', ch: 'intro', theme: 'night', title: 'Targets, part one: speed', settle: 9,
   src: ['exPiaknow', 'kunai', 'xbab', 'xbabFw', 'xbabSensorLock', 'vgnClick', 'pcgSlx', 'usbHs', 'ntrTpuV4'],
   draw: t => {
-    header(t, 'The bar, part one: speed');
+    header(t, 'Targets, part one: speed');
     const yb = ntr_bar(t, NTR_BAR_SPEED);
     captions(t, [[0.6, 'Each row: the best number anyone has shown, who holds it, how we know it, and my target. Theseus matches or beats every one.'], [5.0, 'The big one is wireless motion: 0.14 ms, 59% under the fastest wireless mouse anyone has measured.']]);
     legend(t, 3.2, LM, yb + 58, [{ kind: 'dot', color: C.ink, label: 'Best shown' }, { kind: 'hero', label: 'My target' }]);
@@ -16351,10 +16367,10 @@ S({
   }
 });
 S({
-  id: 'targets2', ch: 'intro', theme: 'paper', title: 'The bar, part two: everything else', settle: 9,
+  id: 'targets2', ch: 'intro', theme: 'paper', title: 'Targets, part two: everything else', settle: 9,
   src: ['exNbcV4', 'ntrTpuV4', 'ntrB2g', 'tpuX2h', 'nbcUlx', 'razerFocus', 'mkb3955', 'xbabSmooth', 'slxPdf', 'slxXt', 'kunai', 'cerakoteH'],
   draw: t => {
-    header(t, 'The bar, part two: everything else');
+    header(t, 'Targets, part two: everything else');
     ntr_bar(t, NTR_BAR_REST);
     captions(t, [[0.6, 'The same rule for everything else: the best figure shown anywhere, and where Theseus sits against it.'], [5.0, 'Every Theseus is weighed; the 29 g here is only listed. And where Razer keeps its sensor to itself, mine is a next-gen PixArt FrameSync-class part.']]);
   }
@@ -16577,10 +16593,10 @@ function exPricePoints() {
   }).filter(Boolean);
 }
 S({
-  id: 'pricefront', ch: 'intro', theme: 'paper', title: 'What a gram costs', settle: 10, ideas: ['weight'],
+  id: 'pricefront', ch: 'intro', theme: 'paper', title: 'Price against weight', settle: 10, ideas: ['weight'],
   src: ['exRtings', 'exEloshapes', 'exPrices', 'x2fCrazy', 'nbcUlx'],
   draw: t => {
-    header(t, 'What a gram costs');
+    header(t, 'Price against weight');
     captions(t, [[0.6, 'Every wireless mouse with a US list price, against its weight. No full shell has shipped past the black line.'],
       [5.4, 'Theseus goes past it: 29.31 g with the whole shell, for $189. That is what the ULX launched at, 8.7 g heavier.']]);
     const P = exPricePoints(), x2f = P.find(p => p.id === 'pulsar-x2f-crazylight'), full = P.filter(p => p !== x2f);
@@ -16623,18 +16639,18 @@ S({
 /* ============================== 09. the empty corner: weight against listed battery life at 1 kHz ============================== */
 const ntr_mk = n => exShort(n).replace(/^(Razer|Logitech|ZOWIE|Lamzu|Pulsar|Ninjutso|Finalmouse|WLMOUSE|Hitscan|Scyrox) /, '').replace('Xiaomi Gaming Mouse 2', 'Xiaomi GM2').replace('Starlight X', 'Starlight X');
 S({
-  id: 'market', ch: 'intro', theme: 'night', title: 'The empty corner', settle: 10, ideas: ['weight', 'battery'],
+  id: 'market', ch: 'intro', theme: 'night', title: 'Battery life against weight', settle: 10, ideas: ['weight', 'battery'],
   src: ['exRtings', 'exEloshapes', 'exNbcV4', 'ntrKeychron', 'ntrDaV4', 'ntrXiaomi', 'ntrGpx2', 'ntrGpx2c', 'razerBatt', 'logiSuperstrike', 'ntrZowie', 'ntrB2g'],
   draw: t => {
-    header(t, 'The empty corner');
+    header(t, 'Battery life against weight');
     const mice = ((RD.mice || {}).mice || []).filter(m => m.connection !== 'wired');
     const rated = mice.filter(m => rv(m.battery_claim_1k_h) != null).map(m => { const w = exWeight(m.id); return w ? { id: m.id, name: ntr_mk(m.name) + (m.id === 'razer-deathadder-v4-pro' ? '*' : ''), x: w.g, y: rv(m.battery_claim_1k_h), hollow: w.ev !== 'measured', ref: m.id === 'razer-viper-v4-pro' } : null; }).filter(Boolean);
     const unr = mice.filter(m => rv(m.battery_claim_1k_h) == null && m.id !== 'mchose-l7-ultra').map(m => { const w = exWeight(m.id); return w && w.g <= 50 ? { id: m.id, name: NTR_SHORT[m.id] || exShort(m.name), g: w.g, ev: w.ev } : null; }).filter(Boolean).sort((a, b) => a.g - b.g);
     const light = rated.reduce((a, p) => (!a || p.x < a.x ? p : a), null);
     captions(t, [[0.6, `Every wireless mouse that lists hours at 1 kHz, against its weight. The lightest is the ${light ? light.name + ', ' + ntr_g(light.x) + ' g' : '–'} as weighed.`],
       [5.4, 'Nothing lighter comes with an hour rating. That corner is Theseus: 29.31 g and 200 h at 1 kHz, measured, for $189.']]);
-    const x = LM + 100, py = 330, w = 1150, ph = 480, xr = [25, 62], yr = [0, 220], X = g => x + w * (g - xr[0]) / (xr[1] - xr[0]);
-    cardHead(t, 0.5, LM - 32, py - 80, w + 132, 'Listed hours at 1 kHz against weight, wireless', [{ ev: 'measured', by: 'RTINGS' }, { ev: 'claim', by: 'Maker' }]);
+    const x = 720, py = 330, w = 1100, ph = 480, xr = [25, 62], yr = [0, 220], X = g => x + w * (g - xr[0]) / (xr[1] - xr[0]);
+    cardHead(t, 0.5, x - 120, py - 80, w + 120, 'Listed hours at 1 kHz against weight, wireless', [{ ev: 'measured', by: 'RTINGS' }, { ev: 'claim', by: 'Maker' }]);
     /* the corner nobody has rated: left of the lightest rated mouse */
     const kz = ep(t, 3.0, 3.8, E.io3);
     if (light && kz > 0) line(X(light.x), py, X(light.x), py + ph * kz, { color: C.red, w: 1.5, dash: [6, 6] });
@@ -16649,17 +16665,17 @@ S({
     unr.forEach((u, i) => { const ux = X(u.g); if (ux >= x && ux <= x + w) line(ux, py + ph - 22, ux, py + ph - 4, { color: C.red, w: 2.5, alpha: kt }); });
     if (light) text('No rating found', X(light.x) - 14, py + ph - 34, { role: 'label', size: 20, color: C.redL, align: 'right', alpha: kt });
     /* the list, so every red tick has a name */
-    const lx = 1400, ly = py - 30, lk = ep(t, 3.6, 4.0);
+    const lx = LM, lr = LM + 480, ly = py - 30, lk = ep(t, 3.6, 4.0);
     text('No 1 kHz rating found', lx, ly, { role: 'label', size: 21, color: C.redL, alpha: lk });
-    line(lx, ly + 16, RM, ly + 16, { color: C.hair, w: 1.5, alpha: lk });
+    line(lx, ly + 16, lr, ly + 16, { color: C.hair, w: 1.5, alpha: lk });
     unr.forEach((u, i) => {
       const yy = ly + 56 + i * 39, k = ep(t, 3.7 + i * 0.05, 4.1 + i * 0.05);
       line(lx, yy - 9, lx + 14, yy - 9, { color: C.red, w: 2.5, alpha: k });
       text(u.name + (u.id === 'finalmouse-slx' ? ' †' : ''), lx + 26, yy, { role: 'small', size: 24, weight: 600, color: C.ink, alpha: k });
-      text(ntr_g(u.g) + '\u00A0g', RM, yy, { font: 'mono', size: 22, weight: 600, color: u.ev === 'measured' ? C.ink2 : C.mute, align: 'right', alpha: k });
+      text(ntr_g(u.g) + '\u00A0g', lr, yy, { font: 'mono', size: 22, weight: 600, color: u.ev === 'measured' ? C.ink2 : C.mute, align: 'right', alpha: k });
     });
     const dc = TH ? '#5F5E59' : '#B9B8B2';
-    legend(t, 4.2, LM, 920, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'ref', label: 'The longest listed' }, { kind: 'hero', label: 'Theseus' }]);
+    legend(t, 4.2, x - 100, 920, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'ref', label: 'The longest listed' }, { kind: 'hero', label: 'Theseus' }]);
     const un = (sc.unnamed || []);
     source(t, (un.length ? 'Unnamed: ' + un.join(', ') + '. ' : '') + '* Report rate not stated. † Finalmouse publishes no hour rating (Back2Gaming). Hours are the makers\' own figures.', { t0: 4.4 });
   }
@@ -17104,8 +17120,8 @@ function ntr_statsData() {
   const ulx = exMouse('finalmouse-ulx'), ulxP = ulx ? rv(ulx.price_usd) : null;
   return [
     { value: THS.mass, unit: 'g', label: 'Weight, every unit weighed', hero: true, next: lw && { value: fmtN(lw.g, 1), unit: 'g', who: lw.name.replace('Finalmouse ', ''), ev: 'measured', by: 'RTINGS', head: 'Lightest weighed' } },
-    { value: ntr_rf(ntr_thsRho()), unit: 'g/cm³', label: 'Density, grams per {cm³} of its box', ev: 'derived', hero: true, next: dn && { value: ntr_rf(dn.rho), unit: '', who: dn.name.replace('Pulsar ', ''), ev: 'derived', head: 'Next best' } },
-    { value: THS.price, unit: '', label: 'US list price', quiet: true, next: ulxP && { value: '$' + ulxP, unit: '', who: 'the ULX at launch', ev: 'claim', text: 'Notebookcheck 2023', head: 'Same as', grey: true } },
+    { value: ntr_rf(ntr_thsRho()), unit: 'g/cm³', label: 'Density, grams per {cm³} of its box', ev: 'derived', hero: true, next: dn && { value: ntr_rf(dn.rho), unit: '', who: dn.name.replace('Pulsar ', ''), ev: 'derived', head: 'Best wireless' } },
+    { value: THS.price, unit: '', label: 'US list price', quiet: true, next: ulxP && { value: '$' + ulxP, unit: '', who: 'Finalmouse ULX, at launch', ev: 'claim', text: 'Notebookcheck 2023', head: 'Same as', grey: true } },
     { value: '0.14', unit: 'ms', label: 'Motion latency, wireless', hero: true, next: mo && { value: fmtN(mo.v, 2), unit: 'ms', who: 'Viper V4 Pro', ev: mo.ev, by: '{piaknow}', head: 'Fastest measured' } },
     { product: true },
     { value: String(THESEUS.hours), unit: 'h', label: 'Battery at 1 kHz, measured', quiet: true, next: bt && { value: fmtN(bt.v, 0), unit: 'h', who: 'Viper V4 Pro', ev: bt.ev, by: 'Razer', head: 'Longest listed' } }
@@ -17169,7 +17185,7 @@ S({
   draw: t => {
     header(t, 'Density, not weight');
     captions(t, [[0.6, 'Weight alone rewards a small mouse. Density says how much mouse you get for every gram.'],
-      [5.4, 'Grams over the box the mouse fits in, the way Pwnage and physics both do it. Lower is lighter for its size, and Theseus is the lowest.']]);
+      [5.4, 'Grams over the box the mouse fits in, the way Pwnage and physics both do it. Lower is lighter for its size, and no wireless mouse is lower than Theseus.']]);
     const B = ntr_shellBox(), bx = ntr_thsBox(), k = 4.2, O = [530, 505], P = ntr_iso(O, k, B);
     const c = (X, Y, Z) => P([X, Y, Z]);
     /* the corners: back bottom (hidden) b0; the box is drawn edge by edge, then the three views land on its faces */
@@ -17234,8 +17250,8 @@ S({
       [5.6, `Theseus puts the same grams into ${fmtN(more, 0)}% more mouse, and at the same mass the bigger one feels lighter in the hand.`]]);
     const k = 3.45, gy = 700;
     const items = [
-      { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29, ev: 'claim', by: 'Pulsar', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 150, t0: 1.1 },
-      { key: 'ths', name: 'Theseus', g: THESEUS.mass, gs: THS.mass, ev: 'proposal', box: bx, rho: rhoT, x: 610, t0: 2.7, hero: true }
+      { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29, ev: 'claim', by: 'Pulsar', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 720, t0: 1.1 },
+      { key: 'ths', name: 'Theseus', g: THESEUS.mass, gs: THS.mass, ev: 'proposal', box: bx, rho: rhoT, x: 1200, t0: 2.7, hero: true }
     ];
     /* the pointer brings each box in and sets it down */
     const lift = 210;
@@ -17264,14 +17280,14 @@ S({
     const gp = it => [it.x + it.box.L * k * 0.5, y0 - it.box.H * k * 0.5];
     cursorAt(t, [[0.7, [P0.x + 120, y0 - 260]], [1.05, gp(P0)], [1.9, [gp(P0)[0], gp(P0)[1] + lift]], [2.3, [gp(P1)[0] - 60, y0 - 160]], [2.65, gp(P1)], [3.5, [gp(P1)[0], gp(P1)[1] + lift]], [4.3, [gp(P1)[0] + 260, gp(P1)[1] + lift + 40]]], [1.05, 2.65], { a: env(t, 0.5, 0.8, 4.1, 4.4) });
     /* the ground */
-    line(LM, gy + 1, 1140, gy + 1, { color: C.hair, w: 1.5, alpha: ep(t, 0.4, 0.9) });
+    line(680, gy + 1, RM, gy + 1, { color: C.hair, w: 1.5, alpha: ep(t, 0.4, 0.9) });
     /* the words, in the right column */
-    ntr_stack(t, 1240, 280, RM - 1240, [
+    ntr_stack(t, LM, 280, 560, [
       { t0: 5.8, gloss: true, a: 'Size–weight illusion', b: 'Of two things with the same mass, the smaller one feels heavier. Charpentier measured it in 1891.' },
       { t0: 6.3, a: 'Buckingham 2014', b: 'The best known of the weight illusions, and over a century of studies keep finding it.' },
       { t0: 6.8, a: 'Pwnage', b: '"Two mouses with the same weight can feel totally different."' }
     ]);
-    source(t, 'Weights: the X2F\'s is Pulsar\'s, Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is the Sora V2\'s, a placeholder.', { t0: 5.0, maxW: 1060 });
+    source(t, 'Weights: the X2F\'s is Pulsar\'s, Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is the Sora V2\'s, a placeholder.', { t0: 5.0, x: 720, maxW: RM - 720 });
   }
 });
 

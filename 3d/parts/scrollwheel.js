@@ -1,4 +1,6 @@
-// Magnesium-alloy scroll wheel (#84) + POM axle (#7) + optical scroll encoder (research "step further").
+// Magnesium-alloy scroll wheel (#84) + POM axle (#7) + optical scroll encoder (research "step further"), built like
+// TTC's optical encoder (a normal mouse-encoder body: tin-plated frame, black housing, axle bushing, five pins; inside a
+// slotted disc between an IR emitter and a dual phototransistor) + a POM support bracket for the far journal.
 // Representative / proposal geometry. Frame: origin on the PCB top surface below the wheel centre;
 // axle along X; wheel centre at Y = axleHeight. Encoder on the user's RIGHT (−X) by default, as on the Sora V2
 // PCB (+X is the user's left in this right-handed frame); encoderSide: 'left' puts it on +X (mirror image).
@@ -25,10 +27,14 @@ export const WHEEL_SPEC = {
   label: 'representative / proposal',
   material: 'magnesium alloy AZ31B-class (1.77 g/cm³), machined, bare passivated finish',
   axle: 'POM (acetal), hex-keyed in the hub, D-flat drive into the encoder',
-  encoder: 'optical: IR emitter, slotted stainless code disc, dual phototransistor (A/B quadrature)',
+  encoder: 'optical, TTC-style: tin-plated steel frame with drawn bushing collar on a black plastic body, 5 pins at 1.25 mm; inside a 24-slot code disc on the rotor, a photo-interrupter (IR emitter + dual phototransistor, A/B a quarter-cycle apart) at the bottom, 24-lobe detent star + leaf spring',
+  support: 'POM bracket: U seat with lead-in chamfers for the far journal, foot with two locating pegs, gusset',
   sources: {
     grousers: 'NASA, "Perseverance Mars rover gets its wheels and air brakes": 48 gently curved treads vs Curiosity 24 chevron [DS]',
     optical: 'Razer: optical encoders "3.3× more reliable" [MC]; Viper V4 Pro uses an optical scroll encoder [MC/IM]',
+    ttc: "TTC optical encoder launch photo (Brock's brief): normal encoder outline, metal frame + plastic housing, bushing, pins [PR]",
+    interrupter: 'Honeywell HOA0901 slotted optical switch (emitter + phototransistor across a slot) [DS]; US6380927 and US12228433 (optical scroll encoders: slotted wheel through an interrupter) [DS]',
+    teardown: "Igor's Lab, Razer Basilisk V3 Pro teardown (optical scroll encoder internals) [IM]",
     size: 'Sora V2 wheel ≈ 22–23.5 × 7.5–8 mm, measured from Brock\'s PCB photo against the 8.94 mm USB-C shell [DV]',
   },
 };
@@ -42,7 +48,7 @@ export function buildScrollWheel(opts = {}) {
   const es = opts.encoderSide ?? 'right';
   const side = (es === 'left' || es === 1 || es === '+1') ? 1 : -1;
   const M = partMaterials(opts.materials);
-  const hiColor = opts.highlight ?? HIGHLIGHT.night;      // the deck sets C.hero through setHighlight
+  const hiColor = opts.highlight ?? HIGHLIGHT[opts.theme] ?? HIGHLIGHT.night;      // the deck sets C.hero through setHighlight
   if (opts.anisoRot !== undefined) { M.magnesium.anisotropyRotation = +opts.anisoRot; M.magnesiumFace.anisotropyRotation = +opts.anisoRot; }
   const userMats = new Set(Object.values(opts.materials || {}));
   const own = new Set(Object.values(M).filter(m => !userMats.has(m)));
@@ -243,12 +249,12 @@ export function buildScrollWheel(opts = {}) {
   }
   const spring = meshOf(sweep(springPts, rectSection(0.1, 0.8, 0.02), { up: [0, 1, 0] }), M.phosBronze, 'detentSpring');
   enc.add(spring);
-  // the photo-interrupter on the disc's rim, rear side (−Z), at the axle's height: a white U holder
-  const beamR = 3.38, phA = -Math.PI / 2, phB = phA - (TAU / steps) * 1.25;    // B lags A by 1¼ slot pitch = 90° electrical
+  // the photo-interrupter on the disc's rim, at the bottom, right over the pins: a white U holder
+  const beamR = 3.38, phA = Math.PI, phB = phA - (TAU / steps) * 1.25;    // B lags A by 1¼ slot pitch = 90° electrical
   const beamPos = (ph) => new THREE.Vector3(0, beamR * Math.cos(ph), beamR * Math.sin(ph));
   const pA = beamPos(phA), pB = beamPos(phB), pM = pA.clone().lerp(pB, 0.5);
   const holder = new THREE.Group(); holder.name = 'interrupter';
-  const zU0 = -4.92, zU1 = -2.55, yU0 = -2.15, yU1 = 0.75, xa0 = 7.25, xa1 = 8.55, xr0 = 9.55, xr1 = 10.45;
+  const zU0 = pM.z - 2.0, zU1 = pM.z + 2.0, yU0 = -4.95, yU1 = -2.35, xa0 = 7.25, xa1 = 8.55, xr0 = 9.55, xr1 = 10.45;
   const blockYZ = (z0, z1, y0, y1, xA, xB, r, bev, name, mat) => {
     const sh = roundedRectShape(z1 - z0, y1 - y0, r, -(z0 + z1) / 2, (y0 + y1) / 2);
     const g = toYZ(extrude(sh, { depth: xB - xA, front: bev ? { r: bev, s: 2 } : null, back: bev ? { r: bev, s: 2 } : null, curveSegments: 6 }), xA);
@@ -256,7 +262,7 @@ export function buildScrollWheel(opts = {}) {
   };
   holder.add(blockYZ(zU0, zU1, yU0, yU1, xa0, xa1, 0.18, 0.06, 'holderArmE', M.paWhite));
   holder.add(blockYZ(zU0, zU1, yU0, yU1, xr0, xr1, 0.18, 0.06, 'holderArmR', M.paWhite));
-  holder.add(blockYZ(zU0, -4.42, yU0, yU1, xa1 - 0.05, xr0 + 0.05, 0.12, 0.0, 'holderBase', M.paWhite));
+  holder.add(blockYZ(zU0, zU1, yU0, -4.4, xa1 - 0.05, xr0 + 0.05, 0.12, 0.0, 'holderBase', M.paWhite));
   enc.add(holder);
   // IR emitter: water-clear epoxy package in the near arm, its lens facing the disc; the die and its bond wire inside
   const emitter = new THREE.Group(); emitter.name = 'emitter';
@@ -270,7 +276,7 @@ export function buildScrollWheel(opts = {}) {
   enc.add(emitter);
   // dual phototransistor: black IR-pass epoxy in the far arm, two apertures (A, B) facing the disc
   const detector = new THREE.Group(); detector.name = 'detector';
-  detector.add(blockYZ(pM.z - 0.95, pM.z + 0.95, pM.y - 1.15, pM.y + 1.15, 9.6, 10.4, 0.2, 0.05, 'detectorBody', M.epoxyIR));
+  detector.add(blockYZ(pM.z - 0.95, pM.z + 0.95, pM.y - 1.0, pM.y + 1.0, 9.6, 10.4, 0.2, 0.05, 'detectorBody', M.epoxyIR));
   const winA = meshOf(new THREE.BoxGeometry(0.05, 0.5, 0.26), M.windowDark.clone(), 'windowA');
   const winB = meshOf(new THREE.BoxGeometry(0.05, 0.5, 0.26), M.windowDark.clone(), 'windowB');
   own.add(winA.material); own.add(winB.material);
@@ -279,14 +285,15 @@ export function buildScrollWheel(opts = {}) {
   enc.add(detector);
   // the lead frame: five strips from the interrupter down to the pins (seen in x-ray)
   const leads = new THREE.Group(); leads.name = 'leads';
-  const leadX = [7.9, 8.2, 9.75, 9.98, 10.2], leadZ0 = [-3.9, -3.3, -4.3, -3.7, -3.1];
+  const leadX = [7.9, 8.2, 9.75, 9.98, 10.2], leadZ0 = [pM.z - 0.4, pM.z + 0.4, pM.z - 0.6, pM.z, pM.z + 0.6];
   for (let i = 0; i < 5; i++) {
-    const z1 = (i - 2) * 1.25, path = [[leadX[i], yU0 + 0.1, leadZ0[i]], [leadX[i], yU0 - 1.0, leadZ0[i]], [XP, YB + 2.2, z1], [XP, YB + 0.55, z1]];
+    const z1 = (i - 2) * 1.25, path = [[leadX[i], yU0 + 0.1, leadZ0[i]], [leadX[i], yU0 - 0.9, leadZ0[i]], [XP, YB + 2.0, z1], [XP, YB + 0.55, z1]];
     leads.add(meshOf(sweep(roundPathYZ(path, 0.25), rectSection(0.3, 0.14, 0.03), { up: [1, 0, 0] }), M.tin, 'lead'));
   }
   enc.add(leads);
   // light gates: emitter → disc (always), disc → detector (gated by the slots). Flat highlight colour, no glow.
-  const beamMat = new THREE.MeshBasicMaterial({ color: hiColor, transparent: true, opacity: 0.92, depthWrite: false, toneMapped: false });
+  // drawn over what lies in front of them (they are only shown in x-ray, as a diagram of the light path)
+  const beamMat = new THREE.MeshBasicMaterial({ color: hiColor, transparent: true, opacity: 0.92, depthWrite: false, depthTest: false, toneMapped: false });
   own.add(beamMat);
   const beams = [];
   for (const [nm, p] of [['A', pA], ['B', pB]]) {

@@ -14,7 +14,7 @@
 import * as THREE from 'three';
 import { createStudio } from '../lib/studio.js';
 import { buildPcb } from './pcb.js';
-import { buildGT01, buildMillMax3305, buildScrollWheel } from '../parts/parts.js';
+import { buildGT01, buildMillMax3305, buildScrollWheel, buildRadioModule, buildSensorModule, buildSnapLens } from '../parts/parts.js';
 const Q = new URLSearchParams(location.search);
 const num = (k, d) => (Q.has(k) ? parseFloat(Q.get(k)) : d);
 const vec = (k) => Q.get(k).split(',').map(Number);
@@ -25,7 +25,7 @@ try {
     envIntensity: num('env', 0.9), key: num('key', 2.2), rim: num('rim', 1.4), fill: num('fill', 0.35) });
   const { scene, camera, renderer } = studio;
   const withParts = Q.get('parts') !== '0';     // parts=0 -> same-footprint stand-ins
-  const pcb = await buildPcb({ placement: Q.get('placement') || 'origin', pressExaggerate: num('exaggerate', 1),
+  const pcb = await buildPcb({ placement: Q.get('placement') || 'origin', radio: Q.get('parts') === '0' ? null : buildRadioModule, sensor: Q.get('parts') === '0' ? null : buildSensorModule, lens: Q.get('parts') === '0' ? null : buildSnapLens, pressExaggerate: num('exaggerate', 1),
     ...(Q.has('glb') ? { glb: Q.get('glb') } : {}),
     ...(withParts ? { gt01: buildGT01, millmax: buildMillMax3305, wheel: buildScrollWheel } : {}) });
   scene.add(pcb);

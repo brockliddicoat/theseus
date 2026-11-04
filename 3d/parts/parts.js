@@ -5,5 +5,6 @@ export { buildScrollWheel, WHEEL_SPEC } from './scrollwheel.js';
 export { buildM2Screw, buildHeatSetInsert, buildScrewJoint, FASTENER_SPEC } from './fasteners.js';
 export { buildDotSkate, buildDotSkateSet, layoutDotSkates, DOT_SKATE_SPEC, SORA_FOOTPRINT, STANDIN_SCREWS } from './skates.js';
 export { buildBattery, buildJstShHeader, BATTERY_SPEC } from './battery.js';
+export { buildRadioModule, buildSensorModule, buildSnapLens, RADIO_SPEC, SENSOR_SPEC, LENS_SPEC } from './boardparts.js';
 export { partMaterials } from './lib/materials.js';
 export { SectionPlane } from './lib/section.js';

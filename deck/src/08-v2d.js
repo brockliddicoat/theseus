@@ -77,8 +77,18 @@ function v2dScene(key) {
       }
       if (best) (m.cent = m.cent || {})[a] = best;
     }
+    /* feature lines (sharp edges, hidden lines already removed), one set per side of each axis: '+1' is seen from above */
+    let lpaths = null;
+    if (m.lines) {
+      lpaths = {};
+      for (const [k, ls] of Object.entries(m.lines)) {
+        const p = new Path2D();
+        for (const l of ls) { let u = 0, v = 0; const d = l.d; for (let i = 0; i < d.length; i += 2) { u += d[i]; v += d[i + 1]; if (i) p.lineTo(u * q, v * q); else p.moveTo(u * q, v * q); } }
+        lpaths[k] = p;
+      }
+    }
     const c = [0, 1, 2].map(i => m.depth[i] ? m.depth[i][2] : 0);
-    meshes.push(Object.assign({}, m, { paths, c, rings: undefined }));
+    meshes.push(Object.assign({}, m, { paths, lpaths, c, rings: undefined, lines: undefined }));
   }
   const S = { key, D, meshes, byId: new Map(meshes.map(m => [m.id, m])), r: (V2D_R[key] || D.frame.r), center: D.frame.center };
   V2D.scenes.set(key, S);
@@ -270,6 +280,7 @@ function v2dLook(key, m, g, st, op) {
       const warm = hexRgb(col); const gold = warm[0] > warm[2] * 1.25;
       o.fill = gold ? (TH ? '#D9B45A' : '#C9A24A') : (TH ? '#B9BEC4' : '#9AA1A9');
       o.stroke = TH ? 'rgba(17,17,17,0.55)' : 'rgba(0,0,0,0.55)';
+      o.lineInk = TH ? 'rgba(17,17,17,0.5)' : 'rgba(0,0,0,0.5)';
     } else if (dark) { o.fill = TH ? mix('#2B2C30', col, 0.4) : mix('#232428', col, 0.4); o.stroke = TH ? 'rgba(255,255,255,0.3)' : `rgba(${ink},0.5)`; }
     else { o.fill = mix(col, TH ? '#FFFFFF' : '#000000', 0.08); o.stroke = 'rgba(17,17,17,0.5)'; }
   }
@@ -314,7 +325,7 @@ function view2D(key, t, x, y, w, h, st = {}, o = {}) {
     const g = v2dGroup(key, m);
     let op = vo.op; if (v2dPhantom(key, g, st)) op = Math.min(op, 0.3);
     const look = v2dLook(key, m, g, st, op); if (!look) continue;
-    if (st.hi2d && st.hi2d.re.test(m.path)) { look.hi = st.hi2d.color || acc(); look.hiw = st.hi2d.w || 2.6; if (st.hi2d.fill) look.fill = st.hi2d.fill; }
+    if (st.hi2d && st.hi2d.re.test(m.path)) { look.hi = st.hi2d.color || C.hero; look.hiw = st.hi2d.w || 2.6; if (st.hi2d.fill) look.fill = st.hi2d.fill; }
     const M = v2dPose(S, m, st);
     /* depth toward the camera, at this state */
     const c = m.c, cw = M ? [M[0] * c[0] + M[1] * c[1] + M[2] * c[2] + M[3], M[4] * c[0] + M[5] * c[1] + M[6] * c[2] + M[7], M[8] * c[0] + M[9] * c[1] + M[10] * c[2] + M[11]] : c;
@@ -342,7 +353,10 @@ function view2D(key, t, x, y, w, h, st = {}, o = {}) {
   /* a ground line under side and front views, where the 3D had its floor and shadow */
   if (a !== 1 && o.ground !== false && st.ground2d !== false) {
     const gy = cam.P([cam.T[0], 0, cam.T[2]])[1];
-    if (gy > y + 8 && gy < y + h - 4) { G.save(); G.globalAlpha *= 0.9; G.strokeStyle = inkA(TH ? 0.22 : 0.2); G.lineWidth = 1.5; G.beginPath(); G.moveTo(x + w * 0.06, gy + 0.75); G.lineTo(x + w * 0.94, gy + 0.75); G.stroke(); G.restore(); }
+    /* as long as the drawing is wide (its frame), not across the whole tile */
+    const Fr = S.D.frame, hw = 0.5 * Math.max(Fr.size[cam.j] || 0, 1) * cam.s * 1.08, gx = cam.P(Fr.center)[0];
+    const gx0 = Math.max(x + w * 0.04, gx - hw), gx1 = Math.min(x + w * 0.96, gx + hw);
+    if (gy > y + 8 && gy < y + h - 4 && gx1 > gx0) { G.save(); G.globalAlpha *= 0.9; G.strokeStyle = inkA(TH ? 0.22 : 0.2); G.lineWidth = 1.5; G.beginPath(); G.moveTo(gx0, gy + 0.75); G.lineTo(gx1, gy + 0.75); G.stroke(); G.restore(); }
   }
   /* pass 1: the outer silhouette, heavier (the fills of pass 2 cover it everywhere but its outer edge) */
   const ink = TH ? '#111111' : '#F3F2EE';
@@ -357,6 +371,12 @@ function view2D(key, t, x, y, w, h, st = {}, o = {}) {
     G.save(); G.globalAlpha *= L.alpha; G.transform(...T6);
     if (L.fill) { if (typeof CanvasPattern !== 'undefined' && L.fill instanceof CanvasPattern && L.fill.setTransform) L.fill.setTransform(new DOMMatrix().scale(1 / sc)); G.fillStyle = L.fill; G.fill(it.path, 'evenodd'); }
     if (L.stroke) { G.lineWidth = L.lw / sc; G.strokeStyle = L.stroke; if (L.dash) G.setLineDash(L.dash.map(v => v / sc)); G.stroke(it.path); G.setLineDash([]); }
+    /* its feature lines, as a draughtsman would add them: thin, in the outline's ink, quieter on phantoms */
+    const lp = it.m.lpaths && it.m.lpaths[(cam.sg > 0 ? '+' : '-') + A];
+    if (lp && !(L.phantom && o.lines === false)) {
+      G.lineWidth = (L.phantom ? 0.8 : 1.0) / sc; G.strokeStyle = L.lineInk || (TH ? `rgba(17,17,17,${L.phantom ? 0.22 : 0.4})` : `rgba(243,242,238,${L.phantom ? 0.2 : 0.36})`);
+      G.stroke(lp);
+    }
     G.restore();
   }
   /* highlighted parts: their outlines in the slide's colour, on top */
@@ -407,8 +427,9 @@ const in2D = (a, b) => (V2D.on ? a : b);
 
 /* ============================== the lattice study, flat ==============================
    GEO2D.lattice (tools/geo2d/lattice2d.py): from below, both lattices with the ribs banded by stress; cut on the midplane
-   and seen from -X, the far half's ribs in the order the 3D grows them and the cut wall in the 3D's yellow; and the
-   fillet node, looked at along its normal, as a plan with contours of rib height. */
+   and seen from -X, the far half's ribs in the order the 3D grows them and the cut wall in Theseus's colour; and the
+   fillet node, looked at along its normal, as a plan with contours of rib height. The cut wall and the tie points are
+   Theseus's colour (C.hero, as the 3D's caps and ties); the stress bands the deck's heat scale (heatCol). */
 const LAT2D = { paths: new Map() };
 function latPath(rings, key) {
   if (key && LAT2D.paths.has(key)) return LAT2D.paths.get(key);
@@ -417,7 +438,7 @@ function latPath(rings, key) {
   if (key) LAT2D.paths.set(key, p);
   return p;
 }
-function latRamp(k) { const R = GEO2D.lattice.ramp, s = clamp(k) * 4, i = Math.min(3, Math.floor(s)); return mix(R[i], R[i + 1], s - i); }
+function latRamp(k) { if (typeof heatCol === 'function') return heatCol(k); const R = GEO2D.lattice.ramp, s = clamp(k) * 4, i = Math.min(3, Math.floor(s)); return mix(R[i], R[i + 1], s - i); }
 /** which flat view a lattice shot becomes: the node plan, from below, or the side (cut or whole) */
 function latMode(st, cam) { if ((st.filletZoom || 0) >= 0.5) return 'node'; if (cam.a === 1) return 'bottom'; return 'side'; }
 /** the node plan's frame: (p - c)·e1 across, (p - c)·e2 up, fitted to the box */

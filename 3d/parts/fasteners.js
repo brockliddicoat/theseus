@@ -1,6 +1,6 @@
 // M2 machine screw with a Phillips/slotted combination drive (#9) and a knurled brass heat-set insert (#101).
 // Screw: ISO 7045 pan head (dk 4.0, k 1.6, rf 3.2, r 0.1 under the head), cross recess No. 0 (type H: m ≈ 1.9,
-// penetration 1.0) with an ISO 1580-size slot (n 0.5, t 0.6) across it, built exactly in lib/panhead.js; rolled
+// penetration 1.0) with an ISO 1580-size slot (n 0.5, 0.8 deep: t ≥ 0.5) across it, built exactly in lib/panhead.js; rolled
 // M2 × 0.4 thread (ISO 68-1 profile: 60° flanks, P/8 crest flat, rounded root), with its run-out under the head
 // (x ≤ 1.0 mm, ISO 7045) and a 45° chamfered point (ISO 4753); brass-plated carbon-steel core (Brock: plating against
 // insert corrosion, steel for magnetic pickup). Finalmouse uses M1.6 × 5 T5; Brock moves to M2 for availability.
@@ -15,7 +15,7 @@ import { SectionPlane } from './lib/section.js';
 
 const TAU = Math.PI * 2;
 export const FASTENER_SPEC = {
-  screw: { thread: 'M2 × 0.4', length: 5, head: 'pan, ISO 7045 envelope dk 4.0 × k 1.6, rf 3.2', drive: 'cross recess No. 0 (type H) + slot 0.5 × 0.6 (combination)',
+  screw: { thread: 'M2 × 0.4', length: 5, head: 'pan, ISO 7045 envelope dk 4.0 × k 1.6, rf 3.2', drive: 'cross recess No. 0 (type H) + slot 0.5 × 0.8 (combination; ISO 1580 M2: n 0.5, t ≥ 0.5)',
     finish: 'brass-plated carbon steel', runout: 'x ≤ 1.0 mm (ISO 7045)', point: '45° chamfer (ISO 4753)', label: 'representative' },
   insert: { thread: 'M2 × 0.4', length: 3.0, od: 3.5, material: 'brass (CuZn)', knurl: 'two bands, 18 sharp teeth each, opposed 30° helix, chamfered ends', label: 'representative' },
   pitch: 0.4,

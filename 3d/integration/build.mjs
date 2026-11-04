@@ -13,11 +13,17 @@ const DECK = path.resolve(ROOT, '..', 'deck');
 const OUT_JS = path.join(DECK, 'vendor', 'r3d.js');
 const OUT_ASSETS = path.join(DECK, 'dist', 'assets');
 
-await build({
-  entryPoints: [path.join(ROOT, 'integration', 'entry.js')],
-  bundle: true, format: 'iife', minify: true, target: 'es2020', outfile: OUT_JS, logLevel: 'warning',
-  define: { 'import.meta.url': 'window.R3D_MODURL' },
-});
+// built into a temp file and renamed over vendor/r3d.js only when esbuild succeeds: a failed build never replaces the
+// bundle other builds are using
+const TMP_JS = OUT_JS + '.tmp-' + process.pid;
+try {
+  await build({
+    entryPoints: [path.join(ROOT, 'integration', 'entry.js')],
+    bundle: true, format: 'iife', minify: true, target: 'es2020', outfile: TMP_JS, logLevel: 'warning',
+    define: { 'import.meta.url': 'window.R3D_MODURL' },
+  });
+  fs.renameSync(TMP_JS, OUT_JS);
+} catch (e) { try { fs.unlinkSync(TMP_JS); } catch (e2) {} console.error('bundle failed; vendor/r3d.js left as it was'); throw e; }
 console.log('bundle', path.relative(ROOT, OUT_JS), (fs.statSync(OUT_JS).size / 1024).toFixed(0) + ' KB');
 
 // runtime assets: everything the builders load by URL

@@ -6,7 +6,7 @@ gestures from Brock's doc. Two variants ship from the same pipeline:
 
 | variant | what it is | file |
 |---|---|---|
-| `theseus` (default) | Sora shape + Theseus gestures (#17, #58, #29, #80, #31, #75, #10, #11, #52, #37, #32/#36/#35, #62, #33/#61, #84/#30/#7 via the parts wheel) | `shell-theseus.glb` + `.json` |
+| `theseus` (default) | Sora shape + Theseus gestures (#17, #29, #80, #31, #75, #10, #11, #52, #37, #32/#36/#35, #62, #33/#61, #84/#30/#7 via the parts wheel), with **one seam from the nose to the rear seam, the wheel in it** (Brock, 2026-11-04) | `shell-theseus-1seam.glb` + `shell-theseus.json` (the first build, with the #58 centre cap, stays as `shell-theseus.glb`) |
 | `sora` | the faithful, unbranded Sora V2 base (scan seams, curved rear cutouts, centre split, original side-button gap). Use for "before / after" | `shell-sora.glb` + `.json` |
 
 ## Handedness (read this first)
@@ -24,7 +24,8 @@ so is everything here:
 |---|---|
 | `shell.js` | `buildShell(opts) → Promise<THREE.Group>`, `SHELL_VIEWS`, `applyView(camera, view)` |
 | `standins.js` | stand-ins with the frozen `3d/parts/` signatures (wheel, dot skate, M2 screw); used only if `../parts/parts.js` is missing |
-| `shell-theseus.glb` / `.json` | geometry (named nodes, exact normals, seam occlusion in COLOR_0) + mechanical metadata (hinges, wheel, skates, screws, sensor, footprint) |
+| `shell-theseus-1seam.glb` | the default Theseus geometry: `shell-theseus.glb` with the centre cap split into the two triggers (`tools/one_seam.py`) |
+| `shell-theseus.glb` / `.json` | geometry (named nodes, exact normals, seam occlusion in COLOR_0) + mechanical metadata (hinges, wheel, skates, screws, sensor, footprint); the JSON serves both Theseus GLBs |
 | `shell-sora.glb` / `.json` | the Sora base variant |
 | `test.html` | standalone page, see "Test page" |
 | `shots/` | 2× finals, both themes, plus photo comparisons |
@@ -106,7 +107,8 @@ Params: `view` (any `SHELL_VIEWS` key), `theme`, `variant`, `colorway`, `click=L
 
 ## Theseus gestures (doc idea numbers) and the calls I made
 - **#17 straightened rear trigger cutouts**: z = 6.0 + 0.00055x² (0.45 mm of curve over the half-width, so it doesn't read concave in perspective); turns down into the side seam on a 2.2 mm radius.
-- **#58 no split ahead of the wheel**: two independent triggers cannot share material ahead of the wheel, so the only physical way is a fixed **centre cap** between them. It is a separate part on the wheel bay ("inverted scroll wheel holder" note), the width of the wheel opening, and it stops at the lip seam so the lip line stays continuous across the nose. Honest trade-off: ahead of the wheel there are now two hairlines (cap edges) instead of one split, but neither edge belongs to both triggers, so a finger resting at the centre can't jam both clicks. It reads as a deliberate wheel channel in the hero/top views; judge `shots/theseus-cu-chamfer-*.png`. The Sora variant keeps the original split for comparison.
+- **One seam, nose to rear** (Brock, 2026-11-04: "it forks which it shouldn't, it has a center strip, which it shouldn't"; supersedes #58 below): `tools/one_seam.py` (numpy only; the meshing pipeline's libraries are not installed here) splits the centre cap at x = 0 with a 0.25 mm gap (the centre split's width behind the wheel), closes each cut with a flat face and darkens the skin beside it in COLOR_0 like the other seam cavities, merges each half into its trigger (so it clicks with it), and covers the old cap-to-trigger grooves with skin strips lofted between the two meshes' cross-sections, 4 µm proud. The `bridge` node is left without a mesh. Known residue: a ~0.4 mm notch at the front corners of the wheel opening, where the old grooves met it. The result: one hairline from the nose to the rear seam with the wheel sitting in it, as on the Sora (two independent triggers need a split ahead of the wheel; now it is a single one).
+- **#58 no split ahead of the wheel** (first build, `shell-theseus.glb`; superseded by the one seam above): two independent triggers cannot share material ahead of the wheel, so the only physical way is a fixed **centre cap** between them. It is a separate part on the wheel bay ("inverted scroll wheel holder" note), the width of the wheel opening, and it stops at the lip seam so the lip line stays continuous across the nose. Honest trade-off: ahead of the wheel there are now two hairlines (cap edges) instead of one split, but neither edge belongs to both triggers, so a finger resting at the centre can't jam both clicks. It reads as a deliberate wheel channel in the hero/top views; judge `shots/theseus-cu-chamfer-*.png`. The Sora variant keeps the original split for comparison.
 - **#46 flat front trigger cutouts**: the lip seam is exactly y = 10.0 across the nose (the scan was already flat to ±0.2 mm).
 - **#32 / #36 / #35 serial**: "099" laser-etched (tone-on-tone, smoother than the coating) on the **right** click, rear-outer area, away from the finger-rest zone; 6.4 mm cap height, Inter Display Medium, reads correctly **for the user** (`SHELL_VIEWS.heroRear`). Design note: rotated 180° (e.g. the RTINGS-angle hero) "099" reads as "660"; any serial built from 0/6/9 has this ambiguity. A small "Nº" prefix or a period would disambiguate; I left the serial as Brock specified.
 - **#62 LT / RT**: Inter SemiBold 2.3 mm, front-outer corners (GMK-style top-left placement mirrored for symmetry), same etch material.
