@@ -130,7 +130,7 @@ Labels: [MEAS] traced from the photo · [DS] datasheet · [REP] representative �
 | R1–R4 | 4.7 k TWI pull-ups, 5.1 k USB-C CC Rd | 0402 | [REP] |
 | U3 | **next-gen PixArt FrameSync-class sensor (proposal)** as a small module board on 2 × 8 castellated half-holes, 1.2 mm pitch, label with a 2D code (`buildSensorModule`, from Brock's four photos) | 8.4 × 9.8 × 0.6 | [PR]; board z 4.0 (near the centre) |
 | LENS | smaller snap-on lens, clear PC: imaging + illumination domes, a boss into the sensor aperture, a Ø1.7 peg with a split snap head at each end through the board (`buildSnapLens`) | body 5.2 × 9.6 × 2.2 (under the board) | [PR] (#37) |
-| SW1, SW2 | Gateron **GT01** (parts builder model), on its 20° wedge, keyed peg; 55 ± 5 gf, 0.35 ± 0.10 mm, 100 M clicks | 12.8 × 5.8 × 6.5 envelope | [REP] ([MC] figures); positions [MEAS] |
+| SW1, SW2 | Gateron **GT01** (parts builder model), on its 20° wedge, no locating peg (pcb.js caps the board's 1.0 mm peg hole beside each, still drilled in pcb.glb); 55 ± 5 gf, 0.35 ± 0.10 mm, 100 M clicks | 12.8 × 5.8 × 6.5 envelope | [REP] ([MC] figures); positions [MEAS] |
 | SW1_MM1–3, SW2_MM1–3 | **Mill-Max 3305** claw receptacles (gold BeCu contact, tin shell) on 5.08 mm pitch | flange Ø1.956, body Ø1.473 × 2.667, hole Ø1.575 | [DS] dims (parts model) |
 | J1 | USB-C 16-pin receptacle, 4 shell legs | 8.94 × 7.35 × 3.16 | [REP] part, [MEAS] position |
 | U4 | USB ESD array, flow-through (USBLC6-2P6 class) | SOT-666 1.6 × 1.6 × 0.55 | [REP] |

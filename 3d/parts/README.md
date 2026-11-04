@@ -33,7 +33,7 @@ Common rules (every builder):
 - **opts:** `tilt` (deg, default 20: measured from Gateron's cutaway image; Brock recalls a 30° wedge; 0 = a flat D2F-style switch), `cover` (`'pink'` | `'black'` | `'clear'`, default pink), `marking` (`'GT01'` default or `''`; other strings need `build_geo.py`), `pinLength` (3.3 mm below the PCB top), `edgeColor` (cutaway edge lines, default teal like Gateron's), `materials`.
 - **Inside: a standard SPDT microswitch** (Brock: "the gt01 switch is literally just a normal SPDT switch with a special bottom housing to rotate it"): a switch base on the rotating wedge, the plunger, a stamped actuator spring (blade with its cut tongue, clamped at the COM post, bowed into a snap), the moving contact rivet at its tip between the NC contact (upper arm) and the NO contact (lower), and the three terminals (COM, NO, NC) running down through the wedge to the pins. `spec.mechanism` lists the parts and the order they move in.
 - **Setters:** `setPress(k, {releasing = false}) → {travel, closed}`: plunger travel = k × 0.35 mm; the moving contact snaps NC→NO at the operating point (k ≥ 0.63, 0.22 mm) and back below the release point (k < 0.50, 0.175 mm) when `releasing` is true. `setCutaway(k)`: a section plane sweeps through the −X half of the cover, the switch base and the wedge (the switch's own −X side; for a switch placed unrotated that is the user's right); the cut faces get caps and teal edge lines fade in (like Gateron's cutaway). `setExplode(k)`: cover, plunger, blade/tongue lift along the switch axis.
-- **spec:** `envelope [12.8, 5.8, 6.5]`, `travel`, `opTravel`, `rpTravel`, `force`, `life`, `claims`, `pitch 5.08`, `pins [{name, x, z}]` (COM z = +5.08, NO z = 0, NC z = −5.08; local, Y = 0), `pinSection [0.6, 0.4]`, `keyPeg {x: 1.45, z: 2.54, d: 0.9}` (keyed orientation), `plungerTop` (rest, local), `plungerAxis`, `footprint` (XZ rectangle of the wedge foot), `heightMax`, `tiltDeg`.
+- **spec:** `envelope [12.8, 5.8, 6.5]`, `travel`, `opTravel`, `rpTravel`, `force`, `life`, `claims`, `pitch 5.08`, `pins [{name, x, z}]` (COM z = +5.08, NO z = 0, NC z = −5.08; local, Y = 0), `pinSection [0.6, 0.4]`, `plungerTop` (rest, local), `plungerAxis`, `footprint` (XZ rectangle of the wedge foot), `heightMax`, `tiltDeg`.
 - **parts:** `body` (the tilted switch-frame group), `base` (the wedge), `core`, `switchBase`, `cover`, `plunger`, `blade`, `tongue`, `contactNC`, `contactNO`, `contactCOM` (moving rivet), `terminals`, `terminalRuns`, `pins[3]`.
 - `gt01PinGeometry(len)`: the terminal blade alone (used by the Mill-Max demo; handy for the PCB builder).
 
@@ -92,7 +92,7 @@ Labels: **[DS]** datasheet / official spec · **[MC]** manufacturer claim · **[
 | Pins | flat 0.9 → 0.6 mm stepped blades, 0.4 thick, 3.3 mm below the board, pointed | [REP] (look of the reference) |
 | Mechanism | a standard SPDT snap-action switch on the wedge: BeCu actuator spring anchored on the COM post, cut-out tongue bowed against a fulcrum, moving contact at its tip between the NC arm (above) and the NO tab (below) | Brock [PR] ("a normal SPDT switch with a special bottom housing") / [REP] geometry |
 | Contacts | silver (AgNi-class) rivets Ø0.84 (NC above, NO below, double-dome moving contact), contact gap 0.30 mm | [REP] |
-| Pin cover | the molded wedge encloses the terminals down to the board (only pin tips exist below it) + a keyed locating peg | [REP] per Brock's note / research "molded pin cover + keyed orientation" [PR] |
+| Pin cover | the molded wedge encloses the terminals down to the board (only pin tips exist below it); no locating peg (Brock, 2026-11-04: it read as a fourth pin), the three terminals key it | [REP] per Brock's note [PR] |
 
 Built from: an extruded side profile (wedge + lower base) split into two 1 mm skins with filleted pocket cut-outs and a 3.8 mm core, so the pockets are real blind pockets with rounded rims; the switch base on it with the COM post, the fulcrum and the NC/NO posts; a CSG cover (minkowski-rounded box, plunger hole with chamfer, 0.06 mm label recess with raised "GT01" traced from Inter Bold, latch windows); swept terminal strips with their runs down through the wedge; lathe rivets; a deformable blade (Hermite bend from the clamp through the plunger to the contact tip) and a re-swept tongue whose bow flips at the snap. Triangles: ≈ 24 k (37 meshes).
 
@@ -173,7 +173,7 @@ Built from: an extruded side profile (wedge + lower base) split into two 1 mm sk
 - Skates: the layout is mirror-symmetric (two per corner) and the footprint comes from the unmirrored scan, so nothing moved. `STANDIN_SCREWS` are symmetric.
 - Scroll wheel: default encoder side is now the user's right (−X), matching the Sora V2 PCB photo (top view, nose up: encoder image-right). The wheel shots were re-rendered with mirrored cameras.
 - Battery: lead and header on the user's left (+X) by default, `connectorSide: 'right'` mirrors them. No reference fixes this side; the PCB layout should decide.
-- GT01: symmetric about its own X except the keyed peg (+X, `spec.keyPeg`) and the cutaway side (−X half removed).
+- GT01: symmetric about its own X except the cutaway side (−X half removed); the locating peg is gone (2026-11-04).
 - The studio's `threeQuarter` view looks from the front-right of the user (camera at −X); `threeQuarterRight` from the front-left.
 
 ## Known gaps / stand-ins

@@ -405,3 +405,17 @@ Answers to the Shell A questions:
 - **F12.12 DECIDED** "tensile strength": the shell counts as broken at 120 MPa.
 - **F12.13 DECIDED** "cite the finalmouse support staff" for "the encoder is the number one failure point". **DONE**
   (`sealed`).
+
+## F13. Answers to the Shell B questions (2026-11-04 ~10:20)
+
+- **F13.1 DECIDED** The strength bar on the arch and fibre slides. First answer: "i'm confused what you're asking".
+  Asked again more plainly: "Show it, holding".
+  - The strip appears on those slides at the triangle lattice's value. The arch is already inside that number, because
+    it's the same dome.
+  - **TODO (fix).**
+- **F13.2 DECIDED** How the mold is made: "Not decided yet". **TODO (fix):** `shbMill` holds for an EDM electrode or a
+  directly milled core.
+- **F13.3 DECIDED** Where the gate goes: "decide where you think is optimal". **TODO (fix):** `shbGates` chooses it, with
+  the reason.
+- **F13.4 DECIDED** The thumb band: "Both sides". **TODO (fix):** the thicker band runs along both low sides, with the thumb
+  rest on the left.
