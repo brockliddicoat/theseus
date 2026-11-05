@@ -947,3 +947,21 @@ old score as archived (F26.13).
   make the back notch the same length as the left and right, then builld". **TODO (K2, from the 08:20 reset):** the wheel
   bay's corners chamfered at the one angle with the 1.0 mm fillets, the rear notch as long as the side notches, then the
   3D build with both power switch versions; also the wheel slide's knurl strip redrawn straight (F30.8).
+
+## F33. How the revamp must sell (2026-11-05 07:16, STANDING for the revamp)
+- **F33.1** Builders: "the last answer was meant to be \"as many as it takes to be as thorough as possible without being
+  wasteful\"" (refines F32.2's "As many as it takes").
+- **F33.2** "you should try to be improving".
+- **F33.3** "remember for the revamp you need to visualize what most mice do wrong mechanically, not just what we do right,
+  and the viewer needs to understand/show how a feature can be the difference between then making and missing a shot, semi
+  marketing by fear of \"what if this goes wrong and you miss\" or if it's something that happens passively all the time
+  making them miss show that as well a sort of excuse". So every slide draws the rival's mechanical fault, and shows the
+  shot it costs: the one bad moment ("what if this goes wrong and you miss"), or the quiet, constant loss the player
+  never notices (the excuse they never knew they had).
+- **F33.4** "the main thing is you're trying to sell this thing and you're trying to make sure you're selling solutions to
+  problems, not just solutions".
+- **F33.5** "i also want to lose any of the ideas i said were important, but executed wrong, those concepts need to be
+  vastly improved, with more importance than the other features" (read as *not* losing them: the ideas he called important
+  but badly executed stay, are vastly improved, and get more weight than the rest). From F27: `cutouts`, `clk_front`,
+  `clk_wedge`, `arc`, `anchors`, `sidebuttons`, `thinwall`, `shlSpecific`, `shlNoPick`, `shlMargin`, `shlThin`,
+  `shlWork`, `shcArms`, `tolerance`, `shlsheet1`'s cutout seams, `ntr_density`, `zerograms`, `market`, `grip`.
