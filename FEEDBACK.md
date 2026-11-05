@@ -822,3 +822,11 @@ old score as archived (F26.13).
   outlining the silhouette and extrapolating the rest of the switch based off other reference as i'd switches, that's my
   process when i model a switch." **IN PROGRESS (K1):** the silhouette traced from it, the rest from other switch
   references, in 3D and 2D (also the bottom-housing reference for `clk_switch`); K2 matches the board's switches to it.
+- **F28.2** With three photos of tensioners (a white shell in two views, a Logitech G305's top shell, a white Lamzu-marked
+  shell; attachments 0300b3c2, c82f85d5, 1fce7c7f): "here are some pictures i'd click tensioning mechanisms i like. none of
+  them are aligned properly though, and all of them are overbuilt and overly complex." **IN PROGRESS (K1):** split,
+  one-screw blocks as in the photos, but aligned with the switches and stripped to what the load needs.
+- **F28.3** With two photos (a G-Wolves board inside its lattice shell, and the black lattice part with its arm; attachments
+  d2ae72fe, 80f31ed6): "i also attached a picture of the pcb with arms from g wolves that are used as a reinforcement that i
+  had break during shipping". **TODO (K6):** `shcArms` drawn from these: what the arms and the board really look like, and
+  that they broke in shipping.
