@@ -771,7 +771,7 @@ function gld_sag(dots) {
     const n = 100, nodes = [], els = [], fix = {}, loads = {}, E0 = SIM_MAT.ppcf.E, rho = SIM_MAT.ppcf.rho;
     for (let i = 0; i <= n; i++) nodes.push([i - 50, 0]);
     for (let i = 0; i < n; i++) els.push({ i, j: i + 1, w: 30, h: 1.4, E: E0, rho });
-    fix[5] = 'xy'; fix[95] = 'y'; if (dots) for (const [, z] of GLD_SDOT) fix[Math.round(50 + z)] = 'y';
+    fix[5] = 'xy'; fix[95] = 'y'; if (dots) for (const [, z] of gld_sdot()) fix[Math.round(50 + z)] = 'y';
     for (let i = 6; i < 95; i++) loads[i] = [0, -1 / 89, 0];
     return { nodes, els, fix, loads };
   });
@@ -783,7 +783,7 @@ S({
   draw: t => {
     header(t, 'Sensor dots: no sag at the lens');
     captions(t, [[0.6, 'With skates only at the corners, the lens sits halfway along an open span. Press the base and it bows, and the lens drops toward the pad.'], [6.4, 'The clip-on lens carries a dot at each end, so it rides at the skates\' height. PixArt\'s own datasheet says to put feet round the lens opening.']]);
-    const r0 = gld_sag(false), r2 = gld_sag(true), d0 = -r0.d[50 * 3 + 1], d2 = -r2.d[50 * 3 + 1], ratio = d2 / d0, cut = Math.round((1 - ratio) * 100);
+    const iL = Math.round(50 + GLD.sensor[1]), r0 = gld_sag(false), r2 = gld_sag(true), d0 = -r0.d[iL * 3 + 1], d2 = -r2.d[iL * 3 + 1], ratio = d2 / d0, cut = Math.round((1 - ratio) * 100);
     const press = ep(t, 2.0, 3.4, E.io3);
     const rows = [{ y: 280, nm: 'Corner skates only', r: r0, dots: false, d: d0 }, { y: 640, nm: 'Theseus: two dots on the clip-on lens', r: r2, dots: true, d: d2 }];
     const bx0 = LM + 50, bw = 900, Xz = z => bx0 + bw * (z + 50) / 100;
@@ -794,16 +794,16 @@ S({
       const yb = y + 150, yPad = y + 262, ka = ep(t, 0.6 + ri * 0.2, 1.1 + ri * 0.2);
       /* the pad, and the skates on it */
       line(x + 32, yPad, Xz(50) + 30, yPad, { color: C.ink2, w: 2, alpha: ka });
-      const sk = [-45, 45].concat(R.dots ? GLD_SDOT.map(p => p[1]) : []);
+      const sk = [-45, 45].concat(R.dots ? gld_sdot().map(p => p[1]) : []);
       /* the base, bowed by the press (drawn × vk), and the skates hanging from it */
       const dv = i => -R.r.d[i * 3 + 1] / d0 * GLD_SAG0 * (74 / GLD_SAG0) * press;
       const pts = []; for (let i = 0; i <= 100; i++) pts.push([Xz(i - 50), yb + dv(i)]);
       poly(pts, { color: C.ink, w: 9, alpha: ka, cap: 'round' });
-      /* the lens under the middle (14.2 mm long, its imaging dome 1.1 mm ahead), and on Theseus a dot under each of its ends */
-      const yl = yb + dv(50), lc = Xz(0), lw2 = 7.1 * bw / 100, lcI = Xz(1.1), clr = TH ? 'rgba(222,232,236,0.9)' : 'rgba(214,226,232,0.3)';
+      /* the lens over the sensor (14.2 mm long, its imaging dome 1.1 mm ahead), and on Theseus a dot under each of its ends */
+      const yl = yb + dv(iL), lc = Xz(GLD.sensor[1]), lw2 = 7.1 * bw / 100, lcI = Xz(GLD.sensor[1] + 1.1), clr = TH ? 'rgba(222,232,236,0.9)' : 'rgba(214,226,232,0.3)';
       gld_shape(() => { rrPath(lc - lw2, yl + 4, 2 * lw2, 30, 6); }, clr, GLD_MAT.clearE(), 1.5, ka);
       gld_shape(() => { G.moveTo(lcI - 16, yl + 34); G.quadraticCurveTo(lcI, yl + 48, lcI + 16, yl + 34); G.closePath(); }, clr, GLD_MAT.clearE(), 1.5, ka);
-      for (const zs of sk) { const i = Math.round(zs + 50), xx = Xz(zs), onLens = Math.abs(zs) < 20, yy = onLens ? yl + 34 - 5 : yb + dv(i); rr(xx - 3.25 * bw / 100, yy + 5, 6.5 * bw / 100, yPad - yy - 5, 3, hero && onLens ? C.hero : C.comp, null, 0, ka); }
+      for (const zs of sk) { const i = Math.round(zs + 50), xx = Xz(zs), onLens = Math.abs(zs - GLD.sensor[1]) < 20, yy = onLens ? yl + 34 - 5 : yb + dv(i); rr(xx - 3.25 * bw / 100, yy + 5, 6.5 * bw / 100, yPad - yy - 5, 3, hero && onLens ? C.hero : C.comp, null, 0, ka); }
       text('Lens', lc, yl + 74, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: ka });
       /* the press: arrows along the span, and the pointer pushing the middle */
       const kp = ep(t, 1.6, 2.2);

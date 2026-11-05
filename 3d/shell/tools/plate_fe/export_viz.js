@@ -4,7 +4,7 @@ process.env.LAYOUT = process.env.LAYOUT || '/home/claude/theseus/3d/shell/plate-
 const o = require('./opt.js'); const { LAY, RHO } = require('./models.js'); const { solveDesign } = require('./m2.js'); const { refMesh, tp } = require('./calib.js');
 const f = LAY.frame;
 /* Theseus as sized (widths in the layout), the grid as exported, the plain plate on a 2 mm DKT mesh */
-const TW = (process.env.TWIN ?? 'ring,tie').split(',').filter(Boolean), WC = +process.env.WCAP;
+const TW = (process.env.TWIN ?? ((LAY.fe && LAY.fe.twin) || ['ring', 'tie']).join(',')).split(',').filter(Boolean), WC = +process.env.WCAP;   /* v3: the FE block's twin kinds */
 const T = solveDesign(f.nodes, f.members.map(([i, j, kind, w, h]) => ({ i, j, kind, w, h, split: TW.includes(kind) && w > WC + 1e-9 ? 2 : 1 })), LAY.dims.skin, ['lens']);
 const g = JSON.parse(fs.readFileSync('grid8.json')), G = solveDesign(g.nodes, g.members.map(([i, j, kind, w, h, sp]) => ({ i, j, kind, w, h, pitch: 8, split: sp || 1 })), LAY.dims.skin, ['lens']);
 const rm = refMesh(2.0), Pm = solveDesign(rm.nodes, rm.mem, tp, ['lens']);

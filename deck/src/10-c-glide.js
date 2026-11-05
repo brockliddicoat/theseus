@@ -35,13 +35,13 @@ const GLD = {
   dot: 6.5,                                                     /* mm: Brock's dot skate, the size of X-Raypad's Obsidian dots */
   skates: [[13.72, 47.29], [19.97, 42.39], [17.2, -43.18], [10.82, -47.93], [-19.92, 42.53], [-13.49, 47.37], [-11.11, -47.83], [-17.4, -42.91]],
   screws: [[21.52, 17.0], [-21.52, 17.0], [25.22, -24.0], [-25.22, -24.0]],
-  sensor: [0, 0],
+  sensor: [0, 1.12],                                            /* the board's sensor (pcb-layout U3 at board z 4.0, the board at mouse z -2.88): the plate's window, the ring skate and the clip-on lens sit there */
   R: 71.8                                                       /* mm: the radius view3D frames the shell by, read off a render */
 };
 (function () {
   try {
     if (typeof fetch !== 'function' || typeof location === 'undefined' || !/^https?:$/.test(location.protocol)) return;
-    fetch('assets/shell-theseus.json').then(r => (r.ok ? r.json() : null)).then(j => {
+    fetch('assets/shell-theseus-1seam.json').then(r => (r.ok ? r.json() : null)).then(j => {
       if (j && Array.isArray(j.skates) && j.skates.length === 8 && Array.isArray(j.screws)) { GLD.skates = j.skates; GLD.screws = j.screws; if (Array.isArray(j.sensor)) GLD.sensor = j.sensor; }
     }).catch(() => { });
   } catch (e) { /* file:// or no fetch: keep the copy above */ }
@@ -106,10 +106,11 @@ function gld_tag(x, y, s, o = {}) {
    Plate off: a ledge in the shell's rim seats two dots at each corner, and the clip-on lens carries two more (Brock: "part of
    the clip on lens like what g wolves does"), one on a pad at each of its ends, under its clip pegs, so the lens stays one dot
    wide (#37). Plate on: a half-moon at each end, after the Viper V4 Pro's rear skate (straight edge toward the sensor),
-   mirrored about the lens and cut round the corner dots, which stay on the ledges; and a ring round the lens window. Corner
+   mirrored about the middle of the base and cut round the corner dots, which stay on the ledges; and a ring round the lens window. Corner
    dots are where the 3D shell puts them (GLD.skates); GLD_HALF is the front half-moon as the plate layout cuts it
    (3d/shell/plate-layout.json skates.front, the back one its mirror). */
-const GLD_SDOT = [[0, 6.3], [0, -6.7]];
+const GLD_SDOT = [[0, 6.3], [0, -6.7]];                     /* the clip-on lens's two dots, from the sensor (gld_sdot() places them) */
+const gld_sdot = () => GLD_SDOT.map(([x, z]) => [GLD.sensor[0] + x, GLD.sensor[1] + z]);
 const GLD_HALF = [[1.29,49.97],[-2.16,49.91],[-3.21,49.76],[-4.08,49.4],[-4.53,49.07],[-5.17,48.3],[-5.5,47.49],[-5.71,46.35],[-6.16,45.3],[-6.64,44.58],[-7.5,43.73],[-8.1,43.31],[-8.82,42.95],[-9.54,42.68],[-10.71,42.41],[-11.52,41.96],[-12.16,41.28],[-12.67,40.32],[-13.18,39.57],[-13.86,38.87],[-14.43,38.42],[-15.33,37.94],[-15.93,37.73],[-16.47,37.6],[-17.34,37.55],[-17.94,37.4],[-18.45,37.16],[-18.9,36.83],[-19.42,36.24],[-19.75,35.64],[-20.17,34.02],[-20.17,33.09],[-20.05,32.58],[-19.78,31.98],[-19.45,31.53],[-18.72,30.92],[-18.21,30.68],[-17.61,30.53],[17.61,30.56],[18.33,30.74],[19.14,31.25],[19.76,31.98],[20.09,32.79],[20.15,34.02],[19.91,35.1],[19.52,36.06],[19.18,36.51],[18.87,36.83],[18.06,37.34],[17.31,37.55],[16.44,37.6],[15.9,37.73],[15.3,37.94],[14.19,38.57],[13.04,39.72],[12.14,41.28],[11.49,41.96],[10.68,42.41],[9.24,42.77],[8.07,43.31],[7.65,43.58],[6.83,44.34],[6.26,45.09],[5.84,45.93],[5.33,47.94],[5.03,48.48],[4.5,49.07],[4.05,49.4],[3.18,49.76]];
 const GLD_HALFZ = 30.5;                                     /* the half-moons' straight edges, z = +/-30.5 */
 function gld_halfPath(X, Y, sg) { GLD_HALF.forEach(([x, z], i) => { const px = X(x), py = Y(sg * z); if (i) G.lineTo(px, py); else G.moveTo(px, py); }); G.closePath(); }
@@ -121,7 +122,7 @@ function gld_bottom(cx, cy, s, set, a, o = {}) {
   const k1 = o.k == null ? 1 : o.k, kS = ep(k1, 0, 0.35), kK = ep(k1, 0.3, 0.75), kL = ep(k1, 0.6, 1);
   if (set === 'on') {
     gld_shape(path([1, 1]), TH ? '#DCDBD5' : '#26272C', inkA(0.4), 2, a * kS);
-    gld_shape(() => rrPath(X(-GLD_WIN.w / 2), Y(GLD_WIN.h / 2), GLD_WIN.w * s, GLD_WIN.h * s, GLD_WIN.w / 2 * s), TH ? '#2A2B30' : '#0B0C0E', null, 0, a * kS);
+    gld_shape(() => rrPath(X(GLD.sensor[0] - GLD_WIN.w / 2), Y(GLD.sensor[1] + GLD_WIN.h / 2), GLD_WIN.w * s, GLD_WIN.h * s, GLD_WIN.w / 2 * s), TH ? '#2A2B30' : '#0B0C0E', null, 0, a * kS);
   } else {
     gld_shape(path([1, 1]), TH ? '#CFCEC8' : '#2E2F34', inkA(0.4), 2, a * kS);
     gld_shape(path([(31.2 - 4.2) / 31.2, (59.5 - 4.2) / 59.5]), TH ? '#2C2D32' : '#121315', null, 0, a * kS);    /* open: the board and lattice inside */
@@ -138,12 +139,12 @@ function gld_bottom(cx, cy, s, set, a, o = {}) {
     /* the corner dots stay on the rim's ledges, in the half-moons' cutouts */
     GLD.skates.forEach(p => { if (kS > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), GLD.dot / 2 * s, 0, TAU), GLD_SKC(), inkA(0.45), 1.5, a * kS); });
     for (const sg of [1, -1]) { const k = sg > 0 ? kK : ep(k1, 0.42, 0.85); if (k > 0.003) gld_shape(() => gld_halfPath(X, Y, sg), GLD_SKC(), inkA(0.45), 1.5, a * k); }
-    if (kL > 0.003) gld_shape(() => { rrPath(X(-GLD_WIN.w / 2 - 2), Y(GLD_WIN.h / 2 + 2), (GLD_WIN.w + 4) * s, (GLD_WIN.h + 4) * s, (GLD_WIN.w / 2 + 2) * s); G.save(); G.restore(); }, null, C.hero, 2 * s, a * kL);
+    if (kL > 0.003) gld_shape(() => { rrPath(X(GLD.sensor[0] - GLD_WIN.w / 2 - 2), Y(GLD.sensor[1] + GLD_WIN.h / 2 + 2), (GLD_WIN.w + 4) * s, (GLD_WIN.h + 4) * s, (GLD_WIN.w / 2 + 2) * s); G.save(); G.restore(); }, null, C.hero, 2 * s, a * kL);
   } else {
     GLD.skates.forEach((p, i) => { const k = ep(k1, 0.3 + i * 0.04, 0.55 + i * 0.04); if (k > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), GLD.dot / 2 * s, 0, TAU), GLD_SKC(), inkA(0.45), 1.5, a * k); });
     /* the clip-on lens's two dots, each on a clear pad at one end of the lens */
-    GLD_SDOT.forEach(p => { if (kL > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), 3.65 * s, 0, TAU), GLD_MAT.clear(), GLD_MAT.clearE(), 1.8, a * kL); });
-    GLD_SDOT.forEach(p => { if (kL > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), GLD.dot / 2 * s, 0, TAU), C.hero, null, 0, a * kL); });
+    gld_sdot().forEach(p => { if (kL > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), 3.65 * s, 0, TAU), GLD_MAT.clear(), GLD_MAT.clearE(), 1.8, a * kL); });
+    gld_sdot().forEach(p => { if (kL > 0.003) gld_shape(() => G.arc(X(p[0]), Y(p[1]), GLD.dot / 2 * s, 0, TAU), C.hero, null, 0, a * kL); });
   }
   return { X, Y };
 }
@@ -172,7 +173,7 @@ S({
   src: ['gld_skateSets', 'gld_shell3d', 'gld_paw3395o', 'gld_brock'],
   draw: t => {
     header(t, 'Skate sets: ten dots, or half-moons and a ring');
-    captions(t, [[0.6, 'Without the plate, a ledge in the rim takes two dots at each corner, and the clip-on lens carries two more: ten in all.'], [5.2, 'With the plate on, a half-moon at each end, cut round the corner dots and mirrored about the lens, and a ring circles it.']]);
+    captions(t, [[0.6, 'Without the plate, a ledge in the rim takes two dots at each corner, and the clip-on lens carries two more: ten in all.'], [5.2, 'With the plate on, a half-moon at each end, cut round the corner dots and mirrored about the middle, and a ring circles the lens.']]);
     const sets = [[LM, 'Plate off: ten dots', 'off', 0.8], [1000, 'Plate on: two half-moons and a ring', 'on', 4.6]];
     sets.forEach(([x, nm, set, t0], i) => {
       const y = 280, w = 840, h = 680, s = 5.0, cx = x + 236, cy = y + 384;
@@ -182,14 +183,14 @@ S({
       const lx = x + 488, C0 = (p, d) => [B.X(p[0]) + d, B.Y(p[1])];
       if (set === 'off') {
         callout(t, t0 + 0.6, C0(GLD.skates[1], GLD.dot / 2 * s), 'Two dots a corner', { to: [lx, y + 156], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'On a ledge in the rim', maxW: 320 });
-        callout(t, t0 + 1.6, C0(GLD_SDOT[0], 3.65 * s), 'Two on the lens', { to: [lx, y + 300], side: 'r', color: C.heroText, tcolor: C.heroText, sub: 'One at each end of it', maxW: 320 });
+        callout(t, t0 + 1.6, C0(gld_sdot()[0], 3.65 * s), 'Two on the lens', { to: [lx, y + 300], side: 'r', color: C.heroText, tcolor: C.heroText, sub: 'One at each end of it', maxW: 320 });
         callout(t, t0 + 2.0, C0(GLD.screws[0], 1.9 * s), 'Screws clear', { to: [lx, y + 444], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'Open it without lifting a skate', maxW: 320 });
         callout(t, t0 + 2.3, C0(GLD.skates[2], GLD.dot / 2 * s), '6.5 mm dots', { to: [lx, y + 588], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'POM, 0.65 mm tall', maxW: 320 });
       } else {
         callout(t, t0 + 0.6, [B.X(20.2), B.Y(GLD_HALFZ + 3)], 'Front half-moon', { to: [lx, y + 156], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'Cut round the corner dots', maxW: 320 });
-        callout(t, t0 + 1.6, [B.X(GLD_WIN.w / 2 + 2), B.Y(0)], 'Ring round the lens', { to: [lx, y + 330], side: 'r', color: C.heroText, tcolor: C.heroText, sub: 'The skate at the lens', maxW: 320 });
+        callout(t, t0 + 1.6, [B.X(GLD.sensor[0] + GLD_WIN.w / 2 + 2), B.Y(GLD.sensor[1])], 'Ring round the lens', { to: [lx, y + 330], side: 'r', color: C.heroText, tcolor: C.heroText, sub: 'The skate at the lens', maxW: 320 });
         callout(t, t0 + 1.1, [B.X(20.2), B.Y(-GLD_HALFZ - 3)], 'Back half-moon', { to: [lx, y + 560], side: 'r', color: C.ink2, tcolor: C.ink, sub: 'A mirror of the front', maxW: 320 });
-        /* the mirror: both straight edges the same distance from the lens */
+        /* the mirror: both straight edges the same distance from the middle of the base (F14.2) */
         const dx = B.X(-31.5), km = ep(t, t0 + 1.4, t0 + 2.0);
         for (const sg of [1, -1]) { line(dx, B.Y(0), dx, B.Y(sg * GLD_HALFZ), { color: C.mute, w: 1.5, alpha: km }); line(dx - 8, B.Y(sg * GLD_HALFZ), dx + 8, B.Y(sg * GLD_HALFZ), { color: C.mute, w: 1.5, alpha: km }); text('d', dx - 14, B.Y(sg * GLD_HALFZ / 2) + 8, { role: 'label', size: 22, color: C.ink, align: 'right', alpha: km, caps: false }); }
         line(dx - 12, B.Y(0), B.X(-GLD_WIN.w / 2 - 2.4), B.Y(0), { color: C.mute, w: 1.5, dash: [4, 4], alpha: km });
@@ -239,7 +240,7 @@ S({
     [[1120 + 150, 'four', fmtN(A4, 0) + ' mm²'], [1120 + 470, 'ten', fmtN(A10, 0) + ' mm²']].forEach(([cx, n, lab], i) => {
       const s2 = 1.45, X = xx => cx + xx * s2, Y = z => ry + rh / 2 - z * s2;
       gld_shape(() => { KEY_PTS.forEach(([xx, yy], j) => (j ? G.lineTo(cx + xx * s2, ry + rh / 2 + yy * s2) : G.moveTo(cx + xx * s2, ry + rh / 2 + yy * s2))); G.closePath(); }, '#26272C', inkA(0.35), 1.5, kk);
-      const dots = n === 'four' ? [0, 3, 4, 7].map(j => GLD.skates[j]) : GLD.skates.concat(GLD_SDOT);
+      const dots = n === 'four' ? [0, 3, 4, 7].map(j => GLD.skates[j]) : GLD.skates.concat(gld_sdot());
       dots.forEach((p, j) => circle(X(p[0]), Y(p[1]), 3.25 * s2, { fill: n === 'ten' && j >= 8 ? C.hero : GLD_SKC(), alpha: kk }));
       text(lab, cx + 60, ry + rh / 2 + 8, { font: 'disp', size: 30, weight: 800, color: i ? C.heroText : C.ink2, alpha: kk });
       text(i ? 'Theseus' : 'One a corner', cx + 60, ry + rh / 2 - 34, { role: 'label', size: 19, color: i ? C.heroText : C.mute, alpha: kk });

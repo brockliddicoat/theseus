@@ -47,6 +47,8 @@ function design3(o) {
     const R = solveDesign(nodes, mk(), o.ts, CS), idx = new Map(R.els.map((e, k) => [e.i + ',' + e.j, k]));
     const C = Object.fromEntries(CS.map(c => [c, R.cases[c].r.comp]));
     const S = f.members.map(([i, j], e) => { const k = idx.get(i + ',' + j); if (k == null) return 0; let s = 0; for (const c of CS) s += o.k[c] / C[c] * R.cases[c].r.en[k]; return s / (w[e] * Lm[e] * H[e]); });
+    /* linked kinds (o.link, e.g. the lens ring) share one width: their group's mean energy density */
+    for (const kd of o.link || []) { const es = f.members.map((m, e) => e).filter(e => f.members[e][2] === kd); const vv = es.reduce((a, e) => a + Lm[e] * H[e] * w[e], 0), sm = es.reduce((a, e) => a + S[e] * Lm[e] * H[e] * w[e], 0) / vv, wm = es.reduce((a, e) => a + w[e] * Lm[e], 0) / es.reduce((a, e) => a + Lm[e], 0); es.forEach(e => { S[e] = sm; w[e] = wm; }); }
     const ref = S.reduce((a, v, e) => a + v * Lm[e] * H[e] * w[e], 0) / S.reduce((a, v, e) => a + Lm[e] * H[e] * w[e], 0);
     w = fit(w.map((x, e) => x * Math.min(1 + o.move, Math.max(1 - o.move, Math.pow(Math.max(1e-6, S[e] / ref), o.eta)))));
   }

@@ -135,7 +135,16 @@ scene('claw', () => PARTS.buildMillMax3305(), { view: 'threeQuarter', margin: 1.
 scene('screw', () => PARTS.buildScrewJoint(), { view: 'front', margin: 1.3 });
 /* the skate sets on the Theseus shell's own base outline, corner dots and screws (plate: 1 half-moons and ring, 0 the clip-on lens
    with its two dots; the corner dots stay in both) */
-scene('skates', async () => { const m = await fetch(A('shell-theseus-1seam.json')).then(r => r.json()); return PARTS.buildSkateSets({ footprint: m.footprint, screws: m.screws, dots: m.skates, skate: m.plate && m.plate.skate }); }, { view: 'top' });
+scene('skates', async () => {
+  const m = await fetch(A('shell-theseus-1seam.json')).then(r => r.json());
+  const g = PARTS.buildSkateSets({ footprint: m.footprint, screws: m.screws, dots: m.skates, skate: m.plate && m.plate.skate });
+  /* plate v3: the lens ring and the clip-on lens (with its two dots) sit on the board's sensor, meta.sensor (z 1.12); the
+     parts build them at the origin. (The stand-in base's own window, cut in parts/skates.js, stays at the origin.) */
+  const sz = m.sensor || [0, 0], ring = g.getObjectByName('lensRing'), ls = g.userData.parts && g.userData.parts.lensSet;
+  if (ring) { ring.position.x = sz[0]; ring.position.z = sz[1]; }
+  if (ls) { ls.position.x = sz[0]; ls.position.z = sz[1]; }
+  return g;
+}, { view: 'top' });
 scene('battery', (studio) => PARTS.buildBattery({ theme: studio.themeName }), { view: 'threeQuarter', margin: 1.2 });
 scene('lattice', (studio) => buildLattice({ assetBase: A(''), theme: studio.themeName }), { view: 'threeQuarter' });
 

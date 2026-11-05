@@ -1,5 +1,6 @@
 // The bottom plate FE study (plate builder, 2026-11-04; v2 the same day: 0.6 mm skin, twin walls, half-moon skates).
-// Order (this folder is CommonJS, see package.json): from 3d/, WIDTHS=shell/plate-layout.json NSUB=3 FIL=0.30 EDGEBAND=0.50
+// Order (this folder is CommonJS, see package.json): from 3d/, [WIDTHS=shell/plate-layout.json, to keep the frame; leave it out
+// for a new frame, as after the sensor moved in v3] NSUB=3 FIL=0.30 EDGEBAND=0.50
 // WSCALE=0.82 python3 -I shell/tools/plate_layout.py once (it writes the skates into the layout: the front-skate load case
 // needs them); then here node final.js (sizes Theseus, solves the grid and the plain plate at Theseus's weight, writes the
 // widths into ../../plate-layout.json and grid8.json; DRY=1 prints only; TS, WCAP, TWIN, CRIT, KP, IT, ETA for variants);
@@ -31,7 +32,7 @@ if (E.CRIT) {
   R = Object.assign(solveDesign(f.nodes, f.members.map(([i, j, kind], e) => ({ i, j, kind, w: R.w[e], h: 2.3, split: R.split[e] })), TS, CS), { w: R.w, vol: R.vol, split: R.split });
 } else {
   const P = { ts: TS, wh: 2.3, fh: 2.3, w0p: 0.6, w0f: 0.45, wminp: 0.5, wminf: 0.35, wcap: WCAP, wcapf: Math.min(0.6, WCAP), M0: +(E.MASS || 4.195), twin: TWIN,
-    k: { lens: 1, pill: +(E.KP || 0.35), back: +(E.KB || 0.35), twist: +(E.KT || 0) }, it: +(E.IT || 40), eta: +(E.ETA || 0.5), move: +(E.MOVE || 0.3) };
+    k: { lens: 1, pill: +(E.KP || 0.35), back: +(E.KB || 0.35), twist: +(E.KT || 0) }, it: +(E.IT || 40), eta: +(E.ETA || 0.5), move: +(E.MOVE || 0.3), link: (E.LINK ?? 'ring').split(',').filter(Boolean) };
   R = o.design3(P);
 }
 const M1 = +(R.vol * RHO).toFixed(3);

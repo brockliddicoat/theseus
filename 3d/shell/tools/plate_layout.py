@@ -5,7 +5,9 @@ Brock: "a fine triangle lattice, but you can only see it looking from inside the
 solid. also the bottom should be solid with no holes (even before mylar)"; "i like the X style designs, but they have to
 form triangles"; "the big cutouts have high walls on ther edges".
 
-The plate is a solid skin (v2, F20.3: 0.6 mm, from the FE's widths file). On its inner face, every rib 2.3 mm tall and no
+The plate is a solid skin (v2, F20.3: 0.6 mm, from the FE's widths file). v3 (plate builder 3): the window, hub ring and lens
+sit on the board's sensor (shell meta 'sensor' = [0, 1.12]: pcb-layout U3 at board z 4.0, the board at mouse z -2.88), and
+any primary the FE sizes wider than the skin may be twin walls (the kinds in the FE block's 'twin'). On its inner face, every rib 2.3 mm tall and no
 rib wider than the skin:
   - PRIMARY struts: an X from the lens ring to the four screw bosses, the keel down the centre line, two ties across the
     screw lines, two side spokes, and a wall round the edge. They close twelve bays, every one a triangle: eight round the
@@ -219,6 +221,7 @@ print('after ring clip: nodes', len(NODES), 'members', len(MEMB), 'ring nodes', 
 
 WFROM = os.environ.get('WIDTHS')
 WIDTH = {}
+FE = None
 if WFROM:
     J = json.load(open(WFROM)); NODES = np.array(J['frame']['nodes']); MEMB = [(m[0], m[1], m[2]) for m in J['frame']['members']]
     WIDTH = {(m[0], m[1]): (m[3], m[4]) for m in J['frame']['members'] if len(m) > 3}
@@ -229,7 +232,7 @@ if WFROM:
 # ------------------------------------------------------------------ rasters: ribs (fine + primary), primary only
 # plate v2 (F20.3): no rib wider than the skin. A member the FE sizes wider (the lens hub ring, the ties) is built as twin
 # walls, each half the width, TGAP apart; the lattice members that meet the ring run on across the gap to its inner wall.
-TWIN_K = [k for k in os.environ.get('TWIN', 'ring,tie').split(',') if k]; WCAP_L = float(os.environ.get('WCAP', D['skin'])); TGAP = 0.8
+TWIN_K = [k for k in os.environ.get('TWIN', ','.join((FE or {}).get('twin', ['ring', 'tie']))).split(',') if k]; WCAP_L = float(os.environ.get('WCAP', D['skin'])); TGAP = 0.8
 RINGSET = set(RING)
 def twin(i, j, kd):
     return kd in TWIN_K and (i, j) in WIDTH and WIDTH[(i, j)][0] > WCAP_L + 1e-9

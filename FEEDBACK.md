@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 20:58 (Chicago).
+Last updated: 2026-11-04 21:40 (Chicago).
 
 ## Open with Brock
 
@@ -36,8 +36,11 @@ Last updated: 2026-11-04 20:58 (Chicago).
   - Shell: the intro's weight budget gives the shell 10.62 g, but Shell A's study body weighs 15.2 g. Which is the target?
     (Default: both shown, each labelled with what it includes.)
   - Shell: grip height 12 mm; board thickness 1.0, 0.8 or 0.6 mm; keep the "arms squeeze" slide?
-  - Plate: at equal weight a plain grid flexed 10 % less than ours (ours peaks 12 % lower). Being re-tuned now so ours
-    wins on both; if it can't within his rules, he picks which rule to relax.
+  - Plate (v3, re-tuned; the FE model also had three errors that favoured the grid, now fixed): at the same 4.20 g ours
+    flexes 14 % less at the lens and 11 % less under the front skate, is 2.35× stiffer in twist and peaks 29 % lower than
+    a plain grid. The grid still flexes 20 % less under the back skate (234 against 292 µm). Weight the back skate harder
+    (1.5× gets 258 µm, but the lens goes to 96 and the front skate to 349)? Where does the battery sit (3 to 4 mm ribs in
+    the tail would win the back skate too)? Is 0.35 mm the thinnest rib he'd mould (0.30 / 0.40 mm gets the lens to ~80 µm)?
   - Clicks: is 70 µs at the NC release only right? The PAW3395's floor?
   - Electronics: AN54LM-20A or -P20A (the long antenna is listed on the -P20A)? The PMIC beside the antenna end? The cell
     LP402535JU, 370 mAh? Syncpower folded into power? The braid as three 32 AWG wires of 40 AWG strands?
@@ -407,7 +410,7 @@ New notes:
   visualizations instead of being an entirely straight line, which looks funny, also the straight light version needs
   to go back future"
   - Asked how far back: "To the smile's deepest point", level with the deepest point of the Sora V2's curved cutout.
-- **F12.10 DONE** (`pltPlate`, `pltSim`, `shlsheet2`; 3D: a solid skin outside, X struts and a frequency-3 triangle lattice inside; 6.6× stiffer than a solid plate of the same weight, 26 % lower peak than the best grid) "the optional bottom plate has big holes instead of tiny triangle
+- **F12.10 DONE** (`pltPlate`, `pltSim`, `shlsheet2`; 3D: a solid skin outside, X struts and a frequency-3 triangle lattice inside; v3: 4.4× stiffer than a solid plate of the same weight; against a plain grid 14 % less flex at the lens, 29 % lower peak, see F20.3) "the optional bottom plate has big holes instead of tiny triangle
   lattices, i've attached some reference designs for you to try to come up with your own design, i like the X style
   designs, but they have to form triangles" / "the big cutouts have high walls on ther edges and are reinforced by
   triangles on their underside" / "i want something that fits the arches and triangles, is as strung as possible, but
@@ -541,7 +544,10 @@ Answers to the Shell A questions:
 - **F20.2 DECIDED** What carries the dot skates by the lens with the plate off: "part of the clip on lens line what g wolves
   does". The dots are part of the clip-on lens, as on G-Wolves mice. **DONE** (3D and Glide).
 - **F20.3 DECIDED** The plate's skin: "Thicker skin", about 0.6 mm, so no rib is wider than the skin. **DONE:** 0.60 mm, and the FE study rerun.
-  The plate is 4.5× as stiff as a solid plate of the same weight. A plain grid is 10 % stiffer, but peaks 12 % higher.
+  The plate is 4.4× as stiff as a solid plate of the same weight (v3, 21:30). Against a plain grid it flexes 14 % less at
+  the lens and 11 % less under the front skate, is 2.35× stiffer in twist and peaks 29 % lower; the grid flexes 20 % less
+  under the back skate. (v2 showed the grid 10 % stiffer: the FE model's whisper stiffness, the grid's hexagon lens ring
+  and its skin faces all favoured the grid; fixed, with switches that bring the v2 behaviour back.)
 - **F20.4 DECIDED** The skates' shape: "they shouldn't be pills, they should be half circles, with cutouts for the dots,
   they should both look like the rear viper v4 skate, which i am attaching". **DONE** (3D and Glide): two half-moons after the
   Viper V4 Pro's rear skate, measured off his photo (an estimate), cut round the corner dots.
