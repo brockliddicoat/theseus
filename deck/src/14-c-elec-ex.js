@@ -20,7 +20,7 @@ S({
     /* the wireless ranking, big */
     const x = LM, y = 280, w = 1040, h = 680;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0), { grid: true });
-    cardHead(t, 0.3, x, y, w, 'Wireless at 8 kHz, motion to PC in ms (lower is better)', ['measured', 'projected']);
+    cardHead(t, 0.3, x, y, w, 'Wireless at 8 khz, motion to PC in ms (lower is better)', ['measured', 'projected']);
     lollipop(t, { x: x + 32, y: y + 150, w: w - 64, t0: 0.5, rows: wless.length > 1 ? wless.slice(0, 11) : [{ name: 'placeholder', v: 0.3 }], xr: [0, 1.0], ticks: [0, 0.25, 0.5, 0.75, 1.0], tfmt: v => v.toFixed(2), fmt: v => v.toFixed(2), rowH: 44, labelW: 360, valW: 80, nsize: 25, target: { v: 0.14 }, placeholder: wless.length <= 1 });
     text('* Motion Sync forced on: piaknow flags these rows', x + 32, y + h - 26, { role: 'label', size: 20, color: C.faint, alpha: ep(t, 3.2, 3.6) });
     /* the right column: by how much, before → after, and wired, quietly */
@@ -29,10 +29,10 @@ S({
     elc_ba(t, 4.8, rx, 650, best.v.toFixed(2), '0.14', { size: 60, label: 'Fastest wireless, then Theseus', unit: 'ms', net: '−' + fmtN(best.v - 0.14, 2) + ' ms on the same rig', maxW: rw });
     const wy = 720, wh = 240;
     demoWindow(rx, wy, rw, wh, tileA(t, 0.3, 1));
-    cardHead(t, 0.5, rx, wy, rw, 'Wired at 8 kHz (lower is better)', ['measured'], { dy: 44 });
+    cardHead(t, 0.5, rx, wy, rw, 'Wired at 8 khz (lower is better)', ['measured'], { dy: 44 });
     const wr = wired.slice(0, 3).concat([{ name: 'Theseus', qual: 'Target', v: 0.13, hero: true }]).sort((a, b) => a.v - b.v || (b.hero ? 1 : -1));
     lollipop(t, { x: rx + 32, y: wy + 112, w: rw - 64, t0: 0.9, rows: wr, xr: [0, 0.5], ticks: [0, 0.25, 0.5], tfmt: v => v.toFixed(2), fmt: v => v.toFixed(2), rowH: 30, labelW: 250, valW: 70, nsize: 22 });
-    source(t, 'piaknow, "Motion Latency of Some Computer Mice 2026-09-15", every 8 kHz row. Theseus 0.14 ms wireless and 0.13 ms wired: Kunai\'s timing model, projected.', { t0: 3 });
+    source(t, 'piaknow, "Motion Latency of Some Computer Mice 2026-09-15", every 8 khz row. Theseus 0.14 ms wireless and 0.13 ms wired: Kunai\'s timing model, projected.', { t0: 3 });
   }
 });
 
@@ -43,7 +43,7 @@ S({
   src: ['exPiaknow', 'usbHs', 'kunai'],
   draw: t => {
     header(t, 'The wireless penalty');
-    captions(t, [[0.6, 'The same mouse is slower wireless than wired. At 8 kHz the Viper V4 Pro gives up 0.08 ms, and the worst pair on piaknow\'s chart 0.45 ms.'], [5.4, 'Theseus targets 0.13 ms wired and 0.14 ms wireless: a 0.01 ms penalty, with the radio timed to each poll the way the cable is.']]);
+    captions(t, [[0.6, 'The same mouse is slower wireless than wired. At 8 khz the Viper V4 Pro gives up 0.08 ms, and the worst pair on piaknow\'s chart 0.45 ms.'], [5.4, 'Theseus targets 0.13 ms wired and 0.14 ms wireless: a 0.01 ms penalty, with the radio timed to each poll the way the cable is.']]);
     const pairs = (((RD.latency || {}).motion_latency_derived) || []).filter(d => d && d.value && d.value.wireless_penalty_ms != null).map(d => d.value);
     const prow = pairs.map(p => ({ name: p.mouse.replace('Razer ', '').replace('VAXEE ', '').replace('ELECOM VM800L', 'ELECOM VM800L*'), a: p.wired_ms, b: p.wireless_ms, d: p.wireless_penalty_ms, ref: /V4 Pro/.test(p.mouse) })).sort((a, b) => a.d - b.d);
     prow.unshift({ name: 'Theseus', a: 0.13, b: 0.14, d: 0.01, hero: true });
@@ -51,7 +51,7 @@ S({
     /* the pairs: a dot wired, a ring wireless, the gap between them */
     const x = LM, y = 280, w = 920, h = 680;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0));
-    cardHead(t, 0.4, x, y, w, 'Wired to wireless at 8 kHz, in ms (the shorter the gap, the better)', ['measured', 'projected']);
+    cardHead(t, 0.4, x, y, w, 'Wired to wireless at 8 khz, in ms (the shorter the gap, the better)', ['measured', 'projected']);
     const dx0 = x + 290, dw = w - 290 - 180, DX = v => dx0 + dw * v / 0.8, dy0 = y + 190, rh = Math.min(120, (h - 240) / Math.max(1, prow.length - 1));
     const ka = ep(t, 0.8, 1.2);
     for (const v of [0, 0.2, 0.4, 0.6, 0.8]) { line(DX(v), dy0 - 40, DX(v), dy0 + rh * (prow.length - 1) + 30, { color: C.hair, w: 1.2, alpha: ka }); text(v.toFixed(1), DX(v), dy0 - 52, { role: 'tick', size: 20, color: C.mute, align: 'center', alpha: ka }); }
@@ -80,7 +80,7 @@ S({
     const X = f => px + pw * (Math.log10(f) - 3) / Math.log10(8), Y = v => py + ph - ph * (Math.log10(v) - Math.log10(0.05)) / (Math.log10(2) - Math.log10(0.05));
     const a0 = ep(t, 0.9, 1.3);
     for (const v of [0.1, 0.2, 0.5, 1]) { line(px, Y(v), px + pw, Y(v), { color: C.hair, w: 1.2, alpha: a0 }); text(v + ' ms', px - 12, Y(v) + 7, { role: 'tick', size: 20, color: C.mute, align: 'right', alpha: a0 }); }
-    for (const f of [1000, 2000, 4000, 8000]) text(f / 1000 + ' kHz', X(f), py + ph + 30, { role: 'tick', size: 20, color: C.mute, align: 'center', alpha: a0 });
+    for (const f of [1000, 2000, 4000, 8000]) text(f / 1000 + ' khz', X(f), py + ph + 30, { role: 'tick', size: 20, color: C.mute, align: 'center', alpha: a0 });
     const vW = get('Razer Viper V4 Pro', 'Wireless'), kw = ep(t, 1.8, 3.0, E.io3);
     if (vW.length) {
       poly(vW.map(p => [X(p[0]), Y(p[1])]), { color: C.ref, w: 4, p: kw });
@@ -143,7 +143,7 @@ S({
     if (D.placeholder) placeholderStamp(t, x, y0 - 80, xr - x, rh * 5 + 80);
     /* the right column: by how much, before → after, the word */
     const rx = 1240, rw = RM - rx;
-    elc_hl(t, 4.0, rx, 440, fmtN(aa.g / me.g, 1) + '×', 'lighter', { label: 'Than an AA, and it recharges', sub: fmtN(me.g, 0) + ' g against ' + fmtN(aa.g, 0) + ' g, for ' + THS.hours + ' at 1 kHz and ' + me.cyc + ' charges to 80%.', subW: rw });
+    elc_hl(t, 4.0, rx, 440, fmtN(aa.g / me.g, 1) + '×', 'lighter', { label: 'Than an AA, and it recharges', sub: fmtN(me.g, 0) + ' g against ' + fmtN(aa.g, 0) + ' g, for ' + THS.hours + ' at 1 khz and ' + me.cyc + ' charges to 80%.', subW: rw });
     elc_ba(t, 4.8, rx, 660, fmtN(100 * aa.g / M, 0), fmtN(100 * me.g / M, 0), { label: 'Share of the mouse: an AA, then the pouch', unit: '%', net: 'One battery, charged in about an hour', maxW: rw });
     glossBox(t, 5.6, rx, 750, rw, 'Boost converter', 'One AA gives 0.8 to 1.6 V and the nRF54 needs at least 1.7 V, so an AA mouse spends parts and energy stepping it up.', { size: 24 });
     source(t, 'Datasheets: Jauch, Panasonic, Energizer. Wh/kg derived: energy ÷ mass; E91 read from its constant-power curve. Cycles: datasheets, Battery University, the eneloop claim.', { t0: 3 });
@@ -157,12 +157,12 @@ S({
   src: ['exPiaknow', 'exRtings', 'exEloshapes', 'exNbcV4', 'elcLp4025', 'kunai'],
   draw: t => {
     header(t, 'Past the Pareto frontier');
-    captions(t, [[0.6, 'Every wireless mouse with a published number, against its weight. No mouse ships past the black line on either chart.'], [5.6, 'Theseus sits past both: ' + THS.massG + ', a 0.14 ms target and ' + THS.hours + ' at 1 kHz.']]);
+    captions(t, [[0.6, 'Every wireless mouse with a published number, against its weight. No mouse ships past the black line on either chart.'], [5.6, 'Theseus sits past both: ' + THS.massG + ', a 0.14 ms target and ' + THS.hours + ' at 1 khz.']]);
     const lat = ((RD.latency || {}).motion_latency_piaknow_2026_09_15 || {}).rows || [];
     const idOf = { 'Razer Viper V4 Pro': 'razer-viper-v4-pro', 'Scyrox V8': 'scyrox-v8', 'WLMOUSE Beast X 8K': 'wlmouse-beast-x', 'VAXEE NP01-S V3': 'vaxee-np01s-v3', 'ELECOM VM800L': 'elecom-vm800l', 'Razer Viper V3 Pro': 'razer-viper-v3-pro', 'Logitech G PRO X2 SUPERSTRIKE': 'logitech-superstrike', 'Logitech G PRO X SUPERLIGHT 2': 'logitech-gpx2' };
     const P1 = lat.filter(r => r.connection === 'Wireless' && rv(r.ms_8000Hz) != null && idOf[r.mouse]).map(r => { const w = exWeight(idOf[r.mouse]); return w ? { name: exShort(w.name).replace('Logitech G Pro X2 Superstrike', 'Superstrike'), x: w.g, y: rv(r.ms_8000Hz), hollow: w.ev !== 'measured', id: idOf[r.mouse] } : null; }).filter(Boolean);
     const pw = (RM - LM - 80) / 2, ph = 360, py = 340;
-    cardHead(t, 0.5, LM - 26, py - 76, pw + 26, 'Motion latency at 8 kHz, wireless (lower is better)', ['measured']);
+    cardHead(t, 0.5, LM - 26, py - 76, pw + 26, 'Motion latency at 8 khz, wireless (lower is better)', ['measured']);
     const s1 = scatter(t, {
       x: LM + 96, y: py, w: pw - 96, h: ph, t0: 0.6, xr: [20, 70], yr: [0, 1.0], xticks: [20, 30, 40, 50, 60, 70], yticks: [0, 0.2, 0.4, 0.6, 0.8, 1.0],
       xfmt: v => v + ' g', yfmt: v => v.toFixed(1) + ' ms', xlabel: 'Weight, {g}', better: { x: -1, y: -1 }, sweet: {}, frontier: true,
@@ -173,7 +173,7 @@ S({
     const mice = (RD.mice || {}).mice || [];
     const P2 = mice.filter(m => rv(m.battery_claim_1k_h) && m.connection !== 'wired').map(m => { const w = exWeight(m.id); return w ? { name: exShort(m.name).replace('Logitech G Pro X Superlight 2c', 'GPX2c').replace('Logitech GPX2c', 'GPX2c').replace('Razer DeathAdder V4 Pro', 'DeathAdder V4 Pro').replace('Xiaomi Gaming Mouse 2', 'Xiaomi GM2').replace('Logitech Superstrike', 'Superstrike').replace('ZOWIE ', ''), x: w.g, y: rv(m.battery_claim_1k_h), hollow: w.ev !== 'measured' } : null; }).filter(Boolean);
     const rx = LM + pw + 80;
-    cardHead(t, 0.9, rx - 26, py - 76, pw + 26, 'Battery life at 1 kHz, claimed (higher is better)', ['claim']);
+    cardHead(t, 0.9, rx - 26, py - 76, pw + 26, 'Battery life at 1 khz, claimed (higher is better)', ['claim']);
     const s2 = scatter(t, {
       x: rx + 96, y: py, w: pw - 96, h: ph, t0: 1.0, xr: [20, 70], yr: [0, 220], xticks: [20, 30, 40, 50, 60, 70], yticks: [0, 50, 100, 150, 200],
       xfmt: v => v + ' g', yfmt: v => v + ' h', xlabel: 'Weight, {g}', better: { x: -1, y: 1 }, sweet: true, frontier: true,
@@ -185,10 +185,10 @@ S({
     /* the strip: by how much, before → after, the legend */
     const v4 = P1.find(p => p.id === 'razer-viper-v4-pro') || { x: 49, y: 0.34 };
     elc_hl(t, 5.4, LM, 880, '−' + fmtN(100 * (1 - THESEUS.mass / v4.x), 0) + '%', 'weight', { size: 110, label: 'Against the fastest wireless mouse, and faster', sub: THS.massG + ' against its ' + fmtN(v4.x, 0) + ' g, and 0.14 ms against ' + v4.y.toFixed(2) + '.', subW: 820 });
-    elc_ba(t, 6.0, 1000, 880, '180', String(THESEUS.hours), { size: 64, label: 'At 1 kHz, the longest listed', unit: 'h', net: 'At ' + fmtN(100 * THESEUS.mass / v4.x, 0) + '% of its weight', maxW: 420 });
+    elc_ba(t, 6.0, 1000, 880, '180', String(THESEUS.hours), { size: 64, label: 'At 1 khz, the longest listed', unit: 'h', net: 'At ' + fmtN(100 * THESEUS.mass / v4.x, 0) + '% of its weight', maxW: 420 });
     [[{ kind: 'dot', color: '#B9B8B2', label: 'Weighed by RTINGS' }], [{ kind: 'ring', color: '#B9B8B2', label: 'Maker\'s weight' }], [{ kind: 'line', color: C.ink, label: 'Pareto frontier' }], [{ kind: 'hero', label: 'Theseus, derived' }]].forEach((it, i) => legend(t, 4.2 + i * 0.08, 1500, 800 + i * 34, it, { size: 20 }));
     const un = [...new Set([...(s1.unnamed || []), ...(s2.unnamed || [])].map(n => n.replace(/^(Razer|Logitech|ZOWIE|Lamzu|Pulsar|Finalmouse|Ninjutso) /, '')))];
     if (un.length) text('Unnamed: ' + un.join(', '), 1500, 938, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 4.6, 5.0), maxW: RM - 1500 });
-    source(t, 'Latency: piaknow 2026-09-15, 8 kHz. Hours: maker claims. Theseus: ' + THS.hours + ' at 1 kHz, derived (the example battery at the V4 Pro\'s draw); 0.14 ms, Kunai\'s model.', { t0: 3 });
+    source(t, 'Latency: piaknow 2026-09-15, 8 khz. Hours: maker claims. Theseus: ' + THS.hours + ' at 1 khz, derived (the example battery at the V4 Pro\'s draw); 0.14 ms, Kunai\'s model.', { t0: 3 });
   }
 });

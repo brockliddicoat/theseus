@@ -311,7 +311,7 @@ S({
     /* ---- right top: how fast a hand can move before a report runs out of digits ---- */
     const rx = 720, rw = RM - rx, ch = 400, ly = 280;
     demoWindow(rx, ly, rw, ch, tileA(t, 0.15, 0));
-    cardHead(t, 0.5, rx, ly, rw, 'Fastest hand a report can carry, at 1 kHz', ['derived']);
+    cardHead(t, 0.5, rx, ly, rw, 'Fastest hand a report can carry, at 1 khz', ['derived']);
     const cx0 = rx + 120, cw0 = rw - 120 - 330, cy0 = ly + 100, ch0 = 210, xs = [400, 51200], ys = [10, 100000];
     const pts = (bits, hz) => { const out = []; for (let c = 400; c <= 51200 * 1.0001; c *= 1.12) out.push([c, Math.min(1e5, ((1 << (bits - 1)) - 1) * hz / c)]); out.push([51200, ((1 << (bits - 1)) - 1) * hz / 51200]); return out; };
     lineChart(t, {
@@ -345,7 +345,8 @@ S({
 });
 
 /* ============================== where the sensor sits (#27) ============================== */
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "delete"). Kept, not registered. */
+const HIDDEN_gld_position = ({
   id: 'gld_position', ch: 'glide', theme: 'paper', title: 'Sensor position: the centre wins', settle: 10, ideas: [27],
   src: ['gld_kim20', 'chi2020', 'gld_baek26', 'gld_shell3d', 'gld_brock'],
   draw: t => {

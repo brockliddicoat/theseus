@@ -31,7 +31,7 @@ S({
         ['#9', 'One titanium M2 screw, Phillips or flat blade'], ['#101', 'Brass heat-set inserts: the same joint every time'],
         ['#71', 'A battery that unplugs, held by two silicone bands'], ['#54', 'Board screws you reach from below'],
         ['#63', 'Art and a QR code under the board'], ['#72 #73', 'A trifold box, and the driver in it'],
-        ['#13', 'Colourways matched to GMK keycap sets'], ['#36', 'Your serial, large, on the right click']
+        ['#13', 'Colourways matched to GMK keycap sets']
       ]
     });
     /* the chapter's part in the iris: the M2 joint, the screw driving home into its insert */
@@ -298,7 +298,8 @@ function own_gapRows() {
   const pick = ['scyrox-v8', 'finalmouse-slx', 'keychron-g3', 'ninjutso-sora-v3', 'hitscan-hyperlight', 'ninjutso-sora-v2', 'wlmouse-huan', 'lamzu-maya', 'wlmouse-beast-x', 'razer-viper-v4-pro', 'logitech-gpx2', 'pulsar-x2-crazylight-m'];
   return pick.map(id => { const m = exMouse(id); if (!m) return null; const c = rv(m.weight_claimed_g), me = rv(m.weight_measured_g); if (c == null || me == null) return null; return { name: exShort(m.name).replace('Finalmouse ', '').replace('Logitech ', '').replace('Ninjutso ', '').replace('Hitscan ', '').replace(' (Medium)', ''), c, m: me, g: (me - c) / c * 100 }; }).filter(Boolean).sort((a, b) => b.g - a.g);
 }
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "not needed for now"; F26.11 engravings off). Kept, not registered. */
+const HIDDEN_serial = ({
   id: 'serial', ch: 'own', theme: 'night', title: 'A serial on the right click', settle: 10, ideas: [36],
   src: ['exRtings', 'exEloshapes', 'slxB2g', 'ulxComp'],
   draw: t => {

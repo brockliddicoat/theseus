@@ -62,6 +62,16 @@ function go(i, opts = {}) {
    preview, a viewer who can't write). */
 const RATE = { db: null, all: {}, ready: false, ro: false, note: '', pend: {}, again: {}, taSlide: null, dirty: false, tmr: null };
 const rateKey = id => String(id).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_');
+/* a slide's version: its drawing code, its title, and a rev a builder bumps when only a helper changed (Brock, F26.13:
+   "updating a slide should archive its old score"). A rating made on another version is archived: it moves into the
+   rating's history, and the slide shows as unrated until it's rated again. */
+function slideVer(s) { return s.__ver || (s.__ver = fnv36(String(s.draw || s.card || '') + '|' + (s.title || '') + '|' + (s.rev || 0))); }
+/* the ratings made before versions were kept (to 2026-11-05 03:45) were made on v19 of the live link: these are its slides'
+   versions, so a slide changed since then shows its old score as archived */
+const RATE_BASE = {"cover":"1c0u7nn","thesis":"1jaw5px","targets":"1dx6bq0","targets2":"1y3r74r","flagships":"10z11az","ntr_stats":"zxwfw4","zerograms":"14eueya","weightgap":"ohrc4v","ntr_density":"p65n0o","ntr_sizewt":"3u58r6","ntr_densrank":"83efoh","pricefront":"ckls6a","market":"1mky897","budget":"1347c8i","map":"1mit5i8","clicks":"9gn0re","arc":"10m54fq","clk_wedge":"gtg33l","clk_switch":"1ystf1l","clk_switch2":"4qfkgx","cutouts":"1w2433v","tensioner":"7ssnzd","clk_tenmat":"kptzkf","anchors":"1soxt08","clk_pomtune":"1ltcvj9","clk_front":"xd9ceo","clk_hotswap":"1de3kkx","clk_spdt":"1x1pvvq","latency":"r4w0v0","clk_debounce":"yeyxis","clk_wait":"19ka6b5","clk_methods":"ge4h2m","sidebuttons":"1l3s004","glide":"rsk0v8","gld_under":"1jtw07e","dots":"13tvchw","gld_camera":"1p4xic3","gld_corr":"6lf345","gld_blur":"p62txs","focus":"1gqtge5","gld_sag":"1gvzacy","gld_module":"1ias97k","sensor":"zjr0ib","gld_reports":"t93q3g","gld_position":"je8l9h","gld_soft":"j1hxar","gld_sheet":"1u1a0l2","shellcard":"14lqvun","materials":"o64pmg","shlSpecific":"1l9sz9h","thinwall":"z9ds44","shlScatter":"ww7f1n","shlPick":"ijjhnj","shlNoPick":"1e45x7u","shlHotspot":"1lch9ee","shlMargin":"18raj1f","shlWork":"1rx28ja","shlShell3d":"80q5fg","lattice":"mlqpqb","shlDeterminate":"1bqxnyt","shlThin":"1hy48m5","shlLattice3d":"1559brn","shbArches":"1loxf85","shbPress":"1c63v65","shbThrust":"z782nj","shbBend":"172nrzl","shbFibres":"1u3lbky","fillet":"11lgp2i","filletsize":"lnurv4","shbFlow":"12wibt8","shbGates":"1op14e5","shbWidth":"13wwoox","shbMill":"18tda1k","shbMillDirect":"vyx6rr","shbTol":"1fmjyie","shbSides":"1upg73i","shlPcbRib":"6ua7bv","shcCarry":"hdvg4d","shcArms":"1ewpj88","shlStructs":"1vm3dy7","tolerance":"kyzyzh","sealed":"1bu2o2j","shlGrams":"293y48","mass":"npv36y","grind":"me2bo4","shlsheet1":"1vkusbq","shlsheet2":"1seh9ov","pltPlate":"1mm0g1b","pltSim":"rr3n7r","pltOptions":"14ao8yo","surfacecard":"10tprvn","coating":"12xp4ak","srf_texture":"1fqv9in","srf_weight":"97v6ro","srf_uv":"eps9w3","grip":"vz36ju","srf_gripmap":"2ale5a","srf_tape":"ng95n0","srf_twotone":"cmq7uq","srf_marks":"ujk4ur","details":"1olxa0e","wheel":"lccs49","srf_encoder":"1evab6w","eleccard":"8m26qp","onechip":"1hifscr","elc_module":"cemxb2","antenna":"1d5pcpa","motion":"13xr6os","elc_rate":"cedf8o","framesync":"1kqz7lp","secondshot":"12pxuwy","power":"e2xlu6","elc_pmic":"4g8qd3","elc_charge":"1j807iu","elc_safe":"1v7r059","cells":"nds3h0","frontier":"q3m2gu","elc_oneside":"8jdhuh","elecsheet1":"10iguxg","elc_tear":"1xy8gna","elc_twist":"s7be4q","elc_lay":"14fua3c","elc_flex":"r1jxva","cable":"6z6965","software":"1whxkha","elc_sheet2":"17ccpqb","shapecard":"1w4i6dv","shp_newton":"b1qsv8","grooves":"1sut1j7","size":"1sqyq6r","emg":"18vt2ey","owncard":"8iee81","repair":"17659uq","ownscrew":"1dgt88h","own_insert":"15ax8cl","own_life":"1a377u5","ownbatt":"fcwm05","ownboard":"gndej8","box":"66qzjx","serial":"zurulc","ownsheet1":"11rm8m4","ownsheet2":"9pu545","close":"j4sd1e"};
+const rateVer = (s, r) => (r && r.ver != null ? r.ver : RATE_BASE[s.id]);
+function rateCur(s) { const r = s && RATE.all[rateKey(s.id)]; if (!r) return null; const v = rateVer(s, r); return v == null || v === slideVer(s) ? r : null; }
+function rateOld(s) { const r = s && RATE.all[rateKey(s.id)]; if (!r) return null; const v = rateVer(s, r); return v != null && v !== slideVer(s) ? r : null; }
 async function rateInit() {
   const cl = window.claude;
   if (!cl || typeof cl.use !== 'function') return;
@@ -97,7 +107,7 @@ function rateBuild(p) {
   p.querySelector('[data-act="next"]').onclick = e => {
     e.stopPropagation();
     const n = DECK.slides.length;
-    for (let k = 1; k <= n; k++) { const j = (APP.i + k) % n; const r = RATE.all[rateKey(DECK.slides[j].id)]; if (!r || !r.value) { go(j); return; } }
+    for (let k = 1; k <= n; k++) { const j = (APP.i + k) % n; const r = rateCur(DECK.slides[j]); if (!r || !r.value) { go(j); return; } }
   };
   p.dataset.built = '1';
 }
@@ -111,11 +121,11 @@ function rateFlush() {
 function rateSync() {
   if (!RATE.db) return;
   const s = DECK.slides[APP.i]; if (!s) return;
-  const r = RATE.all[rateKey(s.id)], done = DECK.slides.filter(x => { const v = RATE.all[rateKey(x.id)]; return v && v.value; }).length;
+  const r = rateCur(s), old = rateOld(s), done = DECK.slides.filter(x => { const v = rateCur(x); return v && v.value; }).length;
   $('rateBtn').textContent = r && r.value ? 'rated ' + r.value : 'rate';
   const p = $('rate'); if (p.hidden) return;
   if (!p.dataset.built) rateBuild(p);
-  p.querySelector('.slide').textContent = (APP.i + 1) + '. ' + (s.title || s.id);
+  p.querySelector('.slide').textContent = (APP.i + 1) + '. ' + (s.title || s.id) + (old && old.value ? '   (rated ' + old.value + ' before it changed)' : '');
   p.querySelectorAll('.vals button').forEach(b => { b.classList.toggle('on', !!(r && +b.dataset.v === r.value)); b.disabled = RATE.ro; });
   const ta = p.querySelector('textarea'); ta.disabled = RATE.ro;
   if (RATE.taSlide !== APP.i) { rateFlush(); ta.value = (r && r.note) || ''; RATE.taSlide = APP.i; RATE.dirty = false; }
@@ -125,10 +135,12 @@ function rateSync() {
 function rateSave(patch, si) {
   if (!RATE.db || RATE.ro) return;
   const i = si == null ? APP.i : si, s = DECK.slides[i]; if (!s) return;
-  const k = rateKey(s.id), old = RATE.all[k] || {};
-  const doc = { id: s.id, title: s.title || '', ch: s.ch || '', n: i + 1, of: DECK.slides.length, value: old.value || null, note: old.note || '' };
+  const k = rateKey(s.id), prev = RATE.all[k] || {}, ver = slideVer(s), pv = rateVer(s, prev.id ? prev : null), same = !prev.id || pv == null || pv === ver, old = same ? prev : {};
+  const history = (prev.history || []).slice();
+  if (!same && (prev.value || prev.note)) history.push({ ver: pv, value: prev.value || null, note: prev.note || '', at: prev.at || null, title: prev.title || '', n: prev.n || null });
+  const doc = { id: s.id, title: s.title || '', ch: s.ch || '', n: i + 1, of: DECK.slides.length, ver, value: old.value || null, note: old.note || '', history };
   Object.assign(doc, patch);
-  if (doc.value === (old.value || null) && doc.note === (old.note || '')) return;
+  if (same && doc.value === (old.value || null) && doc.note === (old.note || '')) return;
   doc.at = new Date().toISOString();
   RATE.all[k] = doc; RATE.note = ''; rateSync();
   /* one write at a time per document: a burst of clicks writes the latest state once the previous write lands */

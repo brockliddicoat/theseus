@@ -16,7 +16,7 @@ Object.assign(SRC, {
   elcNpmJeita: { t: 'nPM1300 product specification, battery temperature: no charging below 0 °C or above 60 °C; 50% current from 0 to 10 °C; a lower termination voltage from 45 to 60 °C (defaults, all configurable)', u: 'https://docs.nordicsemi.com/r/bundle/ps_npm1300/page/chapters/charger.html-battery-temp-monitoring' },
   elcNpmChg: { t: 'Zephyr nPM1300 charger binding: 32 to 800 mA in 2 mA steps; charging ends at 10% (default) or 20% of the set current; charging stops above a set die temperature and resumes below another', u: 'https://docs.zephyrproject.org/latest/build/dts/api/bindings/sensor/nordic,npm1300-charger.html' },
   elcGauge: { t: 'nRF Fuel Gauge library (nrfxlib): state of charge, time to empty, time to full and state of health from the nPM1300 measurements', u: 'https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrfxlib/doxygen/html/group__nrf__fuel__gauge.html' },
-  elcTpuV4: { t: 'TechPowerUp, Razer Viper V4 Pro review: Airoha AB1623MN; 306 mAh, 3.87 V battery; 0.169 A constant-current charge; about 40 h at 8 kHz; fuel gauge IC; 12-bit wireless counts; smoothing after lift-off (as recorded in the 2026-11-03 validation report)', u: 'https://www.techpowerup.com/review/razer-viper-v4-pro/' },
+  elcTpuV4: { t: 'TechPowerUp, Razer Viper V4 Pro review: Airoha AB1623MN; 306 mAh, 3.87 V battery; 0.169 A constant-current charge; about 40 h at 8 khz; fuel gauge IC; 12-bit wireless counts; smoothing after lift-off (as recorded in the 2026-11-03 validation report)', u: 'https://www.techpowerup.com/review/razer-viper-v4-pro/' },
   elcB2gSlx: { t: 'Back2Gaming, Finalmouse Starlight X review: 15 graphite-coated titanium screws, about 0.02 g each; no battery-hour rating', u: 'https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/' },
   elcBu802: { t: 'Battery University BU-802b: lithium-ion self-discharge, 1 to 2% a month plus about 3% a month for the protection circuit', u: 'https://batteryuniversity.com/article/bu-802b-what-does-elevated-self-discharge-do' },
   elcCoat: { t: 'Conformal coating (Wikipedia, citing IPC): acrylic, epoxy or urethane coats are typically 30 to 130 µm thick after curing', u: 'https://en.wikipedia.org/wiki/Conformal_coating' },
@@ -133,7 +133,7 @@ function elc_ba(t, t0, x, y, before, after, o = {}) {
 
 /* ---------- the plan's cell and the draw it runs at ----------
    The cell is the Intro's (its weight budget): Jauch LP402535JU, 370 mAh minimum, 1C charge (elcLp4025). The draw is the
-   Viper V4 Pro's: its 1.184 Wh cell over Razer's 180 h at 1 kHz, and over TechPowerUp's 40 h measured at 8 kHz. */
+   Viper V4 Pro's: its 1.184 Wh cell over Razer's 180 h at 1 khz, and over TechPowerUp's 40 h measured at 8 khz. */
 function elc_cell() {
   const f = ((RD.batteries || {}).jauch_lipo_family || {}).rows || [], r = f.find(x => x.part === 'LP402535JU');
   const c = r ? { mAh: rv(r.capacity) || 370, g: rv(r.mass) || 8, wh: rv(r.energy_Wh) || 1.369 } : { mAh: 370, g: 8, wh: 1.369 };
@@ -270,15 +270,15 @@ function elc_board2d(cx, cy, s, zc, o = {}) {
 S({
   id: 'eleccard', ch: 'elec', card: true, theme: 'night', title: 'Electronics', settle: 5, three: ['pcb'],
   draw: t => {
-    chapterCard(t, { name: 'Electronics', gloss: 'The radio, the power, the one board and its wires, and what each one buys in latency and battery.', list: [[102, 'A pre-certified radio module (intended)'], [68, 'The antenna end turned away from the wheel'], [77, 'Radio and 8 kHz USB in one chip'], ['sync', 'Each frame captured just before it is sent'], ['link', 'A spare copy of every report'], ['pmic', 'A PMIC: charger, rails and fuel gauge'], [92, 'One ' + THS.pcb + ' board, every part on top'], [69, 'Braided wires instead of ribbon cables'], [23, 'Software in a browser tab']] });
+    chapterCard(t, { name: 'Electronics', gloss: 'The radio, the power, the one board and its wires, and what each one buys in latency and battery.', list: [[102, 'A pre-certified radio module (intended)'], [68, 'The antenna end turned away from the wheel'], [77, 'Radio and 8 khz USB in one chip'], ['sync', 'Each frame captured just before it is sent'], ['link', 'A spare copy of every report'], ['pmic', 'A PMIC: charger, rails and fuel gauge'], [92, 'One ' + THS.pcb + ' board, every part on top'], [69, 'Braided wires instead of ribbon cables'], [23, 'Software in a browser tab']] });
     const P = elc_v3('pcb', t, 990, 250, 780, 660, { view: [-0.62, 0.7, 0.5], view2d: 'top', yaw: 0.26 * Math.sin(t * 0.33), zoom: 1.7, target: elc_W(0, 23, 4), power: ep(t, 2.2, 3.0), powerMode: 'run', powerT: t }, { alpha: ep(t, 0.8, 1.7) });
     if (P) elc_waves(t, 2.8, P(elc_W(0, ELC.antZ, 1.0)), 0, { R: 250, spread: Math.PI, n: 4 });
   }
 });
 
 
-/* ============================== single-chip 8 kHz (#77, #90) ============================== */
-/** one path to the PC: a name, the chips in a box, a cable carrying reports at their real rate (rate in kHz), the PC */
+/* ============================== single-chip 8 khz (#77, #90) ============================== */
+/** one path to the PC: a name, the chips in a box, a cable carrying reports at their real rate (rate in khz), the PC */
 function elc_lane(t, t0, x, y, w, o) {
   const k = ep(t, t0, t0 + 0.5), col = o.col, bx = x + 220, bw = o.bw || 200, ex = bx + bw + 14, px = x + w - 70;
   if (k <= 0.003) return;
@@ -299,25 +299,25 @@ function elc_lane(t, t0, x, y, w, o) {
   }
 }
 S({
-  id: 'onechip', ch: 'elec', theme: 'paper', title: 'Single-chip 8 kHz polling', settle: 10, ideas: [77, 90],
+  id: 'onechip', ch: 'elec', theme: 'paper', title: 'Single-chip 8 khz polling', settle: 10, ideas: [77, 90],
   src: ['nrf52', 'nrf54', 'nrf54usb', 'usbHs', 'exEloshapes', 'elcBrock'],
   draw: t => {
-    header(t, 'Single-chip 8 kHz polling');
-    captions(t, [[0.6, 'An nRF52840 has full-speed USB: over a cable it sends 1,000 reports a second at most. For 8 kHz, a mouse adds a second chip with high-speed USB.'], [5.2, 'The nRF54LM20A has high-speed USB built in. One chip runs the radio and 8 kHz over the cable, with no second chip to buy, place or power (#77, #90).']]);
+    header(t, 'Single-chip 8 khz polling');
+    captions(t, [[0.6, 'An nRF52840 has full-speed USB: over a cable it sends 1,000 reports a second at most. For 8 khz, a mouse adds a second chip with high-speed USB.'], [5.2, 'The nRF54LM20A has high-speed USB built in. One chip runs the radio and 8 khz over the cable, with no second chip to buy, place or power (#77, #90).']]);
     const D = elc_census(), N = D.n, tot = D.total || 1;
     /* the left column: the headline, the chips before → after, the word */
     const lx = LM, lw = 600;
     elc_hl(t, 3.4, lx, 450, '8×', 'the wired rate', { label: 'From the radio chip alone', sub: '8,000 reports a second over the mouse\'s own cable, where an nRF52840 alone stops at 1,000.', subW: lw });
-    elc_ba(t, 4.4, lx, 660, '2', '1', { label: 'Chips for 8 kHz', unit: 'chip', net: 'No second high-speed USB chip', maxW: lw });
+    elc_ba(t, 4.4, lx, 660, '2', '1', { label: 'Chips for 8 khz', unit: 'chip', net: 'No second high-speed USB chip', maxW: lw });
     glossBox(t, 5.4, lx, 760, lw, 'High-speed USB', 'Polled every 125 µs, eight times a millisecond. Full speed: once a millisecond at most.', { size: 24 });
     /* the right: three ways to a PC, the reports flowing at their real rates */
     const rx = 760, rw = RM - rx, ry = 280, rh = 360;
     demoWindow(rx, ry, rw, rh, tileA(t, 0.3, 0));
     cardHead(t, 0.5, rx, ry, rw, 'Reports over the cable, at their real rates (more is better)', ['datasheet']);
     const x0 = rx + 36, w0 = rw - 72;
-    elc_lane(t, 0.9, x0, ry + 128, w0, { name: 'One nRF52840', sub: (N.nRF52840 || 0) + ' of ' + tot + ' mice', col: C.comp, khz: 1, rate: '1 kHz', bw: 256, chips: [{ l: 'nRF52840', s: 'full-speed USB' }] });
-    elc_lane(t, 1.7, x0, ry + 216, w0, { name: 'Two chips', sub: 'Most 8 kHz mice', col: C.comp, khz: 8, rate: '8 kHz', bw: 384, chips: [{ l: 'nRF52840', s: 'radio' }, { l: 'USB chip', s: 'high speed', dx: 180 }] });
-    elc_lane(t, 2.5, x0, ry + 304, w0, { hero: true, sub: 'One chip', col: C.hero, khz: 8, rate: '8 kHz', bw: 256, chips: [{ l: 'nRF54LM20A', s: 'radio and USB', sc: C.heroText, hi: true }] });
+    elc_lane(t, 0.9, x0, ry + 128, w0, { name: 'One nRF52840', sub: (N.nRF52840 || 0) + ' of ' + tot + ' mice', col: C.comp, khz: 1, rate: '1 khz', bw: 256, chips: [{ l: 'nRF52840', s: 'full-speed USB' }] });
+    elc_lane(t, 1.7, x0, ry + 216, w0, { name: 'Two chips', sub: 'Most 8 khz mice', col: C.comp, khz: 8, rate: '8 khz', bw: 384, chips: [{ l: 'nRF52840', s: 'radio' }, { l: 'USB chip', s: 'high speed', dx: 180 }] });
+    elc_lane(t, 2.5, x0, ry + 304, w0, { hero: true, sub: 'One chip', col: C.hero, khz: 8, rate: '8 khz', bw: 256, chips: [{ l: 'nRF54LM20A', s: 'radio and USB', sc: C.heroText, hi: true }] });
     /* the two chips, side by side: Theseus's wins in bold, the one spec it gives up kept honest */
     const ty = 680, th = 280;
     demoWindow(rx, ty, rw, th, tileA(t, 0.3, 1));
@@ -459,10 +459,10 @@ S({
   src: ['kunai', 'xbabSensorLock', 'pcgFrameSync', 'razerFocus'],
   draw: t => {
     header(t, 'Frame sync: no jitter');
-    captions(t, [[0.6, 'The sensor is a camera taking pictures of the pad. On its own clock a finished picture waits to be read, so the motion in each report is a different age.'], [4.4, 'Sync the camera to the polls and every report carries motion just seen, the same age every time. My firmware gets each frame to USB in 42 µs, as SensorLock does; Razer\'s FrameSync takes 205.']]);
+    captions(t, [[0.6, 'The sensor is a camera taking pictures of the pad. On its own clock a finished picture waits to be read, so the motion in each report is a different age.'], [4.4, 'Sync the camera to the polls and every report carries motion just seen, the same age every time. The XA25 gets each frame to USB in 42 µs on an older sensor, with better software; Theseus matches it.']]);
     const wx = LM, wy = 280, ww = RM - LM, wh = 400, A = C.hero;
     demoWindow(wx, wy, ww, wh, tileA(t, 0.2, 0));
-    cardHead(t, 0.4, wx, wy, ww, 'Four 8 kHz reports in 500 µs: how old is the motion in each? (younger and steadier is better)', ['derived']);
+    cardHead(t, 0.4, wx, wy, ww, 'Four 8 khz reports in 500 µs: how old is the motion in each? (younger and steadier is better)', ['derived']);
     const x0 = wx + 300, x1 = wx + ww - 60, X = us => x0 + (x1 - x0) * us / 500, now = clamp((t - 1.2) / 4.0) * 500;
     const polls = [125, 250, 375, 500], lanes = [{ y: wy + 176, name: 'Own clock', frames: [10, 93.3, 176.7, 260, 343.3, 426.7], col: C.bad }, { y: wy + 306, name: 'Synced to the polls', frames: [105, 230, 355, 480], col: A, hero: true }];
     for (const p of polls) { const k = ep(t, 1.0, 1.4); line(X(p), wy + 100, X(p), wy + 348, { color: C.ink2, w: 1.5, dash: [5, 4], alpha: k }); text('Poll', X(p), wy + 376, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: k }); }
@@ -480,25 +480,25 @@ S({
       lanes.forEach(L => { for (const f of L.frames) { const d = Math.abs(ph - f); if (d < 16) circle(X(f), L.y - 30, 8 + (16 - d) * 0.8, { fill: rgba(L.col, 0.4 * (1 - d / 16)), alpha: pk }); } });
     }
     /* the strip under it, at a glance (F14.10, F16.1). Brock (F22.2): Theseus's target is "Match SensorLock, 42 µs", frame to USB
-       through its own firmware. The headline is before → after against Razer's FrameSync (205 → 42 µs) in Theseus's colour; the
+       through its own firmware. The headline is before → after against the Viper V4 Pro's FrameSync (202 → 42 µs, Brock, F26.10) in Theseus's colour; the
        jitter before → after beside it; and the chart: both rivals grey, Theseus blue, SensorLock level with it, said plainly */
     const ages = lanes.map(L => polls.map(p => Math.round(p - L.frames.filter(f => f + 15 <= p).pop()))), jit = ages.map(g => Math.max(...g) - Math.min(...g));
-    const FS = { razer: 205, lock: 42, ths: 42 };
-    elc_ba(t, 5.4, LM, 850, String(FS.razer), String(FS.ths), { size: 110, label: 'Frame to USB', unit: 'µs', who: ['Razer\'s FrameSync', 'Theseus'], net: '−' + (FS.razer - FS.ths) + ' µs, in my own firmware', maxW: 560 });
+    const FS = { razer: 202, lock: 42, ths: 42 };   /* Brock (F26.10): Viper V4 Pro 202 µs; XA25 with SensorLock 42 µs on a PAW3950 */
+    elc_ba(t, 5.4, LM, 850, String(FS.razer), String(FS.ths), { size: 110, label: 'Frame to USB', unit: 'µs', who: ['Viper V4 Pro, FrameSync', 'Theseus'], net: '−' + (FS.razer - FS.ths) + ' µs, in my own firmware', maxW: 560 });
     elc_ba(t, 6.0, 700, 850, String(jit[0]), String(jit[1]), { size: 64, label: 'Jitter', unit: 'µs', who: ['Own clock', 'Synced'], net: 'Every report the same age', maxW: 440 });
     const tx = 1200, tw0 = RM - tx, ty = 720, th = 240;
     demoWindow(tx, ty, tw0, th, tileA(t, 0.4, 1));
     /* SensorLock and FrameSync are measured by SensorLock's developer: a claim (DESIGN 6); Theseus's figure is my target */
     cardHead(t, 0.6, tx, ty, tw0, 'Frame to USB, lower is better', ['claim'], { dy: 44 });
     const bx = tx + 272, bw2 = tw0 - 272 - 130, BX = us => bx + bw2 * us / 210;
-    [['Razer\'s FrameSync', FS.razer, false], ['XBAB SensorLock', FS.lock, false], ['Theseus', FS.ths, true]].forEach(([l, v, hero], i) => {
+    [['Viper V4 Pro', FS.razer, false], ['XA25 (PAW3950)', FS.lock, false], ['Theseus', FS.ths, true]].forEach(([l, v, hero], i) => {
       const yy = ty + 92 + i * 40, k = ep(t, 1.6 + i * 0.3, 2.4 + i * 0.3, E.snap), ka = ep(t, 1.4 + i * 0.2, 1.8 + i * 0.2);
       text(l, tx + 32, yy + 8, { role: 'small', size: 23, weight: hero ? 800 : 600, color: hero ? C.heroText : C.ink, alpha: ka });
       rr(bx, yy - 10, Math.max(20, (BX(v) - bx) * k), 20, 10, hero ? C.hero : C.comp, null, 1, ka);
       text(v + ' µs', bx + (BX(v) - bx) * k + 14, yy + 9, { font: 'mono', size: 23, weight: hero ? 800 : 700, color: hero ? C.heroText : C.ink2, alpha: k });
     });
-    text('SensorLock does 42 µs today; Theseus matches it.', tx + 32, ty + th - 22, { role: 'small', size: 22, weight: 600, color: C.ink2, alpha: ep(t, 2.8, 3.2), maxW: tw0 - 64 });
-    source(t, 'Lanes: an illustration, 12,000 frames a second against 8,000 polls, 15 µs to process a frame; jitter = oldest − youngest. Frame to USB: SensorLock\'s developer, 8 kHz, 2026-10-07.', { t0: 2 });
+    text('XA25: 42 µs on a weaker sensor. Theseus matches it.', tx + 32, ty + th - 22, { role: 'small', size: 22, weight: 600, color: C.ink2, alpha: ep(t, 2.8, 3.2), maxW: tw0 - 64 });
+    source(t, 'Lanes: an illustration, 12,000 frames a second against 8,000 polls, 15 µs to process a frame; jitter = oldest − youngest. Frame to USB at 8 khz: Viper V4 Pro 202 µs and XA25 (PAW3950, SensorLock) 42 µs, per Brock; XBAB puts SensorLock 163 µs below FrameSync (2026-10-07).', { t0: 2 });
   }
 });
 
@@ -509,16 +509,16 @@ S({
   src: ['kunai'], sfxLoop: [{ t0: 9.5, per: 5, cues: [[0.24, 'tick'], [0.28, 'tick']] }],
   draw: t => {
     header(t, 'Second Shot: a spare for each report');
-    captions(t, [[0.6, '2.4 GHz is shared with headsets, phones and Wi-Fi, so some packets get lost. At 1 kHz, one lost report costs up to a full millisecond.'], [3.6, 'Send a spare copy one radio slot early, on another channel, and a lost report is replaced on time.']]);
+    captions(t, [[0.6, '2.4 GHz is shared with headsets, phones and Wi-Fi, so some packets get lost. At 1 khz, one lost report costs up to a full millisecond.'], [3.6, 'Send a spare copy one radio slot early, on another channel, and a lost report is replaced on time.']]);
     /* the left column: by how much, before → after, the word */
     const lx = LM, lw = 600;
-    elc_hl(t, 4.6, lx, 470, '99%', 'rescued', { size: 140, label: 'Lost reports, recovered at 4 kHz', sub: 'Measured by Kunai\'s developer with a wireless headset in use nearby. The worst room, beside a headset\'s base station: about 92%.', subW: lw });
+    elc_hl(t, 4.6, lx, 470, '99%', 'rescued', { size: 140, label: 'Lost reports, recovered at 4 khz', sub: 'Measured by Kunai\'s developer with a wireless headset in use nearby. The worst room, beside a headset\'s base station: about 92%.', subW: lw });
     elc_ba(t, 5.4, lx, 720, '0.67', '0.007', { size: 60, label: 'Reports lost, at the weakest signal tried', unit: '%', net: '15 of 220,017 stayed lost', maxW: lw });
     glossBox(t, 6.2, lx, 790, lw, 'Packet loss', 'A report the receiver never hears, because something else was using that channel.', { size: 24 });
-    /* the right: eight radio slots of one 1 kHz report, two channels; the report is lost, the spare lands on time */
+    /* the right: eight radio slots of one 1 khz report, two channels; the report is lost, the spare lands on time */
     const wx = 740, wy = 280, ww = RM - wx, wh = 680;
     demoWindow(wx, wy, ww, wh, tileA(t, 0.2, 0));
-    cardHead(t, 0.5, wx, wy, ww, 'One 1 kHz report is eight 125 µs radio slots', ['claim']);
+    cardHead(t, 0.5, wx, wy, ww, 'One 1 khz report is eight 125 µs radio slots', ['claim']);
     const sx0 = wx + 250, sw = (ww - 290) / 8, ly = [wy + 210, wy + 330];
     ['Channel A: the report', 'Channel B: the spare'].forEach((l, i) => text(l, wx + 32, ly[i] + 8, { role: 'label', size: 21, color: i ? C.heroText : C.ink, alpha: ep(t, 1.0 + i * 0.2, 1.4 + i * 0.2), maxW: 200, lh: 1.15 }));
     for (let i = 0; i < 8; i++) { const k = ep(t, 1.2 + i * 0.05, 1.5 + i * 0.05); for (const y of ly) rr(sx0 + i * sw + 3, y - 28, sw - 6, 56, 6, inkA(0.04), inkA(0.16), 1.2, k); text(String(i + 1), sx0 + i * sw + sw / 2, ly[1] + 66, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: k }); }
@@ -533,16 +533,16 @@ S({
     rr(sx0 + 7 * sw + 8, ly[0] - 20, sw - 16, 40, 5, C.comp, null, 1, kRep * (1 - 0.6 * kLost)); text('Report', sx0 + 7.5 * sw, ly[0] + 8, { role: 'label', size: 20, color: '#111', align: 'center', alpha: kRep });
     if (kLost > 0) { const cx = sx0 + 7.5 * sw, cy = ly[0]; line(cx - 24, cy - 24, cx + 24, cy + 24, { color: C.bad, w: 4, alpha: kLost }); line(cx + 24, cy - 24, cx - 24, cy + 24, { color: C.bad, w: 4, alpha: kLost }); text('Lost', cx, cy - 40, { role: 'label', size: 21, color: C.bad, align: 'center', alpha: kLost }); }
     if (kSave > 0) { arrow(sx0 + 7 * sw - 4, ly[1], sx0 + 8 * sw + 10, ly[1], { color: C.heroText, w: 3, hs: 10, alpha: kSave }); text('The PC gets the spare, on time', sx0 + 8 * sw, ly[1] + 104, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: kSave }); }
-    /* what it costs, before → after: a lost report at 1 kHz */
+    /* what it costs, before → after: a lost report at 1 khz */
     const by = wy + 500;
     rule(wx + 32, by - 34, wx + ww - 32, ep(t, 4.8, 5.2));
-    text('A lost report at 1 kHz', wx + 32, by + 8, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 5.0, 5.4) });
+    text('A lost report at 1 khz', wx + 32, by + 8, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 5.0, 5.4) });
     const kb = ep(t, 5.2, 5.7);
     text('up to 1 ms late', wx + 330, by + 10, { role: 'small', size: 28, weight: 700, color: C.faint, alpha: kb });
     line(wx + 326, by - 1, wx + 334 + tw('up to 1 ms late', { role: 'small', size: 28, weight: 700 }), by - 1, { color: C.mute, w: 2.5, alpha: kb });
     text('→', wx + 580, by + 8, { font: 'disp', size: 30, weight: 700, color: C.faint, alpha: kb });
     text('on time, about 200 µs older', wx + 630, by + 10, { role: 'small', size: 28, weight: 800, color: C.heroText, alpha: ep(t, 5.6, 6.1) });
-    text('At 8 kHz every report carries the full running count, so a lost packet\'s motion still arrives 125 µs later, inside the next report.', wx + 32, by + 80, { role: 'small', size: 24, color: C.ink2, maxW: ww - 64, lh: 1.32, t, t0: 6.4, cps: 120 });
+    text('At 8 khz every report carries the full running count, so a lost packet\'s motion still arrives 125 µs later, inside the next report.', wx + 32, by + 80, { role: 'small', size: 24, color: C.ink2, maxW: ww - 64, lh: 1.32, t, t0: 6.4, cps: 120 });
     source(t, 'Kunai tester guide, firmware 96.79, pre-production (supplied by Brock). No maker publishes packet loss yet; Theseus will.', { t0: 2 });
   }
 });
@@ -555,16 +555,16 @@ S({
   draw: t => {
     const B = elc_cell();
     header(t, 'Battery life against polling rate');
-    captions(t, [[0.6, 'Every report costs current. Razer\'s Viper V3 Pro runs 95 hours at 1 kHz and 17 at 8 kHz; the V4 Pro, with Razer\'s FrameSync and new chips, claims 180 h, and runs about 40 at 8 kHz.'], [5.4, 'Theseus plans ' + THS.hours + ' at 1 kHz: a ' + B.mAh + ' mAh battery at the V4 Pro\'s draw, carried by the weight my shell design frees.']]);
+    captions(t, [[0.6, 'Every report costs current. Razer\'s Viper V3 Pro runs 95 hours at 1 khz and 17 at 8 khz; the V4 Pro, with Razer\'s FrameSync and new chips, claims 180 h, and runs about 40 at 8 khz.'], [5.4, 'Theseus plans ' + THS.hours + ' at 1 khz: a ' + B.mAh + ' mAh battery at the V4 Pro\'s draw, carried by the weight my shell design frees.']]);
     /* the bars: three mice at two rates, Theseus tallest at both */
     const x = LM, y = 280, w = 1000, h = 680;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0));
     cardHead(t, 0.4, x, y, w, 'Battery life in hours (higher is better)', ['claim', { ev: 'measured', by: 'TechPowerUp' }, 'derived']);
     const base = y + 560, sc = 2.05, bw = 112;
-    /* one figure per mouse, deck-wide: the V4 Pro at 8 kHz is TechPowerUp's 40 h, the draw Theseus's own 8 kHz hours come from */
+    /* one figure per mouse, deck-wide: the V4 Pro at 8 khz is TechPowerUp's 40 h, the draw Theseus's own 8 khz hours come from */
     const mice = [['Viper V3 Pro', [95, 17], C.comp, 'No sync'], ['Viper V4 Pro', [180, 40], C.ref, 'Razer\'s FrameSync'], ['Theseus', [THESEUS.hours, Math.round(B.h8)], C.hero, 'The plan']];
     line(x + 40, base, x + w - 40, base, { color: C.faint, w: 1.5, alpha: ep(t, 0.9, 1.3) });
-    ['1 kHz', '8 kHz'].forEach((g, gi) => {
+    ['1 khz', '8 khz'].forEach((g, gi) => {
       const gx = x + 110 + gi * 450;
       text(g, gx + 1.5 * bw + 28, base + 80, { role: 'label', size: 22, color: C.ink, align: 'center', alpha: ep(t, 1.0, 1.4) });
       mice.forEach(([nm, hv, col, q], j) => {
@@ -575,14 +575,14 @@ S({
       });
     });
     const kt = ep(t, 3.4, 3.8);
-    text('8 kHz takes about four-fifths of every mouse\'s hours', x + 560, y + 250, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: 400, lh: 1.3, alpha: kt });
+    text('8 khz takes about four-fifths of every mouse\'s hours', x + 560, y + 250, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: 400, lh: 1.3, alpha: kt });
     text('No hours published: Starlight X, ULX, Sora V2, Beast X, X2 CrazyLight', x + 560, y + 340, { role: 'small', size: 22, weight: 600, color: C.bad, alpha: ep(t, 4.0, 4.4), maxW: 400, lh: 1.3 });
     /* the right column: by how much, before → after, why */
     const rx = 1120, rw = RM - rx;
-    elc_hl(t, 4.2, rx, 430, String(THESEUS.hours), 'hours', { label: 'At 1 kHz, the plan', sub: B.mAh + ' mAh, ' + fmtN(B.wh, 2) + ' Wh at the Viper V4 Pro\'s ' + fmtN(B.w1 * 1000, 1) + ' mW: ' + fmtN(B.h1, 0) + ' h. At 8 kHz, ' + fmtN(B.h8, 0) + ' h.', subW: rw });
+    elc_hl(t, 4.2, rx, 430, String(THESEUS.hours), 'hours', { label: 'At 1 khz, the plan', sub: B.mAh + ' mAh, ' + fmtN(B.wh, 2) + ' Wh at the Viper V4 Pro\'s ' + fmtN(B.w1 * 1000, 1) + ' mW: ' + fmtN(B.h1, 0) + ' h. At 8 khz, ' + fmtN(B.h8, 0) + ' h.', subW: rw });
     elc_ba(t, 5.0, rx, 660, '180', String(THESEUS.hours), { label: 'The longest listed, then Theseus', unit: 'h', net: '+' + fmtN(100 * (THESEUS.hours - 180) / 180, 0) + ' % over the Viper V4 Pro', maxW: rw });
     glossBox(t, 5.8, rx, 750, rw, 'Frame sync', 'The sensor\'s LED flashes once per frame. Synced to the polls, it takes a frame only when a report needs one, so it flashes less often.', { size: 24 });
-    source(t, 'Hours: Razer support and Notebookcheck, claims; the V4 Pro at 8 kHz, TechPowerUp, measured. Theseus: the example battery at the V4 Pro\'s draw, derived.', { t0: 2 });
+    source(t, 'Hours: Razer support and Notebookcheck, claims; the V4 Pro at 8 khz, TechPowerUp, measured. Theseus: the example battery at the V4 Pro\'s draw, derived.', { t0: 2 });
   }
 });
 

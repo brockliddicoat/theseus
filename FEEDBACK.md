@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-05 03:50 (Chicago).
+Last updated: 2026-11-05 04:00 (Chicago).
 
 ## Open with Brock
 
@@ -626,25 +626,25 @@ Answers to the Shell A questions:
 ## F26. Notes at 01:43 (2026-11-05)
 - **F26.1** "the click tensioning mechanism you're showing in the diagrams isn't anywhere near as accurate as it should be,
   i almost feel like it's potentially wrong as well, it needs a lot more effort". Asked what to build from: "Research
-  real mice". **IN PROGRESS (clk4).**
+  real mice". **IN PROGRESS (K1).**
 - **F26.2** "the second of the dual plungers need to be shown as exactly the to be exactly same size as the one for the
   switch and the one for the side button, this helps show our uniformity claim. right now the plunger without a switch
-  sticks done further and looks different." **IN PROGRESS (clk4).**
+  sticks done further and looks different." **IN PROGRESS (K1).**
 - **F26.3 NOTED** "as if we ever add magnetic clicks, the second plunger is an excellent place to do so for this reason"
   (context for F26.2; magnetic clicks stay off the slides, F9.9).
 - **F26.4** "the battery connector needs to be turned 90 degrees so it can be pulled out properly, it's hard to access it
-  when it faces towards the left instead of the back". **IN PROGRESS (pcb3).**
+  when it faces towards the left instead of the back". **IN PROGRESS (K2).**
 - **F26.5** "the pcb needs more rounding on all of its edges to look more premium (this my mean extending the front
   slightly to give it a buffer so the microswitches don't stick out over where there's no pcb), and the tiny notches on
   the left and right sides should be shaved off so the pcb can better be used as a support better, the back width of the
-  pcb should be back width as the front". **IN PROGRESS (pcb3).**
-- **F26.6** "give the triangles on the back of PCB design the proper fliletting". **IN PROGRESS (pcb3).**
+  pcb should be back width as the front". **IN PROGRESS (K2).**
+- **F26.6** "give the triangles on the back of PCB design the proper fliletting". **IN PROGRESS (K2).**
 - **F26.7** "the 2 back holes need slightly more padding on the pcb, but the holes can't change location at all".
-  **IN PROGRESS (pcb3).**
-- **F26.8** "the power switch should be moved to the middle of the notch so it's easier to access". **IN PROGRESS (pcb3).**
+  **IN PROGRESS (K2).**
+- **F26.8** "the power switch should be moved to the middle of the notch so it's easier to access". **IN PROGRESS (K2).**
 - **F26.9** "remove the qr code off the sensor and engrave the sensor with PAW3970 and then whatever letters are on the
   actual sensor to make it look like a real sku (we don't know what the real sku will be past the PAW3970 yet, so
-  derive)". **IN PROGRESS (pcb3).**
+  derive)". **IN PROGRESS (K2).**
 - **F26.10** "the XA25 achieved 42us latency with sensor lock on a worse 3950 sensor with better software" / "the viper v4
   pro does 202us". Asked for the 202 µs source: "you cited it before, maybe it's wrong if you don't remember". (The deck
   had 205 µs = SensorLock's 42 + XBAB's "163 µs lower"; nothing public found for either number.) **DONE:** 202 → 42 µs,
@@ -657,3 +657,156 @@ Answers to the Shell A questions:
   just given you". Answered in chat.
 - **F26.13** "also updating a slide should archive its old score". **DONE:** each rating records the slide's version;
   when the slide changes, its score and note move to the rating's history and the slide shows as unrated.
+
+
+## F27. Brock's slide ratings and notes (rated on v18 and v19, 2026-11-05 00:50 to 03:45)
+He rated 114 slides from 1 to 10 (mean 5.0), 100 with notes: "i've also rated as many slides as i have energy for now, i
+didn't touch the software slides very much yet, mosr of them are confusing". And: "take all my new feedback on the rating
+system into account, assign builders to per slide issues and lessons you can derive globally from my feedback". Asked
+about builders: "that's too many builders, i don't want them to chew through my limits before accomplishing anything, it
+shouldn't be per chapter, it should be per slide and global derived lessons, per chapter would have very uneven work".
+Also answered: units "khz" (all lowercase; **DONE** deck-wide); the scroll encoder: magnetic (Hall effect), "Yes, switch
+everywhere". The ratings are kept in the artifact's db (collection `ratings`); a slide changed since he rated it shows its
+old score as archived (F26.13).
+- **Out of the film (DONE, 2026-11-05 03:5x):** `map`, `gld_position`, `shlGrams`, `sealed`, `serial`, `srf_marks`,
+  `details`, `shbGates`, `pltPlate`, `pltSim`, `pltOptions`, `shlLattice3d` (131 slides now).
+- **His notes, slide by slide (verbatim):**
+  - `cover` (intro, slide 1) **8/10**: "PIAKNOW’S should be all capital, also instead of 8kh it should say something a lot there being zero compromises, 8khz is pretty much standard now"
+  - `thesis` (intro, slide 2) **3/10**: "all of these numbers feel very random, they’d message is good but you can add it to the slide about other companies misadvertising weights"
+  - `targets` (intro, slide 3) **8/10**: "marker it as dual 8khz, press to pc should be shorter, we’ve done numerous things to optimize mechanical latency"
+  - `targets2` (intro, slide 4) **7/10**: "compare to starlight x weight for the headline value. set down and idle sleep settings are not important enough to talk about this early"
+  - `flagships` (intro, slide 5) **6/10**: "need to derive all empty data, also it bothers me when one number has more decimal places than others, superstrike x3 is more id a flagship than gpx2"
+  - `ntr_stats` (intro, slide 6) **4/10**: "density is so important it could be on the cover instead of the 100+ ideas, capitalize the P in Piaknow, it’s a name, all of this information is important but would fit better in other slides. also 8khz wired and wireless is better market as Dual 8khz wired and wireless. don’t capitalize the H in khz"
+  - `zerograms` (intro, slide 7) **5/10**: "needs more reasoning, argument feels weak here, it should be more about theoretical ease of control and target changing speed, overall speed feels outlandish"
+  - `weightgap` (intro, slide 8) **10/10**: "no comment"
+  - `ntr_density` (intro, slide 9) **9/10**: "only use the outline or the shape/silhouete instead of something so detailed, good understandable demonstration, but you need to sell why low density is important a little better, the x2f having the wrong idea should come first, show the problem first, then sell the solution so the solution doesn’t feel useless"
+  - `ntr_sizewt` (intro, slide 10) **9/10**: "find an outline of the x2f to add to the box, and same thing as last slide, the theseus should only be the shape outline"
+  - `ntr_densrank` (intro, slide 11) **9/10**: "it bother me the the x2f is lighter and lacks decimal points, this probably isn’t the most exact weight available for the x2f crazylight (reports online say it’s at least 29.5g), i also don’t like how the theseus has an extra decimal point. you also need to use eloshapes to take g wolves mice into account for there weights and density, yes this will make the theseus look worse, but its more honest"
+  - `pricefront` (intro, slide 12) **7/10**: "the bottom pareto lineinstantly going straight bothers me a lot i should continue on the trajectory it was at for a little but bit, there should never be a kink in a pareto line, i think the viper mini signature edition and zaunkoenig mice need to be on this table as well, and the x3 superstrike"
+  - `market` (intro, slide 13) **8/10**: "we need to man’s a bigger argument here how most mice compromise battery life for weight, research harder to find missing weights or derive"
+  - `budget` (intro, slide 14) **6/10**: "it’s a lot of work to keep updating this one"
+  - `map` (intro, slide 15) **2/10**: "poor execution and not super needed"
+  - `clicks` (click, slide 16) **7/10**: "switch plunger on the gt01s is still turned vertical, bottom part looks fine but the part that actually sticks out above the housing looks like it needs to be turned 90 degrees"
+  - `arc` (click, slide 17) **7/10**: "tensioner doesn’t look accurate, i dont like the use of the metrics “pts” or “points” anywhere. this is a really important slide the concept is good but it needs to be demonstrated and sold better, i think direct drive means the peak theoretical reaction time should be 20% faster because 20% more of the force goes where you actually intend it."
+  - `clk_wedge` (click, slide 18) **4/10**: "important concept, very poor execution, could be closer to the less parts is better demonstration, show after youve shown the problem with having more parts"
+  - `clk_switch` (click, slide 19) **5/10**: "bottom housing doesn’t look very accurate at all, i’ll attach a new reference when you ask, show the effect on battery life, razer says their optical encoder and switched account for almost half the battery life in the viper v4 pro (find quote), also i’d like to switch to using a halling effect/ magnetic encoder so we can say we should have double the battery luce efficiency as razer"
+  - `clk_switch2` (click, slide 20) **2/10**: "largely irrelevant, we don’t even know if we’re going with the gt01 switch or just their style for the bottom housing, if you want to keep this you’d have to group it in with better binning practices, a lot of companies lie about their binning practices for switches, whereas we could commit to proveable bins (potentially using galling effect tech)"
+  - `cutouts` (click, slide 21) **3/10**: "everything here is among the most important concepts, but probably has the worst graphic design in the entire deck, it’s super unintuitive to understand because you can hardly tell which part of the mouse you’re looking at it’s so abstract, also the benefit to the player isn’t really sold"
+  - `tensioner` (click, slide 22) **8/10**: "reference the starlight x’s stufd clicks from using such a stiff composite materiak with no bridge, market top as “as seen in starlight x” or something like that, and bottom as proposed solution. also the rounding where the bridges meets the trigger looks bad, ie needs to connect without filets"
+  - `clk_tenmat` (click, slide 23) **4/10**: "hard to understand, and stiffer is better doesn’t seem right"
+  - `anchors` (click, slide 24) **7/10**: "locking the motion to one plane/ direction needs to be better explained, and the visualization here is too abstract and difficult to tell what you’re looking at, i also dislike how the dual plungers and pads aren’t uniform, and you need to sell the benefit here a little better, talk about how the bad version feels cheap and causes more wear over time fork being losing, good information, execution just need medium improvement"
+  - `clk_pomtune` (click, slide 25) **6/10**: "more cornered should be rounded here in the visualization, this one also just feels lazy compare to another mouse’s tolerances directly"
+  - `clk_front` (click, slide 26) **8/10**: "this slide has second worst execution in the deck. it fails to intuitively communicate what is going on. if they were not my ideas i’d be very lost.  the left needs to compare to what happens when you don’t have a straight front, like when there is heavy front comfort grooves, and how that can cause wobble side to side, because the front will never reach the bottom in the same spot at the same, and where it reaches the bottom first will depend on where you press it, create wobble which makes the parts feel cheap and wear out faster.  i don’t think cross sections are the best way to communicate the comfort grooves that get shallower near the front. also it needs to be explained that these help lock your fingers in across another plane of motion and increase surface area contact since the front has more surface area too.  for the right visualization, it genuinely took me so long to realize that you weren’t demonstrating an alternative to the the left demonstration, you need to show how some mice do that concept wrong to create larger gaps than there should be and how we do it right. this is also an amazing opportunity to demonstrate why the cutouts are ceiling or wall facing.  these are all very important concepts and probably should be spread out over multiple slides, but still dense in information, not too many slides."
+  - `clk_hotswap` (click, slide 27) **4/10**: "demonstration is plane and it’s hard to see the claw clips, there also is no argument as to why this is important"
+  - `clk_spdt` (click, slide 28) **5/10**: "difficult to understand"
+  - `latency` (click, slide 29) **6/10**: "difficult to understand, i like that it sells something though, its hard to tell what is changing"
+  - `clk_debounce` (click, slide 30) **3/10**: "weak slide, also minecraft kids want to be able to adjust their debounce to count more double clicks, so i’m not sure how to feel about how this is being sold, low debounce is good and important though to most people, there is just a sub group of people who really dislike it"
+  - `clk_wait` (click, slide 31) **3/10**: "hard to understand, probably can be combined somewhere else"
+  - `clk_methods` (click, slide 32) **3/10**: "probably can be combined somewhere else or removed"
+  - `sidebuttons` (click, slide 33) **5/10**: "left visualization fells lazy, right visualization doesn’t match the other dial rail plungers with prfe and it’s way overbuilt, important information though, it gets the point across okay, it just feels lazy"
+  - `glide` (glide, slide 34) **7/10**
+  - `gld_under` (glide, slide 35) **4/10**: "corner dots ledges should be the sable length as the sensor distance between the sensor skate ledge (possible to fit up to 3 skates), and they shouldn’t have a gap between themselves and the shell, we need filet where the skate pills hit the shell, the current execution looks vegetation lazy and not uniform, the right visualization is not what i wanted at all"
+  - `dots` (glide, slide 36) **6/10**: "show how this is targeted and more weight efficient compared to how big of skates it takes to reduce the sink that aren’t placed in the most optimal possible spots (viper v4 style)"
+  - `gld_camera` (glide, slide 37) **4/10**: "execution still feels lazy here for the visualization, the pad looks so realistic it’s uncanny, it’s weird irs not drawn like everything else, and this slide could probably be combined with something else, like the next slide"
+  - `gld_corr` (glide, slide 38) **5/10**: "cool slide but it should probability be combined with the last slide"
+  - `gld_blur` (glide, slide 39) **2/10**: "probably could be combined with the last 2 slides"
+  - `gld_sag` (glide, slide 41) **5/10**: "visualization feels lazy and needs more detail, this could also be group with a comparison to bigger skates and weight efficiency"
+  - `gld_module` (glide, slide 42) **8/10**: "i like this slide, it feels like a good slide, just your normal above average slide right here"
+  - `sensor` (glide, slide 43) **6/10**: "says it’s the “suspected” sensor inside the viper v4 pro and that this is the plan, AFTER exclusivity expires"
+  - `gld_reports` (glide, slide 44) **3/10**: "i don’t understand what is being demonstrated this slide, it’s a graphic but it’s not a demonstration. i would have to understand it to know if the information is good or not"
+  - `gld_position` (glide, slide 45) **1/10**: "delete"
+  - `gld_soft` (glide, slide 46) **7/10**: "place near web software, better sell the importance of liftoff distance being 0.1mm configurable"
+  - `gld_sheet` (glide, slide 47) **4/10**: "visualizations feel lazy"
+  - `shellcard` (shell, slide 48) **7/10**
+  - `materials` (shell, slide 49) **6/10**: "explain that this is just on a flat plane, scale the force to what a mouse would experience from a hand and note that, do that more throughout the presentation. also add the projected weights of these 2 beams."
+  - `shlSpecific` (shell, slide 50) **4/10**: "doesn’t shot how higher specific strength is better, just feels like a graphic which is quite convoluted. i like the graphic but the explanation for it needs to be so much better."
+  - `thinwall` (shell, slide 51) **3/10**: "confusing and lazy graphic, hard to understand at a glance and with longer analysis, super important concept though."
+  - `shlScatter` (shell, slide 52) **7/10**: "don’t use points, a little more intuitive, but still quite lazy."
+  - `shlPick` (shell, slide 53) **7/10**: "gpx 2 has worse build quality than the ulx even though it was heavier, this demonstrates the fallacy, i dont like that it says the gpx 2 has good build quality, also i think the line might be unintuitive at a glance, i think the axes need to be formatted and labeled differently, also you expect the right to mean weaker and lighter at a glance be because it has the least area under the curve, not the other way around, maybe y should measure strength not flex, i feel as if that would be more intuitive to understand."
+  - `shlNoPick` (shell, slide 54) **3/10**: "the what if uoh didn’t have to pick shouldn’t be the only thing on the screen for a start animation, it should just be the header, i’ve pointed this out before and im concerned you didn’t change it, it makes me worry you’re missing my other feedback. i have all the same comparisons here as the last slide, this graph feels even more intuitive at a glance, i feel like our method should have a separate line. this is a really important concept, but i genuinely have no idea what it’s show graphically."
+  - `shlHotspot` (shell, slide 55) **8/10**: "show the weight of the 2 parts to tie into how a milled out part can be stronger a solid part, point this out"
+  - `shlMargin` (shell, slide 56) **2/10**: "really hard to understand, probably important"
+  - `shlWork` (shell, slide 57) **8/10**: "tie this into how we designed the stricter more, this page could be sized to have a more information, this example is part of the reasoning for a lot of design choices"
+  - `shlShell3d` (shell, slide 58) **2/10**: "hard to understand, and cut the strength graphs that last multiple slides, they were a bad idea"
+  - `lattice` (shell, slide 59) **7/10**: "use human force that would be exerted on a mouse and point that out make hexagons bend a lot more"
+  - `shlDeterminate` (shell, slide 60) **5/10**: "could be combined with another slide"
+  - `shlThin` (shell, slide 61) **7/10**: "needs a better explanation and more information to be more inituitive, i really like the fact that triangles win more as the mouse gets lighter, this really just isn’t as compelling as it should be sits hard ti understand. max load to bend maybe?"
+  - `shlLattice3d` (shell, slide 62) **1/10**: "wins aren’t big enough, these slides take a ton of computation, and they show triangles firve dispersion being almost no different in the graph, triangles should have less red and more spread out force"
+  - `shbArches` (shell, slide 63) **7/10**: "arches shojdkne be on the photon rim and for some reason sole of the lines look wobbly, cool animation other than the poor execution"
+  - `shbPress` (shell, slide 64) **3/10**: "hard to understand, need real world examples and it’s just unintuitive for a social media brain"
+  - `shbThrust` (shell, slide 65) **3/10**: "hard to understand, need real world examples and it’s just unintuitive for a social media brain"
+  - `shbBend` (shell, slide 66) **3/10**: "hard to understand, need real world examples and it’s just unintuitive for a social media brain"
+  - `shbFibres` (shell, slide 67) **3/10**: "hard to understand, need real world examples and it’s just unintuitive for a social media brain"
+  - `fillet` (shell, slide 68) **4/10**: "she’ll study isn’t needed to be shoes here, rest can be combined with other slides"
+  - `filletsize` (shell, slide 69) **10/10**
+  - `shbGates` (shell, slide 71) **1/10**: "not sure if needed"
+  - `shbWidth` (shell, slide 72) **3/10**: "hard to understand, feels contradictory to things we’ve says before at a glance"
+  - `shbMill` (shell, slide 73) **2/10**: "doesn’t need its own slide"
+  - `shbMillDirect` (shell, slide 74) **2/10**: "doesnt need its own slide"
+  - `shbTol` (shell, slide 75) **3/10**: "unintuitive, better visualization needed, mediocre idea"
+  - `shbSides` (shell, slide 76) **4/10**: "show equal pressure on both sides, just for show. the asymmetry looks bad, this should be in the shape category"
+  - `shlPcbRib` (shell, slide 77) **6/10**: "unintuitive, explain how fr4 is like carbon fiber because it’s also a woven composite, using the pcb is an alternative to having carbon fiber rods in your mouse that doesn’t require extra parts with extra tolerancing, you’re just using what you already have"
+  - `shcCarry` (shell, slide 78) **5/10**: "meg slide"
+  - `shcArms` (shell, slide 79) **6/10**: "these aren’t what the arms or pcb would look like, important idea tho"
+  - `shlStructs` (shell, slide 80) **3/10**: "viewer will have no idea what that spec means in big blue poor setup"
+  - `tolerance` (shell, slide 81) **7/10**: "needs to be explained with some sort of law for more validity, don’t show the theseus teardown, improve the diagram, the little drops should be simplified mouse parts, explain how one incorrectly tolerances mouse part ruins a whole mouse so this is more important than it looks, you’re on the right track here you just need to improve your execution."
+  - `sealed` (shell, slide 82) **1/10**: "remove, you’re still drawing the encoder poorly and i want to use a magnetic encoder that doesn’t get affected by dust and have have a transparent top housing to see when it’s broken like switches"
+  - `shlGrams` (shell, slide 83) **1/10**: "not needed"
+  - `mass` (shell, slide 84) **5/10**: "in review, research why some people are pushing for higher battery placement"
+  - `grind` (shell, slide 85) **7/10**: "factory poron pads, many people already mod there g wolves mice with these for where it hits the pcb to reduce creaking"
+  - `shlsheet1` (shell, slide 86) **4/10**: "most important thing here is the right cutouts thing, and it should be back by the other cutouts slides and it meds a lot more detail, especially how the further the seams are from the center the easier they are to get your fingers caught in them. we don’t have to talk about the pro model yet. and i’m unsure about the the sticker"
+  - `shlsheet2` (shell, slide 87) **5/10**
+  - `pltPlate` (shell, slide 88) **3/10**: "not what i wanted at all"
+  - `pltSim` (shell, slide 89) **3/10**: "none are what i wanted we will worry about the bottom cover later"
+  - `pltOptions` (shell, slide 90) **2/10**: "none are good options and we don’t need to worry abt this into later into development"
+  - `surfacecard` (surface, slide 91) **4/10**: "surfaces looks bad in 2d and 3d visualization"
+  - `coating` (surface, slide 92) **5/10**: "lazy visualizations, show flames and more realistic pots"
+  - `srf_texture` (surface, slide 93) **6/10**: "needs to show previous height before sanding and coat, i like the comparisons to soft touch"
+  - `srf_weight` (surface, slide 94) **4/10**: "can be combined with previous slide, cerakote film numbers before sand blasting look way too heavy, 0.49g is a lot, especially with how much thinner cerakote is to soft touch"
+  - `srf_uv` (surface, slide 95) **7/10**
+  - `grip` (surface, slide 96) **8/10**: "really good visualization but needs to be more intuitive"
+  - `srf_gripmap` (surface, slide 97) **5/10**: "grip designs need massive optimizations to look cool, and blend between there different textures better"
+  - `srf_tape` (surface, slide 98) **8/10**: "the best thickness is no thickness, people have been chasing really thin grip tape for a while now, this is a better solution"
+  - `srf_twotone` (surface, slide 99) **6/10**: "not a universal dah of the design, but i love how realistic it is"
+  - `srf_marks` (surface, slide 100) **1/10**
+  - `details` (surface, slide 101) **3/10**
+  - `wheel` (surface, slide 102) **5/10**: "poor comparison figure, we should be comparing ti average plastic wheels with heavy rubber, a test group"
+  - `srf_encoder` (surface, slide 103) **2/10**
+  - `eleccard` (elec, slide 104) **7/10**
+  - `cells` (elec, slide 116) **4/10**: "lithium ion numbers are way off, look at smaller batteries, you’re probably looking at too big of ones, lithium ion batteries are a usually a gram or two heavier than their lithium polymer counterparts if the same capacity for mice"
+  - `elc_oneside` (elec, slide 118) **7/10**: "good but i wish it was even better visualized"
+  - `elecsheet1` (elec, slide 119) **7/10**: "show joe this protects against water for very little weight, something few might do"
+  - `elc_tear` (elec, slide 120) **8/10**
+  - `elc_flex` (elec, slide 123) **7/10**
+  - `cable` (elec, slide 124) **3/10**: "extremely lazy visualizations, paracord needs better assets"
+  - `software` (elec, slide 125) **6/10**
+  - `elc_sheet2` (elec, slide 126) **2/10**: "remove this slide, add the no rgb light to the slide about having no opticak components, and put it next to the web software"
+  - `repair` (own, slide 133) **8/10**
+  - `ownscrew` (own, slide 134) **7/10**
+  - `serial` (own, slide 140) **1/10**: "not needed for now"
+  - `ownsheet1` (own, slide 141) **2/10**: "feels redundant, most of this should be moved to other slides"
+- **Lessons drawn from all of them (STANDING for every slide):**
+  - **G1. The problem first, then Theseus's fix, then what the player feels.** ("show the problem first, then sell the
+    solution so the solution doesn't feel useless"; "the benefit to the player isn't really sold").
+  - **G2. Real-world examples and human-scale forces, said on the slide** ("need real world examples and it's just
+    unintuitive for a social media brain"; "scale the force to what a mouse would experience from a hand and note that,
+    do that more throughout the presentation").
+  - **G3. Accurate, finished drawings in one style:** parts drawn as they really are (research teardowns and datasheets),
+    nothing lazy, abstract or photo-real ("lazy" recurs in 15 notes; "the pad looks so realistic it's uncanny").
+  - **G4. Fewer, denser slides:** merge thin slides, cut what isn't needed ("probably can be combined", "doesn't need its
+    own slide", 14 notes).
+  - **G5. Honest, complete numbers:** derive missing data instead of blanks; one decimal precision per comparison ("it
+    bothers me when one number has more decimal places than others"); include rivals even when Theseus looks worse ("yes
+    this will make the theseus look worse, but its more honest").
+  - **G6. Words:** no "pts" or "points" metric anywhere; "khz"; Piaknow is a name (capital P; all caps where the style is
+    caps, PIAKNOW'S); "Dual 8khz wired and wireless"; "battery", never "cell"; plain words.
+  - **G7. Sell what the player gets** (control, feel, wear, battery life), at a glance (F14.10).
+  - **G8. Uniform parts where uniformity is the claim** (plungers, pads).
+  - **G9. The opening frame is the header, never a lone phrase** ("the what if you didn't have to pick shouldn't be the
+    only thing on the screen for a start animation, it should just be the header, i've pointed this out before and im
+    concerned you didn't change it, it makes me worry you're missing my other feedback"). Check every past note again.
+  - **G10. Software and latency slides must be simple** ("mosr of them are confusing"; "difficult to understand").
+- **Work packages** (balanced by effort, two builders at a time, each integrated and published as it lands): K1 click
+  mechanics accuracy (F26.1, F26.2 and the click notes on parts); K2 the board and the magnetic encoder (F26.4 to F26.10,
+  and the encoder everywhere); K3 click and glide clarity; K4 shell clarity and consolidation; K5a intro data and selling;
+  K5b surface, electronics and ownership notes plus the global word sweep.

@@ -121,7 +121,8 @@ function plt_ba(t, t0, x, y, before, after, o = {}) {
 }
 
 /* ============================== the plate, outside and in ============================== */
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "not what i wanted at all"; the bottom cover waits). Kept, not registered. */
+const HIDDEN_pltPlate = ({
   id: 'pltPlate', ch: 'shell', theme: 'paper', title: 'Bottom plate: solid outside, triangles inside', settle: 10, after: 'shlsheet2', ideas: [31, 75, 11],
   src: ['plt_brock', 'plt_fe'], three: ['shell'],
   draw: t => {
@@ -185,7 +186,8 @@ function plt_chart(t, t0, x, y, w, head, unit, vals, o = {}) {
   const net = th < g ? (g / th >= 1.5 ? (g / th).toFixed(1) + '× stiffer' : '−' + Math.round((1 - th / g) * 100) + ' % vs the grid') : '+' + Math.round((th / g - 1) * 100) + ' % vs the grid';
   if (k2 > 0.003) text(o.net || net, x, y + 52 + 3 * 30 + 12, { role: 'label', size: 19, color: th < g ? C.heroText : C.bad, alpha: k2, caps: false, maxW: w });
 }
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "we will worry about the bottom cover later"). Kept, not registered. */
+const HIDDEN_pltSim = ({
   id: 'pltSim', ch: 'shell', theme: 'night', title: 'Bottom plate stiffness at the same weight', settle: 10, after: 'pltPlate', ideas: [31, 75],
   src: ['plt_fe', 'plt_strength'],
   draw: t => {
@@ -245,7 +247,8 @@ function plt_optPlate(X, cx, cy, s, a) {
   plt_fill(() => plt_path(P, PLT_GEO.outline), null, inkA(0.5), 1.2, a);
   return P;
 }
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "we don't need to worry abt this into later into development"). Kept, not registered. */
+const HIDDEN_pltOptions = ({
   id: 'pltOptions', ch: 'shell', theme: 'paper', title: 'Bottom plate options at the same weight', settle: 9, after: 'pltSim', ideas: [31, 75],
   src: ['plt_opts', 'plt_fe'],
   draw: t => {

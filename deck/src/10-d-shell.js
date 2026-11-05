@@ -1108,7 +1108,8 @@ function shlLatBottom2D(t, x, y, w, h, st, alpha = 1) {
   G.restore();
   return true;
 }
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "wins aren't big enough, these slides take a ton of computation"). Kept, not registered. */
+const HIDDEN_shlLattice3d = ({
   id: 'shlLattice3d', ch: 'shell', theme: 'night', title: 'Triangles vs hexagons in the 3D shell', settle: 10, ideas: [75, 53], src: ['shlLattice'], three: ['lattice'],
   draw: t => {
     const up = SHL_FE.tri.press / SHL_FE.hex.press - 1, ribCut = 1 - SHL_FE.tri.rib / SHL_FE.hex.rib;
@@ -1497,7 +1498,8 @@ S({
    the same dust falling on a shell with cutouts and on a solid one: through the holes it reaches the encoder (drawn as
    TTC's optical encoder, the form most new ones take) and the scroll signal starts to skip; on the solid shell it stays
    outside, where it wipes off */
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "remove" (a magnetic encoder replaces the optical one)). Kept, not registered. */
+const HIDDEN_sealed = ({
   id: 'sealed', ch: 'shell', theme: 'paper', title: 'The encoder: the number one failure point', settle: 9.5, ideas: [15, 98], src: ['shlFmSupport', 'pulsarEnc', 'shlIgorWheel', 'shlRazerWheel', 'shlDoc'],
   draw: t => {
     header(t, 'The encoder: the number one failure point');
@@ -1563,13 +1565,14 @@ S({
 /* ============================== 18. the lattice frees grams for the battery (#15, #31, #93; Brock: "we will be able to cut weight elsewhere with my shell design to hit that 200hr") ==============================
    to be as stiff on the crown as the lattice, a plain wall of the same shape needs 20.4 g (along its own solved law);
    the lattice is 15.2 g on the stress study's body (the Sora scan's surface at the study's wall). The difference goes to the battery */
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "not needed"). Kept, not registered. */
+const HIDDEN_shlGrams = ({
   id: 'shlGrams', ch: 'shell', theme: 'night', title: 'The lattice frees weight for the battery', settle: 10, ideas: [15, 31, 93],
   src: ['shlLattice', 'shlZkM1k', 'shlB2gSlx', 'shlDoc'],
   draw: t => {
     const freed = SHL_FE.match - SHL_FE.g.body;
     header(t, 'The lattice frees weight for the battery');
-    captions(t, [[0.6, 'To be as stiff on the crown as my lattice, a plain wall of the same shape needs ' + fmtN(SHL_FE.match, 1) + ' g. On the stress study\'s body the lattice is ' + fmtN(SHL_FE.g.body, 1) + ' g.'], [5.0, 'Those ' + fmtN(freed, 1) + ' g go where they buy the most: into the battery, for ' + THS.hours + ' at 1 kHz.']]);
+    captions(t, [[0.6, 'To be as stiff on the crown as my lattice, a plain wall of the same shape needs ' + fmtN(SHL_FE.match, 1) + ' g. On the stress study\'s body the lattice is ' + fmtN(SHL_FE.g.body, 1) + ' g.'], [5.0, 'Those ' + fmtN(freed, 1) + ' g go where they buy the most: into the battery, for ' + THS.hours + ' at 1 khz.']]);
     const x = LM, y = 280, w = 1080, h = 680, a0 = tileA(t, 0.3, 0);
     demoWindow(x, y, w, h, a0);
     text('Stress study body, the same crown stiffness, {g (lower is better)}', x + 32, y + 52, { role: 'label', size: 21, color: C.mute, alpha: a0 });
@@ -1597,7 +1600,7 @@ S({
       rr(cx, cy, cw, chh, 8, null, C.ink2, 2, kc); rr(cx + cw, cy + 22, 10, 26, 3, C.ink2, null, 0, kc);
       const fillK = ep(t, 5.2, 7.6, E.io3); rr(cx + 6, cy + 6, Math.max(12, (cw - 12) * (0.62 + 0.38 * fillK)), chh - 12, 5, C.hero, null, 0, kc);
       text('The battery', cx - 20, cy + 44, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: kc });
-      rich([{ s: String(THESEUS.hours), font: 'disp', size: 44, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: 'h at 1 kHz', role: 'label', size: 21, color: C.mute, gap: 10, caps: false }], cx + cw + 40, cy + 52, { alpha: ep(t, 6.6, 7.0) });
+      rich([{ s: String(THESEUS.hours), font: 'disp', size: 44, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: 'h at 1 khz', role: 'label', size: 21, color: C.mute, gap: 10, caps: false }], cx + cw + 40, cy + 52, { alpha: ep(t, 6.6, 7.0) });
       for (let i = 0; i < 5; i++) { const kk = ep(t, 5.0 + i * 0.32, 5.9 + i * 0.32, E.io3); if (kk <= 0 || kk >= 1) continue; const sx = lerp(gx0 + (gx1 - gx0) * (i + 0.5) / 5, cx + cw * (0.66 + i * 0.06), kk), sy = lerp(gy + 4, cy + 20, kk) - Math.sin(kk * Math.PI) * 60; rr(sx - 9, sy - 9, 18, 18, 3, C.hero, null, 0, 1 - kk * 0.3); }
     }
     text('3D stress study, 10 N on the crown. Its body is the Sora scan\'s surface at the study\'s wall, triggers left out (the same in both); past 15.2 g the plain wall follows its own solved law.', x + 32, y + h - 62, { role: 'small', size: 22, weight: 560, color: C.faint, maxW: w - 64, alpha: ep(t, 2.4, 2.8) });

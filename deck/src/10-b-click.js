@@ -6,7 +6,7 @@
    ============================================================================================ */
 Object.assign(SRC, {
   clk_xbabClick: { t: 'XBAB Tech on X, 2026-06-30: XA25 vs OP1 8k v2 click latency on a Beagle USB 480 analyzer, four tests with means, 95% CIs and n (XBAB measured its own mouse: a maker claim)', u: 'https://x.com/xbabtech/status/2071972219211985258' },
-  clk_tpuV4: { t: 'TechPowerUp, Razer Viper V4 Pro review: click latency 79 µs wired at 8 kHz (switch actuation to USB; as recorded in the 2026-11-03 validation report)', u: 'https://www.techpowerup.com/review/razer-viper-v4-pro/' },
+  clk_tpuV4: { t: 'TechPowerUp, Razer Viper V4 Pro review: click latency 79 µs wired at 8 khz (switch actuation to USB; as recorded in the 2026-11-03 validation report)', u: 'https://www.techpowerup.com/review/razer-viper-v4-pro/' },
   clk_gt01: { t: 'MechKeys, Gateron at ZFX Shenzhen: the GT01 operates at 55 ± 5 gf over 0.35 ± 0.10 mm, is rated for 100 million clicks, has no preload and is shaped for vertical pressing (maker claim; no datasheet published)', u: 'https://mechkeys.com/blogs/news/gateron-launched-magnetic-jade-gaming-switch-and-gt01-microswitch-at-zfx-shenzhen-exhibition' },
   clk_d2fp: { t: 'Omron D2FP-FN2 datasheet (mirror): 0.59 ± 0.15 N, 70 million operations min; LED forward voltage tested at 5 mA; transmission tested with 30 µs pulses every 1 ms', u: 'https://static.chipdip.ru/lib/509/DOC042509999.pdf' },
   clk_elo: { t: 'EloShapes spec sheets: each mouse\'s main switch and its rated clicks (maker figures), via research/data/mice.json', u: 'https://www.eloshapes.com/' },
@@ -1177,7 +1177,7 @@ clk_S({
        how methods differ), so the quickest row on the chart is Theseus's and not the V4 Pro's */
     const LR = 76;
     lollipop(t, { x: wx + 32, y: wy + 160, w: ww - 64, t0: 0.9, xr: [0, 6], ticks: [0, 2, 4, 6], tfmt: v => v + ' ms', fmt: v => (v < 0.1 ? v.toFixed(3) : v.toFixed(1)) + ' ms', labelW: 440, rowH: LR, valW: 130,
-      rows: [{ name: 'Theseus', qual: 'target, NC release', v: CLK_TGT / 1000, hero: true }, { name: 'Razer Viper V4 Pro', qual: 'wired, 8 kHz', v: 0.079, ref: true }, { name: 'Hitscan Hyperlight', qual: '0 ms debounce', v: 0.4 }, { name: 'Lamzu Atlantis', qual: '0 ms debounce', v: 2.4 }, { name: 'Lamzu Atlantis', qual: '4 ms debounce', v: 5.4 }] });
+      rows: [{ name: 'Theseus', qual: 'target, NC release', v: CLK_TGT / 1000, hero: true }, { name: 'Razer Viper V4 Pro', qual: 'wired, 8 khz', v: 0.079, ref: true }, { name: 'Hitscan Hyperlight', qual: '0 ms debounce', v: 0.4 }, { name: 'Lamzu Atlantis', qual: '0 ms debounce', v: 2.4 }, { name: 'Lamzu Atlantis', qual: '4 ms debounce', v: 5.4 }] });
     /* the cost on the chart: a bracket between the Atlantis with and without its debounce (lower is quicker) */
     { const lx0 = wx + 32 + 440, lpw = ww - 64 - 440 - 130 - 20, LX = v => lx0 + lpw * v / 6, yb = wy + 160 + 3.5 * LR, kb = ep(t, 5.1, 5.6, E.snap);
       if (kb > 0) { line(LX(2.4), yb, LX(2.4) + (LX(5.4) - LX(2.4)) * kb, yb, { color: C.bad, w: 2.5 }); line(LX(2.4), yb - 8, LX(2.4), yb + 8, { color: C.bad, w: 2.5 }); if (kb > 0.98) line(LX(5.4), yb - 8, LX(5.4), yb + 8, { color: C.bad, w: 2.5 });

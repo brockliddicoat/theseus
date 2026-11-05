@@ -202,8 +202,11 @@ export async function buildShell(opts = {}) {
   const owned = new Set(Object.values(geoms));
   const matFor = { core: M.cavity, body: M.shell, bridge: M.shell, triggerL: M.shell, triggerR: M.shell, sideFront: M.button, sideRear: M.button, plate: M.plate,
                    wheelBay: M.bay, usbC: M.steel, engraveSerial: M.engrave, engraveLT: M.engrave, engraveRT: M.engrave, sideMark: M.gold };
+  // F26.11: every engraving (the serial, the trigger marks, the gold side mark) is off until Brock has given his input
+  // on them; opts.engrave = true brings them back
+  const offMark = (name) => opts.engrave !== true && (name.startsWith('engrave') || name === 'sideMark');
   const mesh = (name) => {
-    if (!geoms[name]) { const e = new THREE.Group(); e.name = name + '(absent)'; return e; }
+    if (!geoms[name] || offMark(name)) { const e = new THREE.Group(); e.name = name + '(absent)'; return e; }
     const m = new THREE.Mesh(geoms[name], matFor[name] || M.shell); m.name = name;
     m.castShadow = !name.startsWith('engrave') && name !== 'sideMark'; m.receiveShadow = true;
     return m;
@@ -315,7 +318,7 @@ export async function buildShell(opts = {}) {
   }
   const screws = [];
   for (const [x, z] of meta.screws) {
-    const s = lib.buildM2Screw({ length: 4, finish: 'brass', detail: 'low' });   // seen by their heads only
+    const s = lib.buildM2Screw({ length: 4, finish: 'titanium', detail: 'low' });   // seen by their heads only; titanium (F25.4)
     // head top recessed 0.1 mm inside the bottom face: bearing face up, shank up (+Y)
     const k = (s.userData.parts && s.userData.parts.head && s.userData.standIn) ? 0.9 : 1.6;
     s.rotation.x = Math.PI; s.position.set(x, meta.yBase + 0.1 + k, z);

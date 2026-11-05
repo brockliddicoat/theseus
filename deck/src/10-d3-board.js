@@ -478,7 +478,7 @@ function shcCgMark(x, y, r, col, a, hollow) {
 /** a flick: the mouse slides D mm in T seconds, from rest to rest (x = D (u − sin 2πu / 2π)); returns [x, a], a in −1..1 */
 function shcFlick(t, t0, T, D) { const u = clamp((t - t0) / T); return [D * (u - Math.sin(TAU * u) / TAU), t > t0 && t < t0 + T ? Math.sign(D) * Math.sin(TAU * u) : 0]; }
 S({
-  id: 'mass', replaces: 'mass', after: 'shlGrams', ch: 'shell', theme: 'paper', title: 'Keep the mass low, near the fingers', settle: 9.5, ideas: [95],
+  id: 'mass', replaces: 'mass', after: 'tolerance', ch: 'shell', theme: 'paper', title: 'Keep the mass low, near the fingers', settle: 9.5, ideas: [95],
   src: ['shcMassModel', 'ntrJauch', 'exXbabWeight', 'shcBrock', 'shlLattice', 'shlDoc'],
   draw: t => {
     const Q = shcCg(), K = SHC_CG0, pct = Math.round(Q.cut * 100), kMove = ep(t, 4.4, 5.4, E.io3);

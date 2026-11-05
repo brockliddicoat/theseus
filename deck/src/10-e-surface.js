@@ -333,7 +333,7 @@ S({
     }
     chapterCard(t, {
       name: 'surface', gloss: 'What your hand touches, and the small marks that make a mouse look finished.',
-      list: [['#16', 'A baked ceramic coat, 19 µm thin'], ['#16', 'No added weight, no yellowing'], ['#60', 'Laser-etched directional grip'], ['#60', 'No adhesive, two tones in one coat'], ['#36', 'Your serial, lasered on the right click'], ['#34', 'Engravings half as deep'], ['#84', 'A 0.9 g magnesium wheel, six arms'], ['Encoder', 'An optical encoder in TTC\'s form']]
+      list: [['#16', 'A baked ceramic coat, 19 µm thin'], ['#16', 'No added weight, no yellowing'], ['#60', 'Laser-etched directional grip'], ['#60', 'No adhesive, two tones in one coat'], ['#84', 'A 0.9 g magnesium wheel, six arms'], ['Encoder', 'An optical encoder in TTC\'s form']]
     });
     figLabel(t, 2.2, 1040, 1000 - 22, 8, 'Forged colourway, satin clear over raw carbon');
   }
@@ -463,7 +463,8 @@ S({
 });
 
 /* ============================== #36 #62 #61 #33 #32 the marks ============================== */
-S({
+/* out of the film, 2026-11-05 (Brock, F26.11: engravings off for now). Kept, not registered. */
+const HIDDEN_srf_marks = ({
   id: 'srf_marks', ch: 'surface', theme: 'paper', title: 'Laser-marked details', settle: 10, ideas: [36, 62, 61, 33, 32], three: ['shell', 'shell-sora'],
   src: ['srf_doc', 'ulxComp', 'gmk', 'srf_scan'],
   draw: t => {
@@ -534,7 +535,8 @@ S({
 });
 
 /* ============================== #34 #82 engravings and gates ============================== */
-S({
+/* out of the film, 2026-11-05 (Brock, F26.11: engravings off for now). Kept, not registered. */
+const HIDDEN_details = ({
   id: 'details', ch: 'surface', theme: 'night', title: 'Engrave half as deep', settle: 10, ideas: [34, 82],
   src: ['inglis', 'fracMech', 'vernier', 'srf_doc'],
   draw: t => {

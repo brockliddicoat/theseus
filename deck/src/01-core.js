@@ -178,10 +178,10 @@ function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1
 const fmt = (v, d = 0) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 
 /* ---------- case ----------
-   Display type and labels are set in caps; units keep their case (8 kHz, 0.14 ms, 29 g), so caps() protects them. */
+   Display type and labels are set in caps; units keep their case (8 khz, 0.14 ms, 29 g; Brock writes khz), so caps() protects them. */
 /** uppercase Latin letters only: Greek (θ, σ, ρ) and µ keep their case, as in maths */
 const upLatin = s => s.replace(/[a-zà-öø-ÿ]/g, c => c.toUpperCase());
-const UNIT_ANY = /^(?:µs|us|ms|ns|kHz|Hz|MHz|GHz|mm|µm|cm|mAh|mA|µA|mV|mW|Wh|Wh\/kg|Wh\/L|dB|dBm|dpi|cpi|kg|mg|g\/cm³|N·m|mN·m|mN|kPa|MPa|GPa|nRF\w*|µ\w*)$/;
+const UNIT_ANY = /^(?:µs|us|ms|ns|khz|kHz|Hz|MHz|GHz|mm|µm|cm|mAh|mA|µA|mV|mW|Wh|Wh\/kg|Wh\/L|dB|dBm|dpi|cpi|kg|mg|g\/cm³|N·m|mN·m|mN|kPa|MPa|GPa|nRF\w*|µ\w*)$/;
 const UNIT_AFTER_NUM = /^(?:s|h|g|m|min|kg|N|V|W|A|K|x|×|°|°C|%|mm²|cm²|gf|mΩ|Ω|lb|in)$/;
 function capsWord(w, prev) {
   const m = /^([("'\[]*)(.*?)([.,;:)"'\]!?]*)$/.exec(w), core = m[2];
@@ -255,7 +255,7 @@ function drawStr(s, x, y, o) {
 }
 /** apply the role's case rules to a string */
 /** a number and its unit never part at a line break: '60 g' is glued with a no-break space */
-const GLUE = /(\d) (?=(?:g|ms|µs|us|ns|mm|µm|kHz|Hz|MHz|h|s|min|%|mAh|mA|Wh|V|W|mW|N|gf|dB|dBm|C|°C|K|cycles|mm²)\b)/g;
+const GLUE = /(\d) (?=(?:g|ms|µs|us|ns|mm|µm|khz|kHz|Hz|MHz|h|s|min|%|mAh|mA|Wh|V|W|mW|N|gf|dB|dBm|C|°C|K|cycles|mm²)\b)/g;
 function prepare(s, o) { s = String(s); if (o.caps) s = caps(s); else if (o.sentence) s = sentence(s); if (s.indexOf('{') >= 0) s = s.replace(/[{}]/g, ''); return s.replace(GLUE, '$1\u00A0'); }
 /** width of a string in the given style */
 function tw(s, o = {}) { o = sty(o); setFont(o); return measureStr(prepare(edTxt(s), o), o); }

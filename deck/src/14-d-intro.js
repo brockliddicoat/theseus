@@ -142,7 +142,7 @@ function ntr_statsData() {
     { value: THS.price, unit: '', label: 'US list price', quiet: true, next: ulxP && { value: '$' + ulxP, unit: '', who: 'Finalmouse ULX, at launch', ev: 'claim', text: 'Notebookcheck 2023', head: 'Same as', grey: true } },
     { value: '0.14', unit: 'ms', label: 'Motion latency, wireless', hero: true, next: mo && { value: fmtN(mo.v, 2), unit: 'ms', who: 'Viper V4 Pro', ev: mo.ev, by: '{piaknow}', head: 'Fastest measured' } },
     { product: true },
-    { value: String(THESEUS.hours), unit: 'h', label: 'Battery at 1 kHz, the plan', ev: 'derived', quiet: true, next: bt && { value: fmtN(bt.v, 0), unit: 'h', who: 'Viper V4 Pro', ev: bt.ev, by: 'Razer', head: 'Longest listed' } }
+    { value: String(THESEUS.hours), unit: 'h', label: 'Battery at 1 khz, the plan', ev: 'derived', quiet: true, next: bt && { value: fmtN(bt.v, 0), unit: 'h', who: 'Viper V4 Pro', ev: bt.ev, by: 'Razer', head: 'Longest listed' } }
   ];
 }
 /** a stat tile, centred: evidence (when it isn't mine), the number, what it is, and at the foot the next best (smaller,
@@ -176,7 +176,7 @@ function ntr_productTile(t, t0, rect) {
   view3D('shell', t, vb[0], vb[1], vb[2], vb[3], { view: 'threeQuarter', view2d: 'right', ground2d: false, yaw: -0.62 + 0.08 * t, pitch: 0.08, zoom: in2D(2.05, 1.55), colorway: 'black' }, { alpha: ep(t, t0 + 0.2, t0 + 0.9) });
   const ka = ep(t, t0 + 0.7, t0 + 1.2);
   text('Theseus', x + w / 2, y + h - 66, { role: 'h2', size: 40, color: C.heroText, grad: C.heroGrad, align: 'center', alpha: ka, track: 0.14 });
-  text('PAW3970 sensor, 8 kHz wired and wireless', x + w / 2, y + h - 30, { role: 'small', size: 23, weight: 600, color: C.mute, align: 'center', alpha: ka });
+  text('PAW3970 sensor, 8 khz wired and wireless', x + w / 2, y + h - 30, { role: 'small', size: 23, weight: 600, color: C.mute, align: 'center', alpha: ka });
 }
 S({
   id: 'ntr_stats', ch: 'intro', theme: 'paper', title: 'Theseus, by the numbers', settle: 9, after: 'flagships', three: ['shell'],

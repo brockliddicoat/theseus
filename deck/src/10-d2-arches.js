@@ -233,7 +233,7 @@ function shbNodeClose(t, t0, cx, cy, s, o = {}) {
   return P;
 }
 S({
-  id: 'shbArches', ch: 'shell', theme: 'paper', title: 'Interwoven arches form triangles', settle: 11, replaces: 'arches', after: 'shlLattice3d',
+  id: 'shbArches', ch: 'shell', theme: 'paper', title: 'Interwoven arches form triangles', settle: 11, replaces: 'arches', after: 'shlThin',
   ideas: [53, 75], src: ['shlDoc', 'shlLattice', 'shbModel'],
   draw: t => {
     header(t, 'Interwoven arches form triangles');
@@ -964,7 +964,8 @@ function shbGatePlan(t, R, c, cx, cy, s, flow, a) {
   /* the gates */
   c.g.forEach(g => { const p = P(g[0], g[1]); circle(p[0], p[1], 9, { fill: c.hero ? C.hero : C.ink, alpha: a }); circle(p[0], p[1], 15, { color: c.hero ? C.hero : C.ink, w: 2, alpha: a * 0.6 }); });
 }
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "not sure if needed"). Kept, not registered. */
+const HIDDEN_shbGates = ({
   id: 'shbGates', ch: 'shell', theme: 'night', title: 'Gating: one gate, under the crown', settle: 10, after: 'shbFlow',
   ideas: [75, 53], src: ['shbWang', 'shbMoldflow', 'shbKrenchel', 'shbModel'],
   draw: t => {
@@ -1006,7 +1007,7 @@ S({
 
 /* ============================== 8b. one rib width, a fillet at every node: the rest of what the lattice does for its fibres (F2.18) ============================== */
 S({
-  id: 'shbWidth', ch: 'shell', theme: 'paper', title: 'One rib width, a fillet at every node', settle: 9.4, after: 'shbGates',
+  id: 'shbWidth', ch: 'shell', theme: 'paper', title: 'One rib width, a fillet at every node', settle: 9.4, after: 'shbFlow',
   ideas: [75, 53], src: ['shbMoldflow', 'shbModel'],
   draw: t => {
     const gain = shbFlowCase(0.6).turn / shbFlowCase(0).turn - 1;

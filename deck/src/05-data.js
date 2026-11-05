@@ -1,6 +1,6 @@
 /* ============================================================================================
    Theseus's own numbers, in one place, so every slide says the same thing. Brock's targets (2026-11-04):
-   29.31 g, $189, one board of about 5.6 g (there is no front and back board), 200 h at 1 kHz.
+   29.31 g, $189, one board of about 5.6 g (there is no front and back board), 200 h at 1 khz.
    Print them through THS (strings) so a change here changes the deck.
    ============================================================================================ */
 const THESEUS = { mass: 29.31, price: 189, pcb: 5.6, hours: 200, dims: [119.3, 62.4, 39.9] };   /* dims: L x W x H, mm (Brock, F12.11) */
@@ -60,7 +60,7 @@ const SRC = {
   nrf52: { t: 'Nordic nRF52840 product specification', u: 'https://cdn.sparkfun.com/assets/d/2/6/2/6/nRF52840_PS_v1.1.pdf' },
   nrf54usb: { t: 'nRF54LM20A USBHS peripheral documentation', u: 'https://docs.nordicsemi.com/r/bundle/ps_nrf54lm20a/page/usbhs.html' },
   raytac: { t: 'Nordic: nRF54LM20A modules (Raytac lists 8)', u: 'https://www.nordicsemi.com/Products/nRF54LM20A/Modules' },
-  razerBatt: { t: 'Razer support: Viper V3 Pro battery 95 / 62 / 40 / 17 h at 1 / 2 / 4 / 8 kHz', u: 'https://mysupport.razer.com/app/answers/detail/a_id/14044/kw/viper%20v3' },
+  razerBatt: { t: 'Razer support: Viper V3 Pro battery 95 / 62 / 40 / 17 h at 1 / 2 / 4 / 8 khz', u: 'https://mysupport.razer.com/app/answers/detail/a_id/14044/kw/viper%20v3' },
   tpuGpx2: { t: 'TechPowerUp, G Pro X Superlight 2 battery (no fuel gauge IC)', u: 'https://www.techpowerup.com/review/logitech-g-pro-x-superlight-2/8.html' },
   tpuX2h: { t: 'TechPowerUp, Pulsar X2H: 0.27 to 0.28 A charging', u: 'https://www.techpowerup.com/review/pulsar-x2h/8.html' },
   tpuVv3p: { t: 'TechPowerUp, Viper V3 Pro: battery, charge current, fuel gauge', u: 'https://www.techpowerup.com/review/razer-viper-v3-pro/8.html' },
@@ -97,8 +97,8 @@ const SRC = {
   millmax: { t: 'Mill-Max 3305 receptacle: 1,000 cycles minimum', u: 'https://www.mill-max.com/products/receptacle/3305' },
   superstrike: { t: 'Logitech G Pro X2 Superstrike: haptic levels, 60 to 90 h (retailer listing)', u: 'https://www.techbloat.com/how-to-set-up-the-logitech-g-pro-x2-superstrike-wireless-gaming-mouse.html' },
   perseverance: { t: 'The Register: Perseverance wheels, 48 gentler grousers', u: 'https://www.theregister.com/2020/04/06/nasa_reveals_perserverance_rover_grouser_wheel_design/' },
-  tpuHyper: { t: 'TechPowerUp, Hitscan Hyperlight: 0.4 ms click latency at 8 kHz, 0 ms debounce', u: 'https://www.techpowerup.com/review/hitscan-hyperlight/5.html' },
-  nbcV4: { t: 'Notebookcheck, Razer Viper V4 Pro: 180 h at 1 kHz, 45 h at 8 kHz, 49 g', u: 'https://www.notebookcheck.com/Razer-enthuellt-Viper-V4-Pro-mit-180h-Laufzeit-und-8-000-Hz-Polling-im-49g-Gehaeuse.1257839.0.html' },
+  tpuHyper: { t: 'TechPowerUp, Hitscan Hyperlight: 0.4 ms click latency at 8 khz, 0 ms debounce', u: 'https://www.techpowerup.com/review/hitscan-hyperlight/5.html' },
+  nbcV4: { t: 'Notebookcheck, Razer Viper V4 Pro: 180 h at 1 khz, 45 h at 8 khz, 49 g', u: 'https://www.notebookcheck.com/Razer-enthuellt-Viper-V4-Pro-mit-180h-Laufzeit-und-8-000-Hz-Polling-im-49g-Gehaeuse.1257839.0.html' },
   pcgSlx: { t: 'PC Gamer: Finalmouse click latency claims (vendor-run test)', u: 'https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/' },
   delrinAF: { t: 'Delrin AF100 datasheet: dynamic μ 0.19 dry vs steel', u: 'https://www.plasticsintl.com/media/rwhllvo1/delrin-100af-data-sheet.pdf' },
   dotcom: { t: 'Dotcom Distribution 2013 packaging survey (vendor survey, sample not reported)', u: 'https://www.retaildive.com/news/attractive-packaging-might-help-lead-to-repeat-purchases-for-online-shopper/167136/' },
@@ -123,27 +123,27 @@ const SRC = {
   luJung: { t: 'Lu, Jung & Peck 2024, J. Consumer Research: people in photos lowered liking for venues (14,725 photos, 5 experiments)', u: 'https://ideas.repec.org/a/oup/jconrs/v51y2024i2p321-341..html' },
   airbnbPhotos: { t: 'Management Science 2022: verified Airbnb photos, +8.98% occupancy across 7,423 listings', u: 'https://pubsonline.informs.org/doi/fpi/10.1287/mnsc.2021.4175' },
   logiSuperstrike: { t: 'Logitech G: Pro X2 Superstrike, inductive button sensing with haptics, 0.6 mm travel, 10 actuation levels, 90 h', u: 'https://www.logitech.com/blog/2025/09/industrys-first-gaming-mouse-featuring-logitech-gs-revolutionary-superstrike-technology/' },
-  kunai: { t: 'Kunai tester guide, firmware 96.79, by tekkusai (pre-production; supplied by Brock, not public)', u: '', n: 'motion latency 0.14 ms projected on piaknow\'s scale; SensorLock 163 µs sooner than FrameSync, measured; Second Shot rescued 99 to 100% of lost reports at 4 kHz; light to PC 79.6 µs on paper; Smart sleep 10 s.' },
+  kunai: { t: 'Kunai tester guide, firmware 96.79, by tekkusai (pre-production; supplied by Brock, not public)', u: '', n: 'motion latency 0.14 ms projected on piaknow\'s scale; SensorLock 163 µs sooner than FrameSync, measured; Second Shot rescued 99 to 100% of lost reports at 4 khz; light to PC 79.6 µs on paper; Smart sleep 10 s.' },
   piaknow: { t: 'piaknow, "Motion Latency of Some Computer Mice 2026-09-15", 8000 Hz column, as redrawn in the Kunai tester guide', u: 'https://x.com/Tw1tterIsGood/status/2099778999849549856' },
-  xbab: { t: 'XBAB Tech, XA25: wired, 25 g, PAW3950, 8 kHz; about 130 µs motion and 65 µs click latency', u: 'https://xbabtech.com/' },
-  xbabFw: { t: 'XBAB Tech blog, firmware: the sensor read timed to each USB poll; a 107.5 µs floor at 8 kHz', u: 'https://xbabtech.com/blog/firmware' },
+  xbab: { t: 'XBAB Tech, XA25: wired, 25 g, PAW3950, 8 khz; about 130 µs motion and 65 µs click latency', u: 'https://xbabtech.com/' },
+  xbabFw: { t: 'XBAB Tech blog, firmware: the sensor read timed to each USB poll; a 107.5 µs floor at 8 khz', u: 'https://xbabtech.com/blog/firmware' },
   xbabSmooth: { t: 'XBAB Tech blog, smoothing: the PAW3950 smooths over 16 frames, about 450 ms, after each set-down in corded gaming modes, a 3955 the same 450 ms; the XA25 runs 2 frames, about 12 ms', u: 'https://xbabtech.com/blog/smoothing' },
   xbabSensorLock: { t: 'XBAB Tech on X: SensorLock, developed with tekkusai as an alternative to FrameSync, 163 µs lower', u: 'https://x.com/xbabtech/status/2107622164539306331' },
-  razerHs: { t: 'Razer HyperSpeed Wireless: Viper V4 Pro, 0.36 ms average motion latency at 8 kHz (Razer)', u: 'https://www.razer.com/technology/razer-hyperspeed-wireless' },
+  razerHs: { t: 'Razer HyperSpeed Wireless: Viper V4 Pro, 0.36 ms average motion latency at 8 khz (Razer)', u: 'https://www.razer.com/technology/razer-hyperspeed-wireless' },
   razerFocus: { t: 'Razer Focus Pro 50K Gen-3: 930 IPS, 90 G, FrameSync, lift-off and landing set separately (Razer)', u: 'https://www.razer.com/mena-en/technology/razer-focus-pro-sensor' },
   pcgFrameSync: { t: 'PC Gamer: an independent oscilloscope test of FrameSync, credited to piaknow', u: 'https://www.pcgamer.com/hardware/gaming-mice/we-now-have-independent-testing-confirming-razers-latest-innovative-mouse-sensor-tech-does-what-it-says-it-does/' },
   slxPdf: { t: 'Finalmouse, Starlight X technical overview: PerfectSync, PerfectPolling, TMR-DS, nRF54LM20 at both ends, 250 mAh', u: 'https://cdn.shopify.com/s/files/1/2377/4861/files/26.5.27_Starlight_X_Technical_Overview.pdf?v=1779939240' },
   slxGp: { t: 'Gadget Pilipinas, Finalmouse Starlight X: PerfectPolling replaces the 2K, 4K and 8K choice with one mode', u: 'https://www.gadgetpilipinas.net/2026/06/finalmouse-starlight-x/' },
   slxXt: { t: 'Xiaomi Today, SLX: TMR-DS in 40 steps of 0.01 mm, rapid trigger 150 to 250 µm', u: 'https://xiaomitoday.com/?p=41976' },
-  slxOog: { t: 'Out of Games, SLX Nightfall: 250 mAh Jauch battery, up to 200 h at 1 kHz claimed, none tested', u: 'https://outof.games/news/9308-finalmouse-says-slx-nightfall-customer-shipments-could-begin-august-14-2026/' },
-  slxB2g: { t: 'Back2Gaming, Finalmouse Starlight X review: 8 kHz on the receiver link, 41.58 g measured', u: 'https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/' },
+  slxOog: { t: 'Out of Games, SLX Nightfall: 250 mAh Jauch battery, up to 200 h at 1 khz claimed, none tested', u: 'https://outof.games/news/9308-finalmouse-says-slx-nightfall-customer-shipments-could-begin-august-14-2026/' },
+  slxB2g: { t: 'Back2Gaming, Finalmouse Starlight X review: 8 khz on the receiver link, 41.58 g measured', u: 'https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/' },
   kc3955: { t: 'Keychron: PAW3950 vs PAW3955, 40,000 CPI native in 1-CPI steps, 60 G, glass tracking', u: 'https://keychron.com.au/blogs/news/paw3950-vs-paw3955-what-s-actually-new' },
   mkb3955: { t: 'MathewKB: PAW3955, 750 IPS, 11 lift-off levels from 0.7 to 1.7 mm', u: 'https://www.mathewkb.com/china/a-new-king-of-mouse-sensors-paw3955/' },
   eps3950: { t: 'EPS Global: PAW3950DM-T5QU, 16-pin DIP, 10.90 × 16.20 × 5.01 mm, 1.3 mA run, 50-CPI steps', u: 'https://www.epsglobal.com/products/semiconductors/sensing-and-haptics/optical-navigation/paw3950dm-t5qu-optical-gaming-navigation-chip' },
   eps3395: { t: 'EPS Global: PAW3395DM-T6QU, 16-pin DIP, 2.4 mA high-performance, 1.7 mA low-power, 650 IPS, 50 G', u: 'https://www.epsglobal.com/products/semiconductors/sensing-and-haptics/optical-navigation-(1)/paw3395dm-t6qu' },
   vgnClick: { t: 'IT Home: VGN Dragonfly 3 Master GT, click latency "as low as" 0.175 ms (VGN)', u: 'https://www.ithome.com/0/963/000.htm' },
   x2fCrazy: { t: 'PC Gamer: Pulsar X2F CrazyLight, 29 g with a front-half shell', u: 'https://www.pcgamer.com/hardware/gaming-mice/pulsars-new-mouse-is-sliced-in-half-to-make-it-genuinely-crazy-light/' },
-  usbHs: { t: 'XBAB Tech: USB high-speed microframes are 125 µs, so one report per microframe tops out at 8 kHz', u: 'https://xbabtech.com/blog/firmware' },
+  usbHs: { t: 'XBAB Tech: USB high-speed microframes are 125 µs, so one report per microframe tops out at 8 khz', u: 'https://xbabtech.com/blog/firmware' },
   omronD2fPre: { t: 'Omron D2F datasheet precautions (mirror): mount on a flat surface, operate at 70 to 100% of rated overtravel; no off-axis rating', u: 'https://html.alldatasheet.com/html-pdf/333181/OMRON/D2F-01FL2-A1/960/6/D2F-01FL2-A1.html' },
   poron4701: { t: 'Rogers PORON 4701-30 Very Soft: 240 to 400 kg/m³, 21 to 62 kPa at 25% compression (typical values)', u: 'https://www.stockwell.com/data-sheets/poron-4701-30-very-soft.pdf' },
   fracMech: { t: 'McGinty, fracturemechanics.org: stress at an elliptical hole, σmax = σ(1 + 2√(a/ρ)) (Inglis)', u: 'https://fracturemechanics.org/ellipse.html' }

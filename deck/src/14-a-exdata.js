@@ -32,6 +32,6 @@ Object.assign(SRC, {
   exEloshapes: { t: 'EloShapes spec sheets (manufacturer weights, dimensions, sensors), via research/data/mice.json', u: 'https://www.eloshapes.com/' },
   exRtings: { t: 'RTINGS reviews, measured "Default Weight", via research/data/mice.json', u: 'https://www.rtings.com/mouse' },
   exPiaknow: { t: 'piaknow, "Motion Latency of Some Computer Mice 2026-09-15", read from the original chart (research/data/latency.json)', u: 'https://x.com/Tw1tterIsGood/status/2099778999849549856' },
-  exNbcV4: { t: 'Notebookcheck, Razer Viper V4 Pro: 180 h at 1 kHz, 45 h at 8 kHz (maker claim); 1.184 Wh cell (TechPowerUp)', u: 'https://www.notebookcheck.com/Razer-enthuellt-Viper-V4-Pro-mit-180h-Laufzeit-und-8-000-Hz-Polling-im-49g-Gehaeuse.1257839.0.html' }
+  exNbcV4: { t: 'Notebookcheck, Razer Viper V4 Pro: 180 h at 1 khz, 45 h at 8 khz (maker claim); 1.184 Wh cell (TechPowerUp)', u: 'https://www.notebookcheck.com/Razer-enthuellt-Viper-V4-Pro-mit-180h-Laufzeit-und-8-000-Hz-Polling-im-49g-Gehaeuse.1257839.0.html' }
 });
 

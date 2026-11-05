@@ -15,14 +15,14 @@ Object.assign(SRC, {
   ntrB2g: { t: 'Back2Gaming, Finalmouse Starlight X review: 41.58 g weighed; Finalmouse does not publish an hour rating', u: 'https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/' },
   ntrRtSlx: { t: 'RTINGS, Finalmouse Starlight X review: 41.7 g default weight (2026-10-22)', u: 'https://www.rtings.com/mouse/reviews/finalmouse/starlight-x' },
   ntrEloSlx: { t: 'EloShapes, Finalmouse Starlight X: 38 g as listed by Finalmouse', u: 'https://www.eloshapes.com/mouse/compare?p=finalmouse-starlight-x' },
-  ntrTpuV4: { t: 'TechPowerUp, Razer Viper V4 Pro: 306 mAh at 3.87 V (1.184 Wh), about 40 h at 8 kHz, 0.169 A charging, 79 µs click latency wired at 8 kHz', u: 'https://www.techpowerup.com/review/razer-viper-v4-pro/', n: 'Values as recorded in the 2026-11-03 validation report; TechPowerUp refused this session.' },
+  ntrTpuV4: { t: 'TechPowerUp, Razer Viper V4 Pro: 306 mAh at 3.87 V (1.184 Wh), about 40 h at 8 khz, 0.169 A charging, 79 µs click latency wired at 8 khz', u: 'https://www.techpowerup.com/review/razer-viper-v4-pro/', n: 'Values as recorded in the 2026-11-03 validation report; TechPowerUp refused this session.' },
   ntrXbabClick: { t: 'XBAB Tech on X, 2026-06-30: click latency on a Beagle USB 480 analyzer, XA25 72 µs against Endgame Gear OP1 8k v2 320 µs (NC release, mouse still, n = 500 each); a maker testing its own mouse and a rival', u: 'https://x.com/xbabtech/status/2071972219211985258' },
   ntrJauch: { t: 'Endrich (Jauch distributor), lithium-polymer packs, capacity and mass per part: LP402025JU 140 mAh 5 g, LP502030JH 250 mAh 7.5 g, LP422339JU 330 mAh 8 g, LP402535JU 370 mAh 8 g (rounded listing)', u: 'https://www.endrich.com/en/product-categories/accus-batteries/lithium-ion-cells/lithium-polymer-batteries?page=2', n: 'Farnell lists LP402535JU at 380 mAh; the lower figure is used.' },
   ntrGpx2: { t: 'PC Gamer, Logitech G Pro X Superlight 2 review: 95 h, $159 (2023)', u: 'https://www.pcgamer.com/logitech-g-pro-x-superlight-2-gaming-mouse-review/' },
   ntrGpx2c: { t: 'Logitech, Pro X Superlight 2c: 51 g, up to 95 h', u: 'https://www.logitechg.com/en-us/shop/p/pro-x-superlight-2c' },
   ntrDaV4: { t: 'Razer, DeathAdder V4 Pro: 150 h (report rate not stated)', u: 'https://www.razer.com/gaming-mice/razer-deathadder-v4-pro' },
-  ntrZowie: { t: 'ZOWIE, EC2-DW and U2-DW: 80 h at 1 kHz, 60 g', u: 'https://zowie.benq.com/en-us/mouse/ec2-dw.html' },
-  ntrXiaomi: { t: 'Notebookcheck, Xiaomi Gaming Mouse 2: 530 mAh, 160 h at 1 kHz, about 58 g', u: 'https://www.notebookcheck.net/Xiaomi-launches-new-affordable-8K-wireless-gaming-mouse-with-flagship-PixArt-sensor.1293650.0.html' },
+  ntrZowie: { t: 'ZOWIE, EC2-DW and U2-DW: 80 h at 1 khz, 60 g', u: 'https://zowie.benq.com/en-us/mouse/ec2-dw.html' },
+  ntrXiaomi: { t: 'Notebookcheck, Xiaomi Gaming Mouse 2: 530 mAh, 160 h at 1 khz, about 58 g', u: 'https://www.notebookcheck.net/Xiaomi-launches-new-affordable-8K-wireless-gaming-mouse-with-flagship-PixArt-sensor.1293650.0.html' },
   ntrKeychron: { t: 'Keychron, G3: 44 g, up to 160 h', u: 'https://www.keychron.com/products.json' },
   ntrRazerV4: { t: 'Razer, Viper V4 Pro: $159.99 US list', u: 'https://www.razer.com/gaming-mice/razer-viper-v4-pro' },
   ntrStores: { t: 'Maker stores: Finalmouse Starlight X $179, Ninjutso Sora V3 $119.99, Endgame Gear OP1 8k v2 $89.99, XBAB XA25 $169', u: 'https://ninjutso.com/products.json' },
@@ -39,7 +39,7 @@ Object.assign(SRC, {
 const NTR = { primed: typeof WeakSet !== 'undefined' ? new WeakSet() : null };
 /** a research field of a mouse: { v, ev } from its first entry (lists put the strongest evidence first) */
 function ntr_fv(id, k) { const m = exMouse(id); if (!m || m[k] == null) return null; const x = Array.isArray(m[k]) ? m[k][0] : m[k]; const v = rv(x); return v == null ? null : { v, ev: evOf(x) }; }
-/** the loads every Theseus battery forecast uses: a Viper V4 Pro's cell (TechPowerUp) over Razer's 180 h (1 kHz) and TechPowerUp's ~40 h (8 kHz) */
+/** the loads every Theseus battery forecast uses: a Viper V4 Pro's cell (TechPowerUp) over Razer's 180 h (1 khz) and TechPowerUp's ~40 h (8 khz) */
 function ntr_loads() {
   const mp = (RD.batteries || {}).mouse_power_draw || [], r = mp.find(x => /cell energy/i.test(x.case || '')), wh = (r && rv(r.value)) || 1.184;
   const h1 = (ntr_fv('razer-viper-v4-pro', 'battery_claim_1k_h') || {}).v || 180, h8 = (ntr_fv('razer-viper-v4-pro', 'battery_measured_h') || {}).v || 40;
@@ -135,7 +135,7 @@ S({
     const cols = [
       { lab: 'Mass', n: THS.mass, u: 'g', sub: 'Weighed, every unit' },
       { lab: 'Motion latency, wireless', n: '0.14', u: 'ms', sub: 'On {piaknow}\'s rig' },
-      { lab: 'Report rate', n: '8', u: 'kHz', sub: 'Wired and wireless' },
+      { lab: 'Report rate', n: '8', u: 'khz', sub: 'Wired and wireless' },
       { lab: 'Ideas', n: '100', u: '+', sub: 'Each with its evidence' }
     ];
     const cw = (RM - LM) / 4;
@@ -172,7 +172,7 @@ function ntr_specimens() {
     { value: gap != null ? '+' + fmtN(gap, 1) : '–', unit: '%', label: `(${fmtN(me || 0, 1)} − ${fmtN(cl || 0, 1)}) ÷ ${fmtN(cl || 0, 1)}`, ev: 'derived' },
     { value: THS.mass, unit: 'g', label: 'The weight I build to', head: 'My target', hero: true },
     { value: fmtN(THESEUS.pcb, 1), unit: 'g', label: 'Its one board', head: 'My estimate' },
-    { value: h370 != null ? fmtN(h370, 0) : '–', unit: 'h', label: p370 ? `${fmtN(p370.wh, 3)} Wh ÷ ${fmtN(L.w1 * 1000, 2)} mW` : '', head: 'My forecast, 1 kHz' },
+    { value: h370 != null ? fmtN(h370, 0) : '–', unit: 'h', label: p370 ? `${fmtN(p370.wh, 3)} Wh ÷ ${fmtN(L.w1 * 1000, 2)} mW` : '', head: 'My forecast, 1 khz' },
     { rule: true }
   ];
 }
@@ -202,24 +202,24 @@ S({
 /* ============================== 03, 04. the bar: the best figure anyone has shown, who holds it, how we know, my target ============================== */
 /* each row: cat, best (as shown), bv (its value), who, note, ev, tgt (my target), tv, tq (the target's qualifier), better ('low' | 'high') */
 const NTR_BAR_SPEED = [
-  { cat: 'Motion latency, wired', sub: 'Same as the XBAB XA25', best: '0.13 ms', bv: 0.13, who: 'XBAB XA25', note: '{piaknow}, 8 kHz, fw 1.08', ev: 'measured', tgt: '0.13 ms', tv: 0.13, tq: 'or less', better: 'low' },
-  { cat: 'Motion latency, wireless', best: '0.34 ms', bv: 0.34, who: 'Razer Viper V4 Pro', note: '{piaknow}, 8 kHz', ev: 'measured', tgt: '0.14 ms', tv: 0.14, tq: 'on the same rig', better: 'low' },
+  { cat: 'Motion latency, wired', sub: 'Same as the XBAB XA25', best: '0.13 ms', bv: 0.13, who: 'XBAB XA25', note: '{piaknow}, 8 khz, fw 1.08', ev: 'measured', tgt: '0.13 ms', tv: 0.13, tq: 'or less', better: 'low' },
+  { cat: 'Motion latency, wireless', best: '0.34 ms', bv: 0.34, who: 'Razer Viper V4 Pro', note: '{piaknow}, 8 khz', ev: 'measured', tgt: '0.14 ms', tv: 0.14, tq: 'on the same rig', better: 'low' },
   /* Brock (F22.2): "Match SensorLock, 42 µs", frame to USB through Theseus's own firmware (Razer's FrameSync: 205 µs, on the same
      developer's rig); a match, so it sits with the quiet tiles, and the tile says whose figure it matches */
-  { cat: 'Frame sync, frame to USB', sub: 'Same as XBAB SensorLock', best: '42 µs', bv: 42, who: 'XBAB SensorLock', note: 'Its developer, 8 kHz; FrameSync 205 µs', ev: 'claim', tgt: '42 µs', tv: 42, tq: 'in its own firmware', better: 'low' },
+  { cat: 'Frame sync, frame to USB', sub: 'Same as XBAB SensorLock', best: '42 µs', bv: 42, who: 'XBAB SensorLock', note: 'Its developer, 8 khz; FrameSync 205 µs', ev: 'claim', tgt: '42 µs', tv: 42, tq: 'in its own firmware', better: 'low' },
   /* counted at NC release on XBAB's analyzer, as Theseus counts (the clicks chapter, CLK_TGT): the XA25's 72 µs there, not its "about
      65 µs" claim, which matches its SR latch mode, a clock that starts at NO, about 1.5 ms later in the press (Brock, F18.5: "Tighten it") */
   { cat: 'Click latency, wired', best: '72 µs', bv: 72, who: 'XBAB XA25, NC release', note: 'XBAB\'s analyzer, n = 500', ev: 'claim', tgt: '70 µs', tv: 70, tq: 'moving or still', better: 'low' },
   { cat: 'Click latency, wireless', best: '0.175 ms', bv: 0.175, who: 'VGN Dragonfly 3 Master GT', note: 'VGN, "as low as"', ev: 'claim', tgt: '0.1 ms', tv: 0.1, tq: 'or less', better: 'low' },
   { cat: 'Press to PC, with travel', sub: 'Same as the Starlight X', best: '2.0 ms', bv: 2.0, who: 'Finalmouse Starlight X', note: 'Own rig, pre-release', ev: 'claim', tgt: '2.0 ms', tv: 2.0, tq: 'on an outside rig', better: 'low' },
-  { cat: 'Report rate', sub: 'Wired and wireless', best: '8 kHz', bv: 8, who: 'Wired and wireless', note: 'USB high speed, 125 µs', ev: 'datasheet', tgt: '8 kHz', tv: 8, tq: 'wired and wireless', better: 'high' },
-  { cat: 'Lost reports rescued', sub: 'Same as Kunai Second Shot', best: '99 to 100%', bv: 99, who: 'Kunai Second Shot, 4 kHz', note: 'Its developer, unreleased', ev: 'claim', tgt: '99%', tv: 99, tq: 'or more, at every rate', better: 'high' }
+  { cat: 'Report rate', sub: 'Wired and wireless', best: '8 khz', bv: 8, who: 'Wired and wireless', note: 'USB high speed, 125 µs', ev: 'datasheet', tgt: '8 khz', tv: 8, tq: 'wired and wireless', better: 'high' },
+  { cat: 'Lost reports rescued', sub: 'Same as Kunai Second Shot', best: '99 to 100%', bv: 99, who: 'Kunai Second Shot, 4 khz', note: 'Its developer, unreleased', ev: 'claim', tgt: '99%', tv: 99, tq: 'or more, at every rate', better: 'high' }
 ];
 /* Theseus doesn't exist yet, so its hours are derived, never measured (review item 10): the Jauch cell at the Viper V4 Pro's
-   draw, one derivation for the whole deck (ntr_hours). The 8 kHz row is filled in at draw time from it */
+   draw, one derivation for the whole deck (ntr_hours). The 8 khz row is filled in at draw time from it */
 const NTR_BAR_REST = [
-  { cat: 'Battery, 1 kHz', best: '180 h', bv: 180, who: 'Razer Viper V4 Pro, 49 g', note: 'Razer; SLX: no rating', ev: 'claim', tgt: '200 h', tv: 200, tq: 'derived', better: 'high' },
-  { cat: 'Battery, 8 kHz', best: '40 h', bv: 40, who: 'Razer Viper V4 Pro, TechPowerUp', note: 'TechPowerUp', ev: 'measured', tgt: '46 h', tv: 46, tq: 'derived', better: 'high' },
+  { cat: 'Battery, 1 khz', best: '180 h', bv: 180, who: 'Razer Viper V4 Pro, 49 g', note: 'Razer; SLX: no rating', ev: 'claim', tgt: '200 h', tv: 200, tq: 'derived', better: 'high' },
+  { cat: 'Battery, 8 khz', best: '40 h', bv: 40, who: 'Razer Viper V4 Pro, TechPowerUp', note: 'TechPowerUp', ev: 'measured', tgt: '46 h', tv: 46, tq: 'derived', better: 'high' },
   { cat: 'Charge current', sub: 'If the battery is rated for it', best: '0.28 A', who: 'Pulsar X2H', note: 'TechPowerUp', ev: 'measured', tgt: '1C', tq: 'if the battery is rated for it' },
   { cat: 'Weight, full shell', best: '29 g', bv: 29, who: 'Finalmouse ULX, small', note: 'Listed, not weighed', ev: 'claim', tgt: THS.massG, tv: THESEUS.mass, tq: 'weighed, every unit', better: 'low' },
   /* Brock (22:05): Theseus uses the PixArt PAW3970, the Viper V4 Pro's sensor under Razer's name (Focus Pro 50K Gen-3), so it
@@ -235,7 +235,7 @@ const NTR_BAR_REST = [
   { cat: 'Coating hardness', sub: 'Baked F-Series, its test panels', best: '9H pencil', who: 'Cerakote F-130', note: 'ASTM D3363, on its panels', ev: 'datasheet', tgt: '9H', tq: 'baked F-Series' }
 ];
 /** Theseus's battery hours, derived (one derivation for the deck): the Jauch LP402535JU's energy over the Viper V4 Pro's
-   draw, its 1.184 Wh cell over Razer's 180 h at 1 kHz and over TechPowerUp's 40 h at 8 kHz. { h1, h8, wh, L } */
+   draw, its 1.184 Wh cell over Razer's 180 h at 1 khz and over TechPowerUp's 40 h at 8 khz. { h1, h8, wh, L } */
 function ntr_hours() { const cell = ntr_pack('LP402535JU') || { wh: 1.369 }, L = ntr_loads(); return { h1: cell.wh / L.w1, h8: cell.wh / L.w8, wh: cell.wh, L }; }
 /* at a glance (Brock, F14.10, F16.1): the helpers live with the clicks chapter (10-b-click.js); the intro calls them by these names */
 const ntr_hl = (...a) => clk_hl(...a), ntr_ba = (...a) => clk_ba(...a);
@@ -280,7 +280,7 @@ S({
     header(t, 'Targets, part one: speed');
     captions(t, [[0.6, 'For every speed figure, the best anyone has shown, and my target. Theseus matches or beats every one.'], [5.0, 'The big one is wireless motion: 0.14 ms, 59% under the fastest wireless mouse anyone has measured.']]);
     const m = NTR_BAR_SPEED.find(r => /wireless/.test(r.cat) && /Motion/.test(r.cat));
-    ntr_targets(t, NTR_BAR_SPEED, { head: ['−' + fmtN(100 * (m.bv - m.tv) / m.bv, 0) + '%', 'latency', 'Wireless motion: ' + m.tgt + ' against ' + m.best + ', the fastest measured ({piaknow}, 8 kHz)'] });
+    ntr_targets(t, NTR_BAR_SPEED, { head: ['−' + fmtN(100 * (m.bv - m.tv) / m.bv, 0) + '%', 'latency', 'Wireless motion: ' + m.tgt + ' against ' + m.best + ', the fastest measured ({piaknow}, 8 khz)'] });
     source(t, 'Change = (target − best) ÷ best. Best shown: piaknow, Razer, VGN and Finalmouse rigs as named; Kunai and XBAB by their developers.', { t0: 3.4 });
   }
 });
@@ -291,11 +291,11 @@ S({
     header(t, 'Targets, part two: everything else');
     const lw0 = ntr_lightest(), H = ntr_hours(), h8 = Math.round(H.h8);
     const rows = NTR_BAR_REST.map(r => r.cat === 'Weight, full shell' && lw0 ? Object.assign({}, r, { best: fmtN(lw0.g, 1) + ' g', bv: lw0.g, who: lw0.name.replace('Finalmouse ', '') + ', RTINGS' })
-      : r.cat === 'Battery, 8 kHz' ? Object.assign({}, r, { tgt: h8 + ' h', tv: h8 }) : r);
+      : r.cat === 'Battery, 8 khz' ? Object.assign({}, r, { tgt: h8 + ' h', tv: h8 }) : r);
     const w = rows.find(r => r.cat === 'Weight, full shell');
     captions(t, [[0.6, 'The same rule for everything else: the best figure shown anywhere, and where Theseus sits against it.'], [5.0, 'Weighed against weighed: the ULX small lists 29 g, but no one has put it on a scale.']]);
     ntr_targets(t, rows, { head: ['−' + fmtN(100 * (w.bv - w.tv) / w.bv, 0) + '%', 'weight', 'Weighed, against the lightest wireless full shell anyone has weighed: ' + w.who.replace(', RTINGS', '') + ', ' + w.best + ' (RTINGS)'], restHead: 'Matches the best, or my method', first: 'Weight, full shell' });
-    source(t, 'Battery, derived: Jauch\'s ' + fmtN(H.wh, 3) + ' Wh battery at the Viper V4 Pro\'s draw, its ' + fmtN(H.L.wh, 3) + ' Wh over Razer\'s ' + H.L.h1 + ' h at 1 kHz (' + fmtN(H.h1, 0) + ' h, planned as 200) and over TechPowerUp\'s ' + H.L.h8 + ' h at 8 kHz.', { t0: 3.0 });
+    source(t, 'Battery, derived: Jauch\'s ' + fmtN(H.wh, 3) + ' Wh battery at the Viper V4 Pro\'s draw, its ' + fmtN(H.L.wh, 3) + ' Wh over Razer\'s ' + H.L.h1 + ' h at 1 khz (' + fmtN(H.h1, 0) + ' h, planned as 200) and over TechPowerUp\'s ' + H.L.h8 + ' h at 8 khz.', { t0: 3.0 });
   }
 });
 
@@ -321,7 +321,7 @@ function ntr_flagCells() {
   const v4c = ntr_fv('razer-viper-v4-pro', 'click_latency'), v48 = ntr_fv('razer-viper-v4-pro', 'battery_measured_h');
   return {
     w: [{ v: THESEUS.mass, s: THS.mass, u: 'g', ev: 'proposal', sub: 'Weighed' }, wt('razer-viper-v4-pro'), wt('finalmouse-slx'), wt('logitech-gpx2'), wt('ninjutso-sora-v3'), wt('xbab-xa25'), wt('endgame-op1-8k-v2')],
-    b: [{ v: 200, s: '200', u: 'h', ev: 'derived', sub: 'Derived' }, Object.assign(hr('razer-viper-v4-pro'), { sub: v48 ? fmtN(v48.v, 0) + ' h at 8 kHz' : '' }),
+    b: [{ v: 200, s: '200', u: 'h', ev: 'derived', sub: 'Derived' }, Object.assign(hr('razer-viper-v4-pro'), { sub: v48 ? fmtN(v48.v, 0) + ' h at 8 khz' : '' }),
       { na: 'None listed', sub: '250 mAh battery' }, hr('logitech-gpx2'), { na: 'None found' }, { na: 'Wired' }, { na: 'Wired' }],
     m: [{ v: 0.14, s: '0.14', u: 'ms', ev: 'proposal', sub: 'Wireless' }, mo('razer-viper-v4-pro', 'Wireless'), { na: 'Not tested' }, mo('logitech-gpx2', 'Wireless'), { na: 'Not tested' }, mo('xbab-xa25', 'Wired'), mo('endgame-op1-8k-v2', 'Wired')],
     c: [{ s: '70', u: 'µs', ev: 'proposal', sub: 'Moving or still' }, v4c ? { s: fmtN(v4c.v * 1000, 0), u: 'µs', ev: v4c.ev, sub: 'TPU rig' } : { na: 'Not tested' }, { na: 'Not tested' }, { na: 'Not tested' }, { na: 'Not tested' },
@@ -409,11 +409,11 @@ S({
     /* price is charted (Brock, F18.4) but not a contest: no "better" line, no headline, every bar in quiet ink */
     ntr_flagBoard(t, LM, 280, RM - LM, 680, [
       { k: 'w', x: 340, w: 430, label: 'Weight, as weighed', dir: 'low', max: 62, hs: 104, head: head('w', 'low'), ba: ba('w', 'low', 'g'), who: who('w', 'low') },
-      { k: 'b', x: 810, w: 320, label: 'Battery at 1 kHz', dir: 'high', max: 220, hs: 80, head: head('b', 'high'), ba: ba('b', 'high', 'h'), who: who('b', 'high') },
-      { k: 'm', x: 1170, w: 320, label: 'Motion latency, 8 kHz', dir: 'low', max: 1.0, hs: 80, head: head('m', 'low'), ba: ba('m', 'low', 'ms'), who: who('m', 'low') },
+      { k: 'b', x: 810, w: 320, label: 'Battery at 1 khz', dir: 'high', max: 220, hs: 80, head: head('b', 'high'), ba: ba('b', 'high', 'h'), who: who('b', 'high') },
+      { k: 'm', x: 1170, w: 320, label: 'Motion latency, 8 khz', dir: 'low', max: 1.0, hs: 80, head: head('m', 'low'), ba: ba('m', 'low', 'ms'), who: who('m', 'low') },
       { k: 'p', x: 1530, w: 278, label: 'Price, US list', dir: null, max: 200, neutral: true, noBest: true, ref: { v: ulx, label: 'The ULX at launch, ' + cheap }, refCol: C.mute }
     ], rows);
-    source(t, 'Weights: RTINGS; the XA25, XBAB by part. Hours: makers; Theseus\'s derived. Motion: piaknow, 8 kHz. Price: US list; the GPX2 at its 2023 list, the ULX at launch (Notebookcheck).', { t0: 4.0 });
+    source(t, 'Weights: RTINGS; the XA25, XBAB by part. Hours: makers; Theseus\'s derived. Motion: piaknow, 8 khz. Price: US list; the GPX2 at its 2023 list, the ULX at launch (Notebookcheck).', { t0: 4.0 });
   }
 });
 
@@ -583,7 +583,7 @@ S({
   }
 });
 
-/* ============================== 09. the empty corner: weight against listed battery life at 1 kHz ============================== */
+/* ============================== 09. the empty corner: weight against listed battery life at 1 khz ============================== */
 const ntr_mk = n => exShort(n).replace(/^(Razer|Logitech|ZOWIE|Lamzu|Pulsar|Ninjutso|Finalmouse|WLMOUSE|Hitscan|Scyrox) /, '').replace('Xiaomi Gaming Mouse 2', 'Xiaomi GM2').replace('Starlight X', 'Starlight X');
 S({
   id: 'market', ch: 'intro', theme: 'night', title: 'Battery life against weight', settle: 10, ideas: ['weight', 'battery'],
@@ -594,10 +594,10 @@ S({
     const rated = mice.filter(m => rv(m.battery_claim_1k_h) != null).map(m => { const w = exWeight(m.id); return w ? { id: m.id, name: ntr_mk(m.name) + (m.id === 'razer-deathadder-v4-pro' ? '*' : ''), x: w.g, y: rv(m.battery_claim_1k_h), hollow: w.ev !== 'measured', ref: m.id === 'razer-viper-v4-pro' } : null; }).filter(Boolean);
     const unr = mice.filter(m => rv(m.battery_claim_1k_h) == null && m.id !== 'mchose-l7-ultra').map(m => { const w = exWeight(m.id); return w && w.g <= 50 ? { id: m.id, name: NTR_SHORT[m.id] || exShort(m.name), g: w.g, ev: w.ev } : null; }).filter(Boolean).sort((a, b) => a.g - b.g);
     const light = rated.reduce((a, p) => (!a || p.x < a.x ? p : a), null);
-    captions(t, [[0.6, `Every wireless mouse that lists hours at 1 kHz, against its weight. The lightest is the ${light ? light.name + ', ' + ntr_g(light.x) + ' g' : '–'} as weighed.`],
-      [5.4, 'Nothing lighter comes with an hour rating. That corner is Theseus: 29.31 g and 200 h at 1 kHz for $189, its hours derived from its battery at the V4 Pro\'s draw.']]);
+    captions(t, [[0.6, `Every wireless mouse that lists hours at 1 khz, against its weight. The lightest is the ${light ? light.name + ', ' + ntr_g(light.x) + ' g' : '–'} as weighed.`],
+      [5.4, 'Nothing lighter comes with an hour rating. That corner is Theseus: 29.31 g and 200 h at 1 khz for $189, its hours derived from its battery at the V4 Pro\'s draw.']]);
     const x = 720, py = 330, w = 1100, ph = 480, xr = [25, 62], yr = [0, 220], X = g => x + w * (g - xr[0]) / (xr[1] - xr[0]);
-    cardHead(t, 0.5, x - 120, py - 80, w + 120, 'Listed hours at 1 kHz against weight, wireless', [{ ev: 'measured', by: 'RTINGS' }, { ev: 'claim', by: 'Maker' }]);
+    cardHead(t, 0.5, x - 120, py - 80, w + 120, 'Listed hours at 1 khz against weight, wireless', [{ ev: 'measured', by: 'RTINGS' }, { ev: 'claim', by: 'Maker' }]);
     /* the corner nobody has rated: left of the lightest rated mouse */
     const kz = ep(t, 3.0, 3.8, E.io3);
     if (light && kz > 0) line(X(light.x), py, X(light.x), py + ph * kz, { color: C.red, w: 1.5, dash: [6, 6] });
@@ -613,7 +613,7 @@ S({
     if (light) text('No rating found', X(light.x) - 14, py + ph - 34, { role: 'label', size: 20, color: C.redL, align: 'right', alpha: kt });
     /* the list, so every red tick has a name */
     const lx = LM, lr = LM + 480, ly = py - 30, lk = ep(t, 3.6, 4.0);
-    text('No 1 kHz rating found', lx, ly, { role: 'label', size: 21, color: C.redL, alpha: lk });
+    text('No 1 khz rating found', lx, ly, { role: 'label', size: 21, color: C.redL, alpha: lk });
     line(lx, ly + 16, lr, ly + 16, { color: C.hair, w: 1.5, alpha: lk });
     unr.forEach((u, i) => {
       const yy = ly + 50 + i * 31, k = ep(t, 3.7 + i * 0.05, 4.1 + i * 0.05);
@@ -623,7 +623,7 @@ S({
     });
     /* the headline: Theseus's hours against the longest listed, under the list (F14.10) */
     { const lng = rated.reduce((m, p) => (!m || p.y > m.y ? p : m), null), hy = Math.max(ly + 50 + unr.length * 31 + 96, 820);
-      if (lng) ntr_hl(t, 5.6, lx, hy, '+' + fmtN(100 * (THESEUS.hours - lng.y) / lng.y, 0) + '%', 'hours', { size: 92, count: false, sub: THS.hours + ' at 1 kHz against the longest listed, the ' + lng.name.replace('*', '') + ': ' + fmtN(lng.y, 0) + ' h at ' + ntr_g(lng.x) + ' g.', maxW: 520, subSize: 22 }); }
+      if (lng) ntr_hl(t, 5.6, lx, hy, '+' + fmtN(100 * (THESEUS.hours - lng.y) / lng.y, 0) + '%', 'hours', { size: 92, count: false, sub: THS.hours + ' at 1 khz against the longest listed, the ' + lng.name.replace('*', '') + ': ' + fmtN(lng.y, 0) + ' h at ' + ntr_g(lng.x) + ' g.', maxW: 520, subSize: 22 }); }
     const dc = TH ? '#5F5E59' : '#B9B8B2';
     legend(t, 4.2, x - 100, 920, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'ref', label: 'The longest listed' }, { kind: 'hero', label: 'Theseus' }]);
     const un = (sc.unnamed || []);
@@ -670,7 +670,7 @@ S({
   draw: t => {
     header(t, 'Weight budget: 29.31 g, 200 h');
     const B = ntr_budget(), f2 = v => fmtN(v, 2);
-    captions(t, [[0.6, `Where 29.31 g goes: one board instead of three, a ${B.cell.mAh} mAh battery for ${fmtN(B.hours, 0)} h at 1 kHz, a 0.9 g magnesium wheel, ${NTR_BUD.screws} titanium M2 screws in ${NTR_BUD.inserts} brass inserts, one braided lead, and the buttons as XBAB weighed them.`],
+    captions(t, [[0.6, `Where 29.31 g goes: one board instead of three, a ${B.cell.mAh} mAh battery for ${fmtN(B.hours, 0)} h at 1 khz, a 0.9 g magnesium wheel, ${NTR_BUD.screws} titanium M2 screws in ${NTR_BUD.inserts} brass inserts, one braided lead, and the buttons as XBAB weighed them.`],
       [5.6, `That leaves ${f2(B.shell)} g for the shell and skates, ${f2(B.cut)} g under the XA25's. My shell design takes that out, and the battery fits.`]]);
     const rows = [
       { name: 'Shell and skates', g: B.shell, was: B.xa.shell, ev: 'derived', hero: true },
@@ -685,7 +685,7 @@ S({
     breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 54, stagger: 0.09, wasLabel: 'XA25', foot: ['Dashed: the XA25\'s part, as XBAB weighed it (its three boards for the board)', ''] });
     /* the two things the plan rests on: the cell's hours, and the shell's grams */
     ntr_stack(t, 1200, 320, RM - 1200, [
-      { t0: 5.0, gloss: true, a: 'Hours = Wh ÷ draw', b: `${B.cell.mAh} mAh at 3.7 V holds ${fmtN(B.cell.wh, 3)} Wh. A Viper V4 Pro draws ${fmtN(B.L.w1 * 1000, 2)} mW at 1 kHz (its ${fmtN(B.L.wh, 3)} Wh over Razer's ${B.L.h1} h), so the battery runs ${fmtN(B.hours, 0)} h.` },
+      { t0: 5.0, gloss: true, a: 'Hours = Wh ÷ draw', b: `${B.cell.mAh} mAh at 3.7 V holds ${fmtN(B.cell.wh, 3)} Wh. A Viper V4 Pro draws ${fmtN(B.L.w1 * 1000, 2)} mW at 1 khz (its ${fmtN(B.L.wh, 3)} Wh over Razer's ${B.L.h1} h), so the battery runs ${fmtN(B.hours, 0)} h.` },
       { t0: 5.8, a: 'XBAB 2026', b: `The XA25, weighed part by part: 24.94 g in nine parts, shell and skates ${f2(B.xa.shell)} g. Its buttons stand in for mine; the screws and the lead are my own, from the 3D model.` }
     ]);
     { const ka = ep(t, 6.6, 7.2), y = 868;
@@ -710,7 +710,8 @@ const NTR_MAP = {
     { key: 'own', part: 'Screws you can reach', side: 'r', y: 820, at: [1123, 800] }
   ]
 };
-S({
+/* out of the film, 2026-11-05 (Brock, F27: "poor execution and not super needed"). Kept, not registered. */
+const HIDDEN_map = ({
   id: 'map', ch: 'intro', theme: 'night', title: 'Seven areas, each down to the part', settle: 8, three: ['shell'],
   src: ['ntrScan'],
   draw: t => {
