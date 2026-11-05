@@ -921,3 +921,7 @@ old score as archived (F26.13).
   filets a little bigger" / "the scroll wheel cutout should have gold trim and the same radius filet as well". **IN
   PROGRESS (K2):** plan 4 (a trapezoid front with the receptacle hanging a little past it; every corner the same apparent
   size, a little bigger; a gold trim on the wheel bay), shown before the build.
+- **F30.22** His changes to plan 4: "extend the left and right bottom corners so the bottom notch is as deep as the left and
+  right notches" / "the front notch should have the same height as the back other botched depth, and all of their chanfers
+  should be at the same angle". **IN PROGRESS (K2):** plan 5, one notch depth (the waist notches') for the rear notch and
+  the front trapezoid, every chamfer at one angle.
