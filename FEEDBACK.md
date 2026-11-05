@@ -806,7 +806,11 @@ old score as archived (F26.13).
     only thing on the screen for a start animation, it should just be the header, i've pointed this out before and im
     concerned you didn't change it, it makes me worry you're missing my other feedback"). Check every past note again.
   - **G10. Software and latency slides must be simple** ("mosr of them are confusing"; "difficult to understand").
-- **Work packages** (balanced by effort, two builders at a time, each integrated and published as it lands): K1 click
-  mechanics accuracy (F26.1, F26.2 and the click notes on parts); K2 the board and the magnetic encoder (F26.4 to F26.10,
-  and the encoder everywhere); K3 click and glide clarity; K4 shell clarity and consolidation; K5a intro data and selling;
-  K5b surface, electronics and ownership notes plus the global word sweep.
+- **Work packages** (balanced by effort, two builders at a time, each integrated and published as it lands):
+  K1 click mechanics accuracy (F26.1, F26.2, `clicks`, `arc`, `clk_switch`, `tensioner`, `clk_tenmat`, `anchors`,
+  `sidebuttons`; **running** since 04:10); K2 the board, the sensor marking, the magnetic encoder everywhere and the
+  Electronics notes (F26.4 to F26.9; **running** since 04:10); then K3 the click slides made clear (`cutouts`,
+  `clk_front` and the timing slides); K4 the glide slides; K5 the shell's materials and strength slides; K6 the arches,
+  fillets, board and build slides; K7 the intro's data and sell; K8 the surface, the ownership sheet and the wheel. The
+  deck-wide word sweep (G5, G6) is done at integration. (Re-balanced at 04:15 from K3 to K5b: the shell alone was 30
+  slides.)

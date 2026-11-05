@@ -2,7 +2,8 @@
 
 ## brockabomb@gmail.com (the account the 2026-11-04 session ran on)
 - **Main deck**: https://claude.ai/artifact/HH8yRD9aYxCvvgcT1jUkyv, first published 2026-11-04 (version 1793785122-a3a1),
-  republished at each integration (v17 on 2026-11-05 at 00:0x Chicago, version 1793858838-90c9: every note through 22:10). It declares the `db` and
+  republished at each integration (v20 on 2026-11-05 at 04:1x Chicago, version 1793873254-4a5b: the ratings archive, 12 slides
+  out, khz, engravings off, frame sync 202 → 42 µs). It declares the `db` and
   `user` capabilities (the slide ratings, collection `ratings`, readable by viewers, writable by editors): publish later
   versions **without** a `capabilities` parameter so the stored declaration carries forward (`{}` would clear it). It is
   published from
