@@ -280,7 +280,7 @@ export async function buildShell(opts = {}) {
   }
   // wheel (parts API frame: origin = PCB top under the wheel centre, centre at Y = axleHeight)
   const wc = meta.wheel.center, axleHeight = 12;
-  const wheel = lib.buildScrollWheel({ diameter: 22.4, width: 7, axleHeight, encoder: opts.wheelEncoder ?? false, support: opts.wheelEncoder ?? false });
+  const wheel = lib.buildScrollWheel({ diameter: meta.wheel.diameter || 22.74, width: meta.wheel.width || 7, axleHeight, encoder: opts.wheelEncoder ?? false, support: opts.wheelEncoder ?? false });
   wheel.position.set(wc[0], wc[1] - axleHeight, wc[2]);
   const wheelEx = new THREE.Group(); wheelEx.name = 'wheel'; wheelEx.add(wheel); root.add(wheelEx);
   parts.wheel = wheel;

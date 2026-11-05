@@ -250,12 +250,13 @@ function elc_board2d(cx, cy, s, zc, o = {}) {
   const steel = mix('#A9AEB6', '#E5484D', 0.75 * (o.warm || 0));
   R(6.65, 32.25, 6.95, 43.25, 0, steel, null); R(6.65, 31.95, 11.55, 32.3, 0, steel, null); R(6.65, 43.2, 11.55, 43.55, 0, steel, null);
   R(6.65, 34.15, 7.9, 35.75, 0.1 * s, steel, null); R(6.65, 38.35, 7.9, 39.65, 0.1 * s, steel, null);
-  /* the axle, across: steel */
-  R(-8.3, 36.2, 11.15, 39.3, 1.4 * s, steel, 'rgba(0,0,0,0.3)');
-  /* the wheel from above: a rubber tread over the axle, its grip ridges across */
-  R(-3.5, 26.38, 3.5, 49.12, 3.2 * s, '#2A2C31', 'rgba(255,255,255,0.14)');
-  G.save(); G.globalAlpha = a * 0.8; G.strokeStyle = 'rgba(255,255,255,0.10)'; G.lineWidth = 1.2;
-  for (let z = 27.6; z < 48; z += 1.15) { const p = M(3.1, z), q = M(-3.1, z); G.beginPath(); G.moveTo(p[0], p[1]); G.lineTo(q[0], q[1]); G.stroke(); }
+  /* the axle, across: POM (#7), white */
+  R(-8.3, 36.2, 11.15, 39.3, 1.4 * s, '#E4E2DC', 'rgba(0,0,0,0.3)');
+  /* the wheel from above: bare magnesium (it is metal, so it warms with the rest), the fine knurl across its tread (144 grooves,
+     3d/parts/scrollwheel.js; they crowd toward the ends as the tread turns away) */
+  R(-3.5, 26.38, 3.5, 49.12, 3.2 * s, mix('#A4A9B0', '#E5484D', 0.75 * (o.warm || 0)), 'rgba(255,255,255,0.2)');
+  G.save(); G.globalAlpha = a * 0.5; G.strokeStyle = 'rgba(16,18,22,0.6)'; G.lineWidth = 1;
+  for (let k = -28; k <= 28; k++) { const z = 37.75 + 11.37 * Math.sin(k * TAU / 144), p = M(2.9, z), q = M(-2.9, z); G.beginPath(); G.moveTo(p[0], p[1]); G.lineTo(q[0], q[1]); G.stroke(); }
   G.restore();
   if ((o.warm || 0) > 0.01) for (const [x, z, r] of [[9, 37.75, 9], [0, 37.75, 7]]) { const p = M(x, z); warm(p[0], p[1], r * s, '#E5484D', 0.32 * o.warm * a); }
   return M;
@@ -388,7 +389,7 @@ S({
   src: ['antDetune', 'elcLayout', 'elcBrock'],
   draw: t => {
     header(t, 'Antenna turned away from the wheel');
-    captions(t, [[0.6, 'The wheel turns on a steel axle in an encoder with a steel frame, and metal beside an antenna pulls it off its band. The antenna end sat right behind the wheel.'],
+    captions(t, [[0.6, 'The wheel is magnesium and its encoder sits in a steel frame, and metal beside an antenna pulls it off its band. The antenna end sat right behind the wheel.'],
       [5.4, 'Turned 180°, the module keeps its place at the front of the board (#68), and its antenna end sits ' + fmtN(ELC.gap, 0) + ' mm from the axle. The brass inserts stay at the back (#101).']]);
     const x = LM, y = 280, w = 1080, h = 680, ka = tileA(t, 0.2, 0);
     demoWindow(x, y, w, h, ka);
@@ -423,7 +424,7 @@ S({
     vdim(zAnt, ELC.axleZ, landed ? C.heroText : C.ink2, kd, fmtN(d, 1) + ' mm', false);
     /* the labels */
     const kl = ep(t, 1.2, 1.6);
-    callout(t, 1.4, M(9.1, 32.1), 'The wheel\'s metal', { to: [x + 300, y + 92], side: 'l', color: warmK > 0.3 ? C.bad : C.mute, tcolor: C.ink, sub: 'A steel axle, an encoder in a steel frame', maxW: 250 });
+    callout(t, 1.4, M(9.1, 32.1), 'The wheel\'s metal', { to: [x + 300, y + 92], side: 'l', color: warmK > 0.3 ? C.bad : C.mute, tcolor: C.ink, sub: 'A magnesium wheel, an encoder in a steel frame', maxW: 250 });
     if (landed) {
       callout(t, 5.2, M(-6.6, ELC.antZ), 'Antenna end', { to: [x + w - 200, y + h - 170], side: 'r', color: C.heroText, tcolor: C.ink, sub: 'In its keep-out: no copper under it', maxW: 180 });
     }
@@ -479,7 +480,7 @@ S({
     const ages = lanes.map(L => polls.map(p => Math.round(p - L.frames.filter(f => f + 15 <= p).pop()))), jit = ages.map(g => Math.max(...g) - Math.min(...g));
     const FS = { razer: 205, lock: 42, ths: 42 };
     elc_ba(t, 5.4, LM, 850, String(FS.razer), String(FS.ths), { size: 110, label: 'Frame to USB', unit: 'µs', who: ['Razer\'s FrameSync', 'Theseus'], net: '−' + (FS.razer - FS.ths) + ' µs, in my own firmware', maxW: 560 });
-    elc_ba(t, 6.0, 700, 850, String(jit[0]), String(jit[1]), { size: 64, label: 'Jitter', unit: 'µs', who: ['Its own clock', 'Synced'], net: 'Every report the same age', maxW: 440 });
+    elc_ba(t, 6.0, 700, 850, String(jit[0]), String(jit[1]), { size: 64, label: 'Jitter', unit: 'µs', who: ['Own clock', 'Synced'], net: 'Every report the same age', maxW: 440 });
     const tx = 1200, tw0 = RM - tx, ty = 720, th = 240;
     demoWindow(tx, ty, tw0, th, tileA(t, 0.4, 1));
     /* SensorLock and FrameSync are measured by SensorLock's developer: a claim (DESIGN 6); Theseus's figure is my target */

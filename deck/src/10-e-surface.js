@@ -585,7 +585,7 @@ const srf_whTurn = t => (Math.PI / 4) * ep(t, 6.4, 7.8, E.io3);
 function srf_knurlField(pxmm, len) {
   const K = SRF_WH, h = Math.round(K.W * pxmm), per = K.pitch * pxmm, w = Math.ceil(len + 2 * per);
   return srf_field('wheelKnurl' + pxmm.toFixed(2) + '_' + w, w, h, f => {
-    f.mat = { amb: 0.16, kd: 1.0, ks: 1.25, sh: 24, rz: 1, aoR: 2, aoK: 0.32, kf: 0.24 };
+    f.mat = { amb: 0.2, kd: 0.92, ks: 1.15, sh: 26, rz: 1, aoR: 2, aoK: 0.32, kf: 0.26, fall: w * 0.55 };
     for (let y = 0; y < h; y++) {
       const ym = (y + 0.5) / pxmm - K.W / 2, ay = Math.abs(ym);
       let z = Math.sqrt(K.R * K.R - ym * ym) - K.R;                                       /* the crown, mm */
@@ -602,7 +602,8 @@ function srf_knurlField(pxmm, len) {
 function srf_knurlStrip(t, x, y, w, h, th, a) {
   if (a <= 0.003) return;
   const sc = 2, pxmm = sc * h / SRF_WH.W, f = srf_knurlField(pxmm, sc * w), per = SRF_WH.pitch * pxmm;
-  const cv = srf_shade(f, { az: 2.2 + 0.7 * (1 - ep(t, 0.8, 4.0, E.out3)), el: 0.36 });
+  /* a studio light above the strip's top edge sweeps in once and stops (so the shading is cached once it is still) */
+  const k = ep(t, 0.8, 4.4, E.io3), cv = srf_shade(f, { p: [f.w * lerp(-0.2, 0.56, k), -f.h * 0.55, f.h * 1.1] });
   const off = ((th * SRF_WH.R * pxmm) % per + per) % per;
   G.save(); G.globalAlpha = a; rrPath(x, y, w, h, 6); G.clip();
   G.imageSmoothingEnabled = true; G.imageSmoothingQuality = 'high';
@@ -620,22 +621,25 @@ S({
     const lx = LM, ly = 280, lw = 900, lh = 680, th = srf_whTurn(t);
     demoWindow(lx, ly, lw, lh, tileA(t, 0.2, 0));
     /* the wheel: from the side in 2D (the arms, the hub, the rim; the encoder and bracket hidden), a close render in 3D */
-    const wv = { view: [0.86, 0.36, 0.42], zoom: 1.55, target: [0, 12.2, 0], scroll: th, xray: 0, explode: 0 };
-    /* anchors on the right half of the wheel at rest (in the side view +Z is to the left), so the leaders run straight out to the
-       labels; they turn with the wheel. The arm is the one 30° above the horizontal, half way out */
-    const fArm = [0.5, (11 + 3.1 - 0.45) / 21.1, (10.55 - 5.37) / 21.1];
+    /* in 3D the whole tile is the shot, the wheel framed to its left (the target 8.5 mm to the wheel's −Z, screen right here) */
+    const wv = { view: [0.8, 0.48, 0.4], zoom: 1.42, target: [0, 11.2, -8.5], scroll: th, xray: 0, explode: 0 };
+    /* the anchors, as points in the wheel's own frame (x along the axle, toward the camera; r out from the axle at angle al from +Y
+       toward +Z), so each lands on its part and beside its label once the wheel has turned (the arms at rest sit at −120°, −60°,
+       0°, 60°, 120°, 180°; the one at −60° ends 15° right of the top after the 45° turn). Each is aimed through the tread's
+       bounding box, whose size is known (x ±2.9, the crown's R 11.37 round the axle at y 11): at rest in 2D, and in 3D the turned
+       mesh's local box, turned, so grown by |cos| + |sin| of the turn. The 3D anchor projects that world point exactly */
+    const wheelPt = (atR, inf = 1) => (r, al, x = 0) => { const q = K.R * inf;
+      return atR(/wheel\/tread$/, [(x + K.band) / (2 * K.band), (r * Math.cos(al) + q) / (2 * q), (r * Math.sin(al) + q) / (2 * q)]); };
+    const D2R = Math.PI / 180, place = W => { pt.arm = W(6.2, -60 * D2R + th, 0.5) || pt.arm; pt.hub = W(2.15, -95 * D2R, 1.0) || pt.hub; pt.rim = W(10.45, -125 * D2R, 3.5) || pt.rim; pt.top = W(K.R, th) || pt.top; };
     const pt = { arm: [lx + 400, ly + 200], hub: [lx + 320, ly + 280], rim: [lx + 520, ly + 280], top: [lx + 300, ly + 70] };
     if (V2D.on) {
-      const sb = [lx + 40, ly + 60, 500, 440], sv = Object.assign({}, wv, { view2d: 'right', zoom: 2.05, target: [0, 11, 0], hide2d: /encoder|support/ });
+      const sb = [lx + 40, ly + 60, 500, 440], sv = Object.assign({}, wv, { view2d: 'right', zoom: 2.05, target: [0, 11, 0], hide2d: /encoder|support/, ground2d: false });
       srf_3d(t, 0.4, 'wheel', sb[0], sb[1], sb[2], sb[3], sv);
-      const at = (re, f) => v2dAt('wheel', sv, sb, re, f);
-      pt.arm = at(/wheel\/arms$/, fArm) || pt.arm; pt.hub = at(/wheel\/hub$/, [0.5, 0.5, 0.06]) || pt.hub;
-      pt.rim = at(/wheel\/rim$/, [0.5, 0.5, 0.0]) || pt.rim; pt.top = at(/wheel\/rim$/, [0.5, 1.0, 0.5]) || pt.top;
+      const sv0 = Object.assign({}, sv, { scroll: 0 });
+      place(wheelPt((re, f) => v2dAt('wheel', sv0, sb, re, f)));
     } else {
-      const box = [lx + 10, ly + 56, 560, 440], drawn = srf_3d(t, 0.4, 'wheel', box[0], box[1], box[2], box[3], wv);
-      const at = (re, f) => srf_at3('wheel', wv, box, drawn, re, f);
-      pt.arm = at(/wheel\/arms$/, fArm) || pt.arm; pt.hub = at(/wheel\/hub$/, [0.5, 0.5, 0.06]) || pt.hub;
-      pt.rim = at(/wheel\/rim$/, [0.5, 0.5, 0.0]) || pt.rim; pt.top = at(/wheel\/rim$/, [0.5, 1.0, 0.5]) || pt.top;
+      const box = [lx, ly, lw, 500], drawn = srf_3d(t, 0.4, 'wheel', box[0], box[1], box[2], box[3], wv);
+      place(wheelPt((re, f) => srf_at3('wheel', wv, box, drawn, re, f), Math.abs(Math.cos(th)) + Math.abs(Math.sin(th))));
     }
     rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: V2D.on ? 'Magnesium wheel from the side' : 'Magnesium wheel on its POM axle (render)', role: 'small', size: 24, weight: 600, color: C.faint, gap: 16 }], lx + 26, ly + 46, { alpha: ep(t, 0.6, 1.0) });
     const cx = lx + 610;

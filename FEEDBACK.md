@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-05 00:48 (Chicago).
+Last updated: 2026-11-05 01:40 (Chicago).
 
 ## Open with Brock
 
@@ -579,14 +579,17 @@ Answers to the Shell A questions:
   far". **NEXT ITERATION.** The tensioner's real size (F12.5): "Still unknown" (the labelled example stays).
 
 ## F22. Answers at ~23:00 (2026-11-04)
-- **F22.1 DECIDED** The scroll wheel: "https://pmm.gg/products/magnesium-scroll-wheel-op1-8k-op1w-4k-pulse-cyber-op-for-modkit,
+- **F22.1 DONE** The scroll wheel: "https://pmm.gg/products/magnesium-scroll-wheel-op1-8k-op1w-4k-pulse-cyber-op-for-modkit,
   this scroll wheel is 1.0g, ours will be 0.9g, right now the scroll wheel design you have is very bulky and unoptimized,
   it should be closer to the pmm wheel i've attached, but with 6 arms, i also don't like the texture your chosen, even if
   it's based on rover tread, we can get rid of the mars base dome slide as well". **DONE:** `shbDome` (the Mars base
-  dome) is out of the film. **IN PROGRESS (whl):** the wheel in 3D and 2D, at 0.9 g, six arms, a new texture; the wheel
-  slide and the budget.
-- **F22.2 DECIDED** Frame sync: "Match SensorLock, 42 µs". **IN PROGRESS (whl).**
-- **F22.3 DECIDED** Screws and wires in the budget: "Derive Theseus's own" from the 3D model. **IN PROGRESS (whl).**
+  dome) is out of the film. The wheel: six arms, an open hub, a thin crowned rim, AZ31B at 0.900 g (508.8 mm³), a fine
+  straight knurl (144 grooves) instead of the rover tread; `wheel` is now "Six-arm magnesium wheel", −10 % (1.0 → 0.9 g)
+  against PMM's. (PMM's photos were blocked from the session, so the form follows his words and his doc.)
+- **F22.2 DONE** Frame sync: "Match SensorLock, 42 µs". `framesync`: 205 → 42 µs frame to USB against Razer's FrameSync,
+  SensorLock's 42 µs stated plainly.
+- **F22.3 DONE** Screws and wires in the budget: "Derive Theseus's own" from the 3D model: 4 × M2 × 4 steel, 0.75 g; the
+  side-button lead, 0.08 g. With the 0.9 g wheel the shell and skates get **10.02 g** (2.14 g under the XA25's).
 
 ## F23. The phone, and editing text (2026-11-05 00:28)
 - **F23.1 DONE** "on my iphone 16 pro max, all the tools hang off screen and there's no way to input ratings, the tools
@@ -600,3 +603,10 @@ Answers to the Shell A questions:
   only, for every viewer, and are kept in the artifact's db (collection `edits`: slide, from, to), where Claude reads them.
 - **F23.3** "these changes need to be made relatively soon so i can start giving you input on all your slides". Live in
   v18 (00:4x).
+
+## F24. Notes on the wrong slide (2026-11-05 01:13)
+- **F24.1 DONE** "my notes don't appear to be getting properly saved along with the slides ... sometimes my notes from a
+  past slide will carry over to the next one". Cause: the note saved 1.2 s after typing stopped, to whichever slide was
+  showing by then, and a focused note box kept its text across a slide change. Now a note belongs to the slide it was
+  typed on, and any slide change saves it there first. In the saved ratings, `thesis` carries the cover's note word for
+  word and `map`'s note ends mid-sentence: both from this bug.

@@ -38,6 +38,7 @@ function fit() {
 function go(i, opts = {}) {
   i = clamp(i, 0, DECK.slides.length - 1);
   if (i === APP.i && !opts.force) return;
+  try { rateFlush(); if (EDIT.on) editSave(); } catch (e) { }
   const now = performance.now(), prev = DECK.slides[APP.i], next = DECK.slides[i];
   if (!opts.instant && !APP.reduced && prev) {
     SNAP.getContext('2d').drawImage($('fx'), 0, 0);
@@ -59,7 +60,7 @@ function go(i, opts = {}) {
    condense or cut; they don't decide which slides go. They live in the artifact's db at ratings/<slide id>, which only
    the owner and editors can write, and Claude reads them back. Nothing shows where the db isn't served (a local file, a
    preview, a viewer who can't write). */
-const RATE = { db: null, all: {}, ready: false, ro: false, note: '', pend: {}, again: {} };
+const RATE = { db: null, all: {}, ready: false, ro: false, note: '', pend: {}, again: {}, taSlide: null, dirty: false, tmr: null };
 const rateKey = id => String(id).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_');
 async function rateInit() {
   const cl = window.claude;
@@ -88,16 +89,24 @@ function rateBuild(p) {
     '<div class="row"><textarea rows="1" placeholder="What matters most here, or what could go (optional)"></textarea><button class="pill" type="button" data-act="next">next unrated</button></div>';
   p.title = 'The scores show which information is safest to condense, not which slides to cut';
   p.querySelectorAll('.vals button').forEach(b => b.onclick = e => { e.stopPropagation(); rateSave({ value: +b.dataset.v }); });
+  /* a note belongs to the slide it was typed on (Brock, 01:13: "sometimes my notes from a past slide will carry over to
+     the next one"): the box remembers that slide, and any slide change saves the note there first (rateFlush in go) */
   const ta = p.querySelector('textarea');
-  let tmr = null;
-  ta.oninput = () => { clearTimeout(tmr); tmr = setTimeout(() => rateSave({ note: ta.value.trim() }), 1200); };
-  ta.onblur = () => { clearTimeout(tmr); rateSave({ note: ta.value.trim() }); };
+  ta.oninput = () => { if (RATE.taSlide == null) RATE.taSlide = APP.i; RATE.dirty = true; clearTimeout(RATE.tmr); RATE.tmr = setTimeout(rateFlush, 1200); };
+  ta.onblur = () => rateFlush();
   p.querySelector('[data-act="next"]').onclick = e => {
     e.stopPropagation();
     const n = DECK.slides.length;
     for (let k = 1; k <= n; k++) { const j = (APP.i + k) % n; const r = RATE.all[rateKey(DECK.slides[j].id)]; if (!r || !r.value) { go(j); return; } }
   };
   p.dataset.built = '1';
+}
+function rateFlush() {
+  clearTimeout(RATE.tmr); RATE.tmr = null;
+  const ta = $('rate') && $('rate').querySelector('textarea');
+  if (!ta || !RATE.dirty || RATE.taSlide == null) return;
+  RATE.dirty = false;
+  rateSave({ note: ta.value.trim() }, RATE.taSlide);
 }
 function rateSync() {
   if (!RATE.db) return;
@@ -109,13 +118,15 @@ function rateSync() {
   p.querySelector('.slide').textContent = (APP.i + 1) + '. ' + (s.title || s.id);
   p.querySelectorAll('.vals button').forEach(b => { b.classList.toggle('on', !!(r && +b.dataset.v === r.value)); b.disabled = RATE.ro; });
   const ta = p.querySelector('textarea'); ta.disabled = RATE.ro;
-  if (document.activeElement !== ta) ta.value = (r && r.note) || '';
+  if (RATE.taSlide !== APP.i) { rateFlush(); ta.value = (r && r.note) || ''; RATE.taSlide = APP.i; RATE.dirty = false; }
+  else if (!RATE.dirty && document.activeElement !== ta) ta.value = (r && r.note) || '';
   p.querySelector('.state').textContent = RATE.note || (done + ' of ' + DECK.slides.length + ' rated');
 }
-function rateSave(patch) {
+function rateSave(patch, si) {
   if (!RATE.db || RATE.ro) return;
-  const s = DECK.slides[APP.i], k = rateKey(s.id), old = RATE.all[k] || {};
-  const doc = { id: s.id, title: s.title || '', ch: s.ch || '', n: APP.i + 1, of: DECK.slides.length, value: old.value || null, note: old.note || '' };
+  const i = si == null ? APP.i : si, s = DECK.slides[i]; if (!s) return;
+  const k = rateKey(s.id), old = RATE.all[k] || {};
+  const doc = { id: s.id, title: s.title || '', ch: s.ch || '', n: i + 1, of: DECK.slides.length, value: old.value || null, note: old.note || '' };
   Object.assign(doc, patch);
   if (doc.value === (old.value || null) && doc.note === (old.note || '')) return;
   doc.at = new Date().toISOString();
