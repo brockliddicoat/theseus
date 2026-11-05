@@ -898,3 +898,6 @@ old score as archived (F26.13).
   stays straight, with that fillet where it meets the next edge). And, overriding F30.13's USB-C answer: "i think i
   answered your question wrong before and the usb port should be moved back so it doesn't stick out oddly like it does
   now". **IN PROGRESS (K2):** plan 3, shown before the build.
+- **F30.15** "i'm also not sure how i feel about the new board back, i really liked the old designs artwork, you should try
+  the match/adapt the old designs back artwork as best you can". **IN PROGRESS (K2):** today's underside artwork adapted
+  to the new outline (its dark triangles, gold clusters, wordmark, labels, QR), triangles filleted, shown in plan 3.
