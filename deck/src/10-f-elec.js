@@ -252,11 +252,16 @@ function elc_board2d(cx, cy, s, zc, o = {}) {
   R(6.65, 34.15, 7.9, 35.75, 0.1 * s, steel, null); R(6.65, 38.35, 7.9, 39.65, 0.1 * s, steel, null);
   /* the axle, across: POM (#7), white */
   R(-8.3, 36.2, 11.15, 39.3, 1.4 * s, '#E4E2DC', 'rgba(0,0,0,0.3)');
-  /* the wheel from above: bare magnesium (it is metal, so it warms with the rest), the fine knurl across its tread (144 grooves,
-     3d/parts/scrollwheel.js; they crowd toward the ends as the tread turns away) */
+  /* the wheel from above: bare magnesium (it is metal, so it warms with the rest), its diamond knurl across the tread (72 teeth,
+     grooves at 30° each way over the 5.16 mm band, 3d/parts/scrollwheel.js; they crowd toward the ends as the tread turns away) */
   R(-3.5, 26.38, 3.5, 49.12, 3.2 * s, mix('#A4A9B0', '#E5484D', 0.75 * (o.warm || 0)), 'rgba(255,255,255,0.2)');
-  G.save(); G.globalAlpha = a * 0.5; G.strokeStyle = 'rgba(16,18,22,0.6)'; G.lineWidth = 1;
-  for (let k = -28; k <= 28; k++) { const z = 37.75 + 11.37 * Math.sin(k * TAU / 144), p = M(2.9, z), q = M(-2.9, z); G.beginPath(); G.moveTo(p[0], p[1]); G.lineTo(q[0], q[1]); G.stroke(); }
+  G.save(); G.globalAlpha = a * 0.45; G.strokeStyle = 'rgba(16,18,22,0.6)'; G.lineWidth = 1;
+  { const yK = 2.578, dl = yK * Math.tan(Math.PI / 6) / 11.37;
+    for (let k = -14; k <= 14; k++) for (const sg of [1, -1]) {
+      G.beginPath();
+      for (let i = 0; i <= 6; i++) { const u = -1 + i / 3, th = k * TAU / 72 + sg * u * dl, p = M(u * yK, 37.75 + 11.37 * Math.sin(th)); if (i) G.lineTo(p[0], p[1]); else G.moveTo(p[0], p[1]); }
+      G.stroke();
+    } }
   G.restore();
   if ((o.warm || 0) > 0.01) for (const [x, z, r] of [[9, 37.75, 9], [0, 37.75, 7]]) { const p = M(x, z); warm(p[0], p[1], r * s, '#E5484D', 0.32 * o.warm * a); }
   return M;

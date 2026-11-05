@@ -29,7 +29,7 @@ Object.assign(SRC, {
   ntrV4Sensor: { t: 'igor\'sLAB, Razer Viper V4 Pro review: Focus Pro 50K Gen-3 optical sensor, 50,000 DPI in 1-DPI steps, 930 IPS, 90 G, true 8,000 Hz polling, Frame Sync, a 26-level asymmetric cut-off, 99.8% resolution accuracy. Brock: the Focus Pro 50K Gen-3 is PixArt\'s PAW3970 under Razer\'s name (Razer has it alone for about two years); Theseus uses it', u: 'https://www.igorslab.de/en/razer-viper-v4-pro-review-49-grams-8-000-hz-competitive-gaming/2/' },
   ntrDelrinRho: { t: 'Delrin 150 data sheet (Plastics International): specific gravity 1.42 g/cc (ASTM D792)', u: 'https://www.plasticsintl.com/media/05oith4t/delrin-150-data-sheet.pdf' },
   ntrBrassRho: { t: 'Austral Wright Metals, C38500 free-cutting brass: density 8.47 g/cm³ at 20 °C', u: 'https://www.australwright.com.au/technical-data/alloys/copper-brass/c38500-free-cutting-brass/' },
-  ntrSteelRho: { t: 'MakeItFrom, SAE-AISI 1022 (G10220) carbon steel: density 7.9 g/cm³', u: 'https://makeitfrom.com/material-properties/SAE-AISI-1022-G10220-Carbon-Steel', n: 'The screws are brass-plated carbon steel; the plating is a few µm and is not counted.' },
+  ntrTiRho: { t: 'ASM Aerospace Specification Metals, titanium Ti-6Al-4V (grade 5), annealed: density 4.43 g/cc', u: 'https://www.aerospacemetals.com/wp-content/uploads/2023/07/Titanium-Ti-6Al-4V-Grade-5-Annealed.pdf', n: 'Brock chose titanium screws (F25.4); they were brass-plated carbon steel.' },
   ntrGoreWire: { t: 'GORE PTFE hook-up wire, Type ET, 32 AWG (7/40), G01A180: outside diameter 0.020 to 0.024 in, nominal weight 0.49 lb per 1,000 ft (0.73 mg per mm)', u: 'https://kr.gore.com/system/files/2021-04/GORE_PTFE_Hook-Up_Wire.pdf', n: 'The 3D model\'s wires are 0.52 mm across, Type ET\'s size; Brock: three 32 AWG wires of 40 AWG strands (F21.10).' },
   ntrModel3d: { t: 'This deck\'s 3D model of Theseus (3d/): four M2 × 4 pan-head screws (3d/shell meta.screws, parts/fasteners.js, 23.6 mm³ each by its own mesh); the side-button lead, J3 to the two side switches (pcb/tools/components.py SIDELEAD, shell.js), three wires on a 6 mm lay, 109 mm of wire in all; the battery\'s lead belongs to the battery, which Jauch weighs with its leads', u: '', n: 'A design model built for the deck, not a weighed part.' },
   ntrScan: { t: 'The shape on screen is a placeholder: the Ninjutso Sora V2/V3, from Brock\'s own 3D scan (refs/scan, local only)', u: '' }
@@ -642,9 +642,10 @@ const NTR_BUD = {
                                      wheel only" (srf_pmm); the 3D wheel hits it: 508.8 mm³ of AZ31B at 1.77 g/cm³ (srf_wheel3d) */
   axleMm3: 84.3, pom: 1.42,       /* the same part's POM axle: two journals, the hex in the hub and the D drive, 84.3 mm³ by its own
                                      meshes (spec.axleVolume_mm3); Delrin 150, 1.42 g/cm³ (ntrDelrinRho) */
-  screws: 4, screwMm3: 23.59, steel: 7.9,   /* four M2 × 4 pan-head screws in the 3D shell (3d/shell meta.screws, shell.js length 4),
+  screws: 4, screwMm3: 23.59, ti: 4.43,   /* four M2 × 4 pan-head screws in the 3D shell (3d/shell meta.screws, shell.js length 4),
                                      23.59 mm³ each by the screw's own mesh (head 14.42 with its recess, thread 7.38, point 1.79),
-                                     in carbon steel at 7.9 g/cm³ (ntrSteelRho), brass plating aside */
+                                     in titanium Ti-6Al-4V grade 5 at 4.43 g/cm³ (ntrTiRho; Brock, F25.4: "Titanium"). In the carbon
+                                     steel they were (7.9 g/cm³) the four weighed 0.75 g */
   leadMm: 109.1, wireMgMm: 0.729, /* the side-button lead, J3 to the two side switches (ntrModel3d): its 8.9 mm in the board model
                                      (SIDELEAD) and on up the wall to the rear switch, 21.5 mm with three wires; SB4 on to the rear
                                      switch's NO, GND and SB5 on to the front switch's COM and NO; ×1.069 for the 6 mm lay: 109.1 mm
@@ -659,17 +660,17 @@ function ntr_budget() {
   const xa = { shell: by(/^Shell/), btn: by(/^Button/), wheel: by(/^Scroll/), screws: by(/^Screws/), fpc: by(/^FPC/), boards: by(/^Front PCB/) + by(/^Main PCB/) + by(/^Side PCB/) };
   const cell = ntr_pack('LP402535JU') || { part: 'LP402535JU', mAh: 370, g: 8, wh: 1.369 }, L = ntr_loads(), N = NTR_BUD;
   const wheelMg = N.wheel, axle = N.axleMm3 * N.pom / 1000, wheel = wheelMg + axle, ins1 = N.insMm3 * N.brass / 1000, ins = N.inserts * ins1;
-  const screw1 = N.screwMm3 * N.steel / 1000, screws = N.screws * screw1, wires = N.leadMm * N.wireMgMm / 1000;
+  const screw1 = N.screwMm3 * N.ti / 1000, screws = N.screws * screw1, wires = N.leadMm * N.wireMgMm / 1000;
   const ref = xa.btn, shell = THESEUS.mass - cell.g - THESEUS.pcb - ref - wheel - ins - screws - wires;
   return { xa, cell, L, ref, wheel, wheelMg, axle, ins, ins1, screws, screw1, wires, shell, cut: xa.shell - shell, hours: cell.wh / L.w1, ok: P.length > 0 };
 }
 S({
   id: 'budget', ch: 'intro', theme: 'paper', title: 'Weight budget: 29.31 g, 200 h', settle: 11, ideas: ['weight', 'battery'],
-  src: ['exXbabWeight', 'ntrJauch', 'exJauch', 'ntrTpuV4', 'exNbcV4', 'srf_pmm', 'srf_wheel3d', 'srf_az31b', 'ntrDelrinRho', 'ntrModel3d', 'ntrSteelRho', 'ntrGoreWire', 'ntrBrassRho'],
+  src: ['exXbabWeight', 'ntrJauch', 'exJauch', 'ntrTpuV4', 'exNbcV4', 'srf_pmm', 'srf_wheel3d', 'srf_az31b', 'ntrDelrinRho', 'ntrModel3d', 'ntrTiRho', 'ntrGoreWire', 'ntrBrassRho'],
   draw: t => {
     header(t, 'Weight budget: 29.31 g, 200 h');
     const B = ntr_budget(), f2 = v => fmtN(v, 2);
-    captions(t, [[0.6, `Where 29.31 g goes: one board instead of three, a ${B.cell.mAh} mAh battery for ${fmtN(B.hours, 0)} h at 1 kHz, a 0.9 g magnesium wheel, ${NTR_BUD.screws} M2 screws in ${NTR_BUD.inserts} brass inserts, one braided lead, and the buttons as XBAB weighed them.`],
+    captions(t, [[0.6, `Where 29.31 g goes: one board instead of three, a ${B.cell.mAh} mAh battery for ${fmtN(B.hours, 0)} h at 1 kHz, a 0.9 g magnesium wheel, ${NTR_BUD.screws} titanium M2 screws in ${NTR_BUD.inserts} brass inserts, one braided lead, and the buttons as XBAB weighed them.`],
       [5.6, `That leaves ${f2(B.shell)} g for the shell and skates, ${f2(B.cut)} g under the XA25's. My shell design takes that out, and the battery fits.`]]);
     const rows = [
       { name: 'Shell and skates', g: B.shell, was: B.xa.shell, ev: 'derived', hero: true },
@@ -677,7 +678,7 @@ S({
       { name: 'One board', g: THESEUS.pcb, was: B.xa.boards, note: 'Radio, antenna, USB-C on it' },
       { name: 'Buttons', g: B.xa.btn, ev: 'claim', note: 'As in the XA25' },
       { name: 'Wheel and axle', g: B.wheel, ev: 'derived', note: '0.9 g + POM axle' },
-      { name: 'Screws', count: NTR_BUD.screws, g: B.screws, ev: 'derived', note: 'M2 × 4 steel, ' + f2(B.screw1) + ' g each' },
+      { name: 'Screws', count: NTR_BUD.screws, g: B.screws, ev: 'derived', note: 'M2 × 4 titanium, ' + f2(B.screw1) + ' g each' },
       { name: 'Brass inserts', count: NTR_BUD.inserts, g: B.ins, ev: 'derived', note: f2(B.ins1) + ' g each' },
       { name: 'Wires', g: B.wires, ev: 'derived', note: 'Side-button lead, 32 AWG' }
     ];
@@ -690,7 +691,7 @@ S({
     { const ka = ep(t, 6.6, 7.2), y = 868;
       rich([{ s: f2(B.cut), role: 'stat', size: 64, color: C.heroText, grad: C.heroGrad, tnum: true, count: [6.7, 0.8] }, { s: 'g', font: 'disp', size: 26, weight: 700, color: C.mute, gap: 6 }], 1200, y, { t, alpha: ka });
       text('out of the shell: the one number the plan asks of my design', 1200 + 210, y - 22, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: RM - 1410, lh: 1.3, alpha: ka }); }
-    source(t, `Derived from the 3D model: the axle ${fmtN(NTR_BUD.axleMm3, 0)} mm³ of POM at ${NTR_BUD.pom}; each screw ${fmtN(NTR_BUD.screwMm3, 1)} mm³ of steel at ${NTR_BUD.steel}; the lead ${fmtN(NTR_BUD.leadMm, 0)} mm at ${fmtN(NTR_BUD.wireMgMm, 2)} mg/mm; each insert ${fmtN(NTR_BUD.insMm3, 1)} mm³ of brass at ${NTR_BUD.brass}.`, { t0: 3 });
+    source(t, `Derived from the 3D model: the axle ${fmtN(NTR_BUD.axleMm3, 0)} mm³ of POM at ${NTR_BUD.pom}; each screw ${fmtN(NTR_BUD.screwMm3, 1)} mm³ of titanium at ${NTR_BUD.ti}; the lead ${fmtN(NTR_BUD.leadMm, 0)} mm at ${fmtN(NTR_BUD.wireMgMm, 2)} mg/mm; each insert ${fmtN(NTR_BUD.insMm3, 1)} mm³ of brass at ${NTR_BUD.brass}.`, { t0: 3 });
   }
 });
 

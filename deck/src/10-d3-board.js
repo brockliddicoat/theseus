@@ -442,8 +442,8 @@ function shcBudget() {
   const by = (re, d) => { const p = b && b.parts.find(q => re.test(q.part)); return p ? +shcV(p.mass) : d; };
   const cr = (((RD0.batteries || {}).jauch_lipo_family || {}).rows || []).find(r => r.part === 'LP402535JU');
   const cell = { part: 'LP402535JU', mAh: cr ? +shcV(cr.capacity) : 370, g: cr ? +shcV(cr.mass) : 8, t: 4.0 };
-  /* the wheel 0.9 g + its 84.3 mm³ POM axle; 4 × 23.59 mm³ of steel at 7.9; 109.1 mm of 32 AWG lead at 0.729 mg/mm (ntr_budget) */
-  const btn = by(/^Button/, 3.328), wheel = 0.9 + 0.0843 * 1.42, ins = 0.516, screws = 4 * 0.02359 * 7.9, wires = 0.1091 * 0.729;
+  /* the wheel 0.9 g + its 84.3 mm³ POM axle; 4 × 23.59 mm³ of titanium at 4.43; 109.1 mm of 32 AWG lead at 0.729 mg/mm (ntr_budget) */
+  const btn = by(/^Button/, 3.328), wheel = 0.9 + 0.0843 * 1.42, ins = 0.516, screws = 4 * 0.02359 * 4.43, wires = 0.1091 * 0.729;
   return (SHC.bud = { cell, btn, wheel, screws, wires, ins, shell: THESEUS.mass - cell.g - THESEUS.pcb - btn - wheel - ins - screws - wires });
 }
 /** the centre of mass's height with the cell's centre at y (mm), and the two layouts */

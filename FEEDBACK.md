@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-05 01:40 (Chicago).
+Last updated: 2026-11-05 03:50 (Chicago).
 
 ## Open with Brock
 
@@ -612,13 +612,48 @@ Answers to the Shell A questions:
   word and `map`'s note ends mid-sentence: both from this bug.
 
 ## F25. Answers on the new wheel and the screws (2026-11-05 ~01:45)
-- **F25.1 DECIDED** The wheel's tread: "research what you think is best, if assumed, coarse and diamond are my favorites".
+- **F25.1 DONE** (a coarse diamond knurl, 72 teeth at 1.0 mm pitch, 30° each way, flat tops; IS 3403) The wheel's tread: "research what you think is best, if assumed, coarse and diamond are my favorites".
   **IN PROGRESS (whl).**
-- **F25.2 DECIDED** The wheel's form: "thinners arms". **IN PROGRESS (whl).**
+- **F25.2 DONE** The wheel's form: "thinners arms". Arms 0.95 → 0.55 mm, the weight held at 0.900 g.
 - **F25.3 DECIDED** The side-button lead: "Keep 3 wires". **DONE** (no change).
-- **F25.4 DECIDED** The screws: "Titanium" (instead of steel). **IN PROGRESS (whl):** the budget, the 3D screws and the
+- **F25.4 DONE** The screws: "Titanium" (instead of steel): grade 5, 0.42 g for four; shell and skates 10.35 g. **IN PROGRESS (whl):** the budget, the 3D screws and the
   Ownership slides (no more magnetic pickup).
-- **F25.5 DECIDED** "mentioned the improved strength of the titanium screws compared to steel leading to less stripping,
+- **F25.5 DONE** (head hardness 220 → 349 HV against class 4.8, sourced; thread stripping stays in the brass, said so) "mentioned the improved strength of the titanium screws compared to steel leading to less stripping,
   find research to back". **IN PROGRESS (whl):** sourced, against the steel the screws would really be (stainless A2 or
   class 4.8 / 8.8; class 12.9 alloy steel is stronger than grade 5 titanium), and clear about which stripping the evidence
   supports (the recess, by hardness; the thread usually strips in the brass insert, not the screw).
+
+## F26. Notes at 01:43 (2026-11-05)
+- **F26.1** "the click tensioning mechanism you're showing in the diagrams isn't anywhere near as accurate as it should be,
+  i almost feel like it's potentially wrong as well, it needs a lot more effort". Asked what to build from: "Research
+  real mice". **IN PROGRESS (clk4).**
+- **F26.2** "the second of the dual plungers need to be shown as exactly the to be exactly same size as the one for the
+  switch and the one for the side button, this helps show our uniformity claim. right now the plunger without a switch
+  sticks done further and looks different." **IN PROGRESS (clk4).**
+- **F26.3 NOTED** "as if we ever add magnetic clicks, the second plunger is an excellent place to do so for this reason"
+  (context for F26.2; magnetic clicks stay off the slides, F9.9).
+- **F26.4** "the battery connector needs to be turned 90 degrees so it can be pulled out properly, it's hard to access it
+  when it faces towards the left instead of the back". **IN PROGRESS (pcb3).**
+- **F26.5** "the pcb needs more rounding on all of its edges to look more premium (this my mean extending the front
+  slightly to give it a buffer so the microswitches don't stick out over where there's no pcb), and the tiny notches on
+  the left and right sides should be shaved off so the pcb can better be used as a support better, the back width of the
+  pcb should be back width as the front". **IN PROGRESS (pcb3).**
+- **F26.6** "give the triangles on the back of PCB design the proper fliletting". **IN PROGRESS (pcb3).**
+- **F26.7** "the 2 back holes need slightly more padding on the pcb, but the holes can't change location at all".
+  **IN PROGRESS (pcb3).**
+- **F26.8** "the power switch should be moved to the middle of the notch so it's easier to access". **IN PROGRESS (pcb3).**
+- **F26.9** "remove the qr code off the sensor and engrave the sensor with PAW3970 and then whatever letters are on the
+  actual sensor to make it look like a real sku (we don't know what the real sku will be past the PAW3970 yet, so
+  derive)". **IN PROGRESS (pcb3).**
+- **F26.10** "the XA25 achieved 42us latency with sensor lock on a worse 3950 sensor with better software" / "the viper v4
+  pro does 202us". Asked for the 202 µs source: "you cited it before, maybe it's wrong if you don't remember". (The deck
+  had 205 µs = SensorLock's 42 + XBAB's "163 µs lower"; nothing public found for either number.) **DONE:** 202 → 42 µs,
+  both his figures, with XBAB's 163 µs noted.
+- **F26.11** "remove all the engravings in the theseus visualizations for now, it's going to take a lot of specialized
+  input to get them to them waiting i want them so it's better to have them off for now". Asked about the slides about
+  engraving: "Hide them for now". **DONE:** srf_marks, details and serial out of the film; the 3D shell's legends,
+  serial and side mark hidden.
+- **F26.12** "let me know if you have any wishing for me to improve your execution, not just related to the feedback i've
+  just given you". Answered in chat.
+- **F26.13** "also updating a slide should archive its old score". **DONE:** each rating records the slide's version;
+  when the slide changes, its score and note move to the rating's history and the slide shows as unrated.

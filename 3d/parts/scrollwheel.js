@@ -12,9 +12,11 @@
 //  - 0.9 g: magnesium AZ31B at 1.77 g/cm³, so the wheel is sized to 508 mm³ (spec.wheelVolume_mm3, massEstimate_g)
 //  - "more like a torus than cylinder": the tread is a torus section whose crown radius equals the wheel radius (default),
 //    so the top of the wheel is locally spherical: the fingertip sees the same curvature rolling and across  [proposal]
-//  - the tread (#30, the texture): a fine straight knurl, 144 V-grooves across the crown (6 per encoder step), 0.12 mm deep,
-//    grooves and lands about equally wide, each groove running out to a point before the edges, which stay plain turned
-//    bands; bare machined magnesium  [proposal]
+//  - the tread (#30, the texture; F25.1 "coarse and diamond are my favorites"): a coarse diamond knurl, the DIN 82 / IS 3403
+//    left-right form with raised points: 90° V-grooves at 30° to the axis each way, 72 teeth round (1.0 mm pitch, three to an
+//    encoder step), the points flattened so each tooth is a truncated pyramid, framed by plain turned bands; bare magnesium
+//  - F25.2 "thinners arms": the arms run 0.95 → 0.55 mm wide; the weight they gave up went into the skin under the knurl,
+//    which the deeper teeth cut into  [proposal]
 import * as THREE from 'three';
 import { partMaterials } from './lib/materials.js';
 import { HIGHLIGHT } from '../lib/studio.js';
@@ -29,8 +31,8 @@ export const WHEEL_SPEC = {
   name: 'Magnesium scroll wheel + optical encoder',
   label: 'representative / proposal',
   material: 'magnesium alloy AZ31B (1.77 g/cm³), machined, bare passivated finish',
-  wheel: 'six tapered arms on an open hub, a thin crowned rim with a spine where the arms meet it; 0.9 g (Brock\'s figure, F22.1)',
-  tread: 'fine straight knurl: 144 V-grooves (90°) across the crown, 6 per encoder step, 0.12 mm deep, 0.50 mm pitch, running out to points 0.35 mm before the edge fillets',
+  wheel: 'six thin tapered arms on an open hub, a thin crowned rim with a spine where the arms meet it; 0.9 g (Brock\'s figure, F22.1; thinner arms, F25.2)',
+  tread: 'coarse diamond knurl (DIN 82 / IS 3403 left-right, points raised, then flattened): 72 teeth round, 0.99 mm pitch round the crown, 90° V-grooves 0.215 mm deep at 30° to the axis each way, three teeth to an encoder step, plain turned bands at the edges',
   axle: 'POM (acetal), hex-keyed in the hub, D-flat drive into the encoder',
   encoder: 'optical, TTC-style: tin-plated steel frame with drawn bushing collar on a black plastic body, 5 pins at 1.25 mm; inside a 24-slot code disc on the rotor, a photo-interrupter (IR emitter + dual phototransistor, A/B a quarter-cycle apart) at the bottom, 24-lobe detent star + leaf spring',
   support: 'POM bracket: U seat with lead-in chamfers for the far journal, foot with two locating pegs, gusset',
@@ -51,7 +53,7 @@ export const WHEEL_SPEC = {
 export function buildScrollWheel(opts = {}) {
   const D = opts.diameter ?? 22.74, Wd = opts.width ?? 7.0, R = D / 2, hw = Wd / 2;
   const Rc = opts.crownRadius ?? R;
-  const nK = opts.knurl ?? 144, steps = opts.steps ?? 24, nArms = opts.arms ?? 6;
+  const nK = opts.knurl ?? 72, steps = opts.steps ?? 24, nArms = opts.arms ?? 6;
   const AH = opts.axleHeight ?? 11;
   // geometry is built with the encoder on +X, then mirrored in X for the user's right (default)
   const es = opts.encoderSide ?? 'right';
@@ -74,16 +76,18 @@ export function buildScrollWheel(opts = {}) {
   // surface between ±yK is the knurled tread (below); the lathe here is the rest of the skin, an open profile walked with the
   // material on its left: the plain band and fillet at +X, the side face, the inside, the side face and fillet at −X.
   const crown = (y) => (R - Rc) + Math.sqrt(Rc * Rc - y * y);   // crown surface radius at axial y
-  const tE = opts.skinEdge ?? 0.55, tC = opts.skinCentre ?? 0.98;   // skin thickness at the edges, at the centre plane
+  const tE = opts.skinEdge ?? 0.55, tC = opts.skinCentre ?? 1.108;   // skin thickness at the edges, at the centre plane
   const skin = (y) => tE + (tC - tE) * (1 - (y / hw) ** 2);
   const rIn = (y) => crown(y) - skin(y);              // the skin's inside
   const Ri = rIn(0);                                  // at the centre plane
   const fe = 0.35, chI = 0.2;                         // tread-to-side fillet (tangent to both), inside chamfer
   const yF = hw - fe, rF = (R - Rc) + Math.sqrt((Rc - fe) ** 2 - yF * yF);   // the fillet's centre (r, y), +X side
   const phT = Math.atan2(yF, rF - (R - Rc)), yT = yF + fe * Math.sin(phT);    // where it meets the crown
-  /* knurl: depth, band half width, run-out, and each groove's half width in pitches (a 90° V: half as wide as it is deep
-     twice over, so at 144 grooves the grooves and the lands between them are about equally wide) */
-  const kd = opts.knurlDepth ?? 0.12, yK = +(yT - 0.35).toFixed(3), run = 0.45, hwU = kd * Math.tan(Math.PI / 4) / (TAU * R / nK);
+  /* the diamond knurl's grid: a quarter pitch round the crown (pS / 4) by its step along the 30° grooves (dS / tan 30°), so
+     every groove centre, groove edge and tooth ridge is an edge of the mesh; the band is nRow such steps (a multiple of 4,
+     so it is symmetric), and a 90° V's depth is its half width: a quarter of the pitch normal to the grooves */
+  const beta = (opts.knurlAngle ?? 30) * Math.PI / 180, pS = TAU * R / nK, dS = pS / 4, dY = dS / Math.tan(beta);
+  const nRow = opts.knurlRows ?? 12, yK = nRow * dY / 2, kd = opts.knurlDepth ?? pS * Math.cos(beta) / 4;
   const prof = [];
   for (let i = 0; i < 3; i++) { const y = yK + (yT - yK) * i / 3; prof.push([crown(y), y]); }
   for (let i = 0; i <= 8; i++) { const a = phT + (Math.PI / 2 - phT) * i / 8; prof.push([rF + fe * Math.cos(a), yF + fe * Math.sin(a)]); }
@@ -93,14 +97,15 @@ export function buildScrollWheel(opts = {}) {
   for (let i = 0; i <= 8; i++) { const a = -Math.PI / 2 + (Math.PI / 2 - phT) * i / 8; prof.push([rF + fe * Math.cos(a), -yF + fe * Math.sin(a)]); }
   for (let i = 1; i <= 3; i++) { const y = -yT + (yT - yK) * i / 3; prof.push([crown(y), y]); }
   const toX = (geo) => { geo.rotateZ(-Math.PI / 2); return geo; };
-  // nK segments, one at each groove's centre, so the skin's edge circles meet the knurl's run-out points exactly
-  const rim = meshOf(circTangents(toX(lathe(prof, { segments: nK, crease: 30 }))), M.magnesium, 'rim');
+  // 2·nK segments: every other column of the knurl's grid, so the skin's edge circles meet the knurl's edge rows
+  const rim = meshOf(circTangents(toX(lathe(prof, { segments: 2 * nK, crease: 30 }))), M.magnesium, 'rim');
   spin.add(rim);
 
-  // ------------------------------------------------------------------ the tread: a fine straight knurl
-  // nK V-grooves (90° included) across the crown, 6 per encoder step at 144; each runs out to a point over `run` as the
-  // cutter leaves, so the edges stay plain turned bands. The lands are the crown itself.
-  const tread = meshOf(circTangents(knurlGeometry({ N: nK, crown, yb: yK, run, kd, hwU })), M.magnesium, 'tread');
+  // ------------------------------------------------------------------ the tread: a coarse diamond knurl
+  // two families of 90° V-grooves at 30° to the axis each way, nK teeth round; the teeth's points flattened (their tops as
+  // wide as the grooves), rising out of the plain edge bands over the band's first row. The tops are the crown itself.
+  const KN = diamondKnurl({ N: nK, crown, yK, nRow, kd });
+  const tread = meshOf(circTangents(KN.geometry), M.magnesium, 'tread');
   spin.add(tread);
 
   // ------------------------------------------------------------------ six arms on an open hub
@@ -108,7 +113,7 @@ export function buildScrollWheel(opts = {}) {
   // round the rim's inside and a flange round the hub, the six bays between them open, every corner filleted by the cutter.
   const AF = 2.0, rHub = 2.05, hubW = 3.6;           // hex across flats, hub radius, hub width
   const tH = 1.3, tR = 0.9;                           // arm thickness (axial) at the hub and at the rim
-  const wH = 1.4, wR = 0.8;                           // arm width at the hub and at the rim
+  const wH = 0.95, wR = 0.55;                         // arm width at the hub and at the rim (thinner, F25.2)
   const spine = 0.45, flange = 0.4;                   // the web left round the rim's inside and round the hub
   const armShape = new THREE.Shape(); armShape.absarc(0, 0, Ri + 0.15, 0, TAU, false);
   for (const w of armWindows({ n: nArms, rHub, Ri, rIn0: rHub + flange, rOut0: Ri - spine, wH, wR, rfHub: 0.32, rfRim: 0.5, phase: Math.PI / 6 })) armShape.holes.push(w);
@@ -420,12 +425,12 @@ export function buildScrollWheel(opts = {}) {
   root.getState = () => ({ ...st, gateA: beams[0].t, gateB: beams[1].t });
 
   // ------------------------------------------------------------------ spec, parts, dispose
-  // The wheel's volume: the skin by Pappus over its profile closed along the crown, less the knurl's grooves (a V of depth
-  // kd·q and half width hwU·q pitches, q the run-out); the arms and the hub ring as closed meshes, less where they overlap
+  // The wheel's volume: the skin by Pappus over its profile closed along the crown, less what the knurl's grooves cut below
+  // the crown; the arms and the hub ring as closed meshes, less where they overlap
   // (the arms' outer ring 0.15 mm into the skin, 0.05 mm into the hub); the fillet rings (open surfaces) analytically.
   const closedProf = prof.slice(); for (let i = 1; i < 48; i++) { const y = -yK + 2 * yK * i / 48; closedProf.push([crown(y), y]); }
   const skinV = Math.abs(revolvedVolume(closedProf));
-  let grooveV = 0; { const n = 600, dy = 2 * yK / n; for (let i = 0; i < n; i++) { const y = -yK + (i + 0.5) * dy, q = clamp01((yK - Math.abs(y)) / run); grooveV += TAU * crown(y) * kd * hwU * q * q * dy; } }
+  const grooveV = KN.grooveVolume;   // summed over the knurl's own triangles: area × the mean depth cut below the crown
   const armsV = Math.abs(meshVolume(arms.geometry)), hubV = Math.abs(meshVolume(hub.geometry));
   const overlapV = Math.PI * ((Ri + 0.15) ** 2 - Ri ** 2) * tR + Math.PI * (rHub ** 2 - (rHub - 0.05) ** 2) * tH;
   const c4 = 1 - Math.PI / 4, cg = (10 - 3 * Math.PI) / (12 - 3 * Math.PI);   // a concave fillet: area per r², centroid per r
@@ -438,7 +443,7 @@ export function buildScrollWheel(opts = {}) {
   const encBox = { min: [XF0 - 0.5, 0, -ZH - 0.4], max: [XB1, AH + YT, ZH + 0.4] };
   root.userData.spec = {
     ...WHEEL_SPEC, diameter: D, width: Wd, crownRadius: Rc, steps, axleHeight: AH, axleDiameter: 2 * rJ,
-    knurl: { grooves: nK, perStep: nK / steps, depth: kd, angleDeg: 90, pitch: +(TAU * R / nK).toFixed(3), band: +(2 * yK).toFixed(2), runOut: run },
+    knurl: { type: 'diamond: DIN 82 / IS 3403 left-right, points raised, flattened', teeth: nK, perStep: nK / steps, pitch: +pS.toFixed(3), normalPitch: +(pS * Math.cos(beta)).toFixed(3), helixDeg: +(beta * 180 / Math.PI).toFixed(1), profileDeg: 90, depth: +kd.toFixed(3), band: +(2 * yK).toFixed(2), rows: nRow },
     arms: { n: nArms, width: [wH, wR], thickness: [tH, tR] }, hub: { diameter: 2 * rHub, width: hubW }, skin: { edge: tE, centre: tC, spine, inside: +Ri.toFixed(3) },
     hexAF: AF, sagitta: +(crown(0) - crown(hw)).toFixed(3),
     encoderSide: side > 0 ? 'left (+X)' : 'right (−X)',
@@ -553,28 +558,38 @@ function filletRing(r0, y0, rad, s, outward) {
   if (nr[0] * (c[0] - p[0][0]) + nr[1] * (c[1] - p[0][1]) < 0) p = p.reverse();
   return lathe(p, { segments: 120, crease: 60 });
 }
-/** The knurled tread: N straight V-grooves across the crown between ±yb, each running out to a point over `run` at both
-   ends (a cutter leaving the surface: the groove narrows with its depth, so its 90° flanks stay 90°). Three vertices a groove
-   in each row (its two edges and its root); the lands between grooves are the crown itself. Built in the wheel's frame (axis
-   X), the same parametrisation as lathe() + rotateZ(−90°), so its edge rows meet the skin's lathe at the groove centres. */
-function knurlGeometry({ N, crown, yb, run, kd, hwU, mid = 10, nRun = 5 }) {
-  const ys = [];
-  for (let j = 0; j < nRun; j++) ys.push(-yb + run * j / nRun);
-  for (let j = 0; j <= mid; j++) ys.push(-(yb - run) + 2 * (yb - run) * j / mid);
-  for (let j = 1; j <= nRun; j++) ys.push((yb - run) + run * j / nRun);
-  const P = [], UV = [], I = [], M = 3 * N;
-  for (const y of ys) {
-    const r = crown(y), q = clamp01((yb - Math.abs(y)) / run), dth = hwU * q * TAU / N;
-    for (let k = 0; k < N; k++) {
-      const th = k * TAU / N;
-      for (const [a, rr] of [[th - dth, r], [th, r - kd * q], [th + dth, r]]) { P.push(y, -rr * Math.sin(a), rr * Math.cos(a)); UV.push(a / TAU, y); }
-    }
+/** The diamond-knurled tread (DIN 82 / IS 3403 left-right form with raised points, the points flattened). Two families of 90°
+   V-grooves cross at ±beta to the axis; in pitches, family A runs at constant a = (s − y·tan beta) / pS and family B at
+   constant b = (s + y·tan beta) / pS (s round the crown). On a grid a quarter pitch round (column i) by dS / tan beta along the
+   axis (row j), a = (i − j) / 4 and b = (i + j) / 4 exactly, so with each quad split by both its diagonals (a centre vertex) every
+   groove centre (a or b whole), groove edge (a quarter off) and tooth ridge (a row or a column through a crossing) is an edge
+   of the mesh, and the depth kd · max(V(a), V(b)) is exact on it: V is 1 at a groove's centre, 0 a quarter pitch either side
+   and on the tops. The band's edge rows sit on the crown (q = 0), so they meet the skin's lathe. Built in the wheel's frame
+   (axis X) as lathe() + rotateZ(−90°). Returns { geometry, grooveVolume } (mm³ cut below the crown, area × mean depth). */
+function diamondKnurl({ N, crown, yK, nRow, kd }) {
+  const C = 4 * N, dth = TAU / C, dY = 2 * yK / nRow, P = [], UV = [], I = [];
+  const V = u => { const f = u - Math.floor(u + 1e-9), d = Math.min(f, 1 - f); return d < 0.25 - 1e-9 ? 1 - 4 * d : 0; };
+  const q = j => clamp01(j) * clamp01(nRow - j);
+  const dep = (i, j) => kd * q(j) * Math.max(V((i - j) / 4), V((i + j) / 4));
+  const yx = j => -yK + j * dY;
+  const vert = (i, j) => { const y = yx(j), th = i * dth, r = crown(y) - dep(i, j); P.push(y, -r * Math.sin(th), r * Math.cos(th)); UV.push(th / TAU, y); return P.length / 3 - 1; };
+  const idx = [];
+  for (let j = 0; j <= nRow; j++) { const row = []; for (let i = 0; i < C; i++) row.push(vert(i, j)); idx.push(row); }
+  let vol = 0;
+  const tri = (pa, pb, pc, ta, tb, tc) => {
+    I.push(pa, pb, pc);
+    /* the volume cut below the crown: the triangle's area on the crown (s = r θ) × its mean depth */
+    const ym = (ta[1] + tb[1] + tc[1]) / 3, rr = crown(yx(ym)), sx = rr * dth;
+    const ux = (tb[0] - ta[0]) * sx, uy = (tb[1] - ta[1]) * dY, vx = (tc[0] - ta[0]) * sx, vy = (tc[1] - ta[1]) * dY;
+    vol += Math.abs(ux * vy - uy * vx) / 2 * (dep(...ta) + dep(...tb) + dep(...tc)) / 3;
+  };
+  for (let j = 0; j < nRow; j++) for (let i = 0; i < C; i++) {
+    const i1 = (i + 1) % C, c = vert(i + 0.5, j + 0.5), a = idx[j][i], b = idx[j][i1], d = idx[j + 1][i], e = idx[j + 1][i1];
+    const A = [i, j], B = [i + 1, j], D = [i, j + 1], Ec = [i + 1, j + 1], Cc = [i + 0.5, j + 0.5];
+    /* four triangles round the centre, each counter-clockwise in (θ, y) like the lathe's, so the normals face out */
+    tri(a, b, c, A, B, Cc); tri(b, e, c, B, Ec, Cc); tri(e, d, c, Ec, D, Cc); tri(d, a, c, D, A, Cc);
   }
-  for (let j = 0; j < ys.length - 1; j++) for (let i = 0; i < M; i++) {
-    const a = j * M + i, b = j * M + (i + 1) % M, d = (j + 1) * M + i, c = (j + 1) * M + (i + 1) % M;
-    I.push(a, b, d, b, c, d);
-  }
-  return creaseNormals(makeGeometry(P, I, UV), 35);
+  return { geometry: creaseNormals(makeGeometry(P, I, UV), 35), grooveVolume: vol };
 }
 function meshVolume(geo) {
   const p = geo.attributes.position.array; let v = 0;

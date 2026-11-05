@@ -25,6 +25,9 @@ export function partMaterials(over = {}) {
     brassPlated: P({ color: 0xdcb866, metalness: 1, roughness: 0.22, clearcoat: 0.35, clearcoatRoughness: 0.08 }),
     brassPlatedRolled: P({ color: 0xd6b05e, metalness: 1, roughness: 0.27, clearcoat: 0.25, clearcoatRoughness: 0.12 }),   // the rolled thread
     steel: P({ color: 0xc6cbd0, metalness: 1, roughness: 0.24 }),
+    // Ti-6Al-4V grade 5 screw (Brock, F25.4): bare titanium, a warmer, darker grey than steel, a satin highlight
+    titanium: P({ color: 0xa8a59f, metalness: 1, roughness: 0.3 }),
+    titaniumRolled: P({ color: 0xa19e98, metalness: 1, roughness: 0.36 }),   // the rolled thread
     blackOxide: P({ color: 0x2a2b2d, metalness: 0.85, roughness: 0.42 }),
     stainless: P({ color: 0xc2c6ca, metalness: 1, roughness: 0.2 }),
     phosBronze: P({ color: 0xc89a62, metalness: 1, roughness: 0.28 }),

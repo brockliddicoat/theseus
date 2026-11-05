@@ -10,12 +10,21 @@ Object.assign(SRC, {
   ownIso7045w: { t: 'fasten.it, DIN EN ISO 7045 table: M2 pan head with cross recess, dk 4 mm, k 1.6 mm, recess No. 0, m 1.9 mm (type H)', u: 'https://fasten.it/Norms/Norm/DIN_EN_ISO_7045' },
   ownIso1580: { t: 'fasten.it, DIN EN ISO 1580 table: M2 slotted pan head, slot width n 0.5 mm, slot depth t 0.5 mm minimum', u: 'https://fasten.it/Norms/Norm/DIN_EN_ISO_1580' },
   ownIso68: { t: 'ISO 68-1 basic profile of metric threads, as given in "ISO metric screw thread" (Wikipedia): 60° flanks, H = 0.866P, d2 = d − 0.6495P', u: 'https://en.wikipedia.org/wiki/ISO_metric_screw_thread' },
-  ownIso898: { t: 'ISO 898-1:2013, tensile stress area of a metric thread: As = π/4 · ((d2 + d3)/2)², d2 = d − 0.6495P, d3 = d − 1.2269P. M1.6 × 0.35: 1.27 mm²; M2 × 0.4: 2.07 mm² (derived on the slide)', u: 'https://www.iso.org/standard/60963.html' },
+  ownIso898: { t: 'ISO 898-1:2013, tensile stress area of a metric thread: As = π/4 · ((d2 + d3)/2)², d2 = d − 0.6495P, d3 = d − 1.2269P. M1.6 × 0.35: 1.27 mm²; M2 × 0.4: 2.07 mm² (derived)', u: 'https://www.iso.org/standard/60963.html' },
+  ownTi: { t: 'ASM Aerospace Specification Metals, titanium Ti-6Al-4V (grade 5), annealed: density 4.43 g/cc; hardness 36 HRC (349 HV, converted); ultimate tensile strength 950 MPa, yield 880 MPa; magnetic permeability 1.00005; "tends to seize when in sliding contact with itself and other metals"', u: 'https://www.aerospacemetals.com/wp-content/uploads/2023/07/Titanium-Ti-6Al-4V-Grade-5-Annealed.pdf' },
+  ownSteelRho: { t: 'MakeItFrom, SAE-AISI 1022 (G10220) carbon steel: density 7.9 g/cm³ (the steel screw the titanium one replaces)', u: 'https://makeitfrom.com/material-properties/SAE-AISI-1022-G10220-Carbon-Steel' },
+  ownTiMin: { t: 'ASTM B348 grade 5 (6Al-4V) bar, minimum tensile properties as Performance Titanium lists them: tensile strength 130 ksi (896 MPa), yield 120 ksi (827 MPa), elongation 10%', u: 'https://performancetitanium.com/?p=391' },
+  ownIso7045m: { t: 'ISO 7045:2011 (pan head screws with type H or Z cross recess), Table 2: steel, property class 4.8 (ISO 898-1); stainless steel, A2-50 or A2-70 (ISO 3506-1); electroplating to ISO 4042', u: 'https://cdn.standards.iteh.ai/samples/57372/fafe91d8504049fc8953281401736c79/ISO-7045-2011.pdf' },
+  ownIso898p: { t: 'ISO 898-1 mechanical properties, as TR Fastenings tabulates them: property class 4.8: tensile strength 400 MPa nominal, 420 minimum, lower yield 340 minimum, Vickers hardness 130 to 220 HV (71 to 95 HRB); class 8.8: 830 MPa minimum, 255 to 336 HV. Stainless A2-70: 700 N/mm² minimum (Bossard, ISO 3506)', u: 'https://www.trfastenings.com/knowledge-base/metric-screws/screws-and-bolts-mechanical-properties' },
+  ownStrip: { t: 'EngineerExcel, Thread stripping explained: "If the bolt has a higher shear strength than the nut, failure will likely occur at the root of the nut threads"; the stripping force is the shear area times the shear strength of the weaker material', u: 'https://engineerexcel.com/thread-stripping/' },
+  ownTwi: { t: 'TWI, What is galling?: two surfaces seize by cold welding, "most commonly seen when tightening bolts made from materials such as stainless steel, aluminium or titanium"; prevented by lubricating the threads and by using different materials for the two parts', u: 'https://www.twi-global.com/technical-knowledge/faqs/what-is-galling' },
+  ownTiCorr: { t: 'AZoM, Titanium alloys: corrosion and erosion resistance (from The Institute of Materials\' design guide, The Selection and Use of Titanium): "A stable, substantially inert oxide film provides the material with outstanding resistance to corrosion"', u: 'https://www.azom.com/article.aspx?ArticleID=1336' },
+  ownRecess: { t: 'Čada, Frydrýšek, Sejda et al. 2017, J. Med. Biol. Eng. 37: 612–625, titanium-alloy locking bone screws: the drive recess fails when the bit deforms the head, the hexagon "was worn by plastic strains caused by the edges of the hexagonal bit", at 2.5 and 3.1 N·m. (The slide infers from this that a harder head dents less: hardness is resistance to that plastic strain.)', u: 'https://link.springer.com/article/10.1007/s40846-017-0279-4' },
   ownCumbicus: { t: 'Cumbicus, Estrems, Arizmendi & Jiménez 2023, Int. J. Adv. Manuf. Technol. 126: 5163–5178: 5 mm thread-forming screws in 30% glass-fibre PEI bosses, re-assembled ten times; loosening torque lost against the first tightening: PF-30 11.95% by the 3rd assembly, 15.31% by the 5th, 17.16% by the 10th; DELTA PT 56.73% at the 5th, 41.93% at the 10th', u: 'https://doi.org/10.1007/s00170-023-11422-0' },
   ownCovestro: { t: 'Covestro, Self-tapping screws for thermoplastics: thread-cutting screws suit "once-only assembly" or a few re-assemblies; "repeated assembly is only possible if the screw is carefully reinserted into the original thread (by hand)"; VDE 0700 asks for ten assemblies; tighten to at least 1.2 × the insertion torque, at most 0.5 × the stripping torque', u: 'https://solutions.covestro.com/-/media/covestro/solution-center/whitepapers/self-tapping-screws-for-thermoplastics.pdf' },
   ownPemM2: { t: 'PEM (PennEngineering), IUTFA / IUTFB / IUTFC-M2 heat-staking insert, installation and performance data: 255 N pull-out and 0.5 N·m torque-out in ABS; 578 N and 0.9 N·m in polycarbonate; hole 3.23 mm (+0.08)', u: 'https://www.pemnet.com/products/product-finder/iutfc-m2/' },
   own3dp: { t: '3D People, Threaded inserts white paper v1.0 (2022): brass heat-set inserts, M2 to M5, in SLS PA12, FDM PLA, Onyx and PETG; M2 pull strength 629.2 N; after 20 load cycles at 80% of the failure force the pull strength changed by 24.15 N on average (1.37%)', u: 'https://felix-manley-n4jm.squarespace.com/s/Threaded-Inserts-White-Paper-V1.pdf' },
-  ownBrock: { t: 'Brock Liddicoat, In Pursuit of an Objectively Better Mouse: #9 (combination drive: Phillips self-centres, any flat blade as a fallback; M2; brass plating against the inserts; a carbon-steel core for magnetic pickup; machine screws, not self-tapping), #101 (brass heat-set inserts; Finalmouse uses M1.6 × 5 mm with a T5 head), M2 inserts 0.16 to 0.18 g, one screw size for everything, and "with metal on plastic even the tiniest difference in the angle you screw it will turn the screw into a bore ... if you have metal on metal you\'d need the force needed to deform the metal". His estimate of 2026-11-04: a joint screwed straight into ABS feels different after it is unscrewed and screwed back 90% of the time, carbon-filled plastic 70%', u: '', n: 'His judgement: no tag.' }
+  ownBrock: { t: 'Brock Liddicoat, In Pursuit of an Objectively Better Mouse: #9 (combination drive: Phillips self-centres, any flat blade as a fallback; M2; machine screws, not self-tapping), titanium screws (F25.4, 2026-11-05: "Titanium", in place of brass-plated carbon steel), #101 (brass heat-set inserts; Finalmouse uses M1.6 × 5 mm with a T5 head), M2 inserts 0.16 to 0.18 g, one screw size for everything, and "with metal on plastic even the tiniest difference in the angle you screw it will turn the screw into a bore ... if you have metal on metal you\'d need the force needed to deform the metal". His estimate of 2026-11-04: a joint screwed straight into ABS feels different after it is unscrewed and screwed back 90% of the time, carbon-filled plastic 70%', u: '', n: 'His judgement: no tag.' }
 });
 
 /** Brock's estimate (F6.1): the chance a joint feels different after it is unscrewed and screwed back in, screwed straight
@@ -88,7 +97,9 @@ function own_wallTF(reach1, reach2, tilt, ph2) {
 }
 
 /* ---------- metal finishes across a cylinder seen from the side ---------- */
-const OWN_FIN = { plated: ['#6f5a24', '#f6e8b4', '#dcc277', '#9b7c33', '#6a5420'], zinc: ['#5d646c', '#f2f4f6', '#c3c9cf', '#868e96', '#5a6169'], brass: ['#7c5d1c', '#f4dc96', '#d3ac4f', '#b48b2c', '#6e5218'] };
+/* titanium (F25.4): the screw is bare Ti-6Al-4V grade 5, a warm mid grey; OWN_TIM is its cut face, for the hatched sections */
+const OWN_TIM = { g: ['#e4e1db', '#8f8b84', '#c7c3bc'] };
+const OWN_FIN = { titanium: ['#4b4945', '#ebe8e2', '#bdb9b1', '#7f7b75', '#484642'], zinc: ['#5d646c', '#f2f4f6', '#c3c9cf', '#868e96', '#5a6169'], brass: ['#7c5d1c', '#f4dc96', '#d3ac4f', '#b48b2c', '#6e5218'] };
 function own_finish(name, x0, x1) { const g = G.createLinearGradient(x0, 0, x1, 0), c = OWN_FIN[name] || OWN_FIN.zinc; c.forEach((s, i) => g.addColorStop([0, 0.28, 0.5, 0.78, 1][i], s)); return g; }
 const OWN_EDGE = 'rgba(16,17,20,0.75)';
 
@@ -106,7 +117,7 @@ function own_headSil(zb, o = {}) {
 /** a screw in view (a fastener: not hatched), its axis along y: kind 'm2' or 'tf'; zb = the bearing face; ph = the helix
    phase (anchored to what it runs in). Returns stage points */
 function own_screwMM(kind, zb, ph, o = {}) {
-  const T = OWN_TH[kind], len = OWN_M2.len, zt = zb + len, fin = o.finish || (kind === 'm2' ? 'plated' : 'zinc'), step = 0.01;
+  const T = OWN_TH[kind], len = OWN_M2.len, zt = zb + len, fin = o.finish || (kind === 'm2' ? 'titanium' : 'zinc'), step = 0.01;
   const r0 = kind === 'm2' ? OWN_M2.blank : 0.82, R = side => z => { const u = z - zb; return u < 0.1 ? r0 : Math.min(own_rs(T, z, ph, side, zt), lerp(r0, T.rc, clamp((u - 0.1) / 0.35))); };
   const rl = R(-1), rr0 = R(1);
   const path = () => {
@@ -170,7 +181,7 @@ function own_bitMM(kind, tipY, o = {}) {
 /* ---------- the head in section, B-B (through the cross arm, across the slot) or A-A (along the slot) ----------
    origin at the centre of the bearing face, head up. What lies beyond the cut is drawn in view: the far half's
    silhouette, the recess walls in shadow, and, across the slot, the open slot itself (you see through it). The cut face
-   is hatched steel, the brass plating the gold line round it. o = { cut: 'B' | 'A', shank (mm below), bit: { kind, lift,
+   is hatched titanium, solid through (no plating). o = { cut: 'B' | 'A', shank (mm below), bit: { kind, lift,
    dx, turn, a }, bg }. Returns stage points */
 function own_headSecMM(o = {}) {
   const D = OWN_HD, M = OWN_M2, R = D.R, T = OWN_TH.m2, B = o.cut !== 'A', shank = o.shank || 1.3, out = {}, N = 220, n2 = M.n / 2, w2 = M.wing / 2;
@@ -179,21 +190,21 @@ function own_headSecMM(o = {}) {
   const wallTop = u => { const au = Math.abs(u); return B ? (au <= n2 ? D.ys : au <= D.m2 ? D.H0(Math.hypot(w2, au)) : cut(u)) : (au <= w2 ? D.F(D.m2) : au <= D.rs ? D.H0(Math.hypot(au, n2)) : cut(u)); };
   const us = []; for (let i = 0; i <= N; i++) us.push(-R + 2 * R * i / N);
   const Hc = us.map(cut), Hs = us.map(sil), Hw = us.map((u, i) => Math.max(Hc[i], Math.min(Hs[i], wallTop(u))));
-  /* beyond the cut: the far half in view (lit plating), then the recess walls in shadow */
+  /* beyond the cut: the far half in view (lit titanium), then the recess walls in shadow */
   G.beginPath(); G.moveTo(-R, 0); us.forEach((u, i) => G.lineTo(u, -Hs[i])); G.lineTo(R, 0); G.closePath();
-  G.fillStyle = own_finish('plated', -R, R); G.fill(); G.strokeStyle = OWN_EDGE; G.lineWidth = lw(1); G.stroke();
+  G.fillStyle = own_finish('titanium', -R, R); G.fill(); G.strokeStyle = OWN_EDGE; G.lineWidth = lw(1); G.stroke();
   G.beginPath(); us.forEach((u, i) => i ? G.lineTo(u, -Hw[i]) : G.moveTo(u, -Hw[i])); for (let i = N; i >= 0; i--) G.lineTo(us[i], -Hc[i]); G.closePath();
-  G.fillStyle = 'rgba(44,34,14,0.78)'; G.fill();
+  G.fillStyle = 'rgba(30,29,27,0.78)'; G.fill();
   /* the slot's far-wall edge and the arm walls: crisp lines */
   G.beginPath(); let on = false; us.forEach((u, i) => { if (Hw[i] - Hc[i] > 0.02) { on ? G.lineTo(u, -Hw[i]) : G.moveTo(u, -Hw[i]); on = true; } else on = false; });
-  G.strokeStyle = 'rgba(30,24,10,0.9)'; G.lineWidth = lw(1); G.stroke();
+  G.strokeStyle = 'rgba(22,21,20,0.9)'; G.lineWidth = lw(1); G.stroke();
   /* the bit, in the recess: in front of what lies beyond, behind the cut face */
   if (o.bit && o.bit.a > 0.003) {
     const b = o.bit, tipY = -(b.kind === 'flat' ? D.ys : D.yc) - (b.lift || 0);
     own_bitMM(b.kind, tipY, { dx: b.dx, turn: b.turn, a: b.a, bg: o.bg, fade: 4.8, edge: B });
     out.bitTip = SP(b.dx || 0, tipY); out.bitTop = SP(b.dx || 0, tipY - 3.0);
   }
-  /* the cut face: steel, hatched; a short shank in section under it, ending in a break */
+  /* the cut face: titanium, hatched; a short shank in section under it, ending in a break */
   const face = () => {
     G.beginPath(); G.moveTo(-own_r(T, shank, 0, -1), shank);
     for (let z = shank; z >= M.uf; z -= 0.01) G.lineTo(-Math.min(own_r(T, z, 0, -1), lerp(M.blank, T.rc, clamp((z - 0.1) / 0.35))), z);
@@ -204,16 +215,15 @@ function own_headSecMM(o = {}) {
     for (let z = M.uf; z <= shank; z += 0.01) G.lineTo(Math.min(own_r(T, z, 0, 1), lerp(M.blank, T.rc, clamp((z - 0.1) / 0.35))), z);
   };
   face(); brk(own_r(T, shank, 0, 1), shank, shank, 0); G.closePath();
-  G.fillStyle = grad(MT.steel, -R, -2, R, 0); G.fill();
-  G.save(); G.clip(); hatchBox([-R, -2, 2 * R, shank + 2], { sp: o.hatchSp || 10, color: 'rgba(30,34,40,0.34)' }, MT.steel); G.restore();
-  face(); G.strokeStyle = '#E2BE5A'; G.lineWidth = lw(o.plate || 3); G.lineJoin = 'round'; G.stroke();
-  face(); G.strokeStyle = 'rgba(70,50,10,0.6)'; G.lineWidth = lw(1); G.stroke();
+  G.fillStyle = grad(OWN_TIM, -R, -2, R, 0); G.fill();
+  G.save(); G.clip(); hatchBox([-R, -2, 2 * R, shank + 2], { sp: o.hatchSp || 10, color: 'rgba(30,30,32,0.34)' }, OWN_TIM); G.restore();
+  face(); G.strokeStyle = 'rgba(28,27,26,0.7)'; G.lineWidth = lw(1.2); G.lineJoin = 'round'; G.stroke();
   out.crown = SP(0, -M.k); out.cone = SP(0, -D.cone(0)); out.floor = SP(B ? 0.62 : 1.2, -(B ? D.F(0.62) : D.ys)); out.rampR = SP(0.7, -D.F(0.7));
   out.edgeL = SP(-R, 0); out.edgeR = SP(R, 0); out.topL = SP(-R, -M.k); out.topR = SP(R, -M.k); out.side = SP(R, -D.fcy); out.slotL = SP(-n2, -D.ys); out.slotR = SP(n2, -D.ys);
   out.thread = SP(T.rc, shank * 0.7); out.shankY = SP(0, shank)[1];
   return out;
 }
-/** the head from above, shaded once from the exact surface (own_top): brass plating lit from the upper left, the recess
+/** the head from above, shaded once from the exact surface (own_top): bare titanium lit from the upper left, the recess
    darkening with depth. 120 px per mm, cached */
 const OWN_TOPCV = { cv: null };
 function own_topCanvas() {
@@ -229,11 +239,11 @@ function own_topCanvas() {
     const nx = -hx / nl, nz = -hz / nl, ny = 1 / nl, dif = Math.max(0, nx * L[0] + nz * L[1] + ny * L[2]);
     const rz = 2 * dif * ny - L[2], spec = Math.pow(Math.max(0, rz), 46), occ = clamp((OWN_HD.H0(r) - h) / 1.1);
     const sh = (0.30 + 0.78 * dif) * (1 - 0.72 * Math.pow(occ, 0.7)), al = clamp((R - r) / px);
-    d[o] = clamp((216 * sh + 255 * spec * 0.32) / 255) * 255; d[o + 1] = clamp((180 * sh + 245 * spec * 0.32) / 255) * 255; d[o + 2] = clamp((95 * sh + 200 * spec * 0.32) / 255) * 255; d[o + 3] = 255 * al;
+    d[o] = clamp((198 * sh + 255 * spec * 0.3) / 255) * 255; d[o + 1] = clamp((194 * sh + 253 * spec * 0.3) / 255) * 255; d[o + 2] = clamp((186 * sh + 248 * spec * 0.3) / 255) * 255; d[o + 3] = 255 * al;
   }
   c.putImageData(img, 0, 0); OWN_TOPCV.cv = cv; return cv;
 }
-/** the head from above: plated, the slot across it, the cross (No. 0) and its cone at the centre. o = { hi: 'cross' |
+/** the head from above: titanium, the slot across it, the cross (No. 0) and its cone at the centre. o = { hi: 'cross' |
    'slot' (outlined in Theseus's colour), bit: { kind, dx, dy, a } (its footprint, dashed), cutLine } */
 function own_headTopMM(o = {}) {
   const D = OWN_HD, M = OWN_M2, R = D.R, n2 = M.n / 2, w2 = M.wing / 2, m2 = D.m2, xs = Math.sqrt(D.rs * D.rs - n2 * n2), out = {};
@@ -361,7 +371,7 @@ function own_insertPartMM(o = {}) {
     const T = OWN_TH.m2;
     G.save(); G.beginPath(); G.rect(-3, -0.6, 3, I.L + 1.2); G.clip();
     G.beginPath(); G.moveTo(0, -0.6); for (let z = -0.6; z <= I.L + 0.6; z += 0.01) G.lineTo(-own_r(T, z, ph, -1), z); G.lineTo(0, I.L + 0.6); G.closePath();
-    G.fillStyle = own_finish('plated', -T.rc, T.rc); G.fill(); G.strokeStyle = OWN_EDGE; G.lineWidth = lw(1); G.stroke(); G.restore();
+    G.fillStyle = own_finish('titanium', -T.rc, T.rc); G.fill(); G.strokeStyle = OWN_EDGE; G.lineWidth = lw(1); G.stroke(); G.restore();
   }
   /* the centre line */
   G.setLineDash([lw(14), lw(4), lw(3), lw(4)]); G.strokeStyle = TH ? 'rgba(16,17,20,0.55)' : 'rgba(236,235,231,0.55)'; G.lineWidth = lw(1.2); G.beginPath(); G.moveTo(0, -0.7); G.lineTo(0, I.L + 0.7); G.stroke(); G.setLineDash([]);
@@ -370,14 +380,14 @@ function own_insertPartMM(o = {}) {
   return out;
 }
 
-/* ---------- the flank, close up: ISO 68-1's 60° profile, steel in brass (both cut) ---------- */
+/* ---------- the flank, close up: ISO 68-1's 60° profile, titanium in brass (both cut) ---------- */
 function own_isoMM(o = {}) {
   const P = OWN_M2.P, H = 0.866025 * P, n = o.n || 2.2, x0 = -n * P / 2, x1 = n * P / 2, out = {};
   const prof = x => -(-H / 4 + own_tooth(x / P, 1 / 8, 1 / 4) * (5 * H / 8));
   const top = -H * 1.3, bot = H * 1.05;
   const steel = () => { G.beginPath(); G.moveTo(x0, bot); for (let x = x0; x <= x1 + 1e-6; x += P / 200) G.lineTo(x, prof(x)); G.lineTo(x1, bot); G.closePath(); };
   const brass = () => { G.beginPath(); G.moveTo(x0, top); for (let x = x0; x <= x1 + 1e-6; x += P / 200) G.lineTo(x, prof(x) - 0.006); G.lineTo(x1, top); G.closePath(); };
-  solid(steel, MT.steel, [x0, -H, x1 - x0, bot + H], { hatch: { sp: 12, color: 'rgba(30,34,40,0.3)' }, edge: false });
+  solid(steel, OWN_TIM, [x0, -H, x1 - x0, bot + H], { hatch: { sp: 12, color: 'rgba(30,30,32,0.3)' }, edge: false });
   solid(brass, MT.brass, [x0, top, x1 - x0, H * 2], { hatch: { dir: -1, sp: 12, color: 'rgba(80,55,10,0.32)' }, edge: false });
   G.beginPath(); for (let x = x0; x <= x1 + 1e-6; x += P / 200) x === x0 ? G.moveTo(x, prof(x)) : G.lineTo(x, prof(x)); G.strokeStyle = o.line || 'rgba(16,17,20,0.85)'; G.lineWidth = lw(1.6); G.stroke();
   /* the fundamental triangle, dashed */
@@ -467,16 +477,20 @@ function own_ticks(t, t0, x, y, w, cols, rows, o = {}) {
   return 46 + rows.length * rh;
 }
 
+/* the titanium screw against the steel one it replaces (F25.4, F25.5): ISO 7045's steel screws are property class 4.8 (ownIso7045m),
+   130 to 220 HV (ownIso898p; the comparison takes the top of the range); grade 5 titanium 349 HV (ownTi). The M2 × 4 the shell uses
+   is 23.59 mm³ (3d/parts/fasteners.js, spec.volume_mm3): 0.186 g in carbon steel at 7.9 g/cm³, 0.105 g in titanium at 4.43 */
+const OWN_TIW = { hv48: 220, hvTi: 349, mm3: 23.59, gSteel: 23.59 * 7.9 / 1000, gTi: 23.59 * 4.43 / 1000 };
 /* ============================== #9 M2 combination drive ============================== */
 /* the Phillips bit comes down a little off centre and the recess's ramps steer it to the middle; it turns; it lifts out;
    a flat blade drops into the slot. The section is B-B, through the cross arm and across the slot */
 const OWN_SC = { ph: [[1.0, [0.3, 1.8]], [2.0, [0.3, 0.7]], [2.8, [0, 0]], [4.6, [0, 0]], [5.3, [0, 2.0]]], fl: [[5.6, 2.2], [6.6, 0]] };
 S({
   id: 'ownscrew', ch: 'own', theme: 'night', title: 'M2 combination drive screws', settle: 9, after: 'repair', ideas: [9, 101],
-  src: ['ownBrock', 'ownIso7045w', 'ownIso1580', 'ownIso898'],
+  src: ['ownBrock', 'ownTi', 'ownIso898p', 'ownIso7045m', 'ownRecess', 'ownTiMin', 'ownSteelRho', 'ownStrip', 'ownTwi', 'ownTiCorr', 'ownIso7045w', 'ownIso1580', 'ownIso898'],
   draw: t => {
     header(t, 'M2 combination drive screws');
-    captions(t, [[0.6, 'One screw for the whole mouse: an M2 with a Phillips cross and a slot cut into the same head.'], [4.8, 'The Phillips bit steers itself to the centre of the cross. If the cross ever strips, any flat blade turns the slot.']]);
+    captions(t, [[0.6, 'One titanium M2 for the whole mouse: 1.6× the thread of the M1.6 Finalmouse uses, with a Phillips cross and a slot in the same head.'], [4.8, 'The Phillips bit steers itself to the centre of the cross, and grade 5 titanium is harder than the steel such screws are made of, so the cross dents less. If it ever strips, any flat blade turns the slot.']]);
     const x0 = LM, y0 = 280, w0 = 1120, h0 = 640, kw = tileA(t, 0.15, 0);
     demoWindow(x0, y0, w0, h0, kw);
     cardHead(t, 0.35, x0, y0, w0, 'The head, from above and in section B-B', []);
@@ -503,15 +517,19 @@ S({
       /* the pointer on the bit, pushing it down and turning it */
       if (sec.bitTip) { const q = [sec.bitTip[0] + 70, Math.max(sec.bitTip[1] - 210, y0 + 80)]; cursorAt(t, [[1.0, q], [1.2, q]], [2.85], { a: ep(t, 0.9, 1.2) * (1 - ep(t, 8.4, 8.8)) }); }
     }
-    /* right: the glance */
-    const rx = 1240, rw = RM - rx;
-    own_ba(t, 1.2, rx, 450, '1.27', '2.07', { unit: 'mm²', sb: 70, sa: 124, label: 'Thread stress area, M1.6 → M2', net: '1.6× the thread of the M1.6 × 5 Finalmouse uses' });
-    own_bars(t, 2.0, rx, 590, rw, [
-      { label: 'M1.6 × 0.35, Finalmouse', v: 1.27, s: '1.27', kind: 'comp' },
-      { label: 'M2 × 0.4, Theseus', v: 2.07, s: '2.07', kind: 'hero', ev: 'derived' }
-    ], { max: 2.4, title: 'Stress area, {mm²}', better: 'Higher is better', rh: 76 });
-    own_ticks(t, 3.2, rx, 806, rw, ['T5 head', 'Theseus'], [['Phillips #0', false, true], ['Any flat blade', false, true], ['Torx T5', true, false]], { cw: 140, rh: 44 });
-    source(t, 'As = π/4 · ((d2 + d3)/2)², ISO 898-1. Head to ISO 7045 (dk 4.0, k 1.6), slot to ISO 1580. Finalmouse\'s M1.6 × 5 T5: Brock\'s doc, #101.', { t0: 2 });
+    /* right: the glance (F25.4, F25.5). Against the screw it replaces: ISO 7045's steel is property class 4.8, at most 220 HV
+       (ISO 898-1); grade 5 titanium is 349 HV (36 HRC, ASM). Hardness is what a slipping bit has to dent, so the win is the
+       cross (the recess), not the thread: a thread strips in the softer part, and here that is the brass insert either way */
+    const rx = 1240, rw = RM - rx, OT = OWN_TIW;
+    own_ba(t, 1.2, rx, 452, String(OT.hv48), String(OT.hvTi), { unit: 'HV', sb: 70, sa: 124, label: 'Head hardness, steel → titanium', net: fmtN(OT.hvTi / OT.hv48, 1) + '× as hard: a slipping bit dents it less', maxW: rw });
+    pill(rx + rw - pillW('datasheet'), 452 - 124 * 0.78 - 30, 'datasheet', ep(t, 1.6, 2.0));
+    own_ba(t, 2.2, rx, 642, fmtN(OT.gSteel, 2), fmtN(OT.gTi, 2), { unit: 'g', sb: 44, sa: 72, label: 'Each M2 × 4 screw, steel → titanium', net: '−' + Math.round(100 * (1 - OT.gTi / OT.gSteel)) + ' %: ' + fmtN(4 * OT.gSteel, 2) + ' → ' + fmtN(4 * OT.gTi, 2) + ' g for the four', maxW: rw });
+    { const k1 = ep(t, 3.2, 3.6), k2 = ep(t, 3.6, 4.0), y1 = 752;
+      text('What it gives', rx, y1, { role: 'label', size: 20, color: C.heroText, alpha: k1 });
+      text('No plating: its own oxide film keeps it from corroding.', rx, y1 + 30, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: rw, lh: 1.26, alpha: k1 });
+      text('What it costs', rx, y1 + 78, { role: 'label', size: 20, color: C.mute, alpha: k2 });
+      text('No magnet pickup on the driver, and it can gall, so it goes in with anti-seize. A thread still strips in the softer brass first.', rx, y1 + 108, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: rw, lh: 1.26, alpha: k2 }); }
+    source(t, 'Class 4.8 steel, as ISO 7045 names it: at most 220 HV (ISO 898-1). Grade 5 titanium: 349 HV (ASM). 23.6 mm³ at 7.9 and 4.43 g/cm³. Thread area: 1.27 → 2.07 mm² (ISO 898-1).', { t0: 2 });
   }
 });
 
@@ -573,7 +591,7 @@ S({
   src: ['own3dp', 'ownCumbicus', 'ownPemM2', 'ownBrock', 'ownIso68'],
   draw: t => {
     header(t, 'Thread wear: brass, not plastic');
-    captions(t, [[0.6, 'Every re-assembly re-forms a thread in plastic, and it holds a little less each time. Brass keeps its thread.'], [5.6, 'The plastic only grips the knurls, and they never move again: the screw turns in brass, steel on brass.']]);
+    captions(t, [[0.6, 'Every re-assembly re-forms a thread in plastic, and it holds a little less each time. Brass keeps its thread.'], [5.6, 'The plastic only grips the knurls, and they never move again: the screw turns in brass, titanium on brass.']]);
     const x0 = LM, y0 = 280, w0 = 1080, h0 = 640;
     demoWindow(x0, y0, w0, h0, tileA(t, 0.15, 0));
     cardHead(t, 0.35, x0, y0, w0, 'The M2 insert, half in section', []);
@@ -590,7 +608,7 @@ S({
     const fy = y0 + 486, kA = ep(t, 3.0, 3.5);
     part(x0 + 660, fy, 250, () => own_isoMM({ n: 1.6 }), { alpha: kA });
     part(x0 + 900, fy - 20, 150, () => own_flankTFMM(ep(t, 4.2, 5.6), { n: 0.7, ph2: OWN_TH.tf.P * 0.2 }), { alpha: ep(t, 3.4, 3.9) });
-    text('Steel on brass', x0 + 660, y0 + h0 - 34, { role: 'label', size: 20, color: C.heroText, align: 'center', alpha: kA });
+    text('Titanium on brass', x0 + 660, y0 + h0 - 34, { role: 'label', size: 20, color: C.heroText, align: 'center', alpha: kA });
     text('Re-cut plastic', x0 + 900, y0 + h0 - 34, { role: 'label', size: 20, color: C.bad, align: 'center', alpha: ep(t, 3.4, 3.9) });
     /* right: the glance */
     const rx = 1200, rw = RM - rx;

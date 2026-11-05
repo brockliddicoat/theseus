@@ -40,7 +40,8 @@ Object.assign(SRC, {
   srf_al6061: { t: 'Protolabs CNC material data sheet, aluminum 6061-T651/T6: nominal density 2.70 Mg/m³', u: 'https://www.protolabs.com/media/h54d0gnp/2026-026-cnc-material-data-sheet_aluminum-6061-t651_t6.pdf' },
   srf_ss304: { t: 'Protolabs CNC material data sheet, stainless steel 304: density 0.285 lb/in³ (7.89 g/cm³)', u: 'https://www.protolabs.com/media/tltj24um/2026-026-cnc-material-data-sheet_stainless-steel-304.pdf' },
   srf_delrin: { t: 'Delrin 150 data sheet (Plastics International): specific gravity 1.42; water absorption 0.25% in 24 h, 0.9% at saturation; dynamic μ 0.20 (ASTM D3702)', u: 'https://www.plasticsintl.com/media/05oith4t/delrin-150-data-sheet.pdf' },
-  srf_wheel3d: { t: 'This deck\'s 3D scroll wheel (3d/parts/scrollwheel.js): Ø22.74 × 7.0 mm, six arms on an open hub, a thin crowned rim (0.55 mm at the edges), a fine straight knurl of 144 grooves 0.12 mm deep; 508.8 mm³ of wheel, 0.900 g in AZ31B and 1.374 g in 6061; 24-slot code disc; axle held 10.8 mm apart at the encoder boss and the support', u: '', n: 'A design model built for the deck to Brock\'s 0.9 g, not a measured part.' },
+  srf_wheel3d: { t: 'This deck\'s 3D scroll wheel (3d/parts/scrollwheel.js): Ø22.74 × 7.0 mm, six thin arms (0.95 → 0.55 mm wide) on an open hub, a thin crowned rim (0.55 mm at the edges), a coarse diamond knurl of 72 teeth, 30° each way, 0.215 mm deep, points flattened; 508.4 mm³ of wheel, 0.900 g in AZ31B and 1.373 g in 6061; 24-slot code disc; axle held 10.8 mm apart at the encoder boss and the support', u: '', n: 'A design model built for the deck to Brock\'s 0.9 g, not a measured part.' },
+  srf_is3403: { t: 'IS 3403:1981, knurling (the DIN 82 system): straight (RAA), left- or right-hand (RBL, RBR), left-right with raised or indented points (RGE, RGV; once called diamond knurling) and crossed (RKE, RKV); a 90° profile; a 30° helix; pitches 0.5, 0.6, 0.8, 1.0, 1.2 and 1.6 mm; "no attempt has been made to correlate pitch with workpiece diameter"', u: 'https://law.resource.org/pub/in/bis/S01/is.3403.1981.pdf' },
   srf_pmm: { t: 'PMM, Magnesium Scroll Wheel [PULSE, CYBER OP, OP1 8k, OP1w 4k]: magnesium alloy, weight 1.0 g; "the magnesium wheel only" (a scroll wheel pin and a spare ship beside it)', u: 'https://pmm.gg/products/magnesium-scroll-wheel-op1-8k-op1w-4k-pulse-cyber-op-for-modkit', n: 'The maker\'s figure for its own part.' },
   srf_eloEnc: { t: 'EloShapes spec sheets via research/data/mice.json: encoder type of 35 mice (optical: Razer Viper V4 Pro, DeathAdder V4 Pro; ZOWIE EC2-DW, U2-DW)', u: 'https://www.eloshapes.com/' },
   srf_ttc: { t: 'TTC (@TTCswitch on X, 09/03/2026, shared on r/MouseReview): "TTC optical encoder is ready! Built for speed, precision, and durability"; renders show a normal encoder\'s black housing in a stamped steel frame with a bushing, pins and bent legs, and inside an emitter and receiver with a slotted wheel between (the picture Brock attached, F9.21)', u: '', n: 'Brock\'s reference picture; the internal dimensions are this deck\'s 3D model, not TTC\'s drawing.' },
@@ -572,16 +573,19 @@ S({
 
 /* ============================== #84 #30 the six-arm magnesium wheel, 0.9 g ==============================
    Brock (F22.1): PMM's magnesium wheel "is 1.0g, ours will be 0.9g", "closer to the pmm wheel ... but with 6 arms", and not the
-   rover tread. The 3D wheel (scene 'wheel', 3d/parts/scrollwheel.js): six tapered arms on an open hub, a thin crowned rim,
-   508.8 mm³ of AZ31B = 0.900 g; the same wheel in 6061 aluminium 1.374 g. The tread is a fine straight knurl, 144 V-grooves
-   0.12 mm deep, six to a notch, each running out to a point before the plain edge bands: drawn here unrolled, as a lit
-   height field to the 3D model's dimensions. */
-const SRF_WH = { mm3: 508.8, g: 0.9, pmm: 1.0, mg: 1.77, al: 2.70, n: 144, d: 0.12, W: 7.0, R: 11.37, band: 2.90, run: 0.45, yT: 3.25, fe: 0.35, steps: 24 };
+   rover tread; then (F25.1, F25.2) "thinners arms", and for the tread "coarse and diamond are my favorites". The 3D wheel (scene
+   'wheel', 3d/parts/scrollwheel.js): six thin tapered arms on an open hub, a thin crowned rim, 508.4 mm³ of AZ31B = 0.900 g; the
+   same wheel in 6061 aluminium 1.373 g. The tread is a coarse diamond knurl (the DIN 82 / IS 3403 left-right form, its points
+   flattened): drawn here unrolled, as a lit height field to the 3D model's dimensions. */
+/* the knurl as the 3D builds it: 72 teeth round, grooves at 30° each way (tan 30° = 0.5774), 0.215 mm deep, a 12-row band of
+   half width 2.578 mm that rises out of the plain edge bands over its first row (dY 0.4296 mm) */
+const SRF_WH = { mm3: 508.4, g: 0.9, pmm: 1.0, mg: 1.77, al: 2.70, n: 72, d: 0.215, tb: Math.tan(Math.PI / 6), W: 7.0, R: 11.37, band: 2.578, dY: 0.4296, yT: 3.25, fe: 0.35, steps: 24 };
 SRF_WH.alG = SRF_WH.mm3 * SRF_WH.al / 1000; SRF_WH.pitch = TAU * SRF_WH.R / SRF_WH.n;
 /** the wheel's turn (rad): still, then the pointer rolls it three notches (45°), then still */
 const srf_whTurn = t => (Math.PI / 4) * ep(t, 6.4, 7.8, E.io3);
 /** the tread unrolled into a height field, pxmm field px to the mm, len px long plus two pitches (so it scrolls by wrapping):
-   across the width the crown's fall and the edge fillets, along it the grooves, each narrowing to a point as it runs out */
+   across the width the crown's fall and the edge fillets; the two families of grooves at ±30°, a = (s − y tan 30°) / p and
+   b = (s + y tan 30°) / p, each a 90° V a quarter pitch either side of its centre; the flattened tops between them */
 function srf_knurlField(pxmm, len) {
   const K = SRF_WH, h = Math.round(K.W * pxmm), per = K.pitch * pxmm, w = Math.ceil(len + 2 * per);
   return srf_field('wheelKnurl' + pxmm.toFixed(2) + '_' + w, w, h, f => {
@@ -590,10 +594,10 @@ function srf_knurlField(pxmm, len) {
       const ym = (y + 0.5) / pxmm - K.W / 2, ay = Math.abs(ym);
       let z = Math.sqrt(K.R * K.R - ym * ym) - K.R;                                       /* the crown, mm */
       if (ay > K.yT) { const u = Math.min(1, (ay - K.yT) / (K.W / 2 - K.yT)); z -= K.fe * (1 - Math.sqrt(1 - u * u)); }
-      const q = clamp((K.band - ay) / K.run), hw = (K.d / K.pitch) * q;                     /* depth factor; half width in pitches */
+      const q = clamp((K.band - ay) / K.dY), V = u => { const d = Math.abs(u - Math.round(u)); return d < 0.25 ? 1 - 4 * d : 0; };
       for (let x = 0; x < w; x++) {
-        const du = Math.abs((x / per) % 1 - 0.5), g = du < hw ? K.d * q * (1 - du / hw) : 0, p = y * w + x;
-        f.z0[p] = (z - g) * pxmm; f.a0[p * 3] = 176; f.a0[p * 3 + 1] = 181; f.a0[p * 3 + 2] = 188; f.g0[p] = ay > K.band ? 0.7 : 0.9;
+        const sm = x / pxmm, va = V((sm - ym * K.tb) / K.pitch), vb = V((sm + ym * K.tb) / K.pitch), g = K.d * q * Math.max(va, vb), p = y * w + x;
+        f.z0[p] = (z - g) * pxmm; f.a0[p * 3] = 176; f.a0[p * 3 + 1] = 181; f.a0[p * 3 + 2] = 188; f.g0[p] = g > 0.002 ? 0.75 : 0.95;
       }
     }
   });
@@ -612,12 +616,12 @@ function srf_knurlStrip(t, x, y, w, h, th, a) {
 }
 S({
   id: 'wheel', ch: 'surface', theme: 'paper', title: 'Six-arm magnesium wheel', settle: 10, ideas: [84, 30], three: ['wheel'],
-  src: ['srf_pmm', 'srf_wheel3d', 'srf_az31b', 'srf_al6061', 'srf_doc'],
+  src: ['srf_pmm', 'srf_wheel3d', 'srf_is3403', 'srf_az31b', 'srf_al6061', 'srf_doc'],
   draw: t => {
     header(t, 'Six-arm magnesium wheel');
     const K = SRF_WH, cut = Math.round(100 * (K.pmm - K.g) / K.pmm);
     captions(t, [[0.6, `Six arms on an open hub and a thin crowned rim: ${fmtN(K.g, 1)} g of magnesium, ${cut} % under PMM's ${fmtN(K.pmm, 1)} g wheel. In aluminium the same wheel would weigh ${fmtN(K.alG, 2)} g.`],
-      [5.6, 'The tread is a fine straight knurl, 144 grooves across it, six to every notch. It catches the finger the way the wheel turns, and it still looks like plain machined metal.']]);
+      [5.6, 'The tread is a coarse diamond knurl: 72 teeth round, cut 30° each way and flattened on top, three to every notch. It bites whichever way the finger pushes, and the flat tops keep the points off the skin.']]);
     const lx = LM, ly = 280, lw = 900, lh = 680, th = srf_whTurn(t);
     demoWindow(lx, ly, lw, lh, tileA(t, 0.2, 0));
     /* the wheel: from the side in 2D (the arms, the hub, the rim; the encoder and bracket hidden), a close render in 3D */
@@ -643,7 +647,7 @@ S({
     }
     rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: V2D.on ? 'Magnesium wheel from the side' : 'Magnesium wheel on its POM axle (render)', role: 'small', size: 24, weight: 600, color: C.faint, gap: 16 }], lx + 26, ly + 46, { alpha: ep(t, 0.6, 1.0) });
     const cx = lx + 610;
-    callout(t, 2.0, pt.arm, 'Six arms', { to: [cx, ly + 130], side: 'r', color: C.ink, sub: '60° apart: short spans, so the rim can be thin', maxW: 260 });
+    callout(t, 2.0, pt.arm, 'Six thin arms', { to: [cx, ly + 130], side: 'r', color: C.ink, sub: '60° apart, 0.55 mm wide at the rim', maxW: 260 });
     callout(t, 2.5, pt.hub, 'Open hub', { to: [cx, ly + 270], side: 'r', color: C.ink, sub: 'A 4.1 mm ring on the POM axle', maxW: 260 });
     callout(t, 3.0, pt.rim, 'Thin crowned rim', { to: [cx, ly + 390], side: 'r', color: C.ink, sub: '0.55 mm at the edges, R 11.4 crown', maxW: 260 });
     /* the pointer rolls the wheel three notches, riding the tread */
@@ -654,7 +658,7 @@ S({
     srf_knurlStrip(t, sx, sy, sw, sh, th, ks);
     rr(sx, sy, sw, sh, 6, null, inkA(0.18), 1.2, ks);
     { const ka = ep(t, 5.0, 5.5), sbx = sx + sw, mmPx = sh / K.W, yb = ly + lh - 22;
-      text('Fine straight knurl: 144 grooves 0.12 mm deep, six to a notch', sx, yb, { role: 'small', size: 23, weight: 600, color: C.ink2, alpha: ka, maxW: sw - 140 });
+      text('Diamond knurl: 72 teeth, 1.0 mm pitch, 30° each way', sx, yb, { role: 'small', size: 23, weight: 600, color: C.ink2, alpha: ka, maxW: sw - 140 });
       line(sbx - mmPx, yb - 8, sbx, yb - 8, { color: C.mute, w: 2, alpha: ka }); line(sbx - mmPx, yb - 15, sbx - mmPx, yb - 1, { color: C.mute, w: 2, alpha: ka }); line(sbx, yb - 15, sbx, yb - 1, { color: C.mute, w: 2, alpha: ka });
       text('1 mm', sbx - mmPx - 12, yb, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ka }); }
     /* the glance: the weight against PMM's wheel, before → after, and the three wheels by weight */

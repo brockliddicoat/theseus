@@ -28,7 +28,7 @@ S({
   draw: t => {
     chapterCard(t, {
       name: 'Ownership', gloss: 'Built to be opened, fixed and kept, with a number on it that is yours.', list: [
-        ['#9', 'One M2 screw, a Phillips or any flat blade'], ['#101', 'Brass heat-set inserts: the same joint every time'],
+        ['#9', 'One titanium M2 screw, Phillips or flat blade'], ['#101', 'Brass heat-set inserts: the same joint every time'],
         ['#71', 'A battery that unplugs, held by two silicone bands'], ['#54', 'Board screws you reach from below'],
         ['#63', 'Art and a QR code under the board'], ['#72 #73', 'A trifold box, and the driver in it'],
         ['#13', 'Colourways matched to GMK keycap sets'], ['#36', 'Your serial, large, on the right click']
@@ -42,7 +42,7 @@ S({
       part(cx, cy + 40, 56, () => own_jointMM({ kind: 'insert', tip, bit: { a: 1, turn: t * 0.9 }, hole: C.bg }), { alpha: k });
       G.restore();
     } else view3D('screw', t, cx - 330, cy - 370, 660, 680, { view: 'threeQuarter', drive, zoom: 1.2, yaw: 0.35 - 0.25 * ep(t, 0.6, 6), target: [0, 0.2, 0] }, { alpha: k });
-    figLabel(t, 2.2, 1130, 960, 15, 'An M2 machine screw in a brass heat-set insert');
+    figLabel(t, 2.2, 1130, 960, 15, 'A titanium M2 screw in a brass heat-set insert');
   }
 });
 

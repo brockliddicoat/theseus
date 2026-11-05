@@ -2,8 +2,9 @@
 // Screw: ISO 7045 pan head (dk 4.0, k 1.6, rf 3.2, r 0.1 under the head), cross recess No. 0 (type H: m ≈ 1.9,
 // penetration 1.0) with an ISO 1580-size slot (n 0.5, 0.8 deep: t ≥ 0.5) across it, built exactly in lib/panhead.js; rolled
 // M2 × 0.4 thread (ISO 68-1 profile: 60° flanks, P/8 crest flat, rounded root), with its run-out under the head
-// (x ≤ 1.0 mm, ISO 7045) and a 45° chamfered point (ISO 4753); brass-plated carbon-steel core (Brock: plating against
-// insert corrosion, steel for magnetic pickup). Finalmouse uses M1.6 × 5 T5; Brock moves to M2 for availability.
+// (x ≤ 1.0 mm, ISO 7045) and a 45° chamfered point (ISO 4753); titanium Ti-6Al-4V grade 5 (Brock, F25.4: "Titanium";
+// it was brass-plated carbon steel: 'brass' and 'steel' remain as finishes). Finalmouse uses M1.6 × 5 T5; Brock moves to M2
+// for availability.
 // Insert: M2 × 3.0 × Ø3.5 brass, two knurl bands of sharp opposed-helix teeth with chamfered ends, a groove between
 // them, a pilot and a 90° countersink (the common heat-set form; Brock: "M2 heat set inserts are only 0.16–0.18 g").
 // Geometry: representative (ISO envelopes; no specific maker's drawing).
@@ -16,13 +17,14 @@ import { SectionPlane } from './lib/section.js';
 const TAU = Math.PI * 2;
 export const FASTENER_SPEC = {
   screw: { thread: 'M2 × 0.4', length: 5, head: 'pan, ISO 7045 envelope dk 4.0 × k 1.6, rf 3.2', drive: 'cross recess No. 0 (type H) + slot 0.5 × 0.8 (combination; ISO 1580 M2: n 0.5, t ≥ 0.5)',
-    finish: 'brass-plated carbon steel', runout: 'x ≤ 1.0 mm (ISO 7045)', point: '45° chamfer (ISO 4753)', label: 'representative' },
+    finish: 'titanium Ti-6Al-4V grade 5 (4.43 g/cm³), bare', runout: 'x ≤ 1.0 mm (ISO 7045)', point: '45° chamfer (ISO 4753)', label: 'representative' },
   insert: { thread: 'M2 × 0.4', length: 3.0, od: 3.5, material: 'brass (CuZn)', knurl: 'two bands, 18 sharp teeth each, opposed 30° helix, chamfered ends', label: 'representative' },
   pitch: 0.4,
   sources: {
     iso7045: 'ISO 7045:1983 table, M2: dk max 4.0, k max 1.6, rf ≈ 3.2, r min 0.1, x max 1.0, penetration (H) 0.85–1.2 [DS]',
     iso68: 'ISO 68-1 basic profile: H = 0.866P, crest flat P/8, 60° flanks; ISO 965: external root radius ≥ 0.125P [DS]',
-    screws: "Brock's doc #9 (combination drive, M2, brass plating, machine screws) and #101 (brass heat-set inserts) [PR]",
+    screws: "Brock's doc #9 (combination drive, M2, machine screws) and #101 (brass heat-set inserts); titanium (F25.4) [PR]",
+    titanium: 'ASM Aerospace Specification Metals, Ti-6Al-4V grade 5 annealed: 4.43 g/cc, 36 HRC (349 HV), 950 MPa ultimate, 880 MPa yield, permeability 1.00005 [DS]',
     finalmouse: 'Finalmouse M1.6 × 5.0 T5 (Brock, #101) [CA]; SLX uses 15 titanium screws ~0.02 g each [MC]',
     insertMass: 'Brock: M2 heat-set inserts 0.16–0.18 g [CA]',
   },
@@ -54,8 +56,8 @@ function aoByRadius(geo, r0, r1, lo, hi = 1) {
     o.detail: 'high' (deck close-ups, default) | 'low' (screws seen only by their heads, e.g. in the shell). */
 function screwMeshes(M, o = {}) {
   const len = o.length ?? 5, phase = o.phase ?? 0, low = o.detail === 'low';
-  const mat = { brass: M.brassPlated, steel: M.steel, black: M.blackOxide }[o.finish || 'brass'] || M.brassPlated;
-  const tmat = { brass: M.brassPlatedRolled, steel: M.steel, black: M.blackOxide }[o.finish || 'brass'] || M.brassPlatedRolled;
+  const mat = { titanium: M.titanium, brass: M.brassPlated, steel: M.steel, black: M.blackOxide }[o.finish || 'titanium'] || M.titanium;
+  const tmat = { titanium: M.titaniumRolled, brass: M.brassPlatedRolled, steel: M.steel, black: M.blackOxide }[o.finish || 'titanium'] || M.titaniumRolled;
   const headG = panHeadGeometry(low ? { nSlot: 14, nSide: 6, nEnd: 4, radial: 7, nTrench: 6 } : {});
   const head = meshOf(headG.geometry, aoMat(mat), 'head');
   const yTip = -len, y1 = -0.1;                            // thread from the point to the under-head fillet
@@ -109,6 +111,13 @@ function insertMeshes(M, o = {}) {
   return { thread, body, knA, knB, R, massEstimate_g: +(vol * 8.5e-3).toFixed(3) };
 }
 
+/** signed volume of a closed mesh (or of meshes that close one surface together): Σ (a · (b × c)) / 6 over its triangles */
+function signedVolume(geo) {
+  const g = geo.index ? geo.toNonIndexed() : geo, p = g.attributes.position.array; let v = 0;
+  for (let i = 0; i < p.length; i += 9) v += (p[i] * (p[i + 4] * p[i + 8] - p[i + 5] * p[i + 7]) - p[i + 1] * (p[i + 3] * p[i + 8] - p[i + 5] * p[i + 6]) + p[i + 2] * (p[i + 3] * p[i + 7] - p[i + 4] * p[i + 6])) / 6;
+  if (g !== geo) g.dispose();
+  return v;
+}
 export function buildM2Screw(opts = {}) {
   const M = partMaterials(opts.materials);
   const userMats = new Set(Object.values(opts.materials || {}));
@@ -116,7 +125,9 @@ export function buildM2Screw(opts = {}) {
   const g = new THREE.Group(); g.name = 'M2Screw';
   const s = screwMeshes(M, opts);
   g.add(s.head, s.thread, s.tip);
-  g.userData.spec = { ...FASTENER_SPEC.screw, length: opts.length ?? 5, head: s.headSpec };
+  /* the screw's volume (head, thread and point close one surface together) and its weight in grade 5 titanium */
+  const vol = Math.abs([s.head, s.thread, s.tip].reduce((v, m) => v + signedVolume(m.geometry), 0));
+  g.userData.spec = { ...FASTENER_SPEC.screw, length: opts.length ?? 5, head: s.headSpec, volume_mm3: +vol.toFixed(2), massEstimate_g: +(vol * 4.43e-3).toFixed(4) };
   g.userData.parts = { head: s.head, thread: s.thread, tip: s.tip };
   g.dispose = () => { disposeTree(g, userMats); for (const m of own) m.dispose?.(); };
   return g;
@@ -211,7 +222,7 @@ export function buildScrewJoint(opts = {}) {
   section.add(floor, { capColor: 0x2a2c30, capRoughness: 0.8 });
   for (const gm of gussets) section.add(gm, { capColor: 0x2a2c30, capRoughness: 0.8 });
   for (const m of [ins.body, ins.thread, ins.knA, ins.knB]) section.add(m, { capColor: 0xd9b25c, capRoughness: 0.32 });
-  for (const m of [sc.head, sc.thread, sc.tip]) section.add(m, { capColor: 0xb9bec4, capRoughness: 0.3 });   // steel core under the plating
+  for (const m of [sc.head, sc.thread, sc.tip]) section.add(m, { capColor: 0xaeaba5, capRoughness: 0.32 });   // solid titanium, no plating
   plate.children.forEach(m => section.add(m, m.name === 'plateCore' ? { capColor: 0x8a8460 } : {}));
   section.set(0);
 

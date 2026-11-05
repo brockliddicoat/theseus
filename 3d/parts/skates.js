@@ -169,12 +169,12 @@ export function buildDotSkateSet(opts = {}) {
       const ring = meshOf(lathe([[3.55, G.H - 0.0], [3.55, G.H - 0.004], [3.68, G.H - 0.004], [3.68, G.H]], { segments: 96 }), M.pomBlack, 'guideRing');
       ring.position.set(x, 0.0005, z); root.add(ring);
     }
-    // screw heads: the M2 pan head of the parts' screw (ISO 7045, exact cross + slot recess, lib/panhead.js; brass-plated
-    // steel as in fasteners.js), sunk in Ø4.5 counterbores with the dome 0.15 mm inside the plate face, so a worn skate
+    // screw heads: the M2 pan head of the parts' screw (ISO 7045, exact cross + slot recess, lib/panhead.js; titanium, as in
+    // fasteners.js), sunk in Ø4.5 counterbores with the dome 0.15 mm inside the plate face, so a worn skate
     // never puts a head on the pad. The bores' floors carry the bearing faces; a short collar closes them on top.
     const yF = G.H + 0.002 + HEAD_SINK + 1.6;                         // bearing face (head height k = 1.6)
     const headG = panHeadGeometry({ nSlot: 14, nSide: 6, nEnd: 4, radial: 7, nTrench: 6 }).geometry;
-    const headMat = M.brassPlated.clone(); headMat.vertexColors = true; headMat.clearcoat = 0;   // baked occlusion in the recess
+    const headMat = M.titanium.clone(); headMat.vertexColors = true; headMat.clearcoat = 0;   // baked occlusion in the recess
     const boreMat = M.cfpp.clone(); boreMat.color.multiplyScalar(0.8);                          // the bore a little in shadow
     const boreG = lathe([[0, yF], [CB_R, yF], [CB_R, G.H + 1.45]], { segments: 48 });
     const collarG = lathe([[CB_R + 0.15, G.H + 1.5], [CB_R + 0.15, yF + 0.3], [0, yF + 0.3]], { segments: 48 });
