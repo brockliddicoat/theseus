@@ -6159,7 +6159,9 @@ function keyPlanMM(o = {}) {
   dash(H.includes('sensor'), on => { G.beginPath(); G.arc(0, 0, 3.6, 0, TAU); if (on) G.fill(); G.stroke(); });
   /* the plate-off dot skates on the rim's ledge, where the 3D shell seats them (meta.skates, 6.5 mm dots) */
   dash(H.includes('skates'), on => { for (const [x, y] of [[-13.7,-47.3],[-20.0,-42.4],[-17.2,43.2],[-10.8,47.9],[19.9,-42.5],[13.5,-47.4],[11.1,47.8],[17.4,42.9]]) { G.beginPath(); G.arc(x, y, 3.25, 0, TAU); if (on) G.fill(); G.stroke(); } });
-  dash(H.includes('battery'), on => { pathRR(-9, 14, 18, 22, 2); if (on) G.fill(); G.stroke(); });
+  /* the battery where the 3D model's balance puts it: in the tail behind the board, at board height, 35 mm across and
+     25 mm along (the example LP402535JU), so the centre of mass lands under the sensor at the 12 mm grip */
+  dash(H.includes('battery'), on => { pathRR(-17.09, 10.22, 35, 25, 2); if (on) G.fill(); G.stroke(); });
   G.setLineDash([]);
   /* the cut */
   if (o.cut) {
@@ -10018,7 +10020,7 @@ const GLD_SPEC = [
 ];
 S({
   id: 'sensor', ch: 'glide', theme: 'paper', title: 'Next-gen sensor: PixArt PAW3970', settle: 10, ideas: [76],
-  src: ['gld_paw3395', 'gld_next', 'gld_igorV4', 'gld_razerFocus', 'gld_brock'],
+  src: ['gld_paw3395', 'gld_next', 'gld_igorV4', 'gld_razerFocus', 'clk_elo', 'gld_brock'],
   draw: t => {
     header(t, 'Next-gen sensor: PixArt PAW3970');
     captions(t, [[0.6, 'The ULX and the Sora V2 track on the PAW3395, PixArt\'s flagship of 2022, and it struggles on some glass pads.'], [5.4, 'Theseus takes the PAW3970, the sensor inside the Viper V4 Pro: 930 ips, 90 G and 50,000 CPI.']]);
@@ -10026,7 +10028,7 @@ S({
     gld_head(t, 3.4, LM, 500, '+' + gain, '%', { label: 'Tracking speed', size: 176, uk: 0.42, sub: 'The PAW3970 against the PAW3395 in the ULX and Sora V2. Higher is better.', maxW: 560 });
     gld_ba(t, 3.8, LM, 700, fmt(f.a), fmt(f.b) + ' ips', { size: 60, who: ['PAW3395', 'Theseus, PAW3970'] });
     /* the specs, row by row: the PAW3395 in grey by its datasheet, the PAW3970 in blue by the V4 Pro's figures */
-    const x = 720, y = 280, w = RM - x, h = 460;
+    const x = 720, y = 280, w = RM - x, h = 440;
     demoWindow(x, y, w, h, tileA(t, 0.15, 0));
     cardHead(t, 0.35, x, y, w, 'PAW3395 against PAW3970. Higher is better', [{ ev: 'datasheet', by: 'PixArt' }, { ev: 'claim', by: 'Razer' }]);
     const bx = x + 260, bw = w - 260 - 240;
@@ -10043,7 +10045,7 @@ S({
     legend(t, 1.4, x + w - 32, y + h - 34, [{ kind: 'comp', label: 'PAW3395, 2022' }, { kind: 'hero', label: 'Theseus: PAW3970 (the Viper V4 Pro\'s sensor; Brock)' }], { size: 19, gap: 26, align: 'right' });
     /* where the figures come from, and the words in plain terms */
     const ny = y + h + 40, nw = (w - 40) / 2;
-    sourceBox(t, 5.6, x, ny, nw, 'igor\'sLAB', 'The Viper V4 Pro\'s sensor: 50,000 CPI in steps of 1, 930 ips, 90 G, true 8,000 Hz and 99.8% resolution accuracy, Razer\'s figures.', { h: 960 - ny });
+    sourceBox(t, 5.6, x, ny, nw, 'igor\'sLAB', 'The Viper V4 Pro\'s sensor: 50,000 CPI in steps of 1, 930 ips, 90 G, true 8,000 Hz and 99.8% resolution accuracy.', { h: 960 - ny });
     glossBox(t, 5.9, x + nw + 40, ny, nw, 'Ips and G', 'How fast and how hard you can swing the mouse before it loses track: inches a second, and multiples of gravity.', { h: 960 - ny });
     source(t, 'PAW3395: PixArt\'s datasheet. PAW3970: Brock\'s name for the Viper V4 Pro\'s Focus Pro 50K Gen-3, with Razer\'s figures.', { t0: 3, maxW: 580, y: 960 });
   }
@@ -12517,7 +12519,7 @@ S({
       /* the labels sit in the dark margins either side of the node, off the ribs (review item 16): in 2D the node plan is
          centred with about a quarter of the box clear on each side */
       const inBox = p => p[0] > bx + 20 && p[0] < bx + bw - 20 && p[1] > by + 20 && p[1] < by + bh - 20;
-      if (inBox(P1)) callout(t, 2.0, P1, 'A 0.6 mm fillet', { to: in2D([bx + bw * 0.75, by + bh - 78], [Math.min(P1[0] + 120, bx + bw - 320), by + bh - 50]), side: 'r', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: in2D(bw * 0.25 - 24, 280), sub: 'Where three ribs meet', scolor: '#B9B8B2' });
+      if (inBox(P1)) callout(t, 2.0, P1, 'A 0.6 mm fillet', { to: in2D([bx + bw * 0.75, by + bh - 112], [Math.min(P1[0] + 120, bx + bw - 320), by + bh - 50]), side: 'r', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: in2D(bw * 0.25 - 24, 280), sub: 'Where three ribs meet', scolor: '#B9B8B2' });
       if (inBox(P2)) callout(t, 2.6, P2, 'Rib 1.0 mm wide', { to: in2D([bx + bw * 0.25, by + 64], [Math.max(P2[0] - 110, bx + 300), P2[1] + 60]), side: 'l', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: in2D(bw * 0.25 - 24, 250), sub: '2.0 mm tall', scolor: '#B9B8B2' });
     }
     glossBox(t, 2.8, LM, 720, 840, 'Fillet', 'A rounded inside corner: here where three ribs meet, and where each rib meets the wall. Peak: the hottest point over the panel\'s average stress.', { size: 24 });
@@ -14334,7 +14336,7 @@ Object.assign(SRC, {
   shcTpuHatiR: { t: 'TechPowerUp, G-Wolves Hati-R 8K review, 31 Oct 2024: "The very thin main PCB is affixed to the bottom with four screws, and has been extended such that it supports structural rigidity of the shell"', u: 'https://www.techpowerup.com/review/g-wolves-hati-r-8k/4.html' },
   shcBrock: { t: 'Brock Liddicoat, review notes, 4 Nov 2026: one board of about 5.6 g, with the radio, PMIC, antenna and USB-C; many mice reinforce with small arms of FR4 that are "easy to break off or snap under force"; "All G Wolves mice, I even had the arms on an HTS Ultra break during shipping once"; in engineering, draw on all the resources you have', u: '', n: 'his own account and figures' },
   shcBoardFE: { t: 'This deck, 2D frames solved in the page (07-sim.js): the shell at board height seen from above (the Sora outline; its CF-PP rim and lower wall as one 4.0 × 3.6 mm beam, 13.5 GPa), the board in 1.0 mm FR4 (19 GPa) as a plate-equivalent truss 9 mm inside the rim, joined by four 4 mm FR4 arms at the screw-boss rows or by 16 CF-PP rib feet at the study\'s arch rows; a transverse arch (the wall and one arch rib per 9.8 mm, as an equivalent section) under its 7.5 N share of a 10 N crown press, its feet held by the plan frame; the arm alone, edge on, as a fixed-guided FR4 beam', n: 'derived, this model' },
-  shcMassModel: { t: 'This deck, mass model: Theseus\'s 29.31 g as its weight budget sets it (the battery, Jauch LP402535JU, 8 g and 4.0 mm thick; the board 5.6 g; buttons, wheel, screws and wires as XBAB weighed them in the XA25; shell and skates the rest), each part at its height above the pad: the shell and skates at the study shell\'s centre of mass (16.1 mm) and the buttons at theirs (23.3 mm), both integrated from the moulded geometry (3d/lattice); the board 4 to 5 mm up with its parts on top (5 mm); the cell flat on it (7 mm) or up in the hump (20 mm); wheel 22 mm, screws 8 mm, wires 10 mm (estimates); the grip 12 mm up, as in the side-wall study (shbSides)', n: 'derived, this model' }
+  shcMassModel: { t: 'This deck, mass model: Theseus\'s 29.31 g as its weight budget sets it (the battery, Jauch LP402535JU, 8 g and 4.0 mm thick; the board 5.6 g; buttons, screws and wires as XBAB weighed them in the XA25; the magnesium wheel on its POM axle and four brass inserts as the intro\'s budget derives them; shell and skates the rest), each part at its height above the pad: the shell and skates at the study shell\'s centre of mass (16.1 mm) and the buttons at theirs (23.3 mm), both integrated from the moulded geometry (3d/lattice); the board 4 to 5 mm up with its parts on top (5 mm); the battery at board height in the tail, behind the board (7.46 mm, the 3D layout) or up in the hump (20 mm); wheel 22 mm, screws and inserts 8 mm, wires 10 mm (estimates); the grip 12 mm up, as in the side-wall study (shbSides)', n: 'derived, this model' }
 });
 
 /* ---------- small geometry, in the shell study's frame: x across (+ = the user's left), y up, z forward (mm) ---------- */
@@ -14739,25 +14741,35 @@ S({
 /* ============================== 4. keep the mass low, near the fingers (#95, #40) ==============================
    The fingers push the mouse at its sides, 12 mm up (the grip of the side-wall study, shbSides); in a flick its mass pushes
    back at its centre of mass. The height between the two is a lever: the twist is m · a · lever, so at any flick the twist
-   falls as the lever does. Theseus's 29.31 g, part by part at its height (shcMassModel); the pointer moves the 8 g cell from
-   the hump onto the board, and the centre of mass drops onto the grip. Drawn on the study shell, cut across at z = −14 mm. */
-const SHC_CG0 = { grip: 12, high: 20, low: 7, boardY: 5, shellY: 16.07, btnY: 23.31, wheelY: 22, screwY: 8, wireY: 10 };
-/** Theseus's weight budget as the intro's budget sets it: the cell from Jauch, the board Brock's figure, the small parts as
-   XBAB weighed them in the XA25, the shell and skates what is left */
+   falls as the lever does. Theseus's 29.31 g, part by part at its height (shcMassModel); the pointer moves the 8 g battery from
+   the hump down to board height in the tail, behind the board, where the 3D layout puts it (z −35.2 to −10.2 mm, 35 mm across,
+   its centre 7.46 mm up; the board ends at z −7.9), and the centre of mass drops onto the grip. Drawn on the study shell, cut
+   across at z = −14 mm, through the battery and behind the board (so the board is not in the cut); a small plan shows where. */
+const SHC_CG0 = { grip: 12, high: 20, low: 7.46, boardY: 5, shellY: 16.07, btnY: 23.31, wheelY: 22, screwY: 8, wireY: 10 };
+/** Theseus's weight budget, taken from the intro's own (ntr_budget, 14-b-intro-ex.js) so the two can't drift apart: the battery
+   from Jauch, the board Brock's figure, the buttons, screws and wires as XBAB weighed them in the XA25, the magnesium wheel on
+   its POM axle and the four brass inserts as the intro derives them, the shell and skates what is left. The fallback (a build
+   without the intro) uses the same figures */
 function shcBudget() {
   if (SHC.bud) return SHC.bud;
+  const NB = typeof ntr_budget === 'function' ? ntr_budget() : null;
+  if (NB && NB.ok) {
+    const cell = { part: NB.cell.part, mAh: NB.cell.mAh, g: NB.cell.g, t: 4.0 };
+    return (SHC.bud = { cell, btn: NB.xa.btn, wheel: NB.wheel, screws: NB.xa.screws, wires: NB.xa.fpc, ins: NB.ins, shell: NB.shell });
+  }
   const RD0 = typeof RDATA !== 'undefined' ? RDATA : {}, b = ((RD0.weights || {}).breakdowns || []).find(x => /XA25/.test(x.mouse));
   const by = (re, d) => { const p = b && b.parts.find(q => re.test(q.part)); return p ? +shcV(p.mass) : d; };
   const cr = (((RD0.batteries || {}).jauch_lipo_family || {}).rows || []).find(r => r.part === 'LP402535JU');
   const cell = { part: 'LP402535JU', mAh: cr ? +shcV(cr.capacity) : 370, g: cr ? +shcV(cr.mass) : 8, t: 4.0 };
-  const btn = by(/^Button/, 3.328), wheel = by(/^Scroll/, 0.931), screws = by(/^Screws/, 0.708), wires = by(/^FPC/, 0.121);
-  return (SHC.bud = { cell, btn, wheel, screws, wires, shell: THESEUS.mass - cell.g - THESEUS.pcb - btn - wheel - screws - wires });
+  const btn = by(/^Button/, 3.328), wheel = 1.580, ins = 0.516, screws = by(/^Screws/, 0.708), wires = by(/^FPC/, 0.121);
+  return (SHC.bud = { cell, btn, wheel, screws, wires, ins, shell: THESEUS.mass - cell.g - THESEUS.pcb - btn - wheel - ins - screws - wires });
 }
 /** the centre of mass's height with the cell's centre at y (mm), and the two layouts */
 function shcCg() {
   if (SHC.cg) return SHC.cg;
-  const B = shcBudget(), K = SHC_CG0, small = B.wheel + B.screws + B.wires;
-  const parts = [[B.shell, K.shellY], [B.btn, K.btnY], [THESEUS.pcb, K.boardY], [small, (B.wheel * K.wheelY + B.screws * K.screwY + B.wires * K.wireY) / small]];
+  /* the wheel at wheel height, the brass inserts with the screws they take */
+  const B = shcBudget(), K = SHC_CG0, small = B.wheel + B.screws + B.ins + B.wires;
+  const parts = [[B.shell, K.shellY], [B.btn, K.btnY], [THESEUS.pcb, K.boardY], [small, (B.wheel * K.wheelY + (B.screws + B.ins) * K.screwY + B.wires * K.wireY) / small]];
   const m0 = parts.reduce((s, p) => s + p[0], 0), my0 = parts.reduce((s, p) => s + p[0] * p[1], 0), at = y => (my0 + B.cell.g * y) / (m0 + B.cell.g);
   const hi = at(K.high), lo = at(K.low), lvHi = hi - K.grip, lvLo = lo - K.grip;
   return (SHC.cg = { B, at, hi, lo, lvHi, lvLo, cut: 1 - Math.abs(lvLo) / Math.abs(lvHi) });
@@ -14789,7 +14801,7 @@ S({
   draw: t => {
     const Q = shcCg(), K = SHC_CG0, pct = Math.round(Q.cut * 100), kMove = ep(t, 4.4, 5.4, E.io3);
     header(t, 'Keep the mass low, near the fingers');
-    captions(t, [[0.6, 'Your fingers push the mouse at its sides, 12 mm up. In a flick its mass pushes back at its centre of mass, higher up.'], [3.6, 'The height between them is a lever, and every flick twists the mouse around it. Move the 8 g battery down onto the board.'], [6.0, 'The centre of mass drops to the grip. The flick goes straight through it: no lever, almost no twist, at the same weight.']]);
+    captions(t, [[0.6, 'Your fingers push the mouse at its sides, 12 mm up. In a flick its mass pushes back at its centre of mass, higher up.'], [3.6, 'The height between them is a lever, and every flick twists the mouse around it. Move the 8 g battery down to board height, in the tail behind the board.'], [6.0, 'The centre of mass drops to the grip, in line with the sensor. The flick goes nearly straight through it: almost no twist, at the same weight.']]);
     /* ---- left: the headline and the two before → after rows ---- */
     const lx = LM, lw0 = 560;
     shellHL(t, 5.6, lx, 420, '−' + pct + '%', 'twist', { size: 140, sub: 'In every flick, at the same ' + THS.massG + '.', maxW: lw0 });
@@ -14812,16 +14824,11 @@ S({
     const ks = ep(t, 0.6, 1.2, E.snap);
     /* the shell wall, cut */
     { const Bd = shcSecBand(); G.save(); G.globalAlpha = a * ks; G.beginPath(); Bd.outer.forEach((p, i) => { const q = X(p[0], p[1]); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); }); Bd.inner.slice().reverse().forEach(p => { const q = X(p[0], p[1]); G.lineTo(q[0], q[1]); }); G.closePath(); G.fillStyle = TH ? '#3B3C41' : '#8C8D93'; G.fill(); G.restore(); }
-    /* the board, with its parts on top */
-    { const kb = ep(t, 0.9, 1.3), b0 = X(-27.3, 5), b1 = X(27.3, 4);
-      rr(b0[0], b0[1], b1[0] - b0[0], b1[1] - b0[1], 2, C.comp2, null, 0, a * kb);
-      for (const [px, pw, ph] of [[-20, 7, 1.4], [-9, 4, 0.9], [12, 9.8, 3.2], [22, 3, 1.0]]) { const q = X(px - pw / 2, 5 + ph); rr(q[0], q[1], pw * s, ph * s, 2, C.comp, null, 0, a * kb); }
-      text('Board, ' + THS.pcb, X(-25, 0)[0], X(0, 4)[1] + 24, { role: 'label', size: 19, color: C.mute, alpha: a * kb });
-    }
+    /* the board ends 6 mm ahead of this cut (z −7.9), so it is not drawn in it: the plan in the corner shows where it is */
     /* where the cell was, once it has moved */
-    if (kMove > 0.02) { const q0 = X(-12.5, K.high + 2), q1 = X(12.5, K.high - 2); G.save(); G.globalAlpha = a * 0.6 * kMove; G.setLineDash([6, 6]); rrPath(q0[0], q0[1], q1[0] - q0[0], q1[1] - q0[1], 5); G.strokeStyle = inkA(0.45); G.lineWidth = 1.6; G.stroke(); G.setLineDash([]); G.restore(); }
+    if (kMove > 0.02) { const q0 = X(-17.5, K.high + 2), q1 = X(17.5, K.high - 2); G.save(); G.globalAlpha = a * 0.6 * kMove; G.setLineDash([6, 6]); rrPath(q0[0], q0[1], q1[0] - q0[0], q1[1] - q0[1], 5); G.strokeStyle = inkA(0.45); G.lineWidth = 1.6; G.stroke(); G.setLineDash([]); G.restore(); }
     /* the cell */
-    const c0 = X(-12.5, cellY + 2), c1 = X(12.5, cellY - 2), kc = ep(t, 1.0, 1.4);
+    const c0 = X(-17.5, cellY + 2), c1 = X(17.5, cellY - 2), kc = ep(t, 1.0, 1.4);
     rr(c0[0], c0[1], c1[0] - c0[0], c1[1] - c0[1], 5, TH ? '#26272B' : '#D9D8D3', null, 0, a * kc);
     text('Battery, ' + fmtN(Q.B.cell.g, 0) + ' g', (c0[0] + c1[0]) / 2, (c0[1] + c1[1]) / 2 + 7, { role: 'label', size: 19, color: TH ? '#F3F2EE' : '#111111', align: 'center', alpha: a * kc });
     /* the fingers, grey, pressing the low sides at the grip */
@@ -14859,13 +14866,15 @@ S({
       arrow(f0[0], f0[1], f1[0], f1[1], { color: C.ink, w: 3.4, hs: 13, alpha: a * kA });
       arrow(pc[0], pc[1] - 24, pc[0] - dir * (30 + 50 * kA), pc[1] - 24, { color: C.ink2, w: 2.4, hs: 10, alpha: a * kA * 0.8 });
     }
-    /* the pointer moves the cell down onto the board */
+    /* the pointer moves the battery down to board height, in the tail */
     { const ch = X(0, K.high), cl = X(0, K.low), grab = t > 4.2 && t < 5.45;
-      const p = kf(t, [[3.5, [x + w - 120, y + 130]], [4.15, [ch[0] + 40, ch[1] + 4]], [4.4, [ch[0] + 40, ch[1] + 4]], [5.4, [cl[0] + 40, cl[1] + 4]], [5.6, [cl[0] + 40, cl[1] + 4]], [6.2, [x + w - 140, y + 140]]], E.cam);
+      const p = kf(t, [[3.5, [x + w - 300, y + 120]], [4.15, [ch[0] + 40, ch[1] + 4]], [4.4, [ch[0] + 40, ch[1] + 4]], [5.4, [cl[0] + 40, cl[1] + 4]], [5.6, [cl[0] + 40, cl[1] + 4]], [6.2, [x + w - 320, y + 150]]], E.cam);
       cursorPtr(p[0], p[1], { a: ep(t, 3.4, 3.7) * (1 - ep(t, 5.9, 6.2)), grab, press: t > 4.15 && t < 4.6 ? prog(t, 4.15, 4.6) : 0 });
     }
     text('Twist drawn large to be seen', x + 32, y + 48, { role: 'label', size: 19, color: C.faint, alpha: a * ep(t, 2.0, 2.4) });
-    source(t, 'Mass model: the weight budget\'s parts at their heights (shell and skates 16.1 mm, buttons 23.3, board 5, battery 7, or 20 in the hump). Grip 12 mm up, as in the side-wall study.', { t0: 2.0 });
+    /* where it all sits, from above: the battery in the tail behind the board, the sensor, and this cut (A) through the battery */
+    keyPlan(t, 1.2, x + w - 96, y + 132, { s: 1.0, hi: ['battery'], accent: C.hero, cut: { y: 14, label: 'A' }, label: 'From above' });
+    source(t, 'Mass model, the weight budget\'s parts at their heights: shell and skates 16.1 mm, buttons 23.3, wheel 22, board 5, screws and inserts 8, battery 7.5 behind the board or 20 in the hump.', { t0: 2.0 });
   }
 });
 
@@ -15122,22 +15131,23 @@ S({
   draw: t => {
     header(t, 'Bottom plate options at the same weight');
     captions(t, [[0.6, 'The same ' + PLT_OPTS.A.mass.toFixed(2) + ' g, spent four ways. Every one is stiffer than a plain grid of its weight at the lens, under the front skate and in twist.'], [4.6, 'A is the plate built so far. B, C and D each buy something more, and each says what it costs.']]);
-    const T0 = [['A', 'Committed: the balance', 'Wins four of five against the grid with today\'s ribs.', 'The back skate flexes ' + Math.round((PLT_OPTS.A.theseus.back / PLT_OPTS.A.grid.back - 1) * 100) + ' % more than the grid\'s.'],
-      ['B', 'The back skate first', 'Back skate ' + PLT_OPTS.A.theseus.back + ' to ' + PLT_OPTS.B.theseus.back + ' µm: half the gap to the grid.', 'Smaller wins at the lens, the front skate and the peak.'],
-      ['C', 'Thinner ribs', 'Lens ' + PLT_OPTS.A.theseus.lens + ' to ' + PLT_OPTS.C.theseus.lens + ' µm, front skate ' + PLT_OPTS.A.theseus.pill + ' to ' + PLT_OPTS.C.theseus.pill + ' µm.', 'Ribs to mould at ' + PLT_OPTS.C.walls.lattice.toFixed(2) + ' mm, struts at ' + PLT_OPTS.C.walls.struts.toFixed(2) + ' mm.'],
-      ['D', 'Taller ribs in the tail', 'Back skate ' + PLT_OPTS.A.theseus.back + ' to ' + PLT_OPTS.D.theseus.back + ' µm, in the space under the battery.', 'A higher peak, and a grid as tall there gains more.']];
+    const A = PLT_OPTS.A.theseus;
+    const T0 = [['A', 'Committed: the balance', 'Four of five wins, with today\'s ribs.', 'Back skate ' + Math.round((A.back / PLT_OPTS.A.grid.back - 1) * 100) + ' % behind the grid.'],
+      ['B', 'The back skate first', 'Back skate ' + A.back + ' to ' + PLT_OPTS.B.theseus.back + ' µm.', 'Smaller wins everywhere else.'],
+      ['C', 'Thinner ribs', 'Lens ' + A.lens + ' to ' + PLT_OPTS.C.theseus.lens + ' µm, front ' + A.pill + ' to ' + PLT_OPTS.C.theseus.pill + '.', 'Ribs ' + PLT_OPTS.C.walls.lattice.toFixed(2) + ' mm, struts ' + PLT_OPTS.C.walls.struts.toFixed(2) + ' mm.'],
+      ['D', 'Taller ribs in the tail', 'Back skate ' + A.back + ' to ' + PLT_OPTS.D.theseus.back + ' µm.', 'A higher peak; the grid gains more.']];
     const rows = [['Lens flex', 'lens', 0], ['Front skate', 'pill', 0], ['Twist', 'twist', 0], ['Peak stress', 'max', 1], ['Back skate', 'back', 0]];
     T0.forEach(([X, nm, buys, costs], i) => {
       const x = LM + (i % 2) * 900, y = 280 + Math.floor(i / 2) * 370, w = 860, h = 330, a = tileA(t, 0.2, i), O = PLT_OPTS[X], hero = X === 'A';
       demoWindow(x, y, w, h, a, { hero });
       plt_optPlate(X, x + 104, y + h / 2 + 4, 2.5, ep(t, 0.5 + i * 0.2, 1.1 + i * 0.2));
-      const tx = x + 214, k1 = ep(t, 1.0 + i * 0.35, 1.5 + i * 0.35);
+      const tx = x + 200, k1 = ep(t, 1.0 + i * 0.35, 1.5 + i * 0.35);
       text(X, tx, y + 62, { font: 'disp', size: 52, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, alpha: a });
       text(nm, tx + 54, y + 54, { role: 'label', size: 21, color: hero ? C.heroText : C.ink, alpha: a, maxW: 210, lh: 1.15 });
       text('Buys', tx, y + 112, { role: 'label', size: 19, color: C.heroText, alpha: k1 });
-      text(buys, tx, y + 142, { role: 'small', size: 25, weight: 600, color: C.ink2, maxW: 268, lh: 1.25, alpha: k1 });
+      text(buys, tx, y + 142, { role: 'small', size: 25, weight: 600, color: C.ink2, maxW: 280, lh: 1.25, alpha: k1 });
       text('Costs', tx, y + 222, { role: 'label', size: 19, color: C.mute, alpha: k1 });
-      text(costs, tx, y + 252, { role: 'small', size: 25, weight: 600, color: C.ink2, maxW: 268, lh: 1.25, alpha: k1 });
+      text(costs, tx, y + 252, { role: 'small', size: 25, weight: 600, color: C.ink2, maxW: 280, lh: 1.25, alpha: k1 });
       /* its five numbers against the grid of its weight */
       const gx = x + 500, k2 = ep(t, 1.6 + i * 0.35, 2.2 + i * 0.35);
       text('Against a plain grid', gx, y + 48, { role: 'label', size: 19, color: C.ink, alpha: k2, caps: false });
@@ -15146,14 +15156,13 @@ S({
         const yy = y + 112 + j * 34, th = O.theseus[f], g = O.grid[f], win = th < g;
         const d = win ? (g / th >= 1.5 ? (g / th).toFixed(1) + '×' : '−' + Math.round((1 - th / g) * 100) + ' %') : '+' + Math.round((th / g - 1) * 100) + ' %';
         text(lab, gx, yy, { role: 'label', size: 19, color: C.mute, alpha: k2, caps: false });
-        text(fmtN(th, dp), gx + 182, yy, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: k2, caps: false });
-        text(fmtN(g, dp), gx + 260, yy, { role: 'label', size: 21, color: C.secondText, align: 'right', alpha: k2, caps: false });
-        text(d, x + w - 28, yy, { role: 'label', size: 21, color: win ? C.heroText : C.bad, align: 'right', alpha: k2, caps: false });
+        text(fmtN(th, dp), gx + 172, yy, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: k2, caps: false });
+        text(fmtN(g, dp), gx + 256, yy, { role: 'label', size: 21, color: C.secondText, align: 'right', alpha: k2, caps: false });
+        text(d, x + w - 24, yy, { role: 'label', size: 21, color: win ? C.heroText : C.bad, align: 'right', alpha: k2, caps: false });
       });
       const k3 = ep(t, 2.2 + i * 0.35, 2.7 + i * 0.35), thin = Math.min(...Object.values(O.walls).filter(v => v != null));
       text('Thinnest rib ' + thin.toFixed(2) + ' mm', gx, y + h - 22, { role: 'label', size: 19, color: C.ink2, alpha: k3, caps: false });
       text(O.mass.toFixed(2) + ' g', x + w - 28, y + h - 22, { role: 'label', size: 19, color: C.ink2, align: 'right', alpha: k3, caps: false });
-      if (X === 'D') text('Tail struts ' + O.tallH.toFixed(1) + ' mm tall', x + 32, y + h - 22, { role: 'label', size: 19, color: C.heroText, alpha: k3, caps: false });
     });
     source(t, 'Plate FE (this deck), four sizings at ' + PLT_OPTS.A.mass.toFixed(2) + ' g, each against a plain 8 mm grid of the same weight, skin, edge wall, lens ring and rib heights. Theseus blue, the grid yellow.', { t0: 3 });
   }
@@ -16741,9 +16750,9 @@ S({
     demoWindow(rx, ry, rw, rh, tileA(t, 0.3, 0));
     cardHead(t, 0.5, rx, ry, rw, 'Reports over the cable, at their real rates (more is better)', ['datasheet']);
     const x0 = rx + 36, w0 = rw - 72;
-    elc_lane(t, 0.9, x0, ry + 128, w0, { name: 'One nRF52840', sub: (N.nRF52840 || 0) + ' of ' + tot + ' mice', col: C.comp, khz: 1, rate: '1 kHz', bw: 200, chips: [{ l: 'nRF52840', s: 'full-speed USB' }] });
-    elc_lane(t, 1.7, x0, ry + 216, w0, { name: 'Two chips', sub: 'Most 8 kHz mice', col: C.comp, khz: 8, rate: '8 kHz', bw: 360, chips: [{ l: 'nRF52840', s: 'radio' }, { l: 'USB chip', s: 'high speed', dx: 180 }] });
-    elc_lane(t, 2.5, x0, ry + 304, w0, { hero: true, sub: 'One chip', col: C.hero, khz: 8, rate: '8 kHz', bw: 230, chips: [{ l: 'nRF54LM20A', s: 'radio and USB', sc: C.heroText, hi: true }] });
+    elc_lane(t, 0.9, x0, ry + 128, w0, { name: 'One nRF52840', sub: (N.nRF52840 || 0) + ' of ' + tot + ' mice', col: C.comp, khz: 1, rate: '1 kHz', bw: 256, chips: [{ l: 'nRF52840', s: 'full-speed USB' }] });
+    elc_lane(t, 1.7, x0, ry + 216, w0, { name: 'Two chips', sub: 'Most 8 kHz mice', col: C.comp, khz: 8, rate: '8 kHz', bw: 384, chips: [{ l: 'nRF52840', s: 'radio' }, { l: 'USB chip', s: 'high speed', dx: 180 }] });
+    elc_lane(t, 2.5, x0, ry + 304, w0, { hero: true, sub: 'One chip', col: C.hero, khz: 8, rate: '8 kHz', bw: 256, chips: [{ l: 'nRF54LM20A', s: 'radio and USB', sc: C.heroText, hi: true }] });
     /* the two chips, side by side: Theseus's wins in bold, the one spec it gives up kept honest */
     const ty = 680, th = 280;
     demoWindow(rx, ty, rw, th, tileA(t, 0.3, 1));
@@ -16910,19 +16919,20 @@ S({
     const ages = lanes.map(L => polls.map(p => Math.round(p - L.frames.filter(f => f + 15 <= p).pop()))), jit = ages.map(g => Math.max(...g) - Math.min(...g));
     elc_ba(t, 5.4, LM, 880, String(jit[0]), String(jit[1]), { size: 110, label: 'Jitter, its own clock then synced', unit: 'µs', net: 'Every report the same age', maxW: 560 });
     elc_ba(t, 6.0, 680, 880, '73', '20', { size: 64, label: 'The oldest motion in a report', unit: 'µs', net: '−53 µs at the worst', maxW: 480 });
-    const tx = 1240, tw0 = RM - tx, ty = 720, th = 240;
+    const tx = 1200, tw0 = RM - tx, ty = 720, th = 240;
     demoWindow(tx, ty, tw0, th, tileA(t, 0.4, 1));
-    cardHead(t, 0.6, tx, ty, tw0, 'Frame to USB, wired, 8 kHz (lower is better)', [{ ev: 'measured', by: 'Kunai\'s developer' }], { dy: 44 });
-    const bx = tx + 240, bw2 = tw0 - 240 - 140, BX = us => bx + bw2 * us / 210;
+    /* SensorLock is its developer's own work, measured against a rival: a claim (DESIGN 6) */
+    cardHead(t, 0.6, tx, ty, tw0, 'Frame to USB, lower is better', ['claim'], { dy: 44 });
+    const bx = tx + 272, bw2 = tw0 - 272 - 130, BX = us => bx + bw2 * us / 210;
     [['XBAB SensorLock', 42, '42 µs'], ['Razer\'s FrameSync', 205, '205 µs']].forEach(([l, v, lab], i) => {
       const yy = ty + 108 + i * 50, k = ep(t, 1.6 + i * 0.3, 2.4 + i * 0.3, E.snap);
       text(l, tx + 32, yy + 8, { role: 'small', size: 23, weight: 600, color: C.ink, alpha: ep(t, 1.4, 1.8) });
       rr(bx, yy - 10, Math.max(20, (BX(v) - bx) * k), 20, 10, C.comp, null, 1, ep(t, 1.4, 1.8));
       text(lab, bx + (BX(v) - bx) * k + 14, yy + 9, { font: 'mono', size: 23, weight: 700, color: C.ink2, alpha: k });
     });
-    const hw = heroTag(tx + 32, ty + th - 24, 'Theseus', null, { a: ep(t, 2.6, 3.0), size: 21 });
-    text('synced in its PAW3970 sensor, every report on a scope', tx + 32 + hw + 12, ty + th - 24, { role: 'small', size: 22, weight: 600, color: C.heroText, alpha: ep(t, 2.6, 3.0), maxW: tw0 - 76 - hw });
-    source(t, 'Lanes: an illustration, 12,000 frames a second against 8,000 polls, 15 µs to process a frame; jitter = the oldest minus the youngest report. SensorLock: XBAB Tech, 2026-10-07; FrameSync is Razer\'s. Kunai: tester guide, pre-production.', { t0: 2 });
+    const hw = heroTag(tx + 32, ty + th - 26, 'Theseus', null, { a: ep(t, 2.6, 3.0), size: 21 });
+    text('frame sync in its PAW3970', tx + 32 + hw + 12, ty + th - 26, { role: 'small', size: 22, weight: 600, color: C.heroText, alpha: ep(t, 2.6, 3.0) });
+    source(t, 'Lanes: an illustration, 12,000 frames a second against 8,000 polls, 15 µs to process a frame; jitter = oldest − youngest. Frame to USB: SensorLock\'s developer, 8 kHz, 2026-10-07.', { t0: 2 });
   }
 });
 
@@ -17006,7 +17016,7 @@ S({
     elc_hl(t, 4.2, rx, 430, String(THESEUS.hours), 'hours', { label: 'At 1 kHz, the plan', sub: B.mAh + ' mAh, ' + fmtN(B.wh, 2) + ' Wh at the Viper V4 Pro\'s ' + fmtN(B.w1 * 1000, 1) + ' mW: ' + fmtN(B.h1, 0) + ' h. At 8 kHz, ' + fmtN(B.h8, 0) + ' h.', subW: rw });
     elc_ba(t, 5.0, rx, 660, '180', String(THESEUS.hours), { label: 'The longest listed, then Theseus', unit: 'h', net: '+' + fmtN(100 * (THESEUS.hours - 180) / 180, 0) + ' % over the Viper V4 Pro', maxW: rw });
     glossBox(t, 5.8, rx, 750, rw, 'Frame sync', 'The sensor\'s LED flashes once per frame. Synced to the polls, it takes a frame only when a report needs one, so it flashes less often.', { size: 24 });
-    source(t, 'Hours: Razer support and Notebookcheck (claims); the V4 Pro at 8 kHz, TechPowerUp (measured). Theseus: Jauch\'s battery at the V4 Pro\'s draw, derived. PAW3395: 1.7 mA at 1 kHz, 10 mA in its 8 kHz corded mode.', { t0: 2 });
+    source(t, 'Hours: Razer support and Notebookcheck, claims; the V4 Pro at 8 kHz, TechPowerUp, measured. Theseus: the example battery at the V4 Pro\'s draw, derived.', { t0: 2 });
   }
 });
 
@@ -17040,7 +17050,7 @@ S({
     blocks.forEach(([l, s, on], i) => elc_blk(fx, by(i), fw, bh, l, s, on, ep(t, 1.0 + i * 0.12, 1.4 + i * 0.12), col));
     elc_blk(lx + 24, by(0), 130, bh, 'USB-C', '4.0–5.5 V', chg, ep(t, 1.2, 1.6), col);
     elc_blk(lx + 24, by(2), 130, bh, 'Battery', '3.7 V', Math.max(chg, rn), ep(t, 1.2, 1.6), col);
-    [['Radio', 'module', 1, rn], ['Sensor', 'own supply', 2, rn], ['Main chip', 'reads the gauge', 3, gau]].forEach(([l, s, row, on]) => elc_blk(lx + lw - 24 - 130, by(row), 130, bh, l, s, on, ep(t, 1.4, 1.8), col));
+    [['Radio', 'module', 1, rn], ['Sensor', 'own supply', 2, rn], ['Main chip', 'reads it', 3, gau]].forEach(([l, s, row, on]) => elc_blk(lx + lw - 24 - 130, by(row), 130, bh, l, s, on, ep(t, 1.4, 1.8), col));
     const L = lx + 154, R0 = fx, R1 = fx + fw, Ro = lx + lw - 154, mid = i => by(i) + bh / 2;
     const wires = [[[L, mid(0)], [R0, mid(0)], chg], [[R0, mid(0) + 14], [L, mid(2) - 14], chg], [[L, mid(2) - 6], [R0, mid(1)], rn], [[L, mid(2)], [R0, mid(2)], rn], [[R1, mid(1)], [Ro, mid(1)], rn], [[R1, mid(2)], [Ro, mid(2)], rn], [[L, mid(2) + 8], [R0, mid(3)], gau], [[R1, mid(3)], [Ro, mid(3)], gau]];
     wires.forEach(([a0, b0, on]) => {
@@ -17772,11 +17782,11 @@ S({
     const a0 = ep(t, 1.0, 1.4);
     for (const v of [0, 1000, 2000, 3000]) { line(ax0, BY(v), ax1, BY(v), { color: C.hair, w: 1, alpha: a0 }); text(v ? fmtN(v / 1000, 0) + 'k' : '0', ax0 - 12, BY(v) + 7, { role: 'tick', size: 19, color: C.mute, align: 'right', alpha: a0 }); }
     for (const d of [0.4, 0.2, 0.1]) text(fmtN(d, 1) + ' mm', DX(d), ay1 + 28, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a0 });
-    text('Finer →', ax1, ay1 + 28, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
+    text('Finer strands →', ax1, ay1 + 54, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
     const rows = [[0.40, 351], [0.25, 874], [0.13, 2892], [0.10, 2908]], kl = ep(t, 1.2, 2.6, E.io3);
     poly(rows.map(([d, v]) => [DX(d), BY(v)]), { color: C.ink2, w: 2.5, p: kl, alpha: a0 });
     /* values: the two coarse ones right of their points, the two fine ones over theirs, clear of the line */
-    const lab = [[14, -10, 'left'], [14, -10, 'left'], [-12, -14, 'right'], [0, -14, 'center']];
+    const lab = [[14, 28, 'left'], [14, 28, 'left'], [-12, -14, 'right'], [0, -14, 'center']];
     rows.forEach(([d, v], i) => {
       const k = ep(t, 1.3 + i * 0.25, 1.7 + i * 0.25), [dx, dy, al] = lab[i];
       circle(DX(d), BY(v), 7, { fill: C.ink2, alpha: k });
@@ -17787,7 +17797,7 @@ S({
     line(XT, ay0 - 4, XT, ay1, { color: C.hero, w: 3, dash: [7, 5], alpha: kT });
     text('Theseus', XT - 12, ay1 - 40, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: kT });
     text('0.08 mm', XT - 12, ay1 - 14, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: kT });
-    source(t, 'Strain ε = d / 2R, derived. Bends to failure: Alexander 1953, Table IX, 18 AWG wire bent 90° each way; Theseus\'s 0.08 mm strands are finer than any it tested. Fold rating: Shengyi SF202; the film: DuPont Kapton HN.', { t0: 2 });
+    source(t, 'Strain ε = d / 2R, derived. Bends to failure: Alexander 1953, Table IX, 18 AWG wire bent 90° each way. Fold rating: Shengyi SF202; the film: DuPont Kapton HN.', { t0: 2 });
   }
 });
 
@@ -20252,7 +20262,7 @@ S({
       { k: 'm', x: 1170, w: 320, label: 'Motion latency, 8 kHz', dir: 'low', max: 1.0, hs: 80, head: head('m', 'low'), ba: ba('m', 'low', 'ms'), who: who('m', 'low') },
       { k: 'p', x: 1530, w: 278, label: 'Price, US list', dir: null, max: 200, neutral: true, noBest: true, ref: { v: ulx, label: 'The ULX at launch, ' + cheap }, refCol: C.mute }
     ], rows);
-    source(t, 'Weights: RTINGS; the XA25, XBAB part by part. Hours: makers; Theseus\'s derived, its battery at the V4 Pro\'s draw. Motion: piaknow, 8 kHz. Price: US list, the GPX2 at its 2023 list, the ULX at launch (Notebookcheck).', { t0: 4.0 });
+    source(t, 'Weights: RTINGS; the XA25, XBAB by part. Hours: makers; Theseus\'s derived. Motion: piaknow, 8 kHz. Price: US list; the GPX2 at its 2023 list, the ULX at launch (Notebookcheck).', { t0: 4.0 });
   }
 });
 
@@ -20503,14 +20513,14 @@ S({
     const rows = [
       { name: 'Shell and skates', g: B.shell, was: B.xa.shell, ev: 'derived', hero: true },
       { name: 'Battery, ' + B.cell.mAh + ' mAh', g: B.cell.g, ev: 'datasheet', note: 'Example part' },
-      { name: 'One board', g: THESEUS.pcb, was: B.xa.boards },
+      { name: 'One board', g: THESEUS.pcb, was: B.xa.boards, note: 'Radio, antenna, USB-C on it' },
       { name: 'Buttons', g: B.xa.btn, ev: 'claim', note: 'As in the XA25' },
-      { name: 'Wheel and axle', g: B.wheel, was: B.xa.wheel, ev: 'derived', note: 'Magnesium, POM axle' },
+      { name: 'Wheel and axle', g: B.wheel, ev: 'derived', note: 'Magnesium, POM axle' },
       { name: 'Screws', g: B.xa.screws, ev: 'claim', note: 'As in the XA25' },
-      { name: 'Brass inserts', count: NTR_BUD.inserts, g: B.ins, ev: 'derived', note: 'M2 × 3 mm, ' + f2(B.ins1) + ' g each' },
+      { name: 'Brass inserts', count: NTR_BUD.inserts, g: B.ins, ev: 'derived', note: f2(B.ins1) + ' g each' },
       { name: 'Wires', g: B.xa.fpc, ev: 'claim', note: 'As in the XA25' }
     ];
-    breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 54, stagger: 0.09, wasLabel: 'XA25', foot: ['Dashed: the same part in the XA25 (its three boards for the board), as XBAB weighed it', ''] });
+    breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 54, stagger: 0.09, wasLabel: 'XA25', foot: ['Dashed: the XA25\'s part, as XBAB weighed it (its three boards for the board)', ''] });
     /* the two things the plan rests on: the cell's hours, and the shell's grams */
     ntr_stack(t, 1200, 320, RM - 1200, [
       { t0: 5.0, gloss: true, a: 'Hours = Wh ÷ draw', b: `${B.cell.mAh} mAh at 3.7 V holds ${fmtN(B.cell.wh, 3)} Wh. A Viper V4 Pro draws ${fmtN(B.L.w1 * 1000, 2)} mW at 1 kHz (its ${fmtN(B.L.wh, 3)} Wh over Razer's ${B.L.h1} h), so the battery runs ${fmtN(B.hours, 0)} h.` },
@@ -20519,7 +20529,7 @@ S({
     { const ka = ep(t, 6.6, 7.2), y = 868;
       rich([{ s: f2(B.cut), role: 'stat', size: 64, color: C.heroText, grad: C.heroGrad, tnum: true, count: [6.7, 0.8] }, { s: 'g', font: 'disp', size: 26, weight: 700, color: C.mute, gap: 6 }], 1200, y, { t, alpha: ka });
       text('out of the shell: the one number the plan asks of my design', 1200 + 210, y - 22, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: RM - 1410, lh: 1.3, alpha: ka }); }
-    source(t, `The example battery: Jauch ${B.cell.part}. Derived: the wheel ${NTR_BUD.wheelMm3} mm³ of magnesium at ${NTR_BUD.mg} g/cm³ (${f2(B.wheelMg)} g) on an ${fmtN(NTR_BUD.axleMm3, 0)} mm³ POM axle at ${NTR_BUD.pom} (${f2(B.axle)} g); each insert ${fmtN(NTR_BUD.insMm3, 1)} mm³ of brass at ${NTR_BUD.brass}. The antenna and USB-C sit on the one board. Draw: the Viper V4 Pro's, from its battery and Razer's hours.`, { t0: 3 });
+    source(t, `Derived: the wheel, ${NTR_BUD.wheelMm3} mm³ of magnesium at ${NTR_BUD.mg} g/cm³, on an ${fmtN(NTR_BUD.axleMm3, 0)} mm³ POM axle at ${NTR_BUD.pom}; each insert ${fmtN(NTR_BUD.insMm3, 1)} mm³ of brass at ${NTR_BUD.brass}. The example battery: Jauch ${B.cell.part}.`, { t0: 3 });
   }
 });
 
@@ -20693,7 +20703,7 @@ S({
     header(t, 'The pouch battery, per gram');
     captions(t, [[0.6, 'At a mouse\'s drain a fresh AA holds about as much energy per gram as a pouch battery, but it is one ' + fmtN(aa.g, 0) + ' g lump, used once.'], [4.8, 'A ' + me.mAh + ' mAh pouch is ' + fmtN(me.g, 0) + ' g, ' + fmtN(100 * me.g / M, 0) + '% of the mouse, and charges again and again.']]);
     /* the table: the share of the mouse drawn as bars (it decides what fits); energy and cycles as plain figures */
-    const x = LM, y0 = 400, rh = 104, lw = 330, xs = x + lw, sw = 320, xe = xs + sw + 56, xc = xe + 220, xr = 1200;
+    const x = LM, y0 = 400, rh = 104, lw = 330, xs = x + lw, sw = 320, xe = xs + sw + 56, xc = xe + 252, xr = 1200;
     const a0 = ep(t, 0.6, 1.0), load = ep(t, 5.4, 6.6) * (1 - ep(t, 7.6, 8.6));
     [[xs, 'Share of the mouse', '% of ' + THS.massG + ' (lower is better)'], [xe, 'Energy per gram', 'Wh/kg'], [xc, 'Longevity', 'charge cycles']].forEach(([cx, l, u]) => { text(l, cx, y0 - 66, { role: 'label', size: 22, color: C.ink, alpha: a0 }); text(u, cx, y0 - 36, { role: 'label', size: 19, color: C.faint, alpha: a0 }); });
     line(x, y0 - 10, xr, y0 - 10, { color: C.hair, w: 1.5, alpha: a0 });
@@ -20764,7 +20774,7 @@ S({
     [[{ kind: 'dot', color: '#B9B8B2', label: 'Weighed by RTINGS' }], [{ kind: 'ring', color: '#B9B8B2', label: 'Maker\'s weight' }], [{ kind: 'line', color: C.ink, label: 'Pareto frontier' }], [{ kind: 'hero', label: 'Theseus, derived' }]].forEach((it, i) => legend(t, 4.2 + i * 0.08, 1500, 800 + i * 34, it, { size: 20 }));
     const un = [...new Set([...(s1.unnamed || []), ...(s2.unnamed || [])].map(n => n.replace(/^(Razer|Logitech|ZOWIE|Lamzu|Pulsar|Finalmouse|Ninjutso) /, '')))];
     if (un.length) text('Unnamed: ' + un.join(', '), 1500, 938, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 4.6, 5.0), maxW: RM - 1500 });
-    source(t, 'Latency: piaknow 2026-09-15, 8 kHz. Hours: maker claims. Theseus: ' + THS.hours + ' at 1 kHz, derived from the example battery, Jauch\'s 370 mAh, at the Viper V4 Pro\'s draw; 0.14 ms from Kunai\'s model.', { t0: 3 });
+    source(t, 'Latency: piaknow 2026-09-15, 8 kHz. Hours: maker claims. Theseus: ' + THS.hours + ' at 1 kHz, derived (the example battery at the V4 Pro\'s draw); 0.14 ms, Kunai\'s model.', { t0: 3 });
   }
 });
 /* Brock, F12.2: the cover and the close show no shell in 3D mode. Set true to bring the 3D shell back on both */
@@ -20961,7 +20971,7 @@ S({
       const r = cell(i % 3, Math.floor(i / 3)), t0 = 0.3 + order.indexOf(i) * 0.14;
       if (d.product) ntr_productTile(t, t0, r); else ntr_statTile(t, t0, r, d);
     });
-    source(t, 'Density: 29.31 g in Theseus\'s 119.3 × 62.4 × 39.9 mm box; next best: RTINGS\'s weight in its maker\'s box. Battery: Jauch\'s 370 mAh battery at the Viper V4 Pro\'s draw.', { t0: 2.4 });
+    source(t, 'Density: 29.31 g in Theseus\'s 119.3 × 62.4 × 39.9 mm box; next best: RTINGS\'s weight in its maker\'s box. Battery: derived, the example battery at the V4 Pro\'s draw.', { t0: 2.4 });
   }
 });
 

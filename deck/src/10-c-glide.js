@@ -263,7 +263,7 @@ const GLD_SPEC = [
 ];
 S({
   id: 'sensor', ch: 'glide', theme: 'paper', title: 'Next-gen sensor: PixArt PAW3970', settle: 10, ideas: [76],
-  src: ['gld_paw3395', 'gld_next', 'gld_igorV4', 'gld_razerFocus', 'gld_brock'],
+  src: ['gld_paw3395', 'gld_next', 'gld_igorV4', 'gld_razerFocus', 'clk_elo', 'gld_brock'],
   draw: t => {
     header(t, 'Next-gen sensor: PixArt PAW3970');
     captions(t, [[0.6, 'The ULX and the Sora V2 track on the PAW3395, PixArt\'s flagship of 2022, and it struggles on some glass pads.'], [5.4, 'Theseus takes the PAW3970, the sensor inside the Viper V4 Pro: 930 ips, 90 G and 50,000 CPI.']]);

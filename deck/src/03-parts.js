@@ -807,7 +807,9 @@ function keyPlanMM(o = {}) {
   dash(H.includes('sensor'), on => { G.beginPath(); G.arc(0, 0, 3.6, 0, TAU); if (on) G.fill(); G.stroke(); });
   /* the plate-off dot skates on the rim's ledge, where the 3D shell seats them (meta.skates, 6.5 mm dots) */
   dash(H.includes('skates'), on => { for (const [x, y] of [[-13.7,-47.3],[-20.0,-42.4],[-17.2,43.2],[-10.8,47.9],[19.9,-42.5],[13.5,-47.4],[11.1,47.8],[17.4,42.9]]) { G.beginPath(); G.arc(x, y, 3.25, 0, TAU); if (on) G.fill(); G.stroke(); } });
-  dash(H.includes('battery'), on => { pathRR(-9, 14, 18, 22, 2); if (on) G.fill(); G.stroke(); });
+  /* the battery where the 3D model's balance puts it: in the tail behind the board, at board height, 35 mm across and
+     25 mm along (the example LP402535JU), so the centre of mass lands under the sensor at the 12 mm grip */
+  dash(H.includes('battery'), on => { pathRR(-17.09, 10.22, 35, 25, 2); if (on) G.fill(); G.stroke(); });
   G.setLineDash([]);
   /* the cut */
   if (o.cut) {

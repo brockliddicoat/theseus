@@ -17,7 +17,7 @@ Object.assign(SRC, {
   shcTpuHatiR: { t: 'TechPowerUp, G-Wolves Hati-R 8K review, 31 Oct 2024: "The very thin main PCB is affixed to the bottom with four screws, and has been extended such that it supports structural rigidity of the shell"', u: 'https://www.techpowerup.com/review/g-wolves-hati-r-8k/4.html' },
   shcBrock: { t: 'Brock Liddicoat, review notes, 4 Nov 2026: one board of about 5.6 g, with the radio, PMIC, antenna and USB-C; many mice reinforce with small arms of FR4 that are "easy to break off or snap under force"; "All G Wolves mice, I even had the arms on an HTS Ultra break during shipping once"; in engineering, draw on all the resources you have', u: '', n: 'his own account and figures' },
   shcBoardFE: { t: 'This deck, 2D frames solved in the page (07-sim.js): the shell at board height seen from above (the Sora outline; its CF-PP rim and lower wall as one 4.0 × 3.6 mm beam, 13.5 GPa), the board in 1.0 mm FR4 (19 GPa) as a plate-equivalent truss 9 mm inside the rim, joined by four 4 mm FR4 arms at the screw-boss rows or by 16 CF-PP rib feet at the study\'s arch rows; a transverse arch (the wall and one arch rib per 9.8 mm, as an equivalent section) under its 7.5 N share of a 10 N crown press, its feet held by the plan frame; the arm alone, edge on, as a fixed-guided FR4 beam', n: 'derived, this model' },
-  shcMassModel: { t: 'This deck, mass model: Theseus\'s 29.31 g as its weight budget sets it (the battery, Jauch LP402535JU, 8 g and 4.0 mm thick; the board 5.6 g; buttons, wheel, screws and wires as XBAB weighed them in the XA25; shell and skates the rest), each part at its height above the pad: the shell and skates at the study shell\'s centre of mass (16.1 mm) and the buttons at theirs (23.3 mm), both integrated from the moulded geometry (3d/lattice); the board 4 to 5 mm up with its parts on top (5 mm); the cell flat on it (7 mm) or up in the hump (20 mm); wheel 22 mm, screws 8 mm, wires 10 mm (estimates); the grip 12 mm up, as in the side-wall study (shbSides)', n: 'derived, this model' }
+  shcMassModel: { t: 'This deck, mass model: Theseus\'s 29.31 g as its weight budget sets it (the battery, Jauch LP402535JU, 8 g and 4.0 mm thick; the board 5.6 g; buttons, screws and wires as XBAB weighed them in the XA25; the magnesium wheel on its POM axle and four brass inserts as the intro\'s budget derives them; shell and skates the rest), each part at its height above the pad: the shell and skates at the study shell\'s centre of mass (16.1 mm) and the buttons at theirs (23.3 mm), both integrated from the moulded geometry (3d/lattice); the board 4 to 5 mm up with its parts on top (5 mm); the battery at board height in the tail, behind the board (7.46 mm, the 3D layout) or up in the hump (20 mm); wheel 22 mm, screws and inserts 8 mm, wires 10 mm (estimates); the grip 12 mm up, as in the side-wall study (shbSides)', n: 'derived, this model' }
 });
 
 /* ---------- small geometry, in the shell study's frame: x across (+ = the user's left), y up, z forward (mm) ---------- */
@@ -422,25 +422,35 @@ S({
 /* ============================== 4. keep the mass low, near the fingers (#95, #40) ==============================
    The fingers push the mouse at its sides, 12 mm up (the grip of the side-wall study, shbSides); in a flick its mass pushes
    back at its centre of mass. The height between the two is a lever: the twist is m · a · lever, so at any flick the twist
-   falls as the lever does. Theseus's 29.31 g, part by part at its height (shcMassModel); the pointer moves the 8 g cell from
-   the hump onto the board, and the centre of mass drops onto the grip. Drawn on the study shell, cut across at z = −14 mm. */
-const SHC_CG0 = { grip: 12, high: 20, low: 7, boardY: 5, shellY: 16.07, btnY: 23.31, wheelY: 22, screwY: 8, wireY: 10 };
-/** Theseus's weight budget as the intro's budget sets it: the cell from Jauch, the board Brock's figure, the small parts as
-   XBAB weighed them in the XA25, the shell and skates what is left */
+   falls as the lever does. Theseus's 29.31 g, part by part at its height (shcMassModel); the pointer moves the 8 g battery from
+   the hump down to board height in the tail, behind the board, where the 3D layout puts it (z −35.2 to −10.2 mm, 35 mm across,
+   its centre 7.46 mm up; the board ends at z −7.9), and the centre of mass drops onto the grip. Drawn on the study shell, cut
+   across at z = −14 mm, through the battery and behind the board (so the board is not in the cut); a small plan shows where. */
+const SHC_CG0 = { grip: 12, high: 20, low: 7.46, boardY: 5, shellY: 16.07, btnY: 23.31, wheelY: 22, screwY: 8, wireY: 10 };
+/** Theseus's weight budget, taken from the intro's own (ntr_budget, 14-b-intro-ex.js) so the two can't drift apart: the battery
+   from Jauch, the board Brock's figure, the buttons, screws and wires as XBAB weighed them in the XA25, the magnesium wheel on
+   its POM axle and the four brass inserts as the intro derives them, the shell and skates what is left. The fallback (a build
+   without the intro) uses the same figures */
 function shcBudget() {
   if (SHC.bud) return SHC.bud;
+  const NB = typeof ntr_budget === 'function' ? ntr_budget() : null;
+  if (NB && NB.ok) {
+    const cell = { part: NB.cell.part, mAh: NB.cell.mAh, g: NB.cell.g, t: 4.0 };
+    return (SHC.bud = { cell, btn: NB.xa.btn, wheel: NB.wheel, screws: NB.xa.screws, wires: NB.xa.fpc, ins: NB.ins, shell: NB.shell });
+  }
   const RD0 = typeof RDATA !== 'undefined' ? RDATA : {}, b = ((RD0.weights || {}).breakdowns || []).find(x => /XA25/.test(x.mouse));
   const by = (re, d) => { const p = b && b.parts.find(q => re.test(q.part)); return p ? +shcV(p.mass) : d; };
   const cr = (((RD0.batteries || {}).jauch_lipo_family || {}).rows || []).find(r => r.part === 'LP402535JU');
   const cell = { part: 'LP402535JU', mAh: cr ? +shcV(cr.capacity) : 370, g: cr ? +shcV(cr.mass) : 8, t: 4.0 };
-  const btn = by(/^Button/, 3.328), wheel = by(/^Scroll/, 0.931), screws = by(/^Screws/, 0.708), wires = by(/^FPC/, 0.121);
-  return (SHC.bud = { cell, btn, wheel, screws, wires, shell: THESEUS.mass - cell.g - THESEUS.pcb - btn - wheel - screws - wires });
+  const btn = by(/^Button/, 3.328), wheel = 1.580, ins = 0.516, screws = by(/^Screws/, 0.708), wires = by(/^FPC/, 0.121);
+  return (SHC.bud = { cell, btn, wheel, screws, wires, ins, shell: THESEUS.mass - cell.g - THESEUS.pcb - btn - wheel - ins - screws - wires });
 }
 /** the centre of mass's height with the cell's centre at y (mm), and the two layouts */
 function shcCg() {
   if (SHC.cg) return SHC.cg;
-  const B = shcBudget(), K = SHC_CG0, small = B.wheel + B.screws + B.wires;
-  const parts = [[B.shell, K.shellY], [B.btn, K.btnY], [THESEUS.pcb, K.boardY], [small, (B.wheel * K.wheelY + B.screws * K.screwY + B.wires * K.wireY) / small]];
+  /* the wheel at wheel height, the brass inserts with the screws they take */
+  const B = shcBudget(), K = SHC_CG0, small = B.wheel + B.screws + B.ins + B.wires;
+  const parts = [[B.shell, K.shellY], [B.btn, K.btnY], [THESEUS.pcb, K.boardY], [small, (B.wheel * K.wheelY + (B.screws + B.ins) * K.screwY + B.wires * K.wireY) / small]];
   const m0 = parts.reduce((s, p) => s + p[0], 0), my0 = parts.reduce((s, p) => s + p[0] * p[1], 0), at = y => (my0 + B.cell.g * y) / (m0 + B.cell.g);
   const hi = at(K.high), lo = at(K.low), lvHi = hi - K.grip, lvLo = lo - K.grip;
   return (SHC.cg = { B, at, hi, lo, lvHi, lvLo, cut: 1 - Math.abs(lvLo) / Math.abs(lvHi) });
@@ -472,7 +482,7 @@ S({
   draw: t => {
     const Q = shcCg(), K = SHC_CG0, pct = Math.round(Q.cut * 100), kMove = ep(t, 4.4, 5.4, E.io3);
     header(t, 'Keep the mass low, near the fingers');
-    captions(t, [[0.6, 'Your fingers push the mouse at its sides, 12 mm up. In a flick its mass pushes back at its centre of mass, higher up.'], [3.6, 'The height between them is a lever, and every flick twists the mouse around it. Move the 8 g battery down onto the board.'], [6.0, 'The centre of mass drops to the grip. The flick goes straight through it: no lever, almost no twist, at the same weight.']]);
+    captions(t, [[0.6, 'Your fingers push the mouse at its sides, 12 mm up. In a flick its mass pushes back at its centre of mass, higher up.'], [3.6, 'The height between them is a lever, and every flick twists the mouse around it. Move the 8 g battery down to board height, in the tail behind the board.'], [6.0, 'The centre of mass drops to the grip, in line with the sensor. The flick goes nearly straight through it: almost no twist, at the same weight.']]);
     /* ---- left: the headline and the two before → after rows ---- */
     const lx = LM, lw0 = 560;
     shellHL(t, 5.6, lx, 420, '−' + pct + '%', 'twist', { size: 140, sub: 'In every flick, at the same ' + THS.massG + '.', maxW: lw0 });
@@ -495,16 +505,11 @@ S({
     const ks = ep(t, 0.6, 1.2, E.snap);
     /* the shell wall, cut */
     { const Bd = shcSecBand(); G.save(); G.globalAlpha = a * ks; G.beginPath(); Bd.outer.forEach((p, i) => { const q = X(p[0], p[1]); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); }); Bd.inner.slice().reverse().forEach(p => { const q = X(p[0], p[1]); G.lineTo(q[0], q[1]); }); G.closePath(); G.fillStyle = TH ? '#3B3C41' : '#8C8D93'; G.fill(); G.restore(); }
-    /* the board, with its parts on top */
-    { const kb = ep(t, 0.9, 1.3), b0 = X(-27.3, 5), b1 = X(27.3, 4);
-      rr(b0[0], b0[1], b1[0] - b0[0], b1[1] - b0[1], 2, C.comp2, null, 0, a * kb);
-      for (const [px, pw, ph] of [[-20, 7, 1.4], [-9, 4, 0.9], [12, 9.8, 3.2], [22, 3, 1.0]]) { const q = X(px - pw / 2, 5 + ph); rr(q[0], q[1], pw * s, ph * s, 2, C.comp, null, 0, a * kb); }
-      text('Board, ' + THS.pcb, X(-25, 0)[0], X(0, 4)[1] + 24, { role: 'label', size: 19, color: C.mute, alpha: a * kb });
-    }
+    /* the board ends 6 mm ahead of this cut (z −7.9), so it is not drawn in it: the plan in the corner shows where it is */
     /* where the cell was, once it has moved */
-    if (kMove > 0.02) { const q0 = X(-12.5, K.high + 2), q1 = X(12.5, K.high - 2); G.save(); G.globalAlpha = a * 0.6 * kMove; G.setLineDash([6, 6]); rrPath(q0[0], q0[1], q1[0] - q0[0], q1[1] - q0[1], 5); G.strokeStyle = inkA(0.45); G.lineWidth = 1.6; G.stroke(); G.setLineDash([]); G.restore(); }
+    if (kMove > 0.02) { const q0 = X(-17.5, K.high + 2), q1 = X(17.5, K.high - 2); G.save(); G.globalAlpha = a * 0.6 * kMove; G.setLineDash([6, 6]); rrPath(q0[0], q0[1], q1[0] - q0[0], q1[1] - q0[1], 5); G.strokeStyle = inkA(0.45); G.lineWidth = 1.6; G.stroke(); G.setLineDash([]); G.restore(); }
     /* the cell */
-    const c0 = X(-12.5, cellY + 2), c1 = X(12.5, cellY - 2), kc = ep(t, 1.0, 1.4);
+    const c0 = X(-17.5, cellY + 2), c1 = X(17.5, cellY - 2), kc = ep(t, 1.0, 1.4);
     rr(c0[0], c0[1], c1[0] - c0[0], c1[1] - c0[1], 5, TH ? '#26272B' : '#D9D8D3', null, 0, a * kc);
     text('Battery, ' + fmtN(Q.B.cell.g, 0) + ' g', (c0[0] + c1[0]) / 2, (c0[1] + c1[1]) / 2 + 7, { role: 'label', size: 19, color: TH ? '#F3F2EE' : '#111111', align: 'center', alpha: a * kc });
     /* the fingers, grey, pressing the low sides at the grip */
@@ -542,12 +547,14 @@ S({
       arrow(f0[0], f0[1], f1[0], f1[1], { color: C.ink, w: 3.4, hs: 13, alpha: a * kA });
       arrow(pc[0], pc[1] - 24, pc[0] - dir * (30 + 50 * kA), pc[1] - 24, { color: C.ink2, w: 2.4, hs: 10, alpha: a * kA * 0.8 });
     }
-    /* the pointer moves the cell down onto the board */
+    /* the pointer moves the battery down to board height, in the tail */
     { const ch = X(0, K.high), cl = X(0, K.low), grab = t > 4.2 && t < 5.45;
-      const p = kf(t, [[3.5, [x + w - 120, y + 130]], [4.15, [ch[0] + 40, ch[1] + 4]], [4.4, [ch[0] + 40, ch[1] + 4]], [5.4, [cl[0] + 40, cl[1] + 4]], [5.6, [cl[0] + 40, cl[1] + 4]], [6.2, [x + w - 140, y + 140]]], E.cam);
+      const p = kf(t, [[3.5, [x + w - 300, y + 120]], [4.15, [ch[0] + 40, ch[1] + 4]], [4.4, [ch[0] + 40, ch[1] + 4]], [5.4, [cl[0] + 40, cl[1] + 4]], [5.6, [cl[0] + 40, cl[1] + 4]], [6.2, [x + w - 320, y + 150]]], E.cam);
       cursorPtr(p[0], p[1], { a: ep(t, 3.4, 3.7) * (1 - ep(t, 5.9, 6.2)), grab, press: t > 4.15 && t < 4.6 ? prog(t, 4.15, 4.6) : 0 });
     }
     text('Twist drawn large to be seen', x + 32, y + 48, { role: 'label', size: 19, color: C.faint, alpha: a * ep(t, 2.0, 2.4) });
-    source(t, 'Mass model: the weight budget\'s parts at their heights (shell and skates 16.1 mm, buttons 23.3, board 5, battery 7, or 20 in the hump). Grip 12 mm up, as in the side-wall study.', { t0: 2.0 });
+    /* where it all sits, from above: the battery in the tail behind the board, the sensor, and this cut (A) through the battery */
+    keyPlan(t, 1.2, x + w - 96, y + 132, { s: 1.0, hi: ['battery'], accent: C.hero, cut: { y: 14, label: 'A' }, label: 'From above' });
+    source(t, 'Mass model, the weight budget\'s parts at their heights: shell and skates 16.1 mm, buttons 23.3, wheel 22, board 5, screws and inserts 8, battery 7.5 behind the board or 20 in the hump.', { t0: 2.0 });
   }
 });
