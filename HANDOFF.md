@@ -82,7 +82,42 @@ Brock: "the 3D visualizations are broken in a lot of areas, and I want a setting
 - The old deck on this account (`claude.ai/artifact/A7oboZ7PVeA6MMgAqLb8eo`, artifact 49d56dc9) is the pre-design-system
   version; per the history above, its HTML is where the lost idea-sheet code lives.
 
+## Session 2026-11-04 (evening into 11-05): the review-notes rework
+Brock sent 40+ review notes, then steers through the day. **FEEDBACK.md** (repo root) holds every one of them verbatim
+with an ID (F0 to F20) and a status, plus "Open with Brock" at the top: read it before changing anything. The rules that
+now govern every slide are in `deck/DESIGN.md` §0 (items 9 to 12) and §2b.
+- **The rule above all** (F14.10): better at a glance. Each comparison slide leads with a huge Theseus-blue number and a
+  chart or simulation where Theseus visibly wins, with which way is better written on it; numbers that improve show the
+  old value struck beside the new (before → after, F16.1); stress axes read "Peak experienced stress (lower is better)".
+- **The deck:** 143 slides: the intro, seven chapters (clicks, glide, shell, surface, electronics, shape, ownership) and the close.
+  Every chapter was rebuilt by its own builder, then integrated: dupscan, a full build, errors in 2D and 3D, layout qa at
+  settle and mid, and contact sheets at 384 px.
+- **New on the page:** a `rate` pill (only for people who can edit the artifact) opens a panel to rate the slide 1 to 10
+  with a note (F16.2: the ratings guide which information to condense, not which slides to cut). Ratings are stored in
+  the artifact's database, collection `ratings`, one document per slide (`rateKey(slide.id)`); read them with the
+  ArtifactData tool (`list` on `ratings`). The capability is declared once; publish later versions without
+  `capabilities` so it carries forward.
+- **3D:** one shell with one seam (`3d/shell/shell-theseus-1seam.glb`), the optional bottom plate (solid 0.6 mm outside, an
+  X of struts closing into triangles and a fine lattice inside; its FE study is `3d/shell/tools/plate_fe/`, run order in
+  `final.js`), half-moon skates like the Viper V4 Pro's rear one, the clip-on lens carrying the plate-off dots, the GT01's
+  tongue lying flat, TTC's five-pin optical encoder, and the side switches held by the shell.
+- **How the work was built** (useful if you run builders in parallel): `python3 tools/build.py main --out=<name>
+  --own=<files>` builds with the named files from `src/` and the rest from `deck/.snapshot/` (refreshed by the
+  integrator), so builders don't see each other's half-done files. Checks: `tools/errs.js` (`READY_MS=60000 Q='&2d=0'` for
+  3D), `tools/qa.js` (`T=settle` or `T=mid`), `tools/shoot.js` (`PAR=1` on a busy machine).
+- **Follow-ups found on the way:**
+  - The headline and before → after helpers exist once per chapter (`clk_hl`/`clk_ba`, `gld_head`/`gld_ba`,
+    `shellHL`/`shellBA`, `srf_hl`/`srf_ba`, `own_ba`/`own_bars`, and Electronics' own). One shared helper would keep them
+    in step.
+  - `3d/pcb/pcb-layout.json` still carries the old antenna keep-out and calls U1's antenna a chip antenna; `pcb.js` flips
+    the module at load, so the render is right and the JSON is not.
+  - `SP` is declared in both `03-model.js` and `03-parts.js` (the later one wins; harmless today).
+  - `callout()` now flips a label whose forced side points back across its own leader.
+- **Pushing:** the session could not push (the repo isn't in its authorized set); the branch
+  `claude/review-notes-rework` is complete locally and the work also reaches Brock as the live link and a patch.
+
 ## Open decisions for Brock
+- The questions the deck is waiting on are in FEEDBACK.md, "Open with Brock". The ones below are older.
 - 29 g budget vs 200 h target: built like the XA25, a 29 g wireless mouse leaves ~4.9 g for the battery (~140 mAh, ~146 h at 1 kHz); 250 mAh needs ~2.6 g cut elsewhere.
 - Theseus price (the price Pareto shows a line, not a point).
 - The raw Sora scan comes from findmymouse.com's viewer (sold there as a paid download, personal use). Brock says he made the scan; confirm with the site owner before publishing a mesh derived from it.

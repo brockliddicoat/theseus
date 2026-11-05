@@ -1,7 +1,11 @@
 # Live artifacts
 
 ## brockabomb@gmail.com (the account the 2026-11-04 session ran on)
-- **Main deck**: https://claude.ai/artifact/HH8yRD9aYxCvvgcT1jUkyv, published 2026-11-04 (version 1793785122-a3a1) from
+- **Main deck**: https://claude.ai/artifact/HH8yRD9aYxCvvgcT1jUkyv, first published 2026-11-04 (version 1793785122-a3a1),
+  republished at each integration (v14 on 2026-11-04 at 20:5x Chicago, version 1793847463-262c). It declares the `db` and
+  `user` capabilities (the slide ratings, collection `ratings`, readable by viewers, writable by editors): publish later
+  versions **without** a `capabilities` parameter so the stored declaration carries forward (`{}` would clear it). It is
+  published from
   `deck/dist/main.html` (served as index.html) plus every file in `deck/dist/assets/` except the raw `.glb` and `.bin`:
   the host serves neither, so their `.gz.b64.txt` copies (written by `3d/integration/build.mjs`) go instead, at the same
   paths (`assets/…`, `assets/assets/lattice_*`). 24.5 MB of assets, 4.4 MB page. Republish to this URL: from another
