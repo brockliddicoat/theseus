@@ -16,10 +16,33 @@ function triangulate(nodes, mem) {
     while (!used.has(a + ',' + b) && g++ < 2000) { used.add(a + ',' + b); f.push(a); const l = adj[b], k = l.indexOf(a); const c = l[(k - 1 + l.length) % l.length]; a = b; b = c; }
     let ar = 0; for (let k = 0; k < f.length; k++) { const p = nd[f[k]], q = nd[f[(k + 1) % f.length]]; ar += p[0] * q[1] - q[0] * p[1]; }
     if (ar <= 1e-9 || f.length < 3) continue;
-    { const c0 = [0, 0]; f.forEach(k => { c0[0] += nd[k][0] / f.length; c0[1] += nd[k][1] / f.length; }); if (ringD(c0) < 0) continue; }   /* the lens window: no skin inside the ring */
+    /* plate v3: the face's AREA centroid. Its vertex average lies inside the ring for a face that runs along a ring arc (two
+       35 mm2 faces of the grid's skin beside its ring were dropped as window), and fanning from it turned triangles over
+       (skin counted twice at the grid's back bosses). VAVG=1 restores the old test and fan (to reproduce the v2 numbers). */
+    let cx = 0, cz = 0; for (let k = 0; k < f.length; k++) { const p = nd[f[k]], q = nd[f[(k + 1) % f.length]], cr = p[0] * q[1] - q[0] * p[1]; cx += (p[0] + q[0]) * cr; cz += (p[1] + q[1]) * cr; }
+    const cV = [0, 0]; f.forEach(k => { cV[0] += nd[k][0] / f.length; cV[1] += nd[k][1] / f.length; });
+    const c = process.env.VAVG ? cV : [cx / (3 * ar), cz / (3 * ar)];
+    if (ringD(c) < 0) continue;   /* the lens window: no skin inside the ring */
     if (f.length === 3) { tris.push(f.slice()); continue; }
-    const c = [0, 0]; f.forEach(k => { c[0] += nd[k][0] / f.length; c[1] += nd[k][1] / f.length; }); nd.push(c); const ci = nd.length - 1;
-    for (let k = 0; k < f.length; k++) tris.push([f[k], f[(k + 1) % f.length], ci]);
+    /* fan from the centroid when it sees every side; otherwise (a face a ring arc or a boss strut makes non-convex) ear clipping */
+    const ar3 = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (r[0] - p[0]) * (q[1] - p[1]);
+    if (process.env.VAVG || f.every((k, i) => ar3(nd[k], nd[f[(i + 1) % f.length]], c) > 1e-9)) {
+      nd.push(c); const ci = nd.length - 1;
+      for (let k = 0; k < f.length; k++) tris.push([f[k], f[(k + 1) % f.length], ci]);
+    } else {
+      const P = f.slice(); let guard = 0;
+      while (P.length > 3 && guard++ < 10000) {
+        let cut = false;
+        for (let i = 0; i < P.length; i++) {
+          const a = P[(i - 1 + P.length) % P.length], b = P[i], d = P[(i + 1) % P.length];
+          if (ar3(nd[a], nd[b], nd[d]) <= 1e-9) continue;
+          if (P.some(q => q !== a && q !== b && q !== d && ar3(nd[a], nd[b], nd[q]) >= -1e-12 && ar3(nd[b], nd[d], nd[q]) >= -1e-12 && ar3(nd[d], nd[a], nd[q]) >= -1e-12)) continue;
+          tris.push([a, b, d]); P.splice(i, 1); cut = true; break;
+        }
+        if (!cut) break;
+      }
+      if (P.length === 3) tris.push(P);
+    }
   }
   return { nodes: nd, tris };
 }
@@ -36,12 +59,13 @@ function solveDesign(nodes0, mem, ts, cases = ['lens', 'pill', 'twist']) {
   const bossN = BOSS.map(b => { let best = -1, bd = 1e9; nodes0.forEach((p, i) => { const d = Math.hypot(p[0] - b[0], p[1] - b[1]); if (d < bd) { bd = d; best = i; } }); return best; });
   const ringN = []; nodes0.forEach((p, i) => { if (Math.abs(ringD(p)) < 0.3) ringN.push(i); });
   const pillN = []; nodes0.forEach((p, i) => { if (inSkate(p)) pillN.push(i); });
+  const backN = []; nodes0.forEach((p, i) => { if (inSkate([p[0], -p[1]])) backN.push(i); });   /* the back skate: the front one's mirror (F14.2) */
   const near = (p) => BOSS.some(b => Math.hypot(p[0] - b[0], p[1] - b[1]) < D.boss.r);
   const out = {};
   for (const c of cases) {
     const fix = {}, loads = {}; let meas;
     if (c === 'twist') { bossN.slice(0, 3).forEach(i => { fix[i] = 'w'; }); loads[bossN[3]] = [10, 0, 0]; meas = [bossN[3]]; }
-    else { bossN.forEach(i => { fix[i] = 'w'; }); const L = c === 'lens' ? ringN : pillN; L.forEach(i => { loads[i] = [10 / L.length, 0, 0]; }); meas = L; }
+    else { bossN.forEach(i => { fix[i] = 'w'; }); const L = c === 'lens' ? ringN : c === 'back' ? backN : pillN; L.forEach(i => { loads[i] = [10 / L.length, 0, 0]; }); meas = L; }
     const r = pltSolve({ nodes, els, plates, fix, loads });
     const w = meas.reduce((s, i) => s + r.d[i * 3], 0) / meas.length;
     /* stresses: ribs from the solver; skin at each triangle's centroid from its curvature (surface stress, von Mises) */

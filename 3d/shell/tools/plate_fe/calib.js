@@ -20,7 +20,7 @@ function refMesh(a) {
   return { nodes, mem };
 }
 const M0 = +(process.env.M0 || 3.40), tp = M0 / (RHO * LAY.areas.skin);
-const cases = ['lens', 'pill', 'twist'];
+const cases = ['lens', 'pill', 'back', 'twist'];
 function reference(a = 1.5) {
   const m = refMesh(a);
   const { dktK, Dplate } = require('./dkt.js'), { pltSolve, PLT_E, PLT_NU } = require('./fe.js');
@@ -30,8 +30,9 @@ function reference(a = 1.5) {
   const BOSS = Object.values(LAY.bosses), bossN = BOSS.map(b => { let best = -1, bd = 1e9; m.nodes.forEach((p, i) => { const d = Math.hypot(p[0] - b[0], p[1] - b[1]); if (d < bd) { bd = d; best = i; } }); return best; });
   const ringN = []; m.nodes.forEach((p, i) => { if (Math.abs(ringD(p)) < a * 0.34) ringN.push(i); });
   const pillN = []; m.nodes.forEach((p, i) => { if (inSkate(p)) pillN.push(i); });
+  const backN = []; m.nodes.forEach((p, i) => { if (inSkate([p[0], -p[1]])) backN.push(i); });
   const out = {};
-  for (const c of cases) { const fix = {}, loads = {}; let meas; if (c === 'twist') { bossN.slice(0, 3).forEach(i => { fix[i] = 'w'; }); loads[bossN[3]] = [10, 0, 0]; meas = [bossN[3]]; } else { bossN.forEach(i => { fix[i] = 'w'; }); const L = c === 'lens' ? ringN : pillN; L.forEach(i => { loads[i] = [10 / L.length, 0, 0]; }); meas = L; }
+  for (const c of cases) { const fix = {}, loads = {}; let meas; if (c === 'twist') { bossN.slice(0, 3).forEach(i => { fix[i] = 'w'; }); loads[bossN[3]] = [10, 0, 0]; meas = [bossN[3]]; } else { bossN.forEach(i => { fix[i] = 'w'; }); const L = c === 'lens' ? ringN : c === 'back' ? backN : pillN; L.forEach(i => { loads[i] = [10 / L.length, 0, 0]; }); meas = L; }
     const r = pltSolve({ nodes: T.nodes, els: [], plates, fix, loads }); out[c] = { w: meas.reduce((s, i) => s + r.d[i * 3], 0) / meas.length }; }
   return { cases: out, nodes: m.nodes, ringN };
 }

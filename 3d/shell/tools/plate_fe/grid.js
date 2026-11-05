@@ -13,9 +13,11 @@ function gridModel(p, w, h, ts, wallW, ringW) {
   const segs = [];
   /* grid lines: x = i p and z = j p; walk each, split at the region boundary (edge polygon, ring) */
   const lines = [];
-  for (let x = -Math.floor(30 / p) * p; x <= 30; x += p) lines.push([[x, -60], [x, 60]]);
-  for (let z = -Math.floor(60 / p) * p; z <= 60; z += p) lines.push([[-30, z], [30, z]]);
-  const xs = [], zs = []; for (let x = -Math.floor(30 / p) * p; x <= 30; x += p) xs.push(x); for (let z = -Math.floor(60 / p) * p; z <= 60; z += p) zs.push(z);
+  /* lines through the origin (GPX / GPZ shift them, for the phase study in the plate v3 notes) */
+  const ox = +(process.env.GPX || 0), oz = +(process.env.GPZ || 0);
+  for (let x = ox - Math.floor((30 + ox) / p) * p; x <= 30; x += p) lines.push([[x, -60], [x, 60]]);
+  for (let z = oz - Math.floor((60 + oz) / p) * p; z <= 60; z += p) lines.push([[-30, z], [30, z]]);
+  const xs = [], zs = []; for (let x = ox - Math.floor((30 + ox) / p) * p; x <= 30; x += p) xs.push(x); for (let z = oz - Math.floor((60 + oz) / p) * p; z <= 60; z += p) zs.push(z);
   for (const [a, b] of lines) {
     const vert = a[0] === b[0], stops = vert ? zs.map(z => [a[0], z]) : xs.map(x => [x, a[1]]);
     /* fine march to find boundary crossings between the crossing points */
@@ -37,7 +39,19 @@ function gridModel(p, w, h, ts, wallW, ringW) {
   /* each boss centre tied to its three nearest nodes by edge-wall struts (the boss is a solid disc) */
   bossC.forEach(c => { const near = nodes.map((q, i) => [Math.hypot(q[0] - nodes[c][0], q[1] - nodes[c][1]), i]).filter(([d, i]) => i !== c).sort((u, v) => u[0] - v[0]).slice(0, 3); near.forEach(([d, i]) => mem.push({ i: c, j: i, kind: 'edge', w: wallW, h })); });
   const ang = q => Math.atan2(q[1] - R.c[1], q[0] - R.c[0]);
-  const rN = [...new Set(onR)].sort((u, v) => ang(nodes[u]) - ang(nodes[v]));
+  const rN0 = [...new Set(onR)].sort((u, v) => ang(nodes[u]) - ang(nodes[v]));
+  /* plate v3: the lens ring follows the stadium, as Theseus's does (plate_layout.py): points between the grid lines' cut points
+     so no ring member is longer than 2.5 mm (none within 0.8 mm of a cut point). It was a hexagon through the six cut points,
+     whose two long chords ran about 1 mm into the lens window. GRIDRING=hex restores it (to reproduce the v2 numbers). */
+  const rN = [];
+  const onStad = th => { const d = [Math.cos(th), Math.sin(th)]; let lo = 0, hi = 20; for (let k = 0; k < 50; k++) { const m = (lo + hi) / 2; if (ringD([R.c[0] + d[0] * m, R.c[1] + d[1] * m]) < 0) lo = m; else hi = m; } return [R.c[0] + d[0] * lo, R.c[1] + d[1] * lo]; };
+  for (let k = 0; k < rN0.length; k++) {
+    const a = rN0[k], b = rN0[(k + 1) % rN0.length]; rN.push(a);
+    if (process.env.GRIDRING === 'hex') continue;
+    let t0 = ang(nodes[a]), t1 = ang(nodes[b]); if (t1 <= t0) t1 += 2 * Math.PI;
+    const m = Math.ceil((t1 - t0) * R.hl / 2.5);
+    for (let q = 1; q < m; q++) { const pq = onStad(t0 + (t1 - t0) * q / m); if (Math.min(Math.hypot(pq[0] - nodes[a][0], pq[1] - nodes[a][1]), Math.hypot(pq[0] - nodes[b][0], pq[1] - nodes[b][1])) < 0.8) continue; rN.push(nid(pq)); }
+  }
   for (let k = 0; k < rN.length; k++) mem.push({ i: rN[k], j: rN[(k + 1) % rN.length], kind: 'ring', w: ringW, h, split: ringW > (+process.env.WCAP || 0.6) + 1e-9 ? 2 : 1 });
   return { nodes, mem: mem.filter(m => m.i !== m.j) };
 }

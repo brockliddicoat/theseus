@@ -27,7 +27,38 @@ function design(o) {
   }
   R = solveDesign(nodes, mk(), o.ts, cs); R.w = w; R.vol = As * o.ts + w.reduce((a, x, e) => a + x * Lm[e] * H[e], 0) + bossV; return R;
 }
-module.exports = { design, Lm, prim };
+/* plate v3: the stiffness sizer for several load cases. Minimises sum_c k_c C_c / C_c0 (each case's compliance relative to its
+   start) by the optimality criterion w_e <- w_e (S_e / mean)^eta, with S_e = sum_c k_c / C_c * U_e^c / V_e the weighted strain
+   energy density (uniform where the widths are free, the condition for the stiffest structure of the volume), a move limit,
+   and the volume met by bisection with the bounds. A kind in o.twin may be two walls (cap 2 * wcap). No wall below wminf:
+   a twin member sized between wcap and 2 * wminf snaps to one wall or two, and the fine ribs are refit to the volume. */
+function design3(o) {
+  const H = prim.map(p => (p ? o.wh : o.fh)), bossV = 4 * Math.PI * 3.1 ** 2 / 2 * o.wh;
+  const V = o.M0 / RHO - As * o.ts - bossV, twin = new Set(o.twin || []);
+  const isT = e => prim[e] && twin.has(f.members[e][2]);
+  const cap = e => (prim[e] ? (isT(e) ? 2 * o.wcap : o.wcap) : o.wcapf), lo = e => (prim[e] ? o.wminp : o.wminf);
+  const vol = w => w.reduce((s, x, e) => s + x * Lm[e] * H[e], 0);
+  const clampTo = (w, s, only) => w.map((x, e) => (only && !only(e) ? x : Math.min(cap(e), Math.max(lo(e), x * s))));
+  const fit = (w, only) => { let a = 1e-3, b = 1e3; for (let k = 0; k < 60; k++) { const m = Math.sqrt(a * b); if (vol(clampTo(w, m, only)) > V) b = m; else a = m; } return clampTo(w, Math.sqrt(a * b), only); };
+  let w = fit(Lm.map((L, e) => (prim[e] ? o.w0p : o.w0f)));
+  const mk = () => f.members.map(([i, j, kind], e) => ({ i, j, kind, w: w[e], h: H[e], split: (isT(e) && w[e] > o.wcap + 1e-9) ? 2 : 1 }));
+  const CS = Object.keys(o.k).filter(c => o.k[c] > 0);
+  for (let it = 0; it < o.it; it++) {
+    const R = solveDesign(nodes, mk(), o.ts, CS), idx = new Map(R.els.map((e, k) => [e.i + ',' + e.j, k]));
+    const C = Object.fromEntries(CS.map(c => [c, R.cases[c].r.comp]));
+    const S = f.members.map(([i, j], e) => { const k = idx.get(i + ',' + j); if (k == null) return 0; let s = 0; for (const c of CS) s += o.k[c] / C[c] * R.cases[c].r.en[k]; return s / (w[e] * Lm[e] * H[e]); });
+    const ref = S.reduce((a, v, e) => a + v * Lm[e] * H[e] * w[e], 0) / S.reduce((a, v, e) => a + Lm[e] * H[e] * w[e], 0);
+    w = fit(w.map((x, e) => x * Math.min(1 + o.move, Math.max(1 - o.move, Math.pow(Math.max(1e-6, S[e] / ref), o.eta)))));
+  }
+  /* no wall thinner than a fine rib: twin members between one wall's cap and two minimum walls snap to the nearer */
+  const tw = 2 * o.wminf;
+  w = w.map((x, e) => (isT(e) && x > o.wcap + 1e-9 && x < tw ? (x - o.wcap < tw - x ? o.wcap : tw) : x));
+  w = fit(w, e => !prim[e]);
+  const R = solveDesign(nodes, mk(), o.ts, o.out || ['lens', 'pill', 'back', 'twist']);
+  R.w = w; R.vol = As * o.ts + vol(w) + bossV; R.split = mk().map(m => m.split);
+  return R;
+}
+module.exports = { design, design3, Lm, prim };
 if (require.main === module) {
   const base = { ts: 0.45, wh: 2.3, w0p: 0.9, w0f: 0.4, wminp: 0.55, wmaxp: 1.3, wminf: 0.35, wmaxf: 0.6, it: 6, kp: 0.15, kt: 0.06 };
   const plain = 495, pill = 7812, tw = 15435;

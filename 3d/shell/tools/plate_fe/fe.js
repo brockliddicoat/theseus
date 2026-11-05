@@ -31,7 +31,13 @@ function pltSolve(m) {
     for (let r = 0; r < 9; r++) for (let q = 0; q < 9; q++) if (dof[q] >= dof[r]) add(dof[r], dof[q], pl.K[r][q]);
   }
   let dmax = 0; for (let r = 0; r < n; r++) dmax = Math.max(dmax, K[r * B]);
-  for (let r = 0; r < n; r++) K[r * B] += dmax * 1e-10;                         /* a whisper on every DOF */
+  /* a whisper on every DOF, 1e-10 of the MEDIAN diagonal (plate v3). It was 1e-10 of the largest: the grid's mesh has
+     0.08 mm members at the back bosses (its x = 24 lines pass 0.08 mm from the boss centres), whose 12EI/L^3 made that
+     whisper 0.09 N/mm on every DOF, an elastic foundation under the whole plate that held 72 % of the grid's twist energy.
+     WHMAX=1 restores the old whisper (to reproduce the v2 numbers). */
+  const diag = []; for (let r = 0; r < n; r++) if (K[r * B] > 0) diag.push(K[r * B]); diag.sort((a, b) => a - b);
+  const wh = process.env.WHMAX ? dmax * 1e-10 : (diag.length ? diag[diag.length >> 1] : dmax) * 1e-10;
+  for (let r = 0; r < n; r++) K[r * B] += wh;
   for (const [nd, how] of Object.entries(m.fix || {})) { const b0 = pos[+nd] * 3; if (how.includes('w')) K[b0 * B] += dmax * 1e8; if (how.includes('r')) { K[(b0 + 1) * B] += dmax * 1e8; K[(b0 + 2) * B] += dmax * 1e8; } }
   for (const [nd, f] of Object.entries(m.loads || {})) { const b0 = pos[+nd] * 3; F[b0] += f[0] || 0; F[b0 + 1] += f[1] || 0; F[b0 + 2] += f[2] || 0; }
   /* banded Cholesky, in place: K = Lᵀ L stored as upper rows */
