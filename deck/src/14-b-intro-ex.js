@@ -29,6 +29,9 @@ Object.assign(SRC, {
   ntrV4Sensor: { t: 'igor\'sLAB, Razer Viper V4 Pro review: Focus Pro 50K Gen-3 optical sensor, 50,000 DPI in 1-DPI steps, 930 IPS, 90 G, true 8,000 Hz polling, Frame Sync, a 26-level asymmetric cut-off, 99.8% resolution accuracy. Brock: the Focus Pro 50K Gen-3 is PixArt\'s PAW3970 under Razer\'s name (Razer has it alone for about two years); Theseus uses it', u: 'https://www.igorslab.de/en/razer-viper-v4-pro-review-49-grams-8-000-hz-competitive-gaming/2/' },
   ntrDelrinRho: { t: 'Delrin 150 data sheet (Plastics International): specific gravity 1.42 g/cc (ASTM D792)', u: 'https://www.plasticsintl.com/media/05oith4t/delrin-150-data-sheet.pdf' },
   ntrBrassRho: { t: 'Austral Wright Metals, C38500 free-cutting brass: density 8.47 g/cm³ at 20 °C', u: 'https://www.australwright.com.au/technical-data/alloys/copper-brass/c38500-free-cutting-brass/' },
+  ntrSteelRho: { t: 'MakeItFrom, SAE-AISI 1022 (G10220) carbon steel: density 7.9 g/cm³', u: 'https://makeitfrom.com/material-properties/SAE-AISI-1022-G10220-Carbon-Steel', n: 'The screws are brass-plated carbon steel; the plating is a few µm and is not counted.' },
+  ntrGoreWire: { t: 'GORE PTFE hook-up wire, Type ET, 32 AWG (7/40), G01A180: outside diameter 0.020 to 0.024 in, nominal weight 0.49 lb per 1,000 ft (0.73 mg per mm)', u: 'https://kr.gore.com/system/files/2021-04/GORE_PTFE_Hook-Up_Wire.pdf', n: 'The 3D model\'s wires are 0.52 mm across, Type ET\'s size; Brock: three 32 AWG wires of 40 AWG strands (F21.10).' },
+  ntrModel3d: { t: 'This deck\'s 3D model of Theseus (3d/): four M2 × 4 pan-head screws (3d/shell meta.screws, parts/fasteners.js, 23.6 mm³ each by its own mesh); the side-button lead, J3 to the two side switches (pcb/tools/components.py SIDELEAD, shell.js), three wires on a 6 mm lay, 109 mm of wire in all; the battery\'s lead belongs to the battery, which Jauch weighs with its leads', u: '', n: 'A design model built for the deck, not a weighed part.' },
   ntrScan: { t: 'The shape on screen is a placeholder: the Ninjutso Sora V2/V3, from Brock\'s own 3D scan (refs/scan, local only)', u: '' }
 });
 
@@ -201,7 +204,9 @@ S({
 const NTR_BAR_SPEED = [
   { cat: 'Motion latency, wired', sub: 'Same as the XBAB XA25', best: '0.13 ms', bv: 0.13, who: 'XBAB XA25', note: '{piaknow}, 8 kHz, fw 1.08', ev: 'measured', tgt: '0.13 ms', tv: 0.13, tq: 'or less', better: 'low' },
   { cat: 'Motion latency, wireless', best: '0.34 ms', bv: 0.34, who: 'Razer Viper V4 Pro', note: '{piaknow}, 8 kHz', ev: 'measured', tgt: '0.14 ms', tv: 0.14, tq: 'on the same rig', better: 'low' },
-  { cat: 'Frame sync', sub: 'In its PAW3970, on a scope', best: '163 µs', who: 'XBAB SensorLock vs Razer\'s FrameSync', note: 'XBAB and its developer', ev: 'claim', tgt: 'Every report', tq: 'synced in its PAW3970, shown on a scope' },
+  /* Brock (F22.2): "Match SensorLock, 42 µs", frame to USB through Theseus's own firmware (Razer's FrameSync: 205 µs, on the same
+     developer's rig); a match, so it sits with the quiet tiles, and the tile says whose figure it matches */
+  { cat: 'Frame sync, frame to USB', sub: 'Same as XBAB SensorLock', best: '42 µs', bv: 42, who: 'XBAB SensorLock', note: 'Its developer, 8 kHz; FrameSync 205 µs', ev: 'claim', tgt: '42 µs', tv: 42, tq: 'in its own firmware', better: 'low' },
   /* counted at NC release on XBAB's analyzer, as Theseus counts (the clicks chapter, CLK_TGT): the XA25's 72 µs there, not its "about
      65 µs" claim, which matches its SR latch mode, a clock that starts at NO, about 1.5 ms later in the press (Brock, F18.5: "Tighten it") */
   { cat: 'Click latency, wired', best: '72 µs', bv: 72, who: 'XBAB XA25, NC release', note: 'XBAB\'s analyzer, n = 500', ev: 'claim', tgt: '70 µs', tv: 70, tq: 'moving or still', better: 'low' },
@@ -629,13 +634,22 @@ S({
 /* ============================== 10. the weight budget: where 29.31 g goes, with a cell for 200 h ============================== */
 /* Brock decided (2026-11-04): his shell design takes weight out elsewhere so the cell for 200 h fits; at 21:55, "Budget is the
    target": the shell gets whatever the budget leaves. The budget, part by part: the cell from Jauch's datasheet, the one board
-   his figure, Theseus's own parts where the deck specifies them (the magnesium wheel on its POM axle, the four brass heat-set
-   inserts), the buttons, screws and wires as XBAB weighed them in the XA25, and the shell and skates what is left (derived),
-   against the XA25's 12.16 g. */
+   his figure, Theseus's own parts (the magnesium wheel at his 0.9 g on its POM axle; F22.3, "Derive Theseus's own": the four M2
+   screws and the side-button lead from the 3D model; the four brass heat-set inserts), the buttons as XBAB weighed them in the
+   XA25, and the shell and skates what is left (derived), against the XA25's 12.16 g. */
 const NTR_BUD = {
-  wheelMm3: 825, mg: 1.77,        /* the wheel slide: 825 mm³ of wheel (3d/parts/scrollwheel.js) in magnesium AZ31B (srf_az31b) */
-  axleMm3: 84.0, pom: 1.42,       /* the same part's POM axle: two journals, the hex in the hub and the D drive, 84.0 mm³ by its
-                                     lathe profile; Delrin 150, 1.42 g/cm³ (ntrDelrinRho) */
+  wheel: 0.9,                     /* Brock (F22.1): "ours will be 0.9g", the magnesium wheel alone, as PMM's 1.0 g is "the magnesium
+                                     wheel only" (srf_pmm); the 3D wheel hits it: 508.8 mm³ of AZ31B at 1.77 g/cm³ (srf_wheel3d) */
+  axleMm3: 84.3, pom: 1.42,       /* the same part's POM axle: two journals, the hex in the hub and the D drive, 84.3 mm³ by its own
+                                     meshes (spec.axleVolume_mm3); Delrin 150, 1.42 g/cm³ (ntrDelrinRho) */
+  screws: 4, screwMm3: 23.59, steel: 7.9,   /* four M2 × 4 pan-head screws in the 3D shell (3d/shell meta.screws, shell.js length 4),
+                                     23.59 mm³ each by the screw's own mesh (head 14.42 with its recess, thread 7.38, point 1.79),
+                                     in carbon steel at 7.9 g/cm³ (ntrSteelRho), brass plating aside */
+  leadMm: 109.1, wireMgMm: 0.729, /* the side-button lead, J3 to the two side switches (ntrModel3d): its 8.9 mm in the board model
+                                     (SIDELEAD) and on up the wall to the rear switch, 21.5 mm with three wires; SB4 on to the rear
+                                     switch's NO, GND and SB5 on to the front switch's COM and NO; ×1.069 for the 6 mm lay: 109.1 mm
+                                     of 32 AWG wire at 0.729 mg/mm (GORE Type ET, 0.49 lb per 1,000 ft, ntrGoreWire). The battery's
+                                     own lead is in Jauch's weight for the battery */
   inserts: 4, insMm3: 15.23, brass: 8.47   /* four M2 screws in the 3D shell (3d/shell meta.screws), each in an M2 × 3.0 × Ø3.5
                                      insert (3d/parts/fasteners.js, as own_insert draws it): 15.23 mm³ of brass by its own mass
                                      estimate, at 8.47 g/cm³ (free-cutting brass, ntrBrassRho) */
@@ -644,38 +658,39 @@ function ntr_budget() {
   const P = ntr_xa25() || [], by = re => (P.find(p => re.test(p.name)) || {}).g || 0;
   const xa = { shell: by(/^Shell/), btn: by(/^Button/), wheel: by(/^Scroll/), screws: by(/^Screws/), fpc: by(/^FPC/), boards: by(/^Front PCB/) + by(/^Main PCB/) + by(/^Side PCB/) };
   const cell = ntr_pack('LP402535JU') || { part: 'LP402535JU', mAh: 370, g: 8, wh: 1.369 }, L = ntr_loads(), N = NTR_BUD;
-  const wheelMg = N.wheelMm3 * N.mg / 1000, axle = N.axleMm3 * N.pom / 1000, wheel = wheelMg + axle, ins1 = N.insMm3 * N.brass / 1000, ins = N.inserts * ins1;
-  const ref = xa.btn + xa.screws + xa.fpc, shell = THESEUS.mass - cell.g - THESEUS.pcb - ref - wheel - ins;
-  return { xa, cell, L, ref, wheel, wheelMg, axle, ins, ins1, shell, cut: xa.shell - shell, hours: cell.wh / L.w1, ok: P.length > 0 };
+  const wheelMg = N.wheel, axle = N.axleMm3 * N.pom / 1000, wheel = wheelMg + axle, ins1 = N.insMm3 * N.brass / 1000, ins = N.inserts * ins1;
+  const screw1 = N.screwMm3 * N.steel / 1000, screws = N.screws * screw1, wires = N.leadMm * N.wireMgMm / 1000;
+  const ref = xa.btn, shell = THESEUS.mass - cell.g - THESEUS.pcb - ref - wheel - ins - screws - wires;
+  return { xa, cell, L, ref, wheel, wheelMg, axle, ins, ins1, screws, screw1, wires, shell, cut: xa.shell - shell, hours: cell.wh / L.w1, ok: P.length > 0 };
 }
 S({
   id: 'budget', ch: 'intro', theme: 'paper', title: 'Weight budget: 29.31 g, 200 h', settle: 11, ideas: ['weight', 'battery'],
-  src: ['exXbabWeight', 'ntrJauch', 'exJauch', 'ntrTpuV4', 'exNbcV4', 'srf_wheel3d', 'srf_az31b', 'ntrDelrinRho', 'ntrBrassRho'],
+  src: ['exXbabWeight', 'ntrJauch', 'exJauch', 'ntrTpuV4', 'exNbcV4', 'srf_pmm', 'srf_wheel3d', 'srf_az31b', 'ntrDelrinRho', 'ntrModel3d', 'ntrSteelRho', 'ntrGoreWire', 'ntrBrassRho'],
   draw: t => {
     header(t, 'Weight budget: 29.31 g, 200 h');
     const B = ntr_budget(), f2 = v => fmtN(v, 2);
-    captions(t, [[0.6, `Where 29.31 g goes: one board instead of three, a ${B.cell.mAh} mAh battery for ${fmtN(B.hours, 0)} h at 1 kHz, a magnesium wheel, ${NTR_BUD.inserts} brass inserts, and the small parts as XBAB weighed them.`],
+    captions(t, [[0.6, `Where 29.31 g goes: one board instead of three, a ${B.cell.mAh} mAh battery for ${fmtN(B.hours, 0)} h at 1 kHz, a 0.9 g magnesium wheel, ${NTR_BUD.screws} M2 screws in ${NTR_BUD.inserts} brass inserts, one braided lead, and the buttons as XBAB weighed them.`],
       [5.6, `That leaves ${f2(B.shell)} g for the shell and skates, ${f2(B.cut)} g under the XA25's. My shell design takes that out, and the battery fits.`]]);
     const rows = [
       { name: 'Shell and skates', g: B.shell, was: B.xa.shell, ev: 'derived', hero: true },
       { name: 'Battery, ' + B.cell.mAh + ' mAh', g: B.cell.g, ev: 'datasheet', note: 'Example part' },
       { name: 'One board', g: THESEUS.pcb, was: B.xa.boards, note: 'Radio, antenna, USB-C on it' },
       { name: 'Buttons', g: B.xa.btn, ev: 'claim', note: 'As in the XA25' },
-      { name: 'Wheel and axle', g: B.wheel, ev: 'derived', note: 'Magnesium, POM axle' },
-      { name: 'Screws', g: B.xa.screws, ev: 'claim', note: 'As in the XA25' },
+      { name: 'Wheel and axle', g: B.wheel, ev: 'derived', note: '0.9 g + POM axle' },
+      { name: 'Screws', count: NTR_BUD.screws, g: B.screws, ev: 'derived', note: 'M2 × 4 steel, ' + f2(B.screw1) + ' g each' },
       { name: 'Brass inserts', count: NTR_BUD.inserts, g: B.ins, ev: 'derived', note: f2(B.ins1) + ' g each' },
-      { name: 'Wires', g: B.xa.fpc, ev: 'claim', note: 'As in the XA25' }
+      { name: 'Wires', g: B.wires, ev: 'derived', note: 'Side-button lead, 32 AWG' }
     ];
     breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 54, stagger: 0.09, wasLabel: 'XA25', foot: ['Dashed: the XA25\'s part, as XBAB weighed it (its three boards for the board)', ''] });
     /* the two things the plan rests on: the cell's hours, and the shell's grams */
     ntr_stack(t, 1200, 320, RM - 1200, [
       { t0: 5.0, gloss: true, a: 'Hours = Wh ÷ draw', b: `${B.cell.mAh} mAh at 3.7 V holds ${fmtN(B.cell.wh, 3)} Wh. A Viper V4 Pro draws ${fmtN(B.L.w1 * 1000, 2)} mW at 1 kHz (its ${fmtN(B.L.wh, 3)} Wh over Razer's ${B.L.h1} h), so the battery runs ${fmtN(B.hours, 0)} h.` },
-      { t0: 5.8, a: 'XBAB 2026', b: `The XA25, weighed part by part: 24.94 g in nine parts, shell and skates ${f2(B.xa.shell)} g. Its buttons, screws and wires stand in for mine.` }
+      { t0: 5.8, a: 'XBAB 2026', b: `The XA25, weighed part by part: 24.94 g in nine parts, shell and skates ${f2(B.xa.shell)} g. Its buttons stand in for mine; the screws and the lead are my own, from the 3D model.` }
     ]);
     { const ka = ep(t, 6.6, 7.2), y = 868;
       rich([{ s: f2(B.cut), role: 'stat', size: 64, color: C.heroText, grad: C.heroGrad, tnum: true, count: [6.7, 0.8] }, { s: 'g', font: 'disp', size: 26, weight: 700, color: C.mute, gap: 6 }], 1200, y, { t, alpha: ka });
       text('out of the shell: the one number the plan asks of my design', 1200 + 210, y - 22, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: RM - 1410, lh: 1.3, alpha: ka }); }
-    source(t, `Derived: the wheel, ${NTR_BUD.wheelMm3} mm³ of magnesium at ${NTR_BUD.mg} g/cm³, on an ${fmtN(NTR_BUD.axleMm3, 0)} mm³ POM axle at ${NTR_BUD.pom}; each insert ${fmtN(NTR_BUD.insMm3, 1)} mm³ of brass at ${NTR_BUD.brass}. The example battery: Jauch ${B.cell.part}.`, { t0: 3 });
+    source(t, `Derived from the 3D model: the axle ${fmtN(NTR_BUD.axleMm3, 0)} mm³ of POM at ${NTR_BUD.pom}; each screw ${fmtN(NTR_BUD.screwMm3, 1)} mm³ of steel at ${NTR_BUD.steel}; the lead ${fmtN(NTR_BUD.leadMm, 0)} mm at ${fmtN(NTR_BUD.wireMgMm, 2)} mg/mm; each insert ${fmtN(NTR_BUD.insMm3, 1)} mm³ of brass at ${NTR_BUD.brass}.`, { t0: 3 });
   }
 });
 

@@ -1,7 +1,7 @@
 /* ============================== surface and details (chapter code srf) ==============================
    #16 the baked ceramic coat (its film, its weight, its colour), #60 laser-etched directional grip (the grip map, no
-   adhesive, two-tone), #36 #62 #61 #33 #32 the marks, #34 #82 engravings and gates, #84 #30 the magnesium wheel and its
-   tread, #7 the optical encoder on a POM axle. New slides are in 10-e2-surface.js, placed with `after`.
+   adhesive, two-tone), #36 #62 #61 #33 #32 the marks, #34 #82 engravings and gates, #84 #30 the six-arm magnesium wheel
+   (0.9 g) and its knurled tread, #7 the optical encoder on a POM axle. New slides are in 10-e2-surface.js, placed with `after`.
    The close-ups are height fields lit by a raking light (srf_field / srf_macro, below), drawn in their own canvas.
    Scan-derived numbers (Brock's Sora scan) are measured in this deck; competitor numbers carry their source. */
 Object.assign(SRC, {
@@ -40,8 +40,8 @@ Object.assign(SRC, {
   srf_al6061: { t: 'Protolabs CNC material data sheet, aluminum 6061-T651/T6: nominal density 2.70 Mg/m³', u: 'https://www.protolabs.com/media/h54d0gnp/2026-026-cnc-material-data-sheet_aluminum-6061-t651_t6.pdf' },
   srf_ss304: { t: 'Protolabs CNC material data sheet, stainless steel 304: density 0.285 lb/in³ (7.89 g/cm³)', u: 'https://www.protolabs.com/media/tltj24um/2026-026-cnc-material-data-sheet_stainless-steel-304.pdf' },
   srf_delrin: { t: 'Delrin 150 data sheet (Plastics International): specific gravity 1.42; water absorption 0.25% in 24 h, 0.9% at saturation; dynamic μ 0.20 (ASTM D3702)', u: 'https://www.plasticsintl.com/media/05oith4t/delrin-150-data-sheet.pdf' },
-  srf_wheel3d: { t: 'This deck\'s 3D scroll wheel (3d/parts/scrollwheel.js): Ø22 × 7 mm, six spokes, 48 curved grousers, 825 mm³ of wheel, 24-slot code disc; axle held 10.8 mm apart at the encoder boss and the support', u: '', n: 'A design model built for the deck, not a measured part.' },
-  srf_register: { t: 'The Register: NASA\'s Perseverance wheels have 48 gently curved treads, double Curiosity\'s 24 chevrons, to better withstand sharp rocks', u: 'https://www.theregister.com/2020/04/06/nasa_reveals_perserverance_rover_grouser_wheel_design/' },
+  srf_wheel3d: { t: 'This deck\'s 3D scroll wheel (3d/parts/scrollwheel.js): Ø22.74 × 7.0 mm, six arms on an open hub, a thin crowned rim (0.55 mm at the edges), a fine straight knurl of 144 grooves 0.12 mm deep; 508.8 mm³ of wheel, 0.900 g in AZ31B and 1.374 g in 6061; 24-slot code disc; axle held 10.8 mm apart at the encoder boss and the support', u: '', n: 'A design model built for the deck to Brock\'s 0.9 g, not a measured part.' },
+  srf_pmm: { t: 'PMM, Magnesium Scroll Wheel [PULSE, CYBER OP, OP1 8k, OP1w 4k]: magnesium alloy, weight 1.0 g; "the magnesium wheel only" (a scroll wheel pin and a spare ship beside it)', u: 'https://pmm.gg/products/magnesium-scroll-wheel-op1-8k-op1w-4k-pulse-cyber-op-for-modkit', n: 'The maker\'s figure for its own part.' },
   srf_eloEnc: { t: 'EloShapes spec sheets via research/data/mice.json: encoder type of 35 mice (optical: Razer Viper V4 Pro, DeathAdder V4 Pro; ZOWIE EC2-DW, U2-DW)', u: 'https://www.eloshapes.com/' },
   srf_ttc: { t: 'TTC (@TTCswitch on X, 09/03/2026, shared on r/MouseReview): "TTC optical encoder is ready! Built for speed, precision, and durability"; renders show a normal encoder\'s black housing in a stamped steel frame with a bushing, pins and bent legs, and inside an emitter and receiver with a slotted wheel between (the picture Brock attached, F9.21)', u: '', n: 'Brock\'s reference picture; the internal dimensions are this deck\'s 3D model, not TTC\'s drawing.' },
   srf_fmSupport: { t: 'Finalmouse support staff, as Brock reports (F12.13): the encoder is the number one failure point in a mouse', u: '', n: 'Reported by Brock, not a published figure.' }
@@ -332,7 +332,7 @@ S({
     }
     chapterCard(t, {
       name: 'surface', gloss: 'What your hand touches, and the small marks that make a mouse look finished.',
-      list: [['#16', 'A baked ceramic coat, 19 µm thin'], ['#16', 'No added weight, no yellowing'], ['#60', 'Laser-etched directional grip'], ['#60', 'No adhesive, two tones in one coat'], ['#36', 'Your serial, lasered on the right click'], ['#34', 'Engravings half as deep'], ['#84', 'A magnesium wheel, a rover\'s tread'], ['Encoder', 'An optical encoder in TTC\'s form']]
+      list: [['#16', 'A baked ceramic coat, 19 µm thin'], ['#16', 'No added weight, no yellowing'], ['#60', 'Laser-etched directional grip'], ['#60', 'No adhesive, two tones in one coat'], ['#36', 'Your serial, lasered on the right click'], ['#34', 'Engravings half as deep'], ['#84', 'A 0.9 g magnesium wheel, six arms'], ['Encoder', 'An optical encoder in TTC\'s form']]
     });
     figLabel(t, 2.2, 1040, 1000 - 22, 8, 'Forged colourway, satin clear over raw carbon');
   }
@@ -570,71 +570,97 @@ S({
   }
 });
 
-/* ============================== #84 #30 a magnesium wheel with a rover's tread ============================== */
-/** one strip of tread, unrolled: n grousers round the wheel, `kind` 'chevron' or 'curve', scrolled by off (0..1 of a pitch) */
-function srf_tread(x, y, w, h, n, kind, off, col, a) {
+/* ============================== #84 #30 the six-arm magnesium wheel, 0.9 g ==============================
+   Brock (F22.1): PMM's magnesium wheel "is 1.0g, ours will be 0.9g", "closer to the pmm wheel ... but with 6 arms", and not the
+   rover tread. The 3D wheel (scene 'wheel', 3d/parts/scrollwheel.js): six tapered arms on an open hub, a thin crowned rim,
+   508.8 mm³ of AZ31B = 0.900 g; the same wheel in 6061 aluminium 1.374 g. The tread is a fine straight knurl, 144 V-grooves
+   0.12 mm deep, six to a notch, each running out to a point before the plain edge bands: drawn here unrolled, as a lit
+   height field to the 3D model's dimensions. */
+const SRF_WH = { mm3: 508.8, g: 0.9, pmm: 1.0, mg: 1.77, al: 2.70, n: 144, d: 0.12, W: 7.0, R: 11.37, band: 2.90, run: 0.45, yT: 3.25, fe: 0.35, steps: 24 };
+SRF_WH.alG = SRF_WH.mm3 * SRF_WH.al / 1000; SRF_WH.pitch = TAU * SRF_WH.R / SRF_WH.n;
+/** the wheel's turn (rad): still, then the pointer rolls it three notches (45°), then still */
+const srf_whTurn = t => (Math.PI / 4) * ep(t, 6.4, 7.8, E.io3);
+/** the tread unrolled into a height field, pxmm field px to the mm, len px long plus two pitches (so it scrolls by wrapping):
+   across the width the crown's fall and the edge fillets, along it the grooves, each narrowing to a point as it runs out */
+function srf_knurlField(pxmm, len) {
+  const K = SRF_WH, h = Math.round(K.W * pxmm), per = K.pitch * pxmm, w = Math.ceil(len + 2 * per);
+  return srf_field('wheelKnurl' + pxmm.toFixed(2) + '_' + w, w, h, f => {
+    f.mat = { amb: 0.16, kd: 1.0, ks: 1.25, sh: 24, rz: 1, aoR: 2, aoK: 0.32, kf: 0.24 };
+    for (let y = 0; y < h; y++) {
+      const ym = (y + 0.5) / pxmm - K.W / 2, ay = Math.abs(ym);
+      let z = Math.sqrt(K.R * K.R - ym * ym) - K.R;                                       /* the crown, mm */
+      if (ay > K.yT) { const u = Math.min(1, (ay - K.yT) / (K.W / 2 - K.yT)); z -= K.fe * (1 - Math.sqrt(1 - u * u)); }
+      const q = clamp((K.band - ay) / K.run), hw = (K.d / K.pitch) * q;                     /* depth factor; half width in pitches */
+      for (let x = 0; x < w; x++) {
+        const du = Math.abs((x / per) % 1 - 0.5), g = du < hw ? K.d * q * (1 - du / hw) : 0, p = y * w + x;
+        f.z0[p] = (z - g) * pxmm; f.a0[p * 3] = 176; f.a0[p * 3 + 1] = 181; f.a0[p * 3 + 2] = 188; f.g0[p] = ay > K.band ? 0.7 : 0.9;
+      }
+    }
+  });
+}
+/** the tread strip in (x, y, w, h), scrolled by the wheel's turn th (rad); the light rakes in from the upper left and settles */
+function srf_knurlStrip(t, x, y, w, h, th, a) {
   if (a <= 0.003) return;
-  const pitch = w / (n / 4);   /* a quarter of the wheel shows */
+  const sc = 2, pxmm = sc * h / SRF_WH.W, f = srf_knurlField(pxmm, sc * w), per = SRF_WH.pitch * pxmm;
+  const cv = srf_shade(f, { az: 2.2 + 0.7 * (1 - ep(t, 0.8, 4.0, E.out3)), el: 0.36 });
+  const off = ((th * SRF_WH.R * pxmm) % per + per) % per;
   G.save(); G.globalAlpha = a; rrPath(x, y, w, h, 6); G.clip();
-  G.fillStyle = TH ? '#E2E1DC' : '#25262A'; G.fillRect(x, y, w, h);
-  G.strokeStyle = col; G.lineWidth = kind === 'chevron' ? 5 : 4; G.lineCap = 'round';
-  for (let i = -2; i < n / 4 + 2; i++) {
-    const x0 = x + (i + off) * pitch;
-    G.beginPath();
-    if (kind === 'chevron') { G.moveTo(x0, y + 6); G.lineTo(x0 + pitch * 0.42, y + h / 2); G.lineTo(x0, y + h - 6); }
-    else { G.moveTo(x0, y + 6); G.quadraticCurveTo(x0 + pitch * 0.32, y + h / 2, x0, y + h - 6); }
-    G.stroke();
-  }
+  G.imageSmoothingEnabled = true; G.imageSmoothingQuality = 'high';
+  G.drawImage(cv, off, 0, sc * w, f.h, x, y, w, h);
   G.restore();
-  rr(x, y, w, h, 6, null, inkA(0.25), 1.2, a);
 }
 S({
-  id: 'wheel', ch: 'surface', theme: 'paper', title: 'Magnesium, with a rover\'s tread', settle: 10, ideas: [84, 30], three: ['wheel'],
-  src: ['srf_register', 'curiosity', 'srf_wheel3d', 'srf_az31b', 'srf_al6061', 'srf_ss304', 'srf_doc'],
+  id: 'wheel', ch: 'surface', theme: 'paper', title: 'Six-arm magnesium wheel', settle: 10, ideas: [84, 30], three: ['wheel'],
+  src: ['srf_pmm', 'srf_wheel3d', 'srf_az31b', 'srf_al6061', 'srf_doc'],
   draw: t => {
-    header(t, 'Magnesium, with a rover\'s tread');
-    captions(t, [[0.6, 'Magnesium is the lightest metal for the wheel: the same wheel in aluminium weighs 53 % more, in stainless steel four times as much.'], [5.6, 'Curiosity\'s 24 chevron treads cracked on sharp rock. Perseverance rolls on 48 gently curved ones, and so does this wheel.']]);
-    const lx = LM, ly = 280, lw = 900, lh = 680;
+    header(t, 'Six-arm magnesium wheel');
+    const K = SRF_WH, cut = Math.round(100 * (K.pmm - K.g) / K.pmm);
+    captions(t, [[0.6, `Six arms on an open hub and a thin crowned rim: ${fmtN(K.g, 1)} g of magnesium, ${cut} % under PMM's ${fmtN(K.pmm, 1)} g wheel. In aluminium the same wheel would weigh ${fmtN(K.alG, 2)} g.`],
+      [5.6, 'The tread is a fine straight knurl, 144 grooves across it, six to every notch. It catches the finger the way the wheel turns, and it still looks like plain machined metal.']]);
+    const lx = LM, ly = 280, lw = 900, lh = 680, th = srf_whTurn(t);
     demoWindow(lx, ly, lw, lh, tileA(t, 0.2, 0));
-    const wv = { view: [0.55, 0.45, 0.9], zoom: 1.75, scroll: 0.22 * t, xray: 0, explode: 0.3 * env(t, 1.6, 2.6, 4.2, 5.2) };
-    const pt = { g: [lx + 520, ly + 180], sp: [lx + 470, ly + 360], cr: [lx + 400, ly + 250], ax: [lx + 560, ly + 300] };
+    /* the wheel: from the side in 2D (the arms, the hub, the rim; the encoder and bracket hidden), a close render in 3D */
+    const wv = { view: [0.86, 0.36, 0.42], zoom: 1.55, target: [0, 12.2, 0], scroll: th, xray: 0, explode: 0 };
+    /* anchors on the right half of the wheel at rest (in the side view +Z is to the left), so the leaders run straight out to the
+       labels; they turn with the wheel. The arm is the one 30° above the horizontal, half way out */
+    const fArm = [0.5, (11 + 3.1 - 0.45) / 21.1, (10.55 - 5.37) / 21.1];
+    const pt = { arm: [lx + 400, ly + 200], hub: [lx + 320, ly + 280], rim: [lx + 520, ly + 280], top: [lx + 300, ly + 70] };
     if (V2D.on) {
-      /* two views of one wheel: from the side (the spokes and the treads, turning) and from the front (the crown, the axle) */
-      const sb = [lx + 24, ly + 80, 380, 396], fb = [lx + 396, ly + 80, 236, 396];
-      const sv = Object.assign({}, wv, { view2d: 'right', zoom: 1.34, target: [0, 11, 0], explode: 0, hide2d: /encoder|support/ }), fv = Object.assign({}, wv, { view2d: 'front', zoom: 1.32, target: [-1.85, 11, 0] });
+      const sb = [lx + 40, ly + 60, 500, 440], sv = Object.assign({}, wv, { view2d: 'right', zoom: 2.05, target: [0, 11, 0], hide2d: /encoder|support/ });
       srf_3d(t, 0.4, 'wheel', sb[0], sb[1], sb[2], sb[3], sv);
-      srf_3d(t, 0.6, 'wheel', fb[0], fb[1], fb[2], fb[3], fv);
-      const k = ep(t, 0.6, 1.0);
-      text('Side', sb[0] + sb[2] / 2, sb[1] + sb[3] + 22, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: k });
-      text('Front', fb[0] + fb[2] / 2, fb[1] + fb[3] + 22, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: k });
-      pt.g = v2dAt('wheel', sv, sb, /wheel\/grousers$/, [0.5, 1, 0.5]) || pt.g; pt.sp = v2dAt('wheel', sv, sb, /wheel\/web$/, [0.5, 0.3, 0.5]) || pt.sp;
-      pt.cr = v2dAt('wheel', fv, fb, /wheel\/tread$/, [0.5, 1, 0.5]) || pt.cr; pt.ax = v2dAt('wheel', fv, fb, /axle\/axleR$/, [0.5, 0.5, 0.5]) || pt.ax;
+      const at = (re, f) => v2dAt('wheel', sv, sb, re, f);
+      pt.arm = at(/wheel\/arms$/, fArm) || pt.arm; pt.hub = at(/wheel\/hub$/, [0.5, 0.5, 0.06]) || pt.hub;
+      pt.rim = at(/wheel\/rim$/, [0.5, 0.5, 0.0]) || pt.rim; pt.top = at(/wheel\/rim$/, [0.5, 1.0, 0.5]) || pt.top;
     } else {
-      const box = [lx, ly, lw, 500], drawn = srf_3d(t, 0.4, 'wheel', box[0], box[1], box[2], box[3], wv);
-      pt.g = srf_at3('wheel', wv, box, drawn, /wheel\/grousers$/, [0.5, 0.62, 1]) || pt.g; pt.sp = srf_at3('wheel', wv, box, drawn, /wheel\/web$/, [0.5, 0.3, 0.6]) || pt.sp;
-      pt.cr = srf_at3('wheel', wv, box, drawn, /wheel\/tread$/, [0.62, 0.86, 0.9]) || pt.cr; pt.ax = srf_at3('wheel', wv, box, drawn, /axle\/axleR$/, [0.5, 0.5, 0.5]) || pt.ax;
+      const box = [lx + 10, ly + 56, 560, 440], drawn = srf_3d(t, 0.4, 'wheel', box[0], box[1], box[2], box[3], wv);
+      const at = (re, f) => srf_at3('wheel', wv, box, drawn, re, f);
+      pt.arm = at(/wheel\/arms$/, fArm) || pt.arm; pt.hub = at(/wheel\/hub$/, [0.5, 0.5, 0.06]) || pt.hub;
+      pt.rim = at(/wheel\/rim$/, [0.5, 0.5, 0.0]) || pt.rim; pt.top = at(/wheel\/rim$/, [0.5, 1.0, 0.5]) || pt.top;
     }
-    rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: V2D.on ? 'Magnesium wheel and POM axle, two views' : 'Magnesium wheel, POM axle, optical encoder (render)', role: 'small', size: 24, weight: 600, color: C.faint, gap: 16 }], lx + 26, ly + 46, { alpha: ep(t, 0.6, 1.0) });
-    callout(t, 2.0, pt.g, '48 curved grousers', { to: [lx + 596, ly + 120], side: 'r', color: C.ink });
-    callout(t, 2.4, pt.sp, 'Six spokes', { to: [lx + 660, ly + 420], side: 'r', color: C.ink, sub: 'Triangular windows' });
-    callout(t, 2.8, pt.cr, 'Crown, R 11 mm both ways', { to: [lx + 660, ly + 220], side: 'r', color: C.ink, prose: true, maxW: 220 });
-    callout(t, 3.2, pt.ax, 'POM axle', { to: [lx + 660, ly + 330], side: 'r', color: C.ink });
-    /* rover treads, unrolled, along the foot of the tile */
-    const sx = lx + 250, swd = lw - 290, rowsT = [['Curiosity', '24 chevrons', 24, 'chevron', C.comp], ['Perseverance', '48 curved', 48, 'curve', C.ink2], ['Theseus wheel', '48 curved', 48, 'curve', C.hero]];
-    rowsT.forEach(([nm, sub, n, kind, col], i) => {
-      const y = ly + 532 + i * 50, a = ep(t, 5.6 + i * 0.3, 6.0 + i * 0.3);
-      text(nm, lx + 32, y + 18, { role: 'small', size: 24, weight: i === 2 ? 800 : 700, color: C.ink, alpha: a });
-      text(sub, lx + 32, y + 40, { role: 'label', size: 19, color: i === 2 ? C.heroText : C.mute, alpha: a });
-      srf_tread(sx, y, swd, 40, n, kind, (t * 0.35) % 1, i === 2 ? C.hero : col, a);
-    });
-    /* the glance: the weight against aluminium, before → after, and the metals by weight */
-    const rx = 1020, V = 0.825, mg = V * 1.77, al = V * 2.70;
-    srf_hl(t, 1.0, rx, 448, '−34 %', { size: 150, label: 'Wheel weight against aluminium', sub: 'The same 825 mm³ wheel in each metal.', maxW: RM - rx });
-    srf_ba(t, 2.2, rx, 650, fmtN(al, 2), fmtN(mg, 2), { size: 64, unit: 'g', label: 'Aluminium 6061 → magnesium AZ31B' });
-    srf_bars(t, 2.8, { x: rx, y: 764, w: RM - rx, xr: [0, 7], labelW: 300, valW: 110, rowH: 46, dec: 2, unit: 'g', nsize: 24,
-      rows: [['Magnesium AZ31B', 1.77, true], ['Aluminium 6061', 2.70], ['Stainless 304', 7.89]].map(([n, d, hero]) => ({ name: n, v: V * d, hero, label: fmtN(V * d, 2) + ' g' })) });
-    srf_better(t, 3.4, rx, 916, 'Lower is better');
-    pill(RM - pillW('derived'), 916, 'derived', ep(t, 3.4, 3.8));
+    rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: V2D.on ? 'Magnesium wheel from the side' : 'Magnesium wheel on its POM axle (render)', role: 'small', size: 24, weight: 600, color: C.faint, gap: 16 }], lx + 26, ly + 46, { alpha: ep(t, 0.6, 1.0) });
+    const cx = lx + 610;
+    callout(t, 2.0, pt.arm, 'Six arms', { to: [cx, ly + 130], side: 'r', color: C.ink, sub: '60° apart: short spans, so the rim can be thin', maxW: 260 });
+    callout(t, 2.5, pt.hub, 'Open hub', { to: [cx, ly + 270], side: 'r', color: C.ink, sub: 'A 4.1 mm ring on the POM axle', maxW: 260 });
+    callout(t, 3.0, pt.rim, 'Thin crowned rim', { to: [cx, ly + 390], side: 'r', color: C.ink, sub: '0.55 mm at the edges, R 11.4 crown', maxW: 260 });
+    /* the pointer rolls the wheel three notches, riding the tread */
+    { const kp = ep(t, 5.8, 6.2) * (1 - ep(t, 8.0, 8.4)); if (kp > 0.003) cursorPtr(pt.top[0], pt.top[1], { a: kp, press: t > 6.3 && t < 6.75 ? prog(t, 6.3, 6.75) : 0, grab: t > 6.3 && t < 7.9 }); }
+    /* the tread, unrolled under the wheel: the knurl, lit, turning with it */
+    const sx = lx + 32, sw = lw - 64, sy = ly + 526, sh = 112, ks = ep(t, 4.6, 5.2);
+    text('Tread, unrolled', sx, sy - 16, { role: 'label', size: 21, color: C.mute, alpha: ks });
+    srf_knurlStrip(t, sx, sy, sw, sh, th, ks);
+    rr(sx, sy, sw, sh, 6, null, inkA(0.18), 1.2, ks);
+    { const ka = ep(t, 5.0, 5.5), sbx = sx + sw, mmPx = sh / K.W, yb = ly + lh - 22;
+      text('Fine straight knurl: 144 grooves 0.12 mm deep, six to a notch', sx, yb, { role: 'small', size: 23, weight: 600, color: C.ink2, alpha: ka, maxW: sw - 140 });
+      line(sbx - mmPx, yb - 8, sbx, yb - 8, { color: C.mute, w: 2, alpha: ka }); line(sbx - mmPx, yb - 15, sbx - mmPx, yb - 1, { color: C.mute, w: 2, alpha: ka }); line(sbx, yb - 15, sbx, yb - 1, { color: C.mute, w: 2, alpha: ka });
+      text('1 mm', sbx - mmPx - 12, yb, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ka }); }
+    /* the glance: the weight against PMM's wheel, before → after, and the three wheels by weight */
+    const rx = 1020;
+    srf_hl(t, 1.0, rx, 448, '−' + cut + ' %', { size: 150, label: 'Weight against PMM\'s magnesium wheel', maxW: RM - rx });
+    srf_ba(t, 2.0, rx, 640, fmtN(K.pmm, 1), fmtN(K.g, 1), { size: 72, unit: 'g', label: 'The wheel alone, PMM\'s → mine', net: 'Six arms, and still a tenth lighter', maxW: RM - rx });
+    srf_bars(t, 2.8, { x: rx, y: 772, w: RM - rx, xr: [0, 1.5], labelW: 340, valW: 110, rowH: 46, dec: 2, unit: 'g', nsize: 24,
+      rows: [{ name: 'Theseus, magnesium', v: K.g, hero: true }, { name: 'PMM, magnesium', v: K.pmm }, { name: 'My wheel in aluminium', v: K.alG }].map(r => Object.assign(r, { label: fmtN(r.v, 2) + ' g' })) });
+    srf_better(t, 3.4, rx, 924, 'Lower is better');
+    { const kp = ep(t, 3.4, 3.8), wd = pillW('derived'), wc = pillW('claim', { by: 'PMM' }); pill(RM - wd, 924, 'derived', kp); pill(RM - wd - 24 - wc, 924, 'claim', kp, { by: 'PMM' }); }
   }
 });
 

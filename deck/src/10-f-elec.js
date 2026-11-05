@@ -453,7 +453,7 @@ S({
   src: ['kunai', 'xbabSensorLock', 'pcgFrameSync', 'razerFocus'],
   draw: t => {
     header(t, 'Frame sync: no jitter');
-    captions(t, [[0.6, 'The sensor is a camera taking pictures of the pad. On its own clock a finished picture waits to be read, so the motion in each report is a different age.'], [4.4, 'Sync the camera to the polls and every report carries motion that was just seen: the same age every time, and younger.']]);
+    captions(t, [[0.6, 'The sensor is a camera taking pictures of the pad. On its own clock a finished picture waits to be read, so the motion in each report is a different age.'], [4.4, 'Sync the camera to the polls and every report carries motion just seen, the same age every time. My firmware gets each frame to USB in 42 µs, as SensorLock does; Razer\'s FrameSync takes 205.']]);
     const wx = LM, wy = 280, ww = RM - LM, wh = 400, A = C.hero;
     demoWindow(wx, wy, ww, wh, tileA(t, 0.2, 0));
     cardHead(t, 0.4, wx, wy, ww, 'Four 8 kHz reports in 500 µs: how old is the motion in each? (younger and steadier is better)', ['derived']);
@@ -473,24 +473,25 @@ S({
       line(X(ph), wy + 96, X(ph), wy + 350, { color: C.ink, w: 1.5, alpha: 0.3 * pk });
       lanes.forEach(L => { for (const f of L.frames) { const d = Math.abs(ph - f); if (d < 16) circle(X(f), L.y - 30, 8 + (16 - d) * 0.8, { fill: rgba(L.col, 0.4 * (1 - d / 16)), alpha: pk }); } });
     }
-    /* the strip under it, at a glance (F14.10, F16.1): the jitter before → after in Theseus's colour, the oldest motion before →
-       after, and the rivals' measured sync, both grey: Theseus's target is the hero, not theirs */
+    /* the strip under it, at a glance (F14.10, F16.1). Brock (F22.2): Theseus's target is "Match SensorLock, 42 µs", frame to USB
+       through its own firmware. The headline is before → after against Razer's FrameSync (205 → 42 µs) in Theseus's colour; the
+       jitter before → after beside it; and the chart: both rivals grey, Theseus blue, SensorLock level with it, said plainly */
     const ages = lanes.map(L => polls.map(p => Math.round(p - L.frames.filter(f => f + 15 <= p).pop()))), jit = ages.map(g => Math.max(...g) - Math.min(...g));
-    elc_ba(t, 5.4, LM, 880, String(jit[0]), String(jit[1]), { size: 110, label: 'Jitter, its own clock then synced', unit: 'µs', net: 'Every report the same age', maxW: 560 });
-    elc_ba(t, 6.0, 680, 880, '73', '20', { size: 64, label: 'The oldest motion in a report', unit: 'µs', net: '−53 µs at the worst', maxW: 480 });
+    const FS = { razer: 205, lock: 42, ths: 42 };
+    elc_ba(t, 5.4, LM, 850, String(FS.razer), String(FS.ths), { size: 110, label: 'Frame to USB', unit: 'µs', who: ['Razer\'s FrameSync', 'Theseus'], net: '−' + (FS.razer - FS.ths) + ' µs, in my own firmware', maxW: 560 });
+    elc_ba(t, 6.0, 700, 850, String(jit[0]), String(jit[1]), { size: 64, label: 'Jitter', unit: 'µs', who: ['Its own clock', 'Synced'], net: 'Every report the same age', maxW: 440 });
     const tx = 1200, tw0 = RM - tx, ty = 720, th = 240;
     demoWindow(tx, ty, tw0, th, tileA(t, 0.4, 1));
-    /* SensorLock is its developer's own work, measured against a rival: a claim (DESIGN 6) */
+    /* SensorLock and FrameSync are measured by SensorLock's developer: a claim (DESIGN 6); Theseus's figure is my target */
     cardHead(t, 0.6, tx, ty, tw0, 'Frame to USB, lower is better', ['claim'], { dy: 44 });
     const bx = tx + 272, bw2 = tw0 - 272 - 130, BX = us => bx + bw2 * us / 210;
-    [['XBAB SensorLock', 42, '42 µs'], ['Razer\'s FrameSync', 205, '205 µs']].forEach(([l, v, lab], i) => {
-      const yy = ty + 108 + i * 50, k = ep(t, 1.6 + i * 0.3, 2.4 + i * 0.3, E.snap);
-      text(l, tx + 32, yy + 8, { role: 'small', size: 23, weight: 600, color: C.ink, alpha: ep(t, 1.4, 1.8) });
-      rr(bx, yy - 10, Math.max(20, (BX(v) - bx) * k), 20, 10, C.comp, null, 1, ep(t, 1.4, 1.8));
-      text(lab, bx + (BX(v) - bx) * k + 14, yy + 9, { font: 'mono', size: 23, weight: 700, color: C.ink2, alpha: k });
+    [['Razer\'s FrameSync', FS.razer, false], ['XBAB SensorLock', FS.lock, false], ['Theseus', FS.ths, true]].forEach(([l, v, hero], i) => {
+      const yy = ty + 92 + i * 40, k = ep(t, 1.6 + i * 0.3, 2.4 + i * 0.3, E.snap), ka = ep(t, 1.4 + i * 0.2, 1.8 + i * 0.2);
+      text(l, tx + 32, yy + 8, { role: 'small', size: 23, weight: hero ? 800 : 600, color: hero ? C.heroText : C.ink, alpha: ka });
+      rr(bx, yy - 10, Math.max(20, (BX(v) - bx) * k), 20, 10, hero ? C.hero : C.comp, null, 1, ka);
+      text(v + ' µs', bx + (BX(v) - bx) * k + 14, yy + 9, { font: 'mono', size: 23, weight: hero ? 800 : 700, color: hero ? C.heroText : C.ink2, alpha: k });
     });
-    const hw = heroTag(tx + 32, ty + th - 26, 'Theseus', null, { a: ep(t, 2.6, 3.0), size: 21 });
-    text('frame sync in its PAW3970', tx + 32 + hw + 12, ty + th - 26, { role: 'small', size: 22, weight: 600, color: C.heroText, alpha: ep(t, 2.6, 3.0) });
+    text('SensorLock does 42 µs today; Theseus matches it.', tx + 32, ty + th - 22, { role: 'small', size: 22, weight: 600, color: C.ink2, alpha: ep(t, 2.8, 3.2), maxW: tw0 - 64 });
     source(t, 'Lanes: an illustration, 12,000 frames a second against 8,000 polls, 15 µs to process a frame; jitter = oldest − youngest. Frame to USB: SensorLock\'s developer, 8 kHz, 2026-10-07.', { t0: 2 });
   }
 });

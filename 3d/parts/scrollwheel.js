@@ -5,13 +5,16 @@
 // axle along X; wheel centre at Y = axleHeight. Encoder on the user's RIGHT (−X) by default, as on the Sora V2
 // PCB (+X is the user's left in this right-handed frame); encoderSide: 'left' puts it on +X (mirror image).
 //
-// Design rules carried from Brock's doc:
-//  - 6 spokes: the web is cut into 6 equilateral-triangle windows (6 × 60° = 360°)  [brainstorm, proposal]
-//  - "more like a torus than cylinder": the tread is a torus section whose crown radius equals the wheel
-//    radius (default), so the top of the wheel is locally spherical: the fingertip sees the same curvature
-//    rolling and across, and the contact patch is round instead of a stripe  [proposal]
-//  - rover-tread texture (#30): 48 gently curved grousers like Perseverance (NASA: 48 gently curved vs
-//    Curiosity's 24 chevrons), 2 per encoder step; flat-topped for wear, not RGB/shiny  [proposal]
+// The wheel (Brock, F22.1, 2026-11-04: PMM's magnesium wheel "is 1.0g, ours will be 0.9g ... it should be closer to the pmm
+// wheel ... but with 6 arms, i also don't like the texture your chosen, even if it's based on rover tread"):
+//  - six arms, an open hub: six tapered arms 60° apart from a small hub ring to a thin rim (his doc: "6 scroll wheel spokes
+//    ... allowing for the outer shell of the scroll wheel to be the thinnest"); the bays between them are open
+//  - 0.9 g: magnesium AZ31B at 1.77 g/cm³, so the wheel is sized to 508 mm³ (spec.wheelVolume_mm3, massEstimate_g)
+//  - "more like a torus than cylinder": the tread is a torus section whose crown radius equals the wheel radius (default),
+//    so the top of the wheel is locally spherical: the fingertip sees the same curvature rolling and across  [proposal]
+//  - the tread (#30, the texture): a fine straight knurl, 144 V-grooves across the crown (6 per encoder step), 0.12 mm deep,
+//    grooves and lands about equally wide, each groove running out to a point before the edges, which stay plain turned
+//    bands; bare machined magnesium  [proposal]
 import * as THREE from 'three';
 import { partMaterials } from './lib/materials.js';
 import { HIGHLIGHT } from '../lib/studio.js';
@@ -25,24 +28,30 @@ const TAU = Math.PI * 2;
 export const WHEEL_SPEC = {
   name: 'Magnesium scroll wheel + optical encoder',
   label: 'representative / proposal',
-  material: 'magnesium alloy AZ31B-class (1.77 g/cm³), machined, bare passivated finish',
+  material: 'magnesium alloy AZ31B (1.77 g/cm³), machined, bare passivated finish',
+  wheel: 'six tapered arms on an open hub, a thin crowned rim with a spine where the arms meet it; 0.9 g (Brock\'s figure, F22.1)',
+  tread: 'fine straight knurl: 144 V-grooves (90°) across the crown, 6 per encoder step, 0.12 mm deep, 0.50 mm pitch, running out to points 0.35 mm before the edge fillets',
   axle: 'POM (acetal), hex-keyed in the hub, D-flat drive into the encoder',
   encoder: 'optical, TTC-style: tin-plated steel frame with drawn bushing collar on a black plastic body, 5 pins at 1.25 mm; inside a 24-slot code disc on the rotor, a photo-interrupter (IR emitter + dual phototransistor, A/B a quarter-cycle apart) at the bottom, 24-lobe detent star + leaf spring',
   support: 'POM bracket: U seat with lead-in chamfers for the far journal, foot with two locating pegs, gusset',
+  densities: { AZ31B: 1.77, Al6061: 2.70, POM: 1.42 },
   sources: {
-    grousers: 'NASA, "Perseverance Mars rover gets its wheels and air brakes": 48 gently curved treads vs Curiosity 24 chevron [DS]',
+    pmm: 'PMM, Magnesium Scroll Wheel [PULSE, CYBER OP, OP1 8k, OP1w 4k]: magnesium alloy, 1.0 g, "the magnesium wheel only" (the pin ships beside it) [MC]',
+    target: 'Brock (F22.1): "ours will be 0.9g", "closer to the pmm wheel ... but with 6 arms" [PR]',
+    spokes: 'Brock\'s doc: "6 scroll wheel spokes ... allowing for the outer shell of the scroll wheel to be the thinnest" [PR]',
+    az31b: 'Tech Steel & Materials, AZ31B-H24: 1.77 g/cc [DS]; aluminium 6061-T6 2.70 (Protolabs) [DS]',
     optical: 'Razer: optical encoders "3.3× more reliable" [MC]; Viper V4 Pro uses an optical scroll encoder [MC/IM]',
     ttc: "TTC optical encoder launch photo (Brock's brief): normal encoder outline, metal frame + plastic housing, bushing, pins [PR]",
     interrupter: 'Honeywell HOA0901 slotted optical switch (emitter + phototransistor across a slot) [DS]; US6380927 and US12228433 (optical scroll encoders: slotted wheel through an interrupter) [DS]',
     teardown: "Igor's Lab, Razer Basilisk V3 Pro teardown (optical scroll encoder internals) [IM]",
-    size: 'Sora V2 wheel ≈ 22–23.5 × 7.5–8 mm, measured from Brock\'s PCB photo against the 8.94 mm USB-C shell [DV]',
+    size: 'Ø22.74 × 7.0 mm, the Theseus shell\'s wheel (3d/shell meta.wheel); Sora V2 wheel ≈ 22–23.5 × 7.5–8 mm from Brock\'s PCB photo [DV]',
   },
 };
 
 export function buildScrollWheel(opts = {}) {
-  const D = opts.diameter ?? 22, Wd = opts.width ?? 7, R = D / 2, hw = Wd / 2;
+  const D = opts.diameter ?? 22.74, Wd = opts.width ?? 7.0, R = D / 2, hw = Wd / 2;
   const Rc = opts.crownRadius ?? R;
-  const nG = opts.grousers ?? 48, steps = opts.steps ?? 24;
+  const nK = opts.knurl ?? 144, steps = opts.steps ?? 24, nArms = opts.arms ?? 6;
   const AH = opts.axleHeight ?? 11;
   // geometry is built with the encoder on +X, then mirrored in X for the user's right (default)
   const es = opts.encoderSide ?? 'right';
@@ -60,54 +69,70 @@ export function buildScrollWheel(opts = {}) {
   const spin = new THREE.Group(); spin.name = 'spin';        // everything that turns with the wheel
   assy.add(spin);
 
-  // ------------------------------------------------------------------ tread ring (lathe around Y → X)
-  const g = 0.22;                                   // grouser height (= groove depth)
+  // ------------------------------------------------------------------ the rim: a thin crowned skin (lathe around Y → X)
+  // The skin is thinnest at the edges and thickest at the centre plane, where a low spine takes the six arms. Its outer
+  // surface between ±yK is the knurled tread (below); the lathe here is the rest of the skin, an open profile walked with the
+  // material on its left: the plain band and fillet at +X, the side face, the inside, the side face and fillet at −X.
   const crown = (y) => (R - Rc) + Math.sqrt(Rc * Rc - y * y);   // crown surface radius at axial y
-  const floor = (y) => crown(y) - g;
-  const Ri = R - 1.75;                               // rim inner radius (thin shell: 6 triangles carry the load)
-  const fe = 0.42;                                   // tread-to-side fillet
-  const ch = 0.3;                                    // inner chamfer
+  const tE = opts.skinEdge ?? 0.55, tC = opts.skinCentre ?? 0.98;   // skin thickness at the edges, at the centre plane
+  const skin = (y) => tE + (tC - tE) * (1 - (y / hw) ** 2);
+  const rIn = (y) => crown(y) - skin(y);              // the skin's inside
+  const Ri = rIn(0);                                  // at the centre plane
+  const fe = 0.35, chI = 0.2;                         // tread-to-side fillet (tangent to both), inside chamfer
+  const yF = hw - fe, rF = (R - Rc) + Math.sqrt((Rc - fe) ** 2 - yF * yF);   // the fillet's centre (r, y), +X side
+  const phT = Math.atan2(yF, rF - (R - Rc)), yT = yF + fe * Math.sin(phT);    // where it meets the crown
+  /* knurl: depth, band half width, run-out, and each groove's half width in pitches (a 90° V: half as wide as it is deep
+     twice over, so at 144 grooves the grooves and the lands between them are about equally wide) */
+  const kd = opts.knurlDepth ?? 0.12, yK = +(yT - 0.35).toFixed(3), run = 0.45, hwU = kd * Math.tan(Math.PI / 4) / (TAU * R / nK);
   const prof = [];
-  prof.push([Ri, -hw + ch], [Ri + ch, -hw]);
-  const yE = hw - fe;                                // start of the edge fillet (axial)
-  const rE = floor(-yE);
-  prof.push([rE - fe, -hw]);
-  for (let i = 1; i <= 7; i++) { const a = (i / 7) * Math.PI / 2; prof.push([rE - fe + fe * Math.sin(a), -hw + fe - fe * Math.cos(a)]); }
-  for (let i = 1; i < 30; i++) { const y = -yE + (2 * yE) * i / 30; prof.push([floor(y), y]); }
-  for (let i = 0; i <= 7; i++) { const a = (i / 7) * Math.PI / 2; prof.push([rE - fe + fe * Math.cos(a), hw - fe + fe * Math.sin(a)]); }
-  prof.push([Ri + ch, hw], [Ri, hw - ch], [Ri, -hw + ch]);
+  for (let i = 0; i < 3; i++) { const y = yK + (yT - yK) * i / 3; prof.push([crown(y), y]); }
+  for (let i = 0; i <= 8; i++) { const a = phT + (Math.PI / 2 - phT) * i / 8; prof.push([rF + fe * Math.cos(a), yF + fe * Math.sin(a)]); }
+  prof.push([rIn(hw) + chI, hw], [rIn(hw - chI), hw - chI]);
+  for (let i = 1; i < 10; i++) { const y = (hw - chI) * (1 - 2 * i / 10); prof.push([rIn(y), y]); }
+  prof.push([rIn(-(hw - chI)), -(hw - chI)], [rIn(-hw) + chI, -hw]);
+  for (let i = 0; i <= 8; i++) { const a = -Math.PI / 2 + (Math.PI / 2 - phT) * i / 8; prof.push([rF + fe * Math.cos(a), -yF + fe * Math.sin(a)]); }
+  for (let i = 1; i <= 3; i++) { const y = -yT + (yT - yK) * i / 3; prof.push([crown(y), y]); }
   const toX = (geo) => { geo.rotateZ(-Math.PI / 2); return geo; };
-  const tread = meshOf(circTangents(toX(lathe(prof, { segments: 144, crease: 30 }))), M.magnesium, 'tread');
+  // nK segments, one at each groove's centre, so the skin's edge circles meet the knurl's run-out points exactly
+  const rim = meshOf(circTangents(toX(lathe(prof, { segments: nK, crease: 30 }))), M.magnesium, 'rim');
+  spin.add(rim);
+
+  // ------------------------------------------------------------------ the tread: a fine straight knurl
+  // nK V-grooves (90° included) across the crown, 6 per encoder step at 144; each runs out to a point over `run` as the
+  // cutter leaves, so the edges stay plain turned bands. The lands are the crown itself.
+  const tread = meshOf(circTangents(knurlGeometry({ N: nK, crown, yb: yK, run, kd, hwU })), M.magnesium, 'tread');
   spin.add(tread);
 
-  // ------------------------------------------------------------------ grousers (48 gently curved ribs)
-  const ribs = grouserGeometry({ n: nG, floor, crown, hw: yE - 0.08, g, curve: 0.55 / R, bw: 0.62, tw: 0.34 });
-  const grousers = meshOf(circTangents(ribs), M.magnesiumLand, 'grousers');
-  spin.add(grousers);
-
-  // ------------------------------------------------------------------ web with 6 equilateral-triangle windows
-  const tw = 1.2, rHub = 2.35, AF = 2.0;           // web thickness, hub radius, hex across flats
-  const webShape = new THREE.Shape(); webShape.absarc(0, 0, Ri + 0.2, 0, TAU, false);
-  const spokeHalf = 0.5, rTrunc = rHub + 0.42, rf = 0.42;
-  const wins = triangleWindows({ n: 6, Ri, d: spokeHalf, rTrunc, rf, rimGap: 0.78 });
-  for (const w of wins) webShape.holes.push(w);
-  webShape.holes.push(hexPath(AF / 2 / Math.cos(Math.PI / 6) + 0.0, Math.PI / 6));
-  const webG = extrude(webShape, { depth: tw, front: { r: 0.12, s: 3 }, back: { r: 0.12, s: 3 }, curveSegments: 64 });
-  webG.rotateY(Math.PI / 2); webG.translate(-tw / 2, 0, 0);   // shape (sx, sy) → (Z = −sx, Y = sy), e → X
-  const web = meshOf(circTangents(webG), M.magnesiumFace, 'web');
-  spin.add(web);
-  // hub (round outside, hex bore), chamfered
+  // ------------------------------------------------------------------ six arms on an open hub
+  // One part turned and then milled through: the arms (tapered in width and in thickness, thicker at the hub), a low spine
+  // round the rim's inside and a flange round the hub, the six bays between them open, every corner filleted by the cutter.
+  const AF = 2.0, rHub = 2.05, hubW = 3.6;           // hex across flats, hub radius, hub width
+  const tH = 1.3, tR = 0.9;                           // arm thickness (axial) at the hub and at the rim
+  const wH = 1.4, wR = 0.8;                           // arm width at the hub and at the rim
+  const spine = 0.45, flange = 0.4;                   // the web left round the rim's inside and round the hub
+  const armShape = new THREE.Shape(); armShape.absarc(0, 0, Ri + 0.15, 0, TAU, false);
+  for (const w of armWindows({ n: nArms, rHub, Ri, rIn0: rHub + flange, rOut0: Ri - spine, wH, wR, rfHub: 0.32, rfRim: 0.5, phase: Math.PI / 6 })) armShape.holes.push(w);
+  armShape.holes.push(circlePath(rHub - 0.05));     // inside the hub ring (hidden), so the two overlap by 0.05 mm only
+  const armG = extrude(armShape, { depth: tH, front: { r: 0.12, s: 3 }, back: { r: 0.12, s: 3 }, curveSegments: 96, raw: true });
+  armG.rotateY(Math.PI / 2); armG.translate(-tH / 2, 0, 0);   // shape (sx, sy) → (Z = −sx, Y = sy), e → X
+  { // the turned faces are shallow cones: tH at the hub, tR from the rim's spine out
+    const p = armG.attributes.position;
+    for (let i = 0; i < p.count; i++) { const r = Math.hypot(p.getY(i), p.getZ(i)), k = lerp(1, tR / tH, clamp01((r - rHub) / (Ri - rHub))); p.setX(i, p.getX(i) * k); }
+  }
+  const arms = meshOf(circTangents(creaseNormals(armG, 35)), M.magnesiumFace, 'arms');
+  spin.add(arms);
+  // the hub ring (round outside, hex bore), chamfered
   const hubShape = new THREE.Shape(); hubShape.absarc(0, 0, rHub, 0, TAU, false);
   hubShape.holes.push(hexPath(AF / 2 / Math.cos(Math.PI / 6), Math.PI / 6));
-  const hubW = 5.0;
-  const hubG = extrude(hubShape, { depth: hubW, front: { r: 0.28, s: 4 }, back: { r: 0.28, s: 4 }, curveSegments: 48 });
+  const hubG = extrude(hubShape, { depth: hubW, front: { r: 0.2, s: 4 }, back: { r: 0.2, s: 4 }, curveSegments: 48 });
   hubG.rotateY(Math.PI / 2); hubG.translate(-hubW / 2, 0, 0);
   const hub = meshOf(circTangents(hubG), M.magnesiumFace, 'hub');
   spin.add(hub);
-  // fillet rings: web↔hub and web↔rim (both faces)
+  // fillet rings: flange↔hub and spine↔rim (both faces)
+  const fHub = 0.3, fRim = 0.32;
   for (const s of [1, -1]) {
-    const fh = filletRing(rHub, tw / 2, 0.42, s, true);
-    const fr = filletRing(Ri, tw / 2, 0.55, s, false);
+    const fh = filletRing(rHub, tH / 2, fHub, s, true);
+    const fr = filletRing(Ri, tR / 2, fRim, s, false);
     spin.add(meshOf(circTangents(toX(fh)), M.magnesiumFace, 'filletHub'), meshOf(circTangents(toX(fr)), M.magnesiumFace, 'filletRim'));
   }
   const wheel = new THREE.Group(); wheel.name = 'wheel';
@@ -395,23 +420,37 @@ export function buildScrollWheel(opts = {}) {
   root.getState = () => ({ ...st, gateA: beams[0].t, gateB: beams[1].t });
 
   // ------------------------------------------------------------------ spec, parts, dispose
-  // closed meshes only (fillet rings and grouser strips are open surfaces): add their volumes analytically
-  const ribVol = nG * (2 * (yE - 0.08)) * 0.8 * g * (0.62 + 0.34) / 2;
-  const filletVol = 2 * (2 * Math.PI * (rHub + 0.42 * 0.22) * 0.42 * 0.42 * (1 - Math.PI / 4) + 2 * Math.PI * (Ri - 0.55 * 0.22) * 0.55 * 0.55 * (1 - Math.PI / 4));
-  const vol = [tread, web, hub].reduce((s, m) => s + meshVolume(m.geometry), 0) + ribVol + filletVol
-    - Math.PI * rHub * rHub * tw;   // web disc overlaps the hub
+  // The wheel's volume: the skin by Pappus over its profile closed along the crown, less the knurl's grooves (a V of depth
+  // kd·q and half width hwU·q pitches, q the run-out); the arms and the hub ring as closed meshes, less where they overlap
+  // (the arms' outer ring 0.15 mm into the skin, 0.05 mm into the hub); the fillet rings (open surfaces) analytically.
+  const closedProf = prof.slice(); for (let i = 1; i < 48; i++) { const y = -yK + 2 * yK * i / 48; closedProf.push([crown(y), y]); }
+  const skinV = Math.abs(revolvedVolume(closedProf));
+  let grooveV = 0; { const n = 600, dy = 2 * yK / n; for (let i = 0; i < n; i++) { const y = -yK + (i + 0.5) * dy, q = clamp01((yK - Math.abs(y)) / run); grooveV += TAU * crown(y) * kd * hwU * q * q * dy; } }
+  const armsV = Math.abs(meshVolume(arms.geometry)), hubV = Math.abs(meshVolume(hub.geometry));
+  const overlapV = Math.PI * ((Ri + 0.15) ** 2 - Ri ** 2) * tR + Math.PI * (rHub ** 2 - (rHub - 0.05) ** 2) * tH;
+  const c4 = 1 - Math.PI / 4, cg = (10 - 3 * Math.PI) / (12 - 3 * Math.PI);   // a concave fillet: area per r², centroid per r
+  const filletV = 2 * TAU * ((rHub + cg * fHub) * c4 * fHub * fHub + (Ri - cg * fRim) * c4 * fRim * fRim);
+  const vol = skinV - grooveV + armsV + hubV - overlapV + filletV;
+  // the axle (closed lathes and extrusions), less the hex's 0.15 mm into each collar
+  const hexA = 1.5 * Math.sqrt(3) * (AF / 2 / Math.cos(Math.PI / 6) - 0.01) ** 2;
+  const axleV = ['axleL', 'axleR', 'axleHex', 'axleD'].reduce((s, n) => s + Math.abs(meshVolume(axle.getObjectByName(n).geometry)), 0) - 2 * 0.15 * hexA;
+  const RHO = WHEEL_SPEC.densities;
   const encBox = { min: [XF0 - 0.5, 0, -ZH - 0.4], max: [XB1, AH + YT, ZH + 0.4] };
   root.userData.spec = {
-    ...WHEEL_SPEC, diameter: D, width: Wd, crownRadius: Rc, grousers: nG, steps, axleHeight: AH, axleDiameter: 2 * rJ,
+    ...WHEEL_SPEC, diameter: D, width: Wd, crownRadius: Rc, steps, axleHeight: AH, axleDiameter: 2 * rJ,
+    knurl: { grooves: nK, perStep: nK / steps, depth: kd, angleDeg: 90, pitch: +(TAU * R / nK).toFixed(3), band: +(2 * yK).toFixed(2), runOut: run },
+    arms: { n: nArms, width: [wH, wR], thickness: [tH, tR] }, hub: { diameter: 2 * rHub, width: hubW }, skin: { edge: tE, centre: tC, spine, inside: +Ri.toFixed(3) },
     hexAF: AF, sagitta: +(crown(0) - crown(hw)).toFixed(3),
     encoderSide: side > 0 ? 'left (+X)' : 'right (−X)',
     encoderBox: side > 0 ? encBox : { min: [-encBox.max[0], 0, encBox.min[2]], max: [-encBox.min[0], encBox.max[1], encBox.max[2]] },
     encoderBody: { thickness: +(XB1 - XF0).toFixed(2), width: 2 * ZH, height: +(AH + YT).toFixed(2), pins: 5, pitch: 1.25, pinRowX: side * XP },
     disc: { diameter: 2 * discR, slots: steps, slotDeg: +(slotW * 180 / Math.PI).toFixed(2), slotBand: [rs0, rs1], thickness: tD },
     supportBox: side > 0 ? { min: [sx0, 0, -sw / 2], max: [sx1, AH + yt, sw / 2] } : { min: [-sx1, 0, -sw / 2], max: [-sx0, AH + yt, sw / 2] },
-    wheelVolume_mm3: +vol.toFixed(1), massEstimate_g: +(vol * 1.77e-3).toFixed(3),
+    wheelVolume_mm3: +vol.toFixed(1), massEstimate_g: +(vol * RHO.AZ31B / 1000).toFixed(3), massAluminium_g: +(vol * RHO.Al6061 / 1000).toFixed(3),
+    volumeParts_mm3: { skin: +skinV.toFixed(1), grooves: +(-grooveV).toFixed(1), arms: +armsV.toFixed(1), hub: +hubV.toFixed(1), overlaps: +(-overlapV).toFixed(1), fillets: +filletV.toFixed(1) },
+    axleVolume_mm3: +axleV.toFixed(1), axleMass_g: +(axleV * RHO.POM / 1000).toFixed(3),
   };
-  root.userData.parts = { wheel, tread, grousers, web, hub, axle, disc, detentStar, rotor: rot, rotorHub, encoder: enc, housing, frame, pins, leads,
+  root.userData.parts = { wheel, rim, tread, knurl: tread, arms, web: arms, hub, axle, disc, detentStar, rotor: rot, rotorHub, encoder: enc, housing, frame, pins, leads,
     interrupter: holder, emitter, detector, beamA: beams[0].b2, beamB: beams[1].b2, detent: spring, support: sup, spin };
   root.dispose = () => { disposeTree(root, userMats); for (const m of own) m.dispose?.(); };
   apply();
@@ -468,34 +507,34 @@ function annularSlot(r0, r1, a0, a1, rr) {
   const rad = pts.map((_, i) => (i === 0 || i === n || i === n + 1 || i === 2 * n + 1 ? rr : 0));
   return filletPolygon(pts, rad, true, 2);
 }
-/** Six equilateral-triangle windows (apex to the hub, truncated at rTrunc), spokes 2d wide. */
-function triangleWindows({ n, Ri, d, rTrunc, rf, rimGap }) {
+/** The open bays between n tapered arms. Each is bounded by two arms' edges, the spine round the rim's inside (radius
+   rOut0) and the flange round the hub (rIn0), every corner filleted as the cutter leaves it (rfRim at the rim, rfHub at the
+   hub). An arm's width runs linearly from wH at the hub (rHub) to wR at the rim (Ri). Returns hole paths. */
+function armWindows({ n, rHub, Ri, rIn0, rOut0, wH, wR, rfHub, rfRim, phase = 0 }) {
+  const w = r => wH + (wR - wH) * (r - rHub) / (Ri - rHub);
+  /* the point on an arm's edge (s = +1 its counter-clockwise side) at distance Rr from the centre */
+  const edgeAt = (a, s, Rr) => { let r = Rr; for (let i = 0; i < 6; i++) r = Math.sqrt(Math.max(0, Rr * Rr - (w(r) / 2) ** 2)); const h = s * w(r) / 2; return [r * Math.cos(a) - h * Math.sin(a), r * Math.sin(a) + h * Math.cos(a)]; };
   const out = [];
-  const half = Math.PI / n;               // 30°
   for (let k = 0; k < n; k++) {
-    const b = (k + 0.5) * TAU / n;        // window bisector (spokes at multiples of 60°)
-    const ub = [Math.cos(b), Math.sin(b)], up = [-Math.sin(b), Math.cos(b)];
-    // side lines: parallel to the sector edges, offset d inward: points p with |p·n_edge| ... solve in (s, t)
-    // in the bisector frame (s along ub, t along up) the sector edges are t = ±s·tan(30°); offset lines t = ±(s·tan30 − d/cos30)
-    const tn = Math.tan(half), off = d / Math.cos(half);
-    // base: perpendicular to the bisector at s = sb, with the base corners at radius Ri − rimGap
-    // corner: (sb, tb) with tb = sb·tn − off, sb² + tb² = (Ri − rimGap)²
-    const Rc = Ri - rimGap;
-    const A = 1 + tn * tn, B = -2 * tn * off, C = off * off - Rc * Rc;
-    const sb = (-B + Math.sqrt(B * B - 4 * A * C)) / (2 * A);
-    const tb = sb * tn - off;
-    // truncation at radius rTrunc: points on the side lines at |p| = rTrunc
-    const C2 = off * off - rTrunc * rTrunc;
-    const st = (-B + Math.sqrt(B * B - 4 * A * C2)) / (2 * A), tt = st * tn - off;
-    const P = (s, t) => [s * ub[0] + t * up[0], s * ub[1] + t * up[1]];
-    const arcPts = [];
-    const aT = Math.atan2(tt, st);
-    for (let i = 1; i < 4; i++) { const a = -aT + (2 * aT) * i / 4; arcPts.push(P(rTrunc * Math.cos(a), rTrunc * Math.sin(a))); }
-    const pts = [P(st, -tt), P(sb, -tb), P(sb, tb), P(st, tt), ...arcPts.reverse()];
-    const rads = pts.map((_, i) => (i < 4 ? rf : 0));
+    const a0 = phase + k * TAU / n, a1 = a0 + TAU / n;
+    const A = edgeAt(a0, 1, rIn0), B = edgeAt(a0, 1, rOut0), C = edgeAt(a1, -1, rOut0), Dp = edgeAt(a1, -1, rIn0);
+    const pts = [A, B], rads = [rfHub, rfRim];
+    /* along the spine, B → C (counter-clockwise) */
+    const aB = Math.atan2(B[1], B[0]); let aC = Math.atan2(C[1], C[0]); while (aC < aB) aC += TAU;
+    const nA = 14; for (let i = 1; i < nA; i++) { const a = aB + (aC - aB) * i / nA; pts.push([rOut0 * Math.cos(a), rOut0 * Math.sin(a)]); rads.push(0); }
+    pts.push(C, Dp); rads.push(rfRim, rfHub);
+    /* along the flange, D → A (clockwise); few points, so the hub's fillets don't reach past them */
+    const aD = Math.atan2(Dp[1], Dp[0]); let aA = Math.atan2(A[1], A[0]); while (aA > aD) aA -= TAU;
+    const nB = 3; for (let i = 1; i < nB; i++) { const a = aD + (aA - aD) * i / nB; pts.push([rIn0 * Math.cos(a), rIn0 * Math.sin(a)]); rads.push(0); }
     out.push(filletPolygon(pts, rads, true, 6));
   }
   return out;
+}
+/** a closed polygon [[r, y], ...] revolved about the y axis: its volume, 2π ∫ r dA (signed by the walk's direction) */
+function revolvedVolume(pts) {
+  let s = 0;
+  for (let i = 0; i < pts.length; i++) { const [r0, y0] = pts[i], [r1, y1] = pts[(i + 1) % pts.length]; s += (r0 + r1) * (r0 * y1 - r1 * y0); }
+  return TAU * s / 6;
 }
 /** Concave fillet ring (surface of revolution around Y) between a cylinder r0 and a plane at |y| = y0. */
 function filletRing(r0, y0, rad, s, outward) {
@@ -514,39 +553,26 @@ function filletRing(r0, y0, rad, s, outward) {
   if (nr[0] * (c[0] - p[0][0]) + nr[1] * (c[1] - p[0][1]) < 0) p = p.reverse();
   return lathe(p, { segments: 120, crease: 60 });
 }
-/** Grousers: trapezoidal ribs following gently curved paths on the crowned floor. */
-function grouserGeometry({ n, floor, crown, hw, g, curve, bw, tw }) {
-  const P = [], I = [], UV = [];
-  const ns = 32;
-  for (let k = 0; k < n; k++) {
-    const th0 = (k / n) * TAU;
-    const base = P.length / 3;
-    for (let i = 0; i <= ns; i++) {
-      const x = -hw + 2 * hw * i / ns;
-      const u = x / hw;
-      const th = th0 + curve * (u * u);                 // gentle curve: centre leads, ends trail
-      const dth = curve * 2 * u / hw;                   // dθ/dx
-      const rF = floor(x), rC = crown(x);
-      const taper = Math.sqrt(smooth(0, 0.16, 1 - Math.abs(u)));   // ribs rise quickly from the floor at the ends
-      const h = (rC - rF) * taper;
-      // local frame: radial er, circumferential et, axial ex
-      const er = [0, Math.cos(th), Math.sin(th)], et = [0, -Math.sin(th), Math.cos(th)];
-      // lateral direction (in the surface, ⟂ to the rib): mostly circumferential, corrected for the curve
-      const tang = [1, rF * dth * et[1], rF * dth * et[2]];
-      const tl = Math.hypot(...tang);
-      const lat = [(-rF * dth) / tl, et[1] / tl, et[2] / tl];
-      const pt = (r, w) => [x + lat[0] * w, r * er[1] + lat[1] * w, r * er[2] + lat[2] * w];
-      const ring = [pt(rF - 0.03, -bw / 2), pt(rF + h, -tw / 2), pt(rF + h, tw / 2), pt(rF - 0.03, bw / 2)];
-      for (const q of ring) { P.push(...q); UV.push(th / TAU, x); }
+/** The knurled tread: N straight V-grooves across the crown between ±yb, each running out to a point over `run` at both
+   ends (a cutter leaving the surface: the groove narrows with its depth, so its 90° flanks stay 90°). Three vertices a groove
+   in each row (its two edges and its root); the lands between grooves are the crown itself. Built in the wheel's frame (axis
+   X), the same parametrisation as lathe() + rotateZ(−90°), so its edge rows meet the skin's lathe at the groove centres. */
+function knurlGeometry({ N, crown, yb, run, kd, hwU, mid = 10, nRun = 5 }) {
+  const ys = [];
+  for (let j = 0; j < nRun; j++) ys.push(-yb + run * j / nRun);
+  for (let j = 0; j <= mid; j++) ys.push(-(yb - run) + 2 * (yb - run) * j / mid);
+  for (let j = 1; j <= nRun; j++) ys.push((yb - run) + run * j / nRun);
+  const P = [], UV = [], I = [], M = 3 * N;
+  for (const y of ys) {
+    const r = crown(y), q = clamp01((yb - Math.abs(y)) / run), dth = hwU * q * TAU / N;
+    for (let k = 0; k < N; k++) {
+      const th = k * TAU / N;
+      for (const [a, rr] of [[th - dth, r], [th, r - kd * q], [th + dth, r]]) { P.push(y, -rr * Math.sin(a), rr * Math.cos(a)); UV.push(a / TAU, y); }
     }
-    for (let i = 0; i < ns; i++) for (let j = 0; j < 3; j++) {
-      const a = base + i * 4 + j, b = a + 1, c = a + 4, d = a + 5;
-      I.push(a, d, c, a, b, d);
-    }
-    // end caps
-    const e0 = base, e1 = base + ns * 4;
-    I.push(e0, e0 + 2, e0 + 1, e0, e0 + 3, e0 + 2);
-    I.push(e1, e1 + 1, e1 + 2, e1, e1 + 2, e1 + 3);
+  }
+  for (let j = 0; j < ys.length - 1; j++) for (let i = 0; i < M; i++) {
+    const a = j * M + i, b = j * M + (i + 1) % M, d = (j + 1) * M + i, c = (j + 1) * M + (i + 1) % M;
+    I.push(a, b, d, b, c, d);
   }
   return creaseNormals(makeGeometry(P, I, UV), 35);
 }

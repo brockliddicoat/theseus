@@ -37,7 +37,7 @@ const REG = {
   },
   wheel: P.buildScrollWheel && {
     title: 'Magnesium wheel + optical encoder',
-    build: () => P.buildScrollWheel({ steps: num(q.steps, 24), grousers: num(q.grousers, 48), encoder: q.encoder !== '0', support: q.support !== '0', anisoRot: q.aniso, encoderSide: q.side }),
+    build: () => P.buildScrollWheel({ steps: num(q.steps, 24), knurl: q.knurl ? +q.knurl : undefined, encoder: q.encoder !== '0', support: q.support !== '0', anisoRot: q.aniso, encoderSide: q.side }),
     controls: { scroll: [-0.6, 0.6], explode: [0, 1], xray: [0, 1] },
     apply: (o, s) => { o.setScroll(s.scroll); o.setExplode(s.explode); o.setXray(s.xray); },
   },
