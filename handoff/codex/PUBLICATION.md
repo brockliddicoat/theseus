@@ -8,9 +8,13 @@ Preview: https://brockliddicoat.github.io/theseus-codex-preview/
 - Preview repository commit: `4a78485f6a84e97eaec5865e1347409ea8c5778b`.
 - Exact local HTML SHA-256: `f14eb56915da551d6d89a8a9fc64d38b42978a4b6ba80e689add68343d05b821`.
 - Pushed the exact `deck/qa/final-film/tested-index.html`, not a later source rebuild.
-- Deployment run: https://github.com/brockliddicoat/theseus-codex-preview/actions/runs/42061307833
+- Successful deployment run: https://github.com/brockliddicoat/theseus-codex-preview/actions/runs/42062164399
 
-At the time this entry was written, GitHub's first deployment attempt returned HTTP500 in `actions/deploy-pages`; its failed job was re-requested. This candidate must not be described as live until the run succeeds and the public manifest/browser agree. The last positively verified public build is the 46-scene `892e938cbb91` from `79b7053ef2e1472f0de5cadc613e1df47999738f`.
+**Verified live at 2026-11-05T16:14:49Z:** HTTP200, 47 scenes, inline build ID and version manifest both `b9ffd2d08636`, actual runtime Theseus `#1267D8` / secondary `#C7A20D`, zero browser page errors. The successful Pages run and build API both identify commit `4a78485f6a84e97eaec5865e1347409ea8c5778b`. Fresh-load URL: https://brockliddicoat.github.io/theseus-codex-preview/?v=b9ffd2d08636
+
+Public HTML SHA-256 is `38b836799ea3ebd44af01dc6f7858d070ead54f14693b30b87cfb9332f158504`; it is **byte-identical to the tested local HTML after CRLF→LF normalization** (35,509 local CRLFs, zero public CRLFs). The difference is recorded rather than passing a mismatched raw hash off as identical. Compact browser evidence is [public-verification.json](public-verification.json).
+
+The first deployment run (`42061307833`) returned HTTP500 from `actions/deploy-pages`. Re-requesting the complete Pages build succeeded without changing the tested source or artifact. The prior 46-scene build `892e938cbb91` is now historical, not the current publication.
 
 ## The stale-link fixes
 

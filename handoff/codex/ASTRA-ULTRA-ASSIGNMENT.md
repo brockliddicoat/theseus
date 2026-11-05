@@ -65,5 +65,7 @@ Comparison report/patch history:
 
 ## Delivery and quality bar
 
+Deployment addendum from the completed Sol publication: a classic Pages push did not trigger its build in this setup, and the first explicitly requested deployment returned HTTP500. Requesting a complete new Pages build succeeded with the unchanged checked artifact. Verify the actual successful run and served build identity. Do not invent a source edit to force publication or call a queued/failed attempt live. This implementation lesson was also sent to the Astra lead as an authorized task follow-up; the separate model/checkout/site boundary remains unchanged.
+
 Deliver the actual independently built code film, editable source in your mirror, a current GitHub Pages link and a rigorous feedback ledger. Preserve important content while making the film substantially shorter/denser, readable at a glance, with room for the models. Include source links where persuasive/necessary, not tags on Brock’s own design choices. No unspecified dates/guarantees. Run appropriate JavaScript/build checks; deterministic first/mid/settled AND event-stage captures; meaningful causality/numeric checks; inspect actual rendered screenshots; test phone player rating/note attribution/edit/export/import/seek/replay/reopen/update behavior. Publish the exact tested artifact, not a later rebuild of actively changing sources. Record source/artifact identity and report actual remaining evidence/design boundaries. Continue until this is real and reviewable, not only a plan or an empty site.
 
