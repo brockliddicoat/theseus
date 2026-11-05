@@ -968,3 +968,8 @@ old score as archived (F26.13).
 - **F33.6** "not every feature has to be the difference between missing and hitting a shot as that would get repetitive,
   prioritize the best problem the feature can solve" (refines F33.3: each slide sells the strongest problem its feature
   solves, whether that's a missed shot, wear, comfort, battery or weight; the missed shot only where it is the best case).
+- **F33.7** "increasing the skill ceiling the product allows could be a selling point too, i also need you to put an
+  emphasis on how this mouse makes ZERO compromises, and highlight compromises other flagships make". So: the skill
+  ceiling Theseus raises is one more problem a feature can solve (F33.6), and the film's spine is ZERO compromises, with
+  each flagship's own compromise named and shown (weight for battery, shape for weight, durability for weight, optical
+  for battery, and so on), sourced.
