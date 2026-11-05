@@ -29,8 +29,8 @@ function own_ribbonPanel(lt, x, y, w, h, A, a) {
   const mx = cx0, my = by - 13, ex = mx - 100 - 10 * pull, eyy = my - 110 * pull;
   G.save(); G.globalAlpha = a; G.strokeStyle = '#c98a4e'; G.lineWidth = 7; G.lineCap = 'butt'; G.beginPath(); G.moveTo(mx + 30, my); G.lineTo(mx, my); G.quadraticCurveTo(mx - 18, my - 2 * pull, mx - 22 - 10 * pull, my - 26 * pull); G.lineTo(ex, eyy); G.stroke();
   G.strokeStyle = 'rgba(255,240,220,0.5)'; G.lineWidth = 1.2; G.stroke(); G.restore();
-  if (pull > 0.5) { const kc = clamp((pull - 0.5) * 2); circle(mx - 8, my - 4, 16, { color: C.red, w: 2, alpha: a * kc }); text(tear ? 'Torn' : 'Crease', mx - 30, my + 44, { role: 'label', size: 21, color: C.red, alpha: a * kc }); }
-  if (tear) poly([[mx - 12, my - 9], [mx - 6, my - 3], [mx - 11, my + 2], [mx - 5, my + 7]], { color: C.red, w: 2.5, alpha: a });
+  if (pull > 0.5) { const kc = clamp((pull - 0.5) * 2); circle(mx - 8, my - 4, 16, { color: C.bad, w: 2, alpha: a * kc }); text(tear ? 'Torn' : 'Crease', mx - 30, my + 44, { role: 'label', size: 21, color: C.bad, alpha: a * kc }); }
+  if (tear) poly([[mx - 12, my - 9], [mx - 6, my - 3], [mx - 11, my + 2], [mx - 5, my + 7]], { color: C.bad, w: 2.5, alpha: a });
   /* right: the wire harness on a side-entry plug, pulled straight */
   const rx = x + w / 2 + 6;
   text('Wire', rx + 6, y + 34, { role: 'label', size: 21, color: C.ink, alpha: a });
@@ -38,7 +38,7 @@ function own_ribbonPanel(lt, x, y, w, h, A, a) {
   rr(rx + 150, by - 28, 62, 28, 3, nylon, inkA(0.5), 1.5, a);
   const px = rx + 96 - pull * 50;
   rr(px, by - 25, 56, 22, 3, nylon, inkA(0.5), 1.5, a);
-  [C.red, '#222222', '#DDDDDD'].forEach((col, i) => { const yy = by - 20 + i * 6; G.save(); G.globalAlpha = a; G.strokeStyle = col; G.lineWidth = 3; G.beginPath(); G.moveTo(px, yy); G.bezierCurveTo(px - 40, yy, px - 50, yy - 40 - i * 4, px - 70, yy - 70 - i * 2); G.stroke(); G.restore(); });
+  OWN_WIRE.forEach((col, i) => { const yy = by - 20 + i * 6; G.save(); G.globalAlpha = a; G.strokeStyle = col; G.lineWidth = 3; G.beginPath(); G.moveTo(px, yy); G.bezierCurveTo(px - 40, yy, px - 50, yy - 40 - i * 4, px - 70, yy - 70 - i * 2); G.stroke(); G.restore(); });
   if (pull > 0.3) arrow(px - 14, by + 34, px - 74, by + 34, { color: A, w: 3, hs: 11, alpha: a * clamp((pull - 0.3) * 2) });
   text('Pulled straight', rx + 6, by + 76, { role: 'label', size: 21, color: A, alpha: a });
   /* the mass to beat */
@@ -53,7 +53,7 @@ const own_lay = p => Math.sqrt(1 + Math.pow(2 * Math.PI * (0.5 / Math.sqrt(3)) /
 function own_twistPanel(lt, x, y, w, h, A, a) {
   const u = own_u(lt), p = 12 - 9 * own_seg(u, 0.04, 0.28) + 2 * own_seg(u, 0.34, 0.46);
   /* the lead: 40 mm across the panel, three insulated wires about one axis */
-  const x0 = x + 30, x1 = x + w - 30, cy = y + 74, mmpx2 = (x1 - x0) / 40, amp = 9, cols = [C.red, TH ? '#26272b' : '#3a3b41', TH ? '#e9e8e3' : '#d9d8d2'];
+  const x0 = x + 30, x1 = x + w - 30, cy = y + 74, mmpx2 = (x1 - x0) / 40, amp = 9, cols = OWN_WIRE;
   rect(x0 - 14, cy - 18, 14, 36, { fill: inkA(0.35), alpha: a }); rect(x1, cy - 18, 14, 36, { fill: inkA(0.35), alpha: a });
   const strands = [0, 1, 2].map(k => { const pts = []; for (let s = 0; s <= 160; s++) { const u = s / 160, xx = lerp(x0, x1, u), ph = TAU * (u * 40) / p + k * TAU / 3; pts.push([xx, cy + amp * Math.sin(ph), Math.cos(ph)]); } return pts; });
   /* back segments first, front on top, so the twist reads */
@@ -83,7 +83,7 @@ function own_skatePanel(lt, x, y, w, h, A, a) {
   if (k1 > 0.01) {
     const ox = lerp(-60, 0, k1);
     G.save(); G.globalAlpha = a * k1; G.setLineDash([6, 5]); G.strokeStyle = C.mute; G.lineWidth = 2; G.beginPath(); G.ellipse(bx + 120 * 0 + 112 + ox, byy - 46, 34, 14, 0.25, 0, TAU); G.stroke(); G.beginPath(); G.ellipse(bx + 112 + ox, byy + 46, 34, 14, -0.25, 0, TAU); G.stroke(); G.restore();
-    if (k1 > 0.95) { for (const q of [P([-21, -47]), P([21, -47])]) circle(q[0], q[1], 10, { color: C.red, w: 2.5, alpha: a }); text('Last year\'s skate: no fit', x + 18, y + h - 18, { role: 'label', size: 21, color: C.red, alpha: a }); }
+    if (k1 > 0.95) { for (const q of [P([-21, -47]), P([21, -47])]) circle(q[0], q[1], 10, { color: C.bad, w: 2.5, alpha: a }); text('Last year\'s skate: no fit', x + 18, y + h - 18, { role: 'label', size: 21, color: C.bad, alpha: a }); }
   }
   /* the DXF, sliding in from the right */
   const k2 = own_seg(c, 0.32, 0.44), sx = lerp(x + w + 10, x + w - 176, k2), sy = y + 30;
@@ -101,32 +101,32 @@ function own_skatePanel(lt, x, y, w, h, A, a) {
 function own_keyOutline() { keyPath(); G.strokeStyle = inkA(0.7); G.lineWidth = lw(1.2); G.stroke(); }
 
 ideaSheet({
-  id: 'ownsheet1', ch: 'own', theme: 'paper', title: 'Inside, and underneath', src: ['ownTpuDaV4', 'exXbabWeight', 'ownJstSh', 'ownPsV4', 'ownRazerWarranty', 'ownPcgSkates'],
+  id: 'ownsheet1', ch: 'own', theme: 'paper', title: 'Wire leads, twisted pairs, skate files', src: ['ownTpuDaV4', 'exXbabWeight', 'ownJstSh', 'ownPsV4', 'ownRazerWarranty', 'ownPcgSkates'],
   panels: [
     {
       n: 51, ev: ['claim', 'proposal'], title: 'Wires where others run ribbons',
-      body: 'That ribbons fail most is unverified: I found no failure data. Razer\'s DeathAdder V4 Pro runs a branching flex cable. So I will count it: 50 open-close cycles, ribbon against wire.',
+      body: 'A ribbon creases at its latch every time the shell opens; a wire on a plug pulls straight out. Razer\'s DeathAdder V4 Pro runs a branching flex cable. Theseus runs wires, and proves it over 50 open-close cycles.',
       note: 'XBAB weight breakdown; DeathAdder V4 Pro teardown (TechPowerUp).',
       draw: (lt, x, y, w, h, A, a) => own_ribbonPanel(lt, x, y, w, h, A, a)
     },
     {
       n: 69, ev: ['derived', 'proposal'], title: 'Twisted, not tight',
-      body: 'Twisted leads stay together when the shell comes off. Mass is not what limits the twist: a 5 mm lay adds 6% wire, about 0.004 g of copper on a 40 mm, three-wire lead.',
+      body: 'Twisted leads stay together when the shell comes off. Weight is not what limits the twist: a 5 mm lay adds 6 % wire, about 0.004 g of copper on a 40 mm, three-wire lead.',
       note: '√(1 + (2πr/p)²) − 1, r = d/√3, d = 0.5 mm (assumed). AWG 30 copper.',
       draw: (lt, x, y, w, h, A, a) => own_twistPanel(lt, x, y, w, h, A, a)
     },
     {
       n: 'Skate DXF', ev: ['measured', 'proposal'], title: 'The skate template, on day one',
-      body: 'Razer reshaped the Viper V4 Pro\'s skates, so V3 Pro sets do not fit, and its support says third-party skates can void the warranty. I publish the DXF at launch; a swap never voids mine.',
+      body: 'Razer reshaped the Viper V4 Pro\'s skates, so V3 Pro sets do not fit, and third-party skates can void its warranty. Theseus publishes the DXF at launch; a swap never voids it.',
       note: 'ProSettings; Razer support, May 2026. Skate shapes are illustrations.',
       draw: (lt, x, y, w, h, A, a) => own_skatePanel(lt, x, y, w, h, A, a)
     }
   ],
-  captions: [[0.6, 'Three things an owner meets with the shell open: the cables, the battery lead, and the skates.']]
+  captions: [[0.6, 'Three things an owner meets with the shell open: the leads, the battery wires, and the skates.']]
 });
 
 /* ---------- #13: a keycap set's colours, measured onto the mouse ---------- */
-const own_SET = ['#E6DFD0', '#2E2F34', '#C98F86'];
+const own_SET = ['#EDEDEA', '#2E2F34', '#8E9097'];   /* a keycap set's three colours: white, charcoal, grey (no cream, no peach: F9.24) */
 function own_gmkPanel(lt, x, y, w, h, A, a) {
   const c = own_u(lt);
   /* a row of keycaps in the set's three colours */
@@ -151,23 +151,23 @@ function own_gmkPanel(lt, x, y, w, h, A, a) {
 
 /* ---------- #35: what the 9-ending research covers, and what it does not ---------- */
 function own_nineRow(x, y, w, a, label, ok) {
-  text(label, x, y, { role: 'label', size: 21, color: ok ? C.ink : C.red, alpha: a });
-  if (ok) own_tick(x + w - 16, y - 8, 24, C.ink, a); else { G.save(); G.globalAlpha = a; G.setLineDash([4, 4]); rr(x + w - 128, y - 26, 128, 34, 17, null, C.red, 1.8, 1); G.restore(); text('No study', x + w - 64, y - 2, { role: 'label', size: 19, color: C.red, align: 'center', alpha: a }); }
+  text(label, x, y, { role: 'label', size: 21, color: ok ? C.ink : C.bad, alpha: a });
+  if (ok) own_tick(x + w - 16, y - 8, 24, C.ink, a); else text('No study yet', x + w, y, { role: 'label', size: 19, color: C.bad, align: 'right', alpha: a });
 }
 function own_ninePanel(lt, x, y, w, h, A, a) {
   const c = own_u(lt), roll = own_seg(c, 0.06, 0.26);
   const box = (bx, by, bw, s, col) => { rr(bx, by, bw, 50, 6, TH ? '#1c1d21' : '#25262b', null, 0, a); text(s, bx + bw / 2, by + 37, { font: 'mono', size: 30, weight: 700, color: col || '#ECEBE7', align: 'center', alpha: a, tnum: true }); };
   /* 1 · a price: $180 → $179 */
-  box(x + 18, y + 22, 140, roll < 0.5 ? '$180' : '$179');
+  box(x + 18, y + 22, 140, roll < 0.5 ? '$190' : THS.price);
   own_nineRow(x + 176, y + 56, w - 194, a, 'Prices: demand up', true);
   /* 2 · an odometer across 80,000 miles, and the price step */
   const mi = Math.round(79990 + 20 * roll);
-  box(x + 18, y + 104, 140, String(mi).replace(/(\d\d)(\d\d\d)$/, '$1,$2'), mi >= 80000 ? C.red : null);
+  box(x + 18, y + 104, 140, String(mi).replace(/(\d\d)(\d\d\d)$/, '$1,$2'), mi >= 80000 ? C.bad : null);
   own_nineRow(x + 176, y + 138, w - 194, a, 'Odometers: −$210', true);
   /* 3 · a serial run that ends in 9 */
   box(x + 18, y + 186, 140, '042/999');
   own_nineRow(x + 176, y + 220, w - 194, a, 'Serials', false);
-  text('Supported: $179 over $180', x + 18, y + h - 18, { role: 'label', size: 21, color: C.ink, alpha: a * own_seg(c, 0.3, 0.36) });
+  text('Supported: ' + THS.price + ' over $190', x + 18, y + h - 18, { role: 'label', size: 21, color: C.ink, alpha: a * own_seg(c, 0.3, 0.36) });
 }
 
 /* ---------- #74: a cover over the cell, and what each material weighs over it ---------- */
@@ -192,11 +192,11 @@ function own_coverPanel(lt, x, y, w, h, A, a) {
   text('Satin paper, 120 {g/m²}', lx + 8, ly + 92, { role: 'label', size: 19, color: C.ink2, alpha: a });
   /* the masses */
   const rows = [['Paper + PET', 0.101, true], ['PC, 0.2 {mm}', 0.156], ['CF-PP, 0.5 {mm}', 0.329]], b0 = y + 200;
-  rows.forEach(([l, v, hero], i) => { const yy = b0 + i * 38, kk = own_seg(c, 0.28 + i * 0.03, 0.38 + i * 0.03), bw2 = (w - 330) * v / 0.35; text(l, x + 22, yy + 7, { role: 'label', size: 19, color: hero ? C.ink : C.ink2, alpha: a }); rr(x + 250, yy - 7, Math.max(10, bw2 * kk), 14, 3, hero ? C.hero : C.comp, hero && TH ? '#111111' : null, 1.2, a); text(fmtN(v, 2) + ' g', x + 260 + bw2 * kk, yy + 7, { font: 'mono', size: 21, weight: 700, color: C.ink, alpha: a }); });
+  rows.forEach(([l, v, hero], i) => { const yy = b0 + i * 38, kk = own_seg(c, 0.28 + i * 0.03, 0.38 + i * 0.03), bw2 = (w - 330) * v / 0.35; text(l, x + 22, yy + 7, { role: 'label', size: 19, color: hero ? C.ink : C.ink2, alpha: a }); rr(x + 250, yy - 7, Math.max(10, bw2 * kk), 14, 3, hero ? C.hero : C.comp, null, 0, a); text(fmtN(v, 2) + ' g', x + 260 + bw2 * kk, yy + 7, { font: 'mono', size: 21, weight: 700, color: C.ink, alpha: a }); });
 }
 
 ideaSheet({
-  id: 'ownsheet2', ch: 'own', theme: 'night', title: 'Colour, a number, a cover', src: ['gmk', 'knight', 'andersonSim', 'thomasMorwitz', 'lacetera', 'plabase20'],
+  id: 'ownsheet2', ch: 'own', theme: 'night', title: 'GMK colourways, 9-ending serials, a paper cover', src: ['gmk', 'knight', 'andersonSim', 'thomasMorwitz', 'lacetera', 'plabase20'],
   panels: [
     {
       n: 13, ev: ['study', 'proposal'], title: 'Colourways matched to GMK sets',
@@ -206,7 +206,7 @@ ideaSheet({
     },
     {
       n: 35, ev: ['measured', 'proposal'], title: 'Serials ending in 9: a choice',
-      body: 'In all three of Anderson & Simester\'s field tests a 9-ending raised demand; used-car prices step down at each 10,000 miles. That backs $179 over $180. Nothing tests serials.',
+      body: 'In all three of Anderson & Simester\'s field tests a 9-ending raised demand; used-car prices step down at every 10,000 miles. That backs ' + THS.price + ' over $190. A serial ending in 9 is a choice.',
       note: 'Anderson & Simester 2003; Lacetera, Pope & Sydnor 2012.',
       draw: (lt, x, y, w, h, A, a) => own_ninePanel(lt, x, y, w, h, A, a)
     },
@@ -217,5 +217,5 @@ ideaSheet({
       draw: (lt, x, y, w, h, A, a) => own_coverPanel(lt, x, y, w, h, A, a)
     }
   ],
-  captions: [[0.6, 'Three on the outside: a colourway for the keyboard you own, a number, and the cover over the cell.']]
+  captions: [[0.6, 'Three on the outside: a colourway for the keyboard you own, a serial ending in 9, and a paper cover over the cell.']]
 });
