@@ -31,29 +31,10 @@ Last updated: 2026-11-04 22:12 (Chicago).
   still open (F12.5).
 - **SPDT:** F9.4 says "single pull double throw". The standard term is **single pole, double throw**, and the deck uses
   that.
-- **Questions waiting for him** (the question tool timed out twice while he was away; the deck uses the default named
-  after each until he answers):
-  - Shell: the intro's weight budget gives the shell 10.62 g, but Shell A's study body weighs 15.2 g. Which is the target?
-    (Default: both shown, each labelled with what it includes.)
-  - Shell: grip height 12 mm; board thickness 1.0, 0.8 or 0.6 mm; keep the "arms squeeze" slide?
-  - Plate (v3, re-tuned; the FE model also had three errors that favoured the grid, now fixed): at the same 4.20 g ours
-    flexes 14 % less at the lens and 11 % less under the front skate, is 2.35× stiffer in twist and peaks 29 % lower than
-    a plain grid. The grid still flexes 20 % less under the back skate (234 against 292 µm). Weight the back skate harder
-    (1.5× gets 258 µm, but the lens goes to 96 and the front skate to 349)? Where does the battery sit (3 to 4 mm ribs in
-    the tail would win the back skate too)? Is 0.35 mm the thinnest rib he'd mould (0.30 / 0.40 mm gets the lens to ~80 µm)?
-  - Clicks: is 70 µs at the NC release only right? The PAW3395's floor?
-  - Electronics: AN54LM-20A or -P20A (the long antenna is listed on the -P20A)? The PMIC beside the antenna end? The cell
-    LP402535JU, 370 mAh? Syncpower folded into power? The braid as three 32 AWG wires of 40 AWG strands?
-  - Surface: weighings of a shell before the blast, after it and after coating (to put a number on "almost as much")?
-    Two-tone by etching through to the carbon (as drawn), Cerakote's Laser Imaging, or a base coat plus a top coat? Is
-    the grip map right (fine ridges on the buttons, coarse on the sides, dots for the thumb, a smooth hump)? Is 9H "on
-    Cerakote's test panels" fine, when the shell cures at 180 °F?
-  - Ownership: tolerances right on the first assembly have no published rate: an estimate for ABS and carbon-filled, or
-    words only (as now)? The brass insert's 0 % "feels different" is derived from his metal-on-metal reasoning: keep it,
-    another number, or a word? `own_life` sets two different tests side by side, each labelled: keep, or the insert alone?
-  - Shape: the size slide calls Theseus the shortest flagship by his flat-mouse rule, at 39.9 mm tall: fine, or reword?
-    The Newtonian slide uses generic profiles: fine, or wait for the frozen shape's real curves?
-  - Still open from before: the tensioner's real dimensions (F12.5) and the side seam height (F17.2).
+- **Questions:** all answered on 2026-11-04, 21:47 to 22:15 (F21). Still to ask: the grip map, once he has seen the
+  slides with all the feedback in (F21.9). For the next iteration: the side seam by the trigger cutout (F21.16), the PCB
+  redesign (the power chip, the board's thickness: F21.11), simulations of the first fit and the re-screw (F21.3,
+  F21.12), the tensioner's real size (F12.5, still unknown).
 - **Answered from his own photo:** TTC's optical encoder has five pins (the 07:20 photo), so every drawing now has five.
 
 ---
