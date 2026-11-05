@@ -618,3 +618,7 @@ Answers to the Shell A questions:
 - **F25.3 DECIDED** The side-button lead: "Keep 3 wires". **DONE** (no change).
 - **F25.4 DECIDED** The screws: "Titanium" (instead of steel). **IN PROGRESS (whl):** the budget, the 3D screws and the
   Ownership slides (no more magnetic pickup).
+- **F25.5 DECIDED** "mentioned the improved strength of the titanium screws compared to steel leading to less stripping,
+  find research to back". **IN PROGRESS (whl):** sourced, against the steel the screws would really be (stainless A2 or
+  class 4.8 / 8.8; class 12.9 alloy steel is stronger than grade 5 titanium), and clear about which stripping the evidence
+  supports (the recess, by hardness; the thread usually strips in the brass insert, not the screw).
