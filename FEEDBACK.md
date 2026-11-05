@@ -893,3 +893,8 @@ old score as archived (F26.13).
   v22 (2D and 3D); his rating or note there decides it.
 - **F30.13** On board-plan-2.png: build it? "Changes first" (his changes to come). Rear outer corners: "[No preference]"
   (fillets r 0.75 as drawn). SH1/SH2: **"Drop SH1 and SH2"** (sides stay 19.03). USB-C front legs: **"Keep as today"**.
+- **F30.14** His changes to plan 2: "every filet on the board should be the same radius, the changers don't have filets, you
+  filet them the chamfers without turning them into filets" (one radius everywhere, the tab's corners too; each chamfer
+  stays straight, with that fillet where it meets the next edge). And, overriding F30.13's USB-C answer: "i think i
+  answered your question wrong before and the usb port should be moved back so it doesn't stick out oddly like it does
+  now". **IN PROGRESS (K2):** plan 3, shown before the build.
