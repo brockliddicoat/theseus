@@ -163,10 +163,14 @@ function swMM(o = {}) {
 function drawSwitch(x, y, s, o = {}) { return part(x, y, s, () => swMM(o), o); }
 
 /* =================================== 2. the click mechanism, in section ===================================
-   a cut through one button: the shell behind the rear cutout with its screw boss and insert, the tensioner
-   (a spring-steel plate clamped under the boss and staked to the trigger; it is the hinge), the trigger with
-   its plunger post, and the switch on its board. the surface is a soft, generic crown, not the shape. origin near the rear cutout, front to the right. */
-const CKG = { rc: [-1.4, 1.0], foot: [30, 7.6], post: [29, 31], tPost: [4, 8], boss: [-13.2, -6.8], plateY: 0.8, gap: [-1.1, -0.1] };
+   a cut through one button, as Theseus builds it (K1, 2026-11-05, from Brock's photos of shipping top shells and his ideas #4,
+   #18, #49, #50): the shell behind the rear cutout with its screw boss and brass insert; the tensioner, which is the trigger's
+   own arm in the trigger's material (no steel plate): a block clamped to the boss by one screw from below (#49), and a bridge,
+   an arch that thins to its crown (#50), so the trigger turns about the crown; the bridge runs square into the trigger's rear
+   riser, with no fillet; the trigger with its post; one flat board; on it the switch: an upright D2F-class switch, or (o.tilt
+   1) the GT01 on its 20° bottom housing (o.gt01 draws it), its axis on the trigger's arc. The arc is 20° at the plunger, the
+   GT01's own angle (clk_wedge). The surface is a soft, generic crown, not the shape. Origin near the rear cutout, front right. */
+const CKG = { rc: [-1.4, 0.2], foot: [30, 11.63], post: [29, 31], tPost: [4, 8], boss: [-13.2, -6.8], plateY: 0.6, gap: [-1.1, -0.1], rise: 0.8, gtApex: [4.376, 7.845] };
 function surfY(x) { return -2.6 + 0.085 * x + 0.0024 * x * x; }
 function clickGeo(o = {}) {
   const K = CKG, RC = K.rc, F0 = K.foot;
@@ -176,14 +180,18 @@ function clickGeo(o = {}) {
 }
 function clickMM(o = {}) {
   const K = CKG, A = o.accent || acc(), g = clickGeo(o), { RC, F0, R, tilt, phi } = g;
-  const x0 = o.x0 == null ? -16 : o.x0, x1 = o.x1 == null ? 44 : o.x1, out = { geo: g };
+  const x0 = o.x0 == null ? -16 : o.x0, x1 = o.x1 == null ? 44 : o.x1, out = { geo: g }, kT = clamp(o.tilt || 0);
   const ub = x => surfY(x) + 1.2;
-  if (o.ghost > 0) { xsave(); ga(o.ghost * 0.6); xmove(F0[0], F0[1]); xmove(-SWG.px, -SWG.top); G.setLineDash([lw(7), lw(5)]); G.beginPath(); G.rect(0, -6.5, 12.8, 6.5); G.rect(SWG.px - 0.75, SWG.top, 1.5, 0.85); G.strokeStyle = inkA(0.7); G.lineWidth = lw(1.3); G.stroke(); G.setLineDash([]); xrest(); }
-  xsave(); xmove(F0[0], F0[1]); xturn(tilt); xmove(-SWG.px, -SWG.top);
-  out.sw = swMM({ press: o.press || 0, board: true, boardX: o.longBoard ? [x0 - F0[0] + SWG.px, x1 - F0[0] + SWG.px] : null, clear: o.clear, accent: A, glow: o.glow });
-  out.axis = [SP(SWG.px, SWG.top - 9), SP(SWG.px, 1.6)]; out.axisDir = SV(0, 1);
-  xrest();
-  /* shell behind the cutout, its boss, the insert */
+  /* one flat board: the GT01's cap stands 7.85 mm above its top (traced), so the board sits there and never tilts */
+  const yB = F0[1] + K.gtApex[1];
+  pcbSec(F0[0] - 13, F0[0] + 11, yB, 1.2, { brk: [1, 1] });
+  /* the upright switch: its plunger under the post, standing 0.5 mm proud on its feet; it gives way to the GT01 */
+  if (kT < 0.999) { xsave(); ga(1 - kT); xmove(F0[0] - SWG.px, F0[1] - SWG.top); out.sw = swMM({ press: o.press || 0, clear: o.clear, accent: A, glow: o.glow }); xrest(); }
+  if (o.ghost > 0) { xsave(); ga(o.ghost * 0.6); xmove(F0[0] - SWG.px, F0[1] - SWG.top); G.setLineDash([lw(7), lw(5)]); G.beginPath(); G.rect(0, -6.5, 12.8, 6.5); G.rect(SWG.px - 0.75, SWG.top, 1.5, 0.85); G.strokeStyle = inkA(0.7); G.lineWidth = lw(1.3); G.stroke(); G.setLineDash([]); xrest(); }
+  /* the GT01, front to the right (mirrored from its own drawing), its cap's apex at the post */
+  if (kT > 0.001 && o.gt01) { xsave(); ga(kT); xmove(F0[0] - K.gtApex[0], yB); G.scale(-1, 1); XF.m[0] *= -1; XF.m[1] *= -1; o.gt01(clamp((o.press || 0) * SWG.TT / 0.35)); xrest(); }
+  { xsave(); xmove(F0[0], F0[1]); xturn(tilt); out.axis = [SP(0, -9), SP(0, 1.6 + 7.35)]; out.axisDir = SV(0, 1); xrest(); }
+  /* the shell behind the cutout, its boss down to the block, the brass insert */
   const sx1 = K.gap[0], B = K.boss;
   const shell = () => {
     G.beginPath(); G.moveTo(x0, surfY(x0)); for (let x = x0; x < sx1; x += 0.5) G.lineTo(x, surfY(x)); G.lineTo(sx1, surfY(sx1)); G.lineTo(sx1, ub(sx1));
@@ -195,30 +203,35 @@ function clickMM(o = {}) {
   const bx = (B[0] + B[1]) / 2;
   for (const side of [-1, 1]) {
     const xi = bx + side * 1.6, xo = bx + side * 1.05;
-    solid(() => { G.beginPath(); G.moveTo(xo, -1.9); for (let k = 0; k <= 13; k++) { const yy = -1.9 + k * 0.2; G.lineTo(k % 2 ? xi + side * 0.12 : xi, yy); } G.lineTo(xo, K.plateY); G.closePath(); }, MT.brass, [Math.min(xi, xo) - 0.2, -1.9, 0.8, 2.7], { hatch: { dir: -1, sp: 5 }, lw: 0.8 });
+    solid(() => { G.beginPath(); G.moveTo(xo, -1.9); for (let k = 0; k <= 12; k++) { const yy = -1.9 + k * 0.2; G.lineTo(k % 2 ? xi + side * 0.12 : xi, yy); } G.lineTo(xo, K.plateY); G.closePath(); }, MT.brass, [Math.min(xi, xo) - 0.2, -1.9, 0.8, 2.5], { hatch: { dir: -1, sp: 5 }, lw: 0.8 });
   }
-  /* the tensioner: clamped flat under the boss, staked to the trigger post, bending in between */
-  const xa = K.tPost[0], xb = B[1], Pa = rotAbout([xa, 1.0], RC, phi), Lh = Pa[0] - xb, mid = (xb + xa) / 2;
+  /* the tensioner: the trigger's own arm, 0.8 mm, from the block under the boss to the trigger's riser; between them the
+     bridge, an arch rising K.rise to a crown at RC that thins to 0.4 mm there. Clamped flat under the boss, carried round RC
+     by the trigger at the riser, a smooth bend between (Hermite on the flat arm, the arch added on top) */
+  const xa = K.tPost[0], xb = B[1], yA = 1.0, Pa = rotAbout([xa, yA], RC, phi), Lh = Pa[0] - xb;
+  const u = x => clamp((x - xb) / (xa - xb));
+  const arch = x => x > xb && x < xa ? -K.rise * Math.sin(Math.PI * u(x)) : 0;
   const cl = x => {
-    if (x <= xb) return [x, 1.0, 0];
-    if (x >= xa) { const p = rotAbout([x, 1.0], RC, phi); return [p[0], p[1], phi]; }
-    const u = (x - xb) / (xa - xb), m1 = Math.tan(phi) * Lh;
-    const y = (2 * u ** 3 - 3 * u * u + 1) * 1.0 + (-2 * u ** 3 + 3 * u * u) * Pa[1] + (u ** 3 - u * u) * m1;
-    const dy = ((6 * u * u - 6 * u) * 1.0 + (-6 * u * u + 6 * u) * Pa[1] + (3 * u * u - 2 * u) * m1) / Lh;
-    return [xb + u * Lh, y, Math.atan(dy)];
+    if (x <= xb) return [x, yA];
+    if (x >= xa) return rotAbout([x, yA], RC, phi);
+    const s = u(x), m1 = Math.tan(phi) * Lh;
+    return [xb + s * Lh, (2 * s ** 3 - 3 * s * s + 1) * yA + (-2 * s ** 3 + 3 * s * s) * Pa[1] + (s ** 3 - s * s) * m1 + arch(x)];
   };
-  const th = x => o.bridge ? 0.4 - 0.22 * Math.exp(-Math.pow((x - mid) / 2.2, 4)) : 0.4;
+  const th = x => 0.8 - 0.4 * Math.pow(Math.sin(Math.PI * u(x)), 2);
   const top = [], bot = [];
-  for (let x = B[0] - 0.4; x <= K.tPost[1] + 0.8; x += 0.2) { const [px, py, a] = cl(x), h = th(x) / 2, nx = -Math.sin(a), ny = Math.cos(a); top.push([px - nx * h, py - ny * h]); bot.push([px + nx * h, py + ny * h]); }
-  const plate = () => { G.beginPath(); top.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); for (let i = bot.length - 1; i >= 0; i--) G.lineTo(bot[i][0], bot[i][1]); G.closePath(); };
-  solid(plate, MT.spring, [B[0], 0.7, 20, 0.6], { lw: 0.9 });
-  if (o.bendGlow > 0) { const p = cl(mid); xsave(); ga(o.bendGlow); glow(p[0], p[1], 2.4, A, 0.55); xrest(); }
-  /* the screw, unsectioned: shank threads into the insert, pan head under the plate */
-  solid(() => { G.beginPath(); G.moveTo(bx - 1.0, 1.2); G.lineTo(bx - 1.0, -1.45); G.lineTo(bx - 0.7, -1.75); G.lineTo(bx + 0.7, -1.75); G.lineTo(bx + 1.0, -1.45); G.lineTo(bx + 1.0, 1.2); G.closePath(); }, MT.steel, [bx - 1, -1.75, 2, 3], { horiz: true, lw: 0.9 });
-  G.save(); G.beginPath(); G.rect(bx - 1, -1.6, 2, 2.4); G.clip(); G.strokeStyle = 'rgba(40,45,52,0.55)'; G.lineWidth = lw(1); G.beginPath(); for (let yy = -1.6; yy < 0.9; yy += 0.4) { G.moveTo(bx - 1, yy + 0.1); G.lineTo(bx + 1, yy - 0.1); } G.stroke(); G.restore();
-  solid(() => { G.beginPath(); G.moveTo(bx - 1.9, 1.2); G.lineTo(bx + 1.9, 1.2); G.lineTo(bx + 1.9, 1.75); G.quadraticCurveTo(bx + 1.85, 2.45, bx + 1.1, 2.5); G.lineTo(bx - 1.1, 2.5); G.quadraticCurveTo(bx - 1.85, 2.45, bx - 1.9, 1.75); G.closePath(); }, MT.steel, [bx - 1.9, 1.2, 3.8, 1.3], { horiz: true, lw: 0.9 });
-  out.screw = SP(bx, 2.5); out.boss = SP(B[0], -0.6); out.insert = SP(bx + 1.6, -0.5); out.plate = SP(...cl(mid).slice(0, 2)); out.plateFix = SP(B[1], 1.2);
-  /* the trigger, turned by phi about the tensioner's bend */
+  for (let x = B[0] - 0.4; x <= xa + 0.4001; x += 0.2) {
+    const p = cl(x), q = cl(x + 0.05), a = Math.atan2(q[1] - p[1], q[0] - p[0]), h = th(x) / 2, nx = -Math.sin(a), ny = Math.cos(a);
+    top.push([p[0] - nx * h, p[1] - ny * h]); bot.push([p[0] + nx * h, p[1] + ny * h]);
+  }
+  const arm = () => { G.beginPath(); top.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); for (let i = bot.length - 1; i >= 0; i--) G.lineTo(bot[i][0], bot[i][1]); G.closePath(); };
+  solid(arm, MT.shell, [B[0], -0.6, 20, 2.2], { hatch: true, lw: 0.9 });
+  if (o.bendGlow > 0) { const p = cl(RC[0]); xsave(); ga(o.bendGlow); glow(p[0], p[1], 2.4, A, 0.55); xrest(); }
+  /* the one screw from below: the head under the block, the shank up through it into the insert */
+  solid(() => { G.beginPath(); G.moveTo(bx - 1.0, 1.4); G.lineTo(bx - 1.0, -1.45); G.lineTo(bx - 0.7, -1.75); G.lineTo(bx + 0.7, -1.75); G.lineTo(bx + 1.0, -1.45); G.lineTo(bx + 1.0, 1.4); G.closePath(); }, MT.steel, [bx - 1, -1.75, 2, 3.2], { horiz: true, lw: 0.9 });
+  G.save(); G.beginPath(); G.rect(bx - 1, -1.6, 2, 2.0); G.clip(); G.strokeStyle = 'rgba(40,45,52,0.55)'; G.lineWidth = lw(1); G.beginPath(); for (let yy = -1.6; yy < 0.5; yy += 0.4) { G.moveTo(bx - 1, yy + 0.1); G.lineTo(bx + 1, yy - 0.1); } G.stroke(); G.restore();
+  solid(() => { G.beginPath(); G.moveTo(bx - 1.9, 1.4); G.lineTo(bx + 1.9, 1.4); G.lineTo(bx + 1.9, 1.95); G.quadraticCurveTo(bx + 1.85, 2.65, bx + 1.1, 2.7); G.lineTo(bx - 1.1, 2.7); G.quadraticCurveTo(bx - 1.85, 2.65, bx - 1.9, 1.95); G.closePath(); }, MT.steel, [bx - 1.9, 1.4, 3.8, 1.3], { horiz: true, lw: 0.9 });
+  out.screw = SP(bx, 2.7); out.boss = SP(B[0], -0.6); out.insert = SP(bx + 1.6, -0.5); out.plate = SP(...cl(RC[0])); out.plateFix = SP(B[1], 1.4); out.crown = SP(...cl(RC[0]));
+  /* the trigger, turned by phi about the crown: its skin, the rear riser the bridge runs into (square, no fillet), its post */
   xsave(); xabout(RC[0], RC[1], phi);
   const tx0 = K.gap[1], tx1 = x1, P = K.post, Tp = K.tPost;
   const trig = () => {
@@ -226,15 +239,14 @@ function clickMM(o = {}) {
     for (let x = tx0 + 0.5; x < tx1; x += 0.5) G.lineTo(x, surfY(x));
     G.lineTo(tx1, surfY(tx1)); brk(tx1, surfY(tx1), ub(tx1), 0.45);
     for (let x = tx1; x > P[1] + 0.7; x -= 0.5) G.lineTo(x, ub(x)); G.quadraticCurveTo(P[1], ub(P[1]), P[1], ub(P[1]) + 0.7); G.lineTo(P[1], F0[1] - 1); G.arc((P[0] + P[1]) / 2, F0[1] - 1, 1, 0, Math.PI); G.lineTo(P[0], ub(P[0]) + 0.7); G.quadraticCurveTo(P[0], ub(P[0]), P[0] - 0.7, ub(P[0] - 0.7));
-    for (let x = P[0] - 0.7; x > Tp[1] + 0.7; x -= 0.5) G.lineTo(x, ub(x)); G.quadraticCurveTo(Tp[1], ub(Tp[1]), Tp[1], ub(Tp[1]) + 0.7); G.lineTo(Tp[1], K.plateY); G.lineTo(Tp[0], K.plateY); G.lineTo(Tp[0], ub(Tp[0]) + 0.7); G.quadraticCurveTo(Tp[0], ub(Tp[0]), Tp[0] - 0.7, ub(Tp[0] - 0.7));
+    for (let x = P[0] - 0.7; x > Tp[1] + 0.7; x -= 0.5) G.lineTo(x, ub(x)); G.quadraticCurveTo(Tp[1], ub(Tp[1]), Tp[1], ub(Tp[1]) + 0.7); G.lineTo(Tp[1], yA + 0.4); G.lineTo(Tp[0], yA + 0.4); G.lineTo(Tp[0], ub(Tp[0]) + 0.7); G.quadraticCurveTo(Tp[0], ub(Tp[0]), Tp[0] - 0.7, ub(Tp[0] - 0.7));
     for (let x = Tp[0] - 0.7; x > tx0; x -= 0.5) G.lineTo(x, ub(x));
     G.lineTo(tx0, ub(tx0)); G.closePath();
   };
-  solid(trig, MT.shell, [tx0, -3, tx1 - tx0, 12], { hatch: true });
-  solid(() => { G.beginPath(); G.moveTo(5.0, 1.2); G.lineTo(7.0, 1.2); G.quadraticCurveTo(7.0, 1.75, 6.0, 1.75); G.quadraticCurveTo(5.0, 1.75, 5.0, 1.2); G.closePath(); }, MT.shell, [5, 1.2, 2, 0.55], { hatch: true, lw: 0.9 });
+  solid(trig, MT.shell, [tx0, -3, tx1 - tx0, 16], { hatch: true });
   { const pts = []; for (let x = tx0 + 0.15; x < tx1 - 0.2; x += 0.5) pts.push([x, surfY(x) + 0.06]); mmLine(pts, 'rgba(255,255,255,0.22)', 1); }
   { const M0 = XF.m.slice(); out.trigTop = x => SPm(M0, x, surfY(x)); }
-  out.foot = SP(30, F0[1]); out.post = SP(31, F0[1] - 3); out.tip = SP(tx1, surfY(tx1)); out.stake = SP(6, 1.75);
+  out.foot = SP(30, F0[1]); out.post = SP(31, F0[1] - 3); out.tip = SP(tx1, surfY(tx1)); out.stake = SP(Tp[0], yA); out.riser = SP(Tp[0] + 0.8, yA - 1.2);
   xrest();
   { const pts = []; for (let x = x0 + 0.6; x < sx1 - 0.1; x += 0.5) pts.push([x, surfY(x) + 0.06]); mmLine(pts, 'rgba(255,255,255,0.22)', 1); }
   out.cut = SP((K.gap[0] + K.gap[1]) / 2, surfY(-0.6)); out.rc = SP(RC[0], RC[1]);
@@ -569,28 +581,46 @@ function railMM(o = {}) {
   return out;
 }
 
-/* =================================== 12. the tensioner, flat, from above ===================================
-   a pair of spring-steel arms, one per button: a clamped tab with a screw hole, a free length that bends,
-   a tab staked to the trigger. o.smile 0..1 bends the clamped edge to follow a curved rear cutout. */
+/* =================================== 12. the tensioners, from above ===================================
+   K1, 2026-11-05: the two tensioners as the triggers' own arms (the trigger's moulding, no steel), seen from above with the
+   shell off, as in Brock's photos of shipping top shells: behind the bend line a block screwed to the shell by one screw (#49);
+   across the bend line the bridge (#50), 10 mm wide and centred on the arm's switch line (#18), its crown dashed; in front the
+   trigger's riser and its plate. o.smile 0..1 bends the bend line to follow a curved rear cutout (#17). o.built 0..1 adds what
+   ships today (Brock: "overbuilt and overly complex"): a bigger block with a stacked boss and a grid of holes round the screw. */
 function tensionerPlanMM(o = {}) {
-  const sm = o.smile || 0, A = o.accent || acc(), out = { arms: [] }, w = 19, gap = 2.4;
+  const sm = o.smile || 0, A = o.accent || acc(), out = { arms: [] }, w = 19, gap = 2.4, bt = clamp(o.built || 0);
   const edgeY = x => -sm * 4.6 * (1 - Math.pow(x / (w + gap / 2), 2));
+  const gph = TH ? '#4B4C53' : '#3A3B42', lite = TH ? '#77787F' : '#5C5D64', ed = inkA(0.5);
+  const run = (x0, x1, n) => Array.from({ length: n + 1 }, (_, i) => x0 + (x1 - x0) * i / n);
+  /* a band between two offsets from the bend line, sampled at shared x positions so neighbouring bands meet on one line */
+  const band = (x0, x1, d0, d1) => { const xs = run(x0, x1, Math.max(4, Math.round(Math.abs(x1 - x0) / 0.25))); G.beginPath(); xs.forEach((x, i) => i ? G.lineTo(x, edgeY(x) + d0) : G.moveTo(x, edgeY(x) + d0)); for (let i = xs.length - 1; i >= 0; i--) G.lineTo(xs[i], edgeY(xs[i]) + d1); G.closePath(); };
+  const fillE = (f, e = ed) => { G.fillStyle = f; G.fill(); G.strokeStyle = e; G.lineWidth = lw(1.1); G.lineJoin = 'round'; G.stroke(); };
   for (const s of [-1, 1]) {
-    const xa = s * gap / 2, xb = s * (gap / 2 + w), xl = Math.min(xa, xb), xr = Math.max(xa, xb);
-    /* the edge sampled at exact, shared x positions from xl to xr, so the arm and the tab meet along one line with square ends
-       (stepping x by 0.25 in floating point stopped short of xr, which left a slanted end and a notch: Brock, F12.9) */
-    const N = Math.round(w / 0.25), ex = Array.from({ length: N + 1 }, (_, i) => xl + (xr - xl) * i / N);
-    const tab = () => { G.beginPath(); G.moveTo(xl, 9); G.lineTo(xr, 9); for (let i = N; i >= 0; i--) G.lineTo(ex[i], edgeY(ex[i])); G.closePath(); };
-    solid(tab, MT.spring, [xl, -5, w, 14], { lw: 1 });
-    const arm = () => { G.beginPath(); for (let i = 0; i <= N; i++) G.lineTo(ex[i], edgeY(ex[i])); for (let i = N; i >= 0; i--) G.lineTo(ex[i], edgeY(ex[i]) - 7.5); G.closePath(); };
-    solid(arm, { g: ['#e8ebef', '#a3aab3'] }, [xl, -13, w, 9], { lw: 1 });
-    G.save(); arm(); G.clip(); G.strokeStyle = 'rgba(0,0,0,0.06)'; G.lineWidth = lw(1); G.beginPath(); for (let x = xl; x < xr; x += 0.35) { G.moveTo(x, -16); G.lineTo(x, 10); } G.stroke(); G.restore();
-    const hx = s * (gap / 2 + w * 0.5);
-    G.beginPath(); G.arc(hx, 5.0, 1.15, 0, TAU); G.fillStyle = C.panel; G.fill(); G.strokeStyle = edgeCol(MT.spring); G.lineWidth = lw(1); G.stroke();
-    G.beginPath(); G.arc(hx, 5.0, 1.75, 0, TAU); G.strokeStyle = 'rgba(0,0,0,0.18)'; G.lineWidth = lw(1); G.stroke();
-    G.beginPath(); G.arc(hx, edgeY(hx) - 5.2, 0.85, 0, TAU); G.fillStyle = C.panel; G.fill(); G.strokeStyle = edgeCol(MT.spring); G.lineWidth = lw(1); G.stroke();
-    if (o.bend !== false) { G.beginPath(); for (let x = xl + 0.6; x <= xr - 0.6; x += 0.25) G.lineTo(x, edgeY(x) - 1.6); G.setLineDash([lw(9), lw(6)]); G.strokeStyle = A; G.lineWidth = lw(2.2); G.stroke(); G.setLineDash([]); }
-    const M1 = XF.m.slice(); out.arms.push({ hole: SP(hx, 5), stake: SP(hx, edgeY(hx) - 5.2), bendAt: x => SPm(M1, x, edgeY(x) - 1.6), slope: x => sm * 4.6 * 2 * x / Math.pow(w + gap / 2, 2), xl, xr });
+    const xa = s * gap / 2, xb = s * (gap / 2 + w), xl = Math.min(xa, xb), xr = Math.max(xa, xb), hx = s * (gap / 2 + w * 0.5), fx0 = hx - 5, fx1 = hx + 5;
+    /* the trigger's plate and riser, in front of the bridge; the plate is cut off with a break line toward the front */
+    band(xl, xr, -11.0, -7.4); fillE(gph);
+    { const xs = run(xl, xr, 40); G.beginPath(); xs.forEach((x, i) => { const y = edgeY(x) - 11.0 + 0.35 * Math.sin(i * 0.9); i ? G.lineTo(x, y) : G.moveTo(x, y); }); G.strokeStyle = C.panel; G.lineWidth = lw(3); G.stroke(); }
+    band(fx0, fx1, -7.4, -6.2); fillE(gph);
+    /* the bridge, the trigger's own material, 10 mm wide; lighter where it thins; its crown dashed */
+    band(fx0, fx1, -6.2, 0.6); fillE(lite);
+    G.save(); band(fx0, fx1, -4.6, -1.0); G.clip(); G.fillStyle = 'rgba(255,255,255,0.10)'; G.fillRect(fx0 - 1, -20, 12, 30); G.restore();
+    if (o.bend !== false) { const xs = run(fx0 + 0.6, fx1 - 0.6, 30); G.beginPath(); xs.forEach((x, i) => i ? G.lineTo(x, edgeY(x) - 2.8) : G.moveTo(x, edgeY(x) - 2.8)); G.setLineDash([lw(9), lw(6)]); G.strokeStyle = A; G.lineWidth = lw(2.2); G.stroke(); G.setLineDash([]); }
+    /* the block behind the bend line and its one screw. Shipping today (built 1): a bigger block, a stacked boss on it and a
+       grid of holes round the screw; Theseus (built 0): only the material the clamp needs */
+    const by0 = 0.6, by1 = lerp(7.6, 9.2, bt), bx0 = lerp(fx0, hx - 6.6, bt), bx1 = lerp(fx1, hx + 6.6, bt);
+    band(bx0, bx1, by0, by1); fillE(gph);
+    const ys = edgeY(hx) + lerp(4.1, 5.4, bt);
+    if (bt > 0.01) {
+      G.save(); G.globalAlpha *= bt;
+      pathRR(hx - 4.4, ys - 3.4, 8.8, 6.8, 0.5); G.strokeStyle = 'rgba(255,255,255,0.22)'; G.lineWidth = lw(1.2); G.stroke();
+      for (const [dx, dy] of [[-5.4, -3.6], [5.4, -3.6], [-5.4, 3.6], [5.4, 3.6]]) { pathRR(hx + dx - 0.5, ys + dy - 0.5, 1.0, 1.0, 0.12); G.fillStyle = C.panel; G.fill(); G.strokeStyle = ed; G.lineWidth = lw(1); G.stroke(); }
+      for (const dx of [-2.9, 2.9]) { G.beginPath(); G.arc(hx + dx, ys, 0.95, 0, TAU); G.fillStyle = C.panel; G.fill(); G.strokeStyle = ed; G.lineWidth = lw(1); G.stroke(); }
+      G.restore();
+    }
+    G.beginPath(); G.arc(hx, ys, 1.75, 0, TAU); G.fillStyle = TH ? '#B8BEC6' : '#8E959E'; G.fill(); G.strokeStyle = inkA(0.45); G.lineWidth = lw(1); G.stroke();
+    G.beginPath(); G.moveTo(hx - 0.9, ys); G.lineTo(hx + 0.9, ys); G.moveTo(hx, ys - 0.9); G.lineTo(hx, ys + 0.9); G.strokeStyle = inkA(0.55); G.lineWidth = lw(1.4); G.stroke();
+    const M1 = XF.m.slice();
+    out.arms.push({ hole: SP(hx, ys), block: SP(hx + s * (lerp(5, 6.6, bt) - 0.4), ys), stake: SP(hx, edgeY(hx) - 5.2), bendAt: x => SPm(M1, x, edgeY(x) - 2.8), slope: x => sm * 4.6 * 2 * x / Math.pow(w + gap / 2, 2), xl, xr, fx0, fx1, hx });
   }
   const M2 = XF.m.slice(); out.edge = x => SPm(M2, x, edgeY(x)); out.edgeY = edgeY; out.P = (x, y) => SPm(M2, x, y);
   return out;

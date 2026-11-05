@@ -247,6 +247,7 @@ export async function buildShell(opts = {}) {
   const gloveMat = new THREE.MeshPhysicalMaterial({ color: 0x3a3c41, roughness: 0.5, clearcoat: 0.2, clearcoatRoughness: 0.5 });
   const gloveRest = gloveMat.color.clone(), gloveHero = new THREE.Color(0x2f8cff);
   const pocketMat = new THREE.MeshPhysicalMaterial({ color: 0x1c1d20, roughness: 0.65 });
+  const padMat = new THREE.MeshPhysicalMaterial({ color: 0xf2f0ea, roughness: 0.55 });   /* the POM pads */
   if (PARTS && PARTS.buildGT01) {
     const box = (w, h, d, x, y, z, mat, nm) => { const g = new THREE.BoxGeometry(w, h, d); owned.add(g); const m = new THREE.Mesh(g, mat); m.position.set(x, y, z); m.name = nm; m.castShadow = true; m.receiveShadow = true; return m; };
     for (const [k, sb] of meta.sideButtons.entries()) {
@@ -257,7 +258,7 @@ export async function buildShell(opts = {}) {
       const sp = sw.userData.parts; sp.base.visible = false; sp.terminalRuns.visible = false; sp.body.position.y = 0;
       for (const pin of sp.pins) pin.scale.y = 0.75;
       /* switch frame -> world: y_s -> +X (toward the button), z_s -> along the button, following its slant */
-      const tiltG = new THREE.Group(); tiltG.rotation.x = 0.152;   /* the buttons' slant along the side, 8.7 degrees */
+      const tiltG = new THREE.Group(); tiltG.name = 'sideSw' + k; tiltG.rotation.x = 0.152;   /* the buttons' slant along the side, 8.7 degrees */
       const axisG = new THREE.Group(); axisG.rotation.z = -Math.PI / 2; tiltG.add(axisG);
       tiltG.position.set(xTop - 6.5, yc, zc - 1.2);
       axisG.add(sw);
@@ -265,13 +266,23 @@ export async function buildShell(opts = {}) {
       const pocket = new THREE.Group(); pocket.name = 'switchPocket';
       for (const sx of [-1, 1]) pocket.add(box(0.8, 4.5, 14.8, sx * 4.4, 1.0, 0, pocketMat, 'pocketWall'));
       pocket.add(box(9.6, 1.1, 14.8, 0, -0.7, 0, pocketMat, 'pocketFloor'));
+      /* K1, 2026-11-05 (Brock, F26.2: the plungers "exactly the same size" everywhere; F27: the old glove "doesn't match the other
+         dual rail plungers ... way overbuilt"): the glove is a guide that fits over the switch's top, held by the shell: two walls
+         carrying POM pads, skirts down the switch's sides, end bars. The button's post rides between the pads, and the button lands
+         on the guide's top 0.5 mm in, just past the click: the hard stop. The plunger is the GT01's (zs 2.0, its cap 0.80 proud) */
+      const ZP = 2.0;
+      for (const sx of [-1, 1]) {
+        pocket.add(box(0.9, 0.9, 3.6, sx * 2.31, 7.05, ZP, pocketMat, 'guideWall'));
+        pocket.add(box(0.6, 0.8, 2.6, sx * 1.56, 7.05, ZP, padMat, 'guidePad'));
+        pocket.add(box(0.6, 2.9, 3.6, sx * 3.2, 6.05, ZP, pocketMat, 'guideSkirt'));
+        pocket.add(box(1.0, 0.9, 3.6, sx * 2.96, 7.05, ZP, pocketMat, 'guideBridge'));
+      }
+      for (const sz of [-1, 1]) pocket.add(box(5.5, 0.9, 0.6, 0, 7.05, ZP + sz * 1.8, pocketMat, 'guideEnd'));
       axisG.add(pocket);
-      /* the glove, on the button: it moves with it */
+      /* the glove's moving half, on the button: a thin plate under it and its post, the main buttons' 2.4 mm post */
       const glove = new THREE.Group(); glove.name = 'glove';
-      glove.add(box(8.1, 0.9, 13.6, 0, 8.45, 0, gloveMat, 'gloveCap'));
-      for (const sx of [-1, 1]) glove.add(box(0.8, 4.9, 12.0, sx * 3.35, 5.75, 0, gloveMat, 'gloveRail'));
-      for (const sx of [-1, 1]) glove.add(box(0.9, 1.0, 9.0, sx * 2.0, 7.5, -1.2, gloveMat, 'gloveArm'));
-      glove.add(box(1.7, 1.05, 2.0, 0, 7.48, 3.4, gloveMat, 'gloveNub'));
+      glove.add(box(6.0, 0.9, 6.0, 0, 8.45, ZP, gloveMat, 'gloveCap'));
+      glove.add(box(2.4, 0.75, 2.4, 0, 7.675, ZP, gloveMat, 'glovePost'));
       const gHold = new THREE.Group(); gHold.add(glove);
       const gT = new THREE.Group(); gT.rotation.copy(tiltG.rotation); gT.position.copy(tiltG.position);
       const gA = new THREE.Group(); gA.rotation.z = -Math.PI / 2; gT.add(gA); gA.add(gHold);
@@ -437,7 +448,7 @@ export async function buildShell(opts = {}) {
   placePlate();
   root.dispose = () => {
     owned.forEach(g => g.dispose());
-    Object.values(M).forEach(m => m.dispose()); gloveMat.dispose(); pocketMat.dispose(); sideSw.forEach(e => e.sw.dispose && e.sw.dispose());
+    Object.values(M).forEach(m => m.dispose()); gloveMat.dispose(); pocketMat.dispose(); padMat.dispose(); sideSw.forEach(e => e.sw.dispose && e.sw.dispose());
     xrayMat.dispose();
     [wheel, ...screws.map(s => s.children[0]), ...skates.map(s => s.children[0]), ...(lensDots.userData.dots || [])].forEach(o => o && o.dispose && o.dispose());
   };

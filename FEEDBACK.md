@@ -626,10 +626,10 @@ Answers to the Shell A questions:
 ## F26. Notes at 01:43 (2026-11-05)
 - **F26.1** "the click tensioning mechanism you're showing in the diagrams isn't anywhere near as accurate as it should be,
   i almost feel like it's potentially wrong as well, it needs a lot more effort". Asked what to build from: "Research
-  real mice". **IN PROGRESS (K1).**
+  real mice". **DONE (K1, v22).**
 - **F26.2** "the second of the dual plungers need to be shown as exactly the to be exactly same size as the one for the
   switch and the one for the side button, this helps show our uniformity claim. right now the plunger without a switch
-  sticks done further and looks different." **IN PROGRESS (K1).**
+  sticks done further and looks different." **DONE (K1, v22).**
 - **F26.3 NOTED** "as if we ever add magnetic clicks, the second plunger is an excellent place to do so for this reason"
   (context for F26.2; magnetic clicks stay off the slides, F9.9).
 - **F26.4** "the battery connector needs to be turned 90 degrees so it can be pulled out properly, it's hard to access it
@@ -820,11 +820,11 @@ old score as archived (F26.13).
   attachments/8e779cef-image.jpg, annotated "best GT01 Reference"): "this picture should help you get the side profile as
   accurate as possible on the gt01, priories sus profile accuracy over everything else. you shouldn't have an issue
   outlining the silhouette and extrapolating the rest of the switch based off other reference as i'd switches, that's my
-  process when i model a switch." **IN PROGRESS (K1):** the silhouette traced from it, the rest from other switch
+  process when i model a switch." **DONE (K1, v22):** the silhouette traced from it, the rest from other switch
   references, in 3D and 2D (also the bottom-housing reference for `clk_switch`); K2 matches the board's switches to it.
 - **F28.2** With three photos of tensioners (a white shell in two views, a Logitech G305's top shell, a white Lamzu-marked
   shell; attachments 0300b3c2, c82f85d5, 1fce7c7f): "here are some pictures i'd click tensioning mechanisms i like. none of
-  them are aligned properly though, and all of them are overbuilt and overly complex." **IN PROGRESS (K1):** split,
+  them are aligned properly though, and all of them are overbuilt and overly complex." **DONE (K1, v22):** split,
   one-screw blocks as in the photos, but aligned with the switches and stripped to what the load needs.
 - **F28.3** With two photos (a G-Wolves board inside its lattice shell, and the black lattice part with its arm; attachments
   d2ae72fe, 80f31ed6): "i also attached a picture of the pcb with arms from g wolves that are used as a reinforcement that i
@@ -878,3 +878,6 @@ old score as archived (F26.13).
   should only be the extra amount the gt01 hands out ovee because of its angle". **IN PROGRESS (K2):** the plan revised
   (chamfers back, the big corner fillets halved, the front only as far as the GT01's angled overhang), shown again, then
   built.
+- **F30.12** "also the spacing between the scroll wheel hole and sensor, sensor and mcu and mcu and edge of the board all
+  needs to be equal right now it looks like there are some thin parts that could easily break". **IN PROGRESS (K2):** the
+  three gaps along the centre line equal, no thin webs (shown in mm on the revised plan).

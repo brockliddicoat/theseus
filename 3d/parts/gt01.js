@@ -6,6 +6,12 @@
 // "Zero Preload and Zero Delay", "Special Shape for Vertical Pressing".
 // Envelope: Omron D2F class 12.8 × 5.8 × 6.5 mm (D2F datasheet), body tilted on a molded wedge
 // (tilt measured ≈ 20° from Gateron's cutaway image; Brock recalls 30°). Terminals at the D2F 5.08 mm pitch.
+// Side profile (K1, 2026-11-05): traced off Gateron's "Vertical push mouse switch" render, the one Brock called the best GT01
+// reference ("priories sus profile accuracy over everything else"), scaled so the cover's top is 12.8 mm (14.53 px/mm, tilt
+// 19.8°): the body sits 1.02 mm lower than the first model (its front face runs straight down to the board), the clear cover's
+// skirt ends at ys 2.5, the bottom housing's back face drops almost vertically, the four side cut-outs are where the render puts
+// them, and the plunger sits 2.0 mm from the centre with its cap turned 90° (1.5 along × 2.1 across, a rounded top, 0.80 proud).
+// The numbers: scratchpad/k1/GT01-PLUNGER.md.
 //
 // Frames: root = PCB frame (origin on the PCB top surface at the middle pin, +Y up, plunger toward +Z).
 //         body = switch frame S (origin at the body's bottom centre; x width, y up, z length).
@@ -13,7 +19,7 @@ import * as THREE from 'three';
 import { partMaterials } from './lib/materials.js';
 import {
   extrude, lathe, sweep, rectSection, roundedRectShape, roundedRectPath, circlePath, filletPolygon,
-  decodeGeo, meshOf, disposeTree, clamp01, smooth, lerp,
+  decodeGeo, creaseNormals, meshOf, disposeTree, clamp01, smooth, lerp,
 } from './lib/geom.js';
 import { SectionPlane, addEdges } from './lib/section.js';
 import GEO from './geo/gt01.geo.js';
@@ -35,14 +41,15 @@ export const GT01_SPEC = {
   sources: {
     claims: 'MechKeys, "Gateron launched Magnetic Jade gaming switch and GT01 microswitch at ZFX Shenzhen" [MC]',
     envelope: 'Omron D2F datasheet: 12.8 × 5.8 × 6.5 mm, terminal pitch 5.08 mm, terminal t 0.4 mm [DS, class]',
-    tilt: "measured ≈ 20° from Gateron's 'Vertical push' cutaway render; Brock recalls 30° [DV/CA]",
+    tilt: "measured ≈ 20° from Gateron's 'Vertical push' cutaway render (19.8° on the trace); Brock recalls 30° [DV/CA]",
+    profile: "side profile, cut-outs and plunger traced off the same render, 14.53 px/mm with the cover = 12.8 mm [DV]",
   },
 };
 
 // switch-frame layout (mm): a standard SPDT micro switch, D2F class
 const L = 12.8, W = 5.8, H = 6.5;
-const Y_SHOULDER = 2.0, COVER_WALL = 0.45, CEIL = 6.0;   // base / cover joint, cover wall, cavity ceiling
-const ZP = 3.4;                    // plunger axis
+const Y_SHOULDER = 2.5, COVER_WALL = 0.45, CEIL = 6.0;   // base / cover joint (the render's shoulder: 2.53), cover wall, cavity ceiling
+const ZP = 2.0;                    // plunger axis (the render's plunger block spans zs 0.6 to 3.5)
 const PITCH = 5.08;                // COM at +PITCH, NO at 0, NC at −PITCH (D2F)
 const Z_CLAMP = 4.25, Z_TIP = -4.0;   // the blade leaves the COM anchor tab at Z_CLAMP; the moving contact sits at Z_TIP
 const Y_ANCHOR = 4.45, T_BLADE = 0.08, Y_BLADE = Y_ANCHOR + 0.006;   // blade 6 µm above the tab: no coplanar faces
@@ -50,7 +57,8 @@ const Z_FULC = 4.0, Y_FULC = 3.2;  // the tongue's fulcrum: the V notch at the t
 const GAP = 0.30;                  // contact gap NC→NO (representative)
 const Y_NCARM = Y_BLADE + T_BLADE + 0.12 + 0.14;   // NC arm underside: its rivet's crown meets the moving contact at rest
 const Y_NOTAB = Y_BLADE - GAP - 0.12 - 0.14;        // NO tab top: its rivet's crown meets the moving contact after the snap
-const H_MIN = 0.5;                 // wedge thickness under the low (plunger) end
+const H_MIN = -0.52;               // the base plane's height at the low (plunger) end: below the board, as traced (the front face meets the board)
+const CAP_L = 1.5, CAP_W = 2.1, CAP_R = 0.75, CAP_PROUD = 0.80;   // the plunger's cap: along × across the switch, its rounded top, how far it stands proud
 
 export function buildGT01(opts = {}) {
   const tilt = (opts.tilt ?? 20) * D2R;
@@ -63,7 +71,8 @@ export function buildGT01(opts = {}) {
   const root = new THREE.Group(); root.name = 'GT01';
   const body = new THREE.Group(); body.name = 'GT01.body';
   const sT = Math.sin(tilt), cT = Math.cos(tilt);
-  const lift = (L / 2) * sT + H_MIN;
+  const hMin = opts.hMin ?? (tilt > 1e-6 ? H_MIN : 0.5);       // a flat (tilt 0) switch keeps its old 0.5 mm seat
+  const lift = (L / 2) * sT + hMin;
   body.rotation.x = tilt; body.position.set(0, lift, 0);
   root.add(body);
   const S2W = (y, z) => [y * cT - z * sT + lift, y * sT + z * cT];   // switch (y, z) → world (Y, Z)
@@ -74,12 +83,16 @@ export function buildGT01(opts = {}) {
   // Gateron's photos (2026-11-04): ONE black block from the board up to the cover's edge, its bottom flat on the board and
   // its top the switch's base plane, leaning with the switch; in each side, through the skin, a round hole high at the
   // back, a triangle low at the back, a slot along the tilt in the middle and a round hole toward the plunger end.
-  const C = S2W(0, L / 2), F = S2W(0, -L / 2);          // the switch's bottom corners (front low, back high)
+  // The profile, traced off Gateron's render (Brock's best reference): the front face is the switch's own end face, square to
+  // its top, running straight down to the board (so it overhangs); the top is the cover's edge (the shoulder, ys 2.5); at the
+  // back the switch's end face runs down to its base corner, then the housing drops almost vertically (4.2°) to the board.
+  const C = S2W(0, L / 2), F = S2W(0, -L / 2);          // the switch's bottom corners (front low, back high): [Y, Z]
   const C2 = S2W(Y_SHOULDER - 0.004, L / 2), F2 = S2W(Y_SHOULDER - 0.004, -L / 2);   // the cover's edge, front and back
-  const prof = [[F[1], 0], [C[1], 0], [C[1], C[0]], [C2[1], C2[0]], [F2[1], F2[0]], [F[1], F[0]]];
-  const pr = [0.14, 0.14, 0.05, 0.2, 0.2, 0.05];
+  const front = C[0] <= 0.02 ? [[S2W(((L / 2) * sT - lift) / cT, L / 2)[1], 0]] : [[C[1], 0], [C[1], C[0]]];
+  const backFootZ = F[1] - 0.074 * F[0];
+  const prof = [[backFootZ, 0], ...front, [C2[1], C2[0]], [F2[1], F2[0]], [F[1], F[0]]];
+  const pr = front.length === 1 ? [0.14, 0.14, 0.05, 0.2, 0.12] : [0.14, 0.14, 0.05, 0.2, 0.2, 0.05];
   const profShape = () => filletPolygon(prof, pr, false, 6);
-  const yTopAt = (zw) => { const zs = (zw - Y_SHOULDER * sT) / cT; return Y_SHOULDER * cT - zs * sT + lift; };   // the cover's edge over world z
   const circle = (cz, cy, r) => { const h = new THREE.Path(); h.absarc(cz, cy, r, 0, Math.PI * 2, true); return h; };
   const slot = (cz, cy, len, wd) => {
     const h = new THREE.Path(), r = wd / 2, dx = (len / 2 - r) * cT, dy = -(len / 2 - r) * sT;   // along the tilt, falling forward
@@ -88,17 +101,16 @@ export function buildGT01(opts = {}) {
     h.absarc(cz - dx, cy - dy, r, a + Math.PI / 2, a + 1.5 * Math.PI, false);
     h.closePath(); return h;
   };
-  const tri = () => {
-    const zB = F[1] + 0.45, y0 = 0.75, z1 = -1.7;
-    return filletPolygon([[zB, y0], [z1 + 0.3, y0], [zB, 3.0]], 0.3, true, 5);   // a right triangle pointing forward, as photographed
-  };
-  const HOLES = { back: [-3.6, Math.min(4.75, yTopAt(-3.6) - 1.4), 0.95], front: [2.9, Math.min(2.2, yTopAt(2.9) - 1.5), 0.85], slot: [-0.4, 2.45, 1.8, 0.72] };
-  const pockets = [() => circle(...HOLES.back), () => circle(...HOLES.front), () => slot(...HOLES.slot), tri];
+  // the long rounded triangle low at the back: its tip near the middle, its back edge by the housing's back face (render)
+  const tri = () => filletPolygon([[0.07, 0.89], [-5.78, 3.03], [-5.99, 0.46]], [0.35, 0.25, 0.25], true, 5);
+  // the four cut-outs, world (z, y) as the render places them: two round holes, the slot along the tilt, the triangle
+  const HOLES = { back: [-2.86, 3.98, 1.01], front: [3.44, 1.67, 1.10], slot: [0.22, 2.58, 2.0, 0.74] };
+  const pockets = tilt > 10 * D2R ? [() => circle(...HOLES.back), () => circle(...HOLES.front), () => slot(...HOLES.slot), tri] : [];
   const skinT = 1.0, coreHalf = W / 2 - skinT;
   const mkSkin = (s) => {
     const sh = profShape();
     for (const h of pockets) sh.holes.push(h());
-    const bev = { r: 0.22, t: 0.22, s: 4 };
+    const bev = { r: 0.12, t: 0.12, s: 4 };   // the traced cut-outs leave walls of about 0.3 mm: a 0.22 bevel made their contours collide
     const g = extrude(sh, { depth: skinT, front: s < 0 ? bev : null, back: s > 0 ? bev : null, curveSegments: 20 });
     g.rotateY(-Math.PI / 2);                       // shape (Z,Y), extrusion e → −X
     g.translate(s < 0 ? -coreHalf : W / 2, 0, 0);
@@ -123,7 +135,8 @@ export function buildGT01(opts = {}) {
   // ---- the switch's own base (black LCP): the lower body and the pedestals that hold the terminals inside the cover
   const core = new THREE.Group(); core.name = 'switchBase';
   const sb = (g, nm) => { const m = meshOf(g, M.lcpBlack, nm); core.add(m); return m; };
-  sb(box(2 * coreHalf - 0.04, L - 0.24, 0.02, Y_SHOULDER, 0.35, 0.06), 'baseBody');   // inside the black block's core, clear of the skins, so the side holes stay open (they read as crescents when it filled them)
+  const yBase0 = hMin < 0 ? 0.6 : 0.02;   // the base plane's front corner is under the board (traced): keep the block above it
+  sb(box(2 * coreHalf - 0.04, L - 0.24, yBase0, Y_SHOULDER, 0.35, 0.06), 'baseBody');   // inside the black block's core, clear of the skins, so the side holes stay open (they read as crescents when it filled them)
   sb(box(2.8, 1.25, Y_SHOULDER - 0.01, 3.0, 0.16, 0.06, 0, 5.32), 'comPedestal');
   sb(box(2.8, 0.75, Y_SHOULDER - 0.01, 4.62, 0.16, 0.06, 0, -5.62), 'ncPedestal');
   sb(box(1.7, 1.25, Y_SHOULDER - 0.01, 3.64, 0.14, 0.05, 0, -3.95), 'noPedestal');
@@ -135,7 +148,8 @@ export function buildGT01(opts = {}) {
   const term = new THREE.Group(); term.name = 'terminals';
   const tm = (g, nm) => { const m = meshOf(g, M.goldSatin, nm); term.add(m); return m; };
   const ZC = PITCH, ZN = -PITCH;
-  tm(box(2.2, 0.3, 0.0, Y_ANCHOR, 0.06, 0.02, 0, ZC), 'comPost');
+  const yLow = (zs) => Math.max(0, (0.3 + zs * sT - lift) / cT);   // the lowest ys a terminal reaches: 0.3 mm above the board
+  tm(box(2.2, 0.3, yLow(ZC), Y_ANCHOR, 0.06, 0.02, 0, ZC), 'comPost');
   tm(box(2.2, 0.98, Y_ANCHOR - 0.25, Y_ANCHOR, 0.08, 0.02, 0, ZC - 0.34), 'comAnchor');
   {
     // the fulcrum: a narrow tab with a V notch at its tip, where the tongue's end seats
@@ -186,8 +200,17 @@ export function buildGT01(opts = {}) {
   // ---- plunger (black POM), an ordinary micro-switch plunger (Brock: "a fairly normal plunger"): a low cap 0.45 mm
   // proud of the cover with a softly domed top, a flange under the cover's ceiling, and a short nose on the leaf
   const plunger = new THREE.Group(); plunger.name = 'plunger';
-  const Y_CAP = H + 0.45;
-  plunger.add(meshOf(box(1.5, 2.1, 5.95, Y_CAP, 0.4, 0.34, 0, ZP), M.pomBlack, 'plungerCap'));
+  // the cap, turned 90° from the first model (Brock, F27 clicks: "the part that actually sticks out above the housing looks
+  // like it needs to be turned 90 degrees"): 1.5 mm along the switch × 2.1 across it, its top a half-cylinder about the
+  // across axis (side-on an inverted U, as in Gateron's render; from the front a rounded bar, as in its pair photo), 0.80 proud
+  const Y_CAP = H + CAP_PROUD;
+  {
+    const sh = new THREE.Shape(), yb = 5.95, ya = Y_CAP - CAP_R;
+    sh.moveTo(-CAP_L / 2, yb); sh.lineTo(CAP_L / 2, yb); sh.lineTo(CAP_L / 2, ya); sh.absarc(0, ya, CAP_R, 0, Math.PI, false); sh.lineTo(-CAP_L / 2, yb);
+    const g = extrude(sh, { depth: CAP_W, front: { r: 0.08, s: 3 }, back: { r: 0.08, s: 3 }, curveSegments: 16 });
+    g.rotateY(-Math.PI / 2); g.translate(CAP_W / 2, 0, ZP);   // shape (z, y), extrusion → −X, centred
+    plunger.add(meshOf(g, M.pomBlack, 'plungerCap'));
+  }
   plunger.add(meshOf(box(2.3, 2.9, 5.55, 5.98, 0.3, 0.07, 0, ZP), M.pomBlack, 'plungerFlange'));
   const yNose = Y_BLADE + T_BLADE + 0.002;
   const nose = extrude(roundedRectShape(1.3, 1.1, 0.3), { depth: 5.56 - yNose, back: { r: 0.18, s: 4 }, curveSegments: 6 });
@@ -198,7 +221,7 @@ export function buildGT01(opts = {}) {
   // ---- cover (baked CSG, S frame): translucent, plunger hole, label recess with the raised marking
   const mk = opts.marking === undefined ? 'GT01' : opts.marking;
   const rec = GEO['cover_' + (mk ? mk : 'plain')] || GEO.cover_plain;
-  const coverGeo = decodeGeo(rec, 30);
+  const coverGeo = warpCover(decodeGeo(rec, 30));
   const cover = meshOf(coverGeo, coverMat, 'cover');
   body.add(cover);
 
@@ -212,7 +235,8 @@ export function buildGT01(opts = {}) {
   });
   const runs = new THREE.Group(); runs.name = 'terminalRuns';
   for (const [zs, zw] of [[ZC, PITCH], [0, 0], [ZN, -PITCH]]) {
-    const E = S2W(0.05, zs), E2 = S2W(-0.3, zs);           // out of the switch's bottom, along its −y
+    const y0 = yLow(zs), E = S2W(y0 + 0.05, zs), E2 = S2W(y0 - 0.3, zs);   // out of the switch's bottom, along its −y
+    if (E[0] < 0.7) continue;                               // a terminal that already reaches the board meets its pin there
     const yMid = E2[0] - 0.6 > 0.6 ? E2[0] - 0.6 : (E2[0] + 0.3) / 2;
     const pts = [[0, E[0], E[1]], [0, E2[0], E2[1]], [0, yMid, zw], [0, 0.3, zw]];
     runs.add(meshOf(sweep(roundPath(pts, 0.28), rectSection(0.3, 0.6, 0.04, 2), { up: [1, 0, 0] }), M.goldSatin, 'run'));
@@ -307,7 +331,7 @@ export function buildGT01(opts = {}) {
   root.getState = () => ({ ...state });
 
   // ================================================================ spec / parts / dispose
-  const plTop = new THREE.Vector3(0, H + 0.45, ZP).applyEuler(body.rotation).add(body.position);
+  const plTop = new THREE.Vector3(0, Y_CAP, ZP).applyEuler(body.rotation).add(body.position);
   root.userData.spec = {
     ...GT01_SPEC,
     tiltDeg: tilt / D2R,
@@ -315,7 +339,8 @@ export function buildGT01(opts = {}) {
     plungerTop: plTop.toArray().map(v => +v.toFixed(4)),
     plungerAxis: [0, +cT.toFixed(5), +sT.toFixed(5)],
     footprint: [[-W / 2, F[1]], [W / 2, F[1]], [W / 2, C[1]], [-W / 2, C[1]]],
-    heightMax: +Math.max(...[[H, -L / 2], [H, L / 2], [H + 0.45, ZP]].map(([y, z]) => S2W(y, z)[0])).toFixed(3),
+    heightMax: +Math.max(...[[H, -L / 2], [H, L / 2], [Y_CAP, ZP]].map(([y, z]) => S2W(y, z)[0])).toFixed(3),
+    profile: { source: "traced off Gateron's 'Vertical push mouse switch' render (Brock's best reference), scaled to a 12.8 mm cover [DV]", silhouette: prof.map(([z, y]) => [+z.toFixed(3), +y.toFixed(3)]), shoulder: Y_SHOULDER, cap: { along: CAP_L, across: CAP_W, radius: CAP_R, proud: CAP_PROUD, z: ZP } },
     mechanism: 'SPDT snap-action: BeCu frame anchored on COM, cut-out tongue on a fulcrum, AgNi contacts NC above / NO below',
   };
   root.userData.parts = { body, base, core, switchBase: core, cover, plunger, blade, tongue, contactNC: ncRivet, contactNO: noRivet, contactCOM: movRivet, terminals: term, terminalRuns: runs, pins };
@@ -367,4 +392,26 @@ function stadiumPath(len, wid, cx, cy, ang) {
   const v = pts.map(([x, y]) => new THREE.Vector2(cx + x * c - y * s, cy + x * s + y * c));
   if (!THREE.ShapeUtils.isClockWise(v)) v.reverse();
   return new THREE.Path(v);
+}
+
+/* The baked cover (build_geo.py, manifold3d, not available here) re-shaped to the traced profile by a smooth, monotone warp of
+   its vertices, so every face stays valid: (1) the skirt ends at ys 2.5, not 2.0 (y in [2, 3) maps onto [2.5, 3)); (2) on the
+   top plate (y > 5.9) the plunger hole turns 90° and moves from z 3.4 to 2.0 (1.75 × 2.3 → 2.35 × 1.79 at its inner edge: x
+   scales by 1.34 and z by 0.78 across the hole, both blended to nothing by |x| 2.3 and z 5.5), and the label recess ends at
+   z 0.7 instead of 1.3 to make room. Each map is increasing in its own coordinate, so no triangle folds over. */
+function warpCover(g) {
+  const p = g.attributes.position, n = p.count;
+  const K = [[-0.1, -0.1], [1.3, 0.7], [2.15, 1.025], [4.65, 2.975], [5.5, 5.5]];   // z knots: [old, new]
+  const gz = (z) => { if (z <= K[0][0] || z >= K[K.length - 1][0]) return z; for (let i = 1; i < K.length; i++) if (z <= K[i][0]) { const [a0, b0] = K[i - 1], [a1, b1] = K[i]; return b0 + (z - a0) * (b1 - b0) / (a1 - a0); } return z; };
+  const bz = (z) => z <= 1.3 || z >= 5.5 ? 0 : z < 2.15 ? (z - 1.3) / 0.85 : z <= 4.65 ? 1 : (5.5 - z) / 0.85;
+  const hx = (x) => { const a = Math.abs(x), sg = Math.sign(x); if (a <= 0.975) return sg * a * 1.34; if (a < 2.3) return sg * (1.3065 + (a - 0.975) * (2.3 - 1.3065) / (2.3 - 0.975)); return x; };
+  for (let i = 0; i < n; i++) {
+    let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+    if (y < 3.0) y = 2.5 + (y - 2.0) * 0.5;
+    else if (y > 5.9) { const b = bz(z); x = x + (hx(x) - x) * b; z = gz(z); }
+    p.setXYZ(i, x, y, z);
+  }
+  p.needsUpdate = true;
+  g.deleteAttribute('normal');
+  return creaseNormals(g, 30);
 }
