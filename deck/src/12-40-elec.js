@@ -1,36 +1,11 @@
 /* ============================================================================================
-   idea sheet: electronics, built not to fail (#51, #98, #100). Follows the one-side, one-reflow slide.
+   idea sheet: electronics, the coat and the switch (#98, #100). Follows the one-side, one-reflow slide. (#51, wires
+   instead of ribbon cables, is the braid slides' now: 10-f2-elec.js.)
    Sources are in 10-f-elec.js (SRC: elcBrock, elcCoat, elcNpm, elcLayout).
    ============================================================================================ */
 const elc_sheet1 = ideaSheet({
-  id: 'elecsheet1', ch: 'elec', theme: 'night', title: 'Built not to fail', src: ['elcBrock', 'elcCoat', 'elcNpm', 'elcLayout'],
+  id: 'elecsheet1', ch: 'elec', theme: 'paper', title: 'Conformal coat, readable switch', src: ['elcBrock', 'elcCoat', 'elcNpm', 'elcLayout'],
   panels: [
-    {
-      n: 51, ev: ['claim', 'proposal'], title: 'Wires instead of ribbon cables',
-      body: 'A ribbon tears at its latch when a board comes out; a wire on a JST plug can be pulled and pushed back. That is my experience and a tester\'s, not a study.',
-      note: 'Unverified as a failure rate. The DeathAdder V4 Pro still uses a branching ribbon.',
-      draw: (lt, x, y, w, h, A, a) => {
-        const tug = pingpong(lt, 3.2), boardA = (bx, by) => { G.save(); G.globalAlpha = a; rrPath(bx, by, 96, 64, 6); G.fillStyle = '#121316'; G.fill(); G.strokeStyle = 'rgba(217,178,90,0.8)'; G.lineWidth = 1.5; G.stroke(); G.restore(); };
-        /* the ribbon: a thin amber strip into a latch; tugged, it creases at the latch and tears */
-        const y1 = y + 92, bx2 = x + w - 140 + tug * 30;
-        dLabel('Ribbon cable', x + 18, y + 32, { color: C.ink2, alpha: a });
-        boardA(x + 24, y1 - 32); boardA(bx2, y1 - 32);
-        rr(x + 106, y1 - 16, 26, 32, 3, '#e9e4d8', null, 1, a); rr(x + 98, y1 - 20, 10, 40, 2, '#2a2b30', null, 1, a);
-        const crease = clamp((tug - 0.55) / 0.3);
-        G.save(); G.globalAlpha = a; G.fillStyle = '#d18a1c'; G.beginPath(); G.moveTo(x + 132, y1 - 7); const cx0 = x + 146;
-        G.lineTo(cx0, y1 - 7 - 4 * crease); G.lineTo(cx0 + 8, y1 - 7 + 3 * crease); G.lineTo(bx2, y1 - 7); G.lineTo(bx2, y1 + 7); G.lineTo(cx0 + 8, y1 + 7 + 3 * crease); G.lineTo(cx0, y1 + 7 - 4 * crease); G.lineTo(x + 132, y1 + 7); G.closePath(); G.fill(); G.restore();
-        for (let i = 0; i < 6; i++) line(x + 134, y1 - 5 + i * 2, bx2, y1 - 5 + i * 2, { color: 'rgba(120,70,10,0.5)', w: 0.8, alpha: a });
-        if (crease > 0.6) { line(cx0 + 2, y1 - 9, cx0 + 6, y1 + 9, { color: C.red, w: 3, alpha: a }); dLabel('Tears at the latch', cx0 - 4, y1 + 42, { color: C.red, weight: 800, alpha: a }); }
-        /* the wires: a twisted pair into a JST plug; tugged, they straighten and the plug holds */
-        const y2 = y + 230, bx3 = x + w - 140 + tug * 30;
-        dLabel('Wires and a JST plug', x + 18, y + 170, { color: C.ink2, alpha: a });
-        boardA(x + 24, y2 - 32); boardA(bx3, y2 - 32);
-        rr(x + 104, y2 - 13, 30, 26, 3, '#e9e4d8', null, 1, a);
-        const amp = 6 * (1 - 0.6 * tug);
-        for (const [ph0, col] of [[0, '#9e1510'], [Math.PI, '#18181a']]) { const pts = []; for (let u = 0; u <= 1.0001; u += 0.02) pts.push([lerp(x + 134, bx3, u), y2 + Math.sin(u * 22 + ph0) * amp]); poly(pts, { color: col, w: 4, alpha: a }); }
-        if (tug > 0.7) dLabel('Pulls out, plugs back in', x + w - 18, y2 + 54, { align: 'right', color: A, weight: 800, alpha: a });
-      }
-    },
     {
       n: 98, ev: ['datasheet', 'derived', 'proposal'], title: 'A thin conformal coat',
       body: 'A urethane coat over the board and black epoxy on the most sensitive parts, connectors masked. Coats like this run 30 to 130 µm: about 0.06 to 0.24 g on this board.',
@@ -73,6 +48,6 @@ const elc_sheet1 = ideaSheet({
       }
     }
   ],
-  captions: [[0.6, 'Three small things that keep a board alive: connections that survive a repair, a coat against sweat and spills, and a switch nobody has to guess.']]
+  captions: [[0.6, 'Two small things that keep the one board alive: a coat against sweat and spills, and a power switch nobody has to guess.']]
 });
 elc_sheet1.after = 'elc_oneside';

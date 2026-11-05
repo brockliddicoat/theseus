@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 17:30 (Chicago).
+Last updated: 2026-11-04 19:42 (Chicago).
 
 ## Open with Brock
 
@@ -143,14 +143,14 @@ Last updated: 2026-11-04 17:30 (Chicago).
   to draw on all the resources you have access too. and how many mice just use small arms of fr4 to reinforce the pcb
   which are easy to break of or snap under force, but how we plan to use THE WHOLE PCB."
   - Decided: F6.3.
-- **F2.27 DONE in the intro and Shell A (`shlGrams`), IN PROGRESS (elc)** "also dont worry about weight compared to the xa25, i have that covered, we will be
+- **F2.27 DONE** (Intro, Shell A, Electronics) "also dont worry about weight compared to the xa25, i have that covered, we will be
   able to cut weight elsewhere with my shell design to hit that 200hr"
 - **F2.28 IN PROGRESS (ntr)** "after the comparisons, i think our solution needs a stats slide of their own with a bunch of
   important numbers on big fonts that tick up with an animation, maybe sometimes the "next best" is in a smaller lore
   darker font"
   - Done: `ntr_stats`, "Theseus, by the numbers", a bento whose tiles count up, with the next best smaller, darker and
     in yellow, with its source. Shared helper: statTile with `next` (now with `next.ev` / `next.by` / `next.src`).
-- **F2.29 DONE in shared code and 3D (one board in every scene), IN PROGRESS per slide (elc)** "we don't have a front and back pcb," / "it'll be a
+- **F2.29 DONE** (shared code, 3D, and `elc_oneside`: one board, one side, one reflow, 5.6 g) "we don't have a front and back pcb," / "it'll be a
   single ~5.6g pcb."
   - Shared constant: THS.pcb.
 - **F2.30 DONE** "the price for the mouse is $189"
@@ -170,14 +170,14 @@ Last updated: 2026-11-04 17:30 (Chicago).
 - **F2.37 DONE** (`lattice`: whole cells, nothing sticks out; `shlDeterminate`) "it really bothers me that there's one line on the right that sticks way out into no mans
   land on the hexagon flexing animation, you need to polish that animation more as well as make an accompanying
   animation to show how hexagons distribute force versus triangles, talk about then being statically determinant"
-- **F2.38 IN PROGRESS (elc)** "show a simulation benefit of the and statistic of braiding the wires"
+- **F2.38 DONE** (`elc_tear`: 200× the pull; `elc_twist`: −36 dB noise; `elc_lay`; `elc_flex`: 2.5× less strain) "show a simulation benefit of the and statistic of braiding the wires"
   - The benefits to show: F3.6.
 - **F2.39 STANDING, IN PROGRESS (all)** "whenever there is a simulation it needs to be given lots of screen real estate
   those are very convincing and a lot of work goes into them"
 - **F2.40 DONE** (`mass`, rethought: −93 % twist, the centre of mass drops onto the grip line) "the keeping the mass low near the fingers slide needs to be revamped to be much better and
   make a better argument/be more intuitive"
 - **F2.41 STANDING, IN PROGRESS (all)** "make sure no assets overlap where they shouldn't"
-- **F2.42 IN PROGRESS (elc)** "remove any slides about the dongle as i'm unsure if i want to do the side arm system or not"
+- **F2.42 DONE** (the dongle slide is gone) "remove any slides about the dongle as i'm unsure if i want to do the side arm system or not"
 - **F2.43 STANDING, IN PROGRESS (all)** "i like the animations where you show the mouse cursor moving things"
   - Shared helper: cursorAt.
 - **F2.44 IN PROGRESS (own), STANDING for titles (all)** "i want you to specifically mention newtonian shape analysis, i'm
@@ -288,7 +288,7 @@ Last updated: 2026-11-04 17:30 (Chicago).
   more than how it looks right now other than the actual content (i dont like the current form of the 2d mouse, it should
   be removed, and the numbers and text my change)"
 - **F9.12 DECIDED (F11.1)** "maybe you should let me choose between red, blue or yellow for the primary Theseus color"
-- **F9.13 DONE in 3D (turned 180°, the long meander antenna toward the rear), IN PROGRESS in 2D (elc)** "the raytac module needs to be flipped so it's further from the scroll wheels metal, and
+- **F9.13 DONE** (3D, and `antenna`: the pointer turns the module 180°, 1.8× further from the wheel) "the raytac module needs to be flipped so it's further from the scroll wheels metal, and
   id lowk you to use the long antenna design i've attached"
 - **F9.14 DONE** (3D, and 2D on `gld_camera` and `gld_module`) "the sensor and snap on lens are both not as accurate as id like, you need to squeak out
   a lot more accuracy using the images i've attached"
@@ -321,7 +321,7 @@ Last updated: 2026-11-04 17:30 (Chicago).
   as possible"
 - **F9.24 DONE in shared code, IN PROGRESS per slide** "i dislike anywhere where you use peach tones, especially if it's
   depicting skin (it's hard to tell) skin tones should always been mono tone"
-- **F9.25 DONE in 3D (black module), IN PROGRESS in 2D (elc)** "i'd like you to modify the way the raytac module looks, it should be black instead of
+- **F9.25 DONE** (3D and `elc_module`) "i'd like you to modify the way the raytac module looks, it should be black instead of
   blue"
 - **F9.26 DONE** (zerograms argues it from F = m·a) "it feels like you're arguing against me when you say that there's no research to support zero
   grams is actually the optimal weight, it is well known in the enthusiast community that less weight feels better because
@@ -482,8 +482,7 @@ Answers to the Shell A questions:
 
 ## F17. Answers to the 3D builder's questions (2026-11-04 ~11:00)
 
-- **F17.1 DECIDED** The Raytac part: "AN54LM-20A, long antenna". Keep the name, and draw the long meander antenna. **TODO
-  (elc).**
+- **F17.1 DONE** The Raytac part: "AN54LM-20A, long antenna". The name is kept, and the long meander antenna is drawn.
 - **F17.2 OPEN** The side seam meets the side seams about 30.5 mm above the base: "I'll check and say".
 - **F17.3 DONE** (3D, and the shot on `sidebuttons`) A 3D shot of the full-size SPDT side switches in their
   glove: "Yes, model it".

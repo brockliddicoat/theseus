@@ -42,15 +42,63 @@ Object.assign(SRC, {
   srf_delrin: { t: 'Delrin 150 data sheet (Plastics International): specific gravity 1.42; water absorption 0.25% in 24 h, 0.9% at saturation; dynamic μ 0.20 (ASTM D3702)', u: 'https://www.plasticsintl.com/media/05oith4t/delrin-150-data-sheet.pdf' },
   srf_wheel3d: { t: 'This deck\'s 3D scroll wheel (3d/parts/scrollwheel.js): Ø22 × 7 mm, six spokes, 48 curved grousers, 825 mm³ of wheel, 24-slot code disc; axle held 10.8 mm apart at the encoder boss and the support', u: '', n: 'A design model built for the deck, not a measured part.' },
   srf_register: { t: 'The Register: NASA\'s Perseverance wheels have 48 gently curved treads, double Curiosity\'s 24 chevrons, to better withstand sharp rocks', u: 'https://www.theregister.com/2020/04/06/nasa_reveals_perserverance_rover_grouser_wheel_design/' },
-  srf_eloEnc: { t: 'EloShapes spec sheets via research/data/mice.json: encoder type of 35 mice (optical: Razer Viper V4 Pro, DeathAdder V4 Pro; ZOWIE EC2-DW, U2-DW)', u: 'https://www.eloshapes.com/' }
+  srf_eloEnc: { t: 'EloShapes spec sheets via research/data/mice.json: encoder type of 35 mice (optical: Razer Viper V4 Pro, DeathAdder V4 Pro; ZOWIE EC2-DW, U2-DW)', u: 'https://www.eloshapes.com/' },
+  srf_ttc: { t: 'TTC (@TTCswitch on X, 09/03/2026, shared on r/MouseReview): "TTC optical encoder is ready! Built for speed, precision, and durability"; renders show a normal encoder\'s black housing in a stamped steel frame with a bushing, pins and bent legs, and inside an emitter and receiver with a slotted wheel between (the picture Brock attached, F9.21)', u: '', n: 'Brock\'s reference picture; the internal dimensions are this deck\'s 3D model, not TTC\'s drawing.' },
+  srf_fmSupport: { t: 'Finalmouse support staff, as Brock reports (F12.13): the encoder is the number one failure point in a mouse', u: '', n: 'Reported by Brock, not a published figure.' }
 });
 
-/* ---------- shared helpers (chapter code srf) ---------- */
-/** a card with a Kunai head row; returns the y where its content starts */
-function srf_card(t, t0, x, y, w, h, label, ev, o = {}) {
-  demoWindow(x, y, w, h, ep(t, t0, t0 + 0.45), { hero: o.hero, grid: o.grid });
-  return cardHead(t, t0 + 0.1, x, y, w, label, ev || [], { color: o.color || C.ink });
+/* ---------- at a glance (Brock, F14.10, F15.1, F16.1) ----------
+   The eye lands first on a huge number in Theseus's colour that says by how much, and on a chart where Theseus visibly
+   wins with the better direction written on it. A number that improves keeps its bad value beside it, struck (before → after). */
+/** the headline: a quiet label over a huge figure in Theseus's gradient, an optional word under or beside it, a line under.
+   (x, y) = the figure's baseline (left, or o.align). o = { size, label, word, wordBelow, sub, maxW, count, from, a } */
+function srf_hl(t, t0, x, y, num, o = {}) {
+  const a = (o.a == null ? 1 : o.a) * ep(t, t0, t0 + 0.5); if (a <= 0.003) return { w: 0, h: 0 };
+  const sz = o.size || 160, k = E.out3(ep(t, t0, t0 + 0.75)), al = o.align || 'left';
+  G.save(); G.translate(0, (1 - k) * 16);
+  if (o.label) text(o.label, x, y - sz * 0.74 - 22, { role: 'label', size: 22, color: C.heroText, alpha: a, align: al, maxW: o.maxW || 720 });
+  const r = rich([{ s: num, role: 'd1', size: sz, weight: 800, track: -0.03, color: C.heroText, grad: C.heroGrad, tnum: true, count: o.count ? [t0, 1.0, o.from || 0] : null },
+    o.word && !o.wordBelow ? { s: o.word, role: 'd2', size: Math.round(sz * 0.3), color: C.heroText, grad: C.heroGrad, gap: Math.round(sz * 0.08) } : null], x, y, { t, alpha: a, align: al });
+  let yy = y;
+  if (o.word && o.wordBelow) { yy += Math.round(sz * 0.36) + 8; text(o.word, x, yy, { role: 'd2', size: o.wordSize || Math.round(sz * 0.34), color: C.heroText, grad: C.heroGrad, align: al, alpha: a }); }
+  if (o.sub) text(o.sub, x, yy + 52, { role: 'small', size: 25, weight: 600, color: C.ink2, align: al, alpha: a * ep(t, t0 + 0.3, t0 + 0.8), maxW: o.maxW || 620, lh: 1.32 });
+  G.restore();
+  return { w: r.w, h: yy - y };
 }
+/** before → after on one baseline: the old value struck in grey, an arrow, the new one in Theseus's colour, and the net
+   change under them in Theseus's colour. o = { size, label, net, who: [before's name, after's name], unit } */
+function srf_ba(t, t0, x, y, before, after, o = {}) {
+  const a = ep(t, t0, t0 + 0.5) * (o.alpha == null ? 1 : o.alpha); if (a <= 0.003) return 0;
+  const size = o.size || 72, st0 = { role: 'd1', size, weight: 800, color: C.faint, tnum: true }, wB = tw(before, st0);
+  if (o.label) text(o.label, x, y - size * 0.8 - 18, { role: 'label', size: 21, color: C.mute, alpha: a, maxW: o.maxW || 700 });
+  text(before, x, y, Object.assign({ alpha: a * 0.95 }, st0));
+  line(x - 4, y - size * 0.31, x + wB + 4, y - size * 0.31, { color: C.mute, w: Math.max(3, size * 0.055), alpha: a * ep(t, t0 + 0.35, t0 + 0.7) });
+  const ax = x + wB + size * 0.3;
+  arrow(ax, y - size * 0.32, ax + size * 0.6, y - size * 0.32, { color: C.mute, w: Math.max(2.5, size * 0.05), hs: size * 0.2, alpha: a, p: ep(t, t0 + 0.2, t0 + 0.7) });
+  const k = ep(t, t0 + 0.45, t0 + 0.95), x2 = ax + size * 0.9;
+  const r = rich([{ s: after, role: 'd1', size, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, o.unit ? { s: o.unit, font: 'sans', size: Math.max(24, Math.round(size * 0.32)), weight: 700, color: C.heroText, gap: 10 } : null], x2, y, { t, alpha: a * k });
+  if (o.who) { text(o.who[0], x, y + 34, { role: 'label', size: 19, color: C.faint, alpha: a }); text(o.who[1], x2, y + 34, { role: 'label', size: 19, color: C.heroText, alpha: a * k }); }
+  if (o.net) text(o.net, x, y + (o.who ? 80 : 48), { role: 'small', size: o.netSize || 27, weight: 800, color: C.heroText, alpha: a * ep(t, t0 + 0.8, t0 + 1.2), maxW: o.maxW || 700, lh: 1.25 });
+  return x2 + r.w - x;
+}
+/** which way is better, written on a chart: an arrow and quiet caps ('Lower is better'). dir: 'l' | 'r' | 'u' | 'd' */
+function srf_better(t, t0, x, y, s, dir = 'l', o = {}) {
+  const a = ep(t, t0, t0 + 0.4) * (o.alpha == null ? 1 : o.alpha); if (a <= 0.003) return 0;
+  const g = { l: '←', r: '→', u: '↑', d: '↓' }[dir], str = dir === 'r' ? s + '  ' + g : g + '  ' + s;
+  return text(str, x, y, { role: 'label', size: o.size || 21, color: o.color || C.mute, align: o.align || 'left', alpha: a }).w;
+}
+/** where a part sits in the shot view3D just drew into box: on the render (R3D.anchor) when the render was drawn, else on its
+   flat twin. drawn = view3D's return value. (The shared v3At does this, but the build's 08-r3d.js may predate it.) */
+function srf_at3(key, st, box, drawn, re, f = [0.5, 0.5, 0.5]) {
+  if (typeof v3At === 'function') return v3At(key, st, box, re, f);
+  if (drawn && !V2D.on && !V3.proj && typeof R3D !== 'undefined' && R3D.anchor) {
+    const uv = R3D.anchor(key, re, f, TH ? 'paper' : 'night');
+    if (uv) return [box[0] + uv[0] * box[2], box[1] + uv[1] * box[3]];
+  }
+  return typeof v2dAt === 'function' ? v2dAt(key, st, box, re, f) : null;
+}
+
+/* ---------- shared helpers (chapter code srf) ---------- */
 /** a 3D shot clipped to a rounded tile */
 function srf_3d(t, t0, key, x, y, w, h, st, o = {}) {
   const a = ep(t, t0, t0 + 0.5) * (o.alpha == null ? 1 : o.alpha); if (a <= 0.003) return false;
@@ -74,25 +122,6 @@ function srf_proj(x, y, w, h, st, r, margin = 1.12) {
   const up = Math.abs(d[1]) > 0.99 ? [0, 0, -Math.sign(d[1])] : [0, 1, 0], xa = nrm(cross(up, d)), ya = cross(d, xa), tf = Math.tan(fov / 2);
   return (X, Y, Z) => { const v = [X - P[0], Y - P[1], Z - P[2]], vz = -dot(v, d); return [x + w / 2 + dot(v, xa) / (vz * tf * asp) * w / 2, y + h / 2 - dot(v, ya) / (vz * tf) * h / 2]; };
 }
-/** the step further: the best version shipping today (a grey rule), then the Theseus step (a yellow edge). returns the y under it */
-function srf_step(t, t0, x, y, w, best, step, o = {}) {
-  const k1 = ep(t, t0, t0 + 0.45), k2 = ep(t, t0 + 0.9, t0 + 1.35), lh = o.lh || 33, sz = o.size || 25;
-  const pillsR = (kinds, yy, a) => { let xr = x + w; for (let i = kinds.length - 1; i >= 0; i--) { xr -= pillW(kinds[i]); pill(xr, yy + 1, kinds[i], a); xr -= 10; } };
-  rect(x, y - 22, 5, 30, { fill: C.comp, alpha: k1 });
-  text(o.bestLabel || 'Best today', x + 20, y, { role: 'label', size: 21, color: C.mute, alpha: k1 });
-  pillsR(best.ev || [], y, k1);
-  const r1 = para([{ s: best.who + '. ', role: 'small', size: sz, weight: 700, color: C.ink }, { s: best.line, role: 'small', size: sz, weight: 450, color: C.ink2 }], x + 20, y + 38, { maxW: w - 20, lh, t, t0: t0 + 0.15, cps: 150, alpha: k1, maxLines: best.lines || 3 });
-  const y2 = y + 38 + r1.h + (o.gap || 26);
-  if (k2 > 0.003) {
-    const r2l = wrap(step.line, { role: 'small', size: sz, weight: 500 }, w - 20).length;
-    rect(x, y2 - 22, 5, (38 + lh * Math.min(step.lines || 3, r2l)) * E.out3(k2), { fill: C.hero });
-    rich([{ s: o.stepLabel || 'Theseus', role: 'label', size: 21, color: C.onHero, chip: C.heroChip }], x + 26, y2, { alpha: k2 });
-    pillsR(step.ev || ['proposal'], y2, k2);
-    const r2 = para([{ s: step.line, role: 'small', size: sz, weight: 500, color: C.ink }], x + 20, y2 + 38, { maxW: w - 20, lh, t, t0: t0 + 1.05, cps: 150, alpha: k2, maxLines: step.lines || 3 });
-    return y2 + 38 + r2.h;
-  }
-  return y2;
-}
 /** horizontal bars with the value at the end. rows: [{ name, sub, v, lo, hi (a range), err (± whisker), hero, ref, color, dash, ev, label }] */
 function srf_bars(t, t0, o) {
   const { x, y, w } = o, rh = o.rowH || 56, lw = o.labelW || 300, vw = o.valW || 120, bx = x + lw, bw = w - lw - vw, [lo, hi] = o.xr;
@@ -106,7 +135,7 @@ function srf_bars(t, t0, o) {
     const col = r.color || (r.hero ? C.hero : r.ref ? C.ink : C.comp);
     if (r.dash) { G.save(); G.globalAlpha = a; G.setLineDash([6, 5]); rrPath(bx, yy - bh / 2, (X(r.v) - bx) * k, bh, bh / 2); G.strokeStyle = r.hero ? C.heroText : C.ink2; G.lineWidth = 2; G.stroke(); G.restore(); }
     else if (r.lo != null) { const xa = X(r.lo), xb = X(lo + (r.hi - lo) * k); rr(Math.min(xa, xb), yy - bh / 2, Math.max(bh, Math.abs(xb - xa)), bh, bh / 2, col, null, 0, a); }
-    else { const L = Math.max(bh, (X(r.v) - bx) * k); rr(bx, yy - bh / 2, L, bh, bh / 2, col, r.hero && TH ? '#111111' : null, 1.3, a); glint(bx, yy - bh / 2, L, bh, t, d + 3.5 + i * 0.2, 9); }
+    else { const L = Math.max(bh, (X(r.v) - bx) * k); rr(bx, yy - bh / 2, L, bh, bh / 2, col, null, 0, a); }
     if (r.err && k > 0.95) { const xa = X(r.v - r.err), xb = X(r.v + r.err), ka = ep(t, d + 0.8, d + 1.1); line(xa, yy, xb, yy, { color: C.ink, w: 2, alpha: ka }); line(xa, yy - 9, xa, yy + 9, { color: C.ink, w: 2, alpha: ka }); line(xb, yy - 9, xb, yy + 9, { color: C.ink, w: 2, alpha: ka }); }
     const vs = r.label != null ? r.label : fmtN(r.v, o.dec == null ? 1 : o.dec) + (o.unit ? ' ' + o.unit : '');
     const cu = r.label == null && !r.dash ? (countUp(vs, k, lo) || vs) : vs;
@@ -290,26 +319,6 @@ function srf_tip(x, y, r, o = {}) {
 }
 /** friction by direction: the friction ellipse between μ along the ridges (a) and across them (b), at angle th from along */
 const srf_mu = (a, b, th) => a * b / Math.sqrt(Math.pow(b * Math.cos(th), 2) + Math.pow(a * Math.sin(th), 2));
-/** a polar plot of friction by direction. curves = [{ a, b, color, w, dash, p (0..1 drawn), th0, label }], R = px for r = 1.
-   Along is drawn left to right, across up and down, as on the surface beside it */
-function srf_polar(t, t0, cx, cy, R, curves, o = {}) {
-  const k = ep(t, t0, t0 + 0.6);
-  if (k <= 0.003) return;
-  for (const f of [0.5, 1]) circle(cx, cy, R * f * E.out3(k), { color: C.hair, w: 1.5 });
-  const lr = o.lr || 1.16;
-  line(cx - R * lr, cy, cx + R * lr, cy, { color: C.hair, w: 1.5, alpha: k }); line(cx, cy - R * lr, cx, cy + R * lr, { color: C.hair, w: 1.5, alpha: k });
-  text('Along', cx + R * lr, cy + 28, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: k });
-  text('Across', cx, cy - R * lr - 12, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: k });
-  for (const c of curves) {
-    const p = c.p == null ? 1 : c.p; if (p <= 0) continue;
-    const th0 = c.th0 || 0, pts = [];
-    for (let i = 0; i <= 120 * p; i++) { const th = th0 + (c.cw ? -1 : 1) * TAU * i / 120, r = srf_mu(c.a, c.b, th) * R / (o.norm || 1); pts.push([cx + r * Math.cos(th), cy - r * Math.sin(th)]); }
-    G.save(); G.globalAlpha = k * (c.alpha == null ? 1 : c.alpha); G.beginPath(); pts.forEach((q, i) => i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]));
-    if (c.fill && p >= 1) { G.closePath(); G.fillStyle = c.fill; G.fill(); }
-    G.strokeStyle = c.color; G.lineWidth = c.w || 3; G.lineJoin = 'round'; G.setLineDash(c.dash || []); G.stroke(); G.setLineDash([]); G.restore();
-  }
-}
-
 /* ============================== chapter card ============================== */
 S({
   id: 'surfacecard', ch: 'surface', card: true, theme: 'night', title: 'Surface and details', settle: 5, three: ['shell'],
@@ -323,88 +332,69 @@ S({
     }
     chapterCard(t, {
       name: 'surface', gloss: 'What your hand touches, and the small marks that make a mouse look finished.',
-      list: [['#16', 'A baked ceramic coat'], ['#60', 'Laser-etched grip on the sides'], ['#36', 'Your serial, lasered on the right click'], ['#34', 'Engravings half as deep'], ['#84', 'A magnesium wheel, counted with light'], ['#30', 'A rover\'s tread on the wheel'], ['#12', 'Satin clear over raw carbon']]
+      list: [['#16', 'A baked ceramic coat, 19 µm thin'], ['#16', 'No added weight, no yellowing'], ['#60', 'Laser-etched directional grip'], ['#60', 'No adhesive, two tones in one coat'], ['#36', 'Your serial, lasered on the right click'], ['#34', 'Engravings half as deep'], ['#84', 'A magnesium wheel, a rover\'s tread'], ['Encoder', 'An optical encoder in TTC\'s form']]
     });
-    figLabel(t, 2.2, 1040, 1000 - 22, 8, 'The forged colourway: satin clear over raw carbon-filled PP (render)');
+    figLabel(t, 2.2, 1040, 1000 - 22, 8, 'Forged colourway, satin clear over raw carbon');
   }
 });
 
 /* ============================== #16 bake the coating ============================== */
 const srf_GRADES = ['7B', '6B', '5B', '4B', '3B', '2B', 'B', 'HB', 'F', 'H', '2H', '3H', '4H', '5H', '6H', '7H', '8H', '9H'];
 S({
-  id: 'coating', ch: 'surface', theme: 'paper', title: 'Bake the coating', settle: 10, ideas: [16],
-  src: ['srf_eloPmm', 'srf_doc', 'cerakoteH', 'cerakoteC', 'cerakoteGuide', 'cerakoteCure', 'radtech', 'ppSurface', 'srf_scan'],
+  id: 'coating', ch: 'surface', theme: 'paper', title: 'Baked ceramic coating', settle: 10, ideas: [16],
+  src: ['srf_f110', 'cerakoteC', 'cerakoteH', 'srf_soft', 'srf_eloPmm', 'srf_fManual', 'srf_doc'],
   draw: t => {
-    header(t, 'Bake the coating');
-    captions(t, [[0.6, 'Soft-touch rubber wears through. A ceramic coat needs heat to reach full strength, the way a pot does in a kiln.'], [5.8, 'Cerakote measured 8H on steel at 250 °F. Plastics cure at 150 to 180 °F, so I measure it again on the shell before I claim it.']]);
-    /* left: dried in air or fired, a pencil across both, then the step further */
-    const lx = LM, ly = LAY.top, lw = 860, lh = 580, by = ly + 252, P1 = lx + 215, P2 = lx + lw - 215;
-    srf_card(t, 0.3, lx, ly, lw, lh, 'Dried in air, or fired', ['datasheet']);
+    header(t, 'Baked ceramic coating');
+    captions(t, [[0.6, 'A ceramic needs heat to reach its strength. Clay dried in air stays weak; the same clay fired in a kiln does not.'], [5.8, 'PMM\'s air-dried ceramic gripped well and wore. Cerakote\'s F-Series is baked: 9H on its test panels, against 3H air-cured.']]);
+    /* left: dried in air or fired, and a pencil across both */
+    const lx = LM, ly = 280, lw = 680, lh = 680, by = ly + 330, P1 = lx + 170, P2 = lx + lw - 170;
+    demoWindow(lx, ly, lw, lh, tileA(t, 0.2, 0));
     const fire = ep(t, 1.2, 3.0);
     [[P1, 0], [P2, fire]].forEach(([px, f], i) => {
       const a = ep(t, 0.6 + i * 0.2, 1.1 + i * 0.2);
       if (i === 1 && t > 1.0) {
-        /* the kiln: a bed of heat and the air shimmering above it while the pot fires */
-        const hk = ep(t, 1.0, 1.4) * (1 - ep(t, 3.0, 3.8));
-        G.save(); G.globalAlpha = hk; const g = G.createRadialGradient(px, by + 4, 8, px, by + 4, 130); g.addColorStop(0, rgba(C.orange, 0.5)); g.addColorStop(1, rgba(C.orange, 0)); G.fillStyle = g; G.fillRect(px - 140, by - 120, 280, 140); G.restore();
-        for (let k = 0; k < 5; k++) { const ph = (t * 0.7 + k / 5) % 1, xx = px - 56 + k * 28; G.save(); G.globalAlpha = hk * (1 - ph) * 0.7; G.strokeStyle = C.orange; G.lineWidth = 2; G.beginPath(); for (let s2 = 0; s2 <= 1; s2 += 0.1) G.lineTo(xx + 5 * Math.sin(s2 * 6 + t * 3 + k), by - 8 - ph * 140 - s2 * 30); G.stroke(); G.restore(); }
+        /* the kiln: a bed of heat, the air shimmering above it while the pot fires */
+        const hk = ep(t, 1.0, 1.4) * (1 - ep(t, 3.0, 3.8)), hc = heatCol(0.6);
+        G.save(); G.globalAlpha = hk; const g = G.createRadialGradient(px, by + 4, 8, px, by + 4, 130); g.addColorStop(0, rgba(hc, 0.5)); g.addColorStop(1, rgba(hc, 0)); G.fillStyle = g; G.fillRect(px - 140, by - 120, 280, 140); G.restore();
+        for (let k = 0; k < 5; k++) { const ph = (t * 0.7 + k / 5) % 1, xx = px - 56 + k * 28; G.save(); G.globalAlpha = hk * (1 - ph) * 0.7; G.strokeStyle = hc; G.lineWidth = 2; G.beginPath(); for (let s2 = 0; s2 <= 1; s2 += 0.1) G.lineTo(xx + 5 * Math.sin(s2 * 6 + t * 3 + k), by - 8 - ph * 140 - s2 * 30); G.stroke(); G.restore(); }
       }
-      srf_pot(px, by, 140, f, a);
-      line(px - 110, by + 2, px + 110, by + 2, { color: C.hair, w: 2, alpha: a });
-      text(i ? 'Fired in a kiln' : 'Dried in air', px, ly + 92, { role: 'label', size: 22, color: C.ink, align: 'center', alpha: a });
+      srf_pot(px, by, 170, f, a);
+      line(px - 120, by + 2, px + 120, by + 2, { color: C.hair, w: 2, alpha: a });
+      text(i ? 'Fired in a kiln' : 'Dried in air', px, ly + 80, { role: 'label', size: 22, color: C.ink, align: 'center', alpha: a });
     });
-    /* the pencil test: a 4H lead marks the air-cured film (rated 3H) and not the baked one (rated 8H) */
+    /* the pencil test: a 4H lead marks the air-cured film (3H) and not the baked one (9H) */
     const loop = t >= 11 ? ((t - 11) % 7) / 7 : -1, pk = loop >= 0 ? env(loop, 0, 0.06, 0.62, 0.72) : env(t, 3.4, 3.7, 8.2, 8.6);
     const pc = loop >= 0 ? clamp(loop / 0.6) : clamp((t - 3.7) / 4.4);
     [[P1, 1], [P2, 0]].forEach(([px, marks], i) => {
-      const u = clamp(pc * 2 - i), path = s2 => [px - 46 + 92 * E.io3(s2), by - 62 + 8 * Math.sin(s2 * Math.PI)];
+      const u = clamp(pc * 2 - i), path = s2 => [px - 56 + 112 * E.io3(s2), by - 76 + 10 * Math.sin(s2 * Math.PI)];
       const done = loop >= 0 ? 1 : (i === 0 ? u : 0);
       if (marks && done > 0) { G.save(); G.globalAlpha = 0.9; G.strokeStyle = '#6C6B66'; G.lineWidth = 3; G.lineCap = 'round'; G.beginPath(); for (let s2 = 0; s2 <= done + 1e-6; s2 += 0.02) { const q = path(Math.min(s2, done)); G.lineTo(q[0], q[1]); } G.stroke(); G.restore(); }
       if (u > 0 && u < 1) { const q = path(u); srf_pencil(q[0], q[1], i ? '' : '4H', pk); }
       const kr = ep(t, 4.6 + i * 2.2, 5.0 + i * 2.2);
-      text(marks ? '4H marks it' : '4H leaves no mark', px, by + 36, { role: 'label', size: 22, color: marks ? C.red : C.good, align: 'center', alpha: kr });
+      text(marks ? '4H marks it' : '4H leaves no mark', px, by + 44, { role: 'label', size: 22, color: marks ? C.red : C.heroText, align: 'center', alpha: kr });
     });
-    [['C-299, air-cured: 3H', P1], ['H-167, oven-cured: 8H on steel', P2]].forEach(([s2, px], i) => text(s2, px, by + 70, { role: 'small', size: 24, weight: 700, color: C.ink, align: 'center', alpha: ep(t, 5.2 + i * 0.3, 5.6 + i * 0.3) }));
-    rule(lx + 26, ly + 354, lx + lw - 26, ep(t, 5.8, 6.2));
-    srf_step(t, 6.2, lx + 26, ly + 388, lw - 52,
-      { who: 'PMM AIM 8K', line: 'Air-dried ceramic: "improves grip significantly" (EloShapes). It wore (Brock). No hardness published.', lines: 2 },
-      { line: 'Baked; hardness, adhesion and mass measured on the shell.', ev: ['proposal'], lines: 1 }, { gap: 14 });
-    /* right: the pencil-hardness ladder, then wear */
-    const rx = 980, rw = RM - rx, ry = LAY.top;
-    srf_card(t, 0.5, rx, ry, rw, lh, 'Pencil hardness, ASTM D3363', ['study', 'datasheet', 'claim']);
-    const gx0 = rx + 360, gw = rw - 500, GX = i => gx0 + gw * i / 17, a0 = ep(t, 0.9, 1.4), y0 = ry + 120, rg = 64, yb = y0 + 4 * rg + 34;
-    srf_GRADES.forEach((g, i) => { line(GX(i), y0 - 26, GX(i), yb - 4, { color: C.hair, w: 1, alpha: a0 }); if (i % 2 === 1) text(g, GX(i), yb + 22, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a0 }); });
-    const rows = [['Soft-touch rubber', 'RadTech 2016', 4, C.comp, '7B–3B', 'study'], ['Air-cured ceramic', 'Cerakote C-299', 11, C.comp, '3H', 'datasheet'], ['Oven-cured, on steel', 'Cerakote H-167, 250 °F', 16, C.ink, '8H', 'datasheet'], ['Elite series', 'Cerakote', 17, C.comp, '>9H', 'claim']];
-    rows.forEach(([l, sub, b, col, lab, ev], i) => {
+    [['Air-cured C-299: 3H', P1, C.ink2], ['Baked F-Series: 9H', P2, C.heroText]].forEach(([s2, px, col], i) => text(s2, px, by + 82, { role: 'small', size: 25, weight: 800, color: col, align: 'center', alpha: ep(t, 5.2 + i * 0.3, 5.6 + i * 0.3) }));
+    sourceBox(t, 6.2, lx + 40, ly + 500, lw - 80, 'EloShapes, PMM AIM 8K', 'PMM\'s air-dried ceramic "improves grip significantly". Brock: it wore.', { size: 25 });
+    /* right: the glance, then the hardness ladder (harder is better) */
+    const rx = 800;
+    srf_hl(t, 1.0, rx, 448, '9H', { size: 150, label: 'Pencil hardness, baked', sub: 'Cerakote F-Series, on its test panels.', maxW: 460 });
+    srf_ba(t, 5.4, 1320, 448, '3H', '9H', { size: 72, label: 'Air-dried → baked ceramic', net: '+6 grades harder' });
+    pill(RM - pillW('datasheet', { by: 'Cerakote' }), 330, 'datasheet', ep(t, 1.4, 1.8), { by: 'Cerakote' });
+    const gx0 = rx + 300, gw = RM - gx0 - 70, GX = i => gx0 + gw * i / 17, a0 = ep(t, 0.9, 1.4), y0 = 640, rg = 66, yb = y0 + 3 * rg + 34;
+    srf_GRADES.forEach((g, i) => { line(GX(i), y0 - 30, GX(i), yb - 4, { color: C.hair, w: 1, alpha: a0 }); if (i % 2 === 1) text(g, GX(i), yb + 24, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a0 }); });
+    const rows = [['Soft-touch rubber', 'RadTech 2016', 0, 9, '7B–H'], ['Air-cured ceramic', 'Cerakote C-299', 0, 11, '3H'], ['Oven-cured, H-Series', 'Cerakote H-167', 0, 16, '8H'], ['Baked F-Series', 'Theseus\'s coat', 0, 17, '9H', true]];
+    rows.forEach(([l, sub, b0, b, lab, hero], i) => {
       const y = y0 + i * rg, k = ep(t, 1.2 + i * 0.25, 2.0 + i * 0.25, E.snap), al = ep(t, 1.0 + i * 0.25, 1.4 + i * 0.25);
-      evDot(rx + 30, y - 6, ev, 5, al);
-      text(l, rx + 46, y + 2, { role: 'small', size: 24, weight: 700, color: C.ink, alpha: al });
-      text(sub, rx + 46, y + 28, { role: 'label', size: 19, color: C.mute, alpha: al });
-      rr(GX(0), y - 8, Math.max(16, (GX(b) - GX(0)) * k), 16, 8, col, null, 0, al);
-      text(lab, GX(b) + 14, y + 8, { font: 'mono', size: 24, weight: 800, color: C.ink, alpha: ep(t, 1.8 + i * 0.25, 2.2 + i * 0.25) });
+      if (hero) rect(rx, y - 26, 6, 56, { fill: C.hero, alpha: al });
+      text(l, rx + (hero ? 22 : 0), y + 2, { role: 'small', size: 24, weight: hero ? 800 : 700, color: C.ink, alpha: al });
+      text(sub, rx + (hero ? 22 : 0), y + 28, { role: 'label', size: 19, color: hero ? C.heroText : C.mute, alpha: al });
+      rr(GX(b0), y - 9, Math.max(18, (GX(b) - GX(b0)) * k), 18, 9, hero ? C.hero : C.comp, null, 0, al);
+      text(lab, Math.max(GX(b0) + 18, GX(b0) + (GX(b) - GX(b0)) * k) + 14, y + 9, { font: 'disp', size: 26, weight: 800, color: hero ? C.heroText : C.ink2, alpha: ep(t, 1.8 + i * 0.25, 2.2 + i * 0.25), tnum: true });
     });
-    const ty = y0 + 4 * rg, kt = ep(t, 3.0, 3.5);
-    rect(rx, ty - 26, 6, 56, { fill: C.hero, alpha: kt });
-    evDot(rx + 30, ty - 6, 'proposal', 5, kt);
-    text('Theseus, on CF-PP', rx + 46, ty + 2, { role: 'small', size: 24, weight: 800, color: C.ink, alpha: kt });
-    text('150–180 °F cure', rx + 46, ty + 28, { role: 'label', size: 19, color: C.heroText, alpha: kt });
-    G.save(); G.globalAlpha = kt; G.setLineDash([6, 5]); rrPath(GX(0), ty - 8, (GX(16) - GX(0)) * ep(t, 3.2, 4.0, E.cam), 16, 8); G.strokeStyle = C.heroText; G.lineWidth = 2; G.stroke(); G.restore();
-    text('Aim 8H?', GX(16) + 14, ty + 8, { font: 'mono', size: 24, weight: 800, color: C.heroText, alpha: ep(t, 3.8, 4.2) });
-    text('To measure on the shell', GX(8), ty - 18, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: ep(t, 3.8, 4.2) });
-    rule(rx + 26, yb + 50, rx + rw - 26, ep(t, 4.0, 4.4));
-    para([{ s: 'Wear. ', role: 'small', size: 25, weight: 700, color: C.ink }, { s: 'Soft-touch wore through in 31 to 300+ rub cycles (RadTech). Cerakote claims over 8,000 Taber cycles per mil for Elite. Different tests, so no shared axis.', role: 'small', size: 25, weight: 450, color: C.ink2 }], rx + 26, yb + 92, { maxW: rw - 52, lh: 33, t, t0: 4.2, cps: 150, maxLines: 3 });
-    gloss(t, 6.8, 'Pencil hardness', 'Graded pencils are pushed across the film at 45°. The rating is the hardest one that leaves no mark; 9H is the top of the scale.');
-    featureCard(t, 7.2, 'A baked ceramic coat', ['datasheet', 'derived', 'proposal'], 'Oven-cured, not air-dried (#16). One 1-mil coat: 34.7 g/m² × 133 cm² of shell, 0.35 to 0.46 g, at most 1.6% of 29 g.');
+    srf_better(t, 2.4, RM, yb + 64, 'Harder is better', 'r', { align: 'right' });
+    text('Pencil grades, ASTM D3363, on steel', gx0, yb + 64, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 2.4, 2.8) });
   }
 });
-
-/** the step further as the slide's band: the best shipping version on the left (grey dash), the Theseus step on the right (yellow dash) */
-function srf_pillsR(xr, y, kinds, a) { for (let i = kinds.length - 1; i >= 0; i--) { xr -= pillW(kinds[i]); pill(xr, y + 1, kinds[i], a); xr -= 10; } }
-function srf_stepBand(t, t0, best, step) {
-  const w = 820, x2 = W / 2 + 40, w2 = RM - x2;
-  bandBlock(t, t0, LM, w, 'Best today', best.who, best.line, { color: C.comp, right: (y, a) => srf_pillsR(LM + w, y, best.ev || [], a) });
-  bandBlock(t, t0 + 0.7, x2, w2, 'Theseus, one step further', step.who, step.line, { color: C.hero, right: (y, a) => srf_pillsR(RM, y, step.ev || ['proposal'], a) });
-}
 
 /* ============================== #60 directional grip: anisotropic friction ============================== */
 /** the drag on the grip slide, in the macro tile B = [x, y, w, h]: across the ridges, along them, then a full turn.
@@ -419,67 +409,64 @@ function srf_gripPath(t, B) {
   const k = ep(t, 7.3, 10.3, E.io3), ps = TAU * k;
   return { p: [Cc[0] + rad * Math.cos(ps), Cc[1] + rad * Math.sin(ps)], dir: ps + Math.PI / 2, mv: k > 0 && k < 1 ? 1 : 0, ph: k < 1 ? 'turn' : 'rest', turn: k };
 }
-const SRF_MU = { along: 0.42, across: 0.53, coarse: 2 };   /* Zhang 2017 at 1 N (laser grooves on steel); Sergachev 2022 (up to 2x) */
+const SRF_MU = { along: 0.42, across: 0.53 };   /* Zhang 2017, fingertip at 1 N on laser grooves 20 µm wide, 10 µm deep */
 S({
   id: 'grip', ch: 'surface', theme: 'paper', title: 'Directional grip', settle: 11.5, ideas: [60],
-  src: ['srf_zhang17', 'srf_serg22', 'srf_doc'],
+  src: ['srf_zhang17', 'srf_f110', 'srf_doc'],
   draw: t => {
     header(t, 'Directional grip');
-    captions(t, [[0.6, 'Etched ridges hold a fingertip hardest when it slides across them, and let it slide along them.'], [6.4, 'Grip tape grips the same in every direction. An etch can grip one way and leave every other way free.']]);
-    const top = 296, gl = golden(LM, RM - LM, 24), [mx, mw] = gl.a, [px, pw] = gl.b, mh = 476, B = [mx, top, mw, mh];
-    /* the macro: laser-cut grooves in the coat; a studio light sweeps once across them; the camera pushes in slowly */
+    captions(t, [[0.6, 'Laser-etched grooves hold a fingertip hardest when it slides across them, and let it glide along them.'], [6.4, 'Grip tape grips the same every way. An etch grips one way and leaves every other way free.']]);
+    const B = [LM, 280, 1120, 560], [mx, top, mw, mh] = B, W1 = 'rgba(255,255,255,0.88)', W2 = 'rgba(255,255,255,0.6)';
+    /* the simulation: laser-cut grooves in the coat under a sweeping light; the pointer drags a fingertip across, along, round */
     demoWindow(mx, top, mw, mh, tileA(t, 0.2, 0), { r: SRF.r });
     const f = srf_field('grip:ridge', 1000, 450, ff => srf_genFilm(ff, { pat: 'ridge', pitch: 40, width: 22, depth: 6, ang: 0, seed: 5, bend: 120 }));
-    srf_macro(t, f, mx, top, mw, mh, { light: srf_sweep(t, f, 0.5, 3.4), zoom: 1 + 0.08 * ep(t, 0.5, 11.5, E.io3), alpha: ep(t, 0.35, 1.1) });
-    text('Laser-cut grooves in the coat (illustrative)', mx + 32, top + mh - 30, { role: 'small', size: 24, weight: 500, color: 'rgba(255,255,255,0.7)', alpha: ep(t, 1.0, 1.4) });
-    /* the fingertip, dragged by the pointer, and the friction that holds it back */
-    const gp = srf_gripPath(t, B), th = gp.dir, mu = srf_mu(SRF_MU.along, SRF_MU.across, th), ux = Math.cos(th), uy = Math.sin(th);
+    srf_macro(t, f, mx, top, mw, mh, { light: srf_sweep(t, f, 0.5, 3.4), zoom: 1 + 0.06 * ep(t, 0.5, 11.5, E.io3), alpha: ep(t, 0.35, 1.1) });
+    text('Laser-cut grooves, 10 µm deep, inside the 19 µm coat (magnified)', mx + 32, top + mh - 30, { role: 'small', size: 24, weight: 600, color: W2, alpha: ep(t, 1.0, 1.4) });
+    const gp = srf_gripPath(t, [mx, top, mw * 0.78, mh]), th = gp.dir, mu = srf_mu(SRF_MU.along, SRF_MU.across, th), ux = Math.cos(th), uy = Math.sin(th);
     const lag = gp.mv * (8 + 18 * mu), tp = [gp.p[0] - ux * lag, gp.p[1] - uy * lag];
     G.save(); rrPath(mx, top, mw, mh, SRF.r); G.clip();
     srf_tip(tp[0], tp[1], 58, { a: ep(t, 1.9, 2.3), rot: th, stretch: gp.mv * 0.05 * mu / 0.5 });
     if (gp.mv > 0) { const L = 104 * mu / 0.5; arrow(tp[0] - ux * 64, tp[1] - uy * 64, tp[0] - ux * (64 + L), tp[1] - uy * (64 + L), { color: C.hero, w: 5, hs: 18, alpha: 0.95 }); }
     cursorPtr(gp.p[0] + 6, gp.p[1] + 6, { a: ep(t, 1.6, 1.9) * (1 - ep(t, 10.6, 11.0)), grab: gp.mv > 0, fill: '#FFFFFF', edge: '#111111' });
     G.restore();
-    /* friction by direction: the live value, and its polar plot traced as the finger turns */
-    demoWindow(px, top, pw, mh, tileA(t, 0.2, 1), { r: SRF.r });
-    cardHead(t, 0.5, px, top, pw, 'By direction', [{ ev: 'study', by: 'Zhang 2017' }]);
+    /* the live reading, top left of the tile */
     const kr = ep(t, 2.5, 2.9), live = gp.ph === 'across' ? SRF_MU.across : gp.ph === 'along' ? SRF_MU.along : gp.ph === 'turn' ? mu : null;
     if (live != null) {
-      rich([{ s: 'μ', role: 'stat', size: 80, color: C.ink }, { s: live.toFixed(2), role: 'stat', size: 80, color: C.heroText, grad: C.heroGrad, gap: 14, tnum: true }], px + 32, top + 168, { alpha: kr });
-      text(gp.ph === 'across' ? 'Across the ridges' : gp.ph === 'along' ? 'Along the ridges' : 'Turning', px + 32, top + 210, { role: 'small', size: 25, weight: 600, color: C.ink2, alpha: kr });
-    } else if (gp.ph === 'rest') {
-      const k = ep(t, 10.3, 10.7);
-      rich([{ s: '1.26', role: 'stat', size: 80, color: C.heroText, grad: C.heroGrad, tnum: true, count: [10.3, 0.8, 1] }, { s: '×', role: 'stat', size: 56, color: C.heroText, gap: 6 }], px + 32, top + 168, { t, alpha: k });
-      text('Across against along', px + 32, top + 210, { role: 'small', size: 25, weight: 600, color: C.ink2, alpha: k });
+      rich([{ s: 'μ', role: 'stat', size: 64, color: W1 }, { s: live.toFixed(2), role: 'stat', size: 64, color: '#FFFFFF', gap: 12, tnum: true }], mx + 32, top + 92, { alpha: kr });
+      text(gp.ph === 'across' ? 'Across the ridges' : gp.ph === 'along' ? 'Along the ridges' : 'Turning', mx + 32, top + 130, { role: 'label', size: 21, color: W2, alpha: kr });
     }
-    const pc = [px + pw - 196, top + 214], R = 74, nrm = c => ({ a: 2 * c.a / (c.a + c.b), b: 2 * c.b / (c.a + c.b) });
-    const fine = nrm({ a: SRF_MU.along, b: SRF_MU.across }), coarse = nrm({ a: 1, b: SRF_MU.coarse });
-    glowField(t, pc[0], pc[1], 170, { a: 0.6 * ep(t, 7.3, 9.0) });
-    srf_polar(t, 0.8, pc[0], pc[1], R, [
-      { a: 1, b: 1, color: C.second, w: 3 },
-      { a: coarse.a, b: coarse.b, color: C.heroText, w: 2.5, dash: [7, 6], alpha: ep(t, 10.4, 11.0) },
-      { a: fine.a, b: fine.b, color: C.hero, w: 4.5, p: gp.ph === 'turn' ? gp.turn : gp.ph === 'rest' ? 1 : 0, th0: -(Math.PI / 2), cw: true }
-    ], { lr: 1.5 });
-    if (live != null) { const r = srf_mu(fine.a, fine.b, th) * R, q = [pc[0] + r * ux, pc[1] + r * uy]; line(pc[0], pc[1], q[0], q[1], { color: C.hero, w: 2.5, alpha: kr }); circle(q[0], q[1], 7, { fill: C.hero, alpha: kr }); }
-    /* the legend */
-    [[C.hero, null, 'Fine laser grooves', '0.42 along, 0.53 across', 2.6], [C.heroText, [7, 6], 'Coarser texture', 'Up to 2× across', 10.4], [C.second, null, 'Grip tape', 'The same every way', 0.9]].forEach(([c, dash, nm, sub, t0], i) => {
-      const k = ep(t, t0, t0 + 0.4), yy = top + 344 + i * 40;
-      line(px + 32, yy - 7, px + 62, yy - 7, { color: c, w: 4, dash: dash || [], alpha: k });
-      rich([{ s: nm, role: 'label', size: 19, color: C.ink }, { s: sub, role: 'small', size: 24, weight: 450, color: C.mute, gap: 12, caps: false }], px + 76, yy, { alpha: k });
-    });
-    text('Each curve is shown ÷ its own average', px + 32, top + mh - 26, { role: 'small', size: 24, weight: 450, color: C.faint, alpha: ep(t, 1.2, 1.6) });
-    /* the word, under the drawing; the research, under the plot */
-    glossBox(t, 7.0, mx, top + mh + 24, mw, 'Anisotropic friction', 'Friction that changes with the direction of the slide: ridges catch a fingertip crossing them, and along them it glides.');
-    sourceBox(t, 3.0, px, top + mh + 24, pw, 'Zhang et al. 2017', '20 µm laser grooves in steel: a fingertip slid at μ 0.42 along them and 0.53 across.', { kind: 'study', label: 'Measured' });
+    /* friction by direction, over the tile's right side: tape is a circle, the etch reaches out across the ridges */
+    /* each curve is drawn against its own glide direction (along = 1), so tape is a circle and the etch reaches past it across */
+    const pc = [mx + mw - 200, top + mh / 2 + 20], R = 110, RA = 160, fine = { a: 1, b: SRF_MU.across / SRF_MU.along }, kp = ep(t, 0.8, 1.4);
+    if (kp > 0.003) {
+      G.save(); G.globalAlpha = kp;
+      circle(pc[0], pc[1], R * 0.5, { color: 'rgba(255,255,255,0.18)', w: 1.5 });
+      line(pc[0] - RA, pc[1], pc[0] + 188, pc[1], { color: 'rgba(255,255,255,0.22)', w: 1.5 }); line(pc[0], pc[1] - RA, pc[0], pc[1] + RA, { color: 'rgba(255,255,255,0.22)', w: 1.5 });
+      text('Along', pc[0] + 188, pc[1] + 28, { role: 'label', size: 19, color: W2, align: 'right' });
+      text('Across', pc[0] + 10, pc[1] - RA + 14, { role: 'label', size: 19, color: W2 });
+      G.restore();
+      const curve = (c, col, w, p, th0, cw) => { if (p <= 0) return; G.save(); G.globalAlpha = kp; G.beginPath(); for (let i = 0; i <= 120 * p; i++) { const a2 = th0 + (cw ? -1 : 1) * TAU * i / 120, r = srf_mu(c.a, c.b, a2) * R; const q = [pc[0] + r * Math.cos(a2), pc[1] - r * Math.sin(a2)]; i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); } G.strokeStyle = col; G.lineWidth = w; G.lineJoin = 'round'; G.stroke(); G.restore(); };
+      curve({ a: 1, b: 1 }, C.second, 3, 1, 0, false);
+      curve(fine, C.hero, 5, gp.ph === 'turn' ? gp.turn : gp.ph === 'rest' ? 1 : 0, -(Math.PI / 2), true);
+      if (live != null) { const r = srf_mu(fine.a, fine.b, th) * R, q = [pc[0] + r * ux, pc[1] + r * uy]; line(pc[0], pc[1], q[0], q[1], { color: C.hero, w: 2.5, alpha: kr }); circle(q[0], q[1], 7, { fill: C.hero, alpha: kr }); }
+      [[C.hero, 'Etched grooves', 0.9], [C.second, 'Grip tape', 0.9]].forEach(([c, nm, t0], i) => { const k = ep(t, t0, t0 + 0.4), yy = top + 52 + i * 34; line(pc[0] - 40, yy - 7, pc[0] - 10, yy - 7, { color: c, w: 4, alpha: k }); text(nm, pc[0] + 2, yy, { role: 'label', size: 19, color: W1, alpha: k }); });
+      text('Friction by direction', pc[0], pc[1] + RA + 34, { role: 'label', size: 19, color: W2, align: 'center', alpha: kp });
+    }
+    /* the glance: by how much, and the before → after */
+    const rx = 1240;
+    srf_hl(t, 1.0, rx, 448, '+26 %', { size: 150, label: 'Grip across against along', sub: 'Grip where you push, glide where you slide.', maxW: 600 });
+    srf_ba(t, 2.4, rx, 650, '0.42', '0.53', { size: 64, label: 'Fingertip friction, μ', who: ['Along the ridges', 'Across'] });
+    pill(RM - pillW('study', { by: 'Zhang 2017' }), 580, 'study', ep(t, 2.6, 3.0), { by: 'Zhang 2017' });
+    glossBox(t, 3.4, rx, 760, RM - rx, 'Anisotropic friction', 'Friction that depends on the direction of the slide.');
   }
 });
 
 /* ============================== #36 #62 #61 #33 #32 the marks ============================== */
 S({
-  id: 'srf_marks', ch: 'surface', theme: 'paper', title: 'Marks you see, not feel', settle: 10, ideas: [36, 62, 61, 33, 32], three: ['shell', 'shell-sora'],
+  id: 'srf_marks', ch: 'surface', theme: 'paper', title: 'Laser-marked details', settle: 10, ideas: [36, 62, 61, 33, 32], three: ['shell', 'shell-sora'],
   src: ['srf_doc', 'ulxComp', 'gmk', 'srf_scan'],
   draw: t => {
-    header(t, 'Marks you see, not feel');
+    header(t, 'Laser-marked details');
     captions(t, [[0.6, 'Every mark is lasered after moulding, so it cuts no groove into the wall, and a new colourway is a new file, not a new tool.'], [5.6, 'And none of them sits where a fingertip rests: the serial at the back of the right click, the legends at the front corners.']]);
     const base = { colorway: 'black', xray: 0, explode: 0 };
     /* left: the top view, the Sora base wiping into Theseus */
@@ -500,13 +487,13 @@ S({
         const c = pj(sx * 13, 23, 36), e1 = pj(sx * 13, 23, 50), e2 = pj(sx * 13 + 8.5, 23, 36);
         G.save(); G.globalAlpha = kz; G.setLineDash([7, 6]); G.strokeStyle = acc(); G.lineWidth = 2.5; G.beginPath(); G.ellipse(c[0], c[1], Math.abs(e2[0] - c[0]), Math.abs(e1[1] - c[1]), 0, 0, TAU); G.stroke(); G.setLineDash([]); G.fillStyle = rgba(acc(), 0.12); G.fill(); G.restore();
       }
-      const ft = pj(-13, 23, 36);
-      text('Fingertips rest here', ft[0] + 40, ft[1] + 6, { role: 'label', size: 21, color: acc(), alpha: kz });
+      const fa = pj(13, 23, 36), fr = Math.abs(pj(21.5, 23, 36)[0] - fa[0]);
+      callout(t, 3.6, [fa[0] - fr, fa[1]], 'Fingertips', { to: [fa[0] - fr - 44, fa[1] + 70], side: 'l', color: acc(), tcolor: acc(), sub: 'Rest here' });
     }
     const pS = pj(-15.9, 31, 13.5), pL = pj(19.2, 14.8, 50.5), pR = pj(-19.2, 14.8, 50.5);
-    callout(t, 4.0, [pS[0] + 4, pS[1] + 10], 'Serial (#36)', { to: [lx + lw - 30, ly + lh - 120], side: 'l', color: C.ink, elbow: pS[0] + 60 });
-    callout(t, 4.3, [pL[0], pL[1] - 6], 'LT (#62)', { to: [lx + 40, ly + 120], side: 'r', color: C.ink, elbow: lx + 100 });
-    callout(t, 4.5, [pR[0], pR[1] - 6], 'RT (#62)', { to: [lx + lw - 40, ly + 120], side: 'l', color: C.ink, elbow: lx + lw - 100 });
+    callout(t, 4.0, [pS[0] + 4, pS[1] + 10], 'Serial (#36)', { to: [pS[0] + 56, ly + lh - 90], side: 'r', color: C.ink, elbow: pS[0] + 24 });
+    callout(t, 4.3, [pL[0], pL[1] - 6], 'LT (#62)', { to: [pL[0] - 44, ly + 70], side: 'l', color: C.ink, elbow: pL[0] - 12 });
+    callout(t, 4.5, [pR[0], pR[1] - 6], 'RT (#62)', { to: [pR[0] + 44, ly + 70], side: 'r', color: C.ink, elbow: pR[0] + 12 });
     /* right top: the serial up close, a laser spot running over it */
     const sx0 = 810, sw = 600, sh = 300, sv = Object.assign({ view: [0, 1, -0.15], fov: 10, zoom: 6.2, target: [-15.9, 31, 14.0] }, base);
     demoWindow(sx0, ly, sw, sh, ep(t, 0.6, 1.0));
@@ -519,7 +506,9 @@ S({
     }
     rr(sx0 + 18, ly + 18, 300, 40, 8, rgba('#FFFFFF', 0.86), null, 0, ep(t, 1.0, 1.4));
     text('Serial, right click', sx0 + 32, ly + 46, { role: 'label', size: 21, color: C.ink, alpha: ep(t, 1.0, 1.4) });
-    text('3 digits, 6.4 mm tall', sx0 + sw - 22, ly + sh - 22, { role: 'label', size: 19, color: C.ink2, align: 'right', alpha: ep(t, 4.6, 5.0) });
+    const nw = tw('3 digits, 6.4 mm tall', { role: 'label', size: 19 }), kn = ep(t, 4.6, 5.0);
+    rr(sx0 + sw - 34 - nw, ly + sh - 50, nw + 24, 38, 8, rgba('#FFFFFF', 0.86), null, 0, kn);
+    text('3 digits, 6.4 mm tall', sx0 + sw - 22, ly + sh - 24, { role: 'label', size: 19, color: '#2E2E2C', align: 'right', alpha: kn });
     /* right top: the side mark, wiped in, then carried through every colourway */
     const mx0 = 1434, mw = RM - mx0, cyc0 = t >= 7 ? Math.floor((t - 7) / 1.6) % 4 : -1, cws = ['white', 'grey', 'forged', 'black'], cw = cyc0 < 0 ? 'black' : cws[cyc0];
     const mv = Object.assign({}, base, { view: 'right', fov: 10, zoom: 6.4, target: [29, 11.6, 40.5], colorway: cw });
@@ -546,42 +535,38 @@ S({
 /* ============================== #34 #82 engravings and gates ============================== */
 S({
   id: 'details', ch: 'surface', theme: 'night', title: 'Engrave half as deep', settle: 10, ideas: [34, 82],
-  src: ['inglis', 'fracMech', 'vernier', 'curiosity', 'srf_doc'],
+  src: ['inglis', 'fracMech', 'vernier', 'srf_doc'],
   draw: t => {
     header(t, 'Engrave half as deep');
-    captions(t, [[0.6, 'An engraving is a notch, and a notch multiplies stress at its tip. Half the depth takes the peak from 5 times the wall\'s stress to 3.8.'], [5.4, 'The eye catches a broken edge at 0.012 mm, a twelfth of the smallest dot it sees. So a gate mark has to be hidden, not just made small.']]);
-    const A = acc(), lx = LM, ly = LAY.top, lw = 900, lh = 580;
-    srf_card(t, 0.3, lx, ly, lw, lh, 'A notch in a 1.6 mm wall, under load', ['derived']);
-    const a = t < 9 ? lerp(0.6, 0.3, ep(t, 3.2, 4.4, E.io3)) : lerp(0.3, 0.6, 0.5 - 0.5 * Math.cos((t - 9) * TAU / 8)), rho = 0.15;
-    part(lx + 54, ly + 118, 44, () => notchMM({ depth: a, rho, accent: A }), { alpha: ep(t, 0.4, 0.9) });
-    for (const dx of [0, 1]) { const x = dx ? lx + 54 + 18 * 44 + 8 : lx + 46; arrow(x, ly + 118 + 35, x + (dx ? 40 : -40), ly + 118 + 35, { color: C.ink2, w: 3, hs: 11, alpha: ep(t, 1.0, 1.4) }); }
-    const kt = 1 + 2 * Math.sqrt(a / rho);
-    text(`Depth ${a.toFixed(2)} mm, tip radius ${rho} mm`, lx + 54, ly + 222, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 1.2, 1.6) });
-    rich([{ s: 'Kt = 1 + 2√(a/ρ) =', font: 'mono', size: 24, weight: 600, color: C.mute }, { s: kt.toFixed(2), role: 'stat', size: 56, color: kt > 4.5 ? C.red : C.ink, gap: 14, tnum: true }], lx + lw - 30, ly + 274, { align: 'right', alpha: ep(t, 1.4, 1.8) });
-    const m = axes(t, { x: lx + 110, y: ly + 306, w: lw - 170, h: 160, xr: [0, 0.8], yr: [1, 6], xticks: [0, 0.2, 0.4, 0.6, 0.8], yticks: [1, 2, 3, 4, 5, 6], xfmt: v => v.toFixed(1) + ' mm', yfmt: v => v + '×', xlabel: 'Engraving depth', t0: 1.6 });
+    captions(t, [[0.6, 'An engraving is a notch, and a notch multiplies stress at its tip. Half the depth takes the peak from 5 times the wall\'s stress to 3.8.'], [5.4, 'The eye is sharper still at edges: it catches a step of 0.012 mm. So the gate mark goes on a face you never see.']]);
+    const A = acc(), lx = LM, ly = 280, lw = 1080, lh = 680, rho = 0.15;
+    demoWindow(lx, ly, lw, lh, tileA(t, 0.2, 0));
+    text('A notch in a 1.6 mm wall, under load', lx + 40, ly + 56, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.4, 0.8) });
+    pill(lx + lw - 40 - pillW('derived'), ly + 56, 'derived', ep(t, 0.6, 1.0));
+    /* the notch: 0.6 mm deep, then half that; it breathes back and forth after the slide has settled */
+    const a = t < 11 ? lerp(0.6, 0.3, ep(t, 3.2, 4.4, E.io3)) : lerp(0.3, 0.6, 0.5 - 0.5 * Math.cos((t - 11) * TAU / 8)), kt = 1 + 2 * Math.sqrt(a / rho), sN = 50, nx = lx + (lw - 18 * sN) / 2, ny = ly + 116;
+    part(nx, ny, sN, () => notchMM({ depth: a, rho, accent: A }), { alpha: ep(t, 0.4, 0.9) });
+    for (const dx of [0, 1]) { const x = dx ? nx + 18 * sN + 12 : nx - 12; arrow(x, ny + 40, x + (dx ? 44 : -44), ny + 40, { color: C.ink2, w: 3, hs: 11, alpha: ep(t, 1.0, 1.4) }); }
+    text(`Depth ${a.toFixed(2)} mm, tip radius ${rho} mm`, nx, ny + 132, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 1.2, 1.6) });
+    text('{Kt = 1 + 2√(a/ρ)}', nx + 18 * sN, ny + 132, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: ep(t, 1.2, 1.6) });
+    /* the chart: peak stress against depth, lower is better */
+    const m = axes(t, { x: lx + 150, y: ly + 330, w: lw - 260, h: 220, xr: [0, 0.8], yr: [1, 6], xticks: [0, 0.2, 0.4, 0.6, 0.8], yticks: [1, 2, 3, 4, 5, 6], xfmt: v => v.toFixed(1) + ' mm', yfmt: v => v + '×', xlabel: 'Engraving depth', ylabel: 'Peak experienced stress, × the wall\'s (lower is better)', t0: 1.6 });
     const pts = []; for (let d = 0; d <= 0.8; d += 0.01) pts.push([d, 1 + 2 * Math.sqrt(d / rho)]);
     series(m, pts, { color: C.ink2, w: 3, p: ep(t, 2.0, 3.0, E.lin) });
-    for (const [d, col] of [[0.6, C.red], [0.3, A]]) { const k = ep(t, 3.0 + (d < 0.5 ? 1.4 : 0), 3.4 + (d < 0.5 ? 1.4 : 0)), v = 1 + 2 * Math.sqrt(d / rho); circle(m.X(d), m.Y(v), 7, { fill: col, alpha: k }); text(v.toFixed(2) + '×', m.X(d) + 12, m.Y(v) + (d < 0.5 ? 26 : -12), { font: 'mono', size: 22, weight: 700, color: col, alpha: k }); }
-    circle(m.X(a), m.Y(kt), 12, { color: C.ink, w: 1.5, alpha: ep(t, 3.0, 3.4) * 0.6 });
-    text('Half the depth: 23% less peak stress', m.X(0.3), m.Y(1.55), { role: 'small', size: 25, weight: 700, color: A, alpha: ep(t, 4.6, 5.0) });
-    /* right: what the eye catches */
-    const rx = 1004, rw = RM - rx;
-    srf_card(t, 0.5, rx, ly, rw, lh, 'What the eye catches at 50 cm', ['study']);
-    text('Drawn 400× life size', rx + rw - 26, ly + 88, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 1.2, 1.6) });
-    const ex0 = rx + 60, ex1 = rx + rw - 60, ey = ly + 170, k1 = ep(t, 1.6, 2.2), step = 0.012 * 400;
-    line(ex0, ey, lerp(ex0, (ex0 + ex1) / 2, k1), ey, { color: C.ink, w: 3 });
-    if (k1 >= 1) line((ex0 + ex1) / 2, ey + step, lerp((ex0 + ex1) / 2, ex1, ep(t, 2.2, 2.8)), ey + step, { color: C.ink, w: 3 });
-    rich([{ s: 'A break in an edge', role: 'small', size: 25, weight: 700, color: C.ink }, { s: '0.012 mm', font: 'mono', size: 25, weight: 800, color: A, gap: 14 }], rx + 60, ey + 52, { alpha: ep(t, 2.6, 3.0) });
-    text('Vernier acuity: 2 to 5 arcseconds', rx + 60, ey + 86, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 2.8, 3.2) });
-    const dd = 0.145 * 400, dk = ep(t, 3.4, 3.9, E.snap), cyD = ly + 352;
-    circle(rx + 60 + dd / 2, cyD, dd / 2 * dk, { fill: C.ink });
-    rich([{ s: 'The smallest dot', role: 'small', size: 25, weight: 700, color: C.ink }, { s: '0.145 mm', font: 'mono', size: 25, weight: 800, color: C.ink, gap: 14 }], rx + 90 + dd, cyD - 4, { alpha: dk });
-    text('Acuity: about 60 arcseconds', rx + 90 + dd, cyD + 30, { role: 'small', size: 25, color: C.mute, alpha: dk });
-    rule(rx + 26, ly + 430, rx + rw - 26, ep(t, 4.4, 4.8));
-    text('A gate mark breaks an edge, so it shows at a twelfth of the size of detail. It goes on a face you never see.', rx + 26, ly + 472, { role: 'small', size: 25, weight: 600, color: C.ink, t, t0: 4.6, cps: 110, maxW: rw - 200, lh: 1.36 });
-    keyPlan(t, 1.0, rx + rw - 84, ly + 474, { s: 0.42, hi: ['trigL', 'trigR'], detail: { x: -13, y: -36, r: 9 }, label: 'Not here' });
-    gloss(t, 6.2, 'Stress concentration', 'Load crowds around the tip of a notch. A deep, sharp notch multiplies the local stress several times over, and cracks start there.');
-    featureCard(t, 6.6, 'Half-depth engravings, hidden gates', ['derived', 'study', 'proposal'], 'Engravings half as deep (#34), and gate marks moved to faces you never see, not just made smaller (#82).');
+    for (const [d, col, t0] of [[0.6, C.red, 3.0], [0.3, C.hero, 4.4]]) { const k = ep(t, t0, t0 + 0.4), v = 1 + 2 * Math.sqrt(d / rho); circle(m.X(d), m.Y(v), 9, { fill: col, alpha: k }); text(v.toFixed(2) + '×', m.X(d) + 16, m.Y(v) + (d < 0.5 ? 30 : -14), { font: 'disp', size: 26, weight: 800, color: d < 0.5 ? C.heroText : C.red, alpha: k }); }
+    circle(m.X(a), m.Y(kt), 14, { color: C.ink, w: 1.5, alpha: ep(t, 3.0, 3.4) * 0.6 });
+    /* the glance */
+    const rx = 1200;
+    srf_hl(t, 1.0, rx, 448, '−23 %', { size: 150, label: 'Peak experienced stress', sub: 'Half the depth, the same 0.15 mm tip.', maxW: RM - rx });
+    srf_ba(t, 4.4, rx, 640, '5.00×', '3.83×', { size: 64, label: 'Peak, lower is better' });
+    /* the gate mark (#82): hidden, not shrunk */
+    const gy = 720, gh = 240; demoWindow(rx, gy, RM - rx, gh, tileA(t, 5.2, 1));
+    const kg = ep(t, 5.4, 5.8), ex0 = rx + 32, ex1 = rx + 420, ey = gy + 92, st = 0.012 * 400;
+    text('Gate marks: hidden, not shrunk', rx + 32, gy + 48, { role: 'label', size: 21, color: C.ink, alpha: kg });
+    line(ex0, ey, (ex0 + ex1) / 2, ey, { color: C.ink, w: 3, alpha: kg }); line((ex0 + ex1) / 2, ey + st, ex1, ey + st, { color: C.ink, w: 3, alpha: kg });
+    text('A 0.012 mm step, drawn 400×', ex0, ey + 40, { role: 'label', size: 19, color: C.mute, alpha: kg });
+    text('The eye sees it at 50 cm, so the gate goes where no eye looks.', rx + 32, gy + 178, { role: 'small', size: 25, weight: 600, color: C.ink2, maxW: 400, lh: 1.3, alpha: ep(t, 5.8, 6.2) });
+    keyPlan(t, 5.6, RM - 80, gy + 124, { s: 0.36, hi: ['trigL', 'trigR'], detail: { x: -13, y: -36, r: 9 }, label: 'Not here' });
   }
 });
 
@@ -605,17 +590,17 @@ function srf_tread(x, y, w, h, n, kind, off, col, a) {
 }
 S({
   id: 'wheel', ch: 'surface', theme: 'paper', title: 'Magnesium, with a rover\'s tread', settle: 10, ideas: [84, 30], three: ['wheel'],
-  src: ['srf_register', 'curiosity', 'srf_wheel3d', 'srf_az31b', 'srf_al6061', 'srf_ss304', 'srf_delrin', 'exXbabWeight', 'srf_doc'],
+  src: ['srf_register', 'curiosity', 'srf_wheel3d', 'srf_az31b', 'srf_al6061', 'srf_ss304', 'srf_doc'],
   draw: t => {
     header(t, 'Magnesium, with a rover\'s tread');
-    captions(t, [[0.6, 'Curiosity\'s 24 chevron treads cracked on sharp rock. Perseverance rolls on 48 gently curved ones, and so does this wheel.'], [5.6, 'Magnesium is the lightest metal for it: the same wheel in aluminium would weigh 53% more, in stainless steel four times as much.']]);
-    const lx = LM, ly = LAY.top, lw = 900, lh = 580;
-    demoWindow(lx, ly, lw, lh, ep(t, 0.3, 0.7));
+    captions(t, [[0.6, 'Magnesium is the lightest metal for the wheel: the same wheel in aluminium weighs 53 % more, in stainless steel four times as much.'], [5.6, 'Curiosity\'s 24 chevron treads cracked on sharp rock. Perseverance rolls on 48 gently curved ones, and so does this wheel.']]);
+    const lx = LM, ly = 280, lw = 900, lh = 680;
+    demoWindow(lx, ly, lw, lh, tileA(t, 0.2, 0));
     const wv = { view: [0.55, 0.45, 0.9], zoom: 1.75, scroll: 0.22 * t, xray: 0, explode: 0.3 * env(t, 1.6, 2.6, 4.2, 5.2) };
     const pt = { g: [lx + 520, ly + 180], sp: [lx + 470, ly + 360], cr: [lx + 400, ly + 250], ax: [lx + 560, ly + 300] };
     if (V2D.on) {
       /* two views of one wheel: from the side (the spokes and the treads, turning) and from the front (the crown, the axle) */
-      const sb = [lx + 24, ly + 84, 380, 440], fb = [lx + 396, ly + 84, 236, 440];
+      const sb = [lx + 24, ly + 80, 380, 396], fb = [lx + 396, ly + 80, 236, 396];
       const sv = Object.assign({}, wv, { view2d: 'right', zoom: 1.34, target: [0, 11, 0], explode: 0, hide2d: /encoder|support/ }), fv = Object.assign({}, wv, { view2d: 'front', zoom: 1.32, target: [-1.85, 11, 0] });
       srf_3d(t, 0.4, 'wheel', sb[0], sb[1], sb[2], sb[3], sv);
       srf_3d(t, 0.6, 'wheel', fb[0], fb[1], fb[2], fb[3], fv);
@@ -624,83 +609,164 @@ S({
       text('Front', fb[0] + fb[2] / 2, fb[1] + fb[3] + 22, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: k });
       pt.g = v2dAt('wheel', sv, sb, /wheel\/grousers$/, [0.5, 1, 0.5]) || pt.g; pt.sp = v2dAt('wheel', sv, sb, /wheel\/web$/, [0.5, 0.3, 0.5]) || pt.sp;
       pt.cr = v2dAt('wheel', fv, fb, /wheel\/tread$/, [0.5, 1, 0.5]) || pt.cr; pt.ax = v2dAt('wheel', fv, fb, /axle\/axleR$/, [0.5, 0.5, 0.5]) || pt.ax;
-    } else srf_3d(t, 0.4, 'wheel', lx, ly, lw, lh, wv);
-    rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: V2D.on ? 'Magnesium wheel and POM axle, two views' : 'Magnesium wheel, POM axle, optical encoder (render)', role: 'small', size: 24, color: C.faint, gap: 16 }], lx + 26, ly + 46, { alpha: ep(t, 0.6, 1.0) });
-    callout(t, 2.0, pt.g, '48 curved grousers', { to: [lx + 610, ly + 120], side: 'r', color: C.ink });
-    callout(t, 2.4, pt.sp, 'Six spokes', { to: [lx + 648, ly + 420], side: 'r', color: C.ink, sub: 'Triangular windows' });
-    callout(t, 2.8, pt.cr, 'Crown, R 11 mm both ways', { to: in2D([lx + 648, ly + 220], [lx + 60, ly + 140]), side: 'r', color: C.ink, prose: true, maxW: in2D(220, 260) });
-    callout(t, 3.2, pt.ax, 'POM axle', { to: [lx + 648, ly + 330], side: 'r', color: C.ink });
-    /* right top: rover treads, unrolled */
-    const rx = 1004, rw = RM - rx, th = 262;
-    srf_card(t, 0.5, rx, ly, rw, th, 'Rover treads, unrolled', ['datasheet']);
-    const sx = rx + 250, swd = rw - 276, rowsT = [['Curiosity', '24 chevrons', 24, 'chevron', C.comp], ['Perseverance', '48 curved', 48, 'curve', C.ink], ['Theseus wheel', '48 curved', 48, 'curve', C.hero]];
+    } else {
+      const box = [lx, ly, lw, 500], drawn = srf_3d(t, 0.4, 'wheel', box[0], box[1], box[2], box[3], wv);
+      pt.g = srf_at3('wheel', wv, box, drawn, /wheel\/grousers$/, [0.5, 0.62, 1]) || pt.g; pt.sp = srf_at3('wheel', wv, box, drawn, /wheel\/web$/, [0.5, 0.3, 0.6]) || pt.sp;
+      pt.cr = srf_at3('wheel', wv, box, drawn, /wheel\/tread$/, [0.62, 0.86, 0.9]) || pt.cr; pt.ax = srf_at3('wheel', wv, box, drawn, /axle\/axleR$/, [0.5, 0.5, 0.5]) || pt.ax;
+    }
+    rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: V2D.on ? 'Magnesium wheel and POM axle, two views' : 'Magnesium wheel, POM axle, optical encoder (render)', role: 'small', size: 24, weight: 600, color: C.faint, gap: 16 }], lx + 26, ly + 46, { alpha: ep(t, 0.6, 1.0) });
+    callout(t, 2.0, pt.g, '48 curved grousers', { to: [lx + 596, ly + 120], side: 'r', color: C.ink });
+    callout(t, 2.4, pt.sp, 'Six spokes', { to: [lx + 660, ly + 420], side: 'r', color: C.ink, sub: 'Triangular windows' });
+    callout(t, 2.8, pt.cr, 'Crown, R 11 mm both ways', { to: [lx + 660, ly + 220], side: 'r', color: C.ink, prose: true, maxW: 220 });
+    callout(t, 3.2, pt.ax, 'POM axle', { to: [lx + 660, ly + 330], side: 'r', color: C.ink });
+    /* rover treads, unrolled, along the foot of the tile */
+    const sx = lx + 250, swd = lw - 290, rowsT = [['Curiosity', '24 chevrons', 24, 'chevron', C.comp], ['Perseverance', '48 curved', 48, 'curve', C.ink2], ['Theseus wheel', '48 curved', 48, 'curve', C.hero]];
     rowsT.forEach(([nm, sub, n, kind, col], i) => {
-      const y = ly + 92 + i * 56, a = ep(t, 1.0 + i * 0.3, 1.4 + i * 0.3);
-      if (i === 2) rect(rx, y - 6, 6, 50, { fill: C.hero, alpha: a });
-      text(nm, rx + 26, y + 18, { role: 'small', size: 24, weight: i === 2 ? 800 : 700, color: C.ink, alpha: a });
-      text(sub, rx + 26, y + 42, { role: 'label', size: 19, color: i === 2 ? C.heroText : C.mute, alpha: a });
-      srf_tread(sx, y, swd, 44, n, kind, (t * 0.35) % 1, i === 2 ? (TH ? '#9A9890' : '#C9C8C2') : col, a);
-      if (i === 2) rr(sx, y, swd, 44, 6, null, C.hero, 2.5, a);
+      const y = ly + 532 + i * 50, a = ep(t, 5.6 + i * 0.3, 6.0 + i * 0.3);
+      text(nm, lx + 32, y + 18, { role: 'small', size: 24, weight: i === 2 ? 800 : 700, color: C.ink, alpha: a });
+      text(sub, lx + 32, y + 40, { role: 'label', size: 19, color: i === 2 ? C.heroText : C.mute, alpha: a });
+      srf_tread(sx, y, swd, 40, n, kind, (t * 0.35) % 1, i === 2 ? C.hero : col, a);
     });
-    /* right bottom: the same wheel in other materials */
-    const my = ly + th + 24, mh = LAY.bottom - my;
-    srf_card(t, 0.8, rx, my, rw, mh, 'This wheel, by material', ['derived']);
-    text('825 mm³ × density', rx + 26, my + 84, { role: 'small', size: 24, color: C.mute, alpha: ep(t, 1.2, 1.6) });
-    const V = 0.825, mats = [['POM', 'Delrin 150, 1.42', 1.42], ['Magnesium AZ31B', '1.77 g/cm³', 1.77, true], ['Aluminium 6061', '2.70 g/cm³', 2.70], ['Stainless 304', '7.89 g/cm³', 7.89]];
-    const yEnd = srf_bars(t, 1.6, { x: rx + 26, y: my + 132, w: rw - 52, xr: [0, 7], labelW: 280, valW: 110, rowH: 44, dec: 2, unit: 'g',
-      rows: mats.map(([n, s2, d, hero]) => ({ name: n, v: V * d, hero, label: fmtN(V * d, 2) + ' g' })) });
-    const kx = ep(t, 3.4, 3.8), bx = rx + 26 + 280, bw = rw - 52 - 280 - 110, xx = bx + bw * 0.931 / 7;
-    line(xx, my + 104, xx, yEnd - 14, { color: C.ink, w: 2, dash: [5, 4], alpha: kx });
-    text('XA25 wheel, weighed: 0.931 g', xx + 10, my + 106, { role: 'label', size: 19, color: C.ink, alpha: kx });
-    srf_stepBand(t, 6.4, { who: 'Metal wheels', line: 'All high-end mice have one now (Brock), and some add a rubber ring over the metal for grip.' },
-      { who: 'Magnesium, tread and ceramic', line: 'The grousers and a ceramic coat grip, so there is no rubber to wear. Weighed and slip-tested wet and dry before I publish it.', ev: ['proposal'] });
+    /* the glance: the weight against aluminium, before → after, and the metals by weight */
+    const rx = 1020, V = 0.825, mg = V * 1.77, al = V * 2.70;
+    srf_hl(t, 1.0, rx, 448, '−34 %', { size: 150, label: 'Wheel weight against aluminium', sub: 'The same 825 mm³ wheel in each metal.', maxW: RM - rx });
+    srf_ba(t, 2.2, rx, 650, fmtN(al, 2), fmtN(mg, 2), { size: 64, unit: 'g', label: 'Aluminium 6061 → magnesium AZ31B' });
+    srf_bars(t, 2.8, { x: rx, y: 764, w: RM - rx, xr: [0, 7], labelW: 300, valW: 110, rowH: 46, dec: 2, unit: 'g', nsize: 24,
+      rows: [['Magnesium AZ31B', 1.77, true], ['Aluminium 6061', 2.70], ['Stainless 304', 7.89]].map(([n, d, hero]) => ({ name: n, v: V * d, hero, label: fmtN(V * d, 2) + ' g' })) });
+    srf_better(t, 3.4, rx, 916, 'Lower is better');
+    pill(RM - pillW('derived'), 916, 'derived', ep(t, 3.4, 3.8));
   }
 });
 
-/* ============================== the optical encoder ============================== */
+/* ============================== the optical encoder, in TTC's form ==============================
+   Brock (F9.21): "optical encoders look no different than normal mouse encoders". Drawn after TTC's optical encoder and this
+   deck's 3D model of it (scene 'wheel'): a black housing in a stamped steel frame, the axle 11 mm up, a 24-slot code disc of
+   radius 4, a U-shaped light gate straddling its lower rim with windows A and B 1¼ slots apart (quadrature), five pins.
+   Front view, mm: x = -Z, y = 11 - Y (down), origin the axle. The housing is drawn 0.6 mm taller than the model, as Brock says
+   the real ones are ("usually they're a little taller"). */
 /** wheel angle (rad) over time: up for 6 s, back down for 6 s */
 const srf_scrollAt = t => { const p = ((t % 12) + 12) % 12; return 0.55 * (p < 6 ? p : 12 - p); };
+const SRF_ENC = { slots: 24, rIn: 2.95, rOut: 3.72, rA: 3.38, wA: [0, 3.38], wB: [-1.09, 3.2] };
+/** is light reaching window w (front-view mm from the axle) at wheel angle th? (a slot spans half a pitch) */
+function srf_gate(w, th) { const P = TAU / SRF_ENC.slots, an = Math.atan2(w[1], w[0]) - th; return (((an % P) + P) % P) < P / 2; }
+/** the encoder from the front with its face plate cut away. o = { th (wheel angle) }. Returns anchors in stage px */
+function srf_encFront(o = {}) {
+  const th = o.th || 0, out = {}, P = TAU / SRF_ENC.slots;
+  const steel = TH ? '#C3C8CF' : '#A9AFB7', tin = TH ? '#B4B9C0' : '#9AA0A8', housing = TH ? '#2A2B30' : '#202125', cavity = TH ? '#141518' : '#0F1012';
+  const disc = TH ? '#45474E' : '#3A3C43', hub = TH ? '#5A5C63' : '#4E5057', ec = TH ? 'rgba(10,10,12,0.85)' : 'rgba(236,235,231,0.42)';
+  const fp = (f, col, st, w) => { f(); if (col) { G.fillStyle = col; G.fill('evenodd'); } if (st) { G.strokeStyle = st; G.lineWidth = lw(w || 1.1); G.lineJoin = 'round'; G.stroke(); } };
+  /* five pins, and the frame's two bent legs */
+  for (const px of [-2.5, -1.25, 0, 1.25, 2.5]) fp(() => { G.beginPath(); G.rect(px - 0.25, 10.9, 0.5, 2.3); }, tin, ec, 0.8);
+  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.moveTo(sx * 4.3, 10.8); G.lineTo(sx * 5.45, 10.8); G.lineTo(sx * 5.45, 11.6); G.quadraticCurveTo(sx * 5.6, 12.7, sx * 6.45, 13.0); G.lineTo(sx * 6.15, 13.45); G.quadraticCurveTo(sx * 4.75, 13.0, sx * 4.3, 11.7); G.closePath(); }, steel, ec, 0.8);
+  /* the black housing, open at the face: its walls round a dark cavity (the top corner chamfered, as on TTC's) */
+  fp(() => { G.beginPath(); G.moveTo(-5.05, -4.6); G.lineTo(3.6, -4.6); G.lineTo(5.5, -2.7); G.lineTo(5.5, 11); G.lineTo(-5.5, 11); G.lineTo(-5.5, -4.15); G.quadraticCurveTo(-5.5, -4.6, -5.05, -4.6); G.closePath(); }, housing, ec, 1.1);
+  fp(() => { G.beginPath(); G.moveTo(-4.95, -4.08); G.lineTo(3.4, -4.08); G.lineTo(4.95, -2.5); G.lineTo(4.95, 10.4); G.lineTo(-4.95, 10.4); G.closePath(); }, cavity, null);
+  /* the steel face plate, cut away (a phantom), with its collar round the axle; its top tabs and side clips stay */
+  G.save(); G.setLineDash([lw(6), lw(5)]); fp(() => { G.beginPath(); G.rect(-5.5, -4.6, 11, 15.6); G.moveTo(2.4, 0); G.arc(0, 0, 2.4, 0, TAU); }, null, rgba(steel, 0.6), 1.3); G.restore();
+  for (const [x0, x1] of [[2.0, 3.6], [-1.9, -0.6]]) fp(() => { G.beginPath(); G.rect(x0, -5.05, x1 - x0, 0.55); }, steel, ec, 0.8);
+  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.rect(sx > 0 ? 5.5 : -5.78, 2.2, 0.28, 1.5); }, steel, ec, 0.8);
+  /* the code disc: 24 slots near its rim, turning with the wheel; a slot over a window passes the light */
+  fp(() => { G.beginPath(); G.arc(0, 0, 4.0, 0, TAU); for (let i = 0; i < SRF_ENC.slots; i++) { const a0 = th + i * P, a1 = a0 + P / 2; G.moveTo(SRF_ENC.rOut * Math.cos(a0), SRF_ENC.rOut * Math.sin(a0)); G.arc(0, 0, SRF_ENC.rOut, a0, a1); G.lineTo(SRF_ENC.rIn * Math.cos(a1), SRF_ENC.rIn * Math.sin(a1)); G.arc(0, 0, SRF_ENC.rIn, a1, a0, true); G.closePath(); } }, disc, ec, 0.9);
+  fp(() => { G.beginPath(); G.arc(0, 0, 1.65, 0, TAU); }, hub, ec, 1);
+  fp(() => { G.beginPath(); G.arc(0, 0, 1.2, th - Math.PI * 0.8, th + Math.PI * 0.8); G.closePath(); }, TH ? '#D4D8DD' : '#B9BEC5', ec, 0.9);
+  /* the light gate: a U holder straddling the rim (its near arm drawn see-through), the emitter in it */
+  const hold = TH ? '#33353B' : '#2E3035';
+  fp(() => { G.beginPath(); G.rect(-2.54, 4.4, 4.0, 0.55); }, hold, ec, 0.9);
+  G.save(); G.globalAlpha = PA * 0.45; fp(() => pathRR(-2.54, 2.35, 4.0, 2.6, 0.22), hold, null); G.restore();
+  fp(() => pathRR(-2.54, 2.35, 4.0, 2.6, 0.22), null, ec, 0.9);
+  for (const w of [SRF_ENC.wA, SRF_ENC.wB]) if (srf_gate(w, th)) { G.beginPath(); G.arc(w[0], w[1], 0.34, 0, TAU); G.fillStyle = rgba(C.hero, 0.95); G.fill(); G.beginPath(); G.arc(w[0], w[1], 0.62, 0, TAU); G.fillStyle = rgba(C.hero, 0.25); G.fill(); }
+  out.disc = SP(4.0 * Math.cos(-2.4), 4.0 * Math.sin(-2.4)); out.axle = SP(-0.5, -0.9); out.frame = SP(-5.64, 2.95); out.pins = SP(-2.5, 12.6);
+  out.gate = SP(-0.54, 3.4); out.top = SP(0, -5.05); out.base = SP(0, 13.45); out.s = SP(1, 0)[0] - SP(0, 0)[0];
+  return out;
+}
+/** the light gate, magnified and unrolled: the emitter above, the slotted rim, the two windows (A, B) below, and their
+   signals over the last few seconds. (x, y, w, h) its box; th(tt) the wheel angle at slide time tt */
+function srf_gateDetail(t, x, y, w, h, thAt, a) {
+  if (a <= 0.003) return;
+  const M = 56, P = SRF_ENC.rA * TAU / SRF_ENC.slots, th = thAt(t), cx = x + w / 2;
+  const sA = SRF_ENC.rA * Math.atan2(SRF_ENC.wA[1], SRF_ENC.wA[0]), sB = SRF_ENC.rA * Math.atan2(SRF_ENC.wB[1], SRF_ENC.wB[0]), sM = (sA + sB) / 2;
+  const X = s => cx + (s - sM) * M, xA = X(sA), xB = X(sB), litA = srf_gate(SRF_ENC.wA, th), litB = srf_gate(SRF_ENC.wB, th);
+  const yE = y + 64, yS = y + 176, hS = (SRF_ENC.rOut - SRF_ENC.rIn) * M, yD = yS + hS + 56;
+  G.save(); G.globalAlpha = a;
+  /* the emitter: a small block with its lens facing down; light fills the gap down to the rim */
+  const lx0 = Math.min(xA, xB) - 0.16 * M, lx1 = Math.max(xA, xB) + 0.16 * M;
+  rr(lx0 - 26, yE - 46, lx1 - lx0 + 52, 46, 6, TH ? '#2E3035' : '#2A2C31', null, 0, 1);
+  rr(lx0, yE - 8, lx1 - lx0, 8, 3, rgba(C.hero, 0.9), null, 0, 1);
+  G.fillStyle = rgba(C.hero, 0.16); G.fillRect(lx0, yE, lx1 - lx0, yS - yE);
+  /* the rim, unrolled: slots move under the light as the wheel turns */
+  const x0 = x + 30, x1 = x + w - 30;
+  G.save(); G.beginPath(); G.rect(x0, yS - 2, x1 - x0, hS + 4); G.clip();
+  G.fillStyle = TH ? '#45474E' : '#3A3C43'; G.fillRect(x0, yS, x1 - x0, hS);
+  const s0 = SRF_ENC.rA * th, k0 = Math.floor((sM - (cx - x0) / M - s0) / P) - 1, k1 = Math.ceil((sM + (x1 - cx) / M - s0) / P) + 1;
+  for (let k = k0; k <= k1; k++) { const sa = s0 + k * P, xa = X(sa), xb = X(sa + P / 2); G.fillStyle = TH ? '#141518' : '#0F1012'; G.fillRect(xa, yS, xb - xa, hS);
+    /* light through a slot that sits under the lens */
+    const la = Math.max(xa, lx0), lb = Math.min(xb, lx1); if (lb > la) { G.fillStyle = rgba(C.hero, 0.5); G.fillRect(la, yS, lb - la, hS); } }
+  G.restore();
+  /* below the rim: light only where a slot lets it through, down to the detector */
+  for (let k = k0; k <= k1; k++) { const sa = s0 + k * P, la = Math.max(X(sa), lx0), lb = Math.min(X(sa + P / 2), lx1); if (lb > la) { G.fillStyle = rgba(C.hero, 0.16); G.fillRect(la, yS + hS, lb - la, yD - yS - hS); } }
+  rr(lx0 - 26, yD, lx1 - lx0 + 52, 46, 6, TH ? '#2E3035' : '#2A2C31', null, 0, 1);
+  for (const [xx, lit, nm] of [[xA, litA, 'A'], [xB, litB, 'B']]) {
+    const ww = 0.26 * M; rr(xx - ww / 2, yD, ww, 8, 2, lit ? C.hero : (TH ? '#6E7077' : '#5A5C62'), null, 0, 1);
+    if (lit) { G.fillStyle = rgba(C.hero, 0.22); G.beginPath(); G.arc(xx, yD + 4, 22, 0, TAU); G.fill(); }
+    text(nm, xx, yD + 82, { role: 'label', size: 22, color: lit ? C.heroText : C.mute, align: 'center' });
+  }
+  /* a 1 mm scale bar */
+  line(x1 - M, yD + 112, x1, yD + 112, { color: C.mute, w: 2 }); line(x1 - M, yD + 104, x1 - M, yD + 120, { color: C.mute, w: 2 }); line(x1, yD + 104, x1, yD + 120, { color: C.mute, w: 2 });
+  text('1 mm', x1, yD + 146, { role: 'label', size: 19, color: C.mute, align: 'right' });
+  G.restore();
+  return { yE, yS, hS, yD, xA, xB, lx1, x0, x1 };
+}
 S({
-  id: 'srf_encoder', ch: 'surface', theme: 'night', title: 'Count the steps with light', settle: 10, ideas: ['encoder', 84], three: ['wheel'],
-  src: ['srf_razerScroll', 'srf_tpuV4', 'pulsarEnc', 'srf_eloEnc', 'srf_wheel3d'],
+  id: 'srf_encoder', ch: 'surface', theme: 'night', title: 'Optical encoder', settle: 10, ideas: ['encoder', 84],
+  src: ['srf_razerScroll', 'srf_tpuV4', 'srf_eloEnc', 'srf_ttc', 'srf_wheel3d', 'srf_fmSupport', 'srf_doc'],
   draw: t => {
-    header(t, 'Count the steps with light');
-    captions(t, [[0.6, 'A mechanical encoder counts with sliding contacts, and dust or a spill makes them skip. An optical one counts with light, and nothing touches.'], [5.4, 'Four of the 35 mice in my data use one: two Razers, two ZOWIEs. Razer calls its own 3.3 times more reliable, without saying how it measured that.']]);
-    const A = acc(), lx = LM, ly = LAY.top, lw = 1000, lh = 580, th = srf_scrollAt(t);
-    demoWindow(lx, ly, lw, lh, ep(t, 0.3, 0.7));
-    const ev = { view: [-0.35, 0.32, 1], target: [-5.5, 10.5, 0], zoom: 2.25, scroll: th, xray: ep(t, 0.8, 2.0), explode: 0 };
-    srf_3d(t, 0.4, 'wheel', lx, ly, lw, lh, ev);
-    text('X-ray, encoder side', lx + 26, ly + 46, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 0.6, 1.0) });
-    const eb = [lx, ly, lw, lh], ea = (re, f, p) => (V2D.on && v2dAt('wheel', ev, eb, re, f)) || p;
-    callout(t, 2.2, ea(/emitter\/emitterBody$/, [0.5, 0.5, 0.5], [lx + 300, ly + 250]), 'IR emitter', { to: [lx + 120, ly + 150], side: 'r', color: C.ink });
-    callout(t, 2.5, ea(/encoderRotor\/disc$/, [0.5, 0.12, 0.5], [lx + 330, ly + 330]), 'Code disc, 24 slots', { to: [lx + 90, ly + 430], side: 'r', color: C.ink });
-    callout(t, 2.8, ea(/detector\/detectorBody$/, [0.5, 0.5, 0.5], [lx + 420, ly + 270]), 'Detectors A and B', { to: [lx + 560, ly + 120], side: 'r', color: C.ink });
-    callout(t, 3.1, ea(/axle\/axleR$/, [0.6, 0.5, 0.5], [lx + 520, ly + 360]), 'POM axle', { to: [lx + 760, ly + 500], side: 'r', color: C.ink });
-    /* right top: the two light gates, a quarter-step apart, as a logic trace */
-    const rx = 1104, rw = RM - rx, sh = 270;
-    srf_card(t, 0.6, rx, ly, rw, sh, 'Two light gates, a quarter-step apart', ['derived']);
-    const deg = 180 / Math.PI, slot = 15, gA = a => (((a % slot) + slot) % slot) < slot / 2 ? 1 : 0, gB = a => gA(a - slot / 4);
-    const x0 = rx + 76, x1 = rx + rw - 30, N = 180, win = 3.0, ka = ep(t, 1.2, 1.6);
-    [['A', gA, 0], ['B', gB, 1]].forEach(([nm, fn, i]) => {
-      const yb = ly + 150 + i * 70, hh = 36;
-      text(nm, rx + 30, yb - 6, { font: 'mono', size: 24, weight: 800, color: i ? C.ink : A, alpha: ka });
-      G.save(); G.globalAlpha = ka; G.strokeStyle = i ? C.ink : A; G.lineWidth = 3; G.beginPath();
-      for (let j = 0; j <= N; j++) { const tt = t - win + win * j / N, v = fn(srf_scrollAt(Math.max(0, tt)) * deg), xx = lerp(x0, x1, j / N), yy = yb - v * hh; j ? G.lineTo(xx, yy) : G.moveTo(xx, yy); }
-      G.stroke(); G.restore();
+    header(t, 'Optical encoder');
+    captions(t, [[0.6, 'TTC\'s optical encoder looks like any mouse encoder: the same steel frame, bushing and pins. Inside, light counts the steps.'], [5.6, 'Nothing touches, so nothing wears. Only 4 of the 35 mice in my data count with light, and the solid shell keeps dust out of it too.']]);
+    /* the glance: Razer's figure, big, then the chart and the contacts that go away */
+    const hx = LM;
+    srf_hl(t, 0.5, hx, 450, '3.3×', { size: 150, label: 'Optical against mechanical', word: 'More reliable', wordBelow: true, wordSize: 50, sub: 'Razer\'s figure for its optical scroll wheel.', maxW: 440 });
+    pill(hx, 646, 'claim', ep(t, 1.0, 1.4), { by: 'Razer' });
+    const bx = hx + 196, bw = 160, kb = ep(t, 1.4, 2.4, E.snap);
+    [['Mechanical', 1, C.comp, C.ink2], ['Optical', 3.3, C.hero, C.heroText]].forEach(([nm, v, col, tc], i) => {
+      const yy = 700 + i * 50, ka = ep(t, 1.2 + i * 0.2, 1.6 + i * 0.2);
+      text(nm, hx, yy + 8, { role: 'small', size: 25, weight: i ? 800 : 600, color: i ? C.ink : C.ink2, alpha: ka });
+      rr(bx, yy - 9, Math.max(18, bw * v / 3.3 * kb), 18, 9, col, null, 0, ka);
+      text(v === 1 ? '1×' : '3.3×', bx + bw * v / 3.3 * kb + 14, yy + 9, { font: 'disp', size: 28, weight: 800, color: tc, alpha: ka * kb, tnum: true });
     });
-    const stepN = Math.floor(th * deg / slot), up = ((t % 12) + 12) % 12 < 6;
-    rich([{ s: 'Step', role: 'label', size: 21, color: C.mute }, { s: String(stepN).padStart(2, '0'), font: 'mono', size: 30, weight: 800, color: C.ink, gap: 12, tnum: true }, { s: up ? 'A leads: up' : 'B leads: down', role: 'label', size: 21, color: A, gap: 24 }], rx + 30, ly + sh - 28, { alpha: ka });
-    /* right bottom: 35 mice by encoder */
-    const my = ly + sh + 24, mh = LAY.bottom - my;
-    srf_card(t, 0.9, rx, my, rw, mh, '35 mice, by encoder', ['datasheet']);
-    const mice = ((RD.mice || {}).mice || []), opt = mice.filter(m => /optical/i.test(String(rv(m.encoder)))), n = mice.length || 35;
-    const cols = 7, gx = rx + 40, gy = my + 104, sp = 34;
-    for (let i = 0; i < n; i++) { const c = i % cols, r = Math.floor(i / cols), k = ep(t, 1.4 + i * 0.03, 1.8 + i * 0.03), X = gx + c * sp, Y = gy + r * sp; if (i < opt.length) circle(X, Y, 11 * k, { fill: C.ink }); else circle(X, Y, 10 * k, { color: C.comp, w: 2.5 }); }
-    const tx = gx + cols * sp + 30, kt = ep(t, 2.6, 3.0);
-    rich([{ s: String(opt.length || 4), font: 'mono', size: 30, weight: 800, color: C.ink }, { s: 'optical', role: 'label', size: 21, color: C.ink, gap: 12 }], tx, gy + 6, { alpha: kt });
-    text(opt.map(m => exShort(m.name).replace('Razer ', '').replace('ZOWIE ', '')).join(', ') || 'Viper V4 Pro, DeathAdder V4 Pro, EC2-DW, U2-DW', tx, gy + 40, { role: 'small', size: 24, color: C.ink2, maxW: RM - tx - 26, lh: 1.3, alpha: kt });
-    rich([{ s: String(n - opt.length), font: 'mono', size: 30, weight: 800, color: C.ink2 }, { s: 'mechanical', role: 'label', size: 21, color: C.mute, gap: 12 }], tx, gy + 128, { alpha: ep(t, 2.9, 3.3) });
-    srf_stepBand(t, 6.2, { who: 'Razer optical wheel', line: '"3.3 times more reliable than traditional mechanical designs", with no measure given. TechPowerUp: "arguably the best one currently available".', ev: ['claim'] },
-      { who: 'Optical, sealed, published', line: 'An optical encoder in a closed wheel bay on a POM axle, with its detent torque and its missed steps after a dust test published.', ev: ['proposal'] });
+    srf_better(t, 2.0, hx, 794, 'Reliability, higher is better', 'r');
+    srf_ba(t, 3.0, hx, 900, '3', '0', { size: 64, label: 'Sliding contacts that wear', net: 'Nothing touches the code disc', maxW: 440 });
+    /* the drawing: the encoder from the front, cut open; the light gate magnified beside it */
+    const D = [560, 280, 1280, 680]; demoWindow(D[0], D[1], D[2], D[3], tileA(t, 0.2, 0));
+    const th = srf_scrollAt(t), ka = ep(t, 0.5, 1.1), cx = 1010, cy = 498;
+    const E1 = part(cx, cy, 30, () => srf_encFront({ th }), { alpha: ka });
+    text('Front, face plate cut away', D[0] + 40, D[1] + 56, { role: 'label', size: 21, color: C.mute, alpha: ka });
+    callout(t, 1.6, E1.disc, 'Code disc', { to: [790, 390], side: 'l', color: C.ink, sub: '24 slots' });
+    callout(t, 1.9, E1.axle, 'Axle', { to: [790, 488], side: 'l', color: C.ink, sub: 'D-shaped end' });
+    callout(t, 2.2, E1.frame, 'Steel frame', { to: [790, 600], side: 'l', color: C.ink, sub: 'Tabs and legs' });
+    callout(t, 2.5, E1.pins, 'Five pins', { to: [790, 880], side: 'l', color: C.ink });
+    /* the detail: a ring round the light gate, a leader to its magnified view */
+    const kd = ep(t, 2.8, 3.3), gx = 1260, gw = 540;
+    if (kd > 0.003) {
+      circle(E1.gate[0], E1.gate[1], 2.5 * E1.s * E.out3(kd), { color: C.heroText, w: 2, alpha: kd });
+      line(E1.gate[0] + 2.5 * E1.s, E1.gate[1], gx, E1.gate[1], { color: C.heroText, w: 1.5, alpha: kd * 0.7, dash: [6, 5] });
+    }
+    const gd = srf_gateDetail(t, gx, 330, gw, 560, srf_scrollAt, kd);
+    if (gd) {
+      text('Light gate, magnified', gx + 30, 350, { role: 'label', size: 21, color: C.mute, alpha: kd });
+      text('IR emitter', gd.lx1 + 44, gd.yE - 14, { role: 'label', size: 21, color: C.ink, alpha: kd });
+      text('Slotted rim', gd.x0, gd.yS - 16, { role: 'label', size: 21, color: C.ink, alpha: kd });
+      text('Detectors', gd.lx1 + 44, gd.yD + 30, { role: 'label', size: 21, color: C.ink, alpha: kd });
+      /* the two signals: square waves a quarter-cycle apart; which one leads gives the direction */
+      const x0 = gx + 70, x1 = gx + gw - 30, N = 160, win = 3.0, ty = gd.yD + 200;
+      [['A', SRF_ENC.wA, 0], ['B', SRF_ENC.wB, 1]].forEach(([nm, wv, i]) => {
+        const yb = ty + i * 66, hh = 34;
+        text(nm, gx + 30, yb - 6, { font: 'disp', size: 26, weight: 800, color: C.ink, alpha: kd });
+        G.save(); G.globalAlpha = kd; G.strokeStyle = C.hero; G.lineWidth = 3; G.lineJoin = 'round'; G.beginPath();
+        for (let j = 0; j <= N; j++) { const tt = Math.max(0, t - win + win * j / N), v = srf_gate(wv, srf_scrollAt(tt)) ? 1 : 0, xx = lerp(x0, x1, j / N), yy = yb - v * hh; j ? G.lineTo(xx, yy) : G.moveTo(xx, yy); }
+        G.stroke(); G.restore();
+      });
+      const up = ((t % 12) + 12) % 12 < 6;
+      text(up ? 'A leads: scrolling up' : 'B leads: scrolling down', gx + 30, ty + 120, { role: 'small', size: 25, weight: 700, color: C.heroText, alpha: kd });
+    }
   }
 });

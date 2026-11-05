@@ -172,14 +172,14 @@ function elc_readout(t, x, y, v, unit, verdict, col, a, o = {}) {
 
 /* ============================== 1. the tear: a nicked film against strands that share the pull (#51, #69) ============================== */
 S({
-  id: 'elc_tear', ch: 'elec', theme: 'paper', title: 'Braided wires, not ribbon cables', settle: 12, ideas: [51, 69], after: 'elc_oneside',
+  id: 'elc_tear', ch: 'elec', theme: 'night', title: 'Braided wires, not ribbon cables', settle: 12, ideas: [51, 69], after: 'elc_oneside',
   src: ['elcKapton', 'elcCu', 'elcAwg', 'inglis', 'elcBrock', 'elcLayout'],
   draw: t => {
     header(t, 'Braided wires, not ribbon cables');
     captions(t, [[0.6, 'Most mice reach the battery and the side buttons with a ribbon: copper printed on a film. Nick its edge, and a pull piles up at the nick until it tears across.'], [6.6, 'Theseus braids three wires on a JST plug. Pulled, the strands share the load. Cut one, and the other two still carry it.']]);
-    const X = LM, Y = 272, Wd = 1340, Ht = 440, ka = ep(t, 0.2, 0.7, E.snap);
+    const X = LM, Y = 280, Wd = 1200, Ht = 440, ka = ep(t, 0.2, 0.7, E.snap);
     demoWindow(X, Y, Wd, Ht, ka);
-    const yA = Y + 132, yB = Y + 340, bx = X + 30, bw = 140, xc0 = bx + bw, xEnd = X + 1180, tabW = 56, wR = 90;
+    const yA = Y + 132, yB = Y + 340, bx = X + 30, bw = 140, xc0 = bx + bw, xEnd = X + 1040, tabW = 56, wR = 90;
     elc_slab(bx, Y + 30, bw, Ht - 60, ep(t, 0.4, 0.9), { routes: [yA - 60, yB - 50] });
     text('One board', bx + bw / 2, Y + Ht - 52, { role: 'label', size: 21, color: '#E8E6E0', align: 'center', alpha: ep(t, 0.9, 1.3) });
     text('Pulls: illustration', X + Wd - 32, Y + 50, { role: 'label', size: 20, color: C.faint, align: 'right', alpha: ep(t, 3.0, 3.4) });
@@ -211,7 +211,7 @@ S({
     const la = ep(t, 1.2, 1.6);
     text('Ribbon cable (FPC)', xc0 + 24, yA - wR / 2 - 24, { role: 'label', size: 22, color: C.ink, alpha: la });
     text('Polyimide film, three copper traces', xc0 + 24 + tw('Ribbon cable (FPC)', { role: 'label', size: 22 }) + 22, yA - wR / 2 - 24, { role: 'small', size: 25, color: C.mute, alpha: la });
-    if (kRows && t < 6.0) callout(t, 2.8, [xn, yA - wR / 2 + 4 * wR / 24], 'Kt ≈ 11 at the nick\'s tip', { to: [xn + 170, yA + wR / 2 + 34], side: 'r', color: C.bad, sub: 'a 0.5 mm nick, its tip 0.02 mm round' });
+    if (kRows && t < 6.0) callout(t, 2.8, [xn, yA - wR / 2 + 4 * wR / 24], 'Kt ≈ 11 at the nick\'s tip', { to: [xn + 170, yA + wR / 2 + 30], side: 'r', color: C.bad, sub: 'a 0.5 mm nick, its tip 0.02 mm round', maxW: 600 });
     if (t > 3.5 && t < 6.4) text(fmtN(0.07 * L1, 2) + ' N', P[0] + 28, P[1] + 46, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: ep(t, 3.5, 3.8) });
     /* ---- the braid ---- */
     const kB = ep(t, 1.0, 2.0, E.cam), xb1 = lerp(xc0 + 8, xEnd, kB), cut = t >= 7.6, gap = cut ? 6 + 30 * E.out3(prog(t, 7.6, 8.0)) : 0;
@@ -229,10 +229,10 @@ S({
     if (t > 8.7) text(fmtN(FB, 2) + ' N', P[0] + 28, P[1] + 46, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: ep(t, 8.7, 9.0) });
     const down = (t > 3.5 && t < 6.4) || t > 8.7;
     if (t > 1.6) cursorAt(t, keys, [2.5, 3.5, 7.6, 8.7], { grab: down, ease: E.cam });
-    /* ---- the two results, as tiles beside the drawing ---- */
-    const rx = X + Wd + 24, rw = RM - rx, th = (Ht - 24) / 2;
-    statTile(t, 6.1, [rx, Y, rw, th], { value: '0.07', unit: 'N', label: 'tears a nicked ribbon on', ev: 'datasheet', by: 'DuPont', color: C.bad });
-    statTile(t, 10.2, [rx, Y + th + 24, rw, th], { value: fmtN(2 * ELB.wireN, 0), unit: 'N', label: 'braid, one strand cut', ev: 'derived', hero: true });
+    /* ---- by how much, beside the drawing: the headline, then before → after ---- */
+    const rx = X + Wd + 40, rw = RM - rx, FB2 = 2 * ELB.wireN;
+    elc_hl(t, 10.2, rx, 440, fmtN(Math.round(FB2 / 0.07 / 10) * 10, 0) + '×', 'the pull', { size: 120, label: 'To tear it, one strand already cut', sub: 'The braid\'s two good strands hold ' + fmtN(FB2, 0) + ' N; a nick keeps tearing the film at 0.07 N.', subW: rw });
+    elc_ba(t, 10.8, rx, 650, '0.07', fmtN(FB2, 0), { label: 'Force to tear, ribbon then braid', unit: 'N', net: 'Cut one strand, and two still carry it', maxW: rw });
     /* ---- the words, under it ---- */
     const by = Y + Ht + 40;
     glossBox(t, 2.0, X, by, 520, 'FPC', 'A flexible printed circuit: copper traces sealed in polyimide film. Most mice use one for the side buttons.', { size: 25 });
@@ -244,12 +244,12 @@ S({
 
 /* ============================== 2. the noise: a pair's loop, and the twist that flips it (#69) ============================== */
 S({
-  id: 'elc_twist', ch: 'elec', theme: 'night', title: 'Twisted pairs cancel radio noise', settle: 11, ideas: [69], after: 'elc_tear',
+  id: 'elc_twist', ch: 'elec', theme: 'paper', title: 'Twisted pairs cancel radio noise', settle: 11, ideas: [69], after: 'elc_tear',
   src: ['elcKlipec', 'elcNasaTem', 'antDetune', 'elcLayout'],
   draw: t => {
     header(t, 'Twisted pairs cancel radio noise');
     captions(t, [[0.6, 'Two wires side by side make one long loop. A changing field beside it, from the antenna or a regulator\'s coil, drives a current round the whole loop.'], [5.8, 'Twist them and the loop flips every half turn. Each half picks up the opposite of its neighbour, and the halves cancel.']]);
-    const A = acc(), X = LM, Y = 272, Wd = 1180, Ht = 460, ka = ep(t, 0.2, 0.7, E.snap);
+    const A = C.hero, X = LM, Y = 280, Wd = 1180, Ht = 460, ka = ep(t, 0.2, 0.7, E.snap);
     demoWindow(X, Y, Wd, Ht, ka);
     cardHead(t, 0.4, X, Y, Wd, 'A 60 mm lead, a coil 5 mm beside it', ['derived']);
     const S0 = 15, xL = X + 120, xR = xL + ELB.leadL * S0, ys = Y + 250, yP = ys - ELB.h * S0 - 6, yT = ys + ELB.h * S0 + 6, sep = 16;
@@ -291,9 +291,10 @@ S({
     text('Twisted, ' + lay + ' mm lay: each half cancels the next', xL, yT + sep + 50, { role: 'label', size: 22, color: C.ink, alpha: ep(t, 1.5, 1.9) });
     if (t > 1.7) cursorAt(t, keys, [2.8], { grab: t > 2.8 && t < 6.4, ease: E.cam });
     /* the two results, as tiles under the drawing */
-    const r6 = elc_reject(lay, ELB.h, ELB.leadL, clamp(xs, 0, ELB.leadL)), dB6 = elc_dB(r6), ty = Y + Ht + 24, tw2 = (Wd - 24) / 2, th2 = 968 - ty;
-    statTile(t, 3.0, [X, ty, tw2, th2], { value: '1', unit: '×', label: 'picked up side by side', head: 'The reference', count: false });
-    statTile(t, 3.3, [X + tw2 + 24, ty, tw2, th2], { value: fmtN(dB6, 0), unit: 'dB', label: '1/' + fmtN(1 / r6, 0) + ' of it, twisted at 6 mm', ev: 'derived', hero: true, count: false });
+    /* the strip under it: by how much, before → after (the coil at the lead's middle) */
+    const r0 = elc_reject(lay), d0 = elc_dB(r0);
+    elc_hl(t, 3.0, X, 900, fmtN(d0, 0) + ' dB', 'noise', { size: 120, count: false, label: 'Twisted at a ' + lay + ' mm lay, against side by side' });
+    elc_ba(t, 3.4, X + 680, 900, '1', '1/' + fmtN(1 / r0, 0), { label: 'Noise picked up', unit: 'of it', net: 'A coil 5 mm away, at the middle of the lead', maxW: 500 });
     /* the right column: the measurement, the 2.4 GHz case, the word */
     const rx = X + Wd + 24, rw = RM - rx;
     const s1 = sourceBox(t, 3.6, rx, Y, rw, 'Klipec, IEEE 1967', 'Steel conduit cut magnetic pickup 27 dB. A pair twisted to a 2-inch lay did five to six times better: about 41 to 43 dB.', { kind: 'study', size: 25 });
@@ -304,12 +305,12 @@ S({
 
 /* ============================== 3. how tight: the lay against the copper it adds (Brock's caveat, #69) ============================== */
 S({
-  id: 'elc_lay', ch: 'elec', theme: 'paper', title: 'Braid lay: noise against weight', settle: 12, ideas: [69], after: 'elc_twist',
+  id: 'elc_lay', ch: 'elec', theme: 'night', title: 'Braid lay: noise against weight', settle: 12, ideas: [69], after: 'elc_twist',
   src: ['elcKlipec', 'elcCu', 'elcAwg', 'elcBrock', 'elcLayout'],
   draw: t => {
     header(t, 'Braid lay: noise against weight');
     captions(t, [[0.6, 'Every twist adds wire: each strand runs a helix, longer than the lead. Braid it too tight and the copper adds up, as Brock warns.'], [6.4, 'At about 6 mm the noise is already 36 dB down and the copper has barely moved. That is the lay I\'d set: 3 mg over both leads.']]);
-    const X = LM, Y = 272, ka = ep(t, 0.2, 0.7, E.snap);
+    const X = LM, Y = 280, ka = ep(t, 0.2, 0.7, E.snap);
     /* the lead at the lay the pointer sets, drawn big along the top */
     const Hl = 140; demoWindow(X, Y, RM - X, Hl, ka);
     const cy0 = Y + Hl + 24, cw = 1140, ch = 948 - cy0;
@@ -352,10 +353,11 @@ S({
     }
     if (t > 3.2) cursorAt(t, keys, [4.1], { grab: t > 4.1 && t < 8.8, ease: E.cam });
     /* the two numbers that trade, and Brock's caveat */
-    const rx = X + cw + 24, rw = RM - rx, sw = (rw - 24) / 2, sh = 250;
-    statTile(t, 1.6, [rx, cy0, sw, sh], { value: dNow < FLOOR ? '< −60' : fmtN(dNow, 0), unit: 'dB', label: 'noise picked up', ev: 'derived', hero: true, count: false });
-    statTile(t, 1.8, [rx + sw + 24, cy0, sw, sh], { value: '+' + fmtN(mg, mg < 10 ? 1 : 0), unit: 'mg', label: 'copper, both leads', ev: 'derived', color: C.bad, count: false });
-    noteBox(t, 9.0, rx, cy0 + sh + 24, rw, { kind: 'estimate', label: 'Estimate', value: 'Brock', size: 25, body: 'Logitech braids these wires in every GPX (#69), and publishes no lay. Braided too tight, the weight adds up: wires are heavy.' });
+    const rx = X + cw + 40, rw = RM - rx, d6 = elc_rejDB(ELB.lay), tk6 = elc_takeup(ELB.lay), mg6 = ELB.cuMg * tk6;
+    const mgT = ELB.cuMg * elc_takeup(1.5);
+    noteBox(t, 2.0, rx, cy0, rw, { size: 22, head: 'Logitech braids these wires in every GPX (#69)', body: 'It publishes no lay. Braided too tight, the weight adds up: wires are heavy.' });
+    elc_hl(t, 9.0, rx, cy0 + 296, fmtN(mgT / mg6, 0) + '×', 'less copper', { size: 100, label: 'Than a tight 1.5 mm braid' });
+    elc_ba(t, 9.4, rx, cy0 + 436, fmtN(mgT, 0), fmtN(mg6, 1), { size: 56, label: 'Copper added, a 1.5 mm lay then mine', unit: 'mg', net: 'And still ' + fmtN(d6, 0) + ' dB of noise picked up', maxW: rw });
     source(t, 'Model: two 60 mm leads of three 32 AWG wires, copper only (' + fmtN(ELB.cuMg, 0) + ' mg at 9.0 g/cm³). Wire = √(1 + (2πr/lay)²), r 0.23 mm. Noise: a coil 5 mm beside the lead.', { t0: 2 });
   }
 });
@@ -377,12 +379,12 @@ function elc_tiltSlab(ex, y, a, Ls, al) {
   return [ex - Ls * Math.cos(a), y - Ls * Math.sin(a)];
 }
 S({
-  id: 'elc_flex', ch: 'elec', theme: 'night', title: 'Flex life: fine strands, no crease', settle: 12, ideas: [69, 51], after: 'elc_lay',
+  id: 'elc_flex', ch: 'elec', theme: 'paper', title: 'Flex life: fine strands, no crease', settle: 12, ideas: [69, 51], after: 'elc_lay',
   src: ['elcAlexander', 'elcShengyi', 'elcKapton', 'elcAwg', 'elcBrock'],
   draw: t => {
     header(t, 'Flex life: fine strands, no crease');
     captions(t, [[0.6, 'Every battery swap bends these leads. A ribbon bends one way only, and folded hard it creases: its copper takes the whole bend on one line.'], [6.2, 'A braid has no flat side. Its fine strands slide past each other, so each one bends only as hard as its own thickness.']]);
-    const X = LM, Y = 272, Wd = 1180, Ht = 696, ka = ep(t, 0.2, 0.7, E.snap);
+    const X = LM, Y = 280, Wd = 1180, Ht = 680, ka = ep(t, 0.2, 0.7, E.snap);
     demoWindow(X, Y, Wd, Ht, ka);
     cardHead(t, 0.4, X, Y, Wd, 'Lifting the board out, over and over', ['derived']);
     /* the pointer lifts the board by its far end; each lead bends where it leaves the clamp */
@@ -409,28 +411,29 @@ S({
     text('Spread over the arc', ex + 120, yBr + 74, { role: 'label', size: 21, color: C.heroText, alpha: kB * ep(t, 3.0, 3.4) });
     /* the pointer lifts both boards by their far ends */
     if (t > 1.8) { const hx = (hR[0] + hB[0]) / 2 + 20, hy = (hR[1] + hB[1]) / 2; line(hR[0] + 20, hR[1], hB[0] + 20, hB[1], { color: C.faint, w: 2, dash: [4, 6], alpha: ep(t, 1.8, 2.2) }); cursorPtr(hx, hy, { a: ep(t, 1.8, 2.2), grab: t > c0 }); }
-    text('Ribbon: it creases on the edge', X + 40, yR - 70, { role: 'label', size: 22, color: C.bad, alpha: ep(t, 1.0, 1.4) });
-    const hw = heroTag(X + 40, yBr - 70, 'Theseus', 'braid', { a: ep(t, 1.3, 1.7) });
-    text('it rolls round the edge', X + 40 + hw + 16, yBr - 70, { role: 'label', size: 22, color: C.mute, alpha: ep(t, 1.3, 1.7) });
+    text('Ribbon: it creases on the edge', ex + 60, yR - 52, { role: 'label', size: 22, color: C.bad, alpha: ep(t, 1.0, 1.4) });
+    const hw = heroTag(ex + 60, yBr - 62, 'Theseus', 'braid', { a: ep(t, 1.3, 1.7) });
+    text('it rolls round the edge', ex + 60 + hw + 16, yBr - 62, { role: 'label', size: 22, color: C.mute, alpha: ep(t, 1.3, 1.7) });
     rich([{ s: String(bends), role: 'stat', size: 64, color: C.ink, tnum: true }, { s: 'bends', font: 'mono', size: 22, weight: 600, color: C.mute, gap: 10 }], X + Wd - 40, Y + 130, { align: 'right', alpha: ep(t, 2.6, 3.0) });
     /* the strain, in one line: a 40 AWG strand against a solid 32 AWG wire */
-    const sy = Y + Ht - 56, ks = ep(t, 6.6, 7.2), dS = 0.202, dF = 0.0799;
-    rule(X + 32, sy - 70, X + Wd - 32, ks);
-    rich([{ s: fmtN(dS / dF, 1) + '×', role: 'stat', size: 60, color: C.hero, grad: C.heroGrad, tnum: true }, { s: 'less strain in a 40 AWG strand than a solid 32 AWG wire (ε = d / 2R)', role: 'small', size: 25, weight: 600, color: C.ink2, gap: 18 }], X + 40, sy, { alpha: ks });
-    /* right column: Alexander's strands, and the fold rating */
-    const rx = X + Wd + 24, rw = RM - rx, ch = 420;
-    demoWindow(rx, Y, rw, ch, ep(t, 0.6, 1.1, E.snap));
-    cardHead(t, 0.8, rx, Y, rw, 'Bends to failure', [{ ev: 'study', by: 'Alexander 1953' }]);
-    text('18 AWG hook-up wire, by strand count', rx + 32, Y + 92, { role: 'small', size: 25, color: C.mute, alpha: ep(t, 0.9, 1.3) });
-    const rows = [['7', 351], ['19', 874], ['65', 2892], ['105', 2908]], bx0 = rx + 100, bw0 = rw - 100 - 140;
+    const sy = Y + Ht - 46, ks = ep(t, 4.0, 4.6), dS = 0.202, dF = 0.0799;
+    rule(X + 32, sy - 62, X + Wd - 32, ks);
+    rich([{ s: '50+', role: 'stat', size: 54, color: C.bad, tnum: true }, { s: 'folds at 0.38 mm: copper-clad film\'s rating. The film lasts 285,000; the copper cracks.', role: 'small', size: 23, weight: 600, color: C.ink2, gap: 16 }], X + 40, sy, { alpha: ks });
+    /* the right column: by how much, then the strands' life in a test */
+    const rx = X + Wd + 24, rw = RM - rx, R2 = 2.5;
+    elc_hl(t, 6.6, rx, 440, fmtN(dS / dF, 1) + '×', 'less strain', { size: 110, label: 'A fine strand against a solid wire', sub: 'Bent over the same ' + R2 + ' mm, a 40 AWG strand strains ' + fmtN(100 * dF / (2 * R2), 1) + '% and a solid 32 AWG wire ' + fmtN(100 * dS / (2 * R2), 1) + '% (ε = d / 2R).', subW: rw });
+    const cy = 600, ch = 360;
+    demoWindow(rx, cy, rw, ch, ep(t, 0.6, 1.1, E.snap));
+    cardHead(t, 0.8, rx, cy, rw, 'Bends to failure by strand size (higher is better)', [{ ev: 'study', by: 'Alexander 1953' }], { dy: 44 });
+    const rows = [['0.40 mm × 7', 351], ['0.25 mm × 19', 874], ['0.13 mm × 65', 2892], ['0.10 mm × 105', 2908]], bx0 = rx + 190, bw0 = rw - 190 - 110;
     rows.forEach(([l, v], i) => {
-      const yy = Y + 160 + i * 54, k = ep(t, 1.2 + i * 0.25, 2.2 + i * 0.25, E.snap);
-      text(l, rx + 32, yy + 8, { role: 'label', size: 22, color: C.ink, alpha: ep(t, 1.0 + i * 0.25, 1.4 + i * 0.25) });
+      const yy = cy + 106 + i * 48, k = ep(t, 1.2 + i * 0.25, 2.2 + i * 0.25, E.snap);
+      text(l, rx + 32, yy + 8, { role: 'small', size: 22, weight: 600, color: C.ink, alpha: ep(t, 1.0 + i * 0.25, 1.4 + i * 0.25) });
       rr(bx0, yy - 9, bw0, 18, 9, C.track, null, 1, k);
-      G.save(); G.globalAlpha = k; rrPath(bx0, yy - 9, Math.max(18, bw0 * v / 3000 * k), 18, 9); G.fillStyle = i >= 2 ? gradH(bx0, bw0, C.heroGrad) : C.comp; G.fill(); G.restore();
-      text(countUp(fmt(v), k) || fmt(v), rx + rw - 32, yy + 8, { font: 'mono', size: 24, weight: 700, color: C.ink, align: 'right', alpha: k });
+      rr(bx0, yy - 9, Math.max(18, bw0 * v / 3000 * k), 18, 9, i >= 2 ? C.ink2 : C.comp, null, 1, k);
+      text(countUp(fmt(v), k) || fmt(v), rx + rw - 32, yy + 8, { font: 'mono', size: 23, weight: 700, color: C.ink, align: 'right', alpha: k });
     });
-    text('A 90° bend each way. Finer strands: about 8× the life, then it levels off.', rx + 32, Y + ch - 72, { role: 'small', size: 25, color: C.ink2, maxW: rw - 64, lh: 1.3, alpha: ep(t, 2.6, 3.0) });
-    sourceBox(t, 4.0, rx, Y + ch + 24, rw, 'Shengyi SF202', 'Copper-clad film folded over 0.38 mm is rated for at least 50 folds. The film alone lasts 285,000 (Kapton HN): the copper is what cracks.', { kind: 'datasheet', size: 25 });
+    text('18 AWG wire, 90° each way. Theseus\'s strands are 0.08 mm, finer still.', rx + 32, cy + ch - 50, { role: 'small', size: 21, weight: 600, color: C.ink2, maxW: rw - 64, lh: 1.3, alpha: ep(t, 2.6, 3.0) });
+    source(t, 'Strain ε = d / 2R, derived. Bends to failure: Alexander 1953, Table IX. Fold rating: Shengyi SF202; the film: DuPont Kapton HN.', { t0: 2 });
   }
 });
