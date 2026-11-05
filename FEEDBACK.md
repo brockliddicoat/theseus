@@ -842,3 +842,6 @@ old score as archived (F26.13).
   rating panel shows his archived note beside those answers, and "not done: bring my note back" makes it current again
   (recorded in the rating as `reopened`). Those 13 are current again. At each integration Claude checks every raised rev
   against its note and answers before publishing.
+- **F29.3 DECIDED** The power switch (F26.8): asked whether the board builder's reading (centred in the board's window,
+  actuator straight down) was right, he chose "Middle of the shell's notch": centre it on the cutout in the shell or plate
+  it is reached through. **IN PROGRESS (K2).**
