@@ -929,3 +929,14 @@ old score as archived (F26.13).
   symmetrical". **IN PROGRESS (K2), plan 5.**
 - **F30.24** "and the gt01s walls don't look thick on the bottom housing" (after F30.18's 0.45 mm walls). **TODO (after the
   08:20 usage reset):** thicker bottom-housing walls, measured off Gateron's render.
+
+## F32. A full revamp (2026-11-05 07:06 to 07:10)
+- **F32.1** "i havent really seen any big changes from the feedback i gave with the ratings and notes tool, whats up with
+  that?" Answered honestly: of 100 noted slides, 7 rebuilt (clicks), 12 out of the film, "khz" deck-wide; the board in
+  progress; about 70 notes not started, because two builders at a time and deep work per slide made it slow.
+- **F32.2 DECIDED** "wait until next refresh to fully redo the presentation, i was looking for a full revamp, not some tiny
+  changes". Asked how: **"New story, fewer slides"** (re-plan the film from the thesis: fewer, denser slides, each the
+  problem, then the fix, then what the player feels), **"Just build it"** (no outline approval first), **"As many as it
+  takes"** (builders). **TODO (from the 08:20 reset):** REVAMP.md (the new story, each new slide with the old slides and
+  his notes it answers), the rating panel showing those notes on each new slide, then the builders in parallel; the board
+  (K2) and the GT01 walls (K1) carry on beside them.
