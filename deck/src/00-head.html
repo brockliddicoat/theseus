@@ -55,6 +55,14 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 #rate .hint { margin-left: 6px; color: var(--mute); font: 500 11px/1 var(--f-mono); }
 #rate .state { color: var(--mute); font: 500 11px/1.3 var(--f-mono); white-space: nowrap; }
 #rate .slide { margin: 4px 0 8px; font: 600 12px/1.35 var(--f-disp); color: #bdbcb6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rate .was { margin: 0 0 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); max-height: 32vh; overflow: auto; }
+#rate .was[hidden] { display: none; }
+#rate .wnote { margin: 0 0 4px; font: 500 12px/1.4 var(--f-disp); color: var(--ink); }
+#rate .wans { margin: 0 0 6px; padding-left: 18px; font: 400 12px/1.4 var(--f-disp); color: #bdbcb6; }
+#rate .wans q { color: var(--ink); }
+#rate .wrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+#rate .wq { color: var(--mute); font: 500 11px/1.3 var(--f-mono); }
+#rate .wrow .pill { height: 28px; padding: 0 10px; }
 #rate .vals { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 5px; }
 #rate .vals button { height: 34px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 700 14px/1 var(--f-disp); cursor: pointer; font-variant-numeric: tabular-nums; padding: 0; }
 #rate .vals button:hover { background: var(--surface2); }

@@ -62,16 +62,19 @@ function go(i, opts = {}) {
    preview, a viewer who can't write). */
 const RATE = { db: null, all: {}, ready: false, ro: false, note: '', pend: {}, again: {}, taSlide: null, dirty: false, tmr: null };
 const rateKey = id => String(id).replace(/[^A-Za-z0-9_\-.~:@+]/g, '_');
-/* a slide's version: its drawing code, its title, and a rev a builder bumps when only a helper changed (Brock, F26.13:
-   "updating a slide should archive its old score"). A rating made on another version is archived: it moves into the
-   rating's history, and the slide shows as unrated until it's rated again. */
+/* when a rating is archived (Brock, F26.13: "updating a slide should archive its old score"; and 05:05: "you need a solution
+   to make sure archived feedback was fully taken into account and it wasn't just some small change that archived the
+   feedback"). A score is archived only when the slide's `rev` goes up, and a builder raises it only once it has acted on
+   every clause of his note there, listing what it did in the slide's `answers` ([his words, what changed] pairs). A
+   wording sweep or a change to a helper archives nothing. The panel shows the archived note beside those answers, and
+   "not done" brings the note back as current, at the new rev, recorded in the rating (`reopened`) for Claude to read. */
+const slideRev = s => (s && +s.rev) || 0;
+/* the rev a rating was made at: saved with it from v21 on; every rating saved before was made at rev 0 */
+const ratedRev = r => (r && r.rev != null ? +r.rev : 0);
+/* a slide's version, kept in each rating for the record (no longer what archives it) */
 function slideVer(s) { return s.__ver || (s.__ver = fnv36(String(s.draw || s.card || '') + '|' + (s.title || '') + '|' + (s.rev || 0))); }
-/* the ratings made before versions were kept (to 2026-11-05 03:45) were made on v19 of the live link: these are its slides'
-   versions, so a slide changed since then shows its old score as archived */
-const RATE_BASE = {"cover":"1c0u7nn","thesis":"1jaw5px","targets":"1dx6bq0","targets2":"1y3r74r","flagships":"10z11az","ntr_stats":"zxwfw4","zerograms":"14eueya","weightgap":"ohrc4v","ntr_density":"p65n0o","ntr_sizewt":"3u58r6","ntr_densrank":"83efoh","pricefront":"ckls6a","market":"1mky897","budget":"1347c8i","map":"1mit5i8","clicks":"9gn0re","arc":"10m54fq","clk_wedge":"gtg33l","clk_switch":"1ystf1l","clk_switch2":"4qfkgx","cutouts":"1w2433v","tensioner":"7ssnzd","clk_tenmat":"kptzkf","anchors":"1soxt08","clk_pomtune":"1ltcvj9","clk_front":"xd9ceo","clk_hotswap":"1de3kkx","clk_spdt":"1x1pvvq","latency":"r4w0v0","clk_debounce":"yeyxis","clk_wait":"19ka6b5","clk_methods":"ge4h2m","sidebuttons":"1l3s004","glide":"rsk0v8","gld_under":"1jtw07e","dots":"13tvchw","gld_camera":"1p4xic3","gld_corr":"6lf345","gld_blur":"p62txs","focus":"1gqtge5","gld_sag":"1gvzacy","gld_module":"1ias97k","sensor":"zjr0ib","gld_reports":"t93q3g","gld_position":"je8l9h","gld_soft":"j1hxar","gld_sheet":"1u1a0l2","shellcard":"14lqvun","materials":"o64pmg","shlSpecific":"1l9sz9h","thinwall":"z9ds44","shlScatter":"ww7f1n","shlPick":"ijjhnj","shlNoPick":"1e45x7u","shlHotspot":"1lch9ee","shlMargin":"18raj1f","shlWork":"1rx28ja","shlShell3d":"80q5fg","lattice":"mlqpqb","shlDeterminate":"1bqxnyt","shlThin":"1hy48m5","shlLattice3d":"1559brn","shbArches":"1loxf85","shbPress":"1c63v65","shbThrust":"z782nj","shbBend":"172nrzl","shbFibres":"1u3lbky","fillet":"11lgp2i","filletsize":"lnurv4","shbFlow":"12wibt8","shbGates":"1op14e5","shbWidth":"13wwoox","shbMill":"18tda1k","shbMillDirect":"vyx6rr","shbTol":"1fmjyie","shbSides":"1upg73i","shlPcbRib":"6ua7bv","shcCarry":"hdvg4d","shcArms":"1ewpj88","shlStructs":"1vm3dy7","tolerance":"kyzyzh","sealed":"1bu2o2j","shlGrams":"293y48","mass":"npv36y","grind":"me2bo4","shlsheet1":"1vkusbq","shlsheet2":"1seh9ov","pltPlate":"1mm0g1b","pltSim":"rr3n7r","pltOptions":"14ao8yo","surfacecard":"10tprvn","coating":"12xp4ak","srf_texture":"1fqv9in","srf_weight":"97v6ro","srf_uv":"eps9w3","grip":"vz36ju","srf_gripmap":"2ale5a","srf_tape":"ng95n0","srf_twotone":"cmq7uq","srf_marks":"ujk4ur","details":"1olxa0e","wheel":"lccs49","srf_encoder":"1evab6w","eleccard":"8m26qp","onechip":"1hifscr","elc_module":"cemxb2","antenna":"1d5pcpa","motion":"13xr6os","elc_rate":"cedf8o","framesync":"1kqz7lp","secondshot":"12pxuwy","power":"e2xlu6","elc_pmic":"4g8qd3","elc_charge":"1j807iu","elc_safe":"1v7r059","cells":"nds3h0","frontier":"q3m2gu","elc_oneside":"8jdhuh","elecsheet1":"10iguxg","elc_tear":"1xy8gna","elc_twist":"s7be4q","elc_lay":"14fua3c","elc_flex":"r1jxva","cable":"6z6965","software":"1whxkha","elc_sheet2":"17ccpqb","shapecard":"1w4i6dv","shp_newton":"b1qsv8","grooves":"1sut1j7","size":"1sqyq6r","emg":"18vt2ey","owncard":"8iee81","repair":"17659uq","ownscrew":"1dgt88h","own_insert":"15ax8cl","own_life":"1a377u5","ownbatt":"fcwm05","ownboard":"gndej8","box":"66qzjx","serial":"zurulc","ownsheet1":"11rm8m4","ownsheet2":"9pu545","close":"j4sd1e"};
-const rateVer = (s, r) => (r && r.ver != null ? r.ver : RATE_BASE[s.id]);
-function rateCur(s) { const r = s && RATE.all[rateKey(s.id)]; if (!r) return null; const v = rateVer(s, r); return v == null || v === slideVer(s) ? r : null; }
-function rateOld(s) { const r = s && RATE.all[rateKey(s.id)]; if (!r) return null; const v = rateVer(s, r); return v != null && v !== slideVer(s) ? r : null; }
+function rateCur(s) { const r = s && RATE.all[rateKey(s.id)]; if (!r) return null; return ratedRev(r) >= slideRev(s) ? r : null; }
+function rateOld(s) { const r = s && RATE.all[rateKey(s.id)]; if (!r) return null; return ratedRev(r) < slideRev(s) ? r : null; }
 async function rateInit() {
   const cl = window.claude;
   if (!cl || typeof cl.use !== 'function') return;
@@ -95,7 +98,7 @@ async function rateInit() {
 }
 function rateBuild(p) {
   p.innerHTML = '<div class="top"><h2>How valuable is this slide? <span class="hint">1 least, 10 most</span></h2><span class="state" aria-live="polite"></span></div>' +
-    '<p class="slide"></p><div class="vals">' + Array.from({ length: 10 }, (_, i) => '<button type="button" data-v="' + (i + 1) + '" aria-label="Rate ' + (i + 1) + ' of 10">' + (i + 1) + '</button>').join('') + '</div>' +
+    '<p class="slide"></p><div class="was" hidden><p class="wnote"></p><ol class="wans"></ol><div class="wrow"><span class="wq">Not fully done?</span><button class="pill" type="button" data-act="reopen">not done: bring my note back</button></div></div><div class="vals">' + Array.from({ length: 10 }, (_, i) => '<button type="button" data-v="' + (i + 1) + '" aria-label="Rate ' + (i + 1) + ' of 10">' + (i + 1) + '</button>').join('') + '</div>' +
     '<div class="row"><textarea rows="1" placeholder="What matters most here, or what could go (optional)"></textarea><button class="pill" type="button" data-act="next">next unrated</button></div>';
   p.title = 'The scores show which information is safest to condense, not which slides to cut';
   p.querySelectorAll('.vals button').forEach(b => b.onclick = e => { e.stopPropagation(); rateSave({ value: +b.dataset.v }); });
@@ -104,6 +107,7 @@ function rateBuild(p) {
   const ta = p.querySelector('textarea');
   ta.oninput = () => { if (RATE.taSlide == null) RATE.taSlide = APP.i; RATE.dirty = true; clearTimeout(RATE.tmr); RATE.tmr = setTimeout(rateFlush, 1200); };
   ta.onblur = () => rateFlush();
+  p.querySelector('[data-act="reopen"]').onclick = e => { e.stopPropagation(); rateReopen(); };
   p.querySelector('[data-act="next"]').onclick = e => {
     e.stopPropagation();
     const n = DECK.slides.length;
@@ -126,23 +130,46 @@ function rateSync() {
   const p = $('rate'); if (p.hidden) return;
   if (!p.dataset.built) rateBuild(p);
   p.querySelector('.slide').textContent = (APP.i + 1) + '. ' + (s.title || s.id) + (old && old.value ? '   (rated ' + old.value + ' before it changed)' : '');
+  const was = p.querySelector('.was'), hasOld = !!(old && (old.value || old.note));
+  was.hidden = !hasOld;
+  if (hasOld) {
+    p.querySelector('.wnote').textContent = 'You rated it ' + (old.value || '–') + (old.note ? ': \u201c' + old.note + '\u201d' : '') + '. What changed for it:';
+    const ol = p.querySelector('.wans'), ans = Array.isArray(s.answers) ? s.answers : [];
+    ol.innerHTML = '';
+    if (!ans.length) { const li = document.createElement('li'); li.textContent = 'No answers listed for this change yet.'; ol.appendChild(li); }
+    ans.forEach(a => { const li = document.createElement('li'), q = document.createElement('q'), d = document.createElement('span'); q.textContent = a[0]; d.textContent = ' \u2192 ' + a[1]; li.appendChild(q); li.appendChild(d); ol.appendChild(li); });
+    p.querySelector('[data-act="reopen"]').disabled = RATE.ro;
+  }
   p.querySelectorAll('.vals button').forEach(b => { b.classList.toggle('on', !!(r && +b.dataset.v === r.value)); b.disabled = RATE.ro; });
   const ta = p.querySelector('textarea'); ta.disabled = RATE.ro;
   if (RATE.taSlide !== APP.i) { rateFlush(); ta.value = (r && r.note) || ''; RATE.taSlide = APP.i; RATE.dirty = false; }
   else if (!RATE.dirty && document.activeElement !== ta) ta.value = (r && r.note) || '';
   p.querySelector('.state').textContent = RATE.note || (done + ' of ' + DECK.slides.length + ' rated');
 }
+/* "not done": the archived score and note come back as current at the slide's new rev, and the press is recorded */
+function rateReopen() {
+  if (!RATE.db || RATE.ro) return;
+  const s = DECK.slides[APP.i], old = rateOld(s); if (!old) return;
+  const k = rateKey(s.id), rev = slideRev(s);
+  const doc = Object.assign({}, old, { rev, ver: slideVer(s), n: APP.i + 1, of: DECK.slides.length, at: new Date().toISOString(),
+    reopened: (old.reopened || []).concat([{ at: new Date().toISOString(), fromRev: ratedRev(old), rev, answers: (s.answers || []).length }]) });
+  RATE.all[k] = doc; RATE.taSlide = null; RATE.note = 'Your note is back on this slide'; rateSync();
+  rateWrite(k);
+}
 function rateSave(patch, si) {
   if (!RATE.db || RATE.ro) return;
   const i = si == null ? APP.i : si, s = DECK.slides[i]; if (!s) return;
-  const k = rateKey(s.id), prev = RATE.all[k] || {}, ver = slideVer(s), pv = rateVer(s, prev.id ? prev : null), same = !prev.id || pv == null || pv === ver, old = same ? prev : {};
+  const k = rateKey(s.id), prev = RATE.all[k] || {}, rev = slideRev(s), pr = ratedRev(prev.id ? prev : null), same = !prev.id || pr >= rev, old = same ? prev : {};
   const history = (prev.history || []).slice();
-  if (!same && (prev.value || prev.note)) history.push({ ver: pv, value: prev.value || null, note: prev.note || '', at: prev.at || null, title: prev.title || '', n: prev.n || null });
-  const doc = { id: s.id, title: s.title || '', ch: s.ch || '', n: i + 1, of: DECK.slides.length, ver, value: old.value || null, note: old.note || '', history };
+  if (!same && (prev.value || prev.note)) history.push({ rev: pr, ver: prev.ver || null, value: prev.value || null, note: prev.note || '', at: prev.at || null, title: prev.title || '', n: prev.n || null });
+  const doc = { id: s.id, title: s.title || '', ch: s.ch || '', n: i + 1, of: DECK.slides.length, rev, ver: slideVer(s), value: old.value || null, note: old.note || '', history, reopened: prev.reopened || [] };
   Object.assign(doc, patch);
   if (same && doc.value === (old.value || null) && doc.note === (old.note || '')) return;
   doc.at = new Date().toISOString();
   RATE.all[k] = doc; RATE.note = ''; rateSync();
+  rateWrite(k);
+}
+function rateWrite(k) {
   /* one write at a time per document: a burst of clicks writes the latest state once the previous write lands */
   if (RATE.pend[k]) { RATE.again[k] = true; return; }
   RATE.pend[k] = true;

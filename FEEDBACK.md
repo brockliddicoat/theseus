@@ -830,3 +830,15 @@ old score as archived (F26.13).
   d2ae72fe, 80f31ed6): "i also attached a picture of the pcb with arms from g wolves that are used as a reinforcement that i
   had break during shipping". **TODO (K6):** `shcArms` drawn from these: what the arms and the board really look like, and
   that they broke in shipping.
+
+## F29. Status, and archiving that proves the work (2026-11-05 05:05)
+- **F29.1** "are all the agents still working?" / "give me a status update". Answered in chat (K1, K2 running; the board's
+  before/after sent).
+- **F29.2 DONE (v21)** "you need a solution to make sure archived feedback was fully taken into account and it wasn't just
+  some small change that archived the feedback". Found: v20 showed 13 rated slides as archived (cover, targets, targets2,
+  flagships, market, budget, clk_debounce, gld_reports, surfacecard, wheel, eleccard, cells, ownscrew), all by small
+  changes such as the khz sweep. Now: a score is archived only when a builder raises the slide's `rev`, which it may do
+  only after acting on every clause of his note, listing each clause and what changed in the slide's `answers`. The
+  rating panel shows his archived note beside those answers, and "not done: bring my note back" makes it current again
+  (recorded in the rating as `reopened`). Those 13 are current again. At each integration Claude checks every raised rev
+  against its note and answers before publishing.
