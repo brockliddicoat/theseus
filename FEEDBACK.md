@@ -610,3 +610,11 @@ Answers to the Shell A questions:
   showing by then, and a focused note box kept its text across a slide change. Now a note belongs to the slide it was
   typed on, and any slide change saves it there first. In the saved ratings, `thesis` carries the cover's note word for
   word and `map`'s note ends mid-sentence: both from this bug.
+
+## F25. Answers on the new wheel and the screws (2026-11-05 ~01:45)
+- **F25.1 DECIDED** The wheel's tread: "research what you think is best, if assumed, coarse and diamond are my favorites".
+  **IN PROGRESS (whl).**
+- **F25.2 DECIDED** The wheel's form: "thinners arms". **IN PROGRESS (whl).**
+- **F25.3 DECIDED** The side-button lead: "Keep 3 wires". **DONE** (no change).
+- **F25.4 DECIDED** The screws: "Titanium" (instead of steel). **IN PROGRESS (whl):** the budget, the 3D screws and the
+  Ownership slides (no more magnetic pickup).
