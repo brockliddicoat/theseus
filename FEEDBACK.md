@@ -925,3 +925,7 @@ old score as archived (F26.13).
   right notches" / "the front notch should have the same height as the back other botched depth, and all of their chanfers
   should be at the same angle". **IN PROGRESS (K2):** plan 5, one notch depth (the waist notches') for the rear notch and
   the front trapezoid, every chamfer at one angle.
+- **F30.23** "make sure that scroll wheel hole is symmetrical as well, the whole footprint of the board should be
+  symmetrical". **IN PROGRESS (K2), plan 5.**
+- **F30.24** "and the gt01s walls don't look thick on the bottom housing" (after F30.18's 0.45 mm walls). **TODO (after the
+  08:20 usage reset):** thicker bottom-housing walls, measured off Gateron's render.
