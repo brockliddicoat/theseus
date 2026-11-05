@@ -7,15 +7,15 @@ from shapely.ops import unary_union
 from shapely import affinity
 from geom import polys, hershey_text, outline_text, qr_modules, matrix_polys
 from layout import pad_poly, ANT_KEEPOUT, EDGE_BAND
-from board import wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect
+from board import wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, SENSOR_Z, MCU_Z, POWER_VARIANT, power_window_reference
 from parts import GND
 
 LW = 0.10          # silk line width
 # fillets on the underside triangles (F26.6). Each triangle is rounded on its own (rounded_inset), so the mosaic keeps
 # every triangle, the partial ones at the edges too (an opening of the whole mosaic cut those: Brock, 2026-11-05)
-TRI_FILLET = 0.20       # the copper mosaic (inradius 0.58 mm)
+TRI_FILLET = 0.15       # the copper mosaic (inradius 0.58 mm)
 TRI_FILLET_GOLD = 0.15  # the gold triangles (inradius 0.35)
-TRI_FILLET_SILK = 0.10  # the silk-outlined triangles (inradius 0.26)
+TRI_FILLET_SILK = 0.15  # the silk-outlined triangles (inradius 0.26)
 
 
 def rounded_inset(poly, d, r, n=10):
@@ -130,18 +130,18 @@ def build_silk_top(L, B, qr_url):
             items.append((dashed_circle(x, z, d / 2 + 0.55), 'mh'))
     # --- labels
     lab = []
-    lab.append(outline_text('THESEUS', 1.05, -12.15, 15.05, anchor='c', tracking=0.22))
-    lab.append(hershey_text('MAIN  PCB  V1.0', 0.5, -12.15, 13.85, w=0.085))
+    lab.append(outline_text('THESEUS', 1.05, -11.0, 2.6, anchor='c', tracking=0.22))
+    lab.append(hershey_text('MAIN  PCB  V1.0', 0.5, -11.0, 1.4, w=0.085))
     # QR to the web software (normal polarity: white quiet zone, black modules)
     M = qr_modules(qr_url, error='m')
-    lab.append(matrix_polys(M, 4.3, -12.15, 10.35, invert=True, quiet=1))
-    lab.append(hershey_text('WEB  APP', 0.45, -12.15, 7.75, w=0.08))
+    lab.append(matrix_polys(M, 4.3, -9.5, 6.5, invert=True, quiet=1))
+    lab.append(hershey_text('WEB  APP', 0.45, -9.5, 3.9, w=0.08))
     # power switch labels (#100): ON toward the nose, OFF toward the tail
     # (SW3 sits in the middle of its window now, F26.8: the labels moved to the window's free side)
-    lab.append(outline_text('ON', 0.8, 7.05, 21.75, tracking=0.08))
-    lab.append(arrow(8.2, 21.75, 0.85, 0))
-    lab.append(outline_text('OFF', 0.8, 6.95, 18.45, tracking=0.08))
-    lab.append(arrow(8.2, 18.45, 0.85, 180))
+    lab.append(outline_text('ON', 0.8, (13.6 if POWER_VARIANT=='A' else 11.7), SENSOR_Z+1.65, tracking=0.08))
+    lab.append(arrow((12.4 if POWER_VARIANT=='A' else 12.8), SENSOR_Z+1.65, 0.85, 0))
+    lab.append(outline_text('OFF', 0.8, (13.6 if POWER_VARIANT=='A' else 11.7), SENSOR_Z-1.65, tracking=0.08))
+    lab.append(arrow((12.4 if POWER_VARIANT=='A' else 12.8), SENSOR_Z-1.65, 0.85, 180))
     # other test pads
     for ref, t, dx, dz, an in (('TP1', 'VBUS', -0.65, 0.0, 'r'), ('TP2', 'GND', -0.65, 0.0, 'r'), ('TP3', 'VSYS', 0.0, -0.75, 'c'),
                                ('TP4', 'VBAT', -0.65, 0.0, 'r'), ('TP5', 'SNS', 0.0, 0.75, 'c'), ('TP6', 'D-', -0.65, 0.0, 'r'),
@@ -165,8 +165,8 @@ def build_silk_top(L, B, qr_url):
     # RF keep-out frame
     k = ANT_KEEPOUT.bounds
     lab.append(dashed_rect(k[0], k[1], k[2], k[3], lw=0.08))
-    lab.append(hershey_text('ANT', 0.42, 5.75, 25.6, w=0.08, rot=90))
-    lab.append(hershey_text('ANT', 0.42, -5.75, 25.6, w=0.08, rot=90))
+    lab.append(hershey_text('ANT', 0.42, 5.75, MCU_Z-4.8, w=0.08, rot=90))
+    lab.append(hershey_text('ANT', 0.42, -5.75, MCU_Z-4.8, w=0.08, rot=90))
     # revision at the rear edge (where SORA_V2_V1.4 was)
     lab.append(hershey_text('THESEUS_MAIN_V1.0', 0.5, 0.0, -2.98, w=0.085))
     for g in lab:
@@ -259,8 +259,8 @@ def build_bottom(L, B, qr_url, seed=11):
     qr_c = (-11.0, 4.6); qr_s = 7.2
     qr_zone = box(qr_c[0] - qr_s / 2 - 0.6, qr_c[1] - qr_s / 2 - 1.6, qr_c[0] + qr_s / 2 + 0.6, qr_c[1] + qr_s / 2 + 0.6)
     word_zone = box(-14.4, 14.0, 14.4, 17.4).intersection(box(-14.4, 14.0, 14.4, 17.4))
-    word_zone = box(-7.9, 14.5, 7.9, 17.3)
-    lens_zone = rrect(0, 4.0, 10.6, 13.6, 0.8)
+    word_zone = box(-7.9, 10.1, 7.9, 12.9)
+    lens_zone = rrect(0, SENSOR_Z, 10.6, 13.6, 0.8)
     sw_zone = square_cut_poly().buffer(2.3)
     fab_zone = box(4.9, -1.55, 9.7, 0.5)
     rail_zone = box(13.0, 7.4, 16.6, 15.1)
@@ -299,9 +299,9 @@ def build_bottom(L, B, qr_url, seed=11):
     M = qr_modules(qr_url, error='m')
     lab.append(matrix_polys(M, qr_s, qr_c[0], qr_c[1], invert=True, quiet=1, mirror=True))
     lab.append(hershey_text('SCAN  FOR  THE  WEB  SOFTWARE', 0.5, qr_c[0], qr_c[1] - qr_s / 2 - 0.85, w=0.085, mirror=True))
-    lab.append(outline_text('THESEUS', 1.9, 0.0, 15.9, tracking=0.5, mirror=True))
+    lab.append(outline_text('THESEUS', 1.9, 0.0, 11.6, tracking=0.5, mirror=True))
     # ON / OFF at the switch window, readable from below
-    sq = square_cut_poly().bounds
+    sq = power_window_reference().bounds
     lab.append(outline_text('ON', 0.95, (sq[0] + sq[2]) / 2 + 0.2, sq[3] + 0.95, tracking=0.08, mirror=True))
     lab.append(outline_text('OFF', 0.95, (sq[0] + sq[2]) / 2 + 0.2, sq[1] - 0.95, tracking=0.08, mirror=True))
     lab.append(arrow(sq[0] - 0.75, (sq[1] + sq[3]) / 2, 2.6, 0))

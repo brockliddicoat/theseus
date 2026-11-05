@@ -24,3 +24,9 @@ deck/dist/main-*.html
 # builders' temporary 3D build folders
 3d/.k2*/
 3d/pcb/.k2tmp/
+
+# Codex mirror: reproducible captures stay local; retain the checked delivery HTML.
+deck/qa/
+deck/dist/*
+!deck/dist/index.html
+3d/review-geo-raw/

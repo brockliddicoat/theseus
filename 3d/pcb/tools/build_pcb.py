@@ -94,9 +94,10 @@ def board_meshes(L, B, SB, silk_top):
                 tgt = m_edge_gold
             else:
                 is_tht = any(rp.buffer(0.02).contains(Point(q['x'], q['z'])) for q in L['pads'] if q.get('drill') or q.get('slot'))
-                is_sq = rp.buffer(0.05).contains(sq.centroid) and rp.area < 30
+                is_sq = (not sq.is_empty) and rp.buffer(0.05).contains(sq.centroid) and rp.area < 30
+                is_bay = rp.buffer(0.05).contains(wheel_cut_poly().centroid) and rp.area > 100
                 is_mh = any(rp.buffer(0.05).contains(q) for q in mh_plated)
-                tgt = m_edge_gold if (is_tht or is_sq or is_mh) else m_fr4
+                tgt = m_edge_gold if (is_tht or is_sq or is_mh or is_bay) else m_fr4
             from geom import ring_walls
             ring_walls(tgt, list(ring.coords), kind == 'int', Y_MASK, ybot(Y_MASK))
     out['board_core'] = [(m_mask, 'mask'), (m_mask_b, 'mask_b'), (m_edge_gold, 'edge_gold'), (m_fr4, 'fr4')]
@@ -193,7 +194,7 @@ def main():
     # ------------------------------------------------------------------ layout json (animation data + metadata)
     meta = dict(
         units='mm', frame="mouse/three.js (right-handed): +X = user's LEFT (side-button side), +Y up, +Z forward (nose); board top copper at local y=0. Authored in the photo/top-view frame (x = user's right) and mirrored x -> -x at export",
-        boardTopY_in_mouse=5.03, boardOffsetZ_in_mouse=-2.88, thickness=T, qr=QR,
+        variant=__import__('board').POWER_VARIANT, designRevision='F30.25-plan5-approved', electricalStatus='concept routing, not fabrication validated', boardTopY_in_mouse=5.03, boardOffsetZ_in_mouse=-2.88, thickness=T, qr=QR,
         outline=[[round(-c[0], 3), round(c[1], 3)] for c in B['outline'].exterior.coords],
         antennaKeepout=[-ANT_KEEPOUT.bounds[2], ANT_KEEPOUT.bounds[1], -ANT_KEEPOUT.bounds[0], ANT_KEEPOUT.bounds[3]],
         components=comp_meta,

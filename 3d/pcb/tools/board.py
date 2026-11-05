@@ -85,25 +85,46 @@ def filleted(corners):
     return Polygon(pts)
 
 
-# The Theseus board (Brock, 2026-11-05 01:43, F26.5 and F26.7). Changed from the Sora V2 trace:
-# - the wings come forward 2.77 mm (front edge z 46.23 -> 49.0) so the GT01s (top-front corner 8.24 mm ahead of the
-#   middle pin, 3d/parts/gt01.js) sit over board everywhere;
-# - the back is as wide as the front: both at x = +/-19.4 (they were 19.03 at the wings, 18.52 at the back), the small
-#   notches (the "ears" at z 12.4 to 15.4) are gone and the sides run straight;
-# - every corner is rounded: wing corners r 2.0 / 1.2, waist r 1.6, the USB-C tab r 0.6 / 0.8, the rear corners r 4.7;
-# - the two rear mounting holes (MH3, MH4, unmoved) get 1.2 mm of board round their gold rings (was 0.53 below them).
-THESEUS_RIGHT = [  # (x, z, fillet r) on the user's right, front to back (layout frame); mirrored for the left
-    (5.31, 52.5, 0.6), (5.31, 49.76, 0.4), (6.07, 49.0, 0.6),   # USB-C tab (its 45 deg chamfer kept: CC1 runs along it)
-    (19.4, 49.0, 2.0), (19.4, 32.4, 1.2),          # switch wing
-    (15.41, 29.6, 1.6), (15.41, 17.42, 1.6),       # waist (the side-button space)
-    (19.4, 15.3, 1.6), (19.4, -5.7, 4.7),          # the back: straight side, wide rounded corner round MH3/MH4
+# Approved plan 5 + F30.25 (2026-11-05). These are DESIGN values, not a Sora measurement.
+# Chamfers stay straight. All corners use equal 1 mm tangent setbacks, not equal numerical radii.
+W, WAIST_X = 19.03, 15.42
+NOTCH_DEPTH = W - WAIST_X
+CHAMFER_ANGLE = math.atan(0.70656)  # 35.2433 deg, measured plan5 line
+FILLET_T = 1.0
+WING_FRONT = 39.6 + 8.24          # traced GT01 top-front corner, no gratuitous overhang
+FRONT_Z = WING_FRONT + NOTCH_DEPTH
+REAR_NOTCH_Z = -4.0
+REAR_Z = REAR_NOTCH_Z - NOTCH_DEPTH
+SIDE_Z0, SIDE_Z1 = 17.43, 30.52
+NOTCH_LENGTH = SIDE_Z1 - SIDE_Z0  # F30.25: rear notch same flat length as either side notch
+REAR_HALF = NOTCH_LENGTH / 2
+SENSOR_Z = 19.45
+MCU_Z = 4.80                     # actual envelope: rear 7.20 / front 6.65 from its origin
+USB_Z = 49.38                    # 50.43 - 1.05, approved leg clearance choice
+POWER_VARIANT = __import__('os').environ.get('PCB_VARIANT', 'A').upper()
+assert POWER_VARIANT in ('A', 'B')
+
+def tangent_fillets(points, tangent=FILLET_T):
+    import numpy as np
+    corners=[]
+    for i,p in enumerate(points):
+        a=np.asarray(points[i-1],float)-p; b=np.asarray(points[(i+1)%len(points)],float)-p
+        a/=np.linalg.norm(a); b/=np.linalg.norm(b)
+        angle=math.acos(max(-1.,min(1.,float(a@b))))
+        r=0 if angle>math.pi-1e-6 else tangent*math.tan(angle/2)
+        corners.append((*p,r))
+    return filleted(corners)
+
+TA = math.tan(CHAMFER_ANGLE)
+THESEUS_RIGHT = [
+    (5.85, FRONT_Z), (5.85+NOTCH_DEPTH/TA, WING_FRONT),
+    (W,WING_FRONT), (W,SIDE_Z1+NOTCH_DEPTH*TA), (WAIST_X,SIDE_Z1),
+    (WAIST_X,SIDE_Z0), (W,SIDE_Z0-NOTCH_DEPTH*TA), (W,REAR_Z),
+    (REAR_HALF+NOTCH_DEPTH/TA,REAR_Z), (REAR_HALF,REAR_NOTCH_Z),
 ]
 
-
 def theseus_outline():
-    R = THESEUS_RIGHT
-    L = [(-x, z, r) for x, z, r in reversed(R)]
-    return filleted(R + L)
+    return tangent_fillets(THESEUS_RIGHT+[(-x,z) for x,z in reversed(THESEUS_RIGHT)])
 
 
 def rrect(cx, cz, w, h, r):
@@ -113,31 +134,28 @@ def rrect(cx, cz, w, h, r):
 
 # --- holes and cutouts (from Hough circles / edge measurements on the de-rotated photo) ---
 SORA_HOLES = {
-    # name: (x, z, diameter, kind)
-    'MH1': (-10.20, 29.56, 2.90, 'npth'),   # front-left mounting hole (white dashed silk ring in the photo)
-    'MH2': (10.00, 29.43, 2.90, 'npth'),    # front-right
-    'MH3': (-14.69, -2.25, 2.90, 'npth'),   # rear-left
-    'MH4': (14.49, -2.25, 2.90, 'npth'),    # rear-right
-    'LH1': (-10.59, -1.72, 2.20, 'npth'),   # locating holes (shell pins)
-    'LH2': (10.40, -1.85, 2.20, 'npth'),
-    'SH1': (-18.12, -2.25, 1.30, 'npth'),   # small holes at the rear corners
-    'SH2': (17.92, -2.25, 1.30, 'npth'),
+    # F30.25 mirror pairs. The locating / small rear holes are intentionally gone (F30.13,16).
+    'MH1': (-10.10,29.50,2.90,'npth'), 'MH2': (10.10,29.50,2.90,'npth'),
+    'MH3': (-14.59,-2.25,2.90,'npth'), 'MH4': (14.59,-2.25,2.90,'npth'),
 }
-# wheel bay: x 370..588 px, y 408..686 px (front edge set 0.5 mm further back than the visible corners,
-# where it is hidden under the wheel, so the USB-C signal pads have room)
-WHEEL_CUT = dict(x0=-7.05, x1=7.35, z0=27.45, z1=44.95, r=1.2)
-# square window (x 610..668, y 765..830 px) -> Theseus uses it as the power-switch window
-SQUARE_CUT = dict(x0=8.81, x1=12.64, z0=17.95, z1=22.24, r=0.6)
-
+WHEEL_CUT = dict(x0=-7.20,x1=7.20,z0=27.45,z1=44.13,r=1.0)
+SQUARE_CUT = dict(x0=8.085,x1=11.915,z0=SENSOR_Z-2.145,z1=SENSOR_Z+2.145,r=1.0)
 
 def wheel_cut_poly():
-    c = WHEEL_CUT
-    return rrect((c['x0'] + c['x1']) / 2, (c['z0'] + c['z1']) / 2, c['x1'] - c['x0'], c['z1'] - c['z0'], c['r'])
+    c=WHEEL_CUT
+    # A 2 mm lateral chamfer at every bay corner, at the same 35.24 deg as the board.
+    # Each end then receives the same 1 mm tangent setback, keeping a visible straight chamfer.
+    x0,x1,z0,z1=[c[k] for k in ('x0','x1','z0','z1')]; dx=2.0; dz=dx*TA
+    return tangent_fillets([(x0+dx,z1),(x1-dx,z1),(x1,z1-dz),(x1,z0+dz),
+                            (x1-dx,z0),(x0+dx,z0),(x0,z0+dz),(x0,z1-dz)])
 
+def power_window_reference():
+    c=SQUARE_CUT
+    return rrect((c['x0']+c['x1'])/2,(c['z0']+c['z1'])/2,c['x1']-c['x0'],c['z1']-c['z0'],c['r'])
 
 def square_cut_poly():
-    c = SQUARE_CUT
-    return rrect((c['x0'] + c['x1']) / 2, (c['z0'] + c['z1']) / 2, c['x1'] - c['x0'], c['z1'] - c['z0'], c['r'])
+    # B is a real second build, not merely a hidden window in a viewer.
+    return power_window_reference() if POWER_VARIANT=='A' else Polygon()
 
 
 # Sora V2 component boxes as seen in the photo (for the layout comparison image). (x0, z0, x1, z1) mm

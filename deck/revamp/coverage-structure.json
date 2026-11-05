@@ -1,0 +1,1345 @@
+{
+  "schemaVersion": 1,
+  "slides": {
+    "rv_thin_wall": {
+      "clauses": [
+        {
+          "id": "F27.materials.1",
+          "answer": "Explicitly labelled classroom beam, not full shell.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.materials.2",
+          "answer": "Actual10N centre force,60mm mouse-width span.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.materials.3",
+          "answer": "10N maximum visible in animated diagrams; load scope retained in footer.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.materials.4",
+          "answer": "60×10×3.3mm PP-C-20A computes1.9998g; turning section preserves both weights.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.thinwall.1",
+          "answer": "Retained as the opening structure lesson, not removed for its low rating.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.thinwall.2",
+          "answer": "Flat-vs-edge ruler and actual cross-section sizes replace old abstract shell graphic.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.thinwall.3",
+          "answer": "Same-mass9.2×stiffness and half-thickness→one-eighth stiffness stated in plain words.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlScatter.1",
+          "answer": "No points/pts metric appears.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlScatter.2",
+          "answer": "Thickness cube translated to±10% thickness→−27/+33% stiffness.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlScatter.3",
+          "answer": "Section rotation and actual bent-beam traces replace prior abstract scatter graphic.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        }
+      ],
+      "pending": [],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 0.8,
+            "end": 2.6,
+            "event": "Press the flat ruler"
+          },
+          {
+            "start": 3.4,
+            "end": 4.3,
+            "event": "Unload it"
+          },
+          {
+            "start": 4.8,
+            "end": 7.5,
+            "event": "Rotate the same rectangular section through90degrees"
+          },
+          {
+            "start": 8.6,
+            "end": 10.8,
+            "event": "Reload the edge-on ruler with the same10N"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_specific": {
+      "clauses": [
+        {
+          "id": "F27.shlSpecific.1",
+          "answer": "Six equal2g beams visibly deflect by actual density-based thickness and material modulus.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlSpecific.2",
+          "answer": "Tie/fixed-shape/light-shell use cases explain three indices; winning materials differ.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlSpecific.3",
+          "answer": "Kept source data for all6 materials rather than arbitrary ranks, with straight result columns beside physical beams.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        }
+      ],
+      "pending": [],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 0.6,
+            "end": 3.7,
+            "event": "Build the density-dependent sections at the same2g"
+          },
+          {
+            "start": 4.7,
+            "end": 7.7,
+            "event": "Apply the same10N and bend the six beams on one displacement scale"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_hotspots": {
+      "clauses": [
+        {
+          "id": "F27.shlHotspot.1",
+          "answer": "Each of three60mm models prints its actual0.276g mass.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlHotspot.2",
+          "answer": "Actual equal-mass models give plane17.8MPa versus optimized9.5MPa; linear same-peak solid mass0.515g versus0.276g explicitly derived.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlMargin.1",
+          "answer": "At16s, each case gains an explicitly labelled120MPa linear material-stress criterion row. Actual peak results yield67.5N,90.2N,125.9N to the criterion; not product failure capacity.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlMargin.2",
+          "answer": "The row says higher is better; outcome explains more load before the same material-stress limit. Animated loads/margin factors count from10N/1x during16–19.5s while the10N peak-stress diagrams stay fixed. Linear extrapolation, buckling/contact excluded.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlWork.1",
+          "answer": "Optimized rib sizes follow actual member forces, linking drawing to design choice.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlWork.2",
+          "answer": "Three models retain equal mass and working-material fractions together at678px,10N peak stresses at762px, then linear load-to120MPa and material-limit margin at833px after16s. Same scene; no product-capacity claim.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlWork.3",
+          "answer": "Exact requested title Putting that weight to work; force-flow animation shows material being recruited rather than unrelated metric.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        }
+      ],
+      "pending": [],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 1,
+            "end": 3,
+            "event": "Load the solid-plane bad case and retain it"
+          },
+          {
+            "start": 4,
+            "end": 7,
+            "event": "Cut real growing triangular holes through the teaching strip"
+          },
+          {
+            "start": 8,
+            "end": 11,
+            "event": "Move material parcels and grow load-path members"
+          },
+          {
+            "start": 12,
+            "end": 15,
+            "event": "Reload both frames and preserve all three mass/stress results"
+          },
+          {
+            "start": 16,
+            "end": 19.5,
+            "event": "Keep all10N peak/mass/work results fixed; extrapolate three linear loads and material-limit margins to the120MPa criterion, higher is better; not product failure rating."
+          }
+        ],
+        "verification": {
+          "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+          "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+          "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+          "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+          "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+          "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      },
+      "closureVerification": {
+        "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+        "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+        "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+        "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+        "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+        "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+      },
+      "materialLimit": {
+        "criterionMPa": 120,
+        "linearLoadsN": [
+          67.46833832071137,
+          90.20869149338137,
+          125.85317235478821
+        ],
+        "marginFactors": [
+          6.746833832071136,
+          9.020869149338136,
+          12.585317235478822
+        ],
+        "modelLoadN": 10,
+        "productCapacityClaim": false,
+        "excluded": [
+          "buckling",
+          "contact"
+        ]
+      }
+    },
+    "rv_triangles": {
+      "clauses": [
+        {
+          "id": "F27.lattice.1",
+          "answer": "Actual equal-mass panel model loaded10N maximum, a stated human-scale illustration.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.lattice.2",
+          "answer": "10N shown above both panel press bars and original model scope in footer.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.lattice.3",
+          "answer": "Both actual models drawn with one common exaggerated scale; hex bending clearly visible without changing the numerical model.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlDeterminate.1",
+          "answer": "Merged into square/diagonal/triangle straw lesson and equal-mass FE panel result.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        }
+      ],
+      "pending": [],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 1,
+            "end": 3,
+            "event": "Rack the square while preserving239px straw lengths"
+          },
+          {
+            "start": 4.4,
+            "end": 5.5,
+            "event": "Unload and reset the square"
+          },
+          {
+            "start": 5.8,
+            "end": 8,
+            "event": "Move a diagonal from the tray into the joints"
+          },
+          {
+            "start": 10.8,
+            "end": 14.2,
+            "event": "Press the equal-mass hexagon/triangle FE panels with10N"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_light_structure": {
+      "clauses": [
+        {
+          "id": "F27.shlThin.1",
+          "answer": "Actual stiffness curves are beside physical explanation of bending-cubed versus stretching.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlThin.2",
+          "answer": "Lightest0.30mm pair explicitly highlighted:43×stiffness at equal0.67g.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlThin.3",
+          "answer": "Large43×readout, precise rib width and mass, higher-is-better axis.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlThin.4",
+          "answer": "Uses directly solved stiffnessN/mm instead of inventing a max-load value for these panel models.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlPick.1",
+          "answer": "The scene lead explicitly attributes the lighter-ULX-over-GPX2 build-feel ranking to Brock. The animated curves remain actual equal-mass frame models, not invented rival test data. Independent matched product rigidity measurements remain unavailable.",
+          "verification": {
+            "source": "40-structure.js rv_light_structure lead; final unified ten-time layout/visual check is deck/qa/final-film/report.json."
+          },
+          "status": "partial-owner-assessment-not-independent-test"
+        },
+        {
+          "id": "F27.shlPick.2",
+          "answer": "No GPX2 good-build-quality claim in new film.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlPick.3",
+          "answer": "Graph is real panel stiffness against structural mass with named axes.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlPick.4",
+          "answer": "Right is lighter, as shown by Less structural weight →; up is stiffer. The earlier Left is lighter coverage answer was wrong.",
+          "verification": {
+            "source": "Read live rv_light_structure X transform and Less structural weight → label. This scene was not changed or re-rendered in the narrow closure pass; earlier frozen motion evidence remains separate."
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlPick.5",
+          "answer": "Strength-like mechanical response represented by higher-is-better stiffness, not an inverted flex axis.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlNoPick.1",
+          "answer": "Header visible immediately with complete chart/context, never lone opening phrase.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlNoPick.2",
+          "answer": "Explicitly replaces prior missed first-frame design; no source DONE assumed.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlNoPick.3",
+          "answer": "Two old redundant fallacy/comparison stories consolidated into one actual-model plot.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlNoPick.4",
+          "answer": "Triangle method has independent blue curve; hex comparison separate grey curve.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlNoPick.5",
+          "answer": "Mass and stiffness directions are labelled, outcome43×stated.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlNoPick.6",
+          "answer": "Retains important lighter-without-flimsier idea at full slide size.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlShell3d.1",
+          "answer": "Replaces opaque 3D study with actual equal-mass2D result curves and physical law.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlShell3d.2",
+          "answer": "No persistent strength meter exists in new structure module.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlLattice3d.1",
+          "answer": "Old costly3D slide not activated in new film.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlLattice3d.2",
+          "answer": "Underlying force-spreading concept remains in rv_hotspots and rv_triangles.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlLattice3d.3",
+          "answer": "Actual source FE deformation/force flow shown in rv_triangles and rv_hotspots, not nearly identical decorative graph.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlLattice3d.4",
+          "answer": "No adjusted stress scale to manufacture a measured win; actual model results retain modelling disclaimer.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        }
+      ],
+      "pending": [
+        "F27.shlPick.1: Brock’s owner build-feel assessment is visible, not an independently matched GPX2/ULX rigidity test. No measured rival curve is invented."
+      ],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 0.8,
+            "end": 2.8,
+            "event": "Apply10N to both panels"
+          },
+          {
+            "start": 3.6,
+            "end": 12.6,
+            "event": "Remove equal mass, interpolating six precomputed FE solves; hexagons bend while triangles remain triangulated"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_arches": {
+      "clauses": [
+        {
+          "id": "F27.shbArches.1",
+          "answer": "Draws continuous crossing arches separately from rim; original typo-ambiguous rim request cannot be uniquely decoded.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "conditional-typo-ambiguous-source"
+        },
+        {
+          "id": "F27.shbArches.2",
+          "answer": "Smooth analytic arch/chain polylines replace wobbly strokes.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbArches.3",
+          "answer": "Retains animation of chain inversion and continuous arches crossing.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbPress.1",
+          "answer": "Hanging chain inversion and flat strip vs arch teach compressive load path.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbPress.2",
+          "answer": "Actual original equal-mass60mm arch/flat models under10N fingertip-pad load.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbThrust.1",
+          "answer": "Outward arrows at chain/arch feet show why support matters.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbThrust.2",
+          "answer": "Board tie explanation linked to rv_whole_pcb; source model is10N.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbBend.1",
+          "answer": "Actual equal-mass flat and arch deformations shown with one common exaggerated scale.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbBend.2",
+          "answer": "10N load visible and beam-frame source scope stated.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        }
+      ],
+      "pending": [
+        "F27.shbArches.1 source phrase arches shojdkne be on the photon rim is typo-ambiguous; continuous arches shown off rim rather than pretending definite interpretation."
+      ],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 0.4,
+            "end": 2.2,
+            "event": "Let the hanging chain sag"
+          },
+          {
+            "start": 3.1,
+            "end": 6.2,
+            "event": "Invert the chain about its chord"
+          },
+          {
+            "start": 7,
+            "end": 13.1,
+            "event": "Draw continuous crossing great-circle arches, not independent triangle strips"
+          },
+          {
+            "start": 11.6,
+            "end": 14.8,
+            "event": "Apply the same10N to equal-mass flat and arched strips"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_fibres_fillets": {
+      "clauses": [
+        {
+          "id": "F27.shbFibres.1",
+          "answer": "Wood-grain drawing and load arrow explain directional material.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbFibres.2",
+          "answer": "Computed Stokes/Jeffery fibre flow through two corners; actual Choi carbon-nylon1.7×directional result attributed, not transferred to PP.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.fillet.1",
+          "answer": "Unneeded shell study omitted; only node/flow/radius tradeoff shown.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.fillet.2",
+          "answer": "One integrated fibre/fillet/tooling scene replaces separate thin slides.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.filletsize.1",
+          "answer": "Preserved highly rated equal-mass radius sweep using actualFILLET.scfM;0.60–0.75mm band retained.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbWidth.1",
+          "answer": "Explicit bigger-not-always-better explanation: fillet steals rib width at constant mass.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbWidth.2",
+          "answer": "Links curve upturn to rib thinning rather than contradicting fillet benefit.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbMill.1",
+          "answer": "Merged into shared scene: cutter has radius, no knife-edge internal corner.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbMillDirect.1",
+          "answer": "Merged the cutter-radius benefit instead of separate toolpath slide.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbTol.1",
+          "answer": "Radius curve and physical round node replace unintuitive separate tolerance chart.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shbTol.2",
+          "answer": "Useful manufacturing-margin principle retained; no unsupported19×production-yield promise.",
+          "verification": {
+            "qa": "qa.js at settle and0.4×settle; final outputs0 issues (see parent handoff)",
+            "visual": "deck/qa/structure/contact.png inspected; full1920×1080 settled renders in same directory",
+            "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement"
+          },
+          "status": "answered-source-and-render"
+        }
+      ],
+      "pending": [],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 1,
+            "end": 5,
+            "event": "Advect fibres through the sharp junction"
+          },
+          {
+            "start": 5,
+            "end": 9,
+            "event": "Grow0.05mm into0.75mm fillets and interpolate the solved fibre trajectories"
+          },
+          {
+            "start": 11,
+            "end": 16,
+            "event": "Move a toothed circular cutter along the tangent quarter-turn tool path"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_whole_pcb": {
+      "clauses": [
+        {
+          "id": "F27.shlPcbRib.1",
+          "answer": "Large woven-glass/epoxy schematic and carbon-fibre comparison in lead.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlPcbRib.2",
+          "answer": "On-stage outcome explicitly contrasts the whole FR4 core with separate carbon-fibre rods.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlPcbRib.3",
+          "answer": "Outcome says no extra parts to fit and tolerance; uses already-required populated board, not an added reinforcement part.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlPcbRib.4",
+          "answer": "5.6g populated assembly already needed; explicitly distinguishes mass of components from structural FR4.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shcCarry.1",
+          "answer": "Consolidated19%-style carry metric into concrete5.6g already-required assembly and whole-board structural connection.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shcArms.1",
+          "answer": "Original precise G-Wolves/broken-arm photos absent: schematic not claimed exact traced geometry.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "partial-missing-original-photo"
+        },
+        {
+          "id": "F27.shcArms.2",
+          "answer": "Important small-arm bottleneck versus many whole-board connections retained with actual FE stresses.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shcArms.3",
+          "answer": "Footer now explicitly says Owner report: Brock’s HTS Ultra reinforcement arms broke in shipping. Original photos unavailable; schematic not traced geometry. Account restored, precise photo-faithful redraw remains unavailable.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "partial-missing-original-photo"
+        },
+        {
+          "id": "F27.shlStructs.1",
+          "answer": "No unexplained large blue stiffness specification; actual peak MPa and lower-is-better named.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        },
+        {
+          "id": "F27.shlStructs.2",
+          "answer": "Woven-material drawing, weak roots and whole-board connections establish meaning before17.9×result.",
+          "verification": {
+            "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+            "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+            "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+            "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+            "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+            "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+          },
+          "status": "answered-source-and-render"
+        }
+      ],
+      "pending": [
+        "F28.3 original broken G-Wolves arm images not imported; cannot claim exact photo-faithful geometry. Structural schematic is explicitly labelled."
+      ],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 0.8,
+            "end": 2.9,
+            "event": "Load the untied arch and retain its deformed ghost"
+          },
+          {
+            "start": 3.6,
+            "end": 4.6,
+            "event": "Release the load"
+          },
+          {
+            "start": 5,
+            "end": 9,
+            "event": "Move the existing populated board into the tie position"
+          },
+          {
+            "start": 8.6,
+            "end": 10.8,
+            "event": "Connect the feet"
+          },
+          {
+            "start": 11.5,
+            "end": 14.5,
+            "event": "Reload with the whole board tied in"
+          }
+        ],
+        "verification": {
+          "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+          "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+          "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+          "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+          "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+          "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      },
+      "closureVerification": {
+        "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+        "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+        "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+        "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+        "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+        "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+      }
+    }
+  },
+  "source_mapping": [
+    {
+      "id": "F2.09",
+      "slide": "rv_light_structure",
+      "disposition": "superseded-in-part",
+      "answer": "Triangulation at lower mass retained; persistent meter removed perF27."
+    },
+    {
+      "id": "F2.10",
+      "slide": "rv_hotspots",
+      "disposition": "applied",
+      "answer": "Actual mass participation fractions18/25/90% computed, with own-peak threshold meaning explicit."
+    },
+    {
+      "id": "F2.11",
+      "slide": "rv_light_structure",
+      "disposition": "applied",
+      "answer": "Same-weight comparative curves make lighter/rigid argument without lone phrase."
+    },
+    {
+      "id": "F2.12",
+      "slide": "rv_hotspots,rv_triangles,rv_arches,rv_whole_pcb",
+      "disposition": "applied",
+      "answer": "Actual force-flow solves throughout,10N scope visible."
+    },
+    {
+      "id": "F2.16",
+      "slide": "rv_arches",
+      "disposition": "applied",
+      "answer": "Continuous crossing arches, no Mars-base dome example."
+    },
+    {
+      "id": "F2.17",
+      "slide": "rv_fibres_fillets",
+      "disposition": "applied-restricted-study",
+      "answer": "Choi1.7×carbon-nylon directional strength, not a Theseus claim."
+    },
+    {
+      "id": "F2.18",
+      "slide": "rv_fibres_fillets",
+      "disposition": "applied-model",
+      "answer": "Actual inherited Stokes/Jeffery fibre-flow corner model."
+    },
+    {
+      "id": "F2.24",
+      "slide": "rv_arches",
+      "disposition": "applied-model",
+      "answer": "Arch/flat same-mass beam-frame response and chain inversion."
+    },
+    {
+      "id": "F2.25",
+      "slide": "rv_fibres_fillets",
+      "disposition": "applied-qualitative",
+      "answer": "Cutter radius and no knife-edge tooling features; no quantified manufacturing yield."
+    },
+    {
+      "id": "F2.26",
+      "slide": "rv_whole_pcb",
+      "disposition": "applied-model",
+      "answer": "Whole FR4 core is presented as an already-carried tie instead of separate carbon-fibre rods/extra parts/tolerancing. Woven-composite analogy and owner-reported HTS Ultra shipping break are on stage. Generic material efficiency is in rv_specific; no unqualified1.8x-magnesium claim is made here."
+    },
+    {
+      "id": "F6.3",
+      "slide": "rv_whole_pcb",
+      "disposition": "retained-owner-account",
+      "answer": "HTSUltra arm shipping-break not independently validated."
+    },
+    {
+      "id": "F9.23",
+      "slide": "rv_hotspots",
+      "disposition": "applied",
+      "answer": "Shared physical stress scale, red hotspot meaningful;120MPa failure criterion explicit."
+    },
+    {
+      "id": "F9.27",
+      "slide": "all8",
+      "disposition": "applied",
+      "answer": "Frame node fillets visible; no sharp-corner decorative lattice stand-in."
+    },
+    {
+      "id": "F12.12",
+      "slide": "rv_hotspots",
+      "disposition": "applied-model",
+      "answer": "120MPa chosen tensile criterion; derived linear load extrapolation not a failure test."
+    },
+    {
+      "id": "F13.1",
+      "slide": "rv_light_structure",
+      "disposition": "superseded",
+      "answer": "Persistent meter removed."
+    },
+    {
+      "id": "F14.5",
+      "slide": "rv_light_structure",
+      "disposition": "applied",
+      "answer": "All structure headers immediate; no phrase-only first frame."
+    },
+    {
+      "id": "F14.6",
+      "slide": "rv_specific",
+      "disposition": "applied",
+      "answer": "All6materials and job-dependent specific properties."
+    },
+    {
+      "id": "F14.7",
+      "slide": "rv_hotspots",
+      "disposition": "applied-exact-title",
+      "answer": "Putting that weight to work exact requested title."
+    },
+    {
+      "id": "F14.8",
+      "slide": "rv_hotspots,rv_whole_pcb",
+      "disposition": "applied",
+      "answer": "Peak stress lower-is-better named."
+    },
+    {
+      "id": "F22.1",
+      "slide": "rv_arches",
+      "disposition": "applied-removal",
+      "answer": "Mars-base dome example absent."
+    },
+    {
+      "id": "F28.3",
+      "slide": "rv_whole_pcb",
+      "disposition": "pending-source-reference",
+      "answer": "Exact2photos missing; schematic and owner account only."
+    },
+    {
+      "id": "F33.5",
+      "slide": "all8",
+      "disposition": "applied-priority",
+      "answer": "Important poorly executed structural ideas kept and taught with classroom examples."
+    },
+    {
+      "id": "F33.8",
+      "slide": "all8",
+      "disposition": "applied",
+      "answer": "Ruler,straw square/triangle,chain inversion,wood-grain analogies tied to verified classroom references."
+    }
+  ],
+  "verification": {
+    "qa": "qa.js settle+mid all8:0issues. Final hotspot/wholePCB/source wording receipt integrated by parent.",
+    "visual": "deck/qa/structure/contact.png inspected; final settled8renders deck/qa/structure-final; full-resolution hotspots and wholePCB inspected",
+    "source": "deck/revamp/40-structure.js; actual inherited model function calls, no new numeric measurement",
+    "motion": {
+      "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+      "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+      "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+      "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+    },
+    "twoSceneClosure": {
+      "source": "deck/revamp/40-structure.js; only rv_hotspots and rv_whole_pcb reopened; other structure code unchanged and three other owned JS files byte-identical",
+      "qa": "deck/qa/structure-motion/hotspot-margin/layout/report.json:2 scenes,20 timeline checks,0 issues/errors",
+      "causal": "deck/qa/structure-motion/hotspot-margin/margin-report.json:15 captured event frames,11 assertions pass,0 errors",
+      "visual": "Inspected rv_hotspots15.5s,17.75s,22s and rv_whole_pcb23s; margin rows legible and baseline10N/mass/peak preserved",
+      "testedHtmlSha256": "f749181243182b79e986c6e3eb3316d36e6f6e6bdae97d964c478557f7b92828",
+      "sourceSha256": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d"
+    }
+  },
+  "sourceFileHash": "14c57f2329b9c3e0a43176028e2a748c0575655fd5643839cc54022aa071c48d",
+  "honesty": "FE/flow/model numbers not prototype results. No fake retail rigidity curves, no altered solver to force Theseus wins, no claim missing photos inspected."
+}

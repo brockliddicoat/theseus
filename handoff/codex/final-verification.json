@@ -1,0 +1,88 @@
+{
+  "buildId": "b9ffd2d08636",
+  "htmlSha256": "f14eb56915da551d6d89a8a9fc64d38b42978a4b6ba80e689add68343d05b821",
+  "scenes": 47,
+  "layoutSamples": 470,
+  "issueFrames": 0,
+  "runtimeErrors": [],
+  "player": {
+    "report": {
+      "tests": 28,
+      "errors": [],
+      "allPass": true
+    },
+    "panels-report": {
+      "tests": 9,
+      "errors": [],
+      "allPass": true
+    },
+    "coverage-report": {
+      "tests": 6,
+      "errors": [],
+      "allPass": true
+    }
+  },
+  "archive": {
+    "htmlSha256": "f14eb56915da551d6d89a8a9fc64d38b42978a4b6ba80e689add68343d05b821",
+    "at": "2026-11-05T16:02:41.437Z",
+    "results": [
+      {
+        "id": "map",
+        "pass": true
+      },
+      {
+        "id": "gld_position",
+        "pass": true
+      },
+      {
+        "id": "shlLattice3d",
+        "pass": true
+      },
+      {
+        "id": "sealed",
+        "pass": true
+      },
+      {
+        "id": "shlGrams",
+        "pass": true
+      },
+      {
+        "id": "shbGates",
+        "pass": true
+      },
+      {
+        "id": "shbDome",
+        "pass": true
+      },
+      {
+        "id": "pltPlate",
+        "pass": true
+      },
+      {
+        "id": "pltSim",
+        "pass": true
+      },
+      {
+        "id": "pltOptions",
+        "pass": true
+      },
+      {
+        "id": "srf_marks",
+        "pass": true
+      },
+      {
+        "id": "details",
+        "pass": true
+      },
+      {
+        "id": "serial",
+        "pass": true
+      },
+      {
+        "id": "elc_sheet2",
+        "pass": true
+      }
+    ],
+    "errors": []
+  }
+}

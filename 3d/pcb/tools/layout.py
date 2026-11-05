@@ -5,7 +5,7 @@ import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/READ
 from shapely.geometry import Polygon, Point, LineString, box, MultiPolygon, GeometryCollection
 from shapely.ops import unary_union
 from shapely import affinity
-from board import theseus_outline, wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, P
+from board import theseus_outline, wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, P, MCU_Z
 import parts
 from parts import C, world_pads, FP, GND
 
@@ -14,7 +14,7 @@ EDGE_BAND = 0.35          # ENIG edge trim width on top/bottom (Viper V4 Pro sty
 CU_EDGE = 0.30            # copper (non-trim) to trim/edge clearance
 CLR = 0.12                # copper-copper clearance
 POUR_CLR = 0.20           # pour clearance to other nets
-ANT_KEEPOUT = box(-6.6, 23.75, 6.6, 27.45)   # antenna end of U1 to the wheel-bay edge, all layers, no copper
+ANT_KEEPOUT = box(-6.6, MCU_Z-6.65, 6.6, MCU_Z-2.95)   # antenna end of U1 to the wheel-bay edge, all layers, no copper
 
 
 def pad_poly(p, grow=0.0):

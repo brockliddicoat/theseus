@@ -489,7 +489,7 @@ export async function buildPcb(opts = {}) {
     node.add(m); owned.push(m); return m;
   };
   const radio = swap('U1', opts.radio);
-  if (radio) {
+  if (radio && layout.designRevision !== 'F30.25-plan5-approved') {
     radio.rotation.y = Math.PI;                       // its antenna band (+z in the part) to the board's rear
     const oldK = layout.antennaKeepout, zc = parts.U1.position.z;
     const newK = [oldK[0], 2 * zc - oldK[3], oldK[2], 2 * zc - oldK[1]];

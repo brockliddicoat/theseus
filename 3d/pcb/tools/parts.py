@@ -107,12 +107,11 @@ def fp_slide_bridge():
 
 
 def fp_encoder():
-    # TTC-style vertical mechanical encoder (as on the Sora V2): 3 signal pins + 2 frame tabs [REP]
-    P = [pad('A', 0.3, 2.5, 1.45, 1.45, shape='circle', drill=0.9),
-         pad('C', 0.3, 0.0, 1.45, 1.45, shape='circle', drill=0.9),
-         pad('B', 0.3, -2.5, 1.45, 1.45, shape='circle', drill=0.9),
-         pad('F1', -1.55, 4.45, 1.0, 1.4, r=0.1), pad('F2', -1.55, -4.45, 1.0, 1.4, r=0.1)]
-    return dict(pads=P, body=(3.8, 10.0))
+    # Hall proposal, four pins matching the detailed wheel model; no stale three-pin optical footprint.
+    P=[pad(n,0.3,z,1.05,1.05,shape='circle',drill=0.7) for n,z in
+       zip(('A','B','VDD','GND'),(-1.875,-0.625,0.625,1.875))]
+    P += [pad('F1',-1.55,4.45,1.,1.4,r=.1),pad('F2',-1.55,-4.45,1.,1.4,r=.1)]
+    return dict(pads=P,body=(3.8,10.0))
 
 
 def fp_bracket():
@@ -131,7 +130,7 @@ def fp_gt01():
     # 3 x Mill-Max 3305 receptacles: mounting hole 1.575 mm [DS]. Key-peg hole for the GT01 wedge base:
     # parts API keyPeg at local (+1.45, +2.54) in the WORLD frame = (-1.45, +2.54) in this pre-mirror layout frame.
     P = [pad(n, 0, z, 2.3, 2.3, shape='circle', drill=1.575) for n, z in (('COM', 5.08), ('NO', 0.0), ('NC', -5.08))]
-    return dict(pads=P, body=(5.8, 12.8), npth=[(-1.45, 2.54, 1.0)])
+    return dict(pads=P, body=(5.8, 12.8))  # the GT01 has no locating peg (F12.4)
 
 
 def fp_sod523():
@@ -273,3 +272,29 @@ def world_pads(c):
         q['net'] = c['nets'].get(p['name'], c['nets'].get(str(p['name']), 'NC'))
         out.append(q)
     return out, fp
+
+
+# F30.25 final approved placements, applied after pin maps. Keep the original placements as the route-warp
+# reference only. This is a presentation model, not a manufacturing PCB or a verified electrical layout.
+from board import SENSOR_Z, MCU_Z, USB_Z, POWER_VARIANT, W, WAIST_X
+OLD_C = {c['ref']: dict(c) for c in C}
+for c in C:
+    ref=c['ref']
+    if ref=='J1': c['z']=USB_Z
+    elif ref=='U1': c.update(z=MCU_Z,rot=180)
+    elif ref=='U3': c['z']=SENSOR_Z; c['value']='PAW3970DM-T5QU (proposed marking)'
+    elif c['layer']=='pmic':
+        c['x']=-10.2-(c['x']-9.6)*.8
+        c['z']=SENSOR_Z+(c['z']-11.2)
+        c['rot']=-c['rot']
+    elif ref=='J2': c.update(x=14.5,z=8.5,rot=180)
+    elif ref=='J3': c.update(x=-14.5,z=8.5,rot=90)
+    elif ref=='SW3': c.update(x=10.,z=SENSOR_Z) if POWER_VARIANT=='A' else c.update(x=WAIST_X-.85,z=SENSOR_Z,fp='SLIDE',rot=180)
+    elif ref in ('C10','C11','TP8','TP9'): c['z']+=MCU_Z-20.6
+    elif ref in ('C20','C21','C22'): c['z']+=SENSOR_Z-4.
+    elif ref in ('R3','R4'): c['z']-=1.05
+    elif ref in ('TP10','TP11','TP12','TP13'):
+        c.update(x=11.2+2.*int(ref[2:])-20.,z=13.)
+    if ref=='ENC1':
+        c['nets']={'A':'ENC_A','B':'ENC_B','VDD':'VDD_1V8','GND':GND,'F1':GND,'F2':GND}
+        c['value']='Magnetic encoder'; c['label']='[PR] four-pin Hall encoder, transparent cover; representative package'

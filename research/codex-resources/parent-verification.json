@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-05",
+  "performed_by": "independent resource lane lead",
+  "checks": [
+    {
+      "command": "python mechanics-energy/calculate.py --output <independent-scratch>/mechanics-energy.json --check",
+      "result": "passed",
+      "built_in_assertions": 11,
+      "delivered_json_byte_identical": true
+    },
+    {
+      "command": "python mechanics-energy/verify.py",
+      "result": "passed",
+      "independent_numeric_and_reproduction_assertions": 85,
+      "reproduction_byte_identical": true,
+      "published_json_sha256": "eb05b8e88fca72aa0f203ca04fa56118f4e5c07cb649ee2988e4f6bca27a3cc3",
+      "method": "Independent vector/energy arithmetic and numerical beam strain-energy integration; calculator was not imported by the audit."
+    },
+    {
+      "command": "node mechanics-energy/verify-demo.cjs",
+      "result": "passed",
+      "offline_js_assertions": 107,
+      "browser_render_performed": false,
+      "method": "Inert offline DOM: model thresholds, shared clock, control wiring, zero-angle identity, endpoint geometry and dependency check."
+    },
+    {
+      "command": "python reference-geometry/generate_geometry.py --check",
+      "result": "passed",
+      "deterministic_geometry_outputs": 6,
+      "top_source_fnv1a32": "97482648",
+      "side_source_fnv1a32": "480d4ebd",
+      "scope": "Source-copy fingerprints, normalized command round trips and valid pure-vector SVG/XML."
+    }
+  ],
+  "limits": [
+    "No Theseus prototype measurements, final-deck acceptance or inherited whole-shell FEA validation.",
+    "The browser tool rejected local file-URL navigation and prohibited alternate routes. No workaround was attempted.",
+    "Generated local SVG and HTML browser rendering remain unverified; source-page outlines were visually inspected by the geometry worker.",
+    "Wheel eligibility and common assembly scope remain incomplete, with group statistics null.",
+    "Actual competitor rail/POM clearances and the personal-photo G-Wolves arm geometry remain unavailable."
+  ]
+}

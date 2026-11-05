@@ -22,6 +22,33 @@ Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does
 
 Last updated: 2026-11-05 04:00 (Chicago).
 
+## F34. Codex mirror: latest steering (2026-11-05)
+
+The original F0-F33 record below is preserved. These additional direct instructions apply to the independent Codex mirror and override earlier choices where stated.
+
+- **F34.1 STANDING (Codex C1):** all visual assets must be generated with code, with elegant motion design, no AI-generated images, and a human tone.
+- **F34.2 STANDING (Codex C2):** work in a mirror worktree, do not communicate with Claude or its agents, and preserve the same supplied agent briefs and notes. New published resources may be read without soliciting Claude.
+- **F34.3 STANDING (Codex C3):** all active sub-agents use GPT-6.1 Sol or better, preferably not Astra, at **max effort**. Keep work thorough without waste. A fourth concurrent worker was refused by this session's runtime; extra independent chats were explicitly requested and created.
+- **F34.4 STANDING (Codex C4):** keep a live progress preview on GitHub Pages, isolated from Claude's source branch and live artifact.
+- **F34.5 STANDING (Codex C5):** the animations are currently the weakest area compared with Claude. Prioritize a substantive causal-motion pass, not static diagrams with decorative movement.
+- **F34.6 PARTLY OVERRIDDEN by F35.1 (Codex C6):** the presentation should be mostly black, grey/white, yellow, and a little red. Other vibrant colors made it less professional. Explanatory animations may retain functional color. **F35.1 restores blue as Theseus's primary and yellow as comparisons/secondary; the neutral stage and chapter treatment remain in force.** The old Opus baseline is preserved as historical comparison material.
+- **F34.7 AUTHORIZED (Codex C7):** a second independent reference chat with three Sol agents handles isolated research/resource gaps. A third comparison chat reviews actual accessible Codex/Opus versions and sends narrow tested patches; neither edits this primary worktree or contacts Claude.
+
+Current Codex execution and exact evidence are recorded in `REVAMP.md` and `handoff/codex/`; historical DONE labels below are not a fresh acceptance claim.
+
+## F35. Palette clarified (2026-11-05)
+
+- **F35.1 DECIDED, STANDING:** "you’re using too much yellow, the primary color is blue for theseus, yellow for comparisons and secondary items". Blue marks Theseus's results, mechanisms and primary controls. Yellow marks comparisons and secondary items, sparingly. Most type, the stage and chapter labels stay black/grey/white. Red remains reserved for faults. This overrides the all-yellow-primary reading of F34.6 without restoring the other vibrant chapter colors.
+
+## F36. Live preview was not visibly updating (2026-11-05)
+
+- **F36.1 DONE, STANDING for future publications:** "the live link is not updating". The independent Pages preview now has a visible content build ID and a matching version manifest; an already-open supported player polls for new builds and offers a safe update. A pre-updater tab needs one fresh cache-busted load. Do not claim a push is live until the Pages build and served browser runtime agree. Preserve unsaved reviews and text edits before reload. Exact publication evidence is in `handoff/codex/PUBLICATION.md`.
+- **F36.2 ANSWERED:** "what model subagents have you been using?" The main implementation used GPT-6.1 Sol: early workers at high effort, then actual max-effort replacement workers after the explicit max instruction. The separate reference/comparison roles were also moved to Sol max. Raising the lead's effort did not mutate existing workers or expand the runtime concurrency limit.
+
+## F37. Independent Astra comparison build (2026-11-05)
+
+- **F37.1 DECIDED, ACTIONED:** "start a new chat were you give astra ultra the same assignment you started with and tell it to only use astra max, make you add on any extra feedback i’ve given you like the color scheme and live github link that wasn’t from the claude starting point". Created **theseus revamp — astra ultra**, thread `01a1ac67-6fb8-7e01-b555-95a4ab55537c`, with GPT-6 Astra at ultra effort and an explicit Astra-max-only worker boundary. It starts from the original imported Claude baseline in its own checkout/site, not this Sol implementation. The full initial assignment, F0–F35 source locations and all later direct steering are preserved in `handoff/codex/ASTRA-ULTRA-ASSIGNMENT.md`. This is a scoped model exception for that separate experiment; this main Sol implementation stays separate.
+
 ## Open with Brock
 
 - **Pushing:** this branch (claude/review-notes-rework) can't be pushed from the session. GitHub answers "not in this

@@ -10,7 +10,7 @@ from shapely import affinity
 from geom import (Mesh, polys, cap, walls, raised, slab, box_mesh, rbox_mesh, extrude_mesh, cyl_mesh, tube_mesh,
                   grid_surface, fillet_mesh, transform, trs, hershey_text, outline_text, qr_modules, matrix_polys)
 from board_geo import Y_PAD, T, Y_MASK
-from parts import FP, GND
+from parts import FP, GND, C, OLD_C
 
 Y0 = Y_PAD + 0.018        # component seating plane (on the solder layer)
 MIRROR = np.diag([-1.0, 1.0, 1.0, 1.0])
@@ -504,45 +504,36 @@ def millmax_template():
 
 
 def gt01_standin_template(tilt=20.0):
-    """same-footprint stand-in for parts/gt01.js (used only if that module is unavailable), on K1's side profile of
-    2026-11-05 (scratchpad k1/GT01-PLUNGER.md, traced from Gateron's side-on render): the body 12.8 x 5.8 x 6.5 tilted 20 deg
-    and lifted 1.669 mm (switch frame S -> world: Y = ys cos t - zs sin t + lift, Z = ys sin t + zs cos t), the bottom
-    housing (black) to the shoulder at ys 2.5 and its wedge down to the board (feet at z +6.20 and -6.30, the back face
-    4.5 deg off vertical), the clear cover above, and the plunger at zs 2.0 with its cap turned 90 deg: 2.1 mm across x
-    1.5 mm along, a rounded top 0.80 mm proud. Pins COM / NO / NC straight down at z +5.08 / 0 / -5.08."""
-    d = {}
-    plunger = {}
-    t = math.radians(tilt)
-    Lb, Wb, Hb, SH = 12.8, 5.8, 6.5, 2.5
-    lift = 6.4 * math.sin(t) - 0.52
-    yb = Y0 - 0.018                                         # the board's top (the part's world Y = 0)
-    S = trs(0, yb + lift, 0, rx_deg=tilt)                   # switch frame -> component frame
-    merge_into(d, 'black_plastic', rbox_mesh(Wb, SH, Lb, 0.25, rb=0.1), S)
-    merge_into(d, 'gt01_cover', rbox_mesh(Wb, Hb - SH, Lb, 0.4, rb=0.35), S @ trs(0, SH, 0))
-    merge_into(d, 'nickel', box_mesh(1.0, 0.1, 7.2), S @ trs(0, 3.2, -0.5))
-    # the bottom housing's wedge under the tilted body: board line from the back foot to where the body's base plane
-    # meets the board, up its back face to the body's back-bottom corner (world z, y)
-    z_meet = lift / math.sin(t) * math.cos(t)
-    prof = Polygon([(-6.30, 0.0), (z_meet, 0.0), (-6.4 * math.cos(t), 6.4 * math.sin(t) + lift)])
-    m = Mesh(); slab(m, prof, -Wb / 2 + 0.05, Wb / 2 - 0.05)
-    PERM_W = np.array([[0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1]], float)   # (z, y, x) -> (x, y, z)
-    PERM = np.array([[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]], float)
-    # slab() extrudes the (z, y) profile along mesh y between the two values: map profile (u, v, w) -> (x=w, y=v, z=u)
-    P, N, I = m.arrays()
-    P2 = np.c_[P[:, 1], P[:, 2], P[:, 0]]; N2 = np.c_[N[:, 1], N[:, 2], N[:, 0]]
-    w = Mesh(); w.add(P2, N2, I[:, [0, 2, 1]])
-    merge_into(d, 'black_plastic', w, trs(0, yb, 0))
-    for i, z in enumerate((5.08, 0.0, -5.08)):
-        merge_into(d, 'enig', box_mesh(0.6, 2.6, 0.4), trs(0, yb - 1.3, z))
-    # the plunger, built in S about its own axis: flange under the cover's ceiling, cap through the cover, rounded top
-    pm = Mesh()
-    pm.merge(box_mesh(2.3, 0.43, 2.9), trs(0, 5.765 - 6.55, 0))
-    pm.merge(box_mesh(2.1, 6.55 - 5.98, 1.5), trs(0, (5.98 + 6.55) / 2 - 6.55, 0))
-    pm.merge(cyl_mesh(0.75, 2.1, seg=24, axis='x'), trs(-1.05, 0.0, 0))
-    plunger['mesh'] = pm
-    plunger['T'] = S @ trs(0, 6.55, 2.0)
-    plunger['axis'] = [0.0, -math.cos(t), -math.sin(t)]
-    return d, plunger
+    """Traced twin of parts/gt01.js: 0.80 mm render-estimated black housing, 0.45 clear cover.
+    Representative internal contacts, not a Gateron engineering drawing.
+    """
+    d={}; t=math.radians(tilt); ct,st=math.cos(t),math.sin(t); lift=6.4*st-.52
+    def sw(y,z): return (y*st+z*ct, y*ct-z*st+lift)
+    def profmesh(poly,x0,x1):
+        m=Mesh(); slab(m,poly,x0,x1); P,N,I=m.arrays(); out=Mesh()
+        out.add(np.c_[P[:,1],P[:,2],P[:,0]],np.c_[N[:,1],N[:,2],N[:,0]],I[:,[0,2,1]])
+        return out
+    yb=Y0-.018; zi=6.4-.45; F=sw(0,-6.4); Fi=sw(0,-zi)
+    foot=sw((zi*st-lift)/ct,zi)
+    profile=Polygon([(F[0],0),(foot[0],0),sw(2.5,zi),sw(2.5,-zi),Fi,F])
+    holes=unary_union([Point(-2.86,3.81).buffer(.66),Point(3.44,1.49).buffer(.69),
+        LineString([(.22-.60*ct,3.37+.60*st),(.22+.60*ct,3.37-.60*st)]).buffer(.25),
+        Polygon([(-.28,.8),(F[0]+.8,2.68),(F[0]+.8,.8)]).buffer(-.15).buffer(.15)])
+    shell=profile.difference(holes)
+    for lo,hi in [(-2.9,-2.1),(2.1,2.9)]:
+        merge_into(d,'black_plastic',profmesh(shell,lo,hi),trs(0,yb,0))
+    merge_into(d,'epoxy',profmesh(profile,-2.1,2.1),trs(0,yb,0))
+    cover=Polygon([sw(2.5,-6.4),sw(2.5,6.4),sw(6.5,6.4),sw(6.5,-6.4)])
+    inner=Polygon([sw(2.5,-5.95),sw(2.5,5.95),sw(6.,5.95),sw(6.,-5.95)])
+    for lo,hi in [(-2.9,-2.45),(2.45,2.9)]:
+        merge_into(d,'gt01_cover',profmesh(cover,lo,hi),trs(0,yb,0))
+    merge_into(d,'gt01_cover',profmesh(cover.difference(inner),-2.45,2.45),trs(0,yb,0))
+    for z in (5.08,0.,-5.08): merge_into(d,'enig',box_mesh(.6,2.6,.4),trs(0,yb-1.3,z))
+    S=trs(0,yb+lift,0,rx_deg=tilt); pm=Mesh()
+    pm.merge(box_mesh(2.3,.43,2.9),trs(0,5.765-6.55,0))
+    pm.merge(box_mesh(2.1,6.55-5.98,1.5),trs(0,(5.98+6.55)/2-6.55,0))
+    pm.merge(cyl_mesh(.75,2.1,seg=24,axis='x'),trs(-1.05,0,0))
+    return d,dict(mesh=pm,T=S@trs(0,6.55,2.),axis=[0.,-ct,-st])
 
 
 def wheel_standin_template(D=22.74, W=7.0, AX=12.0, n=48):
@@ -734,7 +725,11 @@ def add_wires(glb):
         'SIDELEAD': dict(path=[(-16.2, 1.5, 3.4), (-18.0, 1.7, 3.5), (-20.0, 2.6, 4.0), (-21.8, 4.2, 4.9), (-23.0, 5.8, 5.9)],
                          mats=['wire_black', 'wire_white', 'wire_yellow']),
     }
+    current={c['ref']:c for c in C}
     for name, L_ in leads.items():
+        ref='J2' if name=='BATLEAD' else 'J3'
+        dx=current[ref]['x']-OLD_C[ref]['x']; dz=current[ref]['z']-OLD_C[ref]['z']
+        L_['path']=[(x+dx,y,z+dz) for x,y,z in L_['path']]
         ws = twisted(L_['path'], 0.26)
         d = {}
         for w, mat in zip(ws, L_['mats']):

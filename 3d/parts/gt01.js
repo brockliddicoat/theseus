@@ -29,6 +29,7 @@ const D2R = Math.PI / 180;
 export const GT01_SPEC = {
   name: 'Gateron GT01 mouse micro switch',
   label: 'representative',
+  bottomHousingWall_mm: 0.80, // estimated from supplied render, not a Gateron drawing
   envelope: [12.8, 5.8, 6.5],            // L × W × H of the body before tilt (D2F class, datasheet of the class)
   travel: 0.35,                          // mm, MC (± 0.10)
   opTravel: 0.22,                        // where the contact snaps (representative)
@@ -59,7 +60,8 @@ const Y_NCARM = Y_BLADE + T_BLADE + 0.12 + 0.14;   // NC arm underside: its rive
 const Y_NOTAB = Y_BLADE - GAP - 0.12 - 0.14;        // NO tab top: its rivet's crown meets the moving contact after the snap
 const H_MIN = -0.52;               // the base plane's height at the low (plunger) end: below the board, as traced (the front face meets the board)
 const CAP_L = 1.5, CAP_W = 2.1, CAP_R = 0.75, CAP_PROUD = 0.80;
-const WALL = COVER_WALL;            // one wall thickness for the bottom housing, all round: the D2F-class cover's 0.45 mm (Brock, 2026-11-05: walls straight and one thickness)   // the plunger's cap: along × across the switch, its rounded top, how far it stands proud
+const WALL = 0.80; // F30.24: render-estimated bottom-housing wall, not a published dimension
+// Clear cover walls stay at 0.45 mm. Outer traced silhouette and 20-degree tilt are unchanged.
 
 export function buildGT01(opts = {}) {
   const tilt = (opts.tilt ?? 20) * D2R;
@@ -90,10 +92,10 @@ export function buildGT01(opts = {}) {
   // Walls straight and one thickness (Brock, 2026-11-05: "the walls aren't straight ... and they aren't a consistent thickness").
   // As in Gateron's render, the clear cover's two end walls run down past the shoulder to the switch's base (the back one) and
   // to the board (the front one); the housing fits between them: its back face is one plumb wall from the switch's back-bottom
-  // corner to the board, its front face the cover's inner face, its top the shoulder. Every cut-out sits one wall (WALL, 0.45 mm)
+  // corner to the board, its front face the cover's inner face, its top the shoulder. Cut-outs use the thicker lower wall offset
   // from the edges round it: the bottom, the back face, the shoulder.
   const C = S2W(0, L / 2), F = S2W(0, -L / 2);          // the switch's bottom corners (front low, back high): [Y, Z]
-  const zi = L / 2 - WALL;                              // the end walls' inner faces, along the switch
+  const zi = L / 2 - COVER_WALL; // clear end walls remain 0.45; thicker black skin fits between them
   const C2 = S2W(Y_SHOULDER - 0.004, zi), F2 = S2W(Y_SHOULDER - 0.004, -zi);   // the shoulder, between the end walls
   const Fi = S2W(0, -zi);                               // the back end wall's foot, on the switch's base plane
   const ysF = ((zi) * sT - lift) / cT;                  // where the front end wall's inner face meets the board
@@ -111,9 +113,9 @@ export function buildGT01(opts = {}) {
   };
   // the long rounded triangle low at the back: its bottom one wall above the board, its back one wall in from the back face
   const zb = F[1] + WALL;
-  const tri = () => filletPolygon([[0.07, WALL], [zb, 3.03], [zb, WALL]], [0.35, 0.25, 0.25], true, 5);
+  const tri = () => filletPolygon([[-0.28, WALL], [zb, 2.68], [zb, WALL]], [0.35, 0.25, 0.25], true, 5);
   // the round holes and the slot, each one wall under the shoulder (the front hole one wall above the board too); render sizes
-  const HOLES = { back: [-2.86, 3.81, 1.01], front: [3.44, 1.49, 1.04], slot: [0.22, 3.37, 2.0, 0.74] };
+  const HOLES = { back: [-2.86, 3.81, 0.66], front: [3.44, 1.49, 0.69], slot: [0.22, 3.37, 1.70, 0.50] };
   const pockets = tilt > 10 * D2R ? [() => circle(...HOLES.back), () => circle(...HOLES.front), () => slot(...HOLES.slot), tri] : [];
   const skinT = WALL, coreHalf = W / 2 - skinT;   // the side walls, one wall thick
   const mkSkin = (s) => {

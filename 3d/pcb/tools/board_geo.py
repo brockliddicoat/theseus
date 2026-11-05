@@ -62,6 +62,7 @@ def stitching_vias(L, pour_area, avoid):
                 out.append((p.x, p.y))
     # fence around the wheel bay (not along the antenna side) and the switch window
     for cut in (wheel_cut_poly(), square_cut_poly()):
+        if cut.is_empty: continue
         ring = cut.buffer(CU_EDGE + 0.45, join_style=1).exterior
         n = max(3, int(ring.length / 1.3))
         for i in range(n):
@@ -106,7 +107,8 @@ def build_board(L, art_seed=7):
     nongnd_pad = unary_union([g for p, g in smd_or_tht if p['net'] != GND])
     gnd_pad = unary_union([g for p, g in smd_or_tht if p['net'] == GND])
     l1_tr = [(t, trace_poly(t)) for t in routes if t['layer'] == 'L1']
-    nongnd_tr = unary_union([g for t, g in l1_tr if t['net'] != GND])
+    safe = inside.difference(keep).difference(ant)
+    nongnd_tr = unary_union([g for t, g in l1_tr if t['net'] != GND]).intersection(safe)
     via_ring = lambda v: Point(v['x'], v['z']).buffer(v.get('d', 0.45) / 2, quad_segs=10)
     nongnd_via = unary_union([via_ring(v) for v in vias if v['net'] != GND])
     # component bodies where we do not want field vias (purely visual: vias under parts are hidden anyway)
@@ -153,7 +155,9 @@ def build_board(L, art_seed=7):
     sq = square_cut_poly()
     trim_sq = sq.buffer(0.28, join_style=1).difference(sq)
     mh_rings = unary_union([Point(h['x'], h['z']).buffer(h['d'] / 2 + 0.75, quad_segs=24).difference(Point(h['x'], h['z']).buffer(h['d'] / 2, quad_segs=24)) for h in plated_mh(L)])
-    trim_top = unary_union([trim, trim_sq, mh_rings])
+    bay = wheel_cut_poly()
+    trim_bay = bay.buffer(EDGE_BAND, join_style=1).difference(bay)
+    trim_top = unary_union([trim, trim_sq, trim_bay, mh_rings])
     # tented vias: ring under mask with the drill dimple
     def tented(vs):
         return unary_union([via_ring(v).difference(Point(v['x'], v['z']).buffer(v.get('drill', 0.2) / 2 + 0.01, quad_segs=8)) for v in vs])

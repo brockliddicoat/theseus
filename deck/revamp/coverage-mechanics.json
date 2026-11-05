@@ -1,0 +1,594 @@
+{
+  "schemaVersion": 1,
+  "owner": "mechanics-max-motion",
+  "date": "2026-11-05",
+  "scope": "12 code-only 2D scenes, finite 20-22 second causal motion sequences. Source, temporal browser, text-layout and pixel-correspondence evidence stay separate from physical validation and user acceptance.",
+  "externalMappings": [
+    "F27.clk_switch.1-.5: evidence lane",
+    "F27.clk_switch2.1-.4: binning/evidence integration",
+    "F27.gld_soft.1-.2: web-software scene"
+  ],
+  "slides": {
+    "rv_direct_drive": {
+      "clauses": [
+        {
+          "id": "F27.clicks.1",
+          "answer": "Only the above-cover cap remains turned 90 degrees: 1.5 mm in side view, 2.1 mm across.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clicks.2",
+          "answer": "Traced outside silhouette remains intact; bottom skin cutouts updated to latest 0.80 mm wall geometry.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.arc.1",
+          "answer": "Reuses clickMM: one screw and insert, material bridge, boss, post and real switch, not a freehand beam.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.arc.2",
+          "answer": "No pts or points metric in either owned file.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.arc.3",
+          "answer": "Loaded upright scrape is held while the accurate GT01 housing rotates onto the same fixed flat PCB, followed by a distinct aligned press.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.arc.4",
+          "answer": "Visible 6% SOONER is explicitly IDEAL TRAVEL ESTIMATE. Footer gives sin20/cos20 and separates measured PC latency.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_wedge.1",
+          "answer": "The extra-fit wedge appears before the accurate housing rotates and lands on the single fixed flat PCB.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_wedge.2",
+          "answer": "Parts problem is explained at its actual mechanism; electronics tolerance-stack scene carries the fuller parts argument.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_wedge.3",
+          "answer": "Caption starts with extra parts to align, then explains the angled housing removes them.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_rear_cutouts": {
+      "clauses": [
+        {
+          "id": "F27.cutouts.1",
+          "answer": "Dedicated scene retained ahead of front stops and seams.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.cutouts.2",
+          "answer": "Whole-mouse context zooms into the same clamped trigger arms, retaining wheel, split and screw-block identity.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.cutouts.3",
+          "answer": "Right seam straightens and supports shift onto switch axes, followed by a loaded comparison with real cap rotation and unequal/equal arrows.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.cutouts.4",
+          "answer": "Player benefit is a square, predictable click before the switch is actuated.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_front_contact": {
+      "clauses": [
+        {
+          "id": "F27.clk_front.1",
+          "answer": "Important front geometry and seam direction are retained across two dense scenes.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.2",
+          "answer": "Oblique rear-to-nose trigger surface with explicit rear/nose/shell-stop labels replaces the section-only illustration.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.3",
+          "answer": "Deep groove continues to bad nose; good groove depth smoothly fades along its length to an exactly straight front.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.4",
+          "answer": "Press side alternates; bad front rocks and its computed first-contact location follows the press. Stop stays fixed.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.5",
+          "answer": "Win text names cheap-feeling rock and repeated edge wear.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.6",
+          "answer": "Perspective surface grid depicts longitudinal shallowing, not just a front cross section.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.7",
+          "answer": "Rear groove holds the finger sideways while the trigger still travels downward.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.8",
+          "answer": "Broad shallow nose supports more of the fingertip; not a measured contact-area gain.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.9",
+          "answer": "Seam clearance is its own following scene, not presented as an alternative groove treatment.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.12",
+          "answer": "Two scenes carry grooves/front stop and shoulder seam; no proliferation of one-line slides.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_shoulder_seams": {
+      "clauses": [
+        {
+          "id": "F27.clk_front.10",
+          "answer": "Oversized side-facing gap and proud wall are compared against the intended flush shoulder.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_front.11",
+          "answer": "Section shows why grip should meet smooth wall and opening belongs on top; whole-mouse key locates section.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.shlsheet1.1",
+          "answer": "Cutout and seam scenes sit together in clicks.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.shlsheet1.2",
+          "answer": "Section key, grip finger and flush/wall comparison add the missing geometric context.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.shlsheet1.3",
+          "answer": "Copy says further-out seam is easier to catch with grip.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.shlsheet1.4",
+          "answer": "No Pro-model discussion in the new mechanics lane.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.shlsheet1.5",
+          "answer": "No finalized sticker claim.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_tensioner": {
+      "clauses": [
+        {
+          "id": "F27.tensioner.1",
+          "answer": "Explicit stiff-composite/no-bridge comparison retained as requested.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.tensioner.2",
+          "answer": "AS SEEN IN STARLIGHT X: NO BRIDGE label is visible.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.tensioner.3",
+          "answer": "PROPOSED: A THIN CROWN, ON THE SWITCH AXIS is visible.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.tensioner.4",
+          "answer": "Bridge meets trigger with a square root; no joining fillet.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_tenmat.1",
+          "answer": "Flat stiffness is loaded first, then the crown forms and one screw clamps it before a distinct bridge press. 8.1/26.9/7.7 gf remains an illustrative model, not a test.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_tenmat.2",
+          "answer": "Stiff where you grip, light where you click explicitly separates trigger rigidity from bend compliance.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_dual_rail": {
+      "clauses": [
+        {
+          "id": "F27.anchors.1",
+          "answer": "An off-centre press actually rotates the bad cap; fixed guide walls, POM pads and identical posts assemble before the guided press.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.anchors.2",
+          "answer": "FRONT SECTION label and whole-mouse section key locate the cut.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.anchors.3",
+          "answer": "Both posts use exactly the same 48 by 130 geometry; all four POM pads exactly match.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.anchors.4",
+          "answer": "Copy explains loose movement feels cheap and repeated sideways scraping wears the guide.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.anchors.5",
+          "answer": "Guided translation keeps the cap square instead of rocking.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_pomtune.1",
+          "answer": "Post tips, guides and POM steps have intentional rounded corners.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_pomtune.2",
+          "answer": "Real shell, full-size switch end-view, post engagement and POM leader replace detached rectangle icons.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_pomtune.3",
+          "answer": "No matched rival guide-clearance dataset is available. Illustrative pad ladder is labelled example steps, not a competitor tolerance measurement.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "open-evidence"
+        }
+      ],
+      "pending": [
+        {
+          "id": "F27.clk_pomtune.3",
+          "reason": "No matched rival guide-clearance dataset is available. Illustrative pad ladder is labelled example steps, not a competitor tolerance measurement."
+        }
+      ]
+    },
+    "rv_spdt": {
+      "clauses": [
+        {
+          "id": "F27.clk_spdt.1",
+          "answer": "Detailed original swMM geometry is locally extended with continuous leaf/rivet transit. The real leaf, enlarged contact, state and timeline share one NC/open/NO state.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.latency.1",
+          "answer": "Opening, transit and landing are named in order with the moving timeline marker.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.latency.2",
+          "answer": "SPDT counts opening instead of waiting for landing. Electrical 70 microsecond target remains a target.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.latency.3",
+          "answer": "Actual housing leaf, moving rivet, enlarged contact and timeline marker are synchronized, including an open-contact transit frame.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_debounce.1",
+          "answer": "Debounce is folded into the concrete contact sequence instead of a standalone weak scene.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_debounce.2",
+          "answer": "No forced millisecond debounce is the default benefit.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_debounce.3",
+          "answer": "Explicitly configurable for players deliberately using double-click behavior.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_debounce.4",
+          "answer": "Copy preserves player choice instead of claiming everyone wants minimum debounce.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_wait.1",
+          "answer": "Opening versus later landing shows which wait is avoided; timing is explicitly a logic illustration.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_wait.2",
+          "answer": "Merged into the SPDT scene.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_methods.1",
+          "answer": "No separate methods slide; footer separates the electrical target from extra mechanical travel before PC input.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_hotswap": {
+      "clauses": [
+        {
+          "id": "F27.clk_hotswap.1",
+          "answer": "Actual soldered PCB and approaching iron on left; visibly gripping, opening and releasing spring contacts on right.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_hotswap.2",
+          "answer": "Three large claws open before the switch lifts clear. Every jaw and insertion axis derives from SWG.pins, preserving coaxial alignment.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.clk_hotswap.3",
+          "answer": "Repair argument: replace a worn switch without replacing the mouse or soldering the board.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_sidebuttons": {
+      "clauses": [
+        {
+          "id": "F27.sidebuttons.1",
+          "answer": "Shipping comparison depicts living hinge, cap bending past switch, mini switch, side PCB and lead.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.sidebuttons.2",
+          "answer": "The same 2.4 mm contact end and 0.6 mm POM dimensions match-cut into the side guide before its loaded test. No PTFE question.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.sidebuttons.3",
+          "answer": "One fixed guide over one full-size switch, not long extra rails. F31.4 final guide acceptance remains open.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.sidebuttons.4",
+          "answer": "Full-size SPDT feel, shell-held switch, no side board and shared tolerance design remain explicit.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_sensor_camera": {
+      "clauses": [
+        {
+          "id": "F27.glide.1",
+          "answer": "Camera and focus story retained, now merged and source-drawn.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_camera.1",
+          "answer": "Detailed castellated module, PCB window and optical elements retained. The lens clips in, height drifts and recovers, then the physical stack translates.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_camera.2",
+          "answer": "Cached code-drawn weave, blurred once per exposure for responsive motion. No photographs, fetched bitmaps or AI images.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_camera.3",
+          "answer": "Camera, image pair, moving correspondence patch and focus window share one scene.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_corr.1",
+          "answer": "Physical camera translates right while identical frame detail and outlined patch shift 40 drawn pixels left; pixel correspondence is checked in proof.json.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_corr.2",
+          "answer": "Merged into camera scene.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_blur.1",
+          "answer": "Too high -> calibrated -> rightward motion -> too low -> calibrated: optical height actually drives the blur on both exposures.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_module.1",
+          "answer": "Detailed original castellated-module/PCB/snap-on-lens helpers retained in camera; one-dot-wide 5.2 mm body explained on support scene.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_position.1",
+          "answer": "No position scene in RV.slides; retained only in explicit legacy archive.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_sensor_support": {
+      "clauses": [
+        {
+          "id": "F27.gld_under.1",
+          "answer": "Every corner ledge is 23 mm long and fits three 5.5 mm dots; two fitted, third position ringed.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_under.2",
+          "answer": "Ledges extend into the rim and are clipped to actual silhouette; no floating islands.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_under.3",
+          "answer": "Rounded inner corners blend into the rim.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_under.4",
+          "answer": "Identical mirrored ledges and matching dot placements; actual lens body, clip arms and connected supports.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_under.5",
+          "answer": "Rejected alternative is replaced; the drawing is a review illustration, not claimed user approval.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.dots.1",
+          "answer": "Wide-patch comparison illustrates Viper-V4-style strategy but is explicitly not a Viper V4 measurement.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.dots.2",
+          "answer": "Lens-side dots shorten unsupported span; exaggerated structural sag is distinct from pad sink.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.dots.3",
+          "answer": "Equal material/thickness: less footprint means less skate mass. Higher pad pressure trade-off is explicit; no invented grams.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_sag.1",
+          "answer": "Corner dots land and the lens carrier snaps in before load traces redirect through near-lens supports; the unsupported beam remains visibly sagged.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_sag.2",
+          "answer": "Same scene compares wide patches against targeted smaller footprint and explains material/pressure trade-off.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_sheet.1",
+          "answer": "Source-grounded integrated ledges, real narrow optical body and clip supports replace abstract undersides.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    },
+    "rv_sensor_choice": {
+      "clauses": [
+        {
+          "id": "F27.sensor.1",
+          "answer": "PAW3970 remains suspected relation to Viper V4 Pro, not a public confirmed SKU.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.sensor.2",
+          "answer": "Plan after exclusivity, access not confirmed; no assured release date.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_reports.1",
+          "answer": "An oversized shared raw burst grows from +1000 to +3200 and drives both report lanes, making clipping a demonstration.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        },
+        {
+          "id": "F27.gld_reports.2",
+          "answer": "+3200 visibly becomes +2047 and loses 1153 in 12-bit while all 3200 remain in 16-bit. Both use the same 0-4096 display scale.",
+          "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
+          "status": "implemented-verified"
+        }
+      ],
+      "pending": []
+    }
+  }
+}

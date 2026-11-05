@@ -1,0 +1,478 @@
+{
+  "schema_version": "1.0",
+  "title": "Theseus F27 wheel: published component reports and unresolved test group",
+  "verified_date": "2026-11-05",
+  "status": "unresolved_matched_plastic_plus_rubber_test_group",
+  "outcome": "Several genuine published component-mass reports recovered. No several-model group with confirmed plastic hub plus rubber tyre, identical assembly boundary and documented weighing method was established.",
+  "feedback_ids": [
+    "F27.wheel.1",
+    "F27.wheel.2",
+    "F22.1",
+    "F30.8"
+  ],
+  "intended_measurand": {
+    "name": "rotating wheel assembly mass",
+    "include": [
+      "rim/hub/spokes",
+      "complete stock rubber or elastomer tyre",
+      "integral or removable rotating axle/pin",
+      "any rotating magnet or insert, adhesive and final coating"
+    ],
+    "exclude": [
+      "encoder housing and sensing electronics",
+      "stationary carrier/tilt cradle",
+      "stationary detent spring",
+      "middle-click switch",
+      "PCB and mounting screws"
+    ],
+    "rule": "If an integrated design cannot meet this boundary without damage, retain its full assembly as a separately labelled subgroup; never estimate/subtract unknown parts to force comparability."
+  },
+  "sources": {
+    "m3_report": {
+      "title": "manphalanges: Darmoshark M3 - 44.9g",
+      "url": "https://www.reddit.com/r/MouseReview/comments/1c2eerg/darmoshark_m3_449g/",
+      "kind": "firsthand owner mod report",
+      "date": "2024-04-12",
+      "verified": "page opened; wheel mass in post text",
+      "locator": "post text: scroll wheel 3.2g; A5 replacement (1.5g?)"
+    },
+    "ghero_report": {
+      "title": "manphalanges: Incott Ghero Pro Weight Reduction Mod - 52.66g",
+      "url": "https://www.reddit.com/r/MouseReview/comments/1dl1rkj/incott_ghero_pro_weight_reduction_mod_5266g/",
+      "kind": "firsthand owner mod report",
+      "date": "2024-06-21",
+      "verified": "page opened; component masses and construction discussion in author comments",
+      "locator": "author comment: wheel 3.77g to ~2.5g Attack Shark X11; later author comment describes stock Ghero wheel as rubberized and axle fit"
+    },
+    "op1_report": {
+      "title": "forky mods: Lightweight Scroll Wheel - OP1",
+      "url": "https://forkymods.com/products/lightweight-scroll-wheel-op1",
+      "kind": "replacement designer/seller component comparison claim",
+      "date": null,
+      "verified": "page opened",
+      "locator": "product description: stock wheel 1.8g; replacement ~0.5g; encoder-fit instructions"
+    },
+    "op1_rubber": {
+      "title": "forkymods Etsy listing: Lightweight Scroll Wheel - OP1",
+      "url": "https://www.etsy.com/listing/4385359373/lightweight-scroll-wheel-op1",
+      "kind": "same seller listing with firsthand buyer material observation",
+      "date": null,
+      "verified": "page opened",
+      "locator": "buyer Salim dated 2026-07-30 compares texture with original rubber wheel; not a hub-material declaration"
+    },
+    "m3_rubber": {
+      "title": "sizusei: Darmoshark M3 review",
+      "url": "https://sizusei.com/darmoshark-m3-review/",
+      "kind": "firsthand review; material text visible in search index",
+      "date": null,
+      "verified": "search-index text only; no full-page opening in this pass",
+      "locator": "wheel paragraph describes rubber material and Y-like tread; no separate core material or component mass"
+    },
+    "x11_rubber": {
+      "title": "Attack Shark X11 - should I replace?",
+      "url": "https://www.reddit.com/r/MouseReview/comments/1f8ao9l/",
+      "kind": "firsthand owner mod discussion; indexed text",
+      "date": null,
+      "verified": "search-index text only",
+      "locator": "owner describes fitting a red wheel and rubber; does not establish stock donor core material or stock measured wheel identity"
+    },
+    "g502x_report": {
+      "title": "Leniwcowaty: G502X chonkster scroll wheel mod",
+      "url": "https://www.reddit.com/r/G502MasterRace/comments/1q0anxv/tutorial_g502x_chonkster_scroll_wheel_mod/",
+      "kind": "firsthand teardown/mod report",
+      "date": "2025-12-31",
+      "verified": "page opened; masses and self-contained subassembly discussion readable; embedded scale images not exposed/inspected",
+      "locator": "G502X Plus Wireless: 6.9g; G502 Hero: 16.3g; wheel construction and removable subassembly discussed"
+    },
+    "pmm_control": {
+      "title": "PMM: Magnesium Scroll Wheel [PULSE - CYBER OP] for Modkit",
+      "url": "https://pmm.gg/products/magnesium-scroll-wheel-op1-8k-op1w-4k-pulse-cyber-op-for-modkit",
+      "kind": "manufacturer product specification",
+      "date": null,
+      "verified": "page opened",
+      "locator": "specifications: magnesium alloy; UltraGrip 3.0; flexible low-friction polymer pin; weight 1.0g"
+    },
+    "intellimouse_lead": {
+      "title": "Microsoft Pro Intellimouse teardown pics + weight of individual parts",
+      "url": "https://www.reddit.com/r/MouseReview/comments/d3596p/",
+      "kind": "firsthand teardown lead",
+      "date": "2019-09-12",
+      "verified": "search-index comments only; direct opens failed (cache miss)",
+      "locator": "author says imgur descriptions contain scale readings; wheel/encoder integration noted; no wheel mass recovered"
+    }
+  },
+  "published_reports": [
+    {
+      "id": "darmoshark-m3-stock",
+      "product": "Darmoshark M3, original model; exact batch unspecified",
+      "configuration": "stock wheel removed during owner mod",
+      "reported_mass_g": 3.2,
+      "reported_text": "3.2g",
+      "evidence_class": "firsthand reported component mass",
+      "mass_source": "m3_report",
+      "method": {
+        "description": "Component value reported by source; scale model, calibration, repeat readings, number of wheels and numerical uncertainty not published in inspected text.",
+        "scale_model": null,
+        "resolution_g": null,
+        "calibration": null,
+        "repeats": null,
+        "sample_count": null,
+        "standard_uncertainty_g": null
+      },
+      "boundary": {
+        "rim_hub": "not independently confirmed",
+        "tyre": "rubber described in separate firsthand review; same measured batch not established",
+        "axle": "not enumerated by weighing source",
+        "encoder": "not enumerated by weighing source",
+        "carrier": "not enumerated by weighing source",
+        "note": "Treat as an author-reported wheel component, not a fully documented common assembly boundary."
+      },
+      "material_eligibility": "pending: rubber corroborated for model, plastic hub not established by inspected primary evidence",
+      "material_sources": [
+        "m3_rubber"
+      ],
+      "usable_as_reported_component_lead": true,
+      "eligible_for_matched_group": false
+    },
+    {
+      "id": "incott-ghero-pro-stock",
+      "product": "Incott Ghero Pro, orange owner sample",
+      "configuration": "stock wheel removed during owner mod",
+      "reported_mass_g": 3.77,
+      "reported_text": "3.77g",
+      "evidence_class": "firsthand reported component mass",
+      "mass_source": "ghero_report",
+      "method": {
+        "description": "Component value reported by source; scale model, calibration, repeat readings, number of wheels and numerical uncertainty not published in inspected text.",
+        "scale_model": null,
+        "resolution_g": null,
+        "calibration": null,
+        "repeats": null,
+        "sample_count": null,
+        "standard_uncertainty_g": null
+      },
+      "boundary": {
+        "rim_hub": "not independently confirmed",
+        "tyre": "author explicitly describes stock wheel as rubberized",
+        "axle": "author discusses axle fit and donor-wheel substitution; weighed axle inclusion not enumerated",
+        "encoder": "not enumerated by weighing source",
+        "carrier": "not enumerated by weighing source",
+        "note": "Treat as an author-reported wheel component, not a fully documented common assembly boundary."
+      },
+      "material_eligibility": "pending: rubberized stock wheel confirmed firsthand; plastic core not established",
+      "material_sources": [
+        "ghero_report"
+      ],
+      "usable_as_reported_component_lead": true,
+      "eligible_for_matched_group": false
+    },
+    {
+      "id": "attack-shark-x11-donor",
+      "product": "Attack Shark X11 donor wheel; exact donor variant unspecified",
+      "configuration": "wheel substituted into the Ghero Pro",
+      "reported_mass_g": 2.5,
+      "reported_text": "~2.5g",
+      "evidence_class": "approximate firsthand reported donor component mass",
+      "mass_source": "ghero_report",
+      "method": {
+        "description": "Component value reported by source; scale model, calibration, repeat readings, number of wheels and numerical uncertainty not published in inspected text.",
+        "scale_model": null,
+        "resolution_g": null,
+        "calibration": null,
+        "repeats": null,
+        "sample_count": null,
+        "standard_uncertainty_g": null
+      },
+      "boundary": {
+        "rim_hub": "not independently confirmed",
+        "tyre": "not independently confirmed",
+        "axle": "not enumerated by weighing source",
+        "encoder": "not enumerated by weighing source",
+        "carrier": "not enumerated by weighing source",
+        "note": "Treat as an author-reported wheel component, not a fully documented common assembly boundary."
+      },
+      "material_eligibility": "pending: rubber and core composition for this measured donor not established",
+      "material_sources": [
+        "x11_rubber"
+      ],
+      "usable_as_reported_component_lead": true,
+      "eligible_for_matched_group": false
+    },
+    {
+      "id": "endgame-gear-op1-stock",
+      "product": "Endgame Gear OP1 stock wheel, precise variant/batch unspecified",
+      "configuration": "stock wheel compared by replacement designer",
+      "reported_mass_g": 1.8,
+      "reported_text": "1.8g",
+      "evidence_class": "replacement designer/seller reported component mass, not a documented weighing",
+      "mass_source": "op1_report",
+      "method": {
+        "description": "Component value reported by source; scale model, calibration, repeat readings, number of wheels and numerical uncertainty not published in inspected text.",
+        "scale_model": null,
+        "resolution_g": null,
+        "calibration": null,
+        "repeats": null,
+        "sample_count": null,
+        "standard_uncertainty_g": null
+      },
+      "boundary": {
+        "rim_hub": "not independently confirmed",
+        "tyre": "seller listing buyer calls original wheel rubber; core composition not established",
+        "axle": "not enumerated by weighing source",
+        "encoder": "replacement is inserted into existing encoder; encoder excluded from offered replacement. Stock weighing boundary is not explicitly enumerated.",
+        "carrier": "not enumerated by weighing source",
+        "note": "Treat as an author-reported wheel component, not a fully documented common assembly boundary."
+      },
+      "material_eligibility": "pending: rubber corroborated by buyer; plastic hub not confirmed",
+      "material_sources": [
+        "op1_rubber"
+      ],
+      "usable_as_reported_component_lead": true,
+      "eligible_for_matched_group": false
+    },
+    {
+      "id": "mchose-a5-donor",
+      "product": "Mchose A5 donor wheel, exact variant unspecified",
+      "configuration": "wheel substituted into M3",
+      "reported_mass_g": 1.5,
+      "reported_text": "(1.5g?)",
+      "evidence_class": "explicitly uncertain owner recollection/estimate",
+      "mass_source": "m3_report",
+      "method": {
+        "description": "Source adds a question mark; measurement is not established.",
+        "scale_model": null,
+        "resolution_g": null,
+        "calibration": null,
+        "repeats": null,
+        "sample_count": null,
+        "standard_uncertainty_g": null
+      },
+      "boundary": {
+        "rim_hub": "not independently confirmed",
+        "tyre": "not independently confirmed",
+        "axle": "not enumerated by weighing source",
+        "encoder": "not enumerated by weighing source",
+        "carrier": "not enumerated by weighing source",
+        "note": "Treat as an author-reported wheel component, not a fully documented common assembly boundary."
+      },
+      "material_eligibility": "pending: neither plastic hub nor rubber tyre established",
+      "material_sources": [],
+      "usable_as_reported_component_lead": false,
+      "eligible_for_matched_group": false
+    },
+    {
+      "id": "logitech-g502x-plus-subassembly",
+      "product": "Logitech G502X Plus Wireless",
+      "configuration": "removable tilt/free-scroll wheel subassembly in swap comparison",
+      "reported_mass_g": 6.9,
+      "reported_text": "6,9 g",
+      "evidence_class": "firsthand teardown report with embedded images not inspected",
+      "mass_source": "g502x_report",
+      "method": {
+        "description": "Component value reported by source; scale model, calibration, repeat readings, number of wheels and numerical uncertainty not published in inspected text.",
+        "scale_model": null,
+        "resolution_g": null,
+        "calibration": null,
+        "repeats": null,
+        "sample_count": null,
+        "standard_uncertainty_g": null
+      },
+      "boundary": {
+        "rim_hub": "author describes wheel as plastic",
+        "tyre": "author describes a thin rubber strip",
+        "axle": "exact weighing inclusion unresolved",
+        "encoder": "optical sensing components not enumerated in scale boundary",
+        "carrier": "source discusses self-contained removable subassembly; includes more than a bare wheel in likely interpretation, but scale image not inspected",
+        "note": "Do not pool this figure with bare wheel-and-axle values. Full tilt/free-scroll function and assembly scope differ."
+      },
+      "material_eligibility": "plastic plus rubber described firsthand; common mass boundary unresolved",
+      "material_sources": [
+        "g502x_report"
+      ],
+      "usable_as_reported_component_lead": true,
+      "eligible_for_matched_group": false
+    }
+  ],
+  "comparison_controls": [
+    {
+      "id": "pmm-magnesium",
+      "product": "PMM PULSE - CYBER OP magnesium wheel",
+      "mass_g": 1,
+      "source": "pmm_control",
+      "class": "manufacturer claim",
+      "boundary": "Wheel only; alloy body/coating/polymer pin described; no encoder. Weighing method not given.",
+      "include_in_plastic_rubber_group": false,
+      "note": "Useful adjacent commercial reference only. The pin is polymer; do not call it an all-magnesium assembly."
+    },
+    {
+      "id": "forky-op1-mod",
+      "product": "forky mods OP1 replacement",
+      "mass_g": 0.5,
+      "source": "op1_report",
+      "class": "approximate designer/seller claim",
+      "boundary": "Standalone replacement inserted into an existing encoder; complete material description and weighing method not given.",
+      "include_in_plastic_rubber_group": false,
+      "note": "Potential lighter non-magnesium alternative. Do not claim magnesium is uniquely lightest from this evidence."
+    },
+    {
+      "id": "g502-hero-metal-subassembly",
+      "product": "Logitech G502 Hero donor subassembly",
+      "mass_g": 16.3,
+      "source": "g502x_report",
+      "class": "firsthand teardown report",
+      "boundary": "Larger tilt/free-scroll subassembly; metal wheel plus insert, exact scale payload not inspected.",
+      "include_in_plastic_rubber_group": false,
+      "note": "Material outside requested test group; author's specific alloy identification not independently verified."
+    },
+    {
+      "id": "theseus-proposal",
+      "product": "Theseus six-arm wheel",
+      "mass_g": 0.9,
+      "source_local": "FEEDBACK.md F22.1/F25.2/F30.8",
+      "class": "proposal / geometry mass target, not physical weighing",
+      "boundary": "Integrator must account for final axle, magnet, adhesive and coating in same boundary as comparison.",
+      "include_in_plastic_rubber_group": false,
+      "note": "Straight tread latest rule. No measured savings percentage approved by this package."
+    }
+  ],
+  "group_statistics": {
+    "eligible_models": 0,
+    "mean_g": null,
+    "median_g": null,
+    "range_g": null,
+    "percent_saving": null,
+    "reason": "No common-boundary, material-qualified group. Do not average search leads, uncertain A5 value, metal/free-scroll subassemblies or model targets."
+  },
+  "recovery_leads": [
+    {
+      "source": "intellimouse_lead",
+      "status": "unresolved",
+      "mass_g": null,
+      "reason": "Indexed author says scale values are in linked album descriptions, but original album URL and wheel reading not recovered. No guessed value."
+    }
+  ],
+  "search": {
+    "date": "2026-11-05",
+    "language": "English queries, plus Japanese/Chinese search results inspected for specific construction evidence",
+    "approach": "Broad quoted component-mass searches, known gram values, teardown/scale queries and component/mod suppliers. Search results plus direct opening of strongest sources. No physical weighing, no private groups, no contact with authors, no paywalled inspection, no video frame-by-frame weighing audit.",
+    "direct_open_failures": [
+      "Reddit short links with trailing slash for M3 and Ghero initially failed; full canonical pages opened successfully.",
+      "Intellimouse d3596p short and guessed full permalink opens failed: cache miss.",
+      "G502X embedded scale images were absent from extracted page links; no scale image inspected."
+    ],
+    "queries": [
+      "mouse scroll wheel \"weight\" \"grams\" rubber plastic",
+      "\"scroll wheel\" \"weighs\" \"g\" mouse mod",
+      "\"scroll wheel\" \"weight\" \"1.8g\"",
+      "\"scroll wheel\" \"weighs\" \"rubber\"",
+      "\"scroll wheel\" \"weight\" \"3.2g\"",
+      "\"scroll wheel\" \"weight\" \"1.5g\"",
+      "\"scroll wheel\" \"weight\" \"2.5g\"",
+      "\"scroll wheel\" \"weighs\" \"g305\"",
+      "\"scroll wheel\" \"weight\" \"rubber\" \"1.8\"",
+      "\"scroll wheel\" \"weight\" \"3.77\"",
+      "mouse \"wheel\" \"component weights\"",
+      "\"scroll wheel\" \"stock\" \"weighs\" -site:pcgamer.com -site:reddit.com",
+      "\"scroll wheel\" \"weight\" \"rubber\" \"grams\" mod -site:pcgamer.com",
+      "mouse \"scroll wheel\" \"scale\" \"weight\" teardown -site:pcgamer.com",
+      "site:pmm.gg \"wheel\" \"original\" \"g\"",
+      "Darmoshark M3 teardown scroll wheel rubber plastic",
+      "Endgame Gear OP1 scroll wheel rubber plastic",
+      "\"scroll wheel\" \"grams\" \"teardown\" -site:pcgamer.com -site:gamesradar.com -site:tomsguide.com",
+      "\"scroll wheel\" \"weight\" \"stock\" site:forkymods.com",
+      "\"scroll wheel\" \"weigh\" \"rubber\" -site:pcgamer.com -site:gamesradar.com",
+      "\"scrollwheel\" \"weight\" \"g\" \"stock\" \"rubber\"",
+      "\"scroll wheel\" \"1.7g\" OR \"2.1g\" OR \"2.4g\" OR \"3.5g\"",
+      "\"mouse wheel\" \"weighs\" \"plastic\"",
+      "\"Incott Ghero\" \"wheel\" \"plastic\"",
+      "\"Darmoshark M3\" \"wheel\" \"plastic\"",
+      "\"Endgame Gear OP1\" \"wheel\" \"rubberized\"",
+      "\"Attack Shark X11\" \"wheel\" \"rubber\"",
+      "\"G305\" \"scroll wheel\" \"3.3g\"",
+      "\"scroll wheel\" \"weight\" \"2.0g\"",
+      "\"scroll wheel\" \"weight\" \"2.8g\"",
+      "\"scroll wheel\" \"weight\" \"4.1g\"",
+      "\"scroll wheel\" \"weight\" site:mouseclub.co",
+      "\"scroll wheel\" \"weight\" site:tjexclusives.com",
+      "\"scroll wheel\" \"weight\" site:enncoo.com",
+      "\"scroll wheel\" \"weight\" site:shop.facfox.com",
+      "\"d3596p\" \"imgur\"",
+      "\"Microsoft Pro Intellimouse\" \"wheel\" \"grams\"",
+      "\"mouse\" \"wheel\" \"weighs 2\" -site:pcgamer.com -site:gamesradar.com -site:tomsguide.com",
+      "\"OP1\" \"wheel\" \"1.8g\""
+    ],
+    "exclusions": "Whole-mouse masses; encoder gram-force ratings; ballast weights; seller shipping weights; difference of two whole mice; generic historical 1-2g statements; geometry/density estimates; metal wheels as plastic/rubber samples."
+  },
+  "weighing_protocol": {
+    "status": "proposed, not performed",
+    "sample_design": "Pre-register at least five named stock gaming-mouse models and exact revisions before seeing component masses. Prefer three physical samples per model; if one, state n=1 and do not imply model variance. Include light/flagship as well as inexpensive designs; do not select only heavy rubber examples.",
+    "suggested_candidate_models": [
+      "Darmoshark M3 original",
+      "Incott Ghero Pro",
+      "Endgame Gear OP1 original",
+      "Logitech PRO X SUPERLIGHT 2",
+      "Razer Viper V3 Pro"
+    ],
+    "qualification": "Verify each exact sample has plastic hub/rim and rubber/elastomer tyre by manufacturer statement or documented disassembly. Record unknown polymer grades honestly. Replace or segregate ineligible constructions. These are test candidates, not a claim their wheel masses or materials are verified.",
+    "balance": "Use a balance with 0.001g readability preferred, or 0.01g only if repeatability and documented uncertainty support intended precision. Level/warm up per maker; close draft shield; avoid electrostatic disturbance. Check certified small masses bracketing wheel loads (e.g. 1g and 5g) before/after; record readings, certificate tolerances and scale ID. Readability alone is not accuracy.",
+    "procedure": [
+      "Assign sample ID; photograph model/revision and unmodified wheel on both sides, including axle and carrier; record wear, contamination, lubricant and damage.",
+      "Remove intended rotating assembly intact. Keep stock tyre, rotating pin, inserts and finish. Document every included/excluded item. Do not shave, drill, sand, solvent-strip, or substitute the tyre.",
+      "If tyre/hub is inseparable, weigh intact. If a carrier or encoder is inseparable, put it into a separately named assembly-scope subgroup.",
+      "Tare a clean tray; place assembly centrally without touching enclosure. Wait for stable reading; record all displayed digits and photo ID. Lift completely off, check zero, reposition and repeat five times. Preserve raw readings and zero drift.",
+      "After intact weighing, optionally separate removable tyre and hub/axle for secondary masses; weigh both and reassembled assembly. Component sum is a cross-check, not a substitute for intact measurement; document loss/adhesive change.",
+      "Repeat for actual PMM and Theseus samples with rotating polymer pin/magnet/adhesive/coating included. A CAD target cannot enter the measured column.",
+      "Keep within-sample five repeat readings separate from independent sample count. Calculate each sample mean and SD, then model means across physical samples. Report scale/calibration uncertainty separately from sample variability.",
+      "For a test-group summary, give equal weight to each preregistered model mean, list every model value and n, min/max and selection rule. Call it the tested group average, never the industry average."
+    ],
+    "statistics": "sample_mean=sum(readings)/r; repeat_SD=sqrt(sum((x-mean)^2)/(r-1)). Build a documented uncertainty budget from calibration/check residual, resolution, repeatability, drift and environment; do not invent a confidence interval from displayed precision. Only when common-boundary measured Theseus mass exists: saving_g=group_mean-Theseus_mean; saving_percent=100*(1-Theseus_mean/group_mean). Propagate actual uncertainty and disclose prototype status.",
+    "raw_row_fields": [
+      "sample_id",
+      "product",
+      "revision",
+      "condition",
+      "plastic_hub_evidence",
+      "rubber_tyre_evidence",
+      "rim_included",
+      "tyre_included",
+      "axle_included",
+      "rotating_magnet_included",
+      "encoder_included",
+      "carrier_included",
+      "balance_id",
+      "readability_g",
+      "check_mass_g",
+      "check_reading_g",
+      "check_tolerance_g",
+      "tare_g",
+      "repeat_index",
+      "mass_g",
+      "photo_id",
+      "notes"
+    ],
+    "acceptance_gate": "At least several named plastic-plus-rubber models, same component boundary, actual intact scale evidence, known scale performance, retained raw readings and transparent sampling. F27 remains unresolved until those exist."
+  },
+  "local_source_observation": {
+  "source_file": "deck/revamp/60-surface.js",
+  "line": 94,
+  "observation": "Footnote derives 0.90g from 508.5mm3 at AZ31B density1.77g/cm3 while lines86/93 depict/name a POM axle/bushing. This formula does not separately account for POM pin/bushing mass or a rotating magnet/adhesive/coating.",
+  "scope": "Source-level accounting gap, not a measured mass error or whole-repository mass-budget audit.",
+  "action": "Publish the component breakdown and same rotating-assembly total before comparing to intact retail wheels. If0.90g is magnesium-body-only, label it that way."
+},
+  "integration": {
+    "ready_now": "Use named report cards with visible firsthand report / seller claim labels if useful; preserve source precision in registry and one decimal display with approximate markers. Do not infer hub material, compute a population mean or claim calibrated testing.",
+    "safe_copy": "Plastic-and-rubber wheels deserve a real test group. Published component reports are collected; our matched weighing is still pending.",
+    "saleable_proposal": "A thin, open six-arm wheel. 0.9g design target.",
+    "must_remain_visible": [
+      "Theseus 0.9g is a design target",
+      "published reports are not a matched test",
+      "stock assembly boundaries and materials are not fully resolved"
+    ],
+    "no_claims": [
+      "average plastic/rubber wheel mass",
+      "Theseus measured savings percentage",
+      "magnesium uniquely lightest",
+      "lower mass alone proves better scroll feel, grip, durability or rotational inertia"
+    ]
+  }
+}

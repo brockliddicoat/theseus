@@ -1,5 +1,36 @@
 # Theseus main PCB (`3d/pcb/`)
 
+## Current revision: approved plan 5 + F30.25 (2026-11-05)
+
+The actual generator and GLB now implement the final approved mechanical layout. Earlier measurements, DRC=0 and mass tables below describe the **historical pre-revamp board**, not this revision.
+
+- Symmetric 38.06 × 59.06 mm outline; common 3.61 mm notch depth; 13.09 mm side/rear notch flats; 35.24° chamfers with 1.00 mm tangent-setback fillets.
+- Symmetric, chamfered/filleted wheel bay with 0.35 mm gold trim and mirrored mounting holes.
+- USB-C back 1.05 mm (layout z49.38): 0.44 mm minimum board at shell-leg slots; shell hangs 1.605 mm past the board.
+- Sensor z19.45, MCU z4.80 (rear-facing antenna), PMIC at layout x-10.20,z19.45; actual envelope gaps are all1.60 mm. J2 is at14.5,8.5, opening backward.
+- A is the window-switch build. B is independently built in `variant-b/`, with no window and the switch at the waist edge (x14.57).
+- Original dark/gold triangle art adapted; per-triangle0.15 mm fillets. GT01 bottom walls0.80 mm are an estimate from the supplied Gateron render, not published dimensions; traced silhouette retained. Wheel remains straight144-groove knurl.
+- Sensor/lens/aperture/lens-carried dots move together15.45 mm (mouse z16.57). Balance remains a centre-of-mouse design target, not a verified mass-property result.
+
+**Outstanding engineering:** the requested shorter rear notch overlaps the old battery-front plan envelope by3.720 mm². No battery move or bottom-cover/seam solution is invented. Detailed pre-redesign route topology is relocated for visualization; the current electrical check reports718 issues. This is **not fabrication-ready routing** and no0-DRC claim applies. After the lens movement the optional plate is regenerated geometrically; its previous FE results are not a current validation.
+
+Review: `approved-board-review.png`, `review-top.png`, `review-bottom.png`, `variant-b/review-top.png`; machine-readable geometry, fit and electrical results: `approved-review.json`, `electrical-review.txt`.
+
+Reproduce from the repository root:
+
+```powershell
+python -X utf8 -m pip install -r 3d/pcb/tools/requirements.txt
+python -X utf8 3d/pcb/tools/build_pcb.py
+python -X utf8 3d/pcb/tools/review_approved.py
+# For B, set PCB_VARIANT=B and PCB_OUT to an existing variant-b output directory before building.
+node 3d/integration/build.mjs
+```
+
+JS tooling uses `3d/package.json` and `3d/pnpm-lock.yaml`; browser smoke checks require Playwright Chromium.
+
+## Historical pre-revamp documentation
+
+
 The Theseus main board as a detailed, animatable 3D asset: the **Ninjutso Sora V2 PCB outline and layout**, traced
 from Brock's photo (`refs/photos/sora-v2-pcb-8.29g.jpg`), rebuilt with Brock's changes: **Gateron GT01** switches in
 **Mill-Max 3305** sockets on their wedge (#2, #14), a **Raytac nRF54LM20A module** moved forward to the wheel bay,

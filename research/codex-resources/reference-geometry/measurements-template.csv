@@ -1,0 +1,1 @@
+record_id,model,revision,sample_id,button,measurement_kind,position,assembly_state,value_mm,repeat_index,instrument,display_resolution_mm,calibration_uncertainty_mm,applied_force_n,temperature_c,pad_material_evidence,source_photo_or_drawing,operator_notes

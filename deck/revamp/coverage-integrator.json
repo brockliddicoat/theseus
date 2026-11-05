@@ -1,0 +1,327 @@
+{
+  "schemaVersion": 1,
+  "owner": "integrator / fit and assembly",
+  "slides": {
+    "rv_tolerance": {
+      "clauses": [
+        {
+          "id": "F27.tolerance.1",
+          "answer": "A stated independent-interface series model cites NIST; the coin/error analogy introduces the stack-up problem.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.tolerance.2",
+          "answer": "No Theseus teardown; only simplified section parts and their interfaces are drawn.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.tolerance.3",
+          "answer": "Eight recognisable named mouse parts assemble; the bad interface offsets the rest, then three integrated interfaces assemble.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.tolerance.4",
+          "answer": "Shells, trigger, switch, supports and board replace the old drops/dots.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.tolerance.5",
+          "answer": "The shifted switch-bracket interface breaks alignment of the downstream stack; independent pass probabilities multiply.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.tolerance.6",
+          "answer": "The original tolerance idea is retained and made an explicit part of the mechanical story.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        }
+      ],
+      "pending": []
+    },
+    "rv_contact": {
+      "clauses": [
+        {
+          "id": "F27.grind.1",
+          "answer": "The same board and shell are pressed bare, greased and with a placed/compressed factory Poron pad.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.grind.2",
+          "answer": "The caption explicitly links factory pads to existing G-Wolves anti-creak mods; it claims no measured noise reduction.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        }
+      ],
+      "pending": []
+    },
+    "rv_shape": {
+      "clauses": [
+        {
+          "id": "F27.shbSides.1",
+          "answer": "Equal opposing finger forces are animated on both low sides of every profile.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.shbSides.2",
+          "answer": "The profiles and forces are mirrored, rather than one thumb-only pressure case.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.shbSides.3",
+          "answer": "The bilateral lower band is taught in the Shape story alongside shoulder reaction and comfort grooves.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        }
+      ],
+      "pending": []
+    },
+    "rv_balance": {
+      "clauses": [
+        {
+          "id": "F27.mass.1",
+          "answer": "Source-grounded torque calculation explains why raising an already-low mass toward the grip can reduce the lever too; no mouse-specific higher-battery performance test was found.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.mass.2",
+          "answer": "The explanation explicitly rejects a universal lowest-is-best rule and shows whole-mouse mass weighting, distinct from battery height.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        }
+      ],
+      "pending": [
+        "No physical mass-property or actual battery-fit acceptance; the new rear-notch overlap and centre balance still need design validation.",
+        "No directly measured mouse-specific benefit from higher battery placement; the shown counterargument follows the torque model."
+      ]
+    },
+    "rv_fit": {
+      "clauses": [],
+      "pending": [
+        "Final shape and EMG/comfort/aim study are proposed, not participant results."
+      ]
+    },
+    "rv_binning": {
+      "clauses": [
+        {
+          "id": "F27.clk_switch2.1",
+          "answer": "The irrelevant operating-force/life selection slide is gone. The useful proposal is rebuilt around measuring and matching pairs.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.clk_switch2.2",
+          "answer": "The slide explicitly allows the switch SKU to change without changing the published binning/test standard.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.clk_switch2.3",
+          "answer": "An actuated test rig records response, matches paired force/travel curves and reveals raw records, limits, pairing and test settings. It is a proposed proof method, not fake batch data.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        },
+        {
+          "id": "F27.clk_switch2.4",
+          "answer": "A Hall travel gauge is identified only as a tester proposal; the product clicks explicitly remain mechanical SPDT.",
+          "verification": "Six-scene integrator motion/layout review: deck/qa/integrator-motion-final/report.json (60 deterministic samples, zero issues/errors). Final unified artifact: deck/qa/final-film/report.json; not hardware or user acceptance.",
+          "status": "implemented and reviewed as an explanatory presentation"
+        }
+      ],
+      "pending": [
+        "Actual production test limits, switch choice and per-unit bin records do not exist yet; the film demonstrates the proposed method."
+      ]
+    }
+  },
+  "source_mapping": [],
+  "removed": {
+    "map": {
+      "status": "removed",
+      "answer": "The low-value separate roadmap is absent from the new film.",
+      "clauses": [
+        {
+          "id": "F27.map.1",
+          "answer": "The low-value separate roadmap is absent from the new film.",
+          "status": "removed",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=map route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "shbGates": {
+      "status": "merged",
+      "answer": "The separate gate slide is absent; useful fibre-flow reasoning remains in rv_fibres_fillets.",
+      "clauses": [
+        {
+          "id": "F27.shbGates.1",
+          "answer": "The separate gate slide is absent; useful fibre-flow reasoning remains in rv_fibres_fillets.",
+          "status": "merged",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=shbGates route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "sealed": {
+      "status": "superseded",
+      "answer": "Optical-encoder sealing story is absent; rv_no_lights teaches the decided magnetic encoder and its power limits.",
+      "clauses": [
+        {
+          "id": "F27.sealed.1",
+          "answer": "Optical-encoder sealing story is absent; rv_no_lights teaches the decided magnetic encoder and its power limits.",
+          "status": "superseded",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=sealed route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        },
+        {
+          "id": "F27.sealed.2",
+          "answer": "Decided magnetic encoder with transparent housing is drawn on rv_no_lights; dust immunity is scoped to no optical light gate, not failure-proof hardware.",
+          "status": "superseded",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=sealed route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        },
+        {
+          "id": "F27.sealed.3",
+          "answer": "Decided magnetic encoder with transparent housing is drawn on rv_no_lights; dust immunity is scoped to no optical light gate, not failure-proof hardware.",
+          "status": "superseded",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=sealed route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        },
+        {
+          "id": "F27.sealed.4",
+          "answer": "Decided magnetic encoder with transparent housing is drawn on rv_no_lights; dust immunity is scoped to no optical light gate, not failure-proof hardware.",
+          "status": "superseded",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=sealed route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "shlGrams": {
+      "status": "removed",
+      "answer": "The rejected standalone grams slide is absent. Weight efficiency remains in the structural demonstrations.",
+      "clauses": [
+        {
+          "id": "F27.shlGrams.1",
+          "answer": "The rejected standalone grams slide is absent. Weight efficiency remains in the structural demonstrations.",
+          "status": "removed",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=shlGrams route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "pltPlate": {
+      "status": "deferred by Brock",
+      "answer": "Rejected cover design is absent from the film; no acceptance of its geometry is implied.",
+      "clauses": [
+        {
+          "id": "F27.pltPlate.1",
+          "answer": "Rejected cover design is absent from the film; no acceptance of its geometry is implied.",
+          "status": "deferred by Brock",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=pltPlate route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        },
+        {
+          "id": "F27.pltPlate.2",
+          "answer": "Rejected cover design is absent from the film; no acceptance of its geometry is implied.",
+          "status": "deferred by Brock",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=pltPlate route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "pltSim": {
+      "status": "deferred by Brock",
+      "answer": "Rejected cover simulation is absent; old FE results do not validate the relocated plate.",
+      "clauses": [
+        {
+          "id": "F27.pltSim.1",
+          "answer": "Rejected cover simulation is absent; old FE results do not validate the relocated plate.",
+          "status": "deferred by Brock",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=pltSim route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        },
+        {
+          "id": "F27.pltSim.2",
+          "answer": "Rejected cover simulation is absent; old FE results do not validate the relocated plate.",
+          "status": "deferred by Brock",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=pltSim route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "pltOptions": {
+      "status": "deferred by Brock",
+      "answer": "Rejected alternatives are not offered as final designs; bottom-cover work remains deferred.",
+      "clauses": [
+        {
+          "id": "F27.pltOptions.1",
+          "answer": "Rejected alternatives are not offered as final designs; bottom-cover work remains deferred.",
+          "status": "deferred by Brock",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=pltOptions route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        },
+        {
+          "id": "F27.pltOptions.2",
+          "answer": "Rejected alternatives are not offered as final designs; bottom-cover work remains deferred.",
+          "status": "deferred by Brock",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=pltOptions route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "srf_marks": {
+      "status": "hidden by Brock",
+      "answer": "Engraving showcase is absent, following F26.11.",
+      "clauses": [
+        {
+          "id": "F27.srf_marks.1",
+          "answer": "Engraving showcase is absent, following F26.11.",
+          "status": "hidden by Brock",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=srf_marks route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "details": {
+      "status": "hidden by Brock",
+      "answer": "Engraving/decal details are absent, following F26.11.",
+      "clauses": [
+        {
+          "id": "F27.details.1",
+          "answer": "Engraving/decal details are absent, following F26.11.",
+          "status": "hidden by Brock",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=details route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "serial": {
+      "status": "hidden by Brock",
+      "answer": "Serialization showcase remains hidden for now.",
+      "clauses": [
+        {
+          "id": "F27.serial.1",
+          "answer": "Serialization showcase remains hidden for now.",
+          "status": "hidden by Brock",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=serial route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "shellcard": {
+      "status": "merged",
+      "answer": "The standalone chapter card is removed; material and construction content opens directly with rv_thin_wall.",
+      "clauses": [
+        {
+          "id": "F27.shellcard.1",
+          "answer": "The standalone chapter card is removed; material and construction content opens directly with rv_thin_wall.",
+          "status": "merged",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=shellcard route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    },
+    "shlsheet2": {
+      "status": "redistributed",
+      "answer": "Bilateral lower-wall band and joined ribs remain in structure/shape; rejected optional cover is deferred.",
+      "clauses": [
+        {
+          "id": "F27.shlsheet2.1",
+          "answer": "Bilateral lower-wall band and joined ribs remain in structure/shape; rejected optional cover is deferred.",
+          "status": "redistributed",
+          "verification": "New-film manifest/disposition review and explicit preserved-source ?legacy=shlsheet2 route. Final combined verification: handoff/codex/QA-SUMMARY.md."
+        }
+      ]
+    }
+  }
+}

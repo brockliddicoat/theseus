@@ -1,0 +1,969 @@
+{
+  "meta": {
+    "title": "Theseus revamp targeted live verification",
+    "verified_date": "2026-11-05",
+    "scope": "F27 F31 F32 F33 targeted research. URLs opened or search-index content verified this turn. Unknowns remain null. No entire-deck revalidation implied.",
+    "labels": {
+      "MC": "maker claim",
+      "IM": "independent sample measurement",
+      "DS": "component datasheet",
+      "DV": "derived illustrative model",
+      "CA": "community claim",
+      "PR": "Theseus proposal/target"
+    },
+    "chart_rules": [
+      "Separate measured samples from maker specs visibly.",
+      "Never invent runtime from capacity without measured average current and matching firmware/polling.",
+      "Do not omit G-Wolves winners.",
+      "No universal low-density or fastest claim from selected sample.",
+      "Pareto fronts have legitimate corners; use points/steps or labelled visual guide, not a smoothed curve pretending to be measured."
+    ]
+  },
+  "sources": {
+    "ouRuler": {
+      "title": "Open University â€” Design Â§6.5, Activity 1",
+      "url": "https://www.open.edu/openlearn/science-maths-technology/design-innovation/design/content-section-6.5",
+      "kind": "primary university teaching",
+      "verified_date": "2026-11-05"
+    },
+    "coloradoStraws": {
+      "title": "University of Colorado Boulder ITL â€” Straw Bridges",
+      "url": "https://www.teachengineering.org/activities/cub_brid_lesson01_activity2",
+      "kind": "primary university teaching",
+      "verified_date": "2026-11-05"
+    },
+    "innsbruckChain": {
+      "title": "University of Innsbruck â€” Upside Down course",
+      "url": "https://www.uibk.ac.at/en/design/lsu/teaching/847410-ag-kurzentwerfen-1/",
+      "kind": "primary university teaching",
+      "verified_date": "2026-11-05"
+    },
+    "cornellGrain": {
+      "title": "Cornell SimScience â€” isotropic and anisotropic",
+      "url": "https://sethna.lassp.cornell.edu/SimScience/cracks/glossary/isotropic.html",
+      "kind": "primary university teaching",
+      "verified_date": "2026-11-05"
+    },
+    "nasaTolerance": {
+      "title": "NASA â€” tolerance analysis, NTRS 19920023212",
+      "url": "https://ntrs.nasa.gov/api/citations/19920023212/downloads/19920023212.pdf",
+      "kind": "primary technical report",
+      "verified_date": "2026-11-05"
+    },
+    "nistSeries": {
+      "title": "NIST Engineering Statistics Handbook â€” Series model",
+      "url": "https://www.itl.nist.gov/div898/handbook/apr/section1/apr182.htm",
+      "kind": "primary technical handbook",
+      "verified_date": "2026-11-05"
+    },
+    "gwHtx": {
+      "title": "G-Wolves â€” HTX Mini 8K current product listing",
+      "url": "https://shop.g-wolves.com/products/htx-mini-8k-wireless-gaming-mouse-1",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "eloHtx": {
+      "title": "EloShapes â€” HTX Mini 8K",
+      "url": "https://www.eloshapes.com/mouse/compare?p=g-wolves-htx-mini-8k",
+      "kind": "aggregated specification",
+      "verified_date": "2026-11-05"
+    },
+    "gwHts": {
+      "title": "G-Wolves â€” HTS Ultra 8K",
+      "url": "https://shop.g-wolves.com/products/hts-ultra-8k-wireless-gaming-mouse-29g-usb-type-c-port",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "eloHts": {
+      "title": "EloShapes â€” HTS Ultra 8K",
+      "url": "https://www.eloshapes.com/mouse/compare?p=g-wolves-hts-ultra-8k",
+      "kind": "aggregated specification",
+      "verified_date": "2026-11-05"
+    },
+    "gwHtr": {
+      "title": "G-Wolves â€” HTR Pro 8K",
+      "url": "https://shop.g-wolves.com/products/g-wolves-htr-pro-8k-wireless-mouse",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "eloHtr": {
+      "title": "EloShapes â€” HTR Pro 8K",
+      "url": "https://www.eloshapes.com/mouse/compare?p=g-wolves-htr-pro-8k",
+      "kind": "aggregated specification",
+      "verified_date": "2026-11-05"
+    },
+    "gwHsk": {
+      "title": "G-Wolves â€” HSK Pro ACE",
+      "url": "https://shop.g-wolves.com/products/g-wolves-hsk-pro-ace",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "eloHsk": {
+      "title": "EloShapes browse table â€” HSK Pro ACE and V2",
+      "url": "https://www.eloshapes.com/mouse/browse?sort=width-ascending&view=table",
+      "kind": "aggregated specification",
+      "verified_date": "2026-11-05"
+    },
+    "pulsarX2f": {
+      "title": "Pulsar â€” X2F CrazyLight official US listing",
+      "url": "https://us.pulsar.gg/products/pulsar-lab-x2f-crazylight-gaming-mouse",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "x2fScale": {
+      "title": "trackingtonFPS â€” X2F CrazyLight first-person review, scale with four dot skates",
+      "url": "https://www.reddit.com/r/MouseReview/comments/1xf3ff0/pulsar_x2f_crazylight_review/",
+      "kind": "community first-person measurement",
+      "verified_date": "2026-11-05"
+    },
+    "razerVmse": {
+      "title": "Razer newsroom â€” Viper Mini Signature Edition launch, February 2023",
+      "url": "https://www.razer.com/newsroom/product-news/razer-unveils-the-viper-mini-signature-edition-a-magnesium-alloy-gaming-masterpiece",
+      "kind": "manufacturer launch claim",
+      "verified_date": "2026-11-05"
+    },
+    "zaunM3k": {
+      "title": "Zaunkoenig â€” M3K product page",
+      "url": "https://zaunkoenig.co/m3k",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "logiX2": {
+      "title": "Logitech G â€” PRO X2 SUPERSTRIKE US product",
+      "url": "https://www.logitechg.com/en-us/shop/p/pro-x2-superstrike-mouse",
+      "kind": "manufacturer listing",
+      "verified_date": "2026-11-05"
+    },
+    "logiCompare": {
+      "title": "Logitech G â€” SUPERSTRIKE vs SUPERLIGHT 2",
+      "url": "https://www-gaming.logitech.com/en-gb/discover/learn/superstrike-vs-superlight-2",
+      "kind": "manufacturer comparison",
+      "verified_date": "2026-11-05"
+    },
+    "slxPdf": {
+      "title": "Finalmouse â€” Starlight X Technical Overview v1.0",
+      "url": "https://cdn.shopify.com/s/files/1/2377/4861/files/26.5.27_Starlight_X_Technical_Overview.pdf?v=1779939240",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "slxReview": {
+      "title": "Back2Gaming â€” Starlight X Nightfall review, updated October 31 2026",
+      "url": "https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/",
+      "kind": "independent sample measurement and review",
+      "verified_date": "2026-11-05"
+    },
+    "tiHall": {
+      "title": "TI TMAG5253 datasheet Rev E, April 2026, pp1 and22-23",
+      "url": "https://www.ti.com/lit/ds/symlink/tmag5253.pdf",
+      "kind": "component datasheet",
+      "verified_date": "2026-11-05"
+    },
+    "ti3d": {
+      "title": "TI TMAG3001 product page / datasheet",
+      "url": "https://www.ti.com/product/TMAG3001",
+      "kind": "component datasheet",
+      "verified_date": "2026-11-05"
+    },
+    "razerV4": {
+      "title": "Razer â€” Viper V4 Pro Esports Green newsroom",
+      "url": "https://www.razer.com/newsroom/product-news/viper-v4-pro-arrives-in-esports-green",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "eemb350": {
+      "title": "EEMB LP702030 350mAh bare lithium polymer cell",
+      "url": "https://www.eemb.com/product-220",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "boying350": {
+      "title": "Boying 10440 350mAh cylindrical lithium battery",
+      "url": "https://www.boyingcable.com/10440-electric-toothbrush-rechargeable-lithium-battery-37v/",
+      "kind": "manufacturer claim",
+      "verified_date": "2026-11-05"
+    },
+    "logiX3": {
+      "title": "Logitech G PRO X3 SUPERSTRIKE US product page",
+      "url": "https://www.logitechg.com/en-us/shop/p/pro-x3-superstrike-mouse",
+      "kind": "manufacturer claim/current US listing",
+      "verified_date": "2026-11-05"
+    },
+    "logiX3Launch": {
+      "title": "Logitech September23 2026 G PLAY launch newsroom",
+      "url": "https://news.logitech.com/press-releases/news-details/2026/From-New-PRO-Gear-to-the-Iconic-Yeti-2-Mic---Logitech-G-Unveils-Fifteen-New-Products-at-Logitech-G-PLAY-2026/",
+      "kind": "manufacturer launch claim",
+      "verified_date": "2026-11-05"
+    },
+    "conformal": {
+      "title": "HumiSeal1B31 manufacturer technical data",
+      "url": "https://chasecorp.com/humiseal1/wp-content/uploads/sites/12/2018/10/1B31-TDS.pdf",
+      "kind": "manufacturer datasheet",
+      "verified_date": "2026-11-05"
+    }
+  },
+  "mice": [
+    {
+      "id": "g-wolves-htx-mini-8k",
+      "name": "G-Wolves HTX Mini 8K",
+      "connection": "wireless",
+      "dimensions_mm": {
+        "value": [
+          109,
+          60,
+          35
+        ],
+        "unit": "mm [length,max width,height]",
+        "label": "MC",
+        "source_keys": [
+          "gwHtx"
+        ]
+      },
+      "weight_g": {
+        "value": 26.9,
+        "unit": "g",
+        "label": "MC",
+        "source_keys": [
+          "gwHtx"
+        ]
+      },
+      "battery_mAh": {
+        "value": 250,
+        "unit": "mAh",
+        "label": "MC",
+        "source_keys": [
+          "gwHtx"
+        ]
+      },
+      "battery_hours": {
+        "value": 80,
+        "unit": "h at 1khz",
+        "label": "MC",
+        "source_keys": [
+          "gwHtx"
+        ]
+      },
+      "price": {
+        "value": 159,
+        "unit": "USD current listing",
+        "label": "MC",
+        "source_keys": [
+          "gwHtx"
+        ]
+      },
+      "alternate": {
+        "value": {
+          "dimensions": [
+            109,
+            60,
+            35
+          ],
+          "weight_g": 27
+        },
+        "unit": "specification",
+        "label": "aggregate",
+        "source_keys": [
+          "eloHtx"
+        ],
+        "note": "EloShapes lists PAW3395; current official page says PAW3950 but its detail table still gives 26k/650ips. Do not combine sensor specs across revisions."
+      },
+      "bounding_box_density_g_cm3": {
+        "value": 0.11751856705985145,
+        "unit": "g/cm3 bounding-box proxy",
+        "label": "DV",
+        "formula": "mass_g / (length_mm * max_width_mm * height_mm / 1000)",
+        "mass_basis": "maker claim",
+        "source_keys": [
+          "gwHtx"
+        ],
+        "note": "Not displaced shell volume or material density; grip/shape suitability is separate. Keep all chart rows at 0.001 g/cm3 precision."
+      }
+    },
+    {
+      "id": "g-wolves-hts-ultra-8k-deluxe",
+      "name": "G-Wolves HTS Ultra 8K Deluxe",
+      "connection": "wireless",
+      "dimensions_mm": {
+        "value": [
+          113,
+          61,
+          40
+        ],
+        "unit": "mm [length,max width,height]",
+        "label": "MC",
+        "source_keys": [
+          "gwHts",
+          "eloHts"
+        ]
+      },
+      "weight_g": {
+        "value": 29.5,
+        "unit": "g",
+        "label": "MC",
+        "source_keys": [
+          "gwHts",
+          "eloHts"
+        ]
+      },
+      "price": {
+        "value": null,
+        "unit": "USD variant-matched",
+        "label": "unknown",
+        "source_keys": [
+          "gwHts"
+        ],
+        "note": "$119 displayed for selected Standard 32.9g, not verified Deluxe 29.5g price."
+      },
+      "alternate": {
+        "value": 32.9,
+        "unit": "g Standard",
+        "label": "MC",
+        "source_keys": [
+          "gwHts"
+        ]
+      },
+      "battery_hours": {
+        "value": null,
+        "unit": "h",
+        "label": "unknown",
+        "source_keys": [
+          "gwHts"
+        ]
+      },
+      "bounding_box_density_g_cm3": {
+        "value": 0.10699260118961264,
+        "unit": "g/cm3 bounding-box proxy",
+        "label": "DV",
+        "formula": "mass_g / (length_mm * max_width_mm * height_mm / 1000)",
+        "mass_basis": "maker claim",
+        "source_keys": [
+          "gwHts",
+          "eloHts"
+        ],
+        "note": "Not displaced shell volume or material density; grip/shape suitability is separate. Keep all chart rows at 0.001 g/cm3 precision."
+      }
+    },
+    {
+      "id": "g-wolves-htr-pro-8k",
+      "name": "G-Wolves HTR Pro 8K",
+      "connection": "wireless",
+      "dimensions_mm": {
+        "value": [
+          91,
+          57,
+          33
+        ],
+        "unit": "mm [length,max width,height]",
+        "label": "MC",
+        "source_keys": [
+          "gwHtr"
+        ]
+      },
+      "weight_g": {
+        "value": 25.3,
+        "unit": "g",
+        "label": "MC",
+        "source_keys": [
+          "gwHtr"
+        ]
+      },
+      "price": {
+        "value": 159,
+        "unit": "USD selected Strawberry listing",
+        "label": "MC",
+        "source_keys": [
+          "gwHtr"
+        ]
+      },
+      "alternate": {
+        "value": {
+          "dimensions": [
+            92,
+            57,
+            33
+          ],
+          "weight_g": 24
+        },
+        "unit": "specification",
+        "label": "aggregate",
+        "source_keys": [
+          "eloHtr"
+        ],
+        "note": "Keep complete alternatives together; source revision/configuration differs, not proof anyone lied."
+      },
+      "battery_hours": {
+        "value": null,
+        "unit": "h",
+        "label": "unknown",
+        "source_keys": [
+          "gwHtr"
+        ]
+      },
+      "bounding_box_density_g_cm3": {
+        "value": 0.1478054109633057,
+        "unit": "g/cm3 bounding-box proxy",
+        "label": "DV",
+        "formula": "mass_g / (length_mm * max_width_mm * height_mm / 1000)",
+        "mass_basis": "maker claim",
+        "source_keys": [
+          "gwHtr"
+        ],
+        "note": "Not displaced shell volume or material density; grip/shape suitability is separate. Keep all chart rows at 0.001 g/cm3 precision."
+      }
+    },
+    {
+      "id": "g-wolves-hsk-pro-ace",
+      "name": "G-Wolves HSK Pro ACE",
+      "connection": "wireless",
+      "dimensions_mm": {
+        "value": [
+          73.7,
+          56,
+          29
+        ],
+        "unit": "mm [length,max width,height]",
+        "label": "MC",
+        "source_keys": [
+          "gwHsk"
+        ]
+      },
+      "weight_g": {
+        "value": 26,
+        "unit": "g",
+        "label": "MC",
+        "source_keys": [
+          "gwHsk"
+        ]
+      },
+      "alternate": {
+        "value": {
+          "dimensions": [
+            73.3,
+            56,
+            29
+          ],
+          "weight_g": 25
+        },
+        "unit": "specification",
+        "label": "aggregate",
+        "source_keys": [
+          "eloHsk"
+        ],
+        "note": "Official and EloShapes differ. Not an 8khz mouse: ACE is 1khz."
+      },
+      "battery_hours": {
+        "value": null,
+        "unit": "h",
+        "label": "unknown",
+        "source_keys": [
+          "gwHsk"
+        ]
+      },
+      "bounding_box_density_g_cm3": {
+        "value": 0.2172300165094813,
+        "unit": "g/cm3 bounding-box proxy",
+        "label": "DV",
+        "formula": "mass_g / (length_mm * max_width_mm * height_mm / 1000)",
+        "mass_basis": "maker claim",
+        "source_keys": [
+          "gwHsk"
+        ],
+        "note": "Not displaced shell volume or material density; grip/shape suitability is separate. Keep all chart rows at 0.001 g/cm3 precision."
+      }
+    },
+    {
+      "id": "pulsar-x2f-crazylight",
+      "name": "Pulsar X2F CrazyLight",
+      "connection": "wireless",
+      "dimensions_mm": {
+        "value": [
+          87.5,
+          61.1,
+          31.6
+        ],
+        "unit": "mm [length,max width,height]",
+        "label": "MC",
+        "source_keys": [
+          "pulsarX2f"
+        ]
+      },
+      "weight_g": {
+        "value": 29,
+        "unit": "g",
+        "label": "MC",
+        "source_keys": [
+          "pulsarX2f"
+        ]
+      },
+      "weight_tolerance_g": {
+        "value": 2,
+        "unit": "g plus/minus",
+        "label": "MC",
+        "source_keys": [
+          "pulsarX2f"
+        ]
+      },
+      "weight_measured_g": {
+        "value": 29.5,
+        "unit": "g with four dot skates",
+        "label": "CA-measured",
+        "source_keys": [
+          "x2fScale"
+        ],
+        "note": "One owner's sample, not population minimum and not a laboratory average. Stock skates were not fitted."
+      },
+      "price": {
+        "value": 149.95,
+        "unit": "USD listed in reviewer spec table",
+        "label": "CA",
+        "source_keys": [
+          "x2fScale"
+        ]
+      },
+      "battery_mAh": {
+        "value": 210,
+        "unit": "mAh reviewer report",
+        "label": "CA",
+        "source_keys": [
+          "x2fScale"
+        ]
+      },
+      "battery_hours": {
+        "value": null,
+        "unit": "h standardized test",
+        "label": "unknown",
+        "source_keys": [
+          "x2fScale"
+        ],
+        "note": "Partial week-of-use report is not a run-to-empty measurement."
+      },
+      "bounding_box_density_g_cm3": {
+        "value": 0.17461665724525946,
+        "unit": "g/cm3 bounding-box proxy",
+        "label": "DV",
+        "formula": "mass_g / (length_mm * max_width_mm * height_mm / 1000)",
+        "mass_basis": "single measured sample",
+        "source_keys": [
+          "pulsarX2f",
+          "x2fScale"
+        ],
+        "note": "Not displaced shell volume or material density; grip/shape suitability is separate. Keep all chart rows at 0.001 g/cm3 precision."
+      }
+    },
+    {
+      "id": "razer-viper-mini-signature-edition",
+      "name": "Razer Viper Mini Signature Edition",
+      "connection": "wireless",
+      "dimensions_mm": {
+        "value": [
+          119,
+          62,
+          39
+        ],
+        "unit": "mm [length,max width,height]",
+        "label": "MC",
+        "source_keys": [
+          "razerVmse"
+        ]
+      },
+      "weight_g": {
+        "value": 49,
+        "unit": "g",
+        "label": "MC",
+        "source_keys": [
+          "razerVmse"
+        ]
+      },
+      "price": {
+        "value": 279.99,
+        "unit": "USD launch MSRP February 2023",
+        "label": "MC",
+        "source_keys": [
+          "razerVmse"
+        ]
+      },
+      "battery_hours": {
+        "value": 60,
+        "unit": "h up to; HyperSpeed wireless, launch claim",
+        "label": "MC",
+        "source_keys": [
+          "razerVmse"
+        ]
+      },
+      "bounding_box_density_g_cm3": {
+        "value": 0.1702914416386902,
+        "unit": "g/cm3 bounding-box proxy",
+        "label": "DV",
+        "formula": "mass_g / (length_mm * max_width_mm * height_mm / 1000)",
+        "mass_basis": "maker claim",
+        "source_keys": [
+          "razerVmse"
+        ],
+        "note": "Not displaced shell volume or material density; grip/shape suitability is separate. Keep all chart rows at 0.001 g/cm3 precision."
+      }
+    },
+    {
+      "id": "zaunkoenig-m3k",
+      "name": "Zaunkoenig M3K",
+      "connection": "wired-only",
+      "weight_g": {
+        "value": 24,
+        "unit": "g mouse body",
+        "label": "MC",
+        "source_keys": [
+          "zaunM3k"
+        ]
+      },
+      "price": {
+        "value": 340,
+        "unit": "EUR current maker listing including free shipping",
+        "label": "MC",
+        "source_keys": [
+          "zaunM3k"
+        ]
+      },
+      "maker_approx_usd": {
+        "value": 396,
+        "unit": "USD maker approximation, FX date unspecified",
+        "label": "MC",
+        "source_keys": [
+          "zaunM3k"
+        ],
+        "note": "Do not treat as verified current exchange conversion."
+      },
+      "battery_hours": {
+        "value": null,
+        "unit": "h",
+        "label": "not-applicable",
+        "source_keys": [
+          "zaunM3k"
+        ],
+        "note": "Wired-only, no battery. Do not chart zero runtime."
+      },
+      "predecessor_weight_g": {
+        "value": 24,
+        "unit": "g M2K",
+        "label": "MC",
+        "source_keys": [
+          "zaunM3k"
+        ]
+      },
+      "polling": {
+        "value": 8000,
+        "unit": "Hz wired",
+        "label": "MC",
+        "source_keys": [
+          "zaunM3k"
+        ]
+      }
+    },
+    {
+      "id": "logitech-pro-x2-superstrike",
+      "name": "Logitech G PRO X2 SUPERSTRIKE",
+      "connection": "wireless plus USB-C wired",
+      "weight_g": {
+        "value": 61,
+        "unit": "g",
+        "label": "MC",
+        "source_keys": [
+          "logiCompare"
+        ]
+      },
+      "price": {
+        "value": 179.99,
+        "unit": "USD current listing",
+        "label": "MC",
+        "source_keys": [
+          "logiX2"
+        ]
+      },
+      "battery_hours": {
+        "value": 90,
+        "unit": "h up to, manufacturer continuous use",
+        "label": "MC",
+        "source_keys": [
+          "logiCompare"
+        ]
+      },
+      "note": "X2 predecessor retained for provenance; new flagship comparison uses separately verified X3US values."
+    },
+    {
+      "id": "finalmouse-starlight-x",
+      "name": "Finalmouse Starlight X Nightfall",
+      "connection": "wireless plus charging/wired cable",
+      "dimensions_grip_mm": {
+        "value": [
+          124.8,
+          58.9,
+          39.5
+        ],
+        "unit": "mm [length,grip width,height]",
+        "label": "MC",
+        "source_keys": [
+          "slxPdf"
+        ],
+        "note": "58.9 is explicitly GRIP width, not max width; do not use in bounding-box comparison."
+      },
+      "weight_g": {
+        "value": 38,
+        "unit": "g rated",
+        "label": "MC",
+        "source_keys": [
+          "slxPdf"
+        ]
+      },
+      "weight_measured_g": {
+        "value": 41.58,
+        "unit": "g single review sample",
+        "label": "IM",
+        "source_keys": [
+          "slxReview"
+        ]
+      },
+      "price": {
+        "value": 179,
+        "unit": "USD maker listing as quoted by review",
+        "label": "review-observed",
+        "source_keys": [
+          "slxReview"
+        ]
+      },
+      "battery_mAh": {
+        "value": 250,
+        "unit": "mAh",
+        "label": "MC",
+        "source_keys": [
+          "slxPdf"
+        ]
+      },
+      "battery_hours": {
+        "value": null,
+        "unit": "h public quantified rating",
+        "label": "unknown",
+        "source_keys": [
+          "slxPdf",
+          "slxReview"
+        ],
+        "note": "No hour rating found in these live documents; capacity does not determine runtime alone."
+      }
+    },
+    {
+      "id": "logitech-pro-x3-superstrike",
+      "name": "Logitech G PRO X3 SUPERSTRIKE US",
+      "connection": "wireless plus USB-C wired",
+      "weight_g": {
+        "value": 59,
+        "unit": "g US",
+        "label": "MC",
+        "source_keys": [
+          "logiX3"
+        ]
+      },
+      "price": {
+        "value": 199.99,
+        "unit": "USD current US listing",
+        "label": "MC",
+        "source_keys": [
+          "logiX3"
+        ]
+      },
+      "battery_hours": {
+        "value": 135,
+        "unit": "h plus, manufacturer up-to gaming claim",
+        "label": "MC",
+        "source_keys": [
+          "logiX3"
+        ]
+      },
+      "polling": {
+        "value": 8000,
+        "unit": "Hz wired and wireless",
+        "label": "MC",
+        "source_keys": [
+          "logiX3"
+        ]
+      },
+      "note": "New X3, launched Sep23 2026; not X2. Manufacturer claim of50% chipset power reduction is not a whole-mouse energy measurement and is not used in the deck."
+    }
+  ],
+  "teaching": [
+    {
+      "id": "ruler",
+      "source_keys": [
+        "ouRuler"
+      ],
+      "demo": "Two views of the SAME ruler: broad face bends, edge resists; rotate in 2D with end-on inset.",
+      "principle": "Section geometry changes flexural rigidity without adding material.",
+      "derived_example": {
+        "b_mm": 20,
+        "h_mm": 2,
+        "ratio": 100,
+        "formula": "I_edge/I_flat=(20/2)^2; I=b*h^3/12"
+      },
+      "boundary": "100x is illustrative ideal rectangular beam calculation, not measured Theseus shell performance. Deflection is not failure strength."
+    },
+    {
+      "id": "triangles",
+      "source_keys": [
+        "coloradoStraws"
+      ],
+      "demo": "Press a four-straw square; joints rotate into a parallelogram. Add one diagonal and repeat. Put a simple triangle beside it.",
+      "principle": "Triangulation removes an in-plane pin-jointed mechanism.",
+      "boundary": "Do not say triangles are always strongest or cannot bend. Real ribs bend/buckle; topology, joint rigidity, wall thickness and load determine performance."
+    },
+    {
+      "id": "arch",
+      "source_keys": [
+        "innsbruckChain"
+      ],
+      "demo": "Hang short chain between supports, freeze shape, flip upright; show supports resisting outward spread, then add PCB tie.",
+      "principle": "Tension form-finding inverted produces a compression-funicular structure for corresponding loads.",
+      "boundary": "Mouse shell with arbitrary hand loads is not automatically pure compression. Show tie/support condition; moving/removing supports destroys comparison."
+    },
+    {
+      "id": "grain",
+      "source_keys": [
+        "cornellGrain"
+      ],
+      "demo": "Wood bundle in two orientations; pulling parallel to long fibers loads them; splitting lengthwise separates between fibers. Transition to directional rib flow.",
+      "principle": "Anisotropy: mechanical response depends on loading direction.",
+      "boundary": "Splitting along grain is easy while tensile strength along fibers is high; avoid confusing crack direction with load direction. Short molded fibers are not continuous unidirectional carbon laminate."
+    },
+    {
+      "id": "tolerance",
+      "source_keys": [
+        "nasaTolerance"
+      ],
+      "demo": "Stack schematic mouse shell, guide, switch, board; each has a small +/- error. A fixed clearance line shows total dimensional error consume a gap.",
+      "principle": "Worst-case absolute tolerance sum; independent random dimensional variances add for a linear stack.",
+      "illustrative_example": {
+        "n": 4,
+        "each_tolerance_mm": 0.05,
+        "worst_case_mm": 0.2,
+        "rss_mm": 0.1,
+        "formula": "WC=sum(abs(t_i)); RSS=sqrt(sum(t_i^2))"
+      },
+      "boundary": "RSS needs independent centered processes with the same statistical coverage. Never claim fewer parts alone proves yield; warpage, mold variation and correlated errors matter."
+    },
+    {
+      "id": "reliability",
+      "source_keys": [
+        "nistSeries"
+      ],
+      "demo": "An input path crosses several essential parts; one broken link blocks the whole action. Remove unnecessary link.",
+      "principle": "Independent series-system reliability R_system=product(R_i).",
+      "boundary": "Use as conditional model, not a measured mouse reliability statistic. Series model is not a substitute for dimensional tolerance analysis."
+    }
+  ],
+  "electrical": {
+    "hall_example": {
+      "source_keys": [
+        "tiHall"
+      ],
+      "label": "DS",
+      "part": "TMAG5253, example only; not selected Theseus encoder",
+      "voltage_v": 1.8,
+      "active_current_mA": 2,
+      "shutdown_current_nA_upper": 20,
+      "bipolar_startup_us_typ_upper": 25,
+      "unipolar_startup_us_typ_upper": 60,
+      "duty_cycle_table": {
+        "active_time_us": 50,
+        "sleep_ms": [
+          1,
+          10,
+          50,
+          100,
+          1000
+        ],
+        "average_current_uA": [
+          90.5,
+          9.4,
+          1.9,
+          0.9,
+          0.1
+        ]
+      },
+      "boundary": "These are one sensor's currents, excluding MCU, ADC, regulator and any second Hall channel. Slow sampling can miss fast wheel changes. Hall has no LED; not zero power. Dust does not obstruct an optical path, but physical wheel/detent bearings still wear."
+    },
+    "hall3d_example": {
+      "source_keys": [
+        "ti3d"
+      ],
+      "label": "DS",
+      "part": "TMAG3001",
+      "active_current_mA": 2.1,
+      "wake_sleep_current_uA": 0.45,
+      "sleep_current_nA": 40,
+      "boundary": "Power mode and configured wake interval determine actual consumption; not Theseus selected component."
+    },
+    "optical_scenario": {
+      "label": "DV-not-measurement",
+      "local_source": "deck/src/10-b-click.js: optical battery share worked model",
+      "per_switch_mA": 0.15,
+      "assumed_two_switches_mA": 0.3,
+      "assumed_mouse_average_mA": 1.7,
+      "assumed_share_pct": 17.647,
+      "ideal_runtime_gain_pct": 21.429,
+      "formula": "I_LED=5mA*30us/1000us; s=2*I_LED/(306mAh/180h); ideal runtime gain=1/(1-s)-1",
+      "boundary": "Omron datasheet electrical test pulses are NOT proof of Razer's real LED schedule, switch current or efficiency. Battery-cell and switch-rail currents are not directly comparable without voltages and conversion losses. NOT verified Viper energy share. Mechanical sensing still requires pullups/scanning."
+    },
+    "razer_almost_half": {
+      "label": "CA via Brock",
+      "local_source": "FEEDBACK.md F31.1",
+      "public_verification": "not found",
+      "approved_wording": "Brock reports Razer staff online said switches plus encoder use almost half; no public quotation found.",
+      "boundary": "Do not turn into 2x Theseus measured/guaranteed runtime. If display retained, attribution and unknown measurement conditions must be visible."
+    },
+    "runtime_rule": {
+      "formula": "runtime_h=usable_battery_energy_Wh / average_power_W",
+      "boundary": "Capacity mAh cannot fill missing runtime. State polling, mode, battery size, usage and firmware; otherwise show not published. Current average is valid only at same rail with conversion accounted."
+    },
+    "matched_small_batteries": {
+      "label": "MC matched nominal voltage and capacity, different makers",
+      "pouch": {
+        "source_key": "eemb350",
+        "model": "LP702030",
+        "nominal_mAh": 350,
+        "minimum_mAh": 330,
+        "nominal_V": 3.7,
+        "mass_g": 7,
+        "boundary": "bare cell with solder tabs; no pack PCM/NTC/lead mass"
+      },
+      "cylinder": {
+        "source_key": "boying350",
+        "model": "10440",
+        "nominal_mAh": 350,
+        "minimum_mAh": 320,
+        "nominal_V": 3.7,
+        "mass_g": 9,
+        "boundary": "maker approximate cell mass; protection/pack mass not documented"
+      },
+      "derived_difference_g": 2,
+      "boundary": "These are concrete examples, not a universal chemistry advantage or selected Theseus battery. Compare finished protected packs before procurement."
+    },
+    "conformal": {
+      "recommended_film_um": [
+        25,
+        75
+      ],
+      "label": "DS",
+      "source_key": "conformal",
+      "boundary": "Moisture/environmental protection manufacturer claim; not waterproof certification. Liquid density0.91g/cm3 is not cured-film density; final coated-board mass must be weighed."
+    }
+  },
+  "direct_drive": {
+    "label": "DV geometry; PR Theseus mechanism",
+    "source_local": "FEEDBACK.md F31.2 and deck/src/10-b-click.js arc",
+    "misalignment_deg": 20,
+    "axial_fraction_before": 0.9396926207859084,
+    "axial_fraction_after": 1,
+    "axial_force_gain_pct": 6.417777247591205,
+    "lateral_fraction_before": 0.3420201433256687,
+    "headline": "94% â†’ 100% force along the switch axis",
+    "approved_phrase": "6% sooner (F31.2), only as visibly labelled ideal kinematic model if preserved",
+    "boundary": "Vector geometry is not measured press-to-PC latency, reaction time or a universal time prediction. A constant-speed kinematic projection and a force-driven acceleration model do not predict the same timing. Say removes misalignment/side loading without quantified speed claim unless model assumptions are shown."
+  },
+  "target_boundary": {
+    "Theseus": "29/29.31g, runtime, density, strength, press-to-PC and price remain proposal/model targets until actual prototype test. Integrator chooses one authoritative computed mass; no rounding target into achieved fact."
+  }
+}

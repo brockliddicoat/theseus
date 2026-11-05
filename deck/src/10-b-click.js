@@ -330,17 +330,17 @@ function clk_gt01MM(o = {}) {
   /* walls straight and one thickness (Brock, 2026-11-05): the cover's end walls run down past the shoulder, as in the render, and
      the housing fits between them: one plumb back wall from the switch's back-bottom corner to the board, its front face the
      cover's inner face, its top the shoulder; every cut-out one wall (0.45 mm, the D2F-class cover's) from the edges round it */
-  const WL = 0.45, zi = 6.4 - WL, ysF = (zi * K.s - K.oy) / K.c, ysF0 = (6.4 * K.s - K.oy) / K.c, Fb = S(-6.4, 0);
+  const WL = 0.80, coverWall = 0.45, zi = 6.4 - coverWall, ysF = (zi * K.s - K.oy) / K.c, ysF0 = (6.4 * K.s - K.oy) / K.c, Fb = S(-6.4, 0);
   const hp = [[Fb[0], 0], S(zi, ysF), S(zi, K.sh), S(-zi, K.sh), S(-zi, 0), Fb];   /* Fb is drawing x = −z: the plumb foot under it */
   fill(() => path(hp, [0.1, 0.05, 0.04, 0.04, 0.04, 0.1]), blk, eB, 1.1);
   /* the four cut-outs through its skin, where the render puts them: dark pockets with a lit lower rim */
   const cut = (fn) => { fill(fn, pocket, null); G.save(); fn(); G.clip(); fn(); G.strokeStyle = 'rgba(255,255,255,0.13)'; G.lineWidth = lw(2.2); G.stroke(); G.restore(); fn(); G.strokeStyle = 'rgba(0,0,0,0.5)'; G.lineWidth = lw(1); G.stroke(); };
-  cut(() => { const p = W(-2.86, 3.81); G.beginPath(); G.arc(p[0], p[1], 1.01, 0, TAU); });
-  cut(() => { const p = W(3.44, 1.49); G.beginPath(); G.arc(p[0], p[1], 1.04, 0, TAU); });
-  { const p = W(0.22, 3.37), u = [-K.c, K.s], v = [-K.s, -K.c], h = 0.63, r = 0.37, a = Math.atan2(v[1], v[0]), ccw = u[0] * v[1] - u[1] * v[0] < 0;
+  cut(() => { const p = W(-2.86, 3.81); G.beginPath(); G.arc(p[0], p[1], 0.66, 0, TAU); });
+  cut(() => { const p = W(3.44, 1.49); G.beginPath(); G.arc(p[0], p[1], 0.69, 0, TAU); });
+  { const p = W(0.22, 3.37), u = [-K.c, K.s], v = [-K.s, -K.c], h = 0.60, r = 0.25, a = Math.atan2(v[1], v[0]), ccw = u[0] * v[1] - u[1] * v[0] < 0;
     cut(() => { G.beginPath(); G.moveTo(p[0] + u[0] * h + v[0] * r, p[1] + u[1] * h + v[1] * r); G.lineTo(p[0] - u[0] * h + v[0] * r, p[1] - u[1] * h + v[1] * r);
       G.arc(p[0] - u[0] * h, p[1] - u[1] * h, r, a, a + Math.PI, ccw); G.lineTo(p[0] + u[0] * h - v[0] * r, p[1] + u[1] * h - v[1] * r); G.arc(p[0] + u[0] * h, p[1] + u[1] * h, r, a + Math.PI, a, ccw); G.closePath(); }); }
-  { const zb = -Fb[0] + WL; cut(() => path([W(0.07, WL), W(zb, 3.03), W(zb, WL)], [0.35, 0.25, 0.25])); }
+  cut(() => path([W(-0.28, WL), W(-5.214, 2.68), W(-5.214, WL)], [0.35, 0.25, 0.25]));
   out.housing = SP(...W(-Fb[0] + 0.1, 1.6));   /* on the back face's edge, so its leader shows against the tile */ out.wedge = SP(...W(5.4, 1.2)); out.foot = SP(0, 0.6); out.ang = Math.PI / 9;
   /* the switch: inside the cover first (seen through it when it is clear), clipped to the cover, above the shoulder */
   G.save(); path(boxS(-6.4, 6.4, K.sh, 6.52)); G.clip();

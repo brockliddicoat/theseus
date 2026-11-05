@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "generated": "2026-11-05",
+  "owner": "evidence / intro and electronics lane",
+  "scope": "14 code-only intro/electronics scenes. MAX causal-motion pass and browser-local player review; no hardware/firmware acceptance, commit, account login or publication. Pending clauses remain pending.",
+  "qa": {
+    "temporal_layout": "deck/qa/motion-intro-check/report.json records the exact tested HTML, SHA256, 14 selected scenes and ten deterministic times per scene; inspect that report for final status.",
+    "causal_events": "deck/qa/intro-motion-events/report.json records 43 event frames and actual draw-helper inputs. Causal checks cover equal-start inertia, module rotation, lost/retry/new/ACK packets, LOD tracking states, CC/CV and increasing charge, wheel activity/idle. Not hardware tests.",
+    "player": "Baseline full review/player smoke:28groups passed in report.json. After CSS order and clause-resolution changes, final focused panels-report.json has9passing groups and coverage-report.json has6passing groups; final scope is recorded in handoff/codex/INTRO-MOTION-REVIEW.md.",
+    "visual": "Key start/mid/settle and causal event screenshots were inspected. Review boundaries are listed in handoff/codex/INTRO-MOTION-REVIEW.md; do not infer acceptance of other scene owners.",
+    "real_mobile": "Real-mobile contexts use isMobile:true,hasTouch:true,deviceScaleFactor3 at440x956 and956x440; initial6groups passed. Final panels-report.json additionally includes desktop, actual taps, note/edit persistence, scroll-reachable panel close controls and usable landscape side editor.",
+    "final_no_lights": "Final hypothetical17.6percent-draw/21.4percent-runtime line rechecked at ten times: deck/qa/no-lights-final-check/report.json,0issue frames and0runtime errors. Physical motion is unchanged from43event-frame proof."
+  },
+  "slides": {
+    "rv_cover": {
+      "clauses": [
+        {
+          "id": "F27.cover.1",
+          "answer": "Exact uppercase PIAKNOW'S is the win line.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.cover.2",
+          "answer": "ZERO COMPROMISES is immediate title, not polling-rate hype.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_stats.1",
+          "answer": "Density replaces idea count in typography-only cover.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_stats.2",
+          "answer": "PIAKNOW'S exact uppercase cover; benchmark sources preserve proper name.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_stats.3",
+          "answer": "Battery, mass, latency and circuitry details moved into their feature diagrams.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_stats.4",
+          "answer": "Cover states Dual 8khz wired and wireless.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_stats.5",
+          "answer": "Visible polling units use khz.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.targets.1",
+          "answer": "Dual 8khz wired and wireless is explicit.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.targets.2",
+          "answer": "70us electrical click target is in rv_firmware; physical press mechanics are not mislabelled electrical latency.",
+          "verification": "PARTIAL / NOT CLAIMED COMPLETE: Mechanical latency explanation spans root click lane.70us is electrical only; do not mark full press-to-PC proven."
+        },
+        {
+          "id": "F9.11.1",
+          "answer": "Typography-only heroTHESEUS; whole mouse removed.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F12.2.1",
+          "answer": "No cover3D shell or2D shell renderer; all code typography.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F9.5.1",
+          "answer": "No middle-dot separators in owned slides; meaningful source details in source panel.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F9.5.2",
+          "answer": "No dot-separated concepts.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": [
+        {
+          "id": "F27.targets.2",
+          "reason": "Mechanical latency explanation spans root click lane.70us is electrical only; do not mark full press-to-PC proven."
+        }
+      ]
+    },
+    "rv_tradeoffs": {
+      "clauses": [
+        {
+          "id": "F27.flagships.1",
+          "answer": "Live primary-source dataset, exact variant notes and honest unknown runtime; capacity is not used to invent hours.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.flagships.2",
+          "answer": "Flagship comparison mass strings use one decimal.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.flagships.3",
+          "answer": "Verified current US X3 SUPERSTRIKE official page:59.0g,135+h,$199.99,dual8khz. X3 replaces X2 on chart.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.pricefront.1",
+          "answer": "C1-continuous monotone cubic guide follows X2F→HTXMini→wiredM3K non-dominated plotted points; common tangent prevents a hard kink and keeps direction after each point.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.pricefront.2",
+          "answer": "Viper Mini Signature Edition included at launch MSRP with launch basis disclosed.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.pricefront.3",
+          "answer": "Wired M3K is included, with manufacturer EUR340 / approximate USD396 FX caveat.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.pricefront.4",
+          "answer": "Verified current US X3 SUPERSTRIKE official page:59.0g,135+h,$199.99,dual8khz. X3 replaces X2 on chart.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.market.1",
+          "answer": "Named flagships remain plotted and in readable rows while a moving cursor and leader select each trade-off, then Theseus as a whole-package target. Runtime remains maker data, not a matched benchmark.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.market.2",
+          "answer": "Mass and batteries rechecked; precise verified data and unresolved variant conflicts in evidence JSON.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_density": {
+      "clauses": [
+        {
+          "id": "F27.ntr_density.1",
+          "answer": "Theseus is an outline, no detailed or 3D shell.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_density.2",
+          "answer": "Both silhouettes use one px/mm basis. The full-size target grows from the smaller extent, then dimensional bounding boxes build around the shapes and feed the displayed mass/volume formula.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_density.3",
+          "answer": "Keeps palm-supporting shape at low target mass; explicitly does not prove comfort/aim/strength.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_density.4",
+          "answer": "X2F is drawn first with the missing rear identified. The full-size outline expands only afterward; size-for-weight is sold without proving comfort, strength or aim.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_sizewt.1",
+          "answer": "Recovered and embedded EloShapes published X2F CrazyLight top and side SVG paths as code-native Path2D. Both are scaled through the maker nominal axes; top source-viewBox width fit is -0.5932percent, disclosed rather than calling the outline measured CAD.",
+          "verification": "Source strings and raw-source SHA256 identifiers are embedded in10-intro.js. Rendered exact-published-path density frames at3,6,11.8,17seconds; layout check is clean. See intro-motion-events/report.json and rv_x2fShape source."
+        },
+        {
+          "id": "F27.ntr_sizewt.2",
+          "answer": "Theseus outline only.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F12.11.1",
+          "answer": "Dimensions read THESEUS.dims119.3x62.4x39.9mm.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F12.11.4",
+          "answer": "Volume/density derive from shared dimensions and shared target mass.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_density_rank": {
+      "clauses": [
+        {
+          "id": "F27.ntr_densrank.1",
+          "answer": "Firsthand 29.5g with four dots is verified; stated as single sample, not universal minimum.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_densrank.2",
+          "answer": "All masses one decimal, all density values three decimals.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_densrank.3",
+          "answer": "G-Wolves HTX Mini, HTS Ultra Deluxe, HTR Pro and HSK ACE kept; official/EloShapes conflicts preserved in JSON.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ntr_densrank.4",
+          "answer": "G-Wolves lighter mice remain and are explicitly acknowledged as real rivals; target separated from shipping data.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_inertia": {
+      "clauses": [
+        {
+          "id": "F27.zerograms.1",
+          "answer": "The same physical clock integrates x=x0+v0*t-F*t^2/(2m) and v=v0-F*t/m for both masses. Equal 1.25m/s initial speed and 0.5N reversing force; displayed 40x slower with stable 208ms vs147ms reversal references.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.zerograms.2",
+          "answer": "Actual bodies decelerate, stop at different times, then move left toward the new target. Velocity arrows reverse with the integrated velocity; no arbitrary blur or bounce motion.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.zerograms.3",
+          "answer": "Explicit no faster-aim promise; zero grams is an ideal limit and studies did not test29g.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_weight_truth": {
+      "clauses": [
+        {
+          "id": "F27.weightgap.1",
+          "answer": "The rated38g reference stays visible while the41.58g sample lands and tips an illustrative balance. The9.4percent/3.6g sample gap remains visible; this is not a new weighing test.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.weightgap.2",
+          "answer": "38.0g SLX claim vs41.58g review sample,9.4% gap; Theseus proposed per-unit weighing.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.thesis.1",
+          "answer": "Random-spec overview removed.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.thesis.2",
+          "answer": "Honesty message now belongs to weight-gap story.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.targets2.1",
+          "answer": "29.5% less mass target compared with Starlight X sample, not XA25.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.targets2.2",
+          "answer": "No idle/set-down sleep in opening.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.budget.1",
+          "answer": "Mass/PCB/hours/price read shared THESEUS constants; shell+skates budget calls ntr_budget(), not another manually maintained sum.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_board": {
+      "clauses": [
+        {
+          "id": "F27.eleccard.1",
+          "answer": "Electronics introduction replaced with a substantive single-board and manufacturing demonstration.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.elc_oneside.1",
+          "answer": "An extra-board function moves into the single populated side; the connector disappears, one heat front forms the joints, then a conformal contour is drawn before the splash follows it. Actual A/B vector board layouts remain alongside, with5.6g and1mm explicitly targets.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.elecsheet1.1",
+          "answer": "After reflow, a thin blue contour follows parts and board; an animated drop hits/deflects outside the barrier. Exaggerated film/drops labelled illustration, not waterproof certification.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.elecsheet1.2",
+          "answer": "No invented coating mass; quantitative tiny-weight claim not completed.",
+          "verification": "PARTIAL / NOT CLAIMED COMPLETE: No defensible finished-PCB coating mass available."
+        },
+        {
+          "id": "F27.elecsheet1.3",
+          "answer": "No unsupported claim that no competitor coats boards.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": [
+        {
+          "id": "F27.elecsheet1.2",
+          "reason": "No defensible finished-PCB coating mass available."
+        }
+      ]
+    },
+    "rv_power": {
+      "clauses": [
+        {
+          "id": "F27.cells.1",
+          "answer": "Mouse-sized350mAh10440, not18650.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.cells.2",
+          "answer": "Both maker examples are350mAh/3.7V nominal with minimum/pack differences disclosed. They fill from the integral of one explicitly assumed175mA/4.20V CC/CV profile, not random charge motion.350mAh/200h gives an ideal1.75mA budget, not a measured runtime.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.cells.3",
+          "answer": "Boying9g vsEEMB7g yields concrete2g example, not universal chemistry ranking.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_radio": {
+      "clauses": [],
+      "pending": []
+    },
+    "rv_firmware": {
+      "clauses": [
+        {
+          "id": "F26.10.1",
+          "answer": "202usvs42us retained with explicit attribution viaBrock.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F26.10.2",
+          "answer": "Unverified underlying comparison not presented as independent Theseus measurement.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_web": {
+      "clauses": [
+        {
+          "id": "F27.gld_soft.1",
+          "answer": "Lift-off explanation is directly inside web configuration story.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.gld_soft.2",
+          "answer": "A cursor drags the LOD control through0.1mm increments from0.9 to0.6mm. The same0.8mm lift/sideways move tracks and drags aim before, then cuts off tracking after. Selected-sensor support/calibration remain qualifiers.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.software.1",
+          "answer": "The illustrated LOD control changes the actual lift/tracking demonstration; the cursor then presses save-on-mouse. It is an explanatory configuration concept, not implemented device firmware.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_no_lights": {
+      "clauses": [
+        {
+          "id": "F27.srf_encoder.1",
+          "answer": "Contactless magnet/Hall sensing is visualized with clear-housing outline; not an opaque optical gate. Actual selected component remains unknown.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.elc_sheet2.1",
+          "answer": "Standalone sheet gone from new film; content merged here.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.elc_sheet2.2",
+          "answer": "The magnetic encoder sits beside no-RGB. Wheel movement, optical emitter pulse/current waveform and Hall active/periodic states share the timing. Both2mA awake and90.5uA periodic examples stay visible; no zero-energy or2x-runtime claim.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.elc_sheet2.3",
+          "answer": "File order places rv_no_lights immediately after rv_web.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.clk_switch.1",
+          "answer": "Cross-lane GT01 housing/profile work is now completed in the mechanics/hardware render. The no-emitter power explanation remains here; the actual housing is shown in the click scenes.",
+          "verification": "See handoff/codex/MECHANICS-MOTION.md and HARDWARE.md.0.80mm wall thickness is inferred from the supplied render; no claim that it is a published or physically measured final dimension."
+        },
+        {
+          "id": "F27.clk_switch.2",
+          "answer": "Mechanical/no-emitter advantage explained; Hall2mA awake and90.5uA duty example prevent zero-power error.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.clk_switch.3",
+          "answer": "F31.1 attribution: Razer staff online via Brock, no public quotation, explicitly unverified.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.clk_switch.4",
+          "answer": "Magnet and Hall sensor replace light gate; transparent enclosure outline added.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.clk_switch.5",
+          "answer": "No2x-runtime claim. A visibly hypothetical17.6percent draw reduction gives21.4percent ideal runtime by1/(1-0.176)-1; it is not measured Viper or Theseus consumption. Both2mA awake and90.5uA periodic Hall examples remain visible.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F31.1.1",
+          "answer": "Almost-half report attributed to Razer staff online viaBrock; explicitly unverified.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F31.1.2",
+          "answer": "No2x-runtime claim. A visibly hypothetical17.6percent draw reduction gives21.4percent ideal runtime by1/(1-0.176)-1; it is not measured Viper or Theseus consumption. Both2mA awake and90.5uA periodic Hall examples remain visible.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F30.20.1",
+          "answer": "No-RGB point merged into magnetic/no-emitter encoder page immediately after web configuration.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_cable": {
+      "clauses": [
+        {
+          "id": "F27.cable.1",
+          "answer": "Both recognizable plug/lead assemblies receive the same forward and return motion. The straight cable retains a pad-contact segment and an opposing-drag arrow; the angled woven lead remains above the pad.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.cable.2",
+          "answer": "Reuses detailed procedural woven paracord painter at enlarged scale, no bitmap or photoreal pad.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        }
+      ],
+      "pending": []
+    },
+    "rv_wiring": {
+      "clauses": [
+        {
+          "id": "F27.elc_tear.1",
+          "answer": "Applied pull grows a crack from the existing film nick and separates the shared film. One independent wire separates while its neighbors remain continuous; a broken electrical conductor still fails.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.elc_flex.1",
+          "answer": "The same moving connector displaces a tightly creased flat path and a broad fine-strand path. Motion concentrates at the crease but spreads along the bundle; no fatigue-life ratio is inferred.",
+          "verification": "Owned source and temporal/event QA: deck/qa/motion-intro-check/report.json and deck/qa/intro-motion-events/report.json. Exact evidence boundaries remain in handoff/codex/EVIDENCE.md; pending clauses are not closed by this mapping."
+        },
+        {
+          "id": "F27.ownsheet1.2",
+          "answer": "Wire, twist and flex benefits have moved from the ownership specification sheet into the actual electronics explanation: a nick propagates through shared film while neighboring wires remain independent; alternating loop pickup and the same-endpoint crease/broad-radius comparison move in front of the viewer.",
+          "verification": "43 causal event frames, including rv_wiring at3 and8.2seconds, in deck/qa/intro-motion-events/report.json; source in50-electronics.js. Harness lifetime and signal integrity remain unmeasured."
+        }
+      ],
+      "pending": []
+    }
+  }
+}

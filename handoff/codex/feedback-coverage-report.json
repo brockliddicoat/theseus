@@ -1,0 +1,84 @@
+{
+  "scope": "Feedback traceability and immutable render identity; not physical or user acceptance",
+  "renderReport": "deck/qa/final-film/report.json",
+  "testedHtmlSha256": "f14eb56915da551d6d89a8a9fc64d38b42978a4b6ba80e689add68343d05b821",
+  "scenes": 47,
+  "originalRatings": 114,
+  "verbatimWrittenNotes": 100,
+  "originalClauses": 283,
+  "mappedOriginalClauses": 283,
+  "additionalStandingClauseResponses": 11,
+  "removedOrDeferredSourceScenes": 12,
+  "pending": {
+    "rv_cover": [
+      {
+        "id": "F27.targets.2",
+        "reason": "Mechanical latency explanation spans root click lane.70us is electrical only; do not mark full press-to-PC proven."
+      }
+    ],
+    "rv_board": [
+      {
+        "id": "F27.elecsheet1.2",
+        "reason": "No defensible finished-PCB coating mass available."
+      }
+    ],
+    "rv_balance": [
+      "No physical mass-property or actual battery-fit acceptance; the new rear-notch overlap and centre balance still need design validation.",
+      "No directly measured mouse-specific benefit from higher battery placement; the shown counterargument follows the torque model."
+    ],
+    "rv_fit": [
+      "Final shape and EMG/comfort/aim study are proposed, not participant results."
+    ],
+    "rv_binning": [
+      "Actual production test limits, switch choice and per-unit bin records do not exist yet; the film demonstrates the proposed method."
+    ],
+    "rv_dual_rail": [
+      {
+        "id": "F27.clk_pomtune.3",
+        "reason": "No matched rival guide-clearance dataset is available. Illustrative pad ladder is labelled example steps, not a competitor tolerance measurement."
+      }
+    ],
+    "rv_light_structure": [
+      "F27.shlPick.1: Brock’s owner build-feel assessment is visible, not an independently matched GPX2/ULX rigidity test. No measured rival curve is invented."
+    ],
+    "rv_arches": [
+      "F27.shbArches.1 source phrase arches shojdkne be on the photon rim is typo-ambiguous; continuous arches shown off rim rather than pretending definite interpretation."
+    ],
+    "rv_whole_pcb": [
+      "F28.3 original broken G-Wolves arm images not imported; cannot claim exact photo-faithful geometry. Structural schematic is explicitly labelled."
+    ],
+    "rv_coating": [
+      "F21.10: net coating weight deliberately unnumbered; blast/coat weighing remains unperformed.",
+      "No3Dsurface edits: current code-only presentation instruction overrides old both-mode visual request."
+    ],
+    "rv_grip": [
+      "F21.9: final grip map must be shown then user asked again. Continuous texture demonstration is not final map acceptance."
+    ],
+    "rv_wheel": [
+      "F27.wheel.1: no sourced empirical group of weighed retail rubber/plastic wheels recovered. Three illustrative controls are labelled modelled, not average production measurements."
+    ]
+  },
+  "issues": [],
+  "sourceHashes": {
+    "deck/revamp/00-runtime.js": "b64d3b30d8f708d8139bf8ee75801cd903a4e52aeb2b37f8cc8a5e91d0609c29",
+    "deck/revamp/05-hardware.js": "a7b5be07e05f2b94a2e55a3aa9e522c8c8ecfe7b654bf4b66fd370e008f69ca1",
+    "deck/revamp/10-intro.js": "b25462d4c05de251ab485c0978f30ab15818f07e9576efdfdae222163d9976fa",
+    "deck/revamp/20-clicks.js": "2f8624c511c0b76f53e254fc7948c96f920d3e6a95fd94065263bd650712670f",
+    "deck/revamp/30-glide.js": "90ea58893a71b10c1763c706c966a8130bba277aa22bffef106d411f1efb72d6",
+    "deck/revamp/40-structure.js": "dbeaab21b60bd61c01a4d98cf851d63a41152515674d814fdc9f76a4eb3f5b81",
+    "deck/revamp/45-fit-and-assembly.js": "429b44e22aa522dfcdb100e44306e57107a255e0bc689301fdecefb243f841d1",
+    "deck/revamp/47-binning.js": "ba7467ae93cc3a88728fdfb92ce5b1d43f4d547cf6880e69c9ba2c4d549ab29a",
+    "deck/revamp/50-electronics.js": "78274589ccf5902b78fa8e1c0c8f87ca855c4b3700ca31e7754e41cdccb1d0da",
+    "deck/revamp/60-surface.js": "c8a8621fc26622e8525974c5bf99775b493eb1f6179ce00419ae218c357a4267",
+    "deck/revamp/70-ownership.js": "11f4765de13d67556cb380cb3cb4bdd6990df57ac33326162f7435620faae5e1",
+    "deck/revamp/80-close.js": "e9ad946e583cb8d39f1e7c9ee8b550f331610748e73c9bb5a54e67e9b8193960",
+    "deck/revamp/99-review.js": "54db4b13a43d631b62ca31a5fdc03e3ed2f4176d71bce0cf587ed84ef97a4e8c",
+    "deck/revamp/coverage-evidence.json": "4abb71b0db53ead9a22926923089df3b4624756c0b918e5fd470e9fbb204f1ab",
+    "deck/revamp/coverage-integrator.json": "5e528fa053866eb04ae29902a244ae66dbdd4c405a7f101e086a4e941d6223c7",
+    "deck/revamp/coverage-mechanics.json": "553047745bc9278e92df8dada2294b9891b3070a11e4d262cf430c4445004eb2",
+    "deck/revamp/coverage-structure.json": "6a79ce9f56988673f1827ba828357b97d0763d51d7c3d93fd7b906097a0e0fa1",
+    "deck/revamp/coverage-surface-own.json": "5f7c52ade018e1a060d67139eab8bf98a2099cddabec69fcc6516f37360c3a98",
+    "deck/revamp/coverage.json": "1ec287c551ebc3d917f749b23abce174731411b0eecddc983c80ae592a1ab7a7",
+    "deck/revamp/player.css": "6b54198bc4348ed48e1965e47f743e1f84b804efaee6390946eaa6f2d09dec82"
+  }
+}

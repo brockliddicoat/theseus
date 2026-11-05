@@ -1,0 +1,625 @@
+{
+  "meta": {
+    "title": "Independent mechanics and energy calculations",
+    "verified_date": "2026-11-05",
+    "scope": "Package3 only; main checkout read-only. All calculations standalone, no prototype measurements.",
+    "units": "mm,N,MPa for beam; mA*V=mW; uA*V=uW; mAh*V/1000=Wh",
+    "evidence_types": [
+      "maker component data",
+      "inherited conditional inputs",
+      "derived illustration",
+      "unverified owner attribution",
+      "Theseus targets"
+    ]
+  },
+  "sources": {
+    "omron_direction": {
+      "url": "https://components.omron.com/eu-en/sites/components.omron.com.eu/files/ds_related_pdf/B149-E1.pdf",
+      "type": "manufacturer precautions",
+      "basis": "Press pin plungers in their operating direction; avoid improper side force."
+    },
+    "omron_optical": {
+      "url": "https://www.fa.omron.com.cn/data_pdf/cat/cdva-cn1-002a.pdf?id=3906",
+      "type": "manufacturer D2FP datasheet",
+      "basis": "Electrical-characteristic test conditions: 5 mA, 30 us on / 970 us off; VF typical 1.16 V. Search-index text verified; PDF direct open did not expose readable text."
+    },
+    "ti5253": {
+      "url": "https://www.ti.com/lit/ds/symlink/tmag5253.pdf",
+      "type": "manufacturer datasheet Rev E April 2026",
+      "basis": "pp5,7,22-23: variant/rail currents, startup, duty-cycle example. Table9-1 is a maker estimate, not a Theseus measurement."
+    },
+    "ti3001": {
+      "url": "https://www.ti.com/lit/gpn/TMAG3001",
+      "type": "manufacturer datasheet Rev C May 2025",
+      "basis": "p5 electrical table and pp18,22-23 wake policy. Low current depends on sampling interval; not a selected component."
+    },
+    "eemb": {
+      "url": "https://www.eemb.com/product-220",
+      "type": "manufacturer listing",
+      "basis": "LP702030 bare pouch with solder tabs; nominal350/min330mAh,3.7V,approx7g,20.5x32x7.3mm."
+    },
+    "boying": {
+      "url": "https://www.boyingcable.com/10440-electric-toothbrush-rechargeable-lithium-battery-37v/",
+      "type": "manufacturer listing",
+      "basis": "10440 cylindrical battery; nominal350/min320mAh at0.2C,3.7V,approx9g. Pack protection/lead boundary unspecified."
+    },
+    "pyrofil": {
+      "url": "https://www.m-chemical.co.jp/carbon-fiber/pdf/pellet/pellet.pdf",
+      "type": "Mitsubishi Chemical manufacturer table",
+      "basis": "PP-C-20A typical density1.01g/cm3,flexural modulus13500MPa,tensile120MPa,flexural210MPa. Typical, not guaranteed or mold-specific."
+    },
+    "fr4": {
+      "url": "https://thegundcompany.com/wp-content/uploads/2024/03/NEMA-FR4-Glass-Epoxy-Laminate-by-The-Gund-Co.pdf",
+      "type": "manufacturer sheet",
+      "basis": "Typical density1.85g/cm3,tensile430MPa lengthwise,flexural modulus20/18GPa lengthwise/crosswise; not a populated PCB test."
+    },
+    "beam": {
+      "url": "https://ocw.mit.edu/courses/3-11-mechanics-of-materials-fall-1999/resources/mit3_11f99_bdisp/",
+      "type": "MIT Roylance primary teaching",
+      "basis": "Beam displacement theory. Calculation here derives simply-supported rectangular-beam formulas independently."
+    },
+    "beam_stress": {
+      "url": "https://ocw.mit.edu/courses/3-11-mechanics-of-materials-fall-1999/resources/mit3_11f99_bstress/",
+      "type": "MIT Roylance primary teaching",
+      "basis": "Beam bending stress and section properties."
+    },
+    "ashby": {
+      "url": "https://doi.org/10.1098/rsta.2005.1678",
+      "readable_copy": "https://eclass.aegean.gr/modules/document/file.php/511165/projects/foams_lattices.pdf",
+      "type": "original research paper",
+      "basis": "2006 foams/lattices paper: stretch vs bending modes, buckling and necessary-not-sufficient Maxwell count."
+    },
+    "ruler": {
+      "url": "https://www.open.edu/openlearn/science-maths-technology/design-innovation/design/content-section-6.5",
+      "type": "Open University primary teaching",
+      "basis": "Ruler rotated through its two bending axes."
+    },
+    "triangles": {
+      "url": "https://www.teachengineering.org/activities/cub_brid_lesson01_activity2",
+      "type": "Colorado Boulder ITL primary teaching",
+      "basis": "Straw bridge geometric-shape activity."
+    },
+    "razer": {
+      "url": "https://www.razer.com/newsroom/product-news/viper-v4-pro-arrives-in-esports-green",
+      "type": "manufacturer claim",
+      "basis": "Optical wheel/switch hardware and up-to180h runtime; not a component energy breakdown or a Theseus test."
+    },
+    "abs_inherited": {
+      "url": "https://www.denka.co.kr/pdf/DENKA-ABS_grade_English.pdf",
+      "type": "inherited manufacturer sheet pointer, not reverified in this pass"
+    },
+    "pc_inherited": {
+      "url": "https://solutions.covestro.com/en/products/makrolon/makrolon-2405_000000000000945088",
+      "type": "manufacturer grade page",
+      "basis": "Inherited flexural2.35GPa,tensile yield65MPa,density1.20. Table is conditional on inherited test inputs; no full six-material procurement qualification."
+    },
+    "mg_inherited": {
+      "url": "https://www.tekogehause.de/uploads/manuali/materiali/AZ91D.pdf",
+      "type": "inherited MatWeb mirror pointer, not primary reverified"
+    },
+    "al_inherited": {
+      "url": "https://www.aerospacemetals.com/wp-content/uploads/2023/06/Aluminum-6061-T6-6061-T651.pdf",
+      "type": "inherited supplier sheet pointer, not reverified in this pass"
+    }
+  },
+  "direct_drive": {
+    "label": "derived ideal local projection, not Theseus performance",
+    "source_keys": [
+      "omron_direction"
+    ],
+    "angle_deg": 20,
+    "axial_fraction": 0.9396926207859084,
+    "lateral_fraction": 0.3420201433256687,
+    "aligned_axial_gain_relative_pct": 6.417777247591205,
+    "aligned_required_total_force_reduction_pct": 6.030737921409157,
+    "component_rule": "Axial and lateral components are perpendicular;cos(theta)^2+sin(theta)^2=1.94% axial and34% lateral do not sum to128% energy or imply34% wasted work.",
+    "constant_speed": {
+      "formula": "x=s*cos(theta); t_before=d/(v*cos(theta)); t_after=d/v",
+      "assumptions": "Equal axial actuation travel d; equal trigger-path speed v; locally constant20deg tangent; no compliance, clearance or friction change.",
+      "time_ratio_after_before": 0.9396926207859084,
+      "ideal_sooner_pct": 6.030737921409157,
+      "example_travel_mm": 0.35,
+      "example_speed_mm_ms": 0.1,
+      "example_before_ms": 3.7246222036656915,
+      "example_after_ms": 3.4999999999999996
+    },
+    "constant_force_acceleration": {
+      "formula": "a_before=F*cos(theta)/m; a_after=F/m; t=sqrt(2*d/a)",
+      "assumptions": "Separate ideal model: same axial effective mass/travel, zero initial speed, constant force, zero resistance.",
+      "time_ratio_after_before": 0.9693774397962377,
+      "sooner_pct": 3.0622560203762306,
+      "constant_axial_resistance_sensitivity": [
+        {
+          "R_over_F": 0.0,
+          "aligned_over_misaligned_time": 0.9693774397962377,
+          "sooner_pct": 3.0622560203762306,
+          "misaligned_can_move_from_rest": true
+        },
+        {
+          "R_over_F": 0.5,
+          "aligned_over_misaligned_time": 0.9377554273752922,
+          "sooner_pct": 6.224457262470784,
+          "misaligned_can_move_from_rest": true
+        },
+        {
+          "R_over_F": 0.9,
+          "aligned_over_misaligned_time": 0.6300207995448119,
+          "sooner_pct": 36.9979200455188,
+          "misaligned_can_move_from_rest": true
+        },
+        {
+          "R_over_F": 0.95,
+          "aligned_over_misaligned_time": null,
+          "sooner_pct": null,
+          "misaligned_can_move_from_rest": false
+        }
+      ]
+    },
+    "boundary": "Force and prescribed-motion models are alternatives, not simultaneous proof. A real arc changes angle through travel. No reaction-time, force-feel, wear-life or press-to-PC result follows without a matched test."
+  },
+  "optical": {
+    "label": "hypothetical pulse/energy examples only; NOT measured Razer switch share",
+    "source_keys": [
+      "omron_optical",
+      "razer"
+    ],
+    "pulse_current_ma": 5.0,
+    "on_us": 30.0,
+    "off_us": 970,
+    "period_us": 1000.0,
+    "duty_pct": 3.0,
+    "average_per_switch_ma": 0.15,
+    "average_two_switches_ma": 0.3,
+    "inherited_cross_device_example": {
+      "capacity_mah": 306.0,
+      "runtime_h": 180.0,
+      "capacity_status": "Inherited secondary-review306mAh value; not independently confirmed maker capacity here.",
+      "assumed_battery_voltage_v": 3.7,
+      "implied_battery_current_ma": 1.7,
+      "nominal_energy_wh": 1.1322,
+      "implied_power_mw": 6.29,
+      "invalid_current_ratio_pct": 17.647058823529413,
+      "invalid_current_ratio_runtime_gain_pct": 21.42857142857144,
+      "warning": "0.30mA LED rail divided by1.70mA battery current is invalid without rail voltage and losses; schedule not proven deployed by Razer."
+    },
+    "power_consistent_but_still_hypothetical_scenarios": [
+      {
+        "assumed_supply_v": 1.8,
+        "assumed_conversion_efficiency": 1.0,
+        "two_emitter_rail_power_mw": 0.54,
+        "battery_equivalent_two_emitter_power_mw": 0.54,
+        "hypothetical_share_pct": 8.585055643879173,
+        "ideal_runtime_gain_if_whole_branch_removed_pct": 9.39130434782609
+      },
+      {
+        "assumed_supply_v": 1.8,
+        "assumed_conversion_efficiency": 0.9,
+        "two_emitter_rail_power_mw": 0.54,
+        "battery_equivalent_two_emitter_power_mw": 0.6,
+        "hypothetical_share_pct": 9.538950715421302,
+        "ideal_runtime_gain_if_whole_branch_removed_pct": 10.54481546572934
+      },
+      {
+        "assumed_supply_v": 3.3,
+        "assumed_conversion_efficiency": 1.0,
+        "two_emitter_rail_power_mw": 0.9899999999999999,
+        "battery_equivalent_two_emitter_power_mw": 0.9899999999999999,
+        "hypothetical_share_pct": 15.739268680445148,
+        "ideal_runtime_gain_if_whole_branch_removed_pct": 18.679245283018876
+      },
+      {
+        "assumed_supply_v": 3.3,
+        "assumed_conversion_efficiency": 0.9,
+        "two_emitter_rail_power_mw": 0.9899999999999999,
+        "battery_equivalent_two_emitter_power_mw": 1.0999999999999999,
+        "hypothetical_share_pct": 17.48807631160572,
+        "ideal_runtime_gain_if_whole_branch_removed_pct": 21.194605009633904
+      }
+    ],
+    "led_die_power_mw_typical_vf": 0.348,
+    "led_die_power_boundary": "5mA test VF1.16V applies to LED die only, excluding drive resistor/transistor/receiver/regulator/MCU. Not the battery branch power.",
+    "replacement_formula": "T_new/T_old=P_old/(P_old-P_old_branch+P_new_branch), same usable battery energy and workload",
+    "almost_half_claim": "F31.1: Razer staff online via Brock; no public quotation identified in supplied evidence or this targeted pass. Unverified attribution, not a measurement.",
+    "saleable": "Mechanical clicks need no light emitter. Magnetic scrolling removes the optical path. Measure the complete design before promising a runtime multiplier."
+  },
+  "hall": {
+    "label": "component examples, not selected Theseus encoder",
+    "source_keys": [
+      "ti5253",
+      "ti3001"
+    ],
+    "tmag5253": {
+      "v": 1.8,
+      "active_ma_bipolar_typ": 2.0,
+      "active_ma_bipolar_max": 3.3,
+      "shutdown_na_scenario": 20,
+      "rows": [
+        {
+          "sleep_ms": 1,
+          "enable_high_us": 50.0,
+          "cycle_ms": 1.05,
+          "simple_2ma_rectangle_one_sensor_ua": 95.25714285714285,
+          "simple_two_sensors_ua": 190.5142857142857,
+          "ti_table91_estimate_one_sensor_ua": 90.5,
+          "simple_one_sensor_supply_power_uw_at1p8v": 171.46285714285713,
+          "mean_random_phase_detection_wait_ms_excluding_conversion": 0.525,
+          "max_detection_wait_ms_excluding_conversion": 1.05
+        },
+        {
+          "sleep_ms": 10,
+          "enable_high_us": 50.0,
+          "cycle_ms": 10.05,
+          "simple_2ma_rectangle_one_sensor_ua": 9.970149253731343,
+          "simple_two_sensors_ua": 19.940298507462686,
+          "ti_table91_estimate_one_sensor_ua": 9.4,
+          "simple_one_sensor_supply_power_uw_at1p8v": 17.946268656716416,
+          "mean_random_phase_detection_wait_ms_excluding_conversion": 5.025,
+          "max_detection_wait_ms_excluding_conversion": 10.05
+        },
+        {
+          "sleep_ms": 50,
+          "enable_high_us": 50.0,
+          "cycle_ms": 50.05,
+          "simple_2ma_rectangle_one_sensor_ua": 2.017982017982018,
+          "simple_two_sensors_ua": 4.035964035964036,
+          "ti_table91_estimate_one_sensor_ua": 1.9,
+          "simple_one_sensor_supply_power_uw_at1p8v": 3.6323676323676324,
+          "mean_random_phase_detection_wait_ms_excluding_conversion": 25.025,
+          "max_detection_wait_ms_excluding_conversion": 50.05
+        },
+        {
+          "sleep_ms": 100,
+          "enable_high_us": 50.0,
+          "cycle_ms": 100.05,
+          "simple_2ma_rectangle_one_sensor_ua": 1.0194902548725637,
+          "simple_two_sensors_ua": 2.0389805097451275,
+          "ti_table91_estimate_one_sensor_ua": 0.9,
+          "simple_one_sensor_supply_power_uw_at1p8v": 1.8350824587706147,
+          "mean_random_phase_detection_wait_ms_excluding_conversion": 50.025,
+          "max_detection_wait_ms_excluding_conversion": 100.05
+        },
+        {
+          "sleep_ms": 1000,
+          "enable_high_us": 50.0,
+          "cycle_ms": 1000.05,
+          "simple_2ma_rectangle_one_sensor_ua": 0.11999400029998501,
+          "simple_two_sensors_ua": 0.23998800059997002,
+          "ti_table91_estimate_one_sensor_ua": 0.1,
+          "simple_one_sensor_supply_power_uw_at1p8v": 0.21598920053997303,
+          "mean_random_phase_detection_wait_ms_excluding_conversion": 500.025,
+          "max_detection_wait_ms_excluding_conversion": 1000.05
+        }
+      ],
+      "detection_wait_assumption": "Wait statistics assume a persistent step, ideal periodic point sampling and uniform event phase. Transient movement/reversal can be missed entirely; the maximum is not a guarantee that every scroll is detected.",
+      "table_model_difference": "90.5uA is TI's estimate, not2mA*50us/(1ms+50us). It is numerically consistent withabout1.9mA pulses. Do not label it a derived2mA result or infer the part variant from the table.50us high is not50us valid measurement; startup/settling/ADC must fit."
+    },
+    "tmag3001_datasheet_examples": {
+      "sleep_na_typ": 40,
+      "standby_ma_typ": 0.45,
+      "awake_conversion_ma_typ_at1p8v_low_power": 2.1,
+      "wake_sleep_5000ms_one_channel": {
+        "at1p8v_ua_typ": 0.4,
+        "at3p3v_ua_typ": 0.5
+      },
+      "wake_sleep_1ms_at3p3v_no_averaging": {
+        "one_channel_ua_typ": 110,
+        "one_channel_ua_max": 250,
+        "four_channel_ua_typ": 230,
+        "four_channel_ua_max": 375
+      },
+      "warning": "Homepage0.45uA wake/sleep is not an interval-independent scroll-current budget.0.45mA standby is a different state."
+    },
+    "quadrature_sampling_example": {
+      "label": "invented acceptance-design example, not Theseus wheel specification",
+      "detents_per_rev": 24,
+      "transitions_per_detent": 4,
+      "rev_per_s": 10,
+      "transition_spacing_ms": 1.0416666666666667,
+      "boundary": "Sampling each quadrature state needs worst-case sample gap below the shortest transition dwell, with margin for speed variation/noise.1.05ms already exceeds this1.0417ms dwell. Absolute-angle decoding has different wrapping/alias rules; no universal safe interval is established."
+    },
+    "wake_policy": [
+      "During play, use a validated scan/conversion interval and count energy for all channels, ADC, MCU wakeups, I2C, regulator quiescent current/losses and pullups.",
+      "For idle, retain an autonomous magnetic wake detector or periodic conversions. A shutdown-only analog sensor cannot detect a wheel movement to wake itself.",
+      "Wake-on-mouse-motion alone loses the first scroll when the mouse is stationary. Test the first notch, fast reversal, multiple turns and scroll-only wake from every sleep state.",
+      "Transition to the fast state after wake and preserve the first event/direction; count duty timeout and rearming energy. Timer/threshold interrupt is not continuous capture."
+    ],
+    "explicit_session_energy_example": {
+      "label": "invented8h active/16h idle schedule; two2mA sensors at1.8V,90%conversion; excludes host/ADC",
+      "active_supply_mw": 7.2,
+      "idle_supply_mw": 0.3429257142857143,
+      "active8h_supply_mwh": 57.6,
+      "idle16h_supply_mwh": 5.4868114285714285,
+      "total_battery_mwh_at90pct_conversion": 70.09645714285715,
+      "boundary": "Energy of this assumed schedule, not mouse endurance. Always awake Hall can cost more than a pulsed optical implementation; actual selected parts and firmware decide."
+    }
+  },
+  "same_capacity_batteries": {
+    "label": "two maker examples, matched nominal voltage/capacity, not selected Theseus packs",
+    "source_keys": [
+      "eemb",
+      "boying"
+    ],
+    "nominal_mah_each": 350,
+    "nominal_v_each": 3.7,
+    "nominal_wh_each": 1.295,
+    "pouch": {
+      "model": "EEMB LP702030",
+      "mass_g_approx": 7,
+      "minimum_mah": 330,
+      "dimensions_mm": [
+        20.5,
+        32,
+        7.3
+      ],
+      "nominal_wh_per_kg": 185.0,
+      "boundary": "bare battery with solder tabs; PCM/NTC/lead/connector/mount absent"
+    },
+    "cylinder": {
+      "model": "Boying10440",
+      "mass_g_approx": 9,
+      "minimum_mah": 320,
+      "nominal_wh_per_kg": 143.88888888888889,
+      "boundary": "approx cell mass; protection and terminations not specified"
+    },
+    "difference_g": 2,
+    "pouch_mass_reduction_relative_cylinder_pct": 22.22222222222222,
+    "boundary": "Li-polymer pouch is also lithium-ion. Different formats/makers/minimum capacities; no matched discharge/cycle/abuse/finished-pack test. Capacity does not establish mouse runtime."
+  },
+  "mechanics": {
+    "label": "analytical teaching models; no validated whole-shell strength or lifetime",
+    "source_keys": [
+      "beam",
+      "beam_stress",
+      "pyrofil",
+      "fr4",
+      "ashby",
+      "ruler",
+      "triangles"
+    ],
+    "beam_rotation": {
+      "flat": {
+        "span_mm": 60,
+        "width_mm": 10,
+        "depth_mm": 3.3,
+        "force_n": 10,
+        "E_mpa": 13500,
+        "rho_g_cm3": 1.01,
+        "mass_g": 1.9998,
+        "I_mm4": 29.9475,
+        "deflection_mm": 0.11130589642986337,
+        "stiffness_n_mm": 89.8425,
+        "outer_fiber_stress_mpa": 8.264462809917354
+      },
+      "edge": {
+        "span_mm": 60,
+        "width_mm": 3.3,
+        "depth_mm": 10,
+        "force_n": 10,
+        "E_mpa": 13500,
+        "rho_g_cm3": 1.01,
+        "mass_g": 1.9998,
+        "I_mm4": 275.0,
+        "deflection_mm": 0.012121212121212121,
+        "stiffness_n_mm": 825.0,
+        "outer_fiber_stress_mpa": 2.727272727272727
+      },
+      "same_mass_stiffness_ratio": 9.182736455463727,
+      "section_modulus_strength_ratio_same_stress_limit": 3.0303030303030303,
+      "formula": "I=b*h^3/12; delta=P*L^3/(48*E*I); sigma=M*h/(2*I); M=P*L/4",
+      "boundary": "Simply supported, central point load, constant scalar E, small-deflection beam model.10N is a stated example, not measured gaming grip. Deep orientation L/h=6: shear/3D effects deserve checking before calling9.18x an accurate physical test prediction."
+    },
+    "thickness": {
+      "half_mass_factor": 0.5,
+      "half_bending_stiffness_factor": 0.125,
+      "half_bending_stress_capacity_factor": 0.25,
+      "minus10pct_stiffness_change_pct": -27.09999999999999,
+      "plus10pct_stiffness_change_pct": 33.10000000000004
+    },
+    "index_rules": {
+      "axial_tie_stiffness": "For fixed L, axial k=EA/L and mass=rho*A*L: maximizeE/rho.",
+      "axial_tie_strength": "For matching failure criterion, axial capacity/mass ranks asstrength/rho.",
+      "fixed_width_bending_stiffness": "At fixed L,b,m: h=m/(rho*b*L); k proportionalE/rho^3. Minimum mass at a stiffness target maximizesE^(1/3)/rho. Index ratio must be cubed for equal-mass stiffness ratio.",
+      "plate_bending_stiffness": "Isotropic D=E*t^3/[12*(1-nu^2)]; thickness-free mass index=[E/(1-nu^2)]^(1/3)/rho. Omittingnu is an explicit approximation; laminates need directional stiffness.",
+      "fixed_width_bending_strength": "M_limit=strength*b*h^2/6; at fixed mass ranks asstrength/rho^2. Minimum mass at same allowable moment maximizes sqrt(strength)/rho.",
+      "geometrically_scaled_beam": "If width and depth both scale at fixed aspect ratio, useE^(1/2)/rho for stiffness-limited minimum mass, notE^(1/3)/rho."
+    },
+    "conditional_inherited_six_material_inputs_and_derived_values": [
+      {
+        "material": "PP-C-20A",
+        "E_gpa": 13.5,
+        "strength_mpa": 120,
+        "density_g_cm3": 1.01,
+        "source_key": "pyrofil",
+        "test_basis": "flexural modulus/tensile strength typical",
+        "tensile_strength_over_density": 118.81188118811882,
+        "specific_modulus": 13.366336633663366,
+        "thickness_free_bending_stiffness_mass_index": 2.3575263148042565,
+        "equal_mass_fixed_width_stiffness_factor": 13.102966997023199,
+        "bending_strength_factor_if_same_failure_criterion": 117.6355259288305,
+        "equal_2g_beam": {
+          "span_mm": 60,
+          "width_mm": 10,
+          "depth_mm": 3.3003300330033003,
+          "force_n": 10,
+          "E_mpa": 13500.0,
+          "rho_g_cm3": 1.01,
+          "mass_g": 2.0,
+          "I_mm4": 29.956486047149514,
+          "deflection_mm": 0.11127250800000002,
+          "stiffness_n_mm": 89.86945814144855,
+          "outer_fiber_stress_mpa": 8.262810000000002
+        }
+      },
+      {
+        "material": "Magnesium AZ91D-F",
+        "E_gpa": 44.8,
+        "strength_mpa": 230,
+        "density_g_cm3": 1.81,
+        "source_key": "mg_inherited",
+        "test_basis": "tensile modulus/ultimate tensile; inherited",
+        "tensile_strength_over_density": 127.07182320441989,
+        "specific_modulus": 24.75138121546961,
+        "thickness_free_bending_stiffness_mass_index": 1.962218788381438,
+        "equal_mass_fixed_width_stiffness_factor": 7.555136050630203,
+        "bending_strength_factor_if_same_failure_criterion": 70.20542718476237,
+        "equal_2g_beam": {
+          "span_mm": 60,
+          "width_mm": 10,
+          "depth_mm": 1.8416206261510129,
+          "force_n": 10,
+          "E_mpa": 44800.0,
+          "rho_g_cm3": 1.81,
+          "mass_g": 2.0000000000000004,
+          "I_mm4": 5.204982398196514,
+          "deflection_mm": 0.19298130308035716,
+          "stiffness_n_mm": 51.81849143093418,
+          "outer_fiber_stress_mpa": 26.536410000000004
+        }
+      },
+      {
+        "material": "Aluminium6061-T6",
+        "E_gpa": 68.9,
+        "strength_mpa": 310,
+        "density_g_cm3": 2.7,
+        "source_key": "al_inherited",
+        "test_basis": "tensile modulus/ultimate tensile; inherited",
+        "tensile_strength_over_density": 114.81481481481481,
+        "specific_modulus": 25.51851851851852,
+        "thickness_free_bending_stiffness_mass_index": 1.5183642736669243,
+        "equal_mass_fixed_width_stiffness_factor": 3.50048265000254,
+        "bending_strength_factor_if_same_failure_criterion": 42.52400548696844,
+        "equal_2g_beam": {
+          "span_mm": 60,
+          "width_mm": 10,
+          "depth_mm": 1.2345679012345678,
+          "force_n": 10,
+          "E_mpa": 68900.0,
+          "rho_g_cm3": 2.7,
+          "mass_g": 1.9999999999999998,
+          "I_mm4": 1.568063685965767,
+          "deflection_mm": 0.4165139912917272,
+          "stiffness_n_mm": 24.008797325120298,
+          "outer_fiber_stress_mpa": 59.049
+        }
+      },
+      {
+        "material": "FR4 LW",
+        "E_gpa": 20,
+        "strength_mpa": 430,
+        "density_g_cm3": 1.85,
+        "source_key": "fr4",
+        "test_basis": "flexural modulus/lengthwise tensile strength typical",
+        "tensile_strength_over_density": 232.43243243243242,
+        "specific_modulus": 10.81081081081081,
+        "thickness_free_bending_stiffness_mass_index": 1.4672527657269763,
+        "equal_mass_fixed_width_stiffness_factor": 3.158746767220105,
+        "bending_strength_factor_if_same_failure_criterion": 125.63915266617968,
+        "equal_2g_beam": {
+          "span_mm": 60,
+          "width_mm": 10,
+          "depth_mm": 1.8018018018018018,
+          "force_n": 10,
+          "E_mpa": 20000,
+          "rho_g_cm3": 1.85,
+          "mass_g": 2.0,
+          "I_mm4": 4.874609208673003,
+          "deflection_mm": 0.4615754624999999,
+          "stiffness_n_mm": 21.66492981632446,
+          "outer_fiber_stress_mpa": 27.722249999999995
+        }
+      },
+      {
+        "material": "ABS GR-2000",
+        "E_gpa": 2.55,
+        "strength_mpa": 50,
+        "density_g_cm3": 1.05,
+        "source_key": "abs_inherited",
+        "test_basis": "flexural modulus/tensile YIELD; inherited",
+        "tensile_strength_over_density": 47.61904761904762,
+        "specific_modulus": 2.4285714285714284,
+        "thickness_free_bending_stiffness_mass_index": 1.301140198140223,
+        "equal_mass_fixed_width_stiffness_factor": 2.2027858762552635,
+        "bending_strength_factor_if_same_failure_criterion": 45.35147392290249,
+        "equal_2g_beam": {
+          "span_mm": 60,
+          "width_mm": 10,
+          "depth_mm": 3.1746031746031744,
+          "force_n": 10,
+          "E_mpa": 2550.0,
+          "rho_g_cm3": 1.05,
+          "mass_g": 2.0,
+          "I_mm4": 26.661654275662837,
+          "deflection_mm": 0.6618891176470589,
+          "stiffness_n_mm": 15.108270756208942,
+          "outer_fiber_stress_mpa": 8.930250000000001
+        }
+      },
+      {
+        "material": "PC Makrolon2405",
+        "E_gpa": 2.35,
+        "strength_mpa": 65,
+        "density_g_cm3": 1.2,
+        "source_key": "pc_inherited",
+        "test_basis": "flexural modulus/tensile YIELD; inherited",
+        "tensile_strength_over_density": 54.16666666666667,
+        "specific_modulus": 1.9583333333333335,
+        "thickness_free_bending_stiffness_mass_index": 1.1079190793621556,
+        "equal_mass_fixed_width_stiffness_factor": 1.359953703703704,
+        "bending_strength_factor_if_same_failure_criterion": 45.13888888888889,
+        "equal_2g_beam": {
+          "span_mm": 60,
+          "width_mm": 10,
+          "depth_mm": 2.7777777777777777,
+          "force_n": 10,
+          "E_mpa": 2350.0,
+          "rho_g_cm3": 1.2,
+          "mass_g": 1.9999999999999998,
+          "I_mm4": 17.86122542295382,
+          "deflection_mm": 1.0720953191489362,
+          "stiffness_n_mm": 9.327528831986994,
+          "outer_fiber_stress_mpa": 11.663999999999998
+        }
+      }
+    ],
+    "pp_vs_mg_from_inherited_inputs": {
+      "equal_mass_thickness_ratio": 1.7920792079207921,
+      "equal_mass_fixed_width_stiffness_ratio": 1.7343125139262356,
+      "bending_mass_index_ratio": 1.2014594543500896,
+      "nominal_tensile_strength_per_mass_ratio": 0.9349978476108481,
+      "boundary": "This comparison isolates inherited scalar material values. It is not a molded-shell proof, matched yield ranking, buckling prediction or procurement recommendation."
+    },
+    "fr4_vs_mg_axial_tie_from_inherited_inputs": {
+      "tensile_strength_per_mass_ratio": 1.8291421856639247,
+      "axial_modulus_per_mass_ratio": 0.4367760617760618,
+      "boundary": "The0.437 ratio uses FR4's20GPa flexural modulus as a scalar axial-modulus proxy, not a measured tensile modulus. This conditional model can have higher tensile-strength/mass and lower axial-stiffness/mass simultaneously. Coupon data is not populated-PCB capacity; cutouts,copper,attachments,layup and load direction matter."
+    },
+    "triangle_boundary": "A nondegenerate planar pin-jointed triangle removes the square's in-plane shear mechanism. For a free planar frame, Maxwellb-2j+3=s-m, with self-stress states s and internal infinitesimal mechanisms m. Equality to zero is necessary for an isostatic candidate, not for every rigid frame, and does not alone prove rigidity. A rigid redundant frame may have b>2j-3. Real shell members can bend,buckle,twist or fail at joints.",
+    "thinning_scaling_example": [
+      {
+        "width_factor": 1,
+        "fixed_depth_axial_stiffness_factor": 1,
+        "fixed_depth_in_plane_bending_stiffness_factor": 1,
+        "axial_over_bending_relative_advantage": 1.0
+      },
+      {
+        "width_factor": 0.75,
+        "fixed_depth_axial_stiffness_factor": 0.75,
+        "fixed_depth_in_plane_bending_stiffness_factor": 0.421875,
+        "axial_over_bending_relative_advantage": 1.7777777777777777
+      },
+      {
+        "width_factor": 0.5,
+        "fixed_depth_axial_stiffness_factor": 0.5,
+        "fixed_depth_in_plane_bending_stiffness_factor": 0.125,
+        "axial_over_bending_relative_advantage": 4.0
+      },
+      {
+        "width_factor": 0.25,
+        "fixed_depth_axial_stiffness_factor": 0.25,
+        "fixed_depth_in_plane_bending_stiffness_factor": 0.015625,
+        "axial_over_bending_relative_advantage": 16.0
+      }
+    ],
+    "strength_boundary": "E is not strength; deflection is not failure.120MPa is a stipulated scalar tensile threshold, not a multiaxial short-fiber damage model. Coupon direction, flow/weld lines,impact,fatigue,creep,buckling,minimum walls and attachments can control. Inherited shell FEA was not rerun or independently validated here."
+  }
+}

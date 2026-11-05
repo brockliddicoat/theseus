@@ -15,7 +15,8 @@ D['power'] = power
 # moves with it, mirrored about the module's centre (board frame, as in pcb-layout.json)
 k = lay.get('antennaKeepout')
 u1 = next((c for c in lay.get('components', []) if c.get('ref') == 'U1'), None)
-if k and u1: zc = u1['z']; k = [k[0], round(2 * zc - k[3], 3), k[2], round(2 * zc - k[1], 3)]
+if k and u1 and lay.get('designRevision') != 'F30.25-plan5-approved':
+    zc = u1['z']; k = [k[0], round(2 * zc - k[3], 3), k[2], round(2 * zc - k[1], 3)]
 D['keepout'] = k
 import os
 json.dump(D, open(dst + '.tmp', 'w'), separators=(',', ':')); os.replace(dst + '.tmp', dst)

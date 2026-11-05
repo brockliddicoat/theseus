@@ -159,3 +159,36 @@ R('VDD_SNS', [(6.5, 5.75), (6.5, 3.58), (5.85, 3.58)], w=0.2, ch=0)
 # =============================================================== SWD pads under the module's rear edge
 R('SWDIO', [(3.2, 13.6), (3.2, 10.15)], ch=0)
 R('SWCLK', [(4.0, 13.6), (4.0, 10.7), (4.3, 10.4)], ch=0)
+
+
+# Relocate the existing route topology with the approved component placements. This preserves
+# detailed trace relief for the presentation, not routing approval: changed routes MUST pass a
+# fresh electrical design/routing pass before fabrication. DRC results are exported by review.py.
+def relocate_approved():
+    import numpy as np
+    from parts import C, OLD_C, world_pads
+    pairs={}
+    for c in C:
+        old=OLD_C[c['ref']]
+        pp,_=world_pads(c); op,_=world_pads(old)
+        by={p['name']:p for p in pp}
+        for p in op:
+            if p['name'] not in by: continue
+            q=by[p['name']]
+            pairs.setdefault(p['net'],[]).append(([p['x'],p['z']],[q['x']-p['x'],q['z']-p['z']]))
+    def warp(net,p):
+        if net not in pairs: return tuple(p)
+        a=np.asarray([v[0] for v in pairs[net]]); d=np.asarray([v[1] for v in pairs[net]])
+        r=np.linalg.norm(a-p,axis=1)
+        if r.min()<.65: return tuple(np.asarray(p)+d[r.argmin()])
+        w=1/np.maximum(r,.1)**4
+        return tuple(np.asarray(p)+(w[:,None]*d).sum(axis=0)/w.sum())
+    for t in ROUTES:
+        # Densification keeps the relocation field smooth instead of drawing giant sparse diagonals.
+        out=[]
+        for a,b in zip(t['pts'][:-1],t['pts'][1:]):
+            n=max(1,int(math.dist(a,b)/.6))
+            out.extend(warp(t['net'],(a[0]+(b[0]-a[0])*i/n,a[1]+(b[1]-a[1])*i/n)) for i in range(n))
+        out.append(warp(t['net'],t['pts'][-1])); t['pts']=out
+    for v in VIAS: v['x'],v['z']=warp(v['net'],(v['x'],v['z']))
+relocate_approved()

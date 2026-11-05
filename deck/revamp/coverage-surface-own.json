@@ -1,0 +1,757 @@
+{
+  "schemaVersion": 1,
+  "slides": {
+    "rv_coating": {
+      "clauses": [
+        {
+          "id": "F27.surfacecard.1",
+          "answer": "Replaced inherited surface imagery with code-drawn substrate/film profile and oven process.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.surfacecard.2",
+          "answer": "New user code-only direction supersedes old presentation3D request;3d source intentionally untouched.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "superseded-by-current-code-only-direction"
+        },
+        {
+          "id": "F27.coating.1",
+          "answer": "Process now has a clearly labelled before/blast/coat section.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.coating.2",
+          "answer": "Animated procedural flames beneath the cure oven.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.coating.3",
+          "answer": "Recognizable pot silhouette inside the oven, rendered in deck drawing style.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_texture.1",
+          "answer": "Original surface-height datum stays dashed across all three stages; blast lowers substrate and film restores thin surface.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_texture.2",
+          "answer": "Added51µm soft-touch and19µm Cerakote thickness bars.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_weight.1",
+          "answer": "Merged weight/thickness/texture into rv_coating.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_weight.2",
+          "answer": "Removed0.49g claim; net coating mass explicitly stays unnumbered until weighed samples.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_weight.3",
+          "answer": "51µm versus19µm bars retain thickness comparison.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_uv.1",
+          "answer": "No written F27 change; retain UV/chemical-resistance maker-test context without forever-white guarantee.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_twotone.1",
+          "answer": "No decorative final design imposed; a small neutral section shows exposed carbon only.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_twotone.2",
+          "answer": "Coating film is removed to expose carbon, not a second pigmented layer; final decorative execution not approved.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        }
+      ],
+      "pending": [
+        "F21.10: net coating weight deliberately unnumbered; blast/coat weighing remains unperformed.",
+        "No3Dsurface edits: current code-only presentation instruction overrides old both-mode visual request."
+      ],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 1.6,
+            "end": 5.4,
+            "event": "Traverse the blast nozzle and lower the surface while retaining the original datum"
+          },
+          {
+            "start": 6,
+            "end": 9.2,
+            "event": "Traverse the spray and grow the19um film"
+          },
+          {
+            "start": 10,
+            "end": 12.5,
+            "event": "Move the coated coupon through the open oven door"
+          },
+          {
+            "start": 13,
+            "end": 17,
+            "event": "Close the door and show82C/1h polymer cure"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_grip": {
+      "clauses": [
+        {
+          "id": "F27.grip.1",
+          "answer": "Preserved finger-drag demonstration showing easier motion along texture than across.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.grip.2",
+          "answer": "Resistance versus adjustment arrows stay simultaneously visible with plain outcome labels.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_gripmap.1",
+          "answer": "Replaced disconnected textures with a continuous curved groove field; concept remains subject to aesthetic/user approval.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-concept-final-map-review-pending"
+        },
+        {
+          "id": "F27.srf_gripmap.2",
+          "answer": "Continuous orientation field blends smoothly across width without a hard boundary; not a claimed final zone map.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-concept-final-map-review-pending"
+        },
+        {
+          "id": "F27.srf_tape.1",
+          "answer": "Tape cross-section0.5mm versus film19µm and no adhesive.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.srf_tape.2",
+          "answer": "Headline and thickness graphic frame film as response to players wanting thinner tape.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        }
+      ],
+      "pending": [
+        "F21.9: final grip map must be shown then user asked again. Continuous texture demonstration is not final map acceptance."
+      ],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 1.2,
+            "end": 4,
+            "event": "Drag across the grooves with a short blocked path"
+          },
+          {
+            "start": 5,
+            "end": 8,
+            "event": "Move the fingertip to the smoothly blended adjustment zone"
+          },
+          {
+            "start": 8.8,
+            "end": 12.6,
+            "event": "Turn the drag and follow the grooves; retain the tape peel/dirt bad case"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_wheel": {
+      "clauses": [
+        {
+          "id": "F27.wheel.1",
+          "answer": "Added three same-envelope plastic/rubber design controls rather than PMM-only comparison. This is not the requested empirical retail test group.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "partial-empirical-test-group-pending"
+        },
+        {
+          "id": "F27.wheel.2",
+          "answer": "Control masses calculated from explicit assumed geometry and verified INEOS/Wacker densities; primary-source URLs in SRC; no fake named wheel weights.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        }
+      ],
+      "pending": [
+        "F27.wheel.1: no sourced empirical group of weighed retail rubber/plastic wheels recovered. Three illustrative controls are labelled modelled, not average production measurements."
+      ],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 0.5,
+            "end": 4.5,
+            "event": "Bring six separate arms into the hub"
+          },
+          {
+            "start": 4.7,
+            "end": 7,
+            "event": "Seat the rim"
+          },
+          {
+            "start": 7.5,
+            "end": 10.5,
+            "event": "Build144 straight axial tread lines"
+          },
+          {
+            "start": 11.3,
+            "end": 15,
+            "event": "A fingertip turns the finished wheel"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance.",
+        "massScope": "0.90g is AZ31B metal wheel only; separately labelled POM axle/bushing excluded. Controls are hub+tyre geometry, not matched retail weighings."
+      }
+    },
+    "rv_inserts": {
+      "clauses": [],
+      "pending": [],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 3,
+            "end": 6.8,
+            "event": "Drive both screws out; axial feed and rotation share the thread pitch"
+          },
+          {
+            "start": 8.4,
+            "end": 12.8,
+            "event": "Drive back in; retain the old plastic path while the new cut grows; brass follows the original thread"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_screws": {
+      "clauses": [
+        {
+          "id": "F27.ownscrew.1",
+          "answer": "No written F27 note; retained current grade5 titanium/combination-drive details with restricted hardness comparison.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        }
+      ],
+      "pending": [],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 0.8,
+            "end": 2.7,
+            "event": "Seat the common bit"
+          },
+          {
+            "start": 3.3,
+            "end": 6.8,
+            "event": "Turn and show the illustrative soft-recess flank slipping"
+          },
+          {
+            "start": 7.2,
+            "end": 8.8,
+            "event": "Withdraw the bit"
+          },
+          {
+            "start": 10,
+            "end": 15,
+            "event": "Use the flat-blade backup"
+          },
+          {
+            "start": 14,
+            "end": 17.2,
+            "event": "Bring the four matching service screws onto the tray"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_repair": {
+      "clauses": [
+        {
+          "id": "F27.repair.1",
+          "answer": "No written F27 note; rebuilt as accessible fasteners, unplug battery and visible claw-contact switch release.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.clk_hotswap.1",
+          "answer": "Replaced old standalone abstract slide with context of repairs in rv_repair.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.clk_hotswap.2",
+          "answer": "Three claw-contact pairs drawn large under removable switch, with insertion/release animation.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.clk_hotswap.3",
+          "answer": "Worn switch can be replaced without soldering or replacing the mouse; repair kit in box.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.ownsheet1.1",
+          "answer": "Separate redundant sheet removed from active revamp.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        },
+        {
+          "id": "F27.ownsheet1.2",
+          "answer": "Battery plug, service access and skate-template points are in rv_repair; the harness/twist/flex explanation is substantively moved to rv_wiring with a shared clause response and navigation link.",
+          "verification": {
+            "qa": "tools/qa.js at settle and0.4×settle:0issues for all7; final micro-edits receive integration rerun",
+            "visual": "deck/qa/surface-own/*_rv_*_*.png; seven-slide contact sheet inspected",
+            "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files"
+          },
+          "status": "answered-presentation-scope"
+        }
+      ],
+      "pending": [],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 0.8,
+            "end": 5.15,
+            "event": "Remove four accessible screws one at a time"
+          },
+          {
+            "start": 6.7,
+            "end": 9.6,
+            "event": "Unplug the three-wire connector"
+          },
+          {
+            "start": 10.2,
+            "end": 12.4,
+            "event": "Lift the example battery"
+          },
+          {
+            "start": 13.5,
+            "end": 18.1,
+            "event": "Extract and move aside the old switch"
+          },
+          {
+            "start": 18.3,
+            "end": 21,
+            "event": "Bring the new switch through a separate lane and seat its pins in the visible claws"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    },
+    "rv_close": {
+      "clauses": [],
+      "pending": [],
+      "motion": {
+        "feedback": [
+          "C5",
+          "F27.G1",
+          "F27.G2",
+          "F27.G9",
+          "F33.5",
+          "F33.8"
+        ],
+        "causalBeats": [
+          {
+            "start": 1,
+            "end": 7.05,
+            "event": "Conserve and assemble the complete29.31g budget; battery, board, shape and service hardware stay included"
+          },
+          {
+            "start": 7.4,
+            "end": 10.5,
+            "event": "Count up the visibly labelled concept density and1khz runtime targets"
+          }
+        ],
+        "verification": {
+          "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+          "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+          "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+          "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+        },
+        "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance."
+      }
+    }
+  },
+  "source_mapping": [
+    {
+      "id": "F2.01",
+      "slide": "rv_inserts",
+      "disposition": "answered-with-owner-estimates",
+      "answer": "90/70/0 re-screw-feel figures attributed; first-fit in words, mechanism illustration only."
+    },
+    {
+      "id": "F6.1",
+      "slide": "rv_inserts",
+      "disposition": "applied",
+      "answer": "90% refers feeling different after opening not first assembly."
+    },
+    {
+      "id": "F21.3",
+      "slide": "rv_inserts",
+      "disposition": "superseded-in-part",
+      "answer": "CF estimate now70perF21.5; rethread simulations remain deferred."
+    },
+    {
+      "id": "F21.5",
+      "slide": "rv_inserts",
+      "disposition": "applied",
+      "answer": "ABS90 CF70 brass0 explicitly owner estimates."
+    },
+    {
+      "id": "F21.12",
+      "slide": "rv_inserts",
+      "disposition": "deferred-as-requested",
+      "answer": "No first-fit or rethread numerical simulation; explanatory drawing is schematic."
+    },
+    {
+      "id": "F2.13",
+      "slide": "rv_coating",
+      "disposition": "answered-schematic",
+      "answer": "Fibres drawn under substrate and labelled about7µm across; blast-height datum and thin film shown. Not a micrograph."
+    },
+    {
+      "id": "F2.21",
+      "slide": "rv_coating",
+      "disposition": "answered-material-principle",
+      "answer": "Etch exposes carbon within one film; no extra paint layer or decorative final pattern."
+    },
+    {
+      "id": "F2.22",
+      "slide": "rv_coating",
+      "disposition": "superseded-in-part",
+      "answer": "No exclusive zero-weight coating claim. Net mass stays unnumbered F21.10; thinness from TDS."
+    },
+    {
+      "id": "F2.23",
+      "slide": "rv_coating",
+      "disposition": "answered-with-evidence-limit",
+      "answer": "UV/chemical resistance shown as published maker tests not lifetime/yellowing guarantee for Theseus."
+    },
+    {
+      "id": "F21.7",
+      "slide": "rv_coating",
+      "disposition": "applied",
+      "answer": "Etch through to carbon."
+    },
+    {
+      "id": "F21.10",
+      "slide": "rv_coating",
+      "disposition": "applied",
+      "answer": "9H on Cerakote tests; net coating mass unnumbered."
+    },
+    {
+      "id": "F2.14",
+      "slide": "rv_grip",
+      "disposition": "answered-concept",
+      "answer": "Directional finger movement and continuous texture transition; final map awaiting review."
+    },
+    {
+      "id": "F2.15",
+      "slide": "rv_grip",
+      "disposition": "answered",
+      "answer": "Tape adhesive creep/gunk drawn versus no adhesive film."
+    },
+    {
+      "id": "F21.9",
+      "slide": "rv_grip",
+      "disposition": "pending-user-review",
+      "answer": "No final grip-zone claim; show proposed patterns then ask."
+    },
+    {
+      "id": "F22.1",
+      "slide": "rv_wheel",
+      "disposition": "superseded-in-part",
+      "answer": "Six thin arms and0.90g metal wheel retained; separate POM axle/bushing excluded. PMM secondary; no Mars-base slide."
+    },
+    {
+      "id": "F25.1",
+      "slide": "rv_wheel",
+      "disposition": "superseded",
+      "answer": "Diamond knurl replaced straight perF30.8."
+    },
+    {
+      "id": "F25.2",
+      "slide": "rv_wheel",
+      "disposition": "applied",
+      "answer": "Thin six-arm geometry."
+    },
+    {
+      "id": "F30.8",
+      "slide": "rv_wheel",
+      "disposition": "applied",
+      "answer": "144 straight grooves; no diamond strip."
+    },
+    {
+      "id": "F25.4",
+      "slide": "rv_screws",
+      "disposition": "applied",
+      "answer": "Grade5Ti fourM2×4mm0.42g target; no magnets."
+    },
+    {
+      "id": "F25.5",
+      "slide": "rv_screws",
+      "disposition": "answered-restricted-comparison",
+      "answer": "349HV converted from36HRC versus class4.8≤220HV; not every steel; brass thread can strip."
+    },
+    {
+      "id": "F26.11",
+      "slide": "rv_repair",
+      "disposition": "applied",
+      "answer": "Decorative QR/serial/mark visuals absent; hidden source objects retained original."
+    },
+    {
+      "id": "F12.2",
+      "slide": "rv_close",
+      "disposition": "applied",
+      "answer": "No full-mouse3D on close."
+    },
+    {
+      "id": "F12.11",
+      "slide": "rv_close",
+      "disposition": "applied",
+      "answer": "Density uses119.3×62.4×39.9mm and29.31g."
+    },
+    {
+      "id": "F33.6",
+      "slide": "all7",
+      "disposition": "applied",
+      "answer": "Coating/grip/wheel/wear/repair outcomes not forced missed-shot loop."
+    },
+    {
+      "id": "F33.7",
+      "slide": "all7",
+      "disposition": "applied",
+      "answer": "Zero-compromise design language, targets never presented as measured results."
+    }
+  ],
+  "verification": {
+    "qa": "qa.js settle+mid all7:0issues after final edits; latest coating layout rerun by integrator",
+    "visual": "deck/qa/surface-own-final/contact.png inspected, full7final renders available",
+    "runtime": "tools/shoot.js all7 settled renders; node --check assigned3files",
+    "motion": {
+      "layout": "deck/qa/structure-motion/report.json:15 scenes,150 timeline checks,0 issue frames,0 runtime errors",
+      "causal": "deck/qa/structure-motion/causal-motion-report.json:85 captures,15 passing mechanism assertions",
+      "visual": "Four temporal contact sheets inspected; individual chain6.2s, wheel13s, repair18.5s and fillet23s frames also inspected after geometry fixes",
+      "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
+    }
+  },
+  "sourceFileHashes": {
+    "60-surface.js": "c8a8621fc26622e8525974c5bf99775b493eb1f6179ce00419ae218c357a4267",
+    "70-ownership.js": "11f4765de13d67556cb380cb3cb4bdd6990df57ac33326162f7435620faae5e1",
+    "80-close.js": "e9ad946e583cb8d39f1e7c9ee8b550f331610748e73c9bb5a54e67e9b8193960"
+  },
+  "missingReferenceLimits": [
+    "Original tensioner and G-Wolves broken-arm photos absent from import; unrelated to owned7 drawings.",
+    "Empirical average rubber/plastic-wheel weight group absent; do not call modelled controls retail measurement."
+  ],
+  "honesty": "No whole-note DONE or archived status inferred from code changes. Partial/conditional clauses stay visible; root integrates mappings with global ledger."
+}

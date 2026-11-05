@@ -1,0 +1,115 @@
+{
+  "captured_utc": "2026-11-05T14:46:52.6884247Z",
+  "scope": "Read-only source context snapshot. Actively edited main worktree; not a source freeze, render verification or acceptance review.",
+  "source_root": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex",
+  "files": [
+    {
+      "relative_path": "handoff/codex/INDEPENDENT-REVIEW-BRIEF.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\codex\\INDEPENDENT-REVIEW-BRIEF.md",
+      "bytes": 5260,
+      "sha256": "54da1629fa06eb3ee552dcdfd1b1dc9353b6ef92c4c7dcd4e878180f71aaf433"
+    },
+    {
+      "relative_path": "FEEDBACK.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\FEEDBACK.md",
+      "bytes": 100226,
+      "sha256": "6c526ddb0a0a5c78506d62f55ee90a29debd6e9e1f36789ca6168c988f8e0a58"
+    },
+    {
+      "relative_path": "handoff/README.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\README.md",
+      "bytes": 683,
+      "sha256": "3e1be5be41db54458936c68bcf09340cc2c447fa77443c9373a534c4dc34ced3"
+    },
+    {
+      "relative_path": "handoff/briefs/k-common.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\briefs\\k-common.md",
+      "bytes": 4576,
+      "sha256": "5059504b8d84b748f3cd694062d50afb54699f69449be6b21b243d8975ba50b5"
+    },
+    {
+      "relative_path": "handoff/codex/FEEDBACK-AUDIT.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\codex\\FEEDBACK-AUDIT.md",
+      "bytes": 87487,
+      "sha256": "2ca46c5e87ad575999b89a4774cb65d8931d6d0ac4fd3e2898c76720de175c5a"
+    },
+    {
+      "relative_path": "handoff/codex/EVIDENCE.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\codex\\EVIDENCE.md",
+      "bytes": 17160,
+      "sha256": "216eaa1e5dc720fcfb7319cb0347243411634efeceb6e3a76bbdd4cd62a7d28b"
+    },
+    {
+      "relative_path": "research/data/codex-verified.json",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\research\\data\\codex-verified.json",
+      "bytes": 33126,
+      "sha256": "248d9a8174234a1ccd823fac214e362a1d1d1bb10f92d147fbe9eadbc431f332"
+    },
+    {
+      "relative_path": "handoff/briefs/k1-prompt.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\briefs\\k1-prompt.md",
+      "bytes": 5675,
+      "sha256": "39bd9f448c8f9bdebdcb8da17e9147d1bb10c85813b8a4ab9de2a3dac527a3c9"
+    },
+    {
+      "relative_path": "handoff/briefs/k2-prompt.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\briefs\\k2-prompt.md",
+      "bytes": 5139,
+      "sha256": "381224168b17162b74697ac74bd1aac45eafde94f0619674466c07adad782224"
+    },
+    {
+      "relative_path": "handoff/briefs/k5-prompt.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\briefs\\k5-prompt.md",
+      "bytes": 4351,
+      "sha256": "e720a7dd5277e7cf19efeaeea7ec12fc186ea17c3124bb3ef36d88c10e32ec2b"
+    },
+    {
+      "relative_path": "handoff/briefs/k6-prompt.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\briefs\\k6-prompt.md",
+      "bytes": 5122,
+      "sha256": "d60ea4904162a9b9f6925b77688c58bf199803246848bad14bebff973e162cc6"
+    },
+    {
+      "relative_path": "handoff/briefs/k7-prompt.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\briefs\\k7-prompt.md",
+      "bytes": 4311,
+      "sha256": "f42fc6a24b2b0bafca456b09555e36e600b2e118997297d85a036f68f0d1e7b9"
+    },
+    {
+      "relative_path": "handoff/briefs/k8-prompt.md",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\handoff\\briefs\\k8-prompt.md",
+      "bytes": 2458,
+      "sha256": "3b985d146fef3d8ca0dfdd75ece7de5475532fbf1a35cc0e9d3a78254bd1725e"
+    },
+    {
+      "relative_path": "deck/revamp/10-intro.js",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\deck\\revamp\\10-intro.js",
+      "bytes": 13851,
+      "sha256": "f4a57ca8130217b866df67d0f1f9adbf5c906563df9296cab2ec14099db1e08f"
+    },
+    {
+      "relative_path": "deck/revamp/20-clicks.js",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\deck\\revamp\\20-clicks.js",
+      "bytes": 17387,
+      "sha256": "2858d87a6ef40ddd6ac9ac94cf4ee6a8992e2f0c2479d0c8767d6aad0dad4d65"
+    },
+    {
+      "relative_path": "deck/revamp/40-structure.js",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\deck\\revamp\\40-structure.js",
+      "bytes": 16936,
+      "sha256": "6c33bd62211df60ec6363c89cb0b17c33f4ecf8826be8c4c7c361b292b2e2c10"
+    },
+    {
+      "relative_path": "deck/revamp/50-electronics.js",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\deck\\revamp\\50-electronics.js",
+      "bytes": 25716,
+      "sha256": "0046c2fb544b577d49c6cd7b252e33601da32f86e0e94cf7eb04aba0202a10e8"
+    },
+    {
+      "relative_path": "deck/revamp/60-surface.js",
+      "absolute_path": "C:\\Users\\brock\\Documents\\Codex\\2026-11-05\\https-claude-ai-share-4ce6f186-6380\\theseus-codex\\deck\\revamp\\60-surface.js",
+      "bytes": 9966,
+      "sha256": "96484d4296b2ebe25125e30c8d2cb30c83c29a97fd02d28c88ffe76e00229488"
+    }
+  ]
+}

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direct Drive · two ideal models</title>
+<style>
+  :root { color-scheme: dark; --bg:#111; --panel:#1c1c1c; --line:#454545; --ink:#f3f1ea; --muted:#b6b4ad; --blue:#3B86F5; --blue-text:#78B6FF; --yellow:#E1BE3E; --red:#bf6861; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 "Segoe UI",Arial,sans-serif; }
+  main { width:min(1160px,100%); margin:auto; padding:36px 28px 44px; }
+  .eyebrow { margin:0 0 8px; color:var(--blue-text); font-size:12px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; }
+  h1 { margin:0; font-size:clamp(28px,4vw,44px); font-weight:650; letter-spacing:-.035em; line-height:1.12; }
+  .intro { color:var(--muted); max-width:850px; margin:14px 0 24px; }
+  button,input { font:inherit; }
+  button { cursor:pointer; border:1px solid var(--line); color:var(--ink); background:#262626; border-radius:6px; padding:10px 16px; }
+  button:hover { border-color:#9a978b; }
+  button:focus-visible,input:focus-visible,a:focus-visible { outline:2px solid var(--blue-text); outline-offset:4px; }
+  .modes { display:flex; gap:8px; flex-wrap:wrap; }
+  .modes button[aria-pressed="true"] { background:var(--yellow); border-color:var(--yellow); color:#181810; font-weight:650; }
+  .controls { margin:18px 0 0; display:grid; grid-template-columns:1fr 1fr; gap:16px 30px; }
+  label { color:var(--muted); font-size:14px; }
+  label strong { color:var(--ink); float:right; font-variant-numeric:tabular-nums; }
+  input[type="range"] { display:block; width:100%; accent-color:var(--blue); margin:9px 0; cursor:pointer; }
+  .assumptions { margin:18px 0 20px; padding:12px 16px; background:#242424; border-left:3px solid #77776e; color:#d1cec1; font-size:14px; }
+  .summary { display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .summary>div { padding:16px 20px; background:var(--panel); }
+  .summary small { color:var(--muted); display:block; font-size:13px; }
+  .summary strong { display:block; font-size:30px; font-weight:600; letter-spacing:-.025em; font-variant-numeric:tabular-nums; }
+  .summary .result { color:var(--blue-text); }
+  .panels { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px; }
+  .panel { min-width:0; border:1px solid var(--line); background:var(--panel); border-radius:8px; overflow:hidden; }
+  .panel-head { display:flex; justify-content:space-between; align-items:center; padding:15px 20px 0; gap:12px; }
+  h2 { margin:0; font-size:18px; font-weight:600; }
+  .badge { border:1px solid #5c5c58; border-radius:20px; padding:3px 11px; color:var(--muted); font-size:12px; white-space:nowrap; }
+  .badge.on { background:var(--blue); color:#101820; border-color:var(--blue); }
+  #angled-state.on { background:var(--yellow); color:#181810; border-color:var(--yellow); }
+  svg { display:block; width:100%; height:auto; overflow:visible; }
+  svg text { font-family:"Segoe UI",Arial,sans-serif; }
+  .panel-foot { display:flex; justify-content:space-between; padding:0 20px 16px; gap:12px; color:var(--muted); font-size:14px; }
+  .panel-foot strong { color:var(--ink); font-variant-numeric:tabular-nums; }
+  .playback { margin-top:18px; padding:18px 20px; border:1px solid var(--line); border-radius:8px; background:var(--panel); }
+  .play-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  #play { min-width:98px; color:#101820; background:var(--blue); border-color:var(--blue); font-weight:650; }
+  .clock { margin-left:auto; color:var(--muted); font-size:14px; font-variant-numeric:tabular-nums; }
+  .clock strong { color:var(--ink); }
+  .timeline { margin:20px 0 0; position:relative; }
+  .timeline input { margin:0; }
+  .timeline-labels { position:relative; height:33px; margin:8px 9px 0; color:var(--muted); font-size:11px; }
+  .timeline-labels span { position:absolute; white-space:nowrap; }
+  #aligned-tick { top:0; color:var(--blue-text); transform:translateX(-100%); padding-right:5px; }
+  #angled-tick { top:16px; color:var(--yellow); transform:translateX(-100%); }
+  .plot { margin:18px 0 0; border:1px solid var(--line); border-radius:8px; background:var(--panel); padding:14px 16px 8px; }
+  .plot-title { color:var(--muted); font-size:13px; margin:0 0 2px; }
+  .notes { display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:24px; color:var(--muted); font-size:14px; }
+  .notes h2 { color:var(--ink); font-size:16px; margin-bottom:6px; }
+  .notes p { margin:0 0 8px; }
+  code { color:#e3dfd1; }
+  a { color:var(--blue-text); }
+  footer { border-top:1px solid var(--line); margin-top:24px; padding-top:15px; color:#96948c; font-size:12px; }
+  @media(max-width:650px) { main { padding:24px 16px; } .panels,.notes { grid-template-columns:1fr; } .summary { grid-template-columns:1fr 1fr; } .summary>div:first-child { grid-column:1 / -1; } .controls { gap:14px; } .summary>div { padding:12px 16px; } .clock { margin-left:0; width:100%; margin-top:4px; } }
+  @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">independent mechanics resource · local projection</p>
+  <h1>The same press. Two different assumptions.</h1>
+  <p class="intro">Watch both plungers on one physical clock. An input at 20° projects less motion or force onto the switch axis. The time saved depends on what the model holds equal.</p>
+  <div class="modes" role="group" aria-label="Choose physical model">
+    <button id="speed" aria-pressed="true">Same path speed</button>
+    <button id="force" aria-pressed="false">Same applied force</button>
+  </div>
+  <div class="controls">
+    <label for="angle">Local misalignment <strong id="angle-label">20°</strong><input id="angle" type="range" min="0" max="45" step="1" value="20"></label>
+    <label for="travel">Equal switch travel <strong id="travel-label">0.350 mm</strong><input id="travel" type="range" min="0.20" max="0.70" step="0.01" value="0.35"></label>
+  </div>
+  <p class="assumptions" id="assumptions"></p>
+  <div class="summary" aria-live="polite">
+    <div><small>Aligned actuation occurs</small><strong class="result" id="gain">6.0307% sooner</strong><small id="ratio"></small></div>
+    <div><small>Aligned threshold</small><strong id="aligned-time">3.5000 ms</strong><small>same axial travel</small></div>
+    <div><small>Angled threshold</small><strong id="angled-time">3.7246 ms</strong><small id="projection"></small></div>
+  </div>
+  <div class="panels">
+    <section class="panel" aria-label="Angled input">
+      <div class="panel-head"><h2>Angled input · <span id="diagram-angle">20°</span></h2><span class="badge" id="angled-state">not actuated</span></div>
+      <svg viewBox="0 0 440 350" role="img" aria-label="Angled input vector and moving switch plunger">
+        <defs><marker id="head-comparison" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#E1BE3E" stroke-width="1.5"/></marker></defs>
+        <line x1="220" y1="45" x2="220" y2="330" stroke="#62625b" stroke-dasharray="4 6"/>
+        <text x="230" y="48" fill="#9e9c94" font-size="12">switch axis</text>
+        <line x1="70" y1="195" x2="370" y2="195" stroke="#bf6861" stroke-dasharray="6 5"/>
+        <text x="280" y="186" fill="#c99892" font-size="12">actuation threshold</text>
+        <line x1="90" y1="110" x2="90" y2="195" stroke="#77766e"/>
+        <path d="M85 110h10 M85 195h10" stroke="#77766e"/>
+        <text id="angled-scale" x="15" y="158" fill="#aaa89f" font-size="12">0.350 mm</text>
+        <rect x="128" y="290" width="184" height="38" rx="7" fill="#363632" stroke="#77766f"/>
+        <text x="220" y="314" text-anchor="middle" fill="#c5c2b7" font-size="12">switch body</text>
+        <g id="angled-plunger"><rect x="208" y="112" width="24" height="186" fill="#66665e"/><rect x="164" y="103" width="112" height="14" rx="4" fill="#bcbab0"/></g>
+        <line id="angled-vector" stroke="#E1BE3E" stroke-width="3" marker-end="url(#head-comparison)"/>
+        <text id="angled-vector-label" fill="#E1BE3E" font-size="13"></text>
+      </svg>
+      <div class="panel-foot"><span>Axial displacement <strong id="angled-x">0.0000 mm</strong></span><span id="angled-fraction">0.0% of travel</span></div>
+    </section>
+    <section class="panel" aria-label="Aligned input">
+      <div class="panel-head"><h2>Aligned input · 0°</h2><span class="badge" id="aligned-state">not actuated</span></div>
+      <svg viewBox="0 0 440 350" role="img" aria-label="Aligned input vector and moving switch plunger">
+        <defs><marker id="head-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#3B86F5" stroke-width="1.5"/></marker></defs>
+        <line x1="220" y1="45" x2="220" y2="330" stroke="#62625b" stroke-dasharray="4 6"/>
+        <text x="230" y="48" fill="#9e9c94" font-size="12">switch axis</text>
+        <line x1="70" y1="195" x2="370" y2="195" stroke="#bf6861" stroke-dasharray="6 5"/>
+        <text x="280" y="186" fill="#c99892" font-size="12">actuation threshold</text>
+        <line x1="90" y1="110" x2="90" y2="195" stroke="#77766e"/>
+        <path d="M85 110h10 M85 195h10" stroke="#77766e"/>
+        <text id="aligned-scale" x="15" y="158" fill="#aaa89f" font-size="12">0.350 mm</text>
+        <rect x="128" y="290" width="184" height="38" rx="7" fill="#363632" stroke="#77766f"/>
+        <text x="220" y="314" text-anchor="middle" fill="#c5c2b7" font-size="12">switch body</text>
+        <g id="aligned-plunger"><rect x="208" y="112" width="24" height="186" fill="#747474"/><rect x="164" y="103" width="112" height="14" rx="4" fill="#3B86F5"/></g>
+        <line id="aligned-vector" stroke="#3B86F5" stroke-width="3" marker-end="url(#head-blue)"/>
+        <text id="aligned-vector-label" fill="#78B6FF" font-size="13"></text>
+      </svg>
+      <div class="panel-foot"><span>Axial displacement <strong id="aligned-x">0.0000 mm</strong></span><span id="aligned-fraction">0.0% of travel</span></div>
+    </section>
+  </div>
+  <section class="playback" aria-label="Shared physical timeline">
+    <div class="play-row"><button id="play">Play</button><button id="reset">Reset</button><button id="between">Between crossings</button><span class="clock">Shared physical time: <strong id="clock">0.0000 ms</strong> · <span id="slow">400× slow motion</span></span></div>
+    <div class="timeline"><label class="sr-only" for="time">Scrub the shared physical timeline</label><input type="range" id="time" min="0" max="1" step="0.0001" value="0"><div class="timeline-labels"><span id="aligned-tick"></span><span id="angled-tick"></span></div></div>
+  </section>
+  <section class="plot" aria-label="Displacement curves">
+    <p class="plot-title">Same time axis, same travel scale · yellow = angled comparison · blue = aligned solution</p>
+    <svg viewBox="0 0 1050 220" role="img" aria-label="Both displacement curves with threshold and shared time cursor">
+      <line x1="62" y1="170" x2="1010" y2="170" stroke="#77766e"/>
+      <line x1="62" y1="20" x2="62" y2="170" stroke="#77766e"/>
+      <line id="plot-threshold" x1="62" x2="1010" stroke="#bf6861" stroke-dasharray="6 5"/>
+      <text id="plot-threshold-label" x="68" fill="#c99892" font-size="12">actuation threshold</text>
+      <text x="4" y="22" fill="#aaa89f" font-size="12">travel</text><text x="37" y="175" fill="#aaa89f" font-size="12">0</text>
+      <text x="970" y="207" fill="#aaa89f" font-size="12">time (ms)</text>
+      <path id="curve-angled" stroke="#E1BE3E" stroke-width="3" fill="none"/>
+      <path id="curve-aligned" stroke="#3B86F5" stroke-width="3" fill="none"/>
+      <line id="plot-cursor" y1="20" y2="170" stroke="#eeece3" stroke-width="1.5"/>
+      <text id="plot-end" x="1010" y="188" text-anchor="end" fill="#aaa89f" font-size="12"></text>
+    </svg>
+  </section>
+  <div class="notes">
+    <section><h2>Read the model</h2><p id="formula"></p><p>Arrows show the input direction; the moving plungers show only the axial response. Each cap's center reaches the dashed line at its calculated switch threshold. These are local projection diagrams with enlarged travel, not mouse CAD or contact geometry.</p></section>
+    <section><h2>Keep the claim bounded</h2><p>At 20°, “6% sooner” belongs to the same-speed model. The same-force, zero-resistance model gives 3.0623%. Resistance, compliance, a changing trigger angle and fixed electronic delay change the result.</p><p>There is no measured Theseus latency, reaction-time advantage, friction loss or wear-life result here. Both models use the same axial actuation criterion.</p></section>
+  </div>
+  <footer>Standalone resource · no libraries, images or network requests · no prototype measurements.<br>Operating-axis reference: <a href="https://components.omron.com/eu-en/sites/components.omron.com.eu/files/ds_related_pdf/B149-E1.pdf">Omron basic-switch precautions</a>. Full equations, component evidence and limitations: <a href="claims-review.md">claims-review.md</a> · <a href="calculate.py">calculate.py</a> · <a href="mechanics-energy.json">mechanics-energy.json</a>.</footer>
+</main>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const state = {mode:"speed", angle:20, travel:0.35, time:0, playing:false, last:null};
+const SPEED = 0.1; // chosen mm/ms, not measured hardware
+const ACCEL = 2 * 0.35 / (3.5 * 3.5); // chosen F/m in mm/ms^2, not measured hardware
+const SLOW = 400; // wall-clock ms for each physical ms
+function model(mode, angle, travel) {
+  const c = Math.cos(angle * Math.PI / 180);
+  const aligned = mode === "speed" ? travel / SPEED : Math.sqrt(2 * travel / ACCEL);
+  const angled = mode === "speed" ? aligned / c : aligned / Math.sqrt(c);
+  return {c, aligned, angled, end:angled * 1.12, sooner:100 * (1 - aligned / angled)};
+}
+function displacement(mode, c, t) {
+  const aligned = mode === "speed" ? SPEED * t : 0.5 * ACCEL * t * t;
+  return {aligned, angled:aligned * c};
+}
+function setPlaying(on) { state.playing=on; state.last=null; $("play").textContent=on?"Pause":(state.time >= model(state.mode,state.angle,state.travel).end?"Replay":"Play"); }
+function refreshModel(reset=true) {
+  if (reset) { setPlaying(false); state.time=0; }
+  const m=model(state.mode,state.angle,state.travel);
+  $("speed").setAttribute("aria-pressed",String(state.mode==="speed"));
+  $("force").setAttribute("aria-pressed",String(state.mode==="force"));
+  $("angle-label").textContent=state.angle+"°";
+  $("diagram-angle").textContent=state.angle+"°";
+  $("travel-label").textContent=state.travel.toFixed(3)+" mm";
+  $("angled-scale").textContent=$("aligned-scale").textContent=state.travel.toFixed(3)+" mm";
+  $("gain").textContent=m.sooner.toFixed(4)+"% sooner";
+  $("ratio").textContent="time ratio aligned / angled = "+(m.aligned/m.angled).toFixed(6);
+  $("aligned-time").textContent=m.aligned.toFixed(4)+" ms";
+  $("angled-time").textContent=m.angled.toFixed(4)+" ms";
+  $("projection").textContent=(100*m.c).toFixed(3)+"% axial "+(state.mode==="speed"?"speed":"force");
+  $("assumptions").textContent=state.mode==="speed"
+    ? "Same prescribed trigger-path speed v = 0.100 mm/ms. Same switch-axis travel. Fixed local angle. Ideal transmission; no compliance, clearance or friction change."
+    : "Same constant input force and axial effective mass: chosen F/m = "+ACCEL.toFixed(6)+" mm/ms². Start from rest. Same axial travel. Fixed angle. Zero resistance.";
+  $("formula").textContent=state.mode==="speed"
+    ? "x_aligned = v·t; x_angled = v·t·cosθ. Therefore t_aligned / t_angled = cosθ. Constant speed makes both travel curves straight."
+    : "x_aligned = ½(F/m)t²; x_angled = ½(F/m)cosθ·t². Therefore t_aligned / t_angled = √cosθ. Constant acceleration makes both curves quadratic.";
+  $("time").max=m.end;
+  $("time").setAttribute("aria-valuetext",state.time.toFixed(4)+" physical milliseconds");
+  for (const key of ["aligned","angled"]) {
+    $(key+"-tick").style.left=(100*m[key]/m.end)+"%";
+    $(key+"-tick").textContent=key+" "+m[key].toFixed(4)+" ms";
+  }
+  const maxTravel=displacement(state.mode,m.c,m.end).aligned;
+  const plotY=x=>170-145*x/maxTravel;
+  for (const key of ["angled","aligned"]) {
+    let path="";
+    for (let i=0;i<=100;i++) { const t=m.end*i/100; const x=displacement(state.mode,m.c,t)[key]; path+=(i?" L":"M")+(62+948*i/100).toFixed(3)+","+plotY(x).toFixed(3); }
+    $("curve-"+key).setAttribute("d",path);
+  }
+  const threshold=plotY(state.travel);
+  $("plot-threshold").setAttribute("y1",threshold); $("plot-threshold").setAttribute("y2",threshold);
+  $("plot-threshold-label").setAttribute("y",threshold-7);
+  $("plot-end").textContent=m.end.toFixed(4);
+  draw();
+}
+function draw() {
+  const m=model(state.mode,state.angle,state.travel);
+  const x=displacement(state.mode,m.c,state.time);
+  $("clock").textContent=state.time.toFixed(4)+" ms";
+  $("time").value=state.time;
+  $("time").setAttribute("aria-valuetext",state.time.toFixed(4)+" physical milliseconds");
+  const cursor=62+948*state.time/m.end;
+  $("plot-cursor").setAttribute("x1",cursor); $("plot-cursor").setAttribute("x2",cursor);
+  for (const key of ["angled","aligned"]) {
+    const y=85*x[key]/state.travel;
+    const cap=110+y;
+    // Only the axial response is animated. Do not infer a lateral displacement.
+    $(key+"-plunger").setAttribute("transform","translate(0 "+y+")");
+    // Shorten the hidden shaft to leave the stationary switch body in front.
+    $(key+"-plunger").querySelector("rect").setAttribute("height",Math.max(1,186-y));
+    const theta=(key==="angled"?state.angle:0)*Math.PI/180;
+    const dx=65*Math.sin(theta), dy=65*Math.cos(theta);
+    const vector=$(key+"-vector");
+    vector.setAttribute("x1",220-dx); vector.setAttribute("y1",cap-dy-8);
+    vector.setAttribute("x2",220); vector.setAttribute("y2",cap-8);
+    const label=$(key+"-vector-label"); label.setAttribute("x",230-dx); label.setAttribute("y",cap-dy-17); label.textContent=state.mode==="speed"?"input speed v":"input force F";
+    $(key+"-x").textContent=x[key].toFixed(4)+" mm";
+    $(key+"-fraction").textContent=(100*x[key]/state.travel).toFixed(1)+"% of travel";
+    const on=state.time>=m[key];
+    $(key+"-state").classList.toggle("on",on);
+    $(key+"-state").textContent=on?"actuated":"not actuated";
+  }
+}
+function frame(now) {
+  if (state.playing) {
+    if (state.last!==null) state.time+=(now-state.last)/SLOW;
+    state.last=now;
+    const end=model(state.mode,state.angle,state.travel).end;
+    if (state.time>=end) { state.time=end; setPlaying(false); }
+    draw();
+  }
+  requestAnimationFrame(frame);
+}
+$("speed").addEventListener("click",()=>{state.mode="speed";refreshModel();});
+$("force").addEventListener("click",()=>{state.mode="force";refreshModel();});
+$("angle").addEventListener("input",e=>{state.angle=Number(e.target.value);refreshModel();});
+$("travel").addEventListener("input",e=>{state.travel=Number(e.target.value);refreshModel();});
+$("time").addEventListener("input",e=>{setPlaying(false);state.time=Number(e.target.value);draw();});
+$("play").addEventListener("click",()=>{if(state.time>=model(state.mode,state.angle,state.travel).end)state.time=0;setPlaying(!state.playing);draw();});
+$("reset").addEventListener("click",()=>{setPlaying(false);state.time=0;draw();});
+$("between").addEventListener("click",()=>{setPlaying(false);const m=model(state.mode,state.angle,state.travel);state.time=(m.aligned+m.angled)/2;draw();});
+// Read-only calculation API for independent verification and future integration.
+window.TheseusDirectDrive=Object.freeze({model,displacement,SPEED,ACCEL,SLOW});
+refreshModel();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

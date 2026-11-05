@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "verified_date": "2026-11-05",
+  "competitor_click_clearance": {
+    "status": "No qualifying published measurements recovered in this bounded search",
+    "measured_models": [],
+    "lateral_dual_rail_clearance_mm": null,
+    "vertical_plunger_pad_gap_mm": null,
+    "pom_pad_thickness_mm": null,
+    "manufacturer_tolerance_mm": null,
+    "qualifying_measurements": [],
+    "useful_primary_reference": {
+      "title": "PMM PULSE assembly instructions",
+      "url": "https://pmm.gg/pages/assembly-pulse",
+      "supports": "The maker instructs adjustment using plunger spacers and tension/switch screws. This supports a qualitative adjustable-pretravel comparison.",
+      "does_not_support": "No calibrated dual-rail clearance, POM material identification, spacer thickness or tolerance distribution is supplied in the inspected instructions."
+    },
+    "integration_status": "F27.clk_pomtune direct numeric competitor-tolerance comparison remains open. Do not label generic machining tolerances or switch datasheet travel as measured mouse rail clearance."
+  },
+  "g_wolves_pcb_reinforcing_arms": {
+    "status": "Exact personal-photo geometry remains unavailable; no faithful arm vector is claimed",
+    "personal_photo_seen": false,
+    "personal_photo_recovered": false,
+    "personal_photo_attachment_ids": ["d2ae72fe-image.png", "80f31ed6-image.jpg"],
+    "model_identified_from_personal_photo": null,
+    "pcb_outline": null,
+    "arm_width_mm": null,
+    "arm_length_mm": null,
+    "pcb_thickness_mm": null,
+    "contact_location_mm": null,
+    "fracture_location_mm": null,
+    "failure_load_n": null,
+    "shipping_failure_rate": null,
+    "primary_public_reference_inspected": {
+      "title": "G-Wolves HTS Ultra official product page",
+      "url": "https://shop.g-wolves.com/products/hts-ultra-8k-wireless-gaming-mouse-29g-usb-type-c-port",
+      "supports": "Named product and external shell/gallery context only. No dimensioned PCB/arm model was recovered from this page.",
+      "does_not_support": "Identity of Brock's photographed model, exact reinforcing-arm outline, dimensions, fracture mechanism or a general shipping-failure claim."
+    },
+    "integration_status": "F27.shcArms and F28.3 photo-faithful reconstruction remain open. User feedback records a shipping break anecdote; public gallery context cannot substitute for the missing personal evidence."
+  },
+  "bounded_search": {
+    "queries": [
+      "mouse \"POM\" \"clearance\" dual rail",
+      "mouse button rail tolerance \"mm\" POM",
+      "site.g-wolves.com PCB arms reinforcement HTS Ultra",
+      "G wolves PCB arms broken reinforcement mouse",
+      "mouse \"dual rail\" tolerance POM",
+      "site.pulsar.gg \"POM\" \"rail\"",
+      "site.endgamegear.com OP1 \"pre-travel\"",
+      "site.shop.g-wolves.com \"PCB\" \"reinforcement\""
+    ],
+    "pages_opened": [
+      "https://pmm.gg/pages/assembly-pulse",
+      "https://shop.g-wolves.com/products/hts-ultra-8k-wireless-gaming-mouse-29g-usb-type-c-port"
+    ],
+    "excluded_from_quantitative_evidence": [
+      "Subjective reviews and uncalibrated owner descriptions",
+      "Generic POM machining tolerances",
+      "Switch actuation/pretravel specifications presented as rail clearances",
+      "Whole-product dimensions used to infer unknown internal feature sizes"
+    ],
+    "contacts_made": false,
+    "main_checkout_modified": false,
+    "raw_sora_scan_accessed_or_published": false
+  }
+}

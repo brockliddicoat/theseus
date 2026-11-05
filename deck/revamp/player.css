@@ -1,0 +1,58 @@
+/* Review tools belong to the player, never on the slide. F23 / F24 / F29. */
+#bar { flex-wrap:wrap; justify-content:center; gap:8px; height:auto; min-height:44px; box-sizing:border-box; }
+#chap { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+#rate, #edit, #src, #review { box-sizing:border-box; max-height:min(76dvh,780px); overflow:auto; overscroll-behavior:contain; }
+#rate, #src { position:fixed; top:12px; bottom:auto; max-height:min(76dvh,780px); }
+#review { position:fixed; z-index:30; right:max(20px,env(safe-area-inset-right)); top:20px; width:min(620px,calc(100vw - 40px)); padding:24px; background:#151619; color:#f3f2ee; border:1px solid #3d3f43; border-radius:6px; box-shadow:0 20px 80px #0006; font:560 15px/1.5 'Inter',sans-serif; }
+#review[hidden] { display:none; }
+#review h2 { font-size:21px; margin:0 0 12px; }
+#review h3 { font-size:17px; margin:22px 0 8px; }
+#review p { margin:8px 0; }
+#review blockquote { margin:12px 0; padding:8px 14px; border-left:2px solid #73777d; color:#d0d0cf; }
+#review ul { padding-left:20px; }
+#review li { margin:8px 0; }
+#review .answer { color:var(--hero); }
+#review .pending { color:#e8bfc0; }
+#review a { color:var(--hero); }
+#review .toolbar { display:flex; gap:8px; flex-wrap:wrap; position:sticky; top:0; z-index:2; background:#151619; padding:12px 0; }
+#review button { cursor:pointer; border:1px solid #505257; background:#26272a; color:#f3f2ee; border-radius:4px; padding:8px 12px; font:600 13px 'Inter',sans-serif; }
+#rate .legacy-review { margin:12px 0; border-top:1px solid #414247; padding-top:12px; }
+#rate .legacy-review summary { cursor:pointer; font-weight:650; color:var(--hero); }
+#rate .legacy-review blockquote { margin:10px 0; padding-left:12px; border-left:2px solid #666; white-space:pre-wrap; }
+#rate .legacy-review li { margin:7px 0; }
+#rate textarea { min-height:64px; font-size:16px; }
+#rate .hint { display:block; font-weight:560; }
+#reviewStatus { width:100%; text-align:center; font:560 11px/1.4 'Inter',sans-serif; color:#a6a8ad; white-space:pre-line; overflow-wrap:anywhere; }
+#previewUpdate { position:fixed; z-index:50; top:12px; left:50%; transform:translateX(-50%); box-sizing:border-box; width:min(760px,calc(100vw - 24px)); display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 16px; border:1px solid var(--hero); border-radius:6px; background:#181a1b; color:#f3f2ee; font:650 13px/1.4 'Inter',sans-serif; box-shadow:0 8px 35px #0008; }
+#previewUpdate[hidden] { display:none; }
+#previewUpdate span { overflow-wrap:anywhere; }
+#seek { flex:1 1 100%; min-width:0; height:22px; accent-color:var(--hero); cursor:pointer; }
+#autoBtn[aria-pressed="true"] { border-color:var(--hero); }
+#autoBtn { min-width:108px; }
+#review li { overflow-wrap:anywhere; }
+#review .verification { color:#b9bec6; font-size:12px; }
+#review li[data-status="pending"] { border-left:2px solid #c78686; padding-left:10px; }
+#rate .top, #edit .top { flex-wrap:wrap; }
+#rate .state, #edit .state { white-space:normal; overflow-wrap:anywhere; }
+.rv-panel-close { display:block; margin:0 0 12px auto; height:30px; }
+#rate .rv-panel-close, #edit .rv-panel-close, #src .rv-panel-close { position:sticky; top:0; z-index:3; background:#24262a; }
+#edit { position:fixed; bottom:12px; left:12px; right:12px; top:auto; width:min(760px,calc(100vw - 24px)); margin:auto; max-height:44dvh; }
+#bar .pill { padding-left:12px; padding-right:12px; }
+@media(max-width:720px) {
+ #app { justify-content:flex-start; padding-top:max(12px,env(safe-area-inset-top)); }
+ #bar { align-content:flex-start; gap:7px; }
+ #bar #segs { flex:1 1 100%; order:20; min-height:7px; }
+ #bar #chap { flex:1 1 80px; }
+ #bar button { min-height:36px; }
+ #rate, #src { left:12px; right:12px; width:auto; top:max(10px,env(safe-area-inset-top)); bottom:auto; max-height:66dvh; }
+ #edit { left:12px; right:12px; width:auto; top:auto; bottom:12px; max-height:44dvh; }
+ #review { top:max(10px,env(safe-area-inset-top)); left:12px; right:12px; width:auto; max-height:74dvh; }
+ #reviewStatus { font-size:11px; }
+}
+/* A short landscape phone needs a side editor, not a thumbnail over a tall dock. */
+@media(min-width:721px) and (max-height:540px) {
+ body.editing #bar { display:none; }
+ body.editing #edit { top:12px; bottom:12px; left:auto; right:12px; width:min(420px,44vw); max-height:calc(100dvh - 24px); margin:0; }
+ body.editing #app { align-items:flex-start; justify-content:center; padding-right:calc(min(420px,44vw) + 24px); }
+}
+@media print { #bar, #rate, #edit, #src, #review { display:none!important; } }
