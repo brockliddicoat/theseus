@@ -973,3 +973,9 @@ old score as archived (F26.13).
   ceiling Theseus raises is one more problem a feature can solve (F33.6), and the film's spine is ZERO compromises, with
   each flagship's own compromise named and shown (weight for battery, shape for weight, durability for weight, optical
   for battery, and so on), sourced.
+- **F33.8** "when you teaching engineering concepts in the presentation, research the type of examples professors have used
+  in students to help them intuitively understand a concept at a glance". So each engineering idea is taught with a classroom
+  demonstration, researched and cited: for example, a ruler bent flat and then on edge (stiffness and shape), a sheet of paper
+  tearing at a nick (stress at a notch), the Comet airliner's square windows (why corners get fillets), a square of straws
+  that sags against a triangle that holds (triangulation), a hanging chain flipped upright (the thrust line, as in Gaudí's
+  hanging models), wood splitting along its grain (fibre direction), stacked coins (tolerance stack-up).
