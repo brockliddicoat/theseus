@@ -848,3 +848,25 @@ old score as archived (F26.13).
   the sensor, about 14.5 mm right of centre, level with it; the board's window is 16 mm further forward). Asked where the
   switch should go, he chose **"Decide with the bottom cover"**: it stays centred in the board's window for now, and the
   notch is placed with the bottom cover (the Sora's slot and the room freed by J2's move are noted for then).
+
+## F30. The board revamp, reviewed (2026-11-05 05:22, on board-first.png)
+- **F30.1** "i have a lot of issues with this design, you need to really think through the components placement a lot
+  more, the pmic was supposed to bd moved as far from the mcu as possible" (the power chip's move was due at this
+  redesign, F21.11; Claude's miss: it wasn't in K2's brief).
+- **F30.2** "you weren't supposed to get rid of the back notch and some of the filets being bigger than others looks
+  quite bad".
+- **F30.3** "you should flip the sensor and MCU position so the sensor is as far up as possible and then put the pmic in
+  that empty left middle spot".
+- **F30.4** "you have more space to come up with a more optimal the pcb component spacing shouldn't be so cramped".
+- **F30.5** "the new front sticks out way too much, the power button placement hole should be aligned with the hole above
+  it for the screw and another component".
+- **F30.6** "all of the compensnts should feel cerntered to eachother".
+- **F30.7** "the traces are gone and the not gold triangles are missing from the bottom, this pcb is less detailed than
+  before".
+- **F30.8** "i liked the scroll wheel version with lines better" (back to the straight-line tread of F22.1, overriding
+  F25.1's diamond knurl; arms and 0.900 g kept).
+- **F30.9** "the new battery just is in a really stupid spot that makes it feel cramped" (the battery connector J2).
+- **IN PROGRESS (K2), in two steps:** a placement plan first (scale outline, every part's footprint, the alignment axes,
+  the PMIC-to-MCU distance, the sensor's new position and what it moves), shown to Brock; the 3D rebuild only after his OK.
+  Moving the sensor up moves the lens: the shell's lens window, the dots round it and the balance get asked about with
+  the plan's numbers.
