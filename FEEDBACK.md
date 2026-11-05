@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 20:15 (Chicago).
+Last updated: 2026-11-04 20:58 (Chicago).
 
 ## Open with Brock
 
@@ -45,6 +45,11 @@ Last updated: 2026-11-04 20:15 (Chicago).
     Two-tone by etching through to the carbon (as drawn), Cerakote's Laser Imaging, or a base coat plus a top coat? Is
     the grip map right (fine ridges on the buttons, coarse on the sides, dots for the thumb, a smooth hump)? Is 9H "on
     Cerakote's test panels" fine, when the shell cures at 180 °F?
+  - Ownership: tolerances right on the first assembly have no published rate: an estimate for ABS and carbon-filled, or
+    words only (as now)? The brass insert's 0 % "feels different" is derived from his metal-on-metal reasoning: keep it,
+    another number, or a word? `own_life` sets two different tests side by side, each labelled: keep, or the insert alone?
+  - Shape: the size slide calls Theseus the shortest flagship by his flat-mouse rule, at 39.9 mm tall: fine, or reword?
+    The Newtonian slide uses generic profiles: fine, or wait for the frozen shape's real curves?
   - Still open from before: the tensioner's real dimensions (F12.5) and the side seam height (F17.2).
 - **Answered from his own photo:** TTC's optical encoder has five pins (the 07:20 photo), so every drawing now has five.
 
@@ -83,7 +88,7 @@ Last updated: 2026-11-04 20:15 (Chicago).
 
 ## F2. The 40+ review notes (2026-11-04, attachment)
 
-- **F2.01 IN PROGRESS (own)** "i need a slide on how metal threaded inserts increase longevity and increase chances of
+- **F2.01 DONE** (`own_insert`: the second drive in plastic cuts a new thread, in brass it follows the same one, 85 % → 0 %; `own_life`: 98.6 % hold kept) "i need a slide on how metal threaded inserts increase longevity and increase chances of
   tolerances be correct when assembled the first time, show chances of getting tolerances right and chances of it
   feeling different after unscrewing it (it should be like a 90% chance for abs plastic, and slightly lower for carbon
   filled plastic, which be the other material you're comparing to)"
@@ -108,7 +113,7 @@ Last updated: 2026-11-04 20:15 (Chicago).
   side buttons should show the mini microswitch being used as as support by 2 additional arms as well to keep the
   button from bending in too far"
   - Now full-size SPDT switches with a glove (F9.16).
-- **F2.08 DONE in 3D (TTC-style optical encoder, ISO screws, a knurled insert), IN PROGRESS in 2D (srf, own)** "the encoder and screws need a massive revamp to look proper"
+- **F2.08 DONE** (3D: TTC-style optical encoder, ISO screws, a knurled insert; 2D: `srf_encoder`, and `ownscrew`, `own_insert` and `own_life` drawn from the 3D model's exact head, recess, thread and insert) "the encoder and screws need a massive revamp to look proper"
   - Encoder form: F9.21.
 - **F2.09 DONE** (`shlThin`, `shlShell3d`, `shlLattice3d`, and the meter strip through the chapter) "id like you to elaborate more and do more animations on how triangles are more helpful on a
   lower weight mouse. throughout all the strength increases from industry standards i'd like to see a bar of flex or
@@ -161,7 +166,7 @@ Last updated: 2026-11-04 20:15 (Chicago).
   - Decided: F6.3.
 - **F2.27 DONE** (Intro, Shell A, Electronics) "also dont worry about weight compared to the xa25, i have that covered, we will be
   able to cut weight elsewhere with my shell design to hit that 200hr"
-- **F2.28 IN PROGRESS (ntr)** "after the comparisons, i think our solution needs a stats slide of their own with a bunch of
+- **F2.28 DONE** (`ntr_stats`, "Theseus, by the numbers") "after the comparisons, i think our solution needs a stats slide of their own with a bunch of
   important numbers on big fonts that tick up with an animation, maybe sometimes the "next best" is in a smaller lore
   darker font"
   - Done: `ntr_stats`, "Theseus, by the numbers", a bento whose tiles count up, with the next best smaller, darker and
@@ -196,7 +201,7 @@ Last updated: 2026-11-04 20:15 (Chicago).
 - **F2.42 DONE** (the dongle slide is gone) "remove any slides about the dongle as i'm unsure if i want to do the side arm system or not"
 - **F2.43 STANDING, IN PROGRESS (all)** "i like the animations where you show the mouse cursor moving things"
   - Shared helper: cursorAt.
-- **F2.44 IN PROGRESS (own), STANDING for titles (all)** "i want you to specifically mention newtonian shape analysis, i'm
+- **F2.44 DONE** (`shp_newton`, "Newtonian shape analysis"), **STANDING for titles (all)** "i want you to specifically mention newtonian shape analysis, i'm
   not a fan of how the titles of the slides seem to beat around the bush if the concept names"
 - **F2.45 DONE** "the most important specification isn't weight, it's density, which is calculated by taking
   length x width x height in millimeters and dividing by density in grams (or maybe the other way around, look at how
@@ -335,7 +340,7 @@ Last updated: 2026-11-04 20:15 (Chicago).
   better, and peak force areas should also be colored in red so the viewer knows they're bad. show the risk of breakage.
   this should tie in with a lot of the other advice i've given you, you should try to make as many concepts tie together
   as possible"
-- **F9.24 DONE in shared code and in every chapter integrated so far (Surface: the fingertip is a white print outline); Own still to check** "i dislike anywhere where you use peach tones, especially if it's
+- **F9.24 DONE** (shared code and every chapter: skin is grey or a white print outline, never peach) "i dislike anywhere where you use peach tones, especially if it's
   depicting skin (it's hard to tell) skin tones should always been mono tone"
 - **F9.25 DONE** (3D and `elc_module`) "i'd like you to modify the way the raytac module looks, it should be black instead of
   blue"
@@ -360,7 +365,7 @@ Last updated: 2026-11-04 20:15 (Chicago).
   NOT sacrifice thoroughness or projected agent intelligence or strength, if you have to make compromises, compromise on
   speed"
   - Two or three builders run at a time, on the same model.
-- **F10.2 IN PROGRESS** "i'd also like you go back to giving me a live link that you update so i can see the progress
+- **F10.2 DONE, STANDING** (the live link, republished at each integration; v14 at 20:5x) "i'd also like you go back to giving me a live link that you update so i can see the progress
   updates often as soon as you make them"
   - The link: https://claude.ai/artifact/HH8yRD9aYxCvvgcT1jUkyv, republished as work lands.
 - **F10.3 DONE (this file), STANDING** "you should have a rolling list of all the feedback i've given you somewhere in the
@@ -462,11 +467,11 @@ Answers to the Shell A questions:
 - **F14.7 DONE** "title one of the slides "putting that weight to work" there's a title that is close to that
   right now, but what i've typed here is better"
   - This is `shlWork`, "The grams that work".
-- **F14.8 STANDING, DONE in the Shell chapter and its meter, IN PROGRESS (the remaining chapters)** "i think for peak stress you should put(lower is better) because it still feels
+- **F14.8 STANDING, DONE in every chapter** (each builder labelled its stress axes; the final review checks every slide) "i think for peak stress you should put(lower is better) because it still feels
   unintuitive, maybe you say peak EXPERIENCED stress as well"
   - The label is "Peak experienced stress (lower is better)".
-- **F14.9 STANDING, DONE in Intro, Clicks, Glide and Shell A/B, IN PROGRESS (the rest)** "sometimes you say "grams" where you should say "weight""
-- **F14.10 STANDING, DONE in Intro, Clicks, Glide and Shell A/B, IN PROGRESS (the remaining chapters)** "in general i think youre not really doing the best at showing how are
+- **F14.9 STANDING, DONE in every chapter** (the final review checks every slide) "sometimes you say "grams" where you should say "weight""
+- **F14.10 STANDING, DONE in every chapter; the plate's flex is being re-tuned so it wins at a glance** (the final review checks every slide) "in general i think youre not really doing the best at showing how are
   techniques are better AT A GLANCE, and by how much, you shouldn't have to read the whole slide to understand why our
   methods are better, and if at a glance it can look like our methods add worse that is very dangerous, not everyone is
   going to have time to read the full thing, there eyes are going to get drawn to certain parts each slide. making sure
@@ -482,7 +487,7 @@ Answers to the Shell A questions:
 
 ## F16. 2026-11-04 10:30 (with a screenshot of `arc`, Direct Drive Actuation)
 
-- **F16.1 STANDING, DONE in Intro, Clicks, Glide and Shell A/B, IN PROGRESS (the rest)** "in slides like this where you count down to zero, it's very hard to remember
+- **F16.1 STANDING, DONE in every chapter** (the final review checks every slide) "in slides like this where you count down to zero, it's very hard to remember
   what the original numbers were and how much better they are now, you should find some way to always show the net
   change or the bad case at the same time"
   - Asked how: "Before → after". The bad value stays visible, greyed or struck, beside the live one (10.6° → 0°), with

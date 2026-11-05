@@ -263,7 +263,7 @@ S({
     const D = own_BOX, lx = LM, lw0 = 1000, y0 = 280, h0 = 680;
     own_ba(t, 0.8, lx, 420, '3 of 6', '6 of 6', { sb: 66, sa: 126, label: 'What ships in the box', net: 'Next best: 3 of 6, the OP1 8K; it is wired, so it ships no receiver' });
     const ty = 600;
-    demoWindow(lx, 540, lw0, 420, tileA(t, 0.3, 0));
+    demoWindow(lx, 540, lw0, 400, tileA(t, 0.3, 0));
     const nw = 230, cw = (lw0 - 64 - nw - 60) / D.items.length, gx = j => lx + 32 + nw + cw * (j + 0.5), rh = 46;
     D.items.forEach((it, j) => { const a = ep(t, 0.9 + j * 0.08, 1.3 + j * 0.08); text(it, gx(j), ty - 12, { role: 'label', size: 19, color: it === 'Screw driver' ? C.ink : C.mute, align: 'center', alpha: a, maxW: cw - 6 }); });
     D.mice.forEach((m, i) => {
@@ -285,7 +285,7 @@ S({
     cardHead(t, 0.4, rx, y0, rw, 'Envelope and trifold (#72)', []);
     own_trifold(t, rx, y0 + 90, rw, h0 - 90);
     text('Paper only: no plastic tray, no foam', rx + rw / 2, y0 + h0 - 30, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: ep(t, 4.4, 4.8) });
-    source(t, 'Box lists: maker setup guides, reviews and retailer pages; a dash means the source did not list it. The OP1 8K is wired. The driver in Theseus\'s box fits every screw in it, cross or slot (#73).', { t0: 3.0, maxW: 1760 });
+    source(t, 'Box lists: setup guides, reviews and retailer pages; a dash: the source did not list it. Theseus\'s driver fits every screw in it, cross or slot (#73).', { t0: 3.0, maxW: 1760 });
   }
 });
 

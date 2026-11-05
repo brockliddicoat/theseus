@@ -501,7 +501,7 @@ S({
       text('M2 × 0.4', sec.thread[0] + 44, sec.thread[1] + 8, { role: 'label', size: 21, color: C.ink2, alpha: kd });
       line(sec.thread[0] + 6, sec.thread[1], sec.thread[0] + 36, sec.thread[1], { color: C.mute, w: 1.2, alpha: kd });
       /* the pointer on the bit, pushing it down and turning it */
-      if (sec.bitTop) cursorAt(t, [[1.0, [sec.bitTop[0] + 30, sec.bitTop[1] - 60]], [1.2, [sec.bitTop[0] + 30, sec.bitTop[1] - 60]]], [], { a: ep(t, 0.9, 1.2) * (1 - ep(t, 8.4, 8.8)) });
+      if (sec.bitTip) { const q = [sec.bitTip[0] + 70, Math.max(sec.bitTip[1] - 210, y0 + 80)]; cursorAt(t, [[1.0, q], [1.2, q]], [2.85], { a: ep(t, 0.9, 1.2) * (1 - ep(t, 8.4, 8.8)) }); }
     }
     /* right: the glance */
     const rx = 1240, rw = RM - rx;
@@ -530,7 +530,7 @@ S({
   src: ['ownBrock', 'ownCovestro', 'ownCumbicus', 'ownPemM2'],
   draw: t => {
     header(t, 'Brass heat-set inserts');
-    captions(t, [[0.6, 'Screwed straight into plastic, the first drive cuts the thread. Drive it back in a hair off that angle and it cuts a new one.'], [6.4, 'In a brass insert the screw can only follow the thread it came out of, so the joint closes the same every time.']]);
+    captions(t, [[0.6, 'Screwed straight into plastic, the first drive cuts the thread at whatever angle the hand holds it. A brass insert arrives with the thread finished.'], [4.2, 'Back the screw out and drive it in again a hair off that angle, and in plastic it cuts a new thread, at a new tension.'], [6.8, 'In brass the screw can only follow the thread it came out of, so the joint is right the first time and closes the same every time.']]);
     const x0 = LM, y0 = 280, w0 = 1080, h0 = 640, P = own_inPose(t), s = 40, by = y0 + 320;
     demoWindow(x0, y0, w0, h0, tileA(t, 0.15, 0));
     const turn = t * 0.9, bitA = ep(t, 0.6, 1.0);
@@ -541,7 +541,7 @@ S({
     J.forEach((j, i) => {
       const kN = ep(t, 0.6, 1.0), hero = j.kind === 'insert';
       text(j.name, j.cx, y0 + h0 - 78, { role: 'label', size: 21, color: hero ? C.heroText : C.ink, align: 'center', alpha: kN });
-      const msg = P.step === 0 ? (hero ? 'Runs in a finished brass thread' : 'The first drive cuts the thread') : P.step === 1 ? (hero ? 'The thread stays in the brass' : 'The thread it cut stays behind') : (hero ? 'The same thread, the same joint' : 'A new thread, cut beside the first');
+      const msg = P.step === 0 ? (hero ? 'A finished thread: right first time' : 'The first drive cuts the thread') : P.step === 1 ? (hero ? 'The thread stays in the brass' : 'The thread it cut stays behind') : (hero ? 'The same thread, the same joint' : 'A new thread, cut beside the first');
       const bad = !hero && P.step === 2 && P.reach2 > 1.0;
       text(msg, j.cx, y0 + h0 - 40, { role: 'small', size: 25, weight: 700, color: bad ? C.bad : hero && P.step === 2 ? C.heroText : C.ink2, align: 'center', alpha: kN * ep(t, 1.0, 1.4) });
       /* which way the bit turns: along the front of the shank, leftward driving in */

@@ -92,7 +92,7 @@ function shp_tile(t, t0, r, P, o) {
   if (curve.length > 1) poly(curve, { color: hero ? C.hero : o.over ? C.bad : C.ink, w: 3, alpha: kg });
   const mk = P[Math.min(P.length - 1, F.i)];
   circle(GX(mk.s), GY(mk.k * 180 / Math.PI), 6, { fill: F.off ? C.bad : hero ? C.hero : C.ink, alpha: kg * ep(t, 1.6, 2.0) });
-  text('Rate of change of the slope, along the curve', gx, gy - 14, { role: 'label', size: 19, color: C.mute, alpha: kg });
+  text('Rate of change of the slope', gx, gy - 14, { role: 'label', size: 19, color: C.mute, alpha: kg });
   rich([{ s: 'Peak', role: 'label', size: 20, color: C.mute }, { s: fmtN(shp_peak(P), 1) + '°/mm', font: 'disp', size: 30, weight: 800, color: hero ? C.heroText : C.bad, gap: 12, caps: false }, { s: 'Derived', role: 'label', size: 19, color: C.faint, gap: 16 }], gx, y + h - 26, { alpha: kv });
 }
 
@@ -123,11 +123,11 @@ S({
   draw: t => {
     header(t, 'Newtonian shape analysis');
     captions(t, [[0.6, 'Press a curve and it pushes back at a right angle to itself. Follow the curve 1:1, and its derivative at the edge says where the push sends you.'], [5.4, 'Turn too fast and the finger is thrown off the mouse. Too gently, and there is no shoulder to rest on. Round but defined lands it on the side.']]);
-    const cell = bento(LM, 280, RM - LM, 680, 3, 1);
+    const cell = bento(LM, 280, RM - LM, 640, 3, 1);
     shp_tile(t, 0.2, cell(0, 0), SHP.sharp, { i: 0, name: 'Sharp shoulder', verdict: 'Off the mouse', off: 32, over: true });
     shp_tile(t, 0.2, cell(1, 0), SHP.soft, { i: 1, name: 'Shoulder too gentle', verdict: 'Nowhere to rest', stop: 7 });
     shp_tile(t, 0.2, cell(2, 0), SHP.round, { i: 2, name: 'Round, defined: Theseus\'s rule', verdict: 'Onto the side', stop: 7, hero: true });
-    source(t, 'Generic profiles drawn from their curvature. The finger follows each 1:1; where a curve turns tighter than the press can hold it (2.2 mm), it carries on along the derivative at that edge. Brock\'s doc, the brainstorm and #42.', { t0: 2, maxW: 1760 });
+    source(t, 'Generic profiles, drawn from their curvature. The finger follows each 1:1; where a curve turns tighter than the press holds it (2.2 mm), it carries on along the derivative at that edge.', { t0: 2, maxW: 1760 });
   }
 });
 
@@ -240,10 +240,10 @@ S({
   draw: t => {
     header(t, 'EMG on every shape revision');
     captions(t, [[0.6, 'The forearm extensors carry the aim, and in pro players they never rest. Electrodes on the skin read how hard they work.'], [4.8, 'So every shape revision is measured on players, with aim and comfort scored beside it: EMG alone misses what comfort catches.']]);
-    const x0 = LM, y0 = 280, w0 = 960, h0 = 680, ka = tileA(t, 0.15, 0);
+    const x0 = LM, y0 = 280, w0 = 960, h0 = 640, ka = tileA(t, 0.15, 0);
     demoWindow(x0, y0, w0, h0, ka);
     cardHead(t, 0.35, x0, y0, w0, 'Surface EMG, two forearm muscles, a flick task', []);
-    text('Signal illustrative', x0 + w0 - 32, y0 + 412, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ka });
+    text('Signal illustrative', x0 + w0 - 32, y0 + 400, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ka });
     const tr = [['Extensor digitorum', 1.0], ['Extensor carpi radialis', 0.72]];
     tr.forEach(([nm, amp], i) => {
       const yy = y0 + 170 + i * 150, xA = x0 + 330, xB = x0 + w0 - 40, k = ep(t, 0.8 + i * 0.3, 1.2 + i * 0.3) * ka;
@@ -253,7 +253,7 @@ S({
       G.stroke(); G.restore();
     });
     /* what the study found, as bars */
-    const by = y0 + 470;
+    const by = y0 + 450;
     own_bars(t, 2.4, x0 + 32, by, w0 - 64, [
       { label: 'Extensor digitorum', v: 5, s: '> 5 %', kind: 'comp' },
       { label: 'Extensor carpi radialis', v: 5, s: '> 5 %', kind: 'comp' }
@@ -262,7 +262,7 @@ S({
     const rx = x0 + w0 + 40, rw = RM - rx;
     own_ba(t, 1.0, rx, 440, null, 'Every', { unit: 'revision', sa: 140, label: 'Measured with EMG on players', net: 'Today only Zowie tests its shapes on muscle activity (Brock).' });
     const steps = [['16 players or more', 'Split by hand size and grip: medium hands are the most sensitive to shape.'], ['EMG and fatigue', 'Static load across a session, on the extensors that aim.'], ['Comfort, scored', 'EMG alone missed 5 mm hump changes that comfort caught (Li & Wang 2025).']];
-    let yy = 560; steps.forEach(([hd, b], i) => { const r = noteBox(t, 2.0 + i * 0.3, rx, yy, rw, { head: hd, body: b, size: 25, pad: 28 }); yy += r.h + 20; });
-    source(t, 'Wang et al. 2023: pro Overwatch players, two extensors above 5 % of maximum voluntary contraction throughout; six of ten muscles above 2 %. Li & Wang 2025; Tang 2023 (n = 16, five ZOWIE shapes).', { t0: 2, maxW: 1760 });
+    let yy = 540; steps.forEach(([hd, b], i) => { const r = noteBox(t, 2.0 + i * 0.3, rx, yy, rw, { head: hd, body: b, size: 25, pad: 26 }); yy += r.h + 16; });
+    source(t, 'Wang et al. 2023: pro Overwatch players, two extensors above 5 % of maximum voluntary contraction throughout. Li & Wang 2025. Tang 2023: five ZOWIE shapes, n = 16.', { t0: 2, maxW: 1760 });
   }
 });
