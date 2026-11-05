@@ -940,3 +940,10 @@ old score as archived (F26.13).
   takes"** (builders). **TODO (from the 08:20 reset):** REVAMP.md (the new story, each new slide with the old slides and
   his notes it answers), the rating panel showing those notes on each new slide, then the builders in parallel; the board
   (K2) and the GT01 walls (K1) carry on beside them.
+- **F30.25** On board-plan-5.png: the USB-C conflict (its front leg slots cross the new 3.61 mm front edge by 0.61 mm),
+  "whatever you think is best": **Claude's call: move the receptacle back 1.05 mm** (one depth kept; 0.44 mm of board at
+  its legs; it still hangs 1.60 mm out; the bay's front edge to z 44.13; the mouth 4.05 mm short of the shell's opening
+  until the shell round). Mounting holes: **"Mirror pairs"**. Build it? "chamfer and and filet the scroll wheel cutout,
+  make the back notch the same length as the left and right, then builld". **TODO (K2, from the 08:20 reset):** the wheel
+  bay's corners chamfered at the one angle with the 1.0 mm fillets, the rear notch as long as the side notches, then the
+  3D build with both power switch versions; also the wheel slide's knurl strip redrawn straight (F30.8).
