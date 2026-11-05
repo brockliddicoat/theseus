@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 19:42 (Chicago).
+Last updated: 2026-11-04 20:15 (Chicago).
 
 ## Open with Brock
 
@@ -31,6 +31,22 @@ Last updated: 2026-11-04 19:42 (Chicago).
   still open (F12.5).
 - **SPDT:** F9.4 says "single pull double throw". The standard term is **single pole, double throw**, and the deck uses
   that.
+- **Questions waiting for him** (the question tool timed out twice while he was away; the deck uses the default named
+  after each until he answers):
+  - Shell: the intro's weight budget gives the shell 10.62 g, but Shell A's study body weighs 15.2 g. Which is the target?
+    (Default: both shown, each labelled with what it includes.)
+  - Shell: grip height 12 mm; board thickness 1.0, 0.8 or 0.6 mm; keep the "arms squeeze" slide?
+  - Plate: at equal weight a plain grid flexed 10 % less than ours (ours peaks 12 % lower). Being re-tuned now so ours
+    wins on both; if it can't within his rules, he picks which rule to relax.
+  - Clicks: is 70 µs at the NC release only right? The PAW3395's floor?
+  - Electronics: AN54LM-20A or -P20A (the long antenna is listed on the -P20A)? The PMIC beside the antenna end? The cell
+    LP402535JU, 370 mAh? Syncpower folded into power? The braid as three 32 AWG wires of 40 AWG strands?
+  - Surface: weighings of a shell before the blast, after it and after coating (to put a number on "almost as much")?
+    Two-tone by etching through to the carbon (as drawn), Cerakote's Laser Imaging, or a base coat plus a top coat? Is
+    the grip map right (fine ridges on the buttons, coarse on the sides, dots for the thumb, a smooth hump)? Is 9H "on
+    Cerakote's test panels" fine, when the shell cures at 180 °F?
+  - Still open from before: the tensioner's real dimensions (F12.5) and the side seam height (F17.2).
+- **Answered from his own photo:** TTC's optical encoder has five pins (the 07:20 photo), so every drawing now has five.
 
 ---
 

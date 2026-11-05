@@ -376,7 +376,10 @@ function callout(t, t0, p, label, o = {}) {
   const k = ep(t, t0, t0 + 0.5, E.snap); if (k <= 0) return;
   const col = o.color || C.ink, a = o.alpha == null ? 1 : o.alpha;
   const to = o.to || [p[0] + (o.dx == null ? 140 : o.dx), p[1] + (o.dy == null ? -60 : o.dy)];
-  const right = o.side ? o.side === 'r' : to[0] >= p[0];
+  /* a forced side that points back across the leader would set the label over its own leader: then the label takes the
+     side the leader arrives from */
+  const against = o.side && (o.side === 'r' ? to[0] < p[0] - 4 : to[0] > p[0] + 4);
+  const right = o.side && !against ? o.side === 'r' : to[0] >= p[0];
   circle(p[0], p[1], 5 * k, { fill: col, alpha: a }); circle(p[0], p[1], 11 * k, { color: col, w: 1.5, alpha: 0.45 * a });
   const midx = o.elbow != null ? o.elbow : p[0] + (to[0] - p[0]) * 0.3;
   poly([[p[0], p[1]], [midx, to[1]], [to[0], to[1]]], { color: col, w: 1.5, p: k, alpha: a * 0.85 });

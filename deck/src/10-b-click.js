@@ -847,11 +847,11 @@ clk_S({
       /* the pointer presses the outer edge */
       if (o.edge) { const ka = ep(t, 1.6, 2.3, E.cam), st = [o.edge[0] + 90, o.edge[1] - 110]; cursorPtr(lerp(st[0], o.edge[0], ka), lerp(st[1], o.edge[1], ka), { a: ep(t, 1.4, 1.8), press: prog(t, 2.4, 2.9) > 0 && prog(t, 2.4, 2.9) < 1 ? prog(t, 2.4, 2.9) : 0 }); }
       if (!dual) {
-        callout(t, 3.4, o.edge, 'It rolls about its one post', { to: [x + 576, wy + 110], side: 'r', color: C.bad, tcolor: C.ink, maxW: 240, prose: true });
+        callout(t, 3.4, o.edge, 'It rolls about its one post', { to: [o.edge[0] - 14, wy + 110], side: 'l', color: C.bad, tcolor: C.ink, maxW: 240, prose: true });
         if (pr > 0.8 && o.rub) { circle(o.rub[0], o.rub[1], 9 + 5 * Math.sin(t * 9), { color: C.bad, w: 2.5 }); }
         callout(t, 3.7, o.rub, 'Grinds its bare guide', { to: [x + 576, wy + 330], side: 'r', color: C.bad, tcolor: C.ink, maxW: 240, prose: true });
       } else {
-        callout(t, 7.2, o.post2, 'A second post, on its own rail', { to: [x + 576, wy + 110], side: 'r', color: C.hero, tcolor: C.ink, maxW: 240, prose: true });
+        callout(t, 7.2, o.post2, 'A second post, on its own rail', { to: [o.post2[0] - 14, wy + 110], side: 'l', color: C.hero, tcolor: C.ink, maxW: 240, prose: true });
         callout(t, 7.5, o.guide1, 'POM pads', { to: [x + 250, wy + 330], side: 'l', color: C.hero, tcolor: C.ink });
       }
     });
