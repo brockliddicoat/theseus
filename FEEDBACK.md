@@ -107,12 +107,12 @@ Last updated: 2026-11-04 19:42 (Chicago).
   be the case. follow that up with a "what if you didn't have to pick…" but find a good transition"
 - **F2.12 DONE** (Shells A, B and C) "show more force distribution animations, i think those will be really helpful"
   - Built on 07-sim.js (feFlow, feDraw).
-- **F2.13 IN PROGRESS (srf)** "improve how the texture of the cerakote looks and make the fibers look more accurate"
-- **F2.14 IN PROGRESS (srf)** "visualize and show cerakote can be laser etched in different shapes and spacings to create
+- **F2.13 DONE** (`srf_texture`: 7 µm fibres in PP-C-20A, the blasted profile and the 19 µm film levelling over it, to scale) "improve how the texture of the cerakote looks and make the fibers look more accurate"
+- **F2.14 DONE** (`grip`: the fingertip drag and the polar plot, +26 %; `srf_gripmap`: a laser-etched zone for each job, −57 % squeeze to lift) "visualize and show cerakote can be laser etched in different shapes and spacings to create
   grip in exactly the right places in exactly the right directions, curation that grip tape doesn't allow for, because
   you need extra grip in a specific direction everywhere on the mouse, while allowing mobility in every other
   direction"
-- **F2.15 IN PROGRESS (srf)** "show how this is the solid state solution that doesn't need adhesives that wear down over
+- **F2.15 DONE** (`srf_tape`: 0.5 mm tape on glue against the 19 µm coat, aged six months; 0 adhesive) "show how this is the solid state solution that doesn't need adhesives that wear down over
   time or collect gunk"
 - **F2.16 DONE** (`shbArches`: arches drawn as continuous lines, triangles where they cross; `shbDome`: geodesic domes, the HI-SEAS Mars missions) "talk about how triangles from continuous lines (and therefore arches in dome shape like a
   mouse, show nasa mars base triangle domes) right now the presentation shows triangulated arches/ triangles forming
@@ -127,11 +127,11 @@ Last updated: 2026-11-04 19:42 (Chicago).
 - **F2.20 DONE** (`shbSides`: the flat low sides take the peak; a thicker band and the thumb rest) "show how the left and right sides of the mouse near the bottom being flatter and less
   arched, and how that means extra design intent has to be spent to make the lattice thicker in those wasted, as well as
   possibly specifically where the thumb rests"
-- **F2.21 IN PROGRESS (srf)** "talk about how the cerakote etching lets us do 2 tone designs without having to worry about
+- **F2.21 DONE** (`srf_twotone`: the second tone etched out of the first, 3 → 1 layers; a scuff chips the painted layers) "talk about how the cerakote etching lets us do 2 tone designs without having to worry about
   a second coat adding weight or coming off (as seen in the finalmouse prophecy series)"
-- **F2.22 IN PROGRESS (srf)** "talk about how cerakote is film thin and is the only coating that doesn't add weight because
+- **F2.22 DONE** (`srf_weight`: blast then coat, a balance ends level, +0.49 → ≈0 g) "talk about how cerakote is film thin and is the only coating that doesn't add weight because
   the sandblasting process blasts off almost as much as it adds"
-- **F2.23 IN PROGRESS (srf)** "talk about how with most coatings it's very hard to tell if they will yellow over time, but
+- **F2.23 DONE** (`srf_uv`: a UV chamber, 1,000 h, and what each maker publishes) "talk about how with most coatings it's very hard to tell if they will yellow over time, but
   cerakote is by far one of the safest because of its industry leading chemical and uv resistance (like how the ulx
   pros yellowed)"
 - **F2.24 DONE** (`shbPress`: arch against flat plate, 21× stiffer, the plate cracks at 12 N, the arch holds to 45 N; `shbThrust`; `shbBend`) "i need an elaborate and in depth force simulation, bending simulation and and text
@@ -310,7 +310,7 @@ Last updated: 2026-11-04 19:42 (Chicago).
   - Radius 6.
 - **F9.20 DONE** (`gld_sag`: 0 µm lens drop with the sensor dots, 150 → 0 µm; `dots`) "we need to talk about the importance of having one or 2 dot skates by the sensor to prevent
   sag and keeping the sensor focused correctly"
-- **F9.21 DONE in the shared 2D drawing (`encoderMM`, TTC's form), `sealed` and 3D, IN PROGRESS (srf)** "the encoder you are using is wrong, optical encoders look no different than normal mouse
+- **F9.21 DONE** (the shared 2D drawing `encoderMM` in TTC's form, `sealed`, 3D, and `srf_encoder`: the face plate cut away, the light gate magnified) "the encoder you are using is wrong, optical encoders look no different than normal mouse
   encoders, i've attached picture of what the interior looks of an modern mouse optical encoder is like, usually they're
   a little taller than that though"
 - **F9.22 STANDING** "again this is just me giving you more guidance, do not abandon any of my old guidance unless i've
@@ -319,7 +319,7 @@ Last updated: 2026-11-04 19:42 (Chicago).
   better, and peak force areas should also be colored in red so the viewer knows they're bad. show the risk of breakage.
   this should tie in with a lot of the other advice i've given you, you should try to make as many concepts tie together
   as possible"
-- **F9.24 DONE in shared code, IN PROGRESS per slide** "i dislike anywhere where you use peach tones, especially if it's
+- **F9.24 DONE in shared code and in every chapter integrated so far (Surface: the fingertip is a white print outline); Own still to check** "i dislike anywhere where you use peach tones, especially if it's
   depicting skin (it's hard to tell) skin tones should always been mono tone"
 - **F9.25 DONE** (3D and `elc_module`) "i'd like you to modify the way the raytac module looks, it should be black instead of
   blue"

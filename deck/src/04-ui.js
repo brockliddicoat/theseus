@@ -128,7 +128,7 @@ function bandBlock(t, t0, x, w, label, head, body, o = {}) {
   rect(x, y - 26, 28 * E.out3(a), 3, { fill: o.color || acc(), alpha: a });
   text(label, x + 40, y - 14, { role: 'label', size: 21, color: C.faint, alpha: a });
   if (o.right) o.right(y - 14, a);
-  para([{ s: sentence(head) + (/[.:!?]$/.test(head) ? ' ' : '. '), role: 'small', size: 26, weight: 700, color: o.hcolor || C.ink }, { s: sentence(body || ''), role: 'small', size: 26, weight: 450, color: C.ink2 }],
+  para([{ s: sentence(head) + (/[.:!?]$/.test(head) ? ' ' : '. '), role: 'small', size: 26, weight: 700, color: o.hcolor || C.ink }, { s: sentence(body || ''), role: 'small', size: 26, weight: 560, color: C.ink2 }],
     x, y + 30, { maxW: w, lh: 34, t, t0: t0 + 0.2, cps: 140, alpha: a, maxLines: o.maxLines || 3 });
   G.restore();
 }

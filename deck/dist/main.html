@@ -6113,7 +6113,8 @@ function chipMM(o = {}) {
    o.hi names what to highlight; o.cut draws the section line; o.detail circles a detail. */
 const SORA_HALF = [[0,59.44],[2.84,59.29],[5.66,58.88],[8.45,58.34],[11.22,57.69],[13.97,56.95],[16.68,56.07],[19.32,55.01],[21.86,53.73],[24.21,52.13],[26.23,50.13],[27.78,47.75],[28.77,45.08],[29.34,42.3],[29.67,39.47],[29.88,36.63],[30.02,33.79],[30.1,30.94],[30.16,28.09],[30.2,25.25],[30.29,22.4],[30.44,19.56],[30.51,16.71],[30.52,13.87],[30.5,11.02],[30.5,8.17],[30.5,5.33],[30.49,2.48],[30.49,-0.37],[30.49,-3.21],[30.5,-6.06],[30.54,-8.91],[30.67,-11.75],[30.83,-14.59],[30.97,-17.43],[31.1,-20.28],[31.18,-23.12],[31.19,-25.97],[31.11,-28.82],[30.86,-31.65],[30.41,-34.46],[29.72,-37.22],[28.79,-39.91],[27.63,-42.51],[26.22,-44.98],[24.59,-47.32],[22.76,-49.49],[20.74,-51.5],[18.56,-53.32],[16.21,-54.94],[13.73,-56.33],[11.13,-57.48],[8.43,-58.39],[5.66,-59.04],[2.84,-59.42],[0,-59.55]];
 const KEY_PTS = SORA_HALF.map(([x, z]) => [x, -z]).concat(SORA_HALF.slice(1, -1).reverse().map(([x, z]) => [-x, -z]));
-const KEY = { seam: -4.84, wheel: [-4.3, -48, 8.6, 20], nose: -59.44, tail: 59.55 };   /* seam: the straight rear cutout, level with the Sora smile's deepest point (Brock, F12.9; the 3D shell, shell z 4.84) */
+const KEY = { seam: -4.84, wheel: [-4.7, -46.4, 9.4, 18], nose: -59.44, tail: 59.55 };   /* seam: the straight rear cutout, level with the Sora smile's deepest point (Brock, F12.9; the 3D shell, shell z 4.84);
+   wheel: the 3D shell's wheel opening (wheelOpen: half-width 4.7, z 28.4 to 46.4; key-plan y = -z) */
 function keyPath() {
   const P = KEY_PTS, n = P.length; G.beginPath();
   G.moveTo((P[n - 1][0] + P[0][0]) / 2, (P[n - 1][1] + P[0][1]) / 2);
@@ -6137,18 +6138,25 @@ function keyPlanMM(o = {}) {
      wheel and there is no centre strip (Brock, 07:35): the wheel sits in the split, drawn as the wheel itself, no slot */
   const seam = inkA(TH ? 0.5 : 0.45), hw = keyHalfW(sy);
   mmLine([[0, KEY.nose + 0.4], [0, sy]], seam, 1.1); mmLine([[-hw + 0.3, sy], [hw - 0.3, sy]], seam, 1.1);
-  const [wx, wy, ww, wh] = KEY.wheel, wcx = wx + ww / 2, wwid = ww * 0.62;
-  G.beginPath(); pathRR(wcx - wwid / 2, wy + 1, wwid, wh - 2, wwid / 2); G.fillStyle = H.includes('wheel') ? A : (TH ? '#CFCEC9' : '#3A3B3F'); G.fill();
-  if (!H.includes('wheel')) for (let k = 0; k < 6; k++) mmLine([[wcx - wwid / 2 + 0.8, wy + 3.4 + k * 2.6], [wcx + wwid / 2 - 0.8, wy + 3.4 + k * 2.6]], inkA(0.28), 0.8);
+  /* the wheel as the 3D model has it: 7.0 mm wide, seen through its opening (1 mm short of each end) */
+  const [wx, wy, ww, wh] = KEY.wheel, wcx = wx + ww / 2, wwid = Math.min(7.0, ww - 1.2), wl = wh - 2;
+  G.save(); G.beginPath(); pathRR(wcx - wwid / 2, wy + 1, wwid, wl, wwid / 2); G.fillStyle = H.includes('wheel') ? A : (TH ? '#CFCEC9' : '#3A3B3F'); G.fill();
+  if (!H.includes('wheel')) { G.clip(); for (let k = 0; k < 7; k++) { const ry = wy + 1 + (k + 0.5) * wl / 7; mmLine([[wcx - wwid / 2, ry], [wcx + wwid / 2, ry]], inkA(0.28), 0.8); } }
+  G.restore();
   /* side buttons, on the left */
   for (const [y0, y1] of [[-23.5, -10.7], [-4.3, 9.7]]) { const x0 = -keyHalfW((y0 + y1) / 2); G.beginPath(); pathRR(x0 - 1.6, y0, 3.2, y1 - y0, 1.4); G.fillStyle = H.includes('side') ? A : inkA(TH ? 0.32 : 0.36); G.fill(); }
   /* hidden features underneath, dashed */
   G.setLineDash([lw(3), lw(2.5)]); G.lineWidth = lw(1.1);
   const dash = (on, f) => { G.strokeStyle = on ? A : inkA(0.3); G.fillStyle = rgba(A, 0.5); f(on); };
-  dash(H.includes('board'), on => { pathRR(-17, -34, 34, 72, 3); if (on) G.fill(); G.stroke(); });
-  dash(H.includes('antenna'), on => { G.beginPath(); G.rect(-6, -33, 12, 5); if (on) G.fill(); G.stroke(); });
-  dash(H.includes('sensor'), on => { G.beginPath(); G.arc(0, 4, 3.6, 0, TAU); if (on) G.fill(); G.stroke(); });
-  dash(H.includes('skates'), on => { for (const [x, y] of [[-21, -47], [-15, -53], [21, -47], [15, -53], [-23, 45], [-16, 51], [23, 45], [16, 51]]) { G.beginPath(); G.arc(x, y, 2.6, 0, TAU); if (on) G.fill(); G.stroke(); } });
+  /* the board where the 3D model has it (3d/pcb/pcb-layout.json: x +/-19.3, mouse z -7.9 to 49.6, the encoder under the wheel) */
+  dash(H.includes('board'), on => { pathRR(-19.3, -49.6, 38.6, 57.5, 3); if (on) G.fill(); G.stroke(); });
+  /* the radio's antenna keep-out, as the 3D board has it: the module turned 180 degrees, its antenna end toward the rear,
+     away from the wheel (Brock, F9.13; board keep-out at mouse z 10.87 to 14.57, x +/-6.6) */
+  dash(H.includes('antenna'), on => { G.beginPath(); G.rect(-6.6, -14.57, 13.2, 3.7); if (on) G.fill(); G.stroke(); });
+  /* the sensor's lens under the 3D shell's lens window (shell meta.sensor: x 0, z 0) */
+  dash(H.includes('sensor'), on => { G.beginPath(); G.arc(0, 0, 3.6, 0, TAU); if (on) G.fill(); G.stroke(); });
+  /* the plate-off dot skates on the rim's ledge, where the 3D shell seats them (meta.skates, 6.5 mm dots) */
+  dash(H.includes('skates'), on => { for (const [x, y] of [[-13.7,-47.3],[-20.0,-42.4],[-17.2,43.2],[-10.8,47.9],[19.9,-42.5],[13.5,-47.4],[11.1,47.8],[17.4,42.9]]) { G.beginPath(); G.arc(x, y, 3.25, 0, TAU); if (on) G.fill(); G.stroke(); } });
   dash(H.includes('battery'), on => { pathRR(-9, 14, 18, 22, 2); if (on) G.fill(); G.stroke(); });
   G.setLineDash([]);
   /* the cut */
@@ -15483,7 +15491,9 @@ S({
     }
     rr(sx0 + 18, ly + 18, 300, 40, 8, rgba('#FFFFFF', 0.86), null, 0, ep(t, 1.0, 1.4));
     text('Serial, right click', sx0 + 32, ly + 46, { role: 'label', size: 21, color: C.ink, alpha: ep(t, 1.0, 1.4) });
-    text('3 digits, 6.4 mm tall', sx0 + sw - 22, ly + sh - 22, { role: 'label', size: 19, color: C.ink2, align: 'right', alpha: ep(t, 4.6, 5.0) });
+    const nw = tw('3 digits, 6.4 mm tall', { role: 'label', size: 19 }), kn = ep(t, 4.6, 5.0);
+    rr(sx0 + sw - 34 - nw, ly + sh - 50, nw + 24, 38, 8, rgba('#FFFFFF', 0.86), null, 0, kn);
+    text('3 digits, 6.4 mm tall', sx0 + sw - 22, ly + sh - 24, { role: 'label', size: 19, color: '#2E2E2C', align: 'right', alpha: kn });
     /* right top: the side mark, wiped in, then carried through every colourway */
     const mx0 = 1434, mw = RM - mx0, cyc0 = t >= 7 ? Math.floor((t - 7) / 1.6) % 4 : -1, cws = ['white', 'grey', 'forged', 'black'], cw = cyc0 < 0 ? 'black' : cws[cyc0];
     const mv = Object.assign({}, base, { view: 'right', fov: 10, zoom: 6.4, target: [29, 11.6, 40.5], colorway: cw });

@@ -570,8 +570,8 @@ function shlGauge(x, y, h, frac, o = {}) {
    o = { clog (0..1: dust in the bushing and the frame's gaps) }. Returns { top, bush, left, right } in stage px */
 function shlEncoderMM(o = {}) {
   const out = {}, steel = TH ? '#C9CDD3' : '#A7ADB5', steel2 = TH ? '#AEB3BA' : '#8C929B', tin = TH ? '#B9BEC5' : '#9AA0A8';
-  /* pins and legs under the housing */
-  for (const px of [-2.1, -0.7, 0.7, 2.1]) solid(() => { G.beginPath(); G.rect(px - 0.27, 5.4, 0.54, 3.9); }, MT.tin, [px - 0.27, 5.4, 0.54, 3.9], { fill: tin, lw: 0.8 });
+  /* pins and legs under the housing: five pins, as on TTC's optical encoder (Brock's photo, F9.21) and the 3D model */
+  for (const px of [-2.4, -1.2, 0, 1.2, 2.4]) solid(() => { G.beginPath(); G.rect(px - 0.25, 5.4, 0.5, 3.9); }, MT.tin, [px - 0.25, 5.4, 0.5, 3.9], { fill: tin, lw: 0.8 });
   for (const sx of [-1, 1]) solid(() => { G.beginPath(); G.moveTo(sx * 4.6, 5.0); G.lineTo(sx * 5.6, 5.0); G.lineTo(sx * 5.6, 7.2); G.lineTo(sx * 6.4, 8.9); G.lineTo(sx * 5.5, 9.3); G.lineTo(sx * 4.6, 7.4); G.closePath(); }, MT.steel, [4.6, 5, 1.8, 4.3], { fill: steel2, lw: 0.9 });
   /* the black housing */
   solid(() => pathRR(-5.9, -7.0, 11.8, 12.6, 0.45), MT.black, [-5.9, -7.0, 11.8, 12.6], { fill: TH ? '#26272B' : '#1B1C1F', lw: 1 });
