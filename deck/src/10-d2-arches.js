@@ -350,7 +350,8 @@ const SHB_GEO = (function () {
   return { pts, edges: keep, chains, f };
 })();
 
-S({
+/* Brock (2026-11-04, F22.1): "we can get rid of the mars base dome slide as well". Kept, not registered as a slide. */
+const SHB_DOME_SLIDE = ({
   id: 'shbDome', ch: 'shell', theme: 'night', title: 'Geodesic domes: great circles make the triangles', settle: 10, after: 'shbArches',
   ideas: [75, 53], src: ['shbFuller', 'shbHiseasNasa', 'shbHiseas', 'shbHiseasWiki'],
   draw: t => {
@@ -440,7 +441,7 @@ const SHB_MODEL_LINE = '2D frames, a 10 mm strip of PP-C-20A (13.5 GPa), 60 mm a
    the pointer drags the press up to 10 N and holds it, then on: the plate cracks at its peak (120 MPa, the chapter's
    breaking stress), the arch carries on to its own. Flex drawn 2× real for both, so the comparison stays honest. */
 S({
-  id: 'shbPress', ch: 'shell', theme: 'paper', title: 'Arch action vs a flat plate', settle: 10, after: 'shbDome',
+  id: 'shbPress', ch: 'shell', theme: 'paper', title: 'Arch action vs a flat plate', settle: 10, after: 'shbArches',
   ideas: [53, 75], src: ['shbModel', 'shlPyrofil', 'shlDoc'],
   draw: t => {
     const A = SHB_A, RF = shbArch('flat'), RA = shbArch('para'), ft = shbFt(), mid = A.n / 2;

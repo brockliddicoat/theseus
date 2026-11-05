@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 22:12 (Chicago).
+Last updated: 2026-11-05 00:12 (Chicago).
 
 ## Open with Brock
 
@@ -577,3 +577,13 @@ Answers to the Shell A questions:
 - **F21.16** The side seam by the trigger cutout (about 30.5 mm up): "if you're talking abt the seam by the trigger cutout,
   yes that really bothers me, but we will fix it after ive the iteration where you've implemented all my feedback thus
   far". **NEXT ITERATION.** The tensioner's real size (F12.5): "Still unknown" (the labelled example stays).
+
+## F22. Answers at ~23:00 (2026-11-04)
+- **F22.1 DECIDED** The scroll wheel: "https://pmm.gg/products/magnesium-scroll-wheel-op1-8k-op1w-4k-pulse-cyber-op-for-modkit,
+  this scroll wheel is 1.0g, ours will be 0.9g, right now the scroll wheel design you have is very bulky and unoptimized,
+  it should be closer to the pmm wheel i've attached, but with 6 arms, i also don't like the texture your chosen, even if
+  it's based on rover tread, we can get rid of the mars base dome slide as well". **DONE:** `shbDome` (the Mars base
+  dome) is out of the film. **IN PROGRESS (whl):** the wheel in 3D and 2D, at 0.9 g, six arms, a new texture; the wheel
+  slide and the budget.
+- **F22.2 DECIDED** Frame sync: "Match SensorLock, 42 µs". **IN PROGRESS (whl).**
+- **F22.3 DECIDED** Screws and wires in the budget: "Derive Theseus's own" from the 3D model. **IN PROGRESS (whl).**
