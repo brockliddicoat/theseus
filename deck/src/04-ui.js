@@ -20,8 +20,8 @@ const pad2 = n => String(n).padStart(2, '0');
 /* ---------- a paragraph of runs that wraps: a bold run-in head, then plain text (dictionary style) ----------
    runs: [{ s, role, weight, color, font, caps }]; o: { maxW, lh (px), t, t0, cps, alpha, maxLines }. returns { h, lines } */
 function para(runs, x, y, o = {}) {
-  const words = [];
-  runs.filter(Boolean).forEach(r0 => { const r = sty(Object.assign({ role: 'body' }, r0)); prepare(r.s, r).split(/( +|\n)/).forEach(w => { if (w && !/^( +|\n)$/.test(w)) words.push({ w, r }); }); });
+  const words = [], R0 = runs.filter(Boolean);
+  R0.forEach((r0, ri) => { const r = sty(Object.assign({ role: 'body' }, r0)); prepare(edTxt(r.s), r).split(/( +|\n)/).forEach(w => { if (w && !/^( +|\n)$/.test(w)) words.push({ w, r, ri }); }); });
   const lines = []; let cur = [], cw = 0;
   const wid = wd => { setFont(wd.r); return measureStr(wd.w, wd.r); }, spw = r => { setFont(r); return G.measureText(' ').width; };
   for (const wd of words) {
@@ -34,16 +34,22 @@ function para(runs, x, y, o = {}) {
   const size = sty(Object.assign({ role: 'body' }, runs[0] || {})).size || 28, lh = o.lh || size * 1.4;
   const nL = o.maxLines ? Math.min(o.maxLines, lines.length) : lines.length;
   let shown = o.t0 != null ? Math.max(0, (o.t - o.t0) * (o.cps || 90)) : Infinity, a = o.alpha == null ? 1 : o.alpha;
-  for (let i = 0; i < nL; i++) {
-    let xx = x;
-    for (const wd of lines[i]) {
-      xx += wd.sp;
-      if (shown <= 0) break;
-      const vis = shown >= wd.w.length ? wd.w : wd.w.slice(0, Math.floor(shown));
-      text(vis, xx, y + i * lh, Object.assign({}, wd.r, { role: undefined, caps: false, sentence: false, alpha: a * (wd.r.alpha == null ? 1 : wd.r.alpha) }));
-      shown -= wd.w.length + 1; xx += wd.ww;
+  const rb = EDIT.rec ? R0.map(() => null) : null;   /* each run's box, for edit mode */
+  EDIT.depth++;
+  try {
+    for (let i = 0; i < nL; i++) {
+      let xx = x;
+      for (const wd of lines[i]) {
+        xx += wd.sp;
+        if (shown <= 0) break;
+        const vis = shown >= wd.w.length ? wd.w : wd.w.slice(0, Math.floor(shown));
+        text(vis, xx, y + i * lh, Object.assign({}, wd.r, { role: undefined, caps: false, sentence: false, alpha: a * (wd.r.alpha == null ? 1 : wd.r.alpha) }));
+        if (rb) { const sz = wd.r.size || size, b = rb[wd.ri] || (rb[wd.ri] = [Infinity, Infinity, -Infinity, -Infinity]); b[0] = Math.min(b[0], xx); b[1] = Math.min(b[1], y + i * lh - sz * 0.82); b[2] = Math.max(b[2], xx + wd.ww); b[3] = Math.max(b[3], y + i * lh + sz * 0.26); }
+        shown -= wd.w.length + 1; xx += wd.ww;
+      }
     }
-  }
+  } finally { EDIT.depth--; }
+  if (rb && a > 0.05) { G.globalAlpha = a; rb.forEach((b, ri) => { if (b) edBox(R0[ri].s, b[0], b[1], b[2], b[3]); }); G.globalAlpha = 1; }
   return { h: nL * lh, lines: nL };
 }
 
@@ -102,6 +108,7 @@ function header(t, title, o = {}) {
 /** the narration: steps = [[t0, 'text'], ...], typed under the title (the XBAB subtitle), one step at a time.
    o.bottom = true keeps the old place, centred at the foot of the slide. */
 function captions(t, steps, o = {}) {
+  if (EDIT.rec) EDIT.caps = { slide: EDIT.slide, steps: steps.map(st => [st[0], String(st[1])]) };   /* every step, for edit mode */
   let cur = -1; for (let i = 0; i < steps.length; i++) if (t >= steps[i][0]) cur = i;
   if (cur < 0) return;
   const [t0, str] = steps[cur], nxt = steps[cur + 1];

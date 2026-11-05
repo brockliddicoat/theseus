@@ -258,7 +258,7 @@ function drawStr(s, x, y, o) {
 const GLUE = /(\d) (?=(?:g|ms|µs|us|ns|mm|µm|kHz|Hz|MHz|h|s|min|%|mAh|mA|Wh|V|W|mW|N|gf|dB|dBm|C|°C|K|cycles|mm²)\b)/g;
 function prepare(s, o) { s = String(s); if (o.caps) s = caps(s); else if (o.sentence) s = sentence(s); if (s.indexOf('{') >= 0) s = s.replace(/[{}]/g, ''); return s.replace(GLUE, '$1\u00A0'); }
 /** width of a string in the given style */
-function tw(s, o = {}) { o = sty(o); setFont(o); return measureStr(prepare(s, o), o); }
+function tw(s, o = {}) { o = sty(o); setFont(o); return measureStr(prepare(edTxt(s), o), o); }
 /** split text into lines that fit maxW */
 function wrap(s, o, maxW) {
   o = sty(o); setFont(o);
@@ -284,6 +284,25 @@ function qaText(s, x, y, w, size, o) {
   const sc = Math.hypot(m.a, m.b) / k;
   QA.text.push({ s: String(s).slice(0, 60), x0: Math.min(a[0], b[0]), y0: Math.min(a[1], b[1]), x1: Math.max(a[0], b[0]), y1: Math.max(a[1], b[1]), px: +(size * sc).toFixed(1), a: G.globalAlpha });
 }
+/* EDIT (Brock, 2026-11-05: "a tool where i can tap a button then be able to select and directly edit any text on a
+   slide"). text(), rich() and para() pass each string, as the slide gave it, through edTxt(): an edit made on this slide
+   replaces it (edits live in the artifact's db, edits/<doc>, see 20-app.js). While edit mode is on they also record the
+   string's box in canvas pixels (edBox), so a tap can find it. EDIT.depth > 0 inside rich() and para(), so their words
+   and runs aren't taken one by one. */
+const EDIT = { on: false, rec: false, slide: null, depth: 0, boxes: [], map: {}, live: {} };
+function edTxt(s) {
+  if (EDIT.depth || EDIT.slide == null || s == null) return s;
+  const k = String(s), lv = EDIT.live[EDIT.slide + '\u0001' + k];
+  if (lv != null) return lv;
+  const m = EDIT.map[EDIT.slide];
+  return m && m.has(k) ? m.get(k) : s;
+}
+function edBox(raw, x0, y0, x1, y1) {
+  if (!EDIT.rec || EDIT.depth || raw == null || String(raw).trim() === '' || G.globalAlpha < 0.05) return;
+  const m = G.getTransform(), P = (px, py) => [m.a * px + m.c * py + m.e, m.b * px + m.d * py + m.f];
+  const q = [P(x0, y0), P(x1, y0), P(x0, y1), P(x1, y1)], xs = q.map(v => v[0]), ys = q.map(v => v[1]);
+  EDIT.boxes.push({ k: String(raw), x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) });
+}
 /**
  * text: o = { role (a key of T), size, weight, font ('sans' | 'disp' | 'mono'), color, alpha, align, base,
  *             track (em) or ls (px), caps, sentence, tnum, maxW, lh, t, t0 (typing start), cps, caret,
@@ -291,6 +310,7 @@ function qaText(s, x, y, w, size, o) {
  * returns { w, h, lines }. Lines are laid out by the system (left edge computed once), so typed text never shifts.
  */
 function text(s, x, y, o = {}) {
+  const raw = s; s = edTxt(s);
   o = sty(o);
   /* labels are short: a label longer than 48 characters is set as small sentence text instead (caps are for names, not sentences) */
   if (o.role === 'label' && !o.forceCaps && String(s).length > 48) o = Object.assign({}, o, { role: 'small', font: 'sans', size: Math.max(22, Math.min(25, (o.size || 22) + 1)), weight: 600, caps: false, sentence: true, track: 0, ls: undefined });
@@ -307,12 +327,13 @@ function text(s, x, y, o = {}) {
   const a = o.alpha == null ? 1 : o.alpha;
   if (a <= 0.001) return { w: 0, h: lines.length * lh, lines };
   G.globalAlpha = a; G.fillStyle = o.color || C.ink;
-  let maxw = 0, k = 0;
+  let maxw = 0, k = 0, bx0 = Infinity, bx1 = -Infinity;
   for (let i = 0; i < lines.length; i++) {
     const L = lines[i], n = clamp(shown - k, 0, L.length); k += L.length + 1;
     const vis = L.slice(0, n), ly = y + i * lh;
     const fullW = measureStr(L, o); maxw = Math.max(maxw, fullW);
     const x0 = o.align === 'center' ? x - fullW / 2 : o.align === 'right' ? x - fullW : x;
+    if (EDIT.rec) { bx0 = Math.min(bx0, x0); bx1 = Math.max(bx1, x0 + fullW); }
     /* a gradient across the line (Apple's big numbers): o.grad = [colours], left to right with a slight fall */
     if (o.grad) { const gr = G.createLinearGradient(x0, ly - size * 0.8, x0 + Math.max(1, fullW), ly + size * 0.15); o.grad.forEach((c, j) => gr.addColorStop(o.grad.length > 1 ? j / (o.grad.length - 1) : 0, c)); G.fillStyle = gr; }
     if (o.glow && n) { G.save(); G.shadowColor = o.glow; G.shadowBlur = o.glowR || size * 0.45; drawStr(vis, x0, ly, o); G.restore(); }
@@ -332,6 +353,7 @@ function text(s, x, y, o = {}) {
       G.fillRect(x0 + cw + 3, ly - size * 0.74, Math.max(2, size * 0.09), size * 0.86);
     }
   }
+  if (EDIT.rec && bx1 > bx0) { G.globalAlpha = a; edBox(raw, bx0, y - size * 0.82, bx1, y + (lines.length - 1) * lh + size * 0.26); }
   G.globalAlpha = 1; G.shadowBlur = 0;
   return { w: maxw, h: lines.length * lh, lines };
 }
@@ -347,7 +369,7 @@ function rich(runs, x, y, o = {}) {
   const ws = [], strs = [];
   let capMax = 0;
   for (const r of R) {
-    let s = prepare(r.s, r);
+    let s = prepare(edTxt(r.s), r);
     if (r.count) { const [c0, cd, from] = r.count; const cu = countUp(s, ep(o.t == null ? 99 : o.t, c0, c0 + (cd || 0.9), E.out3), from || 0); if (cu != null) s = cu; }
     strs.push(s); setFont(r); ws.push(measureStr(s, r)); capMax = Math.max(capMax, (r.size || 28) * (r.font === 'mono' ? 0.73 : 0.727));
   }
@@ -363,7 +385,9 @@ function rich(runs, x, y, o = {}) {
     const heroChip = r.chip && (r.chip === C.heroChip || r.chip === HERO || r.chip === HERO_P || r.chip === C.hero);
     if (r.chip && !heroChip && a > 0.003) { const pz = (r.size || 28) * 0.32; G.save(); G.globalAlpha = a * 0.9; G.fillStyle = rgba(r.chip, 0.18); rrPath(xx - pz, y + dy - cap - pz * 0.9, ws[i] + pz * 2, cap + pz * 1.8, (cap + pz * 1.8) * 0.3); G.fill(); G.restore(); }
     const extra = heroChip ? { color: C.heroText, grad: C.heroGrad, weight: Math.max(700, r.weight || 700) } : r.chip ? { color: r.chip } : {};
-    text(strs[i], xx, y + dy, Object.assign({}, r, extra, { role: undefined, caps: false, sentence: false, alpha: a, t: o.t, rise: r.rise }));
+    if (EDIT.rec && a > 0.05) { G.globalAlpha = a; edBox(r.s, xx, y + dy - cap * 1.12, xx + ws[i], y + dy + cap * 0.3); G.globalAlpha = 1; }
+    EDIT.depth++;
+    try { text(strs[i], xx, y + dy, Object.assign({}, r, extra, { role: undefined, caps: false, sentence: false, alpha: a, t: o.t, rise: r.rise })); } finally { EDIT.depth--; }
     xx += ws[i];
   });
   return { w: total, x0, xs, ws };

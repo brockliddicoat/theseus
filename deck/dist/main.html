@@ -22,23 +22,24 @@
 html, body { height: 100%; }
 body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); overflow: hidden; }
 #app { box-sizing: border-box; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-  padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  padding-top: max(12px, env(safe-area-inset-top, 0px)); padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 #stage { position: relative; background: var(--stage); border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.05); touch-action: pan-y; cursor: pointer; flex: none; }
 #stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-#bar { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 100%; flex: none; min-width: 0; }
+#bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: 100%; max-width: 100%; flex: none; min-width: 0; }
 .btn { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; }
 .btn:hover { background: var(--surface2); }
 .btn:focus-visible, .seg:focus-visible, .pill:focus-visible { outline: 2px solid var(--hero); outline-offset: 2px; }
 .pill { flex: none; height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 12px/1 var(--f-mono); cursor: pointer; letter-spacing: .08em; text-transform: uppercase; }
 .pill:hover { background: var(--surface2); }
-#segs { flex: 1 1 auto; display: flex; gap: 3px; height: 36px; align-items: center; min-width: 60px; }
+#segs { flex: 1 1 120px; display: flex; gap: 3px; height: 36px; align-items: center; min-width: 90px; }
 .seg { flex: 1 1 0; height: 6px; border-radius: 3px; background: rgba(255,255,255,.09); border: 0; padding: 0; cursor: pointer; position: relative; overflow: hidden; }
 .seg i { position: absolute; inset: 0; width: 0; background: rgba(236,235,229,.85); }
 .seg.on { background: rgba(47,140,255,.30); }
 .seg.on i { background: var(--hero); }
 #count { flex: none; font: 500 12px/1 var(--f-mono); color: var(--mute); font-variant-numeric: tabular-nums; min-width: 54px; text-align: right; }
 #chap { flex: 0 1 auto; min-width: 0; max-width: 280px; font: 600 12px/1.2 var(--f-mono); color: var(--mute); text-transform: uppercase; letter-spacing: .1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#src { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(64px + env(safe-area-inset-bottom, 0px)); width: min(560px, calc(100% - 32px)); max-height: min(70vh, 640px); overflow: auto;
+#src { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(var(--barH, 44px) + 20px + env(safe-area-inset-bottom, 0px)); width: min(560px, calc(100% - 32px)); max-height: min(70vh, 640px); overflow: auto;
   background: #141517; border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; z-index: 5; box-shadow: 0 30px 80px -30px #000; }
 #src h2 { margin: 0 0 4px; font: 700 15px/1.3 var(--f-disp); }
 #src p.sub { margin: 0 0 12px; color: var(--mute); font: 500 12px/1.4 var(--f-mono); }
@@ -51,7 +52,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 #viewBtn span { opacity: .42; }
 #viewBtn .vs { opacity: .25; }
 #viewBtn[aria-pressed="true"] .v2, #viewBtn[aria-pressed="false"] .v3 { opacity: 1; color: var(--hero); }
-#rate { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(64px + env(safe-area-inset-bottom, 0px)); width: min(600px, calc(100% - 32px));
+#rate, #edit { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(var(--barH, 44px) + 20px + env(safe-area-inset-bottom, 0px)); width: min(600px, calc(100% - 32px)); box-sizing: border-box;
   background: rgba(20,21,23,.96); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; z-index: 6; box-shadow: 0 24px 60px -24px #000; }
 #rate .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 #rate h2 { margin: 0; font: 700 14px/1.3 var(--f-disp); }
@@ -67,11 +68,24 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 #rate textarea { box-sizing: border-box; flex: 1 1 auto; min-width: 0; height: 32px; min-height: 32px; resize: vertical; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: 400 13px/1.3 var(--f-disp); }
 #rate .row .pill { height: 32px; padding: 0 12px; }
 #rateBtn[aria-expanded="true"] { border-color: var(--hero); }
-body.clean #rate { display: none; }
+/* edit mode: tap any text on the slide to change it (Brock, 2026-11-05) */
+#edit h2 { margin: 0; font: 700 14px/1.3 var(--f-disp); }
+#edit .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+#edit .state { color: var(--mute); font: 500 11px/1.3 var(--f-mono); white-space: nowrap; }
+#edit .hint { margin: 6px 0 0; color: #bdbcb6; font: 500 13px/1.4 var(--f-disp); }
+#edit .was { margin: 8px 0 6px; color: var(--mute); font: 500 12px/1.4 var(--f-disp); max-height: 4.2em; overflow: auto; }
+#edit textarea { box-sizing: border-box; width: 100%; min-height: 64px; resize: vertical; background: var(--surface); color: var(--ink); border: 1px solid var(--hero); border-radius: 6px; padding: 8px 10px; font: 500 16px/1.35 var(--f-disp); }
+#edit .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+#edit .row .pill { height: 34px; padding: 0 12px; }
+#editBtn[aria-pressed="true"] { border-color: var(--hero); background: var(--hero); color: #fff; }
+body.editing #stage { cursor: text; }
+body.clean #rate, body.clean #edit { display: none; }
 body.clean #bar, body.clean #src { display: none; }
 body.clean #stage { border-radius: 0; box-shadow: none; }
 body.cap #app { padding: 0; }
-@media (max-width: 720px) { #chap, .opt { display: none; } }
+@media (max-width: 720px) { #chap, #cleanBtn { display: none; }
+  #rate, #edit, #src { top: calc(env(safe-area-inset-top, 0px) + 8px); bottom: auto; left: 8px; right: 8px; width: auto; max-height: 46vh; overflow: auto; }
+  #rate .vals button { height: 40px; } .pill { height: 38px; } }
 @media (prefers-reduced-motion: reduce) { .btn, .pill { transition: none; } }
 </style>
 </head>
@@ -90,12 +104,14 @@ body.cap #app { padding: 0; }
     <button class="pill" id="sndBtn" type="button" aria-pressed="false" title="Mechanical sound design (S)">sound off</button>
     <button class="pill" id="viewBtn" type="button" aria-pressed="false" title="Show the drawings in 2D or 3D (D)"><span class="v2">2D</span><span class="vs">/</span><span class="v3">3D</span></button>
     <button class="pill" id="rateBtn" type="button" aria-expanded="false" aria-controls="rate" hidden title="Rate how valuable this slide is, 1 to 10">rate</button>
+    <button class="pill" id="editBtn" type="button" aria-pressed="false" aria-controls="edit" hidden title="Tap any text on a slide to edit it (E)">edit text</button>
     <button class="pill opt" id="srcBtn" type="button" aria-expanded="false" aria-controls="src">sources</button>
     <button class="pill opt" id="cleanBtn" type="button" title="Hide controls (H)">clean</button>
     <button class="btn" id="fs" type="button" aria-label="Full screen"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
   </nav>
   <aside id="src" hidden aria-label="Sources"></aside>
   <aside id="rate" hidden aria-label="Rate this slide"></aside>
+  <aside id="edit" hidden aria-label="Edit text on this slide"></aside>
 </div>
 
 <script>window.R3D_MODURL = new URL('assets/', location.href).href;</script>
@@ -5129,7 +5145,7 @@ function drawStr(s, x, y, o) {
 const GLUE = /(\d) (?=(?:g|ms|µs|us|ns|mm|µm|kHz|Hz|MHz|h|s|min|%|mAh|mA|Wh|V|W|mW|N|gf|dB|dBm|C|°C|K|cycles|mm²)\b)/g;
 function prepare(s, o) { s = String(s); if (o.caps) s = caps(s); else if (o.sentence) s = sentence(s); if (s.indexOf('{') >= 0) s = s.replace(/[{}]/g, ''); return s.replace(GLUE, '$1\u00A0'); }
 /** width of a string in the given style */
-function tw(s, o = {}) { o = sty(o); setFont(o); return measureStr(prepare(s, o), o); }
+function tw(s, o = {}) { o = sty(o); setFont(o); return measureStr(prepare(edTxt(s), o), o); }
 /** split text into lines that fit maxW */
 function wrap(s, o, maxW) {
   o = sty(o); setFont(o);
@@ -5155,6 +5171,25 @@ function qaText(s, x, y, w, size, o) {
   const sc = Math.hypot(m.a, m.b) / k;
   QA.text.push({ s: String(s).slice(0, 60), x0: Math.min(a[0], b[0]), y0: Math.min(a[1], b[1]), x1: Math.max(a[0], b[0]), y1: Math.max(a[1], b[1]), px: +(size * sc).toFixed(1), a: G.globalAlpha });
 }
+/* EDIT (Brock, 2026-11-05: "a tool where i can tap a button then be able to select and directly edit any text on a
+   slide"). text(), rich() and para() pass each string, as the slide gave it, through edTxt(): an edit made on this slide
+   replaces it (edits live in the artifact's db, edits/<doc>, see 20-app.js). While edit mode is on they also record the
+   string's box in canvas pixels (edBox), so a tap can find it. EDIT.depth > 0 inside rich() and para(), so their words
+   and runs aren't taken one by one. */
+const EDIT = { on: false, rec: false, slide: null, depth: 0, boxes: [], map: {}, live: {} };
+function edTxt(s) {
+  if (EDIT.depth || EDIT.slide == null || s == null) return s;
+  const k = String(s), lv = EDIT.live[EDIT.slide + '\u0001' + k];
+  if (lv != null) return lv;
+  const m = EDIT.map[EDIT.slide];
+  return m && m.has(k) ? m.get(k) : s;
+}
+function edBox(raw, x0, y0, x1, y1) {
+  if (!EDIT.rec || EDIT.depth || raw == null || String(raw).trim() === '' || G.globalAlpha < 0.05) return;
+  const m = G.getTransform(), P = (px, py) => [m.a * px + m.c * py + m.e, m.b * px + m.d * py + m.f];
+  const q = [P(x0, y0), P(x1, y0), P(x0, y1), P(x1, y1)], xs = q.map(v => v[0]), ys = q.map(v => v[1]);
+  EDIT.boxes.push({ k: String(raw), x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) });
+}
 /**
  * text: o = { role (a key of T), size, weight, font ('sans' | 'disp' | 'mono'), color, alpha, align, base,
  *             track (em) or ls (px), caps, sentence, tnum, maxW, lh, t, t0 (typing start), cps, caret,
@@ -5162,6 +5197,7 @@ function qaText(s, x, y, w, size, o) {
  * returns { w, h, lines }. Lines are laid out by the system (left edge computed once), so typed text never shifts.
  */
 function text(s, x, y, o = {}) {
+  const raw = s; s = edTxt(s);
   o = sty(o);
   /* labels are short: a label longer than 48 characters is set as small sentence text instead (caps are for names, not sentences) */
   if (o.role === 'label' && !o.forceCaps && String(s).length > 48) o = Object.assign({}, o, { role: 'small', font: 'sans', size: Math.max(22, Math.min(25, (o.size || 22) + 1)), weight: 600, caps: false, sentence: true, track: 0, ls: undefined });
@@ -5178,12 +5214,13 @@ function text(s, x, y, o = {}) {
   const a = o.alpha == null ? 1 : o.alpha;
   if (a <= 0.001) return { w: 0, h: lines.length * lh, lines };
   G.globalAlpha = a; G.fillStyle = o.color || C.ink;
-  let maxw = 0, k = 0;
+  let maxw = 0, k = 0, bx0 = Infinity, bx1 = -Infinity;
   for (let i = 0; i < lines.length; i++) {
     const L = lines[i], n = clamp(shown - k, 0, L.length); k += L.length + 1;
     const vis = L.slice(0, n), ly = y + i * lh;
     const fullW = measureStr(L, o); maxw = Math.max(maxw, fullW);
     const x0 = o.align === 'center' ? x - fullW / 2 : o.align === 'right' ? x - fullW : x;
+    if (EDIT.rec) { bx0 = Math.min(bx0, x0); bx1 = Math.max(bx1, x0 + fullW); }
     /* a gradient across the line (Apple's big numbers): o.grad = [colours], left to right with a slight fall */
     if (o.grad) { const gr = G.createLinearGradient(x0, ly - size * 0.8, x0 + Math.max(1, fullW), ly + size * 0.15); o.grad.forEach((c, j) => gr.addColorStop(o.grad.length > 1 ? j / (o.grad.length - 1) : 0, c)); G.fillStyle = gr; }
     if (o.glow && n) { G.save(); G.shadowColor = o.glow; G.shadowBlur = o.glowR || size * 0.45; drawStr(vis, x0, ly, o); G.restore(); }
@@ -5203,6 +5240,7 @@ function text(s, x, y, o = {}) {
       G.fillRect(x0 + cw + 3, ly - size * 0.74, Math.max(2, size * 0.09), size * 0.86);
     }
   }
+  if (EDIT.rec && bx1 > bx0) { G.globalAlpha = a; edBox(raw, bx0, y - size * 0.82, bx1, y + (lines.length - 1) * lh + size * 0.26); }
   G.globalAlpha = 1; G.shadowBlur = 0;
   return { w: maxw, h: lines.length * lh, lines };
 }
@@ -5218,7 +5256,7 @@ function rich(runs, x, y, o = {}) {
   const ws = [], strs = [];
   let capMax = 0;
   for (const r of R) {
-    let s = prepare(r.s, r);
+    let s = prepare(edTxt(r.s), r);
     if (r.count) { const [c0, cd, from] = r.count; const cu = countUp(s, ep(o.t == null ? 99 : o.t, c0, c0 + (cd || 0.9), E.out3), from || 0); if (cu != null) s = cu; }
     strs.push(s); setFont(r); ws.push(measureStr(s, r)); capMax = Math.max(capMax, (r.size || 28) * (r.font === 'mono' ? 0.73 : 0.727));
   }
@@ -5234,7 +5272,9 @@ function rich(runs, x, y, o = {}) {
     const heroChip = r.chip && (r.chip === C.heroChip || r.chip === HERO || r.chip === HERO_P || r.chip === C.hero);
     if (r.chip && !heroChip && a > 0.003) { const pz = (r.size || 28) * 0.32; G.save(); G.globalAlpha = a * 0.9; G.fillStyle = rgba(r.chip, 0.18); rrPath(xx - pz, y + dy - cap - pz * 0.9, ws[i] + pz * 2, cap + pz * 1.8, (cap + pz * 1.8) * 0.3); G.fill(); G.restore(); }
     const extra = heroChip ? { color: C.heroText, grad: C.heroGrad, weight: Math.max(700, r.weight || 700) } : r.chip ? { color: r.chip } : {};
-    text(strs[i], xx, y + dy, Object.assign({}, r, extra, { role: undefined, caps: false, sentence: false, alpha: a, t: o.t, rise: r.rise }));
+    if (EDIT.rec && a > 0.05) { G.globalAlpha = a; edBox(r.s, xx, y + dy - cap * 1.12, xx + ws[i], y + dy + cap * 0.3); G.globalAlpha = 1; }
+    EDIT.depth++;
+    try { text(strs[i], xx, y + dy, Object.assign({}, r, extra, { role: undefined, caps: false, sentence: false, alpha: a, t: o.t, rise: r.rise })); } finally { EDIT.depth--; }
     xx += ws[i];
   });
   return { w: total, x0, xs, ws };
@@ -6210,8 +6250,8 @@ const pad2 = n => String(n).padStart(2, '0');
 /* ---------- a paragraph of runs that wraps: a bold run-in head, then plain text (dictionary style) ----------
    runs: [{ s, role, weight, color, font, caps }]; o: { maxW, lh (px), t, t0, cps, alpha, maxLines }. returns { h, lines } */
 function para(runs, x, y, o = {}) {
-  const words = [];
-  runs.filter(Boolean).forEach(r0 => { const r = sty(Object.assign({ role: 'body' }, r0)); prepare(r.s, r).split(/( +|\n)/).forEach(w => { if (w && !/^( +|\n)$/.test(w)) words.push({ w, r }); }); });
+  const words = [], R0 = runs.filter(Boolean);
+  R0.forEach((r0, ri) => { const r = sty(Object.assign({ role: 'body' }, r0)); prepare(edTxt(r.s), r).split(/( +|\n)/).forEach(w => { if (w && !/^( +|\n)$/.test(w)) words.push({ w, r, ri }); }); });
   const lines = []; let cur = [], cw = 0;
   const wid = wd => { setFont(wd.r); return measureStr(wd.w, wd.r); }, spw = r => { setFont(r); return G.measureText(' ').width; };
   for (const wd of words) {
@@ -6224,16 +6264,22 @@ function para(runs, x, y, o = {}) {
   const size = sty(Object.assign({ role: 'body' }, runs[0] || {})).size || 28, lh = o.lh || size * 1.4;
   const nL = o.maxLines ? Math.min(o.maxLines, lines.length) : lines.length;
   let shown = o.t0 != null ? Math.max(0, (o.t - o.t0) * (o.cps || 90)) : Infinity, a = o.alpha == null ? 1 : o.alpha;
-  for (let i = 0; i < nL; i++) {
-    let xx = x;
-    for (const wd of lines[i]) {
-      xx += wd.sp;
-      if (shown <= 0) break;
-      const vis = shown >= wd.w.length ? wd.w : wd.w.slice(0, Math.floor(shown));
-      text(vis, xx, y + i * lh, Object.assign({}, wd.r, { role: undefined, caps: false, sentence: false, alpha: a * (wd.r.alpha == null ? 1 : wd.r.alpha) }));
-      shown -= wd.w.length + 1; xx += wd.ww;
+  const rb = EDIT.rec ? R0.map(() => null) : null;   /* each run's box, for edit mode */
+  EDIT.depth++;
+  try {
+    for (let i = 0; i < nL; i++) {
+      let xx = x;
+      for (const wd of lines[i]) {
+        xx += wd.sp;
+        if (shown <= 0) break;
+        const vis = shown >= wd.w.length ? wd.w : wd.w.slice(0, Math.floor(shown));
+        text(vis, xx, y + i * lh, Object.assign({}, wd.r, { role: undefined, caps: false, sentence: false, alpha: a * (wd.r.alpha == null ? 1 : wd.r.alpha) }));
+        if (rb) { const sz = wd.r.size || size, b = rb[wd.ri] || (rb[wd.ri] = [Infinity, Infinity, -Infinity, -Infinity]); b[0] = Math.min(b[0], xx); b[1] = Math.min(b[1], y + i * lh - sz * 0.82); b[2] = Math.max(b[2], xx + wd.ww); b[3] = Math.max(b[3], y + i * lh + sz * 0.26); }
+        shown -= wd.w.length + 1; xx += wd.ww;
+      }
     }
-  }
+  } finally { EDIT.depth--; }
+  if (rb && a > 0.05) { G.globalAlpha = a; rb.forEach((b, ri) => { if (b) edBox(R0[ri].s, b[0], b[1], b[2], b[3]); }); G.globalAlpha = 1; }
   return { h: nL * lh, lines: nL };
 }
 
@@ -6292,6 +6338,7 @@ function header(t, title, o = {}) {
 /** the narration: steps = [[t0, 'text'], ...], typed under the title (the XBAB subtitle), one step at a time.
    o.bottom = true keeps the old place, centred at the foot of the slide. */
 function captions(t, steps, o = {}) {
+  if (EDIT.rec) EDIT.caps = { slide: EDIT.slide, steps: steps.map(st => [st[0], String(st[1])]) };   /* every step, for edit mode */
   let cur = -1; for (let i = 0; i < steps.length; i++) if (t >= steps[i][0]) cur = i;
   if (cur < 0) return;
   const [t0, str] = steps[cur], nxt = steps[cur + 1];
@@ -13378,7 +13425,8 @@ const SHB_GEO = (function () {
   return { pts, edges: keep, chains, f };
 })();
 
-S({
+/* Brock (2026-11-04, F22.1): "we can get rid of the mars base dome slide as well". Kept, not registered as a slide. */
+const SHB_DOME_SLIDE = ({
   id: 'shbDome', ch: 'shell', theme: 'night', title: 'Geodesic domes: great circles make the triangles', settle: 10, after: 'shbArches',
   ideas: [75, 53], src: ['shbFuller', 'shbHiseasNasa', 'shbHiseas', 'shbHiseasWiki'],
   draw: t => {
@@ -13468,7 +13516,7 @@ const SHB_MODEL_LINE = '2D frames, a 10 mm strip of PP-C-20A (13.5 GPa), 60 mm a
    the pointer drags the press up to 10 N and holds it, then on: the plate cracks at its peak (120 MPa, the chapter's
    breaking stress), the arch carries on to its own. Flex drawn 2× real for both, so the comparison stays honest. */
 S({
-  id: 'shbPress', ch: 'shell', theme: 'paper', title: 'Arch action vs a flat plate', settle: 10, after: 'shbDome',
+  id: 'shbPress', ch: 'shell', theme: 'paper', title: 'Arch action vs a flat plate', settle: 10, after: 'shbArches',
   ideas: [53, 75], src: ['shbModel', 'shlPyrofil', 'shlDoc'],
   draw: t => {
     const A = SHB_A, RF = shbArch('flat'), RA = shbArch('para'), ft = shbFt(), mid = A.n / 2;
@@ -21182,11 +21230,24 @@ function themeOf(s) { return s.theme === 'paper' ? 1 : 0; }
 
 function fit() {
   const cap = document.body.classList.contains('cap'), clean = document.body.classList.contains('clean');
-  const bar = clean || cap ? 0 : 56, pad = cap ? 0 : 32;
-  const vw = window.innerWidth - pad, vh = window.innerHeight - bar - (cap ? 0 : 24);
-  const w = Math.max(200, Math.min(vw, vh * 16 / 9)), h = w * 9 / 16;
+  const cs = getComputedStyle($('app')), num = v => parseFloat(v) || 0, bar = $('bar');
+  const padX = cap ? 0 : num(cs.paddingLeft) + num(cs.paddingRight), padY = cap ? 0 : num(cs.paddingTop) + num(cs.paddingBottom) + 10;
+  /* the bar wraps onto a second line when it is wider than the stage (Brock, on an iPhone 16 Pro Max): measure it at the
+     stage's width and fit the stage again until the two agree */
+  let bh = clean || cap ? 0 : 44, w = 200;
+  for (let k = 0; k < 4; k++) {
+    const vw = window.innerWidth - padX, vh = window.innerHeight - bh - padY;
+    w = Math.floor(Math.max(200, Math.min(vw, vh * 16 / 9)));
+    if (clean || cap) break;
+    bar.style.width = w + 'px';
+    const nb = bar.offsetHeight || bh;
+    if (Math.abs(nb - bh) < 1) break;
+    bh = nb;
+  }
+  const h = w * 9 / 16;
+  document.documentElement.style.setProperty('--barH', bh + 'px');
   const st = $('stage'); st.style.width = w + 'px'; st.style.height = h + 'px';
-  $('bar').style.width = w + 'px';
+  if (!(clean || cap)) bar.style.width = w + 'px';
   APP.dpr = Math.min(2, window.devicePixelRatio || 1); APP.scale = w / W;
   const cw = Math.round(w * APP.dpr), ch = Math.round(h * APP.dpr);
   for (const c of [$('fx'), OFF, SNAP]) { if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; } }
@@ -21205,8 +21266,9 @@ function go(i, opts = {}) {
   } else APP.trStart = -1;
   APP.i = i; APP.t0 = now; APP.tPause = 0; APP.lastT = 0;
   if (APP.reduced) { APP.t0 = now - (next.settle || 9) * 1000; APP.tPause = next.settle || 9; }
+  if (EDIT.on) { editFreeze(next); EDIT.sel = null; requestAnimationFrame(() => requestAnimationFrame(() => editSync())); }
   if (APP.frozenT == null) { try { history.replaceState(null, '', '#' + next.id); } catch (e) { } }
-  updateBar(); renderSources();
+  updateBar(); renderSources(); editSync();
   try { prepare3D(next); prepare3D(DECK.slides[i + 1]); } catch (e) { }
 }
 /* ---------- slide ratings (Brock, F16.2) ----------
@@ -21222,10 +21284,11 @@ async function rateInit() {
   let db = null, user = null;
   try { db = await cl.use('db'); } catch (e) { db = null; }
   if (!db) return;
+  try { editLoad(db); } catch (e) { }
   try { user = await cl.use('user'); } catch (e) { user = null; }
-  if (user) { try { if (!(await user.canEdit())) return; } catch (e) { } }
+  if (user) { try { if (!(await user.canEdit())) { EDIT.db = null; return; } } catch (e) { } }
   RATE.db = db;
-  $('rateBtn').hidden = false;
+  $('rateBtn').hidden = false; $('editBtn').hidden = false; fit();
   const timer = setTimeout(() => { if (!RATE.ready) { RATE.note = 'Can’t reach the saved ratings yet'; rateSync(); } }, 10000);
   db.collection('ratings').onSnapshot(snap => {
     const all = {};
@@ -21290,6 +21353,148 @@ function rateSave(patch) {
     RATE.pend[k] = false; rateSync();
   })();
 }
+/* ---------- edit text (Brock, 2026-11-05: "a tool where i can tap a button then be able to select and directly edit any
+   text a on a slide") ----------
+   "edit text" freezes the slide at its settled frame and outlines every string; a tap picks the one under it and the
+   panel takes the new words, shown on the slide as they're typed. Each edit replaces that string on that slide only
+   (01-core.js edTxt) and is kept in the artifact's db at edits/<slide>--<hash>, { slide, title, n, from, to, at }, which
+   editors write and everyone reads, so the deck shows it to all and Claude reads them back. */
+const EDQ = {};
+function fnv36(str) { let h = 0x811c9dc5; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); }
+const edDocId = (slide, k) => rateKey(slide).slice(0, 80) + '--' + fnv36(String(k)) + '-' + String(k).length;
+function editLoad(db) {
+  EDIT.db = db;
+  db.collection('edits').onSnapshot(snap => {
+    const map = {};
+    snap.docs.forEach(d => { const v = d.data(); if (v && v.slide != null && v.from != null && v.to != null) (map[v.slide] || (map[v.slide] = new Map())).set(String(v.from), String(v.to)); });
+    /* our writes still in flight win over the snapshot */
+    for (const id in EDQ) { const q = EDQ[id]; if (!q.busy || !q.key) continue; const m = map[q.key.slide] || (map[q.key.slide] = new Map()); if (q.last === null) m.delete(q.key.k); else if (q.last) m.set(q.key.k, q.last.to); }
+    EDIT.map = map; editSync();
+  }, err => { EDIT.note = 'Edits unavailable (' + ((err && err.code) || 'error') + ')'; editSync(); });
+}
+function editFreeze(s) {
+  APP.playing = false; APP.tPause = (s && s.settle) || 9;
+  $('playIcon').setAttribute('d', 'M7 5v14l11-7z'); $('play').setAttribute('aria-label', 'Play');
+}
+function editToggle(on) {
+  if (!EDIT.db) return;
+  EDIT.on = on == null ? !EDIT.on : !!on;
+  document.body.classList.toggle('editing', EDIT.on);
+  const b = $('editBtn'); b.setAttribute('aria-pressed', String(EDIT.on)); b.textContent = EDIT.on ? 'editing' : 'edit text';
+  $('edit').hidden = !EDIT.on;
+  if (EDIT.on) { editFreeze(DECK.slides[APP.i]); $('rate').hidden = true; $('rateBtn').setAttribute('aria-expanded', 'false'); $('src').hidden = true; }
+  else { editSave(); EDIT.sel = null; EDIT.boxes.length = 0; }
+  editSync(); requestAnimationFrame(() => requestAnimationFrame(() => editSync()));
+}
+function editBuild(p) {
+  p.innerHTML = '<div class="top"><h2>Edit text</h2><span class="state" aria-live="polite"></span></div>' +
+    '<p class="hint">Tap any text on the slide. What you type replaces it on this slide only, and saves as you go.</p>' +
+    '<div class="caps" hidden><p class="was">The narration changes as the slide plays. Pick a line to edit:</p><div class="row"></div></div>' +
+    '<div class="cur" hidden><p class="was">Was: <span></span></p><textarea rows="2" aria-label="New text" enterkeyhint="done"></textarea>' +
+    '<div class="row"><button class="pill" type="button" data-act="undo">back to original</button><button class="pill" type="button" data-act="done">done</button>' +
+    '<button class="pill" type="button" data-act="exit">stop editing</button></div></div>';
+  const ta = p.querySelector('textarea'); let tmr = null;
+  ta.oninput = () => { if (!EDIT.sel) return; EDIT.live[EDIT.sel.slide + '\u0001' + EDIT.sel.k] = ta.value; clearTimeout(tmr); tmr = setTimeout(editSave, 900); };
+  ta.onblur = () => { clearTimeout(tmr); editSave(); };
+  p.querySelector('[data-act="undo"]').onclick = e => { e.stopPropagation(); editUndo(); };
+  p.querySelector('[data-act="done"]').onclick = e => { e.stopPropagation(); editSave(); EDIT.sel = null; editSync(); };
+  p.querySelector('[data-act="exit"]').onclick = e => { e.stopPropagation(); editToggle(false); };
+  p.dataset.built = '1';
+}
+function editSync(focus) {
+  const p = $('edit'); if (!p || p.hidden || !EDIT.db) return;
+  if (!p.dataset.built) editBuild(p);
+  const s = DECK.slides[APP.i]; if (!s) return;
+  const sel = EDIT.sel && EDIT.sel.slide === s.id ? EDIT.sel : null, m = EDIT.map[s.id];
+  const n = m ? m.size : 0, all = Object.values(EDIT.map).reduce((a, mm) => a + mm.size, 0);
+  p.querySelector('.state').textContent = EDIT.note || (n + ' edited here, ' + all + ' in all');
+  p.querySelector('.hint').hidden = !!sel; p.querySelector('.cur').hidden = !sel;
+  /* the narration's other lines aren't on screen at the settled frame: list them, and show the one picked */
+  const cp = p.querySelector('.caps'), steps = EDIT.caps && EDIT.caps.slide === s.id ? EDIT.caps.steps : [];
+  cp.hidden = !!sel || steps.length < 2;
+  if (!cp.hidden && cp.dataset.slide !== s.id + '|' + steps.length) {
+    const row = cp.querySelector('.row'); row.innerHTML = '';
+    steps.forEach(([t0, str], i) => {
+      const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'pill'; bt.style.textTransform = 'none'; bt.style.letterSpacing = '0';
+      bt.textContent = (i + 1) + '. ' + (str.length > 34 ? str.slice(0, 33) + '…' : str);
+      bt.onclick = e => { e.stopPropagation(); const nx = steps[i + 1]; APP.tPause = Math.min(t0 + Math.min(5, str.length / 70 + 0.6), nx ? nx[0] - 0.3 : Infinity); editSave(); EDIT.sel = { slide: s.id, k: str }; EDIT.note = ''; editSync(true); };
+      row.appendChild(bt);
+    });
+    cp.dataset.slide = s.id + '|' + steps.length;
+  }
+  if (!sel) return;
+  const ta = p.querySelector('textarea'), lk = s.id + '\u0001' + sel.k;
+  p.querySelector('.was span').textContent = sel.k;
+  if (focus || document.activeElement !== ta) ta.value = EDIT.live[lk] != null ? EDIT.live[lk] : (m && m.has(sel.k) ? m.get(sel.k) : sel.k);
+  ta.disabled = !!EDIT.ro;
+  p.querySelector('[data-act="undo"]').disabled = !(m && m.has(sel.k)) && EDIT.live[lk] == null;
+  if (focus) { try { ta.focus({ preventScroll: true }); ta.setSelectionRange(0, ta.value.length); } catch (e) { } }
+}
+function editPick(e) {
+  const st = $('stage'), r = st.getBoundingClientRect(), fx = $('fx');
+  const px = (e.clientX - r.left) * fx.width / r.width, py = (e.clientY - r.top) * fx.height / r.height, pad = 6 * (APP.dpr || 1);
+  let best = null, ba = Infinity;
+  for (const b of EDIT.boxes) {
+    if (px < b.x0 - pad || px > b.x1 + pad || py < b.y0 - pad || py > b.y1 + pad) continue;
+    const ar = Math.max(1, (b.x1 - b.x0) * (b.y1 - b.y0)); if (ar <= ba) { best = b; ba = ar; }
+  }
+  if (!best) { EDIT.sel = null; EDIT.note = 'No text there: tap a word on the slide'; editSync(); setTimeout(() => { if (EDIT.note.startsWith('No text')) { EDIT.note = ''; editSync(); } }, 2500); return; }
+  editSave();
+  EDIT.sel = { slide: DECK.slides[APP.i].id, k: best.k }; EDIT.note = '';
+  editSync(true);
+}
+function editSave() {
+  const sel = EDIT.sel; if (!sel || !EDIT.db || EDIT.ro) return;
+  const lk = sel.slide + '\u0001' + sel.k, v = EDIT.live[lk]; if (v == null) return;
+  const m = EDIT.map[sel.slide] || (EDIT.map[sel.slide] = new Map());
+  if (v === sel.k) { delete EDIT.live[lk]; if (m.has(sel.k)) { m.delete(sel.k); editWrite(sel, null); } editSync(); return; }
+  delete EDIT.live[lk];
+  if (m.get(sel.k) === v) return;
+  m.set(sel.k, v);
+  const s = DECK.slides.find(x => x.id === sel.slide) || {};
+  editWrite(sel, { slide: sel.slide, title: s.title || '', n: DECK.slides.indexOf(s) + 1, from: sel.k.slice(0, 4000), to: v.slice(0, 4000), at: new Date().toISOString() });
+  editSync();
+}
+function editUndo() {
+  const sel = EDIT.sel; if (!sel) return;
+  delete EDIT.live[sel.slide + '\u0001' + sel.k];
+  const m = EDIT.map[sel.slide]; if (m) m.delete(sel.k);
+  editWrite(sel, null); editSync(true);
+}
+/** one write at a time per document: a burst of typing writes the latest text once the previous write lands */
+function editWrite(sel, doc) {
+  if (!EDIT.db) return;
+  const id = edDocId(sel.slide, sel.k), q = EDQ[id] || (EDQ[id] = { busy: false });
+  q.key = { slide: sel.slide, k: sel.k }; q.last = doc; q.has = true;
+  if (q.busy) return;
+  q.busy = true;
+  (async () => {
+    while (q.has) {
+      const d = q.last; q.has = false;
+      try { if (d === null) await EDIT.db.doc('edits/' + id).delete(); else await EDIT.db.doc('edits/' + id).set(d); if (EDIT.note.startsWith('Not saved')) EDIT.note = ''; }
+      catch (e) {
+        if (e && (e.code === 'invalid_argument' || e.code === 'not_granted' || e.code === 'revoked')) { EDIT.ro = true; EDIT.note = 'This view can’t save edits'; }
+        else EDIT.note = 'Not saved (' + ((e && e.code) || 'error') + '), try again';
+        break;
+      }
+    }
+    q.busy = false; editSync();
+  })();
+}
+/** outline every string on the settled slide; the picked one solid, the edited ones in blue */
+function editOverlay() {
+  const fx = $('fx').getContext('2d'), dp = APP.dpr || 1, s = DECK.slides[APP.i];
+  const sel = EDIT.sel && EDIT.sel.slide === s.id ? EDIT.sel.k : null, m = EDIT.map[s.id];
+  fx.save(); fx.setTransform(1, 0, 0, 1, 0, 0); fx.lineWidth = 1.5 * dp;
+  for (const b of EDIT.boxes) {
+    const on = b.k === sel, ed = !!(m && m.has(b.k)), x = b.x0 - 3 * dp, y = b.y0 - 3 * dp, w = b.x1 - b.x0 + 6 * dp, h = b.y1 - b.y0 + 6 * dp;
+    if (on) { fx.fillStyle = 'rgba(47,140,255,0.16)'; fx.fillRect(x, y, w, h); }
+    fx.setLineDash(on || ed ? [] : [4 * dp, 3 * dp]);
+    fx.strokeStyle = on ? '#2F8CFF' : ed ? 'rgba(47,140,255,0.8)' : 'rgba(128,128,128,0.5)';
+    fx.strokeRect(x, y, w, h);
+  }
+  fx.restore();
+}
 function updateBar() {
   const s = DECK.slides[APP.i];
   $('count').textContent = (APP.i + 1) + ' / ' + DECK.slides.length;
@@ -21331,6 +21536,7 @@ function togglePlay() {
 /** draw slide s at time t into a 2D context */
 function drawSlide(ctx, s, t) {
   G = ctx; TH = themeOf(s);
+  EDIT.slide = s.id; EDIT.depth = 0; EDIT.rec = EDIT.on && ctx.canvas === OFF; if (EDIT.rec) EDIT.boxes.length = 0;
   const sc = APP.scale * APP.dpr;
   ctx.setTransform(sc, 0, 0, sc, 0, 0);
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -21349,6 +21555,7 @@ function drawSlide(ctx, s, t) {
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.18)');
     ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
   }
+  EDIT.rec = false;
 }
 function compose(k) {
   const fx = $('fx').getContext('2d'), w = $('fx').width, h = $('fx').height, sx = w / W;
@@ -21395,6 +21602,7 @@ function frame() {
   drawSlide(OFF.getContext('2d'), s, t);
   let k = APP.trStart > 0 ? prog((now - APP.trStart) / 1000, 0, APP.TR) : 1; if (k >= 1) APP.trStart = -1;
   compose(k);
+  if (EDIT.on && k >= 1) editOverlay();
   /* progress inside the chapter segment */
   const segs = [...document.querySelectorAll('.seg')], si = segs.findIndex(b => b.dataset.ch === s.ch);
   segs.forEach((b, kk) => { if (kk < si) b.firstChild.style.width = '100%'; else if (kk > si) b.firstChild.style.width = '0%'; });
@@ -21429,14 +21637,15 @@ async function start() {
   $('next').onclick = e => { e.stopPropagation(); go(APP.i + 1); };
   $('play').onclick = e => { e.stopPropagation(); togglePlay(); };
   $('fs').onclick = e => { e.stopPropagation(); const el = document.documentElement; const p = document.fullscreenElement ? document.exitFullscreen() : (el.requestFullscreen ? el.requestFullscreen() : null); if (p && p.catch) p.catch(() => { }); };
-  $('rateBtn').onclick = e => { e.stopPropagation(); const b = $('rate'); b.hidden = !b.hidden; $('rateBtn').setAttribute('aria-expanded', String(!b.hidden)); rateSync(); };
+  $('rateBtn').onclick = e => { e.stopPropagation(); const b = $('rate'); b.hidden = !b.hidden; $('rateBtn').setAttribute('aria-expanded', String(!b.hidden)); if (!b.hidden && EDIT.on) editToggle(false); rateSync(); };
+  $('editBtn').onclick = e => { e.stopPropagation(); editToggle(); };
   rateInit();
   $('srcBtn').onclick = e => { e.stopPropagation(); const b = $('src'); b.hidden = !b.hidden; $('srcBtn').setAttribute('aria-expanded', String(!b.hidden)); };
   $('sndBtn').onclick = e => { e.stopPropagation(); auInit(); AU.on = !AU.on; $('sndBtn').textContent = AU.on ? 'sound on' : 'sound off'; $('sndBtn').setAttribute('aria-pressed', String(AU.on)); if (AU.on) sfx('click'); };
   $('cleanBtn').onclick = e => { e.stopPropagation(); document.body.classList.toggle('clean'); fit(); };
   $('viewBtn').onclick = e => { e.stopPropagation(); setView2D(!V2D.on); };
   v2dButton();
-  $('stage').addEventListener('click', e => { const r = $('stage').getBoundingClientRect(); go(APP.i + ((e.clientX - r.left) < r.width * 0.3 ? -1 : 1)); });
+  $('stage').addEventListener('click', e => { if (EDIT.on) { editPick(e); return; } const r = $('stage').getBoundingClientRect(); go(APP.i + ((e.clientX - r.left) < r.width * 0.3 ? -1 : 1)); });
   let tx = null; $('stage').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
   $('stage').addEventListener('touchend', e => { if (tx == null) return; const d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 40) go(APP.i + (d < 0 ? 1 : -1)); tx = null; });
   window.addEventListener('keydown', e => {
@@ -21454,7 +21663,8 @@ async function start() {
     else if (k === 'd' || k === 'D') setView2D(!V2D.on);
     else if (k === '2') setView2D(true);
     else if (k === '3') setView2D(false);
-    else if (k === 'Escape') { $('src').hidden = true; $('rate').hidden = true; $('rateBtn').setAttribute('aria-expanded', 'false'); }
+    else if ((k === 'e' || k === 'E') && !$('editBtn').hidden) editToggle();
+    else if (k === 'Escape') { $('src').hidden = true; $('rate').hidden = true; $('rateBtn').setAttribute('aria-expanded', 'false'); if (EDIT.on) editToggle(false); }
   });
   window.addEventListener('hashchange', () => {
     const hv = location.hash.slice(1);

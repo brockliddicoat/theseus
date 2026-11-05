@@ -97,6 +97,12 @@ now govern every slide are in `deck/DESIGN.md` §0 (items 9 to 12) and §2b.
   the artifact's database, collection `ratings`, one document per slide (`rateKey(slide.id)`); read them with the
   ArtifactData tool (`list` on `ratings`). The capability is declared once; publish later versions without
   `capabilities` so it carries forward.
+- **Edit text (2026-11-05):** an `edit text` pill (editors only; key E) lets Brock tap any string on a slide and retype
+  it. Edits live in the artifact's db, collection `edits`, one document per string: `{ slide, title, n, from, to, at }`
+  (`edDocId` in 20-app.js). The deck shows them to every viewer (01-core.js `edTxt`, used by `text`, `rich`, `para`
+  and `tw`). To fold an edit into the source, find `from` in the slide's code, replace it with `to`, then delete the
+  document (ArtifactData `delete`) so the override doesn't linger. The capability declaration now has two rules
+  (`ratings` and `edits`, both read view, write admin).
 - **3D:** one shell with one seam (`3d/shell/shell-theseus-1seam.glb`), the optional bottom plate (solid 0.6 mm outside, an
   X of struts closing into triangles and a fine lattice inside; its FE study is `3d/shell/tools/plate_fe/`, run order in
   `final.js`), half-moon skates like the Viper V4 Pro's rear one, the clip-on lens carrying the plate-off dots, the GT01's

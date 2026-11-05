@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-05 00:12 (Chicago).
+Last updated: 2026-11-05 00:48 (Chicago).
 
 ## Open with Brock
 
@@ -587,3 +587,16 @@ Answers to the Shell A questions:
   slide and the budget.
 - **F22.2 DECIDED** Frame sync: "Match SensorLock, 42 µs". **IN PROGRESS (whl).**
 - **F22.3 DECIDED** Screws and wires in the budget: "Derive Theseus's own" from the 3D model. **IN PROGRESS (whl).**
+
+## F23. The phone, and editing text (2026-11-05 00:28)
+- **F23.1 DONE** "on my iphone 16 pro max, all the tools hang off screen and there's no way to input ratings, the tools
+  below the video player need to wrap around to a second line after they become longer than the width of the video
+  player". The bar wraps onto more lines at the stage's width, the stage refits to the bar's real height, the panels sit
+  at the top on a phone (clear of the keyboard), and the safe areas are respected. Tested at 440 × 956 and 956 × 440.
+- **F23.2 DONE** "id also like a tool where i can tap a button then be able to select and directly edit any text a on a
+  slide". The "edit text" pill (editors only; key E) freezes the slide at its settled frame and outlines every string; a
+  tap picks one and the panel takes the new words, shown on the slide as they're typed and saved as he goes ("back to
+  original" undoes it). The narration's earlier lines are listed in the panel. Edits replace that string on that slide
+  only, for every viewer, and are kept in the artifact's db (collection `edits`: slide, from, to), where Claude reads them.
+- **F23.3** "these changes need to be made relatively soon so i can start giving you input on all your slides". Live in
+  v18 (00:4x).

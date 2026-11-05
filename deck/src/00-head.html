@@ -18,23 +18,24 @@
 html, body { height: 100%; }
 body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); overflow: hidden; }
 #app { box-sizing: border-box; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-  padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  padding-top: max(12px, env(safe-area-inset-top, 0px)); padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 #stage { position: relative; background: var(--stage); border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.05); touch-action: pan-y; cursor: pointer; flex: none; }
 #stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-#bar { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 100%; flex: none; min-width: 0; }
+#bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: 100%; max-width: 100%; flex: none; min-width: 0; }
 .btn { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; }
 .btn:hover { background: var(--surface2); }
 .btn:focus-visible, .seg:focus-visible, .pill:focus-visible { outline: 2px solid var(--hero); outline-offset: 2px; }
 .pill { flex: none; height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: 600 12px/1 var(--f-mono); cursor: pointer; letter-spacing: .08em; text-transform: uppercase; }
 .pill:hover { background: var(--surface2); }
-#segs { flex: 1 1 auto; display: flex; gap: 3px; height: 36px; align-items: center; min-width: 60px; }
+#segs { flex: 1 1 120px; display: flex; gap: 3px; height: 36px; align-items: center; min-width: 90px; }
 .seg { flex: 1 1 0; height: 6px; border-radius: 3px; background: rgba(255,255,255,.09); border: 0; padding: 0; cursor: pointer; position: relative; overflow: hidden; }
 .seg i { position: absolute; inset: 0; width: 0; background: rgba(236,235,229,.85); }
 .seg.on { background: rgba(47,140,255,.30); }
 .seg.on i { background: var(--hero); }
 #count { flex: none; font: 500 12px/1 var(--f-mono); color: var(--mute); font-variant-numeric: tabular-nums; min-width: 54px; text-align: right; }
 #chap { flex: 0 1 auto; min-width: 0; max-width: 280px; font: 600 12px/1.2 var(--f-mono); color: var(--mute); text-transform: uppercase; letter-spacing: .1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#src { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(64px + env(safe-area-inset-bottom, 0px)); width: min(560px, calc(100% - 32px)); max-height: min(70vh, 640px); overflow: auto;
+#src { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(var(--barH, 44px) + 20px + env(safe-area-inset-bottom, 0px)); width: min(560px, calc(100% - 32px)); max-height: min(70vh, 640px); overflow: auto;
   background: #141517; border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; z-index: 5; box-shadow: 0 30px 80px -30px #000; }
 #src h2 { margin: 0 0 4px; font: 700 15px/1.3 var(--f-disp); }
 #src p.sub { margin: 0 0 12px; color: var(--mute); font: 500 12px/1.4 var(--f-mono); }
@@ -47,7 +48,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 #viewBtn span { opacity: .42; }
 #viewBtn .vs { opacity: .25; }
 #viewBtn[aria-pressed="true"] .v2, #viewBtn[aria-pressed="false"] .v3 { opacity: 1; color: var(--hero); }
-#rate { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(64px + env(safe-area-inset-bottom, 0px)); width: min(600px, calc(100% - 32px));
+#rate, #edit { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(var(--barH, 44px) + 20px + env(safe-area-inset-bottom, 0px)); width: min(600px, calc(100% - 32px)); box-sizing: border-box;
   background: rgba(20,21,23,.96); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; z-index: 6; box-shadow: 0 24px 60px -24px #000; }
 #rate .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 #rate h2 { margin: 0; font: 700 14px/1.3 var(--f-disp); }
@@ -63,11 +64,24 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 #rate textarea { box-sizing: border-box; flex: 1 1 auto; min-width: 0; height: 32px; min-height: 32px; resize: vertical; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: 400 13px/1.3 var(--f-disp); }
 #rate .row .pill { height: 32px; padding: 0 12px; }
 #rateBtn[aria-expanded="true"] { border-color: var(--hero); }
-body.clean #rate { display: none; }
+/* edit mode: tap any text on the slide to change it (Brock, 2026-11-05) */
+#edit h2 { margin: 0; font: 700 14px/1.3 var(--f-disp); }
+#edit .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+#edit .state { color: var(--mute); font: 500 11px/1.3 var(--f-mono); white-space: nowrap; }
+#edit .hint { margin: 6px 0 0; color: #bdbcb6; font: 500 13px/1.4 var(--f-disp); }
+#edit .was { margin: 8px 0 6px; color: var(--mute); font: 500 12px/1.4 var(--f-disp); max-height: 4.2em; overflow: auto; }
+#edit textarea { box-sizing: border-box; width: 100%; min-height: 64px; resize: vertical; background: var(--surface); color: var(--ink); border: 1px solid var(--hero); border-radius: 6px; padding: 8px 10px; font: 500 16px/1.35 var(--f-disp); }
+#edit .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+#edit .row .pill { height: 34px; padding: 0 12px; }
+#editBtn[aria-pressed="true"] { border-color: var(--hero); background: var(--hero); color: #fff; }
+body.editing #stage { cursor: text; }
+body.clean #rate, body.clean #edit { display: none; }
 body.clean #bar, body.clean #src { display: none; }
 body.clean #stage { border-radius: 0; box-shadow: none; }
 body.cap #app { padding: 0; }
-@media (max-width: 720px) { #chap, .opt { display: none; } }
+@media (max-width: 720px) { #chap, #cleanBtn { display: none; }
+  #rate, #edit, #src { top: calc(env(safe-area-inset-top, 0px) + 8px); bottom: auto; left: 8px; right: 8px; width: auto; max-height: 46vh; overflow: auto; }
+  #rate .vals button { height: 40px; } .pill { height: 38px; } }
 @media (prefers-reduced-motion: reduce) { .btn, .pill { transition: none; } }
 </style>
 <div id="app">
@@ -84,10 +98,12 @@ body.cap #app { padding: 0; }
     <button class="pill" id="sndBtn" type="button" aria-pressed="false" title="Mechanical sound design (S)">sound off</button>
     <button class="pill" id="viewBtn" type="button" aria-pressed="false" title="Show the drawings in 2D or 3D (D)"><span class="v2">2D</span><span class="vs">/</span><span class="v3">3D</span></button>
     <button class="pill" id="rateBtn" type="button" aria-expanded="false" aria-controls="rate" hidden title="Rate how valuable this slide is, 1 to 10">rate</button>
+    <button class="pill" id="editBtn" type="button" aria-pressed="false" aria-controls="edit" hidden title="Tap any text on a slide to edit it (E)">edit text</button>
     <button class="pill opt" id="srcBtn" type="button" aria-expanded="false" aria-controls="src">sources</button>
     <button class="pill opt" id="cleanBtn" type="button" title="Hide controls (H)">clean</button>
     <button class="btn" id="fs" type="button" aria-label="Full screen"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
   </nav>
   <aside id="src" hidden aria-label="Sources"></aside>
   <aside id="rate" hidden aria-label="Rate this slide"></aside>
+  <aside id="edit" hidden aria-label="Edit text on this slide"></aside>
 </div>
