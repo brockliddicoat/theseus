@@ -903,3 +903,8 @@ old score as archived (F26.13).
   to the new outline (its dark triangles, gold clusters, wordmark, labels, QR), triangles filleted, shown in plan 3.
 - **F30.16** "drop the other 2 small holes and add your own cutouts wherever you see fit" (LH1 and LH2 go; cutouts of
   K2's choosing, each with its reason and weight, every web 1 mm or more). **IN PROGRESS (K2), plan 3.**
+- **F30.17** "i also want a variant of the pcb where the switch hangs off the edge instead if in a hole". **IN PROGRESS
+  (K2):** plan 3 shows variant B (the power switch at the board's edge, no window) beside A (the window).
+- **F30.18** "also on the gt01 switch the walls aren't straight for some reason and they aren't a consistent thickness for
+  the bottom housing, you messed up the design". **IN PROGRESS (K1, resumed):** straight walls of one thickness, 3D and
+  2D; the board's switches follow.
