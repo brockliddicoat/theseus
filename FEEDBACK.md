@@ -908,3 +908,10 @@ old score as archived (F26.13).
 - **F30.18** "also on the gt01 switch the walls aren't straight for some reason and they aren't a consistent thickness for
   the bottom housing, you messed up the design". **IN PROGRESS (K1, resumed):** straight walls of one thickness, 3D and
   2D; the board's switches follow.
+- **F30.19** On board-plan-3.png: USB-C fit "[No preference]" (flush now; the 4.6 mm / 1.36 mm gap to the shell's opening is
+  for the shell round). Power switch: "i want to see bout versions" (A and B both built). The two rear cut-outs: "Drop
+  them". Build it? "Yes, more changes" (to come). The GT01's walls (F30.18): **DONE (K1)**, straight, one 0.45 mm wall
+  (Omron D2F-class construction; Gateron publishes no dimensions).
+- **F30.20 DECIDED** `elc_sheet2` (F27): the no-RGB point goes on the encoder slide, his choice of "The encoder slide":
+  `srf_encoder` becomes "nothing lights up but the sensor" (the magnetic encoder, the mechanical switches, no RGB LED,
+  with their battery figures), next to the web software; `elc_sheet2` out of the film. **IN PROGRESS (K2).**
