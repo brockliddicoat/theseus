@@ -118,7 +118,7 @@ S({
     header(t, 'The pouch battery, per gram');
     captions(t, [[0.6, 'At a mouse\'s drain a fresh AA holds about as much energy per gram as a pouch battery, but it is one ' + fmtN(aa.g, 0) + ' g lump, used once.'], [4.8, 'A ' + me.mAh + ' mAh pouch is ' + fmtN(me.g, 0) + ' g, ' + fmtN(100 * me.g / M, 0) + '% of the mouse, and charges again and again.']]);
     /* the table: the share of the mouse drawn as bars (it decides what fits); energy and cycles as plain figures */
-    const x = LM, y0 = 400, rh = 104, lw = 330, xs = x + lw, sw = 320, xe = xs + sw + 56, xc = xe + 220, xr = 1200;
+    const x = LM, y0 = 400, rh = 104, lw = 330, xs = x + lw, sw = 320, xe = xs + sw + 56, xc = xe + 252, xr = 1200;
     const a0 = ep(t, 0.6, 1.0), load = ep(t, 5.4, 6.6) * (1 - ep(t, 7.6, 8.6));
     [[xs, 'Share of the mouse', '% of ' + THS.massG + ' (lower is better)'], [xe, 'Energy per gram', 'Wh/kg'], [xc, 'Longevity', 'charge cycles']].forEach(([cx, l, u]) => { text(l, cx, y0 - 66, { role: 'label', size: 22, color: C.ink, alpha: a0 }); text(u, cx, y0 - 36, { role: 'label', size: 19, color: C.faint, alpha: a0 }); });
     line(x, y0 - 10, xr, y0 - 10, { color: C.hair, w: 1.5, alpha: a0 });
@@ -189,6 +189,6 @@ S({
     [[{ kind: 'dot', color: '#B9B8B2', label: 'Weighed by RTINGS' }], [{ kind: 'ring', color: '#B9B8B2', label: 'Maker\'s weight' }], [{ kind: 'line', color: C.ink, label: 'Pareto frontier' }], [{ kind: 'hero', label: 'Theseus, derived' }]].forEach((it, i) => legend(t, 4.2 + i * 0.08, 1500, 800 + i * 34, it, { size: 20 }));
     const un = [...new Set([...(s1.unnamed || []), ...(s2.unnamed || [])].map(n => n.replace(/^(Razer|Logitech|ZOWIE|Lamzu|Pulsar|Finalmouse|Ninjutso) /, '')))];
     if (un.length) text('Unnamed: ' + un.join(', '), 1500, 938, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 4.6, 5.0), maxW: RM - 1500 });
-    source(t, 'Latency: piaknow 2026-09-15, 8 kHz. Hours: maker claims. Theseus: ' + THS.hours + ' at 1 kHz, derived from the example battery, Jauch\'s 370 mAh, at the Viper V4 Pro\'s draw; 0.14 ms from Kunai\'s model.', { t0: 3 });
+    source(t, 'Latency: piaknow 2026-09-15, 8 kHz. Hours: maker claims. Theseus: ' + THS.hours + ' at 1 kHz, derived (the example battery at the V4 Pro\'s draw); 0.14 ms, Kunai\'s model.', { t0: 3 });
   }
 });

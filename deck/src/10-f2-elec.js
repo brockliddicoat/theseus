@@ -429,11 +429,11 @@ S({
     const a0 = ep(t, 1.0, 1.4);
     for (const v of [0, 1000, 2000, 3000]) { line(ax0, BY(v), ax1, BY(v), { color: C.hair, w: 1, alpha: a0 }); text(v ? fmtN(v / 1000, 0) + 'k' : '0', ax0 - 12, BY(v) + 7, { role: 'tick', size: 19, color: C.mute, align: 'right', alpha: a0 }); }
     for (const d of [0.4, 0.2, 0.1]) text(fmtN(d, 1) + ' mm', DX(d), ay1 + 28, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a0 });
-    text('Finer →', ax1, ay1 + 28, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
+    text('Finer strands →', ax1, ay1 + 54, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
     const rows = [[0.40, 351], [0.25, 874], [0.13, 2892], [0.10, 2908]], kl = ep(t, 1.2, 2.6, E.io3);
     poly(rows.map(([d, v]) => [DX(d), BY(v)]), { color: C.ink2, w: 2.5, p: kl, alpha: a0 });
     /* values: the two coarse ones right of their points, the two fine ones over theirs, clear of the line */
-    const lab = [[14, -10, 'left'], [14, -10, 'left'], [-12, -14, 'right'], [0, -14, 'center']];
+    const lab = [[14, 28, 'left'], [14, 28, 'left'], [-12, -14, 'right'], [0, -14, 'center']];
     rows.forEach(([d, v], i) => {
       const k = ep(t, 1.3 + i * 0.25, 1.7 + i * 0.25), [dx, dy, al] = lab[i];
       circle(DX(d), BY(v), 7, { fill: C.ink2, alpha: k });
@@ -444,6 +444,6 @@ S({
     line(XT, ay0 - 4, XT, ay1, { color: C.hero, w: 3, dash: [7, 5], alpha: kT });
     text('Theseus', XT - 12, ay1 - 40, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: kT });
     text('0.08 mm', XT - 12, ay1 - 14, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: kT });
-    source(t, 'Strain ε = d / 2R, derived. Bends to failure: Alexander 1953, Table IX, 18 AWG wire bent 90° each way; Theseus\'s 0.08 mm strands are finer than any it tested. Fold rating: Shengyi SF202; the film: DuPont Kapton HN.', { t0: 2 });
+    source(t, 'Strain ε = d / 2R, derived. Bends to failure: Alexander 1953, Table IX, 18 AWG wire bent 90° each way. Fold rating: Shengyi SF202; the film: DuPont Kapton HN.', { t0: 2 });
   }
 });

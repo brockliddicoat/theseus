@@ -251,22 +251,23 @@ S({
   draw: t => {
     header(t, 'Bottom plate options at the same weight');
     captions(t, [[0.6, 'The same ' + PLT_OPTS.A.mass.toFixed(2) + ' g, spent four ways. Every one is stiffer than a plain grid of its weight at the lens, under the front skate and in twist.'], [4.6, 'A is the plate built so far. B, C and D each buy something more, and each says what it costs.']]);
-    const T0 = [['A', 'Committed: the balance', 'Wins four of five against the grid with today\'s ribs.', 'The back skate flexes ' + Math.round((PLT_OPTS.A.theseus.back / PLT_OPTS.A.grid.back - 1) * 100) + ' % more than the grid\'s.'],
-      ['B', 'The back skate first', 'Back skate ' + PLT_OPTS.A.theseus.back + ' to ' + PLT_OPTS.B.theseus.back + ' µm: half the gap to the grid.', 'Smaller wins at the lens, the front skate and the peak.'],
-      ['C', 'Thinner ribs', 'Lens ' + PLT_OPTS.A.theseus.lens + ' to ' + PLT_OPTS.C.theseus.lens + ' µm, front skate ' + PLT_OPTS.A.theseus.pill + ' to ' + PLT_OPTS.C.theseus.pill + ' µm.', 'Ribs to mould at ' + PLT_OPTS.C.walls.lattice.toFixed(2) + ' mm, struts at ' + PLT_OPTS.C.walls.struts.toFixed(2) + ' mm.'],
-      ['D', 'Taller ribs in the tail', 'Back skate ' + PLT_OPTS.A.theseus.back + ' to ' + PLT_OPTS.D.theseus.back + ' µm, in the space under the battery.', 'A higher peak, and a grid as tall there gains more.']];
+    const A = PLT_OPTS.A.theseus;
+    const T0 = [['A', 'Committed: the balance', 'Four of five wins, with today\'s ribs.', 'Back skate ' + Math.round((A.back / PLT_OPTS.A.grid.back - 1) * 100) + ' % behind the grid.'],
+      ['B', 'The back skate first', 'Back skate ' + A.back + ' to ' + PLT_OPTS.B.theseus.back + ' µm.', 'Smaller wins everywhere else.'],
+      ['C', 'Thinner ribs', 'Lens ' + A.lens + ' to ' + PLT_OPTS.C.theseus.lens + ' µm, front ' + A.pill + ' to ' + PLT_OPTS.C.theseus.pill + '.', 'Ribs ' + PLT_OPTS.C.walls.lattice.toFixed(2) + ' mm, struts ' + PLT_OPTS.C.walls.struts.toFixed(2) + ' mm.'],
+      ['D', 'Taller ribs in the tail', 'Back skate ' + A.back + ' to ' + PLT_OPTS.D.theseus.back + ' µm.', 'A higher peak; the grid gains more.']];
     const rows = [['Lens flex', 'lens', 0], ['Front skate', 'pill', 0], ['Twist', 'twist', 0], ['Peak stress', 'max', 1], ['Back skate', 'back', 0]];
     T0.forEach(([X, nm, buys, costs], i) => {
       const x = LM + (i % 2) * 900, y = 280 + Math.floor(i / 2) * 370, w = 860, h = 330, a = tileA(t, 0.2, i), O = PLT_OPTS[X], hero = X === 'A';
       demoWindow(x, y, w, h, a, { hero });
       plt_optPlate(X, x + 104, y + h / 2 + 4, 2.5, ep(t, 0.5 + i * 0.2, 1.1 + i * 0.2));
-      const tx = x + 214, k1 = ep(t, 1.0 + i * 0.35, 1.5 + i * 0.35);
+      const tx = x + 200, k1 = ep(t, 1.0 + i * 0.35, 1.5 + i * 0.35);
       text(X, tx, y + 62, { font: 'disp', size: 52, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, alpha: a });
       text(nm, tx + 54, y + 54, { role: 'label', size: 21, color: hero ? C.heroText : C.ink, alpha: a, maxW: 210, lh: 1.15 });
       text('Buys', tx, y + 112, { role: 'label', size: 19, color: C.heroText, alpha: k1 });
-      text(buys, tx, y + 142, { role: 'small', size: 25, weight: 600, color: C.ink2, maxW: 268, lh: 1.25, alpha: k1 });
+      text(buys, tx, y + 142, { role: 'small', size: 25, weight: 600, color: C.ink2, maxW: 280, lh: 1.25, alpha: k1 });
       text('Costs', tx, y + 222, { role: 'label', size: 19, color: C.mute, alpha: k1 });
-      text(costs, tx, y + 252, { role: 'small', size: 25, weight: 600, color: C.ink2, maxW: 268, lh: 1.25, alpha: k1 });
+      text(costs, tx, y + 252, { role: 'small', size: 25, weight: 600, color: C.ink2, maxW: 280, lh: 1.25, alpha: k1 });
       /* its five numbers against the grid of its weight */
       const gx = x + 500, k2 = ep(t, 1.6 + i * 0.35, 2.2 + i * 0.35);
       text('Against a plain grid', gx, y + 48, { role: 'label', size: 19, color: C.ink, alpha: k2, caps: false });
@@ -275,14 +276,13 @@ S({
         const yy = y + 112 + j * 34, th = O.theseus[f], g = O.grid[f], win = th < g;
         const d = win ? (g / th >= 1.5 ? (g / th).toFixed(1) + '×' : '−' + Math.round((1 - th / g) * 100) + ' %') : '+' + Math.round((th / g - 1) * 100) + ' %';
         text(lab, gx, yy, { role: 'label', size: 19, color: C.mute, alpha: k2, caps: false });
-        text(fmtN(th, dp), gx + 182, yy, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: k2, caps: false });
-        text(fmtN(g, dp), gx + 260, yy, { role: 'label', size: 21, color: C.secondText, align: 'right', alpha: k2, caps: false });
-        text(d, x + w - 28, yy, { role: 'label', size: 21, color: win ? C.heroText : C.bad, align: 'right', alpha: k2, caps: false });
+        text(fmtN(th, dp), gx + 172, yy, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: k2, caps: false });
+        text(fmtN(g, dp), gx + 256, yy, { role: 'label', size: 21, color: C.secondText, align: 'right', alpha: k2, caps: false });
+        text(d, x + w - 24, yy, { role: 'label', size: 21, color: win ? C.heroText : C.bad, align: 'right', alpha: k2, caps: false });
       });
       const k3 = ep(t, 2.2 + i * 0.35, 2.7 + i * 0.35), thin = Math.min(...Object.values(O.walls).filter(v => v != null));
       text('Thinnest rib ' + thin.toFixed(2) + ' mm', gx, y + h - 22, { role: 'label', size: 19, color: C.ink2, alpha: k3, caps: false });
       text(O.mass.toFixed(2) + ' g', x + w - 28, y + h - 22, { role: 'label', size: 19, color: C.ink2, align: 'right', alpha: k3, caps: false });
-      if (X === 'D') text('Tail struts ' + O.tallH.toFixed(1) + ' mm tall', x + 32, y + h - 22, { role: 'label', size: 19, color: C.heroText, alpha: k3, caps: false });
     });
     source(t, 'Plate FE (this deck), four sizings at ' + PLT_OPTS.A.mass.toFixed(2) + ' g, each against a plain 8 mm grid of the same weight, skin, edge wall, lens ring and rib heights. Theseus blue, the grid yellow.', { t0: 3 });
   }

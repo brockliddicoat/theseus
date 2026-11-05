@@ -408,7 +408,7 @@ S({
       { k: 'm', x: 1170, w: 320, label: 'Motion latency, 8 kHz', dir: 'low', max: 1.0, hs: 80, head: head('m', 'low'), ba: ba('m', 'low', 'ms'), who: who('m', 'low') },
       { k: 'p', x: 1530, w: 278, label: 'Price, US list', dir: null, max: 200, neutral: true, noBest: true, ref: { v: ulx, label: 'The ULX at launch, ' + cheap }, refCol: C.mute }
     ], rows);
-    source(t, 'Weights: RTINGS; the XA25, XBAB part by part. Hours: makers; Theseus\'s derived, its battery at the V4 Pro\'s draw. Motion: piaknow, 8 kHz. Price: US list, the GPX2 at its 2023 list, the ULX at launch (Notebookcheck).', { t0: 4.0 });
+    source(t, 'Weights: RTINGS; the XA25, XBAB by part. Hours: makers; Theseus\'s derived. Motion: piaknow, 8 kHz. Price: US list; the GPX2 at its 2023 list, the ULX at launch (Notebookcheck).', { t0: 4.0 });
   }
 });
 
@@ -659,14 +659,14 @@ S({
     const rows = [
       { name: 'Shell and skates', g: B.shell, was: B.xa.shell, ev: 'derived', hero: true },
       { name: 'Battery, ' + B.cell.mAh + ' mAh', g: B.cell.g, ev: 'datasheet', note: 'Example part' },
-      { name: 'One board', g: THESEUS.pcb, was: B.xa.boards },
+      { name: 'One board', g: THESEUS.pcb, was: B.xa.boards, note: 'Radio, antenna, USB-C on it' },
       { name: 'Buttons', g: B.xa.btn, ev: 'claim', note: 'As in the XA25' },
-      { name: 'Wheel and axle', g: B.wheel, was: B.xa.wheel, ev: 'derived', note: 'Magnesium, POM axle' },
+      { name: 'Wheel and axle', g: B.wheel, ev: 'derived', note: 'Magnesium, POM axle' },
       { name: 'Screws', g: B.xa.screws, ev: 'claim', note: 'As in the XA25' },
-      { name: 'Brass inserts', count: NTR_BUD.inserts, g: B.ins, ev: 'derived', note: 'M2 × 3 mm, ' + f2(B.ins1) + ' g each' },
+      { name: 'Brass inserts', count: NTR_BUD.inserts, g: B.ins, ev: 'derived', note: f2(B.ins1) + ' g each' },
       { name: 'Wires', g: B.xa.fpc, ev: 'claim', note: 'As in the XA25' }
     ];
-    breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 54, stagger: 0.09, wasLabel: 'XA25', foot: ['Dashed: the same part in the XA25 (its three boards for the board), as XBAB weighed it', ''] });
+    breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 54, stagger: 0.09, wasLabel: 'XA25', foot: ['Dashed: the XA25\'s part, as XBAB weighed it (its three boards for the board)', ''] });
     /* the two things the plan rests on: the cell's hours, and the shell's grams */
     ntr_stack(t, 1200, 320, RM - 1200, [
       { t0: 5.0, gloss: true, a: 'Hours = Wh ÷ draw', b: `${B.cell.mAh} mAh at 3.7 V holds ${fmtN(B.cell.wh, 3)} Wh. A Viper V4 Pro draws ${fmtN(B.L.w1 * 1000, 2)} mW at 1 kHz (its ${fmtN(B.L.wh, 3)} Wh over Razer's ${B.L.h1} h), so the battery runs ${fmtN(B.hours, 0)} h.` },
@@ -675,7 +675,7 @@ S({
     { const ka = ep(t, 6.6, 7.2), y = 868;
       rich([{ s: f2(B.cut), role: 'stat', size: 64, color: C.heroText, grad: C.heroGrad, tnum: true, count: [6.7, 0.8] }, { s: 'g', font: 'disp', size: 26, weight: 700, color: C.mute, gap: 6 }], 1200, y, { t, alpha: ka });
       text('out of the shell: the one number the plan asks of my design', 1200 + 210, y - 22, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: RM - 1410, lh: 1.3, alpha: ka }); }
-    source(t, `The example battery: Jauch ${B.cell.part}. Derived: the wheel ${NTR_BUD.wheelMm3} mm³ of magnesium at ${NTR_BUD.mg} g/cm³ (${f2(B.wheelMg)} g) on an ${fmtN(NTR_BUD.axleMm3, 0)} mm³ POM axle at ${NTR_BUD.pom} (${f2(B.axle)} g); each insert ${fmtN(NTR_BUD.insMm3, 1)} mm³ of brass at ${NTR_BUD.brass}. The antenna and USB-C sit on the one board. Draw: the Viper V4 Pro's, from its battery and Razer's hours.`, { t0: 3 });
+    source(t, `Derived: the wheel, ${NTR_BUD.wheelMm3} mm³ of magnesium at ${NTR_BUD.mg} g/cm³, on an ${fmtN(NTR_BUD.axleMm3, 0)} mm³ POM axle at ${NTR_BUD.pom}; each insert ${fmtN(NTR_BUD.insMm3, 1)} mm³ of brass at ${NTR_BUD.brass}. The example battery: Jauch ${B.cell.part}.`, { t0: 3 });
   }
 });
 

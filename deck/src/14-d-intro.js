@@ -192,7 +192,7 @@ S({
       const r = cell(i % 3, Math.floor(i / 3)), t0 = 0.3 + order.indexOf(i) * 0.14;
       if (d.product) ntr_productTile(t, t0, r); else ntr_statTile(t, t0, r, d);
     });
-    source(t, 'Density: 29.31 g in Theseus\'s 119.3 × 62.4 × 39.9 mm box; next best: RTINGS\'s weight in its maker\'s box. Battery: Jauch\'s 370 mAh battery at the Viper V4 Pro\'s draw.', { t0: 2.4 });
+    source(t, 'Density: 29.31 g in Theseus\'s 119.3 × 62.4 × 39.9 mm box; next best: RTINGS\'s weight in its maker\'s box. Battery: derived, the example battery at the V4 Pro\'s draw.', { t0: 2.4 });
   }
 });
 

@@ -1209,7 +1209,7 @@ S({
       /* the labels sit in the dark margins either side of the node, off the ribs (review item 16): in 2D the node plan is
          centred with about a quarter of the box clear on each side */
       const inBox = p => p[0] > bx + 20 && p[0] < bx + bw - 20 && p[1] > by + 20 && p[1] < by + bh - 20;
-      if (inBox(P1)) callout(t, 2.0, P1, 'A 0.6 mm fillet', { to: in2D([bx + bw * 0.75, by + bh - 78], [Math.min(P1[0] + 120, bx + bw - 320), by + bh - 50]), side: 'r', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: in2D(bw * 0.25 - 24, 280), sub: 'Where three ribs meet', scolor: '#B9B8B2' });
+      if (inBox(P1)) callout(t, 2.0, P1, 'A 0.6 mm fillet', { to: in2D([bx + bw * 0.75, by + bh - 112], [Math.min(P1[0] + 120, bx + bw - 320), by + bh - 50]), side: 'r', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: in2D(bw * 0.25 - 24, 280), sub: 'Where three ribs meet', scolor: '#B9B8B2' });
       if (inBox(P2)) callout(t, 2.6, P2, 'Rib 1.0 mm wide', { to: in2D([bx + bw * 0.25, by + 64], [Math.max(P2[0] - 110, bx + 300), P2[1] + 60]), side: 'l', prose: true, color: C.hero, tcolor: '#F3F2EE', maxW: in2D(bw * 0.25 - 24, 250), sub: '2.0 mm tall', scolor: '#B9B8B2' });
     }
     glossBox(t, 2.8, LM, 720, 840, 'Fillet', 'A rounded inside corner: here where three ribs meet, and where each rib meets the wall. Peak: the hottest point over the panel\'s average stress.', { size: 24 });

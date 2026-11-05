@@ -309,9 +309,9 @@ S({
     demoWindow(rx, ry, rw, rh, tileA(t, 0.3, 0));
     cardHead(t, 0.5, rx, ry, rw, 'Reports over the cable, at their real rates (more is better)', ['datasheet']);
     const x0 = rx + 36, w0 = rw - 72;
-    elc_lane(t, 0.9, x0, ry + 128, w0, { name: 'One nRF52840', sub: (N.nRF52840 || 0) + ' of ' + tot + ' mice', col: C.comp, khz: 1, rate: '1 kHz', bw: 200, chips: [{ l: 'nRF52840', s: 'full-speed USB' }] });
-    elc_lane(t, 1.7, x0, ry + 216, w0, { name: 'Two chips', sub: 'Most 8 kHz mice', col: C.comp, khz: 8, rate: '8 kHz', bw: 360, chips: [{ l: 'nRF52840', s: 'radio' }, { l: 'USB chip', s: 'high speed', dx: 180 }] });
-    elc_lane(t, 2.5, x0, ry + 304, w0, { hero: true, sub: 'One chip', col: C.hero, khz: 8, rate: '8 kHz', bw: 230, chips: [{ l: 'nRF54LM20A', s: 'radio and USB', sc: C.heroText, hi: true }] });
+    elc_lane(t, 0.9, x0, ry + 128, w0, { name: 'One nRF52840', sub: (N.nRF52840 || 0) + ' of ' + tot + ' mice', col: C.comp, khz: 1, rate: '1 kHz', bw: 256, chips: [{ l: 'nRF52840', s: 'full-speed USB' }] });
+    elc_lane(t, 1.7, x0, ry + 216, w0, { name: 'Two chips', sub: 'Most 8 kHz mice', col: C.comp, khz: 8, rate: '8 kHz', bw: 384, chips: [{ l: 'nRF52840', s: 'radio' }, { l: 'USB chip', s: 'high speed', dx: 180 }] });
+    elc_lane(t, 2.5, x0, ry + 304, w0, { hero: true, sub: 'One chip', col: C.hero, khz: 8, rate: '8 kHz', bw: 256, chips: [{ l: 'nRF54LM20A', s: 'radio and USB', sc: C.heroText, hi: true }] });
     /* the two chips, side by side: Theseus's wins in bold, the one spec it gives up kept honest */
     const ty = 680, th = 280;
     demoWindow(rx, ty, rw, th, tileA(t, 0.3, 1));
@@ -478,19 +478,20 @@ S({
     const ages = lanes.map(L => polls.map(p => Math.round(p - L.frames.filter(f => f + 15 <= p).pop()))), jit = ages.map(g => Math.max(...g) - Math.min(...g));
     elc_ba(t, 5.4, LM, 880, String(jit[0]), String(jit[1]), { size: 110, label: 'Jitter, its own clock then synced', unit: 'µs', net: 'Every report the same age', maxW: 560 });
     elc_ba(t, 6.0, 680, 880, '73', '20', { size: 64, label: 'The oldest motion in a report', unit: 'µs', net: '−53 µs at the worst', maxW: 480 });
-    const tx = 1240, tw0 = RM - tx, ty = 720, th = 240;
+    const tx = 1200, tw0 = RM - tx, ty = 720, th = 240;
     demoWindow(tx, ty, tw0, th, tileA(t, 0.4, 1));
-    cardHead(t, 0.6, tx, ty, tw0, 'Frame to USB, wired, 8 kHz (lower is better)', [{ ev: 'measured', by: 'Kunai\'s developer' }], { dy: 44 });
-    const bx = tx + 240, bw2 = tw0 - 240 - 140, BX = us => bx + bw2 * us / 210;
+    /* SensorLock is its developer's own work, measured against a rival: a claim (DESIGN 6) */
+    cardHead(t, 0.6, tx, ty, tw0, 'Frame to USB, lower is better', ['claim'], { dy: 44 });
+    const bx = tx + 272, bw2 = tw0 - 272 - 130, BX = us => bx + bw2 * us / 210;
     [['XBAB SensorLock', 42, '42 µs'], ['Razer\'s FrameSync', 205, '205 µs']].forEach(([l, v, lab], i) => {
       const yy = ty + 108 + i * 50, k = ep(t, 1.6 + i * 0.3, 2.4 + i * 0.3, E.snap);
       text(l, tx + 32, yy + 8, { role: 'small', size: 23, weight: 600, color: C.ink, alpha: ep(t, 1.4, 1.8) });
       rr(bx, yy - 10, Math.max(20, (BX(v) - bx) * k), 20, 10, C.comp, null, 1, ep(t, 1.4, 1.8));
       text(lab, bx + (BX(v) - bx) * k + 14, yy + 9, { font: 'mono', size: 23, weight: 700, color: C.ink2, alpha: k });
     });
-    const hw = heroTag(tx + 32, ty + th - 24, 'Theseus', null, { a: ep(t, 2.6, 3.0), size: 21 });
-    text('synced in its PAW3970 sensor, every report on a scope', tx + 32 + hw + 12, ty + th - 24, { role: 'small', size: 22, weight: 600, color: C.heroText, alpha: ep(t, 2.6, 3.0), maxW: tw0 - 76 - hw });
-    source(t, 'Lanes: an illustration, 12,000 frames a second against 8,000 polls, 15 µs to process a frame; jitter = the oldest minus the youngest report. SensorLock: XBAB Tech, 2026-10-07; FrameSync is Razer\'s. Kunai: tester guide, pre-production.', { t0: 2 });
+    const hw = heroTag(tx + 32, ty + th - 26, 'Theseus', null, { a: ep(t, 2.6, 3.0), size: 21 });
+    text('frame sync in its PAW3970', tx + 32 + hw + 12, ty + th - 26, { role: 'small', size: 22, weight: 600, color: C.heroText, alpha: ep(t, 2.6, 3.0) });
+    source(t, 'Lanes: an illustration, 12,000 frames a second against 8,000 polls, 15 µs to process a frame; jitter = oldest − youngest. Frame to USB: SensorLock\'s developer, 8 kHz, 2026-10-07.', { t0: 2 });
   }
 });
 
@@ -574,7 +575,7 @@ S({
     elc_hl(t, 4.2, rx, 430, String(THESEUS.hours), 'hours', { label: 'At 1 kHz, the plan', sub: B.mAh + ' mAh, ' + fmtN(B.wh, 2) + ' Wh at the Viper V4 Pro\'s ' + fmtN(B.w1 * 1000, 1) + ' mW: ' + fmtN(B.h1, 0) + ' h. At 8 kHz, ' + fmtN(B.h8, 0) + ' h.', subW: rw });
     elc_ba(t, 5.0, rx, 660, '180', String(THESEUS.hours), { label: 'The longest listed, then Theseus', unit: 'h', net: '+' + fmtN(100 * (THESEUS.hours - 180) / 180, 0) + ' % over the Viper V4 Pro', maxW: rw });
     glossBox(t, 5.8, rx, 750, rw, 'Frame sync', 'The sensor\'s LED flashes once per frame. Synced to the polls, it takes a frame only when a report needs one, so it flashes less often.', { size: 24 });
-    source(t, 'Hours: Razer support and Notebookcheck (claims); the V4 Pro at 8 kHz, TechPowerUp (measured). Theseus: Jauch\'s battery at the V4 Pro\'s draw, derived. PAW3395: 1.7 mA at 1 kHz, 10 mA in its 8 kHz corded mode.', { t0: 2 });
+    source(t, 'Hours: Razer support and Notebookcheck, claims; the V4 Pro at 8 kHz, TechPowerUp, measured. Theseus: the example battery at the V4 Pro\'s draw, derived.', { t0: 2 });
   }
 });
 
@@ -608,7 +609,7 @@ S({
     blocks.forEach(([l, s, on], i) => elc_blk(fx, by(i), fw, bh, l, s, on, ep(t, 1.0 + i * 0.12, 1.4 + i * 0.12), col));
     elc_blk(lx + 24, by(0), 130, bh, 'USB-C', '4.0–5.5 V', chg, ep(t, 1.2, 1.6), col);
     elc_blk(lx + 24, by(2), 130, bh, 'Battery', '3.7 V', Math.max(chg, rn), ep(t, 1.2, 1.6), col);
-    [['Radio', 'module', 1, rn], ['Sensor', 'own supply', 2, rn], ['Main chip', 'reads the gauge', 3, gau]].forEach(([l, s, row, on]) => elc_blk(lx + lw - 24 - 130, by(row), 130, bh, l, s, on, ep(t, 1.4, 1.8), col));
+    [['Radio', 'module', 1, rn], ['Sensor', 'own supply', 2, rn], ['Main chip', 'reads it', 3, gau]].forEach(([l, s, row, on]) => elc_blk(lx + lw - 24 - 130, by(row), 130, bh, l, s, on, ep(t, 1.4, 1.8), col));
     const L = lx + 154, R0 = fx, R1 = fx + fw, Ro = lx + lw - 154, mid = i => by(i) + bh / 2;
     const wires = [[[L, mid(0)], [R0, mid(0)], chg], [[R0, mid(0) + 14], [L, mid(2) - 14], chg], [[L, mid(2) - 6], [R0, mid(1)], rn], [[L, mid(2)], [R0, mid(2)], rn], [[R1, mid(1)], [Ro, mid(1)], rn], [[R1, mid(2)], [Ro, mid(2)], rn], [[L, mid(2) + 8], [R0, mid(3)], gau], [[R1, mid(3)], [Ro, mid(3)], gau]];
     wires.forEach(([a0, b0, on]) => {

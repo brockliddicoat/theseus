@@ -271,7 +271,7 @@ S({
     gld_head(t, 3.4, LM, 500, '+' + gain, '%', { label: 'Tracking speed', size: 176, uk: 0.42, sub: 'The PAW3970 against the PAW3395 in the ULX and Sora V2. Higher is better.', maxW: 560 });
     gld_ba(t, 3.8, LM, 700, fmt(f.a), fmt(f.b) + ' ips', { size: 60, who: ['PAW3395', 'Theseus, PAW3970'] });
     /* the specs, row by row: the PAW3395 in grey by its datasheet, the PAW3970 in blue by the V4 Pro's figures */
-    const x = 720, y = 280, w = RM - x, h = 460;
+    const x = 720, y = 280, w = RM - x, h = 440;
     demoWindow(x, y, w, h, tileA(t, 0.15, 0));
     cardHead(t, 0.35, x, y, w, 'PAW3395 against PAW3970. Higher is better', [{ ev: 'datasheet', by: 'PixArt' }, { ev: 'claim', by: 'Razer' }]);
     const bx = x + 260, bw = w - 260 - 240;
@@ -288,7 +288,7 @@ S({
     legend(t, 1.4, x + w - 32, y + h - 34, [{ kind: 'comp', label: 'PAW3395, 2022' }, { kind: 'hero', label: 'Theseus: PAW3970 (the Viper V4 Pro\'s sensor; Brock)' }], { size: 19, gap: 26, align: 'right' });
     /* where the figures come from, and the words in plain terms */
     const ny = y + h + 40, nw = (w - 40) / 2;
-    sourceBox(t, 5.6, x, ny, nw, 'igor\'sLAB', 'The Viper V4 Pro\'s sensor: 50,000 CPI in steps of 1, 930 ips, 90 G, true 8,000 Hz and 99.8% resolution accuracy, Razer\'s figures.', { h: 960 - ny });
+    sourceBox(t, 5.6, x, ny, nw, 'igor\'sLAB', 'The Viper V4 Pro\'s sensor: 50,000 CPI in steps of 1, 930 ips, 90 G, true 8,000 Hz and 99.8% resolution accuracy.', { h: 960 - ny });
     glossBox(t, 5.9, x + nw + 40, ny, nw, 'Ips and G', 'How fast and how hard you can swing the mouse before it loses track: inches a second, and multiples of gravity.', { h: 960 - ny });
     source(t, 'PAW3395: PixArt\'s datasheet. PAW3970: Brock\'s name for the Viper V4 Pro\'s Focus Pro 50K Gen-3, with Razer\'s figures.', { t0: 3, maxW: 580, y: 960 });
   }
