@@ -881,3 +881,13 @@ old score as archived (F26.13).
 - **F30.12** "also the spacing between the scroll wheel hole and sensor, sensor and mcu and mcu and edge of the board all
   needs to be equal right now it looks like there are some thin parts that could easily break". **IN PROGRESS (K2):** the
   three gaps along the centre line equal, no thin webs (shown in mm on the revised plan).
+
+## F31. Answers on the click work (2026-11-05 ~06:30, on K1's questions)
+- **F31.1** Razer's "almost half the battery" (clk_switch): asked where he saw it, "Razer staff online". No public source:
+  it goes on the slide as a claim, attributed to Razer staff online via Brock, beside the derived 18 % → +21 % for the
+  two switches. **TODO (K3).**
+- **F31.2 DECIDED** Direct Drive's speed: "Keep \"6% sooner\"" (with why it isn't 20 %). **DONE (v22).**
+- **F31.3 DECIDED** The pads: "POM everywhere" (idea #28). **DONE (v22)**; the side buttons' answer drops "say if you want
+  PTFE" (K3).
+- **F31.4** The side-button guide as a fixed part over the full-size switch: "i'd have to see". It's on `sidebuttons` in
+  v22 (2D and 3D); his rating or note there decides it.
