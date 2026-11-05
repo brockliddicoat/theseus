@@ -327,18 +327,21 @@ function clk_gt01MM(o = {}) {
   /* the bottom housing, one black block, as Gateron's render shows it side-on: flat on the board; in front the switch's own end
      face (square to its top, so it overhangs) runs straight down to the board; its top is the cover's edge (the shoulder); at the
      back the switch's end face runs down to its base corner, then the housing drops almost vertically to the board */
-  const ysF = (6.4 * K.s - K.oy) / K.c, Fb = S(-6.4, 0), FbW = [-Fb[0], -Fb[1]];
-  const hp = [W(FbW[0] - 0.074 * FbW[1], 0), S(6.4, ysF), S(6.4, K.sh), S(-6.4, K.sh), Fb];
-  fill(() => path(hp, [0.1, 0.1, 0.06, 0.2, 0.1]), blk, eB, 1.1);
+  /* walls straight and one thickness (Brock, 2026-11-05): the cover's end walls run down past the shoulder, as in the render, and
+     the housing fits between them: one plumb back wall from the switch's back-bottom corner to the board, its front face the
+     cover's inner face, its top the shoulder; every cut-out one wall (0.45 mm, the D2F-class cover's) from the edges round it */
+  const WL = 0.45, zi = 6.4 - WL, ysF = (zi * K.s - K.oy) / K.c, ysF0 = (6.4 * K.s - K.oy) / K.c, Fb = S(-6.4, 0);
+  const hp = [[Fb[0], 0], S(zi, ysF), S(zi, K.sh), S(-zi, K.sh), S(-zi, 0), Fb];   /* Fb is drawing x = −z: the plumb foot under it */
+  fill(() => path(hp, [0.1, 0.05, 0.04, 0.04, 0.04, 0.1]), blk, eB, 1.1);
   /* the four cut-outs through its skin, where the render puts them: dark pockets with a lit lower rim */
   const cut = (fn) => { fill(fn, pocket, null); G.save(); fn(); G.clip(); fn(); G.strokeStyle = 'rgba(255,255,255,0.13)'; G.lineWidth = lw(2.2); G.stroke(); G.restore(); fn(); G.strokeStyle = 'rgba(0,0,0,0.5)'; G.lineWidth = lw(1); G.stroke(); };
-  cut(() => { const p = W(-2.86, 3.98); G.beginPath(); G.arc(p[0], p[1], 1.01, 0, TAU); });
-  cut(() => { const p = W(3.44, 1.67); G.beginPath(); G.arc(p[0], p[1], 1.10, 0, TAU); });
-  { const p = W(0.22, 2.58), u = [-K.c, K.s], v = [-K.s, -K.c], h = 0.63, r = 0.37, a = Math.atan2(v[1], v[0]), ccw = u[0] * v[1] - u[1] * v[0] < 0;
+  cut(() => { const p = W(-2.86, 3.81); G.beginPath(); G.arc(p[0], p[1], 1.01, 0, TAU); });
+  cut(() => { const p = W(3.44, 1.49); G.beginPath(); G.arc(p[0], p[1], 1.04, 0, TAU); });
+  { const p = W(0.22, 3.37), u = [-K.c, K.s], v = [-K.s, -K.c], h = 0.63, r = 0.37, a = Math.atan2(v[1], v[0]), ccw = u[0] * v[1] - u[1] * v[0] < 0;
     cut(() => { G.beginPath(); G.moveTo(p[0] + u[0] * h + v[0] * r, p[1] + u[1] * h + v[1] * r); G.lineTo(p[0] - u[0] * h + v[0] * r, p[1] - u[1] * h + v[1] * r);
       G.arc(p[0] - u[0] * h, p[1] - u[1] * h, r, a, a + Math.PI, ccw); G.lineTo(p[0] + u[0] * h - v[0] * r, p[1] + u[1] * h - v[1] * r); G.arc(p[0] + u[0] * h, p[1] + u[1] * h, r, a + Math.PI, a, ccw); G.closePath(); }); }
-  cut(() => path([W(0.07, 0.89), W(-5.78, 3.03), W(-5.99, 0.46)], [0.35, 0.25, 0.25]));
-  out.housing = SP(...W(-6.0, 1.6));   /* on the back face's edge, so its leader shows against the tile */ out.wedge = SP(...W(5.4, 1.2)); out.foot = SP(0, 0.6); out.ang = Math.PI / 9;
+  { const zb = -Fb[0] + WL; cut(() => path([W(0.07, WL), W(zb, 3.03), W(zb, WL)], [0.35, 0.25, 0.25])); }
+  out.housing = SP(...W(-Fb[0] + 0.1, 1.6));   /* on the back face's edge, so its leader shows against the tile */ out.wedge = SP(...W(5.4, 1.2)); out.foot = SP(0, 0.6); out.ang = Math.PI / 9;
   /* the switch: inside the cover first (seen through it when it is clear), clipped to the cover, above the shoulder */
   G.save(); path(boxS(-6.4, 6.4, K.sh, 6.52)); G.clip();
   const leafY = z => { if (z >= K.zA) return K.yL; if (z >= K.zN) { const u = (K.zA - z) / (K.zA - K.zN); return K.yL - d * u * u * (3 - 2 * u); } const u = (K.zN - z) / (K.zN - K.zE), yE = no ? K.yL - K.gap : K.yL; return K.yL - d + (yE - K.yL + d) * u * u * (3 - 2 * u); };
@@ -373,8 +376,9 @@ function clk_gt01MM(o = {}) {
   /* the plunger: cap, captive flange, nose; it moves along the switch's axis. 2.0 mm from the centre (the render's plunger) */
   const pl = (z0, z1, y0, y1, r) => fill(() => path(boxS(z0, z1, y0 - d, y1 - d), r), TH ? '#45464C' : '#4A4B52', eB, 0.9);
   if (clear) { pl(K.zN - 0.55, K.zN + 0.55, 4.56, 5.57, [0.18, 0.18, 0, 0]); pl(K.zN - 1.45, K.zN + 1.45, 5.55, 5.99, 0.08); }
-  /* the cover: its skirt ends at the shoulder, ys 2.5 */
-  const cov = boxS(-6.4, 6.4, K.sh, 6.52);
+  /* the cover: its skirt ends at the shoulder, ys 2.5; its end walls run on down, the back one to the base, the front to the board */
+  const cov = boxS(-6.4, 6.4, K.sh, 6.52), endB = boxS(-6.4, -zi, 0, K.sh + 0.02), endF = boxS(zi, 6.4, ysF0 + 0.17, K.sh + 0.02);
+  for (const e of [endB, endF]) { if (clear) { fill(() => path(e, 0.05), TH ? 'rgba(40,60,80,0.10)' : 'rgba(200,215,232,0.12)', null); path(e, 0.05); G.strokeStyle = inkA(0.62); G.lineWidth = lw(1.25); G.stroke(); } else fill(() => path(e, 0.05), blk, eB, 1.1); }
   if (clear) {
     fill(() => path(cov, [0, 0, 0.5, 0.5]), TH ? 'rgba(40,60,80,0.05)' : 'rgba(200,215,232,0.06)', null);
     path(boxS(-5.95, 5.95, K.sh, 6.07), [0, 0, 0.2, 0.2]); G.strokeStyle = inkA(0.2); G.lineWidth = lw(1); G.stroke();
