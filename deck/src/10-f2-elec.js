@@ -217,7 +217,7 @@ S({
     const kB = ep(t, 1.0, 2.0, E.cam), xb1 = lerp(xc0 + 8, xEnd, kB), cut = t >= 7.6, gap = cut ? 6 + 30 * E.out3(prog(t, 7.6, 8.0)) : 0;
     const FB = 2.0 * L2, per = cut ? FB / 2 : FB / 3, hk = per / ELB.wireN, heat = [hk, cut ? 0 : hk, hk];
     elc_conn(xc0 + 12, yB, 'jst', ep(t, 0.9, 1.3));
-    glowField(t, (xc0 + xEnd) / 2, yB, 420, { a: 0.55 * kB });
+    glowField(t, (xc0 + xEnd) / 2, yB, 420, { a: 0.55 * kB });   /* the deck's one glow (DESIGN 0.4): Theseus's braid, first seen */
     const liftB = t < 8.7 ? 0 : P[1] - (yB + 2);
     G.save(); if (liftB) { const s = liftB / (xEnd - xc0); G.transform(1, s, 0, 1, 0, -s * xc0); }
     elc_braid(xc0 + 8, xb1, yB, Ab, layPx, 13, { heat, cut: cut ? { i: 1, x: cutX, gap } : null, alpha: ka, sweep: t > 10.4 ? lerp(xc0 - 200, xEnd + 200, ((t - 10.4) % 3.2) / 3.2) : null });
@@ -258,7 +258,6 @@ S({
     const P = kf(t, keys, E.cam), xsPx = t < 2.8 ? xL + 470 : t > 6.4 ? xL + 470 : P[0], xs = (xsPx - xL) / S0;
     const ks = ep(t, 2.0, 2.5), osc = Math.sin(t * 4.2), vis = 0.45 + 0.55 * Math.abs(osc);
     for (let i = 0; i < 7; i++) { const ph = ((t * 0.5 + i / 7) % 1), r = 14 + ph * 240; circle(xsPx, ys, r, { color: A, w: 2, alpha: ks * 0.4 * Math.pow(1 - ph, 1.6) }); }
-    glowField(t, xsPx, ys, 150, { a: 0.9 * ks, cols: [A, A, C.ink] });
     G.save(); G.globalAlpha = ks; const gC = G.createRadialGradient(xsPx - 5, ys - 6, 2, xsPx, ys, 24); gC.addColorStop(0, '#FFFFFF'); gC.addColorStop(1, A); G.fillStyle = gC; G.beginPath(); G.arc(xsPx, ys, 20, 0, TAU); G.fill(); G.restore();
     for (let i = 0; i < 3; i++) circle(xsPx, ys, 8 + i * 4, { color: '#0D0E0F', w: 1.6, alpha: ks * 0.55 });
     text('Noise source', xsPx + 34, ys + 8, { role: 'label', size: 21, color: A, alpha: ks });
@@ -319,7 +318,6 @@ S({
     const keys = [[3.4, [LX(6) + 60, py0 + ph + 70]], [3.9, [LX(6), py0 + ph + 2]], [4.1, [LX(6), py0 + ph + 2]], [5.0, [LX(20), py0 + ph + 2]], [5.4, [LX(20), py0 + ph + 2]], [6.6, [LX(1.6), py0 + ph + 2]], [7.0, [LX(1.6), py0 + ph + 2]], [8.4, [LX(6), py0 + ph + 2]], [8.8, [LX(6), py0 + ph + 2]], [9.6, [LX(6) + 90, py0 + ph + 80]], [13, [LX(6) + 90, py0 + ph + 80]]];
     const P = kf(t, keys, E.cam), lay = t < 4.1 || t > 8.8 ? ELB.lay : clamp(PX(P[0]), Lmin, Lmax);
     const xb0 = X + 60, xb1 = RM - 260, ybr = Y + Hl / 2 + 14;
-    glowField(t, (xb0 + xb1) / 2, ybr, 380, { a: 0.5 * ka });
     elc_braid(xb0, lerp(xb0, xb1, ep(t, 0.4, 1.4, E.cam)), ybr, 8, lay * 30, 13, { alpha: ka, sweep: lerp(xb0 - 200, xb1 + 200, ((t - 1.4) % 4) / 4) });
     text('The lead at ' + fmtN(lay, 1) + ' mm lay, 30 px per mm', xb0, Y + 40, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 1.0, 1.4) });
     const tk = elc_takeup(lay), mg = ELB.cuMg * tk;
@@ -400,7 +398,6 @@ S({
     /* the braid: a round lead that rolls round a radius of its own, the bend spread over the arc */
     const hB = elc_tiltSlab(ex, yBr, tilt, Ls, ep(t, 0.8, 1.3));
     const Bp = elc_bendPts(ex, yBr, tilt, 76, len * kB);
-    glowField(t, ex + 260, yBr, 320, { a: 0.6 * kB });
     poly(Bp.pts, { color: TH ? '#2F3035' : '#6A6B70', w: 30, alpha: kB, cap: 'butt' });
     if (Bp.arc.length > 2) poly(Bp.arc, { color: heatCol(hk * 0.32), w: 30, alpha: kB * 0.85, cap: 'butt' });
     /* its strands: fine lines along it that slide against each other as it bends */
@@ -424,16 +421,29 @@ S({
     elc_hl(t, 6.6, rx, 440, fmtN(dS / dF, 1) + '×', 'less strain', { size: 110, label: 'A fine strand against a solid wire', sub: 'Bent over the same ' + R2 + ' mm, a 40 AWG strand strains ' + fmtN(100 * dF / (2 * R2), 1) + '% and a solid 32 AWG wire ' + fmtN(100 * dS / (2 * R2), 1) + '% (ε = d / 2R).', subW: rw });
     const cy = 600, ch = 360;
     demoWindow(rx, cy, rw, ch, ep(t, 0.6, 1.1, E.snap));
-    cardHead(t, 0.8, rx, cy, rw, 'Bends to failure by strand size (higher is better)', [{ ev: 'study', by: 'Alexander 1953' }], { dy: 44 });
-    const rows = [['0.40 mm × 7', 351], ['0.25 mm × 19', 874], ['0.13 mm × 65', 2892], ['0.10 mm × 105', 2908]], bx0 = rx + 190, bw0 = rw - 190 - 110;
-    rows.forEach(([l, v], i) => {
-      const yy = cy + 106 + i * 48, k = ep(t, 1.2 + i * 0.25, 2.2 + i * 0.25, E.snap);
-      text(l, rx + 32, yy + 8, { role: 'small', size: 22, weight: 600, color: C.ink, alpha: ep(t, 1.0 + i * 0.25, 1.4 + i * 0.25) });
-      rr(bx0, yy - 9, bw0, 18, 9, C.track, null, 1, k);
-      rr(bx0, yy - 9, Math.max(18, bw0 * v / 3000 * k), 18, 9, i >= 2 ? C.ink2 : C.comp, null, 1, k);
-      text(countUp(fmt(v), k) || fmt(v), rx + rw - 32, yy + 8, { font: 'mono', size: 23, weight: 700, color: C.ink, align: 'right', alpha: k });
+    cardHead(t, 0.8, rx, cy, rw, 'Bends to failure, by strand size (higher is better)', [{ ev: 'study', by: 'Alexander 1953' }], { dy: 44 });
+    /* the four strand sizes Alexander tested, as an XY: thickness on x, finer to the right, bends to failure up. Theseus's
+       0.08 mm strands are a blue line past the finest tested: finer than all four, with no test of their own, so no point */
+    const ax0 = rx + 92, ax1 = rx + rw - 40, ay0 = cy + 104, ay1 = cy + ch - 70, LG = Math.log(0.5 / 0.06);
+    const DX = d => ax0 + (ax1 - ax0) * Math.log(0.5 / d) / LG, BY = v => ay1 - (ay1 - ay0) * v / 3000;
+    const a0 = ep(t, 1.0, 1.4);
+    for (const v of [0, 1000, 2000, 3000]) { line(ax0, BY(v), ax1, BY(v), { color: C.hair, w: 1, alpha: a0 }); text(v ? fmtN(v / 1000, 0) + 'k' : '0', ax0 - 12, BY(v) + 7, { role: 'tick', size: 19, color: C.mute, align: 'right', alpha: a0 }); }
+    for (const d of [0.4, 0.2, 0.1]) text(fmtN(d, 1) + ' mm', DX(d), ay1 + 28, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a0 });
+    text('Finer →', ax1, ay1 + 28, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
+    const rows = [[0.40, 351], [0.25, 874], [0.13, 2892], [0.10, 2908]], kl = ep(t, 1.2, 2.6, E.io3);
+    poly(rows.map(([d, v]) => [DX(d), BY(v)]), { color: C.ink2, w: 2.5, p: kl, alpha: a0 });
+    /* values: the two coarse ones right of their points, the two fine ones over theirs, clear of the line */
+    const lab = [[14, -10, 'left'], [14, -10, 'left'], [-12, -14, 'right'], [0, -14, 'center']];
+    rows.forEach(([d, v], i) => {
+      const k = ep(t, 1.3 + i * 0.25, 1.7 + i * 0.25), [dx, dy, al] = lab[i];
+      circle(DX(d), BY(v), 7, { fill: C.ink2, alpha: k });
+      text(fmt(v), DX(d) + dx, BY(v) + dy, { font: 'mono', size: 21, weight: 700, color: C.ink, align: al, alpha: k });
     });
-    text('18 AWG wire, 90° each way. Theseus\'s strands are 0.08 mm, finer still.', rx + 32, cy + ch - 50, { role: 'small', size: 21, weight: 600, color: C.ink2, maxW: rw - 64, lh: 1.3, alpha: ep(t, 2.6, 3.0) });
-    source(t, 'Strain ε = d / 2R, derived. Bends to failure: Alexander 1953, Table IX. Fold rating: Shengyi SF202; the film: DuPont Kapton HN.', { t0: 2 });
+    /* Theseus's strands: finer than all four tested, so a line on the size axis, not a point (no test of their own) */
+    const kT = ep(t, 2.8, 3.3), XT = DX(0.08);
+    line(XT, ay0 - 4, XT, ay1, { color: C.hero, w: 3, dash: [7, 5], alpha: kT });
+    text('Theseus', XT - 12, ay1 - 40, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: kT });
+    text('0.08 mm', XT - 12, ay1 - 14, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: kT });
+    source(t, 'Strain ε = d / 2R, derived. Bends to failure: Alexander 1953, Table IX, 18 AWG wire bent 90° each way; Theseus\'s 0.08 mm strands are finer than any it tested. Fold rating: Shengyi SF202; the film: DuPont Kapton HN.', { t0: 2 });
   }
 });

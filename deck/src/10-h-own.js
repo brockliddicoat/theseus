@@ -126,11 +126,11 @@ S({
   src: ['ownEuBatt', 'ownJstSh', 'ownTpuV4'],
   draw: t => {
     header(t, 'Side-entry battery plug');
-    captions(t, [[0.6, 'The cell sits in two silicone bands instead of adhesive, and its plug slides out sideways, along the board.'], [5.4, 'That already passes the EU\'s rule for February 2027: out with ordinary tools, no heat, no solvent. Here, no tool at all.']]);
+    captions(t, [[0.6, 'The battery sits in two silicone bands instead of adhesive, and its plug slides out sideways, along the board.'], [5.4, 'That already passes the EU\'s rule for February 2027: out with ordinary tools, no heat, no solvent. Here, no tool at all.']]);
     /* left: the cell, the bands, the plug */
     const lx = LM, y0 = 280, lw0 = 1040, h0 = 680;
     demoWindow(lx, y0, lw0, h0, tileA(t, 0.15, 0));
-    cardHead(t, 0.35, lx, y0, lw0, 'The cell, the bands, the plug', []);
+    cardHead(t, 0.35, lx, y0, lw0, 'The battery, the bands, the plug', []);
     const ex = t < 11 ? kf(t, [[2.2, 0], [4.2, 1]], E.io3) : 1 - pingpong(t - 11, 8);
     const bst = { view: 'threeQuarter', view2d: 'front', explode: ex, zoom: in2D(2.3, 1.9), yaw: 0.15 - 0.2 * ep(t, 0.5, 4.2), target: in2D([4, 5, 4], [3, 4, 4]) }, bb = [lx + 20, y0 + 60, lw0 - 40, 500];
     view3D('battery', t, bb[0], bb[1], bb[2], bb[3], bst, { alpha: ep(t, 0.4, 1.0) });
@@ -143,7 +143,7 @@ S({
     }
     /* right: the glance, the EU rule, and which way the plug pulls */
     const rx = lx + lw0 + 40, rw = RM - rx;
-    own_ba(t, 1.0, rx, 440, null, '0', { unit: 'tools', sa: 150, label: 'To change the cell', net: 'Unplug it and lift it out of its bands.' });
+    own_ba(t, 1.0, rx, 440, null, '0', { unit: 'tools', sa: 150, label: 'To change the battery', net: 'Unplug it and lift it out of its bands.' });
     const rules = [['Ordinary tools only', 'No tool at all'], ['No heat, no solvent', 'Bands, not glue'], ['Special tools only if free', 'The driver is in the box']];
     text('EU battery rule, from 18 Feb 2027', rx, 572, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 2.0, 2.4) });
     rules.forEach(([r, th], i) => {
@@ -230,7 +230,7 @@ function own_trifold(t, x, y, w, h) {
       text('Repair', rx2, yc - 96, { role: 'label', size: 21, color: A, align: 'center', alpha: k * ca });
       part(rx2 - 36, yc - 40, 9.5, () => own_headTopMM({}), { alpha: k * ca });
       rr(rx2 + 4, yc - 52, 60, 24, 4, inkA(0.1), inkA(0.4), 1.5, k * ca);
-      ['One driver', 'Unplug cell', 'Lift bands'].forEach((l2, i) => text(l2, rx2, yc + 16 + i * 36, { role: 'label', size: 21, color: C.ink2, align: 'center', alpha: k * ca }));
+      ['One driver', 'Unplug battery', 'Lift bands'].forEach((l2, i) => text(l2, rx2, yc + 16 + i * 36, { role: 'label', size: 21, color: C.ink2, align: 'center', alpha: k * ca }));
     } : null);
   }
   G.restore();
@@ -249,7 +249,7 @@ const own_BOX = {
     { name: 'Starlight X', ev: 'measured', v: [1, 1, 0, 0, 0, 0] },
     { name: 'Sora V3', ev: 'claim', v: [1, 1, 0, 1, 0, 0] },
     { name: 'X2 CrazyLight', ev: 'claim', v: [1, 1, 0, 1, 0, 0] },
-    { name: 'OP1 8K', ev: 'measured', v: [-1, -1, 0, 1, 1, 0], ref: true },
+    { name: 'OP1 8K', ev: 'measured', v: [-1, -1, 0, 1, 1, 0] },
     { name: 'Theseus', ev: 'proposal', v: [1, 1, 1, 1, 1, 1], hero: true }
   ]
 };
@@ -261,7 +261,10 @@ S({
     captions(t, [[0.6, 'An envelope, and in it a trifold: closed it holds the spares, opened it stands up with setup and repair printed on it.'], [5.4, 'Endgame Gear puts a screwdriver in the OP1 8K box. None of the wireless flagships checked here lists one.']]);
     /* left: the table, led by the glance */
     const D = own_BOX, lx = LM, lw0 = 1000, y0 = 280, h0 = 680;
-    own_ba(t, 0.8, lx, 420, '3 of 6', '6 of 6', { sb: 66, sa: 126, label: 'What ships in the box', net: 'Next best: 3 of 6, the OP1 8K; it is wired, so it ships no receiver' });
+    /* the next best is whoever lists the most: four mice tie at 3 of 6; the OP1 8K is the one with a driver, at 2 of the 4 that
+       apply to a wired mouse. The tied totals are yellow, the next best's colour */
+    const cnt = m => m.v.filter(v => v === 1).length, nb = Math.max(...D.mice.filter(m => !m.hero).map(cnt)), nTie = D.mice.filter(m => !m.hero && cnt(m) === nb).length;
+    own_ba(t, 0.8, lx, 420, nb + ' of 6', '6 of 6', { sb: 66, sa: 126, label: 'What ships in the box', net: 'Next best: ' + nb + ' of 6, ' + (['', 'one mouse', 'two mice', 'three mice', 'four mice', 'five mice'][nTie] || nTie + ' mice') + '. Only the wired OP1 8K adds a driver' });
     const ty = 600;
     demoWindow(lx, 540, lw0, 400, tileA(t, 0.3, 0));
     const nw = 230, cw = (lw0 - 64 - nw - 60) / D.items.length, gx = j => lx + 32 + nw + cw * (j + 0.5), rh = 46;
@@ -276,8 +279,8 @@ S({
         if (v === 1) own_tick(X, y, 22, m.hero ? C.hero : C.ink2, kk); else if (v === 0) own_dash(X, y, 22, C.faint, kk);
         else text('n/a', X, y + 7, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: kk });
       });
-      const n = m.v.filter(v => v === 1).length;
-      text(String(n), lx + lw0 - 40, y + 10, { font: 'disp', size: 30, weight: 800, color: m.hero ? C.heroText : m.ref ? C.secondText : C.ink2, align: 'right', alpha: ep(t, 2.4 + i * 0.06, 2.8 + i * 0.06) });
+      const n = cnt(m);
+      text(String(n), lx + lw0 - 40, y + 10, { font: 'disp', size: 30, weight: 800, color: m.hero ? C.heroText : n === nb ? C.secondText : C.ink2, align: 'right', alpha: ep(t, 2.4 + i * 0.06, 2.8 + i * 0.06) });
     });
     /* right: the envelope and the trifold */
     const rx = lx + lw0 + 40, rw = RM - rx;
@@ -332,19 +335,21 @@ S({
     cardHead(t, 0.7, rx, by, rw, 'Measured against claimed', []);
     const x0 = rx + 260, x1 = rx + rw - 110, gmin = -4, gmax = 12, X = g => x0 + (x1 - x0) * (g - gmin) / (gmax - gmin), rh = 26, ty = by + 104;
     const a0 = ep(t, 1.0, 1.4);
-    text('Lower is better', rx + rw - 32, by + 52, { role: 'label', size: 20, color: C.ink, align: 'right', alpha: a0 });
+    text('Closest to 0 is best', rx + rw - 32, by + 52, { role: 'label', size: 20, color: C.ink, align: 'right', alpha: a0 });
     for (const g of [0, 4, 8, 12]) { line(X(g), ty - 12, X(g), ty + rh * (R.length + 1), { color: g ? C.hair : C.mute, w: g ? 1 : 1.5, alpha: a0 }); text((g > 0 ? '+' : '') + g + ' %', X(g), ty - 20, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a0 }); }
+    /* Theseus first: its card is the scale's weight, a gap of zero, the best a card can do */
+    const yT = ty + 8, kT = ep(t, 3.0, 3.5);
+    rect(rx + 20, yT - rh / 2 + 1, rw - 40, rh - 2, { fill: C.heroSoft, alpha: kT });
+    heroMark(X(0), yT, 11, kT);
+    text('Theseus', rx + 32, yT + 7, { role: 'small', size: 21, weight: 800, color: C.heroText, alpha: kT });
+    text('0 %: weighed, printed', X(0) + 22, yT + 7, { role: 'tick', size: 19, color: C.heroText, alpha: kT });
     R.forEach((r, i) => {
-      const y = ty + 8 + i * rh, kk = ep(t, 1.3 + i * 0.07, 2.1 + i * 0.07, E.snap), a = ep(t, 1.2 + i * 0.07, 1.5 + i * 0.07);
+      const y = ty + 8 + (i + 1) * rh, kk = ep(t, 1.3 + i * 0.07, 2.1 + i * 0.07, E.snap), a = ep(t, 1.2 + i * 0.07, 1.5 + i * 0.07);
       text(r.name, rx + 32, y + 7, { role: 'small', size: 21, weight: 600, color: C.ink2, alpha: a });
       const xa = X(0), xb = X(r.g * kk);
       rect(Math.min(xa, xb), y - 6, Math.abs(xb - xa), 12, { fill: i === 0 ? C.bad : C.comp, alpha: a });
       text((r.g > 0 ? '+' : '') + fmtN(r.g, 1) + ' %', r.g >= 0 ? xb + 10 : xa + 10, y + 7, { role: 'tick', size: 19, color: C.ink2, alpha: clamp(kk * 1.4 - 0.3) });
     });
-    const yT = ty + 8 + R.length * rh + 6, kT = ep(t, 3.0, 3.5);
-    heroMark(X(0), yT, 11, kT);
-    text('Theseus', rx + 32, yT + 7, { role: 'small', size: 21, weight: 800, color: C.heroText, alpha: kT });
-    text('0 %: measured, printed', X(0) + 22, yT + 7, { role: 'tick', size: 19, color: C.heroText, alpha: kT });
     source(t, 'Gap = (measured − claimed) ÷ claimed; measured weights from RTINGS. Finalmouse numbered 10,000 ULX Competition units; Theseus puts the number on top, where you see it.', { t0: 3.4, maxW: 1760 });
   }
 });

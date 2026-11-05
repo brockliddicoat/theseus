@@ -214,7 +214,7 @@ S({
   src: ['ansur', 'elo', 'tpuGpx2front', 'coelho', 'shpBrock'],
   draw: t => {
     header(t, 'Sized against real hands');
-    captions(t, [[0.6, 'Hand size moves muscle activity more than mouse geometry does, so the size is the first decision.'], [4.6, 'A flat mouse is better a little too small than too big: a big hand can still fingertip a small mouse, a small hand cannot palm a big one.']]);
+    captions(t, [[0.6, 'Hand size moves muscle activity more than mouse geometry does, so the size is the first decision.'], [4.6, 'A hypothesis from my Newtonian shape analysis notes: "for a flatter mouse, its better to be too small than too big, because big hands will still be able to fingertip grip."']]);
     const L = THESEUS.dims[0], pc = L / SHP_HAND * 100;
     own_ba(t, 1.0, LM, 520, null, fmtN(pc, 1), { unit: '%', sa: 190, label: 'Theseus\'s length, against the average hand', net: fmtN(L, 1) + ' mm on a ' + fmtN(SHP_HAND, 1) + ' mm hand, the shortest of the flagships' });
     const cell = bento(LM, 680, 640, 280, 2, 1);
@@ -227,7 +227,7 @@ S({
     const ids = [['razer-viper-v4-pro', 'Viper V4 Pro'], ['logitech-gpx2', 'G Pro X Superlight 2'], ['finalmouse-ulx', 'UltralightX']];
     const rows = ids.map(([id, nm]) => { const m = exMouse(id); return m ? { label: nm, v: rv(m.length_mm) / SHP_HAND * 100, mm: rv(m.length_mm) } : null; }).filter(Boolean);
     rows.push({ label: 'Theseus', v: pc, mm: L, hero: true });
-    own_bars(t, 1.2, rx + 40, ry + 130, rw - 80, rows.map((r, i) => ({ label: r.label + ', ' + fmtN(r.mm, 1) + ' mm', v: r.v - 55, s: fmtN(r.v, 1) + ' %', kind: r.hero ? 'hero' : i === rows.length - 2 ? 'second' : 'comp' })), { max: 12, title: 'Share of the hand, bars from 55 %', better: 'Smaller fits more hands', rh: 80 });
+    own_bars(t, 1.2, rx + 40, ry + 130, rw - 80, rows.map((r, i) => ({ label: r.label + ', ' + fmtN(r.mm, 1) + ' mm', v: r.v - 55, s: fmtN(r.v, 1) + ' %', kind: r.hero ? 'hero' : i === rows.length - 2 ? 'second' : 'comp' })), { max: 12, title: 'Share of the hand, bars from 55 %', better: 'Smaller is better, by the hypothesis', rh: 80 });
     glossBox(t, 3.4, rx + 40, ry + rh - 186, rw - 80, 'Shape rules', 'A lower front (#40) puts the fingers near the pad; a straighter, pointier front (#38); sides that look straight from above (#39); a slightly wider hump over a slimmer grip (#43).', { size: 25 });
     source(t, 'ANSUR II mean male hand length, 193.7 mm (partial sample). Lengths: maker datasheets. Coelho & Lourenço 2021: hand size outweighed device geometry.', { t0: 2 });
   }

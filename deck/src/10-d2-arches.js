@@ -32,7 +32,7 @@ Object.assign(SRC, {
   shbAutodeskEdm: { t: 'Autodesk Fusion blog (E. Rathbone, 2018), replacing EDM with CNC milling: "Milling ribs within a mold can be difficult, as they require tooling with large LD (length/diameter) ratios"; EDM makes "sharp corners that otherwise would require CNC mills of incredibly small diameters"; electrodes add steps', u: 'https://www.autodesk.com/products/fusion-360/blog/replacing-edm-manufacturing-cnc-milling-efficiency/' },
   shbCte: { t: 'Cutting Tool Engineering, "Racking up ribs" (May 2010): rib grooves 0.090 to 0.100 in wide and 0.400 to 0.900 in deep; burning them by EDM "consumed more than 300 hours"; milled with small solid-carbide tools, "just under 100 hours"', u: 'https://ctemag.com/articles/racking-ribs/' },
   shbCore77: { t: 'Core77 (Core Jr), "5 CNC Machining Pitfalls Industrial Designers Make": keep internal corner radii at R ≥ 1/3 of the cavity depth; keep pocket depth within 4× the cutter diameter; tool deflection scales with the cube of stick-out (citing Sandvik Coromant); a round tool "physically cannot produce a square internal corner"', u: 'https://www.core77.com/posts/144950/5-CNC-Machining-Pitfalls-Industrial-Designers-Make-And-How-to-Avoid-Them-in-CAD' },
-  shbModel: { t: 'This deck, part B models: 2D frames (07-sim.js, Euler-Bernoulli beams, PP-C-20A 13.5 GPa, a 10 mm strip); a Stokes flow through a lattice node (stream function and vorticity, 14 cells per mm) with rigid fibres turned by Jeffery\'s equation; the Theseus hump section sliced from 3d/shell/shell-theseus.glb', n: 'derived, this model' }
+  shbModel: { t: 'This deck, part B models: 2D frames (07-sim.js, Euler-Bernoulli beams, PP-C-20A 13.5 GPa, a 10 mm strip); a Stokes flow through a lattice node (stream function and vorticity, on a grid of 14 points per mm) with rigid fibres turned by Jeffery\'s equation; the Theseus hump section sliced from 3d/shell/shell-theseus.glb', n: 'derived, this model' }
 });
 
 /* ---------- data: the Theseus shell (3d/shell/shell-theseus.glb, from Brock's Sora scan), sliced for this deck ----------
@@ -878,7 +878,7 @@ S({
     /* the strip, holding: the fibres are inside the shell's numbers, not a step of their own */
     shbMeter(t, 3.0, 'shbFlow', LM, 872, RM - LM, { row: true });
     const am = ep(t, 1.6, 2.1), pw0 = pillW('measured', { by: 'Jeffery 1922' });
-    text('Illustrative 2D Stokes flow, 14 cells per mm, through three 1.0 mm ribs, 40% of the melt straight on; rigid fibres turned by Jeffery\'s equation.', LM, 970, { role: 'small', size: 22, color: C.faint, alpha: am, maxW: RM - LM - pw0 - 48 });
+    text('Illustrative 2D melt flow on a 14-per-mm grid, through three 1.0 mm ribs, 40% of the melt straight on; rigid fibres turned by Jeffery\'s equation.', LM, 970, { role: 'small', size: 22, color: C.faint, alpha: am, maxW: RM - LM - pw0 - 48 });
     pill(RM - pw0, 970, 'measured', am, { by: 'Jeffery 1922' });
   }
 });
@@ -1019,9 +1019,11 @@ S({
     /* 1. keep the width steady: a rib that widens turns its fibres across (long fibres follow the melt like a drawn line) */
     { const [x, y, w, h] = B(0, 0), a = tileA(t, 0.3, 0); demoWindow(x, y, w, h, a);
       text('1  One rib width', x + 32, y + 52, { role: 'label', size: 21, color: C.ink, alpha: a });
-      [['A rib that widens', y + 190, true], ['One width', y + 360, false]].forEach(([nm, ry, wide], ri) => {
+      /* the one-width rib is Theseus's, so it is named in its blue (review item 23); Moldflow's finding is qualitative, so
+         this panel carries no number of its own */
+      [['A rib that widens', y + 190, true], ['One width: every Theseus rib', y + 360, false]].forEach(([nm, ry, wide], ri) => {
         const x0 = x + 32, x1 = x + w - 32, w1 = 40, wid = u => wide ? w1 * (1 + 1.6 * Math.exp(-Math.pow((u - 0.5) / 0.17, 2))) : w1, ka = a * ep(t, 1.4 + ri * 0.3, 1.9 + ri * 0.3);
-        text(nm, x0, ry - (wide ? 80 : 40), { role: 'small', size: 22, color: C.mute, alpha: ka });
+        text(nm, x0, ry - (wide ? 80 : 40), { role: 'small', size: 22, weight: wide ? 600 : 700, color: wide ? C.mute : C.heroText, alpha: ka });
         rr(x0, ry - (wide ? 52 : 24), x1 - x0, wide ? 104 : 48, 6, steel, null, 0, ka);
         G.save(); G.globalAlpha = ka; G.fillStyle = melt; G.beginPath();
         for (let q = 0; q <= 60; q++) { const u = q / 60; G.lineTo(lerp(x0, x1, u), ry - wid(u) / 2); } for (let q = 60; q >= 0; q--) { const u = q / 60; G.lineTo(lerp(x0, x1, u), ry + wid(u) / 2); } G.closePath(); G.fill(); G.restore();

@@ -102,7 +102,7 @@ function elc_cells() {
   return {
     placeholder: !ch.length,
     rows: [
-      { name: 'Li-polymer pouch', sub: B.mAh + ' mAh, Jauch ' + B.part, hero: true, whkg: Math.round(B.wh / B.g * 1000), whkgEv: 'derived', cyc: 300, cycEv: 'datasheet', g: B.g },
+      { name: 'Li-polymer pouch', sub: 'Example: Jauch ' + B.part + ', ' + B.mAh + ' mAh', mAh: B.mAh, hero: true, whkg: Math.round(B.wh / B.g * 1000), whkgEv: 'derived', cyc: 300, cycEv: 'datasheet', g: B.g },
       { name: 'Li-ion cylinder', sub: '18650, Panasonic NCR18650B', whkg: rv(li.gravimetric_energy_density) || 243, whkgEv: 'datasheet', cyc: [500, 1000], cycEv: 'datasheet', g: rv(li.mass) || 48.5 },
       { name: 'Alkaline AA', sub: 'Energizer E91', ref: true, whkg: rv(aa.gravimetric_energy_density_low_drain) || 163, whkgLow: rv(aa.gravimetric_energy_density_1W) || 40, whkgEv: 'derived', cyc: 1, cycEv: 'datasheet', g: rv(aa.mass) || 23 },
       { name: 'NiMH AA', sub: 'Panasonic eneloop', whkg: rv(ni.gravimetric_energy_density) || 84, whkgEv: 'derived', cyc: rv(ni.cycle_life) || 2100, cycEv: 'claim', g: rv(ni.mass) || 27 },
@@ -111,12 +111,12 @@ function elc_cells() {
   };
 }
 S({
-  id: 'cells', ch: 'elec', after: 'elc_safe', theme: 'night', title: 'The pouch cell, per gram', settle: 10, ideas: ['battery'],
+  id: 'cells', ch: 'elec', after: 'elc_safe', theme: 'night', title: 'The pouch battery, per gram', settle: 10, ideas: ['battery'],
   src: ['elcLp4025', 'ntrJauch', 'exNcr', 'exE91', 'exEneloop', 'exL91', 'exBu107', 'nrf54'],
   draw: t => {
     const D = elc_cells(), M = THESEUS.mass, aa = D.rows.find(r => r.ref) || { g: 23 }, me = D.rows[0];
-    header(t, 'The pouch cell, per gram');
-    captions(t, [[0.6, 'At a mouse\'s drain a fresh AA holds about as much energy per gram as a pouch cell, but it is one ' + fmtN(aa.g, 0) + ' g lump, used once.'], [4.8, 'A ' + me.sub.split(',')[0] + ' pouch is ' + fmtN(me.g, 0) + ' g, ' + fmtN(100 * me.g / M, 0) + '% of the mouse, and charges again and again.']]);
+    header(t, 'The pouch battery, per gram');
+    captions(t, [[0.6, 'At a mouse\'s drain a fresh AA holds about as much energy per gram as a pouch battery, but it is one ' + fmtN(aa.g, 0) + ' g lump, used once.'], [4.8, 'A ' + me.mAh + ' mAh pouch is ' + fmtN(me.g, 0) + ' g, ' + fmtN(100 * me.g / M, 0) + '% of the mouse, and charges again and again.']]);
     /* the table: the share of the mouse drawn as bars (it decides what fits); energy and cycles as plain figures */
     const x = LM, y0 = 400, rh = 104, lw = 330, xs = x + lw, sw = 320, xe = xs + sw + 56, xc = xe + 220, xr = 1200;
     const a0 = ep(t, 0.6, 1.0), load = ep(t, 5.4, 6.6) * (1 - ep(t, 7.6, 8.6));
@@ -134,16 +134,17 @@ S({
       text(countUp(fmtN(sh, 0) + '%', k) || fmtN(sh, 0) + '%', xs, by - 20, { font: 'mono', size: 26, weight: 800, color: r.hero ? C.heroText : sh > 50 ? C.bad : C.ink, alpha: a });
       if (sh > 100) text('Heavier than the mouse', xs, by + 34, { role: 'label', size: 19, color: C.bad, alpha: ep(t, t0 + 1.0, t0 + 1.4) });
       const wv = r.whkg == null ? null : r.whkgLow ? Math.round(lerp(r.whkg, r.whkgLow, load)) : r.whkg;
-      text(wv == null ? 'Not digitised' : fmtN(wv, 0), xe, by + 8, { font: 'mono', size: 25, weight: r.hero ? 800 : 600, color: wv == null ? C.faint : r.hero ? C.heroText : C.ink2, alpha: a });
+      /* Theseus's pouch wins the share of the mouse, not energy per gram or cycles: those two columns are plain for every row */
+      text(wv == null ? 'Not digitised' : fmtN(wv, 0), xe, by + 8, { font: 'mono', size: 25, weight: 600, color: wv == null ? C.faint : C.ink2, alpha: a });
       if (r.whkgLow) text(load > 0.5 ? 'at 1 W' : 'at 25 mW', xe + 70, by + 8, { role: 'label', size: 19, color: load > 0.5 ? C.bad : C.faint, alpha: a });
       const cv = Array.isArray(r.cyc) ? fmtN(r.cyc[0], 0) + '–' + fmtN(r.cyc[1], 0) : r.cyc === 1 ? 'Single use' : fmtN(r.cyc, 0) + (r.hero ? ' to 80%' : '');
-      text(cv, xc, by + 8, { font: 'mono', size: 25, weight: r.hero ? 800 : 600, color: r.cyc === 1 ? C.bad : r.hero ? C.heroText : C.ink2, alpha: a });
+      text(cv, xc, by + 8, { font: 'mono', size: 25, weight: 600, color: r.cyc === 1 ? C.bad : C.ink2, alpha: a });
     });
     if (D.placeholder) placeholderStamp(t, x, y0 - 80, xr - x, rh * 5 + 80);
     /* the right column: by how much, before → after, the word */
     const rx = 1240, rw = RM - rx;
     elc_hl(t, 4.0, rx, 440, fmtN(aa.g / me.g, 1) + '×', 'lighter', { label: 'Than an AA, and it recharges', sub: fmtN(me.g, 0) + ' g against ' + fmtN(aa.g, 0) + ' g, for ' + THS.hours + ' at 1 kHz and ' + me.cyc + ' charges to 80%.', subW: rw });
-    elc_ba(t, 4.8, rx, 660, fmtN(100 * aa.g / M, 0), fmtN(100 * me.g / M, 0), { label: 'Share of the mouse: an AA, then the pouch', unit: '%', net: 'One cell, charged in about an hour', maxW: rw });
+    elc_ba(t, 4.8, rx, 660, fmtN(100 * aa.g / M, 0), fmtN(100 * me.g / M, 0), { label: 'Share of the mouse: an AA, then the pouch', unit: '%', net: 'One battery, charged in about an hour', maxW: rw });
     glossBox(t, 5.6, rx, 750, rw, 'Boost converter', 'One AA gives 0.8 to 1.6 V and the nRF54 needs at least 1.7 V, so an AA mouse spends parts and energy stepping it up.', { size: 24 });
     source(t, 'Datasheets: Jauch, Panasonic, Energizer. Wh/kg derived: energy ÷ mass; E91 read from its constant-power curve. Cycles: datasheets, Battery University, the eneloop claim.', { t0: 3 });
   }
@@ -164,9 +165,11 @@ S({
     cardHead(t, 0.5, LM - 26, py - 76, pw + 26, 'Motion latency at 8 kHz, wireless (lower is better)', ['measured']);
     const s1 = scatter(t, {
       x: LM + 96, y: py, w: pw - 96, h: ph, t0: 0.6, xr: [20, 70], yr: [0, 1.0], xticks: [20, 30, 40, 50, 60, 70], yticks: [0, 0.2, 0.4, 0.6, 0.8, 1.0],
-      xfmt: v => v + ' g', yfmt: v => v.toFixed(1) + ' ms', xlabel: 'Weight, {g}', better: { x: -1, y: -1 }, sweet: { label: 'Lighter and faster' }, frontier: true,
+      xfmt: v => v + ' g', yfmt: v => v.toFixed(1) + ' ms', xlabel: 'Weight, {g}', better: { x: -1, y: -1 }, sweet: {}, frontier: true,
       points: P1.length ? P1 : [{ name: 'placeholder', x: 49, y: 0.34 }], target: { x: THESEUS.mass, y: 0.14, name: 'Theseus', dx: 26, dy: -6 }, placeholder: !P1.length
     });
+    /* the sweet spot's words, in the open part of its field: in the corner they sat under Theseus's mark */
+    text('Lighter and faster', s1.X(20) + 22, s1.Y(0.42), { role: 'label', size: 21, color: C.heroText, alpha: ep(t, 1.2, 1.7) });
     const mice = (RD.mice || {}).mice || [];
     const P2 = mice.filter(m => rv(m.battery_claim_1k_h) && m.connection !== 'wired').map(m => { const w = exWeight(m.id); return w ? { name: exShort(m.name).replace('Logitech G Pro X Superlight 2c', 'GPX2c').replace('Logitech GPX2c', 'GPX2c').replace('Razer DeathAdder V4 Pro', 'DeathAdder V4 Pro').replace('Xiaomi Gaming Mouse 2', 'Xiaomi GM2').replace('Logitech Superstrike', 'Superstrike').replace('ZOWIE ', ''), x: w.g, y: rv(m.battery_claim_1k_h), hollow: w.ev !== 'measured' } : null; }).filter(Boolean);
     const rx = LM + pw + 80;
@@ -183,9 +186,9 @@ S({
     const v4 = P1.find(p => p.id === 'razer-viper-v4-pro') || { x: 49, y: 0.34 };
     elc_hl(t, 5.4, LM, 880, '−' + fmtN(100 * (1 - THESEUS.mass / v4.x), 0) + '%', 'weight', { size: 110, label: 'Against the fastest wireless mouse, and faster', sub: THS.massG + ' against its ' + fmtN(v4.x, 0) + ' g, and 0.14 ms against ' + v4.y.toFixed(2) + '.', subW: 820 });
     elc_ba(t, 6.0, 1000, 880, '180', String(THESEUS.hours), { size: 64, label: 'At 1 kHz, the longest listed', unit: 'h', net: 'At ' + fmtN(100 * THESEUS.mass / v4.x, 0) + '% of its weight', maxW: 420 });
-    [[{ kind: 'dot', color: '#B9B8B2', label: 'Weighed by RTINGS' }], [{ kind: 'ring', color: '#B9B8B2', label: 'Maker\'s weight' }], [{ kind: 'line', color: C.ink, label: 'Pareto frontier' }], [{ kind: 'hero', label: 'Theseus, projected' }]].forEach((it, i) => legend(t, 4.2 + i * 0.08, 1500, 806 + i * 34, it, { size: 20 }));
-    const un = [...new Set([...(s1.unnamed || []), ...(s2.unnamed || [])])];
-    if (un.length) text('Unnamed: ' + un.join(', '), 1500, 950, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 4.6, 5.0), maxW: RM - 1500 });
-    source(t, 'Latency: piaknow 2026-09-15, 8 kHz. Hours: maker claims. Theseus: ' + THS.hours + ' at 1 kHz from Jauch\'s 370 mAh cell at the Viper V4 Pro\'s draw; 0.14 ms from Kunai\'s model.', { t0: 3 });
+    [[{ kind: 'dot', color: '#B9B8B2', label: 'Weighed by RTINGS' }], [{ kind: 'ring', color: '#B9B8B2', label: 'Maker\'s weight' }], [{ kind: 'line', color: C.ink, label: 'Pareto frontier' }], [{ kind: 'hero', label: 'Theseus, derived' }]].forEach((it, i) => legend(t, 4.2 + i * 0.08, 1500, 800 + i * 34, it, { size: 20 }));
+    const un = [...new Set([...(s1.unnamed || []), ...(s2.unnamed || [])].map(n => n.replace(/^(Razer|Logitech|ZOWIE|Lamzu|Pulsar|Finalmouse|Ninjutso) /, '')))];
+    if (un.length) text('Unnamed: ' + un.join(', '), 1500, 938, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 4.6, 5.0), maxW: RM - 1500 });
+    source(t, 'Latency: piaknow 2026-09-15, 8 kHz. Hours: maker claims. Theseus: ' + THS.hours + ' at 1 kHz, derived from the example battery, Jauch\'s 370 mAh, at the Viper V4 Pro\'s draw; 0.14 ms from Kunai\'s model.', { t0: 3 });
   }
 });

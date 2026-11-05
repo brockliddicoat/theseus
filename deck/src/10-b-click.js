@@ -113,7 +113,7 @@ const CLK_ST = { hh: 46, lh: 33, pad: 22 };
 function clk_stepLines(rows, w) {
   const lw = Math.round(w * 0.45), rwid = w - lw - 96 - 46;
   return rows.map(r => Math.max(
-    para([{ s: r.who + '. ', role: 'small', weight: 700 }, { s: r.now, role: 'small' }], 0, 0, { maxW: lw - 92, lh: CLK_ST.lh, alpha: 0 }).lines,
+    para([{ s: r.who + '. ', role: 'small', weight: 700 }, { s: r.now, role: 'small' }], 0, 0, { maxW: lw - 74, lh: CLK_ST.lh, alpha: 0 }).lines,
     para([{ s: r.step, role: 'small', weight: 600 }], 0, 0, { maxW: rwid, lh: CLK_ST.lh, alpha: 0 }).lines));
 }
 const clk_stepsH = (rows, w) => CLK_ST.hh + clk_stepLines(rows, w).reduce((p, n) => p + n * CLK_ST.lh + CLK_ST.pad, 0) + 6;
@@ -136,9 +136,9 @@ function clk_steps(t, t0, x, y, w, rows, o = {}) {
     const tr = t0 + 0.35 + i * 0.9, ka2 = ep(t, tr, tr + 0.3), kb = ep(t, tr + 0.45, tr + 0.85, E.out3), kc = ep(t, tr + 0.75, tr + 1.1), rh = rhs[i];
     if (i) line(x + 18, yy, x + w - 18, yy, { color: C.hair, w: 1, alpha: ka2 });
     const cy = yy + 10 + CLK_ST.lh * nl[i] / 2;
+    /* the idea number, then the maker: type only, no square between them (F9.5); the source is the tag in the strip's head */
     text(r.n, x + 24, yy + 33, { role: 'label', size: 21, color: C.faint, alpha: ka2 });
-    evDot(x + 84, yy + 26, r.ev, 6, ka2);
-    para([{ s: r.who + '. ', role: 'small', weight: 700, color: C.ink }, { s: r.now, role: 'small', color: C.ink2 }], x + 102, yy + 33, { maxW: lw - 92, lh: CLK_ST.lh, t, t0: tr, cps: 150, alpha: ka2 });
+    para([{ s: r.who + '. ', role: 'small', weight: 700, color: C.ink }, { s: r.now, role: 'small', color: C.ink2 }], x + 84, yy + 33, { maxW: lw - 74, lh: CLK_ST.lh, t, t0: tr, cps: 150, alpha: ka2 });
     if (kb > 0) { const ax0 = x + lw + 14, ax1 = rx - 14; arrow(ax0, cy, lerp(ax0, ax1, kb), cy, { color: C.heroText, w: 3, hs: 13 }); }
     if (kc > 0) {
       G.save(); G.beginPath(); G.rect(rx, yy + 2, (x + w - rx) * E.out3(kc), rh - 4); G.clip();
@@ -445,11 +445,12 @@ clk_S({
       else { circle(FX(r.mid), yy - 8, 8 * k, { fill: C.panel, alpha: a }); circle(FX(r.mid), yy - 8, 8 * k, { color: C.comp, w: 3, alpha: a }); }
       rich([{ s: r.txt, role: 'num', size: 26, weight: r.hero ? 800 : 600, color: r.hero ? C.heroText : C.ink }, { s: 'gf', role: 'label', size: 19, color: C.mute, gap: 8 }], wx + ww - 32, yy, { align: 'right', alpha: a });
     });
-    /* right: rated life, quiet; where the ratings come from; the step */
-    const [cx, cw] = CLK_G.b, L = clk_life(), lo = L.reduce((m, r) => (!m || r.v < m.v ? r : m), null), hi = L.reduce((m, r) => (!m || r.v > m.v ? r : m), null), twin = L.find(r => !r.hero && r.v === 100);
+    /* right: the tolerance in a reader's terms (the most two buttons can differ: each band's full width), rated life in words
+       (the GT01 is not the highest rated, so it gets no big number: review item 23), and the step */
+    const [cx, cw] = CLK_G.b, L = clk_life(), lo = L.reduce((m, r) => (!m || r.v < m.v ? r : m), null), hi = L.reduce((m, r) => (!m || r.v > m.v ? r : m), null);
     clk_stack(wy, [
-      y => { statTile(t, 3.6, [cx, y, cw, 240], { pre: 'Rated life, by its maker', value: '100', unit: 'M clicks', size: 96, label: twin ? 'As many as ' + twin.name + ', ' + twin.qual : 'Gateron GT01', quiet: true }); return { h: 240 }; },
-      y => clk_src(t, 4.4, cx, y, cw, 'EloShapes', lo && hi ? `Each flagship's main switch as its maker rates it: ${lo.v} M (${lo.name}) to ${hi.v} M (${hi.name}). Every figure is the maker's own test.` : 'Each flagship\'s main switch as its maker rates it.'),
+      y => clk_gloss(t, 2.0, cx, y, cw, 'Operating force', `The force at which a switch clicks. At ±5 gf your two buttons differ by ${fmtN(gt.hi - gt.lo, 0)} gf at most; at the D2FP's ±15.3 gf, by ${fmtN(om.hi - om.lo, 1)} gf.`),
+      y => clk_src(t, 4.4, cx, y, cw, 'Rated life, EloShapes', lo && hi ? `Each maker rates its own switch: the GT01 for 100 M clicks, the flagships' mains from ${lo.v} M (${lo.name}) to ${hi.v} M (${hi.name}).` : 'Each maker rates its own switch: the GT01 for 100 M clicks.'),
       y => clk_box(t, 5.2, cx, y, cw, { label: 'Theseus', value: 'Mechanical mains (#78)', head: 'A GT01 on its bottom housing', body: 'Mechanical for the power it saves, SPDT for the speed, pushed straight for the feel.' })
     ]);
   }
@@ -715,10 +716,16 @@ clk_S({
       const by = cy + 70, bw = 330, kh = ep(t, TT.kap, TT.kap + 0.6);
       rr(xr, by, bw, 10, 5, C.track, null, 0, kr * (1 - kh)); rr(xr, by, Math.max(10, bw * clamp(tr / CLK_TN.pre)), 10, 5, clicked ? (R.hero ? C.hero : C.ink) : C.comp, null, 0, kr * (1 - kh));
       text(tr.toFixed(2) + ' of 0.35 mm to the click', xr, by + 40, { role: 'small', size: 25, color: C.mute, alpha: kr * (1 - kh) });
+      /* up close, what the bridge wins: where it bends, and its margin to the break. Each tensioner's peak is taken at its own
+         click, and the bridge's (it does all its bending in its thin crown) sits a little above the flat plane's, so no
+         stress line is set side by side (review item 2): the bridge states its margin, the peak against PP-C-20A's 120 MPa
+         (F12.12), rounded down */
       const uy = R.hero ? by - 12 : by + 10;
-      text('Half the bend in ' + R.c.half.len.toFixed(1) + ' mm', xr, uy, { role: 'small', size: 25, weight: 700, color: R.hero ? C.heroText : C.ink, alpha: kh });
-      text('Peak experienced stress', xr, uy + 28, { role: 'label', size: 19, color: C.faint, alpha: kh });
-      text(`${R.c.sig.toFixed(1)} MPa (lower is better)`, xr, uy + 52, { role: 'small', size: 23, weight: 600, color: C.mute, alpha: kh });
+      text('Half the bend in ' + R.c.half.len.toFixed(1) + ' mm', xr, uy, { role: 'small', size: 25, weight: 700, color: R.hero ? C.heroText : C.ink, alpha: kh, maxW: RM - xr });
+      if (R.hero) {
+        const mg = Math.floor(CLK_BREAK / R.c.sig * 10) / 10;
+        text(`Peak: ${mg.toFixed(1)}× under the break`, xr, uy + 34, { role: 'small', size: 23, weight: 600, color: C.mute, alpha: kh, maxW: RM - xr });
+      }
       G.restore();
     });
     /* the heat scale, and the model in one line */
@@ -740,53 +747,63 @@ clk_S({
     const cA = clk_ten('flat', 'abs').clk, cP = clk_ten('flat', 'ppcf').clk, cB = clk_ten('bridge', 'ppcf').clk, ratio = SIM_MAT.ppcf.E / SIM_MAT.abs.E;
     header(t, 'A stiff trigger with a light click');
     captions(t, [[0.6, 'I want a stiff trigger: it has to be strong on its own, or it flexes into post-travel.'], [2.8, `But ${SIM_MAT.ppcf.name} is ${ratio.toFixed(1)} times as stiff as ABS, so the same flat plane clicks ${ratio.toFixed(1)} times as hard.`], [5.4, `The bridge brings it back: a stiff trigger, and a click ${(cB.gf - cA.gf).toFixed(1)} gf from an ABS one.`]]);
-    const [wx, ww] = CLK_G.a, wy = CLK_TOP, ch = 440;
-    clk_tile(t, 0.3, wx, wy, ww, ch, 'Force against travel at the plunger (lower is lighter)', ['derived']);
+    /* rethought (F15.1; review item 3): the old force-against-travel lines put ABS's 5.1 gf under the bridge's, so the next best
+       won the chart. Here both axes are on: trigger stiffness (the same shape, so it goes with the flexural modulus) against the
+       click force at the GT01's 0.35 mm pre-travel. ABS is light but flexy, a flat PP-C-20A plane stiff but heavy, and only
+       the bridge reaches the corner that is better on both. The pointer flips the material, then the tensioner, and the live
+       point moves with it; the states it leaves stay as ghosts with their values */
+    const [wx, ww] = CLK_G.a, wy = CLK_TOP, wh = CLK_BOT - wy;
+    clk_tile(t, 0.3, wx, wy, ww, wh, 'Trigger stiffness against click force', ['derived']);
     /* the two switches the pointer flips: material, then tensioner */
     const t1 = 2.9, t2 = 5.3, mat = t < t1 ? 'ABS' : SIM_MAT.ppcf.name, ten = t < t2 ? 'Flat plane' : 'Bridge', ty = wy + 104, ka = ep(t, 0.8, 1.2);
     const w1 = ltagW('Material', mat, { size: 20 }), w1max = ltagW('Material', SIM_MAT.ppcf.name, { size: 20 });
     ltag(wx + 26, ty, 'Material', mat, { a: ka, size: 20, solid: t < t1 ? C.second : C.ink2, on: C.bg, color: C.mute });
     ltag(wx + 26 + w1max + 24, ty, 'Tensioner', ten, { a: ka, size: 20, solid: t < t2 ? C.ink2 : C.heroChip, on: t < t2 ? C.bg : C.onHero, color: C.mute });
     const p1 = [wx + 26 + w1 * 0.75, ty - 4], p2 = [wx + 26 + w1max + 24 + ltagW('Tensioner', ten, { size: 20 }) * 0.8, ty - 4];
-    cursorAt(t, [[1.8, [p1[0] + 140, p1[1] + 120]], [2.6, p1], [4.6, p1], [5.1, p2], [9, p2]], [t1, t2], { a: ep(t, 1.6, 2.0) });
-    const m = axes(t, { x: wx + 110, y: wy + 160, w: ww - 330, h: 200, xr: [0, 0.5], yr: [0, 30], xticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5], yticks: [0, 10, 20, 30], xfmt: v => v.toFixed(1), yfmt: v => v + ' gf', xlabel: 'Travel at the plunger, mm', t0: 0.6 });
-    const slope = c => c.gf / CLK_TN.pre, kx = 0.35, lineTo = (g, col, w, a, dash) => { const x1 = Math.min(0.5, 30 / g); series(m, [[0, 0], [x1, g * x1]], { color: col, w, alpha: a, dash }); };
-    /* the click: the GT01's 0.35 mm pre-travel */
-    const kv = ep(t, 1.0, 1.4); line(m.X(kx), m.Y(0), m.X(kx), m.Y(30) - 6, { color: C.ink2, w: 1.5, dash: [6, 5], alpha: kv });
-    text('The GT01 clicks, 0.35 mm', m.X(kx) + 10, m.Y(30) - 12, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: kv });
-    /* the ghosts of the states the pointer left behind, then the live line */
-    const gA = slope(cA), gP = slope(cP), gB = slope(cB), k1 = ep(t, t1 + 0.1, t1 + 0.8, E.snap), k2 = ep(t, t2 + 0.1, t2 + 0.8, E.snap);
-    if (t > t1) lineTo(gA, C.second, 3, ep(t, t1, t1 + 0.4));
-    if (t > t2) lineTo(gP, C.bad, 3, ep(t, t2, t2 + 0.4));
-    const gL = t < t2 ? lerp(gA, gP, k1) : lerp(gP, gB, k2), colL = t < t1 ? C.second : t < t2 ? C.bad : C.hero;
-    lineTo(gL, colL, 5, ep(t, 0.9, 1.5));
-    /* the values at the click */
-    const dot = (g, col, lab, a, below) => { if (a <= 0.003) return; const px = m.X(kx), py = m.Y(g * kx); circle(px, py, 7, { fill: col, alpha: a }); text(lab, px - 14, py + (below ? 30 : -14), { role: 'num', size: 24, weight: 700, color: col, align: 'right', alpha: a }); };
-    dot(gA, C.secondText, cA.gf.toFixed(1) + ' gf', ep(t, 1.4, 1.8) * (t < t1 ? 1 : 1), true);
-    dot(gP, C.bad, cP.gf.toFixed(1) + ' gf', ep(t, t1 + 0.7, t1 + 1.0));
-    dot(gB, C.heroText, cB.gf.toFixed(1) + ' gf', ep(t, t2 + 0.7, t2 + 1.0));
-    /* the line names, set along each line where nothing else is */
-    const nm = (g, x, lab, col, a, dy) => { if (a > 0.003) text(lab, m.X(x) + 12, m.Y(g * x) + dy, { role: 'label', size: 19, color: col, alpha: a }); };
-    nm(gA, 0.47, 'Flat plane, ABS', C.secondText, ep(t, 1.6, 2.0), 30);
-    nm(gB, 0.47, 'Bridge, ' + SIM_MAT.ppcf.name, C.heroText, ep(t, t2 + 0.9, t2 + 1.3), -14);
-    if (t > t1 + 0.8) text('Flat plane, ' + SIM_MAT.ppcf.name, m.X(0.24) - 12, m.Y(gP * 0.24) - 4, { role: 'label', size: 19, color: C.bad, align: 'right', alpha: ep(t, t1 + 0.8, t1 + 1.2) });
-    /* at a glance (F14.10): what Theseus gains, big (a trigger 5.3 times as stiff), and the click force the bridge wins back, the flat
-       plane's figure kept beside it (F16.1: before → after) */
-    const sy = wy + ch + 40, sh = CLK_BOT - sy, bw1 = 540, bw2 = ww - bw1 - 40;
-    { const a = ep(t, 1.4, 1.95, E.snap); demoWindow(wx, sy, bw1, sh, a);
-      text('Stiffness against ABS (higher is better)', wx + 32, sy + 44, { role: 'label', size: 19, color: C.mute, alpha: a, maxW: bw1 - 64 });
-      clk_hl(t, 1.6, wx + 32, sy + 156, ratio.toFixed(1) + '×', 'stiffer', { size: 104, count: false }); }
-    { const a = ep(t, t2 + 0.4, t2 + 0.95, E.snap); demoWindow(wx + bw1 + 40, sy, bw2, sh, a);
-      text('Click force (lower is lighter)', wx + bw1 + 72, sy + 44, { role: 'label', size: 19, color: C.mute, alpha: a, maxW: bw2 - 64 });
-      clk_ba(t, wx + bw1 + 72, sy + 132, { before: cP.gf.toFixed(1), after: cB.gf.toFixed(1), unit: 'gf', net: '−' + ((1 - cB.gf / cP.gf) * 100).toFixed(0) + '%, ' + (cB.gf - cA.gf).toFixed(1) + ' gf from an ABS flat plane', size: 84, k: ep(t, t2 + 0.6, t2 + 1.2), a, hero: true }); }
-    /* right: the word, and what the screw does (#49) */
+    /* the pointer flips both, then leaves, so it never rests on a label */
+    cursorAt(t, [[1.8, [p1[0] + 140, p1[1] + 120]], [2.6, p1], [4.6, p1], [5.1, p2], [5.9, p2], [6.9, [p2[0] + 260, p2[1] + 150]]], [t1, t2], { a: ep(t, 1.6, 2.0) * (1 - ep(t, 6.3, 6.9)) });
+    /* the frame, and the corner that is better on both axes: a soft field toward it, as on the deck's other sweet spots */
+    const fx = wx + 130, fy = wy + 196, fw = ww - 200, fh = 310, ks = ep(t, 1.0, 2.2);
+    if (ks > 0) {
+      G.save(); G.beginPath(); G.rect(fx, fy, fw, fh); G.clip();
+      const g = G.createRadialGradient(fx + fw, fy + fh, 0, fx + fw, fy + fh, fw * 0.62 * ks);
+      g.addColorStop(0, rgba(C.hero, TH ? 0.30 : 0.24)); g.addColorStop(0.5, rgba(C.hero, TH ? 0.10 : 0.08)); g.addColorStop(1, rgba(C.hero, 0));
+      G.fillStyle = g; G.fillRect(fx, fy, fw, fh); G.restore();
+      text('Better on both', fx + fw - 18, fy + fh - 20, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: ks });
+    }
+    const m = axes(t, { x: fx, y: fy, w: fw, h: fh, xr: [0, 6], yr: [0, 30], xticks: [0, 1, 2, 3, 4, 5, 6], yticks: [0, 10, 20, 30], xfmt: v => v ? v + '×' : '0', yfmt: v => v + ' gf', xlabel: 'Trigger stiffness, × ABS (higher is stiffer)', ylabel: 'Click force at the plunger (lower is lighter)', t0: 0.6 });
+    /* the three states and the live point */
+    const SA = [1, cA.gf], SP2 = [ratio, cP.gf], SB = [ratio, cB.gf], k1 = ep(t, t1 + 0.1, t1 + 0.8, E.snap), k2 = ep(t, t2 + 0.1, t2 + 0.8, E.snap);
+    const PX = p => [m.X(p[0]), m.Y(p[1])], [ax, ay] = PX(SA), [px, py] = PX(SP2), [bx, by] = PX(SB);
+    /* a state's name, value and verdict, two lines beside its point (right: x is the right edge) */
+    const tag2 = (x, y, name, val, say, col, a, right) => { if (a <= 0.003) return; const al = right ? 'right' : 'left';
+      rich([{ s: name, role: 'label', size: 19, color: col }, { s: val, role: 'num', size: 24, weight: 800, color: col, gap: 12 }], x, y, { align: al, alpha: a });
+      text(say, x, y + 30, { role: 'small', size: 23, weight: 600, color: C.mute, align: al, alpha: a }); };
+    if (t > t1 + 0.1) circle(ax, ay, 8, { fill: C.second, alpha: ep(t, t1 + 0.1, t1 + 0.4) });
+    if (t > t2 + 0.1) circle(px, py, 8, { fill: C.bad, alpha: ep(t, t2 + 0.1, t2 + 0.4) });
+    /* the bridge's drop at the same stiffness, before → after, on the chart */
+    if (k2 > 0) { const xa = px - 34; arrow(xa, py + 14, xa, lerp(py + 14, by - 16, k2), { color: C.heroText, w: 3, hs: 12 });
+      text('−' + ((1 - cB.gf / cP.gf) * 100).toFixed(0) + '%', xa - 14, (py + by) / 2 + 9, { role: 'num', size: 28, weight: 800, color: C.heroText, align: 'right', alpha: ep(t, t2 + 0.6, t2 + 1.0) }); }
+    const live = t < t2 ? [lerp(ax, px, k1), lerp(ay, py, k1)] : [lerp(px, bx, k2), lerp(py, by, k2)], la = ep(t, 0.9, 1.4);
+    if (t > t2 + 0.6) heroMark(live[0], live[1], 14, la); else circle(live[0], live[1], 10, { fill: t < t1 + 0.4 ? C.second : C.bad, alpha: la });
+    tag2(ax + 20, ay - 50, 'ABS, flat plane', cA.gf.toFixed(1) + ' gf', 'Light, but the trigger flexes', C.secondText, ep(t, 1.4, 1.8));
+    tag2(px - 60, py - 4, SIM_MAT.ppcf.name + ', flat plane', cP.gf.toFixed(1) + ' gf', 'Stiff, but a heavy click', C.bad, ep(t, t1 + 0.8, t1 + 1.2), true);
+    tag2(bx - 60, by - 42, SIM_MAT.ppcf.name + ', bridge', cB.gf.toFixed(1) + ' gf', 'Stiff and light', C.heroText, ep(t, t2 + 0.9, t2 + 1.3), true);
+    text(`Each at the GT01's 0.35 mm pre-travel. The same trigger shape, so its stiffness goes with the flexural modulus: ${SIM_MAT.ppcf.name} ${(SIM_MAT.ppcf.E / 1000).toFixed(1)} GPa, ABS ${(SIM_MAT.abs.E / 1000).toFixed(2)} GPa.`, wx + 32, wy + wh - 56, { role: 'small', size: 22, weight: 600, color: C.faint, maxW: ww - 64, lh: 1.3, alpha: ep(t, 2.4, 2.8) });
+    /* right: at a glance (F14.10), the stiffness the trigger gains and the click force the bridge wins back, the flat plane's
+       figure kept beside it (F16.1: before → after); under it, what the screw does (#49). The tile fills the column down to
+       the box, so both columns end on the same line */
     const fl5 = clk_ten('flat', 'ppcf', { clampTo: 0.5 }).clk, br5 = clk_ten('bridge', 'ppcf', { clampTo: 0.5 }).clk;
     const pc = (a, b) => '+' + ((b.F / a.F - 1) * 100).toFixed(1) + '%', [cx, cw] = CLK_G.b;
-    clk_stack(wy, [
-      y => clk_gloss(t, 2.6, cx, y, cw, 'Flexural modulus', `How hard a material is to bend: ${SIM_MAT.ppcf.name} ${(SIM_MAT.ppcf.E / 1000).toFixed(1)} GPa, ABS ${(SIM_MAT.abs.E / 1000).toFixed(2)} GPa.`),
-      y => clk_src(t, 6.4, cx, y, cw, 'One screw (#49)', `Let the screw clamp 0.5 mm more of the plate: the flat plane clicks ${pc(cP, fl5)} harder, the bridge only ${pc(cB, br5)}. The crown sets the bend, not the screw.`, { kind: 'derived' }),
-      y => clk_box(t, 7.2, cx, y, cw, { label: 'Theseus', value: 'The bridge (#50)', head: 'Stiff where it must be', body: 'The trigger stays stiff on its own, and the bridge\'s thin crown takes the bend: a light click without a flexy trigger.' })
-    ]);
+    const scr = { value: 'One screw (#49)', body: `Clamp 0.5 mm more of the plate under the screw: the flat plane clicks ${pc(cP, fl5)} harder, the bridge only ${pc(cB, br5)}. The crown sets the bend, not the screw.`, src: true, label: null, kind: 'derived' };
+    const hS = clk_snap(noteBox(t, 1e9, cx, 0, cw, scr).h), gh = CLK_BOT - hS - 40 - wy;
+    { const a = ep(t, 1.4, 1.95, E.snap); demoWindow(cx, wy, cw, gh, a);
+      text('Trigger stiffness against ABS (higher is better)', cx + 32, wy + 50, { role: 'label', size: 19, color: C.mute, alpha: a, maxW: cw - 64 });
+      clk_hl(t, 1.6, cx + 32, wy + 190, ratio.toFixed(1) + '×', 'stiffer', { size: 140, count: false });
+      const a2 = ep(t, t2 + 0.4, t2 + 0.95, E.snap);
+      text('Click force (lower is lighter)', cx + 32, wy + gh - 132, { role: 'label', size: 19, color: C.mute, alpha: a2, maxW: cw - 64 });
+      clk_ba(t, cx + 32, wy + gh - 52, { before: cP.gf.toFixed(1), after: cB.gf.toFixed(1), unit: 'gf', size: 76, k: ep(t, t2 + 0.6, t2 + 1.2), a: a2, hero: true, net: '−' + ((1 - cB.gf / cP.gf) * 100).toFixed(0) + '%', netRight: true, netSize: 30 }); }
+    noteBox(t, 6.4, cx, CLK_BOT - hS, cw, Object.assign({}, scr, { h: hS }));
   }
 });
 
@@ -987,7 +1004,8 @@ clk_S({
     text('Depth drawn 5 times deeper', X(1) + 32, wy + h - 32, { role: 'small', size: 22, color: C.faint, alpha: ep(t, 4.2, 4.6) });
     /* 3: beside the button, from the front */
     clk_tile(t, 0.7, X(2), wy, w, h, 'Beside the button', []);
-    const lp = clk_curve(cyc(t, 6.8, 2.6)), lo = part(X(2) + 210, wy + 230, 17, () => flushMM({ press: lp, ref: ep(t, 7.0, 7.4), accent: C.hero }), { alpha: ep(t, 6.5, 7.0) });
+    /* drawn right of centre, so the side wall's section ends clear of the note under it (review item 19) */
+    const lp = clk_curve(cyc(t, 6.8, 2.6)), lo = part(X(2) + 300, wy + 230, 17, () => flushMM({ press: lp, ref: ep(t, 7.0, 7.4), accent: C.hero }), { alpha: ep(t, 6.5, 7.0) });
     clk_note(t, 7.0, lo.wall, X(2) + 34, wy + 350, 'Wall level with the pressed button', { color: C.hero, tcolor: C.ink, maxW: w - 68, sub: 'The front bottoms out first; the walls meet the average.' });
     clk_gloss(t, 2.6, LM, 800, 840, 'Post-travel', 'How far a button moves on after its switch has clicked.');
     clk_src(t, 3.0, LM + 880, 800, RM - LM - 880, 'My doc, #46', 'Flat faces make the travel easy to tune in the mold\'s steel.');
@@ -1155,19 +1173,23 @@ clk_S({
     captions(t, [[0.6, 'The wait is real time on every click. TechPowerUp measured it on one mouse, with its debounce on and off.'], [4.6, 'A 4 ms debounce made the Lamzu Atlantis 3 ms slower. SPDT needs no debounce at all.']]);
     const [wx, ww] = CLK_G.a, wy = CLK_TOP, wh = CLK_BOT - wy;
     clk_tile(t, 0.3, wx, wy, ww, wh, 'Click latency, switch to computer', [{ ev: 'measured', text: 'TechPowerUp' }]);
-    lollipop(t, { x: wx + 32, y: wy + 170, w: ww - 64, t0: 0.9, xr: [0, 6], ticks: [0, 2, 4, 6], tfmt: v => v + ' ms', fmt: v => (v < 0.1 ? v.toFixed(3) : v.toFixed(1)) + ' ms', labelW: 440, rowH: 96, valW: 130,
-      rows: [{ name: 'Razer Viper V4 Pro', qual: 'wired, 8 kHz', v: 0.079, ref: true }, { name: 'Hitscan Hyperlight', qual: '0 ms debounce', v: 0.4 }, { name: 'Lamzu Atlantis', qual: '0 ms debounce', v: 2.4 }, { name: 'Lamzu Atlantis', qual: '4 ms debounce', v: 5.4 }] });
+    /* Theseus's own row (review item 8): its target, counted at NC release on XBAB's analyzer method (the next slide but one says
+       how methods differ), so the quickest row on the chart is Theseus's and not the V4 Pro's */
+    const LR = 76;
+    lollipop(t, { x: wx + 32, y: wy + 160, w: ww - 64, t0: 0.9, xr: [0, 6], ticks: [0, 2, 4, 6], tfmt: v => v + ' ms', fmt: v => (v < 0.1 ? v.toFixed(3) : v.toFixed(1)) + ' ms', labelW: 440, rowH: LR, valW: 130,
+      rows: [{ name: 'Theseus', qual: 'target, NC release', v: CLK_TGT / 1000, hero: true }, { name: 'Razer Viper V4 Pro', qual: 'wired, 8 kHz', v: 0.079, ref: true }, { name: 'Hitscan Hyperlight', qual: '0 ms debounce', v: 0.4 }, { name: 'Lamzu Atlantis', qual: '0 ms debounce', v: 2.4 }, { name: 'Lamzu Atlantis', qual: '4 ms debounce', v: 5.4 }] });
     /* the cost on the chart: a bracket between the Atlantis with and without its debounce (lower is quicker) */
-    { const lx0 = wx + 32 + 440, lpw = ww - 64 - 440 - 130 - 20, LX = v => lx0 + lpw * v / 6, yb = wy + 170 + 2.5 * 96, kb = ep(t, 5.1, 5.6, E.snap);
+    { const lx0 = wx + 32 + 440, lpw = ww - 64 - 440 - 130 - 20, LX = v => lx0 + lpw * v / 6, yb = wy + 160 + 3.5 * LR, kb = ep(t, 5.1, 5.6, E.snap);
       if (kb > 0) { line(LX(2.4), yb, LX(2.4) + (LX(5.4) - LX(2.4)) * kb, yb, { color: C.bad, w: 2.5 }); line(LX(2.4), yb - 8, LX(2.4), yb + 8, { color: C.bad, w: 2.5 }); if (kb > 0.98) line(LX(5.4), yb - 8, LX(5.4), yb + 8, { color: C.bad, w: 2.5 });
         text('+3.0 ms of debounce', (LX(2.4) + LX(5.4)) / 2, yb - 14, { role: 'small', size: 23, weight: 700, color: C.bad, align: 'center', alpha: kb }); }
-      text('Lower is quicker', wx + ww - 32, wy + 112, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 1.0, 1.4) }); }
-    clk_hl(t, 5.4, wx + 32, wy + wh - 72, '0', 'ms debounce', { size: 104, count: false, sub: 'Theseus, SPDT: nothing to wait out, new switch or worn', subSize: 23 });
+      text('Lower is quicker', wx + ww - 32, wy + 96, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ep(t, 1.0, 1.4) }); }
+    /* the headline is SPDT's, and the XA25 is SPDT too: the sub says so, and the box says where Theseus pulls ahead of it */
+    clk_hl(t, 5.4, wx + 32, wy + wh - 72, '0', 'ms debounce', { size: 104, count: false, sub: 'SPDT, as on the XA25: nothing to wait out, new switch or worn', subSize: 23 });
     const [cx, cw] = CLK_G.b;
     clk_stack(wy, [
       y => clk_src(t, 2.2, cx, y, cw, 'TechPowerUp', 'Lamzu Atlantis: 2.4 ms with no debounce, 5.4 ms with 4 ms of it. The same mouse, the same rig.'),
       y => clk_src(t, 2.8, cx, y, cw, 'Tom\'s Hardware', 'A worn switch bounces for longer, so a single-throw mouse needs a longer wait, or it double clicks.'),
-      y => clk_box(t, 5.8, cx, y, cw, { label: 'Theseus', value: 'SPDT', head: 'No debounce, ever', body: 'The latch reads both throws, so there is nothing to wait out on a new switch or a worn one.' })
+      y => clk_box(t, 5.8, cx, y, cw, { label: 'Theseus', value: 'SPDT', head: 'No debounce, ever', body: 'Nothing to wait out, new switch or worn. The XA25 is SPDT too: against it, my target wins the whole click, 72 → ' + CLK_TGT + ' µs.' })
     ]);
   }
 });
@@ -1189,48 +1211,79 @@ clk_S({
   src: ['clk_xbabClick', 'xbab', 'tpuOp1', 'clk_brock'],
   draw: t => {
     header(t, 'Clicks that never wait for motion');
-    captions(t, [[0.6, 'XBAB put its XA25 against the OP1 8k v2 on a USB analyzer: two read modes, still and moving.'], [4.6, 'Still, the OP1\'s release mode is quick. Moving, the same click arrives 121 to 125 µs later: it waits behind motion.'], [8.0, 'My target: 70 µs or less, moving or still, under the XA25\'s 72. Published the same way, with n and the interval.']]);
-    const P = clk_xbab(), pw = 352, gap = 74, px0 = LM + 74, py = 400, ph = 200, top = 600, Y = v => py + ph - ph * v / top;
-    legend(t, 0.5, RM, 300, [{ kind: 'ref', label: 'XBAB XA25' }, { kind: 'comp', label: 'OP1 8k v2' }, { kind: 'dash', color: C.hero, label: 'Theseus target, NC release, ' + CLK_TGT + ' µs' }], { align: 'right' });
+    captions(t, [[0.6, 'XBAB put its XA25 against the OP1 8k v2 on a USB analyzer, with the mouse still and moving.'], [4.6, 'Still, the OP1\'s release mode is quick. Moving, the same click arrives 121 to 125 µs later: it waits behind motion.'], [8.0, 'My target: 70 µs or less, moving or still, under the XA25\'s 72. Published the same way, with n and the interval.']]);
+    /* Rebuilt after the review (item 9). Only the two NC-release tests are charted, because that is the clock Theseus's target
+       runs on (NC edge to USB). XBAB's SR-latch tests (GX Safe) time from the NO edge, about 1.5 ms later in the same press, so
+       their 64 µs cannot sit beside a 70 µs NC-release target: a note says what they found. Each panel carries Theseus's
+       target bar in blue. The XA25 adds nothing moving either, so the glance is what Theseus wins over it: 72 → 70 µs */
+    const P = clk_xbab().filter(p => /NC/.test(p.mode)), pw = 760, gap = 100, px0 = LM + 74, py = 384, ph = 200, top = 500, Y = v => py + ph - ph * v / top;
+    legend(t, 0.5, RM, 300, [{ kind: 'hero', label: 'Theseus target' }, { kind: 'ref', label: 'XBAB XA25' }, { kind: 'comp', label: 'OP1 8k v2' }], { align: 'right' });
     rich([{ s: 'Electrical latency, µs', role: 'label', size: 21, color: C.mute }, { s: 'Beagle USB 480 analyzer', role: 'small', size: 22, weight: 600, color: C.faint, gap: 18 }], LM, 300, { alpha: ep(t, 0.5, 0.9) });
     pill(LM + 600, 300, 'claim', ep(t, 0.6, 1.0), { by: 'XBAB' });
     P.forEach((p, i) => {
-      const x = px0 + i * (pw + gap), t0 = 0.8 + i * 0.5, a = ep(t, t0, t0 + 0.4);
-      const mode = /NC/.test(p.mode) ? 'NC release, GX Speed' : 'SR latch, GX Safe';
-      text(mode, x, py - 44, { role: 'label', size: 21, color: C.mute, alpha: a });
+      const x = px0 + i * (pw + gap), t0 = 0.8 + i * 0.5, a = ep(t, t0, t0 + 0.4), slot = pw / 3;
+      text('NC release, GX Speed', x, py - 44, { role: 'label', size: 21, color: C.mute, alpha: a });
       text(p.still ? 'Still' : 'Moving', x, py - 12, { font: 'disp', size: 30, weight: 800, color: p.still ? C.ink2 : C.ink, caps: true, alpha: a });
-      barChart(t, { x, y: py, w: pw, h: ph, t0, yr: [0, top], ticks: i ? [] : [0, 200, 400, 600], unit: 'µs', dec: 1, foot: false, labelAt: 'ci', vsize: 28, nsize: 28, barW: 0.58,
-        bars: [{ name: 'XA25', v: rv(p.xa), ci: p.xa.ci95_us, n: p.xa.n, ref: true }, { name: 'OP1 8k v2', v: rv(p.op), ci: p.op.ci95_us, n: p.op.n }] });
-      if (i) for (const v of [200, 400]) line(x, Y(v), x + pw, Y(v), { color: C.hair, w: 1.2, alpha: a * 0.8 });
+      barChart(t, { x, y: py, w: pw, h: ph, t0, yr: [0, top], ticks: i ? [] : [0, 100, 200, 300, 400, 500], unit: 'µs', dec: 1, foot: false, labelAt: 'ci', vsize: 28, nsize: 28, barW: 0.46,
+        bars: [{ name: 'Theseus', v: CLK_TGT, label: CLK_TGT + ' µs', hero: true }, { name: 'XA25', v: rv(p.xa), ci: p.xa.ci95_us, n: p.xa.n, ref: true }, { name: 'OP1 8k v2', v: rv(p.op), ci: p.op.ci95_us, n: p.op.n }] });
+      if (i) for (const v of [100, 200, 300, 400]) line(x, Y(v), x + pw, Y(v), { color: C.hair, w: 1.2, alpha: a * 0.8 });
+      const fa = ep(t, t0 + 0.6, t0 + 1.0);
+      text('Target', x + slot * 0.5, py + ph + 72, { role: 'label', size: 20, color: C.heroText, align: 'center', alpha: fa });
       [p.xa, p.op].forEach((b, j) => {
-        const cx = x + pw * (j + 0.5) / 2, fa = ep(t, t0 + 0.6, t0 + 1.0);
+        const cx = x + slot * (j + 1.5);
         text('[' + b.ci95_us.map(v => v.toFixed(1)).join(', ') + ']', cx, py + ph + 72, { role: 'small', size: 22, weight: 600, color: C.mute, align: 'center', alpha: fa });
         text('n = ' + fmt3(b.n), cx, py + ph + 100, { role: 'small', size: 22, weight: 600, color: C.mute, align: 'center', alpha: fa });
       });
-      /* the target, on the two panels that count the way Theseus does (NC release, at first contact). The SR latch counts at NO,
-         about 1.5 ms later in the same press, so a line across those panels would compare two clocks that start apart */
-      const kt = ep(t, 8.2 + i * 0.12, 8.7 + i * 0.12, E.cam);
-      if (kt > 0 && /NC/.test(p.mode)) line(x, Y(CLK_TGT), x + pw * kt, Y(CLK_TGT), { color: C.hero, w: 3, dash: [10, 7] });
       if (!p.still) {
-        const st = P.find(q => q.mode === p.mode && q.still), kd = ep(t, 5.0 + i * 0.3, 5.5 + i * 0.3);
+        const st = P.find(q => q.still), kd = ep(t, 5.0, 5.5);
         if (st && kd > 0) {
-          const cx = x + pw * 0.75, bw2 = pw / 2 * 0.58, y0 = Y(rv(st.op)), y1 = Y(rv(p.op));
+          const cx = x + slot * 2.5, bw2 = slot * 0.46, y0 = Y(rv(st.op)), y1 = Y(rv(p.op));
           G.save(); G.globalAlpha = kd; G.setLineDash([6, 5]); G.strokeStyle = C.bad; G.lineWidth = 2.5; G.strokeRect(cx - bw2 / 2, y0, bw2, Y(0) - y0); G.restore();
           text('+' + (rv(p.op) - rv(st.op)).toFixed(1), cx, (y0 + y1) / 2 + 9, { role: 'num', size: 26, weight: 800, color: C.bad, align: 'center', alpha: kd });
         }
       }
     });
     if (!P.length) placeholderStamp(t, LM, py, RM - LM, ph);
-    text('Red dashes: the same click, still. The XA25 moving: no change within its interval.', LM, py + ph + 136, { role: 'small', size: 24, weight: 600, color: C.mute, alpha: ep(t, 5.6, 6.0) });
-    /* at a glance: what motion adds to a click, Theseus's target against the OP1's measured 121 to 125 µs */
+    const sr = clk_xbab().filter(p => !/NC/.test(p.mode)), srM = sr.find(p => !p.still), srS = sr.find(p => p.still), srAdd = srM && srS ? Math.round(rv(srM.op) - rv(srS.op)) : null;
+    text('Red dashes: the same click, still. The XA25 moving: no change within its interval.', LM, py + ph + 140, { role: 'small', size: 24, weight: 600, color: C.mute, alpha: ep(t, 5.6, 6.0) });
+    text('Not charted: XBAB\'s SR-latch tests (GX Safe) start the clock at NO, about 1.5 ms after NC' + (srAdd != null ? `. Moving, the OP1 adds ${srAdd} µs there too.` : '.'), LM, py + ph + 172, { role: 'small', size: 24, weight: 600, color: C.faint, alpha: ep(t, 6.2, 6.6) });
+    /* at a glance: what Theseus wins over the XA25, moving or still (Brock, F18.5: "Tighten it"), the XA25's figure kept beside it */
     { const a = ep(t, 8.2, 8.7, E.snap); demoWindow(LM, 800, 560, 160, a);
-      text('Added by motion (lower is better)', LM + 32, 838, { role: 'label', size: 19, color: C.mute, alpha: a, maxW: 500 });
-      clk_ba(t, LM + 32, 902, { before: '+125', after: '0', unit: 'µs', net: 'NC release that never waits for motion', size: 64, k: ep(t, 8.4, 9.0), a, hero: true, netSize: 21 }); }
+      text('Click latency (lower is better)', LM + 32, 838, { role: 'label', size: 19, color: C.mute, alpha: a, maxW: 500 });
+      clk_ba(t, LM + 32, 918, { before: '72', after: String(CLK_TGT), unit: 'µs', net: 'Moving or still', netRight: true, size: 76, k: ep(t, 8.4, 9.0), a, hero: true, netSize: 24 }); }
     clk_steps(t, 8.6, LM + 600, 800, RM - LM - 600, CLK_WAIT_STEP);
   }
 });
 
 /* ============================== 16. every click number has a method ============================== */
+/** the methods chart: groups of rows, each under its head, a divider between groups. A row is a name over its method (two lines,
+   in a column of their own, so the stems start after them), a stem from 0 and a dot (Theseus's diamond; the next best yellow
+   with ref; a dim group grey and faint), the value at the right. A value past xmax runs to the axis's end behind an arrow.
+   (x, y) = the top left, w = the width. groups: [{ head, dim, rows: [{ name, qual, v, hero, ref }] }]; o = { xmax, ticks, t0 } */
+function clk_methodsChart(t, x, y, w, groups, o) {
+  const lw = 380, vw = 140, x0 = x + lw, pw = w - lw - vw - 30, xm = o.xmax, X = v => x0 + pw * clamp(v / xm), a0 = ep(t, o.t0, o.t0 + 0.5);
+  const rows = []; let yy = y + 60;
+  groups.forEach((g, gi) => {
+    const ka = ep(t, o.t0 + gi * 0.7, o.t0 + gi * 0.7 + 0.4);
+    if (gi) line(x, yy - 32, x + w, yy - 32, { color: C.hair, w: 1.5, alpha: ka });
+    text(g.head, x, yy, { role: 'label', size: 19, color: g.dim ? C.faint : C.mute, alpha: ka });
+    if (!gi) text('Lower is quicker', x + w, yy, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ka });
+    g.rows.forEach((r, i) => rows.push(Object.assign({ y: yy + 40 + i * 60, dim: g.dim, d: gi * 0.7 + i * 0.12 }, r)));
+    yy += 40 + (g.rows.length - 1) * 60 + 74;
+  });
+  const yEnd = rows.length ? rows[rows.length - 1].y + 20 : y + 60;
+  for (const v of o.ticks) { line(X(v), y + 30, X(v), yEnd, { color: C.hair, w: 1.2, alpha: a0 }); text(v ? v + ' ms' : '0', X(v), y + 18, { role: 'tick', size: 20, color: C.mute, align: 'center', alpha: a0 }); }
+  rows.forEach(r => {
+    const a = ep(t, o.t0 + r.d, o.t0 + r.d + 0.35), k = ep(t, o.t0 + r.d + 0.1, o.t0 + r.d + 0.9, E.snap), off = r.v > xm; if (a <= 0.003) return;
+    text(r.name, x, r.y - 2, { role: 'small', size: 25, weight: r.hero ? 800 : r.dim ? 560 : 650, color: r.dim ? C.mute : C.ink, alpha: a });
+    text(r.qual, x, r.y + 23, { role: 'label', size: 19, color: r.hero ? C.heroText : C.faint, alpha: a });
+    const sy = r.y - 10, col = r.hero ? C.hero : r.dim ? C.comp2 : r.ref ? C.ref : (TH ? '#9F9E98' : '#8E8D88'), xe = lerp(X(0), off ? X(xm) + 22 : X(r.v), k);
+    if (off) arrow(X(0), sy, xe, sy, { color: col, w: 3, hs: 11, alpha: a });
+    else { line(X(0), sy, xe, sy, { color: col, w: r.hero ? 6 : 3, alpha: a, cap: 'round' }); if (r.hero) heroMark(xe, sy, 13, a); else circle(xe, sy, 9, { fill: col, alpha: a }); }
+    const vs = r.v.toFixed(3) + ' ms';
+    text(countUp(vs, k) || vs, x + w, r.y - 2, { role: 'num', size: 25, weight: r.hero ? 800 : r.dim ? 560 : 650, color: r.hero ? C.heroText : r.dim ? C.faint : C.ink, align: 'right', alpha: a });
+  });
+}
 clk_S({
   id: 'clk_methods', ch: 'click', theme: 'night', title: 'Every click number has a method', settle: 9, ideas: [79],
   src: ['xbab', 'clk_xbabClick', 'vgnClick', 'clk_razerSide'],
@@ -1239,12 +1292,14 @@ clk_S({
     captions(t, [[0.6, 'Makers time their own clicks, each in their own way. Read a number only beside the way it was taken.'], [4.4, 'I will publish Theseus on XBAB\'s analyzer method, with n and the interval: ' + CLK_TGT + ' µs, moving or still, under the XA25\'s 72.']]);
     const [wx, ww] = CLK_G.a, wy = CLK_TOP, wh = CLK_BOT - wy;
     clk_tile(t, 0.3, wx, wy, ww, wh, 'Switch to USB, each maker\'s own test', [{ ev: 'claim', text: 'Maker claims' }]);
-    /* the two numbers taken on XBAB's analyzer stay in ink, and Theseus's target sits with them, taken the same way; every other
-       maker's own test is dimmed, and no Theseus line is drawn across tests this unlike (the slide's own point) */
-    lollipop(t, { x: wx + 32, y: wy + 190, w: ww - 64, t0: 0.9, xr: [0, 1.8], ticks: [0, 0.5, 1, 1.5], tfmt: v => v + ' ms', fmt: v => v.toFixed(3) + ' ms', labelW: 520, rowH: 64, valW: 140,
-      rows: [{ name: 'Theseus', qual: 'target, NC release, analyzer', v: CLK_TGT / 1000, hero: true }, { name: 'XBAB XA25', qual: '"about 65 µs"', v: 0.065, dim: true }, { name: 'XBAB XA25', qual: 'NC release, still, analyzer', v: 0.07204 }, { name: 'VGN Dragonfly 3 MGT', qual: '"as low as"', v: 0.175, dim: true },
-        { name: 'Endgame Gear OP1 8k v2', qual: 'GX Speed, analyzer', v: 0.32029 }, { name: 'Razer Viper V4 Pro', qual: 'side buttons', v: 0.33, dim: true }, { name: '"Brand X"', qual: 'side buttons, per Razer', v: 1.65, dim: true }] });
-    text('Lower is quicker. Ink and blue: XBAB\'s analyzer method. Grey: makers\' own tests.', wx + 32, wy + wh - 36, { role: 'small', size: 23, weight: 600, color: C.mute, alpha: ep(t, 2.6, 3.0), maxW: ww - 64 });
+    /* rebuilt after the review (item 4): the numbers taken on XBAB's analyzer, Theseus's target among them, above a divider; the
+       makers' own claims (method not given) faint under it, so a bare "about 65 µs" never sits in ink under Theseus's row. The
+       axis runs 0 to 0.4 ms so 65, 70 and 72 µs are not squeezed together, and "Brand X" runs off it behind an arrow. Each
+       label takes two lines, name over method, so no stem runs through one */
+    clk_methodsChart(t, wx + 32, wy + 96, ww - 64, [
+      { head: 'On XBAB\'s analyzer: NC edge to USB', rows: [{ name: 'Theseus', qual: 'Target, NC release', v: CLK_TGT / 1000, hero: true }, { name: 'XBAB XA25', qual: 'NC release, still', v: 0.07204, ref: true }, { name: 'Endgame Gear OP1 8k v2', qual: 'GX Speed, still', v: 0.32029 }] },
+      { head: 'Makers\' own claims, method not given', dim: true, rows: [{ name: 'XBAB XA25', qual: '"About 65 µs"', v: 0.065 }, { name: 'VGN Dragonfly 3 MGT', qual: '"As low as"', v: 0.175 }, { name: 'Razer Viper V4 Pro', qual: 'Side buttons', v: 0.33 }, { name: '"Brand X"', qual: 'Side buttons, per Razer', v: 1.65 }] }
+    ], { xmax: 0.4, ticks: [0, 0.1, 0.2, 0.3, 0.4], t0: 0.9 });
     const [cx, cw] = CLK_G.b;
     /* the glance: the XA25's analyzer figure struck, Theseus's target beside it (F14.10, F16.1) */
     { const a = ep(t, 3.6, 4.15, E.snap); demoWindow(cx, wy, cw, 200, a);

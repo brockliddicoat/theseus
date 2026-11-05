@@ -9,14 +9,14 @@
    z = toward the nose), turned into the mouse frame by elc_W().
    ============================================================================================ */
 Object.assign(SRC, {
-  elcRaytac: { t: 'Raytac AN54LM-20A product page: nRF54LM20A, 9.9 × 13.3 × 2.0 mm, 2.0 MB flash / 512 KB RAM, high-speed USB, 66 GPIO; "Intended Certifications: FCC, IC, CE, Telec (MIC), KC, SRRC, NCC, RCM, WPC"; coming soon, est. Q3 2026. The long meander (PCB trace) antenna drawn here is listed on the same-size AN54LM-P20A; Brock keeps the AN54LM-20A name (F17.1)', u: 'https://www.raytac.com/product/ins.php?index_id=180' },
+  elcRaytac: { t: 'Raytac AN54LM-P20A product page: nRF54LM20A, PCB antenna (the long meander trace), 9.9 × 13.3 × 2.0 mm, 2.0 MB flash / 512 KB RAM, high-speed USB, 66 GPIO; "Intended Certifications: FCC, IC, CE, Telec (MIC), KC, SRRC, NCC, RCM, WPC"; coming soon, est. Q4 2026 (read 2026-11-04). Brock chose the AN54LM-P20A, long antenna (21:55)', u: 'https://www.raytac.com/product/ins.php?index_id=181' },
   elcLp4025: { t: 'Jauch LP402535JU datasheet (matd 246497, 2020-05-07): 380 mAh typical, 370 mAh minimum at 0.2C; 3.7 V; standard charge 0.2C, maximum charge 1.0C; 4.2 V charge; 300 cycles to 80%; about 8 g; charging from +10 to +45 °C', u: 'https://jauch.com/downloadfile/66ced46b34a2d2b034c873f2a5b325e7b/matd_246497_20200507_380mah_-_lp402535ju_1s1p_2_wire_50mm.pdf' },
   elcRaytacBlog: { t: 'Raytac blog, 25 Mar 2026: the AN54LM series; Bluetooth 6.0 certified, regional certifications listed as targets', u: 'https://raytaccorp.blogspot.com/2026/03/raytac-abietec-announce-new-an54lm.html' },
   elcNpm: { t: 'Nordic nPM1300 product page: 32 to 800 mA charging, 3.5 to 4.45 V termination, 4.0 to 5.5 V input with 22 V overvoltage protection, 2 × 200 mA bucks, 2 LDOs / load switches, fuel gauge, watchdog, ship mode 370 nA, hibernate 500 nA, 5 × 5 mm QFN', u: 'https://www.nordicsemi.com/Products/nPM1300' },
   elcNpmJeita: { t: 'nPM1300 product specification, battery temperature: no charging below 0 °C or above 60 °C; 50% current from 0 to 10 °C; a lower termination voltage from 45 to 60 °C (defaults, all configurable)', u: 'https://docs.nordicsemi.com/r/bundle/ps_npm1300/page/chapters/charger.html-battery-temp-monitoring' },
   elcNpmChg: { t: 'Zephyr nPM1300 charger binding: 32 to 800 mA in 2 mA steps; charging ends at 10% (default) or 20% of the set current; charging stops above a set die temperature and resumes below another', u: 'https://docs.zephyrproject.org/latest/build/dts/api/bindings/sensor/nordic,npm1300-charger.html' },
   elcGauge: { t: 'nRF Fuel Gauge library (nrfxlib): state of charge, time to empty, time to full and state of health from the nPM1300 measurements', u: 'https://nrfconnectdocs.nordicsemi.com/ncs/latest/nrfxlib/doxygen/html/group__nrf__fuel__gauge.html' },
-  elcTpuV4: { t: 'TechPowerUp, Razer Viper V4 Pro review: Airoha AB1623MN; 306 mAh, 3.87 V cell; 0.169 A constant-current charge; about 40 h at 8 kHz; fuel gauge IC; 12-bit wireless counts; smoothing after lift-off (as recorded in the 2026-11-03 validation report)', u: 'https://www.techpowerup.com/review/razer-viper-v4-pro/' },
+  elcTpuV4: { t: 'TechPowerUp, Razer Viper V4 Pro review: Airoha AB1623MN; 306 mAh, 3.87 V battery; 0.169 A constant-current charge; about 40 h at 8 kHz; fuel gauge IC; 12-bit wireless counts; smoothing after lift-off (as recorded in the 2026-11-03 validation report)', u: 'https://www.techpowerup.com/review/razer-viper-v4-pro/' },
   elcB2gSlx: { t: 'Back2Gaming, Finalmouse Starlight X review: 15 graphite-coated titanium screws, about 0.02 g each; no battery-hour rating', u: 'https://www.back2gaming.com/review/finalmouse-starlight-x-nightfall-wireless-mouse/' },
   elcBu802: { t: 'Battery University BU-802b: lithium-ion self-discharge, 1 to 2% a month plus about 3% a month for the protection circuit', u: 'https://batteryuniversity.com/article/bu-802b-what-does-elevated-self-discharge-do' },
   elcCoat: { t: 'Conformal coating (Wikipedia, citing IPC): acrylic, epoxy or urethane coats are typically 30 to 130 µm thick after curing', u: 'https://en.wikipedia.org/wiki/Conformal_coating' },
@@ -68,10 +68,16 @@ function elc_kv(t, t0, x, y, w, rows, o = {}) {
     if (r[2]) evDot(x + w - 7, yy - 8, r[2], 5.5, k);
   });
 }
-/** a small label with a coloured dot, used as the key of a 3D shot */
-function elc_key(x, y, col, label, a = 1, o = {}) { circle(x + 7, y - 7, 7, { fill: col, alpha: a }); return text(label, x + 24, y, Object.assign({ role: 'label', size: 21, color: C.ink, alpha: a }, o)); }
-/** the key on a plate of the tile's own colour, so it reads over a busy 3D shot */
-function elc_keyBg(x, y, col, label, a = 1) { if (a <= 0.003) return; rr(x - 14, y - 30, tw(label, { role: 'label', size: 21 }) + 52, 44, 6, C.panel, null, 1, a * 0.92); elc_key(x, y, col, label, a); }
+/** the key of a 3D shot, in type (DESIGN 0.8: no plate, no dot): a short dashed stroke in the colour of the current it names,
+   then the words. Set it where the tile is clear, never over the board. o = { sub (a second line), maxW, color }. Returns its height */
+function elc_key(x, y, col, label, a = 1, o = {}) {
+  if (a <= 0.003) return 0;
+  line(x, y - 7, x + 30, y - 7, { color: col, w: 4, dash: [8, 5], alpha: a });
+  const r = text(label, x + 42, y, { role: 'label', size: 21, color: o.color || C.ink, alpha: a, maxW: o.maxW ? o.maxW - 42 : 900 });
+  if (!o.sub) return r.h;
+  const s2 = text(o.sub, x + 42, y + r.h + 6, { role: 'small', size: 23, weight: 600, color: C.mute, alpha: a, maxW: o.maxW ? o.maxW - 42 : 900, lh: 1.25 });
+  return r.h + 6 + s2.h;
+}
 /** the radio chip of each wireless mouse in the dataset, grouped */
 function elc_census() {
   const ms = ((RD.mice || {}).mice || []).filter(m => m.connection !== 'wired');
@@ -199,7 +205,7 @@ function elc_module(cx, cy, s, rot, o = {}) {
   if (o.mark !== false && !o.mirror && sc > 9) {
     G.save(); G.scale(px, px); G.fillStyle = 'rgba(52,54,58,0.78)'; G.textAlign = 'left'; G.textBaseline = 'alphabetic';
     const ln = (s0, y, sz, wt) => { setFont({ font: 'sans', size: sz * sc, weight: wt }); G.fillText(s0, -3.75 * sc, y * sc); };
-    ln('Raytac', -1.55, 0.62, 650); ln('AN54LM-20A', -0.45, 0.86, 800); ln('nRF54LM20A', 0.55, 0.6, 650); ln('2.4 GHz  BLE 6.0', 1.4, 0.5, 600);
+    ln('Raytac', -1.55, 0.62, 650); ln('AN54LM-P20A', -0.45, 0.86, 800); ln('nRF54LM20A', 0.55, 0.6, 650); ln('2.4 GHz  BLE 6.0', 1.4, 0.5, 600);
     G.restore();
     G.fillStyle = 'rgba(52,54,58,0.7)';
     for (let j = 0; j < 9; j++) for (let i = 0; i < 9; i++) if (i === 0 || j === 8 || ((i * 7 + j * 13 + i * j * 3) % 5) < 2) G.fillRect(-3.75 + i * 0.2, 3.2 + j * 0.2, 0.2, 0.2);
@@ -309,29 +315,33 @@ S({
     /* the two chips, side by side: Theseus's wins in bold, the one spec it gives up kept honest */
     const ty = 680, th = 280;
     demoWindow(rx, ty, rw, th, tileA(t, 0.3, 1));
-    compareTable(t, {
-      x: rx + 32, y: ty + 64, w: rw - 64, t0: 1.2, rowH: 34,
-      cols: [{ key: 'k', label: '', w: 0.7 }, { key: 'a', label: 'nRF52840', w: 1 }, { key: 'b', label: 'Theseus: nRF54LM20A', w: 1.15, hero: true }],
+    const tcols = [{ key: 'k', label: '', w: 0.7 }, { key: 'a', label: 'nRF52840', w: 1 }, { key: 'b', label: 'Theseus: nRF54LM20A', w: 1.15, hero: true }];
+    const tEnd = compareTable(t, {
+      x: rx + 32, y: ty + 64, w: rw - 64, t0: 1.2, rowH: 34, cols: tcols,
       rows: [
         { cells: { k: 'USB', a: '12 Mbit/s, full speed', b: '480 Mbit/s, high speed' }, best: 'b' },
-        { cells: { k: 'CPU', a: '64 MHz Cortex-M4F', b: '128 MHz Cortex-M33' }, best: 'b' },
-        { cells: { k: 'RAM', a: '256 KB', b: '512 KB' }, best: 'b' },
-        { cells: { k: 'Receive', a: '4.6 mA', b: '3.3 mA' }, best: 'b' },
-        { cells: { k: 'Transmit', a: '4.8 mA', b: '5.0 mA' }, best: 'a' }
+        { cells: { k: 'Processor', a: '64 MHz Cortex-M4F', b: '128 MHz Cortex-M33' }, best: 'b' },
+        { cells: { k: 'Memory', a: '256 KB', b: '512 KB' }, best: 'b' },
+        { cells: { k: 'Receive', a: '4.6 mA', b: '3.3 mA' }, best: 'b' }
       ]
     });
+    /* the one row the new chip gives up, in plain type in both columns but the winner's: compareTable sets the hero column bold,
+       so this row is a table of its own laid on the same columns (its head rule is the row's top rule), the hero rule run on */
+    { const tt = ep(t, 1.2 + 0.4 + 4 * 0.1, 1.2 + 0.4 + 4 * 0.1 + 0.35), tw2 = rw - 64, bxs = rx + 32 + tw2 * 1.7 / 2.85;
+      compareTable(t, { x: rx + 32, y: tEnd - 22, w: tw2, t0: 1.2 + 0.4, rowH: 34, cols: tcols.map(c => Object.assign({}, c, { label: '', hero: false })), rows: [{ cells: { k: 'Transmit', a: '4.8 mA', b: '5.0 mA' }, best: 'a' }] });
+      rect(bxs, tEnd - 10, 2, 34, { fill: C.hero, alpha: 0.9 * tt }); }
     source(t, 'Nordic nRF52840 and nRF54LM20A specifications, currents at 0 dBm. USB 2.0 polling: 1 ms frames, 125 µs microframes. Mice: EloShapes.', { t0: 2 });
   }
 });
 
 
-/* ============================== the module: Raytac AN54LM-20A (#102, #77) ============================== */
+/* ============================== the module: Raytac AN54LM-P20A, long antenna (#102, #77; Brock, 21:55) ============================== */
 S({
   id: 'elc_module', ch: 'elec', theme: 'night', title: 'The Raytac radio module', settle: 10, ideas: [102, 77],
   src: ['elcRaytac', 'elcRaytacBlog', 'raytac', 'nrf54', 'elcBrock', 'elcLayout'],
   draw: t => {
     header(t, 'The Raytac radio module');
-    captions(t, [[0.6, 'The nRF54LM20A goes on the board inside a Raytac AN54LM-20A: the chip under a shield, its memory, and a long meander antenna in one 9.9 × 13.3 mm part.'], [5.2, 'Raytac lists nine certifications for it as intended. The mouse builds on the module\'s radio approvals instead of certifying a radio of its own (#102).']]);
+    captions(t, [[0.6, 'The nRF54LM20A goes on the board inside a Raytac AN54LM-P20A: the chip under a shield, its memory, and a long meander antenna in one 9.9 × 13.3 mm part.'], [5.2, 'Raytac lists nine certifications for it as intended. The mouse builds on the module\'s radio approvals instead of certifying a radio of its own (#102).']]);
     /* the part, big: black, the can, the long antenna; a light crosses the can, current runs the meander, radio leaves it */
     const x = LM, y = 280, w = 1040, h = 680, ka = tileA(t, 0.2, 0);
     demoWindow(x, y, w, h, ka);
@@ -367,7 +377,7 @@ S({
     const sy = cyp + 80, sh = 960 - sy;
     demoWindow(rx, sy, rw, sh, tileA(t, 1.0, 1));
     elc_kv(t, 1.3, rx + 32, sy + 52, rw - 64, [['Chip', 'nRF54LM20A, 128 MHz'], ['Memory', '2 MB, 512 KB RAM: no flash chip'], ['USB', 'High speed, 480 Mbit/s'], ['Size', '9.9 × 13.3 × 2.0 mm']].slice(0, Math.max(2, Math.floor((sh - 30) / 42))), { kw: 150, rh: 42 });
-    source(t, 'Raytac AN54LM-20A product page (est. Q3 2026); the long PCB-trace antenna is listed on its AN54LM-P20A, same size. Drawing: the 3D part, a proposal.', { t0: 2 });
+    source(t, 'Raytac AN54LM-P20A product page: the long PCB antenna, 9.9 × 13.3 × 2.0 mm, est. Q4 2026. Drawing: the 3D part, a proposal.', { t0: 2 });
   }
 });
 
@@ -463,21 +473,24 @@ S({
       line(X(ph), wy + 96, X(ph), wy + 350, { color: C.ink, w: 1.5, alpha: 0.3 * pk });
       lanes.forEach(L => { for (const f of L.frames) { const d = Math.abs(ph - f); if (d < 16) circle(X(f), L.y - 30, 8 + (16 - d) * 0.8, { fill: rgba(L.col, 0.4 * (1 - d / 16)), alpha: pk }); } });
     }
-    /* the strip under it: by how much, before → after, and the measured stage */
-    elc_hl(t, 5.4, LM, 880, '0 µs', 'jitter', { size: 132, label: 'Synced: every report the same age' });
+    /* the strip under it, at a glance (F14.10, F16.1): the jitter before → after in Theseus's colour, the oldest motion before →
+       after, and the rivals' measured sync, both grey: Theseus's target is the hero, not theirs */
+    const ages = lanes.map(L => polls.map(p => Math.round(p - L.frames.filter(f => f + 15 <= p).pop()))), jit = ages.map(g => Math.max(...g) - Math.min(...g));
+    elc_ba(t, 5.4, LM, 880, String(jit[0]), String(jit[1]), { size: 110, label: 'Jitter, its own clock then synced', unit: 'µs', net: 'Every report the same age', maxW: 560 });
     elc_ba(t, 6.0, 680, 880, '73', '20', { size: 64, label: 'The oldest motion in a report', unit: 'µs', net: '−53 µs at the worst', maxW: 480 });
     const tx = 1240, tw0 = RM - tx, ty = 720, th = 240;
     demoWindow(tx, ty, tw0, th, tileA(t, 0.4, 1));
-    cardHead(t, 0.6, tx, ty, tw0, 'Frame to USB, wired, 8 kHz (lower is better)', ['claim'], { dy: 44 });
-    const bx = tx + 220, bw2 = tw0 - 220 - 150, BX = us => bx + bw2 * us / 210;
-    [['SensorLock', 42, A, '42 µs', true], ['FrameSync', 205, C.comp, '205 µs']].forEach(([l, v, c, lab, hero], i) => {
-      const yy = ty + 116 + i * 58, k = ep(t, 1.6 + i * 0.3, 2.4 + i * 0.3, E.snap);
-      text(l, tx + 32, yy + 8, { role: 'small', size: 24, weight: hero ? 800 : 600, color: hero ? C.heroText : C.ink, alpha: ep(t, 1.4, 1.8) });
-      rr(bx, yy - 11, Math.max(22, (BX(v) - bx) * k), 22, 11, c, null, 1, ep(t, 1.4, 1.8));
-      text(lab, bx + (BX(v) - bx) * k + 14, yy + 9, { font: 'mono', size: 24, weight: 800, color: hero ? C.heroText : C.ink2, alpha: k });
+    cardHead(t, 0.6, tx, ty, tw0, 'Frame to USB, wired, 8 kHz (lower is better)', [{ ev: 'measured', by: 'Kunai\'s developer' }], { dy: 44 });
+    const bx = tx + 240, bw2 = tw0 - 240 - 140, BX = us => bx + bw2 * us / 210;
+    [['XBAB SensorLock', 42, '42 µs'], ['Razer\'s FrameSync', 205, '205 µs']].forEach(([l, v, lab], i) => {
+      const yy = ty + 108 + i * 50, k = ep(t, 1.6 + i * 0.3, 2.4 + i * 0.3, E.snap);
+      text(l, tx + 32, yy + 8, { role: 'small', size: 23, weight: 600, color: C.ink, alpha: ep(t, 1.4, 1.8) });
+      rr(bx, yy - 10, Math.max(20, (BX(v) - bx) * k), 20, 10, C.comp, null, 1, ep(t, 1.4, 1.8));
+      text(lab, bx + (BX(v) - bx) * k + 14, yy + 9, { font: 'mono', size: 23, weight: 700, color: C.ink2, alpha: k });
     });
-    text('By Kunai\'s developer, against Razer\'s FrameSync', tx + 32, ty + th - 22, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 2.6, 3.0), maxW: tw0 - 64 });
-    source(t, 'Lanes: an illustration, 12,000 frames a second against 8,000 polls, 15 µs to process a frame. SensorLock: XBAB Tech, 2026-10-07. Kunai: tester guide, pre-production.', { t0: 2 });
+    const hw = heroTag(tx + 32, ty + th - 24, 'Theseus', null, { a: ep(t, 2.6, 3.0), size: 21 });
+    text('synced in its PAW3970 sensor, every report on a scope', tx + 32 + hw + 12, ty + th - 24, { role: 'small', size: 22, weight: 600, color: C.heroText, alpha: ep(t, 2.6, 3.0), maxW: tw0 - 76 - hw });
+    source(t, 'Lanes: an illustration, 12,000 frames a second against 8,000 polls, 15 µs to process a frame; jitter = the oldest minus the youngest report. SensorLock: XBAB Tech, 2026-10-07; FrameSync is Razer\'s. Kunai: tester guide, pre-production.', { t0: 2 });
   }
 });
 
@@ -534,13 +547,14 @@ S({
   draw: t => {
     const B = elc_cell();
     header(t, 'Battery life against polling rate');
-    captions(t, [[0.6, 'Every report costs current. Razer\'s Viper V3 Pro runs 95 hours at 1 kHz and 17 at 8 kHz; the V4 Pro, with FrameSync and new chips, claims 180 and 45.'], [5.4, 'Theseus plans ' + THS.hours + ' at 1 kHz: a ' + B.mAh + ' mAh cell at the V4 Pro\'s draw, carried by the weight my shell design frees.']]);
+    captions(t, [[0.6, 'Every report costs current. Razer\'s Viper V3 Pro runs 95 hours at 1 kHz and 17 at 8 kHz; the V4 Pro, with Razer\'s FrameSync and new chips, claims 180 h, and runs about 40 at 8 kHz.'], [5.4, 'Theseus plans ' + THS.hours + ' at 1 kHz: a ' + B.mAh + ' mAh battery at the V4 Pro\'s draw, carried by the weight my shell design frees.']]);
     /* the bars: three mice at two rates, Theseus tallest at both */
     const x = LM, y = 280, w = 1000, h = 680;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0));
-    cardHead(t, 0.4, x, y, w, 'Battery life in hours (higher is better)', ['claim', 'derived']);
+    cardHead(t, 0.4, x, y, w, 'Battery life in hours (higher is better)', ['claim', { ev: 'measured', by: 'TechPowerUp' }, 'derived']);
     const base = y + 560, sc = 2.05, bw = 112;
-    const mice = [['Viper V3 Pro', [95, 17], C.comp, 'No sync'], ['Viper V4 Pro', [180, 45], C.ref, 'FrameSync'], ['Theseus', [THESEUS.hours, Math.round(B.h8)], C.hero, 'The plan']];
+    /* one figure per mouse, deck-wide: the V4 Pro at 8 kHz is TechPowerUp's 40 h, the draw Theseus's own 8 kHz hours come from */
+    const mice = [['Viper V3 Pro', [95, 17], C.comp, 'No sync'], ['Viper V4 Pro', [180, 40], C.ref, 'Razer\'s FrameSync'], ['Theseus', [THESEUS.hours, Math.round(B.h8)], C.hero, 'The plan']];
     line(x + 40, base, x + w - 40, base, { color: C.faint, w: 1.5, alpha: ep(t, 0.9, 1.3) });
     ['1 kHz', '8 kHz'].forEach((g, gi) => {
       const gx = x + 110 + gi * 450;
@@ -560,7 +574,7 @@ S({
     elc_hl(t, 4.2, rx, 430, String(THESEUS.hours), 'hours', { label: 'At 1 kHz, the plan', sub: B.mAh + ' mAh, ' + fmtN(B.wh, 2) + ' Wh at the Viper V4 Pro\'s ' + fmtN(B.w1 * 1000, 1) + ' mW: ' + fmtN(B.h1, 0) + ' h. At 8 kHz, ' + fmtN(B.h8, 0) + ' h.', subW: rw });
     elc_ba(t, 5.0, rx, 660, '180', String(THESEUS.hours), { label: 'The longest listed, then Theseus', unit: 'h', net: '+' + fmtN(100 * (THESEUS.hours - 180) / 180, 0) + ' % over the Viper V4 Pro', maxW: rw });
     glossBox(t, 5.8, rx, 750, rw, 'Frame sync', 'The sensor\'s LED flashes once per frame. Synced to the polls, it takes a frame only when a report needs one, so it flashes less often.', { size: 24 });
-    source(t, 'Hours: Razer support, Notebookcheck (claims); Theseus from Jauch\'s cell and the V4 Pro\'s draw, derived. PAW3395: 1.7 mA at 1 kHz, 10 mA in its 8 kHz corded mode.', { t0: 2 });
+    source(t, 'Hours: Razer support and Notebookcheck (claims); the V4 Pro at 8 kHz, TechPowerUp (measured). Theseus: Jauch\'s battery at the V4 Pro\'s draw, derived. PAW3395: 1.7 mA at 1 kHz, 10 mA in its 8 kHz corded mode.', { t0: 2 });
   }
 });
 
@@ -579,22 +593,22 @@ S({
   src: ['elcNpm', 'elcNpmChg', 'elcGauge', 'elcLayout', 'npm1300'],
   draw: t => {
     header(t, 'PMIC: one chip runs the power');
-    captions(t, [[0.6, 'The nPM1300 takes USB in, charges the cell, makes the rails for the radio and the sensor, and counts every charge in and out.'], [5.6, 'Unplugged, the current runs the other way: cell, PMIC, two small switching regulators, then the radio module and the sensor.']]);
+    captions(t, [[0.6, 'The nPM1300 takes USB in, charges the battery, powers the radio and the sensor, and counts every charge in and out.'], [5.6, 'Unplugged, the current runs the other way: battery, power chip, two small regulators, then the radio module and the sensor.']]);
     const A = C.hero, run = t >= 6.0, ph = ep(t, 5.4, 6.8, E.cam);
     /* the left column: before → after as the headline, and inside the chip */
     const lx = LM, lw = 640;
-    elc_ba(t, 3.6, lx, 440, '6', '1', { size: 130, label: 'Power parts, then the nPM1300', unit: 'chip', net: 'Charger, regulators, gauge and watchdog in one 5 × 5 mm IC', maxW: lw });
+    elc_ba(t, 3.6, lx, 440, '6', '1', { size: 130, label: 'Power parts, then the nPM1300', unit: 'chip', net: 'Charger, regulators, battery gauge and watchdog in one 5 × 5 mm chip', maxW: lw });
     const ry = 560, rh = 400, kD = tileA(t, 0.4, 0);
     demoWindow(lx, ry, lw, rh, kD);
     cardHead(t, 0.6, lx, ry, lw, 'Inside the nPM1300', ['datasheet'], { dy: 44 });
     const fx = lx + 200, fw = 240, bh = 48, gy = ry + 84, by = i => gy + 10 + i * 58;
     const chg = run ? 0 : ep(t, 1.4, 1.9), rn = run ? ep(t, 6.2, 6.8) : 0, gau = Math.max(chg, rn), col = run ? ELC.run : ELC.chg;
     rr(fx - 10, gy - 4, fw + 20, 5 * 58 + 18, 8, null, A, 2, kD);
-    const blocks = [['Charger', '32–800 mA', chg], ['Buck 1', '200 mA, radio', rn], ['Buck 2', '200 mA, sensor', rn], ['Fuel gauge', 'charge, health', gau], ['Watchdog', 'ship 370 nA', 0]];
+    const blocks = [['Charger', '32–800 mA', chg], ['Regulator 1', '200 mA, radio', rn], ['Regulator 2', '200 mA, sensor', rn], ['Battery gauge', 'charge, health', gau], ['Watchdog', 'off: 370 nA', 0]];
     blocks.forEach(([l, s, on], i) => elc_blk(fx, by(i), fw, bh, l, s, on, ep(t, 1.0 + i * 0.12, 1.4 + i * 0.12), col));
     elc_blk(lx + 24, by(0), 130, bh, 'USB-C', '4.0–5.5 V', chg, ep(t, 1.2, 1.6), col);
-    elc_blk(lx + 24, by(2), 130, bh, 'Cell', '3.7 V', Math.max(chg, rn), ep(t, 1.2, 1.6), col);
-    [['Radio', 'module', 1, rn], ['Sensor', 'own rail', 2, rn], ['MCU', 'over I²C', 3, gau]].forEach(([l, s, row, on]) => elc_blk(lx + lw - 24 - 130, by(row), 130, bh, l, s, on, ep(t, 1.4, 1.8), col));
+    elc_blk(lx + 24, by(2), 130, bh, 'Battery', '3.7 V', Math.max(chg, rn), ep(t, 1.2, 1.6), col);
+    [['Radio', 'module', 1, rn], ['Sensor', 'own supply', 2, rn], ['Main chip', 'reads the gauge', 3, gau]].forEach(([l, s, row, on]) => elc_blk(lx + lw - 24 - 130, by(row), 130, bh, l, s, on, ep(t, 1.4, 1.8), col));
     const L = lx + 154, R0 = fx, R1 = fx + fw, Ro = lx + lw - 154, mid = i => by(i) + bh / 2;
     const wires = [[[L, mid(0)], [R0, mid(0)], chg], [[R0, mid(0) + 14], [L, mid(2) - 14], chg], [[L, mid(2) - 6], [R0, mid(1)], rn], [[L, mid(2)], [R0, mid(2)], rn], [[R1, mid(1)], [Ro, mid(1)], rn], [[R1, mid(2)], [Ro, mid(2)], rn], [[L, mid(2) + 8], [R0, mid(3)], gau], [[R1, mid(3)], [Ro, mid(3)], gau]];
     wires.forEach(([a0, b0, on]) => {
@@ -607,18 +621,21 @@ S({
     const pw = run ? ep(t, 6.0, 6.6) : ep(t, 1.2, 1.8) * (1 - ep(t, 5.4, 5.9));
     const P = elc_v3('pcb', t, x + 2, y + 2, w - 4, h - 4, { view: ELC.top, target: elc_W(lerp(0, -7.5, ph), lerp(24, 11.5, ph), 1), zoom: lerp(1.55, 3.0, ph), power: pw, powerMode: run ? 'run' : 'charge', powerT: t });
     const k1 = ep(t, 1.6, 2.0) * (1 - ep(t, 5.2, 5.6)), k2 = ep(t, 6.8, 7.2);
-    elc_keyBg(x + 36, y + 54, run ? ELC.run : ELC.chg, run ? 'On battery: cell, PMIC, radio and sensor' : 'Plugged in: USB-C, PMIC, cell', ep(t, 1.4, 1.8));
+    elc_key(x + 36, y + 54, ELC.chg, 'Plugged in', ep(t, 1.4, 1.8) * (1 - ep(t, 5.2, 5.6)), { sub: 'USB-C, power chip, battery' });
+    elc_key(x + w - 270, y + 54, ELC.run, 'On battery', ep(t, 6.2, 6.6), { sub: 'Battery, power chip, radio and sensor', maxW: 250 });
     if (P) {
       if (k1 > 0) {
-        callout(t, 1.8, P(elc_W(0, 50.4, 2.5)), 'USB-C in', { to: [x + 210, y + 150], side: 'l', color: ELC.chg, alpha: k1 });
-        callout(t, 2.6, P(elc_W(-9.6, 11.2, 0.9)), 'nPM1300', { to: [x + w - 230, y + 300], side: 'r', color: ELC.chg, alpha: k1 });
-        callout(t, 3.4, P(elc_W(-14, 3.2, 1.5)), 'The cell', { to: [x + w - 230, y + 470], side: 'r', color: ELC.chg, alpha: k1, sub: 'On a JST plug' });
+        callout(t, 1.8, P(elc_W(0, 50.4, 2.5)), 'USB-C in', { to: [x + 210, y + 190], side: 'l', color: ELC.chg, alpha: k1 });
+        callout(t, 2.6, P(elc_W(-9.6, 11.2, 0.9)), 'nPM1300', { to: [x + w - 230, y + 300], side: 'r', color: ELC.chg, alpha: k1, sub: 'The power chip' });
+        callout(t, 3.4, P(elc_W(-14, 3.2, 1.5)), 'The battery', { to: [x + w - 230, y + 470], side: 'r', color: ELC.chg, alpha: k1, sub: 'On its own plug' });
       }
       if (k2 > 0) {
-        callout(t, 6.9, P(elc_W(-9.6, 11.2, 0.9)), 'nPM1300', { to: [x + w - 250, y + 120], side: 'r', color: A, alpha: k2, sub: '5 × 5 mm QFN' });
-        callout(t, 7.3, P(elc_W(-14.35, 10.7, 1.0)), 'Buck inductors', { to: [x + w - 250, y + 290], side: 'r', color: A, alpha: k2, sub: 'One per regulator' });
-        callout(t, 7.7, P(elc_W(1.5, 18, 2.0)), 'Radio module', { to: [x + 220, y + 150], side: 'l', color: A, alpha: k2 });
-        callout(t, 8.1, P(elc_W(1.5, 4.0, 2.0)), 'Sensor', { to: [x + 220, y + 500], side: 'l', color: A, alpha: k2 });
+        /* on the right, in the clear margin; the two on the left sit on the black board, so their words are light */
+        const onBoard = '#F3F2EE';
+        callout(t, 6.9, P(elc_W(-9.6, 11.2, 0.9)), 'nPM1300', { to: [x + w - 250, y + 220], side: 'r', color: A, alpha: k2, sub: '5 × 5 mm' });
+        callout(t, 7.3, P(elc_W(-14.35, 10.7, 1.0)), 'Regulator coils', { to: [x + w - 250, y + 350], side: 'r', color: A, alpha: k2, sub: 'One per regulator' });
+        callout(t, 7.7, P(elc_W(1.5, 18, 2.0)), 'Radio module', { to: [x + 220, y + 150], side: 'l', color: A, alpha: k2, tcolor: onBoard });
+        callout(t, 8.1, P(elc_W(1.5, 4.0, 2.0)), 'Sensor', { to: [x + 272, y + 440], side: 'l', color: A, alpha: k2, tcolor: onBoard });
       }
     }
     source(t, 'Nordic nPM1300 product page and specification. The board, its parts and current paths: the Theseus 3D layout, a proposal.', { t0: 2 });
@@ -645,12 +662,12 @@ function elc_ccv(c, s0 = 0.1, rq = 0.21) {
 }
 const ELC_CHG = { fast: null, slow: null };
 S({
-  id: 'elc_charge', ch: 'elec', theme: 'night', title: 'Fast charging at the cell\'s 1C', settle: 10, ideas: ['pmic', 'battery'],
+  id: 'elc_charge', ch: 'elec', theme: 'night', title: 'Fast charging at the battery\'s 1C', settle: 10, ideas: ['pmic', 'battery'],
   src: ['elcTpuV4', 'tpuUlx', 'tpuX2h', 'elcNpm', 'elcNpmChg', 'elcLp4025', 'exBu409'],
   draw: t => {
     const B = elc_cell();
-    header(t, 'Fast charging at the cell\'s 1C');
-    captions(t, [[0.6, 'The flagships charge at 0.13 to 0.28 A. The nPM1300 can push 0.8 A, so the charger is not the limit: the cell\'s datasheet is.'], [5.0, 'Theseus\'s cell is rated for 1C, ' + B.mAh + ' mA. Against the Viper V4 Pro\'s 0.55C, the charge to 80% takes a little over half as long.']]);
+    header(t, 'Fast charging at the battery\'s 1C');
+    captions(t, [[0.6, 'The flagships charge at 0.13 to 0.28 A. The nPM1300 can push 0.8 A, so the charger is not the limit: the battery\'s datasheet is.'], [5.0, 'Theseus\'s battery is rated for 1C, ' + B.mAh + ' mA. Against the Viper V4 Pro\'s 0.55C, the charge to 80% takes a little over half as long.']]);
     if (!ELC_CHG.fast) { ELC_CHG.fast = elc_ccv(1.0); ELC_CHG.slow = elc_ccv(0.55); }
     const F = ELC_CHG.fast, Sl = ELC_CHG.slow;
     /* one charge, two rates: the model, big */
@@ -683,9 +700,9 @@ S({
     text('nPM1300: 0.8 A', X(0.8) - 10, cy0 + 236, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kc });
     /* the right column: by how much, before → after, the word */
     const rx = 1120, rw = RM - rx;
-    elc_hl(t, 4.0, rx, 430, fmtN(Sl.t80 / F.t80, 1) + '×', 'faster', { label: 'To 80%, at the cell\'s rated 1C', sub: 'Jauch rates the ' + B.part + ' for a 1C charge. The Viper V4 Pro charges at 0.169 A, 0.55C of its 306 mAh.', subW: rw });
+    elc_hl(t, 4.0, rx, 430, fmtN(Sl.t80 / F.t80, 1) + '×', 'faster', { label: 'To 80%, at the battery\'s rated 1C', sub: 'Jauch rates the ' + B.part + ', the example battery, for a 1C charge. The Viper V4 Pro charges at 0.169 A, 0.55C of its 306 mAh.', subW: rw });
     elc_ba(t, 4.8, rx, 660, fmtN(Sl.t80, 0), fmtN(F.t80, 0), { label: 'From 10 to 80%, minutes', unit: 'min', net: '−' + fmtN(Sl.t80 - F.t80, 0) + ' min; full in ' + fmtN(F.end[0], 0) + ' instead of ' + fmtN(Sl.end[0], 0), maxW: rw });
-    glossBox(t, 5.6, rx, 760, rw, 'C-rate', 'Charge current divided by capacity. 1C on a ' + B.mAh + ' mAh cell is ' + B.mAh + ' mA.', { size: 24 });
+    glossBox(t, 5.6, rx, 760, rw, 'C-rate', 'Charge current divided by capacity. 1C on a ' + B.mAh + ' mAh battery is ' + B.mAh + ' mA.', { size: 24 });
     source(t, 'Currents: TechPowerUp. 0.55C = 0.169 A ÷ 0.306 Ah. Jauch LP402535JU datasheet: 1C maximum charge. Curves: a CC/CV model, 4.2 V, stop at 10% current, rq 0.21 V/C.', { t0: 2 });
   }
 });
@@ -698,11 +715,11 @@ S({
   draw: t => {
     const B = elc_cell();
     header(t, 'A safer battery: four guards');
-    captions(t, [[0.6, 'The PMIC reads the cell\'s own thermistor. Its default charges from 0 to 60 °C; I set it to the cell\'s datasheet: 10 to 45 °C, and nothing outside.'], [5.6, 'It also stops charging if its own die runs hot, is protected to 22 V at the input, and draws 370 nA when the switch is off.']]);
+    captions(t, [[0.6, 'The PMIC reads the battery\'s own temperature sensor. Its default charges from 0 to 60 °C; I set it to the battery\'s datasheet: 10 to 45 °C, and nothing outside.'], [5.6, 'It also stops charging if its own die runs hot, is protected to 22 V at the input, and draws 370 nA when the switch is off.']]);
     /* the window, full width: current against the cell's temperature; a thermometer sweeps it */
     const x = LM, y = 280, w = RM - LM, h = 420, A = C.hero;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0));
-    cardHead(t, 0.4, x, y, w, 'Charge current against the cell\'s temperature (none outside the cell\'s window)', ['datasheet']);
+    cardHead(t, 0.4, x, y, w, 'Charge current against the battery\'s temperature (none outside the battery\'s window)', ['datasheet']);
     const m = axes(t, { x: x + 150, y: y + 120, w: w - 230, h: 210, t0: 0.8, xr: [-10, 70], yr: [0, 110], xticks: [-10, 0, 10, 20, 30, 40, 50, 60, 70], yticks: [0, 50, 100], xfmt: v => v + ' °C', yfmt: v => v + '%' });
     const kw = ep(t, 1.2, 2.4, E.cam), lo = lerp(0, 10, kw), hi = lerp(60, 45, kw);
     /* the default window, dashed, and the cell's, filled: before → after */
@@ -713,7 +730,7 @@ S({
     for (const [a0, b0] of [[-10, lo], [hi, 70]]) rect(m.X(a0), m.Y(100), m.X(b0) - m.X(a0), m.Y(0) - m.Y(100), { fill: rgba(C.bad, 0.12), alpha: kw });
     const curve = [[-10, 0], [lo, 0], [lo, 100], [hi, 100], [hi, 0], [70, 0]].map(([a0, b0]) => [m.X(a0), m.Y(b0)]);
     poly(curve, { color: A, w: 4, p: ep(t, 1.6, 3.0, E.io3) });
-    text('The cell\'s datasheet: 10 to 45 °C', (m.X(10) + m.X(45)) / 2, m.Y(100) + 40, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, 2.4, 2.8) });
+    text('The battery\'s datasheet: 10 to 45 °C', (m.X(10) + m.X(45)) / 2, m.Y(100) + 40, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, 2.4, 2.8) });
     const Tc = kf(((t - 3.2) % 9 + 9) % 9, [[0, 24], [1.6, 4], [2.6, 4], [4.0, 12], [4.8, 12], [6.2, 42], [7.0, 42], [7.8, 52], [8.4, 52], [9, 24]]);
     const cur = Tc < 10 || Tc > 45 ? 0 : 100, kt = ep(t, 3.2, 3.6);
     if (kt > 0) {
@@ -725,14 +742,14 @@ S({
       text(lab, lx + 14, y + h - 36, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: kt });
     }
     /* the strip: the headline, two quiet guards, and the cell's third wire in 3D */
-    elc_hl(t, 4.4, LM, 860, '4', 'guards', { size: 120, label: 'Charging that watches itself', sub: 'Cell and die temperature, the input voltage and a watchdog.', subW: 540 });
+    elc_hl(t, 4.4, LM, 860, '4', 'guards', { size: 120, label: 'Charging that watches itself', sub: 'Battery and die temperature, the input voltage and a watchdog.', subW: 540 });
     const ty = 740, th = 220, a1 = tileA(t, 5.0, 0), a2 = tileA(t, 5.0, 1);
     statTile(t, 5.0, [640, ty, 360, th], { value: '22', unit: 'V', label: 'Input protection', quiet: true, ev: 'datasheet' });
     statTile(t, 5.1, [1040, ty, 360, th], { value: '<1', unit: '% a year', label: 'Ship mode, at 370 nA', quiet: true, ev: 'derived', count: false });
     const bx = 1440, bw = RM - bx;
     demoWindow(bx, ty, bw, th, tileA(t, 5.2, 2));
     const PB = elc_v3('battery', t, bx + 150, ty + 2, bw - 152, th - 4, { view: 'threeQuarter', view2d: 'top', zoom: in2D(1.25, 1.4), yaw: 0.15 * Math.sin(t * 0.4), explode: 0.3 * ep(t, 5.4, 6.4) });
-    if (PB) callout(t, 6.0, PB([13.5, 1.2, 23.5]), 'NTC lead', { to: [bx + 176, ty + 92], side: 'l', color: A, sub: 'The cell\'s third wire', maxW: 128 });
+    if (PB) callout(t, 6.0, PB([13.5, 1.2, 23.5]), 'NTC lead', { to: [bx + 176, ty + 92], side: 'l', color: A, sub: 'The battery\'s third wire', maxW: 128 });
     source(t, 'Nordic nPM1300 specification (defaults, all configurable). Jauch LP402535JU: charging from +10 to +45 °C. Ship mode: 370 nA × 8,766 h ≈ 3.2 mAh, under 1% of ' + B.mAh + ' mAh, derived.', { t0: 2 });
   }
 });
@@ -750,36 +767,39 @@ S({
     const kr = prog(t, 1.2, 5.0), sw = ep(t, 5.6, 7.4, E.cam);
     const view = [lerp(0, -0.96, sw), lerp(0.98, 0.16, sw), lerp(-0.2, 0.22, sw)];
     const P = elc_v3('pcb', t, x + 2, y + 2, w - 4, h - 4, { view, target: elc_W(0, 24, lerp(1, 5, sw)), zoom: lerp(1.45, 1.7, sw), reflow: kr > 0 && kr < 1 ? kr : 0 });
-    elc_keyBg(x + 36, y + 54, hot, kr < 1 ? 'Reflow: one heat front, once' : 'Done: one pass', ep(t, 1.0, 1.4) * (1 - ep(t, 5.6, 6.0)));
-    if (P && kr > 0 && kr < 1) { const zf = 58 - kr * 66, p = P(elc_W(19.3, zf, 0)), q = P(elc_W(-19.3, zf, 0)); text('Heat front', Math.max(p[0], q[0]) + 14, (p[1] + q[1]) / 2 + 8, { role: 'label', size: 21, color: hot, alpha: ep(t, 1.4, 1.8) }); }
+    /* the key in type, in the tile's clear top left (the board sits small in the middle), no plate and no dot (DESIGN 0.8) */
+    text(kr < 1 ? 'The oven: one heat front, once' : 'Done: one pass', x + 36, y + 54, { role: 'label', size: 21, color: C.ink2, alpha: ep(t, 1.0, 1.4) * (1 - ep(t, 5.6, 6.0)) });
+    if (P && kr > 0 && kr < 1) { const zf = 58 - kr * 66, p = P(elc_W(19.3, zf, 0)), q = P(elc_W(-19.3, zf, 0)); text('Heat front', Math.max(p[0], q[0]) + 14, (p[1] + q[1]) / 2 + 8, { role: 'label', size: 21, color: C.ink2, alpha: ep(t, 1.4, 1.8) }); }
     if (P && sw > 0.9) {
       const kk = ep(t, 7.6, 8.0);
       callout(t, 7.8, P(elc_W(0, 20.6, 2.0)), 'Every part on top', { to: [x + w - 300, y + 90], side: 'r', color: A, alpha: kk });
       callout(t, 8.2, P(elc_W(-14, 40, -0.6)), 'Underside: nothing soldered', { to: [x + w - 360, y + h - 80], side: 'r', color: A, alpha: kk, sub: 'The lens clips on' });
     }
-    /* the two processes, step by step */
+    /* the two processes, step by step, in type: no boxes round the steps (DESIGN 0.8), no orange (F9.3). A step lights up as
+       it runs; Theseus's one oven pass is blue, and the double-sided board's second pass is red, the problem */
     const ly0 = 780, lh = 180;
     demoWindow(x, ly0, w, lh, tileA(t, 0.3, 1));
-    const step = (sx, sy, lab, on, heat, a) => { const wd = tw(lab, { role: 'label', size: 19 }) + 24; rr(sx, sy - 26, wd, 38, 6, heat > 0 ? rgba(hot, 0.2 * heat) : C.panel, on ? (heat > 0 ? hot : C.ink2) : inkA(0.3), on ? 2 : 1.5, a); text(lab, sx + 12, sy, { role: 'label', size: 19, color: C.ink, alpha: a }); return wd; };
     const lane = (yy, hero, lab, sub, steps, t0) => {
       const ka = ep(t, t0, t0 + 0.4);
       if (hero) heroTag(x + 32, yy - 4, 'Theseus', null, { a: ka, size: 21 }); else text(lab, x + 32, yy - 4, { role: 'label', size: 21, color: C.ink2, alpha: ka });
       text(sub, x + 32, yy + 22, { role: 'label', size: 19, color: hero ? C.heroText : C.bad, alpha: ka });
-      let sx = x + 230;
+      let sx = x + 240;
       steps.forEach((s2, i) => {
-        const k = ep(t, t0 + 0.12 * i, t0 + 0.12 * i + 0.4), on = t > t0 + 0.5 + 0.3 * i, heat = /Reflow/.test(s2) && on ? 1 - 0.5 * ep(t, t0 + 1.0 + 0.3 * i, t0 + 1.7 + 0.3 * i) : 0;
-        const wd = step(sx, yy + 6, s2, on, heat, k); sx += wd + 22;
-        if (steps[i + 1]) arrow(sx - 19, yy - 1, sx - 4, yy - 1, { color: C.faint, w: 2, hs: 6, alpha: k });
+        const k = ep(t, t0 + 0.12 * i, t0 + 0.12 * i + 0.4), on = t > t0 + 0.5 + 0.3 * i, second = !hero && i >= 3;
+        const col = !on ? C.faint : hero && /Oven/.test(s2) ? C.heroText : second ? C.bad : C.ink;
+        const r = text(s2, sx, yy + 6, { role: 'label', size: 20, color: col, alpha: k });
+        sx += r.w;
+        if (steps[i + 1]) { arrow(sx + 9, yy - 1, sx + 27, yy - 1, { color: C.faint, w: 2, hs: 6, alpha: k }); sx += 38; }
       });
     };
-    lane(ly0 + 62, true, '', 'One pass', ['Paste', 'Place', 'Reflow'], 1.0);
-    lane(ly0 + 132, false, 'Double-sided', 'Two passes', ['Paste', 'Place', 'Reflow', 'Flip', 'Paste', 'Place', 'Reflow'], 2.2);
+    lane(ly0 + 62, true, '', 'One pass', ['Paste', 'Place', 'Oven'], 1.0);
+    lane(ly0 + 132, false, 'Double-sided', 'Two passes', ['Paste', 'Place', 'Oven', 'Flip', 'Paste', 'Place', 'Oven again'], 2.2);
     /* the right column: before → after, the one board, why the second pass hurts */
     const rx = 1120, rw = RM - rx;
     elc_ba(t, 4.2, rx, 440, '2', '1', { size: 130, label: 'Oven passes, then Theseus', unit: 'pass', net: 'Nothing hangs upside down while its solder melts again', maxW: rw });
     statTile(t, 5.0, [rx, 560, rw, 200], { value: String(THESEUS.pcb), unit: 'g', label: 'One board, with the radio module, PMIC, antenna and USB-C', hero: true, count: false });
     sourceBox(t, 5.8, rx, 800, rw, 'ALLPCB', 'In a second pass the first side\'s parts hang upside down as their joints melt again, and the heavy ones can drop.', { size: 24 });
-    source(t, 'Second-pass fallout: ALLPCB (yield numbers not verified). Layout: the Theseus 3D layout.', { t0: 2 });
+    source(t, 'Second-pass fallout: ALLPCB. Oven: the reflow oven, where the solder paste melts. Layout: the Theseus 3D layout.', { t0: 2 });
   }
 });
 

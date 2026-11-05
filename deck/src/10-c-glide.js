@@ -10,7 +10,8 @@
 Object.assign(SRC, {
   gld_kim20: { t: 'Kim, Lee, van Gemert & Oulasvirta, "Optimal Sensor Position for a Computer Mouse", CHI 2020: 14 gamers; throughput 5.77 bits/s at the centre, 5.16 at the front (10.7% lower), 4.97 at the rear (14.0% lower); path deviation 18.0, 22.1 and 21.6 px; each player\'s own best position 6.034 against 5.798 bits/s at the centre (+4.1%)', u: 'https://arxiv.org/abs/2001.03352', n: 'Positions 14.4 mm apart (20% steps). A two-sensor mouse emulates any position in 1% steps: x = (1 − p)·front + p·rear. Their calibration took about an hour.' },
   gld_baek26: { t: 'Baek & Kim, arXiv 2608.03168 (4 Aug 2026): a dual-sensor mouse simulates the path for every sensor position, to "reduce the calibration time from an hour to just five minutes" (preliminary)', u: 'https://arxiv.org/abs/2608.03168' },
-  gld_next: { t: 'Brock Liddicoat, 2026-11-04 (F18.3): Theseus\'s sensor is an "Unannounced next part", PixArt\'s next flagship, named when PixArt announces it', u: '' },
+  gld_next: { t: 'Brock Liddicoat, 2026-11-04 (22:00): Theseus uses the PixArt PAW3970. "The viper v4 pro is just a renamed PAW3970, razer only has exclusivity on it for 2 years ... use all of the viper v4 pro sensor specs, we are thinking ahead here" (his identification: Razer does not print the PixArt name)', u: '' },
+  gld_igorV4: { t: 'igor\'sLAB, Razer Viper V4 Pro review, page 2: the Focus Pro 50K Optical Sensor Gen-3, 50,000 DPI in 1-DPI steps, 930 IPS, 90 G, true 8,000 Hz polling, 99.8 percent resolution accuracy, an asymmetric cut-off with 26 levels (Razer\'s figures; no PixArt part named)', u: 'https://www.igorslab.de/en/razer-viper-v4-pro-review-49-grams-8-000-hz-competitive-gaming/2/' },
   gld_paw3395: { t: 'PixArt PAW3395DM-T6QU datasheet v1.2 (15 Nov 2022): up to 26,000 cpi in 50-cpi steps; 650 ips, 50 g (HP mode); run current 1.7 mA HP and 1.3 mA LP at 1 ms polling, 10 mA in Corded Gaming mode at 0.125 ms (LED included); lift cut-off 1 mm or 2 mm, plus manual calibration; angle snapping and angle tunability; VDD 1.8 to 2.1 V; lens to surface 2.2 / 2.4 / 2.6 mm; round lens LM19-LSI (assembled 18.85 × 21.15 mm) or trim lens L0AE-LSI1 (10.90 × 16.80 mm)', u: 'https://atta.szlcsc.com/upload/public/pdf/source/20251201/5A54B75DA77586FABF8CEFBD8F21947D.pdf' },
   gld_eps3950: { t: 'EPS Global listing, PAW3950DM-T5QU: up to 30,000 cpi in 50-cpi steps; 750 ips and 50 g (HP mode); 1.3 mA typical run current, LED included; selectable lift height with manual calibration', u: 'https://www.epsglobal.com/products/semiconductors/sensing-and-haptics/optical-navigation/paw3950dm-t5qu-optical-gaming-navigation-chip', n: 'A distributor listing. Its PAW3395 currents (2.4 / 1.7 mA) did not match PixArt\'s datasheet (1.7 / 1.3 mA), so the 1.3 mA here is not confirmed.' },
   gld_nbcXm: { t: 'Notebookcheck, Xiaomi Gaming Mouse 2 (11 May 2026): "PixArt PAW3955XM sensor", 750 IPS, 60G', u: 'https://www.notebookcheck.net/Xiaomi-launches-new-affordable-8K-wireless-gaming-mouse-with-flagship-PixArt-sensor.1293650.0.html' },
@@ -156,7 +157,7 @@ S({
     chapterCard(t, {
       name: 'glide', gloss: 'What touches the pad, and what sees it.', list: [
         [10, 'Two dots per corner, two on the lens'], ['plate', 'With the plate: two half-moons and a ring'], [11, 'Solid skate pads, a 0.2 mm focus window'], [8, 'POM by default, PTFE in the box'],
-        [52, 'Screws clear of the skates'], [37, 'A snap-on lens, one dot wide'], [76, 'PixArt\'s next flagship sensor'], ['{16-bit}', 'Full reports, no smoothing'],
+        [52, 'Screws clear of the skates'], [37, 'A snap-on lens, one dot wide'], [76, 'The PixArt PAW3970 sensor'], ['{16-bit}', 'Full reports, no smoothing'],
         [27, 'The sensor at the centre of the length'], [87, 'Virtual position, lift-off in 0.1 mm steps']
       ]
     });
@@ -249,51 +250,47 @@ S({
   }
 });
 
-/* ============================== the sensor: PixArt's next flagship (#76) ============================== */
-/* Brock, F18.3: Theseus's sensor is an "Unannounced next part": PixArt's next flagship, with no part name. PixArt hasn't published
-   its figures, so the slide leads with what is certain: the PAW3395's datasheet (PixArt's flagship since 2022, and the newest
-   PixArt flagship with a public datasheet) is the floor. Theseus's bars stop at that floor and run on dashed: more, not yet a number. */
+/* ============================== the sensor: the PixArt PAW3970 (#76) ============================== */
+/* Brock, 22:00 (it replaces F18.3's unnamed part): Theseus uses the PixArt PAW3970, which he identifies as the Viper V4 Pro's
+   sensor (Razer sells it as the Focus Pro 50K Gen-3 and prints no PixArt name), with the V4 Pro's own figures (igor'sLAB; Razer's
+   page). Against it, the PAW3395 by its datasheet: the part in the ULX and the Sora V2, and eight more of the mice in
+   research/data/mice.json. The PAW3950 is about as common there, so the slide names the mice rather than saying "most".
+   Every row is a win, so the bars run straight, the old value kept beside the new (F16.1) */
 const GLD_SPEC = [
-  { lab: 'Max speed', unit: 'ips', a: 650, max: 800 },
-  { lab: 'Acceleration', unit: 'G', a: 50, max: 70 },
-  { lab: 'Top CPI', unit: 'CPI', a: 26000, max: 44000 }
+  { lab: 'Max speed', unit: 'ips', a: 650, b: 930, max: 1000 },
+  { lab: 'Acceleration', unit: 'G', a: 50, b: 90, max: 100 },
+  { lab: 'Top CPI', unit: 'CPI', a: 26000, b: 50000, max: 56000 }
 ];
 S({
-  id: 'sensor', ch: 'glide', theme: 'paper', title: 'Next-gen sensor: PixArt\'s next flagship', settle: 10, ideas: [76],
-  src: ['gld_paw3395', 'gld_next', 'gld_razerFocus', 'gld_ithomeAim', 'gld_ninjaV3', 'gld_brock'],
+  id: 'sensor', ch: 'glide', theme: 'paper', title: 'Next-gen sensor: PixArt PAW3970', settle: 10, ideas: [76],
+  src: ['gld_paw3395', 'gld_next', 'gld_igorV4', 'gld_razerFocus', 'gld_brock'],
   draw: t => {
-    header(t, 'Next-gen sensor: PixArt\'s next flagship');
-    captions(t, [[0.6, 'The PAW3395 has been PixArt\'s flagship since 2022, and it struggles on some glass pads. Theseus takes PixArt\'s next flagship.'], [5.4, 'PixArt hasn\'t published its figures, so I count only what is certain: the PAW3395\'s datasheet is the floor, and every row starts there.']]);
-    const f = GLD_SPEC[0];
-    gld_head(t, 3.4, LM, 500, fmt(f.a) + '+', 'ips', { label: 'Tracking speed, at the least', size: 176, uk: 0.42, ucaps: false, sub: 'The floor: the PAW3395\'s datasheet. PixArt\'s next flagship starts there, and its own figures aren\'t out yet. Higher is better.', maxW: 560 });
-    /* the specs: the PAW3395 in grey, by its datasheet; Theseus in blue to the same floor, then dashed on: past it, by an amount PixArt
-       hasn't published. Higher is better on every row */
+    header(t, 'Next-gen sensor: PixArt PAW3970');
+    captions(t, [[0.6, 'The ULX and the Sora V2 track on the PAW3395, PixArt\'s flagship of 2022, and it struggles on some glass pads.'], [5.4, 'Theseus takes the PAW3970, the sensor inside the Viper V4 Pro: 930 ips, 90 G and 50,000 CPI.']]);
+    const f = GLD_SPEC[0], gain = Math.round((f.b / f.a - 1) * 100);
+    gld_head(t, 3.4, LM, 500, '+' + gain, '%', { label: 'Tracking speed', size: 176, uk: 0.42, sub: 'The PAW3970 against the PAW3395 in the ULX and Sora V2. Higher is better.', maxW: 560 });
+    gld_ba(t, 3.8, LM, 700, fmt(f.a), fmt(f.b) + ' ips', { size: 60, who: ['PAW3395', 'Theseus, PAW3970'] });
+    /* the specs, row by row: the PAW3395 in grey by its datasheet, the PAW3970 in blue by the V4 Pro's figures */
     const x = 720, y = 280, w = RM - x, h = 460;
     demoWindow(x, y, w, h, tileA(t, 0.15, 0));
-    cardHead(t, 0.35, x, y, w, 'The floor, by PixArt\'s datasheet. Dashed: not published yet. Higher is better', []);
-    const bx = x + 260, bw = w - 260 - 260;
+    cardHead(t, 0.35, x, y, w, 'PAW3395 against PAW3970. Higher is better', [{ ev: 'datasheet', by: 'PixArt' }, { ev: 'claim', by: 'Razer' }]);
+    const bx = x + 260, bw = w - 260 - 240;
     GLD_SPEC.forEach((r, i) => {
-      const yy = y + 130 + i * 108, a = ep(t, 0.8 + i * 0.3, 1.2 + i * 0.3), k = ep(t, 1.0 + i * 0.3, 1.9 + i * 0.3, E.snap), La = bw * r.a / r.max;
+      const yy = y + 130 + i * 108, a = ep(t, 0.8 + i * 0.3, 1.2 + i * 0.3), k = ep(t, 1.0 + i * 0.3, 1.9 + i * 0.3, E.snap), kb = ep(t, 2.2 + i * 0.25, 3.1 + i * 0.25, E.snap), La = bw * r.a / r.max, Lb = bw * r.b / r.max;
       text(r.lab, x + 32, yy + 10, { role: 'h3', size: 30, color: C.ink, alpha: a });
       text(r.unit, x + 32, yy + 44, { role: 'label', size: 19, color: C.faint, alpha: a, caps: r.unit !== 'ips' });
       rr(bx, yy - 22, Math.max(14, La * k), 18, 9, C.comp, null, 0, a);
       text(fmt(Math.round(r.a * k)), bx + La * k + 14, yy - 6, { role: 'num', size: 24, weight: 700, color: C.ink2, alpha: a, tnum: true });
-      rr(bx, yy + 10, Math.max(14, La * k), 18, 9, C.hero, null, 0, a);
-      /* past the floor: a dashed run and an arrow, no number on it */
-      const ke = ep(t, 2.4 + i * 0.25, 3.2 + i * 0.25, E.out3), Le = bw * 0.13 * ke;
-      if (ke > 0.003) {
-        G.save(); G.globalAlpha = a * ke; G.setLineDash([6, 5]); rrPath(bx + La - 9, yy + 10, Le + 9, 18, 9); G.strokeStyle = C.heroText; G.lineWidth = 2; G.stroke(); G.restore();
-        arrow(bx + La + Le + 6, yy + 19, bx + La + Le + 30, yy + 19, { color: C.heroText, w: 2.5, hs: 10, alpha: a * ke });
-      }
-      text(fmt(r.a) + '+', bx + La + Le + (ke > 0.003 ? 44 : 14), yy + 26, { role: 'num', size: 26, weight: 800, color: C.heroText, alpha: a, tnum: true });
-      pill(x + w - 32 - pillW('datasheet', { by: 'PixArt' }), yy - 6, 'datasheet', a, { by: 'PixArt' });
+      rr(bx, yy + 10, Math.max(14, lerp(La, Lb, kb) * k), 18, 9, C.hero, null, 0, a);
+      text(fmt(Math.round(lerp(r.a, r.b, kb))), bx + lerp(La, Lb, kb) * k + 14, yy + 26, { role: 'num', size: 26, weight: 800, color: C.heroText, alpha: a, tnum: true });
+      text('+' + Math.round((r.b / r.a - 1) * 100) + '%', x + w - 32, yy + 26, { role: 'num', size: 28, weight: 800, color: C.heroText, align: 'right', alpha: a * kb });
     });
-    legend(t, 1.4, x + w - 32, y + h - 34, [{ kind: 'comp', label: 'PAW3395, 2022' }, { kind: 'hero', label: 'Theseus: PixArt\'s next flagship' }], { size: 19, gap: 26, align: 'right' });
-    /* the others, said plainly */
+    legend(t, 1.4, x + w - 32, y + h - 34, [{ kind: 'comp', label: 'PAW3395, 2022' }, { kind: 'hero', label: 'Theseus: PAW3970 (the Viper V4 Pro\'s sensor; Brock)' }], { size: 19, gap: 26, align: 'right' });
+    /* where the figures come from, and the words in plain terms */
     const ny = y + h + 40, nw = (w - 40) / 2;
-    sourceBox(t, 5.6, x, ny, nw, 'Razer 2025', 'The Focus Pro 50K Gen-3 claims 930 ips. Razer\'s own part, sold to nobody else.', { h: 960 - ny });
-    sourceBox(t, 5.9, x + nw + 40, ny, nw, 'IT Home 2026', 'Ninjutso\'s AIMNINJA 2 is a custom part. Its 52% is power, not speed.', { h: 960 - ny });
-    source(t, 'PixArt PAW3395 datasheet: 650 ips, 50 G, 26,000 CPI. PixArt\'s next flagship has no published figures yet, so none are shown for it.', { t0: 3, maxW: 580, y: 960 });
+    sourceBox(t, 5.6, x, ny, nw, 'igor\'sLAB', 'The Viper V4 Pro\'s sensor: 50,000 CPI in steps of 1, 930 ips, 90 G, true 8,000 Hz and 99.8% resolution accuracy, Razer\'s figures.', { h: 960 - ny });
+    glossBox(t, 5.9, x + nw + 40, ny, nw, 'Ips and G', 'How fast and how hard you can swing the mouse before it loses track: inches a second, and multiples of gravity.', { h: 960 - ny });
+    source(t, 'PAW3395: PixArt\'s datasheet. PAW3970: Brock\'s name for the Viper V4 Pro\'s Focus Pro 50K Gen-3, with Razer\'s figures.', { t0: 3, maxW: 580, y: 960 });
   }
 });
 
@@ -360,10 +357,11 @@ S({
     /* the positions on the key plan: front, centre, rear, 14.4 mm steps */
     const lx = LM, ly = 780, lw0 = 560, lh0 = 180;
     demoWindow(lx, ly, lw0, lh0, tileA(t, 0.15, 3));
-    { const kx = lx + lw0 / 2, ky = ly + 76, s = 1.9, ko = ep(t, 0.5, 1.0), mk = ep(t, 1.0, 1.4);
+    /* drawn at 2.8 px per mm so the three marks sit about 100 px apart and their names never run together (review item 19) */
+    { const kx = lx + lw0 / 2, ky = ly + 72, s = 2.8, ko = ep(t, 0.5, 1.0), mk = ep(t, 1.0, 1.4);
       gld_shape(() => { KEY_PTS.forEach(([xx, yy], j) => (j ? G.lineTo(kx + yy * s, ky + xx * s * 0.62) : G.moveTo(kx + yy * s, ky + xx * s * 0.62))); G.closePath(); }, TH ? '#E4E3DE' : '#26272C', inkA(0.4), 1.5, ko);
       const zNow = kf(t, [[1.3, 36], [2.0, 36], [2.7, -36], [3.3, -36], [4.0, 0]], E.io3);
-      for (const [z, nm] of [[36, 'Front'], [0, 'Centre'], [-36, 'Rear']]) { const xx = kx - z * s; line(xx, ky - 22, xx, ky + 22, { color: z === 0 ? C.heroText : C.faint, w: 2, alpha: mk }); text(nm, xx, ly + lh0 - 26, { role: 'label', size: 19, color: z === 0 ? C.heroText : C.mute, align: 'center', alpha: mk }); }
+      for (const [z, nm] of [[36, 'Front'], [0, 'Centre'], [-36, 'Rear']]) { const xx = kx - z * s; line(xx, ky - 26, xx, ky + 26, { color: z === 0 ? C.heroText : C.faint, w: 2, alpha: mk }); text(nm, xx, ly + lh0 - 20, { role: 'label', size: 19, color: z === 0 ? C.heroText : C.mute, align: 'center', alpha: mk }); }
       circle(kx - zNow * s, ky, 9 * mk, { fill: C.hero });
       text('Nose', kx - 59.4 * s - 10, ky + 7, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ko }); }
     /* right: the study's numbers, Theseus's position in blue */

@@ -60,8 +60,9 @@ ideaSheet({
         gld_pHead(x + 24, y + 84, '0.65', 'mm', 'Skate height, set to the lens', a);
         /* a skate in section under the base, and the lens's height on the window's gauge: a taller skate lifts the lens */
         const k = pingpong(lt, 5.0), extra = 0.2 * k, sc = 110, padY = y + h - 30, skH = (0.65 + extra) * sc, baseY = padY - skH, zL = 2.4 + extra, zn = zL <= 2.5 + 1e-6 ? 0 : zL <= 2.6 + 1e-6 ? 1 : 2;
-        line(x + 20, padY, x + w - 150, padY, { color: C.ink2, w: 2, alpha: a });
-        rr(x + 20, baseY - 20, w - 170, 20, 4, TH ? '#3A3B40' : '#4A4B52', null, 0, a);
+        /* the pad and the base stop short of the lens readout (its number and label sit left of the gauge) */
+        line(x + 20, padY, x + w - 220, padY, { color: C.ink2, w: 2, alpha: a });
+        rr(x + 20, baseY - 20, w - 240, 20, 4, TH ? '#3A3B40' : '#4A4B52', null, 0, a);
         rr(x + 60, baseY, 150, skH, 12, extra < 0.02 ? C.hero : GLD_SKC(), extra < 0.02 ? null : inkA(0.45), 1.5, a);
         text(fmtN(0.65 + extra, 2) + ' mm', x + 135, baseY + skH / 2 + 9, { role: 'num', size: 24, weight: 800, color: extra < 0.02 ? '#FFFFFF' : C.ink, align: 'center', alpha: a });
         dLabel('Skate', x + 230, baseY + skH / 2 + 7, { color: C.mute, alpha: a, size: 19 });

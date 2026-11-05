@@ -149,10 +149,12 @@ function own_gmkPanel(lt, x, y, w, h, A, a) {
   bars.forEach(([l, v], i) => { const yy = b0 + i * 38, kk = own_seg(c, 0.36 + i * 0.03, 0.46 + i * 0.03); text(l, kx, yy + 7, { role: 'label', size: 19, color: C.ink2, alpha: a }); const bw2 = (w - 330) * v / 35; rect(kx + 236, yy - 7, Math.max(3, bw2 * kk), 14, { fill: i === 2 ? C.ink : C.comp, alpha: a }); text(v ? '+' + v + '%' : 'Baseline', kx + 246 + bw2 * kk, yy + 7, { font: 'mono', size: 21, weight: 700, color: C.ink, alpha: a }); });
 }
 
-/* ---------- #35: what the 9-ending research covers, and what it does not ---------- */
-function own_nineRow(x, y, w, a, label, ok) {
-  text(label, x, y, { role: 'label', size: 21, color: ok ? C.ink : C.bad, alpha: a });
-  if (ok) own_tick(x + w - 16, y - 8, 24, C.ink, a); else text('No study yet', x + w, y, { role: 'label', size: 19, color: C.bad, align: 'right', alpha: a });
+/* ---------- #35: what the 9-ending research shows, and the serial that borrows it ---------- */
+/** a row: what the research shows (a tick), or, for the serial, what it does by design (in Theseus's colour, no tick: it is
+   the choice the research backs, not a finding of its own) */
+function own_nineRow(x, y, w, a, label, ok, note) {
+  text(label, x, y, { role: 'label', size: 21, color: ok ? C.ink : C.heroText, alpha: a });
+  if (ok) own_tick(x + w - 16, y - 8, 24, C.ink, a); else if (note) text(note, x + w, y, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: a });
 }
 function own_ninePanel(lt, x, y, w, h, A, a) {
   const c = own_u(lt), roll = own_seg(c, 0.06, 0.26);
@@ -166,7 +168,7 @@ function own_ninePanel(lt, x, y, w, h, A, a) {
   own_nineRow(x + 176, y + 138, w - 194, a, 'Odometers: −$210', true);
   /* 3 · a serial run that ends in 9 */
   box(x + 18, y + 186, 140, '042/999');
-  own_nineRow(x + 176, y + 220, w - 194, a, 'Serials', false);
+  own_nineRow(x + 176, y + 220, w - 194, a, 'Serials', false, '3 digits, not 4');
   text('Supported: ' + THS.price + ' over $190', x + 18, y + h - 18, { role: 'label', size: 21, color: C.ink, alpha: a * own_seg(c, 0.3, 0.36) });
 }
 
@@ -176,7 +178,7 @@ function own_coverPanel(lt, x, y, w, h, A, a) {
   /* the cell from above, 21 × 31 mm, and the cover sliding over it */
   const s = 4.4, cx = x + 26, cy = y + 34, cw = 31 * s, ch = 21 * s;
   rr(cx, cy, cw, ch, 5, TH ? '#c9ccd2' : '#7d828a', inkA(0.5), 1.5, a);
-  text('Li-Po', cx + cw / 2, cy + ch / 2 + 8, { role: 'label', size: 21, color: '#1d1e22', align: 'center', alpha: a });
+  text('Battery', cx + cw / 2, cy + ch / 2 + 8, { role: 'label', size: 21, color: '#1d1e22', align: 'center', alpha: a });
   G.save(); G.beginPath(); G.rect(cx - 4, cy - 4, cw + 8, ch + 8); G.clip();
   const ox = cx + cw * (1 - slide) * 1.1;
   rr(ox, cy, cw, ch, 5, TH ? '#E9E5DA' : '#2a2b30', inkA(0.5), 1.5, a);
@@ -212,10 +214,10 @@ ideaSheet({
     },
     {
       n: 74, ev: ['derived', 'proposal'], title: 'A battery cover in laminated paper',
-      body: 'A covered cell stops a mouse looking like a prototype. Laminated satin paper over the cell weighs about 0.1 g, under a third of a 0.5 mm carbon PP plate.',
+      body: 'A covered battery stops a mouse looking like a prototype. Laminated satin paper over the battery weighs about 0.1 g, under a third of a 0.5 mm carbon PP plate.',
       note: 'Mass = area × areal mass. PET 1.39, PC 1.20, CF-PP 1.01 g/cm³.',
       draw: (lt, x, y, w, h, A, a) => own_coverPanel(lt, x, y, w, h, A, a)
     }
   ],
-  captions: [[0.6, 'Three on the outside: a colourway for the keyboard you own, a serial ending in 9, and a paper cover over the cell.']]
+  captions: [[0.6, 'Three on the outside: a colourway for the keyboard you own, a serial ending in 9, and a paper cover over the battery.']]
 });
