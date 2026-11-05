@@ -377,11 +377,11 @@ Answers to the intro and clicks questions:
 - **F12.2 DECIDED** "the 3d mode should not show the shell cover". Asked whether that covers the close too: "Cover and
   close". **DONE:** neither slide shows a shell in 3D mode.
 - **F12.3 DONE** (`ntr_densrank`: the XA25 ghost row, "Wired: not ranked") "yes density should be ranked among wireless mice only, show the xa25 but shoe it not be taken into
-  account for be wired". **TODO (intro):** `ntr_densrank` shows the XA25, marked wired and not ranked.
-- **F12.4 DONE** (`sidebuttons`: "Held by the shell: no side board") "the shell holds the switched instead of a pcb". **TODO (clicks):** the full-size side switches are
+  account for be wired". **DONE:** `ntr_densrank` shows the XA25 above the density column, wired and not ranked.
+- **F12.4 DONE** (`sidebuttons`: "Held by the shell: no side board") "the shell holds the switched instead of a pcb". **DONE:** the full-size side switches are
   held by the shell, not by a side board.
 - **F12.5 OPEN** The tensioner's real width, span and crown: "unknown yet". The slide keeps its labelled example.
-- **F12.6 DONE** "abandon idea #59". **TODO (clicks):** remove #59 (the taller fulcrum) everywhere.
+- **F12.6 DONE** "abandon idea #59". **DONE:** #59 is on no slide (and K1 was reminded at 04:20).
 - **F12.7 DONE** (3D and 2D) The GT01: "it looks fine besides the fact that everywhere you draw it looks like there's a 4
   extra pin in the front and that's not right".
 
@@ -498,8 +498,8 @@ Answers to the Shell A questions:
 - **F18.1 DECIDED** The pills with the plate on: "One wide front, one wide back". Two pills, mirrored about the sensor,
   each spanning most of the width, plus the ring. **DONE.**
 - **F18.2 DECIDED** Where the dots by the sensor sit with the plate off: "research and decide". **DONE:** left and right of the
-  lens at ±11.5 mm (a third less worst sag under a palm press; front and back would clash with the lens clip). **TODO
-  (fixC):** move Glide's dots to match.
+  lens at ±11.5 mm (a third less worst sag under a palm press; front and back would clash with the lens clip). **TO CHECK
+  (K4):** Glide's dots by the sensor at ±11.5 mm.
 - **F18.3 DECIDED** Theseus's sensor: "Unannounced next part". Call it PixArt's next flagship, with no part name. **DONE.**
 - **F18.4 DECIDED** The price row on `flagships`: "Keep price charted". **DONE:** one chart, price on each row, Theseus's
   $189 ending on the ULX's launch price.
@@ -536,25 +536,25 @@ Answers to the Shell A questions:
 ## F21. Status question and answers (2026-11-04 21:47 to ~21:55)
 - **F21.0** "how far are you into integrating all my feedback?" Answered with the counts above, the review and the fixers.
 - **F21.1 DECIDED** The shell's weight: "Budget is the target". The shell (with its skates) gets what the weight budget
-  leaves; the Shell chapter's 15.2 g body is labelled a stress study, not the final shell. **IN PROGRESS (fixK, fixI)**:
+  leaves; the Shell chapter's 15.2 g body is labelled a stress study, not the final shell. **DONE (fixK, fixI)**:
   the labels, and the budget recounted with the deck's own magnesium wheel and brass inserts.
 - **F21.2 OPEN** The plate's back skate: "i'll have to see all 3 options". Being rendered side by side: (A) v3 as now,
   (B) the back skate weighted harder, (C) thinner ribs (0.30 mm lattice, 0.40 mm struts).
 - **F21.3 DECIDED** The inserts: "i would think carbon filled would be lower than 85%, brass at zero as derived from my
   experiences feels fine, we should simulate it later though". Brass stays 0 % (derived from his experience); the
   carbon-filled figure goes lower (his number asked). **TODO later:** simulate re-threading in carbon-filled and ABS.
-- **F21.4 DECIDED** The radio module: "AN54LM-P20A, long antenna". **IN PROGRESS (fixI in the deck; 3D labels).**
-- **F21.5 DECIDED** Carbon-filled re-screw: **70 %** (ABS 90 %, brass 0 %). **IN PROGRESS (fixI):** own_insert, 70 % → 0 %.
+- **F21.4 DECIDED** The radio module: "AN54LM-P20A, long antenna". **DONE** in the deck.
+- **F21.5 DECIDED** Carbon-filled re-screw: **70 %** (ABS 90 %, brass 0 %). **DONE:** own_insert, 70 % → 0 %.
 - **F21.6 DECIDED, overrides F18.3** The sensor: "the next sensor is the PAW3970 which is what the viper v4 pro sensor is
   based off, the viper v4 pro is just a renamed PAW3970, razer only has exclusivity on it for 2 years so we should have
   access soon, it was the same process with razer viper mini signature edition sensor really just being a renamed 3950,
   use all of the viper v4 pro sensor specs, we are thinking ahead here." The Viper V4 Pro's published specs (Focus Pro
-  50K Gen-3): 50,000 DPI in 1-DPI steps, 930 IPS, 90 G, 8,000 Hz, Frame Sync, 26-level asymmetric cut-off. **IN
-  PROGRESS (fixI, fixK).**
+  50K Gen-3): 50,000 DPI in 1-DPI steps, 930 IPS, 90 G, 8,000 Hz, Frame Sync, 26-level asymmetric cut-off. **DONE**
+  (fixI, fixK); the "suspected sensor" wording is K4's.
 - **F21.7 DECIDED** Two-tone: "Etch through to carbon" (as drawn). **DONE.**
 - **F21.8 DECIDED, STANDING** The battery: "not decided yet, and stop calling it a cell or using abstract vocab, people
   will understand it being called a battery much easier". The LP402535JU stays, labelled as the example battery; every
-  on-screen "cell" becomes "battery", and plain words beat jargon everywhere. **IN PROGRESS (fixI, fixK, plate).**
+  on-screen "cell" becomes "battery", and plain words beat jargon everywhere. **DONE**, bar two lines left for the final sweep.
 - **F21.9** Grip map: "i'll have to see it and then ask me again after i've seen the slides with all the feedback
   integrated". **Ask again** after the final publish.
 - **F21.10 DECIDED** 9H: "'9H on Cerakote's tests'". Coating weight: "No, keep it unnumbered". Sync slide: "Fine, keep it
@@ -568,12 +568,12 @@ Answers to the Shell A questions:
   wear: "Keep both". Newtonian profiles: "Fine for now". **TODO next iteration:** simulate the first fit and the re-screw.
 - **F21.13 DECIDED** The size slide: he asked where "a flat mouse is better" came from; shown his doc's line 627 ("for a
   flatter mouse, its better to be too small than too big, because big hands will still be able to fingertip grip") and
-  line 645 (the 2-4 % rule), he chose "Quote the flatter-mouse line". **IN PROGRESS (fixI).**
+  line 645 (the 2-4 % rule), he chose "Quote the flatter-mouse line". **DONE.**
 - **F21.14 DECIDED** The plate: "show all options for now, so we can go any direction", and "Show all five charts" (the
-  back skate too). **IN PROGRESS (plate):** pltSim with five charts, and a new slide with options A, B and C.
+  back skate too). **SUPERSEDED (F27):** built, then out of the film: "none are what i wanted we will worry about the bottom cover later".
 - **F21.15 DECIDED** The battery's place: "the battery is very heavy and is used to balance the mouse, decide battery
-  placement based where we'd determined the best balance should be". **IN PROGRESS (plate):** placed for the centre of
-  mass the deck argues for (low, at the grip); if the tail is free, an option D with taller ribs there.
+  placement based where we'd determined the best balance should be". **DONE:** the battery sits in the tail, behind the board (the key plan
+  and the 3D agree); why some push for a higher battery is K6's (`mass`).
 - **F21.16** The side seam by the trigger cutout (about 30.5 mm up): "if you're talking abt the seam by the trigger cutout,
   yes that really bothers me, but we will fix it after ive the iteration where you've implemented all my feedback thus
   far". **NEXT ITERATION.** The tensioner's real size (F12.5): "Still unknown" (the labelled example stays).
@@ -613,13 +613,13 @@ Answers to the Shell A questions:
 
 ## F25. Answers on the new wheel and the screws (2026-11-05 ~01:45)
 - **F25.1 DONE** (a coarse diamond knurl, 72 teeth at 1.0 mm pitch, 30° each way, flat tops; IS 3403) The wheel's tread: "research what you think is best, if assumed, coarse and diamond are my favorites".
-  **IN PROGRESS (whl).**
+  **DONE (whl).**
 - **F25.2 DONE** The wheel's form: "thinners arms". Arms 0.95 → 0.55 mm, the weight held at 0.900 g.
 - **F25.3 DECIDED** The side-button lead: "Keep 3 wires". **DONE** (no change).
-- **F25.4 DONE** The screws: "Titanium" (instead of steel): grade 5, 0.42 g for four; shell and skates 10.35 g. **IN PROGRESS (whl):** the budget, the 3D screws and the
+- **F25.4 DONE** The screws: "Titanium" (instead of steel): grade 5, 0.42 g for four; shell and skates 10.35 g. **DONE (whl):** the budget, the 3D screws and the
   Ownership slides (no more magnetic pickup).
 - **F25.5 DONE** (head hardness 220 → 349 HV against class 4.8, sourced; thread stripping stays in the brass, said so) "mentioned the improved strength of the titanium screws compared to steel leading to less stripping,
-  find research to back". **IN PROGRESS (whl):** sourced, against the steel the screws would really be (stainless A2 or
+  find research to back". **DONE (whl):** sourced, against the steel the screws would really be (stainless A2 or
   class 4.8 / 8.8; class 12.9 alloy steel is stronger than grade 5 titanium), and clear about which stripping the evidence
   supports (the recess, by hardness; the thread usually strips in the brass insert, not the screw).
 
@@ -814,3 +814,11 @@ old score as archived (F26.13).
   fillets, board and build slides; K7 the intro's data and sell; K8 the surface, the ownership sheet and the wheel. The
   deck-wide word sweep (G5, G6) is done at integration. (Re-balanced at 04:15 from K3 to K5b: the shell alone was 30
   slides.)
+
+## F28. The GT01 reference (2026-11-05 04:14)
+- **F28.1** With a Gateron render ("Vertical push mouse switch": the GT01 side-on in its mouse, cut open; saved as
+  attachments/8e779cef-image.jpg, annotated "best GT01 Reference"): "this picture should help you get the side profile as
+  accurate as possible on the gt01, priories sus profile accuracy over everything else. you shouldn't have an issue
+  outlining the silhouette and extrapolating the rest of the switch based off other reference as i'd switches, that's my
+  process when i model a switch." **IN PROGRESS (K1):** the silhouette traced from it, the rest from other switch
+  references, in 3D and 2D (also the bottom-housing reference for `clk_switch`); K2 matches the board's switches to it.
