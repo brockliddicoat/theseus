@@ -901,3 +901,5 @@ old score as archived (F26.13).
 - **F30.15** "i'm also not sure how i feel about the new board back, i really liked the old designs artwork, you should try
   the match/adapt the old designs back artwork as best you can". **IN PROGRESS (K2):** today's underside artwork adapted
   to the new outline (its dark triangles, gold clusters, wordmark, labels, QR), triangles filleted, shown in plan 3.
+- **F30.16** "drop the other 2 small holes and add your own cutouts wherever you see fit" (LH1 and LH2 go; cutouts of
+  K2's choosing, each with its reason and weight, every web 1 mm or more). **IN PROGRESS (K2), plan 3.**
