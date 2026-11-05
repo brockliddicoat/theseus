@@ -965,3 +965,6 @@ old score as archived (F26.13).
   but badly executed stay, are vastly improved, and get more weight than the rest). From F27: `cutouts`, `clk_front`,
   `clk_wedge`, `arc`, `anchors`, `sidebuttons`, `thinwall`, `shlSpecific`, `shlNoPick`, `shlMargin`, `shlThin`,
   `shlWork`, `shcArms`, `tolerance`, `shlsheet1`'s cutout seams, `ntr_density`, `zerograms`, `market`, `grip`.
+- **F33.6** "not every feature has to be the difference between missing and hitting a shot as that would get repetitive,
+  prioritize the best problem the feature can solve" (refines F33.3: each slide sells the strongest problem its feature
+  solves, whether that's a missed shot, wear, comfort, battery or weight; the missed shot only where it is the best case).
