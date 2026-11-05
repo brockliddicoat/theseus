@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-04 21:40 (Chicago).
+Last updated: 2026-11-04 22:12 (Chicago).
 
 ## Open with Brock
 
@@ -507,7 +507,7 @@ Answers to the Shell A questions:
 ## F17. Answers to the 3D builder's questions (2026-11-04 ~11:00)
 
 - **F17.1 DONE** The Raytac part: "AN54LM-20A, long antenna". The name is kept, and the long meander antenna is drawn.
-- **F17.2 OPEN** The side seam meets the side seams about 30.5 mm above the base: "I'll check and say".
+- **F17.2 NEXT ITERATION** The side seam meets the side seams about 30.5 mm above the base: "I'll check and say". See F21.16: it bothers him; fix it after this iteration.
 - **F17.3 DONE** (3D, and the shot on `sidebuttons`) A 3D shot of the full-size SPDT side switches in their
   glove: "Yes, model it".
 - **F17.4 DECIDED** The GT01 cover's taller end walls from the photo: "No, it's fine".
@@ -527,7 +527,7 @@ Answers to the Shell A questions:
 - **F18.6 DECIDED** The tensioner's stress colours: "scant to peak and also it's been bothering me that the bridge
   tensioner doesn't properly connect the 2 pieces". **DONE:** the heat runs to the hotter part's peak, and
   the plate, bridge and trigger are drawn as one continuous band with filleted roots.
-- **F18.7 OPEN** The Viper V4 Pro's skate sizes: "Estimate from photos". The photo hosts were blocked from this session, so the pills keep the drawn 40.5 × 6.5 mm, labelled an estimate.
+- **F18.7 DONE** The Viper V4 Pro's skate sizes: "Estimate from photos". Measured off his own photo (F20.4) instead: the rear half-moon is about 53 × 24 mm, labelled an estimate from his photo (`gld_under`).
 - **F18.8 DECIDED** Measured sag or sink figures: "No, keep the models". The labelled illustrations stay.
 
 ## F19. Answers to the Shell at-a-glance builder's questions (2026-11-04 ~15:00)
@@ -551,3 +551,48 @@ Answers to the Shell A questions:
 - **F20.4 DECIDED** The skates' shape: "they shouldn't be pills, they should be half circles, with cutouts for the dots,
   they should both look like the rear viper v4 skate, which i am attaching". **DONE** (3D and Glide): two half-moons after the
   Viper V4 Pro's rear skate, measured off his photo (an estimate), cut round the corner dots.
+
+## F21. Status question and answers (2026-11-04 21:47 to ~21:55)
+- **F21.0** "how far are you into integrating all my feedback?" Answered with the counts above, the review and the fixers.
+- **F21.1 DECIDED** The shell's weight: "Budget is the target". The shell (with its skates) gets what the weight budget
+  leaves; the Shell chapter's 15.2 g body is labelled a stress study, not the final shell. **IN PROGRESS (fixK, fixI)**:
+  the labels, and the budget recounted with the deck's own magnesium wheel and brass inserts.
+- **F21.2 OPEN** The plate's back skate: "i'll have to see all 3 options". Being rendered side by side: (A) v3 as now,
+  (B) the back skate weighted harder, (C) thinner ribs (0.30 mm lattice, 0.40 mm struts).
+- **F21.3 DECIDED** The inserts: "i would think carbon filled would be lower than 85%, brass at zero as derived from my
+  experiences feels fine, we should simulate it later though". Brass stays 0 % (derived from his experience); the
+  carbon-filled figure goes lower (his number asked). **TODO later:** simulate re-threading in carbon-filled and ABS.
+- **F21.4 DECIDED** The radio module: "AN54LM-P20A, long antenna". **IN PROGRESS (fixI in the deck; 3D labels).**
+- **F21.5 DECIDED** Carbon-filled re-screw: **70 %** (ABS 90 %, brass 0 %). **IN PROGRESS (fixI):** own_insert, 70 % → 0 %.
+- **F21.6 DECIDED, overrides F18.3** The sensor: "the next sensor is the PAW3970 which is what the viper v4 pro sensor is
+  based off, the viper v4 pro is just a renamed PAW3970, razer only has exclusivity on it for 2 years so we should have
+  access soon, it was the same process with razer viper mini signature edition sensor really just being a renamed 3950,
+  use all of the viper v4 pro sensor specs, we are thinking ahead here." The Viper V4 Pro's published specs (Focus Pro
+  50K Gen-3): 50,000 DPI in 1-DPI steps, 930 IPS, 90 G, 8,000 Hz, Frame Sync, 26-level asymmetric cut-off. **IN
+  PROGRESS (fixI, fixK).**
+- **F21.7 DECIDED** Two-tone: "Etch through to carbon" (as drawn). **DONE.**
+- **F21.8 DECIDED, STANDING** The battery: "not decided yet, and stop calling it a cell or using abstract vocab, people
+  will understand it being called a battery much easier". The LP402535JU stays, labelled as the example battery; every
+  on-screen "cell" becomes "battery", and plain words beat jargon everywhere. **IN PROGRESS (fixI, fixK, plate).**
+- **F21.9** Grip map: "i'll have to see it and then ask me again after i've seen the slides with all the feedback
+  integrated". **Ask again** after the final publish.
+- **F21.10 DECIDED** 9H: "'9H on Cerakote's tests'". Coating weight: "No, keep it unnumbered". Sync slide: "Fine, keep it
+  folded". Cable: "Yes" (three 32 AWG wires of 40 AWG strands). Grip height: "12 mm is right". **DONE** (the 9H wording
+  by the integrator).
+- **F21.11 DECIDED** The power chip: "it's fine where it is right now, we will move it later next time i give you pcb
+  redesign ideas". The board: "it will probably be thinner, but keep it as 1mm for now and we will change it after the
+  next redesign ... it would be inefficient to recalculate something everytime we build". **STANDING:** don't re-solve
+  for small spec changes between redesigns.
+- **F21.12 DECIDED** First-assembly fit: "keep it in words, and then we'll simulate it for the next iteration". Thread
+  wear: "Keep both". Newtonian profiles: "Fine for now". **TODO next iteration:** simulate the first fit and the re-screw.
+- **F21.13 DECIDED** The size slide: he asked where "a flat mouse is better" came from; shown his doc's line 627 ("for a
+  flatter mouse, its better to be too small than too big, because big hands will still be able to fingertip grip") and
+  line 645 (the 2-4 % rule), he chose "Quote the flatter-mouse line". **IN PROGRESS (fixI).**
+- **F21.14 DECIDED** The plate: "show all options for now, so we can go any direction", and "Show all five charts" (the
+  back skate too). **IN PROGRESS (plate):** pltSim with five charts, and a new slide with options A, B and C.
+- **F21.15 DECIDED** The battery's place: "the battery is very heavy and is used to balance the mouse, decide battery
+  placement based where we'd determined the best balance should be". **IN PROGRESS (plate):** placed for the centre of
+  mass the deck argues for (low, at the grip); if the tail is free, an option D with taller ribs there.
+- **F21.16** The side seam by the trigger cutout (about 30.5 mm up): "if you're talking abt the seam by the trigger cutout,
+  yes that really bothers me, but we will fix it after ive the iteration where you've implemented all my feedback thus
+  far". **NEXT ITERATION.** The tensioner's real size (F12.5): "Still unknown" (the labelled example stays).
