@@ -414,6 +414,8 @@ function insertMM(o = {}) {
 }
 /** a screw head from below: a cross recess, a slight dome */
 function screwHeadMM() {
+  /* the Ownership chapter's head, shaded from the 3D model's exact surface, so every slide shows the same screw */
+  if (typeof own_headTopMM === 'function') return own_headTopMM();
   /* an M2 pan head, brass-plated, with the combination recess: a slot for a flat blade and a cross for a Phillips (#9) */
   const g = G.createRadialGradient(-0.6, -0.6, 0.1, 0, 0, 1.95); g.addColorStop(0, '#fbecbc'); g.addColorStop(0.6, '#d6b25c'); g.addColorStop(1, '#94722a');
   G.beginPath(); G.arc(0, 0, 1.9, 0, TAU); G.fillStyle = g; G.fill(); G.strokeStyle = 'rgba(70,52,12,0.85)'; G.lineWidth = lw(1); G.stroke();
