@@ -2,6 +2,7 @@
 # 2D shapes live in (x, z) mouse-frame mm; 3D is (x, y, z) with +y up.
 import json, math, struct
 import numpy as np
+import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/README.md)
 import mapbox_earcut as earcut
 from shapely.geometry import Polygon, MultiPolygon, LineString, Point, box, GeometryCollection
 from shapely.geometry.polygon import orient
@@ -411,12 +412,17 @@ def hershey_text(text, height, x=0, z=0, w=0.12, anchor='c', rot=0, font='futura
         f = HersheyFonts(); f.load_default_font(font); _HF[font] = f
     f = _HF[font]
     f.normalize_rendering(height * 1.0)
-    lines = []
-    for (x1, y1), (x2, y2) in f.lines_for_text(text):
-        lines.append(LineString([(x1 * spacing, y1), (x2 * spacing, y2)]))
-    if not lines:
-        return Polygon()
-    g = unary_union([l.buffer(w / 2, quad_segs=4, cap_style=1, join_style=1) for l in lines])
+    if hasattr(f, 'text_geometry'):          # shim/HersheyFonts.py: OpenCV's Hershey simplex, strokes buffered by w/2
+        g = f.text_geometry(text, height, w, spacing)
+        if g.is_empty:
+            return Polygon()
+    else:
+        lines = []
+        for (x1, y1), (x2, y2) in f.lines_for_text(text):
+            lines.append(LineString([(x1 * spacing, y1), (x2 * spacing, y2)]))
+        if not lines:
+            return Polygon()
+        g = unary_union([l.buffer(w / 2, quad_segs=4, cap_style=1, join_style=1) for l in lines])
     minx, miny, maxx, maxy = g.bounds
     cx = {'c': (minx + maxx) / 2, 'l': minx, 'r': maxx}[anchor]
     cy = (miny + maxy) / 2

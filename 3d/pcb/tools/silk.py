@@ -1,6 +1,7 @@
 # Silkscreen (top + bottom) and bottom copper/gold artwork for the Theseus PCB.
 import math, random
 import numpy as np
+import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/README.md)
 from shapely.geometry import Polygon, Point, LineString, box, MultiPolygon
 from shapely.ops import unary_union
 from shapely import affinity
@@ -10,6 +11,38 @@ from board import wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect
 from parts import GND
 
 LW = 0.10          # silk line width
+# fillets on the underside triangles (F26.6). Each triangle is rounded on its own (rounded_inset), so the mosaic keeps
+# every triangle, the partial ones at the edges too (an opening of the whole mosaic cut those: Brock, 2026-11-05)
+TRI_FILLET = 0.20       # the copper mosaic (inradius 0.58 mm)
+TRI_FILLET_GOLD = 0.15  # the gold triangles (inradius 0.35)
+TRI_FILLET_SILK = 0.10  # the silk-outlined triangles (inradius 0.26)
+
+
+def rounded_inset(poly, d, r, n=10):
+    """convex polygon `poly` inset by d, its corners rounded at r (exact: the polygon inset by d + r, grown back by r)"""
+    P = np.asarray(poly.exterior.coords)[:-1]
+    e0, e1 = P[1] - P[0], P[2] - P[1]
+    if e0[0] * e1[1] - e0[1] * e1[0] < 0:
+        P = P[::-1]
+    m = len(P)
+    nrm = []
+    for i in range(m):
+        e = P[(i + 1) % m] - P[i]; e = e / np.linalg.norm(e); nrm.append(np.array([e[1], -e[0]]))      # outward (CCW)
+    Q = []
+    for i in range(m):
+        n0, n1 = nrm[i - 1], nrm[i]                     # edges into and out of vertex i
+        a0 = P[i] - n0 * (d + r); a1 = P[i] - n1 * (d + r)
+        t0 = np.array([-n0[1], n0[0]]); t1 = np.array([-n1[1], n1[0]])
+        A = np.array([t0, -t1]).T; k = np.linalg.solve(A, a1 - a0)
+        Q.append(a0 + t0 * k[0])
+    out = []
+    for i in range(m):
+        a_in, a_out = math.atan2(nrm[i - 1][1], nrm[i - 1][0]), math.atan2(nrm[i][1], nrm[i][0])
+        da = (a_out - a_in) % (2 * math.pi)
+        for k in range(n + 1):
+            a = a_in + da * k / n
+            out.append((Q[i][0] + r * math.cos(a), Q[i][1] + r * math.sin(a)))
+    return Polygon(out)
 REF_H = 0.55       # refdes cap height
 NO_REF = {'FID1', 'FID2', 'FID3', 'J1', 'SW4', 'WB1'} | {'TP%d' % i for i in range(1, 14)}
 
@@ -89,6 +122,8 @@ def build_silk_top(L, B, qr_url):
             items.append((rbox_line(c['x'], c['z'], 6.6, 9.1, 0.4), 'outline'))
         elif kind == 'SLIDE':
             items.append((rbox_line(c['x'] + 0.2, c['z'], 2.4, 6.9, 0.25), 'outline'))
+        elif kind == 'SLIDEB':                    # bridging the window: the outline shows on the board either side of it
+            items.append((rbox_line(c['x'], c['z'], 2.5, 7.3, 0.25), 'outline'))
     # --- mounting hole rings (dashed, as on the Sora V2) for the copper-free front holes; small rings elsewhere
     for k, (x, z, d, kind) in SORA_HOLES.items():
         if k in ('MH1', 'MH2'):
@@ -102,10 +137,11 @@ def build_silk_top(L, B, qr_url):
     lab.append(matrix_polys(M, 4.3, -12.15, 10.35, invert=True, quiet=1))
     lab.append(hershey_text('WEB  APP', 0.45, -12.15, 7.75, w=0.08))
     # power switch labels (#100): ON toward the nose, OFF toward the tail
-    lab.append(outline_text('ON', 0.8, 10.35, 23.2, tracking=0.08))
-    lab.append(arrow(11.75, 23.2, 0.85, 0))
-    lab.append(outline_text('OFF', 0.8, 10.25, 16.95, tracking=0.08))
-    lab.append(arrow(11.75, 16.95, 0.85, 180))
+    # (SW3 sits in the middle of its window now, F26.8: the labels moved to the window's free side)
+    lab.append(outline_text('ON', 0.8, 7.05, 21.75, tracking=0.08))
+    lab.append(arrow(8.2, 21.75, 0.85, 0))
+    lab.append(outline_text('OFF', 0.8, 6.95, 18.45, tracking=0.08))
+    lab.append(arrow(8.2, 18.45, 0.85, 180))
     # other test pads
     for ref, t, dx, dz, an in (('TP1', 'VBUS', -0.65, 0.0, 'r'), ('TP2', 'GND', -0.65, 0.0, 'r'), ('TP3', 'VSYS', 0.0, -0.75, 'c'),
                                ('TP4', 'VBAT', -0.65, 0.0, 'r'), ('TP5', 'SNS', 0.0, 0.75, 'c'), ('TP6', 'D-', -0.65, 0.0, 'r'),
@@ -113,9 +149,9 @@ def build_silk_top(L, B, qr_url):
         c, fp = comps[ref]
         lab.append(hershey_text(t, 0.42, c['x'] + dx, c['z'] + dz, w=0.08, anchor=an))
     # polarity / pin-1
-    c, _ = comps['J2']
-    lab.append(hershey_text('+', 0.7, c['x'] - 2.7, c['z'] + 1.05, w=0.12))
-    lab.append(hershey_text('BAT', 0.5, c['x'] + 0.2, c['z'] - 3.25, w=0.09))
+    c, _ = comps['J2']                     # J2 faces the back (F26.4): pin 1 (VBAT) is the one at x + 1.0
+    lab.append(hershey_text('+', 0.7, c['x'] + 2.15, c['z'] + 3.25, w=0.12))
+    lab.append(hershey_text('BAT', 0.5, c['x'] + 4.5, c['z'] + 2.4, w=0.09))
     c, _ = comps['J3']
     lab.append(hershey_text('SIDE', 0.5, c['x'] - 0.3, c['z'] + 3.3, w=0.09))
     for ref, dx, dz in (('U1', -5.35, 7.05), ('U3', -5.6, 6.0), ('U4', -1.25, 1.0)):
@@ -247,13 +283,15 @@ def build_bottom(L, B, qr_url, seed=11):
         ps = max(0.0, 1.0 - ds / 19.0) ** 1.25 * 0.8
         u = rnd.random()
         if u < pg:
-            gold.append(poly.buffer(-0.36, join_style=2))
+            gold.append(rounded_inset(poly, 0.36, TRI_FILLET_GOLD))
         elif rnd.random() < ps:
-            inner = poly.buffer(-0.45, join_style=2)
+            inner = rounded_inset(poly, 0.45, TRI_FILLET_SILK)
             if not inner.is_empty:
                 silk_tri.append(inner.exterior.buffer(0.05, cap_style=2, join_style=2))
-    gaps = unary_union([e.buffer(0.13, cap_style=2, join_style=2) for e in edges])
-    l4 = region.difference(gaps.difference(reserved))
+    # the copper mosaic: every cell inset by half the 0.26 mm gap and its corners rounded on their own (F26.6); cells that
+    # touch a reserved zone stay solid there, as before; the region's own edges cut the partial triangles, nothing else
+    mos = [rounded_inset(poly, 0.13, TRI_FILLET) if not poly.intersects(reserved) else poly for poly, r, c in cells if poly.intersects(region)]
+    l4 = region.intersection(unary_union(mos + [reserved]))
     # GND ring copper around the THT pads stays as pads
     gold = unary_union(gold)
     # --- bottom silk (reads correctly when viewed from below -> mirrored in x)

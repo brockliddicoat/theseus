@@ -711,24 +711,9 @@ function guideMM(o = {}) {
    o = { clog (0..1: dust in the bushing and the frame's gaps) }. Returns { top, bush, left, right, base } in stage px.
    (Brock, F9.21: "optical encoders look no different than normal mouse encoders". From Shell A's shlEncoderMM.) */
 function encoderMM(o = {}) {
-  const out = {}, steel = TH ? '#C9CDD3' : '#A7ADB5', steel2 = TH ? '#AEB3BA' : '#8C929B', tin = TH ? '#B9BEC5' : '#9AA0A8';
-  /* pins and legs under the housing: five pins, as on TTC's optical encoder (Brock's photo, F9.21) and the 3D model */
-  for (const px of [-2.4, -1.2, 0, 1.2, 2.4]) solid(() => { G.beginPath(); G.rect(px - 0.25, 5.4, 0.5, 3.9); }, MT.tin, [px - 0.25, 5.4, 0.5, 3.9], { fill: tin, lw: 0.8 });
-  for (const sx of [-1, 1]) solid(() => { G.beginPath(); G.moveTo(sx * 4.6, 5.0); G.lineTo(sx * 5.6, 5.0); G.lineTo(sx * 5.6, 7.2); G.lineTo(sx * 6.4, 8.9); G.lineTo(sx * 5.5, 9.3); G.lineTo(sx * 4.6, 7.4); G.closePath(); }, MT.steel, [4.6, 5, 1.8, 4.3], { fill: steel2, lw: 0.9 });
-  /* the black housing */
-  solid(() => pathRR(-5.9, -7.0, 11.8, 12.6, 0.45), MT.black, [-5.9, -7.0, 11.8, 12.6], { fill: TH ? '#26272B' : '#1B1C1F', lw: 1 });
-  /* the steel frame over its face: a plate with the bushing's hole, a tab folded over the top, two side clips */
-  solid(() => { G.beginPath(); G.moveTo(-5.3, -7.0); G.lineTo(5.3, -7.0); G.lineTo(5.3, 3.2); G.lineTo(-5.3, 3.2); G.closePath(); G.moveTo(2.75, -0.6); G.arc(0, -0.6, 2.75, 0, TAU, true); }, MT.steel, [-5.3, -7, 10.6, 10.2], { fill: steel, lw: 1 });
-  solid(() => { G.beginPath(); G.rect(-2.0, -7.9, 4.0, 0.9); }, MT.steel, [-2, -7.9, 4, 0.9], { fill: steel2, lw: 0.9 });
-  for (const sx of [-1, 1]) solid(() => { G.beginPath(); G.rect(sx > 0 ? 5.3 : -6.2, -4.4, 0.9, 3.0); }, MT.steel, [5.3, -4.4, 0.9, 3], { fill: steel2, lw: 0.8 });
-  /* the axle bushing and its D-shaped bore */
-  G.beginPath(); G.arc(0, -0.6, 2.3, 0, TAU); G.fillStyle = TH ? '#8E8C86' : '#6E6C67'; G.fill(); G.strokeStyle = edgeCol(MT.black); G.lineWidth = lw(1); G.stroke();
-  G.beginPath(); G.arc(0, -0.6, 1.15, -Math.PI * 0.82, Math.PI * 0.82); G.closePath(); G.fillStyle = '#141518'; G.fill();
-  /* dust caught round the bushing and in the frame's gaps */
-  const ck = o.clog || 0;
-  if (ck > 0) { const r = rng(23); for (let i = 0; i < Math.round(26 * ck); i++) { const an = r() * TAU, d = 2.35 + r() * 0.5; G.beginPath(); G.arc(Math.cos(an) * d, -0.6 + Math.sin(an) * d, 0.17 + r() * 0.12, 0, TAU); G.fillStyle = rgba(C.bad, 0.9); G.fill(); } }
-  out.top = SP(0, -7.9); out.bush = SP(0, -0.6); out.left = SP(-5.9, 0); out.right = SP(5.9, 0); out.base = SP(0, 9.3);
-  return out;
+  /* the scroll encoder is magnetic now (Brock, F27: "a magnetic encoder that doesn't get affected by dust and have a
+     transparent top housing to see when it's broken like switches"; "Yes, switch everywhere"): see k2_encMagFront */
+  return k2_encMagFront(o);
 }
 /* =================================== 16. a fingertip on a surface, magnified section ===================================
    units are not to scale with the parts above: 60 across is about a millimetre of skin. o.etch: a laser-etched
@@ -761,15 +746,22 @@ function gripMM(o = {}) {
 /* =================================== 17. a charging cable, cut across ===================================
    a paracord sheath over braided conductors: VBUS, ground, the two data lines, each a bundle of strands. */
 function cableMM(o = {}) {
-  const out = {}, R = 1.2, n = 18;
-  G.beginPath(); G.arc(0, 0, R, 0, TAU); G.fillStyle = '#26272b'; G.fill();
-  for (let i = 0; i < n; i++) { const a = i / n * TAU, x = Math.cos(a) * (R - 0.16), y = Math.sin(a) * (R - 0.16); G.beginPath(); G.ellipse(x, y, 0.2, 0.13, a + Math.PI / 2, 0, TAU); G.fillStyle = i % 2 ? (o.c1 || '#8e8c85') : (o.c2 || '#5c5b55'); G.fill(); G.strokeStyle = 'rgba(0,0,0,0.4)'; G.lineWidth = lw(0.8); G.stroke(); }
-  G.beginPath(); G.arc(0, 0, R - 0.33, 0, TAU); G.fillStyle = '#ece9e1'; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = lw(1); G.stroke();
-  const r2 = rng(4); G.fillStyle = 'rgba(0,0,0,0.08)'; for (let i = 0; i < 160; i++) { const a = r2() * TAU, rr = Math.sqrt(r2()) * (R - 0.36); G.fillRect(Math.cos(a) * rr, Math.sin(a) * rr, 0.02, 0.02); }
+  /* a paracord-sheathed USB cable cut across, mm: the woven sheath (two layers of strands, two-tone, as the slide's braid),
+     soft nylon filler, four conductors of seven copper strands each (VBUS red, GND black, D+ green, D- white) */
+  const out = {}, R = 1.2, n = 32, c1 = o.c1 || '#2C3340', c2 = o.c2 || '#9AA4B2';
+  G.beginPath(); G.arc(0, 0, R, 0, TAU); G.fillStyle = '#15171B'; G.fill();
+  for (let layer = 0; layer < 2; layer++) for (let i = 0; i < n; i++) {
+    const a = (i + layer * 0.5) / n * TAU, rr0 = R - 0.13 - layer * 0.11, x = Math.cos(a) * rr0, y = Math.sin(a) * rr0;
+    G.beginPath(); G.ellipse(x, y, 0.15, 0.085, a + Math.PI / 2 + (layer ? 0.5 : -0.5), 0, TAU);
+    G.fillStyle = ((i >> 1) + layer) % 2 ? c1 : c2; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.45)'; G.lineWidth = lw(0.6); G.stroke();
+  }
+  G.beginPath(); G.arc(0, 0, R - 0.36, 0, TAU); G.fillStyle = '#E6E2D8'; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.3)'; G.lineWidth = lw(1); G.stroke();
+  const r2 = rng(4); G.strokeStyle = 'rgba(120,112,98,0.35)'; G.lineWidth = lw(0.5);
+  for (let i = 0; i < 90; i++) { const a = r2() * TAU, rr0 = Math.sqrt(r2()) * (R - 0.42), b = r2() * TAU; G.beginPath(); G.moveTo(Math.cos(a) * rr0, Math.sin(a) * rr0); G.lineTo(Math.cos(a) * rr0 + Math.cos(b) * 0.08, Math.sin(a) * rr0 + Math.sin(b) * 0.08); G.stroke(); }
   const cond = [[-0.3, -0.3, '#c8463d'], [0.3, -0.3, '#26272b'], [-0.3, 0.3, '#3f8f4e'], [0.3, 0.3, '#f2f2f2']];
   for (const [x, y, c] of cond) {
     G.beginPath(); G.arc(x, y, 0.27, 0, TAU); G.fillStyle = c; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.45)'; G.lineWidth = lw(0.9); G.stroke();
-    for (let k = 0; k < 7; k++) { const a = k / 6 * TAU, rr = k === 6 ? 0 : 0.085; G.beginPath(); G.arc(x + Math.cos(a) * rr, y + Math.sin(a) * rr, 0.042, 0, TAU); G.fillStyle = '#d99a5c'; G.fill(); }
+    for (let k = 0; k < 7; k++) { const a = k / 6 * TAU, rr0 = k === 6 ? 0 : 0.085; G.beginPath(); G.arc(x + Math.cos(a) * rr0, y + Math.sin(a) * rr0, 0.042, 0, TAU); G.fillStyle = '#d99a5c'; G.fill(); }
   }
   G.beginPath(); G.arc(0, 0, R, 0, TAU); G.strokeStyle = edgeCol(MT.black); G.lineWidth = lw(1.2); G.stroke();
   out.sheath = SP(R * 0.72, -R * 0.72); out.core = SP(0.3, 0.3); out.fill = SP(-0.62, 0.35); out.r = R;
@@ -864,4 +856,60 @@ function keyPlan(t, t0, x, y, o = {}) {
   const r = part(x, y, s, () => keyPlanMM(o), { alpha: k });
   text(o.label || 'where', x, y + 60 * s + 30, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: k });
   return r;
+}
+/** K2 (2026-11-05): the magnetic scroll encoder from the wheel side, its frame plate cut away, as 3d/parts/scrollwheel.js
+   builds it: a normal encoder outline (axle at 0, 0; the board at y = 11; top 4 mm above the axle, the nose-side corner
+   chamfered), a black bottom housing up to the split 3.15 mm below the axle, a clear PC top housing over the moving
+   parts: the orange POM rotor on the axle's D, the 24-lobe detent star under its bronze leaf spring, and on the rotor's
+   end the Ø3 mm diametric magnet (north and south halves) in front of the dark sensor board, four pins, the frame's legs.
+   o.th: the wheel angle; o.field (0..1): the magnet's field lines in the drawing plane, turning with it; o.dust (0..1):
+   specks inside the housing (they change nothing); o.light: the paper theme. Returns anchors in stage px. */
+function k2_encMagFront(o = {}) {
+  const th = o.th || 0, out = {}, N = 24, dk = o.light ? 0 : 1;
+  const nick = dk ? '#C3C8CF' : '#A9AFB7', tin = dk ? '#B4B9C0' : '#9AA0A8', black = dk ? '#232428' : '#1C1D20';
+  const ec = dk ? 'rgba(10,10,12,0.85)' : 'rgba(20,20,22,0.55)', clearF = dk ? 'rgba(196,214,230,0.13)' : 'rgba(150,170,190,0.16)';
+  const clearE = dk ? 'rgba(226,236,246,0.62)' : 'rgba(60,80,100,0.55)';
+  const fp = (f, col, st, w) => { f(); if (col) { G.fillStyle = col; G.fill('evenodd'); } if (st) { G.strokeStyle = st; G.lineWidth = lw(w || 1.1); G.lineJoin = 'round'; G.stroke(); } };
+  /* four pins and the frame's two bent legs into the board */
+  for (const px of [-1.875, -0.625, 0.625, 1.875]) fp(() => { G.beginPath(); G.rect(px - 0.25, 10.9, 0.5, 2.3); }, tin, ec, 0.8);
+  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.moveTo(sx * 4.3, 10.8); G.lineTo(sx * 5.45, 10.8); G.lineTo(sx * 5.45, 11.6); G.quadraticCurveTo(sx * 5.6, 12.7, sx * 6.45, 13.0); G.lineTo(sx * 6.15, 13.45); G.quadraticCurveTo(sx * 4.75, 13.0, sx * 4.3, 11.7); G.closePath(); }, nick, ec, 0.8);
+  /* the sensor board behind everything: a dark plate across the housing's far end, the Hall IC on it, on the axis */
+  fp(() => pathRR(-3.7, -3.2, 7.4, 9.6, 0.3), dk ? '#101114' : '#141518', null);
+  /* the black bottom housing, from the board up to the split */
+  fp(() => { G.beginPath(); G.moveTo(-5.5, 3.15); G.lineTo(5.5, 3.15); G.lineTo(5.5, 10.75); G.quadraticCurveTo(5.5, 11, 5.25, 11); G.lineTo(-5.25, 11); G.quadraticCurveTo(-5.5, 11, -5.5, 10.75); G.closePath(); }, black, ec, 1.1);
+  /* the rotor: the orange POM hub, the detent star round it, the D bore */
+  const star = () => { G.beginPath(); for (let i = 0; i <= N * 12; i++) { const a = th + i / (N * 12) * TAU, f = ((a - th) * N / TAU % 1 + 1) % 1, r = 2.18 + 0.37 * Math.pow(Math.sin(Math.PI * f), 0.6); i ? G.lineTo(r * Math.cos(a), r * Math.sin(a)) : G.moveTo(r * Math.cos(a), r * Math.sin(a)); } G.closePath(); G.moveTo(1.65, 0); G.arc(0, 0, 1.65, 0, TAU, true); };
+  fp(star, dk ? '#2C2D31' : '#26272B', ec, 0.9);
+  fp(() => { G.beginPath(); G.arc(0, 0, 1.65, 0, TAU); }, '#D9813C', ec, 0.9);
+  /* the magnet on the rotor's end: north and south halves of a diametric disc, turning with the wheel */
+  const halves = [[th, dk ? '#D8DBE0' : '#C9CCD2', 'N'], [th + Math.PI, dk ? '#8E939B' : '#7D828A', 'S']];
+  for (const [a0, col] of halves) fp(() => { G.beginPath(); G.moveTo(0, 0); G.arc(0, 0, 1.5, a0 - Math.PI / 2, a0 + Math.PI / 2); G.closePath(); }, col, ec, 0.8);
+  /* the leaf spring over the star: bronze, its bump in a valley at the top */
+  G.beginPath(); for (let i = 0; i <= 30; i++) { const z = -3.3 + 6.6 * i / 30, bump = Math.exp(-(z * z) / 0.12) * 0.22; const y = -(2.55 + 0.14 + 0.34 * Math.pow(2 * i / 30 - 1, 2) - bump); i ? G.lineTo(z, y) : G.moveTo(z, y); }
+  G.strokeStyle = '#C08F4E'; G.lineWidth = lw(3.2); G.lineCap = 'round'; G.stroke();
+  /* dust that got in: it sits there and changes nothing (the field passes it) */
+  const dust = o.dust || 0;
+  if (dust > 0) { const r = rng(31); for (let i = 0; i < Math.round(22 * dust); i++) { const x = -4.6 + 9.2 * r(), y = -3.5 + 6.4 * r(); if (x * x + y * y < 6.9) continue; G.beginPath(); G.arc(x, y, 0.1 + 0.12 * r(), 0, TAU); G.fillStyle = dk ? 'rgba(170,160,140,0.85)' : 'rgba(110,100,85,0.85)'; G.fill(); } }
+  /* the field: dipole loops out of the north half and round into the south, in the drawing plane */
+  const kf = o.field || 0;
+  if (kf > 0.003) {
+    G.save(); G.globalAlpha *= kf; G.strokeStyle = C.hero; G.lineWidth = lw(2.2); G.lineCap = 'round';
+    const ux = Math.cos(th), uy = Math.sin(th);
+    for (const k of [1.6, 2.4, 3.4]) for (const sd of [1, -1]) {
+      G.beginPath();
+      for (let i = 0; i <= 40; i++) { const t = Math.PI * (0.04 + 0.92 * i / 40), rr0 = k * Math.sin(t) * Math.sin(t), px = rr0 * Math.cos(t), py = sd * rr0 * Math.sin(t);
+        const X = px * ux - py * uy, Y = px * uy + py * ux; i ? G.lineTo(X, Y) : G.moveTo(X, Y); }
+      G.stroke();
+    }
+    G.restore();
+  }
+  /* the clear top housing over all of it, from the split to the top, its nose-side corner chamfered; nickel tabs on top */
+  fp(() => { G.beginPath(); G.moveTo(-5.5, 3.15); G.lineTo(-5.5, -3.75); G.quadraticCurveTo(-5.5, -4.0, -5.25, -4.0); G.lineTo(2.9, -4.0); G.lineTo(5.5, -1.4); G.lineTo(5.5, 3.15); G.closePath(); }, clearF, clearE, 1.3);
+  fp(() => { G.beginPath(); G.moveTo(-5.2, 2.95); G.lineTo(-5.2, -3.55); G.lineTo(2.75, -3.7); }, null, dk ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.4)', 1.0);
+  for (const [x0, x1] of [[2.0, 3.6], [-1.9, -0.6]]) fp(() => { G.beginPath(); G.rect(x0, -4.45, x1 - x0, 0.45); }, nick, ec, 0.8);
+  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.rect(sx > 0 ? 5.5 : -5.78, 5.6, 0.28, 1.5); }, nick, ec, 0.8);
+  out.north = SP(0.8 * Math.cos(th), 0.8 * Math.sin(th)); out.south = SP(-0.8 * Math.cos(th), -0.8 * Math.sin(th));
+  out.cover = SP(-3.6, -2.6); out.magnet = SP(1.06 * Math.cos(th + 2.2), 1.06 * Math.sin(th + 2.2)); out.star = SP(-2.3, 0.9); out.spring = SP(-2.4, -2.95);
+  out.sensor = SP(3.2, 4.6); out.pins = SP(-1.875, 12.6); out.axle = SP(0, 0); out.top = SP(0, -4.45); out.base = SP(0, 13.45); out.s = SP(1, 0)[0] - SP(0, 0)[0];
+  return out;
 }

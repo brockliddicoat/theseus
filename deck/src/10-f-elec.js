@@ -148,6 +148,7 @@ function elc_cell() {
 Object.assign(ELC, { modZ: 20.6, antZ: 15.82, antZ0: 25.38, axleZ: 37.75, keep: [-6.6, 13.75, 6.6, 17.45], keep0: [-6.6, 23.75, 6.6, 27.45] });
 ELC.gap = ELC.axleZ - ELC.antZ; ELC.gap0 = ELC.axleZ - ELC.antZ0;      /* 21.9 and 12.4 mm */
 /** the board's outline, board-local mm (x, z), decimated from 3d/pcb/pcb-layout.json */
+/** the board's outline, board-local mm (x, z), decimated from 3d/pcb/pcb-layout.json */
 const ELC_OUTLINE = [[19.25, 13.36], [19.17, 15.41], [15.64, 17.3], [15.41, 17.72], [15.42, 30.38], [19.02, 33.21], [19.03, 45.88], [18.81, 46.2], [8.79, 46.28], [5.39, 49.7], [5.31, 52.18], [4.96, 52.5], [-5.03, 52.49], [-5.31, 52.22], [-5.39, 49.7], [-8.79, 46.28], [-18.81, 46.2], [-19.03, 45.88], [-19.02, 33.18], [-15.41, 30.27], [-15.43, 17.58], [-19.1, 15.48], [-19.32, 15.07], [-19.31, 13.48], [-18.52, 12.24], [-18.52, -0.4], [-18.91, -1.29], [-18.91, -2.7], [-18.65, -3.07], [-14.77, -4.94], [-13.44, -5.02], [-11.07, -3.71], [11.89, -3.71], [13.6, -4.95], [15.61, -4.63], [19.04, -2.71], [19.04, -1.24], [18.52, -0.29], [18.52, 12.23]];
 
 /** the meander antenna's centre line, module-local mm (antenna end up, −y), as the 3D part draws it */
@@ -245,9 +246,16 @@ function elc_board2d(cx, cy, s, zc, o = {}) {
   /* the wheel's support and the middle click, on the user's right */
   R(-8.9, 34.55, -4.1, 40.95, 0.4 * s, '#2B2D32', 'rgba(255,255,255,0.10)');
   R(-12.15, 36.3, -8.65, 39.2, 0.3 * s, '#1B1C20', 'rgba(255,255,255,0.12)'); R(-11.9, 36.55, -8.9, 38.95, 0.2 * s, '#8D9299', null);
-  /* the encoder, on the user's left: a plastic body in a steel frame */
-  R(6.9, 32.25, 11.5, 43.25, 0.3 * s, '#2E3035', 'rgba(255,255,255,0.10)');
+  /* the encoder, on the user's left: the magnetic one (F27), seen from above through its clear top housing: the orange
+     rotor, its detent star under the bronze leaf spring, the magnet on its end, the Hall sensor on its small board; the
+     nickel-silver frame on the wheel side (3d/parts/scrollwheel.js) */
   const steel = mix('#A9AEB6', '#E5484D', 0.75 * (o.warm || 0));
+  R(6.23, 36.1, 8.95, 39.4, 0.25 * s, '#D9813C', null);
+  R(7.45, 35.2, 8.15, 40.3, 0.12 * s, '#17181B', null);
+  R(7.4, 34.45, 8.2, 41.05, 0.1 * s, '#B98B4C', null);
+  R(8.95, 36.25, 9.75, 39.25, 0.12 * s, mix('#C9CCD0', '#E5484D', 0.75 * (o.warm || 0)), null);
+  R(10.9, 34.05, 11.4, 41.45, 0, '#0B0C0E', null); R(10.15, 36.25, 10.9, 39.25, 0.06 * s, '#202125', null);
+  R(6.9, 32.25, 11.5, 43.25, 0.3 * s, 'rgba(206,222,236,0.16)', 'rgba(255,255,255,0.34)');
   R(6.65, 32.25, 6.95, 43.25, 0, steel, null); R(6.65, 31.95, 11.55, 32.3, 0, steel, null); R(6.65, 43.2, 11.55, 43.55, 0, steel, null);
   R(6.65, 34.15, 7.9, 35.75, 0.1 * s, steel, null); R(6.65, 38.35, 7.9, 39.65, 0.1 * s, steel, null);
   /* the axle, across: POM (#7), white */
@@ -813,51 +821,134 @@ S({
 
 
 /* ============================== an angled paracord cable (#19, #20, #70) ============================== */
-/** the chin of the mouse and its charging plug, from the side, zoomed in: the mouse moves back and forth; a straight plug
-   lets the cable slide under the chin, an angled one lifts it clear. (bx, pad) = the plug's mouth over the pad. Returns
-   whether the cable is under the mouse now */
-function elc_plug(t, t0, bx, pad, angled, s = 1.5) {
+/** a paracord cable along pts (stage px), d px across: a woven sheath drawn as the braid's chevrons, two-tone, with each pic's
+   trailing edge in shadow (over and under) and round shading on top. o = { c1, c2, a, slide (px the weave has moved) } */
+function elc_paracord(pts, d, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003 || pts.length < 2) return;
+  const S = [], step = 1.5;
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], L = Math.hypot(x1 - x0, y1 - y0), n = Math.max(1, Math.ceil(L / step));
+    for (let k = (i === 1 ? 0 : 1); k <= n; k++) S.push([x0 + (x1 - x0) * k / n, y0 + (y1 - y0) * k / n]);
+  }
+  const N = S.length, T = S.map((p, i) => { const q = S[Math.min(N - 1, i + 1)], r = S[Math.max(0, i - 1)], dx = q[0] - r[0], dy = q[1] - r[1], l = Math.hypot(dx, dy) || 1; return [dx / l, dy / l]; });
+  const len = [0]; for (let i = 1; i < N; i++) len.push(len[i - 1] + Math.hypot(S[i][0] - S[i - 1][0], S[i][1] - S[i - 1][1]));
+  const at = (s, n) => { let i = 0, j = N - 1; while (j - i > 1) { const m = (i + j) >> 1; if (len[m] < s) i = m; else j = m; }
+    const k = len[j] > len[i] ? (s - len[i]) / (len[j] - len[i]) : 0, x = lerp(S[i][0], S[j][0], k), y = lerp(S[i][1], S[j][1], k), t = T[i];
+    return [x - t[1] * n, y + t[0] * n]; };
+  const h = d / 2, c1 = o.c1 || '#2C3340', c2 = o.c2 || '#9AA4B2';
+  G.save(); G.globalAlpha = a;
+  const outlinePath = () => { G.beginPath(); for (let i = 0; i < N; i++) { const p = at(len[i], h); i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1]); } for (let i = N - 1; i >= 0; i--) { const p = at(len[i], -h); G.lineTo(p[0], p[1]); } G.closePath(); };
+  outlinePath(); G.fillStyle = '#15171B'; G.fill();
+  G.save(); outlinePath(); G.clip();
+  const p = d * 0.62, total = len[N - 1], s0 = -(((o.slide || 0) % (2 * p)) + 2 * p) % (2 * p);
+  G.lineCap = 'round'; G.lineJoin = 'round';
+  for (let s = s0 - p, k = 0; s < total + p; s += p / 2, k++) {
+    /* a chevron: from the top edge, forward to the centre line, back to the bottom edge */
+    const A = at(s - 0.42 * p, h * 1.05), B = at(s + 0.18 * p, 0), C = at(s - 0.42 * p, -h * 1.05);
+    G.beginPath(); G.moveTo(A[0], A[1]); G.lineTo(B[0], B[1]); G.lineTo(C[0], C[1]);
+    G.strokeStyle = (k >> 1) % 2 ? c1 : c2; G.lineWidth = p * 0.36; G.stroke();
+    const A2 = at(s - 0.42 * p - 0.2 * p, h * 1.05), B2 = at(s + 0.18 * p - 0.2 * p, 0), C2 = at(s - 0.42 * p - 0.2 * p, -h * 1.05);
+    G.beginPath(); G.moveTo(A2[0], A2[1]); G.lineTo(B2[0], B2[1]); G.lineTo(C2[0], C2[1]); G.strokeStyle = 'rgba(0,0,0,0.45)'; G.lineWidth = p * 0.08; G.stroke();
+  }
+  /* round shading: dark toward both edges, a soft highlight a third of the way from the top */
+  const band = (n0, w0, col) => { G.beginPath(); for (let i = 0; i < N; i++) { const q = at(len[i], n0); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); } G.strokeStyle = col; G.lineWidth = w0; G.stroke(); };
+  band(h * 0.86, d * 0.3, 'rgba(0,0,0,0.42)'); band(-h * 0.86, d * 0.3, 'rgba(0,0,0,0.5)'); band(h * 0.38, d * 0.16, 'rgba(255,255,255,0.16)');
+  G.restore();
+  outlinePath(); G.strokeStyle = 'rgba(0,0,0,0.6)'; G.lineWidth = 1; G.stroke();
+  G.restore();
+}
+/** a USB-C plug from the side, its metal end in the port at (x, y), s px per mm. dir = +1 the plug body runs right, -1 left.
+   up: the body turns up at once (Theseus's angled plug); else it runs straight out (overmold 15 × 6.5 mm, a 6 mm strain
+   relief). Returns where the cable leaves it and its heading (unit vector) */
+function elc_plugSide(x, y, s, dir, up, a) {
+  const mold = TH ? ['#3B3E45', '#202227'] : ['#43464E', '#24262B'];
+  G.save(); G.globalAlpha = a;
+  const g = (x0, y0, x1, y1) => { const gr = G.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, mold[0]); gr.addColorStop(1, mold[1]); return gr; };
+  /* the metal shell's lip, just visible at the port */
+  G.fillStyle = '#B9BEC5'; G.fillRect(dir > 0 ? x - 0.6 * s : x, y - 1.2 * s, 0.6 * s, 2.4 * s);
+  let out;
+  if (!up) {
+    const x0 = x, x1 = x + dir * 15 * s, t = 3.25 * s;
+    rrPath(Math.min(x0, x1), y - t, 15 * s, 2 * t, 1.4 * s); G.fillStyle = g(0, y - t, 0, y + t); G.fill(); G.strokeStyle = 'rgba(0,0,0,0.5)'; G.lineWidth = 1; G.stroke();
+    G.beginPath(); G.moveTo(x1, y - 2.4 * s); G.lineTo(x1 + dir * 6 * s, y - 1.1 * s); G.lineTo(x1 + dir * 6 * s, y + 1.1 * s); G.lineTo(x1, y + 2.4 * s); G.closePath(); G.fillStyle = g(0, y - 2.4 * s, 0, y + 2.4 * s); G.fill();
+    out = { p: [x1 + dir * 6 * s, y], d: [dir, 0] };
+  } else {
+    const bw = 6.5 * s, top = y - 11 * s, x0 = dir > 0 ? x : x - bw;
+    rrPath(x0, top, bw, y + 3.25 * s - top, 1.4 * s); G.fillStyle = g(x0, 0, x0 + bw, 0); G.fill(); G.strokeStyle = 'rgba(0,0,0,0.5)'; G.lineWidth = 1; G.stroke();
+    const cx = x0 + bw / 2;
+    G.beginPath(); G.moveTo(cx - 2.4 * s, top); G.lineTo(cx - 1.1 * s, top - 5 * s); G.lineTo(cx + 1.1 * s, top - 5 * s); G.lineTo(cx + 2.4 * s, top); G.closePath(); G.fillStyle = g(cx - 2.4 * s, 0, cx + 2.4 * s, 0); G.fill();
+    out = { p: [cx, top - 5 * s], d: [0, -1] };
+  }
+  G.restore();
+  return out;
+}
+/** sample a cubic Bézier into points */
+function elc_bez(p0, p1, p2, p3, n = 40) { const out = []; for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t; out.push([u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0], u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1]]); } return out; }
+/** the mouse's nose from the side, charging: the shell's own model (3D render, or its flat twin in 2D), the hand moving it
+   back and forth over the pad. A straight plug's cable lies on the pad and the chin rides onto it; Theseus's plug turns up
+   and the cable arcs away. (x, y, w, h) the panel. Returns whether the chin is on the cable */
+function elc_chargeSide(t, t0, x, y, w, h, up) {
   const k = ep(t, t0, t0 + 0.5); if (k <= 0.003) return false;
-  const mv = 22 * Math.sin((t - t0) * 1.4), cx = bx + mv * s, hit = !angled && mv > 6;
-  G.save(); G.globalAlpha = k;
-  line(bx - 170 * s, pad, bx + 190 * s, pad, { color: C.faint, w: 2 });
-  G.translate(cx, pad); G.scale(s, s);
-  G.beginPath(); G.moveTo(-150, -46); G.quadraticCurveTo(-20, -50, 0, -22); G.quadraticCurveTo(4, -6, -14, -4); G.lineTo(-150, -4); G.closePath();
-  G.fillStyle = inkA(0.12); G.fill(); G.strokeStyle = inkA(0.6); G.lineWidth = 1.6 / s; G.stroke();
-  const ang = angled ? -0.5 : 0, ex = 2 + Math.cos(ang) * 26, ey = -24 + Math.sin(ang) * 26;
-  G.save(); G.translate(2, -24); G.rotate(ang); G.fillStyle = C.ink2; G.fillRect(0, -6, 26, 12); G.restore();
-  const c1 = angled ? [ex + 50, ey - 40] : [ex + 30, -20], c2 = angled ? [ex + 110, -50] : [ex + 70, 0], end = [(bx + 180 * s - cx) / s, angled ? -10 : -2];
-  G.beginPath(); G.moveTo(ex, ey); G.bezierCurveTo(c1[0], c1[1], c2[0], c2[1], end[0], end[1]); G.strokeStyle = hit ? C.bad : angled ? C.hero : C.ink; G.lineWidth = 5 / s * 1.3; G.lineCap = 'round'; G.stroke();
+  const dz = 7.5 * Math.sin((t - t0) * 1.3);
+  const st = { view: [-1, 0.0001, 0.0001], view2d: 'left', zoom: 2.35, target: [0, 13, 33 - dz], explode: 0, xray: 0, plate: 1, ground2d: false };
+  G.save(); rrPath(x, y, w, h, 10); G.clip();
+  const box = [x, y, w, h], drawn = view3D('shell', t, x, y, w, h, st, { alpha: k });
+  const at = (re, f) => (typeof v3At === 'function' ? v3At('shell', st, box, re, f) : V2D.on ? v2dAt('shell', st, box, re, f) : null);
+  const port = at(/body\/usbC$/, [0.5, 0.5, 1]), tail = at(/body\/usbC$/, [0.5, 0.5, 0]), base = at(/body\/body$/, [0.5, 0, 0.5]);
+  let hit = false;
+  if (port && tail) {
+    const dir = port[0] >= tail[0] ? 1 : -1, s = Math.abs(port[0] - tail[0]) / 6.0, pad = base ? base[1] : y + h - 40;
+    G.fillStyle = inkA(0.05); G.fillRect(x, pad, w, y + h - pad); line(x, pad, x + w, pad, { color: C.faint, w: 1.5, alpha: k });
+    const pl = elc_plugSide(port[0], port[1], s, dir, up, k), d = 1.9 * s * 1.25, pe = pl.p, edge = dir > 0 ? x + w + 20 : x - 20;
+    let path;
+    if (!up) {
+      /* the cable runs out, drops to the pad and lies there; the touch-down stays put while the hand moves the mouse */
+      const xt = port[0] + dir * (40 * s - dz * s), chin = at(/body\/body$/, [0.5, 0.02, 1]);
+      hit = chin ? dir * (chin[0] - (xt - dir * 18 * s)) > 0 : false;
+      path = elc_bez(pe, [pe[0] + dir * 12 * s, pe[1]], [xt - dir * 10 * s, pad - d / 2], [xt, pad - d / 2]).concat([[edge, pad - d / 2]]);
+      if (hit) warm(chin[0] + dir * 8, pad - 4, 46, C.bad, 0.55 * k);
+    } else path = elc_bez(pe, [pe[0], pe[1] - 12 * s], [pe[0] + dir * 6 * s, y + 70], [edge, y + 60]);
+    elc_paracord(path, d, { a: k, slide: (t - t0) * 6 });
+  }
   G.restore();
   return hit;
 }
 S({
-  id: 'cable', ch: 'elec', theme: 'night', title: 'Angled plug, paracord cable', settle: 9, ideas: [19, 20, 70],
+  id: 'cable', ch: 'elec', theme: 'night', title: 'Angled plug, paracord cable', settle: 9, ideas: [19, 20, 70], three: ['shell'], rev: 1,
+  answers: [['extremely lazy visualizations', 'Redrawn: the mouse\'s real profile charging, a woven paracord cable, a detailed angled plug and its section'],
+    ['paracord needs better assets', 'A woven sheath (two-tone chevrons, over and under, round shading) on every cable on the slide']],
   src: ['tpuCables', 'elcXa25', 'elcBrock'],
   draw: t => {
     header(t, 'Angled plug, paracord cable');
-    captions(t, [[0.6, 'Reviewers called the cable in the box too stiff on all four of these flagship-class mice. A stiff cable can push a light mouse around (#20).'], [4.0, 'A paracord sheath over braided conductors bends like rope, and a plug angled up lifts it clear of the chin while it charges (#19).']]);
-    /* the plug, from the side: straight against angled, zoomed in */
-    const x = LM, y = 280, w = 1000, h = 380;
+    captions(t, [[0.6, 'Reviewers called the cable in the box too stiff on all four of these flagship-class mice. A stiff cable drags a light mouse around (#20).'], [4.0, 'Theseus\'s cable is paracord over braided conductors, so it bends like rope, and its plug turns up at the nose, so charging never puts the cable under the chin (#19).']]);
+    /* charging while you play: the same hand movement, a straight plug against Theseus's angled one */
+    const x = LM, y = 272, w = 1000, h = 400;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0));
-    cardHead(t, 0.4, x, y, w, 'Charging while you play: the chin, the plug and the cable, from the side', ['proposal']);
-    const pad = y + h - 70, s = 1.25;
-    const hit = elc_plug(t, 1.6, x + 280, pad, false, s), kA = ep(t, 1.6, 2.0);
-    elc_plug(t, 2.0, x + 750, pad, true, s);
-    text('Straight plug', x + 40, y + 120, { role: 'label', size: 21, color: C.mute, alpha: kA });
-    if (hit) text('Under the chin', x + 40, y + 152, { role: 'label', size: 21, color: C.bad, alpha: kA });
-    heroTag(x + 520, y + 120, 'Theseus', 'angled plug', { a: ep(t, 2.0, 2.4) });
-    text('Clear of the chin', x + 520, y + 152, { role: 'label', size: 21, color: C.heroText, alpha: ep(t, 2.4, 2.8) });
-    /* the cable, cut across */
+    cardHead(t, 0.4, x, y, w, 'Charging while you play, from the side', ['proposal']);
+    const pw = (w - 72) / 2, py = y + 76, ph = h - 96;
+    const hit = elc_chargeSide(t, 1.2, x + 24, py, pw, ph, false);
+    elc_chargeSide(t, 1.6, x + 48 + pw, py, pw, ph, true);
+    text('Straight plug', x + 48, py + 34, { role: 'label', size: 21, color: C.ink2, alpha: ep(t, 1.2, 1.6) });
+    text(hit ? 'The chin rides onto the cable' : 'Cable on the pad', x + 48, py + 64, { role: 'label', size: 20, color: hit ? C.bad : C.mute, alpha: ep(t, 1.2, 1.6) });
+    heroTag(x + 72 + pw, py + 30, 'Theseus', 'angled up', { a: ep(t, 1.6, 2.0) });
+    text('The cable arcs off the pad', x + 72 + pw, py + 64, { role: 'label', size: 20, color: C.heroText, alpha: ep(t, 1.8, 2.2) });
+    /* the cable itself, up close: the angled plug, the woven sheath, and the cable cut across */
     const cy0 = 700, ch = 260;
     demoWindow(x, cy0, w, ch, tileA(t, 0.3, 1));
-    const o = part(x + 170, cy0 + ch / 2, 62, () => cableMM({}), { alpha: ep(t, 0.6, 1.1) });
+    { const k = ep(t, 0.8, 1.3), s = 9, mx = x + 120, my = cy0 + ch - 70;
+      G.save(); rrPath(x, cy0, w, ch, 10); G.clip();
+      rr(mx - 46, my - 30, 46, 60, 6, TH ? '#C9C8C3' : '#2A2C31', null, 0, k);
+      text('Nose', mx - 40, my + 50, { role: 'label', size: 18, color: C.faint, alpha: k });
+      const pl = elc_plugSide(mx, my, s, 1, true, k);
+      const path = elc_bez(pl.p, [pl.p[0], pl.p[1] - 40], [pl.p[0] + 120, cy0 + 92], [x + 420, cy0 + 112]).concat(elc_bez([x + 420, cy0 + 112], [x + 520, cy0 + 126], [x + 560, cy0 + 200], [x + 640, cy0 + 212], 24).slice(1));
+      elc_paracord(path, 1.9 * s * 1.6, { a: k, slide: t * 4 });
+      G.restore(); }
+    const o = part(x + 830, cy0 + ch / 2, 62, () => cableMM({}), { alpha: ep(t, 0.6, 1.1) });
     if (o.sheath) {
-      callout(t, 1.2, o.sheath, 'Paracord sheath (#70)', { to: [x + 360, cy0 + 70], side: 'r', color: C.heroText });
-      callout(t, 1.5, o.core, 'Braided conductors', { to: [x + 360, cy0 + 136], side: 'r', color: C.heroText });
-      callout(t, 1.8, o.fill, 'Soft filler, no stiff jacket', { to: [x + 360, cy0 + 202], side: 'r', color: C.mute, tcolor: C.ink });
+      callout(t, 1.2, o.sheath, 'Paracord sheath', { to: [x + 730, cy0 + 52], side: 'l', color: C.heroText });
+      callout(t, 1.5, o.core, 'Braided conductors', { to: [x + 730, cy0 + 214], side: 'l', color: C.heroText });
     }
-    text('Cut across', x + w - 32, cy0 + ch - 26, { role: 'label', size: 20, color: C.faint, align: 'right', alpha: ep(t, 1.2, 1.6) });
+    text('Woven sheath, then the cable cut across', x + 32, cy0 + 34, { role: 'label', size: 20, color: C.faint, alpha: ep(t, 1.2, 1.6) });
     /* the right column: the headline, before → after, the cables in the box */
     const rx = 1120, rw = RM - rx;
     elc_hl(t, 3.4, rx, 430, '1.9', 'mm', { size: 130, count: false, label: 'Thin enough to bend like rope', sub: 'XA25-class: 1.9 mm still passes USB high speed. Thick enough to charge at full current (#20).', subW: rw });

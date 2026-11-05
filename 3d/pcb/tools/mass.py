@@ -6,6 +6,7 @@
 import json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/README.md)
 from shapely.ops import unary_union
 from layout import build as build_layout
 from board_geo import build_board, T

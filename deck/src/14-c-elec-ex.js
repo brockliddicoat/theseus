@@ -103,20 +103,27 @@ function elc_cells() {
     placeholder: !ch.length,
     rows: [
       { name: 'Li-polymer pouch', sub: 'Example: Jauch ' + B.part + ', ' + B.mAh + ' mAh', mAh: B.mAh, hero: true, whkg: Math.round(B.wh / B.g * 1000), whkgEv: 'derived', cyc: 300, cycEv: 'datasheet', g: B.g },
-      { name: 'Li-ion cylinder', sub: '18650, Panasonic NCR18650B', whkg: rv(li.gravimetric_energy_density) || 243, whkgEv: 'datasheet', cyc: [500, 1000], cycEv: 'datasheet', g: rv(li.mass) || 48.5 },
+      /* Brock (F27, cells): "look at smaller batteries ... lithium ion batteries are usually a gram or two heavier than their
+         lithium polymer counterparts if the same capacity for mice": a mouse-sized Li-ion cell, not an 18650 */
+      { name: 'Li-ion cylinder', sub: '10440 (AAA size), 350 mAh', whkg: Math.round(0.35 * 3.6 / 9 * 1000), whkgEv: 'derived', cyc: [500, 1000], cycEv: 'study', g: 9, mAh: 350 },
       { name: 'Alkaline AA', sub: 'Energizer E91', ref: true, whkg: rv(aa.gravimetric_energy_density_low_drain) || 163, whkgLow: rv(aa.gravimetric_energy_density_1W) || 40, whkgEv: 'derived', cyc: 1, cycEv: 'datasheet', g: rv(aa.mass) || 23 },
       { name: 'NiMH AA', sub: 'Panasonic eneloop', whkg: rv(ni.gravimetric_energy_density) || 84, whkgEv: 'derived', cyc: rv(ni.cycle_life) || 2100, cycEv: 'claim', g: rv(ni.mass) || 27 },
       { name: 'Lithium AA', sub: 'Energizer L91', whkg: null, whkgEv: 'datasheet', cyc: 1, cycEv: 'datasheet', g: rv(l91.mass) || 15 }
     ]
   };
 }
+Object.assign(SRC, {
+  elc10440: { t: 'akkuteile.de, 10440 lithium-ion cell (AAA size, without protection): 350 mAh nominal, 300 mAh minimum, 3.6 to 3.7 V, 9 g ± 1 g, 10.1 × 43.2 mm', u: 'https://www.akkuteile.de/en/10440-350mah-3-6v-3-7v-lithium-ion-cell-without-protection-electronics_101100_2833' }
+});
 S({
   id: 'cells', ch: 'elec', after: 'elc_safe', theme: 'night', title: 'The pouch battery, per gram', settle: 10, ideas: ['battery'],
-  src: ['elcLp4025', 'ntrJauch', 'exNcr', 'exE91', 'exEneloop', 'exL91', 'exBu107', 'nrf54'],
+  src: ['elcLp4025', 'ntrJauch', 'elc10440', 'exE91', 'exEneloop', 'exL91', 'exBu107', 'nrf54'], rev: 1,
+  answers: [['lithium ion numbers are way off, look at smaller batteries', 'The Li-ion row is a mouse-sized 10440 now (350 mAh, 9 g), not an 18650 (48.5 g)'],
+    ['li-ion a gram or two heavier than li-po of the same capacity', 'Said and shown: at the pouch\'s 370 mAh a 10440 would weigh about 9.5 g, 1.5 g more (derived)']],
   draw: t => {
-    const D = elc_cells(), M = THESEUS.mass, aa = D.rows.find(r => r.ref) || { g: 23 }, me = D.rows[0];
+    const D = elc_cells(), M = THESEUS.mass, aa = D.rows.find(r => r.ref) || { g: 23 }, me = D.rows[0], ion = D.rows[1], ionSame = ion.g * me.mAh / ion.mAh;
     header(t, 'The pouch battery, per gram');
-    captions(t, [[0.6, 'At a mouse\'s drain a fresh AA holds about as much energy per gram as a pouch battery, but it is one ' + fmtN(aa.g, 0) + ' g lump, used once.'], [4.8, 'A ' + me.mAh + ' mAh pouch is ' + fmtN(me.g, 0) + ' g, ' + fmtN(100 * me.g / M, 0) + '% of the mouse, and charges again and again.']]);
+    captions(t, [[0.6, 'At a mouse\'s drain a fresh AA holds about as much energy per gram as a pouch battery, but it is one ' + fmtN(aa.g, 0) + ' g lump, used once.'], [4.8, 'A ' + me.mAh + ' mAh pouch is ' + fmtN(me.g, 0) + ' g, ' + fmtN(100 * me.g / M, 0) + '% of the mouse. A Li-ion cell holding the same would weigh ' + fmtN(ionSame, 1) + ' g, ' + fmtN(ionSame - me.g, 1) + ' g more.']]);
     /* the table: the share of the mouse drawn as bars (it decides what fits); energy and cycles as plain figures */
     const x = LM, y0 = 400, rh = 104, lw = 330, xs = x + lw, sw = 320, xe = xs + sw + 56, xc = xe + 252, xr = 1200;
     const a0 = ep(t, 0.6, 1.0), load = ep(t, 5.4, 6.6) * (1 - ep(t, 7.6, 8.6));
@@ -145,8 +152,8 @@ S({
     const rx = 1240, rw = RM - rx;
     elc_hl(t, 4.0, rx, 440, fmtN(aa.g / me.g, 1) + '×', 'lighter', { label: 'Than an AA, and it recharges', sub: fmtN(me.g, 0) + ' g against ' + fmtN(aa.g, 0) + ' g, for ' + THS.hours + ' at 1 khz and ' + me.cyc + ' charges to 80%.', subW: rw });
     elc_ba(t, 4.8, rx, 660, fmtN(100 * aa.g / M, 0), fmtN(100 * me.g / M, 0), { label: 'Share of the mouse: an AA, then the pouch', unit: '%', net: 'One battery, charged in about an hour', maxW: rw });
-    glossBox(t, 5.6, rx, 750, rw, 'Boost converter', 'One AA gives 0.8 to 1.6 V and the nRF54 needs at least 1.7 V, so an AA mouse spends parts and energy stepping it up.', { size: 24 });
-    source(t, 'Datasheets: Jauch, Panasonic, Energizer. Wh/kg derived: energy ÷ mass; E91 read from its constant-power curve. Cycles: datasheets, Battery University, the eneloop claim.', { t0: 3 });
+    glossBox(t, 5.6, rx, 750, rw, 'Pouch against cylinder', 'Same chemistry family, different case: a 10440 Li-ion cell holds 350 mAh in 9 g; at the pouch\'s ' + me.mAh + ' mAh it would weigh ' + fmtN(ionSame, 1) + ' g, ' + fmtN(ionSame - me.g, 1) + ' g more (derived).', { size: 24 });
+    source(t, 'Datasheets: Jauch, Energizer; the 10440 from akkuteile.de. Wh/kg derived: energy ÷ mass (the 10440 at 3.6 V); E91 read from its constant-power curve. Cycles: datasheets, Battery University, the eneloop claim.', { t0: 3 });
   }
 });
 

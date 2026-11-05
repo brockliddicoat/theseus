@@ -4,12 +4,13 @@
 # places the board in the mouse frame (default: board top at y = 5.03 mm, z shifted -2.88 mm).
 import json, math, os, sys, time
 import numpy as np
+import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/README.md)
 from shapely.geometry import Point, box, LineString, Polygon
 from shapely.ops import unary_union
 from shapely import affinity
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.abspath(os.path.join(HERE, '..'))
+OUT = os.path.abspath(os.environ.get('PCB_OUT') or os.path.join(HERE, '..'))   # PCB_OUT: build somewhere else first
 sys.path.insert(0, HERE)
 
 from geom import Mesh, GLB, polys, cap, walls, raised, slab, cyl_mesh, trs

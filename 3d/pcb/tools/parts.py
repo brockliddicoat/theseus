@@ -100,6 +100,12 @@ def fp_slide():
     return dict(pads=[pad(1, 0.15, -2.75, 1.1, 0.8, r=0.08), pad(2, 0.15, 2.75, 1.1, 0.8, r=0.08)], body=(1.8, 4.6))
 
 
+def fp_slide_bridge():
+    # micro slide switch bridging the power-switch window, actuator down through the window's centre: its two
+    # terminals land on the board in front of and behind the window, 1.2 x 0.8 mm, 5.9 mm apart [REP]
+    return dict(pads=[pad(1, 0.0, -2.95, 1.2, 0.8, r=0.08), pad(2, 0.0, 2.95, 1.2, 0.8, r=0.08)], body=(1.8, 5.2))
+
+
 def fp_encoder():
     # TTC-style vertical mechanical encoder (as on the Sora V2): 3 signal pins + 2 frame tabs [REP]
     P = [pad('A', 0.3, 2.5, 1.45, 1.45, shape='circle', drill=0.9),
@@ -147,7 +153,7 @@ def fp_fid():
 
 FP = {'0402': lambda: fp_chip('0402'), '0603': lambda: fp_chip('0603'), '0805': lambda: fp_chip('0805'),
       'L2016': fp_ind2016, 'QFN32': fp_qfn32, 'MODULE': fp_module, 'SENSOR': fp_sensor, 'USBC': fp_usbc,
-      'SOT666': fp_sot666, 'JSTSH3': fp_jst_sh3, 'SLIDE': fp_slide, 'ENC': fp_encoder, 'BRACKET': fp_bracket,
+      'SOT666': fp_sot666, 'JSTSH3': fp_jst_sh3, 'SLIDE': fp_slide, 'SLIDEB': fp_slide_bridge, 'ENC': fp_encoder, 'BRACKET': fp_bracket,
       'TACT': fp_tact, 'SOD523': fp_sod523, 'GT01': fp_gt01, 'TP': fp_tp, 'TPTHT': fp_tp_tht, 'FID': fp_fid}
 
 
@@ -182,11 +188,11 @@ add('U4', 'SOT666', -9.6, 44.0, 0, 'USB ESD', '[REP] USBLC6-2P6-class flow-throu
     {'1': 'USB_DP', '6': 'USB_DP', '3': 'USB_DN', '4': 'USB_DN', '2': GND, '5': 'NC'})
 add('D1', 'SOD523', 8.45, 45.0, 45, 'VBUS TVS', '[REP] 5 V TVS at the Sora V2 diamond position [MEAS]', 'passives',
     {'1': GND, '2': 'VBUS'})
-add('J2', 'JSTSH3', 14.0, 3.2, -90, 'BAT', '[REP] JST SH 3-pin side-entry, rotated sideways (#71)', 'connectors',
+add('J2', 'JSTSH3', 8.6, -0.9, 180, 'BAT', '[REP] JST SH 3-pin side-entry, opening toward the back: the battery plug pulls out toward the tail (F26.4)', 'connectors',
     {'1': 'VBAT', '2': 'NTC', '3': GND, 'MP1': GND, 'MP2': GND})
 add('J3', 'JSTSH3', -12.0, 3.4, 90, 'SIDE', '[REP] JST SH 3-pin side-entry for the side-button wires (#51)', 'connectors',
     {'1': 'SB5', '2': 'SB4', '3': GND, 'MP1': GND, 'MP2': GND})
-add('SW3', 'SLIDE', 13.9, 20.1, 0, 'POWER', '[REP] micro side-actuated slide switch in the Sora square window -> nPM1300 SHPHLD (ship mode)', 'connectors',
+add('SW3', 'SLIDEB', 10.725, 20.095, 0, 'POWER', '[REP] micro slide switch centred over the power-switch window, actuator down through it (F26.8) -> nPM1300 SHPHLD (ship mode)', 'connectors',
     {'1': 'SW_PWR', '2': GND})
 
 # --- PMIC external parts (nPM1300 reference topology: 2 buck inductors, in/out caps, pull-ups) [DS topology]

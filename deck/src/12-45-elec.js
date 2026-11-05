@@ -3,7 +3,10 @@
    (#25, pairing through the receiver, left with the receiver slides: Brock, F2.42.)
    Sources are in 10-f-elec.js and 05-data.js (logiRgb, logiSuperstrike).
    ============================================================================================ */
-ideaSheet({
+/* Brock (F27, elc_sheet2, 2/10): "remove this slide, add the no rgb light to the slide about having no optical components, and
+   put it next to the web software". Removed (kept here, not registered): the no-RGB point is on srf_encoder now, which moved
+   next to the web software as "nothing lights up but the sensor"; the haptics panel goes with this slide. */
+const HIDDEN_elc_sheet2 = ({
   id: 'elc_sheet2', ch: 'elec', theme: 'night', title: 'No RGB LED, optional haptics', src: ['logiRgb', 'logiSuperstrike', 'elcBrock'],
   panels: [
     {

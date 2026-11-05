@@ -26,7 +26,7 @@ try {
   const { scene, camera, renderer } = studio;
   const withParts = Q.get('parts') !== '0';     // parts=0 -> same-footprint stand-ins
   const pcb = await buildPcb({ placement: Q.get('placement') || 'origin', radio: Q.get('parts') === '0' ? null : buildRadioModule, sensor: Q.get('parts') === '0' ? null : buildSensorModule, lens: Q.get('parts') === '0' ? null : buildSnapLens, pressExaggerate: num('exaggerate', 1),
-    ...(Q.has('glb') ? { glb: Q.get('glb') } : {}),
+    ...(Q.has('glb') ? { glb: Q.get('glb') } : {}), ...(Q.has('layout') ? { layout: Q.get('layout') } : {}),
     ...(withParts ? { gt01: buildGT01, millmax: buildMillMax3305, wheel: buildScrollWheel } : {}) });
   scene.add(pcb);
   const U = pcb.userData;

@@ -3,12 +3,13 @@
 //                       modules (Brock: "use the long antenna design i've attached", "it should be black instead of
 //                       blue"); the board turns it so the antenna end sits away from the wheel's metal.
 //   buildSensorModule — the sensor as a small module board with 2 × 8 castellated gold half-holes soldered to the main
-//                       board (as Razer's FP-3 and the PAW39xx-class modules are built), a label on top.
+//                       board (as Razer's FP-3 and the PAW39xx-class modules are built), laser-marked PAW3970DM-T5QU on
+//                       top (Brock, F26.9: no code on it; the suffix is derived, see the marking below).
 //   buildSnapLens     — the clear snap-on lens under the board: two optical domes under the sensor's aperture, a peg
 //                       and snap head at each end through the board.
 // All three: millimetres, +Y up, origin on the main board's top surface at the part's centre. The board is 1.0 thick.
-// The sensor is a proposal ("next-gen PixArt FrameSync-class", never a named part); the module's silicon is
-// Nordic's nRF54LM20A; no maker's logos, IDs or certification marks are drawn.
+// The sensor is PixArt's PAW3970 (F21.6: the Viper V4 Pro's Focus Pro 50K Gen-3 is a renamed PAW3970); the radio
+// module's silicon is Nordic's nRF54LM20A; no maker's logos, IDs or certification marks are drawn.
 import * as THREE from 'three';
 import { partMaterials } from './lib/materials.js';
 import { extrude, lathe, sweep, rectSection, roundedRectShape, circlePath, filletPolygon, meshOf, disposeTree } from './lib/geom.js';
@@ -113,7 +114,8 @@ export function buildRadioModule(opts = {}) {
 }
 
 // ============================================================================================ sensor module
-export const SENSOR_SPEC = { size: [8.4, 9.8, 0.6], pads: '2 × 8 castellated, 1.2 mm pitch', label: 'proposal (next-gen PixArt FrameSync-class sensor in a module package)' };
+export const SENSOR_SPEC = { size: [8.4, 9.8, 0.6], pads: '2 × 8 castellated, 1.2 mm pitch', label: 'PixArt PAW3970 in a module package, marked PAW3970DM-T5QU (suffix derived)',
+  marking: ['PAW3970DM', '-T5QU'] };
 
 export function buildSensorModule(opts = {}) {
   const M = partMaterials(opts.materials);
@@ -151,20 +153,23 @@ export function buildSensorModule(opts = {}) {
     const ring = new THREE.Shape(); ring.absarc(0, 0, 0.42, 0, TAU, false); ring.holes.push(circlePath(0.26));
     root.add(meshOf(yFlip(extrude(ring, { depth: 0.012, curveSegments: 24 })).translate(x, y0 + T, z), M.goldSatin, 'fiducial'));
   }
-  const tex = canvasTexture(800, 860, (x, w, h) => {
-    x.fillStyle = '#ecebe7'; x.fillRect(0, 0, w, h);
-    x.fillStyle = '#141414';
-    const g = codePattern(18, 3950), cs = 24, ox = 70, oy = 110;
-    for (let j = 0; j < 18; j++) for (let i = 0; i < 18; i++) if (g[j][i]) x.fillRect(ox + i * cs, oy + j * cs, cs, cs);
-    x.save(); x.translate(w - 90, 90); x.rotate(Math.PI / 2);
-    x.font = '700 60px Inter, "Helvetica Neue", Arial, sans-serif'; x.fillText('FS-NEXT  ES', 0, 0);
-    x.font = '600 48px Inter, "Helvetica Neue", Arial, sans-serif'; x.fillText('PROPOSAL', 0, 74);
-    x.restore();
+  // the marking (Brock, F26.9: "remove the qr code off the sensor and engrave the sensor with PAW3970 and then whatever
+  // letters are on the actual sensor to make it look like a real sku ... derive"): laser-marked into the black top, no
+  // sticker, no code. PixArt's gaming navigation chips read <PMW|PAW><model>DM-T<n>QU (PMW3360DM-T2QU, PMW3389DM-T3QU,
+  // PAW3395DM-T6QU, PAW3950DM-T5QU: DM is the 16-pin package); the PAW3970 keeps its predecessor PAW3950's -T5QU.
+  const tex = canvasTexture(1024, 448, (x, w, h) => {
+    x.clearRect(0, 0, w, h);
+    x.fillStyle = '#b4b3ae'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = '700 132px Inter, "Helvetica Neue", Arial, sans-serif'; x.fillText(SENSOR_SPEC.marking[0], w / 2, h * 0.33, w * 0.86);
+    x.font = '700 116px Inter, "Helvetica Neue", Arial, sans-serif'; x.fillText(SENSOR_SPEC.marking[1], w / 2, h * 0.74, w * 0.86);
   });
-  const labMat = M.label.clone(); own.add(labMat); if (tex) labMat.map = tex; labMat.roughness = 0.55; labMat.clearcoat = 0.1;
-  const lab = meshOf(yFlip(extrude(roundedRectShape(4.8, 5.1, 0.12), { depth: 0.06, front: { r: 0.02, s: 1 }, curveSegments: 3 })).translate(0, y0 + T, 0), labMat, 'label');
-  // planar UVs on the label's top
-  { const p = lab.geometry.attributes.position, uv = new Float32Array(p.count * 2); for (let i = 0; i < p.count; i++) { uv[i * 2] = (p.getX(i) + 2.4) / 4.8; uv[i * 2 + 1] = 1 - (p.getZ(i) + 2.55) / 5.1; } lab.geometry.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); }
+  const labMat = new THREE.MeshStandardMaterial({ color: 0xffffff, map: tex, transparent: true, roughness: 0.85, metalness: 0,
+    depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+  own.add(labMat);
+  // read from above with the nose up (the user's right on the right, -x): u runs along -x, the text's top toward +z
+  const lab = new THREE.Mesh(quadXZ(6.6, 2.9, y0 + T + 0.004).rotateY(Math.PI), labMat); lab.name = 'marking';
+  lab.renderOrder = 2;
+  if (!tex) lab.visible = false;
   root.add(lab);
   root.userData.spec = { ...SENSOR_SPEC };
   root.userData.parts = { substrate: sub, castellations: cast, label: lab };

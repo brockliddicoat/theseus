@@ -20,3 +20,7 @@ deck/vendor/
 deck/.snapshot/
 # builders' isolated test builds (tools/build.py --out=<code>)
 deck/dist/main-*.html
+
+# builders' temporary 3D build folders
+3d/.k2*/
+3d/pcb/.k2tmp/

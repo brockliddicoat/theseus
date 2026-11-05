@@ -3,6 +3,7 @@
 # glTF node per component (shared meshes per template), mirrored into the physical three.js frame.
 import math
 import numpy as np
+import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/README.md)
 from shapely.geometry import Polygon, Point, box, LineString
 from shapely.ops import unary_union
 from shapely import affinity
@@ -366,6 +367,33 @@ def slide_template():
     return d
 
 
+def slide_bridge_template():
+    """slide switch bridging the power-switch window (F26.8): body 1.8 x 1.0 x 5.2, a terminal at each end on the board"""
+    d = {}
+    yb = Y0 + 0.02
+    body = rbox_mesh(1.8, 1.0, 5.2, 0.08, rb=0.06)
+    merge_into(d, 'black_plastic', body, trs(0, yb, 0))
+    cover = rbox_mesh(1.86, 0.08, 5.26, 0.05, rb=0.02)
+    merge_into(d, 'steel', cover, trs(0, yb + 1.0, 0))
+    for s in (-1, 1):
+        merge_into(d, 'steel', box_mesh(1.86, 0.9, 0.06), trs(0, yb + 0.45, s * 2.61))
+        merge_into(d, 'tin', box_mesh(1.0, 0.08, 0.6), trs(0, Y0 + 0.04, s * 2.95))
+        f = fillet_mesh(0.0, 0.3, 1.0, 0.18, y0=Y_PAD - 0.002, nu=4, nv=6)
+        merge_into(d, 'solder', f, trs(0, 0, s * 3.15) @ trs(ry_deg=-90 * s))
+    return d
+
+
+def slide_bridge_knob_template():
+    """the actuator: it hangs from the body down through the window to 0.25 mm under the board, ridged underneath"""
+    d = {}
+    knob = rbox_mesh(1.0, 1.32, 0.9, 0.08, rb=0.08)
+    merge_into(d, 'black_plastic', knob, trs(0, -1.25, 0))
+    ridge = box_mesh(0.95, 0.06, 0.12)
+    for z in (-0.25, 0.0, 0.25):
+        merge_into(d, 'black_plastic', ridge, trs(0, -1.3, z))
+    return d
+
+
 def slide_knob_template():
     d = {}
     knob = rbox_mesh(1.0, 0.75, 0.9, 0.08, rb=0.08)
@@ -476,27 +504,43 @@ def millmax_template():
 
 
 def gt01_standin_template(tilt=20.0):
-    """same-footprint stand-in for parts/gt01.js (used only if that module is unavailable): wedge base + tilted body."""
+    """same-footprint stand-in for parts/gt01.js (used only if that module is unavailable), on K1's side profile of
+    2026-11-05 (scratchpad k1/GT01-PLUNGER.md, traced from Gateron's side-on render): the body 12.8 x 5.8 x 6.5 tilted 20 deg
+    and lifted 1.669 mm (switch frame S -> world: Y = ys cos t - zs sin t + lift, Z = ys sin t + zs cos t), the bottom
+    housing (black) to the shoulder at ys 2.5 and its wedge down to the board (feet at z +6.20 and -6.30, the back face
+    4.5 deg off vertical), the clear cover above, and the plunger at zs 2.0 with its cap turned 90 deg: 2.1 mm across x
+    1.5 mm along, a rounded top 0.80 mm proud. Pins COM / NO / NC straight down at z +5.08 / 0 / -5.08."""
     d = {}
     plunger = {}
     t = math.radians(tilt)
-    Lb, Wb, Hb = 12.8, 5.8, 6.5
-    y_base = Y_PAD + 0.26 + 0.02
-    # wedge: thin at the front (+z), thick at the rear
-    prof = Polygon([(-Lb / 2, 0), (Lb / 2, 0), (Lb / 2, 0.45), (-Lb / 2, 0.45 + Lb * math.tan(t))])   # (length, height)
-    m = Mesh(); slab(m, prof, -Wb / 2, Wb / 2)                                                       # width along y
-    PERM_W = np.array([[0, 1, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 0, 1]], float)  # x<-y(width), y<-z(height), z<-x(length)
-    merge_into(d, 'black_plastic', m, trs(0, y_base, 0) @ PERM_W)
-    merge_into(d, 'black_plastic', cyl_mesh(0.42, 1.5, seg=18, y0=y_base - 1.5), trs(-1.45, 0, 2.54))   # key peg
-    # tilted body: base block + translucent cover
-    Tb = trs(0, y_base + 0.45 + Lb / 2 * math.tan(t), 0, rx_deg=math.degrees(t))
-    merge_into(d, 'black_plastic', rbox_mesh(Wb, 2.0, Lb, 0.25, rb=0.1), Tb)
-    merge_into(d, 'gt01_cover', rbox_mesh(Wb, Hb - 2.0, Lb, 0.4, rb=0.35), Tb @ trs(0, 2.0, 0))
-    merge_into(d, 'nickel', box_mesh(1.0, 0.1, 7.2), Tb @ trs(0, 3.2, -0.5))
+    Lb, Wb, Hb, SH = 12.8, 5.8, 6.5, 2.5
+    lift = 6.4 * math.sin(t) - 0.52
+    yb = Y0 - 0.018                                         # the board's top (the part's world Y = 0)
+    S = trs(0, yb + lift, 0, rx_deg=tilt)                   # switch frame -> component frame
+    merge_into(d, 'black_plastic', rbox_mesh(Wb, SH, Lb, 0.25, rb=0.1), S)
+    merge_into(d, 'gt01_cover', rbox_mesh(Wb, Hb - SH, Lb, 0.4, rb=0.35), S @ trs(0, SH, 0))
+    merge_into(d, 'nickel', box_mesh(1.0, 0.1, 7.2), S @ trs(0, 3.2, -0.5))
+    # the bottom housing's wedge under the tilted body: board line from the back foot to where the body's base plane
+    # meets the board, up its back face to the body's back-bottom corner (world z, y)
+    z_meet = lift / math.sin(t) * math.cos(t)
+    prof = Polygon([(-6.30, 0.0), (z_meet, 0.0), (-6.4 * math.cos(t), 6.4 * math.sin(t) + lift)])
+    m = Mesh(); slab(m, prof, -Wb / 2 + 0.05, Wb / 2 - 0.05)
+    PERM_W = np.array([[0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, 1]], float)   # (z, y, x) -> (x, y, z)
+    PERM = np.array([[0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]], float)
+    # slab() extrudes the (z, y) profile along mesh y between the two values: map profile (u, v, w) -> (x=w, y=v, z=u)
+    P, N, I = m.arrays()
+    P2 = np.c_[P[:, 1], P[:, 2], P[:, 0]]; N2 = np.c_[N[:, 1], N[:, 2], N[:, 0]]
+    w = Mesh(); w.add(P2, N2, I[:, [0, 2, 1]])
+    merge_into(d, 'black_plastic', w, trs(0, yb, 0))
     for i, z in enumerate((5.08, 0.0, -5.08)):
-        merge_into(d, 'enig', box_mesh(0.6, 2.6, 0.4), trs(0, y_base - 1.0, z))
-    plunger['mesh'] = rbox_mesh(2.0, 0.9, 1.4, 0.25, rb=0.25)
-    plunger['T'] = Tb @ trs(0, Hb - 0.25, 3.6)
+        merge_into(d, 'enig', box_mesh(0.6, 2.6, 0.4), trs(0, yb - 1.3, z))
+    # the plunger, built in S about its own axis: flange under the cover's ceiling, cap through the cover, rounded top
+    pm = Mesh()
+    pm.merge(box_mesh(2.3, 0.43, 2.9), trs(0, 5.765 - 6.55, 0))
+    pm.merge(box_mesh(2.1, 6.55 - 5.98, 1.5), trs(0, (5.98 + 6.55) / 2 - 6.55, 0))
+    pm.merge(cyl_mesh(0.75, 2.1, seg=24, axis='x'), trs(-1.05, 0.0, 0))
+    plunger['mesh'] = pm
+    plunger['T'] = S @ trs(0, 6.55, 2.0)
     plunger['axis'] = [0.0, -math.cos(t), -math.sin(t)]
     return d, plunger
 
@@ -544,7 +588,7 @@ def template_for(c):
     if key not in TEMPLATES:
         TEMPLATES[key] = {'L2016': inductor_template, 'QFN32': qfn32_template, 'MODULE': module_template,
                           'SENSOR': sensor_template, 'USBC': usbc_template, 'SOT666': sot666_template,
-                          'SOD523': sod523_template, 'JSTSH3': jst_template, 'SLIDE': slide_template,
+                          'SOD523': sod523_template, 'JSTSH3': jst_template, 'SLIDE': slide_template, 'SLIDEB': slide_bridge_template,
                           'ENC': encoder_template, 'BRACKET': bracket_template, 'TACT': tact_template}.get(fp, lambda: {})()
     return key
 
@@ -603,8 +647,8 @@ def add_components(glb, L, B):
                                   extras=dict(kind='component', ref='LENS', layer='lens', value='clip-on lens',
                                               label='[PR] smaller clip-on lens (#37), clear PC; clips through two PCB slots', smd=False)))
             meta.append(dict(ref='LENS', fp='LENS', value='clip-on lens', label='[PR] smaller clip-on lens', layer='lens', x=round(-c['x'], 3), z=round(c['z'], 3), rot=0))
-        if c['fp'] == 'SLIDE':
-            kd = slide_knob_template()
+        if c['fp'] in ('SLIDE', 'SLIDEB'):
+            kd = slide_knob_template() if c['fp'] == 'SLIDE' else slide_bridge_knob_template()
             kids2 = [glb.node('SW3_knob_%s' % mat, mesh=mi) for mi, mat, nt in mesh_ids('KNOB', kd, 'knob')]
             nodes.append(glb.node('SW3_knob', children=kids2, T=place_T(c['x'], c['z'] + 0.55, c['rot']),
                                   extras=dict(kind='component', ref='SW3_knob', layer='connectors', smd=False, value='ON')))
@@ -681,8 +725,9 @@ def add_wires(glb):
     """battery lead (J2) and side-button lead (J3): 3 thin wires each, lightly twisted; layout frame then mirrored."""
     nodes, ntri = [], 0
     leads = {
-        # J2: plug mouth at layout x ~ 18.3 (opening faces +x), lead runs to the battery tab behind the board
-        'BATLEAD': dict(path=[(18.0, 1.5, 3.2), (19.6, 1.6, 3.2), (20.3, 1.8, 1.8), (20.1, 1.9, -2.5), (18.6, 2.0, -6.5), (14.0, 2.2, -8.6), (9.5, 2.4, -9.2)],
+        # J2 faces the back (F26.4): the plug's tail at layout z -5.5, the lead runs straight back to the battery behind
+        # the board (its tab end toward the board; centre at mouse z -22.7, 7.5 mm up: 3d/shell plate options)
+        'BATLEAD': dict(path=[(8.6, 1.45, -5.45), (8.6, 1.5, -6.6), (8.75, 1.85, -8.0), (9.1, 2.25, -9.4), (9.4, 2.45, -10.6)],
                         mats=['wire_red', 'wire_white', 'wire_black']),
         # J3: plug mouth at layout x ~ -16.2 (opening faces -x); the lead heads for the side-button board on the left
         # wall and is drawn as a short stub (the side board belongs to the shell asset)

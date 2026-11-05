@@ -1,10 +1,11 @@
 # Theseus PCB layout assembly + DRC + 2D plot.  python3 tools/layout.py [--plot out.png]
 import json, math, sys, os
 import numpy as np
+import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/README.md)
 from shapely.geometry import Polygon, Point, LineString, box, MultiPolygon, GeometryCollection
 from shapely.ops import unary_union
 from shapely import affinity
-from board import sora_outline, wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, P
+from board import theseus_outline, wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, P
 import parts
 from parts import C, world_pads, FP, GND
 
@@ -52,7 +53,7 @@ def load():
 
 
 def build():
-    outline = sora_outline()
+    outline = theseus_outline()
     cuts = [wheel_cut_poly(), square_cut_poly()]
     npth = []
     for k, (x, z, d, kind) in SORA_HOLES.items():

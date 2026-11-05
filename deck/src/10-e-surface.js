@@ -40,7 +40,7 @@ Object.assign(SRC, {
   srf_al6061: { t: 'Protolabs CNC material data sheet, aluminum 6061-T651/T6: nominal density 2.70 Mg/m³', u: 'https://www.protolabs.com/media/h54d0gnp/2026-026-cnc-material-data-sheet_aluminum-6061-t651_t6.pdf' },
   srf_ss304: { t: 'Protolabs CNC material data sheet, stainless steel 304: density 0.285 lb/in³ (7.89 g/cm³)', u: 'https://www.protolabs.com/media/tltj24um/2026-026-cnc-material-data-sheet_stainless-steel-304.pdf' },
   srf_delrin: { t: 'Delrin 150 data sheet (Plastics International): specific gravity 1.42; water absorption 0.25% in 24 h, 0.9% at saturation; dynamic μ 0.20 (ASTM D3702)', u: 'https://www.plasticsintl.com/media/05oith4t/delrin-150-data-sheet.pdf' },
-  srf_wheel3d: { t: 'This deck\'s 3D scroll wheel (3d/parts/scrollwheel.js): Ø22.74 × 7.0 mm, six thin arms (0.95 → 0.55 mm wide) on an open hub, a thin crowned rim (0.55 mm at the edges), a coarse diamond knurl of 72 teeth, 30° each way, 0.215 mm deep, points flattened; 508.4 mm³ of wheel, 0.900 g in AZ31B and 1.373 g in 6061; 24-slot code disc; axle held 10.8 mm apart at the encoder boss and the support', u: '', n: 'A design model built for the deck to Brock\'s 0.9 g, not a measured part.' },
+  srf_wheel3d: { t: 'This deck\'s 3D scroll wheel (3d/parts/scrollwheel.js): Ø22.74 × 7.0 mm, six thin arms (0.95 → 0.55 mm wide) on an open hub, a thin crowned rim (0.55 mm at the edges), a fine straight knurl of 144 grooves, 0.5 mm pitch, 0.12 mm deep, running out before the edges; 508.5 mm³ of wheel, 0.900 g in AZ31B and 1.373 g in 6061; a magnetic encoder in TTC\'s envelope: a diametric magnet Ø3 × 0.8 mm on the rotor\'s end, a 3 × 3 mm Hall IC 0.4 mm from it on a small board, a 24-notch detent star under a bronze leaf spring, a clear polycarbonate top over a black bottom housing, a nickel-silver frame and four pins', u: '', n: 'A design model built for the deck to Brock\'s 0.9 g, not a measured part.' },
   srf_is3403: { t: 'IS 3403:1981, knurling (the DIN 82 system): straight (RAA), left- or right-hand (RBL, RBR), left-right with raised or indented points (RGE, RGV; once called diamond knurling) and crossed (RKE, RKV); a 90° profile; a 30° helix; pitches 0.5, 0.6, 0.8, 1.0, 1.2 and 1.6 mm; "no attempt has been made to correlate pitch with workpiece diameter"', u: 'https://law.resource.org/pub/in/bis/S01/is.3403.1981.pdf' },
   srf_pmm: { t: 'PMM, Magnesium Scroll Wheel [PULSE, CYBER OP, OP1 8k, OP1w 4k]: magnesium alloy, weight 1.0 g; "the magnesium wheel only" (a scroll wheel pin and a spare ship beside it)', u: 'https://pmm.gg/products/magnesium-scroll-wheel-op1-8k-op1w-4k-pulse-cyber-op-for-modkit', n: 'The maker\'s figure for its own part.' },
   srf_eloEnc: { t: 'EloShapes spec sheets via research/data/mice.json: encoder type of 35 mice (optical: Razer Viper V4 Pro, DeathAdder V4 Pro; ZOWIE EC2-DW, U2-DW)', u: 'https://www.eloshapes.com/' },
@@ -623,7 +623,7 @@ S({
     header(t, 'Six-arm magnesium wheel');
     const K = SRF_WH, cut = Math.round(100 * (K.pmm - K.g) / K.pmm);
     captions(t, [[0.6, `Six arms on an open hub and a thin crowned rim: ${fmtN(K.g, 1)} g of magnesium, ${cut} % under PMM's ${fmtN(K.pmm, 1)} g wheel. In aluminium the same wheel would weigh ${fmtN(K.alG, 2)} g.`],
-      [5.6, 'The tread is a coarse diamond knurl: 72 teeth round, cut 30° each way and flattened on top, three to every notch. It bites whichever way the finger pushes, and the flat tops keep the points off the skin.']]);
+      [5.6, 'The tread is a fine straight knurl: 144 grooves round, six to every notch. They cross the way the finger pushes, so it grips, and they run out before the edges, which stay smooth.']]);
     const lx = LM, ly = 280, lw = 900, lh = 680, th = srf_whTurn(t);
     demoWindow(lx, ly, lw, lh, tileA(t, 0.2, 0));
     /* the wheel: from the side in 2D (the arms, the hub, the rim; the encoder and bracket hidden), a close render in 3D */
@@ -660,7 +660,7 @@ S({
     srf_knurlStrip(t, sx, sy, sw, sh, th, ks);
     rr(sx, sy, sw, sh, 6, null, inkA(0.18), 1.2, ks);
     { const ka = ep(t, 5.0, 5.5), sbx = sx + sw, mmPx = sh / K.W, yb = ly + lh - 22;
-      text('Diamond knurl: 72 teeth, 1.0 mm pitch, 30° each way', sx, yb, { role: 'small', size: 23, weight: 600, color: C.ink2, alpha: ka, maxW: sw - 140 });
+      text('Straight knurl: 144 grooves, 0.5 mm pitch, 0.12 mm deep', sx, yb, { role: 'small', size: 23, weight: 600, color: C.ink2, alpha: ka, maxW: sw - 140 });
       line(sbx - mmPx, yb - 8, sbx, yb - 8, { color: C.mute, w: 2, alpha: ka }); line(sbx - mmPx, yb - 15, sbx - mmPx, yb - 1, { color: C.mute, w: 2, alpha: ka }); line(sbx, yb - 15, sbx, yb - 1, { color: C.mute, w: 2, alpha: ka });
       text('1 mm', sbx - mmPx - 12, yb, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ka }); }
     /* the glance: the weight against PMM's wheel, before → after, and the three wheels by weight */
@@ -674,135 +674,145 @@ S({
   }
 });
 
-/* ============================== the optical encoder, in TTC's form ==============================
-   Brock (F9.21): "optical encoders look no different than normal mouse encoders". Drawn after TTC's optical encoder and this
-   deck's 3D model of it (scene 'wheel'): a black housing in a stamped steel frame, the axle 11 mm up, a 24-slot code disc of
-   radius 4, a U-shaped light gate straddling its lower rim with windows A and B 1¼ slots apart (quadrature), five pins.
-   Front view, mm: x = -Z, y = 11 - Y (down), origin the axle. The housing is drawn 0.6 mm taller than the model, as Brock says
-   the real ones are ("usually they're a little taller"). */
+/* ============================== the magnetic encoder ==============================
+   Brock (F27, on `sealed`): "i want to use a magnetic encoder that doesn't get affected by dust and have a transparent top
+   housing to see when it's broken like switches"; decided: "Yes, switch everywhere". The part is this deck's 3D model
+   (3d/parts/scrollwheel.js, scene 'wheel'): TTC's envelope kept (4.6 × 11 mm on the board, 15 mm tall, the axle 11 mm up),
+   a black bottom housing up to the split at 7.85 mm and a clear polycarbonate top over it; inside, an orange POM rotor with
+   a 24-notch detent star under a bronze leaf spring, a diametric magnet Ø3 × 0.8 mm on its end, and a 3 × 3 mm Hall IC on a
+   small board 0.4 mm from the magnet; a nickel-silver frame on the wheel side, four pins. */
+Object.assign(SRC, {
+  srf_kth5791: { t: 'Conntek KTH5791, 3D Hall mouse-wheel encoder sensor (product page): AB quadrature with an index pin, 16 to 1024 counts a turn, QFN 3 × 3 mm; 0.8 mA typical and 1.5 mA maximum at 3.3 V; "寿命 10M+ 次" (life 10M+ cycles) with "无机械磨损" (no mechanical wear)', u: 'https://conntek-design-center-bu1.pages.dev/products/3d-hall/KTH5791', n: 'Maker\'s figures. The 10M+ is the sensor\'s life; the detent spring still wears.' },
+  srf_mpsMag: { t: 'MPS (Sensima), application note "Using MagAlpha devices to replace optical encoders", January 2015: optical encoders "are subject to problems due to contamination (dirt) obstructing the optical path, leading to failure"; magnetic sensors\' "insensitivity to dust and dirt" is a "significant advantage"', u: 'https://media.monolithicpower.cn/document/appnote_Using%20MagAlpha%20devices%20to%20replace%20optical%20encoders.pdf', n: 'A magnetic-sensor maker\'s app note: claim-level.' },
+  srf_kailhEnc: { t: 'Kailh 13 mm rotary mouse scroll-wheel encoders, Global Sources catalogue listings: "300000 life" (15 to 30 g force) and "800000 life" (25 to 40 g force)', u: 'https://www.globalsources.com/Encoder/Kailh-13mm-Rotary-Mouse-Scroll-Wheel-Encoder--1235123766p.htm', n: 'Maker\'s ratings; the 300,000 listing is 1234977385p.' },
+  srf_razerAllOptical: { t: 'Razer, "Why the Razer Viper V4 Pro goes all in on optical" (blog, 2026): with contact encoders, "wear can show up over time as unwanted scroll behavior, including ghost inputs or reverse scrolling"', u: 'https://www.razer.com/blog/why-the-razer-viper-v4-pro-goes-all-in-on-optical' },
+  srf_avagoWheel: { t: 'Avago ADNK-3043 wireless optical mouse design kit, user guide: the wheel encoder\'s IR LED is "pulsed on for approximately 40 µsec every 2 msec while in ACTIVE mode"', u: 'https://manualedistruzioni.it/avago/mouse/adnk-3043-nd24/guide/1vb0s', n: 'No LED current given, so no optical figure in mA.' },
+  srf_mdtTmr: { t: 'TechPowerUp, "MDT unveils new tunneling magnetoresistance (TMR) sensors for gaming devices" (12 November 2024): "less than 0.3mA"; scroll-wheel sensors in development', u: 'https://techpowerup.com/328720/mdt-unveils-new-tunneling-magnetoresistance-tmr-sensors-for-gaming-devices' }
+});
 /** wheel angle (rad) over time: up for 6 s, back down for 6 s */
 const srf_scrollAt = t => { const p = ((t % 12) + 12) % 12; return 0.55 * (p < 6 ? p : 12 - p); };
-const SRF_ENC = { slots: 24, rIn: 2.95, rOut: 3.72, rA: 3.38, wA: [0, 3.38], wB: [-1.09, 3.2] };
-/** is light reaching window w (front-view mm from the axle) at wheel angle th? (a slot spans half a pitch) */
-function srf_gate(w, th) { const P = TAU / SRF_ENC.slots, an = Math.atan2(w[1], w[0]) - th; return (((an % P) + P) % P) < P / 2; }
-/** the encoder from the front with its face plate cut away. o = { th (wheel angle) }. Returns anchors in stage px */
-function srf_encFront(o = {}) {
-  const th = o.th || 0, out = {}, P = TAU / SRF_ENC.slots;
-  const steel = TH ? '#C3C8CF' : '#A9AFB7', tin = TH ? '#B4B9C0' : '#9AA0A8', housing = TH ? '#2A2B30' : '#202125', cavity = TH ? '#141518' : '#0F1012';
-  const disc = TH ? '#45474E' : '#3A3C43', hub = TH ? '#5A5C63' : '#4E5057', ec = TH ? 'rgba(10,10,12,0.85)' : 'rgba(236,235,231,0.42)';
-  const fp = (f, col, st, w) => { f(); if (col) { G.fillStyle = col; G.fill('evenodd'); } if (st) { G.strokeStyle = st; G.lineWidth = lw(w || 1.1); G.lineJoin = 'round'; G.stroke(); } };
-  /* five pins, and the frame's two bent legs */
-  for (const px of [-2.5, -1.25, 0, 1.25, 2.5]) fp(() => { G.beginPath(); G.rect(px - 0.25, 10.9, 0.5, 2.3); }, tin, ec, 0.8);
-  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.moveTo(sx * 4.3, 10.8); G.lineTo(sx * 5.45, 10.8); G.lineTo(sx * 5.45, 11.6); G.quadraticCurveTo(sx * 5.6, 12.7, sx * 6.45, 13.0); G.lineTo(sx * 6.15, 13.45); G.quadraticCurveTo(sx * 4.75, 13.0, sx * 4.3, 11.7); G.closePath(); }, steel, ec, 0.8);
-  /* the black housing, open at the face: its walls round a dark cavity (the top corner chamfered, as on TTC's) */
-  fp(() => { G.beginPath(); G.moveTo(-5.05, -4.6); G.lineTo(3.6, -4.6); G.lineTo(5.5, -2.7); G.lineTo(5.5, 11); G.lineTo(-5.5, 11); G.lineTo(-5.5, -4.15); G.quadraticCurveTo(-5.5, -4.6, -5.05, -4.6); G.closePath(); }, housing, ec, 1.1);
-  fp(() => { G.beginPath(); G.moveTo(-4.95, -4.08); G.lineTo(3.4, -4.08); G.lineTo(4.95, -2.5); G.lineTo(4.95, 10.4); G.lineTo(-4.95, 10.4); G.closePath(); }, cavity, null);
-  /* the steel face plate, cut away (a phantom), with its collar round the axle; its top tabs and side clips stay */
-  G.save(); G.setLineDash([lw(6), lw(5)]); fp(() => { G.beginPath(); G.rect(-5.5, -4.6, 11, 15.6); G.moveTo(2.4, 0); G.arc(0, 0, 2.4, 0, TAU); }, null, rgba(steel, 0.6), 1.3); G.restore();
-  for (const [x0, x1] of [[2.0, 3.6], [-1.9, -0.6]]) fp(() => { G.beginPath(); G.rect(x0, -5.05, x1 - x0, 0.55); }, steel, ec, 0.8);
-  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.rect(sx > 0 ? 5.5 : -5.78, 2.2, 0.28, 1.5); }, steel, ec, 0.8);
-  /* the code disc: 24 slots near its rim, turning with the wheel; a slot over a window passes the light */
-  fp(() => { G.beginPath(); G.arc(0, 0, 4.0, 0, TAU); for (let i = 0; i < SRF_ENC.slots; i++) { const a0 = th + i * P, a1 = a0 + P / 2; G.moveTo(SRF_ENC.rOut * Math.cos(a0), SRF_ENC.rOut * Math.sin(a0)); G.arc(0, 0, SRF_ENC.rOut, a0, a1); G.lineTo(SRF_ENC.rIn * Math.cos(a1), SRF_ENC.rIn * Math.sin(a1)); G.arc(0, 0, SRF_ENC.rIn, a1, a0, true); G.closePath(); } }, disc, ec, 0.9);
-  fp(() => { G.beginPath(); G.arc(0, 0, 1.65, 0, TAU); }, hub, ec, 1);
-  fp(() => { G.beginPath(); G.arc(0, 0, 1.2, th - Math.PI * 0.8, th + Math.PI * 0.8); G.closePath(); }, TH ? '#D4D8DD' : '#B9BEC5', ec, 0.9);
-  /* the light gate: a U holder straddling the rim (its near arm drawn see-through), the emitter in it */
-  const hold = TH ? '#33353B' : '#2E3035';
-  fp(() => { G.beginPath(); G.rect(-2.54, 4.4, 4.0, 0.55); }, hold, ec, 0.9);
-  G.save(); G.globalAlpha = PA * 0.45; fp(() => pathRR(-2.54, 2.35, 4.0, 2.6, 0.22), hold, null); G.restore();
-  fp(() => pathRR(-2.54, 2.35, 4.0, 2.6, 0.22), null, ec, 0.9);
-  for (const w of [SRF_ENC.wA, SRF_ENC.wB]) if (srf_gate(w, th)) { G.beginPath(); G.arc(w[0], w[1], 0.34, 0, TAU); G.fillStyle = rgba(C.hero, 0.95); G.fill(); G.beginPath(); G.arc(w[0], w[1], 0.62, 0, TAU); G.fillStyle = rgba(C.hero, 0.25); G.fill(); }
-  out.disc = SP(4.0 * Math.cos(-2.4), 4.0 * Math.sin(-2.4)); out.axle = SP(-0.5, -0.9); out.frame = SP(-5.64, 2.95); out.pins = SP(-2.5, 12.6);
-  out.gate = SP(-0.54, 3.4); out.top = SP(0, -5.05); out.base = SP(0, 13.45); out.s = SP(1, 0)[0] - SP(0, 0)[0];
-  return out;
-}
-/** the light gate, magnified and unrolled: the emitter above, the slotted rim, the two windows (A, B) below, and their
-   signals over the last few seconds. (x, y, w, h) its box; th(tt) the wheel angle at slide time tt */
-function srf_gateDetail(t, x, y, w, h, thAt, a) {
+/** how each kind of encoder counts a step, small, in the box (x, y, w, h): 'mech' (contacts rub a ring of pads), 'opt' (light
+   through slots, onto a detector) or 'mag' (a magnet's field, read by a Hall chip). th = the wheel's angle; dust 0..1 brings
+   specks in: they block the optical one's light and leave the magnetic one counting. Stage px, drawn straight (no part()) */
+function srf_encIcon(kind, x, y, w, h, th, dust, a) {
   if (a <= 0.003) return;
-  const M = 56, P = SRF_ENC.rA * TAU / SRF_ENC.slots, th = thAt(t), cx = x + w / 2;
-  const sA = SRF_ENC.rA * Math.atan2(SRF_ENC.wA[1], SRF_ENC.wA[0]), sB = SRF_ENC.rA * Math.atan2(SRF_ENC.wB[1], SRF_ENC.wB[0]), sM = (sA + sB) / 2;
-  const X = s => cx + (s - sM) * M, xA = X(sA), xB = X(sB), litA = srf_gate(SRF_ENC.wA, th), litB = srf_gate(SRF_ENC.wB, th);
-  const yE = y + 64, yS = y + 176, hS = (SRF_ENC.rOut - SRF_ENC.rIn) * M, yD = yS + hS + 56;
+  const cx = x + w / 2, cy = y + h / 2, sp = 'rgba(205,190,160,0.95)', dk = '#2B2D32', ec = inkA(0.28);
   G.save(); G.globalAlpha = a;
-  /* the emitter: a small block with its lens facing down; light fills the gap down to the rim */
-  const lx0 = Math.min(xA, xB) - 0.16 * M, lx1 = Math.max(xA, xB) + 0.16 * M;
-  rr(lx0 - 26, yE - 46, lx1 - lx0 + 52, 46, 6, TH ? '#2E3035' : '#2A2C31', null, 0, 1);
-  rr(lx0, yE - 8, lx1 - lx0, 8, 3, rgba(C.hero, 0.9), null, 0, 1);
-  G.fillStyle = rgba(C.hero, 0.16); G.fillRect(lx0, yE, lx1 - lx0, yS - yE);
-  /* the rim, unrolled: slots move under the light as the wheel turns */
-  const x0 = x + 30, x1 = x + w - 30;
-  G.save(); G.beginPath(); G.rect(x0, yS - 2, x1 - x0, hS + 4); G.clip();
-  G.fillStyle = TH ? '#45474E' : '#3A3C43'; G.fillRect(x0, yS, x1 - x0, hS);
-  const s0 = SRF_ENC.rA * th, k0 = Math.floor((sM - (cx - x0) / M - s0) / P) - 1, k1 = Math.ceil((sM + (x1 - cx) / M - s0) / P) + 1;
-  for (let k = k0; k <= k1; k++) { const sa = s0 + k * P, xa = X(sa), xb = X(sa + P / 2); G.fillStyle = TH ? '#141518' : '#0F1012'; G.fillRect(xa, yS, xb - xa, hS);
-    /* light through a slot that sits under the lens */
-    const la = Math.max(xa, lx0), lb = Math.min(xb, lx1); if (lb > la) { G.fillStyle = rgba(C.hero, 0.5); G.fillRect(la, yS, lb - la, hS); } }
-  G.restore();
-  /* below the rim: light only where a slot lets it through, down to the detector */
-  for (let k = k0; k <= k1; k++) { const sa = s0 + k * P, la = Math.max(X(sa), lx0), lb = Math.min(X(sa + P / 2), lx1); if (lb > la) { G.fillStyle = rgba(C.hero, 0.16); G.fillRect(la, yS + hS, lb - la, yD - yS - hS); } }
-  rr(lx0 - 26, yD, lx1 - lx0 + 52, 46, 6, TH ? '#2E3035' : '#2A2C31', null, 0, 1);
-  for (const [xx, lit, nm] of [[xA, litA, 'A'], [xB, litB, 'B']]) {
-    const ww = 0.26 * M; rr(xx - ww / 2, yD, ww, 8, 2, lit ? C.hero : (TH ? '#6E7077' : '#5A5C62'), null, 0, 1);
-    if (lit) { G.fillStyle = rgba(C.hero, 0.22); G.beginPath(); G.arc(xx, yD + 4, 22, 0, TAU); G.fill(); }
-    text(nm, xx, yD + 82, { role: 'label', size: 22, color: lit ? C.heroText : C.mute, align: 'center' });
+  rrPath(x, y, w, h, 12); G.fillStyle = inkA(0.05); G.fill(); G.strokeStyle = inkA(0.12); G.lineWidth = 1.2; G.stroke();
+  G.save(); rrPath(x, y, w, h, 12); G.clip();
+  if (kind === 'mech') {
+    /* a contact ring face-on, turning: 12 brass pads; a leaf wiper rubs it at the top, its tip worn bright */
+    const R = h * 0.36, c0 = [cx + 6, cy + 4];
+    G.beginPath(); G.arc(c0[0], c0[1], R, 0, TAU); G.fillStyle = '#3A3C43'; G.fill(); G.strokeStyle = ec; G.lineWidth = 1; G.stroke();
+    for (let i = 0; i < 12; i++) { const a0 = th + i * TAU / 12, a1 = a0 + TAU / 24;
+      G.beginPath(); G.arc(c0[0], c0[1], R * 0.94, a0, a1); G.arc(c0[0], c0[1], R * 0.58, a1, a0, true); G.closePath(); G.fillStyle = '#C79A55'; G.fill(); }
+    G.beginPath(); G.arc(c0[0], c0[1], R * 0.3, 0, TAU); G.fillStyle = '#55575E'; G.fill();
+    const tip = [c0[0] - 2, c0[1] - R * 0.78];
+    G.beginPath(); G.moveTo(x + 10, y + 18); G.lineTo(tip[0] - 26, y + 18); G.quadraticCurveTo(tip[0] - 8, y + 18, tip[0], tip[1]);
+    G.strokeStyle = '#D6DADF'; G.lineWidth = 3.2; G.lineCap = 'round'; G.stroke();
+    for (let i = 0; i < 4; i++) { const ang = -Math.PI / 2 - 0.5 + i * 0.32; line(c0[0] + Math.cos(ang) * R * 0.98, c0[1] + Math.sin(ang) * R * 0.98, c0[0] + Math.cos(ang) * R * 1.12, c0[1] + Math.sin(ang) * R * 1.12, { color: '#E8C98F', w: 1.6, alpha: a * 0.7 }); }
+  } else if (kind === 'opt') {
+    /* emitter above, a slotted rim moving across, the detector below; light reaches it through a slot, unless a speck sits
+       in the path */
+    const ex = cx - 8, ew = 34, yE = y + 22, yS = cy - 4, hS = 16, yD = y + h - 26, P = 22, off = ((th * 24) % P + P) % P;
+    rr(ex - ew / 2, yE - 14, ew, 14, 3, dk, null, 0, a); rr(ex - 9, yE - 4, 18, 4, 2, C.hero, null, 0, a);
+    rr(ex - ew / 2, yD, ew, 14, 3, dk, null, 0, a);
+    G.fillStyle = '#4A4C53'; G.fillRect(x, yS, w, hS);
+    let open = false;
+    for (let s = -P; s < w + P; s += P) { const sx = x + s + off; G.fillStyle = '#121316'; G.fillRect(sx, yS, P / 2, hS); if (ex >= sx + 2 && ex <= sx + P / 2 - 2) open = true; }
+    const blocked = dust > 0.5, lit = open && !blocked;
+    G.fillStyle = rgba(C.hero, 0.22); G.fillRect(ex - 6, yE, 12, yS - yE);
+    if (open) { G.fillStyle = rgba(C.hero, 0.22); G.fillRect(ex - 6, yS + hS, 12, (blocked ? yS + hS + 10 : yD) - yS - hS); }
+    rr(ex - 9, yD, 18, 4, 2, lit ? C.hero : '#6E7077', null, 0, a);
+    if (dust > 0.003) { const k = clamp(dust * 2); G.globalAlpha = a * k; G.beginPath(); G.ellipse(ex + 1, yS + hS + 9, 7, 5, 0.3, 0, TAU); G.fillStyle = sp; G.fill();
+      for (const [dx, dy, r] of [[22, -30, 2.2], [30, 22, 1.8], [-24, 26, 2.4], [40, -6, 1.6]]) { G.beginPath(); G.arc(cx + dx, cy + dy, r, 0, TAU); G.fill(); }
+      G.globalAlpha = a; }
+  } else if (kind === 'sw') {
+    /* a mechanical microswitch from the side: the body, the plunger, the leaf inside; no LED (struck through, top right) */
+    const bx0 = x + 22, bw0 = w * 0.56, by0 = cy - 14, bh0 = 40, press = 0.5 + 0.5 * Math.sin(th * 3);
+    rr(bx0 + bw0 * 0.42, by0 - 12 + 4 * press, 16, 14, 3, '#C9CCD2', null, 0, a);
+    rr(bx0, by0, bw0, bh0, 6, dk, inkA(0.3), 1, a);
+    G.beginPath(); G.moveTo(bx0 + 10, by0 + 28); G.quadraticCurveTo(bx0 + bw0 * 0.5, by0 + 10 + 6 * press, bx0 + bw0 - 12, by0 + 18 + 6 * press); G.strokeStyle = '#C08F4E'; G.lineWidth = 2.6; G.lineCap = 'round'; G.stroke();
+    circle(bx0 + bw0 - 12, by0 + 29, 3, { fill: '#B4B9C0', alpha: a });
+    for (const px of [0.22, 0.5, 0.78]) rr(bx0 + bw0 * px - 2, by0 + bh0, 4, 14, 1, '#B4B9C0', null, 0, a);
+    const lx = x + w - 34, ly = y + 30; warm(lx, ly, 18, C.hero, 0.25 * a); circle(lx, ly, 6, { fill: rgba(C.hero, 0.6), alpha: a });
+    line(lx - 14, ly + 14, lx + 14, ly - 14, { color: C.ink, w: 2.4, alpha: a });
+  } else if (kind === 'rgb') {
+    /* an RGB LED's glow, struck through */
+    const lx = cx, ly = cy - 4;
+    warm(lx, ly, 44, '#ff3cac', 0.35 * a); warm(lx + 10, ly + 6, 34, '#3cc8ff', 0.3 * a); warm(lx - 8, ly + 8, 30, '#7dff6a', 0.22 * a);
+    rr(lx - 9, ly - 6, 18, 12, 3, '#E8E6E0', null, 0, a);
+    line(lx - 34, ly + 30, lx + 34, ly - 30, { color: C.ink, w: 3, alpha: a });
+  } else {
+    /* the magnet face-on, its north and south halves turning; the Hall chip beside it; the field arcs over to it, through dust */
+    const R = h * 0.26, mc = [x + w * 0.36, cy], chip = [x + w * 0.76, cy];
+    G.save(); G.strokeStyle = rgba(C.hero, 0.75); G.lineWidth = 1.8;
+    for (const k of [1.25, 1.7, 2.2]) for (const sd of [1, -1]) { G.beginPath(); G.ellipse((mc[0] + chip[0]) / 2 - 4, cy, (chip[0] - mc[0]) / 2 + 8 * k, R * k * 0.75, 0, sd > 0 ? Math.PI : 0, sd > 0 ? TAU : Math.PI); G.stroke(); }
+    G.restore();
+    for (const [a0, col] of [[th, '#D8DBE0'], [th + Math.PI, '#8E939B']]) { G.beginPath(); G.moveTo(mc[0], mc[1]); G.arc(mc[0], mc[1], R, a0 - Math.PI / 2, a0 + Math.PI / 2); G.closePath(); G.fillStyle = col; G.fill(); }
+    G.beginPath(); G.arc(mc[0], mc[1], R, 0, TAU); G.strokeStyle = ec; G.lineWidth = 1; G.stroke();
+    rr(chip[0] - 13, cy - 13, 26, 26, 3, '#111214', inkA(0.3), 1, a); circle(chip[0], cy, 4.5, { fill: C.hero, alpha: a });
+    if (dust > 0.003) { G.globalAlpha = a * clamp(dust * 2); G.fillStyle = sp;
+      for (const [dx, dy, r] of [[-4, -14, 2.4], [6, 10, 2.0], [-12, 6, 1.8], [14, -4, 2.2], [-34, 28, 1.6], [30, -28, 1.8]]) { G.beginPath(); G.arc((mc[0] + chip[0]) / 2 + dx, cy + dy, r, 0, TAU); G.fill(); }
+      G.globalAlpha = a; }
   }
-  /* a 1 mm scale bar */
-  line(x1 - M, yD + 112, x1, yD + 112, { color: C.mute, w: 2 }); line(x1 - M, yD + 104, x1 - M, yD + 120, { color: C.mute, w: 2 }); line(x1, yD + 104, x1, yD + 120, { color: C.mute, w: 2 });
-  text('1 mm', x1, yD + 146, { role: 'label', size: 19, color: C.mute, align: 'right' });
-  G.restore();
-  return { yE, yS, hS, yD, xA, xB, lx1, x0, x1 };
+  G.restore(); G.restore();
 }
 S({
-  id: 'srf_encoder', ch: 'surface', theme: 'night', title: 'Optical encoder', settle: 10, ideas: ['encoder', 84],
-  src: ['srf_razerScroll', 'srf_tpuV4', 'srf_eloEnc', 'srf_ttc', 'srf_wheel3d', 'srf_fmSupport', 'srf_doc'],
+  /* moved next to the web software (Brock on elc_sheet2: "add the no rgb light to the slide about having no optical
+     components, and put it next to the web software"; he chose this slide as that one) */
+  id: 'srf_encoder', ch: 'elec', after: 'software', theme: 'night', title: 'Nothing lights up but the sensor', settle: 10, ideas: ['encoder', 84, 99], three: ['wheel'], rev: 1,
+  answers: [['2/10, no note: the optical encoder', 'Rebuilt round the magnetic encoder: what it fixes against mechanical and optical, sourced'],
+    ['(sealed) "you\'re still drawing the encoder poorly"', 'The encoder is the 3D model\'s render (its flat twin in 2D), not a sketch'],
+    ['(sealed) "a magnetic encoder that doesn\'t get affected by dust"', 'Magnet and Hall sensor in 3D and 2D; dust stops light, not a field (MPS)'],
+    ['(sealed) "a transparent top housing to see when it\'s broken like switches"', 'Clear polycarbonate top over the rotor, magnet and spring, called out'],
+    ['(elc_sheet2) "remove this slide"', 'Removed; its haptics panel went with it'],
+    ['(elc_sheet2) "add the no rgb light to the slide about having no optical components"', 'Here: no RGB LED, with Logitech\'s 30 h → 22 h, beside the encoder and the switches'],
+    ['(elc_sheet2) "put it next to the web software"', 'This slide now follows the web software slide']],
+  src: ['srf_mpsMag', 'srf_kailhEnc', 'srf_razerAllOptical', 'srf_kth5791', 'srf_avagoWheel', 'srf_mdtTmr', 'clk_razerV4bat', 'clk_vortexV4', 'logiRgb', 'srf_wheel3d', 'srf_doc'],
   draw: t => {
-    header(t, 'Optical encoder');
-    captions(t, [[0.6, 'TTC\'s optical encoder looks like any mouse encoder: the same steel frame, bushing and pins. Inside, light counts the steps.'], [5.6, 'Nothing touches, so nothing wears. Only 4 of the 35 mice in my data count with light, and the solid shell keeps dust out of it too.']]);
-    /* the glance: Razer's figure, big, then the chart and the contacts that go away */
-    const hx = LM;
-    srf_hl(t, 0.5, hx, 450, '3.3×', { size: 150, label: 'Optical against mechanical', word: 'More reliable', wordBelow: true, wordSize: 50, sub: 'Razer\'s figure for its optical scroll wheel.', maxW: 440 });
-    pill(hx, 646, 'claim', ep(t, 1.0, 1.4), { by: 'Razer' });
-    const bx = hx + 196, bw = 160, kb = ep(t, 1.4, 2.4, E.snap);
-    [['Mechanical', 1, C.comp, C.ink2], ['Optical', 3.3, C.hero, C.heroText]].forEach(([nm, v, col, tc], i) => {
-      const yy = 700 + i * 50, ka = ep(t, 1.2 + i * 0.2, 1.6 + i * 0.2);
-      text(nm, hx, yy + 8, { role: 'small', size: 25, weight: i ? 800 : 600, color: i ? C.ink : C.ink2, alpha: ka });
-      rr(bx, yy - 9, Math.max(18, bw * v / 3.3 * kb), 18, 9, col, null, 0, ka);
-      text(v === 1 ? '1×' : '3.3×', bx + bw * v / 3.3 * kb + 14, yy + 9, { font: 'disp', size: 28, weight: 800, color: tc, alpha: ka * kb, tnum: true });
+    header(t, 'Nothing lights up but the sensor');
+    captions(t, [[0.6, 'Light costs battery: an optical wheel and optical switches keep pulsing LEDs, and RGB runs all the time. In Theseus only the sensor lights up.'],
+      [5.6, 'The wheel counts with a magnet, so dust can\'t block it, and its top is clear like a clear-top switch: you can see the spring and the magnet.']]);
+    const th = srf_scrollAt(t), dust = ep(t, 3.2, 4.4);
+    /* the glance: the three lights Theseus leaves out, each with what it costs a rival */
+    const rows = [
+      { k: 'mag', name: 'Wheel encoder: magnetic', how: 'Optical ones pulse an LED and stop when dust blocks the slot; contact ones wear out (Kailh: 0.3–0.8 M cycles). A magnet does neither.', fig: '10M+ cycles', by: 'Conntek' },
+      { k: 'sw', name: 'Main switches: mechanical', how: 'Optical switches pulse an LED in each. The GT01s draw nothing until pressed (worked out on the GT01 slide, in Clicks).', fig: '18 % → 0 %', sub: 'of a V4 Pro\'s battery', by: 'derived' },
+      { k: 'rgb', name: 'No RGB LED', how: 'RGB cycling cuts a Logitech G703 from 30 h to 22 h. Theseus shows its battery in the web software instead.', fig: '27 % → 0 %', sub: 'of a G703\'s hours', by: 'Logitech' }];
+    const ix = LM, iw = 140, ih = 112, tx = ix + iw + 22, xr = 724, tw0 = xr - tx;
+    rows.forEach((r, i) => {
+      const yy = 290 + i * 172, a = ep(t, 0.9 + i * 0.35, 1.4 + i * 0.35);
+      srf_encIcon(r.k, ix, yy, iw, ih, th, dust, a);
+      text(r.name, tx, yy + 24, { role: 'small', size: 27, weight: 800, color: C.heroText, alpha: a, maxW: tw0 });
+      text(r.how, tx, yy + 56, { role: 'small', size: 20, color: C.ink2, alpha: a, maxW: tw0, lh: 1.25 });
+      const fw = text(r.fig, tx, yy + 136, { font: 'mono', size: 25, weight: 800, color: C.heroText, alpha: a, tnum: true }).w;
+      let px = tx + fw + 12;
+      if (r.sub) px += text(r.sub, px, yy + 136, { role: 'small', size: 20, color: C.mute, alpha: a }).w + 12;
+      px += pill(px, yy + 136, r.by === 'derived' ? 'derived' : 'claim', a, r.by === 'derived' ? {} : { by: r.by }) + 14;
     });
-    srf_better(t, 2.0, hx, 794, 'Reliability, higher is better', 'r');
-    srf_ba(t, 3.0, hx, 900, '3', '0', { size: 64, label: 'Sliding contacts that wear', net: 'Nothing touches the code disc', maxW: 440 });
-    /* the drawing: the encoder from the front, cut open; the light gate magnified beside it */
-    const D = [560, 280, 1280, 680]; demoWindow(D[0], D[1], D[2], D[3], tileA(t, 0.2, 0));
-    const th = srf_scrollAt(t), ka = ep(t, 0.5, 1.1), cx = 1010, cy = 498;
-    const E1 = part(cx, cy, 30, () => srf_encFront({ th }), { alpha: ka });
-    text('Front, face plate cut away', D[0] + 40, D[1] + 56, { role: 'label', size: 21, color: C.mute, alpha: ka });
-    callout(t, 1.6, E1.disc, 'Code disc', { to: [790, 390], side: 'l', color: C.ink, sub: '24 slots' });
-    callout(t, 1.9, E1.axle, 'Axle', { to: [790, 488], side: 'l', color: C.ink, sub: 'D-shaped end' });
-    callout(t, 2.2, E1.frame, 'Steel frame', { to: [790, 600], side: 'l', color: C.ink, sub: 'Tabs and legs' });
-    callout(t, 2.5, E1.pins, 'Five pins', { to: [790, 880], side: 'l', color: C.ink });
-    /* the detail: a ring round the light gate, a leader to its magnified view */
-    const kd = ep(t, 2.8, 3.3), gx = 1260, gw = 540;
-    if (kd > 0.003) {
-      circle(E1.gate[0], E1.gate[1], 2.5 * E1.s * E.out3(kd), { color: C.heroText, w: 2, alpha: kd });
-      line(E1.gate[0] + 2.5 * E1.s, E1.gate[1], gx, E1.gate[1], { color: C.heroText, w: 1.5, alpha: kd * 0.7, dash: [6, 5] });
-    }
-    const gd = srf_gateDetail(t, gx, 330, gw, 560, srf_scrollAt, kd);
-    if (gd) {
-      text('Light gate, magnified', gx + 30, 350, { role: 'label', size: 21, color: C.mute, alpha: kd });
-      text('IR emitter', gd.lx1 + 44, gd.yE - 14, { role: 'label', size: 21, color: C.ink, alpha: kd });
-      text('Slotted rim', gd.x0, gd.yS - 16, { role: 'label', size: 21, color: C.ink, alpha: kd });
-      text('Detectors', gd.lx1 + 44, gd.yD + 30, { role: 'label', size: 21, color: C.ink, alpha: kd });
-      /* the two signals: square waves a quarter-cycle apart; which one leads gives the direction */
-      const x0 = gx + 70, x1 = gx + gw - 30, N = 160, win = 3.0, ty = gd.yD + 200;
-      [['A', SRF_ENC.wA, 0], ['B', SRF_ENC.wB, 1]].forEach(([nm, wv, i]) => {
-        const yb = ty + i * 66, hh = 34;
-        text(nm, gx + 30, yb - 6, { font: 'disp', size: 26, weight: 800, color: C.ink, alpha: kd });
-        G.save(); G.globalAlpha = kd; G.strokeStyle = C.hero; G.lineWidth = 3; G.lineJoin = 'round'; G.beginPath();
-        for (let j = 0; j <= N; j++) { const tt = Math.max(0, t - win + win * j / N), v = srf_gate(wv, srf_scrollAt(tt)) ? 1 : 0, xx = lerp(x0, x1, j / N), yy = yb - v * hh; j ? G.lineTo(xx, yy) : G.moveTo(xx, yy); }
-        G.stroke(); G.restore();
-      });
-      const up = ((t % 12) + 12) % 12 < 6;
-      text(up ? 'A leads: scrolling up' : 'B leads: scrolling down', gx + 30, ty + 120, { role: 'small', size: 25, weight: 700, color: C.heroText, alpha: kd });
-    }
+    /* the one current the magnetic wheel adds, honestly */
+    { const kp = ep(t, 6.4, 6.9), h0 = text('What the magnet costs: its Hall sensor draws 0.8 mA while awake, more than an optical wheel\'s pulsed LED, so Theseus wakes it only to read the wheel (proposal).', LM, 836, { role: 'small', size: 21, color: C.mute, alpha: kp, maxW: xr - LM, lh: 1.3 }).h;
+      const pw = pill(LM, 836 + h0 + 2, 'claim', kp, { by: 'Conntek' }); pill(LM + pw + 12, 836 + h0 + 2, 'claim', kp, { by: 'Avago' }); }
+    /* the part itself: the 3D model, its clear top over the rotor, magnet and spring; the wheel behind it, to the left */
+    const D = [748, 272, 1092, 688]; demoWindow(D[0], D[1], D[2], D[3], tileA(t, 0.2, 0));
+    const box = [D[0], D[1], 800, D[3]];
+    const wv = { view: [-0.62, 0.72, -0.32], zoom: 2.6, target: [-9.0, 8.6, 0.2], scroll: th, xray: 0, explode: 0 };
+    const sv = Object.assign({}, wv, { view2d: 'top', zoom: 3.7, target: [-9.0, 9, 0.6], hide2d: /support|spin\/wheel\/|spin\/axle\//, ground2d: false });
+    let at;
+    if (V2D.on) { srf_3d(t, 0.4, 'wheel', box[0], box[1], box[2], box[3], sv); at = (re, f) => v2dAt('wheel', sv, box, re, f); }
+    else { const drawn = srf_3d(t, 0.4, 'wheel', box[0], box[1], box[2], box[3], wv); at = (re, f) => srf_at3('wheel', wv, box, drawn, re, f); }
+    rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: V2D.on ? 'The magnetic encoder from above, through its clear top' : 'The magnetic encoder, the wheel behind it (render)', role: 'small', size: 24, weight: 600, color: C.faint, gap: 16 }], D[0] + 26, D[1] + D[3] - 26, { alpha: ep(t, 0.6, 1.0) });
+    /* the callouts, stacked down the tile's right in the order their parts sit, so no leader crosses another */
+    const C0 = [D[0] + 330, D[1] + 300], items = [
+      { re: /encoder\/cover$/, f: [0.78, 1, 0.86], l: 'Clear top housing', s: 'Polycarbonate: the spring and magnet in sight' },
+      { re: /magnet\/magnetN$/, f: [0.5, 1, 0.5], l: 'Magnet', s: 'Ø3 × 0.8 mm, turns with the wheel' },
+      { re: /hallSensor\/hallIC$/, f: [0.5, 1, 0.5], l: 'Hall sensor', s: '3 × 3 mm, 0.4 mm from the magnet' },
+      { re: /encoder\/detentSpring$/, f: [0.5, 1, 0.2], l: 'Detent spring', s: 'Bronze, on a 24-notch star: the click you feel' },
+      { re: /frame\/tabTop$/, f: [0.5, 1, 0.5], l: 'Nickel-silver frame', s: 'Holds it to the board, four pins' }];
+    items.forEach((it, i) => { it.p = at(it.re, it.f) || [C0[0] + 30 * i, C0[1] + 40 * i]; });
+    items.slice().sort((p, q) => p.p[1] - q.p[1]).forEach((it, i) => {
+      callout(t, 1.6 + 0.35 * items.indexOf(it), it.p, it.l, { to: [D[0] + 772, D[1] + 84 + i * 114], side: 'r', color: C.ink, sub: it.s, maxW: 300 });
+    });
   }
 });

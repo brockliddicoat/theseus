@@ -9,6 +9,7 @@
 # edge of the USB-C tab (y = 306.5 px) is placed at mouse z = 52.5 mm so that the scroll wheel lands
 # under the shell's wheel slot (scan: wheel centre at z ~ 38 mm).
 import math
+import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/README.md)
 from shapely.geometry import Polygon, Point, box
 from shapely import affinity
 
@@ -56,6 +57,53 @@ def sora_outline():
     poly = poly.buffer(-0.35, join_style=1).buffer(0.35, join_style=1)   # open: r 0.35 mm on convex corners
     # the wing's outer front corners are visibly rounder in the photo (r ~ 0.6 mm)
     return poly.simplify(0.004)
+
+
+def filleted(corners):
+    """closed polygon through corners [(x, z, r), ...] with a tangent arc of radius r at each corner (r = 0: sharp)"""
+    import numpy as np
+    pts = []
+    n = len(corners)
+    for i in range(n):
+        p = np.array(corners[i][:2], float); r = corners[i][2]
+        a = np.array(corners[i - 1][:2], float) - p; b = np.array(corners[(i + 1) % n][:2], float) - p
+        la, lb = np.linalg.norm(a), np.linalg.norm(b)
+        a, b = a / la, b / lb
+        ang = math.acos(max(-1.0, min(1.0, float(a @ b))))
+        if r <= 0 or ang > math.pi - 1e-6:
+            pts.append(tuple(p)); continue
+        d = r / math.tan(ang / 2)
+        assert d < 0.5 * min(la, lb) + 1e-6 or d < min(la, lb), ('fillet too big at', corners[i])
+        c = p + (a + b) / np.linalg.norm(a + b) * (r / math.sin(ang / 2))
+        p1, p2 = p + a * d, p + b * d
+        a1, a2 = math.atan2(p1[1] - c[1], p1[0] - c[0]), math.atan2(p2[1] - c[1], p2[0] - c[0])
+        da = (a2 - a1 + math.pi) % (2 * math.pi) - math.pi          # the short way round
+        k = max(2, int(abs(da) / math.radians(3)))                  # a vertex every 3 degrees
+        for j in range(k + 1):
+            t = a1 + da * j / k
+            pts.append((c[0] + r * math.cos(t), c[1] + r * math.sin(t)))
+    return Polygon(pts)
+
+
+# The Theseus board (Brock, 2026-11-05 01:43, F26.5 and F26.7). Changed from the Sora V2 trace:
+# - the wings come forward 2.77 mm (front edge z 46.23 -> 49.0) so the GT01s (top-front corner 8.24 mm ahead of the
+#   middle pin, 3d/parts/gt01.js) sit over board everywhere;
+# - the back is as wide as the front: both at x = +/-19.4 (they were 19.03 at the wings, 18.52 at the back), the small
+#   notches (the "ears" at z 12.4 to 15.4) are gone and the sides run straight;
+# - every corner is rounded: wing corners r 2.0 / 1.2, waist r 1.6, the USB-C tab r 0.6 / 0.8, the rear corners r 4.7;
+# - the two rear mounting holes (MH3, MH4, unmoved) get 1.2 mm of board round their gold rings (was 0.53 below them).
+THESEUS_RIGHT = [  # (x, z, fillet r) on the user's right, front to back (layout frame); mirrored for the left
+    (5.31, 52.5, 0.6), (5.31, 49.76, 0.4), (6.07, 49.0, 0.6),   # USB-C tab (its 45 deg chamfer kept: CC1 runs along it)
+    (19.4, 49.0, 2.0), (19.4, 32.4, 1.2),          # switch wing
+    (15.41, 29.6, 1.6), (15.41, 17.42, 1.6),       # waist (the side-button space)
+    (19.4, 15.3, 1.6), (19.4, -5.7, 4.7),          # the back: straight side, wide rounded corner round MH3/MH4
+]
+
+
+def theseus_outline():
+    R = THESEUS_RIGHT
+    L = [(-x, z, r) for x, z, r in reversed(R)]
+    return filleted(R + L)
 
 
 def rrect(cx, cz, w, h, r):

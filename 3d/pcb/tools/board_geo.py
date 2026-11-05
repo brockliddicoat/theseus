@@ -1,6 +1,7 @@
 # Board-level geometry for the Theseus PCB: copper pours, stitching vias, mask relief, gold trim, pads, silk, inner layers.
 import math
 import numpy as np
+import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/README.md)
 from shapely.geometry import Polygon, Point, LineString, box, MultiPolygon
 from shapely.ops import unary_union
 from shapely import affinity

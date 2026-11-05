@@ -7,25 +7,35 @@ const elc_sheet1 = ideaSheet({
   id: 'elecsheet1', ch: 'elec', theme: 'paper', title: 'Conformal coat, readable switch', src: ['elcBrock', 'elcCoat', 'elcNpm', 'elcLayout'],
   panels: [
     {
-      n: 98, ev: ['datasheet', 'derived', 'proposal'], title: 'A thin conformal coat',
-      body: 'A urethane coat over the board and black epoxy on the most sensitive parts, connectors masked. Coats like this run 30 to 130 µm: about 0.06 to 0.24 g on this board.',
-      note: 'Mass assumes about 1 g/cm³ over the 18.6 cm² top side; not yet weighed.',
+      n: 98, ev: ['datasheet', 'derived', 'proposal'], title: 'A coat that keeps water off the board',
+      body: 'Sweat or a spilled drink bridges two pads on a bare board, and it shorts or corrodes. A 30 to 130 µm urethane coat seals the board, connectors masked, for 0.06 to 0.24 g: under 1 % of the mouse. Few mice do it.',
+      note: 'Mass assumes about 1 g/cm³ over the 18.6 cm² top side; not yet weighed. Coat drawn thicker than scale.',
       draw: (lt, x, y, w, h, A, a) => {
-        const ph = cyc(lt, 0, 7), sweep = clamp(ph / 0.55), s = 8.2, bx = x + w / 2, by = y + 196;
-        dLabel('Board, in section', x + 18, y + 32, { color: C.ink2, alpha: a });
-        part(bx, by, s, () => { pcbSec(-30, 30, 0, 1.2, {}); for (const [px, k] of [[-24, 'res'], [-15, 'qfn'], [-5, 'cap'], [2, 'res'], [9, 'xtal']]) smdMM(px, k); smdMM(21, 'conn'); }, { alpha: a });
-        /* the coat: a film over everything the nozzle has passed, except the masked connector */
-        const xs = x + 20 + (w - 40) * sweep, film = [];
-        const top = px => { const parts = [[-24, 1.0, 0.35], [-15, 7, 0.85], [-5, 1.6, 0.8], [2, 1.0, 0.35], [9, 2.0, 0.6]]; for (const [c, wd, hh] of parts) if (Math.abs(px - c) <= wd / 2 + 0.15) return hh + 0.25; return 0.25; };
-        for (let px = -30; px <= 15.5; px += 0.25) { const sx = bx + px * s; if (sx > xs) break; film.push([sx, by - top(px) * s]); }
-        if (film.length > 1) poly(film, { color: rgba(A, 0.9), w: 3, alpha: a });
-        G.save(); G.globalAlpha = a; G.setLineDash([4, 3]); G.strokeStyle = C.ink2; G.lineWidth = 1.5; G.strokeRect(bx + 16.8 * s, by - 3.7 * s, 8.4 * s, 3.9 * s); G.restore();
-        dLabel('Masked', bx + 21 * s, by - 4.3 * s, { align: 'center', color: C.ink2, alpha: a });
-        if (sweep < 1) { const nx = xs, ny = y + 70; G.save(); G.globalAlpha = a; G.fillStyle = C.ink2; G.beginPath(); G.moveTo(nx - 12, ny - 26); G.lineTo(nx + 12, ny - 26); G.lineTo(nx + 5, ny); G.lineTo(nx - 5, ny); G.closePath(); G.fill(); G.restore(); for (let i = -2; i <= 2; i++) line(nx, ny + 4, nx + i * 10, by - 40, { color: rgba(A, 0.5), w: 1.5, alpha: a }); }
-        /* a drop lands on the coated board and beads up */
-        const dk = clamp((ph - 0.62) / 0.2), dx = bx - 9 * s;
-        if (dk > 0) { const dy = lerp(y + 60, by - 2.2 * s, Math.min(1, dk * 1.4)); G.save(); G.globalAlpha = a; G.beginPath(); G.ellipse(dx, dy - 8, dk >= 0.7 ? 14 : 8, dk >= 0.7 ? 8 : 11, 0, 0, TAU); G.fillStyle = 'rgba(120,190,255,0.75)'; G.fill(); G.restore(); if (dk >= 0.7) dLabel('Beads up', dx, by - 4 * s, { align: 'center', color: A, weight: 800, alpha: a }); }
-        dLabel('Coat drawn thicker than scale', x + w - 18, y + h - 16, { align: 'right', alpha: a });
+        const ph = cyc(lt, 0, 6), fall = clamp((ph - 0.08) / 0.22), wet = clamp((ph - 0.3) / 0.12), s = 17, by = y + 176;
+        const parts = [[-6.5, 'qfn'], [1.5, 'res'], [6.2, 'cap']], hTop = { qfn: 0.85, res: 0.35, cap: 0.8 };
+        [[x + w * 0.26, false], [x + w * 0.74, true]].forEach(([bx, coated]) => {
+          dLabel(coated ? 'Coated' : 'Bare board', bx, y + 34, { align: 'center', color: coated ? C.heroText : C.ink2, weight: 800, alpha: a });
+          part(bx, by, s, () => { pcbSec(-11, 11, 0, 1.2, {}); for (const [px, k] of parts) smdMM(px, k); }, { alpha: a });
+          /* the coat: one film over the board and every part on it */
+          if (coated) {
+            const top = px => { for (const [c, k] of parts) { const wd = { qfn: 7, res: 1.0, cap: 1.6 }[k]; if (Math.abs(px - c) <= wd / 2 + 0.12) return hTop[k] + 0.22; } return 0.22; };
+            const film = []; for (let px = -11; px <= 11; px += 0.2) film.push([bx + px * s, by - top(px) * s]);
+            poly(film, { color: rgba(A, 0.95), w: 3, alpha: a });
+          }
+          /* the drop: it falls onto the resistor's two pads */
+          const rx = bx + 1.5 * s, ry = by - (coated ? 0.57 : 0.35) * s;
+          if (fall > 0 && fall < 1) { G.save(); G.globalAlpha = a; G.beginPath(); G.ellipse(rx, lerp(y + 50, ry - 13, E.in3(fall)), 9, 13, 0, 0, TAU); G.fillStyle = 'rgba(120,190,255,0.85)'; G.fill(); G.restore(); }
+          if (fall >= 1) {
+            G.save(); G.globalAlpha = a; G.beginPath();
+            if (coated) G.ellipse(rx, ry - 11, 14, 11, 0, 0, TAU); else G.ellipse(rx, ry + 1, lerp(10, 22, wet), lerp(10, 5, wet), 0, 0, TAU);
+            G.fillStyle = 'rgba(120,190,255,0.8)'; G.fill(); G.restore();
+            if (!coated && wet > 0.5) { const fl = 0.6 + 0.4 * Math.sin(lt * 18); warm(rx, ry, 30, C.bad, 0.45 * fl * a); }
+            dLabel(coated ? 'Beads up: dry underneath' : 'Bridges the pads: a short', bx, by + 3.2 * s, { align: 'center', color: coated ? C.heroText : C.bad, weight: 700, alpha: a * clamp(wet * 2) });
+          }
+        });
+        /* what it costs */
+        const ky = y + h - 40;
+        rich([{ s: '+0.06 to 0.24 g', font: 'mono', size: 30, weight: 800, color: C.heroText }, { s: 'under 1 % of the ' + THS.massG + ' mouse', role: 'small', size: 22, color: C.ink2, gap: 14 }], x + w / 2, ky, { align: 'center', alpha: a });
       }
     },
     {
@@ -51,3 +61,7 @@ const elc_sheet1 = ideaSheet({
   captions: [[0.6, 'Two small things that keep the one board alive: a coat against sweat and spills, and a power switch nobody has to guess.']]
 });
 elc_sheet1.after = 'elc_oneside';
+/* Brock (F27, 7/10): "show how this protects against water for very little weight, something few might do" */
+elc_sheet1.rev = 1;
+elc_sheet1.answers = [['show how this protects against water', 'The coat panel now drops water on a bare board (it shorts) and a coated one (it beads up)'],
+  ['for very little weight', '+0.06 to 0.24 g, under 1 % of the mouse, set large under the boards'], ['something few might do', 'Said in the panel: few mice do it']];
