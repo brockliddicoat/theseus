@@ -283,7 +283,7 @@ RV.add({id:'rv_spdt',ch:'click',theme:'paper',title:'Single pole, double throw',
  // The same physical rivet drives the magnified leaf, state label and travel marker in one frame.
  rvcAlpha(rvcBeat(t,3.8,4.2,7.5,8.2),()=>{rvCircle(...physical.contact,22,null,C.hero,3);rvLine([[physical.contact[0]+26,physical.contact[1]],[902,physical.contact[1]],[985,465]],C.faint,2,.8,[6,5]);});
  rvWin('Count the intentional edge.','No forced millisecond wait. Adjustable debounce keeps deliberate double-click play available.');
- rvFoot('Contact sequence slowed, not a timing trace. Electrical target: 70 µs; mechanical travel adds time before PC input. Normal SPDT internals; final switch SKU undecided.');
+ rvFoot('Contact sequence slowed, not a timing trace. Electrical target:70µs, moving or still; mechanical travel adds time before PC input. SPDT internals; switch SKU undecided.');
  }});
 RV.add({id:'rv_hotswap',ch:'click',theme:'night',title:'A switch should be replaceable',settle:20,
  from:['clk_hotswap'],feedback:['F2.08','F27','F33.6'],

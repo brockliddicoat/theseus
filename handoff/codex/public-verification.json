@@ -1,24 +1,25 @@
 {
-  "at": "2026-11-05T16:14:49.240Z",
-  "url": "https://brockliddicoat.github.io/theseus-codex-preview/?v=1793895286634",
+  "at": "2026-11-05T16:36:46.575Z",
+  "url": "https://brockliddicoat.github.io/theseus-codex-preview/?v=1793896604174",
   "httpStatus": 200,
-  "htmlSha256": "38b836799ea3ebd44af01dc6f7858d070ead54f14693b30b87cfb9332f158504",
+  "htmlSha256": "6808d31b3290d58c6979e7a0d0f4c7ec640fabf0d82d973a822fd27eb01d1292",
+  "expectedBuild": "e06360eb8101",
   "state": {
     "title": "THESEUS — ZERO COMPROMISES",
     "slides": 47,
     "primary": "#1267D8",
     "secondary": "#C7A20D",
     "count": "1 / 47",
-    "status": "Preview build b9ffd2d08636 / 2026-11-05T15:59:21+00:00\nReviews and text edits are local to this browser. Export a backup to move or share them.",
+    "status": "Preview build e06360eb8101 / 2026-11-05T16:33:56+00:00\nReviews and text edits are local to this browser. Export a backup to move or share them.",
     "build": {
-      "id": "b9ffd2d08636",
-      "at": "2026-11-05T15:59:21+00:00"
+      "id": "e06360eb8101",
+      "at": "2026-11-05T16:33:56+00:00"
     }
   },
   "manifest": {
-    "buildId": "b9ffd2d08636",
-    "scenes": 47,
-    "at": "2026-11-05T09:59:21-06:00"
+    "at": "2026-11-05T10:33:56-06:00",
+    "buildId": "e06360eb8101",
+    "scenes": 47
   },
   "errors": []
 }

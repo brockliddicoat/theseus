@@ -10,6 +10,8 @@ A new **47-scene code-native film** built from the imported Claude handoff, not 
 - Source branch: `codex/theseus-revamp-2026-11-05`, isolated from Claude’s branch.
 - Imported baseline: `7d8f926ebb8fca1653b3d30509ef6f8f60ac093e`.
 
+The current comparison-review follow-up is [CYCLE4-RELEASE.md](handoff/codex/CYCLE4-RELEASE.md): wheel/finger coupling, explicit moving-or-still electrical-target scope, and preserved playback choices across version refresh. It retains the 47-scene story and open evidence boundaries.
+
 ## The look and motion
 
 Theseus is blue. Yellow is sparse and secondary, mainly comparisons. The stage, type and chapters are black/grey/white; restrained red shows faults. The original Inter fonts and deliberately quiet grid remain. Gradients are limited to selected Theseus headline type/numbers.

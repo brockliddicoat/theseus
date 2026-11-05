@@ -1,5 +1,7 @@
 # Final Sol film: checked artifact
 
+The later comparison-review integration is documented in [CYCLE4-RELEASE.md](CYCLE4-RELEASE.md). It records the current three-patch scope and final artifact separately. The full 47-scene evidence below belongs to the initial release.
+
 ## Exact candidate
 
 - Content build ID: **b9ffd2d08636**.

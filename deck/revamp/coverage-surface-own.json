@@ -343,7 +343,13 @@
           "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
         },
         "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance.",
-        "massScope": "0.90g is AZ31B metal wheel only; separately labelled POM axle/bushing excluded. Controls are hub+tyre geometry, not matched retail weighings."
+        "massScope": "0.90g is AZ31B metal wheel only; separately labelled POM axle/bushing excluded. Controls are hub+tyre geometry, not matched retail weighings.",
+        "cycle4": {
+          "change": "Wheel face/arms/tread and the contacting fingertip use the same finite0.55rad stroke; no unexplained surface slip.",
+          "scope": "Stylized mechanical contact, not measured friction or scrolling performance. Existing wheel weight/dataset boundaries remain.",
+          "verification": "deck/tools/check-wheel-contact.cjs; deck/qa/cycle4-wheel/report.json; deck/qa/cycle4-film/report.json; handoff/codex/CYCLE4-WHEEL-INTEGRATION.md",
+          "revisionPolicy": "Scene rev unchanged; no score/note archive from this narrow correction."
+        }
       }
     },
     "rv_inserts": {

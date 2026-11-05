@@ -66,18 +66,18 @@ RV.add({id:'rv_wheel',ch:'surface',theme:'paper',title:'Less wheel. Same control
  from:['wheel'],feedback:['F22.1','F25.2','F27','F30.8','F33.7','C5'],src:['srf_wheel3d','srf_az31b','srf_delrin','srf_pmm','rv_srfAbs','rv_srfRubber','rv_srfGroup'],
  draw:t=>{
   rvHeader(t,'LESS WHEEL. SAME CONTROL.','Build the grip into the wheel. Six thin arms, a light rim, and straight grooves; not a thick rubber ring.');
-  const arms=rvstP(t,.5,4.5),rim=rvstP(t,4.7,7),knurl=rvstP(t,7.5,10.5),turn=rvstP(t,11.3,15),rot=turn*TAU/3;
+  const arms=rvstP(t,.5,4.5),rim=rvstP(t,4.7,7),knurl=rvstP(t,7.5,10.5),turn=rvstP(t,11.3,15),rot=turn*.55;
   rvLabel(t<4.7?'01 / SIX THIN MAGNESIUM ARMS':t<7.4?'02 / SEAT THE RIM':t<11?'03 / 144 STRAIGHT GROOVES':'04 / TURN THE FINISHED WHEEL',105,327,{color:C.heroText,size:22});
   rvs_wheel(411,555,181,rot,0,{arms,rim:0,grooves:0});
   if(rim>0){const rx=411+(1-rim)*365;G.save();G.beginPath();G.arc(rx,555,181,0,TAU);G.arc(rx,555,166,0,TAU,true);G.fillStyle=C.panel;G.fill();G.strokeStyle=C.ink2;G.lineWidth=2;G.stroke();G.restore();if(rim<1)rvCursor(t,rx+140,447,.7);}
   if(rim>.995)rvs_wheel(411,555,181,rot,0,{arms:1,rim:1,grooves:knurl*144});
   rvLine([[296,555],[565,555]],C.hero,6);rvCircle(411,555,11,C.panel,C.hero,3);rvLabel('SEPARATE POM AXLE / BUSHING',106,756,{size:21});
-  if(t>7.4&&t<10.8){const an=knurl*TAU;rvCursor(t,411+Math.cos(an)*195,555+Math.sin(an)*195,.5);}if(t>11&&t<15.2){const aa=-Math.PI/2+turn*.55,xx=411+Math.cos(aa)*181,yy=555+Math.sin(aa)*181;G.save();G.translate(xx,yy);G.rotate(aa+Math.PI/2);G.translate(0,-12);G.scale(.62,.36);rvFinger(0,0,Math.PI,{fill:C.panel});G.restore();rvArrow([371,350],[410+turn*90,350],C.hero,3);}
+  if(t>7.4&&t<10.8){const an=knurl*TAU;rvCursor(t,411+Math.cos(an)*195,555+Math.sin(an)*195,.5);}if(t>11&&t<15.2){const aa=-Math.PI/2+rot,xx=411+Math.cos(aa)*181,yy=555+Math.sin(aa)*181;G.save();G.translate(xx,yy);G.rotate(aa+Math.PI/2);G.translate(0,-12);G.scale(.62,.36);rvFinger(0,0,Math.PI,{fill:C.panel});G.restore();rvArrow([371,350],[410+turn*90,350],C.hero,3);}
   rvNum('0.90 g',105,837,87);rvTxt('Metal wheel only; axle separate',452,812,28,{color:C.mute});
   rvLabel('SAME-SIZE MATERIAL TEST GROUP',1033,327);rvTxt('Illustrative designs; not retail weighings',1033,372,26,{color:C.mute});
   const group=[];[.8,1.6,2.4].forEach((dep,i)=>{const yy=455+i*110,m=.624+Math.PI*(11.37**2-(11.37-dep)**2)*7*1.12/1000;rvs_wheel(1060,yy-3,31,rot,dep*31/11.37,{depth:10});rvTxt(dep.toFixed(1)+' mm rubber',1128,yy-9,27,{color:C.ink2});rvBar(1128,yy+15,532,m,2,C.mute,15);rvTxt(m.toFixed(2)+' g',1783,yy+25,31,{align:'right',weight:750});group.push(m);});
   rvStageNote('Ø22.74 × 7 mm. Same600 mm³ ABS hub; only tyre depth changes. Material densities: ABS1.04; silicone1.12g/cm³.',1033,767,758);rvTxt('PMM magnesium: 1.00 g maker claim.',1033,842,26,{color:C.mute});
   rvWin('Texture without the thick rubber ring.','The grooves run straight across the rim. The POM axle supplies a self-lubricating bearing surface where the wheel turns.');
-  rvFoot('0.90 g metal wheel from508.5mm³ atAZ31B1.77g/cm³; excludes POM axle/bushing. Same-envelope controls are calculated geometry, not an average of retail wheels. Exploded motion is a design explanation, not a manufacturing sequence.');
+  rvFoot('0.90g =508.5mm³ AZ31B at1.77g/cm³; excludes POM axle/bushing. Comparisons use equal-size calculations, not retail weighings. Assembly illustrated; not manufacturing steps.');
   rvstReport('rv_wheel',t,{phase:t<4.7?'build-six-arms':t<7.4?'seat-rim':t<11?'apply-straight-tread':'finger-turn',armBuild:arms,rimSeat:rim,grooveCount:Math.floor(knurl*144),wheelRotationRad:rot,metalWheelDesignMassG:.9,axleMassIncluded:false,controlMassesG:group});
  }});

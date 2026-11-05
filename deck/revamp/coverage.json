@@ -954,6 +954,12 @@
           "answer": "No separate methods slide; footer separates the electrical target from extra mechanical travel before PC input.",
           "verification": "Source geometry and finite causal sequence reviewed. Exact-build automated start/mid/settle record: deck/qa/mechanics-motion/report.json. Event frames and visible-state/pixel proof: deck/qa/mechanics-motion-events/report.json and proof.json. This verifies rendering, not physical performance or user acceptance.",
           "status": "implemented-verified"
+        },
+        {
+          "id": "F18.5.1",
+          "answer": "The footer explicitly restores70µs moving or still as the electrical target. The contact timeline identifies NC release; the slowed-sequence and extra physical travel statements remain.",
+          "verification": "Matched patch source hash and focused NC/transit/NO/settle renders: handoff/codex/CYCLE4-CLICK-INTEGRATION.md and deck/qa/cycle4-film/report.json. No physical latency claim.",
+          "status": "answered-presentation-scope"
         }
       ],
       "pending": []
@@ -2690,7 +2696,13 @@
           "testedHtmlSha256": "0bdd026fc91b96bf525426c4d12c744624eb5f05900eeeee05607c3096ecfbb6"
         },
         "scope": "Mechanism/linear-model presentation evidence only; not product measurement or user acceptance.",
-        "massScope": "0.90g is AZ31B metal wheel only; separately labelled POM axle/bushing excluded. Controls are hub+tyre geometry, not matched retail weighings."
+        "massScope": "0.90g is AZ31B metal wheel only; separately labelled POM axle/bushing excluded. Controls are hub+tyre geometry, not matched retail weighings.",
+        "cycle4": {
+          "change": "Wheel face/arms/tread and the contacting fingertip use the same finite0.55rad stroke; no unexplained surface slip.",
+          "scope": "Stylized mechanical contact, not measured friction or scrolling performance. Existing wheel weight/dataset boundaries remain.",
+          "verification": "deck/tools/check-wheel-contact.cjs; deck/qa/cycle4-wheel/report.json; deck/qa/cycle4-film/report.json; handoff/codex/CYCLE4-WHEEL-INTEGRATION.md",
+          "revisionPolicy": "Scene rev unchanged; no score/note archive from this narrow correction."
+        }
       }
     },
     "rv_inserts": {

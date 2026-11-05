@@ -16,7 +16,7 @@ const fs=require('fs'),path=require('path'),crypto=require('crypto');
  await page.waitForFunction('window.__ready===true',null,{timeout:90000});
  const slides=await page.evaluate(()=>DECK.slides.map((s,i)=>({id:s.id,i,title:s.title,settle:s.settle||14,from:s.from||[],src:s.src||[]})));
  const selected=slides.filter(s=>!want.length||want.includes(s.id));
- const report={file:path.resolve(file),testedHtml:path.resolve(testedHtml),htmlSha256,at:new Date().toISOString(),slideCount:slides.length,selected:selected.length,errors:[],slides:[]};
+ const report={file:path.resolve(file),testedHtml:path.resolve(testedHtml),htmlSha256,at:new Date().toISOString(),slideCount:slides.length,manifest:slides,selected:selected.length,errors:[],slides:[]};
  for(const s of selected){
   const times=[.02,1.5,3,5,7,9,12,s.settle*.4,s.settle,s.settle+2].filter((v,i,a)=>a.indexOf(v)===i).sort((a,b)=>a-b),frames=[];
   for(const t of times){

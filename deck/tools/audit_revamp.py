@@ -16,7 +16,7 @@ args = parser.parse_args()
 audit = json.loads((ROOT / 'handoff/codex/feedback-audit.json').read_text(encoding='utf-8'))
 coverage = json.loads((ROOT / 'deck/revamp/coverage.json').read_text(encoding='utf-8'))
 render = json.loads((ROOT / args.report).read_text(encoding='utf-8'))
-scenes = {s['id']: s for s in render['slides']}
+scenes = {s['id']: s for s in render.get('manifest', render['slides'])}
 expected = {c['id']: (r, c) for r in audit['ratings'] for c in r['clauses']}
 responses = defaultdict(list)
 issues = []
@@ -57,7 +57,7 @@ pending = {sid: r['pending'] for sid, r in coverage['slides'].items() if r.get('
 result = {
     'scope': 'Feedback traceability and immutable render identity; not physical or user acceptance',
     'renderReport': args.report, 'testedHtmlSha256': actual_hash,
-    'scenes': len(scenes), 'originalRatings': len(audit['ratings']),
+    'scenes': len(scenes), 'scenesRenderedInThisPass': render['selected'], 'originalRatings': len(audit['ratings']),
     'verbatimWrittenNotes': sum(bool(r.get('note')) for r in audit['ratings']),
     'originalClauses': len(expected), 'mappedOriginalClauses': len(set(expected) & responses.keys()),
     'additionalStandingClauseResponses': len(set(responses) - expected.keys()),

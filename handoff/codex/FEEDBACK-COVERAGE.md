@@ -4,7 +4,7 @@
 
 **A mapped response is not acceptance.** Explicit pending items remain open in the player and below. Removed concepts are dispositions, not completed hardware features. The original source notes are never deleted.
 
-Exact render HTML SHA-256: `f14eb56915da551d6d89a8a9fc64d38b42978a4b6ba80e689add68343d05b821`.
+Exact render HTML SHA-256: `d03279f5547da02f3124df6814eac8f0b72e1b5a5d45f038828ead77e55d4d08`.
 
 | original scene | score | clauses | implementation response or disposition |
 | --- | ---: | ---: | --- |

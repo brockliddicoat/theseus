@@ -22,6 +22,10 @@ window.RV_DB=RV_DB;
 /* Autoplay is opt-in. Reading, reviewing, editing or seeking cannot advance a slide.
    Closing a panel never silently resumes: the viewer explicitly presses Play. */
 const RV_AUTO={enabled:new URLSearchParams(location.search).get('auto')==='1',hold:2.5};
+/* A preview refresh keeps the viewer's deliberate pause without using capture mode. */
+if(new URLSearchParams(location.search).get('paused')==='1'){
+ APP.playing=false;document.getElementById('play').setAttribute('aria-label','Play');document.getElementById('playIcon').setAttribute('d','M7 5v14l11-7z');
+}
 window.RV_AUTO=RV_AUTO;
 function rvAutoBlocked(){return ['rate','edit','review','src'].some(id=>{const p=document.getElementById(id);return p&&!p.hidden;})||EDIT.on||/^(TEXTAREA|INPUT|SELECT)$/.test(document.activeElement&&document.activeElement.tagName)||!!(document.activeElement&&document.activeElement.isContentEditable);}
 function rvAutoPause(){if(APP.playing&&APP.frozenT==null){APP.tPause=slideT();APP.playing=false;document.getElementById('playIcon').setAttribute('d','M7 5v14l11-7z');document.getElementById('play').setAttribute('aria-label','Play');}rvAutoStatus();}
@@ -43,7 +47,7 @@ async function rvReloadPreview(manual=false){
  if(!rvPendingBuild||rvReloading||(!manual&&!rvCanRefresh()))return false;
  await rvFlushPending();
  if(RV_DB.status()||RATE.dirty||Object.values(RATE.pend).some(Boolean)||Object.values(EDQ).some(q=>q.busy)){const m=document.getElementById('previewUpdateMessage');if(m)m.textContent='New preview ready. Export a review backup before updating: browser storage did not save.';return false;}
- rvReloading=true;const u=new URL(location.href);u.searchParams.set('v',rvPendingBuild.buildId);if(curSlide())u.hash=curSlide().id;location.replace(u.href);return true;
+ rvReloading=true;const u=new URL(location.href);u.searchParams.set('v',rvPendingBuild.buildId);u.searchParams.set('auto',RV_AUTO.enabled?'1':'0');u.searchParams.set('paused',APP.playing?'0':'1');if(curSlide())u.hash=curSlide().id;location.replace(u.href);return true;
 }
 async function rvCheckUpdate(){
  try{const u=new URL('preview-version.json',location.href);u.searchParams.set('t',String(Date.now()));const r=await fetch(u.href,{cache:'no-store'});if(!r.ok)return false;const b=await r.json(),now=typeof RV_BUILD!=='undefined'?RV_BUILD.id:'';if(!b)return false;b.buildId=b.buildId||b.id;if(typeof b.buildId!=='string'||!b.buildId||b.buildId===now)return false;

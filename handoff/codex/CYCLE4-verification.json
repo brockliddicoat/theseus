@@ -1,0 +1,162 @@
+{
+  "build": {
+    "id": "e06360eb8101",
+    "at": "2026-11-05T16:33:56+00:00"
+  },
+  "htmlSha256": "d03279f5547da02f3124df6814eac8f0b72e1b5a5d45f038828ead77e55d4d08",
+  "baselineSourceCommit": "29d2fb51a917462b5871df5f869edf0982037bd8",
+  "baselinePublicBuild": "b9ffd2d08636",
+  "sceneCount": 47,
+  "focusedLayout": {
+    "scenes": 2,
+    "frames": 20,
+    "issueFrames": 0,
+    "errors": []
+  },
+  "wheel": {
+    "frames": 30,
+    "checks": 12,
+    "metrics": {
+      "contactSamples": 24,
+      "maxAngularPhaseErrorRad": 6.686329806493417e-08,
+      "maxParentFrameErrorRad": 1.6653345369377348e-16,
+      "maxAngularTravelDifferenceRad": 8.843990945139879e-08,
+      "observedStrokeRad": 0.55
+    },
+    "errors": []
+  },
+  "refresh": {
+    "fixture": "actual browser; all document/version responses intercepted from disk; no socket or deployment test",
+    "cases": [
+      {
+        "spec": {
+          "id": "auto-to-manual-review",
+          "openAuto": true,
+          "toggle": true,
+          "pause": true,
+          "manual": true,
+          "note": true
+        },
+        "before": {
+          "enabled": false,
+          "playing": false,
+          "t": 5,
+          "scene": "rv_cover",
+          "rateDirty": true,
+          "url": "https://theseus-review.test/index.html?2d=1&auto=1#rv_cover"
+        },
+        "after": {
+          "enabled": false,
+          "playing": false,
+          "t": 0,
+          "scene": "rv_cover",
+          "build": "review-fixture-auto-to-manual-review",
+          "url": "https://theseus-review.test/index.html?2d=1&auto=0&v=review-fixture-auto-to-manual-review&paused=1#rv_cover",
+          "note": "pending cycle4 refresh note",
+          "playLabel": "Play"
+        },
+        "modePreserved": true,
+        "pausePreserved": true
+      },
+      {
+        "spec": {
+          "id": "manual-to-auto-seek",
+          "openAuto": false,
+          "toggle": true,
+          "pause": true,
+          "manual": true
+        },
+        "before": {
+          "enabled": true,
+          "playing": false,
+          "t": 5,
+          "scene": "rv_cover",
+          "rateDirty": false,
+          "url": "https://theseus-review.test/index.html?2d=1#rv_cover"
+        },
+        "after": {
+          "enabled": true,
+          "playing": false,
+          "t": 0,
+          "scene": "rv_cover",
+          "build": "review-fixture-manual-to-auto-seek",
+          "url": "https://theseus-review.test/index.html?2d=1&v=review-fixture-manual-to-auto-seek&auto=1&paused=1#rv_cover",
+          "playLabel": "Play"
+        },
+        "modePreserved": true,
+        "pausePreserved": true
+      },
+      {
+        "spec": {
+          "id": "settled-auto-paused-refresh",
+          "openAuto": true,
+          "toggle": false,
+          "pause": true,
+          "manual": false
+        },
+        "before": {
+          "enabled": true,
+          "playing": false,
+          "t": 17,
+          "scene": "rv_cover",
+          "rateDirty": false,
+          "url": "https://theseus-review.test/index.html?2d=1&auto=1#rv_cover"
+        },
+        "after": {
+          "enabled": true,
+          "playing": false,
+          "t": 0,
+          "scene": "rv_cover",
+          "build": "review-fixture-settled-auto-paused-refresh",
+          "url": "https://theseus-review.test/index.html?2d=1&auto=1&v=review-fixture-settled-auto-paused-refresh&paused=1#rv_cover",
+          "playLabel": "Play"
+        },
+        "modePreserved": true,
+        "pausePreserved": true
+      },
+      {
+        "spec": {
+          "id": "playing-auto-refresh",
+          "openAuto": true,
+          "toggle": false,
+          "pause": false,
+          "manual": false
+        },
+        "before": {
+          "enabled": true,
+          "playing": true,
+          "t": 17.003300000011922,
+          "scene": "rv_cover",
+          "rateDirty": false,
+          "url": "https://theseus-review.test/index.html?2d=1&auto=1#rv_cover"
+        },
+        "after": {
+          "enabled": true,
+          "playing": true,
+          "t": 0.005100000023841858,
+          "scene": "rv_cover",
+          "build": "review-fixture-playing-auto-refresh",
+          "url": "https://theseus-review.test/index.html?2d=1&auto=1&v=review-fixture-playing-auto-refresh&paused=0#rv_cover",
+          "playLabel": "Pause"
+        },
+        "modePreserved": true,
+        "pausePreserved": true
+      }
+    ],
+    "errors": []
+  },
+  "fullPlayerRegression": {
+    "groups": 28,
+    "scope": "Ran after all three review patches, before the only later change: shortening the wheel footer. Player99 source remained byte-identical; final refresh fixture reran on final artifact."
+  },
+  "sourceHashes": {
+    "deck/revamp/20-clicks.js": "88d7c53c060bec0f8a3618d787763f133eab34eeb4aef0c0745c3f8fa4783daa",
+    "deck/revamp/60-surface.js": "270778abfc41d8e1da6c34c7ae35b075a858cfc42ea8a3b36e2247ef30efbff1",
+    "deck/revamp/99-review.js": "67a157e40f5a36b9b405a0be717f633f1cb0c1fefbc07e1b5cc802e1aea2bf7a"
+  },
+  "publicVerification": "public-verification.json",
+  "publicHtmlSha256": "6808d31b3290d58c6979e7a0d0f4c7ec640fabf0d82d973a822fd27eb01d1292",
+  "publicMatchesTestedAfterCRLFNormalization": true,
+  "previewCommit": "d028898b3895cdf0da6197e289af04fc0e16102d",
+  "successfulPagesRun": "42065965902"
+}
