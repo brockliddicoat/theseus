@@ -870,3 +870,11 @@ old score as archived (F26.13).
   the PMIC-to-MCU distance, the sensor's new position and what it moves), shown to Brock; the 3D rebuild only after his OK.
   Moving the sensor up moves the lens: the shell's lens window, the dots round it and the balance get asked about with
   the plan's numbers.
+- **F30.10** On the placement plan (board-plan.png), the balance: "balance stays at the center of the mouse" (the centre of
+  mass at the mouse's centre, not under the moved sensor; the lens window and the dots move with the sensor).
+- **F30.11** The plan's changes, with his marked-up copy (attachments c2c68601: red at the front edge's diagonal up to the
+  USB-C tab, and at the rear notch's diagonal corners): "i don't like how you removed some of the chamfers and turned them
+  into filets, the main big corner filets need to be half as strong as they are right, and the space in front of the switch
+  should only be the extra amount the gt01 hands out ovee because of its angle". **IN PROGRESS (K2):** the plan revised
+  (chamfers back, the big corner fillets halved, the front only as far as the GT01's angled overhang), shown again, then
+  built.
