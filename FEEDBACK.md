@@ -844,4 +844,7 @@ old score as archived (F26.13).
   against its note and answers before publishing.
 - **F29.3 DECIDED** The power switch (F26.8): asked whether the board builder's reading (centred in the board's window,
   actuator straight down) was right, he chose "Middle of the shell's notch": centre it on the cutout in the shell or plate
-  it is reached through. **IN PROGRESS (K2).**
+  it is reached through. The shell model turned out to have no switch notch (the real Sora V2 has a round-ended slot beside
+  the sensor, about 14.5 mm right of centre, level with it; the board's window is 16 mm further forward). Asked where the
+  switch should go, he chose **"Decide with the bottom cover"**: it stays centred in the board's window for now, and the
+  notch is placed with the bottom cover (the Sora's slot and the room freed by J2's move are noted for then).
