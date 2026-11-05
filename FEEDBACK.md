@@ -891,3 +891,5 @@ old score as archived (F26.13).
   PTFE" (K3).
 - **F31.4** The side-button guide as a fixed part over the full-size switch: "i'd have to see". It's on `sidebuttons` in
   v22 (2D and 3D); his rating or note there decides it.
+- **F30.13** On board-plan-2.png: build it? "Changes first" (his changes to come). Rear outer corners: "[No preference]"
+  (fillets r 0.75 as drawn). SH1/SH2: **"Drop SH1 and SH2"** (sides stay 19.03). USB-C front legs: **"Keep as today"**.
