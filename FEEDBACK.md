@@ -915,3 +915,9 @@ old score as archived (F26.13).
 - **F30.20 DECIDED** `elc_sheet2` (F27): the no-RGB point goes on the encoder slide, his choice of "The encoder slide":
   `srf_encoder` becomes "nothing lights up but the sensor" (the magnetic encoder, the mechanical switches, no RGB LED,
   with their battery figures), next to the web software; `elc_sheet2` out of the film. **IN PROGRESS (K2).**
+- **F30.21** His changes to plan 3: "the usb c connector probably stuck out for a reason, put it needs to hang out a little
+  bit, but there shouldn't be a bump after the chamfer like there is now, the front should form a trapezoid only" / "the
+  notches still don't look filleted, use an approach so that all the filets have the same apparent radius, also make the
+  filets a little bigger" / "the scroll wheel cutout should have gold trim and the same radius filet as well". **IN
+  PROGRESS (K2):** plan 4 (a trapezoid front with the receptacle hanging a little past it; every corner the same apparent
+  size, a little bigger; a gold trim on the wheel bay), shown before the build.
