@@ -35,6 +35,8 @@ Object.assign(SRC, {
 /* ============================== models ============================== */
 const B06 = { c: {} };
 /** compute once and keep */
+/** a number rounded toward zero, as text (DESIGN §9) */
+function b06_dn(v, d = 0) { const k = Math.pow(10, d); return fmtN(Math.floor(v * k + 1e-6) / k, d); }
 function b06_once(k, fn) { if (!(k in B06.c)) B06.c[k] = fn(); return B06.c[k]; }
 
 /* ---------- the melt at a lattice node, for any set of arms (generalises 10-d2-arches.js's shbStokes, which is the 6-arm
@@ -290,7 +292,7 @@ S({
     const kStiff = b06_flex(rH) / b06_flex(rT), cut = Math.round(100 * (1 - rT.smax / rH.smax));
     captions(t, [[0.6, 'Push a square of straws and its pins turn: it folds. A triangle can\'t. A push can only stretch or squeeze its sides.'],
       [3.0, 'Honeycomb mice build their shells from hexagons. Press a strip of one and every wall has to bend at its joints.'],
-      [5.2, 'The same press on a strip of triangles, the same weight, runs straight along the ribs: ' + fmtN(kStiff, 1) + '× stiffer, the peak ' + cut + '% lower.'],
+      [5.2, 'The same press on a strip of triangles, the same weight, runs straight along the ribs: ' + fmtN(kStiff, 1) + '× stiffer, the peak ' + cut + ' % lower.'],
       [8.6, 'That is why Theseus\'s ribs run in triangles: a press is carried as stretch and squeeze, not bending.']]);
     const { L, R } = abSplit(t, -2, B06_SPLIT, { left: 'Honeycomb mice', rival: 'Hexagons', rivalCol: 'grey', right: 'Theseus', rightSub: 'Triangles' });
     const SP = B06_BR.n * B06_BR.a, x0L = L[0] + (L[2] - SP * B06_S) / 2, x0R = R[0] + (R[2] - SP * B06_S) / 2;
@@ -353,7 +355,7 @@ S({
       rich([{ s: Math.round(rH.smax) + ' MPa', role: 'num', size: 30, weight: 750, color: C.mute }, { s: '→', role: 'num', size: 26, weight: 600, color: C.faint, gap: 10 }, { s: Math.round(rT.smax) + ' MPa', role: 'num', size: 40, weight: 800, color: C.heroText, gap: 10 }, { s: '−' + cut + ' %', role: 'num', size: 30, weight: 800, color: C.heroText, gap: 18 }], 1000, 842, { alpha: ks });
       text('Hexagons, then triangles, at the same 10 N', 1000, 876, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: ks }); }
     shlRamp(t, 4.6, 1560, 660, 200, Math.round(rH.smax), 'Colour: stress, squared', SHL_GAMMA);
-    text('In the whole shell its wall shares the load: there the triangles make the crown 1.2× stiffer and the hottest rib 38% cooler (3D study, the same rib weight).', 80, 972, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: ep(t, 7.6, 8.0), maxW: 1760 });
+    text('In the whole shell its wall shares the load: there the triangles make the crown 1.2× stiffer and the hottest rib 38 % cooler (3D study, the same rib weight).', 80, 972, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: ep(t, 7.6, 8.0), maxW: 1760 });
     text('2D frames pressed in their own plane, joints stiffened to their filleted size: a ' + SP + ' mm strip, ' + B06_BR.a + ' mm cells, PP-C-20A ribs 2.0 mm tall, the same ' + fmtN(b06_grams(rT), 2) + ' g. Flex drawn 10× real.', 80, 1002, { role: 'small', size: 19, color: C.faint, alpha: ep(t, 3.4, 3.9), maxW: 1760 });
   }
 });
@@ -483,19 +485,20 @@ const B06_ARC = (function () {
 })();
 S({
   id: 'b06_arches', ch: 'shell', theme: 'paper', title: 'Interwoven arches form triangles', settle: 11, ideas: [53, 75],
+  after: 'b06_thrust',   /* FILM F26: the arch's principle first (b06_arch, b06_thrust), then Theseus's ribs as arches, then the fibres */
   replaces: ['shbArches'], src: ['shlDoc', 'shlLattice', 'shbModel', 'b06Honeycomb'],
   answers: [
     ['shbArches: "arches shojdkne be on the photon rim" (read: shouldn\'t be on the bottom rim)', 'Every rib springs from the shoulder, the widest line, and stops there; the rim below the crease is drawn plain, with no lattice on it (F43.6 too).'],
     ['shbArches: "for some reason sole of the lines look wobbly"', 'Two causes, both fixed: the dome\'s height came from sampled tables with kinks (now smoothed along each rib), and each line switched weight from front to back (now one weight all the way).'],
     ['shbArches: "cool animation other than the poor execution"', 'The build is kept (the families one by one, the triangles closing), now established from above on the mouse\'s outline, then the camera tilts and every straight line rises into an arch over the hump.'],
-    ['F2.16 (interwoven arches)', 'Said in the verdict: a rib runs unbroken from shoulder to shoulder, up to ' + Math.round(B06_ARC.longest) + ' mm, where a honeycomb\'s wall turns every ' + fmtN(B06_ARC.wall, 1) + ' mm.']
+    ['F2.16 (interwoven arches)', 'Said in the verdict: a rib runs unbroken from shoulder to shoulder, up to ' + fmtN(Math.floor(B06_ARC.longest * 10) / 10, 1) + ' mm, where a honeycomb\'s wall turns every ' + fmtN(B06_ARC.wall, 1) + ' mm; and why it matters, in the words: each is an arch, which held at its feet is 21× stiffer than a flat strip (b06_arch, two slides before: FILM F26 puts the principle first).']
   ],
   draw: t => {
     header(t, 'Interwoven arches form triangles');
     const A = B06_ARC;
     captions(t, [[0.4, 'From above, Theseus\'s lattice is three families of straight ribs, 60° apart. Where they cross, triangles close.'],
       [3.0, 'From the side, every one of those ribs is an arch over the hump, from shoulder to shoulder. None runs onto the rim.'],
-      [6.0, 'So a press on the top meets whole arches: a rib runs unbroken up to ' + Math.round(A.longest) + ' mm, where a honeycomb wall turns every ' + fmtN(A.wall, 1) + ' mm.']]);
+      [6.0, 'So a press on the top meets whole arches, each held at its feet (21× stiffer than a flat strip): a rib runs unbroken up to ' + fmtN(Math.floor(A.longest * 10) / 10, 1) + ' mm, where a honeycomb wall turns every ' + fmtN(A.wall, 1) + ' mm.']]);
     /* the camera: from straight above (establishing, on the mouse's own outline) tilting to three quarters */
     const kc = ep(t, 2.8, 4.8, E.io3), yaw = lerp(0, -0.62, kc), pitch = lerp(Math.PI / 2, 0.66, kc);
     const tx = 80, ty = 280, tw = 1120, th = 660;
@@ -517,14 +520,14 @@ S({
     });
     /* the longest arch, picked out, once the camera has tilted */
     const kL = ep(t, 5.0, 5.6);
-    if (kL > 0.003) { const best = A.lines.reduce((b, l) => l.len > b.len ? l : b, A.lines[0]), P = best.pts.map(cam); shbPath(P, C.heroText, 6, kL); const q = P[Math.round(P.length * 0.3)]; fixTag(t, 5.4, q, 'One unbroken rib: ' + Math.round(best.len) + ' mm', { to: [q[0] - 60, ty + 40], side: 'l', maxW: 300 }); }
+    if (kL > 0.003) { const best = A.lines.reduce((b, l) => l.len > b.len ? l : b, A.lines[0]), P = best.pts.map(cam); shbPath(P, C.heroText, 6, kL); const q = P[Math.round(P.length * 0.3)]; fixTag(t, 5.4, q, 'One unbroken rib: ' + fmtN(Math.floor(best.len * 10) / 10, 1) + ' mm', { to: [q[0] - 60, ty + 40], side: 'l', maxW: 300 }); }
     locator(t, -2, 1700, 268, 100, 'top', [-31, -50, 62, 100]);
     /* right: the crown node close up, three ribs straight through, filleted */
     const an = ep(t, 6.6, 7.2);
     shbNodeClose(t, 6.8, 1500, 560, 30, { alpha: an, rot: Math.PI / 6 });
     text('At the crown: three ribs run straight through, filleted 0.6 mm', 1500, 700, { role: 'small', size: 22, weight: 600, color: C.ink2, align: 'center', maxW: 420, lh: 1.3, alpha: an });
     /* the verdict: the longest unbroken run of rib */
-    verdict(t, 6.4, 1260, 905, { from: fmtN(A.wall, 1), to: Math.round(A.longest), unit: 'mm', dec: 0, label: 'Longest unbroken rib', better: 'higher', who: ['Honeycomb', 'Theseus'], rivalCol: 'grey', net: false, size: 110 });
+    verdict(t, 6.4, 1260, 905, { from: fmtN(A.wall, 1), to: Math.floor(A.longest * 10) / 10, unit: 'mm', dec: 1, label: 'Longest unbroken rib', better: 'higher', who: ['Honeycomb', 'Theseus'], rivalCol: 'grey', net: false, size: 110 });
     text('The Theseus top (the Sora outline and the hump\'s sections), smoothed along each rib; 12.5 mm cells; the ribs stop at the shoulder, above the crease.', 80, 1002, { role: 'small', size: 19, color: C.faint, alpha: ep(t, 1.0, 1.5), maxW: 1760 });
   }
 });
@@ -640,7 +643,7 @@ S({
   answers: [
     ['shbPress, shbBend: "hard to understand"', 'One demonstration with one input: the same strip, the same weight, the same finger, pressed until it gives. Flat, it cracks at 20 N; curved with its feet free, they spread and it cracks at 13 N; with its feet held it takes 41 N and then buckles.'],
     ['shbPress, shbBend: "need real world examples"', 'An egg squeezed end to end between thumb and finger opens the slide: its thin dome takes about 46 N before it cracks, the weight of a 4.7 kg mass (Sutanto 2025, 30 eggs; about the same on its side, so the slide doesn\'t claim end-on is stronger); the Pont du Gard (stone arches standing largely without mortar, pushing on their neighbours and the hills) appears as the feet are held.'],
-    ['shbPress, shbBend: "it\'s just unintuitive for a social media brain"', 'Press, crack; curve, crack; hold the feet, hold: three outcomes in under seven seconds, each in one short line, then two numbers: the press each takes before it gives (20 against 41 N, 2.0×) and the flex at 10 N (21× stiffer).'],
+    ['shbPress, shbBend: "it\'s just unintuitive for a social media brain"', 'Press, crack; curve, crack; hold the feet: it takes 41 N, buckles, and back at 10 N it holds: four outcomes in under eight seconds, each in one short line. Then the headline, the flex at 10 N (5.39 → 0.26 mm, 21× stiffer, each rounded against Theseus), with the press each takes before it gives (20.5 against 41.0 N) as the small stat.'],
     ['shbBend: thrust cancelling bending (the brief: "shown, not described")', 'Shown by freeing and then holding the feet: free, they slide out and the arch bends worse than the flat strip; held, they push back (the thrust arrows, 23 N each at 41 N) and cancel 84 % of the bending moment. The caption says "most of the bending", not all: under a fingertip what is left is still bending (the thrust line, next slide).'],
     ['F2.24 (the arch idea needs a real-world anchor and a demonstration)', 'The egg and the Pont du Gard as anchors; the press-until-it-gives sequence as the demonstration. Breaks by F41.1\'s two strengths (207 MPa bent, 120 stretched); the held arch\'s limit is buckling, shown as a buckle, not a crack.']
   ],
@@ -651,7 +654,8 @@ S({
     captions(t, [[0.4, 'An eggshell is thin, but it is a dome: squeezed end to end it takes about 46 N, the weight of a 4.7 kg mass.'],
       [1.6, 'A flat strip can only bend. Pressed in the middle, it cracks at ' + Math.round(Fp) + ' N.'],
       [3.6, 'Curve the same strip into an arch, the same weight. With its feet free they spread, and it cracks at ' + Math.round(Fr) + ' N.'],
-      [5.2, 'Hold its feet, as a mouse\'s walls do: they push back and most bending goes. At ' + Math.round(Fb) + ' N it buckles.']]);
+      [5.2, 'Hold its feet, as a mouse\'s walls do: they push back and most bending goes. At ' + Math.round(Fb) + ' N it buckles.'],
+      [7.2, 'Back at 10 N, a hard press, the held arch holds: ' + fmtN(b06_flex(rF) / b06_flex(rA), 0) + '× stiffer than the flat strip, at the same weight.']]);
     /* the real world, left: the egg, then the Pont du Gard */
     const inner = demoPanel(t, -2, [80, 280, 540, 640], { label: 'The real world', src: t < 5.1 ? 'Sutanto 2025' : 'Pont du Gard' });
     const kEgg = 1 - ep(t, 5.0, 5.4), kPont = ep(t, 5.3, 5.8);
@@ -680,10 +684,14 @@ S({
         if (kc > 0.003) faultTag(t, 4.6, d.hot, 'Feet free: cracks at ' + Math.round(Fr) + ' N', { to: [d.hot[0] + 200, d.hot[1] + 70], side: 'r', alpha: ko });
       }
     } else {                                        /* the feet held (the walls): pressed until it buckles */
-      const tB = 6.4; F = Fb * lin(5.4, tB); const kb = ep(t, 5.25, 5.4), bk = 7 * ep(t, tB, tB + 0.35, E.out3);
+      /* pressed until it buckles (6.4 s), then the press falls back to 10 N (7.2 to 8.0 s): the settled frame is the arch holding
+         at a hard press, its 41 N kept in the verdict (review R2-b06-1) */
+      const tB = 6.4, tU = [7.2, 8.0]; F = t < tU[0] ? Fb * lin(5.4, tB) : lerp(Fb, SHB_A.P, ep(t, tU[0], tU[1], E.io3));
+      const kb = ep(t, 5.25, 5.4), bk = 7 * ep(t, tB, tB + 0.35, E.out3) * (1 - ep(t, tU[0], tU[0] + 0.5, E.io3));
       d = b06_archDraw(rA, F, { feet: 'held', alpha: kb, buckle: bk });
       if (F > 0.3) { const Hb = shbThrustH(rA) * Fb / SHB_A.P; forceArrow(d.feet[0][0] - 50, d.feet[0][1] - 10, 0, 70, { k: clamp(F / Fb), N: Hb, dec: 0, color: C.heroText, side: 'end' }); forceArrow(d.feet[1][0] + 50, d.feet[1][1] - 10, Math.PI, 70, { k: clamp(F / Fb), N: Hb, dec: 0, color: C.heroText, side: 'end' }); }
-      if (t > tB) callout(t, tB, [d.contact[0] + 10, d.contact[1] + 26], 'Buckles at ' + Math.round(Fb) + ' N', { to: [d.contact[0] + 180, d.contact[1] + 6], side: 'r', color: C.ink2, tcolor: C.ink });
+      if (t > tB && t < tU[0] + 0.5) callout(t, tB, [d.contact[0] + 10, d.contact[1] + 26], 'Buckles at ' + Math.round(Fb) + ' N', { to: [d.contact[0] + 180, d.contact[1] + 6], side: 'r', color: C.ink2, tcolor: C.ink, alpha: 1 - ep(t, tU[0], tU[0] + 0.4) });
+      if (t > tU[1]) fixTag(t, tU[1], [d.contact[0] + 10, d.contact[1] + 26], 'Back at 10 N: it holds, flexing ' + fmtN(b06_flex(rA), 2) + ' mm', { to: [d.contact[0] + 180, d.contact[1] + 6], side: 'r' });
       text('The walls hold its feet', B06_AR.xc, B06_AR.yb + 74, { role: 'small', size: 21, weight: 600, color: C.heroText, align: 'center', alpha: ep(t, 5.3, 5.6) });
     }
     shlRamp(t, 1.9, 1630, 452, 200, 'Breaks', 'Strength used, squared', SHL_GAMMA);
@@ -693,8 +701,8 @@ S({
     text('The same strip, the same ' + fmtN(b06_grams(rA), 2) + ' g', 714, 376, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: ep(t, 3.6, 3.9) * (1 - ep(t, 5.05, 5.25)) });
     scaleNote(680, 300, 'a hard press: a 1 kg bag of sugar', { lead: '10 N', t, t0: 1.9, size: 22 });
     /* the verdicts: the press each takes before it gives, and the flex at the same 10 N */
-    verdict(t, 6.5, 680, 885, { from: fmtN(b06_flex(rF), 1), to: fmtN(b06_flex(rA), 2), unit: 'mm', dec: 2, label: 'Flex at 10 N', better: 'lower', who: ['Flat strip', 'Arch, feet held'], rivalCol: 'grey', net: fmtN(b06_flex(rF) / b06_flex(rA), 0) + '× stiffer', size: 84 });
-    verdict(t, 6.9, 1380, 885, { from: Math.round(Fp), to: Math.round(Fb), unit: 'N', dec: 0, label: 'Press before it gives', better: 'higher', who: ['Flat', 'Arch'], rivalCol: 'grey', size: 84 });
+    verdict(t, 6.5, 680, 885, { from: b06_dn(b06_flex(rF), 2), to: fmtN(Math.ceil(b06_flex(rA) * 100 - 1e-9) / 100, 2), unit: 'mm', dec: 2, label: 'Flex at 10 N', better: 'lower', who: ['Flat strip', 'Arch, feet held'], rivalCol: 'grey', net: fmtN(b06_flex(rF) / b06_flex(rA), 0) + '× stiffer', size: 96 });
+    verdict(t, 6.9, 1360, 885, { from: Math.ceil(Fp * 10 - 1e-9) / 10, to: Math.floor(Fb * 10 + 1e-9) / 10, unit: 'N', dec: 1, label: 'Press before it gives', better: 'higher', who: ['Flat', 'Arch'], rivalCol: 'grey', size: 56, maxW: RM - 1360 });
     text('2D frames: a 10 mm PP-C-20A strip, 60 mm across, ' + fmtN(b06_grams(rA), 2) + ' g either way, 10 N on a 10 mm pad. Breaks at 207 MPa bent, 120 stretched. Flex true to scale.', 80, 1002, { role: 'small', size: 19, color: C.faint, alpha: ep(t, 1.6, 2.1), maxW: 1760 });
   }
 });
@@ -726,7 +734,7 @@ S({
   answers: [
     ['shbThrust: "hard to understand"', 'One shape, three moves: a chain hangs in pure tension, turns over into an arch in pure compression, then the same arch under a palm (the line stays inside the rib) and under a fingertip (the line leaves the rib, and that part is carried by bending). The line is drawn from the solve and goes red where it leaves the rib.'],
     ['shbThrust: "need real world examples"', 'Gaudí\'s hanging model for the Colònia Güell church (strings and little bags of birdshot, read upside down) sits beside the chain and turns over with it; Hooke\'s 1675 line, "as hangs the flexible line, so but inverted will stand the rigid arch", is the caption.'],
-    ['shbThrust: "it\'s just unintuitive for a social media brain"', 'Hang, flip, press: the motion is the explanation, and the numbers are two: under a palm the arch\'s peak is 65× lower than the flat strip\'s, under a fingertip 3.8× lower (the same 10 N).'],
+    ['shbThrust: "it\'s just unintuitive for a social media brain"', 'Hang, flip, press: the motion is the explanation, and the numbers are two: under a palm the arch\'s peak is 64× lower than the flat strip\'s (55.5 → 0.9 MPa, the headline), under a fingertip 3.8× lower (101 → 27 MPa, the smaller second line; the same 10 N).'],
     ['F2.24 (the thrust idea needs a demonstration and a real-world anchor)', 'The flip of the chain is the demonstration; Gaudí and Hooke are the anchors; the palm against the fingertip is the honest limit (model auditor M-b06-4).']
   ],
   draw: t => {
@@ -784,8 +792,8 @@ S({
     }
     /* the verdicts: the same 10 N on the arch and on b06_arch's flat strip, spread and gathered */
     text('Peak experienced stress at 10 N (lower is better)', 680, 752, { role: 'label', size: 22, color: C.mute, alpha: ep(t, 6.0, 6.35) });
-    verdict(t, 6.0, 680, 880, { from: fmtN(FU.smax, 1), to: fmtN(RU.smax, 2), unit: 'MPa', dec: 2, label: 'Under a palm', who: ['Flat strip', 'Arch'], rivalCol: 'grey', net: fmtN(FU.smax / RU.smax, 0) + '× lower', size: 84 });
-    verdict(t, 6.5, 1300, 880, { from: Math.round(FC.smax), to: Math.round(RC.smax), unit: 'MPa', dec: 0, label: 'Under a fingertip', who: ['Flat strip', 'Arch'], rivalCol: 'grey', net: fmtN(FC.smax / RC.smax, 1) + '× lower', size: 84 });
+    verdict(t, 6.0, 680, 880, { from: b06_dn(FU.smax, 1), to: Math.ceil(RU.smax * 10 - 1e-9) / 10, unit: 'MPa', dec: 1, label: 'Under a palm', who: ['Flat strip', 'Arch'], rivalCol: 'grey', net: Math.floor(FU.smax / RU.smax) + '× lower', size: 96 });
+    verdict(t, 6.5, 1380, 880, { from: Math.floor(FC.smax), to: Math.ceil(RC.smax), unit: 'MPa', dec: 0, label: 'Under a fingertip', who: ['Flat strip', 'Arch'], rivalCol: 'grey', net: b06_dn(FC.smax / RC.smax, 1) + '× lower', size: 60 });
     text('2D frames: the arch and flat strip of b06_arch (PP-C-20A, 60 mm, 0.55 g each), 10 N spread over the span or on a 10 mm pad. Thrust line e = M / N, from the solve.', 80, 1002, { role: 'small', size: 19, color: C.faint, alpha: ep(t, 3.4, 3.9), maxW: 1760 });
   }
 });
@@ -815,7 +823,7 @@ function b06_wood(x, y, w, h, along, k, gap, a) {
 /** 10-d2-arches.js's shbFlowDraw, copied (b06 prefix) with two changes: true-grey tokens for the steel and the melt, and
    the fibres dimmed inside the node's core (r < 0.9 mm), so the arms, where a fibre's angle decides the rib's stiffness,
    carry the picture; red when a fibre lies more than about 30° off the flow */
-function b06_flowDraw(t, FC, cx, cy, s, ft, a) {
+function b06_flowDraw(t, FC, cx, cy, s, ft, a, hero) {
   if (a <= 0.003) return;
   const F = FC.F, P = p => [cx + p[0] * s, cy - p[1] * s], R = (F.Lr - 0.2) * s, angs = [0, 1, 2, 3, 4, 5].map(k => k * Math.PI / 3);
   G.save(); G.beginPath(); G.arc(cx, cy, R, 0, TAU); G.clip();
@@ -827,11 +835,16 @@ function b06_flowDraw(t, FC, cx, cy, s, ft, a) {
   const Lc = 16, flen = 0.17;
   FC.fb.forEach((f, i) => {
     const ph = ((i * 0.6180339887) % 1) * Lc, u = ((ft - ph) % Lc + Lc) % Lc, q = Math.floor(u / 0.04); if (ft < ph || q >= f.smp.length) return;
-    const [x, y, an] = f.smp[q], ux = F.at(F.u, x, y), uy = F.at(F.v, x, y);
-    let d = Math.abs(((an - Math.atan2(uy, ux)) % Math.PI + Math.PI) % Math.PI); d = Math.min(d, Math.PI - d) * 180 / Math.PI;
+    /* each fibre against the rib it is in (the arm nearest its place, the arms 60° apart): in line within 30° is the verdict's
+       own measure (review R2-b06-5: coloured by the flow, the filleted node read redder than the sharp one). In line: grey in
+       the sharp node, blue in Theseus's filleted one; turned across its rib: red */
+    const [x, y, an] = f.smp[q], ak = Math.round(Math.atan2(y, x) / (Math.PI / 3)) * (Math.PI / 3);
+    let d = Math.abs(((an - ak) % Math.PI + Math.PI) % Math.PI); d = Math.min(d, Math.PI - d) * 180 / Math.PI;
     const p = P([x, y]), dx = Math.cos(an) * flen * s, dy = -Math.sin(an) * flen * s, core = Math.hypot(x, y) < 0.9 ? 0.3 : 1;
     const fa = a * core * Math.min(1, (f.smp.length - q) / 8, q / 4 + 0.2);
-    G.globalAlpha = fa; G.strokeStyle = mix(C.ink2, C.red, clamp((d - 20) / 15)); G.lineWidth = 2.6; G.lineCap = 'round';
+    /* judged once it is in a rib: past the junction and its 0.6 mm fillets (the same radius in both nodes); inside, it is turning */
+    const inRib = Math.hypot(x, y) > F.W + 0.8;
+    G.globalAlpha = fa; G.strokeStyle = inRib ? mix(hero ? C.hero : C.ink2, C.red, clamp((d - 25) / 10)) : C.mute; G.lineWidth = 2.6; G.lineCap = 'round';
     G.beginPath(); G.moveTo(p[0] - dx, p[1] - dy); G.lineTo(p[0] + dx, p[1] + dy); G.stroke();
   });
   G.restore();
@@ -843,7 +856,7 @@ S({
   answers: [
     ['shbFibres: "hard to understand"', 'It starts from something everyone has seen: wood splits along its grain. Pulled across, a Douglas-fir bar parts at 2.3 MPa; along, it takes 107.6 (47×). Then: carbon PP has a grain too, and the node is where that grain has to turn.'],
     ['shbFibres: "need real world examples"', 'Wood (USDA Wood Handbook figures), and PP-C-20A\'s own datasheet: it shrinks 0.1 % along the flow and 0.4 % across, because its fibres line up with the flow.'],
-    ['shbFibres: "it\'s just unintuitive for a social media brain"', 'You watch the fibres: they ride through the node and turn red as they swing across a rib. Sharp, more of them go red; filleted, fewer.'],
+    ['shbFibres: "it\'s just unintuitive for a social media brain"', 'You watch the fibres: they ride through the node and, once in a rib, show whether they came out in line with it (grey in the sharp node, blue in Theseus\'s filleted one) or across it (red); inside the node they are drawn turning, in neutral grey. Sharp, more of them leave red; filleted, most leave blue: the verdict\'s own measure, within 30° of their rib.'],
     ['shbFlow (merged)', 'The melt flow through the node is this slide\'s right half: sharp against filleted, the same flow, the same fibres.'],
     ['F2.17 "specific research on how high the potential strength increases are"', 'Wood 47× (USDA); carbon-filled nylon 1.7× along the flow than across (Choi 2024, 130.3 against 77.2 MPa); PP or glass parts "a factor of 2" in strength and up to 3 in stiffness (Merseburg); Krenchel\'s cos⁴θ for stiffness.'],
     ['F2.18 "a fluid simulation"', 'A 2D flow solve through the node (Stokes) with each fibre turned by Jeffery\'s equation, run twice: sharp corners and 0.6 mm fillets.']
@@ -854,7 +867,7 @@ S({
     captions(t, [[0.4, 'Wood splits along its grain. Pulled across, Douglas-fir parts at 2.3 MPa; along, it takes 107.6. The fibres carry the load.'],
       [2.6, 'Carbon PP has a grain too: its fibres line up with the melt as it flows, and the part is stiffest along them.'],
       [4.6, 'At a node the melt turns. A sharp corner swings the turning fibres across the rib; a fillet steers them round.'],
-      [7.6, 'Filleted, ' + Math.round(S6.turnW * 100) + '% of the turning fibres leave in line with their rib, against ' + Math.round(S0.turnW * 100) + '% sharp.']]);
+      [7.6, 'Filleted, ' + Math.round(S6.turnW * 100) + ' % of the turning fibres leave in line with their rib, against ' + Math.round(S0.turnW * 100) + ' % sharp.']]);
     /* the real world, left: two wood bars pulled, one with the grain, one across it */
     const inner = demoPanel(t, -2, [80, 280, 540, 640], { label: 'The real world', src: 'USDA Wood Handbook' });
     const kp = ep(t, 0.3, 1.1, E.io3), split = 26 * ep(t, 1.1, 1.4, E.out3), bw = inner[2] - 130, bx = inner[0] + 65;
@@ -869,11 +882,11 @@ S({
     /* the node, right: the same melt through a sharp node and a filleted one; fibres ink along the flow, red across */
     const ft = Math.max(0, (t - 2.6) * 2.2), aF = 1, sN = 46, cy = 560;
     b06_flowDraw(t, S0, 990, cy, sN, ft, aF);
-    b06_flowDraw(t, S6, 1530, cy, sN, ft, aF);
+    b06_flowDraw(t, S6, 1530, cy, sN, ft, aF, true);
     text('Sharp corners', 990, 330, { role: 'label', size: 22, color: C.mute, align: 'center' });
     text('Filleted, 0.6 mm: Theseus', 1530, 330, { role: 'label', size: 22, color: C.heroText, align: 'center' });
     text('Melt in →', 990 - (S0.F.Lr - 0.2) * sN + 6, cy - 22, { role: 'small', size: 19, weight: 650, color: C.ink2, alpha: ep(t, 2.4, 2.8) });
-    legend(t, 2.8, 760, 776, [{ kind: 'line', color: C.ink2, label: 'Fibre along the flow' }, { kind: 'line', color: C.red, label: 'Fibre turned across it' }], { size: 19, gap: 26 });
+    legend(t, 2.8, 760, 776, [{ kind: 'line', color: C.mute, label: 'Turning, in the node' }, { kind: 'line', color: C.ink2, label: 'In line with its rib' }, { kind: 'line', color: C.hero, label: 'In line, filleted' }, { kind: 'line', color: C.red, label: 'Across its rib' }], { size: 19, gap: 26 });
     /* the verdict: how much of their stiffness the turning fibres keep (Krenchel), sharp against filleted */
     verdict(t, 6.4, 760, 884, { from: Math.round(S0.turnW * 100), to: Math.round(S6.turnW * 100), unit: '%', dec: 0, label: 'Turning fibres within 30° of their rib', better: 'higher', who: ['Sharp', 'Filleted'], rivalCol: 'grey', net: '+' + Math.round(gain * 100) + ' % stiffness (Krenchel)', size: 72 });
     text('2D flow solve (Stokes) through a 6-arm node of 1 mm ribs, fibres turned by Jeffery\'s equation; stiffness kept by Krenchel\'s cos⁴θ. A sketch of the melt.', 80, 1012, { role: 'small', size: 19, color: C.faint, alpha: ep(t, 2.6, 3.1), maxW: 1760 });
@@ -939,14 +952,15 @@ S({
   replaces: ['fillet'], src: ['b06Rae', 'b06Comet', 'b06Model', 'filletFE', 'shlPyrofil'],
   answers: [
     ['fillet: "she\'ll study isn\'t needed to be shoes here" (read: the shell study isn\'t needed here)', 'No 3D study shell on this slide: the node is shown flat, as the fillet study\'s two stress fields, near-sharp and filleted at the same weight.'],
-    ['fillet: "rest can be combined with other slides"', 'Its other claims moved: the fibres a fillet steers are b06_fibres, the mold it spares is b06_mold. This slide keeps one idea, corners gather stress and a fillet spreads it, taught first with the Comet airliner\'s windows, drawn to their real size (16.6 × 14 in, 3 in corners: ARC R&M 3248), whose corners grew the RAE test\'s first crack.']
+    ['fillet: "rest can be combined with other slides"', 'Its other claims moved: the fibres a fillet steers are b06_fibres, the mold it spares is b06_mold. This slide keeps one idea, corners gather stress, taught with the Comet airliner\'s windows, drawn to their real size (16.6 × 14 in, 3 in corners: ARC R&M 3248), whose corners grew the RAE test\'s first crack.'],
+    ['FILM F28 (one number per slide)', 'This slide\'s number is the Comet\'s: its window\'s corner, 4.0× the skin\'s stress, against a tall oval of the same width, 2.0× (both stay on screen, in neutral ink: it is the lesson, not Theseus\'s result). It ends on the node\'s problem, near-sharp 16.6×, and leaves the fillet\'s 8.3× to b06_filletsize.']
   ],
   draw: t => {
     header(t, 'Why corners get fillets');
     const D = B06_COMET, cut = 1 - FILLET.scfM[7] / FILLET.scfM[0];
     captions(t, [[0.4, 'The Comet, the first jet airliner, had rectangular windows with rounded corners. Pressurised again and again, the skin\'s stress gathered in those corners.'],
       [2.8, 'In a test of a whole Comet cabin, the first crack grew from a window corner after 5,248 cycles. Airliners since have tall oval windows.'],
-      [4.6, 'A lattice node is a corner too. Near-sharp, its peak is ' + fmtN(FILLET.scfM[0], 1) + ' times the average stress; with a fillet, at the same weight, half that.']]);
+      [4.6, 'A lattice node is a corner too. Near-sharp, its peak is ' + fmtN(FILLET.scfM[0], 1) + ' times the average stress: the corner the fillet has to round.']]);
     /* left: the Comet's window, then the oval */
     const x = 170, y = 330, size = 450, kP = ep(t, 0.3, 1.2, E.io3), kOv = ep(t, 3.0, 3.6, E.io3);
     text('de Havilland Comet 1: the RAE\'s cabin test', x, y + size + 74, { role: 'label', size: 20, color: C.mute });
@@ -963,9 +977,23 @@ S({
     /* right: the same at a lattice node, the fillet study's two fields at the same weight */
     locator(t, 4.2, 694, 300, 84, 'top', [-8, 12, 16, 16]);
     shlFilletFrame(t, 4.4, 0, 820, 300, 470, 400, 'Near-sharp, r 0.05 mm', { bad: true });
-    shlFilletFrame(t, 5.0, 7, 1330, 300, 470, 400, 'Filleted, r 0.75 mm');
-    shlRamp(t, 5.0, 1600, 740, 200, 'Peak', 'Node colour: squared', SHL_GAMMA);
-    verdict(t, 6.0, 820, 850, { from: fmtN(FILLET.scfM[0], 1), to: fmtN(FILLET.scfM[7], 1), unit: '×', dec: 1, label: 'Peak experienced stress at a node', better: 'lower', who: ['Near-sharp', 'Filleted'], rivalCol: 'grey', net: '−' + Math.round(cut * 100) + ' %, the same weight', size: 100 });
+    shlRamp(t, 5.0, 820, 760, 200, 'Peak', 'Node colour: squared', SHL_GAMMA);
+    /* the slide's own number (FILM F28): the Comet's corner against the oval, both kept on screen (F16.1), in neutral ink: it
+       is history's lesson, not Theseus's result; the fillet's own number is the next slide's */
+    { const k = ep(t, 3.6, 4.1), hx = 1360, hy = 520;
+      if (k > 0.003) {
+        text('Peak at the window, × the skin\'s stress {(lower is better)}', hx, hy - 120, { role: 'label', size: 20, color: C.mute, alpha: k, maxW: RM - hx });
+        const sq = fmtN(D.sqPeak, 1) + '×', ov = fmtN(D.ovPeak, 1) + '×', w1 = tw(sq, { font: 'disp', size: 64, weight: 800 });
+        text(sq, hx, hy, { font: 'disp', size: 64, weight: 800, color: C.mute, alpha: k, caps: false });
+        line(hx - 4, hy - 22, hx + w1 + 4, hy - 22, { color: C.mute, w: 4, alpha: k * ep(t, 4.0, 4.3) });
+        arrow(hx + w1 + 18, hy - 22, hx + w1 + 70, hy - 22, { color: C.faint, w: 3, hs: 12, alpha: k });
+        text(ov, hx + w1 + 88, hy, { font: 'disp', size: 96, weight: 800, color: C.ink, alpha: k, caps: false });
+        text('Comet 1', hx, hy + 40, { role: 'label', size: 19, color: C.mute, alpha: k });
+        text('Tall oval, same width', hx + w1 + 88, hy + 40, { role: 'label', size: 19, color: C.ink2, alpha: k });
+        text('Airliners since: tall ovals, half the peak', hx, hy + 92, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: k, maxW: RM - hx });
+      }
+      const kn = ep(t, 5.6, 6.0);
+      if (kn > 0.003) text('A lattice node is a corner too: near-sharp, ' + fmtN(FILLET.scfM[0], 1) + '× the average stress', hx, hy + 210, { role: 'small', size: 24, weight: 700, color: C.red, alpha: kn, maxW: RM - hx, lh: 1.3 }); }
     text('2D plane-stress FE. Comet: its 16.6 × 14 in window (RAE) against a tall oval, pressure 2:1, colour linear, red at 4.0×. Node: the fillet study, the same mass.', 80, 1002, { role: 'small', size: 19, color: C.faint, alpha: ep(t, 1.0, 1.5), maxW: 1760 });
   }
 });
@@ -1014,7 +1042,7 @@ S({
       ro('Peak experienced stress', iy + 218); text('(lower is better)', ox, iy + 244, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: kr, sentence: false });
       shellBA(t, ox, iy + 296, { before: fmtN(FILLET.scfM[0], 1) + '×', after: fmtN(f.scf, 1) + '×', size: 44, k: clamp((FILLET.scfM[0] - f.scf) / Math.max(1e-6, FILLET.scfM[0] - FILLET.scfM[7])), a: kr, bad: C.bad, good: f.scf < 12 ? undefined : false });
       rr(ox, iy + 314, bw0, 12, 6, C.track, null, 0, kr); rr(ox, iy + 314, Math.max(12, bw0 * f.scf / 17), 12, 6, f.scf < 12 ? C.hero : heatCol(f.scf / 16.6), null, 0, kr);
-      ro('Stiffness, same weight', iy + 368); const dE = (f.E / FILLET.ExM[0] - 1) * 100; text((dE >= 0 ? '+' : '') + fmtN(dE, 1) + '%', ox, iy + 410, { font: 'disp', size: 38, weight: 800, color: dE > 0.5 ? C.ink : C.mute, alpha: kr, tnum: true });
+      ro('Stiffness, same weight', iy + 368); const dE = (f.E / FILLET.ExM[0] - 1) * 100; text((dE >= 0 ? '+' : '') + fmtN(dE, 1) + ' %', ox, iy + 410, { font: 'disp', size: 38, weight: 800, color: dE > 0.5 ? C.ink : C.mute, alpha: kr, tnum: true });
       text('vs near-sharp', ox + 140, iy + 408, { role: 'label', size: 19, color: C.faint, alpha: kr });
     }
     /* right: the sweep as a curve, and how the pick lines up with the resin maker's rule */
@@ -1038,7 +1066,7 @@ S({
       /* the pointer: drags the radius back from the far end to the pick */
       cursorAt(t, [[4.0, [m.X(1.2) + 60, m.Y(9) + 50]], [4.5, [m.X(1.2) + 3, m.Y(FILLET.scfM[10]) + 3]], [6.0, [m.X(0.75) + 3, m.Y(FILLET.scfM[7]) + 3]], [7.0, [m.X(0.75) + 3, m.Y(FILLET.scfM[7]) + 3]]], [4.55], { a: ep(t, 3.9, 4.2) * (1 - ep(t, 6.6, 7.0)), grab: t > 4.5 && t < 6.1 });
     }
-    sourceBox(t, 5.6, LM + 1040, 680, RM - LM - 1040, 'Envalior', 'Inside radius 25 to 60% of the wall, the upper end for parts that carry load. Mine: 0.6 mm on the 1.0 mm top ribs, 0.75 mm on the 1.2 mm low ribs, 60% of each.', { size: 24 });
+    sourceBox(t, 5.6, LM + 1040, 680, RM - LM - 1040, 'Envalior', 'Inside radius 25 to 60 % of the wall, the upper end for parts that carry load. Theseus: 0.6 mm on the 1.0 mm top ribs, 0.75 mm on the 1.2 mm low ribs, 60 % of each.', { size: 24 });
   }
 });
 
@@ -1052,6 +1080,18 @@ S({
    step" (Brock's doc, line 616) instead. */
 const B06_FLOOR = 0.89;
 /** the radius band (mm) round r0 where the peak stays within tol of its value at r0, inside the moldable range */
+/** the radius drift each corner tolerates (mm), against its radius, up to the strut floor: [[r, ±drift], ...] and rF, the
+   radius where the struts reach the 0.89 mm floor (cached: b06_tolBand walks the fillet study's curve) */
+function b06_tolCurve() {
+  return b06_once('tolCurve', () => {
+    const W = FILLET.wM, R = FILLET.rs; let rF = R[R.length - 1];
+    for (let i = 0; i < W.length - 1; i++) if (W[i] >= B06_FLOOR && W[i + 1] < B06_FLOOR) { rF = lerp(R[i], R[i + 1], (W[i] - B06_FLOOR) / (W[i] - W[i + 1])); break; }
+    /* at the study's own radii (between them its curve is straight lines, whose corners would show as kinks), and at the floor */
+    const at = r => { const B = b06_tolBand(r); return [r, r === R[0] ? B.up : Math.max(0, Math.min(r - B.lo, B.hi - r, B.up || Infinity))]; };
+    const pts = R.filter(r => r < rF).map(at).concat([at(rF)]);
+    return { pts, rF };
+  });
+}
 function b06_tolBand(r0, tol = 0.05) {
   const R = FILLET.rs, P = FILLET.scfM, W = FILLET.wM, at = r => { let i = 0; while (i < R.length - 2 && R[i + 1] < r) i++; const f = (r - R[i]) / (R[i + 1] - R[i]); return [lerp(P[i], P[i + 1], f), lerp(W[i], W[i + 1], f)]; };
   const p0 = at(r0)[0], ok = r => { const [p, w] = at(r); return p <= p0 * (1 + tol) && w >= B06_FLOOR; };
@@ -1081,7 +1121,7 @@ S({
     ['shbWidth: "hard to understand, feels contradictory to things we\'ve says before at a glance"', 'The old "every rib one width" read against the graded walls (#93). This slide doesn\'t say it: its fill line says ribs taper like a funnel and never step (Brock\'s own words, his doc, line 616), and the melt runs round every fillet with no dead corner.'],
     ['shbMill: "doesn\'t need its own slide"', 'Merged here as one of three beats: a milled core\'s sharp corners are knife edges of steel (red tips) that chip and wear.'],
     ['shbMillDirect: "doesnt need its own slide"', 'Merged here: an EDM electrode\'s corners are cut by a round cutter, so a 0.6 mm fillet is one Ø1.2 mm cutter and a sharp corner is impossible. The method is undecided (F13.2); the fillet pays either way, and the slide says so.'],
-    ['shbTol: "unintuitive, better visualization needed, mediocre idea"', 'Now a chart of the node\'s peak against the corner radius (the fillet study, the same weight) with the band that keeps the peak within 5 %: at a 0.05 mm corner it is a sliver, ±13 µm (a fifth of a hair); at the 0.6 mm fillet, read cautiously on the curve\'s steeper side, ±0.14 mm (two hairs). One number: about 11× looser (the old slide\'s 19× was read at a flatter point).'],
+    ['shbTol: "unintuitive, better visualization needed, mediocre idea"', 'Now a chart of the tolerance itself (FILM F28: not the peak curve a third time): how far each corner\'s radius may drift and keep the node\'s peak within 5 %, against the radius, from the fillet study at the same weight, cut where the struts get too thin to mold. At a 0.05 mm corner, ±13 µm (a fifth of a hair); at the 0.6 mm fillet, read on the curve\'s steeper side, ±0.13 mm (two hairs). One number: 10× looser, rounded down (10.9; the old slide\'s 19× was read at a flatter point). Owners on the verdict: "A near-sharp corner" / "Theseus, r 0.6".'],
     ['F2.25, F13.2 (mold method and the corners)', 'Both methods drawn and named; the claims are the ones that hold for either.']
   ],
   draw: t => {
@@ -1090,7 +1130,7 @@ S({
     const rP = 0.6, Bs = b06_tolBand(FILLET.rs[0]), Bf = b06_tolBand(rP), tolS = Bs.up, tolF = Math.min(rP - Bf.lo, Bf.hi - rP), loose = tolF / tolS;
     captions(t, [[0.4, 'A sharp corner in the part is a sharp edge of steel in the mold: knife edges chip and wear, and the melt stalls in the corner.'],
       [3.0, 'Round it at 0.6 mm and one Ø1.2 mm cutter fits every corner, in an EDM electrode or in milled steel, and the steel stays whole.'],
-      [5.4, 'And the radius stops being critical: at a 0.05 mm corner, ' + Math.round(tolS * 1000) + ' µm moves the peak 5%; at the 0.6 mm fillet it can drift ' + fmtN(tolF, 2) + ' mm.']]);
+      [5.4, 'And the radius stops being critical: at a 0.05 mm corner, ' + Math.round(tolS * 1000) + ' µm moves the peak 5 %; at the 0.6 mm fillet it can drift ' + b06_dn(tolF, 2) + ' mm.']]);
     /* left: the steel round one node, sharp and filleted */
     const s = 62, cy = 590;
     text('Sharp corners', 290, 400, { role: 'label', size: 22, color: C.mute, align: 'center' });
@@ -1104,27 +1144,28 @@ S({
     if (t > 3.2) fixTag(t, 3.2, [nF.corners[4].O[0], nF.corners[4].O[1] + 0.6 * s], 'One Ø1.2 mm cutter fits every corner', { to: [720, cy + 210], side: 'r', maxW: 280 });
     text('The mold steel round one node, from above', 495, cy + 268, { role: 'small', size: 20, weight: 600, color: C.mute, align: 'center' });
     text('Fill: ribs taper like a funnel, never step, and the melt runs round each fillet with no dead corner.', 80, 912, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: 820, lh: 1.3, alpha: ep(t, 4.2, 4.6) });
-    /* right: the node's peak against the corner radius, and the band that keeps it within 5 % */
-    const x0 = 1080, x1 = 1760, yT = 370, yB = 680, aC = ep(t, 4.4, 4.9), X = r => x0 + r / 1.2 * (x1 - x0), Y = v => yB - v / 18 * (yB - yT);
+    /* right (FILM F28: the mold's own lesson, not the peak curve a third time): how far each corner's radius may drift and keep
+       the node's peak within 5 %, against the radius, from the fillet study's own curve (b06_tolBand); cut where the struts get
+       too thin to mold (under 0.89 mm, Protolabs) */
+    const x0 = 1080, x1 = 1760, yT = 370, yB = 680, aC = ep(t, 4.4, 4.9), X = r => x0 + r / 1.2 * (x1 - x0), tmax = 0.3, Y = v => yB - Math.min(v, tmax) / tmax * (yB - yT);
     if (aC > 0.003) {
-      text('Peak experienced stress at a node, the same weight {(lower is better)}', 980, 344, { role: 'label', size: 20, color: C.mute, alpha: aC });
-      for (const v of [5, 10, 15]) { line(x0, Y(v), x1, Y(v), { color: C.hair, w: 1.2, alpha: aC }); text(v + '×', x0 - 12, Y(v) + 7, { role: 'tick', size: 19, color: C.mute, align: 'right', alpha: aC }); }
+      text('How far the radius may drift, the peak within 5 % {(more is easier to mold)}', 980, 344, { role: 'label', size: 20, color: C.mute, alpha: aC });
+      for (const v of [0.1, 0.2, 0.3]) { line(x0, Y(v), x1, Y(v), { color: C.hair, w: 1.2, alpha: aC }); text('±' + Math.round(v * 1000) + ' µm', x0 - 12, Y(v) + 7, { role: 'tick', size: 19, color: C.mute, align: 'right', alpha: aC }); }
       line(x0, yB, x1, yB, { color: C.faint, w: 1.5, alpha: aC });
       for (const r of [0, 0.3, 0.6, 0.9, 1.2]) text(fmtN(r, 1) + ' mm', X(r), yB + 28, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: aC });
       text('Corner radius', x1, yB + 56, { role: 'label', size: 19, color: C.ink2, align: 'right', alpha: aC });
-      /* where the struts get too thin to mold (under 0.89 mm, Protolabs) */
-      const rF = (() => { const W = FILLET.wM, R = FILLET.rs; for (let i = 0; i < W.length - 1; i++) if (W[i] >= B06_FLOOR && W[i + 1] < B06_FLOOR) return lerp(R[i], R[i + 1], (W[i] - B06_FLOOR) / (W[i] - W[i + 1])); return 1.2; })();
-      G.save(); G.globalAlpha = aC * 0.5; G.fillStyle = C.track; G.fillRect(X(rF), yT, x1 - X(rF), yB - yT); G.restore();
+      const TC = b06_tolCurve();
+      G.save(); G.globalAlpha = aC * 0.5; G.fillStyle = C.track; G.fillRect(X(TC.rF), yT, x1 - X(TC.rF), yB - yT); G.restore();
       text('Shaded: struts under 0.89 mm, too thin to mold', x0, yB + 56, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: aC });
-      /* the two bands */
-      const kb = ep(t, 5.4, 6.0);
-      G.save(); G.globalAlpha = aC * kb * 0.35; G.fillStyle = C.red; G.fillRect(X(FILLET.rs[0]) - 1.5, yT, Math.max(3, X(FILLET.rs[0] + tolS) - X(FILLET.rs[0]) + 3), yB - yT); G.fillStyle = C.hero; G.fillRect(X(rP - tolF), yT, X(rP + tolF) - X(rP - tolF), yB - yT); G.restore();
-      poly(FILLET.rs.map((r, i) => [X(r), Y(FILLET.scfM[i])]), { color: C.ink, w: 3, alpha: aC });
-      circle(X(FILLET.rs[0]), Y(FILLET.scfM[0]), 6, { fill: C.red, alpha: aC }); circle(X(rP), Y(FILLET.scfM[6]), 6, { fill: C.hero, alpha: aC });
-      if (kb > 0.5) { callout(t, 5.8, [X(FILLET.rs[0]) + 2, Y(12)], '±' + Math.round(tolS * 1000) + ' µm, a fifth of a hair', { to: [X(0.2), Y(16.2)], side: 'r', color: C.red, tcolor: C.red });
-        callout(t, 6.0, [X(rP), Y(6)], '±' + fmtN(tolF, 2) + ' mm, two hairs', { to: [X(0.48), Y(2.2)], side: 'l', color: C.hero, tcolor: C.heroText }); }
+      /* the curve draws on from the sharp end as the caption reaches it */
+      const kd = ep(t, 4.6, 5.8, E.io3), pts = TC.pts.filter(q => q[0] <= lerp(TC.pts[0][0], TC.rF, kd)).map(q => [X(q[0]), Y(q[1])]);
+      if (pts.length > 1) poly(pts, { color: C.ink, w: 3, alpha: aC });
+      const kb = ep(t, 5.6, 6.0);
+      circle(X(FILLET.rs[0]), Y(tolS), 6, { fill: C.red, alpha: aC }); if (kd >= 0.5) circle(X(rP), Y(tolF), 7, { fill: C.hero, alpha: aC * kb });
+      if (kb > 0.5) { callout(t, 5.8, [X(FILLET.rs[0]) + 4, Y(tolS) - 4], '±' + Math.round(tolS * 1000) + ' µm, a fifth of a hair', { to: [X(0.16), Y(0.21)], side: 'r', color: C.red, tcolor: C.red });
+        callout(t, 6.0, [X(rP) + 4, Y(tolF) + 4], '±' + b06_dn(tolF, 2) + ' mm, two hairs', { to: [X(0.66), Y(0.035)], side: 'r', color: C.hero, tcolor: C.heroText }); }
     }
-    verdict(t, 6.6, 1080, 872, { from: '±' + Math.round(tolS * 1000), to: '±' + Math.round(tolF * 1000), unit: 'µm', dec: 0, label: 'Radius tolerance, peak within 5%', better: 'higher', who: ['r 0.05', 'r 0.6'], rivalCol: 'grey', net: fmtN(loose, 0) + '× looser', size: 84 });
+    verdict(t, 6.6, 1080, 872, { from: '±' + Math.round(tolS * 1000), to: '±' + Math.floor(tolF * 1000 + 1e-6), unit: 'µm', dec: 0, label: 'Radius tolerance, peak within 5 %', better: 'higher', who: ['A near-sharp corner', 'Theseus, r 0.6'], rivalCol: 'grey', net: b06_dn(loose, 0) + '× looser', size: 84 });
     text('Steel: RapidDirect 2025, Protolabs. Peaks: the deck\'s fillet study (plane stress, 1.2 mm struts, the same mass). The mold method is open: EDM or milled, the same fillet pays.', 80, 1002, { role: 'small', size: 19, color: C.faint, alpha: ep(t, 1.0, 1.5), maxW: 1760 });
   }
 });

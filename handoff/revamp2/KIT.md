@@ -84,6 +84,16 @@ A chapter card settles at 5.5 to 6 s; a dense demonstration at 11 to 13 s.
   changes to the integrator rather than overriding them in your file.
 - **The simplified mouse is the only whole mouse (F38.8).** Never a full detailed shell. Never peach skin (`finger` is mono
   grey, F9.24). The seam is the Sora's one split (F9.28, F11.3): `mouseSimple` already draws it right.
+- **Rivals are drawn with `mouseRival` (FILM F9).** Any mouse that isn't Theseus: grey by default, yellow only for the one
+  rival a slide names; never `mouseSimple`, which is Theseus alone.
+- **The verdict's grammar (FILM F8, F15).** The struck grey value is always the rival's (or most mice's, or an old design's),
+  the blue one Theseus's; an internal contrast (Theseus against its own simpler option) is two plain stats, each named.
+- **Units.** A space before % and every unit ("17.6 %", "0.54 N"); ° and × attach. `verdict` does it for you.
+- **Heat needs its key (F19.3).** Every slide that colours parts by heat draws `heatKey` beside them; where the slide talks
+  about breaking, colour by the share of strength used (`feUse`, 07-sim.js).
+- **Materials come from `SIM_MAT`** (07-sim.js, `matOf`): one value per material across the film; F41.1's two strengths
+  (`feUse`, `feBreakAt`). The other conventions decided today (gf for clicks, the hard press, one test strip, the board's
+  colours) are in common.md, "Added 11:20".
 
 ## 3. API
 
@@ -248,6 +258,15 @@ about 0.78 × size + 26 px above it, the names and the net about 90 px below.
 
 **`betterTag(t, t0, x, y, 'Lower is better', 'd' | 'u' | 'l' | 'r')`** → which way is better, on a chart.
 
+**`heatKey(t, t0, x, y, w, o)`** → the heat scale's key (M's convention; F19.3: the squared scale must be disclosed). Every
+slide that colours parts by heat draws one beside them: the deck's heat colours as a bar and what they mean under it.
+Where the slide talks about breaking, colour by the share of strength used (`feUse`, red at 1) and key it so (mode `'use'`,
+the default: 0 · 50 % · Breaks); where it compares stress as stress, by MPa (`mode: 'mpa', max`); against a frame's own
+peak, `mode: 'peak'`. Pass the slide's `gamma` (the shell chapters' squared scale: `SHL_GAMMA`, 2): each value sits at its
+true place on the bar in the colour it really gets, and the title says "colour squared". `o = { mode, max, gamma, title,
+ticks ([0, 0.5, 1]), dec, alpha }`; returns `{ w, h }` (about 60 px tall). Test slides `kit_heat_n`, `kit_heat_p`.
+`heatKey(t, 2.0, 1580, 720, 240, { gamma: SHL_GAMMA });` (colour by use: `feDraw(Object.assign({}, r, { sig: feUse(r).map(u => Math.pow(u * k, 2) / k) }), P, { load: k, smax: 1 })`)
+
 ### The shot
 
 **`shotInset(t, t0, x, y, w, h, { miss, drift, dir, at = 1.0, label, result })`** → a crosshair flicks onto a target and the
@@ -337,3 +356,74 @@ on the right (the simplified mouse with it lit, neutral until the answer, then b
   whole-mouse view): same frames as mouseSimple, so the swap is the call's name plus `dims`. Test slides `kit_rival_n`,
   `kit_rival_p`, `kit_rival_dims`. tools/build.py: the `kit` target takes `--out=<name>` (dist/kit-<name>.html), so agents
   stop overwriting one another's dist/kit.html; without it the page is still dist/kit.html.
+- 2026-11-06 10:08 (F0c, the hand-off; no signature changed): `CARD2.skip` and `msSameM(a, b)` (new). While the player's
+  flight or hand-off draws a slide without its ground, it can name placements (view and transform) a slide has declared
+  for its simplified mouse; a `mouseSimple` call at exactly one of them (scale within 0.2 %, offset within 0.75 px) records
+  that it was drawn there and leaves the drawing to the player. This is how the player checks a declaration before it
+  trusts it: a slide declares `handoff: { in, out }` (in-chapter hand-off; see DESIGN §11) or `flight` with `{ view, box,
+  pad, focus }`, and a declaration the slide doesn't really draw is ignored (the film then dissolves or wipes as before).
+  Applied to both deck/src and deck/.snapshot/src (the snapshot copy otherwise as the integrator left it at 09:53).
+- 2026-11-06 10:30 (K; no signature changed) **`verdict`**: (1) the names under the values never overlap: the rival's name keeps
+  to its own column left of the new value, set on two even lines when it is longer than the old value and the arrow (b11's
+  "Plastic threads, ten re-screws" under a short "0"); only a single word too long for that moves Theseus's name right.
+  (2) **A space before `%`**, as the film writes "17.6 %" and before every unit (SI Brochure 9th ed. §5.4.3, §5.4.7); only
+  `°` (an angle) and `×` (a factor) attach. `%` keeps its large size. (3) `maxW` is the room for the whole row now (callers
+  already pass the room to the margin): a row wider than it is set smaller, whole, instead of running past the margin
+  (b01_density, b08_gripmap, b09_penalty, b09_second ran 25 to 72 px past RM). (4) With `align: 'right' | 'center'` the label
+  keeps to the row's side. (5) The morph no longer doubles the old value while it peels off ("0.333", "NN", b08): the big
+  figure hands over to the peeling copy and comes back counting once the copy has cleared; it lands at the same time as
+  before (about 1.8 s after t0). The grammar is in the doc comment: the struck grey value is always the rival's (FILM F8, F15).
+  Test slide `kit_verdict`. **`sentence`** (01-core.js): a sentence's first word with a capital inside it is a name as
+  written and keeps its small first letter (iFixit, iPhone, eBay, mAh). **`breakdown`** (07-charts.js): its share column
+  prints "12.3 %".
+- 2026-11-06 10:50 (K, FILM F12, a must; no signature changed) **`chapterCard2`'s frame one is the thumbnail**: the label row
+  (icon, "Chapter NN / NN", the idea count, no count-up), the name, its rule, "Most mice" and the compromise in red with
+  its flagship line, and the ledger strip are fully set at t = 0, as header() is; in the film, the flight is their entrance
+  (the player fades the card's content in as the mouse lands). The motion is the payoff: the strike and Theseus's answer
+  at `turn`, the ideas, the ledger turning blue. The part's mouse is fully present from frame one and its part lights
+  0.15 to 0.55 s (was 0.6 to 1.1; the mouse came up from 55 %). Checked: the seven film cards at t = 0 and settle (errs,
+  qa clean), the flight b04_reports → b05_card and b08_wheel → b09_card lands pixel-exact (F0c's edges.js: max 0 and 2),
+  and both reverse flights. A card whose part is your own function: draw it from frame one too (b02_card's GT01 fades in
+  from 0.8 s).
+- 2026-11-06 10:20 (H2, F42.1): the battery is set where the mouse balances at its centre. `KEY_PARTS.battery` moves 2.03 mm
+  toward the tail (key y 12.45 → 14.48 to 39.48; mouse z −14.48 to −39.48), at the same height (side view 5.46 to 9.46 mm up),
+  its front 3.99 mm behind the board's rear lobes. Brock's "about 5.9 mm forward and 1.5 mm up" was H1's balance model's
+  answer; that model put the four screws at a bottom plate the mouse doesn't have and left the encoder out. Corrected, and
+  with the side switches (F44.2) and the shell's four screw posts (an estimate until the 3D shell has them) added, the centre
+  of mass lands at z 0 (3d/pcb/tools/balance.py). `mouseSimple`'s battery, `keyPlanMM`, `MS_BATTERY` and every slide that reads
+  them follow (b01_battery, b09_card, b10_battery, b11_card, b11_repair, b11_battplug, b11_board). b07_balance still draws
+  its own battery until P4 switches it to `KEY_PARTS`. Also: `k2_encMagFront` / `encoderMM` draw the axle 12 mm over the board,
+  the mouse's height (was 11; the drawing is 1 mm taller at its feet); the wheel twin follows. The pcb twin's camera frame is
+  pinned, so 2D board views don't move when the battery lead does. No signature changed; `MS_DIMS` untouched.
+- 2026-11-06 11:00 (K; the shared solver, MODELS-AUDIT §1; F41.1) **07-sim.js**: **`feUse(r, ft, fb)`** (each element's use
+  of its strength, 1 = it breaks: σ_axial / ft + σ_bending / fb at its worse end; default PP-C-20A's 120 / 207 MPa; an
+  element may carry `el.ft` / `el.fb`; a rigid joint zone reports its rib's use) and **`feBreakAt(r, P, ft, fb)`** (the press
+  that breaks a frame solved at P N; rigid zones left out). They reproduce M's numbers exactly (shlHot: 109.0, 93.9, 147.8 N;
+  b06's strip as b06_util). **One value per material** in `SIM_MAT`, every shared file reading it (no private copies):
+  PP-C-20A `ft` 120, `fb` 207; ABS `ft` 50 (yield), `fb` 82; magnesium AZ91D **44.8 GPa** (MatWeb, `shlMg`; makeitfrom's 46
+  retired), `ft` 230, `fy` 150; FR4 **`E` 18 GPa across the weave, `EL` 20 along it**, `fb` 483 / `fbL` 552, `ft` 430 (Gund):
+  the board's models take the lower (a board's weave can run either way; the film never takes the value that flatters
+  Theseus's board), a slide ranking FR4 as a material takes the higher and says which. `matOf(key)` gives them in the old
+  tables' units (GPa, g/cm³, rounded as printed). The shared sources now carry the bending strengths (`shlFr4` 552 / 483,
+  `shlAbs` 82, `shlPc` 97): cite them instead of private copies. 10-d-shell.js: shlHot's `peak` is the solver's fibre peak
+  (`r.smax`: 18.99 MPa, was the samples' 17.79, M's −6.3 %) and the work share is measured against it; SHL_STR, SHL_PPC,
+  SHL_ABS, SHL_SPEC, TW read SIM_MAT; 10-d3-board.js and 12-20-shell.js too. On screen nothing in the film moves: the
+  replaced shell slides read `peak`; b07's figures are the same at the printed precision (sides in 0.64 → 0.21 mm).
+- 2026-11-06 11:15 (K, M's must on F19.3) **`heatKey(t, t0, x, y, w, o)`** (new, §3 Compare): the heat scale's key, by share
+  of strength used (the default: 0 · 50 % · Breaks), MPa or against the peak, honest under the squared scale (`gamma`).
+- 2026-11-06 11:35 (K; the player, 20-app.js, now K's) **The dissolve answers at once**: on one ground the film now fades the
+  new frame in with `E.out5` over 0.45 s (was `E.io5` over 0.55 s, which showed nothing for about 0.2 s after a tap). About
+  half the change shows by 50 ms and 95 % by 0.2 s; the two frames still share the stage for only about a tenth of a second.
+  Checked: capture sheets b08_grip ↔ b08_gripmap both ways; live, stepping right and left (back: 52 % of the change at
+  100 ms against 14 % before) and autoplay (moves on after its hold by the 0.45 s dissolve), no errors. DESIGN §7 and §11.
+- 2026-11-06 11:05 (H3, F47.4; no signature changed) **The board is 0.6 mm**: Brock's "0.6 mm, 5.63 g" (a 0.6 mm two-layer
+  board, half-ounce outer copper). One value for every drawing of Theseus's board: **`BOARD_T`** (0.6) and **`BOARD_TOP`**
+  (5.03, its top face over the pad) in 03-parts.js, read from `KEY_PARTS.board.t` / `.top` (new fields, generated by
+  key_parts.py from 3d/pcb/tools/board_geo.py's stack-up and pcb-layout.json). The top stays where it was (the shell's posts,
+  the switches, the wheel's axle 12 mm up and the lens's focus are set from it); the underside comes up from 4.03 to 4.43.
+  **`pcbSec(x0, x1, y0, th, o)`**: leave `th` out (null) for Theseus's board and it draws `BOARD_T`; a rival's board passes its
+  own. Now at 0.6: `mouseSimple`'s side views ('left', 'right': the board dashed from 5.03 to 4.43, was 5.05 to 4.0),
+  `clk_gt01MM`'s own board (was drawn 1.2), `clickMM`'s flat board (`drawClick`, was 1.2), `own_jointMM` (the screw seats on
+  the thinner board: `OWN_SEAT` = 4.4 mm reach for the M2 × 5, was 4.0). Rival and generic drawings keep their own
+  (`swMM`'s o.board, `sensorMM`, `railMM`, `wheelFrontMM`, `clk_hingeMM`, `mouseRival`'s board). Builders' own copies
+  (b03, b04, b07, b10, b11) are listed in their review files (HARDWARE, H3): read `BOARD_T` / `BOARD_TOP`, never a literal.

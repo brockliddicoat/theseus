@@ -10,7 +10,7 @@
      rivals ...... mouseRival, rivalFit, rvBox, rvAt, RV_DIMS   (a neutral rival mouse: any mouse that isn't Theseus)
      place ....... establish, locator
      agents ...... finger, forceArrow, faultTag, fixTag   (and the deck's pointer: cursorAt)
-     compare ..... abSplit, wipeTo, verdict, betterTag
+     compare ..... abSplit, wipeTo, verdict, betterTag, heatKey
      the shot .... shotInset
      teaching .... demoPanel, scaleNote, SCALE
      flow ........ LEDGER, ledger, ledgerStrip, chapterCard2
@@ -282,7 +282,8 @@ function msView(view) {
     const sk = new Path2D(), zs = L.corner.map(c => c[1]).concat(L.lensDots.map(c => c[1]));
     for (const z of zs) sk.addPath(msRR(sg * z - 3.25, -0.74, 6.5, 0.74, 0.3));
     add('skates', { solid: sk });
-    const bd = L.board; add('board', { dash: [msRR(Math.min(sg * bd[1], sg * bd[3]), -5.05, Math.abs(bd[3] - bd[1]), 1.05, 0.3)] });
+    /* the board side on: its top at BOARD_TOP (5.03 mm), BOARD_T thick (0.6 mm, F47.4; both from KEY_PARTS.board, H3) */
+    const bd = L.board; add('board', { dash: [msRR(Math.min(sg * bd[1], sg * bd[3]), -BOARD_TOP, Math.abs(bd[3] - bd[1]), BOARD_T, 0.3)] });
     const bt = KEY_PARTS.battery; add('battery', { dash: [msRR(Math.min(sg * -MS_BATTERY[1], sg * -(MS_BATTERY[1] + MS_BATTERY[3])), -(bt.yMid + bt.t / 2), MS_BATTERY[3], bt.t, 0.6)] });
     add('hump', { fill: msRR(sg * -45, -42, 70, 16, 0), clip: true });
     add('sides', { fill: msRR(-70, -31, 140, 31 - MS_SKIRT, 0), clip: true });
@@ -852,6 +853,35 @@ function betterTag(t, t0, x, y, s, dir = 'd', o = {}) {
   return text(str, x, y, { role: 'label', size: o.size || 21, color: o.color || C.mute, align: o.align || 'left', alpha: a }).w;
 }
 /**
+ * The heat scale's key (M's convention, MODELS-AUDIT §11; F19.3 "disclosure is the condition"): the deck's heat colours
+ * (heatCol: grey, amber, orange, red) as a bar, and what they mean under it. Every slide that colours parts by heat draws
+ * one beside them. Where the slide talks about breaking, colour by the share of strength used (feUse, red at 1) and key it
+ * so (mode 'use': 0, 50 %, "Breaks"); where it compares stress as stress, by MPa (mode 'mpa', max: the MPa at the red end);
+ * a frame coloured against its own peak, mode 'peak' (red is "Peak"). gamma: the exponent the slide colours with (the
+ * shell chapters' squared scale, SHL_GAMMA = 2): each value sits at its true place on the bar in the colour it really
+ * gets, and the title says so ("colour squared").
+ * (x, y) = the bar's top left, w its width. o = { mode ('use' | 'mpa' | 'peak'), max, gamma (1), title, ticks ([0, 0.5, 1],
+ *   as fractions of the range), dec (MPa ticks' decimals), alpha }. Returns { w, h } (title top to labels' foot: ~60 px).
+ * e.g. heatKey(t, 2.0, 1580, 720, 240, { gamma: SHL_GAMMA });   // "Share of strength used, colour squared": 0 · 50 % · Breaks
+ *      heatKey(t, 2.0, 1580, 720, 240, { mode: 'mpa', max: 207 });
+ */
+function heatKey(t, t0, x, y, w, o = {}) {
+  const a = ep(t, t0, t0 + 0.4) * (o.alpha == null ? 1 : o.alpha); if (a <= 0.003) return { w, h: 0 };
+  const mode = o.mode || 'use', gm = o.gamma || 1, bh = 10, sq = Math.abs(gm - 1) > 1e-6;
+  const title = o.title || ({ use: 'Share of strength used', mpa: 'Stress', peak: 'Stress, against its peak' }[mode] || 'Stress') + (sq ? ', colour squared' : '');
+  text(title, x, y - 14, { role: 'label', size: 19, color: C.mute, alpha: a });
+  const g = G.createLinearGradient(x, 0, x + w, 0); for (let i = 0; i <= 16; i++) g.addColorStop(i / 16, heatCol(Math.pow(i / 16, gm)));
+  G.save(); G.globalAlpha = a; G.fillStyle = g; rrPath(x, y, w, bh, bh / 2); G.fill(); G.restore();
+  const dec = o.dec != null ? o.dec : (o.max || 0) >= 20 ? 0 : 1;
+  for (const v of o.ticks || [0, 0.5, 1]) {
+    const tx = x + w * clamp(v), end = v >= 0.999, zero = v <= 0.001;
+    const lab = zero ? '0' : mode === 'mpa' ? kitNum((o.max || 0) * v, dec) + (end ? ' MPa' : '') : end ? (mode === 'use' ? 'Breaks' : 'Peak') : kitNum(v * 100, 0) + ' %';
+    line(tx, y + bh + 3, tx, y + bh + 9, { color: C.faint, w: 1.5, alpha: a });
+    text(lab, tx, y + bh + 30, { role: 'tick', size: 19, color: end && mode !== 'mpa' ? C.red : C.mute, align: zero ? 'left' : end ? 'right' : 'center', alpha: a });
+  }
+  return { w, h: 33 + bh + 30 };
+}
+/**
  * The one before → after headline of the deck (F14.10, F16.1). The old value appears where the new one will stand, then
  * re-counts to the new value in Theseus's gradient while a copy of the old slides left, shrinks, turns grey and is struck;
  * an arrow joins them; the net change lands under the row (by how much, never rounded up); the label says which way is better.
@@ -909,16 +939,19 @@ function verdict(t, t0, x, y, o = {}) {
   /* the old value's copy: with morph it starts exactly over the big figure and flies left, shrinking and greying, to its
      struck place; without morph it waits there, small and grey, from the start */
   if (!morph || km > 0.001) {
-    const bs = lerp(size, bS, km), col = mix(TH ? '#111111' : '#F3F2EE', TH ? '#8A8983' : '#6E6D68', km);
-    rich([{ s: sOld, role: 'd1', size: bs, weight: 800, track: lerp(-0.03, -0.02, km), color: col, tnum: true }, unitRun(bs, km, col)], lerp(xBig, x0, km), y, { alpha: a0 });
+    const grey = TH ? '#8A8983' : '#6E6D68', bs = lerp(size, bS, km), col = mix(TH ? '#111111' : '#F3F2EE', grey, km), ucol = mix(C.mute, grey, km);
+    rich([{ s: sOld, role: 'd1', size: bs, weight: 800, track: lerp(-0.03, -0.02, km), color: col, tnum: true }, unitRun(bs, km, ucol)], lerp(xBig, x0, km), y, { alpha: a0 });
   }
   if (ks > 0) line(x0 - 4, y - bS * 0.34, x0 - 4 + (wOld + 8) * ks, y - bS * 0.34, { color: C.mute, w: Math.max(2.5, bS * 0.06), alpha: a0 });
   if (kar > 0) arrow(x0 + wOld + g1, y - bS * 0.36, x0 + wOld + g1 + arW, y - bS * 0.36, { color: C.faint, w: Math.max(2.5, size * 0.022), hs: Math.max(12, size * 0.09), p: kar, alpha: a0 });
   /* the big figure: the old value until the count starts, then counting to the new one; ink until it lands, then
      Theseus's gradient, cross-faded so the colour arrives rather than switching */
   { const sv = fmt(lerp(f0, f1, kc)), runs = c => [{ s: sv, role: 'd1', size, weight: 800, track: -0.03, color: c ? C.heroText : C.ink, grad: c ? C.heroGrad : null, tnum: true }, unitRun(size, 0, c ? C.heroText : C.mute, c ? C.heroGrad : null)];
-    if (kg < 1) rich(runs(false), xBig, y, { alpha: a0 * (1 - kg) });
-    if (kg > 0) rich(runs(true), xBig, y, { alpha: a0 * kg }); }
+    /* with morph it hands over to the peeling copy at c0 (the two are the same frame there) and comes back, counting from
+       the old value, once the copy has cleared: it never stands under the moving copy (no doubled digits or units, b08) */
+    const kb = !morph || t < c0 ? 1 : ep(t, cs, cs + 0.18);
+    if (kg < 1 && kb > 0) rich(runs(false), xBig, y, { alpha: a0 * kb * (1 - kg) });
+    if (kg > 0 && kb > 0) rich(runs(true), xBig, y, { alpha: a0 * kb * kg }); }
   /* under the row: whose each value is, then the net in Theseus's colour */
   let yy = y + Math.round(size * 0.06) + 34;
   if (o.who) {
@@ -1138,26 +1171,29 @@ function chapterCard2(t, o = {}) {
   const key = o.ch || (typeof curSlide === 'function' && curSlide() ? curSlide().ch : 'click'), L = ledgerOf(key) || { name: key, comp: '', ans: '' };
   const chs = typeof DECK !== 'undefined' ? DECK.chapters : [], ci = chs.findIndex(c => c.key === key), nCh = Math.max(1, chs.length - 2);
   const name = o.name || (ci >= 0 ? chs[ci].name : L.name), comp = o.compromise || L.comp, ans = o.answer || L.ans, turn = o.turn == null ? 2.1 : o.turn;
+  /* frame one is the clip's thumbnail (FILM F12, as header() since 2026-11-06): the label row, the name, the rule and the
+     compromise in red are fully set at t = 0; in the film the flight is their entrance. The motion is the payoff: the
+     strike, Theseus's answer, the ideas, the ledger turning blue, the part lighting */
   /* the label row: the chapter's icon and number, and the idea count at the right (XBAB's TOTAL) */
-  chapterIcon(key, LM, LAY.labelY - 19, 22, C.ink, ep(t, 0.0, 0.3));
-  rich([{ s: 'Chapter ' + pad2(Math.max(0, ci)), role: 'label', size: 22, color: C.ink }, { s: '/ ' + pad2(nCh), role: 'label', size: 22, color: C.faint, gap: 12 }], LM + 36, LAY.labelY, { t, alpha: ep(t, 0.05, 0.35) });
+  chapterIcon(key, LM, LAY.labelY - 19, 22, C.ink, 1);
+  rich([{ s: 'Chapter ' + pad2(Math.max(0, ci)), role: 'label', size: 22, color: C.ink }, { s: '/ ' + pad2(nCh), role: 'label', size: 22, color: C.faint, gap: 12 }], LM + 36, LAY.labelY, { t });
   const n = o.count != null ? o.count : typeof chapterIdeaCount === 'function' ? chapterIdeaCount(key) : (o.list || []).length;
   if (n) {
-    text('Ideas in this chapter', RM, LAY.labelY, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: ep(t, 0.3, 0.7) });
-    rich([{ s: String(n), role: 'd1', size: 110, color: C.ink, tnum: true, count: [0.4, 0.9] }], RM, LAY.labelY + 112, { t, align: 'right', alpha: ep(t, 0.35, 0.6) });
+    text('Ideas in this chapter', RM, LAY.labelY, { role: 'label', size: 21, color: C.mute, align: 'right' });
+    rich([{ s: String(n), role: 'd1', size: 110, color: C.ink, tnum: true }], RM, LAY.labelY + 112, { t, align: 'right' });
   }
   /* the name, as big as the left column allows */
   const colW = 840, nm = caps(name), size = Math.min(150, colW / Math.max(1, tw(nm, { role: 'd2', size: 1, caps: false })));
-  text(nm, LM - size * 0.04, 318, { role: 'd2', size, weight: 900, color: C.ink, t, rise: [0.0, 0.7] });
-  line(LM, 362, LM + colW * ep(t, 0.4, 1.2, E.cam), 362, { color: C.hair, w: 1.5 });
+  text(nm, LM - size * 0.04, 318, { role: 'd2', size, weight: 900, color: C.ink, t });
+  line(LM, 362, LM + colW, 362, { color: C.hair, w: 1.5 });
   /* the problem first: what most mice give up here, in red; then struck as Theseus's answer lands */
-  const kp = ep(t, 0.45, 0.85), kt = ep(t, turn, turn + 0.45), cSt = { role: 'h3', size: 36, weight: 700 };
-  text('Most mice', LM, 430, { role: 'label', size: 22, color: C.mute, alpha: kp });
-  const cr = text(comp, LM, 482, Object.assign({ color: mix(C.red, TH ? '#8A8983' : '#6E6D68', kt), t, t0: 0.55, cps: 75, maxW: colW, lh: 1.18 }, cSt));
+  const kt = ep(t, turn, turn + 0.45), cSt = { role: 'h3', size: 36, weight: 700 };
+  text('Most mice', LM, 430, { role: 'label', size: 22, color: C.mute });
+  const cr = text(comp, LM, 482, Object.assign({ color: mix(C.red, TH ? '#8A8983' : '#6E6D68', kt), t, maxW: colW, lh: 1.18 }, cSt));
   if (kt > 0) { const lines = wrap(sentence(comp), cSt, colW); lines.forEach((l, i) => { const lw2 = tw(l, cSt), kl = clamp(kt * lines.length - i); if (kl > 0) line(LM - 3, 482 + i * 36 * 1.18 - 11, LM - 3 + (lw2 + 6) * kl, 482 + i * 36 * 1.18 - 11, { color: C.mute, w: 2.5 }); }); }
   /* which flagship makes this compromise (FILM F1): small, under it, so the card carries the intro's six trades */
   const flag = o.flag === false ? null : (o.flag || ledgerFlag(key)), fy = 482 + Math.max(1, cr.lines.length) * 36 * 1.18 + 8;
-  if (flag) text(flag, LM, fy, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: colW, alpha: ep(t, 1.0, 1.4) });
+  if (flag) text(flag, LM, fy, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: colW });
   const ay = 482 + Math.max(1, cr.lines.length) * 36 * 1.18 + 62 + (flag ? 34 : 0);
   text('Theseus', LM, ay, { role: 'label', size: 22, color: C.heroText, alpha: ep(t, turn, turn + 0.3) });
   text(ans, LM - 2, ay + 58, { font: 'disp', size: 48, weight: 800, track: -0.01, color: C.heroText, grad: C.heroGrad, t, rise: [turn + 0.05, 0.75], maxW: colW, lh: 1.05, caps: false });
@@ -1174,9 +1210,9 @@ function chapterCard2(t, o = {}) {
     });
   }
   /* the ledger along the foot */
-  ledgerStrip(t, 0.7, LM, 900, RM - LM, { focus: key, turn: turn + 0.1 });
+  ledgerStrip(t, -2, LM, 900, RM - LM, { focus: key, turn: turn + 0.1 });
   /* the part, on the right: frame one shows it (M6); lit neutral while the problem stands, Theseus's blue once answered */
-  const box = [1000, 200, 840, 500], ka = lerp(0.55, 1, ep(t, 0, 0.3));
+  const box = [1000, 200, 840, 500], ka = 1;
   /* the player's chapter flight lands on this mouse: every mouseSimple drawn for the part is seen (CARD2) */
   CARD2.cap = [];
   try { chapterCardPart(t, o, box, ka, kt); }
@@ -1186,7 +1222,7 @@ function chapterCard2(t, o = {}) {
 function chapterCardPart(t, o, box, ka, kt) {
   if (typeof o.part === 'function') o.part(t, box, kt);
   else if (o.part) {
-    const pv = o.part.view || 'top', hi = o.part.hi || [], lit = ep(t, 0.6, 1.1), col = mix(TH ? '#111111' : '#F3F2EE', HU.hero[TH ? 0 : 1], kt);
+    const pv = o.part.view || 'top', hi = o.part.hi || [], lit = ep(t, 0.15, 0.55), col = mix(TH ? '#111111' : '#F3F2EE', HU.hero[TH ? 0 : 1], kt);   /* the part lights as establish's does */
     const hiMap = {}; (Array.isArray(hi) ? hi : [hi]).forEach(h => (hiMap[h] = col));
     mouseFit(box, pv, { hi: hiMap, lit, alpha: ka, pad: o.part.pad == null ? 0.04 : o.part.pad, show: o.part.show });
   }

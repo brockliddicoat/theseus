@@ -14,6 +14,16 @@ D['power'] = power
 # the antenna keep-out as pcb-layout.json has it (board frame). Board plan 5 (H1): the module is not turned any more, its
 # long antenna faces forward and the keep-out sits in front of it, so there is nothing to mirror
 D['keepout'] = lay.get('antennaKeepout')
+# the camera frame (08-v2d.js frames every 2D view of the board from it: its centre is the target, r the distance). The
+# exporter takes it from the whole scene, so the battery lead, which follows the battery (board.py BATTERY), moved and zoomed
+# every board view when the battery moved (H2, F42.1: the lead grew 2 mm back; r 44.24 -> 45.03, centre z -1.0 mm, up to
+# ~15 px on screen). Pinned to the plan-5 board's frame as H1 left it (09:17), so the board's views stay put; the scene's
+# own frame is kept as frameScene. Re-pin on purpose if the board itself changes size.
+PIN = {'center': [1.164677619934082, 14.372908143997194, 20.822985763549802],
+       'size': [48.329355239868164, 28.054181575775146, 68.59402847290039], 'r': 44.23772265818224}
+if 'frame' in D:
+    D['frameScene'] = D.get('frameScene') or D['frame']
+    D['frame'] = PIN
 import os
 json.dump(D, open(dst + '.tmp', 'w'), separators=(',', ':')); os.replace(dst + '.tmp', dst)
 print('power paths', {k: len(v) for k, v in power.items()})

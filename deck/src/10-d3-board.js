@@ -159,7 +159,7 @@ const shcSkin = () => TH ? ['#C9C8C2', '#B3B2AC'] : ['#6A6964', '#55554F'];
    The same weight of each, pulled until it breaks: strips 50 mm long, the FR4 one 10 × 1.0 mm (0.93 g), the magnesium one
    1.0 mm thick and as wide as the same weight allows. Breaking pull = tensile strength × area. The figures are the ones
    Shell A's ranking prints (shlSpecific: Gund for FR4, MatWeb for AZ91D-F); this slide is the head-to-head. */
-const SHC_FR4 = { uts: 430, E: [18, 20], rho: 1.85 }, SHC_MG = { uts: 230, E: 44.8, rho: 1.81 };
+const SHC_FR4 = { uts: SIM_MAT.fr4.ft, E: [matOf('fr4').E, matOf('fr4').EL], rho: matOf('fr4').rho }, SHC_MG = { uts: SIM_MAT.mg.ft, E: matOf('mg').E, rho: matOf('mg').rho };   /* SIM_MAT */
 const SHC_PULL = (() => { const L = 50, aF = 10, g = SHC_FR4.rho * aF * L / 1000, aM = g * 1000 / (SHC_MG.rho * L), fF = SHC_FR4.uts * aF, fM = SHC_MG.uts * aM; return { L, aF, aM, g, fF, fM, ratio: fF / fM }; })();
 /** a strip seen from above: (x, y) = its left end on its centre line, len px long, h px wide; kind 'fr4' (the glass weave)
    or 'mg' (a cast face). from, to = the part of its length drawn (0..1); dx moves it */

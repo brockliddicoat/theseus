@@ -387,10 +387,12 @@ S({
 
 The player (§11) reads a few more, all optional: `hold` (seconds the film holds the settled frame in autoplay, instead of
 the hold counted from its text), `trans` (its own transition in: `'dissolve' | 'wipe' | 'flight' | 'chapter' | 'iris' |
-'push' | 'cut'`), `irisAt: [x, y]`, and `flight`: `{ view, box: [x, y, w, h], pad }` says where the slide's simplified mouse
-sits (as `mouseFit(box, view, { pad })` would draw it), so a chapter flight starts or lands exactly on it; `flight: false`
-keeps the flight out of the slide's chapter changes. A chapter card built with `chapterCard2` needs none of these: the kit
-shows the player its mouse.
+'push' | 'cut' | 'handoff'`; the dissolve, the default on one ground, takes 0.45 s and answers a tap at once, §11), `irisAt: [x, y]`, `handoff: { in, out }` (where the slide's simplified mouse sits at its
+first frame and at its end, so the mouse is handed from slide to slide within a chapter) and `flight` (one placement for
+both, used by the chapter flight; `flight: false` keeps the flight out of the slide's chapter changes). A placement is
+`{ view, box: [x, y, w, h], pad, focus }`, the call as the slide makes it (`mouseFit(box, view, { pad })`, or establish's
+camera); the player checks it against what the slide really draws. A chapter card built with `chapterCard2` needs none of
+these: the kit shows the player its mouse.
 
 ### Furniture (`04-ui.js`)
 
@@ -608,9 +610,11 @@ player (`20-app.js`) strings them into one film.
 **The flow.** The stage never moves between slides: the ground, the 40 px grid and the footer hold still and only the
 content changes. The footer (the rule, THESEUS / chapter, n / N) is the stage's, drawn settled on every slide, so it never
 redraws or dims between them.
-- Same ground (paper to paper, night to night): a **dissolve**, 0.55 s. The new frame fades in over the old, so whatever
+- Same ground (paper to paper, night to night): a **dissolve**, 0.45 s. The new frame fades in over the old, so whatever
   is the same on both (the chapter's label, the footer, a part drawn in the same place) holds perfectly still while the
-  rest changes. Keep two slides on the same ground when one hands a part to the next (M9).
+  rest changes. It is eased out (`E.out5`), so it answers a tap at once: about half the change shows by 50 ms and 95 %
+  by 0.2 s, and the two frames share the stage only for about a tenth of a second (20 to 80 %). (K, 2026-11-06: it was
+  `E.io5` over 0.55 s, which showed nothing for about 0.2 s after a tap and felt laggy.) Keep two slides on the same ground when one hands a part to the next (M9).
 - A change of ground: a **wipe**, 0.7 s. A soft edge, slanted 10°, carries the new slide across from the left (from the
   right going back), so its header shows first (G9).
 - A change of chapter, either way: the **flight** across the simplified mouse (Brock, F40.2: "advanced motion
@@ -630,13 +634,24 @@ redraws or dims between them.
     draws it from then on. A part drawn without the kit's mouse gets a soft hand-off in the card's part box: where its
     mouse sits at the card's settle if it has one there (b11's), or else the chapter's part lit as the words begin, then
     the box handed to the card's own drawing (b02's switch, b08's swatch; 1.85 s). Show the part from frame one (M6), so
-    the hand-off meets it. Any slide can say where its mouse sits with `flight: { view, box, pad }` (the flight then
-    starts or ends exactly on it), or opt out with `flight: false`.
+    the hand-off meets it. Any slide can say where its mouse sits with `flight: { view, box, pad, focus }` (as for a
+    hand-off, below; the flight then starts or ends exactly on it), or opt out with `flight: false`.
   - Timeline (s): the old content recedes 0 to 0.4 as the mouse comes up; the old part's light goes 0.3 to 0.56; the
     camera moves 0.22 to 1.28, turning 0.58 to 1.18 when it must (the kit's own drawing before and after the turn, a loft
     of its outlines during it); a card's clock starts on landing (1.28) and the flight's layer goes at 1.6, when the
     card's mouse is fully up; a slide emerges 1.2 to 1.6 instead. Nothing on it is blue but Theseus's lit part, and
     nothing moves that the camera doesn't move.
+- Within a chapter, the **hand-off** (M9), 1.0 s: when a slide ends on the simplified mouse and the next one starts on it,
+  the one mouse moves (and turns, if the views differ) from the first place to the second while everything else changes
+  round it: the old content goes in place, its lit part with it; the new content comes up round the arriving mouse at
+  its first frame, its lit part with it; its clock starts as the mouse lands. Ask for it on both slides with
+  `handoff: { out: d }` on the first (where its mouse is at its end) and `handoff: { in: d }` on the second (at its first
+  frame), d = `{ view, box: [x, y, w, h], pad, focus }` describing the call as you made it: `mouseFit(box, view, { pad })`
+  (pad 0.06 by default), or `establish(t, t0, box, ...)` at its first frame (pad 0.08), or at its end once pushed in
+  (`focus`: the part name or mm rect, `fpad` 0.06). The mouse must be drawn whole inside `box`. The player checks it: the
+  kit sees whether each slide really draws its mouse there (`CARD2.skip`), and if either doesn't (a wrong box, a slide
+  stepped early, a mouse still moving), the film dissolves or wipes as usual. Going back plays a hand-off only if the
+  slide on screen has an `out` and the one before it an `in`.
 - A slide may ask for its own: `trans: 'dissolve' | 'wipe' | 'flight' | 'chapter' | 'iris' | 'push' | 'cut'`; `chapter` is
   F0b's pass through black (1.1 s), kept for a slide that asks for it; `iris` opens a circle round `irisAt: [x, y]` (stage
   px). Transitions carry no colour (blue is Theseus's). Reduced motion: a 0.25 s dissolve onto the settled frame. Edit

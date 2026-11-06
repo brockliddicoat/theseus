@@ -9,9 +9,9 @@
 /* trigger pair masses: the study shell's triggers (3.88 g of Pyrofil PP-C-20A, 3d/lattice) at each material's density */
 const SHL_TRIG = [
   { nm: 'PPS, 30% carbon', E: 17, rho: 1.4, hero: true },
-  { nm: 'Carbon PP, 20%', E: 13.5, rho: 1.01 },
-  { nm: 'Magnesium AZ91D', E: 46, rho: 1.81, ref: true }
-].map(m => Object.assign(m, { g: 3.88 * m.rho / 1.01, d: 13.5 / m.E }));
+  { nm: 'Carbon PP, 20%', E: matOf('ppcf').E, rho: matOf('ppcf').rho },
+  { nm: 'Magnesium AZ91D', E: matOf('mg').E, rho: matOf('mg').rho, ref: true }   /* SIM_MAT: MatWeb's 44.8 GPa (was makeitfrom's 46) */
+].map(m => Object.assign(m, { g: 3.88 * m.rho / matOf('ppcf').rho, d: matOf('ppcf').E / m.E }));
 
 /* #93: an arch slice of the same mass with even walls or walls graded thicker toward the rim, clamped at the rim,
    squeezed at the grip and pressed at the crown; solved as frames (frameSolve, 10-d-shell.js) */
@@ -34,7 +34,7 @@ const SHL_GRADE = (function () {
 
 S({
   id: 'shlsheet1', ch: 'shell', theme: 'paper', title: 'PPS triggers, film sticker, closed wheel well', settle: 10, sheet: true, ideas: [6, 26, 58],
-  src: ['cfpps', 'shlPyrofil', 'az91d', 'shlLattice', 'shlMylar', 'shlB2gSlx', 'shlDoc'],
+  src: ['cfpps', 'shlPyrofil', 'shlMg', 'shlLattice', 'shlMylar', 'shlB2gSlx', 'shlDoc'],
   sfx: [[0.45, 'tick'], [1.15, 'tick'], [1.85, 'tick']],
   draw: t => {
     header(t, 'PPS triggers, film sticker, closed wheel well');

@@ -11,13 +11,19 @@ from board import SORA_HOLES, wheel_cut_poly, square_cut_poly, rrect, BAY_TRIM
 from parts import GND
 
 # ---- stack-up (local y; laminate top at 0) -------------------------------------------------------------
-T = 1.0                 # finished FR4 laminate thickness (mm)
-CU = 0.035              # outer copper (1 oz)
+# F47.4 (Brock, 2026-11-06, "0.6 mm, 5.63 g"; H3): a 0.6 mm finished, two-layer board with half-ounce outer copper, on the
+# path to the 5.6 g target (F42.2). Was 1.0 mm, four layers (L2 a GND plane, L3 power + long runs), 1 oz outer. The board's
+# TOP stays where it was in the mouse (5.03 mm over the pad: the shell's posts, the switches, the wheel's axle 12 mm up and
+# the lens's focus are all set from it); the underside comes up 0.4 mm. The deck's drawings read this through KEY_PARTS
+# (deck/tools/geo2d/key_parts.py -> KEY_PARTS.board.t / .top -> BOARD_T / BOARD_TOP in deck/src/03-parts.js).
+T = 0.6                 # finished FR4 laminate thickness (mm)
+LAYERS = 2              # copper layers: L1 (top) and L4 (the bottom, the art's pour); 4 adds L2 (GND) and L3 (power)
+CU = 0.0175             # outer copper (0.5 oz, 17.5 um; was 1 oz, 35 um)
 Y_MASK = 0.022          # solder mask over bare laminate
-Y_MASKCU = 0.056        # solder mask over copper (copper 35 um + mask 21 um)
-Y_PAD = 0.042           # ENIG pad surface
-Y_SILK = 0.064          # silkscreen ink
-Y_L2, Y_L3 = -0.30, -0.70   # inner layers (core 0.4 mm between them)
+Y_MASKCU = CU + 0.021   # solder mask over copper (copper + mask 21 um): 0.0385 (was 0.056)
+Y_PAD = CU + 0.007      # ENIG pad surface (copper + nickel-gold): 0.0245 (was 0.042)
+Y_SILK = Y_MASKCU + 0.008   # silkscreen ink on the mask: 0.0465 (was 0.064)
+Y_L2, Y_L3 = -0.30, -0.70   # inner layers of the four-layer build only (LAYERS == 4, T 1.0); none on two layers
 BEVEL = 0.045           # mask shoulder over copper edges (gives the subtle relief)
 MASK_EXP = 0.05         # mask opening expansion around pads
 QR_URL = 'https://theseus.example/software'   # placeholder: Brock sets the real web-software URL (see README)

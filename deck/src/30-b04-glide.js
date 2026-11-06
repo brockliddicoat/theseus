@@ -555,7 +555,7 @@ S({
       if (kb > 0.003) {
         const det = Math.round(b04_sharp(F) / sharp0 * 100), inF = Math.abs(dz) <= 0.1 + 1e-6;
         text('Detail kept', tx, vyy + 100, { role: 'label', size: 22, color: C.mute, alpha: kb * (1 - kv9) });
-        rich([{ s: String(Math.min(100, det)), role: 'd1', size: 64, weight: 800, color: inF ? C.ink : C.red, tnum: true }, { s: '%', font: 'disp', size: 34, weight: 800, color: inF ? C.ink : C.red, gap: 4 }], tx - 3, vyy + 166, { alpha: kb * (1 - kv9) });
+        rich([{ s: String(Math.min(100, det)), role: 'd1', size: 64, weight: 800, color: inF ? C.ink : C.red, tnum: true }, { s: '%', font: 'disp', size: 34, weight: 800, color: inF ? C.ink : C.red, gap: 10 }], tx - 3, vyy + 166, { alpha: kb * (1 - kv9) });
         /* the phone: its camera too close to a page, its screen the same cloth, blurred as much */
         const phx = RM - 40 - 96, phy = vyy - 8, phw = 96, phh = 168;
         b04_phone(phx, phy, phw, phh, op.rmm / fieldMM * (phw - 12) * 1.6, kb * (1 - kv9), u);
@@ -599,9 +599,9 @@ S({
           /* the same move, counted short or long, against the in-focus count (F16.1) */
           const net = Math.round((cnt / cnt0 - 1) * 100);
           rich([{ s: fmtN(cnt, 1), font: 'disp', size: 52, weight: 800, color: C.red, tnum: true }, { s: 'counts, not ' + fmtN(cnt0, 1), role: 'small', size: 24, weight: 600, color: C.mute, gap: 10, sentence: false }], mx, fy + 156, { alpha: kfd });
-          text((net > 0 ? '+' : '−') + Math.abs(net) + '% for the same move', mx, fy + 192, { role: 'small', size: 24, weight: 700, color: C.red, alpha: kfd });
+          text((net > 0 ? '+' : '−') + Math.abs(net) + ' % for the same move', mx, fy + 192, { role: 'small', size: 24, weight: 700, color: C.red, alpha: kfd });
         } else {
-          const km = ep(t, 9.2, 9.7), pc = zz => { const v = Math.round((b04_shiftAt(zz) / b04_shiftAt(B04.Z) - 1) * 100); return (v > 0 ? '+' : '−') + Math.abs(v) + '%'; };
+          const km = ep(t, 9.2, 9.7), pc = zz => { const v = Math.round((b04_shiftAt(zz) / b04_shiftAt(B04.Z) - 1) * 100); return (v > 0 ? '+' : '−') + Math.abs(v) + ' %'; };
           if (km > 0.003) { text('At 2.8 mm ' + pc(2.8), mx, fy + 184, { role: 'small', size: 24, weight: 700, color: C.red, alpha: km * kfd }); text('At 2.0 mm ' + pc(2.0), mx, fy + 214, { role: 'small', size: 24, weight: 700, color: C.red, alpha: km * kfd }); }
           else text('At 1,600 CPI', mx, fy + 192, { role: 'label', size: 22, color: C.faint, alpha: kfd });
         }
@@ -645,7 +645,7 @@ S({
     header(t, 'A focus window of 0.2 mm, not 0.4');
     captions(t, [[0.3, 'PixArt\'s datasheets let the lens sit anywhere from 2.2 to 2.6 mm over the pad, and a mouse built to that whole window can land anywhere in it. The chip\'s scale goes with the height.'],
       [3.6, 'Theseus is built to the middle 0.2 mm, 2.3 to 2.5. The same flick lands within 4 %, and the picture keeps more of its detail.'],
-      [8.3, 'Lift-off is set from the lens\'s height too: built 0.2 mm off, every lift-off setting is 0.2 mm off. Next, what moves the lens in use.']]);
+      [8.3, 'Lift-off is set from the lens\'s height too: built 0.2 mm off, every lift-off setting is 0.2 mm off.']]);
     const Z = b04_fZ(t), F = B04FO;
     /* ---- left: the lens over the cloth, the chip's picture, and the ruler the pointer sets the height on ---- */
     const bx = LM, by = 280, bw = 860, bh = 660;
@@ -666,7 +666,7 @@ S({
       b04_blit(b04_frameCv(Fr), fx, fy, fs, fs, 0, 1, { px: true, r: 4 });
       text('What the chip sees', fx + fs + 24, fy + 22, { role: 'label', size: 22, color: C.mute });
       text('Detail kept', fx + fs + 24, fy + 70, { role: 'label', size: 22, color: C.mute });
-      rich([{ s: String(det), role: 'd1', size: 60, weight: 800, color: out ? C.red : C.ink, tnum: true }, { s: '%', font: 'disp', size: 32, weight: 800, color: out ? C.red : C.ink, gap: 4 }], fx + fs + 22, fy + 134); }
+      rich([{ s: String(det), role: 'd1', size: 60, weight: 800, color: out ? C.red : C.ink, tnum: true }, { s: '%', font: 'disp', size: 32, weight: 800, color: out ? C.red : C.ink, gap: 10 }], fx + fs + 22, fy + 134); }
     /* the ruler: 2.0 to 2.8 mm, PixArt's window and Theseus's, a handle at the lens's height */
     const rx = bx + 620, yR = z => by + 600 - (z - 2.0) * 560, kB = ep(t, 3.6, 4.0);
     line(rx, yR(2.8), rx, yR(2.0), { color: C.faint, w: 2 });
@@ -802,14 +802,15 @@ S({
   ],
   draw: t => {
     header(t, 'Dots at the lens keep it in focus');
-    captions(t, [[0.3, 'Rest your hand on the mouse and its skates sink into a soft pad. With skates only at the corners, the lens comes down with the mouse, out of its focus window.'],
-      [2.1, 'One cure is more skate. To hold the lens as well as two dots beside it would, the skates at the ends must grow to 706 mm².'],
+    captions(t, [[0.3, 'Rest a hand on the mouse and its skates sink into a soft pad; with skates only at the corners, the lens drops out of its focus window.'],
+      [2.5, 'One cure is more skate. To hold the lens as well as two dots beside it would, the skates at the ends must grow to 706 mm².'],
       [4.9, 'Theseus puts the two dots on its clip-on lens. The cloth under the lens goes down with them, and the lens holds for 0.05 g.'],
       [8.1, 'PixArt says it too: put the feet around the sensor\'s opening. Two dots there do the work of 0.31 g of skate.']]);
     const g = B04G, box = g.box, K = b04_key();
     demoWindow(box[0], box[1], box[2], box[3], 1, { plain: true });
     /* the input, the same for every skate set: the hand's weight, 5 N, on the hump; and the pointer's drag of the skate size */
-    const kp = ep(t, 0.6, 1.5, E.io3), pf = kp * B04HAND / 5, kDrag = ep(t, 2.6, 4.4, E.io3), Am = B04SP.sweep.find(p => Math.abs(p.k - B04SP.match) < 1e-3).area;
+    const kp = ep(t, -0.1, 0.9, E.out3), pf = kp * B04HAND / 5,   /* the press is under way on frame one (R2-b04-1, M6) */
+      kDrag = ep(t, 2.6, 4.4, E.io3), Am = B04SP.sweep.find(p => Math.abs(p.k - B04SP.match) < 1e-3).area;
     const A = lerp(B04SP.corners.area, Am, kDrag), R = b04_spSweep(A), TS = b04_spSet('theseus'), pads = b04_padsAt(R.k), kw = ep(t, 4.7, 5.6, E.cam);
     const res = {};
     clipped(box[0], box[1], box[2], box[3], () => {
@@ -825,10 +826,10 @@ S({
       line(zx0, zy1, box[0] + 6, 602, { color: inkA(0.35), w: 1.2, dash: [4, 4] }); line(zx1, zy1, box[0] + box[2] - 6, 602, { color: inkA(0.35), w: 1.2, dash: [4, 4] });
       /* the press: the hand's weight on the hump */
       const hz = -20, yH = g.y1 - 39.4 * g.s1;
-      forceArrow(g.ox1 + hz * g.s1, yH - 2, Math.PI / 2, 74, { k: kp, N: B04HAND * kp, dec: 1, label: 'your hand\'s weight', color: C.ink, side: 'r' });
+      forceArrow(g.ox1 + hz * g.s1, yH - 2, Math.PI / 2, 74, { k: kp, N: B04HAND, dec: 1, label: 'your hand\'s weight',   /* forceArrow labels N × k itself */ color: C.ink, side: 'r' });
       /* what it costs: out of the window */
       const kf = 1 - ep(t, 2.6, 3.0);
-      if (kw <= 0.001 && kf > 0.003) faultTag(t, 1.45, [r.ax + 44, r.yL], 'Out of its window', { to: [r.ax + 236, r.yL + 4], side: 'r', alpha: kf });
+      if (kw <= 0.001 && kf > 0.003) faultTag(t, 1.0, [r.ax + 44, r.yL], 'Out of its window', { to: [r.ax + 236, r.yL + 4], side: 'r', alpha: kf });
       /* the scale, said */
       text('Section at the lens: movement drawn ' + g.X4 + '× larger', box[0] + box[2] - 28, box[1] + box[3] - 20, { role: 'label', size: 22, color: TH ? '#FFFFFF' : C.ink2, align: 'right' });
     });
@@ -843,7 +844,7 @@ S({
       /* the player's side of it: counts scale as 2.4 / Z, so the same move reads more while you press */
       const sens = Math.round((2.4 / Z - 1) * 100), ks = ep(t, 1.0, 1.4);
       text('Sensitivity', rx + rw - 32, ky + 96, { role: 'label', size: 22, color: C.mute, align: 'right', alpha: ks });
-      rich([{ s: (sens > 0 ? '+' : '') + sens, role: 'd1', size: 56, weight: 800, color: out ? C.red : C.ink, tnum: true }, { s: '%', font: 'disp', size: 30, weight: 800, color: out ? C.red : C.ink, gap: 4 }], rx + rw - 32, ky + 150, { align: 'right', alpha: ks });
+      rich([{ s: (sens > 0 ? '+' : '') + sens, role: 'd1', size: 56, weight: 800, color: out ? C.red : C.ink, tnum: true }, { s: '%', font: 'disp', size: 30, weight: 800, color: out ? C.red : C.ink, gap: 10 }], rx + rw - 32, ky + 150, { align: 'right', alpha: ks });
       text('while you press', rx + rw - 32, ky + 192, { role: 'small', size: 25, weight: 600, color: C.mute, align: 'right', alpha: ks });
       /* the scale: 2.2 to 2.6 mm, the window shaded, a marker at Z */
       const gx0 = rx + 32, gx1 = rx + rw - 32, gy = ky + 232, GX = z => lerp(gx0, gx1, (z - 2.2) / 0.4);
@@ -1026,10 +1027,11 @@ S({
       wipeTo(t, 2.6, 0.9, [qx, by, qw, bh], () => { sec = b04_ledgeSec(cx, yC, s2, sk1, 1); }, () => { sec = b04_ledgeSec(cx, yC, s2, k3a > 0.003 ? sk2 : [sk2[0], null, sk2[2]], 1); }, { labels: false });
     });
     /* the press: 10 N, a hard one, on the ledge */
-    forceArrow(cx, (sec ? sec.top : yC - 60) - 4, Math.PI / 2, 90, { k: kp, N: B04SK.press * kp, dec: 0, label: 'a hard press', color: C.ink, side: 'r' });
+    forceArrow(cx, (sec ? sec.top : yC - 60) - 4, Math.PI / 2, 90, { k: kp, N: B04SK.press, dec: 0, label: 'a hard press',   /* forceArrow labels N × k itself */ color: C.ink, side: 'r' });
     /* the readout: the deepest dot's sink against its own height */
     { const sNow = kw < 0.5 ? B04SK.one[3] * kp : Math.max(...sk2.filter(v => v != null)), clr = B04SK.stack - sNow, drag = clr < 0, col = drag ? C.red : kw >= 0.5 ? C.heroText : C.ink;
-      text(k3a > 0.5 ? 'Deepest dot\'s sink, with a third' : 'Deepest dot\'s sink', qx + 32, by + 104, { role: 'label', size: 22, color: C.mute });
+      /* labelled in place (R2-b04-2): this live meter ends on the ledge with a third dot added; the verdict is as shipped */
+      text(k3a > 0.5 ? 'Deepest dot\'s sink, a third dot added' : kw >= 0.5 ? 'Deepest dot\'s sink, two dots' : 'Deepest dot\'s sink, one dot', qx + 32, by + 104, { role: 'label', size: 22, color: C.mute });
       rich([{ s: fmtN(sNow, 2), role: 'd1', size: 60, weight: 800, color: col, tnum: true }, { s: 'mm', font: 'sans', size: 24, weight: 700, color: C.mute, gap: 6 }], qx + 32, by + 164);
       text(drag ? 'Deeper than its 0.65 mm: the floor drags' : 'The floor clears the cloth by ' + fmtN(clr, 2) + ' mm', qx + 32, by + 204, { role: 'small', size: 24, weight: 700, color: drag ? C.red : C.mute, maxW: qw - 64 });
       /* the stack, named once */
@@ -1039,8 +1041,12 @@ S({
     if (t > 3.8 && t < 5.6) { const tp = [cx, yC - 10]; cursorAt(t, [[3.8, [tp[0] + 120, tp[1] + 120]], [4.3, tp], [5.6, [tp[0] + 90, tp[1] + 130]]], [4.35], { a: ep(t, 3.8, 4.0) * (1 - ep(t, 5.0, 5.4)) }); }
     if (t > 4.3) text('A third, for the softest pads', cx, yC + 136, { role: 'label', size: 22, color: C.heroText, align: 'center', alpha: ep(t, 4.4, 4.8) * (1 - ep(t, 6.2, 6.5)) });
     /* the verdict: one dot a corner against Theseus's two */
-    verdict(t, 5.6, bx + 40, by + 540, { from: B04SK.one[3], to: Math.max(...B04SK.two[3]), unit: 'mm', dec: 2, label: 'Deepest sink, hard press', better: 'lower', who: ['One dot', 'Theseus'], size: 72 });
-    source(t, 'Derived (pad model, previous slide): a hard press, 10 N, on the hump; one dot mid-ledge, two at its ends, three in all. Brock: with one dot a corner "some softer pads cause the dots to sink in too much and the pad to scrape the bottom of the mouse"; 0.65 mm skates; POM, PTFE in the box. TechPowerUp: the UltralightX\'s rear screws sit under its skates.', { t0: 0.8, maxW: RM - LM });
+    /* the verdict, as shipped: one dot a corner (the layout Brock found scraping; no mouse is named for it: none was found
+       sourced) against Theseus's two dots a corner */
+    verdict(t, 5.6, bx + 40, by + 540, { from: B04SK.one[3], to: Math.max(...B04SK.two[3]), unit: 'mm', dec: 2, label: 'Deepest sink, hard press', better: 'lower', who: ['One dot a corner', 'Theseus, two dots'], size: 72 });
+    /* why 10 N here and 4.4 N on b04_sag (R2-b04-2): the model is linear, so a resting hand sinks one dot only 0.41 mm, inside
+       its 0.65; the floor drags under a hard press, which is the case this slide tests */
+    source(t, 'Derived (pad model, previous slide): 10 N, a hard press, on the hump; only then does the floor drag (a resting hand, 4.4 N, sinks one dot ' + fmtN(B04SK.one[3] * B04HAND / B04SK.press, 2) + ' mm). Brock, of one dot a corner: "some softer pads cause the dots to sink in too much and the pad to scrape the bottom of the mouse". TechPowerUp: the UltralightX\'s rear screws sit under its skates.', { t0: 0.8, maxW: RM - LM });
   }
 });
 
@@ -1082,13 +1088,14 @@ S({
   answers: [
     ['gld_module: "i like this slide, it feels like a good slide"', 'Kept: the castellated module and the clip-on lens in section, drawn from the 3D board, and the lenses\' footprints to scale.'],
     ['gld_module: "just your normal above average slide right here"', 'Raised: it now opens on the problem, PixArt\'s own assembly (the lens sits on the base plate, the board on the lens, the top case presses it down, and PixArt warns that a click moving the board moves the optics), builds that stack, then snaps Theseus\'s lens up through the board; the verdict is against PixArt\'s smaller (trim) lens, not its biggest.'],
+    ['R2-b04-3 (the rival\'s fault drawn; the payoff said)', 'PixArt\'s own warning is named on its board in red ("Clicks move it") and said in full in the narration and the foot line; Theseus\'s clip is labelled for what it does ("Clipped round the chip": chip and lens held as one, by the board alone); the closing line says what one dot wide buys: the lens carries its own two dots, the dots that keep it in focus (Dots at the lens). Not animated: PixArt gives no mechanism or size for the motion'],
     ['F9.14: "the sensor and snap on lens are both not as accurate as id like"', 'Drawn to the 3D board: the 8.4 × 9.8 × 0.62 mm castellated module, its half-holes at 1.2 mm, the clip-on lens 5.2 × 14.2 mm with a clip through the board at each end, the imaging and light lenses where the 3D has them.']
   ],
   draw: t => {
     header(t, 'Snap-on lens: one dot wide');
-    captions(t, [[0.4, 'PixArt\'s own lens sits on the mouse\'s base plate, under the board: the plate and the lens set the board\'s height, and the top case must press it down.'],
-      [2.7, 'Theseus\'s lens clips up through two slots around the sensor module. The board alone holds it, so the base plate can come off.'],
-      [7.0, 'It is one dot wide: 5.2 mm across, with a dot at each end, on a fraction of the board.']]);
+    captions(t, [[0.2, 'PixArt\'s lens sits on the base plate under the board, and the top case must press the board down: PixArt warns that clicks moving it break the alignment.'],
+      [3.0, 'Theseus\'s lens clips up through the board around the sensor module: chip and lens held as one, by the board alone, so the base plate can come off.'],
+      [7.0, 'It is one dot wide, 5.2 mm across, so it carries its own two dots: the dots at the lens that keep it in focus, on a fraction of the board.']]);
     const K = b04_key(), kA = ep(t, 0.6, 2.4), kS = ep(t, 2.9, 3.7, E.out3), bx = LM, by = 280, bw = 1000, bh = 660, s = 20;
     demoWindow(bx, by, bw, bh, 1, { plain: true });
     /* ---- top: PixArt's stack ---- */
@@ -1101,6 +1108,9 @@ S({
         line(p[0], p[1], lx - 10, p[1] + dy, { color: inkA(0.3), w: 1.2, alpha: kl }); text(l, lx, p[1] + dy + 7, { role: 'label', size: 22, color: C.ink2, alpha: kl });
       }
       if (kA > 0.7) forceArrow(r.post[0] + 4, r.post[1] + 6, 2.25, 52, { k: ep(t, 2.0, 2.4), color: C.ink, w: 3 });
+      /* the rival's fault, in PixArt's own words (R2-b04-3): "PCB motion due to button presses must be minimized to maintain optical
+         alignment" (datasheet §3.5, step 6). Named on its board, not animated: PixArt gives no mechanism or size to draw */
+      faultTag(t, 2.5, [r.X(-13), r.Y(5.95)], 'Clicks move it', { dx: 0, dy: -84 });
     }
     line(bx + 30, by + 340, bx + bw - 30, by + 340, { color: C.hair, w: 1.5 });
     /* ---- bottom: Theseus's: the module on the board, the lens snapping up through it; no plate ---- */
@@ -1116,8 +1126,8 @@ S({
       for (const zr of [K.ldots[0] - K.lens, K.ldots[1] - K.lens]) { b04_shape(() => rrPath(X(zr - 0.8), Y(B04S.up), 1.6 * s, Y(-4.38) - Y(B04S.up), 2), B04M.clear(), B04M.clearE(), 1.4, 1); b04_shape(() => rrPath(X(zr - 3.25), Y(-4.38), 6.5 * s, 0.65 * s, 3), C.hero, null, 0, 1); }
       G.restore();
       const kl = ep(t, 3.6, 4.1), lx = bx + 690;
-      for (const [p, l, ly] of [[[X(-3.2), Y(0.67)], 'Module on the board', by + 418], [[X(6.0), Y(0.72)], 'Clip through a slot', by + 456], [[X(2.5), Y(-2.2)], 'Lens, 5.2 mm wide', by + 540], [[X(K.ldots[0] - K.lens + 3.0), Y(-4.6)], 'A dot at each end', by + 590]]) {
-        poly([[p[0], p[1]], [lx - 40, ly], [lx - 10, ly]], { color: inkA(0.3), w: 1.2, alpha: kl }); text(l, lx, ly + 7, { role: 'label', size: 22, color: l === 'Lens, 5.2 mm wide' || l === 'A dot at each end' ? C.heroText : C.ink2, alpha: kl });
+      for (const [p, l, ly] of [[[X(-3.2), Y(0.67)], 'Module on the board', by + 418], [[X(6.0), Y(0.72)], 'Clipped round the chip', by + 456], [[X(2.5), Y(-2.2)], 'Lens, 5.2 mm wide', by + 540], [[X(K.ldots[0] - K.lens + 3.0), Y(-4.6)], 'A dot at each end', by + 590]]) {
+        poly([[p[0], p[1]], [lx - 40, ly], [lx - 10, ly]], { color: inkA(0.3), w: 1.2, alpha: kl }); text(l, lx, ly + 7, { role: 'label', size: 22, color: l === 'Lens, 5.2 mm wide' || l === 'A dot at each end' || l === 'Clipped round the chip' ? C.heroText : C.ink2, alpha: kl });
       }
       if (kS > 0.02 && kS < 0.98) arrow(X(-12.5), Y(-6.5), X(-12.5), Y(-4.0), { color: C.ink2, w: 2.5, hs: 10, alpha: Math.sin(kS * Math.PI) });
       text('No base plate under it', bx + 690, by + 636, { role: 'label', size: 22, color: C.mute, alpha: ep(t, 3.8, 4.2) });
@@ -1205,7 +1215,9 @@ S({
       rr(x0, y - 16, Math.max(6, L * A / mx), 12, 6, C.comp, null, 0, 1);
       rr(x0, y + 2, Math.max(6, L * lerp(A, B, k) / mx), 12, 6, C.hero, null, 0, 1);
       text(nf(A), x0 + Math.max(6, L * A / mx) + 10, y - 4, { role: 'num', size: 22, weight: 700, color: C.mute, tnum: true });
-      text(nf(Math.round(lerp(A, B, k))) + ' ' + unit, x0 + Math.max(6, L * lerp(A, B, k) / mx) + 10, y + 16, { role: 'num', size: 24, weight: 800, color: C.heroText, tnum: true, caps: false });
+      const vx = x0 + Math.max(6, L * lerp(A, B, k) / mx) + 10, vw = text(nf(Math.round(lerp(A, B, k))) + ' ' + unit, vx, y + 16, { role: 'num', size: 24, weight: 800, color: C.heroText, tnum: true, caps: false }).w || 0;
+      /* a row where the shorter bar wins says so on the row, beside its value (F14.10; R2-b04-4): a 1 cpi step is finer than 50 */
+      if (better === 'lower') text('Finer is better', vx + vw + 16, y + 16, { role: 'label', size: 19, color: C.mute, alpha: k });
     });
     verdict(t, 5.2, rx + 36, by + 494, { from: 650, to: 930, unit: 'ips', dec: 0, label: 'Tracking speed', better: 'higher', who: ['PAW3395', 'PAW3970, planned'], size: 90 });
     source(t, 'PixArt PAW3395 datasheet (2022). Razer\'s figures for the Focus Pro 50K Gen-3 (igor\'sLAB) and its "tracks flawlessly on glass". Stalls on glass: PC Gamer 2026-05-22 (after a skate swap), Razer Insider 2026-10 (stock feet). PAW3970, two years: Brock. Focus+ → PAW3395, Focus Pro 30K → PAW3950: validation report (an analogy).', { t0: 0.8, maxW: RM - LM });
@@ -1238,8 +1250,8 @@ S({
   ],
   draw: t => {
     header(t, 'Every frame as it comes');
-    captions(t, [[0.3, 'Many sensors still smooth: for about 450 ms after every set-down, the PAW3950 averages its last 16 frames (XBAB, 2026). Set the mouse down and flick, slowed 20 times.'],
-      [2.4, 'The averaged cursor runs behind your hand, most at the flick\'s peak: 44 pixels at 1,600 cpi in XBAB\'s test, more than twice that in slower modes.'],
+    captions(t, [[0.3, 'Many sensors still smooth: for about 450 ms after every set-down, the PAW3950 averages its last 16 frames (XBAB, 2026). Set down, flick, slowed 20×.'],
+      [2.7, 'The averaged cursor runs behind your hand, most at the flick\'s peak: 44 pixels at 1,600 cpi in XBAB\'s test, more than twice that in slower modes.'],
       [5.3, 'Theseus\'s firmware turns it off: two frames, the least the sensor allows, and full 16-bit counts. The same set-down and flick again; the test will be published.']]);
     const R = B04R, again = t >= R.tAgain, tau = Math.max(0, (t - (again ? R.tAgain : R.tStart)) * 1000 / R.slow), fl = b04_flick(tau), hi = again ? 1 : 0;
     /* ---- top: the 600 ms after the set-down, the smoothing window, the flick in it ---- */
@@ -1285,9 +1297,10 @@ S({
       for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) line(ccx + dx * 6, cy + dy * 6, ccx + dx * 18, cy + dy * 18, { color: cc, w: 3, alpha: ca });
       if (lag > 1.5) { line(ccx, cy - 34, cx, cy - 34, { color: cc, w: 2, alpha: ca }); }
       text('Your hand', cx, cy + 48, { role: 'label', size: 22, color: '#CECED2', align: 'center' });
-      rich([{ s: fmtN(Math.abs(lag), 0), role: 'd1', size: 48, weight: 800, color: i === 0 ? C.red : C.heroText, tnum: true }, { s: 'px behind', role: 'small', size: 24, weight: 600, color: C.mute, gap: 10, sentence: false }], x + 32, sy + sh - 30, { alpha: i === 0 ? 1 : Math.max(0.35, a) });
-      /* once a flick has passed its peak, the most it fell behind stays */
-      if (tau > R.t0 + R.T / 2 && (i === 0 || again)) text('Most: ' + fmtN(b04_lagPx(R.t0 + R.T / 2, N), 0) + ' px', x + sw - 32, sy + sh - 30, { role: 'small', size: 24, weight: 700, color: i === 0 ? C.red : C.heroText, align: 'right' });
+      /* the readout: live while the flick rises, then the most it fell behind, held big (R2-b04-5: the settled frame shows
+         the two peaks, 44 against 3, not two live zeros). The averaged screen keeps its peak through Theseus's replay */
+      const mid = R.t0 + R.T / 2, held = i === 0 ? again || tau > mid : again && tau > mid, show = held ? b04_lagPx(mid, N) : Math.abs(lag);
+      rich([{ s: fmtN(show, 0), role: 'd1', size: 48, weight: 800, color: i === 0 ? C.red : C.heroText, tnum: true }, { s: held ? 'px behind, at the peak' : 'px behind', role: 'small', size: 24, weight: 600, color: C.mute, gap: 10, sentence: false }], x + 32, sy + sh - 30, { alpha: i === 0 ? 1 : Math.max(0.35, a) });
     });
     source(t, 'XBAB (qsxcv), 2026: the PAW3950 averages 16 frames for about 450 ms after every set-down, 2 with smoothing off; tested at 20,000 frames a second (high-performance modes run under 8,000). Derived: an N-frame average runs (N − 1) / 2 frames behind; a 10 cm flick in 100 ms at 1,600 cpi. Slowed 20×. V4 Pro wireless: 12-bit counts (TechPowerUp).', { t0: 0.8, maxW: RM - LM });
   }

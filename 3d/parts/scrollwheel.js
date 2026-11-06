@@ -58,7 +58,9 @@ export function buildScrollWheel(opts = {}) {
   const D = opts.diameter ?? 22.74, Wd = opts.width ?? 7.0, R = D / 2, hw = Wd / 2;
   const Rc = opts.crownRadius ?? R;
   const nK = opts.knurl ?? 144, steps = opts.steps ?? 24, nArms = opts.arms ?? 6;
-  const AH = opts.axleHeight ?? 11;
+  /* the axle's height over the board's top: 12, the mouse's (the shell's wheel centre 17.03 over the board's top 5.03; pcb.js
+     and shell.js pass 12). H2 (2026-11-06): the default was 11, so the part on its own (and its 2D twin) stood 1 mm short */
+  const AH = opts.axleHeight ?? 12;
   // geometry is built with the encoder on +X, then mirrored in X for the user's right (default)
   const es = opts.encoderSide ?? 'right';
   const side = (es === 'left' || es === 1 || es === '+1') ? 1 : -1;

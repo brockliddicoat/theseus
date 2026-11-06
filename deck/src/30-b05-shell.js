@@ -7,9 +7,11 @@
      b05_wall      the melt freezing short in a wall too thin: at the same weight the lighter resin gets the thicker wall
      b05_cubed     the ruler flat and on edge; the mold's tolerance on a thin wall and a thicker one, cubed
      b05_fallacy   heavier is not stronger: the GPX 2 against the Sora V2, and a solid plane's trade-off
-     b05_nopick    you don't have to pick: sized triangles take 1.3× the press, or the same press at 26 % less weight
-     b05_hotspot   why: a solid plane's one hot spot; triangles milled from a thicker sheet, 15 % lighter, hold its press
+     b05_nopick    you don't have to pick: on the chapters' test strip, triangles 1.3× as stiff, or as stiff at 27 % less weight
+     b05_hotspot   why: a solid plane pressed until its one hot spot cracks; triangles milled from a thicker sheet, 15 %
+                   lighter, hold its press
      b05_margin    the peak decides the break: paper tears at a nick; the strength left on each part
+   (the numbers above are b05_fr()'s on b06's B06_STRIP today; the slides and their answers read it live)
      b05_work      putting that weight to work: the share of its strength each gram uses, and the choices it drives
    Breaks follow Brock's two strengths (F41.1): carbon PP 120 MPa stretched, 207 MPa bent (PP-C-20A datasheet).
    Every number comes from a source named in SRC or from a model solved in the page (07-sim.js, labelled Derived).
@@ -369,6 +371,15 @@ function b05_drawTri(r, F, P, s, t, o = {}) {
 }
 /** a number rounded toward zero (DESIGN §9), as text: b05_dn(89.6) → '89' */
 function b05_dn(v, d = 0) { const k = Math.pow(10, d); return fmtN(Math.floor(v * k + 1e-6) / k, d); }
+/** a slide whose `answers` are written from the live model (review R2-b05-1): pass `answers: (B, Cl) => [[clause, what
+   the slide does], ...]` and they are built from b05_fr() / b05_cells() when read (the rating panel reads them after every
+   file has loaded; b06's B06_STRIP is not there yet while this file loads), so the numbers in the answers are the numbers
+   on the frames, and they follow B06_STRIP when the lattice study changes it */
+function b05_live(o) {
+  const rows = o.answers; delete o.answers;
+  Object.defineProperty(o, 'answers', { enumerable: true, configurable: true, get: () => { try { return rows(b05_fr(), b05_cells()); } catch (e) { return [['(answers)', 'The model behind these answers could not be read: ' + e.message]]; } } });
+  return o;
+}
 /** the heat key (F19.3, review M 09:15): a short ramp from unused to breaking, squared as the drawings are */
 function b05_heatKey(x, y, w, o = {}) {
   const a = o.alpha == null ? 1 : o.alpha; if (a <= 0.003) return;
@@ -380,13 +391,17 @@ function b05_heatKey(x, y, w, o = {}) {
 /* ============================== b05_card: the chapter card (the kit's chapterCard2: the compromise, the ledger, the ideas) ============================== */
 S({
   id: 'b05_card', ch: 'shell', card: true, first: true, theme: 'night', title: 'Shell and structure', settle: 6,
+  /* the hand-off (F0c, POLISH 'All polish agents'): the card's lit shell goes on to b05_material, where a strip is cut from its wall.
+     As chapterCard2 draws a { view, hi } part: mouseFit in [1000, 200, 840, 500], pad 0.04 */
+  handoff: { out: { view: 'left', box: [1000, 200, 840, 500], pad: 0.04 } },
   replaces: ['shellcard'],
   answers: [
-    ['shellcard (7/10, no note)', 'Rebuilt in the kit\'s chapter-card family: the compromise most light mice make, struck, and the answer in blue; the flagship line (the UltralightX, from b01); the ledger strip; this chapter\'s slides in film order; the simplified mouse with its shell lit.'],
+    ['shellcard (7/10, no note)', 'Rebuilt in the kit\'s chapter-card family: the compromise most light mice make, struck, and the answer in blue; the flagship line (the UltralightX, from b01); the ledger strip; the whole chapter in film order, nine lines for its 24 slides (b05\'s, then b06\'s triangles, arches, fibres and fillets, then b07\'s board, tolerance and Poron pads: FILM F22); the simplified mouse with its shell lit.'],
     ['F33.7, F38.8: the compromise named; the simplified mouse', 'The compromise is the ledger\'s shell line; the only mouse drawn is the kit\'s simplified one.']
   ],
   draw: t => chapterCard2(t, { ch: 'shell', turn: 2.1, part: { view: 'side', hi: ['shell'] },
-    list: [[5, 'Carbon-filled polypropylene'], [5, 'Strength per gram'], [5, 'Walls a mold can fill'], [5, 'Wall tolerance, cubed'], [[15, 75], 'The strength–weight fallacy'], [[75, 15], 'You don\'t have to pick'], [75, 'Stress hotspots'], [75, 'The peak decides the break'], [[75, 93], 'Weight that works']] })
+    /* the whole chapter (FILM F22): b05's slides, then b06's and b07's, nine lines in film order */
+    list: [[5, 'Carbon-filled polypropylene'], [5, 'Strength per gram'], [5, 'Walls a mold can fill, cubed'], [[15, 75], 'The strength–weight fallacy'], [[75, 15], 'You don\'t have to pick'], [[75, 93], 'Hotspots and the peak'], [[75, 53], 'Triangles and arches'], [[53, 75], 'Fibres and fillets'], [[94, 57], 'The board, tolerance, Poron']] })
 });
 
 /* ============================== b05_material: carbon-filled polypropylene (materials, 6/10) ==============================
@@ -394,10 +409,12 @@ S({
    pressed by one fingertip with 2 N (about the hardest grip measured at a desk, Won 2009). ABS, the common mouse plastic (Brock's
    baseline, #5; Finalmouse benchmarks against it): it sags 4.2 mm, drawn to scale. The same strip in PP-C-20A, the same finger
    and press: 0.80 mm. The weights (his note): 0.63 g and 0.61 g, and the carbon PP strip as stiff as the ABS one: 0.57 mm,
-   0.35 g. Strength on one basis (the pull test): ABS gives at 5.6 N, carbon PP holds to 13.3 N. Beam theory (b05Strip). */
+   0.35 g. Strength, the strip bent until it gives: on pull-test strengths ABS gives at 5.6 N, carbon PP holds to 13.3 N; on their
+   bending strengths (ABS 82 MPa, PP-C-20A 207, F41.1) 9.1 and 23.0 N (review R2-b05-3). Beam theory (b05Strip). */
 const B05_MAT_T = { lift: [0.3, 1.2], press: [1.5, 2.4], swap: [4.0, 4.6], kg: 5.6, v: 6.6, thin: 7.8 };
 S({
   id: 'b05_material', ch: 'shell', theme: 'paper', title: 'Carbon-filled polypropylene', settle: 10.5, ideas: [5],
+  handoff: { in: { view: 'left', box: [LM, 280, 340, 220], pad: 0.06 } },   /* its first frame's mouseFit, the card's mouse arriving */
   src: ['shlPyrofil', 'shlAbs', 'b05Fm', 'b05Strip', 'b05Won'],
   replaces: ['materials'],
   answers: [
@@ -426,8 +443,8 @@ S({
     const kt = ep(t, T.thin, T.thin + 0.5);
     if (kt > 0) { b05_strip(x0, y0 + 230, s, Mt.tMatch, b05_sag(Mt.P, B05_MAT.pp.E, Mt.tMatch), { fill: C.hero, alpha: kt }); rich([{ s: 'As stiff as the ABS strip:', role: 'small', size: 22, weight: 600, color: C.ink2, sentence: false }, { s: fmtN(Mt.tMatch, 2) + ' mm, ' + fmtN(Mt.gMatch, 2) + ' g', role: 'num', size: 26, weight: 800, color: C.heroText, gap: 10 }, { s: '(−' + b05_dn((1 - Mt.gMatch / Mt.gA) * 100) + ' %)', role: 'small', size: 22, weight: 600, color: C.heroText, gap: 8, sentence: false }], x0, y0 + 330, { alpha: kt }); }
     /* the headline */
-    verdict(t, T.v, 1300, 470, { from: Mt.sagA, to: Math.ceil(Mt.sagP * 100) / 100, unit: 'mm', dec: 2, label: 'Sag under 2 N, one strip', better: 'lower', net: b05_dn(Mt.kE, 1) + '×', netWord: 'stiffer', size: 90, maxW: RM - 1300 });
-    text('In a pull test, ABS gives at ' + fmtN(Mt.givesA, 1) + ' N, carbon PP holds to ' + b05_dn(Mt.givesP, 1) + ' N: ' + b05_dn(Mt.kS, 1) + '× as strong', 1300, 600, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: RM - 1300, sentence: false, alpha: ep(t, T.v + 1.4, T.v + 1.8) });
+    verdict(t, T.v, 1300, 470, { from: Mt.sagA, to: Math.ceil(Mt.sagP * 100) / 100, unit: 'mm', dec: 2, label: 'Sag under 2 N, one strip', better: 'lower', who: ['ABS', 'Carbon PP'], net: b05_dn(Mt.kE, 1) + '×', netWord: 'stiffer', size: 90, maxW: RM - 1300 });
+    text('Bent until it gives, on pull-test strengths: ABS ' + fmtN(Mt.givesA, 1) + ' N, carbon PP ' + b05_dn(Mt.givesP, 1) + ' N (' + b05_dn(Mt.kS, 1) + '×); on bending strengths ' + fmtN(b05_gives(B05_MAT.abs.fb, Mt.t), 1) + ' and ' + b05_dn(b05_gives(B05_MAT.pp.fb, Mt.t), 1) + ' N', 1300, 600, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: RM - 1300, sentence: false, alpha: ep(t, T.v + 1.4, T.v + 1.8) });
     scaleNote(LM, 952, 'about the hardest grip measured at a desk (Won 2009)', { lead: '2 N', t, t0: T.press[0] });
     text('Beam theory: a 60 mm span, 10 mm wide, 1 mm thick; flexural moduli 2,550 (ABS) and 13,500 MPa (PP-C-20A); sag drawn to scale', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false });
   }
@@ -494,7 +511,7 @@ S({
     const kB = 1, bx = 1170, cA = T.d2[1] + 0.6, cB = T.crack + 0.4;
     const itemsOf = (rawRank, wRank, vf) => B05_SP.rows.map((row, i) => ({ name: row.m.name, l: rawRank[i], r: wRank[i], hero: !!row.m.hero, second: row.k === 'mg', ring: !!row.m.board, vR: vf(row) }));
     b05_bump(bx, 340, RM - bx, 28, { t, t0: cA, a: kB, title: 'Stiffness {(1st bends least)}', head: ['Datasheet', 'Bent, at one weight'], items: itemsOf(B05_SP.rawE, B05_SP.stiff, row => fmtN(row.sag, 2) + ' mm'), rightW: 330 });
-    b05_bump(bx, 588, RM - bx, 28, { t, t0: cB, a: kB, title: 'Strength in a pull test {(1st holds most; ult.: ultimate)}', head: ['Datasheet', 'Bent, at one weight'], items: itemsOf(B05_SP.rawS, B05_SP.strong, row => fmtN(row.holds, 1) + ' N (' + ({ pp: 'break', fr4: 'break', abs: 'yield', pc: 'yield', mg: 'ult.', al: 'ult.' })[row.k] + ')'), rightW: 330 });
+    b05_bump(bx, 588, RM - bx, 28, { t, t0: cB, a: kB, title: 'Strength bent, on pull-test strengths {(1st holds most)}', head: ['Datasheet', 'Bent, at one weight'], items: itemsOf(B05_SP.rawS, B05_SP.strong, row => fmtN(row.holds, 1) + ' N (' + ({ pp: 'break', fr4: 'break', abs: 'yield', pc: 'yield', mg: 'ultimate', al: 'ultimate' })[row.k] + ')'), rightW: 330 });
     text('Bent, PP-C-20A\'s datasheet allows 207 MPa (23 N)', bx, 802, { role: 'small', size: 20, weight: 600, color: C.faint, alpha: ep(t, cB + 1.0, cB + 1.4), maxW: RM - bx, sentence: false });
     text('FR4 comes only as flat board: it is Theseus\'s board (#94)', bx, 830, { role: 'small', size: 20, weight: 600, color: C.faint, alpha: ep(t, cB + 1.0, cB + 1.4), maxW: RM - bx });
     /* ---- the headline: carbon PP's rank, from the datasheet to per gram ---- */
@@ -621,7 +638,7 @@ S({
 const B05_CUBE_T = { p1: [0.5, 1.6], rel: [2.0, 2.4], turn: [2.6, 3.8], p2: [4.0, 5.0], same: 5.2, rows: [6.2, 8.4], v: 9.0, sym: 9.8 };
 S({
   id: 'b05_cubed', ch: 'shell', theme: 'night', title: 'Wall tolerance, cubed', settle: 12, ideas: [5, 75],
-  src: ['b05Strip', 'shlPyrofil', 'b05Ji', 'b05Ucsb', 'b05ProtoTol', 'rtingsUlx', 'b05Peri', 'b05Won'],
+  src: ['b05Strip', 'shlPyrofil', 'b05Ji', 'b05Ucsb', 'b05ProtoTol', 'rtingsUlx', 'b05Peri', 'b05Fm', 'b05Won'],
   replaces: ['shlScatter'],
   answers: [
     ['"don\'t use points"', 'No points anywhere: each wall\'s stiffness swing in %, and the headline "1.4× more alike".'],
@@ -668,9 +685,9 @@ S({
     });
     /* ---- the headline: how far apart two walls of one design can be, thin wall → carbon PP's ---- */
     const sp0 = (Cc.thin.hi - Cc.thin.lo) * 100, sp1 = (Cc.ths.hi - Cc.ths.lo) * 100;
-    verdict(t, T.v, gx, 880, { from: Math.round(sp0), to: Math.ceil(sp1), unit: '%', dec: 0, label: 'Stiffness swing between two walls of one design', better: 'lower', net: b05_dn(sp0 / sp1, 1) + '×', netWord: 'more alike', size: 88, maxW: RM - gx });
-    text('One mouse, two verdicts: RTINGS\'s ULX Competition, "noticeable creaking, popping, and flexibility"; Periview\'s, "The sides are solid"', LM, 760, { role: 'small', size: 21, weight: 600, color: C.mute, maxW: 820, sentence: false, alpha: ep(t, T.sym, T.sym + 0.4) });
-    scaleNote(LM, 952, 'a hard press: a 1 kg bag of sugar, five times the hardest grip measured at a desk (Won 2009)', { lead: '10 N', t, t0: T.p1[0], size: 22 });
+    verdict(t, T.v, gx, 880, { from: Math.round(sp0), to: Math.ceil(sp1), unit: '%', dec: 0, label: 'Stiffness swing between two walls of one design', better: 'lower', who: ['0.70 mm', '1.00 mm, carbon PP'], rivalCol: 'grey', net: b05_dn(sp0 / sp1, 1) + '×', netWord: 'more alike', size: 88, maxW: RM - gx });
+    text('Thin shells differ unit to unit. One mouse, two verdicts: RTINGS\'s ULX Competition (a carbon-composite shell), "noticeable creaking, popping, and flexibility"; Periview\'s, "The sides are solid"', LM, 760, { role: 'small', size: 21, weight: 600, color: C.mute, maxW: 820, sentence: false, alpha: ep(t, T.sym, T.sym + 0.4) });
+    scaleNote(LM, 952, 'a hard press: a 1 kg bag of sugar (Won 2009: five times the hardest desk grip)', { lead: '10 N', t, t0: T.p1[0], size: 22 });
     text('Beam theory: a 60 mm span, PP-C-20A (13.5 GPa); bend drawn ' + 100 + '× real. Walls: stiffness ∝ thickness³', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false });
   }
 });
@@ -776,23 +793,24 @@ S({
 function Mp_rho_mm3() { return B05_MAT.pp.rho / 1000; }
 
 /* ============================== b05_nopick: you don't have to pick (Brock: "a really important concept") ==============================
-   The header on frame one (G9), with the chart under it: the solid plane's line (the fallacy slide's comparison) and,
-   once the demonstration has drawn it, the method's own line (his note). The demonstration first: two 0.28 g pieces, 60 mm
-   long, pressed on their edge (the principle in 2D: the slide claims nothing about a whole mouse in the hand, review
-   M-b05-2), the same finger, the press rising: the solid plane cracks at 109 N (bent, against 207 MPa: F41.1); the
-   triangles sized to their force hold, and take 147 N. Their two points land on the chart, their line draws through
-   their point, and the pointer slides it down the line to the plane's strength: the same press at 26 % less weight. */
-S({
+   The header on frame one (G9), with the chart under it: the solid plane's line (the fallacy slide's comparison, the same
+   axes) and, once the demonstration has drawn it, the method's own line (his note). The demonstration first: two pieces of
+   the chapters' test strip (b06's B06_STRIP: 60 mm, the same weight), pressed on their edge (the principle in 2D: the slide
+   claims nothing about a whole mouse in the hand, review M-b05-2), the same finger, the same 10 N (a hard press). It leads
+   with stiffness (F41.1: under his two strengths ribs of one width break before the solid plane, so no strength is
+   claimed): the triangles flex less; their point lands on the chart, their line draws through it, and the pointer slides it
+   down the line to the plane's stiffness: as stiff at less weight. Every number is b05_fr()'s, and so are the answers. */
+S(b05_live({
   id: 'b05_nopick', ch: 'shell', theme: 'night', title: 'You don\'t have to pick', settle: 10, ideas: [75, 15, 93],
   src: ['shlPyrofil', 'b05Won'],
   replaces: ['shlNoPick', 'shlShell3d'],
-  answers: [
+  answers: B => [
     ['"the what if uoh didn\'t have to pick shouldn\'t be the only thing on the screen for a start animation, it should just be the header"', 'The title, YOU DON\'T HAVE TO PICK, is the header from the first frame, set like every other title, with the two parts and the chart already under it. There is no question on its own anywhere.'],
     ['"i\'ve pointed this out before and im concerned you didn\'t change it, it makes me worry you\'re missing my other feedback"', 'Changed: the header leads the first frame, and every clause of his notes on the two slides this one replaces is answered in this list. The strength meter he cut is drawn by no slide in this file.'],
-    ['"i have all the same comparisons here as the last slide"', 'It keeps the fallacy slide\'s comparison on purpose (the solid plane\'s line, strength against weight, the same axes) and adds what that slide doesn\'t have: the way out, demonstrated and drawn as its own line.'],
-    ['"this graph feels even more intuitive at a glance"', 'Read as "less intuitive": the graph is rebuilt. Strength goes up (the press it takes to crack, higher is better), weight goes across, two straight lines from zero: the solid plane in grey, the sized triangles in blue above it at every weight.'],
-    ['"i feel like our method should have a separate line"', 'The method is its own blue line, drawn through the point the demonstration just measured: triangles sized to their force, the way his #93 grades the lattice ("gradually changing the lattice thickness").'],
-    ['"this is a really important concept, but i genuinely have no idea what it\'s show graphically"', 'The demonstration says it before the chart: two 0.28 g pieces of the same carbon PP, 60 mm long (about a mouse\'s width), the same finger, the press rising; the solid plane cracks at 109 N, the sized triangles hold, using 74 % of their strength. Then the chart shows both ways out of the pick: 1.3× the press at the same weight, or the same press at 26 % less weight. Breaks follow his two strengths (F41.1: 120 MPa stretched, 207 MPa bent, said on the slide). The slide says it is the principle in 2D: it claims nothing about a whole mouse in the hand.'],
+    ['"i have all the same comparisons here as the last slide"', 'It keeps the fallacy slide\'s comparison on purpose (the solid plane\'s line on the same axes: the press it takes to flex a piece 0.1 mm, against its weight) and adds what that slide doesn\'t have: the way out, demonstrated and drawn as its own line.'],
+    ['"this graph feels even more intuitive at a glance"', 'Read as "less intuitive": the graph is rebuilt. Up: the press it takes to flex the piece 0.1 mm, a sheet of copy paper (higher is better); across: its weight; two straight lines from zero: the solid plane in grey, Theseus\'s triangles in blue above it at every weight.'],
+    ['"i feel like our method should have a separate line"', `The method is its own blue line, drawn through the point the demonstration just measured: Theseus's triangles, ribs ${fmtN(B.ST.ribW, 1)} mm wide (the chapters' test strip, b06).`],
+    ['"this is a really important concept, but i genuinely have no idea what it\'s show graphically"', `The demonstration says it before the chart: two ${fmtN(B.g, 2)} g pieces of the same carbon PP, a strip across the top ${B.ST.span} mm long (the mouse's width), the same finger and the same 10 N (a hard press: a 1 kg bag of sugar); the solid plane flexes ${fmtN(B.iP.flex, 3)} mm, Theseus's triangles ${fmtN(B.iT.flex, 3)} mm. Then the chart shows both ways out of the pick: ${b05_dn(B.stiff, 1)}× as stiff at the same weight (${Math.round(B.p01(B.iP))} → ${Math.floor(B.p01(B.iT))} N to flex it 0.1 mm, the headline), or as stiff at ${b05_dn((1 - B.sameFlex) * 100)} % less weight (the pointer slides the point down its line). It leads with stiffness: under his two strengths (F41.1) ribs of one width break first (${b05_dn(B.Ft / B.Fp, 2)}× the solid plane's press), so the slide claims no strength. It says it is the principle in 2D, nothing about a whole mouse in the hand.`],
     ['shlShell3d: "hard to understand"', 'The 3D stress study is not on this slide; the comparison is two plain 2D parts under one finger.'],
     ['shlShell3d: "and cut the strength graphs that last multiple slides, they were a bad idea"', 'Cut: no slide in this file draws the shell meter. This chart belongs to this slide: the fallacy slide before it draws only the solid plane\'s line, and this slide redraws that line in its first second as its own.'],
     ['F2.11: "follow that up with a what if you didn\'t have to pick... but find a good transition"', 'The fallacy slide ends on the solid plane\'s line and "where the material goes"; this slide opens on the same line and answers it.'],
@@ -825,7 +843,7 @@ S({
     text(fmtN(B.g, 2) + ' g pieces of a strip across the top, 60 mm (the mouse\'s width), in 2D; flex drawn ' + sc + '× real; colour: strength used, squared', LM, 990, { role: 'small', size: 21, weight: 560, color: C.faint, alpha: ep(t, 1.2, 1.6), sentence: false });
     /* ---- right: the chart. The press it takes to flex each piece 0.1 mm (a sheet of copy paper), against its weight ---- */
     const cx = 1200, cy = 340, cw = 620, ch = 270, xr = [0, 0.6], yr = [0, 40];
-    const m = axes(t, { x: cx, y: cy, w: cw, h: ch, xr, yr, xticks: [0, 0.2, 0.4, 0.6], yticks: [0, 10, 20, 30, 40], xfmt: v => fmtN(v, 1) + ' g', yfmt: v => String(v), t0: -0.6, xlabel: 'Weight of the piece' });
+    const m = axes(t, { x: cx, y: cy, w: cw, h: ch, xr, yr, xticks: [0, 0.2, 0.4, 0.6], yticks: [0, 10, 20, 30, 40], xfmt: v => fmtN(v, 1) + ' g', yfmt: v => String(v), t0: -0.6, xlabel: 'Weight of the piece (added out of the page)' });
     text('Press to flex it 0.1 mm, N {(higher is better)}', cx - 14, cy - 34, { role: 'label', size: 21, color: C.mute, alpha: a0 });
     /* the solid plane's line, from frame one: stiffness bought with weight, gram for gram */
     const kg = ep(t, 0.0, 0.7, E.io3), yEnd = B.perG.plate * xr[1];
@@ -858,7 +876,7 @@ S({
     /* the headline: the demonstration's own measure, the same weight (F14.10, F16.1; stiffness: F41.1) */
     verdict(t, 4.6, cx - 40, 880, { from: Math.round(vP), to: Math.floor(vT), unit: 'N', dec: 0, label: 'Press to flex it 0.1 mm, the same weight', better: 'higher', rivalCol: 'grey', net: b05_dn(B.stiff, 1) + '×', netWord: 'as stiff', size: 100, maxW: 760 });
   }
-});
+}));
 
 /**
  * A bump chart of several columns (the old slide's graphic, which Brock liked, made plain): each item a line through its
@@ -917,38 +935,45 @@ function b05_hanger(t, x, y, discs, o = {}) {
 }
 
 /* ============================== b05_hotspot: stress hotspots (Brock, shlHotspot 8/10; F2.10) ==============================
-   Why the solid plane loses (review R-b05-3: nopick shows the race, this slide shows the reason). It opens where nopick
-   ended: the solid plane under the finger at the press that cracked it (109 N), cracked. The camera pushes in on the one hot
-   spot (100 % of its strength) while the rest of it averages a quarter (M4). Then a thicker sheet (0.96 mm against the
-   plane's 0.44 mm, its end drawn) has triangles milled out of it, the weight counting down from 0.60 to 0.22 g: 20 % lighter
-   than the solid plane. The same finger, the same 109 N: the press runs along every member and it holds, using 92 % of its
-   strength (F41.1: 120 MPa stretched, 207 MPa bent). Brock's reasoning, his doc: "it's possible to cut material out of a
-   solid plane to make it stronger". The triangles are the truss sized to its force (one-size ones lose under two
-   strengths: review b05 F41). */
-const B05_HOT_T = { cam: [0.5, 1.3, 2.3, 3.0], swap: [3.0, 3.4], mill: [3.5, 5.1], press2: [5.4, 6.8], v: 7.2 };
-S({
+   Why the solid plane loses (review R-b05-3: nopick shows the race, this slide shows the reason). The same test strip
+   (b06's B06_STRIP, 60 mm) as a solid plane under the finger; the press builds from nothing to the press that cracks it
+   (b05_fr's Fp, about 182 N: pressed to where it breaks, a strength test), the heat rising into the one spot under the
+   finger until it cracks there (review R2-b05-2: the crack is seen happening). The camera pushes in on that one hot spot
+   (all of its strength) while the rest of it averages a quarter (M4). Then a thicker sheet has triangles milled out of it,
+   each rib sized to its force, the weight counting down: 15 % lighter than the solid plane. The same finger, the same press:
+   it runs along every member and the part holds (F41.1: 120 MPa stretched, 207 MPa bent). Brock's reasoning, his doc: "it's
+   possible to cut material out of a solid plane to make it stronger". The triangles are sized to their force because ribs of
+   one width lose under two strengths (review b05 F41). Every number is b05_fr()'s, and so are the answers. */
+const B05_HOT_T = { press1: [0.2, 1.25], crack: [1.25, 1.5], cam: [1.4, 2.1, 2.65, 3.25], swap: [3.25, 3.65], mill: [3.7, 5.1], press2: [5.3, 6.55], v: 6.9 };
+const B05_HOT_F = 0.85;   /* the milled part's weight, a fraction of the solid plane's */
+S(b05_live({
   id: 'b05_hotspot', ch: 'shell', theme: 'paper', title: 'Stress hotspots', settle: 10.5, ideas: [75, 93],
   src: ['shlHot2d', 'shlPyrofil'],
   replaces: ['shlHotspot'],
-  answers: [
-    ['"show the weight of the 2 parts"', 'Both weights are on the slide, beside their parts: the solid plane 0.28 g (0.44 mm thick); the milled part counts down from its 0.60 g sheet to 0.22 g as the mill passes, and the headline is the weight: 0.28 → 0.22 g, −20 %, holding the press that cracked the solid plane.'],
-    ['"and to tie into how a milled out part can be stronger a solid part, point this out"', 'Pointed out in words and shown: the triangles are milled out of a thicker sheet on screen, and the caption says it: "Cut material out, and it holds: the same 109 N, 20 % lighter than the solid plane." Under the same press it uses 92 % of its strength where the solid plane used all of it and cracked.'],
-    ['F2.10: hotspots, one break point, the rest of the material wasted', 'The camera pushes in on the solid plane\'s one hot spot (100 % of its strength, red) and says the rest of it averages a quarter; on the triangles the same press runs along every member.']
-  ],
+  answers: B => {
+    const f = B05_HOT_F, gS = B05_MAT.pp.rho / 1000 * 60 * B.H * B.ST.ribH * f, Fp = fmtN(B.Fp, 0), uM = Math.ceil(B.use(B.sized, B.Fp, f) * 100 - 1e-9);
+    return [
+      ['"show the weight of the 2 parts"', `Both weights are on the slide beside their parts: the solid plane ${fmtN(B.g, 2)} g (${fmtN(B.plate.model.w, 2)} mm thick, its end drawn); the milled part counts down from its ${fmtN(gS, 2)} g sheet (${fmtN(B.ST.ribH * f, 2)} mm) to ${fmtN(B.g * f, 2)} g as the mill passes, and the headline is the weight: ${fmtN(B.g, 2)} → ${fmtN(B.g * f, 2)} g, −${b05_dn((1 - f) * 100)} %, holding the ${Fp} N that cracked the solid plane.`],
+      ['"and to tie into how a milled out part can be stronger a solid part, point this out"', `Pointed out in words and shown: the triangles are milled out of a thicker sheet on screen, each rib sized to its force, and the caption says it: "Cut material out, and it holds: the same ${Fp} N runs along every member." Under that press it uses ${uM} % of its strength where the solid plane used all of it and cracked.`],
+      ['F2.10: hotspots, one break point, the rest of the material wasted', `The press builds from nothing on the solid plane to ${Fp} N (about 18 bags of sugar: pressed to where it breaks), the heat rising into the one spot under the finger until it cracks there; the camera pushes in on it ("It cracks here") and the slide says the rest of it averages ${fmtN(B.iP.mean / B.iP.uMax * 100, 0)} %: idle weight. On the triangles the same press runs along every member.`]
+    ];
+  },
   draw: t => {
-    const T = B05_HOT_T, B = b05_fr(), H = B.H, f = 0.85, sc = 5, box = [LM, 290, 1060, 600];
+    const T = B05_HOT_T, B = b05_fr(), H = B.H, f = B05_HOT_F, sc = 5, box = [LM, 290, 1060, 600];
     /* where the cracked plane's bottom middle is drawn (flex 5× real): the camera's target */
     const yb = B.plate.d[B.plate.model.mid * 3 + 1] * sc * B.Fp / 10;
     header(t, 'Stress hotspots');
-    captions(t, [[0.3, 'Where the solid plane cracked: one hot spot under the finger, while the rest of it idles.'], [3.0, 'Mill triangles out of a thicker sheet, each rib sized to its force: ' + b05_dn((1 - f) * 100) + ' % lighter than the solid plane.'], [5.4, 'Cut material out, and it holds: the same ' + fmtN(B.Fp, 0) + ' N runs along every member.']]);
+    captions(t, [[0.3, 'Press a solid plane until it breaks: one hot spot under the finger cracks, while the rest of it idles.'], [T.swap[0], 'Mill triangles out of a thicker sheet, each rib sized to its force, just enough to hold: ' + b05_dn((1 - f) * 100) + ' % lighter than the solid plane.'], [T.press2[0], 'Cut material out, and it holds: the same ' + fmtN(B.Fp, 0) + ' N runs along every member.']]);
     /* ---- the camera: establish the cracked part, push in on the hot spot, pull back out for the mill (M4) ---- */
     const c = cam(t, [[0, 0, H / 2 + yb / 2, 14], [T.cam[0], 0, H / 2 + yb / 2, 14], [T.cam[1], 0, yb + 3.4, 30], [T.cam[2], 0, yb + 3.4, 30], [T.cam[3], 0, H / 2, 14]]);
     const ox = box[0] + box[2] / 2, oy = box[1] + box[3] / 2 + 20, P = p => [ox + (p[0] - c.cx) * c.s, oy - (p[1] - c.cy) * c.s];
-    const kSwap = ep(t, T.swap[0], T.swap[1]), F1 = B.Fp * (1 - ep(t, T.swap[0] - 0.5, T.swap[0], E.io3)), F2 = lerp(0, B.Fp, ep(t, T.press2[0], T.press2[1], E.io3));
+    /* the press builds on the solid plane until it cracks (F1), held while the camera looks, released as the scene changes */
+    const kSwap = ep(t, T.swap[0], T.swap[1]), F1 = B.Fp * ep(t, T.press1[0], T.press1[1], x => x * x * (2 - x)) * (1 - ep(t, T.swap[0] - 0.5, T.swap[0], E.io3)), F2 = lerp(0, B.Fp, ep(t, T.press2[0], T.press2[1], E.io3));
+    const kCrack = ep(t, T.crack[0], T.crack[1], E.out3), cracked = t >= T.crack[0];
     const milling = t >= T.mill[0] && t < T.mill[1], milled = t >= T.mill[1], km = ep(t, T.mill[0], T.mill[1], E.io2 || E.io3);
     G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
-    /* the solid plane, cracked at the press that cracked it; it lets go as the scene changes */
-    if (kSwap < 1) b05_drawPlane(F1, P, { sc, crack: 1, alpha: 1 - kSwap, ny: 14 });
+    /* the solid plane under the rising press: its heat climbs into the one spot, and it cracks there; it lets go as the scene changes */
+    if (kSwap < 1) b05_drawPlane(F1, P, { sc, crack: kCrack, alpha: 1 - kSwap, ny: 14 });
     /* the thicker sheet, then the mill: it passes left to right, leaving the triangles behind it */
     if (kSwap > 0) {
       const hw = 1.1, xc = lerp(-31.5, 31.5, km), pxC = P([xc, 0])[0], s0 = P([-31.5, H + hw]), s1 = P([31.5, -hw]);
@@ -978,18 +1003,19 @@ S({
     text('Strength used at its peak', rx, 676, { role: 'label', size: 19, color: C.mute });
     text('(lower is better)', rx, 702, { role: 'small', size: 21, weight: 600, color: C.faint, sentence: false });
     if (!(kN > 0 && !milled)) {
-      const u = milled ? B.use(B.sized, F2, f) : 1;
-      rich([{ s: String(Math.round(u * 100)), role: 'num', size: 44, weight: 800, color: milled ? C.heroText : C.red, tnum: true }, { s: '%', role: 'label', size: 19, color: C.mute, gap: 6, caps: false }], rx, 760);
-      if (!milled || t >= T.press2[1]) text(milled ? 'Holds' : 'Cracked', rx + 150, 760, { role: 'label', size: 22, color: milled ? C.heroText : C.red });
+      /* the share of its strength the peak uses: the plane's climbs with the press to all of it; Theseus's never rounded down */
+      const u = milled ? B.use(B.sized, F2, f) : F1 / B.Fp, pct = milled ? Math.ceil(u * 100 - 1e-9) : Math.round(u * 100);
+      rich([{ s: String(pct), role: 'num', size: 44, weight: 800, color: milled ? C.heroText : cracked ? C.red : C.ink, tnum: true }, { s: '%', role: 'label', size: 19, color: C.mute, gap: 6, caps: false }], rx, 760);
+      if (milled ? t >= T.press2[1] : cracked) text(milled ? 'Holds' : 'Cracked', rx + 150, 760, { role: 'label', size: 22, color: milled ? C.heroText : C.red, alpha: milled ? 1 : kCrack });
     }
     const kRest = ep(t, T.cam[1] - 0.2, T.cam[1] + 0.2) * (1 - kN);
     if (kRest > 0) text('That is its hot spot. The rest of it averages ' + fmtN(B.iP.mean / B.iP.uMax * 100, 0) + ' %: idle weight.', rx, 806, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: RM - rx, sentence: false, alpha: kRest });
     /* ---- the headline: the weight that holds the press that cracked the solid plane ---- */
-    verdict(t, T.v, rx, 960, { from: B.g, to: B.g * f, unit: 'g', dec: 2, label: 'Weight that holds ' + fmtN(B.Fp, 0) + ' N: solid → milled', better: 'lower', net: '−' + b05_dn((1 - f) * 100) + ' %', netWord: 'weight', size: 96, maxW: RM - rx });
+    verdict(t, T.v, rx, 908, { from: B.g, to: B.g * f, unit: 'g', dec: 2, label: 'Weight that holds ' + fmtN(B.Fp, 0) + ' N', better: 'lower', who: ['Solid plane', 'Milled triangles'], rivalCol: 'grey', net: '−' + b05_dn((1 - f) * 100) + ' %', netWord: 'weight', size: 84, maxW: RM - rx });
     scaleNote(LM, 952, 'about 18 bags of sugar: pressed to where the solid plane breaks', { lead: fmtN(B.Fp, 0) + ' N', t, t0: -1, size: 22 });
     text('Ribs sized to their force (#93): one-width ribs break first. Breaks at 120 MPa stretched, 207 bent; flex 5× real', LM, 990, { role: 'small', size: 21, weight: 560, color: C.faint, sentence: false });
   }
-});
+}));
 /** the share of the sheet the mill leaves: the one-size triangles' grams over the sheet's (same outline, same thickness) */
 
 /** a strip of printer paper gripped at both ends and pulled, seen face on. (cx, cy): its centre; s px per mm (25 mm wide,
@@ -1043,22 +1069,23 @@ function b05_grip(x, y, h, side) {
    more than students could pull (25 to 35 N); cut a 5 mm nick in its edge, 80 % of it still there, and every student
    tore it, at about 33 N: the stress piles up at the nick's tip. Then the same idea in the part: the solid plane's hot spot
    is its nick. It cracks where its peak uses all of its strength (bent, against 207 MPa: F41.1) while the average uses a
-   quarter; at that press triangles sized to their force, the same weight, have 26 % of their strength left. */
+   quarter; at that press triangles sized to their force, the same weight, have about a quarter of their strength left (b05_fr's
+   figure, printed rounded toward zero; the answers are built from it too). */
 const B05_MARGIN_T = { pull1: [0.3, 1.7], rel: [1.9, 2.2], cut: [2.3, 2.8], pull2: [2.95, 4.0], tear: 4.0, press: [4.9, 7.5] };
-S({
+S(b05_live({
   id: 'b05_margin', ch: 'shell', theme: 'night', title: 'The peak decides the break', settle: 12, ideas: [75],
   src: ['b05Bates', 'shlHot2d', 'shlPyrofil'],
   replaces: ['shlMargin'],
-  answers: [
-    ['"really hard to understand"', 'Taught with a sheet of paper first (Bates & Dean 2024): pulled whole, it holds at 35 N and needs 95 N; nicked 5 mm, it tears at about 33 N from the nick, with the stress drawn piling up at the nick\'s tip. Then the same idea in the part, said in one line: the solid plane\'s hot spot is its nick. Each part gets one gauge, the share of its strength its peak uses, with its average marked beside it (the solid plane cracks at 100 % while its average is 25 %).'],
-    ['"probably important"', 'Treated as one of the important ideas (F33.5): a classroom demonstration, the margin as the headline (0 % → 26 % of the strength left at the press that cracks the solid plane), from the same 2D pieces as the slides before.'],
+  answers: B => [
+    ['"really hard to understand"', `Taught with a sheet of paper first (Bates & Dean 2024): pulled whole, it holds at 35 N and needs 95 N; nicked 5 mm, it tears at about 33 N from the nick, with the stress drawn piling up at the nick's tip. Then the same idea in the part, said in one line: the solid plane's hot spot is its nick. Each part gets one gauge, the share of its strength its peak uses, with its average marked beside it (the solid plane cracks at 100 % while its average is ${fmtN(B.iP.mean / B.iP.uMax * 100, 0)} %).`],
+    ['"probably important"', `Treated as one of the important ideas (F33.5): a classroom demonstration, and the margin as the headline (0 % → ${Math.floor((1 - B.use(B.sized, B.Fp)) * 100 + 1e-6)} % of the strength left at the ${fmtN(B.Fp, 0)} N that cracks the solid plane, triangles sized to their force at the same weight), from the same test strip as the slides before (b06's).`],
     ['F9.23: "show the risk of breakage ... peak force areas should also be colored in red"', 'The peak is red where it reaches the strength, and the margin left before breaking is the headline.'],
     ['F12.12 and F41.1: when it counts as broken', 'Both gauges break at 100 % of the strength by his two strengths, 120 MPa stretched and 207 MPa bent (PP-C-20A datasheet), said in the foot line.']
   ],
   draw: t => {
     const T = B05_MARGIN_T, B = b05_fr(), H = B.H;
     header(t, 'The peak decides the break');
-    captions(t, [[0.3, 'Pull a strip of printer paper: it takes 95 N to tear, more than most hands can pull.'], [2.3, 'Nick its edge 5 mm and it tears at about a third of that, from the nick.'], [4.5, 'A solid plane\'s hot spot is that nick: it cracks there while most of it idles.'], [7.6, 'At the press that cracks it, triangles sized to their force, the same weight, have ' + b05_dn((1 - B.use(B.sized, B.Fp)) * 100) + ' % of their strength left.']]);
+    captions(t, [[0.3, 'Pull a strip of printer paper: it takes 95 N to tear, more than most hands can pull.'], [2.3, 'Nick its edge 5 mm and it tears at about a third of that, from the nick.'], [4.5, 'A solid plane\'s hot spot is that nick: it cracks there while most of it idles.'], [7.6, 'At the press that cracks it, the same sized triangles at the plane\'s full ' + fmtN(B.g, 2) + ' g keep ' + b05_dn((1 - B.use(B.sized, B.Fp)) * 100) + ' % of their strength in reserve.']]);
     /* ---- left: the classroom version ---- */
     const r = demoPanel(t, -1, [LM, 280, 820, 520], { src: 'Bates & Dean 2024, Physics Education' });
     const s = 6, cx = r[0] + r[2] / 2, cy = r[1] + 170;
@@ -1109,9 +1136,9 @@ S({
     scaleNote(xl, 952, 'about 18 bags of sugar: pressed to where the solid plane breaks', { lead: fmtN(B.Fp, 0) + ' N', t, t0: T.press[1], size: 22 });
     text('Breaks at 120 MPa stretched, 207 bent; flex 5× real; colour: share used, squared', xl, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false, alpha: ka });
     /* ---- the headline: the strength left when the solid plane cracks ---- */
-    verdict(t, 7.9, LM, 960, { from: 0, to: Math.floor((1 - B.use(B.sized, B.Fp)) * 100 + 1e-6), unit: '%', dec: 0, label: 'Strength left at ' + fmtN(B.Fp, 0) + ' N: solid plane → sized triangles', better: 'higher', size: 96, net: false, maxW: 760 });
+    verdict(t, 7.9, LM, 928, { from: 0, to: Math.floor((1 - B.use(B.sized, B.Fp)) * 100 + 1e-6), unit: '%', dec: 0, label: 'Strength left at ' + fmtN(B.Fp, 0) + ' N, the same weight', better: 'higher', who: ['Solid', 'Sized triangles'], rivalCol: 'grey', size: 96, net: false, maxW: 760 });
   }
-});
+}));
 
 /* ============================== b05_work: putting that weight to work (Brock, shlWork 8/10; F2.10, F14.7) ==============================
    The test strip (FILM F4) three ways at one weight, each pressed to its own limit: the solid plane, Theseus's triangles
@@ -1150,22 +1177,22 @@ function b05_icon(kind, x, y, col, a) {
   else if (kind === 'board') { G.strokeRect(x - 22, y - 7, 44, 14); path([P(-24, 0), P(-36, 0)]); path([P(24, 0), P(36, 0)]); path([P(-36, 0), P(-31, -4)]); path([P(-36, 0), P(-31, 4)]); path([P(36, 0), P(31, -4)]); path([P(36, 0), P(31, 4)]); }
   G.restore();
 }
-S({
+S(b05_live({
   id: 'b05_work', ch: 'shell', theme: 'paper', title: 'Putting that weight to work', settle: 12, ideas: [75, 93, 94],
   src: ['shlPyrofil', 'b05Won'],
   replaces: ['shlWork'],
-  answers: [
+  answers: (B, Cl) => [
     ['"tie this into how we designed the structure more"', 'The last third of the slide is the design choices this reasoning drives, each drawn small with where the film shows it: triangles, not hexagons; arches; fillets at every joint; fibres along the load (b06); walls thicker where the force is (#93); the board as a tie (#94, b07). "Triangles, not hexagons" lights last: b06_lattice is next.'],
     ['"this page could be sized to have more information"', 'It carries three parts instead of one comparison, the bars with their averages, the headline, the grams at work in every 10 g, and the six choices.'],
     ['"this example is part of the reasoning for a lot of design choices"', 'Said on the slide: "The same reasoning is behind most of the shell", over the six choices.'],
-    ['M-b05-4: a figure with no threshold', 'Each bar is the average gram\'s share of its strength in use when the part is at its limit (F41.1\'s two strengths): 25 %, 46 %, 69 %. No threshold, no feEngaged, no grams of the 3D study.'],
-    ['F2.10, F14.7: the grams a force acts on; his title', 'His title; the bars stand every gram up by how hard it works, and the line under the headline turns it into grams: of every 10 g, 2.5 g at work in the solid plane, 4.6 g in the triangles, 6.9 g sized.']
+    ['M-b05-4: a figure with no threshold', `Each bar is the average gram's share of its strength in use when the part is at its limit (F41.1's two strengths): ${fmtN(Cl.plate.mean * 100, 0)} %, ${b05_dn(Cl.tri.mean * 100)} %, ${b05_dn(Cl.sized.mean * 100)} %. No threshold, no feEngaged, no grams of the 3D study.`],
+    ['F2.10, F14.7: the grams a force acts on; his title', `His title; the bars stand every gram up by how hard it works, and the line under the headline turns it into grams: of every 10 g, ${fmtN(Cl.plate.mean * 10, 1)} g at work in the solid plane, ${b05_dn(Cl.tri.mean * 10, 1)} g in the triangles, ${b05_dn(Cl.sized.mean * 10, 1)} g sized.`]
   ],
   draw: t => {
     const B = b05_fr(), T = B05_WORK_T, H = B.H, Cl = b05_cells();
     header(t, 'Putting that weight to work');
     captions(t, [[0.3, 'Press each piece to its limit: in the solid plane, the average gram is using a quarter of its strength.'], [2.3, 'In triangles the press runs along the ribs: the average gram does nearly twice the work.'], [4.1, 'Size each rib to its force (#93) and most of the weight works near its limit.'], [7.0, 'The same reasoning is behind most of the shell: put the weight where the force is.']]);
-    const rows = [{ k: 'plate', r: B.plate, name: 'A solid plane', col: C.comp, hero: false }, { k: 'tri', r: B.tri, name: 'Theseus\'s triangles', col: C.hero, hero: true }, { k: 'sized', r: B.sized, name: 'Sized to their force (#93)', col: C.hero, hero: true }];
+    const rows = [{ k: 'plate', r: B.plate, name: 'A solid plane', col: C.comp, hero: false }, { k: 'tri', r: B.tri, name: 'Theseus\'s triangles', col: C.hero, hero: true }, { k: 'sized', r: B.sized, name: 'Sized to their force: the next step (#93)', col: C.hero, hero: true }];
     const bx = 470, cw = 14, n = Cl.plate.cells.length, bh = 104, s = 5;
     text('Each gram, by the share of its strength it is using {(at the part\'s limit)}', bx, 300, { role: 'label', size: 19, color: C.mute });
     rows.forEach((rw, i) => {
@@ -1183,7 +1210,7 @@ S({
     });
     text('Breaks', bx - 10, 340 + 112 - bh + 6, { role: 'tick', size: 19, color: C.red, align: 'right' });
     /* ---- the headline: the average gram's work, solid plane → Theseus's triangles; and in grams ---- */
-    verdict(t, T.v, 1330, 470, { from: Math.round(Cl.plate.mean * 100), to: Math.floor(Cl.tri.mean * 100 + 1e-6), unit: '%', dec: 0, label: 'Share at work', better: 'higher', net: b05_dn(Cl.tri.mean / Cl.plate.mean, 1) + '×', netWord: 'the work', size: 96, maxW: RM - 1330 });
+    verdict(t, T.v, 1330, 470, { from: Math.round(Cl.plate.mean * 100), to: Math.floor(Cl.tri.mean * 100 + 1e-6), unit: '%', dec: 0, label: 'Share at work', better: 'higher', who: ['Solid plane', 'Triangles'], rivalCol: 'grey', net: b05_dn(Cl.tri.mean / Cl.plate.mean, 1) + '×', netWord: 'the work', size: 96, maxW: RM - 1330 });
     text('Of every 10 g: ' + fmtN(Cl.plate.mean * 10, 1) + ' g at work in a solid plane, ' + b05_dn(Cl.tri.mean * 10, 1) + ' g in triangles, ' + b05_dn(Cl.sized.mean * 10, 1) + ' g sized', 1330, 590, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: RM - 1330, sentence: false, alpha: ep(t, T.v + 1.6, T.v + 2.0) });
     /* ---- the design choices this reasoning drives, and where the film shows each ---- */
     const ch = [['tri', 'Triangles, not hexagons', 'next (b06)'], ['arch', 'Arches', 'b06'], ['fillet', 'Fillets at every joint', 'b06'], ['fibre', 'Fibres along the load', 'b06'], ['wall', 'Walls graded to the force', '#93, b07'], ['board', 'The board as a tie', '#94, b07']];
@@ -1197,4 +1224,4 @@ S({
     });
     text('The test strip (b06), ' + fmtN(B.g, 2) + ' g each, in 2D, each pressed to its own limit; breaks at 120 MPa stretched, 207 bent; colour: share used, squared', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false });
   }
-});
+}));

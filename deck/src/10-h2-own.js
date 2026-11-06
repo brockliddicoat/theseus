@@ -4,7 +4,7 @@
    Slides: ownscrew, own_insert, own_life. They follow 'repair'.
    The drawings are in mm, to the 3D models' geometry (3d/parts/lib/panhead.js, 3d/parts/fasteners.js): the ISO 7045
    pan head with its cross recess No. 0 and ISO 1580 slot, the M2 × 0.4 ISO 68-1 thread, the knurled M2 × 3 insert,
-   the carbon-filled boss and the 1 mm board. Every top-level name starts with own_ / OWN_.
+   the carbon-filled boss and the board (BOARD_T, 0.6 mm since F47.4). Every top-level name starts with own_ / OWN_.
    ============================================================================================ */
 Object.assign(SRC, {
   ownIso7045w: { t: 'fasten.it, DIN EN ISO 7045 table: M2 pan head with cross recess, dk 4 mm, k 1.6 mm, recess No. 0, m 1.9 mm (type H)', u: 'https://fasten.it/Norms/Norm/DIN_EN_ISO_7045' },
@@ -34,6 +34,9 @@ const OWN_FEEL = { abs: 90, cf: 70, insert: 0 };
 
 /* ---------- the pan head, exactly as the 3D model builds it (panhead.js): heights above the bearing face, in mm ---------- */
 const OWN_M2 = { dk: 4.0, k: 1.6, rf: 3.2, fil: 0.32, uf: 0.1, blank: 0.87, n: 0.5, ts: 0.8, m: 1.9, wing: 0.42, tc: 1.0, xb: 0.3, rc: 0.18, cd: 0.16, P: 0.4, len: 5 };
+/* the screw seated: its head on the board, so its tip this far below the boss top (the board BOARD_T thick: 0.6 mm since F47.4,
+   so the M2 × 5 reaches 4.4 mm, was 4.0 on the 1.0 mm board; the insert's clearance hole runs to 4.95, the plain bore to 4.55; H3) */
+const OWN_SEAT = OWN_M2.len - BOARD_T;
 const OWN_HD = (() => {
   const M = OWN_M2, R = M.dk / 2, dc = M.k - M.rf, fcx = R - M.fil, fcy = dc + Math.sqrt((M.rf - M.fil) ** 2 - fcx * fcx), rt = M.rf * fcx / (M.rf - M.fil);
   const H0 = r => r <= rt ? dc + Math.sqrt(Math.max(0, M.rf * M.rf - r * r)) : r <= R ? fcy + Math.sqrt(Math.max(0, M.fil * M.fil - (r - fcx) ** 2)) : 0;
@@ -275,7 +278,7 @@ function own_headTopMM(o = {}) {
    origin at the top of the boss, on the axis, y down. The insert (fasteners.js): M2 × 3.0, Ø3.5, knurl tips r 1.75 and
    roots r 1.5 in two bands of opposed helix, a groove between them (r 1.38), a pilot (r 1.42), a 90° countersink; its
    thread crest r 0.80, groove r 1.02. The boss: carbon-filled PP, r 2.65; under the insert a clearance hole with a drill
-   point. The board: 1.0 mm, black mask, a gold pad under the head and a plated hole. */
+   point. The board: BOARD_T (0.6 mm since F47.4; was 1.0), black mask, a gold pad under the head and a plated hole. */
 const OWN_INS = { L: 3.0, R: 1.75, rRoot: 1.5, rGroove: 1.38, rPilot: 1.42, gTop: 1.30, gBot: 1.62, pTop: 2.52, cMin: 0.80, cMaj: 1.02 };
 const OWN_MAT = {
   abs: { g: ['#dad9d3', '#b7b6b0'], hatch: { color: 'rgba(0,0,0,0.22)' } },
@@ -300,7 +303,7 @@ function own_insHalf(sd, ph) {
 function own_jointMM(o = {}) {
   const kind = o.kind || 'insert', ins = kind === 'insert', T = OWN_TH[ins ? 'm2' : 'tf'], hole = o.hole || C.panel, out = {};
   const fw = 4.6, bossM = OWN_MAT[ins ? 'cf' : kind], rB = 2.65, hB = o.crop || 5.4, I = OWN_INS;
-  const pass2 = o.pass === 2, ph = pass2 ? (o.ph2 || 0) : (ins ? 0.2 : 0), tip = o.tip == null ? 4.0 : o.tip, zb = tip - OWN_M2.len;
+  const pass2 = o.pass === 2, ph = pass2 ? (o.ph2 || 0) : (ins ? 0.2 : 0), tip = o.tip == null ? OWN_SEAT : o.tip, zb = tip - OWN_M2.len;
   /* the boss, cut and hatched; it runs on down into the shell, so it ends in a break line */
   const bossPath = () => { G.beginPath(); G.moveTo(-rB, hB); G.lineTo(-rB, 0.25); G.arcTo(-rB, 0, -rB + 0.25, 0, 0.25); G.lineTo(rB - 0.25, 0); G.arcTo(rB, 0, rB, 0.25, 0.25); G.lineTo(rB, hB); G.bezierCurveTo(rB * 0.36, hB + 0.3, -rB * 0.36, hB - 0.3, -rB, hB); G.closePath(); };
   solid(bossPath, bossM, [-rB, 0, 2 * rB, hB], { hatch: Object.assign({ sp: 9 }, bossM.hatch || {}) });
@@ -327,9 +330,10 @@ function own_jointMM(o = {}) {
     }
     poly2(W.L2, W.R2, true); G.strokeStyle = edgeCol(bossM); G.lineWidth = lw(1); G.stroke();
   }
-  /* the board, clamped: black mask both faces, the gold pad under the head, the plated hole */
-  for (const [x0, x1, b] of [[-fw, -1.15, [1, 0]], [1.15, fw, [0, 1]]]) pcbSec(x0, x1, -1.0, 1.0, { brk: b, mask: '#141518' });
-  G.fillStyle = '#C9A15C'; G.fillRect(-2.25, -1.03, 1.1, 0.04); G.fillRect(1.15, -1.03, 1.1, 0.04); G.fillRect(-1.19, -1.0, 0.04, 1.0); G.fillRect(1.15, -1.0, 0.04, 1.0);
+  /* the board, clamped: black mask both faces, the gold pad under the head, the plated hole; BOARD_T thick (0.6 mm, F47.4) */
+  const bT = BOARD_T;
+  for (const [x0, x1, b] of [[-fw, -1.15, [1, 0]], [1.15, fw, [0, 1]]]) pcbSec(x0, x1, -bT, bT, { brk: b, mask: '#141518' });
+  G.fillStyle = '#C9A15C'; G.fillRect(-2.25, -bT - 0.03, 1.1, 0.04); G.fillRect(1.15, -bT - 0.03, 1.1, 0.04); G.fillRect(-1.19, -bT, 0.04, bT); G.fillRect(1.15, -bT, 0.04, bT);
   /* the screw in view, and the bit in its head; the second drive comes in tilted about the boss's mouth */
   const a = pass2 ? (o.tilt || 0) : 0;
   xsave(); xturn(a);
@@ -538,7 +542,7 @@ S({
    a fifth of a pitch out of phase, as a hand does: it cuts its own thread beside the first. In brass it can only follow */
 const OWN_IN = { d1: [1.2, 3.6], out: [4.0, 5.4], d2: [6.0, 8.4], tilt: 2 * Math.PI / 180, ph2: 0.18 };
 function own_inPose(t) {
-  const P = OWN_IN, d = 4.0;
+  const P = OWN_IN, d = OWN_SEAT;
   if (t < P.out[0]) { const k = ep(t, P.d1[0], P.d1[1], E.io3); return { pass: 1, tip: d * k, reach1: d * k, reach2: 0, dir: t > P.d1[0] && t < P.d1[1] ? 1 : 0, step: 0 }; }
   if (t < P.d2[0]) { const k = ep(t, P.out[0], P.out[1], E.io3); return { pass: 1, tip: d * (1 - k), reach1: d, reach2: 0, dir: t < P.out[1] ? -1 : 0, step: 1 }; }
   const k = ep(t, P.d2[0], P.d2[1], E.io3); return { pass: 2, tip: d * k, reach1: d, reach2: d * k, dir: t < P.d2[1] ? 1 : 0, step: 2 };

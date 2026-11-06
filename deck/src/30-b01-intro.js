@@ -94,6 +94,23 @@ function b01_all() {
   return (b01_all.v = out);
 }
 const b01_get = id => b01_all().find(m => m.id === id) || null;
+/* ---- rivals are drawn with the kit's neutral rival mouse (mouseRival, FILM F9; K 09:58): only Theseus is mouseSimple ---- */
+/** a mouse's box [L, W, H] mm for mouseRival: its sourced dims (EloShapes' makers' figures in mice.json, or B01_MICE), else
+   the kit's typical mouse */
+const b01_dims = id => { const m = b01_get(id); return m && m.L && m.W && m.H ? [m.L, m.W, m.H] : RV_DIMS; };
+/** between two mice's dims at k (0..1), quantised to 0.25 mm so a morph reuses the kit's cached outlines (rvView caches by dims) */
+const b01_dimsLerp = (a, b, k) => a.map((v, i) => Math.round(lerp(v, b[i], clamp(k)) * 4) / 4);
+/** a rival's battery from above (mm, mouseRival's top frame): the kit's typical place, rvBox's focus box less its 6 mm margin */
+function b01_rvBatt(dims) { const b = rvBox('top', 'battery', { dims }); return [b[0] + 6, b[1] + 6, b[2] - 12, b[3] - 12]; }
+/** the rival grey (the kit's rvCols: the outline and the body), for a rival drawn from its own traced outline (the X2F) */
+const b01_rvCol = () => typeof rvCols === 'function' ? rvCols('grey') : { out: mix(C.comp, C.mute, 0.4), body: mix(C.bg, C.comp2, 0.5) };
+/** a rival's main switch body from above, mm [across, along] (the kit's Omron-size switch, RV_AT.swS) */
+const b01_rvSw = () => (typeof RV_AT !== 'undefined' && RV_AT.swS) || [5.8, 12.8];
+/** the top stretch of a rival's side outline ('right': nose right, the pad at y = 0, y negative up): points higher than
+   frac of its height, between x0 and x1, sorted by x */
+function b01_rvTop(pts, H, x0, x1, frac = 0.55) { return pts.filter(p => p[1] < -frac * H && p[0] > x0 && p[0] < x1).sort((p, q) => p[0] - q[0]); }
+/** the height of that top line at x (mm, negative up), interpolated */
+function b01_rvTopAt(top, x) { for (let i = 1; i < top.length; i++) if (top[i][0] >= x) { const [x0, y0] = top[i - 1], [x1, y1] = top[i]; return y0 + (y1 - y0) * (x - x0) / Math.max(1e-9, x1 - x0); } return top.length ? top[top.length - 1][1] : 0; }
 /** Theseus in the same shape (its own numbers, from THESEUS) */
 function b01_ths() { const [L, W, H] = THESEUS.dims; return { id: 'theseus', name: 'Theseus', short: 'Theseus', brand: 'Nitrite Labs', conn: 'wireless', g: THESEUS.mass, gBy: 'target', gEv: 'proposal', L, W, H, h1k: THESEUS.hours, price: THESEUS.price, hero: true }; }
 /** one precision for every weight in a comparison (G5): 0.1 g */
@@ -210,8 +227,9 @@ S({
   sfx: [[2.15, 'tick'], [2.35, 'tick'], [2.55, 'tick'], [2.75, 'tick']],
   src: ['kunai', 'piaknow', 'ntrScan'],
   answers: [
-    ['cover: "PIAKNOW\'S should be all capital"', 'Set as PIAKNOW\'S, every letter a capital'],
-    ['cover: "instead of 8kh it should say something about there being zero compromises"', 'The third figure is now Compromises: it counts down from the six that the next slide shows every flagship making, to 0'],
+    ['cover: "PIAKNOW\'S should be all capital"', 'Set as PIAKNOW\'S, every letter a capital ("Target, by PIAKNOW\'S measure" under the motion latency)'],
+    ['Integrator (10:2x): no figure may read as a measurement it isn\'t', 'No Theseus has been weighed or timed yet, so the weight (29.31 g, the budget\'s target), the motion latency (0.14 ms, the timing model\'s target, as on Targets) and the density (the target weight over its box) each read "Target" first; the weight\'s line keeps the promise in Listed against weighed\'s words, every unit weighed. "0 compromises" is the design\'s claim and the next slide shows the six it answers'],
+    ['cover: "instead of 8kh it should say something about there being zero compromises"', 'The third figure is now Compromises: it counts down to 0 from the eight in the film\'s ledger (the next slide\'s six flagships fold into them), and the close counts the same eight down to 0 before THESEUS'],
     ['cover: "8khz is pretty much standard now"', '8 khz is off the cover; dual 8 khz, wired and wireless, is on the targets slide'],
     ['ntr_stats: density "could be on the cover instead of the 100+ ideas"', 'The fourth figure is density, 0.099 g/cm³ (weight per cm³ of the box it fills, rounded up, against Theseus)'],
     ['F9.11 (keep the cover\'s form, no 2D mouse) and F12.2 (no shell on the cover)', 'Kept: the studio row, THESEUS rising letter by letter, the gram scale with 29.31 g in blue, the subtitle in three voices, four figures and the byline; no mouse and no shell']
@@ -249,11 +267,15 @@ S({
     ], LM, 640, { t });
     /* four figures, display numbers next to their units */
     const rho = b01_rhoTxt(THESEUS.mass / (THESEUS.dims[0] * THESEUS.dims[1] * THESEUS.dims[2] / 1000), true);
+    /* no figure may read as a measurement it isn't (integrator, 10:2x): no Theseus exists to weigh or time yet, so the
+       weight (the budget's target, F21.1), the motion latency (Kunai's timing model's target, as b01_targets and b09_latency
+       say) and the density (the target weight over its box) each say "Target" first, in a brighter voice than the rest of
+       the line; the weight keeps b01_listed's promise in its words (every unit weighed) */
     const cols = [
-      { lab: 'Weight', n: THS.mass, u: 'g', sub: 'Weighed, every unit' },
-      { lab: 'Motion latency, wireless', n: '0.14', u: 'ms', sub: 'On PIAKNOW\'S rig' },
-      { lab: 'Compromises', n: '0', u: '', sub: 'Every flagship makes one', down: 6 },
-      { lab: 'Density', n: rho, u: 'g/cm³', sub: 'Weight per cm³ of its box' }
+      { lab: 'Weight', n: THS.mass, u: 'g', tgt: true, sub: 'every unit weighed' },
+      { lab: 'Motion latency, wireless', n: '0.14', u: 'ms', tgt: true, sub: 'by PIAKNOW\'S measure' },
+      { lab: 'Compromises', n: '0', u: '', sub: 'Eight that most mice make', down: 8 },
+      { lab: 'Density', n: rho, u: 'g/cm³', tgt: true, sub: 'weight per cm³ of its box' }
     ];
     const cw = (RM - LM) / 4;
     const nw = c => tw(c.n, { role: 'd1', size: 100, tnum: true }) / 100 + (c.u ? tw(c.u, { font: 'mono', size: 38, weight: 600 }) / 100 + 0.1 : 0);
@@ -263,13 +285,17 @@ S({
       if (i) line(x - 24, 770, x - 24, 770 + 190 * ep(t, t0 - 0.1, t0 + 0.5, E.cam), { color: inkA(0.14), w: 1.5 });
       text(c.lab, x, 786, { role: 'label', size: 21, color: C.mute, alpha: a, t, t0, cps: 60 });
       if (c.down) {
-        /* six trades, counted down to none: the six the next slide names, struck one by one */
-        const kd = E.out3(prog(t, t0 + 0.1, t0 + 1.3)), v = Math.round(lerp(c.down, 0, kd)), done = kd >= 0.999;
+        /* the film's eight compromises (its ledger: the next slide's six flagships fold into them), each mark struck in turn and
+           the count stepping down with each strike, to none; the close counts the same eight down again (R2-b01-3) */
+        const kjs = Array.from({ length: c.down }, (_, j) => ep(t, t0 + 0.1 + j * 0.15, t0 + 0.3 + j * 0.15)), v = c.down - kjs.filter(k => k >= 0.5).length, done = v === 0;
         text(String(v), x - 6, 916, { role: 'd1', size: nS, color: done ? C.heroText : C.ink, grad: done ? C.heroGrad : null, tnum: true, alpha: a });
-        const xs = x + tw(String(v), { role: 'd1', size: nS, tnum: true }) + 26;
-        for (let j = 0; j < c.down; j++) { const kj = ep(t, t0 + 0.1 + j * 0.2, t0 + 0.3 + j * 0.2); const sx = xs + j * 26; line(sx, 860, sx, 900, { color: C.mute, w: 3, alpha: a * 0.8 }); if (kj > 0) line(sx - 8, 896, sx - 8 + 16 * kj, 864, { color: C.red, w: 3, alpha: a }); }
+        const xs = x + tw('0', { role: 'd1', size: nS, tnum: true }) + 26;
+        kjs.forEach((kj, j) => { const sx = xs + j * 26; line(sx, 860, sx, 900, { color: C.mute, w: 3, alpha: a * 0.8 }); if (kj > 0) line(sx - 8, 896, sx - 8 + 16 * kj, 864, { color: C.red, w: 3, alpha: a }); });
       } else rich([{ s: c.n, role: 'd1', size: nS, color: C.ink, tnum: true, count: [t0, 1.0] }, c.u ? { s: c.u, font: 'mono', size: 38, weight: 600, color: C.mute, gap: 10, caps: false } : null], x - 6, 916, { t, alpha: a });
-      text(c.sub, x, 962, { role: 'label', size: 19, color: C.faint, alpha: ep(t, t0 + 0.4, t0 + 0.8) });
+      const ks = ep(t, t0 + 0.4, t0 + 0.8);
+      /* knock: the stage grid's + row at y 960 is knocked out from under the words (FILM F10) */
+      if (c.tgt) rich([{ s: 'Target', role: 'label', size: 19, color: C.ink2, knock: true }, { s: c.sub, role: 'label', size: 19, color: C.faint, gap: 12, knock: true }], x, 962, { alpha: ks });
+      else text(c.sub, x, 962, { role: 'label', size: 19, color: C.faint, alpha: ks, knock: true });
     });
     /* the byline, on the chrome's rule */
     line(LM, LAY.ruleY, LM + (RM - LM) * ep(t, 0.3, 1.4, E.cam), LAY.ruleY, { color: C.hair, w: 1.5 });
@@ -303,80 +329,81 @@ function b01_budget() {
 }
 
 /* ================================ small demonstrations of each trade ================================
-   One per row of the ledger (b01_compromise) and the close: the simplified mouse (06-motion.js) with the part the trade
-   costs lit red, and the cause acting on it once (M2): its weight sags a scale, its battery runs down, its switches draw
-   current, a finger bows its shell, its back half comes away, a cable runs out of its nose. box = [x, y, w, h] px; the
-   mouse sits nose right. o = { a (alpha), k0 (when the cause starts: t0), hero (draw Theseus's answer instead, blue) } */
+   One per row of the ledger (b01_compromise): the flagship drawn as the kit's neutral rival mouse (mouseRival, grey, sized
+   from its sourced dims: only Theseus is the simplified mouse, FILM F9), its fault drawn on it in red, and the cause acting on
+   it once (M2): its weight sags a scale, its battery runs down, its switches draw current, a finger bows its shell, its back
+   half comes away (the X2F's own traced outline), a cable runs out of its nose. box = [x, y, w, h] px; the mouse sits nose
+   right. o = { a (alpha), dims ([L, W, H] mm, the rival's), g (the weight's grams), hero (draw Theseus's answer instead) } */
 function b01_tradeIcon(t, t0, kind, box, o = {}) {
   const [x, y, w, h] = box, a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
-  const lit = ep(t, t0, t0 + 0.35), k = ep(t, t0 + 0.1, t0 + 0.9, E.snap), hero = !!o.hero, col = hero ? 'hero' : 'bad', cc = hero ? C.hero : C.red;
-  const base = { lw: 1.6, dim: 0.55 };
-  /* the top view, nose right: the key plan's frame turned a quarter (its nose is at -y) */
+  const lit = ep(t, t0, t0 + 0.35), k = ep(t, t0 + 0.1, t0 + 0.9, E.snap), hero = !!o.hero, cc = hero ? C.hero : C.red, dims = o.dims || RV_DIMS;
+  const base = { lw: 1.6, dim: 0.55 }, rb = { dims, lw: 1.6 };
+  /* the top view, nose right: the frame turned a quarter (the nose is at -y). Theseus: mouseSimple; a rival: mouseRival */
   const top = (o2, draw, dx = 0) => { const V = msView('top'), s = Math.min((w - 8) / V.box[3], (h - 8) / V.box[2]); return part(x + w / 2 + dx, y + h / 2, s, () => { mouseSimple('top', Object.assign({}, base, o2)); if (draw) draw(s); }, { alpha: a, rot: Math.PI / 2 }); };
-  /* the side view, nose right, standing on its pad line at yb */
-  const sideS = (pad = 8) => { const V = msView('right'); return Math.min((w - pad) / V.box[2], (h - 14) / V.box[3]); };
-  const side = (o2, draw, yb, s) => { const V = msView('right'), cx = V.box[0] + V.box[2] / 2; return part(x + w / 2 - cx * s, yb, s, () => { mouseSimple('right', Object.assign({}, base, o2)); if (draw) draw(s); }, { alpha: a }); };
+  const rtop = (o2, draw) => { const B = rvBox('top', null, { dims }), s = Math.min((w - 8) / B[3], (h - 8) / B[2]); return part(x + w / 2, y + h / 2, s, () => { const m = mouseRival('top', Object.assign({}, rb, o2)); if (draw) draw(m, s); }, { alpha: a, rot: Math.PI / 2 }); };
+  /* the rival's side view, nose right, standing on its pad line at yb (its frame's x = 0 is the length's middle) */
+  const rsideS = (pad = 8) => { const B = rvBox('right', null, { dims }); return Math.min((w - pad) / B[2], (h - 14) / B[3]); };
   if (kind === 'weight') {
     /* set down on a scale: its weight presses down (the arrow grows to it), the pan sags under it and a spring settles it.
        59.0 g sags the pan twice as far as Theseus's 29.3 g would */
-    const g = o.g || 59, s = sideS(30), sp = spring(t, t0 + 0.12, { f: 2.6, z: 0.45 }), sag = 0.11 * g * sp, drop = (1 - E.out3(clamp((t - t0) / 0.22))) * -8;
+    const g = o.g || 59, s = rsideS(30), sp = spring(t, t0 + 0.12, { f: 2.6, z: 0.45 }), sag = 0.11 * g * sp, drop = (1 - E.out3(clamp((t - t0) / 0.22))) * -8;
     const yb = y + h - 10 + sag + drop, px0 = x + 10, px1 = x + w - 10;
     /* the scale: its foot, and the pan the mouse stands on */
     rect(x + w / 2 - 22, y + h - 4, 44, 4, { fill: inkA(0.3), alpha: a * lit });
     line(x + w / 2, y + h - 4, x + w / 2, yb + 3, { color: inkA(0.3), w: 3, alpha: a * lit });
     rr(px0, yb, px1 - px0, 3.5, 1.5, cc, null, 0, a * lit);
-    side({ lineA: 1 }, null, yb, s);
+    part(x + w / 2, yb, s, () => mouseRival('right', rb), { alpha: a });
     /* the weight, an arrow through the mouse onto the pan, growing with the load (M2) */
     const ax = x + w / 2 - 6, len = 0.62 * g * sp;
     if (len > 3) arrow(ax, yb - len - 4, ax, yb - 3, { color: cc, w: 3, hs: 9, alpha: a * lit });
   } else if (kind === 'battery') {
-    /* the battery, lit, runs down: its charge falls to 80 of the 200 h a Theseus battery holds */
-    top({ hi: ['battery'], col, lit }, s => {
-      const [bx, by, bw, bh] = MS_BATTERY, frac = hero ? 1 : lerp(1, 80 / THESEUS.hours, k);
-      G.save(); G.globalAlpha = PA * a * lit * 0.55; G.fillStyle = cc; rrPath(bx + 1.2, by + 1.2 + (bh - 2.4) * (1 - frac), bw - 2.4, (bh - 2.4) * frac, 1.2); G.fill(); G.restore();
+    /* its battery runs down, red: the charge falls to 80 of the 200 h a Theseus battery holds */
+    rtop({ show: ['battery'] }, () => {
+      const [bx, by, bw, bh] = b01_rvBatt(dims), frac = lerp(1, 80 / THESEUS.hours, k);
+      G.save(); G.globalAlpha = PA * lit * 0.55; G.fillStyle = cc; rrPath(bx + 1.2, by + 1.2 + (bh - 2.4) * (1 - frac), bw - 2.4, (bh - 2.4) * frac, 1.2); G.fill();
+      G.globalAlpha = PA * lit; G.strokeStyle = cc; G.lineWidth = lw(1.6); rrPath(bx, by, bw, bh, 2); G.stroke(); G.restore();
     });
   } else if (kind === 'optical') {
-    /* the triggers' optical switches draw current from the battery: a dashed path runs from the battery to the switches */
-    top({ hi: hero ? ['triggers'] : { triggers: 'bad' }, col, lit, show: ['battery'] }, s => {
-      const sw = [[-11, -34], [11, -34]], [bx, by, bw, bh] = MS_BATTERY, src = [bx + bw / 2, by];
-      for (const p of sw) {
-        G.save(); G.globalAlpha = PA * a * lit; G.fillStyle = cc; rrPath(p[0] - 2.6, p[1] - 2.6, 5.2, 5.2, 0.8); G.fill(); G.restore();
-        if (!hero) { const kk = clamp((t - t0 - 0.2) / 0.8); G.save(); G.globalAlpha = PA * a * Math.min(1, kk * 3) * (1 - 0.6 * ep(t, t0 + 1.2, t0 + 1.6)); G.strokeStyle = cc; G.lineWidth = lw(2); G.setLineDash([lw(5), lw(5)]); G.lineDashOffset = -(t - t0) * lw(40); G.beginPath(); G.moveTo(src[0], src[1]); G.lineTo(src[0], p[1] + 10); G.lineTo(p[0], p[1] + 2.6); G.stroke(); G.restore(); }
+    /* its two optical main switches draw current from the battery: red bodies, a dashed path running from the battery to each */
+    rtop({ show: ['battery'] }, () => {
+      const [sa, sl] = b01_rvSw(), [bx, by, bw] = b01_rvBatt(dims), src = [bx + bw / 2, by];
+      for (const p of ['switchL', 'switchR'].map(n => rvAt('top', n, { dims }))) {
+        G.save(); G.globalAlpha = PA * lit; G.fillStyle = cc; rrPath(p[0] - sa / 2, p[1] - sl / 2, sa, sl, 0.8); G.fill(); G.restore();
+        const kk = clamp((t - t0 - 0.2) / 0.8); G.save(); G.globalAlpha = PA * Math.min(1, kk * 3) * (1 - 0.6 * ep(t, t0 + 1.2, t0 + 1.6)); G.strokeStyle = cc; G.lineWidth = lw(2); G.setLineDash([lw(5), lw(5)]); G.lineDashOffset = -(t - t0) * lw(40); G.beginPath(); G.moveTo(src[0] + p[0] * 0.3, src[1]); G.lineTo(src[0] + p[0] * 0.3, p[1] + sl / 2 + 4); G.lineTo(p[0], p[1] + sl / 2 + 4); G.lineTo(p[0], p[1] + sl / 2); G.stroke(); G.restore();
       }
     });
   } else if (kind === 'flex') {
-    /* a fingertip presses the hump from behind and above, and the shell bows under it (a spring settles the bow), red where it bends */
-    const V = msView('right'), s = sideS(10), cx = V.box[0] + V.box[2] / 2;
-    const ox = x + w / 2 - cx * s, oy = y + h - 6, d = hero ? 0 : 3.4 * spring(t, t0 + 0.2, { f: 2.2, z: 0.5 });
-    const hump = MS_SIDE.reduce((b, p) => (p[1] > b[1] ? p : b), [0, 0]), zc = hump[0] - 4, sig = 16;
+    /* a fingertip presses the top near the hump, and the shell bows under it (a spring settles the bow), red where it bends */
+    const s = rsideS(10), ox = x + w / 2, oy = y + h - 6, d = 3.4 * spring(t, t0 + 0.2, { f: 2.2, z: 0.5 });
+    const top = b01_rvTop(mouseRival('right', { dims, alpha: 0 }).pts, dims[2], -42, 42, 0.58), zc = rvAt('right', 'hump', { dims })[0] - 4, sig = 16;
     part(ox, oy, s, () => {
-      mouseSimple('right', Object.assign({}, base, { hi: ['shell'], col, lit: hero ? lit : lit * 0.25 }));
-      if (!hero) {
-        const pts = MS_SIDE.filter(p => p[1] > 22 && p[0] > -42 && p[0] < 42).sort((p, q) => p[0] - q[0]).map(p => [p[0], -(p[1] - d * Math.exp(-Math.pow((p[0] - zc) / sig, 2)))]);
-        G.save(); G.globalAlpha = PA * lit; G.strokeStyle = C.red; G.lineWidth = lw(2.8); G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.stroke(); G.restore();
-      }
+      mouseRival('right', rb);
+      const pts = top.map(p => [p[0], p[1] + d * Math.exp(-Math.pow((p[0] - zc) / sig, 2))]);
+      G.save(); G.globalAlpha = PA * lit; G.strokeStyle = C.red; G.lineWidth = lw(2.8); G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.stroke(); G.restore();
     }, { alpha: a });
-    if (!hero) { const pz = [ox + zc * s, oy - (hump[1] - d) * s]; finger(pz[0], pz[1], 2.55, { s: s * 0.62, press: clamp(d / 3.4), alpha: a * ep(t, t0, t0 + 0.25), len: 26 }); }
+    const pz = [ox + zc * s, oy + (b01_rvTopAt(top, zc) + d) * s]; finger(pz[0], pz[1], 2.55, { s: s * 0.62, press: clamp(d / 3.4), alpha: a * ep(t, t0, t0 + 0.25), len: 26 });
   } else if (kind === 'half') {
-    /* the X2 from above, nose right: a cut runs across it and its back half comes away; the X2F is what's left (87.5 of 120 mm) */
-    const s = Math.min((w - 20) / 120, (h - 8) / B01_X2F.W), full = b01_outline(B01_X2_HALF), cut = b01_outline(B01_X2_HALF, B01_X2F.cut, B01_X2F.r);
+    /* the X2 from above, nose right: a cut runs across it and its back half comes away; the X2F is what's left (87.5 of 120 mm).
+       Its own traced outline (a real shape is the point), in the rival's grey like every other flagship */
+    const s = Math.min((w - 20) / 120, (h - 8) / B01_X2F.W), full = b01_outline(B01_X2_HALF), cut = b01_outline(B01_X2_HALF, B01_X2F.cut, B01_X2F.r), rc = b01_rvCol();
     const kc = hero ? 0 : ep(t, t0 + 0.05, t0 + 0.4, E.cam), kk = hero ? 0 : ep(t, t0 + 0.4, t0 + 1.0, E.snap), ox = x + w / 2 + 60 * s + 4, oy = y + h / 2;
     part(ox, oy, s, () => {
       if (!hero) {
         /* the rear piece, beyond the cut: sliding back and settling as a dashed red ghost of what was given up */
         G.save(); G.translate(0, kk * 9); G.globalAlpha = PA * lerp(1, 0.55, kk); G.beginPath(); G.rect(-40, B01_X2F.cut, 80, 40); G.clip();
-        if (kk < 0.02) { G.fillStyle = C.panel; G.fill(full.path); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2); G.stroke(full.path); }
+        if (kk < 0.02) { G.fillStyle = rc.body; G.fill(full.path); G.strokeStyle = rc.out; G.lineWidth = lw(1.6); G.stroke(full.path); }
         else { G.setLineDash([lw(4), lw(3.5)]); G.strokeStyle = C.red; G.lineWidth = lw(1.8); G.stroke(full.path); }
         G.restore();
       }
-      G.save(); G.globalAlpha = PA; G.fillStyle = C.panel; G.fill((hero ? full : cut).path); G.strokeStyle = hero ? C.hero : inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(hero ? 2.2 : 2); G.stroke((hero ? full : cut).path); G.restore();
+      G.save(); G.globalAlpha = PA; G.fillStyle = hero ? C.panel : rc.body; G.fill((hero ? full : cut).path); G.strokeStyle = hero ? C.hero : rc.out; G.lineWidth = lw(hero ? 2.2 : 1.6); G.stroke((hero ? full : cut).path); G.restore();
       if (!hero && kc > 0) { G.save(); G.globalAlpha = PA * lit; G.strokeStyle = C.red; G.lineWidth = lw(3); G.beginPath(); G.moveTo(-B01_X2F.W / 2 - 3, B01_X2F.cut); G.lineTo(-B01_X2F.W / 2 - 3 + (B01_X2F.W + 6) * kc, B01_X2F.cut); G.stroke(); G.restore(); }
     }, { alpha: a, rot: Math.PI / 2 });
   } else if (kind === 'wire') {
-    /* a cable runs out of the nose: the mouse is tied to the PC */
-    const V = msView('top'), s = Math.min((w - 34) / V.box[3], (h - 8) / V.box[2]), mx = x + w / 2 - 14;
-    part(mx, y + h / 2, s, () => mouseSimple('top', Object.assign({}, base, { hi: hero ? ['shell'] : [], col, lit })), { alpha: a, rot: Math.PI / 2 });
-    if (!hero) { const nx = mx + (-KEY.nose * MS_K.y) * s, ny = y + h / 2; poly([[nx - 1, ny], [nx + 8, ny], [nx + 18, ny + 5], [x + w + 4, ny + 8]], { color: C.red, w: 3, p: k, alpha: a * lit }); }
+    /* a cable runs out of its nose: the mouse is tied to the PC */
+    const B = rvBox('top', null, { dims }), s = Math.min((w - 34) / B[3], (h - 8) / B[2]), mx = x + w / 2 - 14, ca = rvAt('top', 'cable', { dims });
+    part(mx, y + h / 2, s, () => mouseRival('top', rb), { alpha: a, rot: Math.PI / 2 });
+    /* the rotated frame: (px, py) mm lands at (mx - py s, my + px s) */
+    const nx = mx - ca[1] * s, ny = y + h / 2 + ca[0] * s; poly([[nx - 1, ny], [nx + 8, ny], [nx + 18, ny + 5], [x + w + 4, ny + 8]], { color: C.red, w: 3, p: k, alpha: a * lit });
   } else if (kind === 'theseus') {
     top({ hi: ['shell'], col: 'hero', lit, show: ['battery'] });
   }
@@ -422,10 +449,11 @@ function b01_bigWeight(t, s0, box, o = {}) {
   const panW = 270, LP = [L[0], L[1] + hang], RP = [R[0], R[1] + hang];
   for (const [E0, P0] of [[L, LP], [R, RP]]) { line(E0[0], E0[1], P0[0] - panW / 2 + 4, P0[1] - 6, { color: ink, w: 1.6 }); line(E0[0], E0[1], P0[0] + panW / 2 - 4, P0[1] - 6, { color: ink, w: 1.6 }); }
   b01_pan(LP[0], LP[1], panW, C.red, 1); b01_pan(RP[0], RP[1], panW, ink, 1);
-  /* the mice on the pans, side view (nose right), 2 px per mm */
+  /* the mice on the pans, side view (nose right), 2 px per mm: Theseus the simplified mouse in blue, the X3 the kit's rival
+     (grey, its own 125 × 63.5 × 40 mm; the fault, its weight, is the red pan it drops) */
   const V = msView('right'), s = 2.0, mcx = V.box[0] + V.box[2] / 2;
   part(RP[0] - mcx * s, RP[1] - 2, s, () => mouseSimple('right', { lw: 1.8, hi: ['shell'], col: 'hero', lit: 0.8 }));
-  part(LP[0] - mcx * s, LP[1] - 2 - fall * 230, s, () => mouseSimple('right', { lw: 2, hi: ['shell'], col: 'bad', lit: ep(t, s0 + 0.15, s0 + 0.45) }));
+  part(LP[0], LP[1] - 2 - fall * 230, s, () => mouseRival('right', { dims: o.dims || RV_DIMS, lw: 2 }));
   text('59.0 g', LP[0], LP[1] + 46, { role: 'num', size: 30, weight: 800, color: C.red, align: 'center', alpha: ta });
   text('29.3 g', RP[0], RP[1] + 46, { role: 'num', size: 30, weight: 800, color: C.heroText, align: 'center', alpha: ta });
   text('Theseus', RP[0], RP[1] + 76, { role: 'label', size: 20, color: C.heroText, align: 'center', alpha: ta });
@@ -434,12 +462,13 @@ function b01_bigBattery(t, s0, box, o = {}) {
   const [x, y, w, h] = box, ta = o.textA == null ? 1 : o.textA;
   /* the clock runs from 0 to 200 h; the battery holds 80 */
   const hrs = 200 * clamp((t - s0 - 0.04) / 0.7), frac = clamp(1 - hrs / 80), dead = hrs >= 80;
-  /* left: the mouse, nose right, its battery lit and emptying with the gauge */
-  const V = msView('top'), sm = 2.55, mx = x + 150, my = y + h / 2;
+  /* left: the mouse (the kit's rival, its own 113 × 61 mm), nose right, its battery outlined red and emptying with the gauge */
+  const dims = o.dims || RV_DIMS, sm = 2.55, mx = x + 150, my = y + h / 2, kl = ep(t, s0, s0 + 0.3);
   part(mx, my, sm, () => {
-    mouseSimple('top', { lw: 2, hi: ['battery'], col: 'bad', lit: ep(t, s0, s0 + 0.3) });
-    const [bx, by, bw, bh] = MS_BATTERY;
-    G.save(); G.globalAlpha = PA * 0.6; G.fillStyle = C.red; rrPath(bx + 1.2, by + 1.2 + (bh - 2.4) * (1 - frac), bw - 2.4, (bh - 2.4) * frac, 1.2); G.fill(); G.restore();
+    mouseRival('top', { dims, lw: 2, show: ['battery'] });
+    const [bx, by, bw, bh] = b01_rvBatt(dims);
+    G.save(); G.globalAlpha = PA * 0.6; G.fillStyle = C.red; rrPath(bx + 1.2, by + 1.2 + (bh - 2.4) * (1 - frac), bw - 2.4, (bh - 2.4) * frac, 1.2); G.fill();
+    G.globalAlpha = PA * kl; G.strokeStyle = C.red; G.lineWidth = lw(2); rrPath(bx, by, bw, bh, 2); G.stroke(); G.restore();
   }, { rot: Math.PI / 2 });
   /* right: the battery, big, with the hours under it */
   const gx = x + 360, gy = y + 110, gw = 560, gh = 150;
@@ -456,18 +485,19 @@ function b01_bigBattery(t, s0, box, o = {}) {
 }
 function b01_bigOptical(t, s0, box, o = {}) {
   const [x, y, w, h] = box, ta = o.textA == null ? 1 : o.textA;
-  /* left: the mouse from above, nose right; its two optical switches fire their beams and draw current from the battery */
-  const sm = 3.3, mx = x + 230, my = y + h / 2 - 6, on = ep(t, s0 + 0.03, s0 + 0.16), eat = ep(t, s0 + 0.1, s0 + 0.7, E.io3);
-  const sw = [[-11, -34], [11, -34]];
+  /* left: the mouse from above (the kit's rival, its own 127.1 × 63.9 mm), nose right; its two optical switches, at the
+     rival's switch places and size, fire their beams and draw current from its battery */
+  const dims = o.dims || RV_DIMS, sm = 3.3, mx = x + 230, my = y + h / 2 - 6, on = ep(t, s0 + 0.03, s0 + 0.16), eat = ep(t, s0 + 0.1, s0 + 0.7, E.io3);
+  const sw = ['switchL', 'switchR'].map(n => rvAt('top', n, { dims })), [sa, sl] = b01_rvSw();
   part(mx, my, sm, () => {
-    mouseSimple('top', { lw: 2, hi: { triggers: 'bad' }, lit: on * 0.8, show: ['battery'] });
-    const [bx, by, bw] = MS_BATTERY, src = [bx + bw / 2, by];
+    mouseRival('top', { dims, lw: 2, show: ['battery'] });
+    const [bx, by, bw] = b01_rvBatt(dims), src = [bx + bw / 2, by];
     for (const p of sw) {
-      G.save(); G.globalAlpha = PA; G.fillStyle = C.panel; G.strokeStyle = C.red; G.lineWidth = lw(2.2); rrPath(p[0] - 4, p[1] - 3.2, 8, 6.4, 0.8); G.fill(); G.stroke();
+      G.save(); G.globalAlpha = PA; G.fillStyle = C.panel; G.strokeStyle = C.red; G.lineWidth = lw(2.2); rrPath(p[0] - sa / 2, p[1] - sl / 2, sa, sl, 0.8); G.fill(); G.stroke();
       /* the beam across the switch: its LED firing (dashes running from emitter to receiver) */
-      G.globalAlpha = PA * on; G.setLineDash([lw(5), lw(4)]); G.lineDashOffset = -(t - s0) * lw(60); G.lineWidth = lw(3); G.beginPath(); G.moveTo(p[0] - 3, p[1]); G.lineTo(p[0] + 3, p[1]); G.stroke();
+      G.globalAlpha = PA * on; G.setLineDash([lw(5), lw(4)]); G.lineDashOffset = -(t - s0) * lw(60); G.lineWidth = lw(3); G.beginPath(); G.moveTo(p[0] - sa / 2 + 0.8, p[1]); G.lineTo(p[0] + sa / 2 - 0.8, p[1]); G.stroke();
       /* the current, from the battery to the switch */
-      G.lineWidth = lw(2.2); G.setLineDash([lw(6), lw(6)]); G.lineDashOffset = -(t - s0) * lw(55); G.beginPath(); G.moveTo(src[0] + p[0] * 0.3, src[1]); G.lineTo(src[0] + p[0] * 0.3, p[1] + 9); G.lineTo(p[0], p[1] + 9); G.lineTo(p[0], p[1] + 3.2); G.stroke(); G.restore();
+      G.lineWidth = lw(2.2); G.setLineDash([lw(6), lw(6)]); G.lineDashOffset = -(t - s0) * lw(55); G.beginPath(); G.moveTo(src[0] + p[0] * 0.3, src[1]); G.lineTo(src[0] + p[0] * 0.3, p[1] + sl / 2 + 3); G.lineTo(p[0], p[1] + sl / 2 + 3); G.lineTo(p[0], p[1] + sl / 2); G.stroke(); G.restore();
     }
   }, { rot: Math.PI / 2 });
   /* name the switches on the drawing (the rotated frame: key plan (px, py) lands at (mx - py s, my + px s)) */
@@ -482,40 +512,42 @@ function b01_bigOptical(t, s0, box, o = {}) {
   text('to the switches', gx + gw - 10 - eatW / 2, gy + gh + 78, { role: 'label', size: 19, color: C.red, align: 'center', alpha: ta * eat });
 }
 function b01_bigFlex(t, s0, box, o = {}) {
-  const [x, y, w, h] = box, ta = o.textA == null ? 1 : o.textA;
-  /* the side view, nose right, big; a fingertip presses the top and the shell bows under it, a spring settling the bow */
-  const V = msView('right'), s = Math.min((w - 120) / V.box[2], (h - 70) / V.box[3]), cx = V.box[0] + V.box[2] / 2, ox = x + w / 2 - cx * s, oy = y + h - 20;
-  const d = 3.0 * spring(t, s0 + 0.06, { f: 2.4, z: 0.42 }), hump = MS_SIDE.reduce((b, p) => (p[1] > b[1] ? p : b), [0, 0]), zc = hump[0] - 4, sig = 17;
+  const [x, y, w, h] = box, ta = o.textA == null ? 1 : o.textA, dims = o.dims || RV_DIMS;
+  /* the side view (the kit's rival, its own 121.3 × 62 × 37 mm), nose right, big; a fingertip presses the top and the shell
+     bows under it, a spring settling the bow. TechPowerUp: "when applying pressure exactly at the top, the entire top contracts" */
+  const B = rvBox('right', null, { dims }), s = Math.min((w - 120) / B[2], (h - 70) / B[3]), ox = x + w / 2, oy = y + h - 20;
+  const top = b01_rvTop(mouseRival('right', { dims, alpha: 0 }).pts, dims[2], -48, 44, 0.53);
+  const d = 3.0 * spring(t, s0 + 0.06, { f: 2.4, z: 0.42 }), zc = rvAt('right', 'hump', { dims })[0] - 4, sig = 17;
   const bow = p => d * Math.exp(-Math.pow((p[0] - zc) / sig, 2));
   part(ox, oy, s, () => {
-    mouseSimple('right', { lw: 2, lineA: 1 });
+    mouseRival('right', { dims, lw: 2 });
     /* the bowed stretch of the top, coloured by how hard it bends (red at the peak) */
-    const pts = MS_SIDE.filter(p => p[1] > 20 && p[0] > -48 && p[0] < 44).sort((p, q) => p[0] - q[0]);
-    for (let i = 1; i < pts.length; i++) {
-      const a0 = pts[i - 1], a1 = pts[i], k = (bow(a0) + bow(a1)) / 2 / 3.0;
-      G.save(); G.globalAlpha = PA; G.strokeStyle = heatCol(k); G.lineWidth = lw(4); G.lineCap = 'round'; G.beginPath(); G.moveTo(a0[0], -(a0[1] - bow(a0))); G.lineTo(a1[0], -(a1[1] - bow(a1))); G.stroke(); G.restore();
+    for (let i = 1; i < top.length; i++) {
+      const a0 = top[i - 1], a1 = top[i], k = (bow(a0) + bow(a1)) / 2 / 3.0;
+      G.save(); G.globalAlpha = PA; G.strokeStyle = heatCol(k); G.lineWidth = lw(4); G.lineCap = 'round'; G.beginPath(); G.moveTo(a0[0], a0[1] + bow(a0)); G.lineTo(a1[0], a1[1] + bow(a1)); G.stroke(); G.restore();
     }
     /* creaks: two short ticks where the bow ends meet the stiff wall, at the peak of the press */
     const ck = clamp(d / 3.0) * ep(t, s0 + 0.22, s0 + 0.36) * (1 - ep(t, s0 + 0.62, s0 + 0.74));
-    for (const zz of [zc - 30, zc + 30]) { const p = MS_SIDE.reduce((b, q) => (Math.abs(q[0] - zz) < Math.abs(b[0] - zz) && q[1] > 20 ? q : b), [99, 0]); G.save(); G.globalAlpha = PA * ck; G.strokeStyle = C.red; G.lineWidth = lw(2.4); for (const r of [3, 5.5]) { G.beginPath(); G.arc(p[0], -p[1], r, -Math.PI * 0.95, -Math.PI * 0.05); G.stroke(); } G.restore(); }
+    for (const zz of [zc - 30, zc + 30]) { const yz = b01_rvTopAt(top, zz); G.save(); G.globalAlpha = PA * ck; G.strokeStyle = C.red; G.lineWidth = lw(2.4); for (const r of [3, 5.5]) { G.beginPath(); G.arc(zz, yz, r, -Math.PI * 0.95, -Math.PI * 0.05); G.stroke(); } G.restore(); }
   });
-  const pz = [ox + zc * s, oy - (hump[1] - d) * s];
+  const pz = [ox + zc * s, oy + (b01_rvTopAt(top, zc) + d) * s];
   finger(pz[0], pz[1], 2.15, { s: s * 0.7, press: clamp(d / 3.0), len: 34 });
-  text('A firm press', pz[0] + 150, pz[1] - 120, { role: 'label', size: 21, color: C.ink2, alpha: ta * ep(t, s0 + 0.1, s0 + 0.3) });
+  text('Pressed at the top', pz[0] + 150, pz[1] - 120, { role: 'label', size: 21, color: C.ink2, alpha: ta * ep(t, s0 + 0.1, s0 + 0.3) });
   text('Bend drawn larger than life', x + w, y + h + 22, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ta * 0.9 });
 }
 function b01_bigHalf(t, s0, box, o = {}) {
   const [x, y, w, h] = box, ta = o.textA == null ? 1 : o.textA;
-  /* the X2 from above, nose right; a cut runs across it at 87.5 mm and its back half comes away and dissolves */
-  const s = Math.min((w - 120) / 120, (h - 80) / B01_X2F.W), full = b01_outline(B01_X2_HALF), cut = b01_outline(B01_X2_HALF, B01_X2F.cut, B01_X2F.r);
+  /* the X2 from above, nose right; a cut runs across it at 87.5 mm and its back half comes away and dissolves. Its own traced
+     outline (the cut shape is the point), in the rival grey every other flagship wears (FILM F9) */
+  const s = Math.min((w - 120) / 120, (h - 80) / B01_X2F.W), full = b01_outline(B01_X2_HALF), cut = b01_outline(B01_X2_HALF, B01_X2F.cut, B01_X2F.r), rc = b01_rvCol();
   const ox = x + w / 2 + 60 * s + 30, oy = y + h / 2 - 10, kc = ep(t, s0 + 0.02, s0 + 0.26, E.cam), kk = ep(t, s0 + 0.26, s0 + 0.72, E.snap);
   part(ox, oy, s, () => {
     /* the back half: solid until the cut has run, then sliding back, fading to a dashed red ghost */
     G.save(); G.translate(0, kk * 14); G.beginPath(); G.rect(-40, B01_X2F.cut, 80, 40); G.clip();
-    if (kk < 0.03) { G.globalAlpha = PA; G.fillStyle = C.panel; G.fill(full.path); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2); G.stroke(full.path); }
+    if (kk < 0.03) { G.globalAlpha = PA; G.fillStyle = rc.body; G.fill(full.path); G.strokeStyle = rc.out; G.lineWidth = lw(2); G.stroke(full.path); }
     else { G.globalAlpha = PA * lerp(1, 0.6, kk); G.setLineDash([lw(6), lw(5)]); G.strokeStyle = C.red; G.lineWidth = lw(2.2); G.stroke(full.path); }
     G.restore();
-    G.save(); G.globalAlpha = PA; G.fillStyle = C.panel; G.fill(cut.path); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2.2); G.stroke(cut.path); G.restore();
+    G.save(); G.globalAlpha = PA; G.fillStyle = rc.body; G.fill(cut.path); G.strokeStyle = rc.out; G.lineWidth = lw(2); G.stroke(cut.path); G.restore();
     if (kc > 0) { G.save(); G.globalAlpha = PA; G.strokeStyle = C.red; G.lineWidth = lw(4); G.beginPath(); G.moveTo(-B01_X2F.W / 2 - 6, B01_X2F.cut); G.lineTo(-B01_X2F.W / 2 - 6 + (B01_X2F.W + 12) * kc, B01_X2F.cut); G.stroke(); G.restore(); }
   }, { rot: Math.PI / 2 });
   /* its length, against the whole mouse's */
@@ -525,10 +557,11 @@ function b01_bigHalf(t, s0, box, o = {}) {
 }
 function b01_bigWire(t, s0, box, o = {}) {
   const [x, y, w, h] = box;
-  /* from above, nose right; a cable runs out of the nose, snaking as it pays out, to the edge of the stage: tied to the PC */
-  const V = msView('top'), sm = 3.2, mx = x + 270, my = y + h / 2 - 10, k = ep(t, s0 + 0.04, s0 + 0.7, E.out3);
-  part(mx, my, sm, () => mouseSimple('top', { lw: 2 }), { rot: Math.PI / 2 });
-  const nx = mx + (-KEY.nose * MS_K.y) * sm, ny = my, xe = x + w + 40, pts = [];
+  /* from above (the kit's rival, its own 116.8 × 63 mm), nose right; a cable runs out of its nose, snaking as it pays out, to
+     the edge of the stage: tied to the PC. The rotated frame: (px, py) mm lands at (mx - py sm, my + px sm) */
+  const dims = o.dims || RV_DIMS, sm = 3.2, mx = x + 270, my = y + h / 2 - 10, k = ep(t, s0 + 0.04, s0 + 0.7, E.out3), ca = rvAt('top', 'cable', { dims });
+  part(mx, my, sm, () => mouseRival('top', { dims, lw: 2 }), { rot: Math.PI / 2 });
+  const nx = mx - ca[1] * sm, ny = my + ca[0] * sm, xe = x + w + 40, pts = [];
   for (let i = 0; i <= 60; i++) { const u = i / 60, xx = lerp(nx, xe, u), amp = 46 * Math.sin(u * Math.PI) * (1 - 0.6 * u), yy = ny + amp * Math.sin(u * TAU * 1.25 - 0.4) * (1 - 0.35 * k); pts.push([xx, yy]); }
   poly(pts, { color: C.red, w: 6, p: k, cap: 'round' });
   rr(nx - 6, ny - 9, 16, 18, 4, C.red);
@@ -549,7 +582,7 @@ function b01_ledgerList(t, o = {}) {
     const y = b01_rowY(i), tf = o.rowT ? o.rowT(i) : -1, kf = ep(t, tf, tf + 0.3), ki = ep(t, tf + 0.1, tf + 0.35);
     line(x, y, r, y, { color: C.hair, w: 1.2, alpha: a0 });
     if (kf <= 0.003) return;
-    b01_tradeIcon(t, -10, tr.icon, [x, y + 9, Lt.icon[0], Lt.icon[1]], { a: ki });
+    b01_tradeIcon(t, -10, tr.icon, [x, y + 9, Lt.icon[0], Lt.icon[1]], { a: ki, dims: b01_dims(tr.id) });
     const nx = x + Lt.icon[0] + 22;
     text(tr.name, nx, y + 34, { role: 'h3', size: 26, weight: 750, color: C.ink, alpha: kf, sentence: false });
     text(tr.small, nx, y + 63, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kf, sentence: false, maxW: r - nx - 150 });
@@ -620,26 +653,28 @@ S({
   replaces: ['flagships', 'thesis'],
   src: ['b01X3', 'b01X3Psn', 'b01X3Pcg', 'b01TpuHtsU', 'b01GwHtsU', 'b01Optical', 'clk_d2fp', 'ntrTpuV4', 'b01RtUlx', 'rtingsUlx', 'b01X2f', 'b01X2fWt', 'x2fCrazy', 'b01X2Trace', 'exXbabWeight', 'ntrStores', 'ntrRazerV4', 'nbcUlx', 'exRtings'],
   answers: [
-    ['flagships: "need to derive all empty data"', 'No blanks left: each flagship shows the one thing it trades, and every one has its figure, sourced (Logitech, TechPowerUp, RTINGS, Pulsar, XBAB) or derived and marked so (the Viper V4 Pro\'s 13.6 %, worked from Omron\'s optical pulse and its own battery). The other numbers sit in each row\'s small print, none blank'],
+    ['flagships: "need to derive all empty data"', 'No blanks left: each flagship shows the one thing it trades, and every one has its figure, sourced (Logitech, TechPowerUp, RTINGS, Pulsar, XBAB) or derived and marked so (the Viper V4 Pro\'s 13.6 %, worked from Logitech\'s own optical and hybrid hours for the G Pro X Superlight 2, on the V4 Pro\'s battery). The other numbers sit in each row\'s small print, none blank'],
     ['flagships: "it bothers me when one number has more decimal places than others"', 'One precision per kind: every weight to 0.1 g (59.0, 31.0, 38.0, 29.0, 24.9, and Theseus 29.3), hours whole, the optical share to 0.1 % (13.6 %, rounded down, never up)'],
     ['flagships: "superstrike x3 is more of a flagship than gpx2"', 'The GPX2 is gone; Logitech\'s flagship is the Pro X3 Superstrike (launched 2026-09-23): its 59.0 g tips a balance against a 29.3 g mouse'],
     ['thesis: "all of these numbers feel very random"', 'The eight specimen tiles are gone. Every number here belongs to a named flagship\'s trade, with its source in the foot line'],
     ['thesis: "the message is good but you can add it to the slide about other companies misadvertising weights"', 'Done: b01_listed (Listed against weighed) carries it ("the weight on the card is the scale\'s"); here it closes the slide in one line, "Optimization over opinion: measure every trade, then design it out"'],
     ['F18.4 (keep price charted)', 'Each flagship\'s price stands in its row\'s small print, and price against weight is charted on b01_price, with the Viper Mini Signature Edition, the Zaunkoenig M3K and the X3 Superstrike added'],
-    ['F33.7 (zero compromises; highlight the compromises other flagships make)', 'The film\'s problem slide: six flagships, each shown big while its compromise happens to it (weight, battery, battery to optical clicks, strength, the shape, wireless), each landing in the ledger in red; Theseus lands whole and gives up nothing. The close answers the same six rows']
+    ['F33.7 (zero compromises; highlight the compromises other flagships make)', 'The film\'s problem slide: six flagships, each shown big while its compromise happens to it (weight, battery, battery to optical clicks, strength, the shape, wireless), each landing in the ledger in red; Theseus lands whole and gives up nothing; the six then fold into the film\'s eight-chapter ledger, which the close answers row by row'],
+    ['FILM F9 / kit (rivals drawn as Theseus)', 'Every flagship is drawn as the kit\'s neutral rival mouse, grey, at its own sourced size (EloShapes\' makers\' figures), its fault drawn on it in red (the battery, the switches, the bowed top, the cable); the X2F keeps its own traced outline, also grey. Only Theseus is the simplified mouse, in blue'],
+    ['BROADCAST-0945 #3 (never "a firm press")', 'The fingertip on the UltralightX is labelled "Pressed at the top", TechPowerUp\'s own finding ("when applying pressure exactly at the top, the entire top contracts"); no force is claimed']
   ],
   draw: t => {
     header(t, 'Every flagship compromises');
     captions(t, [[0.3, 'Six flagships, six trades: each one gives something up to win something else.'],
       [6.1, 'Theseus gives up nothing. Optimization over opinion: measure every trade, then design it out.'],
-      [7.4, 'Eight chapters, eight compromises: each trade lands in its chapter, and three more that most mice make.']]);
+      [7.7, 'Eight chapters, eight compromises: each trade lands in its chapter, and three more that most mice make.']]);
     const SB = B01_STAGE.box, n = B01_TRADES.length, Lt = B01_STAGE.list, tT = b01_beatT(n) + 0.05;
     /* the stage: the beat in play, big; as it ends it flies into its row */
     B01_TRADES.forEach((tr, i) => {
       const s0 = b01_beatT(i), end = b01_beatT(i + 1), kin = ep(t, s0 - 0.22, s0 + 0.04), kout = ep(t, end - 0.26, end);
       if (t < s0 - 0.22 || kout >= 1) return;
       const row = [Lt.x, b01_rowY(i) + 9, Lt.icon[0], Lt.icon[1]], ta = 1 - clamp(kout * 3);
-      b01_fly(kout, SB, row, () => { G.globalAlpha = 1; B01_BIG[tr.icon](t, s0, SB, { textA: ta * kin }); });
+      b01_fly(kout, SB, row, () => { G.globalAlpha = 1; B01_BIG[tr.icon](t, s0, SB, { textA: ta * kin, dims: b01_dims(tr.id) }); });
       /* the beat's words: maker and name over the drawing, what it gives up under it, in red */
       const kw = kin * (1 - ep(t, end - 0.38, end - 0.22));
       text(tr.brand, LM, 312, { role: 'label', size: 22, color: C.mute, alpha: kw });
@@ -657,6 +692,8 @@ S({
       const kG = kT * (1 - ep(t, B01_STAGE.fold - 0.3, B01_STAGE.fold));
       text('Gives up', LM, 813, { role: 'label', size: 22, color: C.heroText, alpha: kG });
       text('Nothing', LM - 3, 903, { role: 'd1', size: 88, weight: 800, track: -0.02, color: C.heroText, grad: C.heroGrad, alpha: kG, rise: [tT + 0.12, 0.6], t });
+      /* no figure reads as a measurement it isn't (integrator, the cover's rule): Theseus's answers are its targets */
+      text('Theseus\'s targets', 560, 398, { role: 'label', size: 19, color: C.mute, alpha: ep(t, tT + 0.35, tT + 0.7) });
       [['Weight', '29.3 g'], ['Battery life at 1 khz', THESEUS.hours + ' h'], ['Spent on clicks', b01_mechPct()], ['Strength', 'Solid, arched'], ['The shape', 'Full, 119.3 mm'], ['Wireless', 'Dual 8khz wired and wireless']].forEach(([wd, v], j) => {
         const yy = 436 + j * 60, kj = ep(t, tT + 0.4 + j * 0.07, tT + 0.75 + j * 0.07);
         if (j) line(560, yy - 40, 1110, yy - 40, { color: C.hair, w: 1, alpha: kj });
@@ -716,12 +753,13 @@ S({
     ['F33.5 (an important idea, vastly improved)', 'A classroom demonstration, then the same physics on two named mice with the same push, the time each adds running on a bar, and the verdict, in place of three lanes of pucks'],
     ['F33.7 (a higher skill ceiling as a selling point)', 'The payoff line: the same hands, finer control, a higher skill ceiling'],
     ['Integrator: the headline must hold exactly as printed (the hand weighs far more than the mouse)', 'Scoped to where it is exact: every time grows with all the moving mass (k × (fingers + mouse)), so the slide claims the mouse\'s own part, k × mouse, which halves whatever the fingers weigh: the lanes, the time bars and the verdict say "the time the mouse itself adds", the caption names the arm\'s and the fingers\' parts, and the 70 ms shot is gone (it held only with no finger mass)'],
-    ['M-b01-1 (finger mass: the headline holds only if nothing but the mouse moves)', 'Fixed by claiming the mouse\'s additive part, exact for any finger mass; the m_eff ratio (about 40 % sooner with 10 to 20 g of fingertip) waits for Q2\'s finger-segment masses'],
+    ['M-b01-1 (finger mass: the headline holds only if nothing but the mouse moves)', 'Fixed by claiming the mouse\'s additive part, exact for any finger mass; with Q2\'s finger masses in (Mirakhorlo 2016), the slide adds the honest floor for a real hand: up to 45 g of fingertip moving too, at least 28 % less, derived'],
     ['M-b01-2 (say no pad friction and the constant push)', 'The foot line says both: 0.54 N, a GT01 click, and no pad friction'],
     ['R-b01-8 (headline what does not depend on the assumptions)', 'The verdict\'s label now names its conditions (0.5 m/s and 0.54 N) and its net, −50 %, is the part fixed by the masses; beside it the honest floor for a player\'s hand: with up to 45 g of fingertip moving too (Mirakhorlo 2016, derived), at least 28 % less time'],
     ['R-b01-9 (the shot\'s 70 ms is picked)', 'Removed: no shot at a chosen time'],
     ['R-b01-10 (dim the classroom once the flick starts)', 'The classroom panel dims to half as the mouse lanes start'],
-    ['M-b01-3 (don\'t imply studies show lighter aims better)', 'Nothing on the slide cites a study of aim; it is a physics argument from F = m · a only']
+    ['M-b01-3 (don\'t imply studies show lighter aims better)', 'Nothing on the slide cites a study of aim; it is a physics argument from F = m · a only'],
+    ['FILM F9 / kit (rivals drawn as Theseus)', 'The Pro X3 Superstrike\'s lane is the kit\'s rival mouse at its own 125 × 63.5 × 40 mm, in the yellow of the one rival this slide names; Theseus is the simplified mouse, in blue']
   ],
   draw: t => {
     header(t, 'Why lighter wins');
@@ -753,7 +791,11 @@ S({
        Every time here grows with all the mass that moves (k × (fingers + mouse)), so the mouse's part, k × mouse, is its own
        and halves whatever the fingers weigh (M-b01-1): the lanes and the verdict claim only that part ---- */
     const lanes = [{ m: B01_LT.mR, name: 'Pro X3 Superstrike, 59.0 g', col: C.secondText, bar: C.second, y: 292 }, { m: THESEUS.mass / 1000, name: 'Theseus, 29.3 g', col: C.heroText, bar: C.hero, y: 500, hero: true }];
-    const tF = B01_LT.tF, SL = B01_LT.slow, xt = 1110, sD = 1.6, sM = 8, V = msView('right');
+    const tF = B01_LT.tF, SL = B01_LT.slow, xt = 1110, sD = 1.6, sM = 8;
+    /* each lane's mouse, side view, nose right, about its length's middle at x = 0 in both frames: Theseus the simplified mouse; the X3 the
+       kit's rival at its own 125 × 63.5 × 40 mm, in the yellow of the one rival this slide names and beats (FILM F9, F35.1) */
+    const dX3 = b01_dims('logitech-x3'), laneBox = L => L.hero ? msView('right').box : rvBox('right', null, { dims: dX3 });
+    const laneMouse = (L, o) => L.hero ? mouseSimple('right', Object.assign({ hi: ['shell'], col: 'hero', lit: 0.6 }, o)) : mouseRival('right', Object.assign({ dims: dX3, col: 'rival' }, o));
     text('The mouse\'s own part, slowed 20×: the same 0.54 N push on each', 840, 300, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 1000 });
     /* the time bars: 0 to 150 ms of real time since the mouse crossed its target */
     const BX = 1470, BW = 370, msX = ms => BX + BW * Math.min(ms, 150) / 150;
@@ -765,13 +807,13 @@ S({
       if (!j) text('Target', xt + 10, L.y + 94, { role: 'label', size: 21, color: C.mute });
       /* the sensor's path: a tick every 10 ms of the real flick, and a dashed ghost where it stopped */
       for (let g = -0.02; g < tau - 0.004; g += 0.01) { const xg = xt + b01_flickP(L.m, g) * sM; line(xg, yT + 4, xg, yT + 14, { color: L.hero ? C.hero : C.ink2, w: 2, alpha: 0.75 }); }
-      if (tau > I.ts) { const xs = xt + I.d * sM; part(xs, yT - 1, sD, () => mouseSimple('right', { lw: 1.4, lineA: 0.45, fill: 'rgba(0,0,0,0)' }), { alpha: 0.8 });
+      if (tau > I.ts) { const xs = xt + I.d * sM; part(xs, yT - 1, sD, () => L.hero ? mouseSimple('right', { lw: 1.4, lineA: 0.45, fill: 'rgba(0,0,0,0)' }) : mouseRival('right', { dims: dX3, col: 'rival', lw: 1.4, lineA: 0.45, fill: 'rgba(0,0,0,0)', hide: ['wheel', 'skates'] }), { alpha: 0.8 });
         text(fmtN(I.d, 1) + ' mm past', xs, yT + 40, { role: 'label', size: 19, color: L.hero ? C.heroText : C.mute, align: 'center', alpha: ep(t, tF + I.ts * SL, tF + I.ts * SL + 0.3) }); }
       const xm = xt + p * sM;
-      part(xm, yT - 1, sD, () => mouseSimple('right', { lw: 2, hi: L.hero ? ['shell'] : [], col: 'hero', lit: L.hero ? 0.6 : 0 }));
+      part(xm, yT - 1, sD, () => laneMouse(L, { lw: 2 }));
       /* the push: back while it brakes and heads home, forward as it eases onto the target */
-      const dir = b01_flickPush(L.m, tau);
-      if (dir) { const tip = dir < 0 ? xm + (V.box[0] + V.box[2]) * sD : xm + V.box[0] * sD; const fx = tip + (dir < 0 ? 4 : -4), fl = 56; forceArrow(fx, yT - 34, dir < 0 ? Math.PI : 0, fl, { k: 1, color: L.hero ? C.hero : C.ink }); text(fmtN(B01_LT.F, 2) + ' N', fx + (dir < 0 ? fl / 2 : -fl / 2), yT - 50, { role: 'num', size: 22, weight: 750, color: L.hero ? C.heroText : C.ink, align: 'center' }); }
+      const dir = b01_flickPush(L.m, tau), VB = laneBox(L);
+      if (dir) { const tip = dir < 0 ? xm + (VB[0] + VB[2]) * sD : xm + VB[0] * sD; const fx = tip + (dir < 0 ? 4 : -4), fl = 56; forceArrow(fx, yT - 34, dir < 0 ? Math.PI : 0, fl, { k: 1, color: L.hero ? C.hero : C.ink }); text(fmtN(B01_LT.F, 2) + ' N', fx + (dir < 0 ? fl / 2 : -fl / 2), yT - 50, { role: 'num', size: 22, weight: 750, color: L.hero ? C.heroText : C.ink, align: 'center' }); }
       /* the time it adds, in real milliseconds: the bar runs while the mouse is off its target and stops when it is back */
       const by = L.y + 150, msNow = Math.max(0, Math.min(tau, I.total) * 1000), back = tau >= I.total, kb = ep(t, tF + I.total * SL, tF + I.total * SL + 0.3);
       if (!j) text('Time the mouse adds, ms', BX, L.y + 52, { role: 'label', size: 20, color: C.mute });
@@ -801,7 +843,7 @@ S({
    missing weights or derive". The argument, demonstrated: every wireless mouse that lists hours at 1 khz, by weight, and
    the frontier of the most hours listed at each weight. The pointer drags a mouse lighter along that frontier, from the
    Viper V4 Pro (48.9 g, 306 mAh, 180 h) to the G-Wolves HTX Mini 8K (26.9 g, 250 mAh, 80 h); on the right its battery,
-   drawn to scale by capacity inside the film's mouse, shrinks as the hours fall (cause on screen, M2). The lightest list
+   drawn to scale by capacity inside it (the kit's rival mouse, sized from one end's dims to the other's), shrinks as the hours fall (cause on screen, M2). The lightest list
    80 h, or none: five light mice list no hours and are shown with their batteries (210 to 300 mAh). Then Theseus at
    29.3 g carries a battery bigger than the Viper's (370 mAh) and leaves the frontier for 200 h.
    Not plotted: hours derived for rivals. A mouse's draw is its own (G-Wolves's 250 mAh lists 80 h; at the V4 Pro's draw it
@@ -819,23 +861,26 @@ function b01_btData() {
 }
 /** a battery drawn to scale by capacity in the top view's mm (the example pouch, 35 × 25 mm at 4 mm thick, holds 370 mAh;
    c mAh at the same thickness keeps its shape and scales its area by c / 370), centred where the key plan puts it */
-function b01_battRect(c) { const B = KEY_PARTS.battery, k = Math.sqrt(c / 370), cx = (B.x + B.w / 2) * MS_K.x, cy = (B.y + B.h / 2) * MS_K.y, w = B.w * k * MS_K.x, h = B.h * k * MS_K.y; return [cx - w / 2, cy - h / 2, w, h]; }
+function b01_battRect(c, at) { const B = KEY_PARTS.battery, k = Math.sqrt(c / 370), [cx, cy] = at || b01_battC(), w = B.w * k * MS_K.x, h = B.h * k * MS_K.y; return [cx - w / 2, cy - h / 2, w, h]; }
+/** where Theseus keeps its battery in the top view (mm): the key plan's place (KEY_PARTS, so H2's move reaches it) */
+function b01_battC() { const B = KEY_PARTS.battery; return [(B.x + B.w / 2) * MS_K.x, (B.y + B.h / 2) * MS_K.y]; }
 S({
   id: 'b01_battery', ch: 'intro', theme: 'paper', title: 'Battery life, traded for weight', settle: 11, ideas: ['battery', 'weight'],
   replaces: ['market'],
   src: ['exRtings', 'b01TpuHtsU', 'b01GwHtsU', 'b01Gw', 'exNbcV4', 'razerBatt', 'ntrKeychron', 'ntrDaV4', 'ntrXiaomi', 'ntrGpx2', 'ntrGpx2c', 'logiSuperstrike', 'ntrZowie', 'b01X3', 'b01X2f', 'b01TpuUlx', 'b01SlxBatt', 'ntrJauch'],
   answers: [
     ['market: "we need to make a bigger argument here how most mice compromise battery life for weight"', 'Demonstrated instead of plotted: the pointer drags a mouse lighter along the frontier of every mouse that lists hours, from the Viper V4 Pro (48.9 g, 180 h) to the HTX Mini 8K (26.9 g, 80 h), and its battery, drawn to scale inside it, shrinks from 306 to 250 mAh as the hours fall; the five lightest that list no hours appear with their batteries (210 to 300 mAh); then Theseus at 29.3 g carries 370 mAh, more than the Viper, and leaves the frontier for 200 h'],
-    ['market: "research harder to find missing weights or derive"', 'Twelve mice with listed hours and weights (scale weights where weighed), five more found with weights and batteries but no hours. Derived: Theseus\'s hours, from its battery at the Viper V4 Pro\'s draw (said in the foot line). Not derived for rivals: each mouse\'s draw is its own (G-Wolves\'s 250 mAh lists 80 h, where the V4 Pro\'s draw would give 141 h), so their batteries are shown instead of guessed hours'],
-    ['F33.5 (an important idea, vastly improved)', 'One causal demonstration: weight down, battery smaller, hours down, then the answer off the curve, with the verdict 80 → 200 h and what it means at 6 h a day'],
+    ['market: "research harder to find missing weights or derive"', 'Twelve mice with listed hours and weights (scale weights where weighed), five more found with weights and batteries but no hours. Derived, all on one basis: every known battery at the Viper V4 Pro\'s draw, drawn as rings that rise to their hours (X2F 118 h, the 250 mAh mice 141 h, the Beast X 169 h), and Theseus\'s 370 mAh at the same draw, 200 h; the legend says "Battery at the same draw" and the foot line says how (an estimate at the V4 Pro\'s draw, never a bound)'],
+    ['F33.5 (an important idea, vastly improved)', 'One causal demonstration: weight down, battery smaller, hours down, then the answer off the curve, with the verdict on one basis, 141 → 200 h (under 32 g, the same draw), and what it means at 6 h a day'],
     ['R-b01-4 (hours need their polling rate)', 'Every hour figure on the slide is at 1 khz and the axis says so'],
-    ['F27 (one precision per column) and F2.32', 'Weights to 0.1 g, hours whole, capacities in whole mAh; Theseus 29.3 g like the rest']
+    ['F27 (one precision per column) and F2.32', 'Weights to 0.1 g, hours whole, capacities in whole mAh; Theseus 29.3 g like the rest'],
+    ['FILM F9 / kit (rivals drawn as Theseus)', 'Along the frontier the mouse on the right is the kit\'s rival mouse, sized from the Viper V4 Pro (127.1 × 63.9 mm) to the HTX Mini 8K (109 × 60 mm) as it is dragged; Theseus\'s simplified mouse takes its place only when Theseus lands, its battery moving to where Theseus keeps it']
   ],
   draw: t => {
     header(t, 'Battery life, traded for weight');
     captions(t, [[0.3, 'Every wireless mouse that lists its battery life at 1 khz, by weight. The lighter it gets, the fewer the hours.'],
-      [4.4, 'Going lighter, the battery shrinks and the hours go: the lightest list 80 hours, or none at all.'],
-      [5.4, 'Give every light mouse the same draw: their batteries last 118 to 169 hours. Theseus\'s 370 mAh, 200.']]);
+      [4.0, 'Going lighter, the battery shrinks and the hours go: the lightest list 80 hours, or none.'],
+      [5.6, 'Give every light mouse the same draw: their batteries last 118 to 169 hours. Theseus\'s 370 mAh, 200.']]);
     const D = b01_btData(), T = B01_BT, x0 = 190, y0 = 300, w = 820, h = 470;
     const m = axes(t, { t0: -1, x: x0, y: y0, w, h, xr: [20, 64], yr: [0, 220], xticks: [20, 30, 40, 50, 60], yticks: [0, 50, 100, 150, 200], xfmt: v => v + ' g', yfmt: v => v + ' h', ylabel: 'Battery life at 1 khz' });
     text('Weight', x0 + w + 18, y0 + h + 34, { role: 'label', size: 21, color: C.mute });
@@ -885,20 +930,25 @@ S({
       heroMark(m.X(gT), m.Y(hNow), 12, kT);
       text('Theseus, 29.3 g, ' + fmtN(hNow, 0) + ' h', m.X(gT), m.Y(hNow) - 24, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: kT });
     }
-    /* the mouse on the right, its battery drawn to scale by capacity */
+    /* the mouse on the right, its battery drawn to scale by capacity. Along the frontier it is a rival (the kit's rival
+       mouse, grey: FILM F9), sized from the Viper V4 Pro's 127.1 × 63.9 mm at the start to the HTX Mini 8K's 109 × 60 mm at
+       the end; Theseus (the simplified mouse) takes its place as it lands, and the battery moves to where Theseus keeps it */
     const rival = D.hi.mAh + (D.lo.mAh - D.hi.mAh) * (D.hi.g - g) / (D.hi.g - D.lo.g), cap = lerp(rival, 370, E.out3(prog(t, T.ths + 0.1, T.ths + 0.9)));
     const V = msView('top'), sc = 3.5, mcx = 1385, mcy = 575, ox = mcx - (V.box[0] + V.box[2] / 2) * sc, oy = mcy - (V.box[1] + V.box[3] / 2) * sc;
+    const dR = b01_dimsLerp(b01_dims(D.hi.id), b01_dims(D.lo.id), kd), cR = rvAt('top', 'battery', { dims: dR }), cT = b01_battC();
+    const bAt = [lerp(cR[0], cT[0], kT), lerp(cR[1], cT[1], kT)];
     part(ox, oy, sc, () => {
-      mouseSimple('top', { lw: 2.2, hi: kT > 0 ? ['shell'] : [], col: 'hero', lit: kT * 0.75 });
-      const [bx, by, bw, bh] = b01_battRect(cap), heroB = kT > 0.5;
+      if (kT < 1) mouseRival('top', { dims: dR, lw: 2.2, alpha: 1 - kT });
+      if (kT > 0) mouseSimple('top', { lw: 2.2, hi: ['shell'], col: 'hero', lit: kT * 0.75, alpha: kT });
+      const [bx, by, bw, bh] = b01_battRect(cap, bAt), heroB = kT > 0.5;
       G.save(); G.globalAlpha = PA; rrPath(bx, by, bw, bh, 1.6); G.fillStyle = heroB ? 'rgba(10,132,255,0.22)' : inkA(TH ? 0.12 : 0.2); G.fill(); G.lineWidth = lw(2.2); G.strokeStyle = heroB ? C.hero : C.ink; G.stroke();
-      if (kT > 0) { const [gx, gy, gw, gh] = b01_battRect(D.lo.mAh); G.globalAlpha = PA * kT; G.setLineDash([lw(5), lw(4)]); G.lineWidth = lw(1.6); G.strokeStyle = C.ink2; rrPath(gx, gy, gw, gh, 1.6); G.stroke(); }
+      if (kT > 0) { const [gx, gy, gw, gh] = b01_battRect(D.lo.mAh, cT); G.globalAlpha = PA * kT; G.setLineDash([lw(5), lw(4)]); G.lineWidth = lw(1.6); G.strokeStyle = C.ink2; rrPath(gx, gy, gw, gh, 1.6); G.stroke(); }
       G.restore();
     });
-    { const [bx, by, bw, bh] = b01_battRect(cap); text(fmtN(cap, 0) + ' mAh', ox + (bx + bw / 2) * sc, oy + (by + bh / 2) * sc + 7, { role: 'num', size: 20, weight: 750, color: kT > 0.5 ? C.heroText : (onEnd ? C.ink : C.mute), align: 'center' }); }
+    { const [bx, by, bw, bh] = b01_battRect(cap, bAt); text(fmtN(cap, 0) + ' mAh', ox + (bx + bw / 2) * sc, oy + (by + bh / 2) * sc + 7, { role: 'num', size: 20, weight: 750, color: kT > 0.5 ? C.heroText : (onEnd ? C.ink : C.mute), align: 'center' }); }
     /* the readouts: whose mouse, its weight, its battery life */
     const RX = 1590, who = kT > 0.5 ? ['Nitrite Labs', 'Theseus'] : t < T.d0 + 0.05 ? ['Razer', 'Viper V4 Pro'] : t > T.d1 - 0.05 ? ['G-Wolves', 'HTX Mini 8K'] : ['Along the frontier', 'No product here'];
-    const ink = kT > 0.5 ? C.heroText : onEnd ? C.ink : C.mute, gNow = lerp(g, gT, E.out3(prog(t, T.ths, T.ths + 0.6))), hShow = kT > 0 ? lerp(D.lo.h, THESEUS.hours, kR) : hrs;
+    const ink = kT > 0.5 ? C.heroText : onEnd ? C.ink : C.mute, gNow = lerp(g, gT, E.out3(prog(t, T.ths + 0.2, T.ths + 0.8))), hShow = kT > 0 ? lerp(D.lo.h, THESEUS.hours, kR) : hrs;
     text(who[0], RX, 360, { role: 'label', size: 20, color: kT > 0.5 ? C.heroText : C.mute });
     text(who[1], RX, 398, { role: 'h3', size: 30, weight: 750, color: ink, sentence: false });
     text('Weight', RX, 456, { role: 'label', size: 20, color: C.mute });
@@ -1054,7 +1104,7 @@ S({
       text(fmtN(l, 1) + ' × ' + fmtN(w, 1) + ' × ' + fmtN(hh, 1) + ' mm = ' + fmtN(v, 1) + ' cm³', RX, y + 44, { role: 'small', size: 25, weight: 650, color: C.ink2, alpha: k1, sentence: false });
       rich([{ s: g + ' g ÷ ' + fmtN(v, 1) + ' cm³ =', role: 'small', size: 25, weight: 650, color: C.ink2, sentence: false }, { s: b01_rhoTxt(r, ths), role: 'num', size: 40, weight: 800, color: col, gap: 12 }, { s: 'g/cm³', role: 'small', size: 22, weight: 700, color: C.mute, gap: 8, sentence: false }], RX, y + 100, { alpha: k2 });
     });
-    verdict(t, T.verdict, RX, 930, { from: b01_rhoTxt(r2, false), to: b01_rhoTxt(r3, true), unit: 'g/cm³', dec: 3, size: 84, label: 'Density', better: 'lower', maxW: 520 });
+    verdict(t, T.verdict, RX, 930, { from: b01_rhoTxt(r2, false), to: b01_rhoTxt(r3, true), unit: 'g/cm³', dec: 3, size: 84, label: 'Density', better: 'lower', maxW: RM - RX });
     { const k = ep(t, T.line, T.line + 0.5); text('A whole mouse under your palm, at a cut-down mouse\'s weight.', LM, 900, { role: 'h3', size: 30, weight: 750, color: C.ink, alpha: k, sentence: false }); }
     source(t, 'Dimensions: Pulsar (X2F), Brock (Theseus). Weights: the X2F, Pulsar\'s claim (29 g ± 2; none weighed is published); Theseus\'s target. Density: weight ÷ (L × W × H), rounded against Theseus. X2F outline: the X2 family\'s, traced from Pulsar\'s photo, cut to 87.5 mm.', { t0: 0.8, maxW: 1180 });
   }
@@ -1087,7 +1137,7 @@ S({
     header(t, 'Same weight, more mouse, feels lighter');
     captions(t, [[0.3, 'Two blocks of the same 200 g: the balance says they are equal. Lift them, and the big one feels lighter.'],
       [2.6, 'Measured: lifted, the big block felt like 161 g and the small one 211 g (Wolf 2018). The size-weight illusion.'],
-      [4.4, 'The X2F and Theseus weigh about the same, and Theseus fills 1.76 times the box: in the hand it should feel about a tenth lighter.']]);
+      [4.5, 'The X2F and Theseus weigh about the same, and Theseus fills 1.76 times the box: in the hand it should feel about a tenth lighter.']]);
     const T = B01_IL;
     /* ---- the classroom version: two 200 g blocks, small and big, level on a balance; lifted, they feel different ---- */
     const PN = [80, 262, 760, 590], inner = demoPanel(t, -0.8, PN, { src: 'Wolf 2018, PLOS ONE' });
@@ -1200,11 +1250,11 @@ S({
     /* the headline: Theseus's rank, by weight and by density */
     { const ths = byR.find(m => m.id === 'theseus'), wR = byW.indexOf(ths) + 1, dR = byR.indexOf(ths) + 1, k = ep(t, T.verdict, T.verdict + 0.4), kn = ep(t, T.verdict + 0.5, T.verdict + 1.0, E.snap);
       text('Theseus\'s rank of ' + N + ' wireless mice', 1380, 470, { role: 'label', size: 22, color: C.mute, alpha: k });
-      rich([{ s: wR + (wR % 10 === 1 && wR !== 11 ? 'st' : wR % 10 === 2 && wR !== 12 ? 'nd' : wR % 10 === 3 && wR !== 13 ? 'rd' : 'th'), role: 'd1', size: 64, weight: 800, color: C.mute }, { s: 'by weight', role: 'label', size: 20, color: C.mute, gap: 14 }], 1380, 560, { alpha: k });
+      rich([{ s: wR + (wR % 10 === 1 && wR !== 11 ? 'st' : wR % 10 === 2 && wR !== 12 ? 'nd' : wR % 10 === 3 && wR !== 13 ? 'rd' : 'th'), role: 'd1', size: 64, weight: 800, color: C.mute }, { s: 'by weight, as mice are sold', role: 'label', size: 20, color: C.mute, gap: 14 }], 1380, 560, { alpha: k });   /* the old ruler, not a rival (R2's could) */
       line(1376, 540, 1376 + 104 * kn, 540, { color: C.mute, w: 4, alpha: k });
       rich([{ s: dR + (dR === 2 ? 'nd' : dR === 1 ? 'st' : dR === 3 ? 'rd' : 'th'), role: 'd1', size: 150, weight: 800, color: C.heroText, grad: C.heroGrad }, { s: 'by density', role: 'label', size: 22, color: C.heroText, gap: 16 }], 1380, 720, { alpha: kn });
       text('Lighter for its size than all but one.', 1380, 780, { role: 'small', size: 26, weight: 700, color: C.ink, alpha: ep(t, T.verdict + 1.0, T.verdict + 1.4), maxW: 460, sentence: false }); }
-    source(t, 'Weights: TechPowerUp and RTINGS scales where weighed, else the maker\'s (G-Wolves\'s own figures, what EloShapes aggregates); the X2F, Pulsar\'s claim (29 g ± 2). Density: weight ÷ (L × W × H), rounded against Theseus. 48 wireless mice with all three dimensions; wired ones are not ranked.', { t0: 0.8 });
+    source(t, 'Weights: TechPowerUp and RTINGS scales where weighed, else the maker\'s (G-Wolves\'s own figures, what EloShapes aggregates); the X2F, Pulsar\'s claim (29 g ± 2). Density: weight ÷ (L × W × H), rounded against Theseus, at its 29.31 g target. 48 wireless mice with all three dimensions; wired ones are not ranked.', { t0: 0.8 });
   }
 });
 
@@ -1260,7 +1310,7 @@ S({
         text('Theseus, 29.3 g, $189', m.X(THESEUS.mass), py - 22, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, T.ths + 0.9, T.ths + 1.2) });
       } }
     legend(t, -1, x0, y0 + h + 72, [{ kind: 'line', color: C.ink, label: 'Cheapest at each weight' }, { kind: 'dot', color: C.comp, label: 'Wireless' }, { kind: 'ring', color: C.comp, label: 'Wired' }, { kind: 'area', color: C.ink2, label: 'Flagships, $160 to $200' }], { size: 20 });
-    verdict(t, T.verdict, 1330, 760, { from: 38.0, to: 29.3, unit: 'g', dec: 1, size: 96, label: 'Weight at $189: the UltralightX, then Theseus', better: 'lower', maxW: 520, who: ['UltralightX', 'Theseus'] });
+    verdict(t, T.verdict, 1330, 760, { from: 38.0, to: 29.3, unit: 'g', dec: 1, size: 96, label: 'Weight at $189: the UltralightX, then Theseus', better: 'lower', maxW: RM - 1330, who: ['UltralightX', 'Theseus'] });
     { const k = ep(t, T.verdict + 1.4, T.verdict + 1.9); text('G-Wolves sells lighter for less, and lists 80 h of battery, or none.', 1330, 470, { role: 'small', size: 24, weight: 650, color: C.ink2, alpha: ep(t, T.lab + 0.6, T.lab + 1.0), maxW: 500, sentence: false }); }
     source(t, 'Prices: makers\' US list prices; the Zaunkoenig mice sell in euros, plotted at the M3K\'s own rate (€340 ~ $396). Weights: scales where weighed, else makers\' (the X2F, Pulsar\'s 29 g ± 2). The UltralightX: TechPowerUp\'s 2023 medium, $189, 38 g. Theseus\'s $189 and 29.3 g are targets.', { t0: 0.8, maxW: 1160 });
   }
@@ -1273,11 +1323,17 @@ S({
    "Dual 8khz wired and wireless"; set-down and idle sleep are gone. The latency targets race: the best anyone has shown
    against Theseus's target, each pulse running to its time on one track (shorter is better), a row at a time (M7).
    Press to PC: Finalmouse's rig times from the touch on the button, so it includes the switch's travel; the Starlight X's
-   2.0 ms is a magnetic switch at 0.01 mm. Theseus's target, under 2.0 ms, rests on reading the switch as its NC contact
-   releases, at the start of the travel, with no free play (the clicks chapter); the fastest mechanical on that rig, the
-   OP1 8K V2, reads 5.7 ms, and the foot line says so. */
+   2.0 ms is a magnetic switch at 0.01 mm, near the rig's own floor. Theseus's switch is mechanical, so the row compares
+   mechanical switches (R2-b01-2): the fastest on that rig, the OP1 8K V2, 5.7 ms, against Theseus's derived target. The
+   GT01 is a snap switch: its NC contact opens at the snap, after the pre-travel, so reading NC saves the snap's flight
+   (B03.flightMs, 1.5 ms, XBAB: the clicks chapter's own figure), not the travel. 5.7 − 1.5 = 4.2 ms, if Finalmouse ran the
+   OP1 without its own NC mode (Endgame Gear's GX Speed mode, which it says is about 1.4 ms quicker); Direct Drive's 6 % of the
+   travel comes on top, so "under 4.2". The magnetic Starlight X stays on the track, labelled, as the faster technology. */
+/** Theseus's press-to-PC target on Finalmouse's rig (derived): the fastest mechanical there (OP1 8K V2, 5.7 ms) less the
+   snap's flight that reading NC saves (b03's B03.flightMs when present, else its 1.5 ms), rounded up (against Theseus) */
+function b01_pressTgt() { const fl = (typeof B03 !== 'undefined' && B03.flightMs) || 1.5; return Math.ceil((5.7 - fl) * 10 - 1e-9) / 10; }
 const B01_TG = [
-  { cat: 'Press to PC, with travel', unit: 'ms', best: 2.0, who: 'Starlight X, magnetic, its maker\'s rig', tgt: 2.0, tgtTxt: 'Under 2.0', under: true, max: 8, dec: 1, extra: [['OP1 8K V2', 5.7], ['Viper V4 Pro', 7.5]] },
+  { cat: 'Press to PC, with travel', unit: 'ms', best: 5.7, who: 'OP1 8K V2, the fastest mechanical, Finalmouse\'s rig', get tgt() { return b01_pressTgt(); }, get tgtTxt() { return 'Under ' + fmtN(b01_pressTgt(), 1); }, tgtNote: 'derived', under: true, max: 8, dec: 1, extra: [['Starlight X, magnetic', 2.0], ['Viper V4 Pro', 7.5]] },
   { cat: 'Motion latency, wireless', unit: 'ms', best: 0.34, who: 'Viper V4 Pro, PIAKNOW\'S rig', tgt: 0.14, tgtTxt: '0.14', max: 0.4, dec: 2 },
   { cat: 'Click latency, wired', unit: 'µs', best: 72, who: 'XA25 at NC release, XBAB', tgt: 70, tgtTxt: '70', max: 80, dec: 0 },
   { cat: 'Frame sync, frame to USB', unit: 'µs', best: 42, who: 'XBAB SensorLock', tgt: 42, tgtTxt: '42, a match', max: 50, dec: 0 }
@@ -1288,7 +1344,7 @@ S({
   src: ['b01FmClick', 'pcgSlx', 'exPiaknow', 'kunai', 'ntrXbabClick', 'xbabSensorLock', 'ntrV4Sensor', 'ntrRtSlx', 'ntrJauch', 'exNbcV4'],
   answers: [
     ['targets: "marker it as dual 8khz"', 'Set as "Dual 8khz, wired and wireless"'],
-    ['targets: "press to pc should be shorter, we\'ve done numerous things to optimize mechanical latency"', 'The target is now under 2.0 ms, faster than the Starlight X\'s magnetic switch on its maker\'s rig, and the slide says how: the switch is read as its NC contact releases, at the start of the travel, with no free play. The foot line gives the fastest mechanical on that rig (OP1 8K V2, 5.7 ms), so the claim is seen against it'],
+    ['targets: "press to pc should be shorter, we\'ve done numerous things to optimize mechanical latency"', 'Shorter, and derived from the clicks chapter: under 4.2 ms on Finalmouse\'s rig against the fastest mechanical there, the OP1 8K V2\'s 5.7 ms. Reading the switch\'s NC contact (Clicks) saves the snap\'s 1.5 ms flight, and Direct Drive\'s 6 % of the travel comes on top; the foot line says the one assumption (the OP1 timed without its own NC mode). The magnetic Starlight X\'s 2.0 ms stays on the track, labelled: a magnetic switch reads at 0.01 mm, and Theseus\'s is mechanical (R2-b01-2)'],
     ['targets2: "compare to starlight x weight for the headline value"', 'The headline: the Starlight X, 41.7 g on RTINGS\'s scale, against Theseus\'s 29.3 g'],
     ['targets2: "set down and idle sleep settings are not important enough to talk about this early"', 'Both removed'],
     ['F33.5 (show, don\'t list)', 'Each latency target races the best shown on one time track, a row at a time']
@@ -1299,7 +1355,8 @@ S({
       [5.4, 'The headline: the Starlight X weighs 41.7 g on RTINGS\'s scale; Theseus\'s target is 29.3 g.']]);
     const x0 = LM, tx = 520, tw0 = 640, y0 = 330, rh = 140;
     B01_TG.forEach((r, i) => {
-      const y = y0 + i * rh, t0 = 0.2 + i * 1.1, a = ep(t, t0 - 0.3, t0), X = v => tx + tw0 * Math.min(v, r.max) / r.max;
+      /* frame one shows every row's label and track (R2-b01-4); the row racing is full strength, the rest wait at half (M7) */
+      const y = y0 + i * rh, t0 = 0.2 + i * 1.1, a = lerp(0.5, 1, ep(t, t0 - 0.3, t0)), X = v => tx + tw0 * Math.min(v, r.max) / r.max;
       text(r.cat, x0, y, { role: 'label', size: 21, color: C.ink, alpha: a });
       text(r.who, x0, y + 30, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: a, maxW: tx - x0 - 30, sentence: false });
       /* the track: 0 to its max, ticks at the start and end */
@@ -1318,12 +1375,12 @@ S({
       /* Theseus's target, in blue, on its own track just under */
       const kT = clamp((t - t0 - 0.15) / 1.0 / (r.tgt / r.max)), yT = y + 50, xe = lerp(tx, X(r.tgt), Math.min(1, kT));
       if (kT > 0) { line(tx, yT, tx + tw0, yT, { color: C.track, w: 6, alpha: a * 0.6 }); line(tx, yT, xe, yT, { color: C.hero, w: 6, alpha: a }); heroMark(xe, yT, 9, a);
-        if (kT >= 1) text((r.under ? '' : '') + r.tgtTxt + ' ' + (r.tgtTxt.includes('match') ? '' : r.unit), X(r.tgt) + 20, yT + 8, { role: 'num', size: 24, weight: 800, color: C.heroText, alpha: ep(t, t0 + 0.15 + r.tgt / r.max, t0 + 0.45 + r.tgt / r.max) }); }
+        if (kT >= 1) text(r.tgtTxt + (r.tgtTxt.includes('match') ? '' : ' ' + r.unit) + (r.tgtNote ? ', ' + r.tgtNote : ''), X(r.tgt) + 20, yT + 8, { role: 'num', size: 24, weight: 800, color: C.heroText, alpha: ep(t, t0 + 0.15 + r.tgt / r.max, t0 + 0.45 + r.tgt / r.max) }); }
       if (i < B01_TG.length - 1) line(x0, y + rh - 46, tx + tw0, y + rh - 46, { color: C.hair, w: 1, alpha: a });
     });
     legend(t, -1, tx, y0 - 44, [{ kind: 'dot', color: C.comp, label: 'Best shown' }, { kind: 'hero', label: 'Theseus\'s target' }], { size: 19 });
     /* the right column: the headline, then the quiet tiles */
-    verdict(t, 5.4, 1330, 470, { from: 41.7, to: 29.3, unit: 'g', dec: 1, size: 110, label: 'Weight: the Starlight X on RTINGS\'s scale, then Theseus', better: 'lower', who: ['Starlight X', 'Theseus, target'], maxW: 520 });
+    verdict(t, 5.4, 1330, 470, { from: 41.7, to: 29.3, unit: 'g', dec: 1, size: 110, label: 'Weight: the Starlight X on RTINGS\'s scale, then Theseus', better: 'lower', who: ['Starlight X', 'Theseus, target'], maxW: RM - 1330 });
     [['Report rate', 'Dual 8khz', 'Wired and wireless'], ['Sensor', 'PAW3970', 'The Viper V4 Pro\'s'], ['Battery, 1 khz', '200 h', 'Derived, its 370 mAh']].forEach(([lab, v, sub], j) => {
       const y = 700 + j * 92, a = ep(t, 6.6 + j * 0.15, 7.0 + j * 0.15);
       line(1330, y - 40, RM, y - 40, { color: C.hair, w: 1, alpha: a });
@@ -1331,7 +1388,7 @@ S({
       text(v, RM, y + 8, { role: 'h3', size: 30, weight: 800, color: C.heroText, align: 'right', alpha: a, sentence: false });
       text(sub, 1330, y + 22, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: a, sentence: false });
     });
-    source(t, 'Best shown: Finalmouse\'s own rig (PC Gamer, Sept 2026), from the touch on the button, so the switch\'s travel counts: Starlight X 2.0 ms (magnetic), OP1 8K V2 5.7 ms (the fastest mechanical), Viper V4 Pro 7.5 ms; PIAKNOW\'S rig at 8 khz; XBAB\'s analyzer and SensorLock by their developers. Theseus: targets; its weight and hours are planned.', { t0: 0.8, maxW: 1160 });
+    source(t, 'Best shown: Finalmouse\'s own rig (PC Gamer, Sept 2026), from the touch on the button, so the switch\'s travel counts: Starlight X 2.0 ms (magnetic), OP1 8K V2 5.7 ms (the fastest mechanical), Viper V4 Pro 7.5 ms; PIAKNOW\'S rig at 8 khz; XBAB\'s analyzer and SensorLock by their developers. Theseus: targets (its weight and hours planned); press to PC derived: the OP1\'s 5.7 ms less the snap\'s ' + fmtN((typeof B03 !== 'undefined' && B03.flightMs) || 1.5, 1) + ' ms flight that reading NC saves (Clicks), if Finalmouse ran it without its own NC mode; Direct Drive\'s gain, 6 % of the travel, comes on top, unquantified.', { t0: 0.8, maxW: 1160 });
   }
 });
 
@@ -1397,7 +1454,9 @@ S({
         line(x, yb, x + xa * kx, yb, { color: C.comp, w: 4, alpha: kx });
         line(x, yb - 10, x, yb + 10, { color: C.comp, w: 2, alpha: kx }); if (kx > 0.98) line(x + xa, yb - 10, x + xa, yb + 10, { color: C.comp, w: 2 });
         text('The XA25\'s shell, ' + fmtN(BG.xaShell, 2) + ' g (XBAB)', x, yb + 30, { role: 'label', size: 19, color: C.mute, alpha: kx });
-        if (kx > 0.98) { line(x + w, yb, x + xa, yb, { color: C.red, w: 4 }); text('About ' + fmtN(BG.cut, 1) + ' g to find', x + xa - 4, yb + 28, { role: 'label', size: 19, color: C.red, align: 'right', alpha: ep(t, tS + 1.3, tS + 1.6) }); }
+        /* the gap to the XA25's shell, in neutral ink: not a fault left open on Theseus's side, a problem handed to the Shell
+           chapter (R2-b01-5), on its own line under the XA25's label */
+        if (kx > 0.98) { line(x + w, yb, x + xa, yb, { color: C.ink2, w: 4 }); text('About ' + fmtN(BG.cut, 1) + ' g lighter than the XA25\'s: the Shell chapter shows how', x + xa - 4, yb + 56, { role: 'label', size: 19, color: C.ink2, align: 'right', alpha: ep(t, tS + 1.3, tS + 1.6) }); }
         total += BG.shell * k;
       } }
     /* the scale's display */
@@ -1420,7 +1479,8 @@ S({
   src: ['b01X3', 'b01TpuHtsU', 'b01Optical', 'b01TpuUlx', 'b01X2f', 'exXbabWeight'],
   answers: [
     ['close (not rated)', 'The close now answers the film\'s ledger: the eight compromises every chapter card carried, struck and answered in blue one by one, each with the flagship that made it (Pro X3 Superstrike and HTS Ultra 8K, Viper V4 Pro, UltralightX, X2F CrazyLight, XA25) struck under it; then THESEUS, as the film opened'],
-    ['FILM F1 (c): the close answers the eight bars and the six flagships inside them', 'Done: the kit\'s ledger, answered row by row, and B01_TRADES\' flagships under their chapters, read live']
+    ['FILM F1 (c): the close answers the eight bars and the six flagships inside them', 'Done: the kit\'s ledger, answered row by row, and B01_TRADES\' flagships under their chapters, read live'],
+    ['R2-b01-3 (the bookends count differently; zero never lands)', 'The cover\'s counter runs again here: "Compromises" 8, a mark struck as each row is answered, down to 0 in blue just before THESEUS rises; the cover counts the same eight (the film\'s ledger, its six flagships inside)']
   ],
   draw: t => {
     chapterIcon('intro', LM, LAY.labelY - 19, 22, C.hero, ep(t, 0.1, 0.4));
@@ -1437,6 +1497,12 @@ S({
       text(lab, x, by, { role: 'small', size: 19, weight: 650, color: names.length ? mix(C.red, C.faint, kt) : C.faint, sentence: false, alpha: ep(t, -0.4, 0.2) });
       if (kt > 0) line(x - 2, by - 6, x - 2 + (wv + 4) * clamp(kt * 1.6), by - 6, { color: C.mute, w: 1.5 });
     });
+    /* the cover's counter, run again as the rows are answered (R2-b01-3): "Compromises" 8, a mark struck with each answer, the
+       count stepping down with each strike, landing on 0 in Theseus's blue just before THESEUS rises: the film's spine, zero */
+    { const n = LEDGER.length, kjs = LEDGER.map((e, i) => ep(t, turn + i * step, turn + i * step + 0.25)), v = n - kjs.filter(k => k >= 0.5).length, done = v === 0, a = ep(t, -0.4, 0.2);
+      text('Compromises', RM, 430, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: a });
+      text(String(v), RM, 590, { role: 'd1', size: 150, color: done ? C.heroText : C.ink, grad: done ? C.heroGrad : null, tnum: true, align: 'right', alpha: a });
+      kjs.forEach((kj, j) => { const sx = RM - 8 - (n - 1 - j) * 26; line(sx, 622, sx, 662, { color: C.mute, w: 3, alpha: a * 0.8 }); if (kj > 0) line(sx - 8, 658, sx - 8 + 16 * kj, 626, { color: C.red, w: 3, alpha: a }); }); }
     /* THESEUS, rising letter by letter, the way the film opened */
     const t0 = turn + LEDGER.length * step + 0.4, st = { role: 'hero', size: 120, track: -0.028 }, word = 'THESEUS', x0 = LM - 6, yb = 976;
     setFont(sty(st)); const ls = lsPx(sty(st));

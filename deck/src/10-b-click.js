@@ -324,8 +324,9 @@ function clk_gt01MM(o = {}) {
   const fill = (fn, f, e, px = 1) => { fn(); G.fillStyle = f; G.fill(); if (e) { G.strokeStyle = e; G.lineWidth = lw(px); G.lineJoin = 'round'; G.stroke(); } };
   const blk = TH ? '#2B2C31' : '#26272C', pocket = TH ? '#121316' : '#0C0D0F', inner = TH ? '#3A3B41' : '#34353B', eB = edgeCol(MT.black);
   const brass = TH ? '#C79B45' : '#B98F3E', eM = 'rgba(70,48,10,0.7)', gold = '#D9AA4C', silver = TH ? '#D9DDE2' : '#C3C8CE', eS = 'rgba(40,44,50,0.65)';
-  /* the board, with three plated holes (o.board false: the caller draws its own), and the three flat pins straight down */
-  if (o.board !== false) pcbSec(-9.2, 9.2, 0, 1.2, { holes: [-5.08, 0, 5.08] });
+  /* the board, with three plated holes (o.board false: the caller draws its own), and the three flat pins straight down.
+     Theseus's board: BOARD_T thick (0.6 mm, F47.4; was drawn 1.2), its top at y 0 where the switch stands (H3) */
+  if (o.board !== false) pcbSec(-9.2, 9.2, 0, BOARD_T, { holes: [-5.08, 0, 5.08] });
   for (const z of [5.08, 0, -5.08]) { const [x] = W(z, 0); fill(() => path([[x - 0.3, -0.4], [x + 0.3, -0.4], [x + 0.3, 2.95], [x + 0.12, 3.3], [x - 0.12, 3.3], [x - 0.3, 2.95]]), gold, eM, 0.8); }
   out.legs = [5.08, 0, -5.08].map(z => SP(W(z, 0)[0], 3.3));
   /* the bottom housing, one black block, as Gateron's render shows it side-on: flat on the board; in front the switch's own end

@@ -76,8 +76,10 @@ function pathRR(x, y, w, h, r) { r = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 
    The board convention (the model auditor's ruling, 2026-11-06): Theseus's board is black mask #16171a with gold #d9b25a
    pads and rings in every view; in section the mask is the thin black skin, the FR4 core shows only on the cut face (muted,
    hatched), the plated holes' surface rings are gold. o.rival: a rival's board, grey (C.comp) with tin rings, unless its
-   teardown is the point (then pass o.mask). o.mask, o.ring override the colours. */
+   teardown is the point (then pass o.mask). o.mask, o.ring override the colours.
+   th: the board's thickness; leave it out (null) for Theseus's board, BOARD_T (0.6 mm, F47.4); a rival's board passes its own. */
 function pcbSec(x0, x1, y0, th, o = {}) {
+  if (th == null) th = BOARD_T;
   const y1 = y0 + th, bl = o.brk || [1, 1], holes = o.holes || [];
   const mask = o.mask || (o.rival ? C.comp : '#16171a'), ring = o.ring || (o.rival ? '#c9ccd1' : '#d9b25a');
   const path = () => { G.beginPath(); G.moveTo(x0, y0); G.lineTo(x1, y0); if (bl[1]) brk(x1, y0, y1, 0.3); else G.lineTo(x1, y1); G.lineTo(x0, y1); if (bl[0]) brk(x0, y1, y0, 0.3); else G.lineTo(x0, y0); G.closePath(); };
@@ -189,9 +191,10 @@ function clickMM(o = {}) {
   const K = CKG, A = o.accent || acc(), g = clickGeo(o), { RC, F0, R, tilt, phi } = g;
   const x0 = o.x0 == null ? -16 : o.x0, x1 = o.x1 == null ? 44 : o.x1, out = { geo: g }, kT = clamp(o.tilt || 0);
   const ub = x => surfY(x) + 1.2;
-  /* one flat board: the GT01's cap stands 7.85 mm above its top (traced), so the board sits there and never tilts */
+  /* one flat board: the GT01's cap stands 7.85 mm above its top (traced), so the board sits there and never tilts. Theseus's
+     board, BOARD_T thick (0.6 mm, F47.4; was drawn 1.2): only its underside moves (H3) */
   const yB = F0[1] + K.gtApex[1];
-  pcbSec(F0[0] - 13, F0[0] + 11, yB, 1.2, { brk: [1, 1] });
+  pcbSec(F0[0] - 13, F0[0] + 11, yB, BOARD_T, { brk: [1, 1] });
   /* the upright switch: its plunger under the post, standing 0.5 mm proud on its feet; it gives way to the GT01 */
   if (kT < 0.999) { xsave(); ga(1 - kT); xmove(F0[0] - SWG.px, F0[1] - SWG.top); out.sw = swMM({ press: o.press || 0, clear: o.clear, accent: A, glow: o.glow }); xrest(); }
   if (o.ghost > 0) { xsave(); ga(o.ghost * 0.6); xmove(F0[0] - SWG.px, F0[1] - SWG.top); G.setLineDash([lw(7), lw(5)]); G.beginPath(); G.rect(0, -6.5, 12.8, 6.5); G.rect(SWG.px - 0.75, SWG.top, 1.5, 0.85); G.strokeStyle = inkA(0.7); G.lineWidth = lw(1.3); G.stroke(); G.setLineDash([]); xrest(); }
@@ -920,16 +923,21 @@ const KEY_PARTS = {
   window: {c: [0.0, -16.57], hw: 3.2, hl: 7.7},
   lensDots: {pts: [[0.0, -22.87], [0.0, -9.87]], r: 3.25},
   skates: {pts: [[-13.72, -47.29], [-19.97, -42.39], [-17.2, 43.18], [-10.82, 47.93], [19.92, -42.53], [13.49, -47.37], [11.11, 47.83], [17.4, 42.91]], r: 3.25},
-  battery: {x: -17.09, y: 12.45, w: 35.0, h: 25.0, r: 2, t: 4.0, yMid: 7.46, part: "LP402535JU"},
+  battery: {x: -17.09, y: 14.48, w: 35.0, h: 25.0, r: 2, t: 4.0, yMid: 7.46, part: "LP402535JU"},
   antenna: {x: -6.6, y: -9.37, w: 13.2, h: 4.3},
   power: {A: {c: [10.0, -16.57], w: 3.83, h: 4.29, r: 1.0, note: "variant A (default): a slide switch over its window, the knob reached from below"}, B: {c: [14.12, -16.57], w: 2.6, h: 6.7, tip: 16.92, note: "variant B: a right-angle slide switch at the right waist edge, its knob 1.5 mm past the edge"}},
   module: {c: [0.0, -1.92], w: 9.9, h: 13.3},
   pmic: {c: [-10.2, -16.57], w: 5.0, h: 5.0},
-  board: {anchor: [0.0, 2.88], box: [-19.03, -48.57, 19.03, 10.49], pts: [[5.03, -48.57], [5.38, -48.53], [5.72, -48.45], [6.05, -48.33], [6.37, -48.18], [6.67, -47.99], [10.29, -45.44], [10.76, -45.2], [11.09, -45.08], [11.43, -45.0], [11.96, -44.96], [18.14, -44.95], [18.3, -44.92], [18.45, -44.87], [18.68, -44.72], [18.79, -44.61], [18.89, -44.48], [18.96, -44.33], [19.01, -44.17], [19.03, -43.96], [19.03, -31.19], [19.02, -30.99], [18.99, -30.78], [18.9, -30.49], [18.76, -30.21], [18.59, -29.96], [18.45, -29.81], [18.21, -29.61], [16.15, -28.16], [16.0, -28.02], [15.86, -27.87], [15.69, -27.62], [15.55, -27.34], [15.46, -27.05], [15.43, -26.84], [15.42, -26.64], [15.42, -15.55], [15.43, -15.35], [15.46, -15.14], [15.55, -14.85], [15.69, -14.57], [15.86, -14.32], [16.0, -14.17], [16.24, -13.97], [18.21, -12.58], [18.37, -12.45], [18.52, -12.31], [18.71, -12.06], [18.86, -11.8], [18.93, -11.6], [18.99, -11.41], [19.03, -11.1], [19.03, 9.54], [19.01, 9.7], [18.96, 9.86], [18.89, 10.01], [18.79, 10.14], [18.68, 10.25], [18.55, 10.35], [18.4, 10.42], [18.24, 10.47], [18.03, 10.49], [12.65, 10.49], [12.13, 10.45], [11.62, 10.31], [11.29, 10.18], [10.98, 10.01], [7.22, 7.36], [6.91, 7.19], [6.41, 7.0], [6.07, 6.92], [5.54, 6.88], [-5.54, 6.88], [-6.07, 6.92], [-6.41, 7.0], [-6.91, 7.19], [-7.22, 7.36], [-10.98, 10.01], [-11.29, 10.18], [-11.62, 10.31], [-12.13, 10.45], [-12.65, 10.49], [-18.03, 10.49], [-18.24, 10.47], [-18.4, 10.42], [-18.55, 10.35], [-18.68, 10.25], [-18.79, 10.14], [-18.89, 10.01], [-18.96, 9.86], [-19.01, 9.7], [-19.03, 9.54], [-19.03, -11.1], [-18.99, -11.41], [-18.93, -11.6], [-18.86, -11.8], [-18.71, -12.06], [-18.52, -12.31], [-18.37, -12.45], [-18.21, -12.58], [-16.24, -13.97], [-16.0, -14.17], [-15.86, -14.32], [-15.69, -14.57], [-15.55, -14.85], [-15.46, -15.14], [-15.43, -15.35], [-15.42, -15.55], [-15.42, -26.64], [-15.43, -26.84], [-15.46, -27.05], [-15.55, -27.34], [-15.69, -27.62], [-15.86, -27.87], [-16.0, -28.02], [-16.15, -28.16], [-18.21, -29.61], [-18.45, -29.81], [-18.59, -29.96], [-18.76, -30.21], [-18.9, -30.49], [-18.99, -30.78], [-19.02, -30.99], [-19.03, -31.19], [-19.03, -43.96], [-19.01, -44.17], [-18.96, -44.33], [-18.89, -44.48], [-18.79, -44.61], [-18.68, -44.72], [-18.45, -44.87], [-18.3, -44.92], [-18.14, -44.95], [-11.96, -44.96], [-11.43, -45.0], [-11.09, -45.08], [-10.76, -45.2], [-10.29, -45.44], [-6.67, -47.99], [-6.37, -48.18], [-6.05, -48.33], [-5.72, -48.45], [-5.38, -48.53], [-5.03, -48.57]], holes: [[-10.1, -26.62, 1.45], [10.1, -26.62, 1.45], [-14.59, 5.13, 1.45], [14.59, 5.13, 1.45]], bay: [[2.59, -41.25], [2.94, -41.23], [3.46, -41.13], [3.79, -41.01], [4.26, -40.77], [6.38, -39.28], [6.54, -39.15], [6.69, -39.01], [6.88, -38.76], [7.03, -38.5], [7.1, -38.3], [7.18, -38.01], [7.2, -37.7], [7.2, -28.12], [7.18, -27.81], [7.1, -27.52], [6.98, -27.23], [6.82, -26.97], [6.69, -26.81], [6.54, -26.67], [6.38, -26.54], [4.41, -25.15], [3.95, -24.88], [3.46, -24.69], [3.12, -24.61], [2.77, -24.57], [-2.77, -24.57], [-3.12, -24.61], [-3.46, -24.69], [-3.95, -24.88], [-4.41, -25.15], [-6.38, -26.54], [-6.54, -26.67], [-6.69, -26.81], [-6.82, -26.97], [-6.98, -27.23], [-7.1, -27.52], [-7.18, -27.81], [-7.2, -28.12], [-7.2, -37.7], [-7.18, -38.01], [-7.1, -38.3], [-7.03, -38.5], [-6.88, -38.76], [-6.69, -39.01], [-6.54, -39.15], [-6.38, -39.28], [-4.26, -40.77], [-3.79, -41.01], [-3.46, -41.13], [-2.94, -41.23], [-2.59, -41.25]]},
+  board: {anchor: [0.0, 2.88], t: 0.6, top: 5.03, box: [-19.03, -48.57, 19.03, 10.49], pts: [[5.03, -48.57], [5.38, -48.53], [5.72, -48.45], [6.05, -48.33], [6.37, -48.18], [6.67, -47.99], [10.29, -45.44], [10.76, -45.2], [11.09, -45.08], [11.43, -45.0], [11.96, -44.96], [18.14, -44.95], [18.3, -44.92], [18.45, -44.87], [18.68, -44.72], [18.79, -44.61], [18.89, -44.48], [18.96, -44.33], [19.01, -44.17], [19.03, -43.96], [19.03, -31.19], [19.02, -30.99], [18.99, -30.78], [18.9, -30.49], [18.76, -30.21], [18.59, -29.96], [18.45, -29.81], [18.21, -29.61], [16.15, -28.16], [16.0, -28.02], [15.86, -27.87], [15.69, -27.62], [15.55, -27.34], [15.46, -27.05], [15.43, -26.84], [15.42, -26.64], [15.42, -15.55], [15.43, -15.35], [15.46, -15.14], [15.55, -14.85], [15.69, -14.57], [15.86, -14.32], [16.0, -14.17], [16.24, -13.97], [18.21, -12.58], [18.37, -12.45], [18.52, -12.31], [18.71, -12.06], [18.86, -11.8], [18.93, -11.6], [18.99, -11.41], [19.03, -11.1], [19.03, 9.54], [19.01, 9.7], [18.96, 9.86], [18.89, 10.01], [18.79, 10.14], [18.68, 10.25], [18.55, 10.35], [18.4, 10.42], [18.24, 10.47], [18.03, 10.49], [12.65, 10.49], [12.13, 10.45], [11.62, 10.31], [11.29, 10.18], [10.98, 10.01], [7.22, 7.36], [6.91, 7.19], [6.41, 7.0], [6.07, 6.92], [5.54, 6.88], [-5.54, 6.88], [-6.07, 6.92], [-6.41, 7.0], [-6.91, 7.19], [-7.22, 7.36], [-10.98, 10.01], [-11.29, 10.18], [-11.62, 10.31], [-12.13, 10.45], [-12.65, 10.49], [-18.03, 10.49], [-18.24, 10.47], [-18.4, 10.42], [-18.55, 10.35], [-18.68, 10.25], [-18.79, 10.14], [-18.89, 10.01], [-18.96, 9.86], [-19.01, 9.7], [-19.03, 9.54], [-19.03, -11.1], [-18.99, -11.41], [-18.93, -11.6], [-18.86, -11.8], [-18.71, -12.06], [-18.52, -12.31], [-18.37, -12.45], [-18.21, -12.58], [-16.24, -13.97], [-16.0, -14.17], [-15.86, -14.32], [-15.69, -14.57], [-15.55, -14.85], [-15.46, -15.14], [-15.43, -15.35], [-15.42, -15.55], [-15.42, -26.64], [-15.43, -26.84], [-15.46, -27.05], [-15.55, -27.34], [-15.69, -27.62], [-15.86, -27.87], [-16.0, -28.02], [-16.15, -28.16], [-18.21, -29.61], [-18.45, -29.81], [-18.59, -29.96], [-18.76, -30.21], [-18.9, -30.49], [-18.99, -30.78], [-19.02, -30.99], [-19.03, -31.19], [-19.03, -43.96], [-19.01, -44.17], [-18.96, -44.33], [-18.89, -44.48], [-18.79, -44.61], [-18.68, -44.72], [-18.45, -44.87], [-18.3, -44.92], [-18.14, -44.95], [-11.96, -44.96], [-11.43, -45.0], [-11.09, -45.08], [-10.76, -45.2], [-10.29, -45.44], [-6.67, -47.99], [-6.37, -48.18], [-6.05, -48.33], [-5.72, -48.45], [-5.38, -48.53], [-5.03, -48.57]], holes: [[-10.1, -26.62, 1.45], [10.1, -26.62, 1.45], [-14.59, 5.13, 1.45], [14.59, 5.13, 1.45]], bay: [[2.59, -41.25], [2.94, -41.23], [3.46, -41.13], [3.79, -41.01], [4.26, -40.77], [6.38, -39.28], [6.54, -39.15], [6.69, -39.01], [6.88, -38.76], [7.03, -38.5], [7.1, -38.3], [7.18, -38.01], [7.2, -37.7], [7.2, -28.12], [7.18, -27.81], [7.1, -27.52], [6.98, -27.23], [6.82, -26.97], [6.69, -26.81], [6.54, -26.67], [6.38, -26.54], [4.41, -25.15], [3.95, -24.88], [3.46, -24.69], [3.12, -24.61], [2.77, -24.57], [-2.77, -24.57], [-3.12, -24.61], [-3.46, -24.69], [-3.95, -24.88], [-4.41, -25.15], [-6.38, -26.54], [-6.54, -26.67], [-6.69, -26.81], [-6.82, -26.97], [-6.98, -27.23], [-7.1, -27.52], [-7.18, -27.81], [-7.2, -28.12], [-7.2, -37.7], [-7.18, -38.01], [-7.1, -38.3], [-7.03, -38.5], [-6.88, -38.76], [-6.69, -39.01], [-6.54, -39.15], [-6.38, -39.28], [-4.26, -40.77], [-3.79, -41.01], [-3.46, -41.13], [-2.94, -41.23], [-2.59, -41.25]]},
 };
 /* KEY_PARTS:END */
 /* the board's outline in the mouse's plan frame ([X, Z]: X the user's left, Z the nose), for models that work there (b07) */
 const BOARD_OUTLINE = KEY_PARTS.board.pts.map(([x, y]) => [-x, -y]);
+/* the board's thickness and its top face over the pad, mm, from the 3D board (KEY_PARTS.board.t / .top). F47.4 (Brock,
+   2026-11-06, "0.6 mm, 5.63 g"): a 0.6 mm two-layer board (was 1.0 mm, four layers). Its top stays at 5.03 mm (the shell's
+   posts, the switches and the wheel's axle are set from it); its underside comes up to 4.43. Every drawing of Theseus's board
+   in section or side on reads these: pcbSec's default thickness, mouseSimple's side view, clk_gt01MM, own_jointMM (H3) */
+const BOARD_T = KEY_PARTS.board.t, BOARD_TOP = KEY_PARTS.board.top;
 function keyPath() {
   const P = KEY_PTS, n = P.length; G.beginPath();
   G.moveTo((P[n - 1][0] + P[0][0]) / 2, (P[n - 1][1] + P[0][1]) / 2);
@@ -979,8 +987,9 @@ function keyPlanMM(o = {}) {
   if (H.includes('power')) dash(true, () => { const w = KEY_PARTS.power.A; G.beginPath(); pathRR(w.c[0] - w.w / 2, w.c[1] - w.h / 2, w.w, w.h, w.r); G.fill(); G.stroke(); });
   /* the plate-off dot skates on the rim's ledge, where the 3D shell seats them (meta.skates, 6.5 mm dots) */
   dash(H.includes('skates'), on => { for (const [x, y] of KEY_PARTS.skates.pts) { G.beginPath(); G.arc(x, y, KEY_PARTS.skates.r, 0, TAU); if (on) G.fill(); G.stroke(); } });
-  /* the battery: in the tail behind the board, 0.43 mm over the board's top, 35 mm across and 25 mm along (the example
-     LP402535JU); 2.23 mm further back than before, clear of plan 5's rear lobes (KEY_PARTS.battery) */
+  /* the battery: in the tail behind the board, 0.43 mm over the board's top level, 35 mm across and 25 mm along (the
+     example LP402535JU), where the mouse balances at its centre (F42.1; H2's balance.py, 2026-11-06): its front 3.99 mm
+     behind plan 5's rear lobes (KEY_PARTS.battery) */
   const bt = KEY_PARTS.battery;
   dash(H.includes('battery'), on => { pathRR(bt.x, bt.y, bt.w, bt.h, bt.r); if (on) G.fill(); G.stroke(); });
   G.setLineDash([]);
@@ -1009,7 +1018,8 @@ function keyPlan(t, t0, x, y, o = {}) {
   return r;
 }
 /** K2 (2026-11-05): the magnetic scroll encoder from the wheel side, its frame plate cut away, as 3d/parts/scrollwheel.js
-   builds it: a normal encoder outline (axle at 0, 0; the board at y = 11; top 4 mm above the axle, the nose-side corner
+   builds it: a normal encoder outline (axle at 0, 0; the board at y = 12, the mouse's axle height (H2, 2026-11-06: was 11,
+   the part's old default; the shell and the board put the axle 12 mm over the board's top); top 4 mm above the axle, the nose-side corner
    chamfered), a black bottom housing up to the split 3.15 mm below the axle, a clear PC top housing over the moving
    parts: the orange POM rotor on the axle's D, the 24-lobe detent star under its bronze leaf spring, and on the rotor's
    end the Ø3 mm diametric magnet (north and south halves) in front of the dark sensor board, four pins, the frame's two
@@ -1024,12 +1034,12 @@ function k2_encMagFront(o = {}) {
   const fp = (f, col, st, w) => { f(); if (col) { G.fillStyle = col; G.fill('evenodd'); } if (st) { G.strokeStyle = st; G.lineWidth = lw(w || 1.1); G.lineJoin = 'round'; G.stroke(); } };
   /* four pins through the board, and the frame's two side tabs run down to it and bend out into SMD feet (H1, board plan 5:
      the feet sit on the board's F1/F2 pads beside the wheel bay; the old J-hook legs stood over the bay) */
-  for (const px of [-1.875, -0.625, 0.625, 1.875]) fp(() => { G.beginPath(); G.rect(px - 0.25, 10.9, 0.5, 2.3); }, tin, ec, 0.8);
-  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.moveTo(sx * 5.5, 4.1); G.lineTo(sx * 5.72, 4.1); G.lineTo(sx * 5.72, 10.82); G.quadraticCurveTo(sx * 5.74, 10.86, sx * 5.8, 10.86); G.lineTo(sx * 6.5, 10.86); G.lineTo(sx * 6.5, 11.0); G.lineTo(sx * 5.62, 11.0); G.quadraticCurveTo(sx * 5.5, 11.0, sx * 5.5, 10.88); G.closePath(); }, nick, ec, 0.8);
+  for (const px of [-1.875, -0.625, 0.625, 1.875]) fp(() => { G.beginPath(); G.rect(px - 0.25, 11.9, 0.5, 2.3); }, tin, ec, 0.8);
+  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.moveTo(sx * 5.5, 4.1); G.lineTo(sx * 5.72, 4.1); G.lineTo(sx * 5.72, 11.82); G.quadraticCurveTo(sx * 5.74, 11.86, sx * 5.8, 11.86); G.lineTo(sx * 6.5, 11.86); G.lineTo(sx * 6.5, 12.0); G.lineTo(sx * 5.62, 12.0); G.quadraticCurveTo(sx * 5.5, 12.0, sx * 5.5, 11.88); G.closePath(); }, nick, ec, 0.8);
   /* the sensor board behind everything: a dark plate across the housing's far end, the Hall IC on it, on the axis */
   fp(() => pathRR(-3.7, -3.2, 7.4, 9.6, 0.3), dk ? '#101114' : '#141518', null);
   /* the black bottom housing, from the board up to the split */
-  fp(() => { G.beginPath(); G.moveTo(-5.5, 3.15); G.lineTo(5.5, 3.15); G.lineTo(5.5, 10.75); G.quadraticCurveTo(5.5, 11, 5.25, 11); G.lineTo(-5.25, 11); G.quadraticCurveTo(-5.5, 11, -5.5, 10.75); G.closePath(); }, black, ec, 1.1);
+  fp(() => { G.beginPath(); G.moveTo(-5.5, 3.15); G.lineTo(5.5, 3.15); G.lineTo(5.5, 11.75); G.quadraticCurveTo(5.5, 12, 5.25, 12); G.lineTo(-5.25, 12); G.quadraticCurveTo(-5.5, 12, -5.5, 11.75); G.closePath(); }, black, ec, 1.1);
   /* the rotor: the orange POM hub, the detent star round it, the D bore */
   const star = () => { G.beginPath(); for (let i = 0; i <= N * 12; i++) { const a = th + i / (N * 12) * TAU, f = ((a - th) * N / TAU % 1 + 1) % 1, r = 2.18 + 0.37 * Math.pow(Math.sin(Math.PI * f), 0.6); i ? G.lineTo(r * Math.cos(a), r * Math.sin(a)) : G.moveTo(r * Math.cos(a), r * Math.sin(a)); } G.closePath(); G.moveTo(1.65, 0); G.arc(0, 0, 1.65, 0, TAU, true); };
   fp(star, dk ? '#2C2D31' : '#26272B', ec, 0.9);
@@ -1063,6 +1073,6 @@ function k2_encMagFront(o = {}) {
   for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.rect(sx > 0 ? 5.5 : -5.78, 5.6, 0.28, 1.5); }, nick, ec, 0.8);
   out.north = SP(0.8 * Math.cos(th), 0.8 * Math.sin(th)); out.south = SP(-0.8 * Math.cos(th), -0.8 * Math.sin(th));
   out.cover = SP(-3.6, -2.6); out.magnet = SP(1.06 * Math.cos(th + 2.2), 1.06 * Math.sin(th + 2.2)); out.star = SP(-2.3, 0.9); out.spring = SP(-2.4, -2.95);
-  out.sensor = SP(3.2, 4.6); out.pins = SP(-1.875, 12.6); out.axle = SP(0, 0); out.top = SP(0, -4.45); out.base = SP(0, 13.45); out.s = SP(1, 0)[0] - SP(0, 0)[0];
+  out.sensor = SP(3.2, 4.6); out.pins = SP(-1.875, 13.6); out.axle = SP(0, 0); out.top = SP(0, -4.45); out.base = SP(0, 14.45); out.s = SP(1, 0)[0] - SP(0, 0)[0];
   return out;
 }

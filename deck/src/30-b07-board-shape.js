@@ -17,10 +17,8 @@
    the board outline from 3d/pcb/plans/outline_v5.json, plan 5). */
 
 Object.assign(SRC, {
-  b07GwPlusPro: { t: 'G-Wolves, HTS Plus Pro 8K: ~28 g; "Single-shell + carbon rod", "no hole pattern"; $159. Warg 8K: "Single-shell, no holes", a carbon rod, ~28.9 g, $149 (the maker\'s descriptions)', u: 'https://shop.g-wolves.com/products/hts-plus-pro-8k-wireless-gaming-mouse-28g' },
-  b07GwHtsU: { t: 'G-Wolves HTS Ultra 8K (TechPowerUp: "G-Wolves Hati-S Ultra 8K"): about 31 g, 113 × 61 × 40 mm, "a pattern consisting of hexagonal holes across the entire shell"', u: 'https://techpowerup.com/review/g-wolves-hati-s-ultra-8k/single-page.html' },
-  b07Fr4Flex: { t: 'The Gund Company, NEMA FR4 (typical): flexural strength 80 ksi (552 MPa) lengthwise, 70 ksi (483 MPa) crosswise; flexural modulus 20 GPa lengthwise, 18 GPa crosswise; tensile 430 MPa lengthwise (as b05Fr4Flex and shlFr4)', u: 'https://thegundcompany.com/wp-content/uploads/2024/03/NEMA-FR4-Glass-Epoxy-Laminate-by-The-Gund-Co.pdf' },
-  b07X2f: { t: 'Pulsar X2F CrazyLight: 29 g ± 2 g, 87.5 × 61.1 × 31.6 mm, $149.95 (gaming-st.com and Prisjakt\'s review, quoting Pulsar); reports put it at 29.5 g on a scale', u: 'https://gaming-st.com/peripherals/pulsar-x2f-crazylight-29g-vs-x2f/' },
+  /* sources shared with other chapters are cited by their first key (one source per fact): b01GwPlusPro, b01GwWarg,
+     b01TpuHtsU, b01X2f, b01X2fWt (b01), shlFr4 (Gund: moduli and flexural strengths both ways) */
   b07OudeHengel: { t: 'K. M. Oude Hengel, B. J. Houwink, D. Odell, J. H. van Dieën and J. T. Dennerlein, "Smaller external notebook mice have different effects on posture and muscle activity", Clinical Biomechanics 23 (2008) 727-734: 30 adults, a 121 × 64 mm mouse against five smaller ones; the smallest raised wrist-extensor activity by up to 4.1 % MVC, larger hands on an 87 × 36 mm mouse up to 5.5 % MVC; "not optimal to use, particularly for participants with larger hands"', u: 'https://stacks.cdc.gov/view/cdc/223122/cdc_223122_DS1.pdf' },
   b07Fr4Wiki: { t: 'Wikipedia, "FR-4": "a NEMA grade designation for glass-reinforced epoxy laminate material"; "a composite material composed of woven fiberglass cloth with an epoxy resin binder that is flame resistant"; defined in NEMA LI 1-1998; 1.850 g/cm³, flexural strength > 415 MPa lengthwise, Young\'s modulus 24 GPa lengthwise', u: 'https://en.wikipedia.org/wiki/FR-4' },
   b07Sabre: { t: 'Tom\'s Hardware, Corsair Sabre v2 Pro Wireless CF review: "The top shell and primary buttons are made of carbon fiber", the sides too; 55 g, $199.99; the plastic Sabre v2 Pro costs roughly half as much, the magnesium version $150', u: 'https://www.tomshardware.com/peripherals/gaming-mice/corsair-sabre-v2-pro-wireless-cf-review' },
@@ -51,6 +49,15 @@ Object.assign(SRC, {
 const B07 = { c: {} };
 /** compute once, keep */
 function b07_once(k, fn) { if (!(k in B07.c)) B07.c[k] = fn(); return B07.c[k]; }
+/** a number rounded toward zero, as text (DESIGN §9) */
+const b07_dn = (v, d = 0) => { const k = Math.pow(10, d); return fmtN(Math.floor(v * k + 1e-6) / k, d); };
+/** a slide whose `answers` are written from the live models (pass answers: () => rows): built when read, after every file
+   has loaded, so the numbers in the answers are the numbers on the frames and follow KEY_PARTS when the hardware moves */
+function b07_live(o) {
+  const rows = o.answers; delete o.answers;
+  Object.defineProperty(o, 'answers', { enumerable: true, configurable: true, get: () => { try { return rows(); } catch (e) { return [['(answers)', 'The model behind these answers could not be read: ' + e.message]]; } } });
+  return o;
+}
 
 /* the board, plan 5 (3d/pcb/plans/outline_v5.json, Brock's approved outline), simplified to 0.06 mm: [x, z] mm in the board's
    layout frame (z toward the nose; mouse z = layout z − 2.88, H1's notes). Used for the solver where no shared outline is
@@ -65,16 +72,22 @@ const B07_ROWS = [-31.65, -20.43, -10.64, -0.77, 9.17, 19.25, 29.76, 41.16];
 /* the 29.31 g budget. F44.2 (Brock): the two side switches (full-size SPDT, about 0.5 g each) come out of the shell's
    allowance, 10.35 → 9.35 g; the total stays 29.31 g. F42.2: the board's 5.6 g is a target */
 const B07_BUD = { shell: 9.35, sideSw: 1.0, btn: 3.328, board: 5.6, batt: 8.0, wheel: 1.02, screws: 0.418, ins: 0.516, wires: 0.08 };
-/* where each part sits: z forward of the middle, y above the pad (mm), from the 3D assets (see b07Mass3d). The board's
-   centre is plan 5's area centroid (layout z 21.97, mouse 19.09); the battery's comes from the shared key-plan constant when
-   the kit has it (MS_BATTERY: x, y = −z, across, along), so H1's move reaches this slide */
+/* where each part sits: z forward of the middle, y above the pad (mm). H2's balance model (3d/pcb/tools/balance.py; review
+   b07 "HARDWARE", 10:14), number for number: the rest of the shell at the body's volume centroid; the two side switches
+   (0.5 g each, F44.2: out of the shell's allowance) where shell.js puts them; the four boss posts over the board's holes, an
+   ESTIMATE until S1 models them (MH1/MH2 would hang from the triggers, so an upper bound), also inside the shell's 9.35 g;
+   the board's own centre of mass at its 5.6 g target (F42.2: bare board at its core's centroid, every part, the encoder and
+   its support in); the board's four screws, driven from below (#54; the film's mouse has no bottom plate), heads under the
+   board, their brass inserts at the foot of the posts; the battery from KEY_PARTS (b07_battZ / b07_battY). With them the
+   mouse balances at z 0.00, 12.60 mm up (H2); re-run when S1 gives the shell its posts */
 const B07_POS = {
-  sideSw: { z: 6.95, y: 21.45 },     /* the two side switches, under the side buttons (the kit's side1 and side2, their mean) */
-  boardCom: { z: 21.69, y: 4.93 },   /* the board's centre of mass from its parts (H1, balance.py, plan 5), mouse frame */
-  screwsH1: { z: -3.6 },             /* the four plate screws' mean z, as balance.py places them */
+  sideSws: [{ z: 15.00, y: 19.82 }, { z: -3.55, y: 22.65 }],                       /* the two side switches, 0.5 g each */
+  posts: [{ g: 2 * 0.272, z: 26.62, y: 15.34 }, { g: 2 * 0.387, z: -5.13, y: 19.69 }], /* boss posts MH1+MH2, MH3+MH4 (estimate) */
+  boardCom: { z: 23.44, y: 6.51 },   /* the board's centre of mass from its parts at its 5.6 g target (H2), mouse frame */
+  screws: { z: 10.74, y: 4.0 }, inserts: { z: 10.74, y: 6.5 }, wires: { z: 0, y: 8.0 },
   body: { z: -10.41, y: 16.44 }, bay: { z: 36.0, y: 13.21 }, btn: { z: 31.97, y: 22.05 }, board: { z: 19.09, y: 5.0 },
-  wheel: { z: 34.87, y: 17.03 }, screws: { z: -3.5, y: 8.0 }, wires: { z: 0, y: 10.0 },
-  battLow: { z: -24.95, y: 7.46 }, battHigh: { z: -14.0, y: 20.0 }, battOld: { z: -22.72, y: 7.46 },
+  wheel: { z: 34.87, y: 17.03 },
+  battHigh: { z: -14.0, y: 20.0 }, battOld: { z: -22.72, y: 7.46 }, battH1: { z: -24.95, y: 7.46 },
   sensorOld: 1.12, sensorNew: 16.57, grip: 12.0
 };
 /* hands and mice */
@@ -119,7 +132,10 @@ function b07_boardHalfW(z) { const P = b07_boardOut(); let w = 0; for (let i = 0
      'whole'  by every side rib that reaches it (the study's rows over the board, a CF-PP rib foot each side).
    Load: a squeeze, 10 N inward on each side at z 4 (thumb and fingers on the sides over the board). Each element's stress
    is in MPa for that squeeze. */
-const B07_PLAN = { ring: { w: 4.0, h: 3.6 }, ringIn: 2.1, lat: 5, armZ: [-1.0, 8.5, 18.0], armW: 3.8, rib: { w: 1.1, h: 1.2 }, sqZ: 4.0, sqN: 10 };
+/* bt: the board's thickness. F47.4 (Brock, "0.6 mm, 5.63 g"): a 0.6 mm two-layer board (was 1.0 mm). It ties the feet in its own
+   plane, so its stiffness here goes with its thickness (60 % of the 1.0 mm board's), not with its cube (22 %, the bending
+   figure); the arms in the 'arms' case are cut from the same board, so they are 0.6 mm too */
+const B07_PLAN = { ring: { w: 4.0, h: 3.6 }, ringIn: 2.1, lat: 5, armZ: [-1.0, 8.5, 18.0], armW: 3.8, rib: { w: 1.1, h: 1.2 }, sqZ: 4.0, sqN: 10, bt: 0.6 };
 const B07_ARM_L = 6.5;   /* the tab's free length, estimated from Brock's photo (5 to 8 mm): one length for the plan model and the edge-on tab */
 function b07_planModel(kind) {
   const nodes = [], els = [], rowNode = {}, pp = SIM_MAT.ppcf, fr = SIM_MAT.fr4, B = b07_boardOut();
@@ -137,7 +153,7 @@ function b07_planModel(kind) {
   let tail = 0, nose = 0; R.forEach((p, i) => { if (p[1] < R[tail][1]) tail = i; if (p[1] > R[nose][1]) nose = i; });
   const m = { nodes, els, fix: { [tail]: 'xy', [nose]: 'x' }, loads: {}, rowNode, nRing: R.length, links: [], board: [], kind, ribRows };
   if (kind !== 'none') {
-    const s = B07_PLAN.lat, L = feLattice('tri', -25, -15, 50, 75, s, { w: 1.0, h: 0.866 * s, E: fr.E, rho: fr.rho / 3, truss: true, part: 'board' });
+    const s = B07_PLAN.lat, L = feLattice('tri', -25, -15, 50, 75, s, { w: B07_PLAN.bt, h: 0.866 * s, E: fr.E, rho: fr.rho / 3, truss: true, part: 'board' });
     const keep = L.nodes.map(p => b07_inside(B, p[0], p[1])), map = new Map();
     L.nodes.forEach((p, i) => { if (keep[i]) { map.set(i, nodes.length); m.board.push(nodes.length); nodes.push(p); } });
     L.els.forEach(e => { if (keep[e.i] && keep[e.j]) els.push(Object.assign({}, e, { i: map.get(e.i), j: map.get(e.j) })); });
@@ -151,7 +167,7 @@ function b07_planModel(kind) {
         const a = nodes[bi], b = nodes[ri], Lr = Math.hypot(b[0] - a[0], b[1] - a[1]), f = Math.min(0.95, B07_ARM_L / Lr), mi = nodes.length;
         nodes.push([lerp(a[0], b[0], f), lerp(a[1], b[1], f)]);
         m.links.push({ e: els.length, z, sd, board: bi, ring: ri, mid: mi });
-        els.push({ i: bi, j: mi, w: 1.0, h: B07_PLAN.armW, E: fr.E, rho: fr.rho, part: 'arm' });
+        els.push({ i: bi, j: mi, w: B07_PLAN.bt, h: B07_PLAN.armW, E: fr.E, rho: fr.rho, part: 'arm' });
         els.push({ i: mi, j: ri, w: B07_PLAN.ring.w, h: B07_PLAN.ring.h, E: pp.E, rho: pp.rho, part: 'flange' });
       } else {
         m.links.push({ e: els.length, z, sd, board: bi, ring: ri });
@@ -276,30 +292,26 @@ function b07_tol() {
    Each part of the 29.31 g at its place (B07_POS), the shell split between the body and the wheel bay by their volumes
    (12,166 and 1,375 mm³). Returns the centre of mass's z (forward of the middle) and height for the battery at a place. */
 function b07_cg(batt) {
-  const B = B07_BUD, P = B07_POS;
-  const parts = [[B.shell, P.body], [B.sideSw, P.sideSw], [B.btn, P.btn], [B.board, P.boardCom], [B.wheel, P.wheel], [B.screws, { z: P.screwsH1.z, y: 3.0 }], [B.ins, { z: P.screwsH1.z, y: 6.0 }], [B.wires, { z: 0, y: 8.0 }], [B.batt, batt]];
+  const B = B07_BUD, P = B07_POS, postG = P.posts.reduce((a, q) => a + q.g, 0);
+  const parts = [[B.shell - postG, P.body], ...P.posts.map(q => [q.g, q]), ...P.sideSws.map(q => [B.sideSw / 2, q]), [B.btn, P.btn], [B.board, P.boardCom], [B.wheel, P.wheel], [B.screws, P.screws], [B.ins, P.inserts], [B.wires, P.wires], [B.batt, batt]];
   const m = parts.reduce((s, p) => s + p[0], 0);
   return { m, z: parts.reduce((s, p) => s + p[0] * p[1].z, 0) / m, y: parts.reduce((s, p) => s + p[0] * p[1].y, 0) / m, parts };
 }
-/** the battery's centre in the mouse (z forward), from the shared key-plan constant when there is one */
-/* F42.1 (Brock): the battery moves about 5.9 mm forward and 1.5 mm up, over the board's rear edge, so the mouse balances at
-   its centre: z −19.05 (H1's balance.py: "battery z for CoM z 0"), its middle 8.96 mm up. Until H2 moves it in KEY_PARTS,
-   the decided place is used; once KEY_PARTS has it (forward of z −21), the shared place is */
-const B07_BATT_F42 = { z: -19.05, y: 7.46 + 1.5 };
-function b07_battZ() {
-  const kp = typeof KEY_PARTS !== 'undefined' && KEY_PARTS.battery ? -(KEY_PARTS.battery.y + KEY_PARTS.battery.h / 2) : null;
-  return kp != null && kp > -21 ? kp : B07_BATT_F42.z;
-}
-/** the battery's centre height over the pad (mm): the shared key plan's once it carries F42.1's move, else the decided 8.96 */
-function b07_battY() {
-  const kp = typeof KEY_PARTS !== 'undefined' && KEY_PARTS.battery ? -(KEY_PARTS.battery.y + KEY_PARTS.battery.h / 2) : null;
-  return kp != null && kp > -21 && KEY_PARTS.battery.yMid != null ? KEY_PARTS.battery.yMid : B07_BATT_F42.y;
-}
+/* F42.1 (Brock, "Forward and up": a balance at the centre). H2 placed the battery in KEY_PARTS where the corrected model
+   balances (side switches and boss posts in): its centre at z −26.98, 7.46 mm up, 2.03 mm behind H1's place, no rise (review
+   b07 "HARDWARE"). Read from KEY_PARTS; H2's numbers only if KEY_PARTS is missing */
+const B07_BATT = { z: -26.98, y: 7.46 };
+/** the battery's centre in the mouse (z forward of the middle, mm) */
+function b07_battZ() { const kp = typeof KEY_PARTS !== 'undefined' ? KEY_PARTS.battery : null; return kp ? -(kp.y + kp.h / 2) : B07_BATT.z; }
+/** the battery's centre height over the pad (mm) */
+function b07_battY() { const kp = typeof KEY_PARTS !== 'undefined' ? KEY_PARTS.battery : null; return kp && kp.yMid != null ? kp.yMid : B07_BATT.y; }
 function b07_balance() {
   return b07_once('bal', () => {
     const P = B07_POS, zb = b07_battZ(), low = b07_cg({ z: zb, y: b07_battY() }), high = b07_cg(P.battHigh), old = b07_cg(P.battOld);
     const lvLow = low.y - P.grip, lvHigh = high.y - P.grip;
-    return { low, high, old, lvLow, lvHigh, twistCut: 1 - Math.abs(lvLow) / Math.abs(lvHigh) };
+    /* the rest of the mouse without its battery: where the battery has to pull the balance from */
+    const rest = (() => { const q = low.parts.slice(0, -1), m = q.reduce((a, p) => a + p[0], 0); return { m, z: q.reduce((a, p) => a + p[0] * p[1].z, 0) / m }; })();
+    return { low, high, old, rest, zb, lvLow, lvHigh, twistCut: 1 - Math.abs(lvLow) / Math.abs(lvHigh) };
   });
 }
 /** the same section squeezed at the grip: 10 N inward on each side, 12 mm up (thumb and fingers), feet held down and tied by k */
@@ -316,6 +328,16 @@ function b07_squeeze() {
     const fl = r => r.d[r.model.grip[0] * 3] - r.d[r.model.grip[1] * 3];
     const ft = r => r.d[r.model.N * 3] - r.d[0];
     return { s0, s1, s2, flex0: -fl(s0), flex1: -fl(s1), flexFree: -fl(s2), feet0: ft(s0), feet1: ft(s1), pk0: s0.smax, pk1: s1.smax };
+  });
+}
+
+/** the rival's fix on the same slice (review R2-b07-1): a 2 mm pultruded carbon rod glued across the feet (E 134 GPa,
+   1.5 g/cm³: TAP Plastics, research b07-10), as long as the feet are apart, with the rim still there; the same squeeze */
+function b07_rodTie() {
+  return b07_once('rod', () => {
+    const m = b07_archModel(1), span = Math.abs(m.nodes[m.N][0] - m.nodes[0][0]), A = Math.PI * 1 * 1, kRod = 134000 * A / span, kN = b07_tieK('none');
+    const r = simSolve('b07-sq-rod', () => b07_sqModel(kN + kRod));
+    return { flex: -(r.d[r.model.grip[0] * 3] - r.d[r.model.grip[1] * 3]), g: 1.5e-3 * A * span, span, kRod };
   });
 }
 
@@ -497,7 +519,7 @@ function b07_bracket(x, y0, y1, col, a, label, o = {}) {
    its ribs on the board's edge, which holds the feet apart: the same squeeze moves the sides a third as far, nothing added. The cut is the real shell's,
    across the board's rear rib row (model 2); the classroom panels are the two weaves side by side and the same weight of
    FR4 and magnesium pulled apart. */
-const B07_BRD = { ex: 10, by: 5.0, bt: 1.0, rodY: 2.2, rodR: 1.0, z: -0.77 };
+const B07_BRD = { ex: 10, by: 5.03 - B07_PLAN.bt / 2, bt: B07_PLAN.bt, rodY: 2.2, rodR: 1.0, z: -0.77 };   /* the board's top stays at 5.03 mm (the posts' ends), F47.4's 0.6 mm below it */
 /** a plain-weave swatch in [x, y, w, h]: strands passing over and under each other, set in resin. kind 'carbon' | 'glass' */
 function b07_weave(x, y, w, h, kind, a, o = {}) {
   if (a <= 0.003) return;
@@ -606,7 +628,7 @@ function b07_secHands(est, r, sq, o = {}) {
 S({
   id: 'b07_board', ch: 'shell', theme: 'night', title: 'The board you already carry', settle: 11, ideas: [94],
   replaces: ['shlPcbRib', 'shcCarry', 'shlStructs'],
-  src: ['b07Fe', 'b07Fr4Wiki', 'shlFr4', 'shlMg', 'b07GwPlusPro', 'b07Sabre', 'b07Harpe', 'shlPyrofil'],
+  src: ['b07Fe', 'b07Fr4Wiki', 'shlFr4', 'shlMg', 'b01GwPlusPro', 'b01GwWarg', 'b07Sabre', 'b07Harpe', 'shlPyrofil'],
   answers: [
     ['shlPcbRib: "unintuitive"', 'One demonstration on the real shell, cut across the board\'s rear rib row, problem first: squeeze it at the grip and its feet slide inward, the sides come in 0.64 mm; the usual added part; then the board, anchored to the ribs, holds the feet and the same squeeze moves the sides 0.21 mm.'],
     ['"explain how fr4 is like carbon fiber because it\'s also a woven composite"', 'A panel sets the two weaves side by side, carbon cloth in epoxy and glass cloth in epoxy (Wikipedia, FR-4: "woven fiberglass cloth with an epoxy resin binder"), and the narration says it: carbon fibre\'s recipe, made with glass cloth.'],
@@ -615,7 +637,8 @@ S({
     ['"you\'re just using what you already have"', 'The title, and the line "the board already spans the feet": the board is carried anyway (its 5.6 g is a target, F42.2).'],
     ['shcCarry: "meg slide"', 'Read as "meh": the square-per-gram grid is gone. Its point, use the weight you already carry (the board, 5.6 g target), is this slide\'s result (+0 g, no added part).'],
     ['shlStructs: "viewer will have no idea what that spec means in big blue poor setup"', 'The published N/mm figure is left out. The measurement is set up on screen instead: 10 N on each side (the weight of a 1 kg bag of sugar) and how far the sides move, in mm (six sheets of copy paper), solved for this shell.'],
-    ['F2.26 (FR4 as strong as magnesium; the whole board)', 'The same weight of each pulled until it breaks: FR4 4,300 N, magnesium alloy 2,350 N, 1.8× (Gund; MatWeb, the higher magnesium figure, so the ratio is the cautious one).']
+    ['F2.26 (FR4 as strong as magnesium; the whole board)', 'The same weight of each pulled until it breaks: FR4 4,300 N, magnesium alloy 2,350 N, 1.8× (Gund; MatWeb, the higher magnesium figure, so the ratio is the cautious one).'],
+    ['F47.4 (the 0.6 mm board)', 'Re-solved with the 0.6 mm two-layer board (FR4 18 GPa across the weave). The board ties the feet in its own plane, so there it keeps 60 % of the 1.0 mm board\'s stiffness (the 22 % is its bending stiffness); its tie is still about 70× the rim\'s (586 against 8.5 N/mm), so the sides move 0.21 mm either way (0.2078 against 0.2073 mm solved): the verdict stands, and the section draws the board 0.6 mm thick.']
   ],
   draw: t => {
     const R = b07_squeeze(), ex = B07_BRD.ex;
@@ -657,13 +680,16 @@ S({
       rich([{ s: fmtN(v, 2), font: 'disp', size: 84, weight: 800, color: C.ink, tnum: true }, { s: 'mm', font: 'disp', size: 32, weight: 700, color: C.mute, gap: 10, caps: false }], RM, 418, { align: 'right', alpha: kr });
       if (t > 2.5) { const s6 = 'about six sheets of copy paper'; scaleNote(RM - 34 - tw(s6, { role: 'small', size: 23, weight: 600 }), 466, s6, { t, t0: 2.5, size: 23 }); }
     }
-    if (t > 2.1) scaleNote(LM, 950, 'a side, a hard press: a 1 kg bag of sugar, five times the hardest grip measured at a desk', { lead: '10 N', t, t0: 2.1, size: 22 });
+    if (t > 2.1) scaleNote(LM, 920, 'a side, a hard press: a 1 kg bag of sugar, five times the hardest grip measured at a desk', { lead: '10 N', t, t0: 2.1, size: 22 });
     /* phase 2, the right column: the two weaves, the same-weight pull, and the result */
     const rx = LM + 1100, rw = RM - rx;
-    b07_weavePanel(t, 5.3, [rx, 286, rw, 280]);
-    b07_pullPanel(t, 6.3, [rx, 584, rw, 190]);
-    verdict(t, 8.4, rx, 910, { from: +fmtN(R.flex0, 2), to: +fmtN(R.flex1, 2), unit: 'mm', dec: 2, label: 'How far the sides come in', better: 'lower', size: 96, netWord: 'with no added part', maxW: rw });
-    source(t, 'Solved here in 2D: a 10 mm slice of the shell (CF-PP), its feet on the rim alone or on rim and board; 10 N a side, drawn ' + ex + '× real. Stiffness only: the tie raises the wall\'s peak stress 9 %.', { t0: 2.2 });
+    b07_weavePanel(t, 5.3, [rx, 286, rw, 216]);
+    b07_pullPanel(t, 6.3, [rx, 518, rw, 190]);
+    /* the rival's fix, solved the same way (R2-b07-1): a 2 mm pultruded carbon rod (134 GPa, TAP Plastics, research b07-10) glued
+       across the feet ties them about as well, for a part, its weight and two joints: the board's win is the added nothing */
+    { const RB = b07_rodTie(), kr2 = ep(t, 8.0, 8.4); if (kr2 > 0.003) text('A 2 mm carbon rod glued across does about the same (' + fmtN(RB.flex, 2) + ' mm), for +1 part, +' + fmtN(RB.g, 2) + ' g and 2 glued joints.', rx, 744, { role: 'small', size: 21, weight: 600, color: C.mute, maxW: rw, lh: 1.25, alpha: kr2 }); }
+    verdict(t, 8.4, rx, 905, { from: +fmtN(R.flex0, 2), to: +fmtN(R.flex1, 2), unit: 'mm', dec: 2, label: 'How far the sides come in', better: 'lower', who: ['Rim alone', 'Tied to the board'], rivalCol: 'grey', size: 84, netWord: 'with no added part', maxW: rw });
+    source(t, 'Solved here in 2D: a 10 mm slice of the shell (CF-PP), its feet on the rim alone or on rim and the 0.6 mm board (F47.4); 10 N a side, drawn ' + ex + '× real. Stiffness only: the tie raises the wall\'s peak stress 9 %. The rod: 134 GPa, 1.5 g/cm³ (TAP Plastics), glued at the feet.', { t0: 2.2, maxW: rx - LM - 40 });
     if (kx > 0.003) text('One 10 mm slice, solved in 2D', box[0] + box[2], box[1] + 18, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kx * (1 - ep(t, 7.6, 7.8)) + ep(t, 8.7, 9.0) });
   }
 });
@@ -675,7 +701,7 @@ S({
    FR4 coloured by its stress on one scale. The arm, edge on: a fixed-guided FR4 tab 6.5 mm long and 1.0 mm thick (its
    length estimated from the photo): σ = 3·E·h·δ / L², so 0.36 mm at its tip takes its root to 483 MPa (Gund, crosswise
    flexural). Only the squeeze is modelled on both; the drop is shown on the arm alone. */
-const B07_ARM = { L: B07_ARM_L, h: 1.0, E: 18000, sf: 483 };   /* crosswise FR4 (a tab off the long edge): modulus 18 GPa, bending strength 483 MPa (Gund, b07Fr4Flex) */
+const B07_ARM = { L: B07_ARM_L, h: 1.0, E: 18000, sf: 483 };   /* crosswise FR4 (a tab off the long edge): modulus 18 GPa, bending strength 483 MPa (Gund, shlFr4) */
 B07_ARM.perMM = 3 * B07_ARM.E * B07_ARM.h / (B07_ARM.L * B07_ARM.L);
 B07_ARM.snap = B07_ARM.sf / B07_ARM.perMM;
 /** the board's outline in the top view's frame (key plan: x as given, y = −z) */
@@ -798,19 +824,20 @@ function b07_sweepChart(t, t0, r, SW, kw) {
 S({
   id: 'b07_arms', ch: 'shell', theme: 'paper', title: 'Small arms snap, the whole board holds', settle: 11, ideas: [94],
   replaces: ['shcArms'],
-  src: ['b07Fe', 'shcTpuHati', 'shcTpuHatiR', 'b07GwHtsU', 'b07GwPhoto', 'b07Fr4Flex'],
+  src: ['b07Fe', 'shcTpuHati', 'shcTpuHatiR', 'b01TpuHtsU', 'b07GwPhoto', 'shlFr4'],
   answers: [
     ['"these aren\'t what the arms or pcb would look like"', 'Drawn from his two photos: narrow FR4 tabs on the board\'s long edge, square at the root, silkscreen corner marks at the tips and a locating hole in one, reaching under the shell\'s rim (a close-up tile), placed along the board where G-Wolves puts them (52, 68 and 84 % back from its front) in the top view.'],
     ['"important idea tho"', 'Kept and led with the failure he lived: a jolt snaps an arm at its root, and the edge-on arm shows how little it takes (a 6.5 mm tab breaks when its tip moves 0.38 mm). Then the important idea itself: the whole board, every rib tied along its edge, stiffens the length of the board instead of three spots.'],
     ['F2.26 (small FR4 arms easy to snap; THE WHOLE PCB)', 'The same 10 N squeeze moved along the board (solved): arms hold the shell hard at their three places and leave the front soft; every rib tied along the edge spreads it, so the softest spot moves less (derived). No strength claim: a drop is not modelled, and the slide says so.'],
     ['F6.3, F28.3 (his HTS Ultra\'s arms broke in shipping; his photos)', 'Said in the narration; the photos are the drawing\'s reference (drawn, not shown, F34.1).'],
-    ['F33.5, F41.1', 'One of his important ideas, problem first. Its point leads with stiffness (F41.1): under a squeeze nothing here comes near breaking, and a drop is not modelled.']
+    ['F33.5, F41.1', 'One of his important ideas, problem first. Its point leads with stiffness (F41.1): under a squeeze nothing here comes near breaking, and a drop is not modelled.'],
+    ['F47.3, F47.4 (the rib feet\'s joint is open; the 0.6 mm board)', 'Re-solved with the 0.6 mm two-layer board (FR4 18 GPa across the weave), the arms cut from the same board: the softest spot along the board 53 → 45 µm (each rounded against Theseus; 53.2 and 44.4 solved). The model ties each rib to the board both ways, and the source line says so: how a foot joins the board is still open (Brock: "keep as options"); a push-only joint would let the pulling feet go and lose this lead (55.7 µm, worse than the arms). No drop claim.']
   ],
   draw: t => {
     const R = b07_plan(), Ca = R.arms, Cw = R.whole, SW = b07_sweep();
     header(t, 'Small arms snap, the whole board holds');
     captions(t, [[0.6, 'G-Wolves had the right idea: use the board to stiffen the shell. It reaches the shell through six small FR4 arms.'],
-      [2.6, 'Short, stiff tabs with square roots: a jolt in shipping snapped the arms on my HTS Ultra 8K.'],
+      [2.6, 'Short, stiff tabs with square roots: a jolt in shipping snapped the arms on Brock\'s HTS Ultra 8K.'],
       [4.8, 'Theseus ties every rib along the board\'s edge instead, with no tab to snap. Arms hold three spots hard and leave the front soft; every rib spreads the hold along the board.']]);
     /* ---------- the main view: the whole mouse from above, then onto the board ---------- */
     const jolt = t > 2.9 ? Math.exp(-(t - 2.9) * 7) * Math.sin((t - 2.9) * 38) * 9 : 0;
@@ -858,8 +885,8 @@ S({
     b07_armEdge(t, [rx, 560, rw, 196], dJ, crackJ, kE);
     if (t > 3.6 && t < 5.35) scaleNote(rx, 790, 'about four sheets of copy paper', { lead: fmtN(B07_ARM.snap, 2) + ' mm', t, t0: 3.6, size: 23 });
     b07_sweepChart(t, 5.5, [rx, 560, rw, 250], SW, kw);
-    verdict(t, 8.6, rx, 912, { from: SW.worstArms * 1000, to: SW.worstWhole * 1000, unit: 'µm', dec: 0, label: 'Softest spot along the board', better: 'lower', size: 72, maxW: rw });
-    source(t, 'Solved here in 2D: CF-PP rim, plan-5 FR4 board, 10 N a side; tabs 3.8 × ' + fmtN(B07_ARM_L, 1) + ' mm FR4 (photo), ribs CF-PP. Tab: 18 GPa, 483 MPa bent, crosswise (Gund). A drop isn\'t modelled.', { t0: 2.2 });
+    verdict(t, 8.6, rx, 912, { from: Math.floor(SW.worstArms * 1000), to: Math.ceil(SW.worstWhole * 1000), unit: 'µm', dec: 0, label: 'Softest spot along the board', better: 'lower', who: ['G-Wolves arms', 'Every rib tied'], size: 72, maxW: rw });
+    source(t, 'Solved here in 2D: CF-PP rim, plan-5 FR4 board, 10 N a side; tabs 3.8 × ' + fmtN(B07_ARM_L, 1) + ' mm FR4 (photo), ribs CF-PP. Tab: 18 GPa, 483 MPa bent, crosswise (Gund). Board 0.6 mm (F47.4); each rib tied both ways (how a foot joins the board is open). A drop isn\'t modelled.', { t0: 2.2, maxW: rx - LM - 40 });
   }
 });
 
@@ -1132,7 +1159,7 @@ S({
     b07_contact(t, 6.7, [cx0 + 2 * (cw + 20), cy, cw, ch], pad, { name: 'Poron pad: nothing slides', hero: true, fmax: fm, pad: true });
     const kd = ep(t, 2.4, 2.8);
     if (kd > 0.003) text('Contacts drawn magnified; one-mass model, illustrative', RM, cy + ch + 30, { role: 'tick', size: 19, color: C.faint, align: 'right', alpha: kd });
-    verdict(t, 8.9, cx0, 900, { from: dry.slips.length, to: 0, unit: 'slips', dec: 0, label: 'Creaks in one squeeze', better: 'lower', size: 84, net: 'Silent', netWord: 'for a few square millimetres of foam', maxW: 900 });
+    verdict(t, 8.9, cx0, 880, { from: dry.slips.length, to: 0, unit: 'slips', dec: 0, label: 'Creaks in one squeeze (modelled)', better: 'lower', who: ['Dry', 'Poron'], rivalCol: 'grey', size: 84, net: 'Silent', netWord: 'for a few square millimetres of foam', maxW: 900 });
     if (t > 7.2) scaleNote(LM, 770, 'PORON 4701-30: soft, 21 to 62 kPa at a quarter squeeze', { t, t0: 7.2, size: 21 });
     source(t, 'Stick-slip: static friction above sliding friction (TU Delft demo 17.5). Pads: Rogers PORON, which "fill gaps caused by variations in manufacturing tolerances".', { t0: 2.0 });
   }
@@ -1176,8 +1203,8 @@ S({
         rr(bx, yy + 14, bw * (d / mg) * kb, 30, 4, col, null, 0, a);
         text(fmtN(d, 2) + ' g/cm³', bx + bw * (d / mg) * kb + 12, yy + 37, { role: 'num', size: 21, weight: 700, color: tc, alpha: a * kb });
       });
-      text('The same trigger, by weight', bx, y + 352, { role: 'tick', size: 19, color: C.faint, alpha: a });
-      verdict(t, 1.8, x + 24, y + 470, { from: 100, to: Math.round((1 - cut) * 1000) / 10, unit: '%', dec: 0, label: 'Trigger weight', better: 'lower', size: 60, maxW: w - 48 });
+      text('The same shape: ' + b07_dn(cut * 100) + ' % lighter (magnesium is the stiffer: 45 against 17 GPa)', bx, y + 352, { role: 'tick', size: 19, color: C.faint, alpha: a, maxW: w - 48 });
+      verdict(t, 1.8, x + 24, y + 470, { from: 100, to: Math.ceil((1 - cut) * 100 - 1e-9), unit: '%', dec: 0, label: 'Trigger weight, the same shape', better: 'lower', who: ['Magnesium', 'PPS'], size: 52, maxW: w - 48 });
     }
     /* ---- 2: graded walls ---- */
     { const [x, y, w, h] = tiles[1], a = ep(t, 3.2, 3.6);
@@ -1188,7 +1215,7 @@ S({
         const sq = ep(t, 4.2, 4.9, E.io3), box = [x + 20, y + 96, w - 40, 236], cf = camFit([-40, -40, 80, 44], box, 0.06), P0 = q => [q[0], -q[1]];
         withCam(cf, box, () => { for (const [r, col, dx] of [[GR.ev, C.comp, -0.0], [GR.gr, C.hero, 0]]) { G.save(); G.translate(dx, 0); b07_miniFrame(r, P0, sq, 25, col, a * (col === C.hero ? 1 : 0.85), { w: 1 }); G.restore(); } });
         text('Grey: even. Blue: graded. Squeeze drawn 25× real.', x + 24, y + 352, { role: 'tick', size: 19, color: C.faint, alpha: a });
-        verdict(t, 5.0, x + 24, y + 470, { from: Math.abs(GR.flexEv), to: Math.abs(GR.flexGr), unit: 'mm', dec: 3, label: 'Flex, 10 N each side', better: 'lower', size: 60, maxW: w - 48 });
+        verdict(t, 5.0, x + 24, y + 470, { from: Math.abs(GR.flexEv), to: Math.abs(GR.flexGr), unit: 'mm', dec: 3, label: 'Flex, 10 N each side', better: 'lower', who: ['Even wall', 'Graded'], rivalCol: 'grey', size: 72, maxW: w - 48 });
       }
     }
     /* ---- 3: joined struts ---- */
@@ -1204,11 +1231,11 @@ S({
           text(nm, x + 30, y + 118 + i * 118, { role: 'label', size: 19, color: i ? C.heroText : C.mute, alpha: a });
         });
         text('5 N on the roof, drawn 120× real; same strut weight. Peak stress +' + Math.round((ST.pkJo / ST.pkSep - 1) * 100) + ' %.', x + 24, y + 352, { role: 'tick', size: 19, color: C.faint, alpha: a, maxW: w - 48 });
-        verdict(t, 8.4, x + 24, y + 470, { from: ST.sinkSep * 1000, to: ST.sinkJo * 1000, unit: 'µm', dec: 1, label: 'Roof sink', better: 'lower', size: 60, maxW: w - 48 });
+        verdict(t, 8.4, x + 24, y + 470, { from: ST.sinkSep * 1000, to: ST.sinkJo * 1000, unit: 'µm', dec: 1, label: 'Roof sink', better: 'lower', who: ['Separate struts', 'Joined'], rivalCol: 'grey', size: 52, maxW: w - 48 });
       }
     }
     if (t > 9) text('Elsewhere: the closed wheel well is with the cutouts. Not shown: the bottom cover (later).', LM, ty + th + 40, { role: 'small', size: 21, weight: 560, color: C.faint, alpha: ep(t, 9, 9.4) });
-    source(t, 'Densities: carbon-filled PPS 1.40 (MakeItFrom), magnesium AZ91D 1.81 g/cm³ (MatWeb). Walls and struts: 2D frames solved here in CF-PP, 10 mm deep.', { t0: 2.0 });
+    source(t, 'Carbon-filled PPS 1.40 g/cm³, 17 GPa (MakeItFrom); magnesium AZ91D 1.81 g/cm³, 44.8 GPa (MatWeb). Walls and struts: 2D frames solved here in CF-PP, 10 mm deep.', { t0: 2.0 });
   }
 });
 
@@ -1223,7 +1250,8 @@ S({
     ['Hand-off in (b10_software)', 'Every setting changes in the browser; a shape can\'t, so it has to be measured before it ships: the card\'s answer.']
   ],
   draw: t => chapterCard2(t, { ch: 'shape', turn: 2.1, part: { view: 'left', hi: ['hump', 'sides'] },
-    list: [[['newton', 42], 'Newtonian shape analysis'], [[93], 'Flat low sides, the same on both'], [['size', 40], 'Sized against real hands'], [[45], 'EMG on every revision'], [[95], 'Balance at the centre']] })
+    /* film order (FILM F27): the slide that answers the card's flagship (the X2F, cut to 87.5 mm) plays first */
+    list: [[['size', 40], 'Sized against real hands'], [['newton', 42], 'Newtonian shape analysis'], [[93], 'Flat low sides, the same on both'], [[45], 'EMG on every revision'], [[95], 'Balance at the centre']] })
 });
 
 /* ============================== 7. b07_newton: Newtonian shape analysis ==============================
@@ -1309,7 +1337,7 @@ S({
       [2.9, 'A fingertip sliding over a mouse is that ball. Where the shoulder turns tighter than the press can hold it, the finger carries straight on.'],
       [6.2, 'Newtonian shape analysis charts how fast the slope turns. Past the red line the finger flies off; with no turn there is no edge to rest on.']]);
     /* the classroom version, on screen from frame one */
-    const pan = [LM, 286, 540, 520], inner = demoPanel(t, -1, pan, { src: 'McCloskey 1980' });
+    const pan = [LM, 286, 540, 490], inner = demoPanel(t, -1, pan, { src: 'McCloskey 1980' });
     b07_tube(t, inner);
     text('A ball through a curved tube, seen from above: which way does it leave?', inner[0], inner[1] + 8, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: inner[2], alpha: 1 });
     /* the three profiles, rival first */
@@ -1322,7 +1350,7 @@ S({
     });
     if (t > 6.3) text('How fast the slope turns along it, °/mm; red: faster than a finger can follow', tx0, ty + th2 + 14 + 156 + 30, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: ep(t, 6.3, 6.7) });
     const pkS = b07_peakK(SH.sharp), pkR = b07_peakK(SH.round), thr = 180 / Math.PI / (B07_NEWT.m * B07_NEWT.v * B07_NEWT.v / B07_NEWT.F * 1000);
-    verdict(t, 8.2, LM, 930, { from: pkS, to: pkR, unit: '°/mm', dec: 0, label: 'Sharpest turn on the shoulder', size: 72, net: 'Under the ' + fmtN(Math.floor(thr), 0) + ' °/mm a finger follows', maxW: 540 });
+    verdict(t, 8.2, LM, 868, { from: pkS, to: pkR, unit: '°/mm', dec: 0, label: 'Sharpest turn on the shoulder', who: ['Sharp shoulder', 'Theseus'], size: 72, net: 'In the band', netWord: 'an edge to feel, a turn to follow', maxW: 540 });
     source(t, 'Illustrative profiles (F21.12), drawn from their curvature. A 10 g fingertip at 0.5 m/s pressing 1.1 N turns no tighter than ' + fmtN(B07_NEWT.m * B07_NEWT.v * B07_NEWT.v / B07_NEWT.F * 1000, 1) + ' mm.', { t0: 2.0, maxW: 1260, x: RM, align: 'right' });
   }
 });
@@ -1402,28 +1430,30 @@ S({
       text('Fingers', tr[0] + 24, cy - 44, { role: 'label', size: 19, color: C.heroText, alpha: kt });
       text('Thumb rest', tr[0] + 24, cy + 58, { role: 'label', size: 19, color: C.heroText, alpha: kt });
     }
-    verdict(t, 6.8, LM + 560, 900, { from: R.fE, to: R.fB, unit: 'mm', dec: 2, label: 'Flex for the same added weight', better: 'lower', size: 84, netWord: 'against spreading it evenly', maxW: 700 });
+    verdict(t, 6.8, LM + 560, 870, { from: R.fE, to: R.fB, unit: 'mm', dec: 2, label: 'Flex for the same added weight', better: 'lower', who: ['Spread evenly', 'On the low sides'], rivalCol: 'grey', size: 84, netWord: 'the same added weight', maxW: 700 });
     source(t, 'Solved here in 2D: the shell cut across the hump, mirror-averaged, a 10 mm CF-PP strip; 10 N a side, 12 mm up; drawn ' + ex + '× real. The band adds 10 % weight.', { t0: 2.4 });
   }
 });
 
 /* ============================== 9. b07_size: Sized against real hands ==============================
-   The Shape chapter's compromise is "shapes cut down for weight": Pulsar cut the X2F CrazyLight to 87.5 mm to reach 29.5 g.
+   The Shape chapter's compromise is "shapes cut down for weight": Pulsar cut the X2F CrazyLight to 87.5 mm to reach 29 g (its own
+   figure, ± 2 g; no scale weight is published: BROADCAST-0945, b01X2fWt).
    Theseus keeps a full 119.3 mm at 29.31 g, the shortest of the full-size flagships. Hands from ANSUR II (US Army 2012,
    the full public sample), lengths on one ruler; his rule for a flat mouse quoted word for word (F21.13). */
-const B07_X2F = { L: 87.5, g: 29.5 };
+const B07_X2F = { L: 87.5, g: 29 };
 S({
   id: 'b07_size', ch: 'shape', theme: 'paper', title: 'Sized against real hands', settle: 10, ideas: ['size', 40, 38, 39, 43],
+  after: 'b07_shcard',   /* FILM F27: Shape opens on the slide that answers its card's flagship (the X2F, cut to 87.5 mm) */
   replaces: ['size'],
-  src: ['b07Ansur', 'b07X2f', 'b07OudeHengel', 'shlDoc'],
+  src: ['b07Ansur', 'b01X2f', 'b01X2fWt', 'b07OudeHengel', 'shlDoc'],
   answers: [
     ['F21.13 (the flatter-mouse line, word for word)', 'Quoted exactly in its own card: "for a flatter mouse, its better to be too small than too big, because big hands will still be able to fingertip grip" (his doc, line 627), and called his rule, not a measured finding (Theseus is 39.9 mm tall).'],
     ['119.3 mm against the flagships and the average hand', 'One ruler: hand lengths from ANSUR II (women 5th 165, mean 181; men mean 193.3, 95th 210 mm; 193.3 is his 19.3 cm) and the flagships\' lengths (Viper V4 Pro 127.1, G Pro X Superlight 2 125.0, Starlight X 124.8, UltralightX 121.3, Theseus 119.3).'],
-    ['FILM F1 (the chapter\'s flagship, X2F CrazyLight: cut to 87.5 mm)', 'The slide answers the card\'s flagship: the X2F cut to 87.5 mm to reach 29.5 g; Theseus keeps a full 119.3 mm at 29.31 g. The cost of too short, sourced: Oude Hengel 2008, an 87 mm mouse raised big hands\' wrist-extensor load by up to 5.5 % MVC (office mice; no length-to-hand ratio rule exists, research gap 8).']
+    ['FILM F1 (the chapter\'s flagship, X2F CrazyLight: cut to 87.5 mm)', 'The slide answers the card\'s flagship: the X2F cut to 87.5 mm to reach 29 g (Pulsar\'s figure, ± 2 g); Theseus keeps a full 119.3 mm at 29.31 g. The cost of too short, sourced: Oude Hengel 2008, an 87 mm mouse raised big hands\' wrist-extensor load by up to 5.5 % MVC (office mice; no length-to-hand ratio rule exists, research gap 8).']
   ],
   draw: t => {
     header(t, 'Sized against real hands');
-    captions(t, [[0.6, 'To reach 29.5 g, Pulsar cut the X2F CrazyLight to 87.5 mm. Under an average hand, that is less than half the hand\'s length.'],
+    captions(t, [[0.6, 'To reach 29 g, Pulsar cut the X2F CrazyLight to 87.5 mm. Under an average hand, that is less than half the hand\'s length.'],
       [3.6, 'Theseus keeps a full 119.3 mm at 29.31 g: the shortest of the full-size flagships, sized to the rule below.']]);
     const mice = [['Pulsar X2F CrazyLight', B07_X2F.L, 'rival', 'Cut down for weight']].concat(B07_LEN.map(([id, nm, d]) => [nm, b07_len(id, d), 'comp'])).concat([['Theseus', 119.3, 'hero']]);
     mice.sort((a, b) => a[1] - b[1]);
@@ -1435,7 +1465,7 @@ S({
     text('{mm}', x1 + 18, 900, { role: 'tick', size: 19, color: C.faint, alpha: ka });
     text('Hand length, wrist crease to fingertip (ANSUR II)', LM, y0 + 10, { role: 'label', size: 20, color: C.mute, alpha: ka });
     hands.forEach(([nm, L], i) => {
-      const y = y0 + 44 + i * 40, k = ep(t, -0.6 + i * 0.15, 0 + i * 0.15, E.out3);
+      const y = y0 + 44 + i * 40, k = 1;   /* the hands are the ruler: all four from frame one (R2-b07-8) */
       text(nm, x0 - 16, y + 7, { role: 'small', size: 21, weight: 620, color: C.ink2, align: 'right', alpha: ka });
       rr(x0, y - 10, Math.max(2, (X(L) - x0) * k), 20, 4, TH ? C.comp2 : C.comp2, null, 0, ka);
       if (k >= 1) text(fmtN(L, L % 1 ? 1 : 0), X(L) + 10, y + 7, { role: 'num', size: 21, weight: 700, color: C.ink2, alpha: ka, tnum: true });
@@ -1461,9 +1491,9 @@ S({
       text('Brock, In Pursuit of an Objectively Better Mouse', qx + 26, 300 + 330 - 26, { role: 'small', size: 20, weight: 560, color: C.faint, maxW: qw - 52, alpha: kq });
     }
     const kh = ep(t, 6.2, 6.6);
-    if (kh > 0.003) text('Too short costs too: in a lab study, a mouse 87 mm long raised big hands\' wrist-extensor load by up to 5.5 % of its maximum (Oude Hengel 2008, office mice).', qx, 672, { role: 'small', size: 21, weight: 560, color: C.mute, maxW: qw, lh: 1.3, alpha: kh });
-    verdict(t, 6.8, qx, 860, { from: B07_X2F.L, to: 119.3, unit: 'mm', dec: 1, label: 'Length at about 29 g', better: 'higher', who: ['X2F', 'Theseus'], size: 72, maxW: qw });
-    source(t, 'Hands: ANSUR II public data (US Army 2012), men n 4,082, women n 1,986. Lengths: the makers\'; X2F CrazyLight 87.5 mm, 29 g ± 2 (Pulsar), 29.5 g reported.', { t0: 2.0 });
+    if (kh > 0.003) text('Too short costs too: in a lab study, a mouse 87 mm long raised big hands\' wrist-extensor load by up to 5.5 % of its maximum (Oude Hengel 2008, office mice).', qx, 660, { role: 'small', size: 21, weight: 560, color: C.mute, maxW: qw, lh: 1.3, alpha: kh });
+    verdict(t, 6.8, qx, 860, { from: B07_X2F.L, to: 119.3, unit: 'mm', dec: 1, label: 'Full length at about 29 g', who: ['X2F', 'Theseus'], size: 72, maxW: qw });
+    source(t, 'Hands: ANSUR II public data (US Army 2012), men n 4,082, women n 1,986. Lengths: the makers\'; X2F CrazyLight 87.5 mm, 29 g ± 2 (Pulsar; no scale weight is published).', { t0: 2.0 });
   }
 });
 
@@ -1525,7 +1555,7 @@ S({
       const names = ['FK1', 'FK1+', 'FK2', 'S1', 'S2'], cw = (p2[2] - 52) / 5;
       names.forEach((nm, i) => {
         const cx = p2[0] + 26 + cw * (i + 0.5), ka = k2 * ep(t, 3.5 + i * 0.12, 3.8 + i * 0.12);
-        text(nm, cx, p2[1] + 110, { role: 'h2', size: 34, color: nm === 'S1' ? C.red : (nm === 'S2' || nm === 'FK1') ? C.heroText : C.ink2, align: 'center', alpha: ka });
+        text(nm, cx, p2[1] + 110, { role: 'h2', size: 34, color: nm === 'S1' ? C.red : (nm === 'S2' || nm === 'FK1') ? C.ink : C.mute, align: 'center', alpha: ka });
         /* the click rate: the same bar for every shape */
         rect(cx - 16, p2[1] + 300 - 130, 32, 130, { fill: C.comp, alpha: ka });
       });
@@ -1544,13 +1574,14 @@ S({
       demoWindow(p3[0], p3[1], p3[2], p3[3], k4);
       text('Every Theseus revision', p3[0] + 26, p3[1] + 42, { role: 'label', size: 20, color: C.heroText, alpha: k4 });
       [['Muscle', 'EMG on the two extensors, during play'], ['Aim', 'the same aim test, the same players'], ['Comfort', 'rated by the players: a 5 mm move of the peak changed comfort, not EMG (Li & Wang 2025)']].forEach(([h1, body], i) => {
-        const ka = k4 * ep(t, 6.2 + i * 0.35, 6.6 + i * 0.35), yy = p3[1] + 110 + i * 130;
+        const ka = k4 * ep(t, 6.2 + i * 0.35, 6.6 + i * 0.35), yy = p3[1] + 104 + i * 112;
         circle(p3[0] + 40, yy - 8, 13, { fill: C.hero, alpha: ka }); text(String(i + 1), p3[0] + 40, yy - 1, { role: 'num', size: 19, weight: 800, color: C.onHero || '#FFFFFF', align: 'center', alpha: ka });
         text(h1, p3[0] + 66, yy, { role: 'h2', size: 30, color: C.ink, alpha: ka });
         text(body, p3[0] + 66, yy + 34, { role: 'small', size: 21, weight: 560, color: C.mute, maxW: p3[2] - 92, lh: 1.3, alpha: ka });
       });
       const kq = ep(t, 7.6, 8.0) * k4;
-      text('The revision that wins all three ships.', p3[0] + 26, p3[1] + 520, { role: 'small', size: 24, weight: 700, color: C.heroText, maxW: p3[2] - 52, alpha: kq });
+      /* the payoff for the eye (review R2-b07-6): no Theseus EMG result exists yet, so no number; the rule itself, in its type */
+      text('The revision that wins all three ships.', p3[0] + 26, p3[1] + 490, { font: 'disp', size: 38, weight: 800, color: C.heroText, grad: C.heroGrad, maxW: p3[2] - 52, lh: 1.1, alpha: kq, caps: false });
       text('"Currently Zowie is the only company to take the Sports Science of shape design seriously enough to do this." Brock', p3[0] + 26, p3[1] + 574, { role: 'small', size: 20, weight: 560, color: C.faint, maxW: p3[2] - 52, lh: 1.3, alpha: kq, sentence: false });
     }
     source(t, 'Wang et al. 2023 (16 pros, Overwatch): static activity of the extensor digitorum 5.1 to 5.4 % MVC, extensor carpi radialis 5.4 to 5.9 %. Jonsson: static load under 2 %, never over 5 %.', { t0: 2.0 });
@@ -1568,21 +1599,26 @@ S({
 /** the parts as they go in, each with its weight (g) and centroid (z forward, y up; mm) */
 function b07_balParts() {
   return b07_once('balParts', () => {
-    /* H1's balance model (3d/pcb/tools/balance.py), so the film has one: the budget's masses at the 3D centroids, the whole
-       shell at its body's centroid, the board's own centre of mass from its parts (scaled to the 5.6 g target, F42.2), the
-       plate screws at y 3.0, their inserts at 6.0, the wires at 8.0 */
-    const B = B07_BUD, P = B07_POS, sc = B.screws + B.ins + B.wires;
+    /* H2's balance model (3d/pcb/tools/balance.py), so the film has one, grouped as they land: the shell (its body and its
+       four boss posts, 9.35 g), the two side switches, the board at its 5.6 g target, the four screws and inserts with the
+       wires; each group at its own weighted centroid, so the balance point is exactly b07_cg's */
+    const B = B07_BUD, P = B07_POS, grp = list => { const g = list.reduce((a, q) => a + q[0], 0); return { g, z: list.reduce((a, q) => a + q[0] * q[1].z, 0) / g, y: list.reduce((a, q) => a + q[0] * q[1].y, 0) / g }; };
+    const postG = P.posts.reduce((a, q) => a + q.g, 0);
+    const shell = grp([[B.shell - postG, P.body], ...P.posts.map(q => [q.g, q])]), sw = grp(P.sideSws.map(q => [B.sideSw / 2, q]));
+    const scw = grp([[B.screws, P.screws], [B.ins, P.inserts], [B.wires, P.wires]]);
     return [
-      { name: 'Shell', g: B.shell, z: P.body.z, y: P.body.y },
+      { name: 'Shell', g: shell.g, z: shell.z, y: shell.y },
       { name: 'Buttons', g: B.btn, z: P.btn.z, y: P.btn.y },
-      { name: 'Side switches', g: B.sideSw, z: P.sideSw.z, y: P.sideSw.y },
+      { name: 'Side switches', g: sw.g, z: sw.z, y: sw.y },
       { name: 'Board', g: B.board, z: P.boardCom.z, y: P.boardCom.y, target: true },
       { name: 'Wheel', g: B.wheel, z: P.wheel.z, y: P.wheel.y },
-      { name: 'Screws, wires', g: sc, z: ((B.screws + B.ins) * P.screwsH1.z) / sc, y: (B.screws * 3.0 + B.ins * 6.0 + B.wires * 8.0) / sc },
+      { name: 'Screws, wires', g: scw.g, z: scw.z, y: scw.y },
       { name: 'Battery', g: B.batt, z: b07_battZ(), y: b07_battY(), batt: true }
     ];
   });
 }
+/** a lever (mm) as one decimal, rounded against Theseus: up for its own low battery, down for the battery in the hump */
+const b07_lvTxt = (v, theseus) => fmtN((theseus ? Math.ceil(Math.abs(v) * 10 - 1e-9) : Math.floor(Math.abs(v) * 10 + 1e-9)) / 10, 1);
 /** where the scales sit (under the front and rear skates, mouse z) and the middle of the mouse's length */
 function b07_balFrame() {
   return b07_once('balFrame', () => {
@@ -1613,24 +1649,27 @@ function b07_comMark(x, y, r, a) {
   G.strokeStyle = C.ink; G.lineWidth = 2; G.beginPath(); G.arc(x, y, r, 0, TAU); G.stroke();
   G.restore();
 }
-S({
+S(b07_live({
   id: 'b07_balance', ch: 'shape', theme: 'paper', title: 'Balance at the centre', settle: 12, ideas: [95],
   replaces: ['mass'],
-  src: ['b07Mass3d', 'b07Periview', 'shlDoc'],
-  answers: [
-    ['mass: "in review"', 'Rebuilt: the balance point is shown moving as each part goes in, on two kitchen scales (the classroom way to find a centre of mass), then the battery\'s height argued both ways with the flick\'s twist drawn.'],
-    ['"research why some people are pushing for higher battery placement"', 'No maker or test gives a reason in print (research gap 4, logged). The physics gives one, shown and credited to no one: in a flick the hand pushes where it holds, so a palm resting high on the hump pushes higher up, and a higher battery lines the weight up with that push. Against it: Theseus is held on its flat low sides, 12 mm up, so a low battery puts the balance at the grip\'s height, within a millimetre (0.6 mm, the parts\' heights known to about a millimetre), against 3.6 mm above it with the battery in the hump.'],
-    ['F30.10 (balance stays at the centre)', 'The scales end level (14.6 and 14.7 g): the balance point at the middle of the length, within a millimetre (the parts\' places are known to about that), not under the sensor.'],
-    ['F21.15, F42.1 (the battery balances the mouse; "forward and up")', 'The battery lands last, the heaviest part at 8 g, at its decided place (about 5.9 mm forward and 1.5 mm up, over the board\'s rear edge), and pulls the balance from about 7 mm ahead of the middle to the centre. The slide reads KEY_PARTS once H2 moves the battery there.'],
-    ['F42.2 (the board\'s 5.6 g is a target)', 'The weights list says "Board (target) 5.60 g".'],
-    ['F2.40 (a better argument, more intuitive)', 'The argument is the lever between the push and the weight, drawn on the mouse, with the mouse rocking (drawn exaggerated) when the battery is high and not when it is low.']
-  ],
+  src: ['b07Mass3d', 'b07Periview', 'b11GpxBatt', 'shlDoc'],
+  answers: () => {
+    const BAL = b07_balance(), F = b07_balFrame(), m = BAL.low.m, front = m * (BAL.low.z - F.zr) / (F.zf - F.zr);
+    return [
+      ['mass: "in review"', 'Rebuilt: the balance point is shown moving as each part goes in, on two kitchen scales (the classroom way to find a centre of mass), then the battery\'s height argued both ways with the flick\'s twist drawn.'],
+      ['"research why some people are pushing for higher battery placement"', `No maker or test gives a reason in print (research gap 4: none found). The physics gives one, shown and credited to no one: in a flick the hand pushes where it holds, so a palm resting high on the hump pushes higher up, and a higher battery lines the weight up with that push; some mice do carry it high (the G Pro X Superlight's is glued to its top shell, iFixit). Against it: Theseus is held on its flat low sides, 12 mm up, so a low battery puts the balance ${b07_lvTxt(BAL.lvLow, true)} mm above the grip, within a millimetre (the parts' heights are known to about that), against ${b07_lvTxt(BAL.lvHigh, false)} mm with the battery in the hump (the headline, both rounded against Theseus).`],
+      ['F30.10 (balance stays at the centre)', `The scales end level (${fmtN(front, 1)} and ${fmtN(m - front, 1)} g): the balance point at the middle of the length, within a millimetre (the parts' places are known to about that), not under the sensor.`],
+      ['F21.15, F42.1 (the battery balances the mouse; "forward and up")', `The battery lands last, the heaviest part at 8 g, set where the mouse balances: ${fmtN(-BAL.zb, 1)} mm behind the middle, at board height (KEY_PARTS). F42.1 asked for a balance at the centre; with the side switches and the four boss posts in the model (H2; the posts estimated), the centre needs the battery 2.0 mm further back than H1's place, at the same height, so the slide says "set where the mouse balances", not "forward and up". It pulls the balance from about ${b07_dn(BAL.rest.z)} mm ahead of the middle to the centre.`],
+      ['F42.2 (the board\'s 5.6 g is a target)', 'The weights list says "Board (target) 5.60 g".'],
+      ['F2.40 (a better argument, more intuitive)', 'The argument is the lever between the push and the weight, drawn on the mouse, with the mouse rocking (drawn exaggerated) when the battery is high and not when it is low.']
+    ];
+  },
   draw: t => {
     const parts = b07_balParts(), F = b07_balFrame(), P0 = B07_POS, BAL = b07_balance();
     header(t, 'Balance at the centre');
-    captions(t, [[0.6, 'Weigh the mouse at both ends as its parts go in. Each part pulls the balance point toward itself.'],
-      [3.4, 'The battery is the heaviest part, 8 g. Set low over the board\'s rear edge, it brings the balance back to the centre.'],
-      [4.8, 'Some want the battery higher, up in the hump. A palm resting high on the hump pushes up there, and the weight would line up with it.'],
+    captions(t, [[0.2, 'Weigh the mouse at both ends as its parts go in. Each part pulls the balance point toward itself.'],
+      [3.4, 'The battery is the heaviest part, 8 g. Set low in the tail, where the mouse balances, it brings the balance back to the centre.'],
+      [4.5, 'Some want the battery higher, up in the hump. A palm resting high on the hump pushes up there, and the weight would line up with it.'],
       [7.2, 'Theseus is held on its flat low sides, 12 mm up. A low battery puts the balance on that grip, so a flick doesn\'t rock it.']]);
     /* the parts land one by one; the battery last */
     const tl = [0.9, 1.3, 1.65, 2.0, 2.35, 2.7, 3.3], kl = parts.map((p, i) => spring(t, tl[i], { f: 2.6, z: 0.7 })), kp = parts.map((p, i) => ep(t, tl[i], tl[i] + 0.35)), ib = parts.length - 1;
@@ -1655,7 +1694,7 @@ S({
     b07_scale({ draw, P }, F.zr, Math.max(0, rear), kScale);
     if (kScale > 0.003) { const pf = P(-F.zf, 12.5), pr = P(-F.zr, 12.5); text('Front skates', pf[0], pf[1] + 4, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kScale }); text('Rear skates', pr[0], pr[1] + 4, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kScale }); }
     /* the weights, each at its centroid, sized by its grams; in the second half only the battery keeps its label */
-    const lab = { Shell: [1, -1, 'left'], Buttons: [0, -1, 'center'], 'Side switches': [0, -1, 'center'], Board: [0, 2, 'center'], Wheel: [-1, 0, 'right'], 'Screws, wires': [0, 2, 'center'], Battery: [0, 1, 'center'] };
+    const lab = { Shell: [1, -1, 'left'], Buttons: [0, -1, 'center'], 'Side switches': [0, -1, 'center'], Board: [-1, 2, 'right'], Wheel: [-1, 0, 'right'], 'Screws, wires': [1, 2, 'left'], Battery: [0, 1, 'center'] };
     const kD = 1 - 0.7 * ep(t, 4.6, 5.0), kLab = 1 - ep(t, 4.6, 5.0);
     cur.forEach((p, i) => {
       if (kp[i] <= 0.003) return;
@@ -1685,7 +1724,7 @@ S({
       line(qc[0] + 16, qc[1], xr, qc[1], { color: col, w: 1.5, dash: [3, 4], alpha: k2 * 0.8 });
       b07_bracket(xr + 4, qc[1], gR[1], col, k2, null, { dir: 1, w: 2 });
       const ym = (qc[1] + gR[1]) / 2;
-      text(fmtN(Math.abs(lever), 1) + ' mm', xr + 24, ym - 2, { role: 'num', size: 26, weight: 750, color: bad ? C.red : C.ink, alpha: k2, tnum: true });
+      text(b07_lvTxt(lever, up < 0.5) + ' mm', xr + 24, ym - 2, { role: 'num', size: 26, weight: 750, color: bad ? C.red : C.ink, alpha: k2, tnum: true });
       text('lever', xr + 24, ym + 24, { role: 'small', size: 21, weight: 650, color: C.mute, alpha: k2 });
       /* the flicks: the hand pushes at the grip, the weight lags at the balance point */
       const f1 = ep(t, 6.3, 6.6) * (1 - ep(t, 7.3, 7.6)), f2 = ep(t, 8.5, 8.8) * (1 - ep(t, 9.4, 9.7)), fk = Math.max(f1, f2);
@@ -1730,13 +1769,13 @@ S({
         arrow(rx, 552, rx + 44, 552, { color: C.red, w: 3, hs: 11, alpha: kg }); text('the weight lags, at the balance point', rx + 60, 559, { role: 'small', size: 23, weight: 620, color: C.red, alpha: kg });
       }
       const kb = ep(t, 5.6, 6.0), kc = ep(t, 7.4, 7.8);
-      text('A palm high on the hump pushes higher up: a higher battery suits it.', rx, 626, { role: 'small', size: 24, weight: 620, color: C.secondText, maxW: rw, lh: 1.3, alpha: kb });
-      text('Theseus is held on its flat low sides: its battery sits low, on the grip.', rx, 712, { role: 'small', size: 24, weight: 650, color: C.heroText, maxW: rw, lh: 1.3, alpha: kc });
+      text('A palm high on the hump pushes higher up: a higher battery suits it. Some mice carry it there: the G Pro X Superlight\'s is glued to its top shell (iFixit).', rx, 598, { role: 'small', size: 22, weight: 620, color: C.secondText, maxW: rw, lh: 1.3, alpha: kb });
+      text('Theseus is held on its flat low sides: its battery sits low, on the grip.', rx, 706, { role: 'small', size: 24, weight: 650, color: C.heroText, maxW: rw, lh: 1.3, alpha: kc });
     }
     /* one decimal at most: the parts' heights are known to about a millimetre (model audit M-b07-5), so the low battery is
        "at the grip", not a percentage cut; with F44.2's side switches it sits 0.6 mm above, so "within a millimetre" */
-    verdict(t, 8.8, rx, 900, { from: BAL.lvHigh, to: Math.abs(BAL.lvLow), unit: 'mm', dec: 1, label: 'Balance above the grip', better: 'lower', size: 96, net: 'At the grip', netWord: 'within a millimetre', maxW: rw });
-    source(t, 'H1\'s balance model: the 29.31 g budget (board at its 5.6 g target) at the 3D centroids; battery over the board\'s rear edge (F42.1). Twist = m·a·lever. Rock not to scale.', { t0: 2.0 });
+    verdict(t, 8.8, rx, 884, { from: +b07_lvTxt(BAL.lvHigh, false), to: +b07_lvTxt(BAL.lvLow, true), unit: 'mm', dec: 1, label: 'Balance above the grip', better: 'lower', who: ['Battery in the hump', 'Theseus'], size: 96, net: 'At the grip', netWord: 'within a millimetre', maxW: rw });
+    source(t, 'Derived, H2\'s balance model: the 29.31 g budget at the 3D centroids (board at its 5.6 g target; side switches and four boss posts, estimated, inside the shell\'s 9.35 g); battery set where the mouse balances. Twist = m·a·lever. Rock not to scale.', { t0: 2.0, maxW: rx - LM - 60 });
   }
-});
+}));
 

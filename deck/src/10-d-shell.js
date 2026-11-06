@@ -21,9 +21,9 @@ Object.assign(SRC, {
   shlLat2d: { t: 'This deck: 2D frames solved in the page (07-sim.js), Pyrofil PP-C-20A, lattices of 12.5 mm cells with 2.0 mm tall ribs, triangles and hexagons at the same mass; bottom edge clamped, 10 N spread over the top; pin-jointed cells checked with the same solver (a hexagon comes back as a mechanism)', n: 'derived, this model' },
   shlPyrofil: { t: 'PlaBase (Mitsubishi Chemical), Pyrofil PP-C-20A datasheet: 1.01 g/cm³; flexural modulus 13,500 MPa; tensile breaking stress 120 MPa (JIS K7162), bending strength 207 MPa (JIS K7171), strain at break 3%; Charpy 6 kJ/m² notched, 36 unnotched; MVR 13 cm³/10 min', u: 'https://en.plabase.com/plastic/items/6577ab7a86df1821ce54dafc' },
   shlKyron: { t: 'Mitsubishi Chemical America: KyronMAX compounds with "tensile strengths that exceed 60,000 psi (414 MPa)" (maker claim)', u: 'https://us.mitsubishi-chemical.com/injection-moldable-material-exceeds-60000-psi-tensile-strength/' },
-  shlFr4: { t: 'The Gund Company, NEMA FR4: 1.85 g/cm³, tensile 430 MPa lengthwise, flexural modulus 20 GPa lengthwise and 18 GPa crosswise', u: 'https://thegundcompany.com/wp-content/uploads/2024/03/NEMA-FR4-Glass-Epoxy-Laminate-by-The-Gund-Co.pdf' },
-  shlAbs: { t: 'Denka ABS GR-2000 datasheet (typical): density 1.05 g/cm³ (ISO 1183); flexural modulus 2,550 MPa (ISO 178); tensile stress at yield 50 MPa, at break 35 MPa (ISO 527)', u: 'https://www.denka.co.kr/pdf/DENKA-ABS_grade_English.pdf' },
-  shlPc: { t: 'Covestro Makrolon 2405 polycarbonate, CAMPUS datasheet: density 1,200 kg/m³ (ISO 1183); flexural modulus 2,350 MPa (ISO 178); tensile modulus 2,400 MPa, yield stress 65 MPa (ISO 527)', u: 'https://www.materialdatacenter.com/ms/en/Makrolon/Covestro+Deutschland+AG/Makrolon%C2%AE+2405/986598f8/410' },
+  shlFr4: { t: 'The Gund Company, NEMA FR4 (typical): 1.85 g/cm³; tensile 430 MPa lengthwise; flexural modulus 20 GPa lengthwise and 18 GPa crosswise; flexural strength 80 ksi (552 MPa) lengthwise and 70 ksi (483 MPa) crosswise', u: 'https://thegundcompany.com/wp-content/uploads/2024/03/NEMA-FR4-Glass-Epoxy-Laminate-by-The-Gund-Co.pdf' },
+  shlAbs: { t: 'Denka ABS GR-2000 datasheet (typical): density 1.05 g/cm³ (ISO 1183); flexural modulus 2,550 MPa and flexural strength 82 MPa (ISO 178); tensile stress at yield 50 MPa, at break 35 MPa (ISO 527)', u: 'https://www.denka.co.kr/pdf/DENKA-ABS_grade_English.pdf' },
+  shlPc: { t: 'Covestro Makrolon 2405 polycarbonate, CAMPUS datasheet: density 1,200 kg/m³ (ISO 1183); flexural modulus 2,350 MPa and flexural strength 97 MPa (ISO 178); tensile modulus 2,400 MPa, yield stress 65 MPa (ISO 527)', u: 'https://www.materialdatacenter.com/ms/en/Makrolon/Covestro+Deutschland+AG/Makrolon%C2%AE+2405/986598f8/410' },
   shlMg: { t: 'MatWeb, magnesium AZ91D-F, cast: density 1.81 g/cc; ultimate tensile strength 230 MPa, yield 150 MPa; modulus of elasticity 44.8 GPa in tension', u: 'https://www.tekogehause.de/uploads/manuali/materiali/AZ91D.pdf' },
   shlAl: { t: 'ASM Aerospace Specification Metals, aluminium 6061-T6: density 2.7 g/cc; ultimate tensile strength 310 MPa, yield 276 MPa; modulus of elasticity 68.9 GPa (AA typical)', u: 'https://www.aerospacemetals.com/wp-content/uploads/2023/06/Aluminum-6061-T6-6061-T651.pdf' },
   shlEnvalior: { t: 'Envalior (resin maker), radii and chamfers: inside radius 25 to 60% of the nominal wall, the upper end for load-bearing parts, at least 0.5 mm; stress concentration about 1.5 at r = 0.5 t, about 3 at r = 0.1 t', u: 'https://www.envalior.com/en-us/radii-and-chamfers' },
@@ -133,7 +133,7 @@ S({
    the same strip of each on two supports, pressed in the middle: beam theory, δ = P L³ / (48 E I), with each resin's
    flexural modulus from its datasheet. Their densities are nearly the same, so the strips weigh the same. */
 const SHL_STRIP = { L: 60, b: 10, h: 2, P: 10 };
-const SHL_PPC = { E: 13.5, s: 120, rho: 1.01 }, SHL_ABS = { E: 2.55, s: 50, rho: 1.05 };
+const SHL_PPC = { E: matOf('ppcf').E, s: matOf('ppcf').ft, rho: matOf('ppcf').rho }, SHL_ABS = { E: matOf('abs').E, s: matOf('abs').ft, rho: matOf('abs').rho };   /* SIM_MAT: one value per material */
 /** the strip's sag in the middle (mm), E in GPa */
 const shlSag = E => { const { L, b, h, P } = SHL_STRIP; return P * L ** 3 / (48 * E * 1000 * b * h ** 3 / 12); };
 S({
@@ -185,11 +185,11 @@ S({
    line through its rank in each column, so the order visibly changes. Metals and FR4 give their elastic modulus, the
    plastics their flexural modulus. */
 const SHL_SPEC = [
-  { name: 'PP-C-20A', s: 120, E: 13.5, rho: 1.01, hero: true },
-  { name: 'Magnesium', s: 230, E: 44.8, rho: 1.81, second: true },
+  { name: 'PP-C-20A', s: matOf('ppcf').ft, E: matOf('ppcf').E, rho: matOf('ppcf').rho, hero: true },          /* SIM_MAT (07-sim.js) */
+  { name: 'Magnesium', s: matOf('mg').ft, E: matOf('mg').E, rho: matOf('mg').rho, second: true },
   { name: 'Aluminium', s: 310, E: 68.9, rho: 2.70 },
-  { name: 'FR4', s: 430, E: 20, rho: 1.85 },
-  { name: 'ABS', s: 50, E: 2.55, rho: 1.05 },
+  { name: 'FR4', s: matOf('fr4').ft, E: matOf('fr4').EL, rho: matOf('fr4').rho },   /* along the weave: the figure that doesn't flatter PP */
+  { name: 'ABS', s: matOf('abs').ft, E: matOf('abs').E, rho: matOf('abs').rho },
   { name: 'PC', s: 65, E: 2.35, rho: 1.20 }
 ];
 const shlNum = v => v >= 100 ? fmtN(v, 0) : v >= 10 ? (Math.abs(v - Math.round(v)) < 1e-6 ? fmtN(v, 0) : fmtN(v, 1)) : fmtN(v, 2);
@@ -263,7 +263,7 @@ S({
    the same mass over the same area: t = m / (ρ A). carbon PP against magnesium, the doc's two real options for a light shell.
    floors from the sources named; the tolerance scatter is a simulation of ±0.05 mm at 3σ; the strength comparison is the
    textbook plate scaling at equal mass (bending strength ∝ σ/ρ², bending stiffness ∝ E/ρ³). */
-const TW = { A: 100, pp: { rho: 1.01, name: 'Carbon PP, 20%', floor: 0.89 }, mg: { rho: 1.81, name: 'Magnesium AZ91D', floor: 0.7, floor2: 0.5 }, tol: 0.05 };
+const TW = { A: 100, pp: { rho: matOf('ppcf').rho, name: 'Carbon PP, 20%', floor: 0.89 }, mg: { rho: matOf('mg').rho, name: 'Magnesium AZ91D', floor: 0.7, floor2: 0.5 }, tol: 0.05 };
 const twBudget = t => t < 4.5 ? 10 : 10.6 + 1.6 * Math.sin((t - 4.5) * TAU / 9 - Math.asin(0.6 / 1.6));
 const SHL_TOLDOTS = (function () {
   const r = rng(17), g = () => { const u = Math.max(1e-9, r()), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(TAU * v); };
@@ -274,7 +274,7 @@ S({
   src: ['protoWall', 'thixoDN', 'shlYizumi', 'beall102', 'shlPyrofil', 'shlMg', 'shlB2gSlx'],
   draw: t => {
     /* at the same weight: the wall's thickness goes with 1/ρ, a plate's bending strength with σ/ρ² (MatWeb AZ91D: 230 MPa) */
-    const kT = TW.mg.rho / TW.pp.rho, sMg = 230, bPP = SHL_PPC.s / TW.pp.rho ** 2, bMg = sMg / TW.mg.rho ** 2, perW = 1 - (SHL_PPC.s / TW.pp.rho) / (sMg / TW.mg.rho);
+    const kT = TW.mg.rho / TW.pp.rho, sMg = SIM_MAT.mg.ft, bPP = SHL_PPC.s / TW.pp.rho ** 2, bMg = sMg / TW.mg.rho ** 2, perW = 1 - (SHL_PPC.s / TW.pp.rho) / (sMg / TW.mg.rho);
     header(t, 'Minimum wall thickness');
     captions(t, [[0.6, 'A mold can only fill a wall so thin, and the thinner the wall, the harder its size is to hold.'], [3.9, 'At the same weight a denser material gets a thinner wall: magnesium\'s is 0.56 as thick as carbon PP\'s.'], [7.0, 'So the lighter resin wins even with ' + Math.round(perW * 100) + '% less strength for its weight: its wall molds, holds its size and bends less.']]);
     /* left: the same weight over the same area, live */
@@ -428,7 +428,7 @@ function shlSamples(r, nx = 16, ny = 16) {
   return out.sort((p, q) => q.s - p.s);
 }
 /** the grams that work: the share of the material stressed to at least frac of this frame's own peak */
-function shlWorkShare(r, frac = 0.5) { const S0 = r.samples, pk = S0[0].s; let g = 0, tot = 0; for (const p of S0) { tot += p.g; if (p.s >= frac * pk) g += p.g; } return g / tot; }
+function shlWorkShare(r, frac = 0.5) { const S0 = r.samples, pk = r.smax || S0[0].s;   /* against the true peak (M): the samples' outer row sits inside the fibre */ let g = 0, tot = 0; for (const p of S0) { tot += p.g; if (p.s >= frac * pk) g += p.g; } return g / tot; }
 /** n cells of equal mass, most stressed first: each cell's mean stress */
 function shlCellsOf(r, n = 52) {
   const S0 = r.samples, tot = S0.reduce((s, p) => s + p.g, 0), cells = new Array(n).fill(0), cg = new Array(n).fill(0); let acc0 = 0;
@@ -439,7 +439,7 @@ function shlHot() {
   if (SHL.hot) return SHL.hot;
   const uni = simSolve('shl-hot-uni', () => shlTrussModel()), sized = simSolve('shl-hot-sized', shlTrussSized);
   const mass = uni.mass.reduce((s, v) => s + v, 0), plate = simSolve('shl-hot-plate', () => shlPlateModel(mass));
-  for (const r of [uni, sized, plate]) { r.samples = shlSamples(r); r.k = SHL_HOT.P / -r.d[r.model.mid * 3 + 1]; r.peak = r.samples[0].s; r.work = shlWorkShare(r, 0.5); r.cells = shlCellsOf(r); }
+  for (const r of [uni, sized, plate]) { r.samples = shlSamples(r); r.k = SHL_HOT.P / -r.d[r.model.mid * 3 + 1]; r.peak = r.smax; r.work = shlWorkShare(r, 0.5); r.cells = shlCellsOf(r); }
   /* the plane's stress falls as 1/thickness: the grams it needs to match the sized triangles' peak */
   return (SHL.hot = { uni, sized, plate, mass, match: plate.peak / sized.peak });
 }
@@ -554,7 +554,7 @@ function shlPushPtr(t, t0, x, y, k, depth = 14) { const a = ep(t, t0 - 0.6, t0);
 const shlG = v => Math.round(v / 40) * 40;
 /** the material's strength (datasheet): PP-C-20A breaks at 120 MPa in tension (207 MPa in bending). The gauges use the
    lower, the one a crack opens against */
-const SHL_STR = { ft: 120, fb: 207 };
+const SHL_STR = { ft: SIM_MAT.ppcf.ft, fb: SIM_MAT.ppcf.fb };   /* SIM_MAT: F41.1's two strengths */
 /** a vertical gauge of the peak stress against the strength: (x, y) its top left, h tall. frac = peak ÷ strength.
    The fill runs on the heat scale and turns red as it reaches the strength (the dashed line at the top); what is left
    under the line is the margin. o = { a, w } */
@@ -1318,7 +1318,7 @@ const SHL_BOW = (function () {
   return { nodes, N, crown, tL, tR, free, tied, ratio: free.d / tied.d };
 })();
 S({
-  id: 'shlPcbRib', ch: 'shell', theme: 'night', title: 'The board is a tie, not a beam', settle: 10, ideas: [94, 31], src: ['shlFr4', 'az91d', 'shlLattice', 'shlDoc'], three: ['lattice'],
+  id: 'shlPcbRib', ch: 'shell', theme: 'night', title: 'The board is a tie, not a beam', settle: 10, ideas: [94, 31], src: ['shlFr4', 'shlMg', 'shlLattice', 'shlDoc'], three: ['lattice'],
   draw: t => {
     header(t, 'The board is a tie, not a beam');
     captions(t, [[0.6, 'FR4, the core of a circuit board, is stronger in tension than magnesium alloy, but less than half as stiff.'], [4.6, 'So the board should pull, not bend. Tie the side ribs to its edge and it holds the arches\' feet together, like a bowstring.']]);

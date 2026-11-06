@@ -14,12 +14,20 @@
               N·mm), mass (g per element), L, comp (f·d), mech (true when the frame is a mechanism: it cannot carry the load) }
    ============================================================================================ */
 const SIM = { cache: new Map() };
-/* materials with their sources (keys in SRC); print a property only with its source */
+/* materials with their sources (keys in SRC). ONE value per material across the film (K, 2026-11-06; MODELS-AUDIT §1): every
+   file reads these and none keeps its own copy. Print a property only with its source. E: the modulus a frame uses (MPa);
+   ft: the stretched (tensile) strength and fb: the bent (flexural) strength, Brock's F41.1 "two strengths" (MPa); fy: a
+   metal's yield, where it bends for good; rho: g/mm³.
+   FR4 is a woven laminate with two of each (Gund): across the weave (E, fb) and along it (EL, fbL). A board's weave can run
+   either way, so the board's models take the lower (across); a slide that ranks FR4 as a material takes the higher (along),
+   the one that doesn't flatter carbon PP, and says which. Gund gives one tensile figure, along the weave (ft).
+   Magnesium is MatWeb's AZ91D-F, cast (44.8 GPa in tension; makeitfrom's 46 GPa is retired). Its source gives no bending
+   strength, so fb is its ultimate, the generous figure (G5). ABS's ft is its yield (it breaks lower, at 35 MPa). */
 const SIM_MAT = {
-  ppcf: { name: 'PP-C-20A', E: 13500, rho: 1.01e-3, src: 'shlPyrofil' },       /* Theseus: Pyrofil, 20 % carbon polypropylene */
-  abs: { name: 'ABS', E: 2550, rho: 1.05e-3, src: 'denkaAbs' },                 /* most mice */
-  mg: { name: 'Mg AZ91D', E: 46000, rho: 1.81e-3, src: 'az91d' },              /* metal shells */
-  fr4: { name: 'FR4', E: 19000, rho: 1.85e-3, ft: 430, src: 'shlFr4' }         /* the board */
+  ppcf: { name: 'PP-C-20A', E: 13500, ft: 120, fb: 207, rho: 1.01e-3, src: 'shlPyrofil' },          /* Theseus: Pyrofil, 20 % carbon PP: flexural E; JIS K7162, K7171 */
+  abs: { name: 'ABS', E: 2550, ft: 50, fb: 82, rho: 1.05e-3, src: 'shlAbs' },                       /* most mice: Denka GR-2000: flexural E (ISO 178); yield; ISO 178 */
+  mg: { name: 'Mg AZ91D', E: 44800, ft: 230, fb: 230, fy: 150, rho: 1.81e-3, src: 'shlMg' },        /* metal shells: MatWeb AZ91D-F, cast */
+  fr4: { name: 'FR4', E: 18000, EL: 20000, ft: 430, fb: 483, fbL: 552, rho: 1.85e-3, src: 'shlFr4' } /* the board: Gund NEMA FR4, across / along the weave */
 };
 /** solve once and keep the result: key names the load case, fn builds the model */
 function simSolve(key, fn) {
@@ -96,10 +104,37 @@ function feElPts(r, e, scale = 1, nSeg = 10) {
   }
   return out;
 }
-/** the share of the frame's mass that is working: stressed above frac of the peak. Returns { g (grams working), total (g), share } */
+/** the share of the frame's mass that is working: stressed above frac of the peak. Returns { g (grams working), total (g), share }.
+   Not for a printed share (M, MODELS-AUDIT §1, FLAWED as a measure): it counts an element's whole mass when one end's outer
+   fibre passes the threshold (70 % where the material truly above 30 % is 34 %). Sample through each element's depth and
+   length instead (shlSamples), against the true peak (r.smax), and say the rule on the slide. */
 function feEngaged(r, frac = 0.3) {
   let g = 0, tot = 0; r.sig.forEach((s, e) => { tot += r.mass[e]; if (s >= frac * r.smax) g += r.mass[e]; });
   return { g, total: tot, share: tot ? g / tot : 0 };
+}
+/** F41.1, Brock's "two strengths": each element's use of its strength, 1 = it breaks: its axial stress over ft plus its
+   bending stress at the worse end over fb (the solver's own fibre stress, split into its two parts and combined linearly:
+   the model auditor's rule, review/b05.md 09:03). ft, fb: the material's (default PP-C-20A, 120 MPa stretched and 207 bent;
+   for another, SIM_MAT[key].ft and .fb); an element may carry its own (el.ft, el.fb) in a model of two materials. A rigid
+   joint zone (el.rigid, b06's) reports its rib's use (el.flex). Colour "how near it is to breaking" by this, red at 1, not
+   by MPa: a bent part and a stretched part at the same MPa are not equally near their break.
+   e.g. const u = feUse(r); feDraw(Object.assign({}, r, { sig: u.map(v => v * 207), smax: 207 }), P, { smax: 207 }) */
+function feUse(r, ft = SIM_MAT.ppcf.ft, fb = SIM_MAT.ppcf.fb) {
+  const els = r.model.els, u = els.map((el, e) => {
+    const A = el.w * el.h, I = el.w * el.h * el.h * el.h / 12, sa = Math.abs(r.N[e]) / A;
+    const sb = el.truss ? 0 : Math.max(Math.abs(r.M1[e]), Math.abs(r.M2[e])) * (el.h / 2) / I;
+    return sa / (el.ft || ft) + sb / (el.fb || fb);
+  });
+  return u.map((v, e) => els[e].rigid && els[e].flex != null ? u[els[e].flex] : v);
+}
+/** SIM_MAT's figures in the old tables' units, rounded as the sources print them: E and EL in GPa, rho in g/cm³; ft, fb, fbL,
+   fy in MPa. e.g. matOf('mg').E → 44.8 */
+function matOf(key) { const m = SIM_MAT[key]; return { name: m.name, E: +(m.E / 1000).toFixed(2), EL: m.EL ? +(m.EL / 1000).toFixed(2) : undefined, ft: m.ft, fb: m.fb, fbL: m.fbL, fy: m.fy, rho: +(m.rho * 1000).toFixed(3), src: m.src }; }
+/** the press (N) that breaks a frame solved at P newtons (the model is linear): P over its largest use (feUse; rigid joint
+   zones left out: they are not material that breaks). e.g. feBreakAt(simSolve('strip', build), 10) → 109.0 */
+function feBreakAt(r, P = 10, ft, fb) {
+  let m = 0; feUse(r, ft, fb).forEach((u, e) => { if (!r.model.els[e].rigid) m = Math.max(m, u); });
+  return m > 0 ? P / m : Infinity;
 }
 /** heat: how hard a part of the frame works, 0..1, as a colour. Cool is the ground's grey; then amber, orange, and red
    where it is about to fail (red is a problem in this deck; Theseus is blue) */

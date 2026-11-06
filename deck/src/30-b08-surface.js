@@ -21,7 +21,7 @@ Object.assign(SRC, {
   b08_johnson: { t: 'Johnson, Hagberg, Wigaeus Hjelm & Rempel 2000, Measuring and characterizing force exposures during computer mouse use, Scand J Work Environ Health 26(5): 398-405: mean force on the button 0.35 N, on the sides 0.43 N', u: 'https://www.sjweh.fi/article/560' },
   b08_covestro: { t: 'Covestro, "Soft touch waterborne polyurethane coatings: control of optic and haptic properties" (white paper, July 2021): the haptic effect "can already be obtained in coatings of only a few micrometer thickness", matt soft-touch "even ... at very low film thickness (2 to 3 µm)"', u: 'https://solutions.covestro.com/-/media/covestro/solution-center/brands/downloads/imported/1652424150.pdf', n: 'No maker publishes the soft-touch film on a mouse; RadTech 2016 tested at 2 mil (51 µm).' },
   b08_huntsman: { t: 'Buchanan (Huntsman), "UV-resistant epoxies", Coatings Trends & Technologies 2024: clear coats on glass under QUV-A (ASTM G53): a polyurethane clear coat ΔE 0.13 at 500 h and 0.19 at 1,000 h; aromatic (BADGE) epoxies ΔE 16.3 to 21.8 at 500 h, "failure before 1000 hours"', u: 'https://pcimag.com/ext/resources/Events/CTT/presentations/MitchBuchanan_Huntsman_UV-Resistant-Epoxies_2024-CTT-_New-Format.pdf', n: 'The chemistry decides; not a figure for any mouse coating.' },
-  b08_wheels: { t: 'Stock scroll wheels, sellers\' figures: Endgame Gear OP1 stock wheel "1.8g" (Forky Mods, which sells a lighter replacement); the Zeromouse V34/V35 kit\'s original wheel 1.5 g against its 0.7 g carbon wheel (Zeromouse)', u: 'https://forkymods.com/products/lightweight-scroll-wheel-op1', n: 'Neither says whether the tyre or axle is included. Zeromouse: https://zeromouse.co/products/carbon-scroll . Brock asked for four or more; two are published.' },
+  b08_wheels: { t: 'Stock scroll wheels, the weights published by sellers of lighter replacements: Endgame Gear OP1 stock wheel "1.8g" (Forky Mods); Razer Viper V2 Pro stock wheel 1.5 g, 22.5 mm across: Zeromouse\'s "original" wheel beside its 0.7 g carbon one; its V34 and V35 kits are built from a Viper V2 Pro (PC Gamer, Notebookcheck), so the original is that mouse\'s (an identification by inference, FILLS Q3)', u: 'https://forkymods.com/products/lightweight-scroll-wheel-op1', n: 'Neither says whether the tyre or axle is included. Zeromouse: https://zeromouse.co/products/carbon-scroll . Brock (F47.5): "Show the two found"; 21 searches found no other stock wheel weighed.' },
   b08_zhang15: { t: 'Zhang, Rodriguez Urribarri, Morales Hurtado, Zeng & van der Heide 2015, International Journal of Solids and Structures 56-57: 53-61: a grooved channel texture on tool steel; there, sliding parallel to the grooves gave the higher friction', u: 'https://research.utwente.nl/en/publications/the-role-of-the-sliding-direction-against-a-grooved-channel-textu/' },
   /* grip tape: thickness, and what it does in use */
   b08_tape05: { t: 'Mouse grip tapes at 0.5 mm: Lizard Skins DSP, Pulsar SuperGrip, Pwnage UltraGrip, TalonGames (NerdTechy roundup of mouse grip tapes; "Ultra-thin 0.5 mm tapes preserve your natural hand movement"; advice to "keep edges slightly curved to prevent lifting")', u: 'https://nerdtechy.com/?p=82833' },
@@ -1134,38 +1134,65 @@ S({
    reference, the hours counting to 1,000; the mask comes off: no visible change (Cerakote's photopolymer test, a C-Series
    coat on 3D-printed plastic). Verdict: UV test hours published, 0 → 1,000 h. Chemicals in a line: F-Series is rated
    "Excellent", a colour change under ΔE 2.5 (CIE76) after a day in each chemical. */
-const B08U = { use: [0.8, 3.4], lift: [3.4, 3.9], tags: [3.9, 4.2], lamps: 4.6, hours: [4.9, 7.5], peel: [7.6, 8.2], verdict: 8.2 };
-/** a UV weathering chamber, cut open: its lamps, a white panel on the rack with a masked strip, an hours readout.
-   (x, y, w, h); o = { on (0..1: the lamps), hours, peel (0..1: the mask comes off) }. Returns the panel's rect. */
+/* the beats overlap so the number lands by 8 s (R2-b08-3): the lamps come on as the fingers lift; then the chemicals (R2-b08-1) */
+const B08U = { use: [0.8, 3.4], lift: [3.4, 3.9], tags: [3.9, 4.2], lamps: 3.4, hours: [3.6, 6.0], peel: [6.0, 6.6], verdict: 6.4, drops: [6.9, 7.4], day: [7.4, 8.2], wipe: [8.2, 8.8] };
+/** a UV weathering chamber, cut open: its lamps, Cerakote's white panel on the rack with a masked strip, two clear-coated
+   strips beside it (Huntsman 2024's two clear coats under the same kind of lamps: an aromatic epoxy yellows, a UV-stable
+   polyurethane doesn't; R2-b08-2), an hours readout; then a drop each of sweat, sunscreen and skin oil on the panel, left a
+   day and wiped (R2-b08-1: the owners blame those as much as light). (x, y, w, h); o = { on (0..1: the lamps), hours,
+   peel (0..1: the mask comes off), drops (0..1: they land), day (0..1), wipe (0..1) }. Returns the panel's rect. */
 function b08_quv(x, y, w, h, o = {}) {
-  const on = clamp(o.on || 0), peel = clamp(o.peel || 0);
+  const on = clamp(o.on || 0), peel = clamp(o.peel || 0), hrs = o.hours || 0;
   /* the cabinet */
   rrPath(x, y, w, h, 14); G.fillStyle = TH ? '#D9D9DB' : '#2A2B2F'; G.fill(); G.strokeStyle = rgba(C.ink, 0.35); G.lineWidth = 1.5; G.stroke();
   const ix = x + 26, iy = y + 26, iw = w - 52, ih = h - 96;
   rrPath(ix, iy, iw, ih, 8); G.fillStyle = TH ? '#3A3B3F' : '#121316'; G.fill();
   /* the lamps: four long tubes across the top of the chamber, glowing when on */
-  for (let i = 0; i < 4; i++) {
-    const ly = iy + 22 + i * 26;
+  for (let i = 0; i < 3; i++) {
+    const ly = iy + 20 + i * 22;
     if (on > 0.01) { G.save(); G.globalAlpha = on * 0.55; G.fillStyle = '#FFFFFF'; G.shadowColor = 'rgba(255,255,255,0.9)'; G.shadowBlur = 18; rrPath(ix + 30, ly - 5, iw - 60, 10, 5); G.fill(); G.restore(); }
     rrPath(ix + 30, ly - 5, iw - 60, 10, 5); G.fillStyle = mix(TH ? '#8E8E92' : '#5A5B60', '#FFFFFF', on); G.fill();
   }
   /* the light falling on the rack */
   if (on > 0.01) { const gl = G.createLinearGradient(0, iy, 0, iy + ih); gl.addColorStop(0, `rgba(255,255,255,${0.32 * on})`); gl.addColorStop(1, 'rgba(255,255,255,0)'); G.fillStyle = gl; G.fillRect(ix, iy, iw, ih); }
-  /* the panel: white coat, its left strip under foil until the test is done */
-  const pw = iw * 0.62, ph = ih * 0.5, px = ix + (iw - pw) / 2, py = iy + ih - ph - 22;
+  /* Cerakote's panel: white coat, its left strip under foil until the test is done */
+  const pw = 360, ph = 150, px = ix + 30, py = iy + 108;
   rrPath(px, py, pw, ph, 4); G.fillStyle = '#F7F7F8'; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = 1.2; G.stroke();
   const mw = pw * 0.24;
   if (peel < 1) {
-    /* the foil peels from its bottom edge up, curling over */
     const hh = ph * (1 - peel), cy0 = py;
     G.save(); G.beginPath(); G.rect(px, cy0, mw, hh); G.fillStyle = '#9A9A9E'; G.fill();
     G.clip(); G.strokeStyle = 'rgba(255,255,255,0.35)'; G.lineWidth = 1; G.beginPath(); for (let xx = px - ph; xx < px + mw; xx += 7) { G.moveTo(xx, cy0 + ph); G.lineTo(xx + ph, cy0); } G.stroke(); G.restore();
     if (peel > 0.01) { G.beginPath(); G.ellipse(px + mw / 2, cy0 + hh, mw / 2, 7, 0, 0, TAU); G.fillStyle = '#B4B4B8'; G.fill(); }
   }
+  /* the chemicals: three drops on the exposed coat, a day, then a cloth wipes them off */
+  const dr = clamp(o.drops || 0), dy = clamp(o.day || 0), wp = clamp(o.wipe || 0), ex0 = px + mw, ew = pw - mw;
+  const drops = [[0.22, 'Sweat', 'rgba(205,220,236,0.9)'], [0.52, 'Sunscreen', 'rgba(252,252,248,1)'], [0.8, 'Skin oil', 'rgba(226,210,150,0.92)']];
+  if (dr > 0.01 && wp < 1) {
+    const wx = ex0 + ew * wp;
+    drops.forEach(([u, nm, col], i) => {
+      const k = clamp((dr - i * 0.18) / 0.5), dx = ex0 + ew * u, dcy = py + ph * 0.5; if (k <= 0 || dx < wx) return;
+      G.save(); G.beginPath(); G.ellipse(dx, dcy, 17 * k, 11 * k, 0, 0, TAU); G.fillStyle = col; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.3)'; G.lineWidth = 1.2; G.stroke();
+      G.beginPath(); G.ellipse(dx - 5 * k, dcy - 4 * k, 5 * k, 2.6 * k, -0.4, 0, TAU); G.fillStyle = 'rgba(255,255,255,0.8)'; G.fill(); G.restore();
+      text(nm, dx, i === 1 ? dcy - 24 : dcy + 38, { role: 'label', size: 19, color: 'rgba(17,17,17,0.75)', align: 'center', alpha: k });
+    });
+    if (dy > 0.01 && wp <= 0) text('A day', ex0 + ew / 2, py + ph - 14, { role: 'label', size: 19, color: 'rgba(17,17,17,0.7)', align: 'center', alpha: Math.min(dy * 4, 1) });
+    if (wp > 0) { G.save(); rrPath(wx - 26, py - 10, 40, ph + 20, 8); G.fillStyle = '#B9B9BE'; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.3)'; G.lineWidth = 1.2; G.stroke(); G.restore(); }
+  }
+  /* Huntsman's two clear coats, the same kind of lamps: the epoxy ambers with the hours (ΔE 16 by 500 h), the polyurethane holds */
+  const sw = 56, sx1 = px + pw + 52, sx2 = sx1 + 170, amb = clamp(hrs / 500);
+  rrPath(sx1, py, sw, ph, 4); G.fillStyle = mix('#F5F5F3', '#C9902F', 0.82 * amb); G.fill(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = 1.2; G.stroke();
+  rrPath(sx2, py, sw, ph, 4); G.fillStyle = '#F6F6F7'; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = 1.2; G.stroke();
+  text('Clear coats, Huntsman 2024', sx1 - 6, py - 16, { role: 'label', size: 19, color: '#E6E6E9' });
+  text('Epoxy', sx1 + sw / 2, py + ph + 26, { role: 'label', size: 19, color: '#E6E6E9', align: 'center' });
+  text('Polyurethane', sx2 + sw / 2, py + ph + 26, { role: 'label', size: 19, color: '#E6E6E9', align: 'center' });
+  if (hrs >= 500) { const ka = clamp((hrs - 500) / 120);
+    text('ΔE 16 by 500 h', sx1 + sw / 2, py + ph + 52, { role: 'small', size: 19, weight: 700, color: '#E3B866', align: 'center', alpha: ka });
+    text('ΔE 0.13', sx2 + sw / 2, py + ph + 52, { role: 'small', size: 19, weight: 700, color: '#E6E6E9', align: 'center', alpha: ka }); }
   /* the hours readout */
-  const hrs = Math.round(o.hours || 0);
+  const hr = Math.round(hrs);
   rrPath(x + w - 210, y + h - 58, 184, 40, 6); G.fillStyle = TH ? '#1E1F22' : '#0B0C0D'; G.fill();
-  text(String(hrs).padStart(4, '0') + ' h', x + w - 40, y + h - 30, { role: 'num', size: 26, weight: 750, color: on > 0.05 ? '#FFFFFF' : '#8A8A8E', align: 'right', tnum: true, caps: false });
+  text(String(hr).padStart(4, '0') + ' h', x + w - 40, y + h - 30, { role: 'num', size: 26, weight: 750, color: on > 0.05 ? '#FFFFFF' : '#8A8A8E', align: 'right', tnum: true, caps: false });
   text('UV lamps, ASTM D4587', x + 26, y + h - 30, { role: 'label', size: 19, color: C.mute });
   return { px, py, pw, ph, mw };
 }
@@ -1177,12 +1204,13 @@ S({
     ['(rated 7/10, no note): kept what worked', 'Still a UV chamber, the hours and what each maker publishes; now a demonstration: the panel in the chamber with a masked reference strip that comes off at 1,000 h'],
     ['F2.23 "with most coatings it\'s very hard to tell if they will yellow over time"', 'The rival first: a white mouse whose maker published no UV or chemical test, yellowing where the fingers rest as the months pass; its owners found out after buying'],
     ['F2.23 "(like how the ulx pros yellowed)"', 'The rival is the white ULX Pro Series, with its owners\' own words ("known to yellow very badly"; the Aceu "a huge problem"), drawn from reports, no rate implied'],
-    ['F2.23 "cerakote is by far one of the safest because of its industry leading chemical and uv resistance"', 'Cerakote publishes both: 1,000 h under UV lamps with no visible change, and the F-Series rated Excellent for chemicals (a colour change under ΔE 2.5); verdict 0 → 1,000 h of published UV testing']
+    ['F2.23 "cerakote is by far one of the safest because of its industry leading chemical and uv resistance"', 'Cerakote publishes both, and the chamber shows both: 1,000 h under UV lamps with no visible change, then a drop each of sweat, sunscreen and skin oil left a day and wiped: the F-Series is rated Excellent (a colour change under ΔE 2.5); beside it, two clear coats under the same kind of lamps (Huntsman 2024): the epoxy yellows (ΔE 16 at 500 h), the polyurethane holds (0.13): the chemistry decides. Verdict 0 → 1,000 h of published UV testing']
   ],
   draw: t => {
     header(t, 'No yellowing');
     captions(t, [[0.4, 'Finalmouse publishes no UV or chemical test for the ULX Pro\'s coat, so owners found out after buying: white ULX Pros yellowed where the fingers rest.'],
-      [4.6, 'Cerakote publishes its tests: a white panel under UV lamps for 1,000 hours, one strip covered to compare. Nothing changed.']]);
+      [4.3, 'Cerakote publishes its tests: a white panel under UV lamps for 1,000 hours, one strip covered to compare. Nothing changed.'],
+      [B08U.drops[0], 'Then a day under sweat, sunscreen and skin oil: Cerakote rates the F-Series Excellent, a colour change under ΔE 2.5.']]);
     const U0 = B08U;
     /* the left half: the rival in use */
     const lx = LM, cx0 = 330, cy0 = 640, sM = 4.4;
@@ -1210,23 +1238,22 @@ S({
     { const bx = lx, by = 930, bw = 500; line(bx, by, bx + bw, by, { color: C.hair, w: 6 }); line(bx, by, bx + bw * km, by, { color: C.secondText, w: 6 }); text('Months in use', bx, by - 16, { role: 'label', size: 19, color: C.mute }); }
     if (t > U0.tags[0]) faultTag(t, U0.tags[0], [cx0 - 14 * MS_K.x * sM + 10, cy0 - 36 * MS_K.y * sM - 20], '"Known to yellow very badly"', { to: [cx0 + 170, 420], side: 'r', prose: true, maxW: 300 });
     if (t > U0.tags[1]) faultTag(t, U0.tags[1], [cx0 + 14 * MS_K.x * sM - 4, cy0 - 36 * MS_K.y * sM + 30], '"A huge problem" (Aceu edition)', { to: [cx0 + 190, 560], side: 'r', prose: true, maxW: 300 });
-    { const a = ep(t, 4.0, 4.4); text('The chemistry decides, and a mouse rarely says which it is: under the same UV lamps an aromatic epoxy clear coat shifted ΔE 16 in 500 h, a UV-stable polyurethane 0.13.', 560, 680, { role: 'small', size: 21, weight: 600, color: C.ink2, alpha: a, maxW: 380 });
-      pill(560, 846, 'study', a, { by: 'Huntsman 2024' }); }
     text("Owners' reports, drawn: no rate given. They blame sweat, lotions and the grippier coat as much as light.", lx, 978, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: ep(t, 3.0, 3.4), maxW: 860 });
     /* the right half: Cerakote's test */
     const qx = 1000, qy = 296, qw = 840, qh = 420;
     const on = ep(t, U0.lamps, U0.lamps + 0.3), hrs = 1000 * ep(t, U0.hours[0], U0.hours[1], E.io3), pk = ep(t, U0.peel[0], U0.peel[1], E.io3);
     text('Cerakote, white', qx, 284, { role: 'label', size: 20, color: C.heroText });
-    const Q = b08_quv(qx, qy + 10, qw, qh, { on, hours: hrs, peel: pk });
+    const Q = b08_quv(qx, qy + 10, qw, qh, { on, hours: hrs, peel: pk, drops: ep(t, U0.drops[0], U0.drops[1]), day: ep(t, U0.day[0], U0.day[1], E.lin), wipe: ep(t, U0.wipe[0], U0.wipe[1], E.io3) });
     if (pk > 0.6) {
       const a = ep(t, U0.peel[0] + 0.4, U0.peel[0] + 0.8);
       text('Covered', Q.px + Q.mw / 2, Q.py + Q.ph + 18, { role: 'label', size: 19, color: '#F3F3F5', align: 'center', alpha: a });
       text('1,000 h of UV', Q.px + Q.mw + (Q.pw - Q.mw) / 2, Q.py + Q.ph + 18, { role: 'label', size: 19, color: '#F3F3F5', align: 'center', alpha: a });
-      text('No visible change', Q.px + Q.mw + (Q.pw - Q.mw) / 2, Q.py + Q.ph / 2 + 9, { role: 'label', size: 24, color: C.heroText, align: 'center', alpha: ep(t, U0.peel[1], U0.peel[1] + 0.3) });
+      const kw = ep(t, U0.wipe[1], U0.wipe[1] + 0.3), cxm = Q.px + Q.mw + (Q.pw - Q.mw) / 2;
+      text('No visible change', cxm, Q.py + Q.ph / 2 + 9 - 14 * kw, { role: 'label', size: 24, color: C.heroText, align: 'center', alpha: ep(t, U0.peel[1], U0.peel[1] + 0.3) * Math.max(1 - ep(t, U0.drops[0] - 0.2, U0.drops[0]), kw) });
+      text('Chemicals: Excellent', cxm, Q.py + Q.ph / 2 + 30, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: kw });
     }
-    verdict(t, U0.verdict, qx, 870, { from: 0, to: 1000, unit: 'h', dec: 0, label: 'UV testing published', better: 'higher', who: ['ULX Pro', 'Cerakote'], size: 112, maxW: 560 });
-    { const a = ep(t, 9.6, 10.0); text('Chemicals: the F-Series is rated Excellent, a colour change under ΔE 2.5 after a day in each', qx + 560, 800, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: a, maxW: RM - qx - 560 }); }
-    scaleNote(qx, 962, 'six weeks without a break', { lead: '1,000 h', t, t0: 9.4 });
+    verdict(t, U0.verdict, qx, 870, { from: 0, to: 1000, unit: 'h', dec: 0, label: 'UV testing published', better: 'higher', who: ['ULX Pro: none', 'Cerakote'], size: 112, maxW: 560 });
+    scaleNote(qx, 962, 'six weeks without a break', { lead: '1,000 h', t, t0: 8.4 });
   }
 });
 
@@ -1264,6 +1291,7 @@ S({
     ['"the best thickness is no thickness"', 'His line is the title, and the payoff: added for grip, 0.5 mm of tape → 0 mm, the grip cut into the coat that is there anyway'],
     ['"people have been chasing really thin grip tape for a while now"', 'The chase is on screen: 0.5 mm tapes (Lizard Skins DSP, Pulsar SuperGrip), then 0.3 mm (TalonGames PU-0, Keychron), each a thinner sheet still on glue with an edge'],
     ['"this is a better solution"', 'Shown on the same fingertip: the tape\'s edge is a step it drops off; after the etch it slides across the same place with no step'],
+    ['(R2-b08-5) where is this?', 'From frame one: "Fingertip, in section" and "Grip tape on its glue" named on the drawing, and the kit\'s locator under it, the left button from the side; at 150 px a mm the fingertip\'s nail sits far above the box, so it reads by its name']
     ['F2.15 "doesn\'t need adhesives that wear down over time or collect gunk"', 'A month on: the glue creeps out of the cut edge (US 6,686,014), skin and lint stick to it, the edge lifts ("unpeeled after a month"); the etch has no glue and no edge']
   ],
   draw: t => {
@@ -1283,7 +1311,9 @@ S({
     const x1 = t < T0.slide2[0] ? lerp(bx + bw * 0.34, bx + bw * 0.86, ep(t, T0.slide1[0], T0.slide1[1], E.io3)) : lerp(bx + bw * 0.86, bx + bw * 0.42, ep(t, T0.slide2[0], T0.slide2[1], E.io3));
     clipped(bx, by, bw, bh, () => b08_tip(x1, { s: sc, top, x0: bx - 40 }));
     rrPath(bx, by, bw, bh, 6); G.strokeStyle = C.hair; G.lineWidth = 1.2; G.stroke();
-    /* the layers named, quietly */
+    /* the layers named, quietly; and, from frame one, what the grey and the strip are (R2-b08-5: "where" at t = 0) */
+    text('Fingertip, in section', bx + 24, by + 44, { role: 'label', size: 20, color: C.ink2 });
+    text('Grip tape on its glue', ex - 10, base - 0.5 * sc - 26, { role: 'label', size: 20, color: C.ink2, align: 'right', alpha: 1 - ep(t, T0.thin1[0] - 0.3, T0.thin1[0]) });
     text('Shell', bx + 16, by + bh - 20, { role: 'label', size: 19, color: '#E8E8EA' });
     text('Coat, 19 µm: a line at this scale', bx + 16, base + 30, { role: 'label', size: 19, color: '#E8E8EA' });
     /* the tape's thickness, counted as it thins */
@@ -1308,6 +1338,9 @@ S({
       });
     }
     verdict(t, T0.verdict, rx, 760, { from: 0.5, to: 0, unit: 'mm', dec: 1, label: 'Added for grip', better: 'lower', who: ['Grip tape', 'Theseus'], size: 120, maxW: RM - rx });
+    /* where this is: the left button from the side (the kit's locator), under the section */
+    locator(t, -1, bx + 18, by + bh + 26, 104, 'left', msBox('left', 'trigL'), { hi: ['trigL'] });
+    text('The left button, seen from the side; the section cuts across the tape\'s edge', bx + 168, by + bh + 52, { role: 'small', size: 20, weight: 600, color: C.mute, maxW: 900 });
     scaleNote(rx, 880, 'two-thirds of a credit card', { lead: '0.5 mm', t, t0: 8.6 });
     text("Ageing drawn from owners' reports and the adhesive patent, not measured", rx, 926, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: ep(t, 8.8, 9.2), maxW: RM - rx });
   }
@@ -1353,12 +1386,12 @@ S({
   answers: [
     ['"i love how realistic it is"', 'Kept: the same lit macro of a laser rastering the key band out of a white coat down to the carbon shell, with one light sweep over the finished relief'],
     ['"not a universal dah of the design"', 'Said on the slide: a colourway option, not the default design'],
-    ['F2.21 "without having to worry about a second coat adding weight or coming off (as seen in the finalmouse prophecy series)"', 'The rival first: Prophecy\'s painted art is three layers on the shell (undercoat, paint, UV top coat, Finalmouse\'s words); the same scuff takes its top layers off, and finds nothing on top to chip on the etched coat. Verdict 3 → 1 layers. The old "33 g painted, 29 g plain" is dropped: Finalmouse does not say what the 4 g is'],
+    ['F2.21 "without having to worry about a second coat adding weight or coming off (as seen in the finalmouse prophecy series)"', 'The rival first: Prophecy\'s painted art is three layers on the shell (undercoat, paint, UV top coat, Finalmouse\'s words); a scuff that gets through the top coat reaches the paint (shown as the mechanism: no owner reports of Prophecy wear were found, so the slide does not say its paint chips), and finds nothing on top to reach on the etched coat. Verdict 3 → 1 layers. The old "33 g painted, 29 g plain" is dropped: Finalmouse does not say what the 4 g is'],
     ['F21.7 "Etch through to carbon"', 'As drawn: the second tone is the carbon shell itself']
   ],
   draw: t => {
     header(t, 'Two tones in one coat');
-    captions(t, [[0.5, 'Painted art sits on top of the shell: an undercoat, the paint and a top coat. A scuff takes the top layers off.'],
+    captions(t, [[0.5, 'Painted art sits on top of the shell: an undercoat, the paint and a top coat. A scuff that gets through the top coat reaches the paint.'],
       [2.8, 'Etched art is cut out of one coat: the laser takes the white off, and the carbon shell under it is the second tone.']]);
     const W0 = B08W;
     /* the macro: a white coat; the laser rasters the key band out of it; one studio light sweep over the finished relief */
@@ -1388,9 +1421,9 @@ S({
     const sA = ep(t, W0.scuff0[0], W0.scuff0[1], E.io3), sB = ep(t, W0.scuff1[0], W0.scuff1[1], E.io3);
     if (sA > 0 && sA < 1) b08_scuffer(lerp(rx + sw * 0.25, rx + sw * 0.95, sA), topA, 1);
     if (sB > 0 && sB < 1) b08_scuffer(lerp(rx + sw * 0.25, rx + sw * 0.95, sB), topB, 1);
-    if (t > W0.scuff0[1] - 0.2) faultTag(t, W0.scuff0[1] - 0.2, [rx + sw * 0.5, topA + 8], 'The paint chips', { to: [rx + sw + 30, topA - 24], side: 'r' });
+    if (t > W0.scuff0[1] - 0.2) faultTag(t, W0.scuff0[1] - 0.2, [rx + sw * 0.5, topA + 8], 'A scuff reaches the paint', { to: [rx + sw + 30, topA - 24], side: 'r', maxW: 200 });   /* the mechanism, not a report: no owner reports of Prophecy paint wear were found (FILLS b08-6; R2-b08-6) */
     if (t > W0.scuff1[1] - 0.1) fixTag(t, W0.scuff1[1] - 0.1, [rx + sw * 0.65, topB + 4], 'Nothing to chip', { to: [rx + sw + 30, topB - 24], side: 'r' });
-    verdict(t, W0.verdict, rx, 866, { from: 3, to: 1, unit: '', dec: 0, label: 'Layers on the shell', better: 'lower', who: ['Painted', 'Etched'], size: 120, maxW: RM - rx, net: false });
+    verdict(t, W0.verdict, rx, 880, { from: 3, to: 1, unit: '', dec: 0, label: 'Layers on the shell', better: 'lower', who: ['Painted', 'Etched'], size: 150, maxW: RM - rx, net: false });
     text('A colourway option, not the default design', T0[0], T0[1] + T0[3] + 30, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: ep(t, 8.6, 9.0) });
   }
 });
@@ -1398,13 +1431,15 @@ S({
 /* ---------- b08_wheel: a 0.9 g magnesium wheel ----------
    Replaces wheel (5/10: "poor comparison figure, we should be comparing ti average plastic wheels with heavy rubber, a
    test group"); F22.1 (PMM's wheel is 1.0 g, ours 0.9 g, six arms), F25.2 (thinner arms, 0.55 mm), F30.8 (the straight-line
-   tread). The test group he asked for (stock plastic wheels in rubber tyres) has no published weights yet (two research
-   passes, research/FILLS.md b08-1), so it stands on screen as a row of stock wheels under a red placeholder stamp: to be
-   weighed. The weighing that can be shown honestly is shown: a jeweller's scale from above, PMM's magnesium wheel set on its
-   pan by tweezers (1.00 g, PMM's own figure), taken off, then Theseus's (0.90 g, derived: 508.5 mm³ of AZ31B at 1.77 g/cm³,
-   the deck's 3D wheel). The wheel itself from the side (the shared 2D twin): six thin arms that make six triangles with the
-   rim, and the tread's straight grooves unrolled under it. */
-const B08H = { seq: [['stock', 1.0, 2.6, 1.8], ['pmm', 3.3, 4.9, 1.0], ['ths', 5.6, 99, 0.9]], dur: 0.9, off: 0.6, verdict: 7.4 };
+   tread); F47.5 (Brock: "Show the two found"). The test group is the two stock wheels in rubber tyres whose weights are
+   published, both by sellers of lighter wheels: Endgame Gear's OP1 1.8 g (Forky Mods) and Razer's Viper V2 Pro 1.5 g
+   (Zeromouse's "original", the wheel its kit reuses; FILLS Q3); 21 searches found no others. The verdict takes their average
+   (1.65 g), as he asked. A jeweller's scale from above weighs the V2 Pro's wheel (1.50 g), PMM's magnesium wheel (1.00 g,
+   PMM's own figure), then Theseus's (0.90 g, derived: 508.5 mm³ of AZ31B at 1.77 g/cm³, the deck's 3D wheel). The wheel from
+   the side (the shared 2D twin): six thin arms that make six triangles with the rim, and the straight-grooved tread. */
+const B08H = { seq: [['stock', 1.0, 2.45, 1.5], ['pmm', 3.1, 4.7, 1.0], ['ths', 5.4, 99, 0.9]], dur: 0.9, off: 0.6, count: 0.35, verdict: 7.4,
+  stock: [1.8, 1.5] };   /* the two stock wheels found (OP1, Viper V2 Pro); the verdict takes their average, as Brock asked ("average plastic wheels"),
+                           1.65 g (R2-b08-9); each count lands within 0.35 s, so the 40 % frame reads a settled 1.00 g (R2-b08-10) */
 /** a wheel face-on (lying flat on a pan), centre (x, y), radius R px: kind 'stock' (a plastic wheel in a black rubber tyre),
    'pmm' (a plain metal disc: its design is not drawn, only its size), 'ths' (six thin arms, an open hub, a thin rim) */
 function b08_wheelFace(x, y, R, kind, o = {}) {
@@ -1427,7 +1462,7 @@ function b08_wheelFace(x, y, R, kind, o = {}) {
 }
 /** tweezers holding a wheel at (x, y) from the upper left; open (0..1) */
 function b08_tweezers(x, y, R, open, a) {
-  if (a <= 0.003) return; const ang = -2.4, ux = Math.cos(ang), uy = Math.sin(ang), gap = R * (0.22 + 0.5 * open), L = 260;
+  if (a <= 0.003) return; const ang = -2.85, ux = Math.cos(ang), uy = Math.sin(ang), gap = R * (0.22 + 0.5 * open), L = 260;
   G.save(); G.globalAlpha = a; G.lineCap = 'round';
   for (const sd of [-1, 1]) { const px = -uy * sd, py = ux * sd, t0 = [x + ux * R * 0.9 + px * gap, y + uy * R * 0.9 + py * gap], t1 = [x + ux * (R + L) + px * 6, y + uy * (R + L) + py * 6]; line(t0[0], t0[1], t1[0], t1[1], { color: '#6E6E73', w: 6 }); }
   G.restore();
@@ -1437,30 +1472,32 @@ S({
   replaces: ['wheel'],
   src: ['b08_wheels', 'srf_pmm', 'srf_wheel3d', 'srf_az31b', 'srf_doc'],
   answers: [
-    ['"poor comparison figure"', 'A weighing instead of a figure: a jeweller\'s scale from above, each wheel set on its pan by tweezers and the display settling: Endgame Gear\'s OP1 stock wheel 1.80 g, PMM\'s magnesium wheel 1.00 g, then Theseus\'s 0.90 g; verdict 1.8 → 0.9 g against the stock wheel'],
-    ['"we should be comparing ti average plastic wheels with heavy rubber, a test group"', 'The test group is on screen: the two stock wheels with published weights (OP1 1.8 g, the Zeromouse kit\'s 1.5 g, sellers\' figures) and two more under a red placeholder stamp, to weigh. Six research passes found no others; the report asks Brock to weigh two'],
+    ['"poor comparison figure"', 'A weighing instead of a figure: a jeweller\'s scale from above, each wheel set on its pan by tweezers and the display settling: the Viper V2 Pro\'s stock wheel 1.50 g, PMM\'s magnesium wheel 1.00 g, then Theseus\'s 0.90 g; the verdict against the two stock wheels\' average, as he asked (1.65 → 0.90 g, −45 %)'],
+    ['"we should be comparing ti average plastic wheels with heavy rubber, a test group"', 'The two stock wheels in rubber tyres with published weights are on screen: Endgame Gear\'s OP1 1.8 g (Forky Mods) and Razer\'s Viper V2 Pro 1.5 g (Zeromouse\'s figure for the wheel its kit reuses), both from sellers of lighter wheels, said on the slide; the "to weigh" slots are gone (Brock, F47.5: "Show the two found"); 21 searches found no others'],
     ['F22.1 / F25.2 (six arms, thinner, 0.9 g against PMM\'s 1.0 g)', 'The wheel from the side (the shared 2D twin): six thin arms, 0.55 mm at the rim, six triangles with it; verdict 1.0 → 0.9 g'],
     ['F30.8 (the straight-line tread)', 'The tread unrolled under the wheel: straight grooves across it, no rubber']
   ],
   draw: t => {
     header(t, 'A 0.9 g magnesium wheel');
-    captions(t, [[0.4, 'A stock wheel is plastic in a rubber tyre: Endgame Gear\'s OP1 wheel weighs 1.8 g. PMM\'s magnesium wheel weighs 1.0 g.'],
-      [5.6, 'Theseus\'s is magnesium too, cut to six thin arms that make six triangles with the rim: 0.9 g, on a straight-grooved tread.']]);
+    captions(t, [[0.4, 'Stock plastic wheels in rubber tyres: OP1 1.8 g, Viper V2 Pro 1.5 g. PMM\'s magnesium wheel: 1.0 g.'],
+      [5.4, 'Theseus\'s is magnesium too: six thin arms, six triangles with the rim, 0.9 g, on a straight-grooved tread.']]);
     const H0 = B08H, R = 104;
-    /* the test group: stock wheels in rubber tyres; two have published weights, two are still to weigh */
-    text('Stock wheels in rubber tyres: the test group', LM, 298, { role: 'label', size: 20, color: C.mute });
-    [[150, 'OP1', '1.8 g'], [290, 'Zeromouse kit', '1.5 g'], [530, 'To weigh', ''], [670, 'To weigh', '']].forEach(([x, nm, g]) => {
+    /* the stock wheels in rubber tyres with published weights: the two found (Brock, F47.5: "Show the two found") */
+    text('Stock wheels in rubber tyres: the two weights published', LM, 298, { role: 'label', size: 20, color: C.mute });
+    [[184, 'Endgame Gear OP1', '1.8 g'], [446, 'Razer Viper V2 Pro', '1.5 g']].forEach(([x, nm, g]) => {
       b08_wheelFace(x, 384, 46, 'stock');
-      text(nm, x, 456, { role: 'label', size: 19, color: g ? C.mute : C.red, align: 'center' });
-      if (g) text(g, x, 482, { role: 'small', size: 22, weight: 750, color: C.ink2, align: 'center' });
+      text(nm, x, 456, { role: 'label', size: 19, color: C.mute, align: 'center' });
+      text(g, x, 482, { role: 'small', size: 22, weight: 750, color: C.ink2, align: 'center' });
     });
-    placeholderStamp(t, 466, 344, 268, 126, { t0: 0 });
+    text('Both weighed by sellers of lighter wheels: Forky Mods (OP1) and Zeromouse, whose kit reuses the Viper V2 Pro\'s wheel. Tyre and axle not stated.', 590, 362, { role: 'small', size: 20, weight: 600, color: C.mute, maxW: 345, lh: 1.3 });
+    text('Average 1.65 g', 315, 512, { role: 'small', size: 21, weight: 700, color: C.ink2, align: 'center' });
+    line(184, 494, 446, 494, { color: C.faint, w: 1.5 }); line(184, 488, 184, 494, { color: C.faint, w: 1.5 }); line(446, 488, 446, 494, { color: C.faint, w: 1.5 });
     /* the scale, from above: its pan, its display */
     const bx = LM + 30, by = 520, bw = 820, bh = 380, pc = [bx + 230, by + bh / 2];
     rrPath(bx, by, bw, bh, 28); G.fillStyle = TH ? '#E2E2E5' : '#2A2B2F'; G.fill(); G.strokeStyle = rgba(C.ink, 0.3); G.lineWidth = 1.5; G.stroke();
     circle(pc[0], pc[1], 160, { fill: TH ? '#F1F1F3' : '#3A3B40' }); circle(pc[0], pc[1], 160, { color: rgba(C.ink, 0.25), w: 1.5 });
     /* the wheels, one at a time: set on the pan by tweezers, read, taken off */
-    const from = [bx - 260, by - 120];
+    const from = [bx - 260, by + 40];
     let val = 0, who = null;
     clipped(bx - 40, by - 200, bw + 80, bh + 240, () => {
       for (const [kind, t0, t1, g] of H0.seq) {
@@ -1469,7 +1506,7 @@ S({
         b08_wheelFace(at[0], at[1], R, kind);
         const held = kin < 1 || kout > 0, rel = ep(t, t0 + H0.dur, t0 + H0.dur + 0.3), grab = ep(t, t1 - 0.3, t1);
         b08_tweezers(at[0], at[1], R, held ? 0 : 1, held ? 1 : Math.max(1 - rel, grab));
-        if (kin >= 1 && kout <= 0) { val = g * ep(t, t0 + H0.dur, t0 + H0.dur + 0.6, E.out3); who = kind; }
+        if (kin >= 1 && kout <= 0) { val = g * ep(t, t0 + H0.dur, t0 + H0.dur + H0.count, E.out3); who = kind; }
         else if (kout > 0) { val = g * (1 - ep(t, t1, t1 + 0.25)); who = kout < 0.4 ? kind : null; }
       }
     });
@@ -1477,7 +1514,7 @@ S({
     const dx = bx + 470, dy = by + 120, dw = 300, dh = 140;
     rrPath(dx, dy, dw, dh, 12); G.fillStyle = '#1C1D20'; G.fill();
     text(val.toFixed(2) + ' g', dx + dw - 24, dy + dh / 2 + 26, { role: 'num', size: 72, weight: 750, color: '#EDEDEF', align: 'right', tnum: true, caps: false });
-    const names = { stock: ['OP1 stock wheel', C.ink2], pmm: ['PMM magnesium', C.secondText], ths: ['Theseus', C.heroText] };
+    const names = { stock: ['Viper V2 Pro stock wheel', C.ink2], pmm: ['PMM magnesium', C.secondText], ths: ['Theseus', C.heroText] };
     if (who) text(names[who][0], dx, dy + dh + 40, { role: 'label', size: 22, color: names[who][1] });
     /* the wheel from the side: the shared 2D twin, with its two features named */
     const sb = [1010, 286, 460, 366], sv = { view: [0.8, 0.48, 0.4], zoom: 2.05, target: [0, 11, 0], scroll: 0, xray: 0, explode: 0, view2d: 'right', hide2d: /encoder|support/, ground2d: false };
@@ -1485,14 +1522,14 @@ S({
     const K = SRF_WH, D2R = Math.PI / 180, wp = (r, al, x = 0) => v2dAt('wheel', sv, sb, /wheel\/tread$/, [(x + K.band) / (2 * K.band), (r * Math.cos(al) + K.R) / (2 * K.R), (r * Math.sin(al) + K.R) / (2 * K.R)]);
     const pArm = wp(6.2, -60 * D2R, 0.5) || [sb[0] + 300, sb[1] + 160], pRim = wp(10.45, -125 * D2R, 3.5) || [sb[0] + 360, sb[1] + 260];
     if (t > 5.4) callout(t, 5.4, pArm, 'Six thin arms', { to: [1510, 350], side: 'r', color: C.hero, tcolor: C.heroText, sub: '0.55 mm wide at the rim', maxW: 260 });
-    if (t > 5.8) callout(t, 5.8, pRim, 'Six triangles with the rim', { to: [1510, 500], side: 'r', color: C.hero, tcolor: C.heroText, prose: true, maxW: 260 });
+    if (t > 5.8) callout(t, 5.8, pRim, 'Six triangles with the rim', { to: [1510, 500], side: 'r', color: C.hero, tcolor: C.heroText, prose: true, maxW: 260, sub: 'as in the shell\'s lattice', scolor: C.mute });
     /* the tread, unrolled: straight grooves across it (F30.8) */
     { const tx = 1010, ty = 688, tw = 460, th = 44, ka = ep(t, 6.0, 6.4);
       if (ka > 0.003) { const tf = srf_field('b08w:tread', 460, 44, f => srf_genFilm(f, { pat: 'ridge', pitch: 12, width: 6, depth: 3, ang: Math.PI / 2, seed: 3, col: [176, 176, 182], ecol: [120, 120, 126] }));
         G.save(); rrPath(tx, ty, tw, th, 6); G.clip(); srf_macro(t, tf, tx, ty, tw, th, { light: { az: 2.35, el: 0.6 }, alpha: ka, r: 0 }); G.restore();
         text('Tread, unrolled: straight grooves', tx, ty - 12, { role: 'label', size: 19, color: C.mute, alpha: ka }); } }
-    verdict(t, H0.verdict, 1010, 872, { from: 1.8, to: 0.9, unit: 'g', dec: 1, label: 'Wheel weight', better: 'lower', who: ['OP1 stock', 'Theseus'], rivalCol: 'grey', size: 100, maxW: 460 });
-    { const a = ep(t, 8.6, 9.0); text("Stock wheels and PMM's: sellers' own figures (tyre and axle not stated). Theseus's derived: the 3D wheel's 508.5 mm³ of AZ31B at 1.77 g/cm³", 1510, 790, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: a, maxW: RM - 1510 }); }
+    verdict(t, H0.verdict, 1010, 872, { from: (H0.stock[0] + H0.stock[1]) / 2, to: 0.9, unit: 'g', dec: 2, label: 'Wheel weight', better: 'lower', who: ['Stock average (n = 2)', 'Theseus'], rivalCol: 'grey', size: 100, maxW: 460 });
+    { const a = ep(t, 8.6, 9.0); text("Stock wheels: sellers' figures; PMM's: its own (tyre and axle not stated). Theseus's derived: the 3D wheel's 508.5 mm³ of AZ31B at 1.77 g/cm³", 1510, 790, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: a, maxW: RM - 1510 }); }
   }
 });
 

@@ -4,7 +4,7 @@
    good ... the pacing also has to be amazing"):
    - Transitions never move the stage: both frames stay registered, so the 40 px grid and the footer hold still while the
      content changes over them. On the same ground the new frame fades in over the old, so what both share holds still
-     (dissolve, 0.55 s); when the ground changes, paper to night or back, a soft slanted edge carries the new slide across
+     (dissolve, 0.45 s, moving from the first frame); when the ground changes, paper to night or back, a soft slanted edge carries the new slide across
      from the left, so its header shows first (wipe, 0.7 s); a change of chapter, either way, is the flight across the
      film's one simplified mouse (F0c, Brock F40.2: "advanced motion transitions"): the old content recedes into the mouse
      where its chapter was, one camera carries it, turning between views, to the next chapter's part, and lands on the
@@ -67,7 +67,7 @@ function fit() {
 }
 /* ---------- the transitions ----------
    How long each takes (s). Quick enough to keep a viewer, long enough never to read as a cut. */
-const TRN = { dissolve: 0.55, wipe: 0.7, chapter: 1.1, iris: 1.15, push: 0.6, cut: 0, reduced: 0.25, flight: 1.6, handoff: 1.0 };
+const TRN = { dissolve: 0.45, wipe: 0.7, chapter: 1.1, iris: 1.15, push: 0.6, cut: 0, reduced: 0.25, flight: 1.6, handoff: 1.0 };
 /* when the new slide's clock starts, as a fraction of its transition: the chapter move holds it until the slide begins to
    come up out of the dark, so its first frame is the first thing seen (every other move starts it at once) */
 const TRS = { chapter: 0.38, flight: 0.8 };   /* flight: onto a card its clock starts on landing (the plan's own, FLY.T.land / dur; tools: t=auto is exact) */
@@ -493,10 +493,11 @@ function compose(k) {
   const A = SNAP, B = OFF, dir = APP.back ? -1 : 1;
   if (APP.trans === 'dissolve') {
     /* the same ground: the new frame fades in over the old, so whatever is the same on both (the chapter's label, the
-       footer, a part one slide hands to the next, M9) holds perfectly still while the rest changes; steeply eased, so
-       the two frames share the stage only for a moment (20 to 80 % in under a tenth of a second) */
+       footer, a part one slide hands to the next, M9) holds perfectly still while the rest changes. Eased out (K, 2026-11-06:
+       F0b's io5 showed nothing for about 0.2 s after a tap and felt laggy): it answers at once (45 % at 50 ms, 95 % by
+       0.2 s) and the two frames still share the stage only for a moment (20 to 80 % in about a tenth of a second) */
     fx.drawImage(A, 0, 0);
-    fx.globalAlpha = E.io5(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1;
+    fx.globalAlpha = E.out5(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1;
   } else if (APP.trans === 'wipe') {
     /* the ground changes: a soft, slightly slanted edge carries the new slide across over the old one, left to right
        (right to left going back), so its header is the first thing to show. Both frames stay where they are: the grid's
@@ -569,16 +570,20 @@ function compose(k) {
    mouse; the card's words land over it and the card lights its part. Stepping back plays the same move the other way:
    the card's words go, the camera flies back, the slide comes up out of the mouse.
    - Each end of the move is a card or a slide. A card is a slide whose kit mouse the player can see: chapterCard2's part,
-     read through the kit's capture (CARD2), or a slide's own `flight: { view, box, pad }`. A card's mouse IS the flight's
-     mouse at that end: the flight starts on it or lands on it exactly. A slide recedes into, or emerges out of, its
-     chapter's station: the chapter's part, lit, framed large at the centre (FLY.st).
+     read through the kit's capture (CARD2.rec), or a mouse the slide declares (S({ flight }) or S({ handoff }), see
+     flPlace) and really draws there (CARD2.skip). A card's mouse IS the flight's mouse at that end: the flight starts on
+     it or lands on it exactly, and the slide leaves it to the flight meanwhile (CARD2.hide, CARD2.skip), so there is only
+     ever one. A card the player can't see (its part drawn without the kit's mouse) gets a soft hand-off in its part box.
+     A slide recedes into, or emerges out of, its chapter's station: the chapter's part, lit, framed large at the centre
+     (FLY.st).
    - The turn: each view is a roll about the mouse's long axis and a turn in the plane (top 0°, side 90°, below 180°).
      Between two views the mouse is a loft of the kit's own outlines (the top's width, the side's heights, the front's
      section), so its silhouette and its lines (seams, skirt, wheel, buttons, skates, lens) turn as one solid; before and
      after the turn it is the kit's own drawing, so the hand-off to a card is exact.
-   - Timeline, s (FLY.T): the slide recedes 0 to 0.42 as the mouse comes up; the camera moves 0.22 to 1.28 (E.cam),
-     turning 0.58 to 1.18 when it must; the old part's light goes 0.3 to 0.56; a card's clock starts on landing (1.28)
-     and its part comes up over the landed mouse until the flight's layer goes (1.6); a slide emerges 1.2 to 1.6 instead.
+   - Timeline, s (FLY.T): the slide recedes 0 to 0.4 as the mouse comes up; the ground changes 0.34 to 0.66 (after the
+     slide has gone); the camera moves 0.22 to 1.28 (E.cam), turning 0.58 to 1.18 when it must; the old part's light goes
+     0.3 to 0.56; a card's clock starts on landing (1.28) and the flight's layer goes at 1.6, when the card's mouse is fully
+     up; a slide emerges 1.2 to 1.6 instead. Onto a card whose part is no mouse at all, 1.85 s.
    ============================================================================================ */
 const FLY = {
   dur: TRN.flight,
@@ -616,8 +621,8 @@ const FLY = {
    0.86, the new content comes up 0.5 to 0.86 at its first frame, its clock starts on landing, done at 1.0 s. Only where
    the kit sees both mice drawn exactly where declared (CARD2.skip); otherwise the plain dissolve or wipe. */
 const HAND = { dur: TRN.handoff,
-  T: { words: [0, 0.22], up: [0, 0], theme: [0.2, 0.5], move: [0.06, 0.86], off: [99, 99], k2l: [0.14, 0.2], turn: [0.2, 0.76],
-    l2k: [0.76, 0.82], land: 0.86, on: [0.86, 0.86], emerge: [0.5, 0.86], chrome: [0.3, 0.7], rec: [0, 0] } };
+  T: { words: [0, 0.22], up: [0, 0], theme: [0.2, 0.5], move: [0.06, 0.86], off: [0, 0.22], k2l: [0.14, 0.2], turn: [0.2, 0.76],
+    l2k: [0.76, 0.82], land: 0.86, on: [0.5, 0.86], emerge: [0.5, 0.86], chrome: [0.3, 0.7], rec: [0, 0] } };   /* the old light goes with the old words, the new comes up with the new content */
 /** where a slide says its simplified mouse sits, as the kit would place it: S({ handoff: { in: d, out: d } }) for a hand-off
     (in: at its first frame; out: at its end), S({ flight: d }) for both. d = { view, box: [x, y, w, h] stage px, pad (as
     given to mouseFit: 0.06; establish's first frame: 0.08), focus (a part name or [x, y, w, h] mm: a closer frame, as
@@ -710,6 +715,7 @@ function flLit(pl, end, u, src) {
     const o = Object.assign({}, end.skip && end.skip.hit ? end.skip.hit.o : cs.length ? cs.reduce((a, b) => (b.m[0] > a.m[0] ? b : a)).o : end.o || {});
     if (src) o.lit = (o.lit == null ? 1 : o.lit) * (1 - E.io3(prog(u, T.off[0], T.off[1])));
     else if (end.bare) o.lit = E.io3(prog(u, T.on[0] - 0.12, T.on[1] - 0.12));
+    else if (pl.kind === 'handoff') o.lit = (o.lit == null ? 1 : o.lit) * E.io3(prog(u, T.on[0], T.on[1]));
     return o;
   }
   const k = src ? 1 - E.io3(prog(u, T.off[0], T.off[1])) : E.io3(prog(u, T.on[0], T.on[1]));

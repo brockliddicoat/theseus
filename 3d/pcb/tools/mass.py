@@ -104,3 +104,58 @@ print('| **+ wheel assembly (wheel, axle, encoder, support) = total** | | | **%.
 print('| Sora V2 PCB + wheel (Brock\'s scale) | | | 8.29 | measured |')
 print(json.dumps(board, indent=1))
 print('centre of mass', json.dumps(com))
+
+# ------------------------------------------------------------------ F42.2: the board's 5.6 g is a TARGET (H2, 2026-11-06)
+# Brock: "Keep 5.6 g as target": the film stays at 29.31 g and calls the board's figure a target; the board gets built to it
+# ("thinner laminate, fewer layers, a lighter encoder"). The model stays as built (1.0 mm, 4 layers: F21.11, "keep it as 1mm
+# for now ... it would be inefficient to recalculate something everytime we build"); this is the path, not a redesign.
+# Each step at the same areas as above (mass.py's own model: the dielectric is the finished thickness less the copper).
+TARGET_G = 5.6
+ENC_G, SUP_G = PER_FP['ENCM'][0], PER_FP['BRACKET'][0]
+est_board = m_board + m_comp_board                       # board + on-board parts
+est_all = est_board + ENC_G + SUP_G                      # + the wheel's encoder and support (the 5.6 g covers them: F42.2)
+A_cu = {k: a for k, (a, t) in cu.items()}
+
+
+def bare(Tf, layers=4, outer=0.035, inner=0.0175):
+    """the bare board's grams at finished thickness Tf, 4 or 2 layers, outer / inner copper thickness (mm)"""
+    out_a = A_cu['L1 (pour + traces + pads)'] + A_cu['L4 (triangle-art pour)']
+    in_a = A_cu['L2 (GND plane)'] + A_cu['L3 (power + long runs)'] if layers == 4 else 0.0
+    diel = Tf - 2 * outer - (2 * inner if layers == 4 else 0.0)
+    return A_core * diel * FR4 + (out_a * outer + in_a * inner) * CU + m_mask + m_barrels
+
+
+# the lighter encoder, from the 3D part's own volumes (pcb.glb ENC1, solid): black housing 447.8 mm3, clear housing 346.2,
+# nickel-silver frame 49.5 (8.7 g/cm3: 0.43 g, nearly half of the ~1.0 g estimate), sensor board 18.7, tin and solder 2.3.
+# Lighter: no metal frame (the housings snap together and peg into the board), 0.4 mm walls instead of 0.5, the Hall IC
+# on the main board under the magnet (no sensor board); the clear top housing stays (Brock: "a transparent top housing to
+# see when it's broken"). About 0.45 g. The support (WB1, 162 mm3 of POM solid) cored to about 60 %: about 0.16 g.
+ENC_LIGHT, SUP_LIGHT = 0.45, 0.16
+steps = [('plan 5 as built: 1.0 mm, 4 layers (outer 1 oz, inner 0.5 oz), encoder ~1.0 g, support 0.26 g', None)]
+cfg = dict(Tf=1.0, layers=4, outer=0.035, enc=ENC_G, sup=SUP_G)
+def total(c): return bare(c['Tf'], c['layers'], c['outer']) + (m_comp_board) + c['enc'] + c['sup']
+path = []
+prev = total(cfg)
+for label, ch in (('laminate 1.0 -> 0.8 mm finished', dict(Tf=0.8)),
+                  ('4 -> 2 layers (the GND plane moves into the bottom pour, the art stays)', dict(layers=2)),
+                  ('a lighter encoder: no metal frame, 0.4 mm housings, the Hall IC on the board (~0.45 g)', dict(enc=ENC_LIGHT)),
+                  ('a cored support (~0.16 g)', dict(sup=SUP_LIGHT)),
+                  ('laminate 0.8 -> 0.6 mm finished', dict(Tf=0.6)),
+                  ('outer copper 1 oz -> 0.5 oz (35 -> 17.5 um)', dict(outer=0.0175))):
+    cfg.update(ch); now = total(cfg); path.append(dict(step=label, delta_g=round(now - prev, 3), total_g=round(now, 3))); prev = now
+target = dict(target_g=TARGET_G, estimate_board_and_parts_g=round(est_board, 2), estimate_with_encoder_and_support_g=round(est_all, 2),
+              over_target_g=round(est_all - TARGET_G, 2), path=path,
+              uncertain=dict(millmax='Brock: 0.11 g each, 6 = 0.66 g (modelled 0.03 each, 0.18): +0.48 g if his figure holds',
+                             gt01='0.5 g each is a typical micro switch, not a weighed GT01',
+                             encoder='~1.0 g is a hollow-shell estimate of the 3D part (1.49 g solid at PBT 1.35, PC 1.2, nickel silver 8.7)'),
+              note='F42.2: the 5.6 g covers the board with everything on it, the wheel\'s encoder and support included; the model '
+                   'stays 1.0 mm / 4 layers until the next board redesign (F21.11). Stiffness goes with the cube of the thickness: '
+                   '0.8 mm keeps 51 %, 0.6 mm 22 % of the 1.0 mm board\'s.')
+out['target'] = target
+json.dump(out, open(os.path.join(HERE, '..', 'work', 'mass.json'), 'w'), indent=1)
+print('\n**Target (F42.2): %.1f g** with everything on it; the estimate now %.2f g (board and parts), %.2f g with the encoder '
+      'and support: %.2f g over.' % (TARGET_G, est_board, est_all, est_all - TARGET_G))
+print('| step to the target | g | total (g) |\n|---|---:|---:|')
+print('| %s | | %.2f |' % (steps[0][0], est_all))
+for p in path: print('| %s | %+.2f | %.2f |' % (p['step'], p['delta_g'], p['total_g']))
+print('| **target** | | **%.2f** |' % TARGET_G)

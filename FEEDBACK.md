@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 10:10 (Chicago).
+Last updated: 2026-11-06 11:08 (Chicago).
 
 ## F34, F35. Brock's own steering given to Codex on 2026-11-05 (carried over; Codex's work itself is set aside, F38.4)
 On 2026-11-05, out of Claude usage, Brock had Codex continue from this branch. On 2026-11-06 he called its output "very
@@ -168,6 +168,65 @@ opening and the slot above and below it; red curves at the two ends of the strai
   keep manufacturability in mind when you choose dimensions": the lattice study (F43.4) explains its rib and arch-beam
   proportions with the ruler (ribs are rulers on edge: as deep as the mould can fill), and every chosen dimension respects
   moulding limits (rib-to-wall ratio against sink, minimum rib width, draft, fillet minimums), cited. **TODO (L1, b05, b06).**
+
+## F46. Shape answers on S1's options sheets (2026-11-06 ~10:30)
+Sheets: /home/claude/work/s1/s1_options_A.png and s1_options_B.png (sent to him).
+- **F46.1 DECIDED** The wheel opening: **"O1 even 1.0 mm"** (9.0 × 19.3 mm, r 1.6, the Sora's look with an even 1.0 mm gap).
+  The "wacky" tapers he circled were a drawing artifact (b02_trigBase smoothed the 3D opening's corners).
+- **F46.2 DECIDED** The rear cutout's corners: **"K3 flowing"** (curvature-continuous, smallest radius 1.8 mm, bends early
+  and wraps in late, 3.3 × 7 mm).
+- **F46.3 DECIDED (deferred)** The side profile: **"don’t change side profile, all of the options you presented are really
+  bad so we’ll have to wait until there is a smarter model available to make a more involved changed like that apparently"**.
+  F43.3 (a centre hump like the Starlight X) is deferred; the hump stays where the scan has it.
+- **F46.4 DECIDED** The height: **"39.9 mm"** (his F12.11 number). **Clarified by F47.1: only the stated number.**
+
+## F47. The profile stays, the rim, the rib feet, the board, the wheels (2026-11-06 ~10:40)
+- **F47.1 DECIDED** "don’t change the side profile at all, just say it’s 39.9 and we’ll use that model until we can dk something
+  better later": no stretch, no hump move, in the 3D or the 2D; 39.9 mm is the stated height only.
+- **F47.2** "also you did the bottom rim very wrong, it’s supposed to slope down in a straight line from the back, you cut off
+  way too much, reference the 3d scan": the rim below the crease at the back must match the scan (a straight slope down
+  from the back). **TODO (S1):** before/after at true scale, then the 3D and 2D.
+- **F47.3** The rib feet's joint to the board (P4's options sheet): "keep as options, i haven’t decided yet". Open; b07 makes
+  no drop claim.
+- **F47.4 DECIDED** The board's path to its 5.6 g target: **"0.6 mm, 5.63 g"**: a 0.6 mm, two-layer board, half-ounce outer
+  copper, a lighter encoder (its nickel-silver frame dropped) and a cored support; it keeps 22 % of the 1.0 mm board's
+  bending stiffness, so the shell slides that use the board as a tie re-derive with it. **TODO (H3, P4, P1).**
+- **F47.5 DECIDED** Stock wheels: **"Show the two found"** (OP1 1.8 g, Viper V2 Pro 1.5 g, both sellers' figures; PMM 1.0 g;
+  Theseus 0.9 g). **TODO (P2).**
+- Simplified mouse detail (S1's sheet, section 4): not answered directly; built "as shown" (creases and lattice on full-size
+  views, the small locator without the lattice), F43.5.
+
+## F48. The side rail and the antenna (2026-11-06 ~10:50, answered on pictures)
+- **F48.1 DECIDED** The side rail (b03_rail's four designs, real POM friction 0.35 to 0.40 dry): **"Tied posts (wire)"**: two
+  posts linked by a stabiliser wire, 56 to 59 gf at the tip for a 55 gf switch; nothing tilts. **TODO (P2):** b03_side's rail
+  redrawn as the tied pair, its verdict the tied design's spread, "friction aside" gone; b03_rail keeps the four, the tied one
+  chosen.
+- **F48.2 DECIDED** The antenna's clearance: **"A accept plan 5"**: 17.2 mm to the wheel's magnesium, 19.5 mm to the battery's
+  foil (4.3× the first board's 4.0 mm), 2.8 mm short of Taoglas's 20 mm best, said on b09_radio.
+- Integrator decisions on H2's small questions (no need to ask): the battery stays where it balances (2.03 mm behind H1's place,
+  no rise); R1 and C35 near the antenna noted for the next board round; the battery drawn 35 × 25 mm until the pack's
+  dimensions are confirmed; the 0.70 mm sideways balance left as is.
+
+## F49. The fingers, and the trigger cutouts seen from the side (2026-11-06 10:06; delivered ~11:00)
+Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/claude/work/int/film/main-all.html).
+- **F49.1** "the fingers look really bad right now": every fingertip drawn on the slides (the kit's finger and the builders'
+  own fingers). **TODO (FG):** a redesign, shown to him as an options sheet first, then rolled out across the film.
+- **F49.2** "and the trigger cutouts in the side profile also don’t look correct at all, they should be smooth and naturally
+  arching, an offset from the top of the profile, not jaggy like they are right now": the line where the triggers are cut
+  from the body, seen from the side (the simplified mouse's side views and the 3D twin it comes from), must be a smooth arch
+  offset below the top of the profile. This doesn't change the profile itself (F47.1). **TODO (S1).**
+
+## F50. Log every message, with what the slides looked like (2026-11-06 11:00) STANDING
+- **F50.1 STANDING** "make sure pretty much every message i send is logged in feedback.md, with references of what each slide
+  looked like when i sent the feedback, this way when smarter models come out they will have as much context as possible to
+  make the presentation even better by looking at all of my feedback, make sure to mark when old feedback is outdated and
+  has been overruled by new feedback". So: every message goes in this file, verbatim, with its time; each entry that is about
+  slides links frames of those slides as they were when he wrote (feedback/frames/<entry>/, rendered from the build that was
+  live then, with the live version and the git commit); and every item a later message overrules is marked OVERRULED (or
+  SUPERSEDED, DEFERRED) with the entry that overrules it. **IN PROGRESS (FA, the feedback archivist).**
+- **F50.2** (11:06) "the last 2 messages i sent were hanging for like 20 minutes so i hit send now, its information that you
+  needed but it shouldn’t interrupt your work, read them and then proceed". (His stop at ~11:00 was only to push F49 and
+  F50 through; the 0.6 mm board work, H3, carries on.)
 
 ## Open with Brock
 

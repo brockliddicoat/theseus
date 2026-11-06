@@ -169,18 +169,21 @@ function b03_hingeMM(o = {}) {
   return out;
 }
 
-/** Theseus's side button, in the same cut and scale: the full-size SPDT switch (the GT01's own switch without its wedge:
-   swMM, the deck's D2F-class drawing) held in a pocket of the shell, its plunger facing the button; over its top a guide
-   held by the shell, two walls with a POM pad on each; the button's post (the main buttons' 2.4 mm post) rides between the
-   pads and rests on the plunger (no preload); 0.55 mm in, the button lands flat on the guide just past the 0.5 mm click:
-   the stop. Three wires from the legs, no side board. o = { press 0..1 of the way to the stop }. */
+/** Theseus's side button, in the same cut and scale (F48.1, Brock picked "Tied posts (wire)" from b03_rail): two posts, one
+   near each end of the button, each riding between two POM pads in a 5 mm guide of the shell; a central nub rests on the
+   full-size SPDT switch's plunger (swMM, the deck's D2F-class drawing, no preload), the switch behind the guides in a pocket
+   of the shell; under the posts (hidden, dashed) a stabiliser wire turns in two clips on the shell, its arms up into the two
+   posts, so both ends must travel together and nothing tilts (b03_rail's model: only the wire's pivots rub). 0.55 mm in,
+   the button lands flat on the guides' outer faces just past the 0.5 mm click: the stop. Three wires from the legs, no side
+   board. o = { press 0..1 of the way to the stop }. Everything moves at its true size. */
 function b03_railMM(o = {}) {
-  const S = B03_SIDE, pr = clamp(o.press || 0), stop = 0.55, u = pr * stop, out = {};
-  const swTop = 3.75, post = 2.4, pad = 0.54, cl = 0.06, gw = 0.85, gx0 = S.th + stop, gx1 = swTop - 0.05, tipX = swTop - 0.85;
+  const S = B03_SIDE, R = B03.rail, pr = clamp(o.press || 0), stop = 0.55, u = pr * stop, out = {};
+  const post = 2.4, pad = 0.54, cl = 0.06, gw = 0.85, gx0 = S.th + stop, gL = 5, gx1 = gx0 + gL, xc = (gx0 + gx1) / 2;
+  const tipX = gx1 + 0.3, swTop = tipX + 0.85, ys = [-R.a, R.a];
   const fx = swTop + 6.5 + 0.2, yA = 5.6 + 0.3, yB = 5.6 - 12.8 - 0.3, h = S.L / 2 + S.gap, c0 = swTop + 0.75;
   b03_sideWall();
-  /* the shell's pocket round the switch, one moulding with the wall: a 1 mm arm on each side of the switch and a floor its
-     legs pass through, joined to the wall beside the opening by short ribs (lean: Brock, "way overbuilt") */
+  /* the shell's pocket round the switch, one moulding with the wall and the guides: a 1 mm wall round the switch and a floor
+     its legs pass through */
   const t1 = 0.9, P = [[S.wall - 0.02, -h - t1], [fx + t1, -h - t1], [fx + t1, yA + t1], [c0 + t1, yA + t1], [c0 + t1, h + t1], [S.wall - 0.02, h + t1],
     [S.wall - 0.02, h], [c0, h], [c0, yA], [fx, yA], [fx, yB], [S.wall - 0.02, yB]];
   b03_cut([P], [S.wall, -h - t1, fx + t1 - S.wall, 2 * h + 2 * t1]);
@@ -190,23 +193,36 @@ function b03_railMM(o = {}) {
   xrest();
   out.contact = sw.contact; out.isNO = sw.isNO; out.swBody = sw.body;
   /* the three wires from the legs, gathered into the braided side-button lead (F25.3) toward the main board */
-  [1.4, 6.4, 11.4].forEach((lx, k) => { const yy = 5.6 - lx, xe = swTop + 10.0; G.save(); G.beginPath(); G.moveTo(xe - 0.6, yy); G.bezierCurveTo(xe + 1.2, yy, xe + 1.0, -0.6 + k * 0.45, xe + 2.6, -0.6 + k * 0.45); G.lineTo(xe + 3.6, -0.6 + k * 0.45); G.strokeStyle = B03C.wire[k]; G.lineWidth = lw(4.2); G.lineCap = 'round'; G.stroke(); G.restore(); });
-  out.pocket = SP(fx + t1, yB + 1.0); out.wires = SP(swTop + 12.6, -0.15);
-  /* the guide over the switch's top: two walls, a POM pad on each; its outer face is the stop */
-  const wallY = post / 2 + cl + pad;
-  for (const s of [-1, 1]) {
-    solid(() => pathRR(gx0, s > 0 ? wallY : -wallY - gw, gx1 - gx0, gw, 0.1), MT.shell, [gx0, -wallY - gw, gx1 - gx0, gw], { fill: B03C.shellLite(), ec: edgeCol(MT.shell), hatch: true });
-    solid(() => pathRR(gx0 + 0.12, s > 0 ? post / 2 + cl : -wallY, gx1 - gx0 - 0.24, pad, 0.08), MT.pom, [gx0, -wallY, gx1 - gx0, pad], { fill: B03C.pom(), ec: edgeCol(MT.pom) });
+  [1.4, 6.4, 11.4].forEach((lx, k) => { const yy = 5.6 - lx, xe = swTop + 9.0; G.save(); G.beginPath(); G.moveTo(xe - 0.6, yy); G.bezierCurveTo(xe + 1.0, yy, xe + 0.8, -0.6 + k * 0.45, xe + 2.0, -0.6 + k * 0.45); G.lineTo(xe + 2.6, -0.6 + k * 0.45); G.strokeStyle = B03C.wire[k]; G.lineWidth = lw(4.2); G.lineCap = 'round'; G.stroke(); G.restore(); });
+  out.pocket = SP(fx + t1, yB + 1.0); out.wires = SP(swTop + 11.6, -0.15);
+  /* the stabiliser wire, under the section (hidden, dashed): along the button at the guides' middle, turning in two clips on
+     the shell's floor (its pivots), its arms rising into the two posts */
+  { const wc = TH ? '#5E636B' : '#B9BEC6';
+    G.save(); G.setLineDash([lw(9), lw(5)]); G.lineCap = 'round';
+    G.beginPath(); G.moveTo(xc + u, ys[0]); G.lineTo(xc, ys[0] + 1.2); G.lineTo(xc, ys[1] - 1.2); G.lineTo(xc + u, ys[1]); G.strokeStyle = wc; G.lineWidth = lw(4.2); G.stroke();
+    for (const cy of [-2.0, 2.0]) { G.beginPath(); G.rect(xc - 1.0, cy - 0.75, 2.0, 1.5); G.strokeStyle = inkA(0.6); G.lineWidth = lw(1.5); G.stroke(); }
+    G.restore();
+    out.wire = SP(xc, 0.9); out.wireTop = SP(xc, -2.75); out.pivot = SP(xc + 1.0, 2.0); }
+  /* the two guides: two walls each, a POM pad on each inner face; their outer faces are the stop */
+  for (const yp of ys) for (const sg of [-1, 1]) {
+    const yIn = yp + sg * (post / 2 + cl), yPad = sg > 0 ? yIn : yIn - pad, yW = sg > 0 ? yIn + pad : yIn - pad - gw;
+    solid(() => pathRR(gx0, yW, gL, gw, 0.1), MT.shell, [gx0, yW, gL, gw], { fill: B03C.shellLite(), ec: edgeCol(MT.shell), hatch: true });
+    solid(() => pathRR(gx0 + 0.1, yPad, gL - 0.2, pad, 0.08), MT.pom, [gx0, yPad, gL, pad], { fill: B03C.pom(), ec: edgeCol(MT.pom) });
   }
-  solid(() => pathRR(gx1 - 0.32, -wallY - gw - 0.55, 0.37, 2 * (wallY + gw + 0.55), 0.08), MT.shell, [gx1 - 0.32, -3, 0.37, 6], { fill: B03C.shellLite(), ec: edgeCol(MT.shell), hatch: true });
-  out.pad = SP(gx0 + (gx1 - gx0) * 0.55, -post / 2 - cl - pad * 0.5); out.guide = SP(gx0 + (gx1 - gx0) * 0.5, wallY + gw); out.stop = SP(gx0, -wallY - gw * 0.5);
-  /* the button and its post, moved in by u; the rest outline as a ghost */
-  const btnP = () => { G.beginPath(); G.moveTo(0.4, -S.L / 2); G.lineTo(S.th, -S.L / 2); G.lineTo(S.th, -post / 2); G.lineTo(tipX - 0.35, -post / 2); G.quadraticCurveTo(tipX, -post / 2, tipX, -post / 2 + 0.35); G.lineTo(tipX, post / 2 - 0.35); G.quadraticCurveTo(tipX, post / 2, tipX - 0.35, post / 2); G.lineTo(S.th, post / 2); G.lineTo(S.th, S.L / 2); G.lineTo(0.4, S.L / 2); G.quadraticCurveTo(0, S.L / 2, 0, S.L / 2 - 0.4); G.lineTo(0, -S.L / 2 + 0.4); G.quadraticCurveTo(0, -S.L / 2, 0.4, -S.L / 2); G.closePath(); };
+  out.pad = SP(gx0 + gL * 0.55, ys[1] - post / 2 - cl - pad * 0.5); out.guide = SP(gx0 + gL * 0.5, ys[1] + post / 2 + cl + pad + gw); out.stop = SP(gx0, ys[1] + post / 2 + cl + pad + gw * 0.5);
+  out.guideBox = null;   /* the old ~2 mm guide's placeholder flag is gone: the drawing is Brock's pick (F48.1) */
+  /* the button, its two posts and the nub on the switch, moved in by u; the rest outline as a ghost */
+  const btnP = () => {
+    G.beginPath(); G.moveTo(0.4, -S.L / 2); G.lineTo(S.th, -S.L / 2);
+    for (const [yp, w] of [[ys[0], post], [0, 1.6], [ys[1], post]]) { const lo = yp - w / 2, hi = yp + w / 2, tx = yp === 0 ? tipX : tipX - 0.15;
+      G.lineTo(S.th, lo); G.lineTo(tx - 0.3, lo); G.quadraticCurveTo(tx, lo, tx, lo + 0.3); G.lineTo(tx, hi - 0.3); G.quadraticCurveTo(tx, hi, tx - 0.3, hi); G.lineTo(S.th, hi); }
+    G.lineTo(S.th, S.L / 2); G.lineTo(0.4, S.L / 2); G.quadraticCurveTo(0, S.L / 2, 0, S.L / 2 - 0.4); G.lineTo(0, -S.L / 2 + 0.4); G.quadraticCurveTo(0, -S.L / 2, 0.4, -S.L / 2); G.closePath();
+  };
   if (pr > 0.02) b03_ghost(btnP);
   xsave(); xmove(u, 0);
   solid(btnP, MT.shell, [0, -S.L / 2, tipX, S.L], { fill: B03C.shell(), ec: edgeCol(MT.shell), hatch: true });
   const Mr = XF.m.slice();
-  out.post = SP((S.th + tipX) / 2, post / 2); out.face = y => SPm(Mr, 0, y); out.btnIn = SP(S.th, -S.L / 2 + 1.5);
+  out.post = SP((S.th + tipX) / 2 + 0.6, ys[1] + post / 2); out.postA = SP((S.th + tipX) / 2, ys[0]); out.face = y => SPm(Mr, 0, y); out.btnIn = SP(S.th, -S.L / 2 + 1.5);
   out.M = Mr;
   xrest();
   out.u = u; out.landed = pr >= 0.999; out.clicked = u >= 0.5 - 1e-6;
@@ -833,7 +849,8 @@ S({
     ['minecraft kids want to be able to adjust their debounce to count more double clicks', 'They can: single-throw mode with a window from 0 to 20 ms (a proposal for the software), shown counting 1 → 5 from one press as the window comes down; Razer Insider\'s Minecraft player quoted'],
     ['so i\'m not sure how to feel about how this is being sold', 'Sold as low by default and yours to set: the default needs no window at all, and the window is there for players who want the doubles'],
     ['low debounce is good and important though to most people', 'The default is double throw: counted as the pole leaves NC, 0 ms of wait and no false doubles (the verdict: Fnatic\'s 4 ms → 0 ms)'],
-    ['there is just a sub group of people who really dislike it', 'Said plainly: some players want the doubles, and some want none; the setting serves both, and the default gives the second group no doubles without any wait']
+    ['there is just a sub group of people who really dislike it', 'Said plainly: some players want the doubles, and some want none; the setting serves both, and the default gives the second group no doubles without any wait'],
+    ['(integrator, on b03\'s question 7) counting at NC release can take a slam or a drop as a click', 'A third mode in the panel: "Double throw, safe", counted when the pole lands on NO, 1.4 ms later, so a drop or a slam can\'t click; still no window']
   ],
   sfx: [[5.6, 'click']],
   draw: t => {
@@ -903,11 +920,14 @@ S({
         text(head, px + 72, y, { role: 'small', size: 25, weight: 750, color: on ? (hero ? C.heroText : C.ink) : C.mute, alpha: kp, maxW: pw - 100 });
         text(sub, px + 72, y + 32, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: kp, maxW: pw - 100, lh: 1.3 });
       };
-      opt(py + 130, theseus, 'Double throw (default)', 'counted as the pole leaves NC: no window, no wait, no false doubles', true);
-      opt(py + 270, !theseus, 'Single throw', 'counted on NO, with a window you set: 0 to 20 ms. Low for doubles', false);
+      opt(py + 118, theseus, 'Double throw (default)', 'counted as the pole leaves NC: no window, no wait, no false doubles', true);
+      opt(py + 232, !theseus, 'Single throw', 'counted on NO, with a window you set: 0 to 20 ms. Low for doubles', false);
+      /* the safe mode (integrator, on b03's question 7): a slam or a drop can jolt the pole off NC, so for players who'd rather,
+         double throw counted when the pole lands on NO: still no window, 1.4 ms later (b03_timing's flight) */
+      opt(py + 346, false, 'Double throw, safe', 'counted when the pole lands on NO, 1.4 ms later: a drop or a slam can\'t click', false);
     }
     /* the pointer: drags the window down, then picks the default */
-    const kb = [[T.drag[0] - 0.6, [SX(4) + 60, sy + 60]], [T.drag[0], [SX(4), sy]], [T.drag[1], [SX(D.wTo), sy]], [T.toTheseus - 0.45, [px + 46, py + 122]], [T.toTheseus + 0.6, [px + 46, py + 122]], [T.toTheseus + 1.2, [px + 120, py + 200]]];
+    const kb = [[T.drag[0] - 0.6, [SX(4) + 60, sy + 60]], [T.drag[0], [SX(4), sy]], [T.drag[1], [SX(D.wTo), sy]], [T.toTheseus - 0.45, [px + 46, py + 110]], [T.toTheseus + 0.6, [px + 46, py + 110]], [T.toTheseus + 1.2, [px + 120, py + 200]]];
     if (t > T.drag[0] - 0.9 && t < T.toTheseus + 1.6) cursorAt(t, kb, [T.drag[0], T.toTheseus], { a: ep(t, T.drag[0] - 0.9, T.drag[0] - 0.5) * (1 - ep(t, T.toTheseus + 1.1, T.toTheseus + 1.5)) });
     /* the verdict: the default wait */
     verdict(t, T.verdict, 1240, 850, { from: '4', to: '0', unit: 'ms', dec: 0, label: 'Default wait', better: 'lower', who: ['Fnatic', 'Theseus'], net: false, size: 120, maxW: RM - 1240 });
@@ -1026,19 +1046,20 @@ S({
   replaces: ['sidebuttons'], src: ['b03_tpuHyper', 'b03_brockDoc', 'b03_gateronRail', 'b03_gt01', 'b03_razerV4', 'b03_openstax', 'b03_mvp'],
   answers: [
     ['left visualization feels lazy', 'The shipping button is drawn as it is built (one moulded part on a living hinge, its nub on a 2-pin mini switch on its own side board, a ribbon cable to the main board: Brock\'s photos, TechPowerUp\'s Hyperlight teardown) and demonstrated: a thumb presses it at three spots and the force to click runs from 165 gf by the hinge to 40 gf at the tip, where it bends on past the click'],
-    ['right visualization doesn\'t match the other dual rail plungers with ptfe', 'It uses the main buttons\' post (2.4 mm) between two pads, POM as everywhere (F31.3), labelled "the main buttons\' post, on POM pads"'],
-    ['it\'s way overbuilt', 'Stripped to a guide over the switch\'s top (two walls, two pads), the one post, and a 1 mm pocket in the shell round the switch: no arms, no rails, no glove skirts'],
+    ['right visualization doesn\'t match the other dual rail plungers with ptfe', 'Two posts like the main buttons\' (2.4 mm), each between two POM pads (F31.3), labelled "Two posts on POM pads, as the main buttons"'],
+    ['it\'s way overbuilt', 'Only what the slide needs: two 5 mm guides with POM pads, two posts, the stabiliser wire in two clips (the tilt needs it: b03_rail), and a 1 mm pocket in the shell round the switch: no arms, no glove skirts'],
     ['important information though, it gets the point across okay', 'Every fact kept but one: "0 mice ship SPDT side buttons" (F11.4) turned out wrong (TechPowerUp: the Gamesense MVP\'s side buttons are Kailh GM 4.0s, full-size, on a side board), so the slide says what is true: full-size side switches are rare, and Theseus\'s are held by the shell with 0 side boards; full-size switches at 29.31 g (F9.17), held by the shell with no side board (F12.4), the stop on the guide (#64)'],
-    ['it just feels lazy', 'Now a demonstration: established on the mouse, pushed in, the same three thumb presses on the hinge and on the rail, the classroom door (torque) beside it, and the verdict (FILM F3): click force spread across the button, 125 → 0 gf'],
-    ['F31.4: "i\'d have to see" the guide over the full-size switch', 'Shown plainly, held by the shell, as the slide\'s second half: say if the pads should face across instead (a question in the report)']
+    ['it just feels lazy', 'Now a demonstration: established on the mouse, pushed in, the same three thumb presses on the hinge and on the rail, the classroom door (torque) beside it, and the verdict (FILM F3): click force spread across the button, 125 → 4 gf'],
+    ['F31.4: "i\'d have to see" the guide over the full-size switch', 'Shown plainly, held by the shell, as the slide\'s second half; its friction and four ways to build the guide are shown on the next slide, b03_rail (F44.1)'],
+    ['(F44.1, F48.1) the guide: Brock picked "Tied posts (wire)" from b03_rail', 'Drawn as picked: two posts in 5 mm guides, tied by a stabiliser wire under them (dashed: hidden by the section), its two clips on the shell as pivots; the readouts are that design\'s (55 / 59 / 59 gf with the wire\'s pivots dry, b03_rail\'s model, the wire 0.6 mm on 3 mm arms, assumed) and the verdict its spread, 125 → 4 gf; "friction aside" and the placeholder are gone']
   ],
   sfx: B03_SIDE_T.rival.concat(B03_SIDE_T.ours).map(t0 => [t0 + 0.16, 'click']),
   draw: t => {
     const T = B03_SIDE_T, box = [80, 260, 1200, 700], RX = 1320, RW = 520;
     header(t, 'Dual rail side buttons');
     captions(t, [[0.4, 'A side button on a hinge is a lever: where your thumb lands changes the click.'],
-      [T.wipe, 'Theseus\'s slide straight in, on the main buttons\' post and POM pads, over a full-size SPDT switch.'],
-      [T.facts, 'No sweet spot to hunt for: the same click at every spot, with full-size switches, at 29.31 g.']]);
+      [T.wipe, 'Theseus\'s slides straight in on two posts and POM pads, tied by a wire so neither end can tilt.'],
+      [T.facts, 'No lever and no tilt: within 4 gf of the switch\'s own 55 at every spot, with full-size switches.']]);
     /* where the front side button is on the mouse: its centre, and the shell's outer face there (the kit's top view) */
     const yc = (-23.5 - 8.9) / 2 * MS_K.y, X0 = -msHalfW(-16.2), focus = [X0 - 15, yc - 11.5, 44, 23];
     const est = establish(t, T.push, box, { view: 'top', hi: ['side1'], col: 'ink', focus, locator: 'tr', fade: 0.35, dimFill: 0.55 });
@@ -1062,7 +1083,7 @@ S({
       if (fp) {
         const ia = ep(t, pr.t0 - 0.35, pr.t0 - 0.05) * (1 - ep(t, pr.t0 + 0.8, pr.t0 + 1.0));
         clipped(box[0], box[1], box[2], box[3], () => finger(fp[0], fp[1], -Math.PI / 2, { s: est.s, press: pr.d, alpha: ia * 0.96, len: 40 }));
-        const gf = riv ? b03_hingeGf(spot.s) : b03_railGf();
+        const gf = riv ? b03_hingeGf(spot.s) : b03_tiedGf(spot.s);
         forceArrow(fp[0] - 4, fp[1], 0, 60 + 1.2 * gf, { label: gf + ' gf', k: clamp(pr.d / 0.82) * ia, color: riv ? (gf > 100 ? C.red : C.ink) : C.hero, side: 'end' });
       }
     }
@@ -1073,14 +1094,14 @@ S({
         const tR = T.rival[i] + 0.62, tO = T.ours[i] + 0.62, oursShown = t >= tO, rivalShown = t >= tR && t < T.wipe + 0.45;
         if (!rivalShown && !oursShown) return;
         const a = ka * (oursShown ? ep(t, tO, tO + 0.3) : ep(t, tR, tR + 0.3) * (1 - ep(t, T.wipe + 0.1, T.wipe + 0.45)));
-        const gf = oursShown ? b03_railGf() : b03_hingeGf(sp.s);
+        const gf = oursShown ? b03_tiedGf(sp.s) : b03_hingeGf(sp.s);
         circle(q[0] - 3, q[1], 4, { fill: oursShown ? C.hero : i === 0 ? C.red : C.ink2, alpha: a });
         rich([{ s: gf + ' gf', role: 'num', size: 26, weight: 750, color: oursShown ? C.heroText : i === 0 ? C.red : C.ink, tnum: true }], xL - 12, q[1] + 9, { align: 'right', alpha: a });
       });
       const kr = ep(t, T.rival[2] + 0.75, T.rival[2] + 1.05) * (1 - ep(t, T.wipe, T.wipe + 0.35)) * ka;
       if (kr > 0.01) { text(b03_floor(B03.leverSpread, 1) + '× the force by the hinge', sx, sy, { role: 'small', size: 26, weight: 750, color: C.red, alpha: kr }); text('as at the tip, for the same click', sx, sy + 32, { role: 'small', size: 23, weight: 600, color: C.mute, alpha: kr }); }
       const ks = ep(t, T.ours[2] + 0.8, T.ours[2] + 1.1) * ka;
-      if (ks > 0.01) { text('The same force at every spot', sx, sy, { role: 'small', size: 26, weight: 750, color: C.heroText, alpha: ks }); text('it slides: no hinge, no lever', sx, sy + 32, { role: 'small', size: 23, weight: 600, color: C.mute, alpha: ks }); }
+      if (ks > 0.01) { text('Within 4 gf at every spot', sx, sy, { role: 'small', size: 26, weight: 750, color: C.heroText, alpha: ks }); text('two posts, tied: nothing tilts', sx, sy + 32, { role: 'small', size: 23, weight: 600, color: C.mute, alpha: ks }); }
     }
     /* the parts, named in one column to the right of the drawing, as they matter */
     if (kd > 0.5 && ko < 0.02) {
@@ -1094,7 +1115,8 @@ S({
         /* top to bottom as their parts sit, so no leader crosses another; the post's runs straight down past the switch */
         if (rail.pocket) callout(t, T.wipe + 1.6, rail.pocket, 'Held by the shell: no side board', Object.assign({ to: [lx, ly(0)], color: C.ink2, tcolor: C.ink }, C2));
         if (rail.swBody) callout(t, T.wipe + 1.3, rail.swBody, 'Full-size SPDT switch', Object.assign({ to: [lx, ly(1) + 30], color: C.ink2, tcolor: C.ink }, C2));
-        if (rail.post) fixTag(t, T.wipe + 1.0, rail.post, 'The main buttons\' post and POM pads', Object.assign({ to: [lx, ly(3) + 40], elbow: rail.post[0], sub: 'it lands flat on its guide: the stop', scolor: C.mute }, C2));
+        if (rail.post) fixTag(t, T.wipe + 1.0, rail.post, 'Two posts on POM pads', Object.assign({ to: [lx, ly(3) + 14], elbow: rail.post[0], sub: 'as the main buttons; the guides are the stop', scolor: C.mute }, C2, { maxW: 300 }));
+        if (rail.wireTop) fixTag(t, T.wipe + 1.9, rail.wireTop, 'Stabiliser wire', { to: [478, 536], side: 'l', sub: 'and its two pivot clips', scolor: C.mute });
       }
     }
     /* the classroom version, beside the rival's presses: a door is the same lever */
@@ -1113,14 +1135,232 @@ S({
     }
     /* the verdict: how much more force the heaviest spot takes than the lightest */
     const spreadGf = b03_hingeGf(B03.spots[0]) - b03_hingeGf(B03.spots[2]);   /* 165 − 40 = 125 gf, exact (G5) */
+    const spreadT = Math.max(...B03.spots.map(b03_tiedGf)) - Math.min(...B03.spots.map(b03_tiedGf));   /* tied posts, dry pivots: 59 − 55 = 4 gf (3.76 rounded up) */
     /* FILM F3's wording is too long for one line of the column: set as two lines, as the kit sets its label */
-    verdict(t, T.verdict, RX, 450, { from: String(spreadGf), to: '0', unit: 'gf', dec: 0, label: null, better: null, who: ['On a hinge', 'Theseus, friction aside'], net: false, size: 112, dur: 0.8, maxW: RW });
+    verdict(t, T.verdict, RX, 450, { from: String(spreadGf), to: String(spreadT), unit: 'gf', dec: 0, label: null, better: null, who: ['On a hinge', 'Theseus'], net: false, size: 112, dur: 0.8, maxW: RW });
     { const a0 = ep(t, T.verdict, T.verdict + 0.35), yl = 450 - Math.round(112 * 0.78) - 26;
       text('Click force spread across', RX, yl - 30, { role: 'label', size: 22, color: C.mute, alpha: a0 });
       text('the button (lower is better)', RX, yl, { role: 'label', size: 22, color: C.mute, alpha: a0 }); }
-    scaleNote(RX, 548, 'at every spot: an egg\'s weight', { lead: b03_railGf() + ' gf', t, t0: T.verdict + 1.7 });
+    scaleNote(RX, 548, 'about an egg\'s weight', { lead: B03.gt01.f + ' to ' + Math.max(...B03.spots.map(b03_tiedGf)) + ' gf', t, t0: T.verdict + 1.7 });
     statTile(t, T.facts, [RX, 600, RW, 160], { value: '0', unit: 'side boards', label: 'SPDT side switches held by the shell', align: 'left' });
     statTile(t, T.facts + 0.3, [RX, 800, RW, 160], { value: THS.mass, unit: 'g', label: 'with four full-size SPDT switches', hero: true, align: 'left' });
-    text('Lever model: 14.5 mm button, nub 9 mm from the hinge, 55 gf on both (2-pin Omron D2LS-21: 61 ± 20 gf). Full-size side switches are rare: the Gamesense MVP\'s sit on a side board', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, T.verdict + 1.9, T.verdict + 2.3), maxW: RM - LM });
+    source(t, 'Lever model: 14.5 mm button, nub 9 mm from the hinge, 55 gf on both (2-pin Omron D2LS-21: 61 ± 20 gf). Tied posts, derived (next slide): only the wire\'s pivots rub, taken dry (μ 0.35, DuPont), the wire\'s size assumed (0.6 mm on 3 mm arms). Full-size side switches are rare: the Gamesense MVP\'s sit on a side board.', { t0: T.verdict + 1.9, maxW: RM - LM, y: 994 });
+  }
+});
+
+/* ============================== b03_rail: four ways to guide a side rail (F44.1) ==============================
+   Brock (F44.1): "show all 3, it's hard to visualize these things with text, that is the point of this presentation".
+   Pressed at its tip, a button on a rail is a drawer pushed by one corner: it tilts in its guide until the guide touches it
+   at two points, one at each end of the guide on opposite faces. The guide's push there is N = F·e / L each (a couple that
+   answers the thumb's moment F·e), and each point rubs with μN, so the thumb needs F = S / (1 − 2μe / L): the switch's own
+   55 gf, plus friction that grows with the press's offset e and shrinks with the guide's length L (it jams when 2μe ≥ L).
+   Two posts tilt together (a rigid button moves both sideways alike), so two loose posts act as one guide of their length.
+   Tied so both ends must travel together (a wire, as under a keyboard's space bar), nothing tilts: the tie carries the
+   moment as two axial forces f = F·e / 2a, and only its pivots rub, on a lever r / R (assumed wire 0.6 mm, arms 3 mm).
+   μ (FILLS, Q3, 10:09): POM on POM, dry, kinetic 0.35 to 0.40 (DuPont Delrin, the same grade on both faces); a plastics
+   grease 0.02 to 0.04 in steady sliding (Molykote, measured steel on POM); grease may not lower the break-away (static) μ.
+   The tie's joints: greased (0.02) to dry steel on POM (0.35, DuPont Module III). Verified in /home/claude/work/p2/scripts/
+   rail_model.py: 14 mm dry 73.95-77.78 gf; 5 mm dry 194.7-305.6; 5 mm greased 57.35-59.91; tie 55.2-58.8. */
+Object.assign(SRC, {
+  b03_delrinPair: { t: 'DuPont, "Delrin: low wear, low friction" brochure (L-12259 04.01), table of properties: dynamic coefficient of friction against itself (the same grade on both faces, reciprocating at about 0.08 m/s and 0.196 MPa): Delrin 100 0.4, Delrin 500 0.35; PTFE-filled 100AF 0.18, 520MP 0.19', u: 'https://www.emcoplastics.com/assets/pdf/delrin/Delrin%20Low%20Wear%20Low%20Friction%20Brochure%20Dupont.pdf' },
+  b03_delrinM3: { t: 'DuPont, Delrin Design Guide, Module III, Table 2 (ASTM D3702 thrust washer, no lubricant, 50 mm/s, 2 MPa, against carbon steel): standard grades static 0.20, dynamic 0.35', u: 'https://www-eng.lbl.gov/~shuman/NEXT/CURRENT_DESIGN/TP/MATERIALS/delrin_props.pdf' },
+  b03_molykote: { t: 'Molykote PG-54 Plastislip data sheet (80-3212B-01): a 12.7 mm steel ball on POM, 6.3 N, 10 mm/s, 24 h: μ under 0.04; Molykote PG-75 (71-0171D-01): steel ball on POM, 5 N, 10 cm/s: μ 0.02 (lubricant makers\' figures, steady sliding)', u: 'https://www.dupont.com/content/dam/Dupont2.0/Products/transportation/Literature/Downloaded-TDS/MOLYKOTE%20PG-75%20High%20Performance%20Grease%2071-0171D-01.pdf' },
+  b03_lubeStatic: { t: 'Sabet et al. 2019 (Univ. Minho), "Friction properties of POM materials in dry and lubricated conditions": lubrication "does not seem to influence the static coefficient"; Ptak et al. 2023, Aviation 27(4): 272 to 278, POM on POM: with oil the static coefficient was higher than dry', u: 'https://jest.vgtu.lt/index.php/Aviation/article/download/20650/12095' }
+});
+/* the rail model's numbers: one place, a constant to change (μ), every figure on the slide computed from it */
+B03.rail = {
+  e: B03.spots[2] - B03.btnL / 2,          /* the tip spot's offset from the post and the switch's plunger: 12.375 − 7.25 = 5.125 mm */
+  mu: [0.35, 0.40],                        /* POM on POM, dry, kinetic (DuPont Delrin 500 and 100, against themselves) */
+  muG: [0.02, 0.04],                       /* with a plastics grease, steady sliding (Molykote PG-75 and PG-54, steel on POM) */
+  a: 5.6,                                  /* two posts: each 5.6 mm off the button's centre */
+  tie: { r: 0.3, R: 3.0, n: 4, mu: [0.02, 0.35] },   /* the tie, assumed: a 0.6 mm steel wire turning in two clips, its 3 mm
+                                                        arms in the two posts (four joints), greased to dry (steel on POM) */
+  clr: 0.06, K: 5                          /* the post's clearance in its pads, mm a side; gaps and tilt drawn 5× */
+};
+/** the thumb's force at the click, gf, pressed e mm off a guide of length L with friction μ (Infinity: it jams) */
+const b03_railF = (L, mu, e = B03.rail.e) => { const q = 2 * mu * e / L; return q >= 1 ? Infinity : B03.gt01.f / (1 - q); };
+/** the same with the posts tied: only the tie's joints rub, carrying F·e / 2a at each post on a lever r / R */
+const b03_tieF = (mu, e = B03.rail.e) => { const T = B03.rail.tie, q = T.n * mu * (T.r / T.R) * e / (2 * B03.rail.a); return B03.gt01.f / (1 - q); };
+/** b03_side (F48.1, the tied posts): the force to click at a spot s mm from the front end, gf, the wire's pivots dry (the
+   conservative end: 55 / 59 / 59 gf; greased they give 55 / 56 / 56), rounded up (G5) */
+const b03_tiedGf = s => b03_ceil(b03_tieF(B03.rail.tie.mu[1], Math.abs(s - B03.btnL / 2)));
+/** Theseus's own costs are never rounded down (G5) */
+const b03_ceil = v => Math.ceil(v - 1e-9);
+/* the four designs, in the order they are shown (Brock's three, then the one that reaches about ×1.0) */
+const B03_RAILS = [
+  { key: 'long', name: '14 mm guide', sub: 'One post, dry POM', L: 14, posts: [0], gf: () => B03.rail.mu.map(m => b03_railF(14, m)) },
+  { key: 'posts', name: 'Two posts', sub: 'Both ends, 5 mm guides', L: 5, posts: [-B03.rail.a, B03.rail.a], gf: () => B03.rail.mu.map(m => b03_railF(5, m)) },
+  { key: 'short', name: '5 mm guide', sub: 'Dry, then greased', L: 5, posts: [0], gf: () => B03.rail.mu.map(m => b03_railF(5, m)), gfG: () => B03.rail.muG.map(m => b03_railF(5, m)) },
+  { key: 'tied', name: 'Two posts, tied', sub: 'Theseus: a wire ties them', L: 5, posts: [-B03.rail.a, B03.rail.a], tie: true, gf: () => B03.rail.tie.mu.map(m => b03_tieF(m)) }
+];
+
+/** one rail design, cut at button height and seen from above, in b03_side's frame (mm: x inward from the button's face at
+   rest, y along the button toward the tail, its centre at y = 0). d: a B03_RAILS entry; o = { press 0..1 (to the click,
+   0.5 mm, true size), grease 0..1, fr: [gf of friction at each contact] }. The tilt and the gaps are drawn K× (said on the
+   slide). Returns stage points: contacts [{ p, n }], the thumb's spot on the face, the tie's far arm. */
+function b03_guideMM(d, o = {}) {
+  const S = B03_SIDE, R = B03.rail, K = R.K, th = S.th, half = S.L / 2, post = 2.4, pad = 0.54, gw = 0.85, cd = R.clr * K;
+  const gx0 = th + 0.55, gx1 = gx0 + d.L, xc = (gx0 + gx1) / 2, pr = clamp(o.press || 0), u = pr * 0.5;
+  const tilt = d.tie ? 0 : ep(pr, 0, 0.35, E.out3) * 2 * cd / d.L, tipX = gx1 + 0.3, swTop = tipX + 0.85, out = { contacts: [] };
+  const shellF = B03C.shellLite(), eS = edgeCol(MT.shell), gap = S.gap;
+  /* the side wall either side of the button's opening (the gap drawn K× too), ending in break lines */
+  for (const s of [-1, 1]) {
+    const y0 = s * (half + gap), y1 = s * (half + gap + 1.0);
+    solid(() => { G.beginPath(); G.moveTo(0, y0); G.lineTo(0, y1); brk(0, y1, y1, 0); G.lineTo(S.wall, y1); G.lineTo(S.wall, y0); G.closePath(); }, MT.shell, [0, Math.min(y0, y1), S.wall, 1.0], { fill: B03C.shell(), ec: eS, hatch: true });
+  }
+  /* the switch: the shared full-size switch, turned so its plunger meets the post (or the nub) at y = 0; only its front is
+     shown, ending in a break line */
+  G.save(); G.beginPath(); G.rect(swTop - 1.2, -7.4, 2.2, 13.2); G.clip(); G.globalAlpha *= 0.62;
+  xsave(); xmove(swTop, 5.6); xturn(-Math.PI / 2); xmove(0, 6.5); out.sw = swMM({ press: u / 0.8, accent: C.ink2, glow: false }); xrest();
+  G.restore();
+  G.save(); G.beginPath(); G.moveTo(swTop + 1.0, -7.2); brk(swTop + 1.0, -7.2, 5.6, 0.35); G.strokeStyle = inkA(0.55); G.lineWidth = lw(1.2); G.stroke(); G.restore();
+  out.swAt = SP(swTop + 0.5, -7.4);
+  /* the tie, under the section (hidden, dashed): a wire along the button, turning in two clips on the shell, its arms up
+     into the posts, so both ends must travel together */
+  if (d.tie) {
+    const wc = TH ? '#5E636B' : '#B9BEC6';
+    G.save(); G.setLineDash([lw(9), lw(5)]); G.lineCap = 'round';
+    G.beginPath(); G.moveTo(xc + u, -R.a); G.lineTo(xc, -R.a + 1.2); G.lineTo(xc, R.a - 1.2); G.lineTo(xc + u, R.a); G.strokeStyle = wc; G.lineWidth = lw(4.2); G.stroke();
+    for (const cy of [-2.0, 2.0]) { G.beginPath(); G.rect(xc - 1.0, cy - 0.75, 2.0, 1.5); G.strokeStyle = inkA(0.6); G.lineWidth = lw(1.5); G.stroke(); }
+    G.restore();
+    out.tie = SP(xc, 0); out.armFar = SP(xc + u, -R.a);
+  }
+  /* the guides: two shell walls a post, a POM pad on each inner face; the grease, when it comes, a glossy film on the pads */
+  for (const yp of d.posts) for (const s of [-1, 1]) {
+    const yIn = yp + s * (post / 2 + cd), yPad = s > 0 ? yIn : yIn - pad, yW = s > 0 ? yIn + pad : yIn - pad - gw;
+    solid(() => pathRR(gx0, yW, d.L, gw, 0.1), MT.shell, [gx0, yW, d.L, gw], { fill: shellF, ec: eS, hatch: true });
+    solid(() => pathRR(gx0 + 0.08, yPad, d.L - 0.16, pad, 0.08), MT.pom, [gx0, yPad, d.L, pad], { fill: B03C.pom(), ec: edgeCol(MT.pom) });
+    if (o.grease > 0.003) { G.save(); G.globalAlpha *= clamp(o.grease); const gt = 0.2, gy = s > 0 ? yIn - 0.02 : yIn - gt + 0.02;
+      pathRR(gx0 + 0.1, gy, d.L - 0.2, gt, 0.09); G.fillStyle = TH ? 'rgba(112,120,132,0.62)' : 'rgba(205,210,218,0.5)'; G.fill();
+      G.fillStyle = 'rgba(255,255,255,0.85)'; for (let k = 0; k < d.L / 1.3; k++) G.fillRect(gx0 + 0.45 + k * 1.3, gy + 0.05, 0.42, 0.05); G.restore(); }
+  }
+  /* the button, its post(s) (and, for two posts, the nub on the switch), pressed in by u and turned by the tilt about the
+     guide's middle; its rest outline a dashed ghost */
+  const body = () => {
+    G.beginPath(); G.moveTo(0.4, -half); G.lineTo(th, -half);
+    const stems = d.posts.length > 1 ? [[d.posts[0], post], [0, 1.6], [d.posts[1], post]] : [[0, post]];
+    for (const [yp, w] of stems) { const lo = yp - w / 2, hi = yp + w / 2, tx = yp === 0 ? tipX : tipX - 0.15;
+      G.lineTo(th, lo); G.lineTo(tx - 0.3, lo); G.quadraticCurveTo(tx, lo, tx, lo + 0.3); G.lineTo(tx, hi - 0.3); G.quadraticCurveTo(tx, hi, tx - 0.3, hi); G.lineTo(th, hi); }
+    G.lineTo(th, half); G.lineTo(0.4, half); G.quadraticCurveTo(0, half, 0, half - 0.4); G.lineTo(0, -half + 0.4); G.quadraticCurveTo(0, -half, 0.4, -half); G.closePath();
+  };
+  if (pr > 0.02) b03_ghost(body);
+  xsave(); xabout(xc, 0, -tilt); xmove(u, 0);
+  solid(body, MT.shell, [0, -half, tipX, S.L], { fill: B03C.shell(), ec: edgeCol(MT.shell), hatch: true });
+  out.face = SP(0, R.e); out.faceFar = SP(0, -half + 1.2); out.M = XF.m.slice();
+  xrest();
+  /* where the tilted post touches its pads: at each guide's outer end on the tail-side face, at its inner end on the
+     nose-side face (fixed points of the guide); fr[i] the friction there, gf */
+  if (!d.tie) for (const yp of d.posts) {
+    out.contacts.push({ p: SP(gx0 + 0.18, yp + post / 2 + cd), n: SP(gx0 + 0.18, yp + post / 2 + cd - 1), side: 1 });
+    out.contacts.push({ p: SP(gx1 - 0.18, yp - post / 2 - cd), n: SP(gx1 - 0.18, yp - post / 2 - cd + 1), side: -1 });
+  }
+  out.guide = SP(gx0 + d.L * 0.5, d.posts[d.posts.length - 1] + post / 2 + cd + pad + gw);
+  out.right = SP(swTop + 1.2, 0);
+  return out;
+}
+
+/** the classroom version: a drawer seen from above in its cabinet, pushed by one front corner. o = { push 0..1 }: it slides a
+   little, twists until two corners meet the cabinet's sides, and stops. mm, y down, the cabinet's mouth at y = 0 */
+function b03_drawerMM(o = {}) {
+  const W = 64, D = 30, c = 1.3, k = clamp(o.push || 0), slide = 4 * ep(k, 0, 0.5, E.out3), rack = ep(k, 0.1, 0.6, E.io3) * (2 * c / D) * 0.98, out = {};
+  const wallF = B03C.shellLite(), eS = edgeCol(MT.shell);
+  for (const s of [-1, 1]) solid(() => { G.beginPath(); G.rect(s > 0 ? W / 2 + c : -W / 2 - c - 4, -D - 10, 4, D + 10); }, MT.shell, [s > 0 ? W / 2 + c : -W / 2 - c - 4, -D - 10, 4, D + 10], { fill: wallF, ec: eS, hatch: true });
+  const cy = -D / 2 + 9 - slide;
+  xsave(); xmove(0, cy); xturn(rack);
+  solid(() => pathRR(-W / 2, -D / 2, W, D, 1.2), MT.white, [-W / 2, -D / 2, W, D], { fill: TH ? '#E5E5EA' : '#48484A', ec: edgeCol(MT.white) });
+  solid(() => pathRR(-W / 2 - 1.2, D / 2 - 2.2, W + 2.4, 2.6, 0.8), MT.white, [-W / 2, D / 2 - 2.2, W, 2.6], { fill: TH ? '#D1D1D6' : '#5A5A5E', ec: edgeCol(MT.white) });
+  solid(() => pathRR(-7, D / 2 + 0.6, 14, 1.6, 0.8), MT.steel, [-7, D / 2 + 0.6, 14, 1.6], { fill: TH ? '#9AA0A8' : '#7E848C', ec: edgeCol(MT.steel) });
+  out.push = SP(-W / 2 + 3, D / 2 + 0.4); out.jamA = SP(W / 2, -D / 2); out.jamB = SP(-W / 2, D / 2 - 2.2);
+  xrest();
+  out.k = ep(k, 0.55, 0.7);
+  return out;
+}
+
+/* the timeline (s): the drawer, the one press on all four (held), the tags, the grease on the short guide, the payoff */
+const B03_RL_T = { drawer: 0.5, press: 1.6, count: [1.7, 1.0], tags: [2.85, 3.15, 3.45, 3.75], grease: 5.1, pay: 7.0 };
+/** a range of gf, rounded up, one precision (G5); one figure when both ends meet */
+const b03_gfRange = (v, k = 1, from = B03.gt01.f) => { const a = b03_ceil(lerp(from, v[0], k)), b = b03_ceil(lerp(from, v[1], k)); return a === b ? String(a) : a + ' to ' + b; };
+S({
+  id: 'b03_rail', ch: 'click', theme: 'paper', title: 'Four ways to guide a side rail', settle: 11.5, ideas: [80],
+  src: ['b03_delrinPair', 'b03_delrinM3', 'b03_molykote', 'b03_lubeStatic', 'b03_gt01'],
+  answers: [
+    ['F44.1: "show all 3, it\'s hard to visualize these things with text, that is the point of this presentation"', 'All three are on screen under the same press at the tip: a 14 mm guide, two posts (one at each end of the button), and a 5 mm guide (dry, then greased). Each tilts in its guide (drawn 5× larger than life, said on the slide), its contact points light red with the friction drawn there, and the force the click needs at the tip counts up, with a bar splitting it into the switch\'s 55 gf and the friction'],
+    ['F44.1, the numbers (×1.2 at 14 mm, ×1.85 at 5 mm, "or two posts")', 'Recomputed at b03_side\'s tip spot (5.1 mm off the post) with POM\'s measured friction (FILLS, Q3: POM on POM dry 0.35 to 0.40, DuPont; greased 0.02 to 0.04, Molykote): 14 mm 74 to 78 gf; 5 mm dry 195 to 306 gf, greased 58 to 60 gf. The old ×1.2 and ×1.85 used μ 0.2, DuPont\'s static figure against steel. Two posts on their own tilt together and act as one 5 mm guide (195 to 306 gf), so a fourth design is shown: the two posts tied by a wire, 56 to 59 gf (only its pivots rub)'],
+    ['R-b03-2 (critic): the rail\'s friction is left out of b03_side\'s 0 gf', 'Shown here in full, with measured friction; Brock picked the tied posts from this slide (F48.1), so b03_side now draws them and its verdict is their spread, 125 → 4 gf (the wire\'s pivots dry), "friction aside" gone']
+  ],
+  sfx: [[B03_RL_T.press + 0.2, 'click']],
+  draw: t => {
+    const T = B03_RL_T, s = 17;
+    header(t, 'Four ways to guide a side rail');
+    captions(t, [[0.3, 'Push a drawer by one corner and it twists and jams. A side button on a rail does the same when your thumb lands at its tip.'],
+      [T.press - 0.1, 'It tilts until its guide touches it at two points, and dry POM rubs there: the click at the tip takes more force.'],
+      [T.grease - 0.3, 'A long guide rubs less. Two loose posts tilt together, like one short guide. Grease, or tying the posts together, fixes it.'],
+      [T.pay + 0.3, 'Tied, nothing tilts: the click at the tip stays within a few gf of the switch\'s own 55 gf.']]);
+    /* the same press on all four, at the tip, held */
+    const pr = pressCurve(t, T.press, { down: 0.4, hold: 99, bounce: 0.02 }), kc = ep(t, T.count[0], T.count[0] + T.count[1], E.out3);
+    const kg = ep(t, T.grease, T.grease + 0.9, E.cam), widths = [400, 290, 290, 290], gapX = 25;
+    let cx = 80;
+    B03_RAILS.forEach((d, i) => {
+      const x = cx, w = widths[i]; cx += w + gapX;
+      if (i) line(x - gapX / 2, 268, x - gapX / 2, 840, { color: C.hair, w: 1.5, alpha: ep(t, 0, 0.4) });
+      const ox = x + 82, oy = 478, short = d.key === 'short', g = short ? kg : 0;
+      /* this design's force at the tip now: from the switch's 55 gf, counting as the press lands; the short guide's falls to its greased figure */
+      const dry = d.gf(), wet = d.gfG ? d.gfG() : dry, F = [lerp(55, lerp(dry[0], wet[0], g), kc), lerp(55, lerp(dry[1], wet[1], g), kc)], tilted = d.tie ? 0 : 1;
+      /* the friction at each contact (the drawn arrows use the upper μ): N = F e / (n L) on each, μN */
+      const mu = lerp(B03.rail.mu[1], B03.rail.muG[1], g), frc = mu * F[1] * B03.rail.e / d.L / d.posts.length;
+      text(d.name, x + 22, 272, { role: 'label', size: 22, color: d.tie ? C.heroText : C.ink });
+      text(d.sub, x + 22, 300, { role: 'small', size: 20, weight: 600, color: C.mute, maxW: w - 30 });
+      let o = {};
+      const drawAt = gg => { o = part(ox, oy, s, () => b03_guideMM(d, { press: pr, grease: gg })); };
+      clipped(x, 316, w, 330, () => { if (short) wipeTo(t, T.grease, 0.9, [x + 4, 322, w - 8, 318], () => drawAt(0), () => drawAt(1), { rival: 'Dry', right: 'Greased', rivalCol: 'grey', ly: 346 }); else drawAt(0); });
+      /* the parts, named once, in the long guide's spare room */
+      if (i === 0) { const ka0 = ep(t, 0.2, 0.6), P = (mx, my) => [ox + mx * s, oy + my * s];
+        text('Guide: two POM pads', P(9.2, 0)[0], P(0, -3.4)[1] - 10, { role: 'small', size: 19, weight: 650, color: C.mute, align: 'center', alpha: ka0 });
+        text('The button\'s post', P(9.2, 0)[0], P(0, 3.4)[1] + 30, { role: 'small', size: 19, weight: 650, color: C.mute, align: 'center', alpha: ka0 });
+        if (o.swAt) text('Switch', o.swAt[0], o.swAt[1] - 8, { role: 'small', size: 19, weight: 650, color: C.mute, align: 'center', alpha: ka0 }); }
+      /* the thumb at the tip */
+      if (o.face) forceArrow(o.face[0] - 4, o.face[1], 0, 62, { k: ep(t, T.press - 0.3, T.press), color: C.ink2, w: 3, hs: 12 });
+      /* the contact points and the friction there (red); the guide's push on the post (grey) */
+      const kf = ep(pr, 0.3, 0.8) * tilted;
+      if (kf > 0.01) for (const c of o.contacts) {
+        circle(c.p[0], c.p[1], 6 * kf, { fill: C.red, alpha: kf }); circle(c.p[0], c.p[1], 12 * kf, { color: C.red, w: 1.5, alpha: 0.45 * kf });
+        const L = 8 + 5.2 * Math.sqrt(frc);
+        arrow(c.p[0] + 2, c.p[1], c.p[0] + 2 - L * kf, c.p[1], { color: C.red, w: 3, hs: 10, alpha: kf });
+        arrow(c.n[0], c.n[1] + c.side * 18, c.n[0], c.n[1] + c.side * 3, { color: C.mute, w: 2, hs: 8, alpha: kf * 0.8, p: kf });
+      }
+      /* the force at the tip, counted; a bar: the switch's 55 gf, then the friction (to the low end solid, to the high end light) */
+      const tx = x + 20, ka = ep(t, T.press - 0.2, T.press + 0.2), pay = d.tie ? ep(t, T.pay, T.pay + 0.6) : 0;
+      const col = d.tie ? C.heroText : short ? (g > 0.5 ? C.heroText : C.red) : d.key === 'posts' ? C.red : C.ink;
+      if (short) text('Dry: ' + b03_gfRange(dry, 1, 0) + ' gf', tx, 668, { role: 'small', size: 20, weight: 650, color: C.red, alpha: ep(t, T.grease + 0.5, T.grease + 0.9) });
+      rich([{ s: b03_gfRange(F, 1, 0), role: 'num', size: 44, weight: 800, color: col, tnum: true, grad: pay > 0.5 ? C.heroGrad : null }], tx, 712, { alpha: ka });
+      text('gf to click at the tip', tx, 742, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: ka, sentence: false });
+      { const bx = tx, by = 758, pxg = 0.8, b55 = 55 * pxg, f0 = Math.max(0, F[0] - 55) * pxg, f1 = Math.max(0, F[1] - 55) * pxg;
+        G.save(); G.globalAlpha = ka; G.fillStyle = C.comp; G.fillRect(bx, by, b55, 12);
+        G.fillStyle = C.red; G.fillRect(bx + b55, by, f0, 12); G.globalAlpha = ka * 0.38; G.fillRect(bx + b55 + f0, by, f1 - f0, 12); G.restore(); }
+      /* what happened, in a few words */
+      const tags = { long: ['Barely tilts; dry POM still rubs', C.ink2], posts: ['Both tilt together, as one guide', C.red], short: g > 0.5 ? ['Greased: it slides once moving', C.heroText] : ['Short and dry: it grips hard', C.red], tied: ['Nothing tilts: the wire carries it', C.heroText] };
+      const [tg, tc] = tags[d.key];
+      text(tg, tx, 808, { role: 'small', size: 21, weight: 650, color: tc, maxW: w - 30, alpha: ep(t, T.tags[i], T.tags[i] + 0.35), lh: 1.25 });
+    });
+    /* the classroom version: the drawer pushed by one corner */
+    { const r = demoPanel(t, -1, [1465, 262, 375, 380], { label: 'The classroom version' }), kp = ep(t, T.drawer, T.drawer + 0.9, E.io3);
+      const dr = part(r[0] + r[2] / 2, r[1] + 160, 3.6, () => b03_drawerMM({ push: kp }));
+      if (dr.push) forceArrow(dr.push[0], dr.push[1], -Math.PI / 2, 46, { k: ep(t, T.drawer - 0.2, T.drawer + 0.3), color: C.ink2, w: 3, hs: 11 });
+      if (dr.k > 0.01) for (const p of [dr.jamA, dr.jamB]) { circle(p[0], p[1], 6 * dr.k, { fill: C.red, alpha: dr.k }); circle(p[0], p[1], 12 * dr.k, { color: C.red, w: 1.5, alpha: 0.45 * dr.k }); }
+      text('Pushed by one corner, a drawer twists and jams.', r[0], r[1] + 236, { role: 'small', size: 21, weight: 600, color: C.ink2, maxW: r[2], lh: 1.28 }); }
+    /* what the marks mean */
+    { const lx = 1475, ka = ep(t, T.press + 0.5, T.press + 0.9), rows = [['dot', 'Where the post touches its guide'], ['fric', 'The friction there'], ['push', 'The guide\'s push on the post'], ['bar', 'The switch\'s 55 gf, then friction']];
+      rows.forEach(([k, s0], j) => { const yy = 690 + j * 30;
+        if (k === 'dot') circle(lx + 12, yy - 7, 6, { fill: C.red, alpha: ka });
+        else if (k === 'bar') { G.save(); G.globalAlpha = ka; G.fillStyle = C.comp; G.fillRect(lx, yy - 13, 18, 11); G.fillStyle = C.red; G.fillRect(lx + 18, yy - 13, 10, 11); G.restore(); }
+        else arrow(lx + 26, yy - 7, lx, yy - 7, { color: k === 'fric' ? C.red : C.mute, w: k === 'fric' ? 3 : 2, hs: 9, alpha: ka });
+        text(s0, lx + 40, yy, { role: 'small', size: 20, weight: 600, color: C.ink2, alpha: ka }); }); }
+    text('Tilt and play: 5× larger than life', 1475, 834, { role: 'small', size: 20, weight: 650, color: C.mute, alpha: ep(t, T.press + 0.6, T.press + 1.0) });
+    text('Travel: 0.5 mm to the click, true size', 1475, 862, { role: 'small', size: 20, weight: 650, color: C.mute, alpha: ep(t, T.press + 0.8, T.press + 1.2) });
+    /* where this is: the side button on the mouse, from above */
+    { const lw0 = 40, lx = 1489, ly = 896, yc = (-23.5 - 8.9) / 2 * MS_K.y, X0 = -msHalfW(-16.2);
+      locator(t, 0, lx, ly, lw0, 'top', [X0 - 3, yc - 9, 9, 18], { hi: ['side1'] });
+      text('The front side button, cut at its height', lx + lw0 + 34, ly + 22, { role: 'small', size: 20, weight: 600, color: C.mute, maxW: 1840 - lx - lw0 - 34, alpha: ep(t, 0, 0.4), lh: 1.28 }); }
+    source(t, 'Derived: F = 55 gf ÷ (1 − 2μe ÷ L); e 5.1 mm, the tip spot off the post; L, the guide. POM on POM dry 0.35 to 0.40 (DuPont Delrin); a plastics grease 0.02 to 0.04 sliding (Molykote; may not lower the break-away). The tie, assumed: 0.6 mm wire, 3 mm arms.', { t0: 1.2, maxW: 1350, y: 977 });
   }
 });

@@ -82,8 +82,12 @@ function b02_trigBase() {
      front (z max) before the joint */
   const walk = dir => { const out = []; for (let k = 0, i = i0; k < n; k++, i = (i + dir + n) % n) { out.push(src[i]); if (i === i1) break; } return out; };
   let fixed = walk(1); if (Math.max(...fixed.map(p => p[1])) < 50) fixed = walk(-1);
-  /* light smoothing (the twin is quantised to 0.05 mm) */
-  const sm = fixed.map((p, i) => { if (!i || i === fixed.length - 1) return p.slice(); const a = fixed[i - 1], b = fixed[i + 1]; return [(a[0] + 2 * p[0] + b[0]) / 4, (a[1] + 2 * p[1] + b[1]) / 4]; });
+  /* light smoothing (the twin is quantised to 0.05 mm), only where both neighbours are near: a corner whose neighbour is a
+     long span away (the wheel opening's ends, the nose) is kept, not dragged along the span (S1-b02-1: averaging across
+     them turned the opening's four corners into the "funnels" Brock circled, F43.1) */
+  const sm = fixed.map((p, i) => { if (!i || i === fixed.length - 1) return p.slice(); const a = fixed[i - 1], b = fixed[i + 1];
+    if (Math.hypot(a[0] - p[0], a[1] - p[1]) > 1 || Math.hypot(b[0] - p[0], b[1] - p[1]) > 1) return p.slice();
+    return [(a[0] + 2 * p[0] + b[0]) / 4, (a[1] + 2 * p[1] + b[1]) / 4]; });
   /* the two rear curves, from the joint to the inner corner, N points each by arc length */
   const N = 48;
   const resample = pts => { const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])); const T = L[L.length - 1], out = []; let j = 1; for (let k = 0; k < N; k++) { const s = T * k / (N - 1); while (j < L.length - 1 && L[j] < s) j++; const u = (s - L[j - 1]) / ((L[j] - L[j - 1]) || 1); out.push([lerp(pts[j - 1][0], pts[j][0], u), lerp(pts[j - 1][1], pts[j][1], u)]); } return out; };
@@ -546,11 +550,11 @@ S({
     chapterCard2(t, {
       ch: 'click', turn,
       list: [[[17, 18], 'Straight rear cutouts'], [58, 'One split, between your fingers'], [[46, 47], 'A flat front, grooves that hold'], [48, 'Flush walls, no pinch'],
-        [2, 'Direct Drive, one flat board'], [50, 'The bridge, in a stiff button'], [[3, 28], 'Dual rails on POM pads']],
+        [2, 'Direct Drive Actuation'], [50, 'The bridge, in a stiff button'], [[3, 28], 'Dual rails on POM pads']],
       part: (tt, box, kt) => {
-        const [bx, by, bw, bh] = box, sc = Math.min(bw / 19, bh / 15), sw = clk_swc(tt, 2.4, 2.6), a = ep(tt, 0.8, 1.6);
+        const [bx, by, bw, bh] = box, sc = Math.min(bw / 19, bh / 15), sw = clk_swc(tt, 2.4, 2.6), a = 1;   /* on screen from frame one (FILM F12, KIT 10:51): the switch's own press is the motion */
         part(bx + bw / 2 + 1.5 * sc, by + bh * 0.62, sc, () => clk_gt01MM({ press: sw.pr, state: sw.state }), { alpha: a });
-        text('Gateron GT01, on its 20° housing', bx + bw / 2, by + bh - 6, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: ep(tt, 1.6, 2.0) });
+        text('Gateron GT01, on its 20° housing', bx + bw / 2, by + bh - 6, { role: 'label', size: 20, color: C.mute, align: 'center' });
       }
     });
   }
@@ -709,7 +713,7 @@ S({
     b02_swingLoupe(t, lx, ly, lr, { lean, k: clamp(swing), a: kl, col: rival ? C.ink : C.hero, side: -1 });
     const share = b02_sideShare(lean) * 100;
     if (kl > 0) {
-      text(share.toFixed(1) + '%', lx, ly + lr + 50, { role: 'num', size: 34, weight: 800, color: share > 0.05 ? C.red : C.heroText, align: 'center', alpha: kl });
+      text(share.toFixed(1) + ' %', lx, ly + lr + 50, { role: 'num', size: 34, weight: 800, color: share > 0.05 ? C.red : C.heroText, align: 'center', alpha: kl });
       text('of the travel there, sideways', lx, ly + lr + 80, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: kl });
     }
     /* what the player gets, in words, beside the headline */
@@ -1236,7 +1240,9 @@ S({
    rival is the mouse #2 names: Endgame Gear angles its switches by putting them "on their own PCBs screwed into the top
    shell", "connected through a 3-pin connector" (TechPowerUp, OP1 8K). Shown in the shared click section: that switch's
    own board, its screw into the shell and its connector and cable come in one by one; then they go, and the GT01's housing
-   holds the 20° on the one flat board. No tolerance figures are claimed here: the stack-up law is b07's slide. */
+   holds the 20° on the one flat board. No tolerance figures are claimed here: the stack-up law is b07's slide.
+   PLACE (POLISH, Brock's notes (b) and (c)): in the shell chapter right after b07_tolerance, its first caption the callback
+   ("every part you remove is a tolerance you don't stack"); b07_poron follows (where a shell post meets the board). */
 const B02_WG = { press: { down: 0.22, hold: 0.55, up: 0.25 }, adds: [1.5, 2.3, 3.1], p1: 3.85, mo: [5.0, 1.1], p2: 6.5, v: 7.1 };
 /** the rival's extra parts in clickMM's frame (mm, y down, front right): the switch on its own small board, turned 20°
    onto the arc, hung from the top shell by a boss and a screw, and a cable down to the main board. k: [board, screw,
@@ -1278,20 +1284,20 @@ function b02_subBoardMM(k, press, a) {
   return { board: SP(F0[0] + 6, F0[1] + 6), screw: tip, cable: SP(F0[0] - 13, yB - 3) };
 }
 S({
-  id: 'b02_wedge', ch: 'click', theme: 'paper', title: 'One flat board, no extra parts', settle: 10.5, ideas: [2],
+  id: 'b02_wedge', ch: 'shell', after: 'b07_tolerance', theme: 'paper', title: 'One flat board, no extra parts', settle: 10.5, ideas: [2],
   replaces: ['clk_wedge'],
   src: ['b02_tpuOp1', 'clk_gt01', 'clk_brock'],
   answers: [
     ['important concept, very poor execution', 'Rebuilt as a demonstration in the shared click section: the parts another mouse needs to angle its switch come in one by one, then go'],
-    ['could be closer to the less parts is better demonstration', 'It makes the same case as b07_tolerance (fewer parts), and says so; I recommend the integrator places it right after b07_tolerance (hand-off in the report)'],
-    ['show after youve shown the problem with having more parts', 'Within the slide the problem comes first (the OP1 8K\'s own board, screw, connector and cable); the one-board answer after. Placed after b07_tolerance the law comes first too'],
+    ['could be closer to the less parts is better demonstration', 'Placed right after b07_tolerance (the stack-up law, in the shell chapter), and its first caption is the callback: every part you remove is one less tolerance in the stack'],
+    ['show after youve shown the problem with having more parts', 'It now follows the tolerance slide, which shows the problem with more parts (errors adding up, one sloppy part ruining the seam); within the slide too, the OP1 8K\'s extra parts come first, the one-board answer after'],
     ['(clk_wedge\'s old claim "I will publish both")', 'Dropped; and no tolerance numbers are claimed here (the law and its numbers are b07\'s)']
   ],
   sfx: [[B02_WG.adds[0] + 0.25, 'tick'], [B02_WG.adds[1] + 0.25, 'tick'], [B02_WG.adds[2] + 0.25, 'tick'], [pressCross(B02_WG.p1, B02_WG.press, 0.7), 'click'], [pressCross(B02_WG.p2, B02_WG.press, 0.7), 'click']],
   draw: t => {
     const Q = B02_WG, D = Q.press;
     header(t, 'One flat board, no extra parts');
-    captions(t, [[0.5, 'To turn its switches onto the arc, the OP1 8K puts each on its own board in the top shell.'],
+    captions(t, [[0.5, 'Every part you remove is one less tolerance in the stack. To angle its switches, the OP1 8K puts each on its own board.'],
       [Q.adds[0] - 0.1, 'That takes a second board, a screw into the shell, and a connector with a cable down to the main board.'],
       [Q.mo[0], 'The GT01\'s housing holds the 20° itself, so it solders straight onto Theseus\'s one flat board.'],
       [Q.v + 0.4, 'Fewer parts to build, align and come loose: one board, assembled in one pass.']]);

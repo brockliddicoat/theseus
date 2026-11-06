@@ -812,16 +812,16 @@ S({
       const dmg = nSl * 0.5 * (c.steel ? 1 : B11.hv.steel / B11.hv.ti);
       /* cut through the head (B-B), the bit in its cross */
       G.save(); G.beginPath(); G.rect(c.x + 2, y + 58, c.w - 4, 330); G.clip();
-      part(sx, sy, ss, () => b11_headSecMM({ lift, turn: turning ? t * 2 : 0, a: 1, dmg, col: C.bad, shank: 1.2, bg: C.panel }), { alpha: a });
+      part(sx, sy, ss, () => b11_headSecMM({ lift, turn: turning ? t * 2 : 0, a: 1, dmg, col: c.steel ? C.bad : C.mute, shank: 1.2, bg: C.panel }), { alpha: a });   /* red is the steel's alone (R2-b11-1) */
       G.restore();
       text('Cut through', sx, y + 412, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: a });
       /* from above: the cross, the bit's wings dashed, the dents in red */
-      part(tx, ty, 50, () => b11_headTopMM({ dmg, rot, bitA: 0.85 * ka, col: C.bad }), { alpha: a });
+      part(tx, ty, 50, () => b11_headTopMM({ dmg, rot, bitA: 0.85 * ka, col: c.steel ? C.bad : C.mute }), { alpha: a });
       text('From above', tx, y + 412, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: a });
       /* the hand on the driver, turning; cam-out pushes the bit up */
       const bitY = sy - ss * (OWN_M2.k + lift), hy = y + 128 - ss * lift;
       if (ka > 0.01) { cursorPtr(sx + 22, hy + 6, { a: a * ka, grab: true }); G.save(); G.globalAlpha = a * ka; G.strokeStyle = C.mute; G.lineWidth = 2.5; G.beginPath(); G.ellipse(sx, hy + 34, 46, 11, 0, 0.35, Math.PI - 0.35); G.stroke(); G.restore(); }
-      if (lift > 0.03) forceArrow(sx + 72, bitY - 30 - 90 * lift, -Math.PI / 2, 26 + 110 * lift, { k: 1, color: C.red, w: 4, hs: 13, alpha: a });
+      if (lift > 0.03) forceArrow(sx + 72, bitY - 30 - 90 * lift, -Math.PI / 2, 26 + 110 * lift, { k: 1, color: c.steel ? C.red : C.mute, w: 4, hs: 13, alpha: a });
       const kc = a * ep(t, Q.slips[0][0], Q.slips[0][0] + 0.25) * (1 - ep(t, Q.slips[1][1] + 0.4, Q.slips[1][1] + 0.7));
       if (i === 0 && kc > 0.01) text('Cam-out', sx + 86, y + 118, { role: 'small', size: 22, weight: 750, color: C.red, alpha: kc });
       /* what two slips leave */
@@ -943,7 +943,7 @@ function b11_result(t, t0, x, y, o) {
   G.save(); G.translate(0, dy);
   ltag(x, y - Math.round(z * 0.78) - 26, o.who, o.what, { size: 21, color: hero ? C.heroText : C.mute, vcolor: hero ? C.heroText : C.secondText, a });
   rich([{ s: o.v.toFixed(1), role: 'd1', size: z, weight: 800, track: -0.03, color: hero ? C.heroText : C.ink2, grad: hero ? C.heroGrad : null, tnum: true },
-    { s: '%', font: 'disp', size: Math.round(z * 0.55), weight: 700, color: hero ? C.heroText : C.mute, grad: hero ? C.heroGrad : null, gap: Math.round(z * 0.03), caps: false }], x, y, { alpha: a });
+    { s: '%', font: 'disp', size: Math.round(z * 0.55), weight: 700, color: hero ? C.heroText : C.mute, grad: hero ? C.heroGrad : null, gap: Math.round(z * 0.16), caps: false }], x, y, { alpha: a });   /* a space before %, as the kit's verdict */
   if (o.sub) text(o.sub, x, y + 42, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: a, maxW: o.maxW || 600, lh: 1.25 });
   G.restore();
 }
@@ -956,7 +956,7 @@ S({
   id: 'b11_wear', ch: 'own', theme: 'night', title: 'Thread wear: brass keeps its hold', settle: 11, ideas: [101],
   replaces: ['own_life'], src: ['b11Cumbicus', 'own3dp', 'ownPemM2'],
   answers: [
-    ['Brief: brass keeps 98.6 % of its hold after 20 heavy loads; screws straight into plastic keep 82.8 % and 43.3 % after re-assembly: both tests, labelled (F21.12 "Keep both")', 'Two rows, each named with its own test: plastic re-assembled ten times (the dial follows Cumbicus 2023: ' + B11W_SHOW.pf30.toFixed(1) + ' % for the better screw by the 10th, 82.84 rounded up, never in Theseus\'s favour), the brass insert pulled 20 times to 80 % of its failure force, then measured: ' + B11W_SHOW.brass.toFixed(1) + ' %. On the right the two results stand side by side, each with its test, under "Hold kept: two tests, each as measured": no arrow joins them (they are different measures); the other screw\'s ' + B11W_SHOW.dpt5.toFixed(1) + ' % by the 5th is said under the plastic\'s, and its 58.1 % by the 10th is in the source.'],
+    ['Brief: brass keeps 98.6 % of its hold after 20 heavy loads; screws straight into plastic keep 82.8 % and 43.3 % after re-assembly: both tests, labelled (F21.12 "Keep both")', 'Two rows, each named with its own test: plastic re-assembled ten times (the dial follows Cumbicus 2023: ' + B11W_SHOW.pf30.toFixed(1) + ' % for the better screw by the 10th, 82.84 rounded up, never in Theseus\'s favour), the brass insert pulled 20 times to 80 % of its failure force, then measured: ' + B11W_SHOW.brass.toFixed(1) + ' %. On the right the two results stand side by side, each with its test, under "Hold kept, two different tests (higher is better)": no arrow joins them (they are different measures); the other screw\'s ' + B11W_SHOW.dpt5.toFixed(1) + ' % by the 5th is said under the plastic\'s, and its 58.1 % by the 10th is in the source.'],
     ['F2.01: "how metal threaded inserts increase longevity"', 'Each plastic re-assembly visibly shaves the thread\'s flank (red slivers pile up, magnified) while the dial drops; the brass thread is never re-cut and the insert\'s grip survives the pulls. The payoff: two measured results, each named (plastic ' + B11W_SHOW.pf30.toFixed(1) + ' % of its undo torque after 10 re-assemblies; brass ' + B11W_SHOW.brass.toFixed(1) + ' % of its pull strength after 20 heavy pulls), Theseus\'s the larger.'],
     ['F2.08: the screws "need a massive revamp to look proper"', 'Both joints are the 3D model\'s M2 joints in section (as on b11_inserts); the magnified flank is the thread-forming profile, the brass side the ISO thread.'],
     ['What moved from own_life', 'The insert\'s half-section with its dimensions and knurl callouts is out: the insert is drawn in every joint now, and its pull strength is what the brass row tests. New: the human scale (one M2 insert holds 255 N in ABS, a 26 kg suitcase, PEM) and the hand-off to the battery.']
@@ -973,7 +973,7 @@ S({
     rows.forEach(R => {
       const plast = R.kind === 'cf', A = plast ? act0 : act1, y = R.y, col = plast ? C.secondText : C.heroText;
       demoWindow(x0, y, x1 - x0, rh, 1);
-      ltag(x0 + 24, y + 34, plast ? 'Straight in' : 'Theseus', plast ? 'Plastic, re-assembled 10 times' : 'Brass insert, pulled 20 times to 80 % of failure', { size: 21, color: plast ? C.mute : C.heroText, vcolor: col, a: A });
+      ltag(x0 + 24, y + 34, plast ? 'Straight in' : 'Theseus', plast ? 'Glass-filled PEI, re-assembled 10 times' : 'Brass insert, pulled 20 times to 80 % of failure', { size: 21, color: plast ? C.mute : C.heroText, vcolor: col, a: A });
       /* where: the joint at the board's boss, in section, as on the slide before */
       G.save(); G.beginPath(); G.rect(x0 + 2, y + 52, 300, rh - 54); G.clip();
       const J = part(x0 + 160, y + (plast ? 216 : 178), 30, () => b11_jointMM({ kind: R.kind, rival: R.kind !== 'insert', tip: 4.0, pass: 1, reach1: 4.0, reach2: 0, tilt: 0, ph2: 0, recut: 0, bit: { a: 0 }, hole: C.panel, crop: 5.4 }), { rot: Math.PI, alpha: A }) || {};
@@ -1012,8 +1012,8 @@ S({
     /* right: the two results, each named with its own test, side by side in one column (two measures, so no before → after
        arrow and nothing struck: M-b11-3, POLISH b11_wear); Theseus's the larger; then the human scale */
     const cx = 1220, cw = RM - cx, SW = B11W_SHOW;
-    text('Hold kept: two tests, each as measured (higher is better)', cx, 330, { role: 'label', size: 22, color: C.mute, alpha: ep(t, W.verdict, W.verdict + 0.4), maxW: cw });
-    b11_result(t, W.verdict, cx, 470, { who: 'Straight in', what: 'Screw in plastic', v: SW.pf30, size: 76, maxW: cw,
+    text('Hold kept, two different tests (higher is better)', cx, 330, { role: 'label', size: 22, color: C.mute, alpha: ep(t, W.verdict, W.verdict + 0.4), maxW: cw });
+    b11_result(t, W.verdict, cx, 470, { who: 'Straight in', what: 'Screw in glass-filled PEI', v: SW.pf30, size: 76, maxW: cw,
       sub: 'Torque to undo it, after 10 re-assemblies (the better of two screws; the other kept ' + SW.dpt5.toFixed(1) + ' % by the 5th)' });
     b11_result(t, W.verdict + 0.4, cx, 712, { who: 'Theseus', what: 'Brass insert', v: SW.brass, size: 120, hero: true, maxW: cw,
       sub: 'Pull strength, after 20 pulls to 80 % of what breaks it' });
@@ -1053,9 +1053,9 @@ S({
   draw: t => {
     const Q = B11B;
     header(t, 'A battery you can unplug');
-    captions(t, [[0.3, 'Most mice glue the battery in: heat it, pry it off, and try not to bend the pouch. The plug is pulled out by its wires.'], [Q.slide[0] - 0.1, 'Theseus holds its battery in two silicone bands, and its plug faces the back: pull it straight out, slide the battery free.']]);
+    captions(t, [[0.3, 'Logitech glues the G Pro X Superlight\'s battery in: heat it, pry it off, and try not to bend the pouch. The plug is pulled out by its wires.'], [Q.slide[0] - 0.1, 'Theseus holds its battery in two silicone bands, and its plug faces the back: pull it straight out, slide the battery free.']]);
     const cw = 520, gx = [LM, LM + 540], ry = [286, 606], rh = [300, 280];
-    const cells = [[0, 0, 'Most mice', 'Glued to the shell'], [1, 0, 'Theseus', 'Held in two bands'], [0, 1, 'Most mice', 'Pulled up by its wires'], [1, 1, 'Theseus', 'A plug that faces the back']];
+    const cells = [[0, 0, 'G Pro X Superlight', 'Glued to the shell'], [1, 0, 'Theseus', 'Held in two bands'], [0, 1, 'G Pro X Superlight', 'Pulled by its wires'], [1, 1, 'Theseus', 'A plug that faces the back']];   /* named, from iFixit's guide (R2-b11-2) */
     cells.forEach(([c, r, l, v]) => { demoWindow(gx[c], ry[r], cw, rh[r], 1); ltag(gx[c] + 22, ry[r] + 32, l, v, { size: 21, color: c ? C.heroText : C.mute, vcolor: c ? C.heroText : C.ink2 }); });
     /* where: a small locator on Theseus's battery cell */
     locator(t, 0, gx[1] + cw - 118, ry[0] + 22, 96, 'left', msBox('left', 'battery'), { hi: { battery: 'hero' } });
@@ -1101,7 +1101,7 @@ S({
     b11_tape(t, Q.tape, rx, 330, rw, 250);
     verdict(t, Q.verdict, rx, 760, { from: 7, to: 1, label: 'Tools and supplies to change the battery', better: 'lower', net: false, size: 110, maxW: rw });
     text('The one tool is the driver in the box. No heat, no solvent: what the EU asks of every portable battery from 18 February 2027.', rx, 820, { role: 'small', size: 22, weight: 650, color: C.ink2, maxW: rw, lh: 1.3, alpha: ep(t, Q.eu, Q.eu + 0.4) });
-    source(t, 'Most mice: iFixit\'s G Pro X Superlight battery guide (adhesive: heat it and pry; the plug pulled "straight up"; tools: spudger, Phillips driver, tweezers, angled tweezers, iOpener or hair dryer, isopropyl alcohol, double-sided tape); Glorious Model O 2 Wireless (glued, "this will rip"); a punctured battery can catch fire (iFixit). Peel and shear: 3M. EU Regulation 2023/1542 Art. 11.', { t0: 1.0, maxW: 1760 });
+    source(t, 'G Pro X Superlight: iFixit\'s battery guide (adhesive: heat it and pry; the plug pulled "straight up"; tools: spudger, Phillips driver, tweezers, angled tweezers, iOpener or hair dryer, isopropyl alcohol, double-sided tape); Glorious Model O 2 Wireless (glued, "this will rip"); a punctured battery can catch fire (iFixit). Peel and shear: 3M. EU Regulation 2023/1542 Art. 11.', { t0: 1.0, maxW: 1760 });
   }
 });
 
@@ -1114,7 +1114,7 @@ S({
   id: 'b11_board', ch: 'own', theme: 'night', title: 'Screws from below, art on the board', settle: 11, ideas: [54, 63, 74, 100],
   replaces: ['ownboard'], src: ['b11TpuV3', 'b11Brock', 'ownBrock'],
   answers: [
-    ['Brief: the board comes out from below', 'The mouse from below: the four screws back out one by one with the driver (no skate touched), the board comes down; the rival column says what most mice ask first (Viper V3 Pro: skates, screws, clips, a cable, then the board\'s own screws inside). Verdict: board screws you can reach from outside 0 → 4.'],
+    ['Brief: the board comes out from below', 'The mouse from below: the four screws back out one by one with the driver (no skate touched), the board comes down; the rival column says what many mice ask first (Viper V3 Pro: skates, screws, clips, a cable, then the board\'s own screws inside), its first step drawn: the skates peel off its underside. Verdict: board screws you can reach from outside 0 → 4.'],
     ['Brief and F30.15: its underside artwork, the old design\'s, adapted ("i really liked the old designs artwork, you should try the match/adapt")', 'The board\'s underside as plan 5 draws it (H1: the old dark triangles, filleted, the gold clusters, the wordmark, the labels and the QR, fitted to the new outline), named part by part.'],
     ['#63 art on the PCB bottom; #100 ON/OFF; #74 the paper battery cover (moved here from ownbatt and ownsheet2)', 'Callouts: the gold triangles (#63), ON and OFF at the switch (#100), the QR to the web software; the laminated satin paper cover over the battery drawn and named on the mouse from below (#74: "battery exposed makes a mouse look like a prototype").'],
     ['F26.11: serials and engravings stay hidden', 'No serial and no shell engraving on screen; the board\'s silkscreen art is the board\'s own (F30.15).']
@@ -1165,14 +1165,31 @@ S({
     /* right: what most mice ask first, the verdict, the hand-off */
     const rx = 1220 + 0, rw = RM - rx, kr = ep(t, Q.rival, Q.rival + 0.4);
     demoWindow(rx - 20, 286, rw + 20, 300, kr);
-    ltag(rx, 318, 'Most mice', 'Razer Viper V3 Pro', { size: 21, color: C.mute, vcolor: C.secondText, a: kr });
+    ltag(rx, 318, 'Many mice', 'Razer Viper V3 Pro', { size: 21, color: C.mute, vcolor: C.secondText, a: kr });
     ['Peel the front and rear skates', 'Undo the screws beneath them', 'Pop two side clips, free a cable', 'Then the board\'s four screws, inside'].forEach((s2, i) => {
       const k = ep(t, Q.rival + 0.3 + i * 0.25, Q.rival + 0.6 + i * 0.25);
       text((i + 1) + '', rx, 372 + i * 50, { role: 'small', size: 22, weight: 800, color: C.mute, alpha: k });
-      text(s2, rx + 32, 372 + i * 50, { role: 'small', size: 22, weight: 650, color: i === 3 ? C.red : C.ink2, alpha: k, maxW: rw - 40 });
+      text(s2, rx + 32, 372 + i * 50, { role: 'small', size: 22, weight: 650, color: i === 3 ? C.red : C.ink2, alpha: k, maxW: 420 });
     });
+    /* its first step, drawn in the same view as Theseus's (R2-b11-3): the rival from below, its skates peeling off to reach
+       the screws (TechPowerUp: Torx T6 beneath the front and rear skates); the count isn't given, so no screws are drawn */
+    { const kp = ep(t, Q.rival + 0.6, Q.rival + 1.5, E.io3), sR = 1.8, cxm = rx + rw - 64, cym = 436;
+      part(cxm, cym, sR, () => {
+        mouseRival('bottom', { hide: ['skates'], alpha: kr });
+        const V = rvView('bottom'), sk = V.parts.skates && V.parts.skates.solid, cs = rvCols();
+        if (sk) [[-1, -51.3], [1, 51.3]].forEach(([sg, y0]) => {
+          G.save(); G.globalAlpha = kr; G.beginPath(); G.rect(-45, sg < 0 ? -75 : 0, 90, 75); G.clip();
+          /* the bare bed it leaves, in the fault's red */
+          G.save(); G.setLineDash([lw(4), lw(3)]); G.strokeStyle = C.red; G.lineWidth = lw(1.4); G.globalAlpha = kr * kp; G.stroke(sk); G.restore();
+          /* the skate, peeled out and turned off its bed */
+          G.translate(7 * kp, y0 + sg * 9 * kp); G.rotate(sg * 0.2 * kp); G.translate(0, -y0);
+          G.fillStyle = cs.solid; G.fill(sk); G.strokeStyle = cs.line; G.lineWidth = lw(1.3); G.stroke(sk);
+          G.restore();
+        });
+      });
+      text('New skates every time', rx + rw - 8, 578, { role: 'label', size: 19, color: C.red, align: 'right', alpha: kr * kp }); }
     verdict(t, Q.verdict, rx, 760, { from: 0, to: 4, label: 'Board screws you can reach from outside', better: 'higher', net: false, size: 110, maxW: rw });
-    text('Back in with the same four turns. Next: what comes in the box.', rx, 830, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.hand, Q.hand + 0.4), maxW: rw, lh: 1.3 });
+    text('Back in with the same four turns.', rx, 830, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.hand, Q.hand + 0.4), maxW: rw, lh: 1.3 });
     source(t, 'Viper V3 Pro: TechPowerUp\'s review (Torx T6 screws beneath the front and rear skates, two clips at the sides, a cable between the shells, four screws hold the board to the bottom shell). Theseus: Brock\'s doc #54 (the board\'s screws inserted from the bottom), #63 (art on the board\'s underside), #74 (the paper cover); the art and outline: plan 5 (H1).', { t0: 1.0, maxW: 1760 });
   }
 });
@@ -1233,7 +1250,7 @@ S({
     });
     const yb = ty + 40 + B11_BOXROWS.length * rh + 6;
     /* the skate file, and why it matters: changing a flagship's feet can cost its warranty (G2, a real case) */
-    const dx2 = text('The skate file (DXF) is published: cut your own and keep the warranty. Razer at first refused a reviewer\'s V4 Pro claim because its feet had been changed (PC Gamer, May 2026).', rx, yb + 10, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.dxf, Q.dxf + 0.4), maxW: rw, lh: 1.25 });
+    const dx2 = text('The skate file (DXF) is published: cut your own, keep the warranty. Razer at first refused a reviewer\'s V4 Pro claim over changed feet (PC Gamer, May 2026).', rx, yb + 10, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.dxf, Q.dxf + 0.4), maxW: rw, lh: 1.25 });
     const yc = yb + 10 + Math.max(1, (dx2 && dx2.lines ? dx2.lines.length : 2)) * 27.5;
     const kc = ep(t, Q.col, Q.col + 0.4);
     if (kc > 0.003) {
@@ -1241,6 +1258,6 @@ S({
       sw.forEach(([m, k], i) => { const x = rx + i * 76; rr(x, yc, 32, 32, 6, m, inkA(0.25), 1.2, kc); rr(x + 34, yc, 32, 32, 6, k, inkA(0.25), 1.2, kc); });
       text('Colourways matched to GMK keycap sets (#13): shell beside keycap within ΔE 1.0, about the least an eye can tell', rx + 240, yc + 14, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kc, maxW: rw - 240, lh: 1.25 });
     }
-    source(t, 'Box lists from setup guides, reviews and retailer pages (a dash: not listed): ProSettings and TweakTown (Viper V4 Pro: "I do miss a set of replacement mouse feet"), Logitech, ProSettings for the X3 (its cable from Logitech\'s own X2 Superstrike list: Logitech publishes none for the X3), Back2Gaming, AusModShop, TechRadar (OP1 8K: "A small screwdriver is included"). Warranty: PC Gamer, May 2026; Razer may exclude issues it blames on third-party skates. ΔE 1.0: the usual just-noticeable difference (Datacolor). Theseus\'s box: Brock\'s plan (#72, #73).', { t0: 1.0, maxW: 1760 });
+    source(t, 'Box lists (a dash: not listed): ProSettings and TweakTown (Viper V4 Pro: "I do miss a set of replacement mouse feet"), Logitech, ProSettings for the X3 (its cable from Logitech\'s X2 Superstrike list; Logitech lists none for the X3), Back2Gaming, AusModShop, TechRadar (OP1 8K: "A small screwdriver is included"). Warranty: PC Gamer, May 2026. ΔE 1.0: the usual just-noticeable difference (Datacolor). Theseus\'s box: Brock\'s plan (#72, #73).', { t0: 1.0, maxW: 1760 });
   }
 });

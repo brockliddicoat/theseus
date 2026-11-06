@@ -13,7 +13,11 @@ board) with the power switch over its window on the x +10 axis; B (`pcb-b.glb`, 
 right-angle slide switch at the right waist edge (on the top side, so the board stays one reflow, #92; plan 5 drew it on the
 underside: a question for Brock). Every net routed (hand routes + `tools/autoroute.py`), DRC 0 for both. The underside's art
 is the old design's, adapted (plan 5's zones). Build: `PCB_OUT=<dir> PCB_VARIANT=A|B python3 tools/build_pcb.py`. The
-battery's place for the 2D drawings and the balance: `BATTERY` in `tools/board.py`; the balance: `python3 tools/balance.py`.
+battery's place for the 2D drawings and the balance: `BATTERY` in `tools/board.py`; the balance: `python3 tools/balance.py`
+(H2, F42.1: it sets the battery where the centre of mass lands at mouse z 0: front 3.99 mm behind the rear lobes, 2.03 mm
+behind H1's place, at the same height. The model now has the board's screws at its holes, the bare board at its core's
+centroid, the encoder and support inside the 5.6 g, the side switches (F44.2) and the shell's four boss posts, the last an
+estimate until the 3D shell has them; `--h1` gives H1's model; the battery lead in `components.py` follows `BATTERY`).
 The 2D drawings (deck `boardMM`, `keyPlanMM`, the kit's mouse) come from these tools: deck/tools/geo2d/board2d.py and
 key_parts.py. The text below is the v1 board's description (2026-11-04), kept for its method and honesty labels.
 
@@ -190,10 +194,31 @@ Leads and plugs are excluded (not in the Sora's 8.29 g either). The board is ~40
 ≈ 0.5 g of laminate, and the wheel + encoder estimate is the least certain line.
 
 **One board.** Brock: "we don't have a front and back pcb, it'll be a single ~5.6g pcb." Every scene has exactly one
-board: `pcb.glb` (one outline, top-side assembly), the lattice's single PCB stand-in, none in the shell. The model's
-board + on-board parts estimate (6.66 g on plan 5; 6.28 on v1) is 1.1 g over Brock's ~5.6 g, about the component-mass
-uncertainty (the two GT01s alone are "typical micro switch" guesses at 1.0 g); plan 5's larger outline adds 0.41 g of
-laminate and copper.
+board: `pcb.glb` (one outline, top-side assembly), the lattice's single PCB stand-in, none in the shell.
+
+**5.6 g is the target (F42.2, Brock: "Keep 5.6 g as target").** The film stays at 29.31 g and calls the board's figure a
+target; the board gets built to it. It covers the board with everything on it, the wheel's encoder and support included
+("thinner laminate, fewer layers, a lighter encoder"). The model stays as built, 1.0 mm and 4 layers, until the next board
+redesign (F21.11: "keep it as 1mm for now"). `mass.py` prints the path and writes it to `work/mass.json` (`target`):
+
+| | g | total (g) |
+|---|---:|---:|
+| **Target** | | **5.60** |
+| Estimate now: board + on-board parts (plan 5) | | 6.66 |
+| Estimate now: + the wheel's encoder (~1.0, hollow-shell estimate) and support (0.26) | | **7.92** (2.32 over) |
+| 1. Laminate 1.0 → 0.8 mm finished (1703 mm² × 0.2 mm × 1.85 g/cm³) | −0.63 | 7.29 |
+| 2. 4 → 2 layers (the GND plane into the bottom pour; its 35 µm become laminate at the same thickness) | −0.13 | 7.16 |
+| 3. A lighter encoder (~0.45 g): no nickel-silver frame (49.5 mm³ × 8.7 g/cm³ = 0.43 g, nearly half of today's ~1.0 g), 0.4 mm housings, the Hall IC on the board; the clear top housing stays | −0.55 | 6.61 |
+| 4. A cored support (162 mm³ of POM solid, to ~60 %: ~0.16 g) | −0.10 | 6.51 |
+| 5. Laminate 0.8 → 0.6 mm | −0.63 | 5.88 |
+| 6. Outer copper 1 oz → 0.5 oz | −0.25 | 5.63 |
+
+What it says: the thickness is the big lever (0.63 g per 0.2 mm); fewer layers barely help by weight at the same thickness;
+the encoder's metal frame is the heaviest single part to lose. The cost: stiffness goes with the cube of the thickness
+(0.8 mm keeps 51 %, 0.6 mm 22 % of the 1.0 mm board's), so a 0.6 mm board leans on the shell's posts and the ribs
+(b07_board's tie) and the Mill-Max sockets need a thin-board length. Uncertain lines: the Mill-Max sockets (Brock: 0.11 g
+each, +0.48 g on the 0.03 g modelled), the GT01s (0.5 g each, typical, not weighed), the encoder (1.49 g solid, ~1.0 as
+0.5 mm shells).
 
 ## Shots (`shots/`, 2×)
 
@@ -202,6 +227,32 @@ laminate and copper.
 module and wheel removed: the copper-free keep-out), `pmic_{paper,night}` (nPM1300 + inductors), `power_charge_*`,
 `power_run_*`, `xray_{paper,night}`, `xray_hero_night`, `reflow_{paper,night}`, `reflow_pmic_night`,
 `switch_hotswap_{paper,night}` (SW1 lifted out of its Mill-Max sockets), `compare_sora_v2_vs_theseus_{paper,night}`.
+
+## Metal near the antenna (H2, 2026-11-06)
+
+Raytac publishes no keep-out for the AN54LM-P20A (its datasheet and design guide are behind project registration;
+research Q1), so `antennaKeepout` stays representative: the module's antenna end and 0.8 mm past it, x ±6.6, layout z
+7.95–12.25. The one published rule found is Taoglas's PCB antenna note (APN-13-8-001.A, research/FILLS.md b09-1):
+"clearances of minimum 4mm are kept from other metal components" and "20mm or more for best gain and radiation
+efficiency". Distances in the board's plane from each part's metal (pcb.glb), to the keep-out / to the antenna (the
+module's front 3.5 mm, x ±4.95):
+
+| part | to the keep-out (mm) | to the antenna (mm) | against Taoglas |
+|---|---:|---:|---|
+| J3, side-button connector (its solder) | 4.50 | 6.15 | over the 4 mm minimum; kept |
+| J2, battery connector | 4.65 | 6.30 | over the 4 mm minimum; kept |
+| SW3, power switch (variant A) | 4.85 | 6.53 | over |
+| U2, nPM1300 | 4.70 | 6.17 | over |
+| battery lead | 8.67 | 9.83 | over |
+| **the battery** (its pouch is metal foil; F42.1 place) | **19.55** | **19.55** | just under the 20 mm best (17.52 at H1's place) |
+| R1, SDA pull-up (0402) | **0.83** | **2.48** | **under 4 mm** if the rule covers small passives |
+| C35, VSYS cap (0603) | 2.01 | **3.81** | **under 4 mm**, same reading |
+| C36, VBAT cap (0603) | 3.06 | 4.90 | over |
+
+J2 and J3 break no rule I can source, so they stay where plan 5 put them. R1 and C35 are outside the keep-out but closer
+to the antenna than Taoglas's 4 mm. Module makers usually ask only that the keep-out stays clear, so this is a question,
+not a fault: moving R1 about 1.6 mm and C35 about 0.3 mm outboard would meet it (a placement change and a re-route,
+left for the next board round, F21.11).
 
 ## Measured vs representative, and known gaps
 

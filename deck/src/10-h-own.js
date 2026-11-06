@@ -37,7 +37,7 @@ S({
     /* the chapter's part in the iris: the M2 joint, the screw driving home into its insert */
     const cx = 1380, cy = 580, k = ep(t, 0.9, 1.6), drive = t < 8 ? kf(t, [[1.4, 0], [4.4, 0.45]], E.io3) : 0.45 + 0.55 * pingpong(t - 8, 8);
     if (V2D.on) {
-      const tip = 4.0 * clamp(kf(t, [[1.4, 0], [4.4, 1]], E.io3) - (t > 8 ? 0.6 * pingpong(t - 8, 8) : 0));
+      const tip = OWN_SEAT * clamp(kf(t, [[1.4, 0], [4.4, 1]], E.io3) - (t > 8 ? 0.6 * pingpong(t - 8, 8) : 0));   /* seated on the BOARD_T board (H3) */
       G.save(); G.beginPath(); G.arc(cx, cy, 392, 0, TAU); G.clip();
       part(cx, cy + 40, 56, () => own_jointMM({ kind: 'insert', tip, bit: { a: 1, turn: t * 0.9 }, hole: C.bg }), { alpha: k });
       G.restore();
@@ -182,7 +182,7 @@ S({
     const rx = lx + lw0 + 40, rw = RM - rx, rh1 = 360;
     demoWindow(rx, y0, rw, rh1, tileA(t, 0.3, 1));
     cardHead(t, 0.5, rx, y0, rw, 'Screws from below (#54)', []);
-    const k5 = ep(t, 1.2, 1.7), tip = 4.0 * (t < 9 ? kf(t, [[2.0, 0], [3.6, 1]]) : 1 - 0.5 * pingpong(t - 9, 7));
+    const k5 = ep(t, 1.2, 1.7), tip = OWN_SEAT * (t < 9 ? kf(t, [[2.0, 0], [3.6, 1]]) : 1 - 0.5 * pingpong(t - 9, 7));   /* seated on the BOARD_T board (H3) */
     const o = part(rx + 200, y0 + 196, 24, () => own_jointMM({ kind: 'insert', tip, bit: { a: 1, turn: t }, hole: C.panel, crop: 4.0 }), { alpha: k5, rot: Math.PI }) || {};
     if (o.bossTop) {
       const kl = ep(t, 3.0, 3.4), lab = (s2, y, col) => { text(s2, rx + 380, y + 7, { role: 'label', size: 21, color: col, alpha: kl }); line(rx + 336, y, rx + 370, y, { color: C.mute, w: 1.2, alpha: kl }); };

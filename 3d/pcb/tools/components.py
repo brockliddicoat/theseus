@@ -784,7 +784,7 @@ def add_wires(glb):
         # of the shell's boss post over it (#54: the screws come from below, the post stands on the board's top, Ø5.3 as
         # 3d/parts/fasteners.js's boss; the bundle's axis >= 3.5 mm from the hole's centre), then on to the battery's tab end
         # at its front face (board.py BATTERY, H2: z1 -11.60, its middle 2.43 mm over the board's top), so it follows BATTERY
-        'BATLEAD': dict(path=[(14.5, 1.45, 3.3), (14.3, 1.5, 2.1), (12.9, 1.8, 0.5), (11.0, 2.1, -1.8), (10.6, 2.3, -4.6),
+        'BATLEAD': dict(path=[(14.5, 1.45, 3.3), (14.2, 1.5, 2.2), (12.4, 1.8, 0.7), (10.7, 2.1, -1.6), (10.45, 2.3, -4.6),
                               (10.3, BATTERY['yMid'] - 5.03, BATTERY['z1'] + 2.17), (10.2, BATTERY['yMid'] - 5.03, BATTERY['z1'] + 0.17)],
                         mats=['wire_red', 'wire_white', 'wire_black']),
         # J3 (opening to the left, F30): the plug's tail at the board's left edge (layout x -19.1); the lead heads for the

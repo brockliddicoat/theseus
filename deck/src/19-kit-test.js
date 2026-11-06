@@ -257,3 +257,39 @@ S({ id: 'kit_verdict', ch: 'own', theme: 'paper', title: 'verdict', settle: 4, d
   verdict(t, 0.8, 1000, 800, { from: 19.5, to: 0, unit: '°', dec: 1, size: 110, label: 'Bend line, off square', better: 'lower', who: ['Most mice', 'Theseus'] });
   verdict(t, 1.0, 1840, 960, { from: 1.0, to: 2.4, unit: '×', dec: 1, size: 80, label: 'Load before it bends', better: 'higher', who: ['Most mice', 'Theseus'], align: 'right' });
 } });
+
+/* ---------- 14. the heat key (M's convention) with the shared F41.1 rule: a strip pressed until it breaks ---------- */
+/** a Warren truss strip, 60 mm, 5 bays of 12 mm, PP-C-20A ribs 10 × 1.0 mm, rigid joints, pinned left, roller right,
+   10 N on the middle top node (screen y down) */
+function kx_truss() {
+  return simSolve('kx-truss', () => {
+    const M = SIM_MAT.ppcf, n = 5, a = 12, hh = a * Math.sqrt(3) / 2, nodes = [], els = [], sec = { w: 10, h: 1.0, E: M.E, rho: M.rho };
+    for (let i = 0; i <= n; i++) nodes.push([i * a, 0]);
+    for (let i = 0; i < n; i++) nodes.push([i * a + a / 2, -hh]);
+    const top = i => n + 1 + i;
+    for (let i = 0; i < n; i++) { els.push(Object.assign({ i, j: i + 1 }, sec)); els.push(Object.assign({ i, j: top(i) }, sec)); els.push(Object.assign({ i: top(i), j: i + 1 }, sec)); if (i < n - 1) els.push(Object.assign({ i: top(i), j: top(i + 1) }, sec)); }
+    return { nodes, els, fix: { 0: 'xy', [n]: 'y' }, loads: { [top(2)]: [0, 10, 0] } };
+  });
+}
+[['night', 'n'], ['paper', 'p']].forEach(([th, sfx]) => {
+  S({ id: 'kit_heat_' + sfx, ch: 'shell', theme: th, title: 'heatKey', settle: 4, draw: t => {
+    header(t, 'The heat key: share of strength used');
+    const r = kx_truss(), u = feUse(r), Nb = feBreakAt(r, 10), kL = Nb / 10 * ep(t, 0.4, 3.0, E.io3), s = 13;
+    const panel = (x0, byUse) => {
+      const P = ([x, y]) => [x0 + x * s, 640 + y * s];
+      const g = byUse ? 2 : 1, smax = byUse ? 1 : Math.max(...r.sig) * Nb / 10;
+      const rr2 = Object.assign({}, r, { sig: byUse ? u.map(v => Math.pow(v * Math.max(kL, 1e-6), g) / Math.max(kL, 1e-6)) : r.sig });
+      feDraw(rr2, P, { load: kL, smax, scale: 4, w: s * 0.9, seg: 8 });
+      feSupport(P([0, 0]), 'pin'); feSupport(P([60, 0]), 'roller');
+      const tip = P([30, -10.39]); forceArrow(tip[0], tip[1] - 6, Math.PI / 2, 110, { N: 10 * kL, label: kL >= Nb / 10 - 1e-3 ? 'it breaks' : 'pressed', color: C.ink, k: Math.min(1, kL * 2) });
+      return P;
+    };
+    panel(140, true); panel(1040, false);
+    text('Coloured by the share of its strength used (feUse), squared', 140, 330, { role: 'label', size: 20, color: C.mute });
+    text('The same frame coloured by stress, MPa', 1040, 330, { role: 'label', size: 20, color: C.mute });
+    heatKey(t, 0.2, 140, 800, 300, { gamma: 2 });   /* SHL_GAMMA in the film (10-d-shell.js is not on this page) */
+    heatKey(t, 0.2, 1040, 800, 300, { mode: 'mpa', max: +(Math.max(...r.sig) * Nb / 10).toFixed(0) });
+    heatKey(t, 0.2, 1420, 800, 300, { mode: 'peak' });
+    source(t, 'Kit test. 2D frame, PP-C-20A ribs 10 × 1.0 mm; breaks (feBreakAt, F41.1: 120 MPa stretched, 207 bent) at ' + fmtN(Nb, 1) + ' N. Flex drawn 4×.', { t0: 0.3 });
+  } });
+});

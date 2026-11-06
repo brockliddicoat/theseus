@@ -207,5 +207,49 @@ which).
   use the tokens (C.bg, C.panel, C.ink, C.mute, C.faint, C.hair, C.track, C.comp) and never a warm hex.
 - **Frame one.** header() now sets the label and title at t = 0; your subject must be on screen at t = 0 too.
 - **The player** (F0b, finished): 2D only, smooth transitions (dissolve on the same ground, a wipe between paper and
-  night, a pass through black into a chapter card), autoplay holds by text length, `?clip=<id>` and tools/clip.js for MP4
+  night; a chapter change is a camera flight across the simplified mouse from the last chapter's part into the chapter card, F40.2, F0c), autoplay holds of 2 to 6 s by reading load (F40.1), `?clip=<id>` and tools/clip.js for MP4
   clips. Screenshots now start at the true top of the stage (the page's 8 px margin is gone).
+
+## Added 10:15 (integrator): the film is complete in its first pass; what holds now
+- All 104 slides are new; builders have finished and polish agents own their files (/home/claude/work/POLISH.md).
+- In-chapter hand-offs (M9) can now be exact: `handoff: { out: d }` on a slide and `handoff: { in: d }` on the next, d = the
+  mouseFit / establish call as made ({ view, box, pad, focus }); the player moves (and turns) the one mouse between them in
+  1.0 s, and falls back to the usual dissolve when the declarations don't match what is drawn (F0c, DESIGN §7).
+- Design questions to Brock come with a picture (F44.1). Decisions since 09:00: FEEDBACK F40 to F45 and the broadcasts
+  BROADCAST-0930.md, BROADCAST-0945.md in /home/claude/work.
+
+## Added 11:20 (K, the shared-code maintainer): the conventions decided today, in one place
+Decided this morning by Brock, the integrator and the model auditor (BROADCAST-0930 and -0945, review/FILM.md,
+models/MODELS-AUDIT.md). Follow them on every slide; the kit enforces what it can (KIT.md §2).
+- **The verdict's grammar** (FILM F8, F15): the struck grey value is always the rival's (or most mice's, or an old
+  design's), the blue one Theseus's. Never strike Theseus's own alternative: show an internal contrast (one direction
+  against the map, the first layout against plan 5, an air-cured against a baked coat) as two plain stats, each named.
+- **Click weights in gf** (FILM F3): every Clicks slide that claims "the same click wherever you press" uses one verdict,
+  "Click force spread across the button (lower is better)", in gf; newtons only in small print where a physics step needs
+  them (the GT01: 55 gf = 0.54 N, `SCALE.click`).
+- **The hard press** (BROADCAST-0945 §3): no measurement of grip or press force during gaming exists. Measured at a desk: a
+  squeeze of 0.4 to 1 N on average, peaks about 2 N (Johnson 2000; Won 2009); a resting hand weighs about 4.4 N (0.61 % of
+  body mass, de Leva 1996). The shell chapters' 10 N is "a hard press" ("10 N, a hard press: a 1 kg bag of sugar, about
+  five times the hardest grip measured at a desk"), never "a firm press" or "typical"; a resting palm is 4.4 N; "the hardest
+  a hand can squeeze" needs a source or goes.
+- **One test strip for the shell chapters** (FILM F4): b05 and b06 use b06's `B06_STRIP` (30-b06-lattice.js: 60 mm across
+  the top of a 62.5 mm-wide mouse, 5 cells of 12 mm, PP-C-20A, 10 N on a 10 mm pad) unless a slide's point needs another
+  specimen, and then it says why. Strength by F41.1's two strengths, 120 MPa stretched and 207 MPa bent (`feUse`,
+  `feBreakAt` in 07-sim.js), so the numbers chain from slide to slide.
+- **The board's colours** (M, 09:08): Theseus's board, in every view, is black solder mask with gold (ENIG) pads and trim;
+  a rival's board is grey (`C.comp`; `pcbSec(..., { rival: true })`), in its real colour only where its teardown is the
+  point, sourced; never green by default. Bought-in parts keep their own look (the battery's protection board, the radio
+  module, the sensor module).
+- **One value per material** (M): every material property comes from `SIM_MAT` (07-sim.js; `matOf(key)` in GPa and
+  g/cm³), never a private copy. FR4 has two directions: the board's models take the lower (18 GPa across the weave), a
+  slide that ranks FR4 as a material the higher (20 GPa along it), and says which. Magnesium is MatWeb's AZ91D-F, 44.8 GPa.
+- **Units**: a space before % and before every unit ("17.6 %", "0.54 N"); only ° (an angle) and × (a factor) attach
+  ("19.5°", "2.3×"), as the SI Brochure has it (§5.4.3, §5.4.7). `verdict` does it; write your own strings the same way.
+- **Rivals** (FILM F9): any mouse that isn't Theseus is drawn with the kit's `mouseRival` (grey; yellow only for the one
+  rival a slide names and beats), never with `mouseSimple`, which is Theseus alone.
+- **The heat key** (F19.3): every slide that colours parts by heat draws `heatKey` beside them; where the slide talks
+  about breaking, colour by the share of strength used (`feUse`), not MPa.
+- Also decided (see the broadcasts for the details): the optical switches take 13.6 % of a Viper V4 Pro's battery
+  (derived, Logitech's hours), so Theseus gains +15 % (switches) and +23 % (with the magnetic wheel); the V4 Pro at 8 khz
+  is Razer's 45 h; the UltralightX is named as one model with that model's price, weight and fault; "most mice" only with
+  a source or a count (FILM F20); a chapter card's first frame shows its name and compromise (FILM F12, now the kit's).

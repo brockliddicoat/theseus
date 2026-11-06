@@ -22,6 +22,7 @@ import deps  # noqa: F401
 import board as BD
 import parts as PT
 from layout import ANT_KEEPOUT
+from board_geo import T as BOARD_T            # the finished thickness (F47.4: 0.6 mm, H3)
 
 lay = json.load(open(os.path.join(R3, 'pcb', 'pcb-layout.json')))
 DZ = lay.get('boardOffsetZ_in_mouse', -2.88)
@@ -48,7 +49,9 @@ def mirrored(poly):
 ol = BD.theseus_outline()
 pts = [K(x, z) for x, z in mirrored(ol)]
 xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-board = dict(anchor=K(0, 0), box=[min(xs), min(ys), max(xs), max(ys)], pts=pts,
+# t: the finished thickness (board_geo.T); top: its top face over the pad in the mouse (pcb-layout.json: the shell's posts,
+# the switches and the wheel's axle are set from it, so a thinner board keeps its top and brings its underside up)
+board = dict(anchor=K(0, 0), t=r2(BOARD_T), top=r2(lay.get('boardTopY_in_mouse', 5.03)), box=[min(xs), min(ys), max(xs), max(ys)], pts=pts,
              holes=[K(v[0], v[1]) + [v[2] / 2] for k, v in sorted(BD.SORA_HOLES.items())],
              bay=[K(x, z) for x, z in mirrored(BD.wheel_cut_poly())])
 # the parts on it
