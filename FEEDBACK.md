@@ -47,9 +47,9 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 12:38 (Chicago): F53 (~12:30, 12:34) logged with the sheet he answered on. (12:22: F52, F40.4's
-measure. 12:08: frames for the older entries, F9 to F31 and F27. 11:55: F51. 11:38: the missing messages, frames and
-attachments for F39 to F49, overruled items marked, F50.1.)
+Last updated: 2026-11-06 13:18 (Chicago): F57 (~13:10) logged with L1's frames. (13:14: F56. 12:58: F54, F55. 12:38:
+F53. 12:22: F52, F40.4's measure. 12:08: frames for the older entries, F9 to F31 and F27. 11:55: F51. 11:38: the missing
+messages, frames and attachments for F39 to F49, overruled items marked, F50.1.)
 
 ## F34, F35. Brock's own steering given to Codex on 2026-11-05 (carried over; Codex's work itself is set aside, F38.4)
 On 2026-11-05, out of Claude usage, Brock had Codex continue from this branch. On 2026-11-06 he called its output "very
@@ -171,7 +171,7 @@ Frames: feedback/frames/F42/ (the budget with the board at 5.6 g, and the batter
   wheel's encoder and bracket, which the budget doesn't list. His answer: **"Keep 5.6 g as target"**: the film stays at
   29.31 g and calls the board's figure a target; the board gets built to it (thinner laminate, fewer layers, a lighter
   encoder). **TODO:** slides that print 5.6 g say "target"; the hardware brief carries it. The path to it: F47.4 (0.6 mm,
-  two layers, 5.63 g).
+  two layers, 5.63 g). **The 5.6 g target SUPERSEDED by F56.1:** the board as built, 5.68 g, accepted.
 - Decided by the integrator from H1's report (no question needed): variant B's edge switch on the top side (one soldering
   pass, as the film's "one board, one side, one reflow" claims); the GT01's walls stay 0.70 mm (measured off Gateron's
   render); the bottom plate's lattice waits until the bottom cover is revisited (it is out of the film).
@@ -194,7 +194,8 @@ profile on b01_lighter, the simplified mouse on b11_repair).
   no stretch, in 3D or 2D) until a better model can make the change; 39.9 mm is only the stated height.
 - **F43.4** "run a simulation to determine the perfect lattice and lattice beam dimension and filet size for the mouse and
   explain how that conclusion was arrived at in the presentation". **TODO (L1):** the study, and a shell-chapter slide that
-  shows how the answer was reached.
+  shows how the answer was reached. Since then: the skin 0.60 mm, to be proven (F52.3); ribs 1.80 mm deep, cut steel-safe
+  (F57.2); the pattern still open (F57.1).
 - **F43.5** "i feel like the simplified mouse design you’re using in some places is a little too simple, i still need to be
   able to see things like the lattice and the creases above the scroll wheel the sora v2 has": the simplified mouse keeps
   the lattice and the creases above the wheel (from the scan). **TODO (S1).**
@@ -257,7 +258,8 @@ attachments/F46/). Frames: feedback/frames/F47/ (b07_board and b10_board as live
   no drop claim.
 - **F47.4 DECIDED** The board's path to its 5.6 g target: **"0.6 mm, 5.63 g"**: a 0.6 mm, two-layer board, half-ounce outer
   copper, a lighter encoder (its nickel-silver frame dropped) and a cored support; it keeps 22 % of the 1.0 mm board's
-  bending stiffness, so the shell slides that use the board as a tie re-derive with it. **TODO (H3, P4, P1).**
+  bending stiffness, so the shell slides that use the board as a tie re-derive with it. **TODO (H3, P4, P1).** **The
+  5.63 g SUPERSEDED by F56.1:** built, it weighs 5.68 g, accepted as is.
 - **F47.5 DECIDED** Stock wheels: **"Show the two found"** (OP1 1.8 g, Viper V2 Pro 1.5 g, both sellers' figures; PMM 1.0 g;
   Theseus 0.9 g). **TODO (P2).**
 - Simplified mouse detail (S1's sheet, section 4): not answered directly; built "as shown" (creases and lattice on full-size
@@ -342,14 +344,58 @@ what he saw.
 - **F53.1** (~12:30) The cutout's front (one arch to the nose tip, recommended, or the lip kept nearly flat and eased into):
   typed, neither option: "it needs to properly connect completely". Reading: neither drawing joins the cutout to the front
   properly; the line must connect into the nose completely, nothing stopping short or left hanging. Refines F51.1.
-  **TODO (S2):** shown to him again.
+  **TODO (S2):** shown to him again. Still open after F54.1 (both of the next options rejected too).
 - **F53.2 OVERRULED by F53.3** (~12:30) The rim (the tail-tip-to-nose straight line with a top-view trim of up to 0.6 mm
   round the tail, or the tail widened to keep the outline): clicked **"Widen the tail"**, by accident (F53.3).
 - **F53.3 DECIDED** (12:34) "i accidentally hit the wrong but on the last question, i was typing a new answer" / "i was
   saying the bottom rim line needs to be at ~2 degrees, prioritizing matching as much in the front and middle as possible
   instead of the back". Reading: "Widen the tail" is void; the rim's crease is one straight line at about 2°, fitted to the
   scan's crease over the front and middle, letting the back depart from it (not the tail-tip-to-nose chord S2 drew).
-  Refines F51.2. **TODO (S2).**
+  Refines F51.2. **TODO (S2).** **"~2 degrees" SUPERSEDED by F55.1:** 1.75°.
+
+## F54. The nose seam, the finger on the bridges, the targets' press time (2026-11-06 ~12:40, answers)
+Answers to the integrator's questions, each asked on a picture. Attachments: feedback/attachments/F54/ (S2's 12:21 sheet,
+FG's question sheet, P3's targets row). No frames: the pictures are what he saw.
+- **F54.1** The nose seam (S2's sheet: C, one smooth run-out into the flat lip, or B, the arch to the nose tip, which needs
+  a nose redesign?): typed: "i can’t tell, but both the options you presented in that image aren’t anywhere near good
+  enough". Reading: neither; the front stays open (F51.1, F53.1) and needs a better proposal. **TODO (S2).**
+- **F54.2 DECIDED** The finger on the shell's lattice slides (FG's Q1: to scale, to scale and see-through, or smaller as
+  b06 drew it): **"To scale (Recommended)"**.
+- **F54.3 DECIDED** The finger seen end-on (FG's Q2: square to the viewer, or turned 13° so its side and nail show):
+  **"Turned 13° (Recommended)"**.
+- **F54.4 DECIDED** The targets' press-to-PC time (P3's row: the Starlight X's magnetic 2.0 ms, the OP1 8K V2's 5.7 ms, the
+  Viper V4 Pro's 7.5 ms): **"Under 4.2 ms, derived (Recommended)"**. (His F27 note on `targets`: "press to pc should be
+  shorter".)
+
+## F55. The rim's angle, PixArt's warning, the compromise count, the EMG ending (2026-11-06 ~12:50, answers)
+Answers to the integrator's questions, each asked on a picture. Attachments: feedback/attachments/F55/ (S2's 12:40 sheet,
+P3's two pictures, P4's b07_emg frame). No frames: the pictures are what he saw.
+- **F55.1 DECIDED** The rim's crease angle (S2's sheet: 2.0°, recommended, or 1.75°, closer to the scan over the front and
+  middle): **"1.75°"**. Refines F53.3. **TODO (S2).**
+- **F55.2 DECIDED** PixArt's warning on b04_module (a lens on the base plate, moved by the clicks, against Theseus's lens
+  clipped to the board): **"Keep as is (Recommended)"**.
+- **F55.3 DECIDED** The compromise count on the cover and the close: **"Eight, per chapter (Recommended)"**.
+- **F55.4 NOTED** b07_emg's ending (keep the rule, a target verdict, or a measured stat): typed: "i have no idea what you’re
+  asking here". Reading: the question wasn't clear to him, even with the slide shown; the integrator kept the default (the
+  rule stays). A question for him needs its choices drawn, not only named (F44.1).
+
+## F56. The board's weight, as built (2026-11-06 ~13:05, answer)
+Attachments: feedback/attachments/F56/ (H3's sheet "Where the last 0.08 g could come from"). No frames: the sheet is what he
+saw.
+- **F56.1 DECIDED** The 0.6 mm two-layer board as built weighs 5.68 g, against F47.4's 5.63 g and F42.2's 5.60 g target; H3's
+  sheet drew the cuts that could close the gap (the encoder's housing walls, the Hall IC's small board, the support's walls,
+  foot and seat; a 0.5 mm board; not the Hall IC on the main board, which doesn't work): **"Accept 5.68 g
+  (Recommended)"**. Reading: the board is 5.68 g as built, with none of the cuts. **TODO:** the budget's board line and
+  the slides that print the board's weight (the integrator, H3).
+
+## F57. The lattice study: the pattern and the rib depth (2026-11-06 ~13:10, answers)
+Asked on L1's frames of b12_latopt and b12_ribs. Attachments: feedback/attachments/F57/ (both frames). No other frames: the
+pictures are what he saw.
+- **F57.1** The lattice pattern (b12_latopt: woven kagome, recommended; squares; true triangles): typed: "show kagome and
+  true triangles". Reading: show him the two side by side before he picks (the integrator's reading; a picture is being
+  made). Open. **TODO (L1).**
+- **F57.2 DECIDED** The rib depth (b12_ribs: 1.80 mm cut steel-safe, 1.80 mm as is, or 1.08 mm): **"1.80, cut steel-safe
+  (Recommended)"**.
 
 ## Open with Brock
 
@@ -501,7 +547,7 @@ what he saw.
     in other slides"): its figures went to the cover (density, as he suggested) and b01_budget.
 - **F2.29 DONE** (shared code, 3D, and `elc_oneside`: one board, one side, one reflow, 5.6 g) "we don't have a front and back pcb," / "it'll be a
   single ~5.6g pcb."
-  - Shared constant: THS.pcb. Since F42.2 the 5.6 g is a target, met by the 0.6 mm board (F47.4).
+  - Shared constant: THS.pcb. Since F42.2 the 5.6 g was a target; the 0.6 mm board as built, 5.68 g, is accepted (F56.1).
 - **F2.30 DONE** "the price for the mouse is $189"
   - Shared constant: THS.price.
 - **F2.31 OVERRIDDEN by F7.10** "the main accent color could be red first, before yellow"

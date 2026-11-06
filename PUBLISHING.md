@@ -16,5 +16,5 @@
 
 ## Brock's main account
 - Main deck: slug 53c9f24b-6151-4df2-bb06-2f0f168fdc8b (https://claude.ai/artifact/BM6ym7q1adWFaNP6u5cTQv), published from
-  deck/dist/main.html as index.html. Republish with publish_files + slug + base_version (last: 1793716369-34d8, v1 new
-  design system). Not reachable from the account above: update it from a session on that account, with the same files.
+  deck/dist/main.html as index.html. Republish with publish_files + slug + base_version (last: 1793991510-57ae, 2026-11-06 12:58 Chicago, the 12:53
+  revamp build, 107 slides; history 1793981126-8865 at 10:05, 1793716369-34d8 v1 new design system). Not reachable from the account above: update it from a session on that account, with the same files.
