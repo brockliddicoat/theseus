@@ -417,9 +417,9 @@ S({
   id: 'b03_switch', ch: 'click', theme: 'paper', title: 'A mechanical switch, for the battery', settle: 12, ideas: [78],
   replaces: ['clk_switch'], src: ['b03_gpx2Hours', 'b03_d2fp', 'clk_razerV4bat', 'clk_vortexV4', 'b03_razerStaff', 'b03_logiHybrid', 'b03_eloSwitches', 'clk_gt01', 'clk_gateronRender'],
   answers: [
-    ['bottom housing doesn\'t look very accurate at all, i\'ll attach a new reference when you ask', 'Drawn with the shared clk_gt01MM, traced from the Gateron render you sent as the best reference (F28.1); H1 is making its walls one straight 0.70 mm wall, and that lands here as it lands'],
+    ['bottom housing doesn\'t look very accurate at all, i\'ll attach a new reference when you ask', 'Drawn with the shared clk_gt01MM, traced from the Gateron render you sent as the best reference (F28.1), with H1\'s straight 0.70 mm walls (F30.24), now landed'],
     ['show the effect on battery life', 'The slide is that demonstration: the optical switch\'s LED flashing on a current trace whether pressed or not, against the GT01\'s contact with nothing to light, then a Viper V4 Pro\'s draw with its two switches\' share: 13.6 % → 0.4 % (Logitech\'s own hours; up to 17.6 % by Omron\'s pulse), so the same battery lasts 15 % longer'],
-    ['razer says their optical encoder and switched account for almost half the battery life in the viper v4 pro (find quote)', 'Searched again: no public quote (Razer\'s pages and blog, Razer Insider, reviews). On screen as Razer staff\'s claim via you (F31.1), beside Logitech\'s own support page saying its optical-only mode "can reduce battery life"'],
+    ['razer says their optical encoder and switched account for almost half the battery life in the viper v4 pro (find quote)', 'Searched again: no public quote (Razer\'s pages and blog, Razer Insider, reviews). On screen as Razer staff\'s claim via you (F31.1), under Logitech\'s own support page, also on screen: its optical-only mode "can reduce battery life"'],
     ['also i\'d like to switch to using a hall effect / magnetic encoder', 'The wheel is magnetic deck-wide; this slide hands on to Electronics: "nothing in Theseus lights up but the sensor"'],
     ['so we can say we should have double the battery life efficiency as razer', 'Not said as 2×: the film\'s own derivation for switches and wheel is +23 % (b10_lights), so the slide shows +15 % for the two switches (from Logitech\'s own 96 h vs 104 h; Omron\'s pulse would say up to 17.6 %), and Razer staff\'s "almost half" as their claim, higher still. A question for you in the report']
   ],
@@ -517,9 +517,11 @@ S({
     /* what the makers say: Logitech's own page, and Razer staff via Brock */
     const km = ep(t, T.makers, T.makers + 0.4), km2 = ep(t, T.makers + 0.4, T.makers + 0.8);
     if (km > 0.003) {
-      text('The same, other ways', RX, 792, { role: 'label', size: 20, color: C.mute, alpha: km });
-      text('By Omron\'s datasheet pulse: up to ' + b03_floor(B03.omronShare * 100, 1) + ' %', RX, 830, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: RW, lh: 1.3, alpha: km });
-      text('Razer staff, via Brock, put it higher still: switches and wheel take "almost half"', RX, 878, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: RW, lh: 1.3, alpha: km2 });
+      text('The same, other ways', RX, 782, { role: 'label', size: 20, color: C.mute, alpha: km });
+      text('By Omron\'s datasheet pulse: up to ' + b03_floor(B03.omronShare * 100, 1) + ' %', RX, 816, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: RW, lh: 1.3, alpha: km });
+      /* the maker's own words (A1: the answer cited them; now on screen): Logitech's support page on its optical-only mode */
+      text('Logitech\'s own page: optical-only mode "can reduce battery life"', RX, 852, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: RW, lh: 1.3, alpha: ep(t, T.makers + 0.2, T.makers + 0.6) });
+      text('Razer staff, via Brock, put it higher still: switches and wheel take "almost half"', RX, 920, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: RW, lh: 1.3, alpha: km2 });
     }
     text('Derived from Logitech\'s GPX2 (TechPowerUp): 96 h with its switches\' light always on, 104 h without, 1 khz, on a V4 Pro\'s 306 mAh over 180 h; mechanical read by strobing, 3 µA', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, T.verdict + 1.0, T.verdict + 1.4), maxW: RM - LM });
   }
@@ -898,7 +900,7 @@ S({
         rr(swx - 18, by + 10, 36, 15, 3, TH ? '#2C2D32' : '#0E0E10', null, 0, kd);
         let fl = 0; for (const c of D.closes) { const u = t - (T.draw + T.drawDur * c / D.span); if (u >= 0 && u < 0.18) fl = Math.max(fl, 1 - u / 0.18); }
         if (fl > 0.01) circle(swx, by + 17, 14 + 10 * (1 - fl), { color: C.ink2, w: 2, alpha: kd * fl });
-        finger(fx, by, 0.16, { s: 2.2, press: 1, view: 'side', alpha: kd });
+        finger(fx, by, 0.16, { s: 2.2, surf: 0, press: 1, view: 'side', alpha: kd });   /* surf: the pad lies on the level button (F52.1) */
         text('Dragged along the button', bx0 - 16, by + 4, { role: 'small', size: 20, weight: 600, color: C.mute, align: 'right', alpha: kd });
       } }
     /* what the reader counts: single throw, a window of w after each counted closing; Theseus, once, as NC opens */
@@ -1104,7 +1106,7 @@ S({
       const riv = t < T.wipe, o = riv ? hinge : rail, yS = -B03_SIDE.L / 2 + spot.s, fp = o.face ? o.face(yS) : null;
       if (fp) {
         const ia = ep(t, pr.t0 - 0.35, pr.t0 - 0.05) * (1 - ep(t, pr.t0 + 0.8, pr.t0 + 1.0));
-        clipped(box[0], box[1], box[2], box[3], () => finger(fp[0], fp[1], -Math.PI / 2, { s: est.s, press: pr.d, alpha: ia * 0.96, len: 40 }));
+        clipped(box[0], box[1], box[2], box[3], () => finger(fp[0], fp[1], -Math.PI / 2, { s: est.s, digit: 'thumb', press: pr.d, alpha: ia * 0.96, len: 40 }));
         const gf = riv ? b03_hingeGf(spot.s) : b03_tiedGf(spot.s);
         forceArrow(fp[0] - 4, fp[1], 0, 60 + 1.2 * gf, { label: gf + ' gf', k: clamp(pr.d / 0.82) * ia, color: riv ? (gf > 100 ? C.red : C.ink) : C.hero, side: 'end' });
       }
@@ -1138,21 +1140,25 @@ S({
         if (rail.pocket) callout(t, T.wipe + 1.6, rail.pocket, 'Held by the shell: no side board', Object.assign({ to: [lx, ly(0)], color: C.ink2, tcolor: C.ink }, C2));
         if (rail.swBody) callout(t, T.wipe + 1.3, rail.swBody, 'Full-size SPDT switch', Object.assign({ to: [lx, ly(1) + 30], color: C.ink2, tcolor: C.ink }, C2));
         if (rail.post) fixTag(t, T.wipe + 1.0, rail.post, 'Two posts on POM pads', Object.assign({ to: [lx, ly(3) + 14], elbow: rail.post[0], sub: 'as the main buttons; the guides are the stop', scolor: C.mute }, C2, { maxW: 300 }));
-        if (rail.wireTop) fixTag(t, T.wipe + 1.9, rail.wireTop, 'Stabiliser wire', { to: [478, 536], side: 'l', sub: 'and its two pivot clips', scolor: C.mute });
+        /* the wire named in ink, as the other parts are, and centred between the readouts, so it doesn't read as one unit with a
+           blue "59 gf" (A1) */
+        if (rail.wireTop) callout(t, T.wipe + 1.9, rail.wireTop, 'Stabiliser wire', { to: [478, 552], side: 'l', color: C.ink2, tcolor: C.ink, sub: 'ties the two posts', scolor: C.mute });
       }
     }
     /* the classroom version, beside the rival's presses: a door is the same lever */
     const kc = 1 - ep(t, T.wipe + 0.3, T.wipe + 0.8);
     if (t > 0.9 && kc > 0.003) {
       G.save(); G.globalAlpha = kc;
-      const r = demoPanel(t, 0.9, [RX, 260, RW, 330], { src: 'OpenStax §10.6' });
+      /* "Classroom" (not the kit's longer label) so the heading clears its source; the door 30 px lower, so its force arrow (up
+         to 104 px, at the hinge) starts under the heading (A1: it ran through it) */
+      const r = demoPanel(t, 0.9, [RX, 260, RW, 350], { label: 'Classroom', src: 'OpenStax §10.6' });
       const dpr = t < T.wipe ? press(T.rival) : null, dsp = dpr ? B03_SPOTS[dpr.i] : null;
-      const door = part(r[0] + 34, r[1] + 70, 4.6, () => b03_doorMM({ swing: dpr ? dpr.d : 0 }), { alpha: ep(t, 1.1, 1.5) });
+      const door = part(r[0] + 34, r[1] + 100, 4.6, () => b03_doorMM({ swing: dpr ? dpr.d : 0 }), { alpha: ep(t, 1.1, 1.5) });
       if (dsp && door.M) {
         const pa = SPm(door.M, 80 * dsp.s / B03.btnL, -1.6), N = b03_hingeGf(dsp.s) * 9.80665e-3, ia = 1 - ep(t, dpr.t0 + 0.8, dpr.t0 + 1.0);
         forceArrow(pa[0], pa[1], Math.PI / 2, 30 + 46 * N, { k: clamp(dpr.d / 0.82) * ia, color: N > 1 ? C.red : C.ink, w: 3, hs: 11 });
       }
-      text('Push a door near its hinge and it takes far more force than at the handle. A hinged button is the same lever.', r[0], r[1] + 158, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: r[2], alpha: ep(t, 1.4, 1.8), lh: 1.3 });
+      text('Push a door near its hinge and it takes far more force than at the handle. A hinged button is the same lever.', r[0], r[1] + 192, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: r[2], alpha: ep(t, 1.4, 1.8), lh: 1.3 });
       G.restore();
     }
     /* the verdict: how much more force the heaviest spot takes than the lightest */

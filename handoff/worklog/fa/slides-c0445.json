@@ -1,0 +1,738 @@
+[
+ {
+  "i": 0,
+  "id": "cover",
+  "ch": "intro",
+  "title": "Theseus: in pursuit of an objectively better mouse",
+  "settle": 8,
+  "replaces": null
+ },
+ {
+  "i": 1,
+  "id": "thesis",
+  "ch": "intro",
+  "title": "Optimization over opinion",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 2,
+  "id": "targets",
+  "ch": "intro",
+  "title": "The bar, part one: speed",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 3,
+  "id": "targets2",
+  "ch": "intro",
+  "title": "The bar, part two: everything else",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 4,
+  "id": "flagships",
+  "ch": "intro",
+  "title": "Theseus against the flagships",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 5,
+  "id": "zerograms",
+  "ch": "intro",
+  "title": "The optimal weight is zero grams",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 6,
+  "id": "weightgap",
+  "ch": "intro",
+  "title": "Listed against weighed",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 7,
+  "id": "pricefront",
+  "ch": "intro",
+  "title": "What a gram costs",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 8,
+  "id": "market",
+  "ch": "intro",
+  "title": "The empty corner",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 9,
+  "id": "budget",
+  "ch": "intro",
+  "title": "29 g: the decision",
+  "settle": 11,
+  "replaces": null
+ },
+ {
+  "i": 10,
+  "id": "map",
+  "ch": "intro",
+  "title": "Seven areas, each down to the part",
+  "settle": 8,
+  "replaces": null
+ },
+ {
+  "i": 11,
+  "id": "clicks",
+  "ch": "click",
+  "title": "Clicks",
+  "settle": 6,
+  "replaces": null
+ },
+ {
+  "i": 12,
+  "id": "arc",
+  "ch": "click",
+  "title": "Push the switch along its own axis",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 13,
+  "id": "clk_switch",
+  "ch": "click",
+  "title": "A mechanical switch, pushed straight",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 14,
+  "id": "cutouts",
+  "ch": "click",
+  "title": "Cut the rear cutouts straight",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 15,
+  "id": "clk_front",
+  "ch": "click",
+  "title": "Flat and flush at the front",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 16,
+  "id": "anchors",
+  "ch": "click",
+  "title": "Two anchors per trigger",
+  "settle": 11,
+  "replaces": null
+ },
+ {
+  "i": 17,
+  "id": "tensioner",
+  "ch": "click",
+  "title": "Decide where the tensioner bends",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 18,
+  "id": "clk_hotswap",
+  "ch": "click",
+  "title": "Swap a switch without solder",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 19,
+  "id": "latency",
+  "ch": "click",
+  "title": "Counted at first contact",
+  "settle": 11,
+  "replaces": null
+ },
+ {
+  "i": 20,
+  "id": "clk_wait",
+  "ch": "click",
+  "title": "A click should never wait for motion",
+  "settle": 11,
+  "replaces": null
+ },
+ {
+  "i": 21,
+  "id": "clk_methods",
+  "ch": "click",
+  "title": "Every click number has a method",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 22,
+  "id": "magbuttons",
+  "ch": "click",
+  "title": "A sensor under each main button",
+  "settle": 11,
+  "replaces": null
+ },
+ {
+  "i": 23,
+  "id": "sidebuttons",
+  "ch": "click",
+  "title": "Side buttons on rails",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 24,
+  "id": "glide",
+  "ch": "glide",
+  "title": "Glide and tracking",
+  "settle": 5,
+  "replaces": null
+ },
+ {
+  "i": 25,
+  "id": "gld_under",
+  "ch": "glide",
+  "title": "Under the mouse",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 26,
+  "id": "dots",
+  "ch": "glide",
+  "title": "Eight dots, half the pressure",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 27,
+  "id": "focus",
+  "ch": "glide",
+  "title": "The sensor's 0.4 mm window",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 28,
+  "id": "gld_sheet",
+  "ch": "glide",
+  "title": "Three details under the mouse",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 29,
+  "id": "sensor",
+  "ch": "glide",
+  "title": "What each sensor publishes",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 30,
+  "id": "gld_reports",
+  "ch": "glide",
+  "title": "Full reports, no smoothing",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 31,
+  "id": "gld_position",
+  "ch": "glide",
+  "title": "Where the sensor sits",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 32,
+  "id": "gld_soft",
+  "ch": "glide",
+  "title": "Set in the mouse",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 33,
+  "id": "shellcard",
+  "ch": "shell",
+  "title": "Shell and structure",
+  "settle": 6,
+  "replaces": null
+ },
+ {
+  "i": 34,
+  "id": "materials",
+  "ch": "shell",
+  "title": "Stiffness per gram, for a thin shell",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 35,
+  "id": "thinwall",
+  "ch": "shell",
+  "title": "A mold only goes so thin",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 36,
+  "id": "lattice",
+  "ch": "shell",
+  "title": "Triangles don't bend",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 37,
+  "id": "shlLattice3d",
+  "ch": "shell",
+  "title": "Triangles inside the real shell",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 38,
+  "id": "fillet",
+  "ch": "shell",
+  "title": "Round every corner of the lattice",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 39,
+  "id": "filletsize",
+  "ch": "shell",
+  "title": "How big the fillet should be",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 40,
+  "id": "arches",
+  "ch": "shell",
+  "title": "Triangles that form arches",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 41,
+  "id": "shlPcbRib",
+  "ch": "shell",
+  "title": "The board is a tie, not a beam",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 42,
+  "id": "shlStructs",
+  "ch": "shell",
+  "title": "Shell structures that ship",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 43,
+  "id": "tolerance",
+  "ch": "shell",
+  "title": "Fewer parts, tighter gaps",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 44,
+  "id": "sealed",
+  "ch": "shell",
+  "title": "A solid shell keeps the encoder clean",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 45,
+  "id": "shlGrams",
+  "ch": "shell",
+  "title": "What a solid shell weighs",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 46,
+  "id": "mass",
+  "ch": "shell",
+  "title": "Keep the mass low, near the fingers",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 47,
+  "id": "grind",
+  "ch": "shell",
+  "title": "Fix the grind instead of greasing it",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 48,
+  "id": "shlsheet1",
+  "ch": "shell",
+  "title": "Three shell details",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 49,
+  "id": "shlsheet2",
+  "ch": "shell",
+  "title": "Three more on the structure",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 50,
+  "id": "surfacecard",
+  "ch": "surface",
+  "title": "Surface and details",
+  "settle": 5,
+  "replaces": null
+ },
+ {
+  "i": 51,
+  "id": "coating",
+  "ch": "surface",
+  "title": "Bake the coating",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 52,
+  "id": "grip",
+  "ch": "surface",
+  "title": "Grip where the fingers lift",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 53,
+  "id": "srf_marks",
+  "ch": "surface",
+  "title": "Marks you see, not feel",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 54,
+  "id": "details",
+  "ch": "surface",
+  "title": "Engrave half as deep",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 55,
+  "id": "wheel",
+  "ch": "surface",
+  "title": "Magnesium, with a rover's tread",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 56,
+  "id": "srf_encoder",
+  "ch": "surface",
+  "title": "Count the steps with light",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 57,
+  "id": "eleccard",
+  "ch": "elec",
+  "title": "Electronics",
+  "settle": 5,
+  "replaces": null
+ },
+ {
+  "i": 58,
+  "id": "onechip",
+  "ch": "elec",
+  "title": "8 kHz from one chip",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 59,
+  "id": "elc_module",
+  "ch": "elec",
+  "title": "A radio module, pre-certified",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 60,
+  "id": "antenna",
+  "ch": "elec",
+  "title": "Keep carbon away from the antenna",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 61,
+  "id": "motion",
+  "ch": "elec",
+  "title": "The fastest mice, on one chart",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 62,
+  "id": "elc_rate",
+  "ch": "elec",
+  "title": "What a faster poll buys",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 63,
+  "id": "framesync",
+  "ch": "elec",
+  "title": "Capture each frame just in time",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 64,
+  "id": "secondshot",
+  "ch": "elec",
+  "title": "A spare copy of every report",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 65,
+  "id": "power",
+  "ch": "elec",
+  "title": "The polling tax",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 66,
+  "id": "syncpower",
+  "ch": "elec",
+  "title": "Sync saves battery, too",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 67,
+  "id": "elc_pmic",
+  "ch": "elec",
+  "title": "The PMIC: one chip runs the power",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 68,
+  "id": "elc_charge",
+  "ch": "elec",
+  "title": "Charge at the cell's limit",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 69,
+  "id": "elc_safe",
+  "ch": "elec",
+  "title": "A safer battery",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 70,
+  "id": "cells",
+  "ch": "elec",
+  "title": "The cell, per gram",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 71,
+  "id": "frontier",
+  "ch": "elec",
+  "title": "Past the frontier",
+  "settle": 11,
+  "replaces": null
+ },
+ {
+  "i": 72,
+  "id": "elc_oneside",
+  "ch": "elec",
+  "title": "One side, one reflow",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 73,
+  "id": "elecsheet1",
+  "ch": "elec",
+  "title": "Built not to fail",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 74,
+  "id": "cable",
+  "ch": "elec",
+  "title": "A cable you can play on",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 75,
+  "id": "dongle",
+  "ch": "elec",
+  "title": "A receiver that tells you things",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 76,
+  "id": "software",
+  "ch": "elec",
+  "title": "Software in a browser tab",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 77,
+  "id": "elc_sheet2",
+  "ch": "elec",
+  "title": "Three more from the electronics",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 78,
+  "id": "shapecard",
+  "ch": "shape",
+  "title": "shape",
+  "settle": 5,
+  "replaces": null
+ },
+ {
+  "i": 79,
+  "id": "grooves",
+  "ch": "shape",
+  "title": "curves that push the hand on, not off",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 80,
+  "id": "size",
+  "ch": "shape",
+  "title": "sized against real hands",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 81,
+  "id": "emg",
+  "ch": "shape",
+  "title": "measure the strain, then the shape",
+  "settle": 9,
+  "replaces": null
+ },
+ {
+  "i": 82,
+  "id": "owncard",
+  "ch": "own",
+  "title": "Ownership",
+  "settle": 6,
+  "replaces": null
+ },
+ {
+  "i": 83,
+  "id": "repair",
+  "ch": "own",
+  "title": "Made to be opened",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 84,
+  "id": "ownscrew",
+  "ch": "own",
+  "title": "One screw, any driver",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 85,
+  "id": "ownbatt",
+  "ch": "own",
+  "title": "A battery that unplugs",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 86,
+  "id": "ownboard",
+  "ch": "own",
+  "title": "The underside is on show",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 87,
+  "id": "box",
+  "ch": "own",
+  "title": "The box is the first thing they open",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 88,
+  "id": "serial",
+  "ch": "own",
+  "title": "A number that is yours",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 89,
+  "id": "ownsheet1",
+  "ch": "own",
+  "title": "Inside, and underneath",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 90,
+  "id": "ownsheet2",
+  "ch": "own",
+  "title": "Colour, a number, a cover",
+  "settle": 10,
+  "replaces": null
+ },
+ {
+  "i": 91,
+  "id": "close",
+  "ch": "end",
+  "title": "Close",
+  "settle": 9,
+  "replaces": null
+ }
+]

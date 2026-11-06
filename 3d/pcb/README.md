@@ -83,6 +83,7 @@ numbered callouts on what changed.
 | `pcb.js` | `buildPcb(opts) → THREE.Group` + state setters. Loads `pcb.glb` + `pcb-layout.json`. |
 | `pcb.glb` | All geometry, 145.9k triangles, 6.36 MB (2.06 MB with the deck's meshopt FILTER compression; H3, 0.6 mm two-layer build; `pcb-b.glb` variant B). Nodes carry `extras` (`kind`, `ref`, `layer`, `value`, `label`, `smd`) → `userData`. |
 | `pcb-layout.json` | Outline, antenna keep-out, component list (position, value, honesty label), every route and via, power-flow paths and nodes. Mouse frame (see below). |
+| `pcb-mass.json` | The board as built, in grams (`tools/mass.py`, H3): as built with the encoder and support 5.68, board and parts 5.01, bare 2.25, the target 5.6, the stiffness shares. The deck's `BOARD_G` reads it (deck/tools/geo2d/key_parts.py → `KEY_PARTS.board.g`). |
 | `test.html` | Standalone viewer (URL params below), sets `window.__ready`. |
 | `shots/` | Finals at 2× (paper `#f7f6f2` and night `#0d0e0f`); `top_transparent.png` has an alpha background for slides. |
 | `tools/` | Python generators: `board.py` (photo trace), `parts.py` (footprints + pin maps), `stackup.py` (thickness, layers, copper: H3), `routes.py` (hand routing), `autoroute.py` (grid router: `routes_auto.py` A, `routes_auto_b.py` B), `layout.py` (build + DRC), `gnd.py` (two-layer ground check), `board_geo.py` (pours, vias, mask relief, trim, inner layers), `silk.py` (silkscreen, bottom art, QR), `components.py` (3D parts), `power_paths.py`, `geom.py` (mesh + GLB writer), `build_pcb.py` (writes the GLB + JSON), `mass.py` (mass estimate), `compare.py` (Sora vs Theseus image), `render_finals.sh` / `shot.mjs` / `shot.sh` (renders). |
@@ -193,9 +194,11 @@ bench), so the user's left is on the right there.
   The one place that forced a change is the module's B3 (VDD 1.8 V): C10 and C11 moved apart (C11 0.5 mm left, C10 0.3 mm
   right) for one via site between them, the 1.8 V reaching B3 on the top. A plugged, capped via in B3's pad would leave
   them where they were; a question for Brock.
-- **The Mill-Max sockets.** The 3305's body is fixed (Ø1.473 × 2.667 below the flange): on the 0.6 mm board 0.4 mm more of
-  it stands below the underside; its tip stays where it was in the mouse (the board's top did not move). Whether the
-  press-fit holds in 0.6 mm of laminate is Mill-Max's to say; the model carries no minimum board thickness.
+- **The Mill-Max sockets.** The 3305's body is fixed (Ø1.473, 2.667 long, its flange 0.25 over the board): on the 0.6 mm
+  board 0.4 mm more of it stands below the underside (1.81 mm instead of 1.41); its tip stays where it was in the mouse
+  (the board's top did not move). It is soldered in (DigiKey lists the 3305 as "No Tail Solder"), so what changes is the
+  joint: 0.6 mm of plated barrel to solder to instead of 1.0, the joint that holds the socket when a switch is pulled
+  out. Mill-Max's minimum board thickness for it is not in the model; worth a line to them before the board is made.
 
 ## Components (all on the top side: one reflow pass)
 
@@ -289,12 +292,18 @@ path and writes it to `work/mass.json` (`target`: each step, the stiffness, the 
 **It lands at 5.68 g, not 5.63:** 0.08 g over the target, 0.05 g over Brock's figure. Steps 1, 2, 5 and 6 came in as
 estimated; the encoder and the support, drawn, weigh 0.475 and 0.202 g against the 0.45 and 0.16 estimated (the Hall IC
 keeps its small board, 0.066 g: on the main board it would sit ~10 mm from the magnet; the support's seat stays solid).
-The 0.08 g left is a question for Brock (the handoff's report, H3), not something the model hides.
+The 0.08 g left is a question for Brock (the handoff's report, H3), not something the model hides. Where it could come
+back, each the 3D builder re-run with the change (none applied): the encoder's housings 0.40 → 0.35 mm walls (−0.032 g),
+its sensor board 0.5 → 0.4 mm (−0.013), the support post's walls 0.55 → 0.45 mm (−0.011), its foot 2.4 → 1.8 mm tall
+(−0.013), its seat 0.6 mm shorter along the axle (−0.010). The first three bring it to 5.63 g, all five to 5.60; each
+thins a moulding that is already under general moulding guidance (micro-moulding). The Hall IC on the main board (the
+first estimate's assumption) would save 0.097 g but sits 12 mm from the magnet's centre, 0.3 to 0.6 mT against ~110 mT
+at 0.4 mm: not recommended. A 0.5 mm board would save 0.32 g at 12.5 % of the 1.0 mm board's bending stiffness.
 
 What it says: the thickness is the big lever (0.63 g per 0.2 mm); fewer layers barely help by weight at the same
 thickness; the encoder's frame was the heaviest single part to lose (0.50 g as drawn). The cost: **bending stiffness 21.6 %**
-of the 1.0 mm board's (in-plane 60 %), the USB pair's impedance, and the Mill-Max sockets' grip (see "Two layers: what it
-costs").
+of the 1.0 mm board's (in-plane 60 %), the USB pair's impedance, and the Mill-Max sockets' solder joints (see "Two layers:
+what it costs").
 
 ## Shots (`shots/`, 2×)
 

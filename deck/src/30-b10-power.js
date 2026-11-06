@@ -58,7 +58,10 @@ const B10 = (() => {
   /* the Viper V4 Pro's draw: its 1.184 Wh battery over Razer's 180 h at 1 khz and Razer's 45 h at 8 khz (claims, like for
      like with Theseus's derivation: the film's one 8 khz figure, BROADCAST-0930; TechPowerUp measured about 40 h, which
      the source lines keep as corroboration) */
-  const w1 = whV4 / 180, w8 = whV4 / 45, h1 = cell.wh / w1, h8 = cell.wh / w8;
+  const w1 = whV4 / 180, w8 = whV4 / 45, h1 = cell.wh / w1;
+  /* Theseus at 8 khz: the film's one figure (R3: b10_charge implied 52 h, b09_life prints 50): its 200 h target at 1 khz
+     scaled as the V4 Pro's 180 → 45 h, read from b09's B09L where it exists, so Electronics I and II can't drift */
+  const h8 = typeof B09L !== 'undefined' && B09L.ths && B09L.ths.h ? B09L.ths.h[3] : THESEUS.hours * 45 / 180;
   /* Li-ion in a steel can, mouse-sized (Brock, F27 cells: "look at smaller batteries"): two sellers' 10440s at 350 mAh */
   const cyl = [{ who: 'akkuteile', mAh: 350, g: 9, src: 'elc10440' }, { who: 'Keeppower', mAh: 350, g: 10, src: 'b10Keep10440' }]
     .map(c => Object.assign(c, { at: c.g * cell.mAh / c.mAh, whkg: c.mAh / 1000 * 3.6 / c.g * 1000 }));
@@ -124,11 +127,12 @@ function b10_ccv(c, s0 = 0.2) {
   B10_CCV.set(key, r); return r;
 }
 /** b10_charge's payoff: the hours of play at 8 khz that ten minutes of charge from 20 % buy, on the V4 Pro (0.55C) and on
-   Theseus (1C), both at the V4 Pro's 8 khz draw (B10.w8, Razer's 45 h). The true values (4.14 and 8.67 h), and the shown
-   ones rounded against Theseus (higher is better: the rival's up, Theseus's down, never in its favour): 4.2 → 8.6 h */
+   Theseus (1C): the share of a full charge each takes in, times its own battery's life at 8 khz: the V4 Pro's 45 h (Razer),
+   Theseus's 50 h (B10.h8, b09_life's figure: one value for the film). The true values (4.14 and 8.33 h), and the shown
+   ones rounded against Theseus (higher is better: the rival's up, Theseus's down, never in its favour): 4.2 → 8.3 h */
 function b10_tenMin() {
   const A = b10_ccv(B10.v4.c, 0.2), Bc = b10_ccv(1.0, 0.2);
-  const hA = (A.at(10) - 0.2) * B10.cell.whV4 / B10.w8, hB = (Bc.at(10) - 0.2) * B10.cell.wh / B10.w8;
+  const hA = (A.at(10) - 0.2) * B10.v4.h8, hB = (Bc.at(10) - 0.2) * B10.h8;
   return { hA, hB, sA: Math.ceil(hA * 10 - 1e-9) / 10, sB: Math.floor(hB * 10 + 1e-9) / 10 };
 }
 
@@ -711,7 +715,9 @@ const B10_CAB = (() => {
   const hP = 5.25; let zp = 56.7;
   for (let i = 1; i < MS_SIDE.length; i++) { const [z0, h0] = MS_SIDE[i - 1], [z1, h1] = MS_SIDE[i]; if (z0 > 40 && z1 > 40 && (h0 - hP) * (h1 - hP) <= 0 && h0 !== h1) { zp = z0 + (hP - h0) / (h1 - h0) * (z1 - z0); break; } }
   const chin = MS_SIDE.filter(p => p[0] > 50 && p[1] < 8.5 && p[1] > 0.7).sort((p, q) => p[0] - q[0]);
-  return { zp, hP, chin, dc: 3.0, lod: 1.0 };
+  /* dc: the stock cable, an illustration (none is published); dt: Theseus's paracord, about 2 mm (XBAB's XA25-class 1.9 mm
+     passes USB 2.0 high speed: thin can still be full spec) */
+  return { zp, hP, chin, dc: 3.0, dt: 2.0, lod: 1.0 };
 })();
 /** the live numbers: skates, pivot, lens (read when first asked, so H1's rebuilt shell is used) */
 function b10_cabLive() {
@@ -893,7 +899,7 @@ S({
     captions(t, [[0.6, 'Most mice guess the charge from the battery\'s voltage, and that voltage moves with load, cold and every restart.'],
       [5.8, 'Theseus\'s nPM1300 counts charge in and out: it reads within 3 %, and does six parts\' work.']]);
     const u = clamp((t - 0.3) / 5.0), S0 = b10_session(u);
-    /* the session chart: % left against hours of play (the session starts at 46 %: about 24 h at 8 khz) */
+    /* the session chart: % left against hours of play (the session starts at 46 %: 23 h of Theseus's 50 h at 8 khz) */
     const cx = 170, cy = 300, cw = 980, ch = 400, X = v => cx + v * cw, Y = p => cy + ch - p / 0.6 * ch;
     for (const p of [0, 0.2, 0.4, 0.6]) { line(cx, Y(p), cx + cw, Y(p), { color: p ? C.hair : C.faint, w: p ? 1.2 : 1.5 }); text(Math.round(p * 100) + ' %', cx - 14, Y(p) + 7, { role: 'tick', color: C.mute, align: 'right' }); }
     const hrs = 0.46 * B10.h8; for (let h = 0; h <= hrs; h += 5) text(h + ' h', X(h / hrs), Y(0) + 30, { role: 'tick', color: C.mute, align: 'center' });
@@ -957,14 +963,14 @@ S({
    In from b10_pmic's empty battery. The demonstration: two batteries plugged in at 20 % on the same clock: the Viper V4
    Pro's at 0.169 A (TechPowerUp: 0.55C of its 306 mAh), Theseus's at its battery's rated 1C (Jauch: 370 mA). The current
    arrows are sized by amps, the fills rise, and the CC/CV curves (Battery University: constant current, then constant
-   voltage) are drawn under them. Ten minutes: +9.2 % → 4.2 h against +16.7 % → 8.6 h at 8 khz (b10_tenMin). Then the four guards that
+   voltage) are drawn under them. Ten minutes: +9.2 % → 4.2 h against +16.7 % → 8.3 h at 8 khz (b10_tenMin). Then the four guards that
    make 1C safe act in turn, each a cause and its effect: cold, a bad charger, a short, storage. */
 S({
   id: 'b10_charge', ch: 'elec', theme: 'night', title: 'Fast charging, safely', settle: 11, ideas: ['pmic', 'battery'],
   src: ['elcTpuV4', 'nbcV4', 'elcLp4025', 'b10Npm', 'b10Bu409', 'b10Bu410'],
   replaces: ['elc_charge', 'elc_safe'],
   answers: [
-    ['elc_charge (not rated, no note)', 'Rebuilt as a demonstration: two batteries on one clock, current arrows sized by amps, fills rising, the CC/CV curve under each; ten minutes buy ' + b10_tenMin().sA.toFixed(1) + ' h on the V4 Pro, ' + b10_tenMin().sB.toFixed(1) + ' h on Theseus at 8 khz (at Razer\'s 45 h for the V4 Pro at 8 khz)'],
+    ['elc_charge (not rated, no note)', 'Rebuilt as a demonstration: two batteries on one clock, current arrows sized by amps, fills rising, the CC/CV curve under each; ten minutes buy ' + b10_tenMin().sA.toFixed(1) + ' h on the V4 Pro, ' + b10_tenMin().sB.toFixed(1) + ' h on Theseus at 8 khz: the share charged times each battery\'s life at 8 khz (Razer\'s 45 h for the V4 Pro; Theseus\'s 50 h, b09_life\'s figure, so the two chapters agree)'],
     ['elc_safe (not rated, no note)', 'The four guards act in turn, each cause with its effect: cold (waits until 10 °C), a bad charger (stopped at the input, 22 V rated), a short (the battery\'s own board opens), storage (ship mode, 370 nA)'],
     ['(F0.5) honest wording: the PMIC is not the limit, the battery is', 'Said: Theseus charges at its battery\'s rated 1C; the nPM1300 could go to 800 mA. Its charger is linear too, so the guards, not less heat, make 1C safe']
   ],
@@ -1016,7 +1022,7 @@ S({
     /* the payoff */
     const H10 = b10_tenMin();
     verdict(t, 5.2, 980, 846, { from: H10.sA, to: H10.sB, unit: 'h', dec: 1, label: 'Play from a 10-minute charge, at 8 khz', better: 'higher', who: ['Viper V4 Pro', 'Theseus'], size: 110, maxW: 800 });
-    source(t, 'V4 Pro: 0.169 A on 306 mAh (TechPowerUp). Theseus: Jauch LP402535JU, rated to 1.0C (370 mA); nPM1300: up to 800 mA, 22 V input, NTC, JEITA, ship mode 370 nA. CC/CV: the deck\'s battery model; hours derived at the V4 Pro\'s 8 khz draw (Razer\'s 45 h; TechPowerUp measured about 40). Cold charging plates lithium (Battery University BU-410).', { t0: 2.4 });
+    source(t, 'V4 Pro: 0.169 A on 306 mAh (TechPowerUp). Theseus: Jauch LP402535JU, rated to 1.0C (370 mA); nPM1300: up to 800 mA, 22 V input, NTC, JEITA, ship mode 370 nA. CC/CV: the deck\'s battery model; hours derived from the share charged, at 8 khz: V4 Pro 45 h (Razer; TechPowerUp about 40), Theseus 50 h. Cold charging plates lithium (BU-410).', { t0: 2.4 });
   }
 });
 
@@ -1039,10 +1045,13 @@ S({
   ],
   draw: t => {
     header(t, 'The battery, per gram');
-    captions(t, [[0.6, 'A Li-ion battery the size of a AAA holds 350 mAh in a steel can and weighs 9 g. Theseus\'s Li-po pouch holds 370 mAh in 8 g.'],
-      [5.0, 'The can is about 2.2 g of steel, the pouch\'s foil 0.4 g: the same 8 g of pouch runs 33 h longer.']]);
     const cell = B10.cell, cy = B10.cyl[0], V = 3.7;
     const whkgI = cy.mAh / 1000 * V / cy.g * 1000, whkgP = cell.wh / cell.g * 1000, hI = whkgI * cell.g / 1000 / B10.w1, hP = cell.wh / B10.w1;
+    /* one precision for the pair, each rounded against Theseus (R3: 140 rounded the 10440's 143.9 down): the 10440 up, the
+       pouch down, 144 → 171 Wh/kg; the hours the same 8 g buys, floored, one figure for the caption and the verdict: +33 h */
+    const whI = Math.ceil(whkgI - 1e-9), whP = Math.floor(whkgP + 1e-9), dh = Math.floor(hP - hI + 1e-9);
+    captions(t, [[0.6, 'A Li-ion battery the size of a AAA holds 350 mAh in a steel can and weighs 9 g. Theseus\'s Li-po pouch holds 370 mAh in 8 g.'],
+      [5.0, 'The can is about ' + B10.can.toFixed(1) + ' g of steel, the pouch\'s foil ' + B10.foil.toFixed(1) + ' g: the same 8 g of pouch runs ' + dh + ' h longer.']]);
     locator(t, -0.4, 94, 290, 46, 'top', msBox('top', 'battery'), { hi: ['battery'] });
     /* the balance: locked level while the batteries are set down, then released */
     const tr = 0.9, w = 2 * Math.PI * 0.9, z = 0.22, th0 = -0.11, u = Math.max(0, t - tr);
@@ -1054,9 +1063,9 @@ S({
       part(L0[0], L0[1] - 5.1 * s - drop, s, () => b10_li10440MM({ label: true }));
       part(R0[0] - 8.5 * s / 2, R0[1] - drop, s, () => b10_pouchMM({ plug: 'back' }));
       ltag(L0[0] - 110, L0[1] + 60, '10440 Li-ion', null, { size: 21, color: C.secondText });
-      text('350 mAh · 9 g', L0[0] - 110, L0[1] + 90, { role: 'small', size: 22, weight: 650, color: C.ink2 });
+      text('350 mAh, 9 g', L0[0] - 110, L0[1] + 90, { role: 'small', size: 22, weight: 650, color: C.ink2 });
       heroTag(R0[0] - 60, R0[1] + 60, 'Li-po pouch', null, { size: 21 });
-      text('370 mAh · 8 g', R0[0] - 60, R0[1] + 90, { role: 'small', size: 22, weight: 650, color: C.ink2 });
+      text('370 mAh, 8 g', R0[0] - 60, R0[1] + 90, { role: 'small', size: 22, weight: 650, color: C.ink2 });
       /* the reading, under the pointer once the beam has settled */
       const kr = ep(t, 3.0, 3.4);
       if (kr > 0.003) rich([{ s: '1 g', role: 'num', size: 30, color: C.secondText }, { s: 'heavier, for 20 mAh less', role: 'small', size: 22, weight: 650, color: C.ink2, gap: 10, sentence: false }], 640, 866, { align: 'center', alpha: kr });
@@ -1071,8 +1080,9 @@ S({
       if (o2.top) callout(t, 4.9, o2.top, 'Foil: ' + B10.foil.toFixed(1) + ' g', { to: [px + pw - 150, py + 300], side: 'r', color: C.hero, tcolor: C.heroText, alpha: kf });
     }
     /* the payoff */
-    verdict(t, 5.6, 1240, 830, { from: Math.round(whkgI / 10) * 10, to: Math.floor(whkgP / 10) * 10, unit: 'Wh/kg', label: 'Energy for the weight, about', better: 'higher', who: ['10440 Li-ion', 'Li-po pouch'], net: '+' + Math.floor((hP - hI) / 10) * 10 + ' h at 1 khz, same 8 g', size: 110, maxW: 600 });
-    scaleNote(80, 926, 'is 27 % of Theseus\'s 29.3 g, set in the tail to balance it', { lead: cell.g + ' g of battery', t, t0: 6.6, size: 22 });
+    verdict(t, 5.6, 1240, 830, { from: whI, to: whP, unit: 'Wh/kg', dec: 0, label: 'Energy for the weight', better: 'higher', who: ['10440 Li-ion', 'Li-po pouch'], net: '+' + dh + ' h at 1 khz, same 8 g', size: 110, maxW: 600 });
+    /* the mouse's weight as the film states it (F2.32: 29.31 g, from THS), the share from it, rounded down */
+    scaleNote(80, 926, 'is ' + Math.floor(cell.g / THESEUS.mass * 100 + 1e-9) + ' % of Theseus\'s ' + THS.massG + ', set in the tail to balance it', { lead: cell.g + ' g of battery', t, t0: 6.6, size: 22 });
     source(t, 'Li-ion: akkuteile 10440, 350 mAh, 9 ± 1 g (Keeppower\'s: about 10 g). Li-po: Jauch LP402535JU, 370 mAh, 8 g. Energy at 3.7 V; hours at a Viper V4 Pro\'s draw at 1 khz. Can (0.18 mm steel) and foil (0.11 mm laminate) weights derived from their sizes.', { t0: 2.4 });
   }
 });
@@ -1091,7 +1101,7 @@ S({
   replaces: ['elc_oneside'],
   answers: [
     ['"good but i wish it was even better visualized"', 'Rebuilt as a demonstration: two boards ride one reflow oven at the same moment, the camera riding with them and the oven\'s heat charted above with a dot for the boards. The two-faced board is on its second pass, its first face hanging upside down; as that solder melts again the parts sink on liquid joints and the Type-C is tagged over the 30 g/in² rule. Theseus\'s board, every part on top, rides the same heat once with nothing underneath. A classroom panel says why it matters: a drop hangs from a dropper until its weight beats surface tension and falls, beside the Type-C\'s joint zoomed ×4, hanging the same way'],
-    ['(F2.29) "we don\'t have a front and back pcb" / "it\'ll be a single ~5.6g pcb"', 'Theseus\'s lane reads "Every part on top. Board target: 5.6 g" (the budget\'s figure, a target: F42.2; the 0.6 mm two-layer board of F47.4 is drawn thinner than the two-faced one) and a tag under its board says "Nothing underneath"; the verdict is oven passes 2 → 1'],
+    ['(F2.29) "we don\'t have a front and back pcb" / "it\'ll be a single ~5.6g pcb"', 'Theseus\'s lane reads "Every part on top. Board target: ' + fmtN(THESEUS.pcb, 2) + ' g. As built: ' + fmtN(BOARD_G, 2) + ' g" (the budget\'s figure, a target: F42.2; beside it the 0.6 mm two-layer board of F47.4 as H3 built it, drawn thinner than the two-faced one) and a tag under its board says "Nothing underneath"; the verdict is oven passes 2 → 1'],
     ['(F0.5) the single-sided reflow wording', 'As validated: one pass for a one-sided board; a two-sided board\'s second pass hangs its first face upside down while it melts again. Not claimed: weaker re-melted joints (Wirth et al. saw no change in shear strength), or that the Type-C falls (Liu\'s parts held at about 40 g/in²; the slide says only that it is over the 30 g/in² rule; the drop that falls is water)']
   ],
   draw: t => {
@@ -1118,7 +1128,9 @@ S({
     text('Theseus', 80, 768, { role: 'label', size: 22, color: C.heroText, alpha: l2 });
     text('Pass 1 of 1', 80, 802, { role: 'label', size: 24, color: C.ink, alpha: l2 });
     text('Every part on top', 80, 834, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2 });
-    text('Board target: ' + THESEUS.pcb + ' g', 80, 858, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2, maxW: 214 });   /* the budget's figure, a target (F42.2, R3-b10-1) */
+    text('Board target: ' + fmtN(THESEUS.pcb, 2) + ' g', 80, 858, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2, maxW: 214 });   /* the budget's figure, a target (F42.2, R3-b10-1) */
+    /* and the board as built on Brock's 0.6 mm path (H3's hardware model, the shared BOARD_G), beside the target, never for it */
+    text('As built: ' + fmtN(BOARD_G, 2) + ' g', 80, 882, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2, maxW: 214 });
     /* the fault, named while it happens: the receptacle hangs in liquid solder, over the rule */
     if (R1) faultTag(t, 0.3 + B10_OV.uMelt + 0.4, [R1.partPt[0] - R1.part.w * s * 0.3, R1.partPt[1] + R1.part.h * s * 0.5], 'Melted again, upside down', { to: [R1.partPt[0] - 110, 632], side: 'l', sub: 'About 40 g per in² of pad; the rule is 30', maxW: 460 });
     if (R2) fixTag(t, 4.7, [R2.under[0] - 120, R2.under[1]], 'Nothing underneath', { to: [R2.under[0] - 60, 842], side: 'r' });
@@ -1165,7 +1177,7 @@ S({
     locator(t, -0.4, 94, 290, 46, 'top', msBox('top', 'board'), { hi: ['board'] });
     const box = [200, 280, 900, 560], s = 166, cx = box[0] + box[2] / 2, cy = box[1] + box[3] / 2 + 46;
     const fall = ep(t, 0.0, 0.5, E.in3), grow = clamp((t - 1.0) / 3.2), clockA = 14 * grow, sh = env(t, 4.2, 4.25, 4.6, 5.0);
-    const tB = Math.max(0, t - 6.0), clockB = Math.min(120, tB * 48);   /* the coated clock: 2 minutes, twice DTU's slowest bare 62 s, inside Yoo's under-200 s tests */
+    const tB = Math.max(0, t - 6.0), clockB = Math.min(120, tB * 80);   /* the coated clock: 2 minutes (by 7.5 s, so the payoff lands by about 8 s: A1, M6), twice DTU's slowest bare 62 s, inside Yoo's under-200 s tests */
     demoWindow(box[0], box[1], box[2], box[3], 1, { plain: true });
     let R = null;
     clipped(box[0], box[1], box[2], box[3], () => wipeTo(t, 5.0, 0.9, box,
@@ -1183,14 +1195,14 @@ S({
       b10_beaker(r[0] + 130, r[1] + r[3] - 6, 140, clamp((t - 1.2) / 3.0), {});
       text('Tin chloride solution, a 9 V battery and two paper clips: tin grows from the − clip.', r[0] + 300, r[1] + 40, { role: 'small', size: 21, weight: 600, color: C.ink2, maxW: r[2] - 300, lh: 1.3 }); }
     /* the payoff: the time to a short, and what the coat costs */
-    { const k1 = ep(t, 8.6, 9.0), k2 = ep(t, 8.9, 9.3);
+    { const k1 = ep(t, 7.6, 8.0), k2 = ep(t, 7.9, 8.3);
       text('A sweat drop on powered pads', 1160, 704, { role: 'label', size: 22, color: C.mute, alpha: k1 });
       rich([{ s: '14 to 62 s', role: 'num', size: 60, color: C.secondText }, { s: 'to a short, bare', role: 'small', size: 24, weight: 650, color: C.ink2, gap: 14, sentence: false }], 1160, 776, { alpha: k1 });
       rich([{ s: 'None', role: 'd1', size: 60, color: C.heroText, grad: C.heroGrad }, { s: 'in 2 minutes, coated', role: 'small', size: 24, weight: 650, color: C.ink2, gap: 14, sentence: false }], 1160, 850, { alpha: k2 });
       /* the coat's cost, rounded up (against Theseus); its share from the printed grams, said as "under 1 %" */
       const gC = Math.ceil(coatG(50) * 100 - 1e-9) / 100;
-      scaleNote(1160, 914, 'of coat (50 µm, both faces): ' + (gC / THESEUS.mass < 0.01 ? 'under 1 %' : Math.ceil(gC / THESEUS.mass * 100) + ' %') + ' of the mouse', { lead: '+' + gC.toFixed(2) + ' g', t, t0: 9.3, size: 22 }); }
-    text('Few mice protect the board: HyperX rates its Pulsefire Haste Wireless IP55 against sweat.', 200, 880, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: ep(t, 9.6, 10.0), maxW: 900 });
+      scaleNote(1160, 914, 'of coat (50 µm, both faces): ' + (gC / THESEUS.mass < 0.01 ? 'under 1 %' : Math.ceil(gC / THESEUS.mass * 100) + ' %') + ' of the mouse', { lead: '+' + gC.toFixed(2) + ' g', t, t0: 8.3, size: 22 }); }
+    text('Few mice protect the board: HyperX rates its Pulsefire Haste Wireless IP55 against sweat.', 200, 880, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: ep(t, 8.6, 9.0), maxW: 900 });
     source(t, 'Sweat: Na⁺ and Cl⁻ 10 to 90 mmol/L (GSSI). Bare: DTU 2012, a NaCl drop on an 0805 part at 5 V, 62 s down to 14 s as the drop goes from 0.27 to 2.7 mmol/L (derived). Coated: Yoo 2024, a coated part under 17 and 51 mmol/L drops at 3 to 12 V: no failure in tests run until the drop dried (under 200 s). Coat: 25 to 75 µm (HumiSeal); weight from plan 5\'s board, ' + area.toFixed(1) + ' cm² a face: ' + coatG(25).toFixed(2) + ' to ' + coatG(75).toFixed(2) + ' g. Pads 166× life size; growth time-lapsed.', { t0: 2.4 });
   }
 });
@@ -1379,7 +1391,8 @@ S({
   answers: [
     ['"extremely lazy visualizations"', 'Rebuilt as a demonstration on the mouse in profile, the camera riding it: with a straight plug the cable comes down to the pad at the chin; a flick runs the chin onto its slack, the mouse pitches about its rear skates and the sensor rises past its 1 mm lift-off, so the cursor freezes mid-flick and the shot misses. Rewound and wiped to Theseus: the plug turns up, the cable arcs over the pad, the same flick passes clean and the shot lands. Each lift is computed on its own mouse: most mice drawn as the film\'s neutral rival mouse (its chin, skates, port and sensor), Theseus from its shell'],
     ['"paracord needs better assets"', 'The paracord is drawn as a woven sheath: 16 carriers crossing over two and under two, each yarn with its fibres and the edge where it dives under in shadow, foreshortened round the cylinder, with a blue tracer yarn; and the cable cut across (sheath, filler, four stranded conductors)'],
-    ['(brief) the angled plug on the shell, the drag it removes', 'The L plug sits in the nose\'s port and lifts the cable straight up, so none of it lies on the pad at the chin (Pulsar sells the same idea: it "prevents cable drag against the desk")']
+    ['(brief) the angled plug on the shell, the drag it removes', 'The L plug sits in the nose\'s port and lifts the cable straight up, so none of it lies on the pad at the chin (Pulsar sells the same idea: it "prevents cable drag against the desk")'],
+    ['#20 (Brock\'s doc): a Goldilocks cable, "the tension in the bent cable is stronger than the weight of the mouse"', 'Said on the close-up: its name gives the thickness, "Theseus\'s cable, about ' + fmtN(B10_CAB.dt, 0) + ' mm", and from 6.7 s why: "Thin enough not to tug a ' + fmtN(THESEUS.mass, 0) + ' g mouse; XBAB\'s 1.9 mm cable still passes USB high speed" (XBAB\'s XA25 page: 1.9 mm, 6.9 g/m, passes the USB 2.0 high-speed eye test). Theseus\'s cable is 2 mm on the pad too, not only in its arc. The angled plug above is the other half: no cable under the chin']
   ],
   draw: t => {
     header(t, 'An angled plug, a paracord cable');
@@ -1408,11 +1421,13 @@ S({
       for (let z = -120; z < 160; z += 10) { const x = mx + (z - (D % 10)) * s; if (x > box[0] && x < box[0] + box[2]) line(x, py + 3, x, py + 9, { color: inkA(0.18), w: 1.5 }); }
       /* the slack: the cable lying on the pad from its far end back to where it doubles over */
       const zEdge = (box[0] + box[2] - mx) / s + 10, zSl = ths ? GT.zp + 64 - D : zh0 - D;
-      b10_paracord([Pd(zSl, dc / 2), Pd(zEdge, dc / 2)], dc * s, { cols: TH ? ['#3A3F48', '#4A505B'] : ['#4A505B', '#5A616D'], slide: -D * s });
+      /* Theseus's slack is its own 2 mm paracord (A1, #20: it was drawn at the stock cable's 3 mm under the 2 mm arc) */
+      if (ths) b10_paracord([Pd(zSl, C0.dt / 2), Pd(zEdge, C0.dt / 2)], C0.dt * s, { cols: ['#2A2E36', '#3A404B'], tracer: C.hero, slide: -D * s });
+      else b10_paracord([Pd(zSl, dc / 2), Pd(zEdge, dc / 2)], dc * s, { cols: TH ? ['#3A3F48', '#4A505B'] : ['#4A505B', '#5A616D'], slide: -D * s });
       /* the mouse: Theseus's simplified mouse, or most mice's neutral rival (FILM F9: a rival never wears Theseus's outline) */
       part(mx, py, s, () => { xabout(g.zr, 0, -th); if (ths) mouseSimple('right', { show: ['sensor', 'skates'] }); else mouseRival('right', { show: ['sensor'] }); });
       /* the plug in the port, the cable from it */
-      const port = M(g.zp, g.hP), cr = ths ? 1.0 : dc / 2;
+      const port = M(g.zp, g.hP), cr = ths ? C0.dt / 2 : dc / 2;
       const pl = b10_plug(port[0], port[1], s, 1, ths, { rot: -th, cr });
       let path;
       if (!ths) {
@@ -1420,9 +1435,9 @@ S({
         path = b10_bez(E0, [E0[0] + dx * 0.5, E0[1]], [Tp[0] - dx * 0.5, Tp[1]], Tp, 30).concat([Pd(zEdge, dc / 2)]);
         b10_paracord(path, dc * s, { cols: ['#2A2E36', '#3A404B'], slide: 0 });
       } else {
-        const E0 = pl.out, Tz = GT.zp + 72 - D, Tp = Pd(Tz, 1.0);
-        path = b10_bez(E0, [E0[0], E0[1] - 16 * s], [mx + (GT.zp + 30 - D * 0.35) * s, py - (37 + D * 0.12) * s], Tp, 40).concat([Pd(zEdge, 1.0)]);
-        b10_paracord(path, 2.0 * s, { cols: ['#2A2E36', '#3A404B'], tracer: C.hero, slide: 0 });
+        const E0 = pl.out, Tz = GT.zp + 72 - D, Tp = Pd(Tz, C0.dt / 2);
+        path = b10_bez(E0, [E0[0], E0[1] - 16 * s], [mx + (GT.zp + 30 - D * 0.35) * s, py - (37 + D * 0.12) * s], Tp, 40).concat([Pd(zEdge, C0.dt / 2)]);
+        b10_paracord(path, C0.dt * s, { cols: ['#2A2E36', '#3A404B'], tracer: C.hero, slide: 0 });
       }
       /* the gap under the lens, marked when it opens */
       const lens = M(g.zl, 0), gap = py - lens[1];
@@ -1452,7 +1467,7 @@ S({
       text('Lift-off, 1 mm', x1, base - C0.lod * k - 10, { role: 'label', size: 19, color: C.red, align: 'right' });
       const bx = x0 + 30, bw2 = 120, by = base - lift * k;
       rr(bx, by - 38, bw2, 38, 4, TH ? '#FFFFFF' : '#2A2B2F', inkA(0.6), 1.5);
-      rr(bx + bw2 / 2 - 20, by - 7, 40, 7, 2, over ? C.red : C.hero, null, 1);
+      rr(bx + bw2 / 2 - 20, by - 7, 40, 7, 2, over ? C.red : t < 3.4 ? C.ink2 : C.hero, null, 1);   /* the rival's lens in ink, blue once it is Theseus's (A1, F35.1) */
       text('Lens', bx + bw2 / 2, by - 15, { role: 'label', size: 19, color: C.mute, align: 'center' });
       text('×6', x1, gy + 36, { role: 'label', size: 19, color: C.faint, align: 'right' });
       /* human scale: credit cards (0.76 mm, ISO/IEC 7810) stacked under the lens */
@@ -1469,9 +1484,12 @@ S({
     { const px = 1340, py2 = 270, pw = 500, ph = 450, kc = ep(t, 5.9, 6.3), kin = ep(t, 3.8, 4.3);
       if (kin > 0.003) {
       demoWindow(px, py2, pw, ph, kin);
-      text('Theseus\'s cable, close up', px + 24, py2 + 36, { role: 'label', size: 21, color: C.heroText, alpha: kin });
+      /* his #20, the Goldilocks cable (A1: listed in ideas, never said): its thickness in the panel's name, and why under it;
+         the woven band runs lower on the right to leave the two lines clear */
+      text('Theseus\'s cable, about ' + fmtN(C0.dt, 0) + ' mm', px + 24, py2 + 36, { role: 'label', size: 21, color: C.heroText, alpha: kin });
+      text('Thin enough not to tug a ' + fmtN(THESEUS.mass, 0) + ' g mouse; XBAB\'s 1.9 mm cable still passes USB high speed.', px + 24, py2 + 70, { role: 'small', size: 20, weight: 600, color: C.ink2, maxW: pw - 48, lh: 1.3, alpha: kin * ep(t, 6.7, 7.1) });
       G.save(); G.globalAlpha *= kin;
-      clipped(px, py2, pw, ph, () => b10_paracord(b10_bez([px - 20, py2 + 210], [px + 170, py2 + 230], [px + 260, py2 + 90], [px + pw + 20, py2 + 100], 60), 46, { tracer: C.hero, slide: Math.max(0, t - 5.9) * 30 }));
+      clipped(px, py2, pw, ph, () => b10_paracord(b10_bez([px - 20, py2 + 210], [px + 170, py2 + 230], [px + 260, py2 + 130], [px + pw + 20, py2 + 140], 60), 46, { tracer: C.hero, slide: Math.max(0, t - 5.9) * 30 }));
       const o = part(px + pw - 110, py2 + 330, 52, () => cableMM({}));
       text('Cut across', px + pw - 110, py2 + ph - 22, { role: 'label', size: 19, color: C.faint, align: 'center' });
       G.restore();
@@ -1497,7 +1515,7 @@ S({
    step counts, its clear top showing the spring and magnet. */
 S({
   id: 'b10_lights', ch: 'elec', theme: 'night', title: 'Nothing lights up but the sensor', settle: 12, ideas: ['encoder', 78, 84, 99],
-  src: ['srf_razerAllOptical', 'b10Gpx2Hours', 'b03_logiHybrid', 'b03_d2fp', 'srf_avagoWheel', 'b10MdtTmr', 'b10G703', 'srf_mpsMag', 'pulsarEnc', 'srf_fmSupport'],
+  src: ['srf_razerAllOptical', 'b10Gpx2Hours', 'b03_logiHybrid', 'b03_d2fp', 'srf_avagoWheel', 'b10MdtTmr', 'b10G703', 'srf_mpsMag', 'pulsarEnc', 'srf_fmSupport', 'gld_paw3395o'],
   replaces: ['srf_encoder'],
   answers: [
     ['srf_encoder (2/10, rated, no note)', 'Rebuilt as a demonstration: the Viper V4 Pro from above in x-ray (drawn as the film\'s neutral rival mouse, at its size) with its three pulsing LEDs (two optical switches, an optical wheel), each with its share of the battery; they go out one by one as it hands over to Theseus\'s mouse, where only the sensor lights; then a dust test with both wheels turning the same steps'],
@@ -1522,13 +1540,14 @@ S({
     const at = n => { const a = atR(n), b = mT.at(n); return [lerp(a[0], b[0], kX), lerp(a[1], b[1], kX)]; }, pulse = (ph, f) => 0.55 + 0.45 * Math.max(0, Math.sin(t * f + ph));
     const lights = [{ p: atR('trigL'), k: 1 - off[0], ph: 0 }, { p: atR('trigR'), k: 1 - off[1], ph: 1.3 }, { p: atR('wheel'), k: 1 - off[2], ph: 2.1 }];
     lights.forEach(l => { if (l.k > 0.003) { glow(l.p[0], l.p[1], 46, C.second, 0.55 * l.k * pulse(l.ph, 9)); circle(l.p[0], l.p[1], 5, { fill: C.second, alpha: l.k }); } });
-    /* the sensor's light: both mice have it */
-    { const p = at('sensor'); glow(p[0], p[1], 40, '#FF5A4E', 0.5); circle(p[0], p[1], 4, { fill: '#FF7A6E' }); }
+    /* the sensor's light: both mice have it. Its LED is infrared (PixArt: 850 nm), unseen, so it is drawn as the film draws
+       light (b04_camera's LED, in ink), a soft neutral glow, never in red, the faults' colour (R3) */
+    { const p = at('sensor'); glow(p[0], p[1], 40, C.ink, 0.3); circle(p[0], p[1], 4, { fill: C.ink }); }
     /* each light named, with its share of the battery (against the V4 Pro's whole draw at 1 khz) */
     const lx = 560, row = (y, p, name, val, k, thsName, thsVal) => {
       const a = k, b = 1 - k;
       line(p[0] + 12, p[1], lx - 16, y - 8, { color: a > 0.5 ? C.second : C.hero, w: 1.5, alpha: 0.7 });
-      if (a > 0.003) { text(name, lx, y, { role: 'label', size: 21, color: C.mute, alpha: a }); text(val, lx, y + 34, { role: 'num', size: 30, color: C.secondText, alpha: a }); }
+      if (a > 0.003) { text(name, lx, y, { role: 'label', size: 21, color: C.mute, alpha: a }); text(val, lx, y + 34, { role: 'num', size: 30, color: C.ink2, alpha: a }); }   /* the shares in ink: the glows carry the yellow (A1, F35.1 sparingly) */
       if (b > 0.003) { text(thsName, lx, y, { role: 'label', size: 21, color: C.heroText, alpha: b }); text(thsVal, lx, y + 34, { role: 'num', size: 30, color: C.ink, alpha: b }); }
     };
     /* the rival's shares rounded down, Theseus's up: neither rounding favours Theseus */
@@ -1538,7 +1557,7 @@ S({
     const mSh = L.mUA / 1000 / L.avg;
     row(492, at('trigR'), 'Optical switch', B10.lightsShown().sw.toFixed(1) + ' %', lights[1].k, 'Mechanical switch', pcU(mSh));
     row(592, at('trigL'), 'Optical switch', B10.lightsShown().sw.toFixed(1) + ' %', lights[0].k, 'Mechanical switch', pcU(mSh));
-    { const p = at('sensor'); line(p[0] + 12, p[1], lx - 16, 684, { color: C.faint, w: 1.5, alpha: 0.7 }); text('Sensor', lx, 692, { role: 'label', size: 21, color: C.mute }); text('Both have it', lx, 724, { role: 'small', size: 22, weight: 600, color: C.ink2 }); }
+    { const p = at('sensor'); line(p[0] + 12, p[1], lx - 16, 684, { color: C.faint, w: 1.5, alpha: 0.7 }); text('Sensor, infrared', lx, 692, { role: 'label', size: 21, color: C.mute }); text('Both have it, unseen', lx, 724, { role: 'small', size: 22, weight: 600, color: C.ink2 }); }
     text(t < 3.6 ? 'Viper V4 Pro' : 'Theseus', 290, 900, { role: 'label', size: 22, color: t < 3.6 ? C.secondText : C.heroText, align: 'center' });
     text('No RGB either: Logitech rates its G703 for 32 h with the lights off, 24 h with RGB cycling.', lx, 790, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 360, lh: 1.3, alpha: ep(t, 4.0, 4.4) });
     /* the payoff */
@@ -1565,7 +1584,7 @@ S({
       }
       if (enc.cover) callout(t, 9.2, enc.cover, 'Clear top', { to: [px + pw - 150, py + 130], side: 'r', color: C.heroText, tcolor: C.ink, sub: 'Spring and magnet in sight', maxW: 140 });
     }
-    source(t, 'Shares of a Viper V4 Pro\'s 1.70 mA at 1 khz (306 mAh, 180 h), derived: an optical switch 0.116 mA, from Logitech\'s 96 h optical-only against 104 h hybrid (Superlight 2, TechPowerUp; Omron\'s pulse: 0.15 mA); its wheel LED 40 µs every 2 ms (Avago) at 5 mA, assumed; TMR 1.5 µA an axis (MDT); a mechanical switch 3 µA. Dust counts: an illustration (MPS).', { t0: 2.4 });
+    source(t, 'Shares of a Viper V4 Pro\'s 1.70 mA at 1 khz (306 mAh, 180 h), derived: an optical switch 0.116 mA, from Logitech\'s 96 h optical-only against 104 h hybrid (Superlight 2; Omron\'s pulse: 0.15 mA); its wheel LED 40 µs every 2 ms (Avago) at 5 mA, assumed; TMR 1.5 µA an axis (MDT); a mechanical switch 3 µA. Sensor LED: infrared (PixArt). Dust: illustrative (MPS).', { t0: 2.4 });
   }
 });
 

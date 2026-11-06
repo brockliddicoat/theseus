@@ -213,10 +213,11 @@ function own_trifold(t, x, y, w, h) {
   const ca = clamp((open - 0.75) / 0.25);
   face([cx - pw / 2, ph], [cx + pw / 2, ph], yc, paperC, () => {
     text('Spares', cx, yc - 96, { role: 'label', size: 21, color: A, align: 'center', alpha: k });
-    for (let i = 0; i < 8; i++) { const sx = cx - 63 + (i % 4) * 42, sy = yc - 52 + Math.floor(i / 4) * 40; circle(sx, sy, 13, { fill: i < 4 ? (TH ? '#ffffff' : '#E7E6E1') : (TH ? '#F1F0EC' : '#CFCEC9'), alpha: k }); circle(sx, sy, 13, { color: inkA(0.4), w: 1.5, alpha: k }); }
-    text('POM, PTFE', cx, yc + 26, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: k });
-    rr(cx - 70, yc + 46, 140, 44, 6, inkA(0.08), inkA(0.3), 1.5, k);
-    text('Grip tape', cx, yc + 76, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: k });
+    /* skates only (F52.2, Brock: grip tape dropped from the box; the grip is etched into the surface): two sets of dots, then
+       their names on the Setup panel's text rows (true greys) */
+    for (let i = 0; i < 8; i++) { const sx = cx - 63 + (i % 4) * 42, sy = yc - 52 + Math.floor(i / 4) * 40; circle(sx, sy, 13, { fill: i < 4 ? (TH ? '#FFFFFF' : '#E6E6E9') : (TH ? '#F0F0F2' : '#CDCDD1'), alpha: k }); circle(sx, sy, 13, { color: inkA(0.4), w: 1.5, alpha: k }); }
+    text('Skates', cx, yc + 52, { role: 'label', size: 21, color: C.ink2, align: 'center', alpha: k });
+    text('POM, PTFE', cx, yc + 88, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: k });
   });
   if (sw > 0.01) {
     face([cx - pw / 2, ph], [cx - pw / 2 - pw * sw, outerH], yc, paperC, ca > 0 ? () => {

@@ -1,0 +1,121 @@
+{
+ "box": [
+  -17.91,
+  6.96,
+  -34.436,
+  17.09,
+  10.96,
+  -9.436
+ ],
+ "shell": {
+  "n": 2009270,
+  "collide": 0,
+  "min": [
+   6.64,
+   [
+    -17.4,
+    1.8,
+    -38.61
+   ],
+   "body"
+  ],
+  "roof (above, over the footprint)": [
+   15.05,
+   [
+    -17.9,
+    26.01,
+    -34.33
+   ],
+   "body"
+  ],
+  "tail (behind the rear face)": [
+   6.64,
+   [
+    -17.4,
+    1.8,
+    -38.61
+   ],
+   "body"
+  ],
+  "sides (beside, within its length)": [
+   7.27,
+   [
+    -23.03,
+    1.8,
+    -9.45
+   ],
+   "body"
+  ]
+ },
+ "board": {
+  "area": 13.7,
+  "overlapZ": 1.05,
+  "boardRearLobes": -10.49,
+  "notchEdge": -6.88
+ },
+ "parts": [
+  {
+   "ref": "BATLEAD",
+   "gap3d": 0.0,
+   "at": [
+    -11.19,
+    7.56,
+    -9.54
+   ],
+   "top": 8.8,
+   "underPlan": true,
+   "vgap": -1.84,
+   "collide": 494
+  }
+ ],
+ "bosses": [
+  {
+   "hole": "MH3",
+   "X": 14.59,
+   "Z": -5.13,
+   "r": 2.65,
+   "kind": "stand-in \u00d85.3 (fasteners.js)",
+   "plan_gap": 1.66,
+   "front_edge_gap": 1.66
+  },
+  {
+   "hole": "MH3",
+   "X": 14.59,
+   "Z": -5.13,
+   "r": 2.2,
+   "kind": "b11's drawing 4.4 wide",
+   "plan_gap": 2.11,
+   "front_edge_gap": 2.11
+  },
+  {
+   "hole": "MH4",
+   "X": -14.59,
+   "Z": -5.13,
+   "r": 2.65,
+   "kind": "stand-in \u00d85.3 (fasteners.js)",
+   "plan_gap": 1.66,
+   "front_edge_gap": 1.66
+  },
+  {
+   "hole": "MH4",
+   "X": -14.59,
+   "Z": -5.13,
+   "r": 2.2,
+   "kind": "b11's drawing 4.4 wide",
+   "plan_gap": 2.11,
+   "front_edge_gap": 2.11
+  }
+ ],
+ "heads": {
+  "head_top": 4.03,
+  "head_bottom": 2.73,
+  "vgap": 2.93,
+  "note": "heads under the board (#54): the battery is above the board, never over a head"
+ },
+ "antenna": {
+  "keepout": 14.51,
+  "keepout_plan": 14.51,
+  "antenna": 14.55,
+  "antenna_plan": 14.51
+ }
+}

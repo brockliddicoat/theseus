@@ -1,0 +1,22 @@
+{
+ "note": "S2 crease line (F51 12:34): one straight line at 2.0 deg to the base, minimax-fitted to the scan crease over z -20..55.4 (front two-thirds); scene Z (nose +), Y up from the pad, mm; both walls. Behind the tail point and ahead of the nose point the crease runs on the side outline itself (the side view unchanged). Where the line is under the scan crease, the wall above is carried straight down (no top-view widening); top view changes <= 0.03 mm.",
+ "angle_deg": 2.0,
+ "y0": 4.7063,
+ "slope": -0.034921,
+ "formula": "y = 4.7063 - 0.034921 * z",
+ "meets_outline": {
+  "tail": [
+   -58.324,
+   6.743
+  ],
+  "nose": [
+   55.524,
+   2.767
+  ]
+ },
+ "worst_miss_mm": {
+  "front": -0.85,
+  "middle": 0.85,
+  "back": -1.34
+ }
+}

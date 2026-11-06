@@ -1,0 +1,120 @@
+[
+ {
+  "kind": "tri",
+  "lam": 0.2382,
+  "w": 0.3606,
+  "hr": 1.8028,
+  "draft": 0.5,
+  "r_root": 0.1803,
+  "r_node": 0.1803,
+  "h": 0.55,
+  "rails": true,
+  "crease": "slope",
+  "t": 0.5979294922636326,
+  "label": "P6-win-nom"
+ },
+ {
+  "kind": "tri",
+  "lam": 0.2382,
+  "w": 0.4366,
+  "hr": 1.8788,
+  "draft": 0.5,
+  "r_root": 0.1803,
+  "r_node": 0.1803,
+  "h": 0.55,
+  "rails": true,
+  "crease": "slope",
+  "t": 0.6739,
+  "label": "P6-win-all+"
+ },
+ {
+  "kind": "tri",
+  "lam": 0.2382,
+  "w": 0.2846,
+  "hr": 1.7268,
+  "draft": 0.5,
+  "r_root": 0.1803,
+  "r_node": 0.1803,
+  "h": 0.55,
+  "rails": true,
+  "crease": "slope",
+  "t": 0.5219,
+  "label": "P6-win-all-"
+ },
+ {
+  "kind": "tri",
+  "lam": 0.2382,
+  "w": 0.3606,
+  "hr": 1.8028,
+  "draft": 0.5,
+  "r_root": 0.1803,
+  "r_node": 0.1803,
+  "h": 0.55,
+  "rails": true,
+  "crease": "slope",
+  "t": 0.6739,
+  "label": "P6-win-skin+"
+ },
+ {
+  "kind": "tri",
+  "lam": 0.2382,
+  "w": 0.3606,
+  "hr": 1.8028,
+  "draft": 0.5,
+  "r_root": 0.1803,
+  "r_node": 0.1803,
+  "h": 0.55,
+  "rails": true,
+  "crease": "slope",
+  "t": 0.5219,
+  "label": "P6-win-skin-"
+ },
+ {
+  "kind": "none",
+  "rails": true,
+  "h": 0.55,
+  "crease": "slope",
+  "t": 0.7424,
+  "label": "P6-plain-744"
+ },
+ {
+  "kind": "none",
+  "rails": true,
+  "h": 0.55,
+  "crease": "slope",
+  "t": 0.8184,
+  "label": "P6-plain-744+"
+ },
+ {
+  "kind": "none",
+  "rails": true,
+  "h": 0.55,
+  "crease": "slope",
+  "t": 0.6664,
+  "label": "P6-plain-744-"
+ },
+ {
+  "kind": "none",
+  "rails": true,
+  "h": 0.55,
+  "crease": "slope",
+  "t": 0.7,
+  "label": "P6-plain-700"
+ },
+ {
+  "kind": "none",
+  "rails": true,
+  "h": 0.55,
+  "crease": "slope",
+  "t": 0.776,
+  "label": "P6-plain-700+"
+ },
+ {
+  "kind": "none",
+  "rails": true,
+  "h": 0.55,
+  "crease": "slope",
+  "t": 0.624,
+  "label": "P6-plain-700-"
+ }
+]

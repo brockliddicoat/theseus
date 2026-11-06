@@ -1,0 +1,6 @@
+[
+ ["- [ ] 30-b05-shell.js:522 still calls 2 N \"a firm press\": use the hard-press convention (BROADCAST-0945 §3; 2 N is \"about\n      the hardest grip measured at a desk, Won 2009\", 10 N \"a hard press\").",
+  "- [x] 30-b05-shell.js:522 still calls 2 N \"a firm press\": use the hard-press convention (BROADCAST-0945 §3; 2 N is \"about\n      the hardest grip measured at a desk, Won 2009\", 10 N \"a hard press\").\n      > P4: already fixed in the builder's final file (no \"firm\" left in b05/b06/b07; 2 N and 10 N worded as decided)."],
+ ["- [ ] b05_cubed is the film's one full ruler demonstration (F45): check its wording against Codex's (\"Shape buys more than\n      thinning.\" / \"On edge. Same weight.\") and L1's callback; keep the numbers L1 was given (10 × 3.3 mm, 60 mm, 2.00 g,\n      10 N, 111 → 12 µm, 9.1×).",
+  "- [x] b05_cubed is the film's one full ruler demonstration (F45): check its wording against Codex's (\"Shape buys more than\n      thinning.\" / \"On edge. Same weight.\") and L1's callback; keep the numbers L1 was given (10 × 3.3 mm, 60 mm, 2.00 g,\n      10 N, 111 → 12 µm, 9.1×).\n      > P4: checked, kept: Codex's lines are its caption and label; numbers verified (1.9998 g, 111.3 / 12.1 µm, 9.18 → 9.1×).\n      > Changed only the ULX line (R2-b05-4) and the verdict's owners; L1's callback numbers are untouched."]
+]

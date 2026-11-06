@@ -1,0 +1,3 @@
+[
+ ["**FILM F40 (new, could, integrator): no FEEDBACK IDs on screen.**", "**P4 (12:0x): done in b05-b07.** b07_board's and b07_arms' source lines no longer carry \"(F47.4)\" (both rewritten from BOARD_T / SIM_MAT, two lines each), b07_newton's \"Illustrative profiles (F21.12)\" is now \"Illustrative profiles\". Same class: b05_work's choices row printed our builder codes (\"next (b06)\", \"b06\", \"#93, b07\"): each now reads the slide's number in the chapter, found live from the film's order (\"Next slide\", \"Slide 13\" ... \"Slide 24\"), and the row is sorted in film order; its source line says \"The test strip\" (was \"(b06)\"). No other on-screen IDs in the three files (grepped)."]
+]

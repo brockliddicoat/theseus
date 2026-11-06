@@ -1,0 +1,856 @@
+{
+ "ids": [
+  "b01_cover",
+  "b01_compromise",
+  "b01_lighter",
+  "b01_battery",
+  "b01_listed",
+  "b01_density",
+  "b01_illusion",
+  "b01_rank",
+  "b01_price",
+  "b01_targets",
+  "b01_budget",
+  "b02_card",
+  "b02_cutouts",
+  "b02_seams",
+  "b02_front",
+  "b02_grooves",
+  "b02_flush",
+  "b02_direct",
+  "b02_tensioner",
+  "b02_stiff",
+  "b02_rails",
+  "b02_pom",
+  "b03_switch",
+  "b03_binning",
+  "b03_spdt",
+  "b03_timing",
+  "b03_debounce",
+  "b03_hotswap",
+  "b03_side",
+  "b03_rail",
+  "b04_card",
+  "b04_camera",
+  "b04_focus",
+  "b04_sag",
+  "b04_skates",
+  "b04_module",
+  "b04_sensor",
+  "b04_reports",
+  "b05_card",
+  "b05_material",
+  "b05_specific",
+  "b05_wall",
+  "b05_cubed",
+  "b05_fallacy",
+  "b05_nopick",
+  "b05_hotspot",
+  "b05_margin",
+  "b05_work",
+  "b06_lattice",
+  "b06_light",
+  "b06_arch",
+  "b06_thrust",
+  "b06_arches",
+  "b06_fibres",
+  "b06_fillet",
+  "b06_filletsize",
+  "b06_mold",
+  "b07_board",
+  "b07_arms",
+  "b07_tolerance",
+  "b02_wedge",
+  "b07_poron",
+  "b07_sheet",
+  "b08_card",
+  "b08_coating",
+  "b08_film",
+  "b08_uv",
+  "b08_grip",
+  "b08_gripmap",
+  "b08_tape",
+  "b08_twotone",
+  "b08_wheel",
+  "b09_card",
+  "b09_chip",
+  "b09_radio",
+  "b09_latency",
+  "b09_penalty",
+  "b09_sync",
+  "b09_second",
+  "b09_life",
+  "b10_pmic",
+  "b10_charge",
+  "b10_battery",
+  "b10_board",
+  "b10_sealed",
+  "b10_wires",
+  "b10_twist",
+  "b10_cable",
+  "b10_lights",
+  "b10_software",
+  "b07_shcard",
+  "b07_size",
+  "b07_newton",
+  "b07_sides",
+  "b07_emg",
+  "b07_balance",
+  "b11_card",
+  "b11_repair",
+  "b11_screws",
+  "b11_inserts",
+  "b11_wear",
+  "b11_battplug",
+  "b11_board",
+  "b11_box",
+  "b01_close"
+ ],
+ "hits": {
+  "b02_card": {
+   "clk_gt01MM board=true": [
+    0.02,
+    0.6,
+    1.5,
+    2.2,
+    3,
+    5,
+    5.5,
+    7
+   ],
+   "pcbSec ths th=0.6": [
+    0.02,
+    0.6,
+    1.5,
+    2.2,
+    3,
+    5,
+    5.5,
+    7
+   ]
+  },
+  "b02_direct": {
+   "drawClick": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "clickMM": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "pcbSec ths th=0.6": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "clk_gt01MM board=false": [
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b03_switch": {
+   "pcbSec rival th=1.2": [
+    1.5,
+    3,
+    4.8,
+    5
+   ],
+   "pcbSec ths th=1": [
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "clk_gt01MM board=false": [
+    4.8,
+    5,
+    7,
+    12
+   ]
+  },
+  "b03_binning": {
+   "clk_gt01MM board=false": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b03_spdt": {
+   "pcbSec ths th=1": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ],
+   "clk_gt01MM board=false": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ]
+  },
+  "b03_timing": {
+   "pcbSec ths th=1": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "clk_gt01MM board=false": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ]
+  },
+  "b03_hotswap": {
+   "b03_clawMM": [
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b04_card": {
+   "b04_boardSec": [
+    0.02,
+    0.6,
+    1.5,
+    2.2,
+    3,
+    5,
+    5.5,
+    7
+   ]
+  },
+  "b04_camera": {
+   "kitSideBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "b04_boardSec": [
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ]
+  },
+  "b04_focus": {
+   "b04_boardSec": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ]
+  },
+  "b04_sag": {
+   "b04_boardSec": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ]
+  },
+  "b04_skates": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b04_module": {
+   "b04_boardSec": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4,
+    5,
+    7,
+    10
+   ]
+  },
+  "b07_board": {
+   "pcbSec ths th=0.6": [
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b07_arms": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "boardMM top": [
+    5,
+    7,
+    11
+   ]
+  },
+  "b02_wedge": {
+   "kitSideBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ],
+   "drawClick": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ],
+   "clickMM": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ],
+   "pcbSec ths th=0.6": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ],
+   "pcbSec rival th=1.2": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ],
+   "clk_gt01MM board=false": [
+    7,
+    10.5
+   ]
+  },
+  "b07_poron": {
+   "b07_contact": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "pcbSec ths th=1.2": [
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b08_wheel": {
+   "view3D wheel 0.8,0.48,0.4": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.6,
+    5,
+    7,
+    11.5
+   ],
+   "view2D wheel 0.8,0.48,0.4": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.6,
+    5,
+    7,
+    11.5
+   ]
+  },
+  "b09_card": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    2.2,
+    3,
+    5,
+    5.5,
+    7
+   ]
+  },
+  "b09_chip": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ]
+  },
+  "b09_radio": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "view3D pcb 0,0.98,-0.2": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "view2D pcb 0,0.98,-0.2": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b10_pmic": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b10_board": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ],
+   "b10_boardSideMM": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.2,
+    5,
+    7,
+    10.5
+   ]
+  },
+  "b10_sealed": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b10_lights": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "encoderMM": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "k2_encMagFront": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ]
+  },
+  "b11_card": {
+   "b11_rivalInside": [
+    0.02,
+    0.6,
+    1.5,
+    2.2
+   ],
+   "b11_theseusInside": [
+    3,
+    5,
+    5.5,
+    7
+   ],
+   "clk_gt01MM board=false": [
+    3,
+    5,
+    5.5,
+    7
+   ]
+  },
+  "b11_repair": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "b11_rivalInside": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "b11_theseusInside": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "clk_gt01MM board=false": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "pcbSec rival th=1.2": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "b11_switchClaws": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ],
+   "pcbSec ths th=1.2": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.8,
+    5,
+    7,
+    12
+   ]
+  },
+  "b11_inserts": {
+   "kitSideBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "b11_bossesSide": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "b11_jointMM ths tip=0": [
+    1.5,
+    4.4
+   ],
+   "pcbSec ths th=1": [
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "b11_jointMM ths tip=3.687756030951297": [
+    3
+   ],
+   "b11_jointMM rival tip=3.687756030951297": [
+    3
+   ],
+   "pcbSec rival th=1": [
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "b11_jointMM ths tip=0.1492928998396271": [
+    5
+   ],
+   "b11_jointMM rival tip=0.1492928998396271": [
+    5
+   ],
+   "b11_jointMM ths tip=4": [
+    7,
+    11
+   ],
+   "b11_jointMM rival tip=4": [
+    7,
+    11
+   ],
+   "b11_jointMM rival tip=0": [
+    4.4
+   ]
+  },
+  "b11_wear": {
+   "b11_jointMM rival tip=4": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "pcbSec rival th=1": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "b11_jointMM ths tip=4": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "pcbSec ths th=1": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b11_battplug": {
+   "b11_plugMM top": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "pcbSec rival th=1": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "b11_plugMM side": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "pcbSec ths th=1": [
+    0.02,
+    0.6,
+    1.5,
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  },
+  "b11_board": {
+   "kitPlanBoard": [
+    0.02,
+    0.6,
+    1.5,
+    3
+   ],
+   "view3D pcb bottom": [
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ],
+   "view2D pcb bottom": [
+    3,
+    4.4,
+    5,
+    7,
+    11
+   ]
+  }
+ }
+}

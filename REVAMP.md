@@ -1,5 +1,7 @@
 # REVAMP v2: the new film (2026-11-06)
 
+**Where it stopped (14:30): see WORK-LEFT.md.**
+
 Brock: "pick back up with the revamp that was planned for yesterday ... you should still have well over 100 slides, every
 animation should be vastly improved and more intuitive ... set the bar for this new presentation 10x higher". The spine is
 ZERO compromises; every slide shows the rival's fault, then Theseus's fix, then what the player gets; every slide works as a

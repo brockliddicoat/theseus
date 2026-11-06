@@ -1,0 +1,385 @@
+{
+ "note": "L1: the study's final numbers in one citable file (out/results-final.json): Theseus's shell, 9.35 g, the final sloped\ncrease, mesh 0.55 mm (converged within about 4 %); 10 N cases; strength by F41.1 (120 MPa stretched, 207 bent).",
+ "names": {
+  "tri": "kagome (woven; the code calls it tri)",
+  "kagome": "true triangles (the code calls it kagome)",
+  "square": "squares",
+  "diamond": "diamonds",
+  "hex": "hexagons",
+  "none": "plain wall"
+ },
+ "winner": {
+  "label": "G-win-h0.55",
+  "kind_code": "tri",
+  "lam": 0.2382,
+  "spacing_mm": 12.59,
+  "skin_mm": 0.598,
+  "rib_w_mm": 0.3606,
+  "rib_h_mm": 1.8028,
+  "mesh_mm": 0.55,
+  "flex_um": {
+   "worst_hard_press": 112.2,
+   "crown": 64.3,
+   "off_centre": 103.8,
+   "palm_4p4N": 5.45,
+   "squeeze": 113.5
+  },
+  "strength_used_at_10N": {
+   "skin": 0.146,
+   "ribs": 0.129,
+   "rails": 0.119
+  },
+  "buckle": null
+ },
+ "plain_wall_with_rails": {
+  "label": "G-plain+rails-h0.55",
+  "kind_code": "none",
+  "lam": null,
+  "spacing_mm": null,
+  "skin_mm": 0.742,
+  "rib_w_mm": null,
+  "rib_h_mm": null,
+  "mesh_mm": 0.55,
+  "flex_um": {
+   "worst_hard_press": 147.0,
+   "crown": 82.8,
+   "off_centre": 132.1,
+   "palm_4p4N": 6.22,
+   "squeeze": 141.5
+  },
+  "strength_used_at_10N": {
+   "skin": 0.211,
+   "ribs": 0,
+   "rails": 0.146
+  },
+  "buckle": null
+ },
+ "plain_wall_no_rails": {
+  "label": "H-plain-h0.55",
+  "kind_code": "none",
+  "lam": null,
+  "spacing_mm": null,
+  "skin_mm": 0.776,
+  "rib_w_mm": null,
+  "rib_h_mm": null,
+  "mesh_mm": 0.55,
+  "flex_um": {
+   "worst_hard_press": 240.0,
+   "crown": 127.9,
+   "off_centre": 214.1,
+   "palm_4p4N": 9.23,
+   "squeeze": 168.7
+  },
+  "strength_used_at_10N": {
+   "skin": 0.24,
+   "ribs": 0,
+   "rails": 0
+  },
+  "buckle": null
+ },
+ "patterns": [
+  {
+   "label": "H-square-t0.60",
+   "kind_code": "square",
+   "lam": 0.2393,
+   "spacing_mm": 12.54,
+   "skin_mm": 0.599,
+   "rib_w_mm": 0.361,
+   "rib_h_mm": 1.8049,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 108.6,
+    "crown": 61.8,
+    "off_centre": 97.2,
+    "palm_4p4N": 5.2,
+    "squeeze": 111.3
+   },
+   "strength_used_at_10N": {
+    "skin": 0.158,
+    "ribs": 0.126,
+    "rails": 0.118
+   },
+   "buckle": null
+  },
+  {
+   "label": "H-diamond-t0.60",
+   "kind_code": "diamond",
+   "lam": 0.2374,
+   "spacing_mm": 12.64,
+   "skin_mm": 0.597,
+   "rib_w_mm": 0.3601,
+   "rib_h_mm": 1.8007,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 110.3,
+    "crown": 64.4,
+    "off_centre": 101.1,
+    "palm_4p4N": 5.41,
+    "squeeze": 113.0
+   },
+   "strength_used_at_10N": {
+    "skin": 0.147,
+    "ribs": 0.176,
+    "rails": 0.133
+   },
+   "buckle": null
+  },
+  {
+   "label": "H-kagome-t0.60",
+   "kind_code": "kagome",
+   "lam": 0.2398,
+   "spacing_mm": 12.51,
+   "skin_mm": 0.596,
+   "rib_w_mm": 0.3596,
+   "rib_h_mm": 1.7981,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 111.6,
+    "crown": 63.7,
+    "off_centre": 100.8,
+    "palm_4p4N": 5.37,
+    "squeeze": 113.1
+   },
+   "strength_used_at_10N": {
+    "skin": 0.207,
+    "ribs": 0.137,
+    "rails": 0.118
+   },
+   "buckle": null
+  },
+  {
+   "label": "G-win-h0.55",
+   "kind_code": "tri",
+   "lam": 0.2382,
+   "spacing_mm": 12.59,
+   "skin_mm": 0.598,
+   "rib_w_mm": 0.3606,
+   "rib_h_mm": 1.8028,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 112.2,
+    "crown": 64.3,
+    "off_centre": 103.8,
+    "palm_4p4N": 5.45,
+    "squeeze": 113.5
+   },
+   "strength_used_at_10N": {
+    "skin": 0.146,
+    "ribs": 0.129,
+    "rails": 0.119
+   },
+   "buckle": null
+  },
+  {
+   "label": "H-hex-t0.60",
+   "kind_code": "hex",
+   "lam": 0.2372,
+   "spacing_mm": 12.65,
+   "skin_mm": 0.598,
+   "rib_w_mm": 0.3604,
+   "rib_h_mm": 1.8021,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 114.6,
+    "crown": 66.9,
+    "off_centre": 104.2,
+    "palm_4p4N": 5.52,
+    "squeeze": 119.8
+   },
+   "strength_used_at_10N": {
+    "skin": 0.191,
+    "ribs": 0.264,
+    "rails": 0.152
+   },
+   "buckle": null
+  }
+ ],
+ "depth_family": [
+  {
+   "label": "H-depth0.6",
+   "kind_code": "tri",
+   "lam": 0.2382,
+   "spacing_mm": 12.59,
+   "skin_mm": 0.683,
+   "rib_w_mm": 0.4112,
+   "rib_h_mm": 0.6,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 153.4,
+    "crown": 86.2,
+    "off_centre": 138.7,
+    "palm_4p4N": 6.52,
+    "squeeze": 145.3
+   },
+   "strength_used_at_10N": {
+    "skin": 0.19,
+    "ribs": 0.135,
+    "rails": 0.16
+   },
+   "buckle": null
+  },
+  {
+   "label": "H-depth1.0",
+   "kind_code": "tri",
+   "lam": 0.2382,
+   "spacing_mm": 12.59,
+   "skin_mm": 0.652,
+   "rib_w_mm": 0.3925,
+   "rib_h_mm": 1.0,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 143.9,
+    "crown": 81.1,
+    "off_centre": 130.8,
+    "palm_4p4N": 6.29,
+    "squeeze": 136.8
+   },
+   "strength_used_at_10N": {
+    "skin": 0.181,
+    "ribs": 0.138,
+    "rails": 0.153
+   },
+   "buckle": null
+  },
+  {
+   "label": "H-depth1.4",
+   "kind_code": "tri",
+   "lam": 0.2382,
+   "spacing_mm": 12.59,
+   "skin_mm": 0.624,
+   "rib_w_mm": 0.3757,
+   "rib_h_mm": 1.4,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 128.8,
+    "crown": 73.0,
+    "off_centre": 118.0,
+    "palm_4p4N": 5.89,
+    "squeeze": 125.1
+   },
+   "strength_used_at_10N": {
+    "skin": 0.165,
+    "ribs": 0.129,
+    "rails": 0.137
+   },
+   "buckle": null
+  },
+  {
+   "label": "G-win-h0.55",
+   "kind_code": "tri",
+   "lam": 0.2382,
+   "spacing_mm": 12.59,
+   "skin_mm": 0.598,
+   "rib_w_mm": 0.3606,
+   "rib_h_mm": 1.8028,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 112.2,
+    "crown": 64.3,
+    "off_centre": 103.8,
+    "palm_4p4N": 5.45,
+    "squeeze": 113.5
+   },
+   "strength_used_at_10N": {
+    "skin": 0.146,
+    "ribs": 0.129,
+    "rails": 0.119
+   },
+   "buckle": null
+  },
+  {
+   "label": "H-depth2.2",
+   "kind_code": "tri",
+   "lam": 0.2382,
+   "spacing_mm": 12.59,
+   "skin_mm": 0.575,
+   "rib_w_mm": 0.3471,
+   "rib_h_mm": 2.2,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 97.1,
+    "crown": 56.5,
+    "off_centre": 91.1,
+    "palm_4p4N": 5.06,
+    "squeeze": 103.7
+   },
+   "strength_used_at_10N": {
+    "skin": 0.127,
+    "ribs": 0.124,
+    "rails": 0.102
+   },
+   "buckle": null
+  },
+  {
+   "label": "H-depth2.6",
+   "kind_code": "tri",
+   "lam": 0.2382,
+   "spacing_mm": 12.59,
+   "skin_mm": 0.555,
+   "rib_w_mm": 0.3349,
+   "rib_h_mm": 2.6,
+   "mesh_mm": 0.55,
+   "flex_um": {
+    "worst_hard_press": 84.1,
+    "crown": 49.8,
+    "off_centre": 80.2,
+    "palm_4p4N": 4.74,
+    "squeeze": 95.3
+   },
+   "strength_used_at_10N": {
+    "skin": 0.116,
+    "ribs": 0.117,
+    "rails": 0.086
+   },
+   "buckle": null
+  }
+ ],
+ "convergence": {
+  "winner": [
+   93.2,
+   109.5,
+   112.2
+  ],
+  "plain_with_rails": [
+   135.7,
+   142.9,
+   147.0
+  ],
+  "mesh_mm": [
+   0.9,
+   0.7,
+   0.55
+  ]
+ },
+ "buckling_h0p9": {
+  "winner": {
+   "crown": 92.87106745613164,
+   "squeeze": 73.51752700155774
+  },
+  "plain_with_rails": {
+   "crown": 74.98137054227242,
+   "squeeze": 44.56306881155187
+  },
+  "note": "load factor x the 10 N case"
+ },
+ "registration_h0p9": {
+  "kagome": [
+   92.3,
+   94.2,
+   91.1
+  ],
+  "triangles": [
+   94.2,
+   94.2,
+   92.0
+  ],
+  "note": "worst hard press, um, three placements (true translations), level crease"
+ },
+ "fillets": {
+  "root_mm": 0.24,
+  "node_mm": 0.22,
+  "root_scf": 1.472,
+  "note": "root: 0.4 skins (top of DFMPro 0.25-0.4); node: 60 % of the rib (b06_filletsize rule)"
+ },
+ "flow_path_mm": 105
+}

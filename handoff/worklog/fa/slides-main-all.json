@@ -1,0 +1,1067 @@
+[
+ {
+  "i": 0,
+  "id": "b01_cover",
+  "ch": "intro",
+  "title": "Theseus: in pursuit of an objectively better mouse",
+  "settle": 7.5,
+  "replaces": [
+   "cover"
+  ]
+ },
+ {
+  "i": 1,
+  "id": "b01_compromise",
+  "ch": "intro",
+  "title": "Every flagship compromises",
+  "settle": 10.5,
+  "replaces": [
+   "flagships",
+   "thesis"
+  ]
+ },
+ {
+  "i": 2,
+  "id": "b01_lighter",
+  "ch": "intro",
+  "title": "Why lighter wins",
+  "settle": 10.5,
+  "replaces": [
+   "zerograms"
+  ]
+ },
+ {
+  "i": 3,
+  "id": "b01_battery",
+  "ch": "intro",
+  "title": "Battery life, traded for weight",
+  "settle": 11,
+  "replaces": [
+   "market"
+  ]
+ },
+ {
+  "i": 4,
+  "id": "b01_listed",
+  "ch": "intro",
+  "title": "Listed against weighed",
+  "settle": 10,
+  "replaces": [
+   "weightgap"
+  ]
+ },
+ {
+  "i": 5,
+  "id": "b01_density",
+  "ch": "intro",
+  "title": "Density, not weight",
+  "settle": 11,
+  "replaces": [
+   "ntr_density"
+  ]
+ },
+ {
+  "i": 6,
+  "id": "b01_illusion",
+  "ch": "intro",
+  "title": "Same weight, more mouse, feels lighter",
+  "settle": 10,
+  "replaces": [
+   "ntr_sizewt"
+  ]
+ },
+ {
+  "i": 7,
+  "id": "b01_rank",
+  "ch": "intro",
+  "title": "Ranked by density, not weight",
+  "settle": 11,
+  "replaces": [
+   "ntr_densrank"
+  ]
+ },
+ {
+  "i": 8,
+  "id": "b01_price",
+  "ch": "intro",
+  "title": "Price against weight",
+  "settle": 10,
+  "replaces": [
+   "pricefront"
+  ]
+ },
+ {
+  "i": 9,
+  "id": "b01_targets",
+  "ch": "intro",
+  "title": "Targets",
+  "settle": 10,
+  "replaces": [
+   "targets",
+   "targets2"
+  ]
+ },
+ {
+  "i": 10,
+  "id": "b01_budget",
+  "ch": "intro",
+  "title": "The weight budget",
+  "settle": 11,
+  "replaces": [
+   "budget",
+   "ntr_stats"
+  ]
+ },
+ {
+  "i": 11,
+  "id": "b02_card",
+  "ch": "click",
+  "title": "Clicks that land the same, every time",
+  "settle": 5.5,
+  "replaces": [
+   "clicks"
+  ]
+ },
+ {
+  "i": 12,
+  "id": "b02_cutouts",
+  "ch": "click",
+  "title": "Straight rear cutouts",
+  "settle": 10.5,
+  "replaces": [
+   "cutouts"
+  ]
+ },
+ {
+  "i": 13,
+  "id": "b02_seams",
+  "ch": "click",
+  "title": "One split, between your fingers",
+  "settle": 10,
+  "replaces": [
+   "shlsheet1"
+  ]
+ },
+ {
+  "i": 14,
+  "id": "b02_front",
+  "ch": "click",
+  "title": "A flat front, no wobble",
+  "settle": 10.5,
+  "replaces": [
+   "clk_front"
+  ]
+ },
+ {
+  "i": 15,
+  "id": "b02_grooves",
+  "ch": "click",
+  "title": "Grooves that hold your finger",
+  "settle": 10.5,
+  "replaces": [
+   "grooves"
+  ]
+ },
+ {
+  "i": 16,
+  "id": "b02_flush",
+  "ch": "click",
+  "title": "Ceiling-facing cutouts, flush walls",
+  "settle": 11,
+  "replaces": []
+ },
+ {
+  "i": 17,
+  "id": "b02_direct",
+  "ch": "click",
+  "title": "Direct Drive Actuation",
+  "settle": 11,
+  "replaces": [
+   "arc"
+  ]
+ },
+ {
+  "i": 18,
+  "id": "b02_wedge",
+  "ch": "click",
+  "title": "One flat board, no extra parts",
+  "settle": 10.5,
+  "replaces": [
+   "clk_wedge"
+  ]
+ },
+ {
+  "i": 19,
+  "id": "b02_tensioner",
+  "ch": "click",
+  "title": "The bridge tensioner",
+  "settle": 11,
+  "replaces": [
+   "tensioner"
+  ]
+ },
+ {
+  "i": 20,
+  "id": "b02_stiff",
+  "ch": "click",
+  "title": "A stiff button, a light click",
+  "settle": 10,
+  "replaces": [
+   "clk_tenmat"
+  ]
+ },
+ {
+  "i": 21,
+  "id": "b02_rails",
+  "ch": "click",
+  "title": "Dual rail main clicks",
+  "settle": 11,
+  "replaces": [
+   "anchors"
+  ]
+ },
+ {
+  "i": 22,
+  "id": "b02_pom",
+  "ch": "click",
+  "title": "POM pads set the fit",
+  "settle": 10.5,
+  "replaces": [
+   "clk_pomtune"
+  ]
+ },
+ {
+  "i": 23,
+  "id": "b03_switch",
+  "ch": "click",
+  "title": "A mechanical switch, for the battery",
+  "settle": 12,
+  "replaces": [
+   "clk_switch"
+  ]
+ },
+ {
+  "i": 24,
+  "id": "b03_binning",
+  "ch": "click",
+  "title": "Provable switch binning",
+  "settle": 11,
+  "replaces": [
+   "clk_switch2"
+  ]
+ },
+ {
+  "i": 25,
+  "id": "b03_spdt",
+  "ch": "click",
+  "title": "Single pole, double throw",
+  "settle": 10.5,
+  "replaces": [
+   "clk_spdt"
+  ]
+ },
+ {
+  "i": 26,
+  "id": "b03_timing",
+  "ch": "click",
+  "title": "Negative latency",
+  "settle": 12,
+  "replaces": [
+   "latency",
+   "clk_wait",
+   "clk_methods"
+  ]
+ },
+ {
+  "i": 27,
+  "id": "b03_debounce",
+  "ch": "click",
+  "title": "Debounce: low, and yours to set",
+  "settle": 11,
+  "replaces": [
+   "clk_debounce"
+  ]
+ },
+ {
+  "i": 28,
+  "id": "b03_hotswap",
+  "ch": "click",
+  "title": "Hot-swap switches, no solder",
+  "settle": 11,
+  "replaces": [
+   "clk_hotswap"
+  ]
+ },
+ {
+  "i": 29,
+  "id": "b03_side",
+  "ch": "click",
+  "title": "Dual rail side buttons",
+  "settle": 11,
+  "replaces": [
+   "sidebuttons"
+  ]
+ },
+ {
+  "i": 30,
+  "id": "b04_card",
+  "ch": "glide",
+  "title": "Glide and tracking",
+  "settle": 5.5,
+  "replaces": [
+   "glide"
+  ]
+ },
+ {
+  "i": 31,
+  "id": "b04_camera",
+  "ch": "glide",
+  "title": "Your sensor is a camera",
+  "settle": 12,
+  "replaces": [
+   "gld_camera",
+   "gld_corr",
+   "gld_blur"
+  ]
+ },
+ {
+  "i": 32,
+  "id": "b04_focus",
+  "ch": "glide",
+  "title": "A focus window of 0.2 mm, not 0.4",
+  "settle": 10.5,
+  "replaces": [
+   "focus"
+  ]
+ },
+ {
+  "i": 33,
+  "id": "b04_sag",
+  "ch": "glide",
+  "title": "Dots at the lens keep it in focus",
+  "settle": 10.5,
+  "replaces": [
+   "gld_sag",
+   "dots"
+  ]
+ },
+ {
+  "i": 34,
+  "id": "b04_skates",
+  "ch": "glide",
+  "title": "Skates where they count",
+  "settle": 11,
+  "replaces": [
+   "gld_under",
+   "gld_sheet"
+  ]
+ },
+ {
+  "i": 35,
+  "id": "b04_module",
+  "ch": "glide",
+  "title": "Snap-on lens: one dot wide",
+  "settle": 10,
+  "replaces": [
+   "gld_module"
+  ]
+ },
+ {
+  "i": 36,
+  "id": "b04_sensor",
+  "ch": "glide",
+  "title": "The PAW3970: the plan",
+  "settle": 10,
+  "replaces": [
+   "sensor"
+  ]
+ },
+ {
+  "i": 37,
+  "id": "b04_reports",
+  "ch": "glide",
+  "title": "Every frame as it comes",
+  "settle": 11.5,
+  "replaces": [
+   "gld_reports"
+  ]
+ },
+ {
+  "i": 38,
+  "id": "b05_card",
+  "ch": "shell",
+  "title": "Shell and structure",
+  "settle": 6,
+  "replaces": [
+   "shellcard"
+  ]
+ },
+ {
+  "i": 39,
+  "id": "b05_material",
+  "ch": "shell",
+  "title": "Carbon-filled polypropylene",
+  "settle": 10.5,
+  "replaces": [
+   "materials"
+  ]
+ },
+ {
+  "i": 40,
+  "id": "b05_specific",
+  "ch": "shell",
+  "title": "Specific strength and specific stiffness",
+  "settle": 12,
+  "replaces": [
+   "shlSpecific"
+  ]
+ },
+ {
+  "i": 41,
+  "id": "b05_wall",
+  "ch": "shell",
+  "title": "How thin a wall can go",
+  "settle": 11,
+  "replaces": [
+   "thinwall"
+  ]
+ },
+ {
+  "i": 42,
+  "id": "b05_cubed",
+  "ch": "shell",
+  "title": "Wall tolerance, cubed",
+  "settle": 12,
+  "replaces": [
+   "shlScatter"
+  ]
+ },
+ {
+  "i": 43,
+  "id": "b05_fallacy",
+  "ch": "shell",
+  "title": "The strength–weight fallacy",
+  "settle": 11,
+  "replaces": [
+   "shlPick"
+  ]
+ },
+ {
+  "i": 44,
+  "id": "b05_nopick",
+  "ch": "shell",
+  "title": "You don't have to pick",
+  "settle": 10,
+  "replaces": [
+   "shlNoPick",
+   "shlShell3d"
+  ]
+ },
+ {
+  "i": 45,
+  "id": "b05_hotspot",
+  "ch": "shell",
+  "title": "Stress hotspots",
+  "settle": 10.5,
+  "replaces": [
+   "shlHotspot"
+  ]
+ },
+ {
+  "i": 46,
+  "id": "b05_margin",
+  "ch": "shell",
+  "title": "The peak decides the break",
+  "settle": 12,
+  "replaces": [
+   "shlMargin"
+  ]
+ },
+ {
+  "i": 47,
+  "id": "b05_work",
+  "ch": "shell",
+  "title": "Putting that weight to work",
+  "settle": 12,
+  "replaces": [
+   "shlWork"
+  ]
+ },
+ {
+  "i": 48,
+  "id": "b06_lattice",
+  "ch": "shell",
+  "title": "Triangles, not hexagons",
+  "settle": 11.5,
+  "replaces": [
+   "lattice",
+   "shlDeterminate"
+  ]
+ },
+ {
+  "i": 49,
+  "id": "b06_light",
+  "ch": "shell",
+  "title": "Triangles win more on a light mouse",
+  "settle": 12,
+  "replaces": [
+   "shlThin"
+  ]
+ },
+ {
+  "i": 50,
+  "id": "b06_arches",
+  "ch": "shell",
+  "title": "Interwoven arches form triangles",
+  "settle": 11,
+  "replaces": [
+   "shbArches"
+  ]
+ },
+ {
+  "i": 51,
+  "id": "b06_arch",
+  "ch": "shell",
+  "title": "Why an arch holds",
+  "settle": 11,
+  "replaces": [
+   "shbPress",
+   "shbBend"
+  ]
+ },
+ {
+  "i": 52,
+  "id": "b06_thrust",
+  "ch": "shell",
+  "title": "The thrust line",
+  "settle": 11,
+  "replaces": [
+   "shbThrust"
+  ]
+ },
+ {
+  "i": 53,
+  "id": "b06_fibres",
+  "ch": "shell",
+  "title": "Fibres along the load",
+  "settle": 12,
+  "replaces": [
+   "shbFibres",
+   "shbFlow"
+  ]
+ },
+ {
+  "i": 54,
+  "id": "b06_fillet",
+  "ch": "shell",
+  "title": "Why corners get fillets",
+  "settle": 11.5,
+  "replaces": [
+   "fillet"
+  ]
+ },
+ {
+  "i": 55,
+  "id": "b06_filletsize",
+  "ch": "shell",
+  "title": "Fillet size, solved at equal mass",
+  "settle": 11,
+  "replaces": [
+   "filletsize"
+  ]
+ },
+ {
+  "i": 56,
+  "id": "b06_mold",
+  "ch": "shell",
+  "title": "What a fillet buys the mold",
+  "settle": 12,
+  "replaces": [
+   "shbWidth",
+   "shbMill",
+   "shbMillDirect",
+   "shbTol"
+  ]
+ },
+ {
+  "i": 57,
+  "id": "b07_board",
+  "ch": "shell",
+  "title": "The board you already carry",
+  "settle": 11,
+  "replaces": [
+   "shlPcbRib",
+   "shcCarry",
+   "shlStructs"
+  ]
+ },
+ {
+  "i": 58,
+  "id": "b07_arms",
+  "ch": "shell",
+  "title": "Small arms snap, the whole board holds",
+  "settle": 11,
+  "replaces": [
+   "shcArms"
+  ]
+ },
+ {
+  "i": 59,
+  "id": "b07_tolerance",
+  "ch": "shell",
+  "title": "Tolerance stack-up",
+  "settle": 12.5,
+  "replaces": [
+   "tolerance"
+  ]
+ },
+ {
+  "i": 60,
+  "id": "b07_poron",
+  "ch": "shell",
+  "title": "Poron pads, not grease",
+  "settle": 11,
+  "replaces": [
+   "grind"
+  ]
+ },
+ {
+  "i": 61,
+  "id": "b07_sheet",
+  "ch": "shell",
+  "title": "The rest of the shell",
+  "settle": 13,
+  "replaces": [
+   "shlsheet2"
+  ]
+ },
+ {
+  "i": 62,
+  "id": "b08_card",
+  "ch": "surface",
+  "title": "Grip that holds, and stays",
+  "settle": 5.5,
+  "replaces": [
+   "surfacecard"
+  ]
+ },
+ {
+  "i": 63,
+  "id": "b08_coating",
+  "ch": "surface",
+  "title": "A baked ceramic coat",
+  "settle": 11.5,
+  "replaces": [
+   "coating"
+  ]
+ },
+ {
+  "i": 64,
+  "id": "b08_film",
+  "ch": "surface",
+  "title": "A fifth of a sheet of paper",
+  "settle": 11,
+  "replaces": [
+   "srf_texture",
+   "srf_weight"
+  ]
+ },
+ {
+  "i": 65,
+  "id": "b08_uv",
+  "ch": "surface",
+  "title": "No yellowing",
+  "settle": 11.5,
+  "replaces": [
+   "srf_uv"
+  ]
+ },
+ {
+  "i": 66,
+  "id": "b08_grip",
+  "ch": "surface",
+  "title": "Directional grip",
+  "settle": 10.5,
+  "replaces": [
+   "grip"
+  ]
+ },
+ {
+  "i": 67,
+  "id": "b08_gripmap",
+  "ch": "surface",
+  "title": "A grip map for the hand",
+  "settle": 11,
+  "replaces": [
+   "srf_gripmap"
+  ]
+ },
+ {
+  "i": 68,
+  "id": "b08_tape",
+  "ch": "surface",
+  "title": "The best thickness is no thickness",
+  "settle": 11.5,
+  "replaces": [
+   "srf_tape"
+  ]
+ },
+ {
+  "i": 69,
+  "id": "b08_twotone",
+  "ch": "surface",
+  "title": "Two tones in one coat",
+  "settle": 11,
+  "replaces": [
+   "srf_twotone"
+  ]
+ },
+ {
+  "i": 70,
+  "id": "b08_wheel",
+  "ch": "surface",
+  "title": "A 0.9 g magnesium wheel",
+  "settle": 11.5,
+  "replaces": [
+   "wheel"
+  ]
+ },
+ {
+  "i": 71,
+  "id": "b09_card",
+  "ch": "elec",
+  "title": "Wireless with no penalty",
+  "settle": 5.5,
+  "replaces": [
+   "eleccard"
+  ]
+ },
+ {
+  "i": 72,
+  "id": "b09_chip",
+  "ch": "elec",
+  "title": "One chip, 8 khz",
+  "settle": 10.5,
+  "replaces": [
+   "onechip"
+  ]
+ },
+ {
+  "i": 73,
+  "id": "b09_radio",
+  "ch": "elec",
+  "title": "The radio, clear of the wheel",
+  "settle": 11,
+  "replaces": [
+   "elc_module",
+   "antenna"
+  ]
+ },
+ {
+  "i": 74,
+  "id": "b09_latency",
+  "ch": "elec",
+  "title": "Motion latency, ranked",
+  "settle": 9.5,
+  "replaces": [
+   "motion"
+  ]
+ },
+ {
+  "i": 75,
+  "id": "b09_penalty",
+  "ch": "elec",
+  "title": "No wireless penalty",
+  "settle": 10,
+  "replaces": [
+   "elc_rate"
+  ]
+ },
+ {
+  "i": 76,
+  "id": "b09_sync",
+  "ch": "elec",
+  "title": "Frame sync: 202 → 42 µs",
+  "settle": 9.5,
+  "replaces": [
+   "framesync"
+  ]
+ },
+ {
+  "i": 77,
+  "id": "b09_second",
+  "ch": "elec",
+  "title": "Second Shot",
+  "settle": 10.5,
+  "replaces": [
+   "secondshot"
+  ]
+ },
+ {
+  "i": 78,
+  "id": "b09_life",
+  "ch": "elec",
+  "title": "Battery life at every polling rate",
+  "settle": 10,
+  "replaces": [
+   "power",
+   "frontier"
+  ]
+ },
+ {
+  "i": 79,
+  "id": "b10_pmic",
+  "ch": "elec",
+  "title": "One chip runs the power",
+  "settle": 11,
+  "replaces": [
+   "elc_pmic"
+  ]
+ },
+ {
+  "i": 80,
+  "id": "b10_charge",
+  "ch": "elec",
+  "title": "Fast charging, safely",
+  "settle": 11,
+  "replaces": [
+   "elc_charge",
+   "elc_safe"
+  ]
+ },
+ {
+  "i": 81,
+  "id": "b10_battery",
+  "ch": "elec",
+  "title": "The battery, per gram",
+  "settle": 10,
+  "replaces": [
+   "cells"
+  ]
+ },
+ {
+  "i": 82,
+  "id": "b10_board",
+  "ch": "elec",
+  "title": "One board, one side, one reflow",
+  "settle": 10.5,
+  "replaces": [
+   "elc_oneside"
+  ]
+ },
+ {
+  "i": 83,
+  "id": "b10_sealed",
+  "ch": "elec",
+  "title": "A coat that keeps water out",
+  "settle": 11,
+  "replaces": [
+   "elecsheet1"
+  ]
+ },
+ {
+  "i": 84,
+  "id": "b10_wires",
+  "ch": "elec",
+  "title": "Braided, not ribbon",
+  "settle": 12,
+  "replaces": [
+   "elc_tear",
+   "elc_flex"
+  ]
+ },
+ {
+  "i": 85,
+  "id": "b10_twist",
+  "ch": "elec",
+  "title": "Twisted pairs, a quiet radio",
+  "settle": 11,
+  "replaces": [
+   "elc_twist",
+   "elc_lay"
+  ]
+ },
+ {
+  "i": 86,
+  "id": "b10_cable",
+  "ch": "elec",
+  "title": "An angled plug, a paracord cable",
+  "settle": 11,
+  "replaces": [
+   "cable"
+  ]
+ },
+ {
+  "i": 87,
+  "id": "b10_lights",
+  "ch": "elec",
+  "title": "Nothing lights up but the sensor",
+  "settle": 12,
+  "replaces": [
+   "srf_encoder"
+  ]
+ },
+ {
+  "i": 88,
+  "id": "b10_software",
+  "ch": "elec",
+  "title": "Set it once, in the browser",
+  "settle": 11,
+  "replaces": [
+   "software",
+   "gld_soft"
+  ]
+ },
+ {
+  "i": 89,
+  "id": "b07_shcard",
+  "ch": "shape",
+  "title": "Shape",
+  "settle": 5.5,
+  "replaces": [
+   "shapecard"
+  ]
+ },
+ {
+  "i": 90,
+  "id": "b07_newton",
+  "ch": "shape",
+  "title": "Newtonian shape analysis",
+  "settle": 11,
+  "replaces": [
+   "shp_newton"
+  ]
+ },
+ {
+  "i": 91,
+  "id": "b07_sides",
+  "ch": "shape",
+  "title": "Flat low sides, held the same on both",
+  "settle": 11,
+  "replaces": [
+   "shbSides"
+  ]
+ },
+ {
+  "i": 92,
+  "id": "b07_size",
+  "ch": "shape",
+  "title": "Sized against real hands",
+  "settle": 10,
+  "replaces": [
+   "size"
+  ]
+ },
+ {
+  "i": 93,
+  "id": "b07_emg",
+  "ch": "shape",
+  "title": "EMG on every shape revision",
+  "settle": 11,
+  "replaces": [
+   "emg"
+  ]
+ },
+ {
+  "i": 94,
+  "id": "b07_balance",
+  "ch": "shape",
+  "title": "Balance at the centre",
+  "settle": 12,
+  "replaces": [
+   "mass"
+  ]
+ },
+ {
+  "i": 95,
+  "id": "b11_card",
+  "ch": "own",
+  "title": "Made to last, and to open",
+  "settle": 5.5,
+  "replaces": [
+   "owncard"
+  ]
+ },
+ {
+  "i": 96,
+  "id": "b11_repair",
+  "ch": "own",
+  "title": "Made to be opened",
+  "settle": 12,
+  "replaces": [
+   "repair"
+  ]
+ },
+ {
+  "i": 97,
+  "id": "b11_screws",
+  "ch": "own",
+  "title": "Titanium screws: harder heads, lighter",
+  "settle": 12,
+  "replaces": [
+   "ownscrew"
+  ]
+ },
+ {
+  "i": 98,
+  "id": "b11_inserts",
+  "ch": "own",
+  "title": "Brass inserts: the same fit every time",
+  "settle": 11,
+  "replaces": [
+   "own_insert"
+  ]
+ },
+ {
+  "i": 99,
+  "id": "b11_wear",
+  "ch": "own",
+  "title": "Thread wear: brass keeps its hold",
+  "settle": 11,
+  "replaces": [
+   "own_life"
+  ]
+ },
+ {
+  "i": 100,
+  "id": "b11_battplug",
+  "ch": "own",
+  "title": "A battery you can unplug",
+  "settle": 11,
+  "replaces": [
+   "ownbatt"
+  ]
+ },
+ {
+  "i": 101,
+  "id": "b11_board",
+  "ch": "own",
+  "title": "Screws from below, art on the board",
+  "settle": 11,
+  "replaces": [
+   "ownboard"
+  ]
+ },
+ {
+  "i": 102,
+  "id": "b11_box",
+  "ch": "own",
+  "title": "In the box: the driver, and a manual that stands up",
+  "settle": 11,
+  "replaces": [
+   "box",
+   "ownsheet1",
+   "ownsheet2"
+  ]
+ },
+ {
+  "i": 103,
+  "id": "b01_close",
+  "ch": "end",
+  "title": "Close",
+  "settle": 9,
+  "replaces": [
+   "close"
+  ]
+ }
+]

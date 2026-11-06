@@ -1,0 +1,6 @@
+[
+ ["- [ ] Battery (F42.1, corrected by H2): switch B07_BATT_F42", "- [x] Battery (F42.1, corrected by H2): switch B07_BATT_F42"],
+ ["- [ ] The rib feet's joint to the board (b07's question 1)", "- [x] The rib feet's joint to the board (b07's question 1)"],
+ ["- [ ] SRC keys: b07Fr4Wiki, b07Fr4Flex, b07GwPlusPro, b07GwHtsU, b07X2f duplicate b01's and b05's keys: point at the\n      originals (or keep one definition) so the film has one source per fact.",
+  "- [x] SRC keys: b07Fr4Wiki, b07Fr4Flex, b07GwPlusPro, b07GwHtsU, b07X2f duplicate b01's and b05's keys: point at the\n      originals (or keep one definition) so the film has one source per fact.\n      > P4: b07GwPlusPro → b01GwPlusPro + b01GwWarg, b07GwHtsU → b01TpuHtsU, b07Fr4Flex → shlFr4 (Gund, both ways), b07X2f →\n      > b01X2f + b01X2fWt. b07Fr4Wiki kept: no other file defines the Wikipedia FR-4 entry. Also b07_size's X2F 29.5 → 29 g (Pulsar)."]
+]

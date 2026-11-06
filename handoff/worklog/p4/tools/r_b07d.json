@@ -1,0 +1,3 @@
+[
+ ["**R3-b07-1 (should, b07_poron): two labels collide at settle.**", "**P4 (12:1x machine clock): FIXED.** The scale note moved under the Poron panel, the pad it describes: \"— PORON 4701-30 soft, 21 to 62 kPa at a quarter squeeze\" (the grade as its bold lead), right-aligned to the margin at y 846, level with the verdict's figures and clear of its label (which starts at x 640 and ends near 1198). qa clean at 4.4, 9.5 and 11 s; frames /home/claude/work/p4/shots/b07p/b07_poron_sheet.jpg. (could, b07_newton) was already done: \"Illustrative profiles, drawn from their curvature\" (FILM F40)."]
+]

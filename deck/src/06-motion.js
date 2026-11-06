@@ -720,7 +720,12 @@ function locator(t, t0, x, y, w, view, focus, o = {}) {
    - Dandekar, Raju & Srinivasan 2003: fingertips typically 16 to 20 mm across (research/FILLS.md b02-1).
    - The press: 1.7 to 2.0 mm of pulp compression at a firm tap's peak, 2.3 to 4.3 N (Jindrich, Zhou, Becker & Dennerlein
      2003, J Biomech 36: 497-503, Table 1); a contact about 10 mm long, about 1 cm2, at 1 N (Serhat, Vardar & Kuchenbecker
-     2022, PLoS ONE 17: e0269722). press 1 = 1.5 mm, which flattens about 10 mm of the pad. */
+     2022, PLoS ONE 17: e0269722). press 1 = 1.5 mm, which flattens about 10 mm of the pad.
+   FG2 (Brock 13:18, "the nails on them don't look quite right still"; his pick: "A Soft"): the nail redrawn as a real one
+   sits (a U-shaped cuticle, a rounded free edge, its sides under the folds, a thin plate from the side, in the skin's own
+   greys with no outline of its own; sheet /home/claude/work/fg2/fg2_nail_options_1351_a.png), and the tip reads round:
+   the shadow wraps round it in every view (the end view's light/shadow line found on the model), the pressed pad rolls
+   onto the surface with no corner. */
 const FINGER = { w: 14.3, top: 16, style: 'A line' };   /* the fingertip's breadth at the nail and at the joint, mm (kept for old readers) */
 /** monotone cubic (Fritsch-Carlson) through [[x, y], ...] sorted by x; linear beyond the ends */
 function fngMono(pts) {
@@ -761,6 +766,19 @@ function fngCR(pts, k = 8) {
    hw: half-width from above (the tip's rounding a superellipse over cap mm); nail: free edge and cuticle u, its
    half-width along it, the height of its curvature seen from the side (fold), the lunula's size; dip: the joint's u;
    belly: the pad's centre (the top view's contact); flex: the joint's bend, radians (the proximal part rises). */
+/* the digits, in mm. u: back from the tip along the distal phalanx's axis. h: height above the pad's lowest point.
+   side: the silhouette from the far end along the back to the tip, round the tip and back along the pad (u, h);
+   hw: half-width from above (the tip's rounding a superellipse over cap mm); dip: the joint's u; belly: the pad's centre
+   (the top view's contact); flex: the joint's bend, radians (the proximal part rises).
+   nail (FG2, Brock 13:18 "the nails on them don't look quite right still"): the plate as a real one sits. free: its free
+   edge's middle, mm back from the tip; corner: where the free edge turns into the sides; hw: its visible half-width between
+   the lateral folds (they hide its edges); cut: the cuticle's middle, the cuticle a U (half an ellipse sag mm deep, tangent
+   to the sides); p: the free edge's roundness (a superellipse quadrant, tangent to the sides); smile: the paler free edge
+   out to the onychodermal band, mm at the middle and added at the corners; lunula (the thumb shows its own).
+   Index: 12.7 mm from cuticle to free edge, 10.3 mm visible across (72 % of the 14.3 mm tip), the cuticle's U 2.75 mm deep,
+   curved across at about 9 mm radius (Ha et al., "Fingernail configuration", Arch Plast Surg 2015, 42: 753-760: men's index
+   nail 12.3 wide x 13.0 long, transverse radius 8.9 mm; thumb 15.2 x 14.7, radius 11.4); its cuticle 7 mm ahead of the
+   joint's crease (AIST: nail base to fingertip 14.2 mm x 1.03, the joint 21.9 mm back). */
 const FNG_DIG = {
   index: {
     side: [[62, 16.0], [50, 15.0], [42, 14.15], [35, 13.65], [29, 13.55], [25.5, 13.75], [22.6, 14.05], [20.8, 13.85], [18.5, 13.25],
@@ -769,7 +787,7 @@ const FNG_DIG = {
       [15.5, 0.4], [18.4, 0.62], [20.6, 0.9], [21.9, 1.25], [23.0, 1.2], [24.4, 0.88], [27, 0.55], [32, 0.4], [40, 0.55], [50, 0.8], [62, 1.1]],
     hw: [[6.0, 6.95], [8.5, 7.15], [12, 7.3], [14.6, 7.45], [18, 7.7], [21.5, 8.0], [25, 7.8], [30, 7.75], [36, 7.95], [42, 8.4], [48, 9.0], [62, 9.4]],
     cap: 6.0, capP: 2.25,
-    nail: { free: 1.9, corner: 3.35, cut: 14.6, hw: [[1.9, 5.15], [3.35, 5.45], [5.2, 5.6], [8.5, 5.6], [12, 5.35], [14.6, 4.9]], fold: 2.2, lunula: 0, cuspPow: 2.3, cutSag: 1.15 },
+    nail: { free: 1.9, corner: 3.4, cut: 14.6, sag: 2.75, p: 1.9, hw: [[3.4, 4.95], [5.5, 5.15], [8.5, 5.13], [10.5, 5.0], [11.85, 4.87]], smile: [0.5, 0.4], lunula: 0 },
     dip: 21.9, belly: 7.2, flex: 0.2
   },
   thumb: {
@@ -779,7 +797,7 @@ const FNG_DIG = {
       [23, 0.98], [27, 1.38], [29.6, 1.85], [30.8, 1.75], [32.6, 1.35], [36, 1.0], [44, 1.0], [54, 1.25], [68, 1.7]],
     hw: [[7.8, 8.55], [10, 8.9], [13, 9.15], [16.5, 9.4], [21, 9.75], [26, 10.15], [30.5, 10.35], [34, 10.1], [40, 10.0], [48, 10.5], [68, 11.3]],
     cap: 7.8, capP: 2.35,
-    nail: { free: 2.4, corner: 4.3, cut: 16.2, hw: [[2.4, 6.85], [4.3, 7.38], [8.1, 7.57], [12, 7.35], [16.2, 6.6]], fold: 2.6, lunula: 0.8, cuspPow: 2.2, cutSag: 1.45 },
+    nail: { free: 2.4, corner: 4.3, cut: 16.2, sag: 3.3, p: 1.9, hw: [[4.3, 6.85], [7.0, 7.12], [10.0, 7.08], [12.9, 6.78]], smile: [0.6, 0.45], lunula: 1 },
     dip: 30.2, belly: 8.8, flex: 0.14
   }
 };
@@ -792,14 +810,25 @@ function fngGeo(dig) {
   let it = 0; sil.forEach((p, i) => { if (p[0] < sil[it][0]) it = i; });
   const back = sil.slice(0, it + 1).map(p => [p[0], p[1]]), pad = sil.slice(it).map(p => [p[0], p[1]]);
   const interp = arr => { const a = arr.slice().sort((p, q) => p[0] - q[0]); return u => { if (u <= a[0][0]) return a[0][1]; for (let i = 1; i < a.length; i++) if (a[i][0] >= u) { const f = (u - a[i - 1][0]) / (a[i][0] - a[i - 1][0] || 1); return a[i - 1][1] + f * (a[i][1] - a[i - 1][1]); } return a[a.length - 1][1]; }; };
-  const top = interp(back), bot = interp(pad), hwB = fngMono(D.hw), nhw = fngMono(D.nail.hw);
+  const top = interp(back), bot = interp(pad), hwB = fngMono(D.hw);
   const hw = u => { if (u <= 0) return 0; if (u >= D.cap) return hwB(u); const k = 1 - u / D.cap; return hwB(D.cap) * Math.pow(1 - Math.pow(k, D.capP), 1 / D.capP); };
-  const g = { D, sil, top, bot, hw, nhw, tipH: sil[it][1] };
-  const N = D.nail; g.corner = N.corner; g.zc = nhw(N.corner);
-  g.freeAt = z => N.free + (N.corner - N.free) * Math.pow(Math.min(1, Math.abs(z) / g.zc), N.cuspPow);
+  const g = { D, sil, top, bot, hw, tipH: sil[it][1] };
+  /* the nail's outline in (u, z): its visible half-width W(u) (the free edge a superellipse quadrant tangent to the sides,
+     the sides between the folds, the cuticle's U half an ellipse tangent to them), and the same edges as u of z */
+  const N = D.nail, nhw = fngMono(N.hw);
+  g.nhw = nhw; g.corner = N.corner; g.zc = nhw(N.corner); g.ua = N.cut - N.sag; g.w0 = nhw(g.ua);
+  g.W = u => {
+    if (u <= N.free || u >= N.cut) return 0;
+    if (u < N.corner) { const q = (N.corner - u) / (N.corner - N.free); return g.zc * Math.pow(Math.max(0, 1 - Math.pow(q, N.p)), 1 / N.p); }
+    if (u <= g.ua) return nhw(u);
+    const q = (u - g.ua) / N.sag; return g.w0 * Math.sqrt(Math.max(0, 1 - q * q));
+  };
+  g.freeAt = z => { const r = Math.min(1, Math.abs(z) / g.zc); return N.corner - (N.corner - N.free) * Math.pow(Math.max(0, 1 - Math.pow(r, N.p)), 1 / N.p); };
+  g.cutAt = z => { const r = Math.min(1, Math.abs(z) / g.w0); return g.ua + N.sag * Math.sqrt(Math.max(0, 1 - r * r)); };
   /* a section at u: the heights of its top and its bottom at lateral offset z (superellipses, flatter on top) */
   g.sec = (u, z) => { const b = hw(u); if (b <= 1e-4 || Math.abs(z) >= b) return null; const t = top(u), bo = bot(u), hc = bo + (t - bo) * 0.52, r = Math.abs(z) / b;
     return [hc + (t - hc) * Math.pow(1 - Math.pow(r, 2.05), 1 / 2.05), hc - (hc - bo) * Math.pow(1 - Math.pow(r, 2.3), 1 / 2.3)]; };
+  g.secTop = (u, z) => { const r = g.sec(u, z); return r ? r[0] : top(u); };
   /* the joint's flexion: a point (X = -u, Y = -h) of the straight finger turned about the joint's centre by up to flex, the
      middle phalanx toward the palm (in the fingertip's frame it drops below the fingertip's axis; the knuckle stands out) */
   g.bender = flex => {
@@ -811,32 +840,50 @@ function fngGeo(dig) {
   return g;
 }
 
-/** the nail in the finger's (u, z): its outline (free edge, lateral edges, cuticle), the free edge's white band, the
-    lunula and the lateral folds. Shared by the top and end views so the two always agree. */
+/** the nail in the finger's (u, z), shared by the top and end views so the two always agree: its outline; the paler free
+    edge; the lunula (the thumb's); the fold: one line round its sides and the cuticle's U where the skin folds over it (the
+    free edge has none); the proximal fold's soft crease behind the cuticle; the highlight's line on either side (s = -1, 1);
+    the hyponychium's shadow under the free edge */
 function fngNail(dig) {
-  const g = fngGeo(dig), D = g.D, N = D.nail, ucr = g.corner, zc = g.zc, K = 24;
-  const uc0 = N.cut - N.cutSag, w0 = g.nhw(uc0), cut = z => N.cut - N.cutSag * Math.pow(Math.min(1, Math.abs(z) / w0), 2.3);
-  const out = [];
-  for (let i = 0; i <= K; i++) { const z = -zc + 2 * zc * i / K; out.push([g.freeAt(z), z]); }
-  for (let u = ucr + 0.3; u < uc0 - 0.1; u += 0.3) out.push([u, g.nhw(u)]);
-  for (let i = 0; i <= K; i++) { const z = w0 * (1 - 2 * i / K); out.push([cut(z), z]); }
-  for (let u = uc0 - 0.3; u > ucr + 0.1; u -= 0.3) out.push([u, -g.nhw(u)]);
-  const free = [], fw = dig === 'thumb' ? 0.65 : 0.45;
-  for (let i = 0; i <= K; i++) { const z = -zc + 2 * zc * i / K; free.push([g.freeAt(z), z]); }
-  for (let i = K; i >= 0; i--) { const z = (-zc + 2 * zc * i / K) * 0.99; free.push([g.freeAt(z) + fw, z]); }
-  const lun = [], lw0 = w0 * (dig === 'thumb' ? 0.74 : 0.6), ld = 1.0 + N.lunula * 2.2;
-  for (let i = 0; i <= 18; i++) { const z = lw0 * (1 - 2 * i / 18); lun.push([cut(z) - 0.12 - ld * Math.sqrt(Math.max(0, 1 - (z / lw0) * (z / lw0))), z]); }
-  const folds = [-1, 1].map(sd => { const f = []; for (let u = uc0 + 0.4; u >= ucr + 1.0; u -= 0.4) f.push([u, sd * (g.nhw(u) + 0.75)]); return f; });
-  return { out, free, lun, folds, cut, uc0, w0 };
+  const g = fngGeo(dig), N = g.D.nail, K = 28, out = [];
+  for (let i = 0; i <= K; i++) { const z = g.zc * Math.sin(-Math.PI / 2 + Math.PI * i / K); out.push([g.freeAt(z), z]); }
+  for (let u = N.corner + 0.25; u < g.ua - 0.05; u += 0.25) out.push([u, g.nhw(u)]);
+  for (let i = 0; i <= K; i++) { const th = Math.PI * i / K; out.push([g.ua + N.sag * Math.sin(th), g.w0 * Math.cos(th)]); }
+  for (let u = g.ua - 0.25; u > N.corner + 0.05; u -= 0.25) out.push([u, -g.nhw(u)]);
+  const zs = g.zc, sm = z => N.smile[0] + N.smile[1] * Math.pow(Math.abs(z) / g.zc, 2), free = [];
+  for (let i = 0; i <= K; i++) { const z = zs * Math.sin(-Math.PI / 2 + Math.PI * i / K); free.push([g.freeAt(z) - 0.05, z]); }
+  for (let i = K; i >= 0; i--) { const z = zs * Math.sin(-Math.PI / 2 + Math.PI * i / K); free.push([g.freeAt(z) + sm(z), z]); }
+  const lun = [];
+  if (N.lunula > 0) { const wl = g.w0 * 0.8, ld = 2.3 * N.lunula;
+    for (let i = 0; i <= 20; i++) { const z = -wl + 2 * wl * i / 20; lun.push([g.cutAt(z) - ld * Math.sqrt(Math.max(0, 1 - (z / wl) * (z / wl))), z]); }
+    for (let i = 20; i >= 0; i--) { const z = -wl + 2 * wl * i / 20; lun.push([g.cutAt(z) + 0.1, z]); } }
+  /* the fold: from the left corner back along the side, round the U, forward along the right side */
+  const fold = [], uf0 = N.corner - 0.3 * (N.corner - N.free), e = 0.03;
+  for (let u = uf0; u < g.ua - 0.05; u += 0.25) fold.push([u, -(g.W(u) + e)]);
+  for (let i = 0; i <= K; i++) { const th = Math.PI * (1 - i / K); fold.push([g.ua + (N.sag + e) * Math.sin(th), (g.w0 + e) * Math.cos(th)]); }
+  for (let u = g.ua - 0.05; u >= uf0; u -= 0.25) fold.push([u, g.W(u) + e]);
+  const pfold = [], wp = g.w0 * 0.78;
+  for (let i = 0; i <= 16; i++) { const z = -wp + 2 * wp * i / 16; pfold.push([g.cutAt(z * 1.05) + 1.7, z]); }
+  const hl = sg => { const l = []; for (let u = N.free + 2.1; u <= g.ua - 0.2; u += 0.4) l.push([u, sg * 0.42 * Math.min(g.W(u), g.w0)]); return l; };
+  const um = (N.free + N.cut) / 2, cross = [[um, -g.nhw(um)], [um, g.nhw(um)]];
+  return { out, free, lun, fold, pfold, hl, zs, sm, cross };
 }
-
-/** the lunula only where the digit shows one (the thumb; the index's is usually under the fold) */
-function fngLun(dig, NU) { return (FNG_DIG[dig] || FNG_DIG.index).nail.lunula > 0 ? NU.lun : []; }
 
 /* ------------------------------ the views, as outlines in the finger's frame ------------------------------
    Frame: X = -u (the tip toward +X), Y = -h (the back up = -Y). Each returns { body (closed), nail (closed), free (the
-   free edge's band), lun, lines (creases, folds), term (the light/shadow line, side view), flat: [X0, X1] (the contact),
-   far: the far end's centre, axis: the finger's direction there (for the fade) }. */
+   free edge's band), lun, fold (the skin's edge round the nail), hl (its highlight's line), lines (creases), term (the
+   light/shadow line), flat: [X0, X1] (the contact), far: the far end's centre, axis: the finger's direction there (for
+   the fade), tipAx: the fingertip's own direction (the shading wraps round the tip about it) }. */
+
+/** round a corner of an outline: the points within r mm either side of pts[i] give way to a quadratic through it */
+function fngRound(pts, i, r) {
+  const n = pts.length; if (!(i > 0 && i < n - 1) || !(r > 0)) return pts;
+  const walk = dir => { let acc = 0, j = i; for (;;) { const k = j + dir; if (k < 0 || k >= n) return { j, q: pts[j] };
+    const d = Math.hypot(pts[k][0] - pts[j][0], pts[k][1] - pts[j][1]); if (acc + d >= r) { const f = (r - acc) / (d || 1); return { j, q: [pts[j][0] + (pts[k][0] - pts[j][0]) * f, pts[j][1] + (pts[k][1] - pts[j][1]) * f] }; } acc += d; j = k; } };
+  const a = walk(-1), b = walk(1), C = pts[i], seg = [];
+  for (let k = 0; k <= 10; k++) { const t = k / 10, v = 1 - t; seg.push([v * v * a.q[0] + 2 * v * t * C[0] + t * t * b.q[0], v * v * a.q[1] + 2 * v * t * C[1] + t * t * b.q[1]]); }
+  return pts.slice(0, a.j).concat(seg, pts.slice(b.j + 1));
+}
 
 /** the side view: the surface is the line Y = 0, the finger meets it pitched by `pitch` (radians, tip into it), its joint
     bent by flex, pressed by press (0..1 -> 1.5 mm of pulp). L: mm of finger. */
@@ -846,45 +893,51 @@ function fngSide(dig, L, pitch, press, flex, floor) {
   for (const p of g.sil) if (p[0] <= L) body.push([-p[0], -p[1]]);
   /* close the far end across the finger */
   body.unshift([-L, -g.top(L)]); body.push([-L, -g.bot(L)]);
-  /* the nail, from the side: the band between the back and the lateral nail fold (the nail's own curvature), its proximal
-     end the cuticle curving down and forward, its free edge a slanted line down to the corner */
-  const nf = N.free, nc = N.cut, fold = N.fold, ucr = g.corner;
-  const fd = u => fold * (0.88 + 0.12 * Math.sin(Math.PI * clamp((u - ucr) / (nc - 1.3 - ucr))));
-  const nail = [];
-  for (let u = nf; u <= nc; u += 0.2) nail.push([-u, -g.top(u) + 0.04]);
-  for (let k = 1; k <= 8; k++) { const a = k / 8 * Math.PI / 2, u = nc - N.cutSag * (1 - Math.cos(a)), d = 0.04 + (fd(nc - N.cutSag) - 0.04) * Math.sin(a); nail.push([-u, -g.top(u) + d]); }
-  for (let u = nc - N.cutSag - 0.2; u >= ucr; u -= 0.2) nail.push([-u, -g.top(u) + fd(u)]);
-  const edgeAt = q => { const u = nf + (ucr - nf) * q; return [-u, -g.top(u) + 0.04 + (fd(ucr) - 0.04) * Math.pow(q, 0.85)]; };
-  for (let k = 1; k <= 10; k++) nail.push(edgeAt(1 - k / 10));
-  const fw = dig === 'thumb' ? 0.8 : 0.62, free = [];
-  for (let k = 0; k <= 10; k++) free.push(edgeAt(k / 10));
-  for (let k = 10; k >= 0; k--) { const e = edgeAt(k / 10); free.push([e[0] - fw, e[1] + (g.top(-e[0]) - g.top(-e[0] + fw))]); }
+  /* the nail from the side (FG2): a thin plate on the back of the fingertip, seen edge-on at its crest. What shows is the
+     strip between the crest (the silhouette) and the fold over its side: about 1.5 mm at most, tapering to nothing at the
+     cuticle's U and round the free edge, as the plate curves away (9 mm radius across); the paler free edge at its front */
+  const st = (u, z) => g.secTop(u, z), cov = 0.2, us = [];
+  for (let u = N.free; u < N.cut; u += 0.12) us.push(u); us.push(N.cut);
+  const lowAt = u => [-u, -st(u, Math.max(0, g.W(u) - cov))];
+  const nail = us.map(u => [-u, -(g.top(u) + 0.01)]).concat(us.slice().reverse().map(lowAt));
+  const fold = us.filter(u => u >= N.corner - 0.3).reverse().map(lowAt);
+  const fedge = []; for (let i = 0; i <= 14; i++) { const z = (g.zc - cov) * (1 - i / 14), u = g.freeAt(z); fedge.push([-u, -st(u, z)]); }
+  const NU = fngNail(dig), smile = [];
+  for (let i = 0; i <= 14; i++) { const z = NU.zs * i / 14, u = g.freeAt(z) - 0.05; smile.push([-u, -st(u, z) - 0.01]); }
+  for (let i = 14; i >= 0; i--) { const z = NU.zs * i / 14, u = g.freeAt(z) + NU.sm(z); smile.push([-u, -st(u, z)]); }
+  const hl = []; for (let u = N.free + 1.1; u <= N.cut - 1.6; u += 0.4) hl.push([-u, -(g.top(u) - 0.3)]);
   /* creases: the joint's dorsal wrinkles (short arcs down from the back) and its palmar crease */
   const lines = [];
   for (const [du0, len] of [[-1.3, 2.4], [0, 3.1], [1.25, 2.3]]) { const u = D.dip + du0 - 0.4, y0 = -g.top(u) + 0.3; lines.push([[-u, y0], [-(u - 0.3), y0 + len * 0.55], [-(u - 0.12), y0 + len]]); }
   { const u = D.dip, y0 = -g.bot(u) - 0.1; lines.push([[-u, y0], [-(u - 0.45), y0 - 1.3], [-(u - 0.3), y0 - 2.3]]); }
-  /* the light/shadow line along the side: 40 % up from the pad, following the tip round */
-  const term = [];
-  for (let u = L; u >= 1.0; u -= 0.4) { const t = g.top(u), b = g.bot(u), f = 0.4 + 0.18 * Math.exp(-u / 2.5); term.push([-u, -(b + (t - b) * f)]); }
+  /* the light/shadow line along the side, 40 % up from the shadowed side (the pad's, or the back's when the light comes
+     from below); round the tip it is carried on to the outline when painted, so the tip reads round */
+  const termA = [], termB = [];
+  for (let u = L; u >= 4.4; u -= 0.4) { const t = g.top(u), b = g.bot(u); termA.push([-u, -(b + (t - b) * 0.4)]); termB.push([-u, -(b + (t - b) * 0.62)]); }
   /* bend, pitch, contact, press */
   const c = Math.cos(pitch), s = Math.sin(pitch), rot = p => [p[0] * c - p[1] * s, p[0] * s + p[1] * c];
-  const all = [body, nail, free, term, ...lines].map(a => a.map(p => rot(bend(p))));
+  const all = [body, nail, smile, fold, fedge, hl, termA, termB, ...lines].map(a => a.map(p => rot(bend(p))));
   let lo = -1e9, cx = 0;
   for (const p of all[0]) if (p[1] > lo) { lo = p[1]; cx = p[0]; }
   const delta = 1.5 * clamp(press), sh = p => [p[0] - cx, p[1] - lo + delta];
   const out = all.map(a => a.map(sh));
-  let x0 = 1e9, x1 = -1e9;
+  let x0 = 1e9, x1 = -1e9, i0 = -1, i1 = -1;
   const fy = floor ? (X => -floor(X)) : (X => 0);
-  out[0] = out[0].map(p => { const f = fy(p[0]); if (p[1] > f) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); return [p[0], f]; } return p; });
+  out[0] = out[0].map((p, i) => { const f = fy(p[0]); if (p[1] > f) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); if (i0 < 0) i0 = i; i1 = i; return [p[0], f]; } return p; });
   if (x1 > x0) {
     /* the skin beside the flat bulges outward a little (the pulp is nearly incompressible) */
-    const xc = (x0 + x1) / 2, hl = (x1 - x0) / 2, k = 0.38 * delta;
-    out[0] = out[0].map(p => { const h = p[1] - fy(p[0]); if (h < -3.0) return p; const f = 1 + Math.min(0, h) / 3.0, dx = p[0] - xc; if (Math.abs(dx) < hl * 0.7) return p; return [p[0] + Math.sign(dx) * k * f * f, p[1]]; });
-    out[3] = out[3].map(p => (p[1] > -0.4 ? [p[0], -0.4] : p));
+    const xc = (x0 + x1) / 2, hl2 = (x1 - x0) / 2, k = 0.38 * delta;
+    out[0] = out[0].map(p => { const h = p[1] - fy(p[0]); if (h < -3.0) return p; const f = 1 + Math.min(0, h) / 3.0, dx = p[0] - xc; if (Math.abs(dx) < hl2 * 0.7) return p; return [p[0] + Math.sign(dx) * k * f * f, p[1]]; });
+    /* and it rolls onto the surface: no corner where the pad meets it (FG2: the tip read as a chisel) */
+    const rr = Math.min(1.3, 0.3 * (x1 - x0) + 0.15);
+    out[0] = fngRound(out[0], i1, rr); out[0] = fngRound(out[0], i0, rr);
+    for (const q of [6, 7]) out[q] = out[q].map(p => (p[1] > -0.4 ? [p[0], -0.4] : p));
   }
   const fe = out[0], far = [(fe[0][0] + fe[fe.length - 1][0]) / 2, (fe[0][1] + fe[fe.length - 1][1]) / 2];
   const th = pitch - flex;   /* the middle phalanx's direction: the fingertip's pitch less the joint's flexion */
-  return { body: out[0], nail: out[1], free: out[2], term: out[3], lines: out.slice(4), flat: x1 > x0 ? [x0, x1] : null, flatPts: x1 > x0 ? [[x0, fy(x0)], [x1, fy(x1)]] : null, far, axis: [Math.cos(th), Math.sin(th)], L, tip: out[0].reduce((a, q) => (q[0] > a[0] ? q : a), [-1e9, 0]) };
+  return { body: out[0], nail: out[1], free: out[2], fold: out[3], fedge: out[4], hl: out[5], termA: out[6], termB: out[7], lines: out.slice(8),
+    flat: x1 > x0 ? [x0, x1] : null, flatPts: x1 > x0 ? [[x0, fy(x0)], [x1, fy(x1)]] : null, far, axis: [Math.cos(th), Math.sin(th)], tipAx: [c, s], L,
+    tip: out[0].reduce((a, q) => (q[0] > a[0] ? q : a), [-1e9, 0]) };
 }
 
 /** the top view (the nail toward the viewer): the pad's centre (the contact) at the origin; pressed, the pulp spreads */
@@ -895,9 +948,10 @@ function fngTop(dig, L, press) {
   for (let u = 0; u <= L + 1e-6; u += 0.2) half.push([U(u) + (u < 1.2 ? 0.25 * p * (1.2 - u) / 1.2 : 0), g.hw(u) + spread(u)]);
   const body = half.map(q => [q[0], -q[1]]).reverse().concat(half.slice(1).map(q => [q[0], q[1]]));
   const NU = fngNail(dig), T = q => [U(q[0]), q[1]];
-  const lines = NU.folds.map(f => f.map(T));
+  const lines = [];
   for (const [du0, f] of [[-1.3, 0.4], [0, 0.55], [1.25, 0.38]]) { const u = D.dip + du0 - 0.3, w = g.hw(u) * f, l = []; for (let i = 0; i <= 10; i++) { const z = -w + 2 * w * i / 10; l.push([U(u - 0.5 * (1 - Math.pow(z / w, 2))), z]); } lines.push(l); }
-  return { body, nail: NU.out.map(T), free: NU.free.map(T), lun: fngLun(dig, NU).map(T), lines, uc, far: [U(L), 0], axis: [1, 0], L };
+  return { body, nail: NU.out.map(T), free: NU.free.map(T), lun: NU.lun.map(T), fold: NU.fold.map(T), pfold: NU.pfold.map(T), hlL: NU.hl(-1).map(T), hlR: NU.hl(1).map(T), cross: NU.cross.map(T),
+    lines, uc, far: [U(L), 0], axis: [1, 0], tipAx: [1, 0], L, hwAt: u => g.hw(u) + spread(u), U };
 }
 
 /** the end view: the finger comes toward the viewer, its fingertip pitched down by pitch (radians) to the surface (the
@@ -907,20 +961,29 @@ function fngTop(dig, L, press) {
     Y-up = u sin(pitch) + h cos(pitch). The silhouette is the union of every section's projection. */
 /* the end view, in two parts: the projection (costly; cached by its pose) and the press (cheap; every frame) */
 const FNG_ENDBASE = new Map();
-function fngEnd(dig, L, pitch, press, flex, yaw = 0, floor, roll = 0) {
-  const k0 = [dig, L, pitch, flex, yaw, roll].map(v => (typeof v === 'number' ? v.toFixed(4) : v)).join('|');
+function fngEnd(dig, L, pitch, press, flex, yaw = 0, floor, roll = 0, light = [-0.42, -0.91]) {
+  const k0 = [dig, L, pitch, flex, yaw, roll, light[0], light[1]].map(v => (typeof v === 'number' ? v.toFixed(4) : v)).join('|');
   let B = FNG_ENDBASE.get(k0);
-  if (!B) { B = fngEndBase(dig, L, pitch, flex, yaw, roll); FNG_ENDBASE.set(k0, B); if (FNG_ENDBASE.size > 60) FNG_ENDBASE.delete(FNG_ENDBASE.keys().next().value); }
+  if (!B) { B = fngEndBase(dig, L, pitch, flex, yaw, roll, light); FNG_ENDBASE.set(k0, B); if (FNG_ENDBASE.size > 60) FNG_ENDBASE.delete(FNG_ENDBASE.keys().next().value); }
   const delta = 1.5 * clamp(press), dY = q => [q[0], q[1] + delta];
   const fy = floor ? (X => -floor(X)) : (X => 0);
   let x0 = 1e9, x1 = -1e9;
-  const low2 = B.lower.map(p => { const y = p[1] + delta, f = fy(p[0]); if (y > f) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); return [p[0], f]; } return [p[0], y]; });
+  const CL = new Set();
+  const low2 = B.lower.map(p => { const y = p[1] + delta, f = fy(p[0]); if (y > f) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); const q = [p[0], f]; CL.add(q); return q; } return [p[0], y]; });
   let body = B.upper.map(dY).concat(low2.reverse());
-  if (x1 > x0) { const k = 0.45 * delta, mid = (x0 + x1) / 2, hl = (x1 - x0) / 2; body = body.map(p => (p[1] > -3 && Math.abs(p[0] - mid) > hl * 0.6 ? [p[0] + Math.sign(p[0] - mid) * k * Math.pow(1 + Math.min(0, p[1]) / 3, 2), p[1]] : p)); }
-  return { body, nail: B.nail.map(dY), free: B.free.map(dY), lun: B.lun.map(dY), lines: B.lines.map(l => l.map(dY)), term: B.term.map(dY),
+  if (x1 > x0) {
+    const k = 0.45 * delta, mid = (x0 + x1) / 2, hl = (x1 - x0) / 2;
+    body = body.map(p => { if (p[1] > -3 && Math.abs(p[0] - mid) > hl * 0.6) { const q = [p[0] + Math.sign(p[0] - mid) * k * Math.pow(1 + Math.min(0, p[1]) / 3, 2), p[1]]; if (CL.has(p)) CL.add(q); return q; } return p; });
+    let i0 = -1, i1 = -1; body.forEach((p, i) => { if (CL.has(p)) { if (i0 < 0) i0 = i; i1 = i; } });
+    const rr = Math.min(1.2, 0.3 * (x1 - x0) + 0.15);
+    if (i1 > i0) { body = fngRound(body, i1, rr); body = fngRound(body, i0, rr); }
+  }
+  const tY = q => { const y = q[1] + delta; return [q[0], y > -0.35 ? -0.35 : y]; };
+  return { body, nail: B.nail.map(dY), free: B.free.map(dY), lun: B.lun.map(dY), fold: B.fold.map(dY), pfold: B.pfold.map(dY), hlL: B.hlL.map(dY), hlR: B.hlR.map(dY), cross: B.cross.map(dY),
+    lines: B.lines.map(l => l.map(dY)), term: B.term.map(tY),
     flat: x1 > x0 ? [x0, x1] : null, flatPts: x1 > x0 ? [[x0, fy(x0)], [x1, fy(x1)]] : null, L, far: dY(B.far), axis: B.axis, tip: [0, 0] };
 }
-function fngEndBase(dig, L, pitch, flex, yaw, roll) {
+function fngEndBase(dig, L, pitch, flex, yaw, roll, light) {
   const g = fngGeo(dig), D = g.D, c = Math.cos(pitch), s = Math.sin(pitch), cy = Math.cos(yaw), sy = Math.sin(yaw), sec = g.sec, bend = g.bender(flex);
   /* roll: the finger turned about its own axis (the stage's ang: 0 the pad down; -PI/2 the pad facing right, a finger
      lying against a side wall). The body still rises up the screen; the result is drawn in a frame turned by roll so the
@@ -948,15 +1011,68 @@ function fngEndBase(dig, L, pitch, flex, yaw, roll) {
   const lines = [];
   /* the hyponychium: the shadow line just under the free edge */
   { const l = [], zf = g.zc * 0.86; for (let i = 0; i <= 20; i++) { const z = -zf + 2 * zf * i / 20, u = g.freeAt(z) - 0.1; l.push(proj(u, z, -0.75)); } lines.push(l); }
-  for (const f of NU.folds) lines.push(f.map(q => proj(q[0], q[1], 0)));
   for (const [du0, f] of [[-1.3, 0.36], [0, 0.48], [1.25, 0.34]]) { const u = D.dip + du0 - 0.3; if (u > L - 3) continue; const w = g.hw(u) * f, l = []; for (let i = 0; i <= 10; i++) { const z = -w + 2 * w * i / 10; l.push(proj(u - 0.5 * (1 - Math.pow(z / w, 2)), z)); } lines.push(l); }
-  /* the light/shadow line (lit from the viewer's left): down the finger's right side, then under the fingertip's pad */
-  const term = [];
-  for (let u = L; u >= 2.5; u -= 0.5) { const b = g.hw(u), z = 0.42 * b, r = sec(u, z); if (r) term.push(proj(u, z, 0)); }
-  for (let k = 1; k <= 10; k++) { const q = k / 10, u = 2.5 - 1.6 * q, b = g.hw(u), z = b * (0.42 - 0.75 * q), r = sec(u, z); if (r) term.push(proj(u, z, -(r[0] - r[1]) * (0.25 + 0.55 * q))); }
+  /* the light/shadow line, found on the model itself (FG2: it was a fixed polygon and read faceted): the light in the
+     frame (from the stage's, turned by roll) tilted toward the viewer; on each section the visible point where the
+     surface turns from the light, followed from the far end to the tip, where it runs out at the silhouette */
+  const P3d = (u, h, z) => { const q = bend([-u, -h]), uu = -q[0], hh = -q[1], dh = hh - hA, z2 = z * cr - dh * sr, h2 = hA + z * sr + dh * cr;
+    const X = uu * sy * c - h2 * sy * s + z2 * cy, Y = h2 * c + uu * s, Z = -cy * c * uu + cy * s * h2 + sy * z2; return [X * cr + Y * sr, -X * sr + Y * cr, Z]; };
+  const lz = 0.42, lk = Math.sqrt(1 - lz * lz), ll = Math.hypot(light[0], light[1]) || 1, LV = [light[0] / ll * lk, -light[1] / ll * lk, lz];
+  const secPt = (u, th) => { const b = g.hw(u), t = g.top(u), bo = g.bot(u), hc = bo + (t - bo) * 0.52, cs = Math.cos(th), sn = Math.sin(th);
+    const pz = sn >= 0 ? 2.05 : 2.3, z = b * Math.sign(cs) * Math.pow(Math.abs(cs), 2 / pz), dh = sn >= 0 ? (t - hc) * Math.pow(sn, 2 / 2.05) : -(hc - bo) * Math.pow(-sn, 2 / 2.3);
+    return P3d(u, hc + dh, z); };
+  /* every section's crossings (where the surface turns from the light), then the two branches of the loop they make:
+     down the side away from the light to the tip, and back from under the tip until it passes out of sight */
+  const NT = 96, rows = [];
+  for (let u = L; u >= 0.1; u -= (u > 9 ? 0.6 : u > 3 ? 0.3 : 0.1)) {
+    const b = g.hw(u); if (b <= 1e-3) continue;
+    const C0 = P3d(u, (g.top(u) + g.bot(u)) / 2, 0), du = Math.min(0.08, u * 0.5), cand = [];
+    let f0 = null, v0 = null, s0 = null;
+    for (let i = 0; i <= NT; i++) {
+      const th = TAU * i / NT, S0 = secPt(u, th), Su = secPt(u + du, th), St = secPt(u, th + TAU / NT * 0.5);
+      const a1 = [Su[0] - S0[0], Su[1] - S0[1], Su[2] - S0[2]], b2 = [St[0] - S0[0], St[1] - S0[1], St[2] - S0[2]];
+      let n = [a1[1] * b2[2] - a1[2] * b2[1], a1[2] * b2[0] - a1[0] * b2[2], a1[0] * b2[1] - a1[1] * b2[0]];
+      if (n[0] * (S0[0] - C0[0]) + n[1] * (S0[1] - C0[1]) + n[2] * (S0[2] - C0[2]) < 0) n = [-n[0], -n[1], -n[2]];
+      const nl = Math.hypot(n[0], n[1], n[2]) || 1, f = (n[0] * LV[0] + n[1] * LV[1] + n[2] * LV[2]) / nl, vis = n[2] / nl;
+      if (f0 != null && f0 * f <= 0 && Math.max(vis, v0) > -0.03) { const k = f0 / ((f0 - f) || 1e-9); cand.push({ X: s0[0] + (S0[0] - s0[0]) * k, Y: s0[1] + (S0[1] - s0[1]) * k, vis: Math.max(vis, v0) }); }
+      f0 = f; v0 = vis; s0 = S0;
+    }
+    rows.push(cand);
+  }
+  /* the loop's two branches, followed out from the tip (where both are found) toward the far end while in sight; joined
+     across the tip's blunt front through its rim's darkest point. Fallback: one branch from the far end */
+  const dist = (p1, p2) => Math.hypot(p1.X - p2.X, p1.Y - p2.Y), R = rows.slice().reverse();
+  const trace = (r0, start, avoid) => { const out = [start]; let prev = start;
+    for (let r = r0 + 1; r < R.length; r++) { const cand = R[r].filter(w => !avoid || !avoid[r] || dist(w, avoid[r]) > 0.35); if (!cand.length) break;
+      const pick = cand.reduce((q, w) => (dist(w, prev) < dist(q, prev) ? w : q)); if (dist(pick, prev) > 3 || pick.vis < -0.03) break; out.push(pick); out.byRow = out.byRow || {}; out.byRow[r] = pick; prev = pick; }
+    return out; };
+  let A1 = [], B1 = [];
+  const r0 = R.findIndex(c => c.length >= 2);
+  if (r0 >= 0) {
+    const c = R[r0]; let i1 = 0, i2 = 1, bd = -1;
+    for (let i = 0; i < c.length; i++) for (let j = i + 1; j < c.length; j++) { const d = dist(c[i], c[j]); if (d > bd) { bd = d; i1 = i; i2 = j; } }
+    const br1 = trace(r0, c[i1], null), av = {}; if (br1.byRow) Object.assign(av, br1.byRow); av[r0] = c[i1];
+    const br2 = trace(r0, c[i2], av);
+    /* the rim point of a small section facing most away from the light */
+    let dk = null, dmin = 1e9; const cc = P3d(0.05, g.tipH, 0);
+    for (let i = 0; i < 48; i++) { const q = secPt(0.05, TAU * i / 48), d = (q[0] - cc[0]) * LV[0] + (q[1] - cc[1]) * LV[1]; if (d < dmin) { dmin = d; dk = q; } }
+    const a0 = br1[0], b0 = br2[0], bridge = [];
+    for (let j = 1; j < 8; j++) { const t = j / 8, v = 1 - t; bridge.push({ X: v * v * a0.X + 2 * v * t * dk[0] + t * t * b0.X, Y: v * v * a0.Y + 2 * v * t * dk[1] + t * t * b0.Y }); }
+    A1 = br1.slice().reverse(); B1 = bridge.concat(br2);
+  }
+  if (A1.length + B1.length < 6) {
+    A1 = []; B1 = []; let prev = null;
+    for (const cand of rows) { if (!cand.length) { if (prev) break; continue; }
+      const pick = prev ? cand.reduce((q, w) => (dist(w, prev) < dist(q, prev) ? w : q)) : cand.reduce((q, w) => (w.vis > q.vis ? w : q));
+      if (prev && dist(pick, prev) > 4) break; A1.push(pick); prev = pick; }
+  }
+  let term = A1.concat(B1).map(q => [q.X - xc, -(q.Y - lo)]);
+  /* eased (the bridge and the sampling leave small kinks), its ends kept */
+  for (let it = 0; it < 4; it++) term = term.map((q, i) => (i === 0 || i === term.length - 1 ? q : [(term[i - 1][0] + 2 * q[0] + term[i + 1][0]) / 4, (term[i - 1][1] + 2 * q[1] + term[i + 1][1]) / 4]));
   /* the far end and the axis there (for the fade) */
   const fa = P3(L, (g.top(L) + g.bot(L)) / 2, 0), fb = P3(L - 1, (g.top(L - 1) + g.bot(L - 1)) / 2, 0), al = Math.hypot(fb[0] - fa[0], fb[1] - fa[1]) || 1;
-  return { upper, lower, nail: NU.out.map(PJ), free: NU.free.map(PJ), lun: fngLun(dig, NU).map(PJ), lines, term,
+  return { upper, lower, nail: NU.out.map(PJ), free: NU.free.map(PJ), lun: NU.lun.map(PJ), fold: NU.fold.map(q => proj(q[0], q[1], 0.02)), pfold: NU.pfold.map(q => proj(q[0], q[1], 0)),
+    hlL: NU.hl(-1).map(PJ), hlR: NU.hl(1).map(PJ), cross: NU.cross.map(PJ), lines, term,
     far: [fa[0] - xc, -(fa[1] - lo)], axis: [(fb[0] - fa[0]) / al, -(fb[1] - fa[1]) / al] };
 }
 /* ---- the finger's drawing: Brock's pick, "A Line" (FEEDBACK F49.1, 2026-11-06 ~12:10): outlined like the deck's parts, a lit
@@ -978,11 +1094,17 @@ function fngPath(pts, close) {
     G.lineTo(pts[n - 1][0], pts[n - 1][1]);
   }
 }
-/** the greys, on paper and on night: lit, shadow, outline (px), nail, its shade, free edge, creases, lunula, blanched nail */
+/** the greys, on paper and on night: lit, shadow, outline (px), creases; the nail is drawn in the skin's own greys, a
+    little lighter (FNG_NAIL), never a colour of its own */
 function fngPal() {
-  return TH ? { lit: '#D5D5DA', sh: '#AFAFB5', edge: 'rgba(17,17,17,0.66)', ew: 1.35, nail: '#EEEEF1', nsh: '#D6D6DB', nedge: 'rgba(17,17,17,0.44)', free: '#F9F9FA', line: 'rgba(17,17,17,0.36)', lun: '#F6F6F8', bl: '#FAFAFB' }
-    : { lit: '#A4A4AA', sh: '#77777D', edge: 'rgba(243,243,245,0.66)', ew: 1.35, nail: '#CBCBD0', nsh: '#ABABB0', nedge: 'rgba(12,12,14,0.4)', free: '#E6E6E9', line: 'rgba(12,12,14,0.45)', lun: '#D6D6DA', bl: '#E8E8EB' };
+  return TH ? { lit: '#D5D5DA', sh: '#AFAFB5', edge: 'rgba(17,17,17,0.66)', ew: 1.35, line: 'rgba(17,17,17,0.36)', inkHex: '#111111', k: 0 }
+    : { lit: '#A4A4AA', sh: '#77777D', edge: 'rgba(243,243,245,0.66)', ew: 1.35, line: 'rgba(12,12,14,0.45)', inkHex: '#0C0C0E', k: 1 };
 }
+/* the nail, Brock's pick A Soft (white and ink over the skin's greys, [paper, night]): tone, its lift over the skin;
+   free, the paler free edge; fold, the skin's edge round it (a crease line, x the crease's alpha); hl, the sheen along its
+   curve (alpha, width x); rim, its darkening toward its sides (it curves away under the folds); edge, a line on the free
+   edge; pf, the proximal fold's crease */
+const FNG_NAIL = { tone: [0.3, 0.13], free: [0.36, 0.2], fold: [0.6, 0.65], hl: [0.75, 0.42], hlw: 1, rim: [0, 0], edge: 0, pf: 0 };
 /**
  * A fingertip, drawn from one anatomical model, to scale, in the deck's line style (F49.1: Brock's pick "A Line"), mono grey
  * with a lit and a shadow side on both grounds (F9.24). (x, y) is the contact on the surface it presses, ang the way it
@@ -990,7 +1112,7 @@ function fngPal() {
  * it with the part: the finger rides the button down. The last joint is a little flexed, so only the fingertip's pad
  * reaches the surface. o = {
  *   s       px per mm (3.2). Pass the part's own scale so the finger is to scale with what it presses: an index fingertip
- *           is 14.3 mm across at the nail and 16 mm at the joint, its nail 11.2 by 12.7 mm (AIST x 1.03). Inside part() or a
+ *           is 14.3 mm across at the nail and 16 mm at the joint, its nail 10.3 by 12.7 mm between the folds. Inside part() or a
  *           camera pass s in its units (1 in mm): line widths and detail follow the true size on the stage.
  *   press   0..1: the bone and nail move 1.5 mm toward the surface, the pad flattens on it (about a 10 mm contact, as at
  *           1 N), the skin beside bulges, the nail stays rigid and pales from its free edge.
@@ -1039,8 +1161,9 @@ function finger(x, y, ang = 0, o = {}) {
     }
     rot = ts; geo = memo(key(['s', dig, L, pitch, p, flex, flk]), () => fngSide(dig, L, pitch, p, flex, fl));
   } else if (view === 'top') geo = memo(key(['t', dig, L, p]), () => fngTop(dig, L, p));
-  else { const yaw = o.yaw == null ? 0.22 * Math.cos(ang) : o.yaw; geo = memo(key(['e', dig, L, epitch, p, flex, yaw, flk, ang]), () => fngEnd(dig, L, epitch, p, flex, yaw, fl, ang)); }
   const m = flip ? -1 : 1;
+  if (view === 'end') { const yaw = o.yaw == null ? 0.22 * Math.cos(ang) : o.yaw, c0 = Math.cos(ang), s0 = Math.sin(ang), lt = [FNG_LIGHT[0] * c0 + FNG_LIGHT[1] * s0, m * (-FNG_LIGHT[0] * s0 + FNG_LIGHT[1] * c0)];
+    geo = memo(key(['e', dig, L, epitch, p, flex, yaw, flk, ang, m]), () => fngEnd(dig, L, epitch, p, flex, yaw, fl, ang, lt)); }
   /* the light in the frame (the inverse of rotate(rot), then the mirror); the true size on the stage */
   const cr = Math.cos(rot), sr = Math.sin(rot), Lx = FNG_LIGHT[0] * cr + FNG_LIGHT[1] * sr, Ly = m * (-FNG_LIGHT[0] * sr + FNG_LIGHT[1] * cr);
   const T0 = G.getTransform(), dev = (typeof APP !== 'undefined' && APP.scale ? APP.scale * (APP.dpr || 1) : 1), sEff = s * Math.hypot(T0.a, T0.b) / dev;
@@ -1061,7 +1184,7 @@ function finger(x, y, ang = 0, o = {}) {
   LC.setTransform(1, 0, 0, 1, 0, 0); LC.globalAlpha = 1; LC.globalCompositeOperation = 'source-over'; LC.clearRect(0, 0, lw0, lh0);
   LC.setTransform(M.a, M.b, M.c, M.d, M.e - bx0, M.f - by0);
   G = LC;
-  try { fngPaint(geo, view, P, p, px, lod, Lx, Ly, L, epitch, dig); } finally { G = G0; }
+  try { fngPaint(geo, view, P, p, px, lod, Lx, Ly, L, epitch, dig, FNG_NAIL); } finally { G = G0; }
   G0.save(); G0.setTransform(1, 0, 0, 1, 0, 0); G0.globalAlpha = G0.globalAlpha * a * (o.ghost ? 1 - 0.75 * clamp(o.ghost) : 1);
   G0.drawImage(FNG_LAYER, 0, 0, lw0, lh0, bx0, by0, lw0, lh0); G0.restore();
   /* the contact and the tip in the caller's units; a stretch of the pad marked (a pinch) */
@@ -1076,10 +1199,56 @@ function finger(x, y, ang = 0, o = {}) {
 /** the pad's height (mm) above its lowest point, u mm back from the tip (for sections drawn at other scales: b08_tape's) */
 function fingerPad(u, digit) { return fngGeo(FNG_DIG[digit] ? digit : 'index').bot(Math.max(0, u)); }
 
+/** the shadow side as one shape that wraps the tip (FG2: the tip read as a chisel): the light/shadow line T from the far
+    end, carried on by a smooth curve to the outline B where the outline's normal is square to the light (on a ball that is
+    where the shadow's edge meets the silhouette), arriving along it; then the outline from there round the shadow side
+    back to the far end. With snap, T already ends on the outline (the end view). */
+function fngShadow(B, T, Lx, Ly, sdir, tipAx, snap) {
+  const n = B.length; if (n < 4 || T.length < 2) return null;
+  let sa = 0; for (let i = 0; i < n; i++) { const p = B[i], q = B[(i + 1) % n]; sa += p[0] * q[1] - q[0] * p[1]; }
+  const tan = i => { const p = B[Math.max(0, i - 1)], q = B[Math.min(n - 1, i + 1)], dx = q[0] - p[0], dy = q[1] - p[1], l = Math.hypot(dx, dy) || 1; return [dx / l, dy / l]; };
+  const Te = T[T.length - 1];
+  let iA = -1;
+  if (snap) { let bd = 1e9; for (let i = 0; i < n; i++) { const d = Math.hypot(B[i][0] - Te[0], B[i][1] - Te[1]); if (d < bd) { bd = d; iA = i; } } }
+  else {
+    const ll = Math.hypot(Lx, Ly) || 1, lx = Lx / ll, ly = Ly / ll;
+    let nA = [-ly, lx]; if (nA[0] * tipAx[0] + nA[1] * tipAx[1] < 0) nA = [ly, -lx];
+    if (nA[0] * tipAx[0] + nA[1] * tipAx[1] < 0.18) {
+      /* the light along the finger: from ahead the whole tip is lit (the edge meets the outline on the shadow side), from
+         behind the whole tip is in shadow (it meets it on the lit side) */
+      const ahead = lx * tipAx[0] + ly * tipAx[1] > 0, sd = ahead ? sdir : [-sdir[0], -sdir[1]], sg = (sd[0] * -tipAx[1] + sd[1] * tipAx[0]) > 0 ? 1 : -1;
+      nA = [-tipAx[1] * sg + tipAx[0] * 0.2, tipAx[0] * sg + tipAx[1] * 0.2]; const l2 = Math.hypot(nA[0], nA[1]); nA = [nA[0] / l2, nA[1] / l2];
+    }
+    let tx = -1e9; for (const q of B) tx = Math.max(tx, q[0] * tipAx[0] + q[1] * tipAx[1]);
+    let best = -2;
+    for (let i = 1; i < n - 1; i++) {
+      if (B[i][0] * tipAx[0] + B[i][1] * tipAx[1] < tx - 7) continue;
+      const t = tan(i), nn = sa > 0 ? [t[1], -t[0]] : [-t[1], t[0]], d = nn[0] * nA[0] + nn[1] * nA[1];
+      if (d > best) { best = d; iA = i; }
+    }
+  }
+  if (iA < 0) return null;
+  /* which way round the outline is the shadow side */
+  const arc = dir => { const a = [], T0 = T[0]; let bi = 1, bd = 1e9; for (let k = 0; k < n; k++) { const i = ((iA + dir * k) % n + n) % n; a.push(B[i]); const d = Math.hypot(B[i][0] - T0[0], B[i][1] - T0[1]); if (d < bd) { bd = d; bi = a.length; } } return a.slice(0, bi); };
+  const aP = arc(1), aM = arc(-1), mid = T[Math.floor(T.length / 2)], score = a => { let sc = 0; for (const q of a) sc += (q[0] - mid[0]) * sdir[0] + (q[1] - mid[1]) * sdir[1]; return sc / (a.length || 1); };
+  const useP = score(aP) >= score(aM), sarc = useP ? aP : aM;
+  const A = B[iA], tA0 = tan(iA), tA = useP ? [-tA0[0], -tA0[1]] : tA0;
+  const Tp = T[T.length - 2], tl = Math.hypot(Te[0] - Tp[0], Te[1] - Tp[1]) || 1, t0 = [(Te[0] - Tp[0]) / tl, (Te[1] - Tp[1]) / tl];
+  const k = 0.42 * Math.hypot(A[0] - Te[0], A[1] - Te[1]), P1 = [Te[0] + t0[0] * k, Te[1] + t0[1] * k], P2 = [A[0] - tA[0] * k, A[1] - tA[1] * k];
+  const wrap = [];
+  if (!snap) for (let j = 1; j < 16; j++) { const t = j / 16, v = 1 - t; wrap.push([v * v * v * Te[0] + 3 * v * v * t * P1[0] + 3 * v * t * t * P2[0] + t * t * t * A[0], v * v * v * Te[1] + 3 * v * v * t * P1[1] + 3 * v * t * t * P2[1] + t * t * t * A[1]]); }
+  return T.concat(wrap, sarc);
+}
+/** a soft streak: a line stroked in stacked widths, faint and wide to bright and thin (no filter: it plays everywhere) */
+function fngStreak(pts, w, al, col) {
+  if (pts.length < 2) return;
+  for (const [f, k] of [[1, 0.13], [0.66, 0.16], [0.36, 0.22]]) { fngPath(pts, false); G.strokeStyle = rgba(col, al * k); G.lineWidth = w * f; G.stroke(); }
+}
+
 /** paint a view's geometry in the current frame (into the layer): body, shadow side, nail, creases, outline, the fade */
-function fngPaint(geo, view, P, p, px, lod, Lx, Ly, L, epitch, dig) {
+function fngPaint(geo, view, P, p, px, lod, Lx, Ly, L, epitch, dig, NS) {
   G.lineJoin = 'round'; G.lineCap = 'round';
-  const B = geo.body, ax = geo.axis;
+  const B = geo.body, ax = geo.axis, gi = P.k, white = '#FFFFFF', ink = P.inkHex;
   /* the lit side: across the axis toward the light in the side view (the back, unless the light comes from the pad's
      side); from above, the finger's side facing the light; end-on, the light's own direction */
   let dirL;
@@ -1088,44 +1257,48 @@ function fngPaint(geo, view, P, p, px, lod, Lx, Ly, L, epitch, dig) {
   else { const l = Math.hypot(Lx, Ly * 0.55) || 1; dirL = [Lx / l, Ly * 0.55 / l]; }
   /* 1. the body, in the lit grey */
   fngPath(B, true); G.fillStyle = P.lit; G.fill();
-  /* 2. the shadow side: a flat second grey beyond a clean terminator */
+  /* 2. the shadow side: a flat second grey beyond a clean terminator that wraps round the tip */
   if (lod >= 1) {
-    G.save(); fngPath(B, true); G.clip(); G.beginPath();
-    if (view === 'side') {
-      const T2 = geo.term, off = [-dirL[0] * 40, -dirL[1] * 40];
-      G.moveTo(T2[0][0] - ax[0] * 30 + off[0], T2[0][1] - ax[1] * 30 + off[1]);
-      for (const q of T2) G.lineTo(q[0], q[1]);
-      const e = T2[T2.length - 1]; G.lineTo(e[0] + ax[0] * 2.5, e[1] + ax[1] * 2.5 + (dirL[1] < 0 ? 1.2 : -1.2)); G.lineTo(e[0] + ax[0] * 30 + off[0], e[1] + ax[1] * 30 + off[1]);
-    } else if (view === 'top') {
-      const g = fngGeo(dig), sd = -dirL[1];
-      G.moveTo(-L + geo.uc - 8, sd * 40);
-      for (let u = L + 8; u >= 0.6; u -= 0.4) G.lineTo(-u + geo.uc, sd * 0.32 * g.hw(u));
-      G.quadraticCurveTo(geo.uc + 0.2, sd * 0.4, geo.uc + 4, sd * 3); G.lineTo(geo.uc + 4, sd * 40);
-    } else {
-      const T = geo.term; G.moveTo(T[0][0] + 40, T[0][1] - 40); for (const q of T) G.lineTo(q[0], q[1]);
-      const e = T[T.length - 1]; G.lineTo(e[0] - 30, e[1] + 0.2); G.lineTo(-40, 40); G.lineTo(40, 40);
-    }
-    G.closePath(); G.fillStyle = P.sh; G.fill(); G.restore();
+    let T, snap = false;
+    if (view === 'side') { const backLit = dirL[0] * ax[1] - dirL[1] * ax[0] > 0; T = backLit ? geo.termA : geo.termB; }
+    else if (view === 'top') { const g = fngGeo(dig), sd = -dirL[1]; T = []; for (let u = L; u >= 4.4; u -= 0.4) T.push([geo.U(u), sd * 0.72 * geo.hwAt(u)]); }
+    else { T = geo.term; snap = true; }
+    const SP = fngShadow(B, T, Lx, Ly, [-dirL[0], -dirL[1]], geo.tipAx || [1, 0], snap);
+    if (SP) { G.save(); fngPath(B, true); G.clip(); fngPath(SP, true); G.fillStyle = P.sh; G.fill(); G.restore(); }
   }
-  /* 3. the nail: the plate (from above and end-on, a crescent of its shade where it curves away from the light), the
-     thumb's lunula, its free edge; pressed, the nail bed pales from the free edge back toward the cuticle */
-  if (geo.nail) {
-    fngPath(geo.nail, true); G.fillStyle = P.nail; G.fill();
-    if (lod >= 1 && view !== 'side') {
-      G.save(); fngPath(geo.nail, true); G.clip(); G.fillStyle = P.nsh; G.fill();
-      G.translate(dirL[0] * 1.15, dirL[1] * 1.15); fngPath(geo.nail, true); G.fillStyle = P.nail; G.fill(); G.restore();
+  /* 3. the nail (FG2): in the skin's own greys, a little lighter; no outline of its own. The skin's edge (the fold) runs
+     round its sides and the cuticle's U as a crease; the free edge is paler; a soft sheen runs along its curve on the lit
+     side; pressed, the nail bed pales from the free edge back toward the cuticle */
+  if (geo.nail && geo.nail.length > 2) {
+    const N = geo.nail, side = view === 'side';
+    const tone = NS.tone[gi] * (side ? 0.8 : 1);
+    G.save(); fngPath(N, true); G.clip();
+    if (tone > 0 || lod === 0) { fngPath(N, true); G.fillStyle = rgba(white, Math.max(tone, lod === 0 ? 0.22 : 0)); G.fill(); }
+    if (lod >= 1 && NS.rim[gi] > 0 && !side && geo.cross) { const [c0, c1] = geo.cross, gr = G.createLinearGradient(c0[0], c0[1], c1[0], c1[1]), rk = NS.rim[gi];
+      gr.addColorStop(0, rgba(ink, rk)); gr.addColorStop(0.28, rgba(ink, 0)); gr.addColorStop(0.72, rgba(ink, 0)); gr.addColorStop(1, rgba(ink, rk)); G.fillStyle = gr; G.fillRect(-90, -90, 180, 180); }
+    if (lod >= 2 && geo.lun && geo.lun.length) { fngPath(geo.lun, true); G.fillStyle = rgba(white, NS.free[gi] * 0.45); G.fill(); }
+    if (p > 0.02 && lod >= 1 && geo.free && geo.free.length > 4) {
+      const fr = geo.free, f0 = fr[Math.floor(fr.length / 4)], n0 = side ? N[Math.floor(N.length * 0.25)] : N[Math.floor(N.length / 2)];
+      const gb = G.createLinearGradient(f0[0], f0[1], n0[0], n0[1]); gb.addColorStop(0, rgba(white, 0.5 * p)); gb.addColorStop(Math.min(0.95, 0.2 + 0.45 * p), rgba(white, 0.4 * p)); gb.addColorStop(1, rgba(white, 0));
+      G.fillStyle = gb; G.fillRect(-90, -90, 180, 180);
     }
-    if (lod >= 2 && geo.lun && geo.lun.length) { fngPath(geo.lun, false); G.closePath(); G.fillStyle = P.lun; G.fill(); }
-    if (p > 0.02 && lod >= 1) {
-      G.save(); fngPath(geo.nail, true); G.clip(); G.globalAlpha *= 0.6 * p;
-      const fr = geo.free, f0 = fr[Math.floor(fr.length / 4)], n0 = geo.nail[Math.floor(geo.nail.length / 2)];
-      const gb = G.createLinearGradient(f0[0], f0[1], n0[0], n0[1]); gb.addColorStop(0, P.bl); gb.addColorStop(Math.min(0.95, 0.25 + 0.5 * p), P.bl); gb.addColorStop(1, rgba(P.bl, 0));
-      G.fillStyle = gb; G.fillRect(-90, -90, 180, 180); G.restore();
+    if (lod >= 1 && geo.free) { fngPath(geo.free, true); G.fillStyle = rgba(white, NS.free[gi]); G.fill(); }
+    /* the sheen: on the lit side (from the side, along the crest when the back is lit) */
+    if (lod >= 1) {
+      let H = null;
+      if (side) { const backLit = dirL[0] * ax[1] - dirL[1] * ax[0] > 0; if (backLit) H = geo.hl; }
+      else { const mean = l => l.reduce((a, q) => a + q[0] * dirL[0] + q[1] * dirL[1], 0) / (l.length || 1); H = mean(geo.hlL) > mean(geo.hlR) ? geo.hlL : geo.hlR; }
+      if (H && H.length > 1) fngStreak(H, (side ? 0.7 : 2.2) * NS.hlw, NS.hl[gi], white);
     }
-    if (lod >= 1 && geo.free) { fngPath(geo.free, true); G.fillStyle = P.free; G.fill(); }
-    fngPath(geo.nail, true); G.strokeStyle = P.nedge; G.lineWidth = (lod >= 2 ? 1.0 : 0.8) * px; G.stroke();
+    G.restore();
+    if (lod >= 1) {
+      const fa = NS.fold[gi];
+      if (fa > 0 && geo.fold && geo.fold.length > 1) { fngPath(geo.fold, false); G.strokeStyle = P.line; G.globalAlpha *= Math.min(1, fa); G.lineWidth = (lod >= 2 ? 1.0 : 0.8) * px * Math.max(1, fa); G.stroke(); G.globalAlpha /= Math.min(1, fa); }
+      if (NS.edge && lod >= 2) { const fe = side ? geo.fedge : geo.free && geo.free.slice(0, Math.floor(geo.free.length / 2)); if (fe && fe.length > 1) { fngPath(fe, false); G.strokeStyle = P.line; G.lineWidth = 0.9 * px; G.stroke(); } }
+      if (NS.pf && lod >= 2 && geo.pfold && geo.pfold.length > 1) { fngPath(geo.pfold, false); G.strokeStyle = P.line; G.globalAlpha *= 0.55; G.lineWidth = 0.9 * px; G.stroke(); G.globalAlpha /= 0.55; }
+    }
   }
-  /* 4. the joint's creases and the nail's folds */
+  /* 4. the joint's creases (and the end view's hyponychium) */
   if (lod >= 2 && geo.lines) { G.strokeStyle = P.line; G.lineWidth = px; for (const l of geo.lines) { if (l.length < 2) continue; fngPath(l, false); G.stroke(); } }
   /* 5. the outline */
   fngPath(B, true); G.strokeStyle = P.edge; G.lineWidth = (lod >= 1 ? P.ew : 1.0) * px; G.stroke();

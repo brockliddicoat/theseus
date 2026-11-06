@@ -1,0 +1,28 @@
+[
+ {
+  "kind": "tri",
+  "lam": 0.2382,
+  "w": 0.3606,
+  "hr": 1.8028,
+  "draft": 0.5,
+  "r_root": 0.1803,
+  "r_node": 0.1803,
+  "h": 0.7,
+  "rails": true,
+  "crease": "slope",
+  "label": "G-win-h0.7"
+ },
+ {
+  "kind": "tri",
+  "lam": 0.2382,
+  "w": 0.3606,
+  "hr": 1.8028,
+  "draft": 0.5,
+  "r_root": 0.1803,
+  "r_node": 0.1803,
+  "h": 0.55,
+  "rails": true,
+  "crease": "slope",
+  "label": "G-win-h0.55"
+ }
+]

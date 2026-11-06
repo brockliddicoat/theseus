@@ -1,0 +1,14 @@
+**The rule as code** (proposed for 07-sim.js; the integrator applies shared changes; until then copy it into your file under
+your prefix). Each element's use of its strength, 1 = it breaks, axial and bending parts combined linearly:
+```js
+/** F41.1: σ_axial / ft + σ_bending / fb for each element (PP-C-20A: 120 stretched, 207 bent; FR4: 430 / 483) */
+function feUse(r, ft = 120, fb = 207) {
+  return r.model.els.map((el, e) => { const A = el.w * el.h, I = el.w * el.h ** 3 / 12, sa = Math.abs(r.N[e]) / A,
+    sb = el.truss ? 0 : Math.max(Math.abs(r.M1[e]), Math.abs(r.M2[e])) * el.h / 2 / I; return sa / ft + sb / fb; });
+}
+/** the press (N) that breaks a frame solved at P newtons: P / its largest use */
+const feBreakAt = (r, P = 10, ft, fb) => P / Math.max(...feUse(r, ft, fb));
+```
+Where a slide colours or gauges "how near it is to breaking", colour by use (red at 1), not by MPa: a bent part and a
+stretched part at the same MPa are not equally near their break. Keep "Peak experienced stress (lower is better)" in
+MPa where the slide compares stress as stress.

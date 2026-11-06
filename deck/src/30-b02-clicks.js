@@ -401,52 +401,6 @@ function b02_frontMM(o = {}) {
   return out;
 }
 
-/* ============================== a fingertip seen end-on (the kit draws it from the side and from above) ==============================
-   For the front views (flush walls, grooves, seams): the fingertip's cross-section near the pad, mono grey (F9.24), 16 mm
-   across (the kit's FINGER.top), its nail on top. Its pad lies on the surface it presses: where the pad's resting curve,
-   pushed down by sink, would pass below the surface, it flattens onto it (skin conforms), so the contact patch and any skin
-   that drapes into a step come out of the geometry. In mm, y up in the model; drawn with y down. o = { cx (the finger's
-   centre u), base (the pad's lowest point at rest, y), sink (mm the pad is pushed into the surface), surf(u) → y (the surface
-   under it; default flat at base), tilt (radians: the finger leaning), w (16), h (13), alpha, mark: [u0, u1, colour] (a stretch
-   of the pad to colour: a pinch) }. Returns { contact: [u0, u1] (where the pad touches), top: [u, y], pad: [u, y] } (model mm) */
-function b02_fingerEndMM(o = {}) {
-  const w = o.w || 16, hh = o.h || 13, a = w / 2, cx = o.cx || 0, base = o.base || 0, sink = o.sink || 0, surf = o.surf || (() => base - 9);
-  const skin = C.comp, edge = inkA(TH ? 0.6 : 0.45), nail = TH ? C.hair : C.faint;
-  /* the pad's resting underside: a flattened ellipse 16 mm wide, its lowest point at base; pushed down by sink */
-  const rest = u => { const x = (u - cx) / a; return Math.abs(x) >= 1 ? base + hh * 0.42 : base + hh * 0.42 * (1 - Math.sqrt(1 - x * x)) * 1.0; };
-  const bot = [], cont = [];
-  for (let u = cx - a; u <= cx + a + 1e-9; u += 0.1) { const y0 = rest(u) - sink, ys = surf(u), y = Math.max(y0, ys); bot.push([u, y]); if (y0 <= ys + 1e-3 && Math.abs(u - cx) < a - 0.3) cont.push(u); }
-  const topY = base + hh - sink * 0.15;
-  G.save(); G.globalAlpha *= (o.alpha == null ? 1 : o.alpha); G.translate(cx, 0); G.rotate(-(o.tilt || 0)); G.translate(-cx, 0);
-  G.beginPath(); bot.forEach(([u, y], i) => i ? G.lineTo(u, -y) : G.moveTo(u, -y));
-  G.bezierCurveTo(cx + a * 1.04, -(base + hh * 0.55), cx + a * 0.86, -topY, cx, -topY);
-  G.bezierCurveTo(cx - a * 0.86, -topY, cx - a * 1.04, -(base + hh * 0.55), bot[0][0], -bot[0][1]); G.closePath();
-  G.fillStyle = skin; G.fill(); G.strokeStyle = edge; G.lineWidth = lw(1.4); G.lineJoin = 'round'; G.stroke();
-  /* the nail on top, end-on: a shallow arch */
-  G.beginPath(); G.moveTo(cx - a * 0.62, -(topY - 1.7)); G.quadraticCurveTo(cx, -(topY + 1.0), cx + a * 0.62, -(topY - 1.7)); G.quadraticCurveTo(cx, -(topY - 0.4), cx - a * 0.62, -(topY - 1.7)); G.closePath();
-  G.fillStyle = nail; G.fill(); G.strokeStyle = edge; G.lineWidth = lw(1.1); G.stroke();
-  if (o.mark) { const [u0, u1, col] = o.mark; G.beginPath(); bot.filter(([u]) => u >= u0 && u <= u1).forEach(([u, y], i) => i ? G.lineTo(u, -y) : G.moveTo(u, -y)); G.strokeStyle = col || C.red; G.lineWidth = lw(4); G.lineCap = 'round'; G.stroke(); }
-  G.restore();
-  return { contact: cont.length ? [Math.min(...cont), Math.max(...cont)] : null, top: [cx, topY], pad: [cx, Math.max(rest(cx) - sink, surf(cx))] };
-}
-
-/** a finger seen from the front (the nose): the kit's end-on fingertip, and behind it the finger's back rising toward the
-   knuckle (in a claw or relaxed grip it climbs steeply, so from the front it stands above the tip as a column that fades).
-   (x, y) the pad's contact, stage px; s px per mm; ang tilts it with the button; press flattens the pad */
-function b02_fingerFront(x, y, ang, o = {}) {
-  const a = o.alpha == null ? 1 : o.alpha; if (a <= 0.003) return;
-  const s = o.s || 3.2, skin = TH ? '#C3C3C3' : '#5E5E5E', edge = TH ? 'rgba(40,40,40,0.6)' : 'rgba(230,230,230,0.45)';   /* the kit's finger greys, neutral */
-  G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(ang); G.scale(s, s);
-  const y0 = -7, y1 = -(o.rise || 30), g = G.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, rgba(skin, 1)); g.addColorStop(0.55, rgba(skin, 0.85)); g.addColorStop(1, rgba(skin, 0));
-  const ge = G.createLinearGradient(0, y0, 0, y1); ge.addColorStop(0, edge); ge.addColorStop(1, 'rgba(128,128,128,0)');
-  G.beginPath(); G.moveTo(-7.6, y0); G.bezierCurveTo(-7.5, y0 - 8, -7.1, y1 + 6, -6.9, y1); G.lineTo(6.9, y1); G.bezierCurveTo(7.1, y1 + 6, 7.5, y0 - 8, 7.6, y0); G.closePath();
-  G.fillStyle = g; G.fill();
-  G.beginPath(); G.moveTo(-7.6, y0); G.bezierCurveTo(-7.5, y0 - 8, -7.1, y1 + 6, -6.9, y1); G.moveTo(7.6, y0); G.bezierCurveTo(7.5, y0 - 8, 7.1, y1 + 6, 6.9, y1);
-  G.strokeStyle = ge; G.lineWidth = 1.3 / s; G.stroke();
-  G.restore();
-  finger(x, y, ang, { s, press: o.press || 0, view: 'end', alpha: a });
-}
-
 /* ============================== flush walls (#48) and which way the cutout faces ==============================
    A cut across the user's right half of the mouse at the fingertips, seen from the front (so it sits on the viewer's left
    in the kit's front frame: x = -u). u is the distance out from the centre, y up from the pad, mm. The shell's outside is
@@ -623,7 +577,7 @@ function b02_gfTag(x, y, a, val, o = {}) {
   return r;
 }
 S({
-  id: 'b02_cutouts', ch: 'click', theme: 'paper', title: 'Straight rear cutouts', settle: 10.5, ideas: [17, 18],
+  id: 'b02_cutouts', ch: 'click', theme: 'night', title: 'Straight rear cutouts', settle: 10.5, ideas: [17, 18],
   replaces: ['cutouts'],
   src: ['b02_scan', 'clk_gt01', 'clk_brock', 'b02_tpuV3', 'b02_nickel'],
   answers: [
@@ -681,7 +635,7 @@ S({
       const P1 = A.at(...pts[0]), P2 = A.at(...pts[1]);
       const fx = kf(t, [[0.9, [P1[0] + 60, P1[1] + 260]], [Q.p1 - 0.05, P1], [Q.p2 - 0.45, P1], [Q.p2 - 0.05, P2], [Q.mo[0] + 0.1, P2], [Q.mo[0] + 0.7, [P2[0] - 30, P2[1] + 200]], [Q.p3 - 0.5, [P1[0] + 40, P1[1] + 160]], [Q.p3 - 0.05, P1], [Q.p4 - 0.45, P1], [Q.p4 - 0.05, P2]], E.cam);
       const fa = ep(t, 0.9, 1.2) * (1 - 0.65 * ep(t, Q.mo[0] + 0.1, Q.mo[0] + 0.5)) + 0.65 * ep(t, Q.p3 - 0.7, Q.p3 - 0.3);
-      finger(fx[0], fx[1], -Math.PI / 2 - 0.12, { s: est.s, press: dNow, view: 'top', alpha: clamp(fa), len: 22 });
+      finger(fx[0], fx[1], -Math.PI / 2 - 0.12, { s: est.s, press: dNow, view: 'top', alpha: clamp(fa), len: 30 });
       /* the click force at each point, once its press lands */
       const gf = pts.map(([x, z]) => [b02_clickGf2(1, x, z), b02_clickGf2(0, x, z)]);
       const kA = [Q.p1, Q.p2].map(p => ep(t, p + 0.15, p + 0.4)), kB = [Q.p3, Q.p4].map(p => ep(t, p + 0.15, p + 0.4));
@@ -765,11 +719,12 @@ function b02_seamLoupe(t, x, y, r, o = {}) {
     const poly = (pts, f) => { G.beginPath(); pts.forEach(([u, yy], i) => i ? G.lineTo(u, yy) : G.moveTo(u, yy)); G.closePath(); G.fillStyle = f; G.fill(); G.strokeStyle = edge; G.lineWidth = lw(1.6); G.stroke(); };
     if (k > 0.5) { poly(strip, shell); poly(trig, fill); }
     else poly([[-14, dd], [14, dd], [14, 3 + dd], [-14, 3 + dd]], fill);
-    /* the pad (b02_fingerEndMM works y up), wrapping whatever is under it: on the strip it stays up, over the button it
-       rides down; a press with a seam under it folds skin into the step */
-    const surf = u => k > 0.5 ? (u < -g / 2 ? 0 : u < g / 2 ? -2.6 : -dd) : -dd;
-    const mk = k > 0.5 && (o.press || 0) > 0.5 ? [-g / 2 - 1.2, g / 2 + 1.6, C.red] : null;
-    b02_fingerEndMM({ cx: 4.0, base: -dd, sink: 0.35, surf, w: 15.5, h: 12.5, mark: mk });
+    /* the pad (the kit's fingertip end-on, F52.1, its default 13° turn), wrapping whatever is under it (surf: height up,
+       mm): on the strip it stays up, over the button it rides down; a press with a seam under it folds skin into the step.
+       It rests 0.35 mm into its pad (press 0.23 of the kit's 1.5 mm) */
+    const surf = u => k > 0.5 ? (u < -g / 2 ? 0 : u < g / 2 ? -2.6 : -dd) : -dd, fu = 4.0;
+    const mk = k > 0.5 && (o.press || 0) > 0.5 ? [-g / 2 - 1.2 - fu, g / 2 + 1.6 - fu, C.red] : null;
+    finger(fu, -surf(fu), 0, { view: 'end', s: 1, press: 0.23, floor: X => surf(fu + X) - surf(fu), floorKey: 'seam' + (k > 0.5 ? 'r' : 't') + dd.toFixed(3), mark: mk });
   });
   G.restore();
   circle(x, y, r, { color: inkA(0.5), w: 1.5, alpha: a });
@@ -1087,8 +1042,10 @@ S({
         if (kC < 1) RW = b02_flushMM({ face: 'wall', press: pr, shellA: 1 - kC, lit: C.ink });
         if (kC > 0) { G.save(); G.globalAlpha *= kC; R = b02_flushMM({ face: 'ceiling', wall: kW, press: pr, lit: C.ink }); G.restore(); }
         /* the middle finger's pad across the button's outer edge: it rides the button down and wraps any step */
-        const S0 = kC < 0.5 ? RW : R, mk = S0 && S0.step != null && S0.step > 0.05 && pr > 0.6 ? [F.uE - 0.8, F.uE + F.gap * F.ex + 2.4, C.red] : null;
-        if (S0) { G.save(); G.scale(-1, 1); b02_fingerEndMM({ cx: Q.fu, base: S0.top(Q.fu), sink: 0.3, surf: S0.top, w: 15.5, h: 12.5, mark: mk }); G.restore(); }
+        /* the kit's fingertip end-on (F52.1, its default 13° turn), 0.3 mm into its pad (press 0.2 of the kit's 1.5 mm). The
+           section's model runs u the other way (drawn at -u), so the floor and the pinch are read mirrored: X = fu - u */
+        const S0 = kC < 0.5 ? RW : R, mk = S0 && S0.step != null && S0.step > 0.05 && pr > 0.6 ? [Q.fu - (F.uE + F.gap * F.ex + 2.4), Q.fu - (F.uE - 0.8), C.red] : null;
+        if (S0) { const y0 = S0.top(Q.fu); finger(-Q.fu, -y0, 0, { view: 'end', s: 1, press: 0.2, floor: X => S0.top(Q.fu - X) - y0, floorKey: 'flush' + (kC < 0.5 ? 'w' : 'c' + kW.toFixed(3)) + pr.toFixed(3), mark: mk }); }
         G.restore();
       } });
     const P = (u, y) => est.P(-u, -y), s = est.s;
@@ -1159,10 +1116,11 @@ function b02_mower(x, y, s, th, push, a) {
   for (const wx of [mx - 22 * s, mx + 22 * s]) circle(wx, y - 9 * s, 9 * s, { fill: body, color: ed, w: 2, alpha: a });
   const hx = mx - 30 * s, hy = y - 30 * s, L = 110 * s, gx = hx - Math.cos(th) * L, gy = hy - Math.sin(th) * L;
   line(gx, gy, hx, hy, { color: ed, w: 4, alpha: a });
-  /* the push along the handle (ink), its part along the ground (blue: moves it), its part into the ground (red: wasted) */
+  /* the push along the handle (ink), its part along the ground (ink2: moves it; blue is Theseus's alone, F35.1, A1), its
+     part into the ground (red: wasted) */
   const F = 70 * s, fx = Math.cos(th) * F, fy = Math.sin(th) * F, ax = gx - 8 * s, ay = gy - 26 * s;
   arrow(ax, ay, ax + fx, ay + fy, { color: C.ink, w: 3, hs: 10, alpha: a });
-  arrow(ax, ay, ax + fx, ay, { color: C.hero, w: 3, hs: 10, alpha: a });
+  arrow(ax, ay, ax + fx, ay, { color: C.ink2, w: 3, hs: 10, alpha: a });
   arrow(ax + fx, ay, ax + fx, ay + fy, { color: C.red, w: 3, hs: 10, alpha: a });
 }
 /** the post's travel at the plunger, split along the switch's axis and across it, in a loupe. dirM: the travel's
@@ -1189,7 +1147,7 @@ S({
   answers: [
     ['tensioner doesn\'t look accurate', 'The shared click section (clickMM, K1 after Brock\'s photos): the trigger\'s own arm clamped by one screw into a brass insert, the bridge thinning to its crown, square joints'],
     ['i dont like the use of the metrics "pts" or "points" anywhere', 'No pts or points anywhere: percentages of the travel, and the click\'s timing in percent'],
-    ['this is a really important slide the concept is good but it needs to be demonstrated and sold better', 'Demonstrated: the finger presses the same trigger on an upright switch and on the GT01; the loupe splits the travel at the plunger along and across the switch, the across part scrubbing red; the lawn mower beside it. Sold in What you feel: no scrub, no wear in the guide, the click 6 % sooner'],
+    ['this is a really important slide the concept is good but it needs to be demonstrated and sold better', 'Demonstrated: the finger presses the same trigger on an upright switch and on the GT01; the loupe splits the travel at the plunger along and across the switch, the across part scrubbing red; the lawn mower beside it. Sold: once the verdict lands, a What you feel panel takes the classroom panel\'s place: "The whole press goes into the click. No scrub at the plunger, no side load wearing its guide, and the click lands 6 % sooner"; the last caption says it too'],
     ['i think direct drive means the peak theoretical reaction time should be 20% faster because 20% more of the force goes where you actually intend it', 'The slide says 6 % sooner and why not 20 %: the across part is at right angles to the axis, so turning the switch lifts the along part from cos 20° = 94 % to 100 %, not by 20 % (F31.2)'],
     ['(F39.2 check) the old "34.2 % sideways" as a share of force', 'Re-labelled as what it is: 34.2 % of the travel at the switch runs across its axis (sin 20°), a scrub over the plunger\'s cap; no claim of 34 % of the force']
   ],
@@ -1212,9 +1170,9 @@ S({
     if (kd > 0.5) callout(t, 1.5, o.rc, 'Turns about the crown', { to: [o.rc[0] - 30, o.rc[1] + 100], side: 'l', elbow: o.rc[0], color: C.ink2, tcolor: C.ink2 });
     /* the finger presses the front of the trigger, riding it down */
     if (o.trigTop) { const tp = o.trigTop(37), tq = o.trigTop(38), ang = Math.atan2(tq[1] - tp[1], tq[0] - tp[0]) - 0.05, fa = ep(t, 1.5, 1.9);
-      finger(tp[0], tp[1] + (1 - ep(t, 1.5, 1.95, E.out3)) * -110, ang, { s, press: pr / Q.pk, view: 'side', alpha: fa * kd, len: 24 }); }
+      finger(tp[0], tp[1] + (1 - ep(t, 1.5, 1.95, E.out3)) * -110, ang, { s, press: pr / Q.pk, view: 'side', alpha: fa * kd, len: 30 }); }
     /* at the plunger: the travel split along the switch's axis and across it (the numbers from the arc's angle at rest) */
-    const lx = 1400, ly = 420, lr = 110, kl = ep(t, Q.p1 - 0.2, Q.p1 + 0.2) * kd, mis = (o.geo && o.geo.mis) || 0;
+    const lx = 1400, ly = 404, lr = 110, kl = ep(t, Q.p1 - 0.2, Q.p1 + 0.2) * kd, mis = (o.geo && o.geo.mis) || 0;   /* 16 px up: room for the panel below (A1) */
     if (o.footW && kl > 0) {
       line(o.footW[0], o.footW[1], lx - lr, ly + 20, { color: C.faint, w: 1.2, dash: [4, 4], alpha: kl });
       const ax = o.axisDir, cm = Math.cos(mis), sm = Math.sin(mis), mvd = [ax[0] * cm + ax[1] * sm, -ax[0] * sm + ax[1] * cm];
@@ -1225,12 +1183,15 @@ S({
       text('of the travel, across the switch', lx, ly + lr + 78, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: kl, maxW: 600 });
       text(along.toFixed(1) + ' % along it' + (rv ? '' : ': the click 6 % sooner'), lx, ly + lr + 108, { role: 'label', size: 20, color: rv ? C.mute : C.heroText, align: 'center', alpha: kl, maxW: 520 });
     }
-    /* the classroom version: the lawn mower (OpenStax §7.1, Fig. 7.2) */
-    { const r = demoPanel(t, 0.2, [1200, 668, 640, 170], { label: 'The classroom version', src: 'OpenStax §7.1', pad: 22 }), ka = ep(t, 0.4, 0.8);
+    /* the classroom version: the lawn mower (OpenStax §7.1, Fig. 7.2); once the verdict lands, what you feel takes its place
+       (A1: the gain was only in the last caption). The panel ends 24 px above the verdict's label (A1: they touched). Once the
+       note's tile has landed on it (0.45 s) the panel under it is no longer drawn (its name would sit under the tile) */
+    { const r = demoPanel(t < Q.v + 1.3 + 0.45 ? t : -1, 0.2, [1200, 646, 640, 164], { label: 'The classroom version', src: 'OpenStax §7.1', pad: 22 }), ka = ep(t, 0.4, 0.8) * (1 - ep(t, Q.v + 0.9, Q.v + 1.25));
       const push = (pressCurve(t, Q.p1, D) + pressCurve(t, Q.p2, D) + pressCurve(t, Q.p3, D) + pressCurve(t, Q.p4, D)) * 0.5;
       b02_mower(r[0] + 420, r[1] + r[3] + 6, 0.62, 0.62, push, ka);
       text('Push along the handle:', r[0], r[1] + 26, { role: 'small', size: 22, weight: 600, color: C.ink2, alpha: ka });
-      text('only F cos θ moves it', r[0], r[1] + 56, { role: 'small', size: 22, weight: 700, color: C.heroText, alpha: ka }); }
+      text('only F cos θ moves it', r[0], r[1] + 56, { role: 'small', size: 22, weight: 700, color: C.ink, alpha: ka });
+      noteBox(t, Q.v + 1.3, 1200, 646, 640, { label: 'What you feel', head: 'The whole press goes into the click', body: 'No scrub at the plunger, no side load wearing its guide, and the click lands 6 % sooner.', size: 22, pad: 22, h: 164 }); }
     verdict(t, Q.v, 1200, 950, { from: '34.2', to: '0.0', unit: '%', label: 'Travel at the switch running across it', better: 'lower', who: ['Upright', 'Theseus'], rivalCol: 'grey', size: 96, maxW: 640 });
     source(t, 'Derived from the shared click section: the post\'s arc at the plunger is 20.0° off upright (crown to post foot 31.4 mm forward, 11.4 mm down): across = sin 20° = 34.2 % of the travel, along = cos 20° = 94.0 %, so turning the switch makes the click 6 % sooner, not 20 %. Upright switches mount flat (Omron D2F).', { t0: 1.6, maxW: 1080, y: 977 });
   }
@@ -1317,7 +1278,7 @@ S({
     part(ox, oy, s, () => { R = b02_subBoardMM(kx, kG > 0.5 ? 0 : pr, kd * out); });
     /* the finger on the trigger */
     if (o.trigTop) { const tp = o.trigTop(37), tq = o.trigTop(38), ang = Math.atan2(tq[1] - tp[1], tq[0] - tp[0]) - 0.05, fa = ep(t, 1.4, 1.8);
-      finger(tp[0], tp[1] + (1 - ep(t, 1.4, 1.85, E.out3)) * -110, ang, { s, press: pr / 0.68, view: 'side', alpha: fa * kd, len: 24 }); }
+      finger(tp[0], tp[1] + (1 - ep(t, 1.4, 1.85, E.out3)) * -110, ang, { s, press: pr / 0.68, view: 'side', alpha: fa * kd, len: 30 }); }
     /* each extra part named as it lands, with its count */
     if (R) {
       const names = ['Its own board', 'A screw into the shell', 'A connector and cable'], at = [R.board, R.screw, R.cable], to = [[R.board[0] + 170, R.board[1] + 40], [R.screw[0] + 190, R.screw[1] - 30], [R.cable[0] - 120, R.cable[1] + 120]];
@@ -1347,7 +1308,7 @@ const B02_TN = { sw: 55 * CLK_TN.XS / CLK_TN.XP, v: 8.6 };
    to the hotter peak); B, no heat (neutral parts, the bend curves carry it); C, by the share of strength used (red = breaks) */
 const B02_TNHEAT = (() => { try { const m = /[?&]tnheat=([ABC])\b/.exec(location.search); return m ? m[1] : 'A'; } catch (e) { return 'A'; } })();
 S({
-  id: 'b02_tensioner', ch: 'click', theme: 'night', title: 'The bridge tensioner', settle: 11, ideas: [50, 4],
+  id: 'b02_tensioner', ch: 'click', theme: 'paper', title: 'The bridge tensioner', settle: 11, ideas: [50, 4],
   replaces: ['tensioner'],
   src: [SIM_MAT.ppcf.src, 'clk_gt01', 'clk_brock'],
   answers: [
@@ -1366,7 +1327,8 @@ S({
       [3.0, `The same ${cB.gf.toFixed(1)} gf on both: the bridge reaches the click. The flat plane has moved ${sameF.toFixed(2)} of 0.35 mm.`],
       [5.0, `To reach the click the flat plane needs ${cF.gf.toFixed(1)} gf, ${ratio.toFixed(1)} times as much, and it bends hardest at its screw.`],
       [8.0, `The bridge: an arch that thins at its crown, so it bends there, and the click your finger feels drops from ${(cF.gf + B02_TN.sw).toFixed(1)} to ${(cB.gf + B02_TN.sw).toFixed(1)} gf.`]]);
-    const wy = CLK_TOP, wh = CLK_BOT - wy, rowH = wh / 2, X0 = LM, XW = 1360, xr = 1480, kc = ep(t, TT.c0, TT.c1, E.cam);
+    /* the window ends 14 px above CLK_BOT so the two-line model note sits clear of it and of the footer (A1: it ran into both) */
+    const wy = CLK_TOP, wh = CLK_BOT - 14 - wy, rowH = wh / 2, X0 = LM, XW = 1360, xr = 1480, kc = ep(t, TT.c0, TT.c1, E.cam);
     /* frame one (R2-b02-1, M6): the window, both tensioners at rest and their readouts are on screen at t = 0; the motion is the press */
     demoWindow(LM, wy, RM - LM, wh, 1, {});
     line(LM + 24, wy + rowH, RM - 24, wy + rowH, { color: C.hair, w: 1.2 });
@@ -1376,7 +1338,9 @@ S({
        peak reads red; the key says where PP-C-20A breaks bent (207 MPa, F41.1's two strengths), twenty times higher (F9.23) */
     const sref = Math.max(cF.sig, cB.sig), kref = cB.kmax * cB.F;
     const rows = [
-      { r: rF, c: cF, name: 'As seen in Starlight X', spec: 'Flat, no bridge, same resin', F: cB.F * ep(t, TT.p0, TT.p1) + (cF.F - cB.F) * ep(t, TT.f0, TT.f1), hero: false },
+      /* the flat row is Starlight X's design modelled in Theseus's PP-C-20A, so its numbers are the model's, not that mouse's
+         (A1: say so on the row; its own composite is stiffer and unpublished, the foot line says) */
+      { r: rF, c: cF, name: 'As seen in Starlight X', spec: 'Flat, no bridge,\nmodelled in the same resin', F: cB.F * ep(t, TT.p0, TT.p1) + (cF.F - cB.F) * ep(t, TT.f0, TT.f1), hero: false },
       { r: rB, c: cB, name: 'Proposed solution', spec: 'A bridge, 0.8 to 0.4 mm', F: cB.F * ep(t, TT.p0, TT.p1), hero: true }
     ];
     /* the GT01's own 41.3 gf at the fingertip is added once, after both have clicked, for the felt click (R2-b02-3): until then
@@ -1409,14 +1373,14 @@ S({
           const base = cy + 116, H = 60, n = R.r.model.nStrip, pts = [];
           for (let e = 0; e < n; e++) { const xm = CLK_TN.S * (e + 0.5) / n; pts.push([P([xm, 0])[0], base - H * R.c.kap[e] * R.F / kref * kk]); }
           const x0 = P([0, 0])[0], x1 = P([CLK_TN.S, 0])[0], col = R.hero ? C.hero : C.ink2;
-          G.save(); G.beginPath(); G.moveTo(x0, base); pts.forEach(p => G.lineTo(p[0], p[1])); G.lineTo(x1, base); G.closePath(); G.fillStyle = rgba(R.hero ? C.hero : '#9a9993', R.hero ? 0.28 : 0.22); G.fill(); G.restore();
+          G.save(); G.beginPath(); G.moveTo(x0, base); pts.forEach(p => G.lineTo(p[0], p[1])); G.lineTo(x1, base); G.closePath(); G.fillStyle = rgba(R.hero ? C.hero : C.comp, R.hero ? 0.28 : 0.22); G.fill(); G.restore();
           poly([[x0, base]].concat(pts, [[x1, base]]), { color: col, w: 2.5, alpha: kk });
           line(x0, base, x1, base, { color: C.faint, w: 1.2, alpha: kk });
           const ha = P([R.c.half.a, 0])[0], hb = P([R.c.half.b, 0])[0];
           line(ha, base + 12, hb, base + 12, { color: col, w: 3, alpha: kk }); line(ha, base + 6, ha, base + 18, { color: col, w: 2, alpha: kk }); line(hb, base + 6, hb, base + 18, { color: col, w: 2, alpha: kk });
           text('Bend along the tensioner', x0 - 18, base + 6, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kk });
           const hot = R.hero ? P([R.c.at, CLK_TN.rise + 0.2]) : P([0.25, 0.4]);
-          callout(t, TT.kap + 0.3, hot, R.hero ? 'Bends at the crown' : 'Hardest at the screw', { to: [R.hero ? P([CLK_TN.S, 0])[0] + 70 : hot[0] + 110, cy - 96], side: 'r', color: col, tcolor: R.hero ? C.heroText : C.ink });
+          callout(t, TT.kap + 0.3, hot, R.hero ? 'Bends at the crown' : 'Hardest at the screw', { to: [R.hero ? P([CLK_TN.S, 0])[0] + 112 : hot[0] + 110, cy - 96], side: 'r', color: col, tcolor: R.hero ? C.heroText : C.ink });   /* the bridge's label clear of the post (on paper the post is dark under it) */
         }
         G.restore();
       });
@@ -1425,8 +1389,8 @@ S({
          the flat plane's felt click beside its own (F16.1: before → after) */
       const kr = 1, spring = R.F * CLK_GF, felt = spring + B02_TN.sw * kG;
       G.save();
-      text(R.name, xr, cy - 118, { role: 'label', size: 22, color: R.hero ? C.heroText : C.ink, alpha: kr });
-      text(R.spec, xr, cy - 84, { role: 'small', size: 25, color: C.mute, alpha: kr });
+      text(R.name, xr, cy - 124, { role: 'label', size: 22, color: R.hero ? C.heroText : C.ink, alpha: kr });
+      text(R.spec, xr, cy - 92, { role: 'small', size: 22, color: C.mute, alpha: kr, maxW: RM - xr, lh: 1.3, sentence: false });
       if (R.hero) clk_ba(t, xr, cy - 10, { before: (cF.F * CLK_GF + B02_TN.sw).toFixed(1), after: felt.toFixed(1), unit: 'gf', size: 72, k: kV, a: kr });
       else clk_big(t, xr, cy + 4, null, felt.toFixed(1), 'gf', { size: 56, color: C.ink2, alpha: kr });
       text('The spring\'s part, at the fingertip', xr, R.hero ? cy + 27 : cy + 40, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: kr * (1 - ep(t, TT.f1 + 0.1, TT.f1 + 0.4)) });
@@ -1450,20 +1414,33 @@ S({
       }
       G.restore();
     });
-    /* where this is: the rear of the trigger, from the side */
-    locator(t, -1, LM + 30, CLK_TOP + 24, 150, 'right', msBox('right', 'rear'), { hi: ['rear'], col: 'ink' });
+    /* where this is: the rear of the trigger, from the side. Top left in the wide shot; once the camera has pushed in, the
+       block and its insert fill that corner, so it moves to the free corner bottom right (A1: it covered the insert) */
+    locator(t, -1, LM + 30, CLK_TOP + 24, 150, 'right', msBox('right', 'rear'), { hi: ['rear'], col: 'ink', a: 1 - ep(t, TT.c0, TT.c0 + 0.4) });
+    locator(t, -1, X0 + XW - 168, wy + wh - 104, 150, 'right', msBox('right', 'rear'), { hi: ['rear'], col: 'ink', a: ep(t, TT.c1 - 0.2, TT.c1 + 0.2) });
     /* the heat scale, and the model in one line */
     const lx = X0 + XW - 430, ly = wy + 40, kl = ep(t, 1.2, 1.6);
     /* the kit's key (F19.3): coloured by MPa against the hotter peak (Brock, F18.6), and where PP-C-20A breaks by F41.1's two
        strengths: the tensioner bends, so 207 MPa (120 is its stretched strength) */
+    /* in the wide shot it sits over the top row's lever; once pushed in, the trigger's riser stands there, so it moves (stacked)
+       to the free space right of the riser, below the lever's level (A1: it covered the riser) */
     if (B02_TNHEAT !== 'B') {
-      rr(lx - 56, ly - 34, 488, 80, 6, C.panel, null, 0, kl);
-      if (B02_TNHEAT === 'C') { heatKey(t, 1.2, lx - 36, ly, 300, { mode: 'use', title: 'Share of strength used (bent)' }); }
-      else { heatKey(t, 1.2, lx - 36, ly, 150, { mode: 'mpa', max: sref, dec: 1, ticks: [0, 1] });
-        text('Red: the peak', lx + 140, ly + 8, { role: 'label', size: 19, color: C.faint, alpha: kl }); text('Breaks at ' + SIM_MAT.ppcf.fb + ' MPa bent', lx + 140, ly + 36, { role: 'label', size: 19, color: C.faint, alpha: kl }); }
+      const kw1 = kl * (1 - ep(t, TT.c0, TT.c0 + 0.4)), kw2 = ep(t, TT.c1 - 0.2, TT.c1 + 0.2), zx = X0 + XW - 320, zy = wy + 196;
+      if (kw1 > 0.003) {
+        rr(lx - 56, ly - 34, 488, 80, 6, C.panel, null, 0, kw1);
+        if (B02_TNHEAT === 'C') heatKey(t, 1.2, lx - 36, ly, 300, { mode: 'use', title: 'Share of strength used (bent)', alpha: kw1 / Math.max(kl, 1e-6) });
+        else { heatKey(t, 1.2, lx - 36, ly, 150, { mode: 'mpa', max: sref, dec: 1, ticks: [0, 1], alpha: kw1 / Math.max(kl, 1e-6) });
+          text('Red: the peak', lx + 140, ly + 8, { role: 'label', size: 19, color: C.faint, alpha: kw1 }); text('Breaks at ' + SIM_MAT.ppcf.fb + ' MPa bent', lx + 140, ly + 36, { role: 'label', size: 19, color: C.faint, alpha: kw1 }); }
+      }
+      if (kw2 > 0.003) {
+        rr(zx - 20, zy - 36, 330, 142, 6, C.panel, null, 0, kw2);
+        if (B02_TNHEAT === 'C') heatKey(t, 0, zx, zy, 280, { mode: 'use', title: 'Share of strength used (bent)', alpha: kw2 });
+        else { heatKey(t, 0, zx, zy, 160, { mode: 'mpa', max: sref, dec: 1, ticks: [0, 1], alpha: kw2 });
+          text('Red: the peak', zx, zy + 70, { role: 'label', size: 19, color: C.faint, alpha: kw2 }); text('Breaks at ' + SIM_MAT.ppcf.fb + ' MPa bent', zx, zy + 96, { role: 'label', size: 19, color: C.faint, alpha: kw2 }); }
+      }
     }
     pill(RM - 24 - pillW('derived'), ly + 6, 'derived', kl);
-    text(`2D frame model (K1), the example tensioner: ${SIM_MAT.ppcf.name} at ${(SIM_MAT.ppcf.E / 1000).toFixed(1)} GPa for both, 10 mm wide over an 8 mm span, pressed 40 mm out, plunger at 30 mm; the GT01's 55 gf adds ${B02_TN.sw.toFixed(1)} gf at the fingertip. It breaks at ${SIM_MAT.ppcf.fb} MPa bent, ${SIM_MAT.ppcf.ft} stretched: the tensioner only bends. Starlight X's own composite is stiffer (not published). Motion drawn ${CLK_TT.ex}×.`, LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, 1.0, 1.6), maxW: RM - LM });
+    text(`2D frame model (K1), the example tensioner: ${SIM_MAT.ppcf.name} at ${(SIM_MAT.ppcf.E / 1000).toFixed(1)} GPa for both, 10 mm wide over an 8 mm span, pressed 40 mm out, plunger at 30 mm; the GT01's 55 gf adds ${B02_TN.sw.toFixed(1)} gf at the fingertip. It breaks at ${SIM_MAT.ppcf.fb} MPa bent, ${SIM_MAT.ppcf.ft} stretched: the tensioner only bends. Starlight X's own composite is stiffer (not published). Motion drawn ${CLK_TT.ex}×.`, LM, 970, { role: 'foot', color: C.faint, alpha: ep(t, 1.0, 1.6), maxW: RM - LM });
   }
 });
 
@@ -1475,7 +1452,9 @@ S({
    force) on the example button: the switch holds the post, and the body bends between the post and the fingertip
    (an overhanging beam, 20 × 2.4 mm, the same shape in both): δ = F a² (L + a) / 3EI with L 30, a 10 mm. ABS (2.55 GPa)
    against PP-C-20A (13.5 GPa): 5.3× less bend for the same shape. */
-const B02_ST = { F: 2.0, L: 30, a: 10, b: 20, h: 2.4, ex: 40, press: { down: 0.35, hold: 0.9, up: 0.35 }, p1: 1.9, p2: 4.3, v: 5.9 };
+/* p2 3.6 and the first hold 0.75 (were 4.3 and 0.9): the 40 % frame (4.0 s) shows both bends and their numbers, not two
+   buttons at rest between presses (A1, M8) */
+const B02_ST = { F: 2.0, L: 30, a: 10, b: 20, h: 2.4, ex: 40, press: { down: 0.35, hold: 0.75, up: 0.35 }, p1: 1.9, p2: 3.6, v: 5.9 };
 const b02_stBend = E => { const Q = B02_ST, I = Q.b * Q.h * Q.h * Q.h / 12; return Q.F * Q.a * Q.a * (Q.L + Q.a) / (3 * E * I); };
 /** one button from the side, simply: the spring at the rear, the body as a bar, the switch under the post at 30 mm, the
    fingertip at 40 mm. bend: the tip's drop from the body's own bend (mm, drawn ex×), k: the press 0..1 */
@@ -1513,10 +1492,17 @@ function b02_doors(r, push, a) {
     const e = pts[pts.length - 1]; arrow(e[0] + 0, e[1] - 46, e[0], e[1] - 8, { color: C.ink, w: 3, hs: 10, alpha: a * (0.4 + 0.6 * push) });
   });
 }
+/** a bend (mm) as the nearest plain fraction of a human hair (SCALE.hair: 0.07 mm, Ley 1999), for the human scale (A1, M5):
+   45 µm is about two-thirds of one, 9 µm about an eighth */
+function b02_hairFr(mm) {
+  const r = mm / ((typeof SCALE !== 'undefined' && SCALE.hair) ? SCALE.hair.mm : 0.07);
+  const F = [[1 / 8, 'an eighth'], [1 / 6, 'a sixth'], [1 / 5, 'a fifth'], [1 / 4, 'a quarter'], [1 / 3, 'a third'], [1 / 2, 'half'], [2 / 3, 'two-thirds'], [3 / 4, 'three-quarters'], [1, 'all']];
+  return F.reduce((b, f) => (Math.abs(f[0] - r) < Math.abs(b[0] - r) ? f : b))[1];
+}
 S({
   id: 'b02_stiff', ch: 'click', theme: 'paper', title: 'A stiff button, a light click', settle: 10, ideas: [50],
   replaces: ['clk_tenmat'],
-  src: [SIM_MAT.ppcf.src, SIM_MAT.abs.src, 'b02_radwin', 'b02_tpuGpx2', 'clk_brock'],
+  src: [SIM_MAT.ppcf.src, SIM_MAT.abs.src, 'b02_radwin', 'clk_brock'],
   answers: [
     ['hard to understand', 'One idea, one demonstration: the same hard click (2 N) on the same button in ABS and in PP-C-20A, side by side, both drawn from frame one; the ABS body visibly bends past the switch, the PP-C-20A one stays on its line; a door and its hinge as the classroom version'],
     ['and stiffer is better doesn\'t seem right', 'Said plainly: stiff is right for the body (it should not bend) and wrong for the spring (the bridge on the previous slide keeps the click light, 49.0 gf); the headline is the body\'s bend, lower is better, not "stiffer"']
@@ -1528,7 +1514,7 @@ S({
     captions(t, [[0.5, 'A button has two jobs. Its spring sets how hard it clicks. Its body should not bend at all.'],
       [Q.p1, 'Click hard and the switch holds the post: a body that bends lets your finger sink on past it, a mushy end to every click.'],
       [Q.p2 - 0.2, 'The same press on the same shape in PP-C-20A: 5.3 times stiffer, it stays on its line. The bridge keeps the click light.'],
-      [Q.v + 0.4, `Stiff where it should be, light where it should be: your finger sinks ${(bP * 1000).toFixed(0)} µm past the click, not ${(bA * 1000).toFixed(0)}: the low post-travel TechPowerUp praised on the GPX 2.`]]);
+      [Q.v + 0.4, `Stiff where it should be, light where it should be: your finger sinks ${(bP * 1000).toFixed(0)} µm past the click, not ${(bA * 1000).toFixed(0)}: about ${b02_hairFr(bP)} of a hair's width, not ${b02_hairFr(bA)}.`]]);
     /* where this is: the button from the side */
     locator(t, -1, LM, 286, 150, 'right', msBox('right', 'trigL'), { hi: ['trigL'], col: 'ink' });
     /* frame one (R2-b02-1, M6): both buttons at rest from t = 0; the motion is the press */
@@ -1555,7 +1541,7 @@ S({
       text('A stiff door swings true', r[0] + r[2] * 0.72, r[1] + r[3] + 4, { role: 'small', size: 21, weight: 600, color: C.ink2, align: 'center', alpha: ka }); }
     noteBox(t, Q.v + 1.2, 1240, 590, 600, { label: 'Two jobs, two parts', head: 'The body: stiff. The spring: light.', body: 'PP-C-20A keeps the body from bending; the bridge keeps the click at 49.0 gf, a little under an egg\'s weight.' });
     verdict(t, Q.v, 1240, 950, { from: (bA * 1000).toFixed(0), to: (bP * 1000).toFixed(0), unit: 'µm', label: 'The body\'s bend under a hard click', better: 'lower', who: ['ABS', 'PP-C-20A'], rivalCol: 'grey', size: 96, maxW: 600, net: false });
-    source(t, 'Derived for the example button (a 20 × 2.4 mm body, the switch 30 mm and the fingertip 40 mm from the spring): after the click the switch holds the post, and the body bends past it, δ = F a² (L + a) / 3EI; F = 2 N, a hard click (fingers peak at 2.5 to 4.6× a switch\'s activation force: Radwin & Jeng 1997; 2 N is 3.7× the GT01\'s 0.54 N), about a 200 g phone\'s weight. E: ABS 2.55, PP-C-20A 13.5 GPa (datasheets).', { t0: 1.6, maxW: 1100, y: 977 });
+    source(t, 'Derived for the example button (a 20 × 2.4 mm body, the switch 30 mm and the fingertip 40 mm from the spring): after the click the switch holds the post, and the body bends past it, δ = F a² (L + a) / 3EI; F = 2 N, a hard click (fingers peak at 2.5 to 4.6× a switch\'s activation force: Radwin & Jeng 1997; 2 N is 3.7× the GT01\'s 0.54 N), about a 200 g phone\'s weight. E: ABS 2.55, PP-C-20A 13.5 GPa (datasheets). A hair: about 70 µm (Ley 1999: 17 to 181).', { t0: 1.6, maxW: 1100, y: 977 });
   }
 });
 
@@ -1590,7 +1576,7 @@ function b02_railsTop(phi, k, o = {}) {
     G.save(); G.globalAlpha *= a;
     for (const sg of [-1, 1]) {
       sq([sx + sg * (half + 0.7), z], 1.4, 4.0, TH ? C.comp : C.comp2, `rgba(${ink},0.55)`);
-      if (padded) sq([sx + sg * (half - Q.pad / 2), z], Q.pad, 3.4, C.panel, `rgba(${ink},0.5)`);
+      if (padded) sq([sx + sg * (half - Q.pad / 2), z], Q.pad, 3.4, TH ? '#FFFFFF' : '#B4B4BA', `rgba(${ink},0.5)`);   /* POM: white plastic, so the pads read as parts (A1) */
     }
     G.restore();
     return half;
@@ -1602,6 +1588,26 @@ function b02_railsTop(phi, k, o = {}) {
   const cA = postAt(Q.pA); let cB = null; if (k > 0.01) { G.save(); G.globalAlpha *= k; cB = postAt(Q.pB); G.restore(); }
   const M = XF.m.slice();
   return { at: (x, z) => SPm(M, ...P(...rot([x, z]))), fix: (x, z) => SPm(M, ...P(x, z)), postA: SPm(M, ...P(...cA)), postB: cB ? SPm(M, ...P(...cB)) : null, hinge: SPm(M, ...P(hc[0], hc[1])) };
+}
+/** a loupe on one post in its guide (A1: the posts and their POM pads are the slide's subject, and the fingertip hides them
+   in the main view): b02_railsTop drawn again at sL px per mm, centred on the guide at z, clipped to a circle at (cx, cy) of
+   radius r; the same phi, k and wear as the main view, so the post swings and the pads come in as they do there.
+   o = { a, label } */
+function b02_railLoupe(cx, cy, r, sL, z, phi, k, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
+  const c = b02_P(-B02.sw.x, z);
+  G.save(); G.globalAlpha = a; G.beginPath(); G.arc(cx, cy, r, 0, TAU); G.fillStyle = b02_bodyF(); G.fill(); G.clip();
+  part(cx, cy, sL, () => { xmove(-c[0], -c[1]); b02_railsTop(phi, k, { wear: o.wear || 0 }); }, { alpha: a });
+  G.restore();
+  circle(cx, cy, r, { color: inkA(0.5), w: 1.5, alpha: a });
+  if (o.label) text(o.label, cx, cy + r - 16, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: a });
+  /* the pads named, once they are in: a word over the post and a short line to each */
+  const kp = (o.pads || 0) * a;
+  if (kp > 0.003) {
+    const Q = B02_RL, hx = (Q.post / 2 + Q.gapPom * Q.ex + Q.pad / 2) * sL * b02_K().x, py = cy - 1.2 * sL * b02_K().y;
+    text('POM pads', cx, cy - r + 32, { role: 'label', size: 19, color: C.ink2, align: 'center', alpha: kp });
+    for (const sg of [-1, 1]) line(cx + sg * 22, cy - r + 40, cx + sg * hx, py, { color: C.ink2, w: 1.2, alpha: kp });
+  }
 }
 /** the classroom version: a drawer from above on one runner (centre) and on two (its sides), pushed at a corner; the one-
    runner drawer twists in its opening, the two-runner one goes straight */
@@ -1626,9 +1632,9 @@ S({
   src: ['clk_protolabs', 'clk_brock'],
   answers: [
     ['locking the motion to one plane/ direction needs to be better explained', 'Shown, not said: the same sideways nudge swings a one-post trigger about its spring (its front sways, the post grinds its guide); with the second post near the front it can only go down and up. The caption names it: one plane'],
-    ['and the visualization here is too abstract and difficult to tell what you\'re looking at', 'The whole mouse from above first, then one push-in to the left trigger (locator kept); the posts and guides drawn through the shell where they sit, the finger on the button'],
-    ['i also dislike how the dual plungers and pads aren\'t uniform', 'Both posts are the same 2.4 mm square, both guides the same, both with the same POM pads (G8, F26.2)'],
-    ['and you need to sell the benefit here a little better, talk about how the bad version feels cheap and causes more wear over time fork being losing', 'What you feel: no sideways wobble under the finger (the cheap feel), and nothing grinding the guide wider every click (red rub marks build on the bare guide; POM pads take the rub on Theseus)'],
+    ['and the visualization here is too abstract and difficult to tell what you\'re looking at', 'The whole mouse from above first, then one push-in to the left trigger (locator kept); the posts and guides drawn through the shell where they sit, the fingertip seen through from the first flick; and the posts themselves in two loupes beside the mouse at 2.25×, each in its guide (A1)'],
+    ['i also dislike how the dual plungers and pads aren\'t uniform', 'Shown side by side at settle: the two loupes hold the rear and the front post, the same 2.4 mm square in the same guide with the same POM pads (G8, F26.2)'],
+    ['and you need to sell the benefit here a little better, talk about how the bad version feels cheap and causes more wear over time fork being losing', 'Said and shown: the second caption calls the one-post rattle cheap ("a rattle that feels cheap"); red rub marks build on the bare guide in the rear loupe; after the verdict a What you feel panel takes the classroom panel\'s place: "Solid, not cheap. No side-to-side rattle under your finger, and nothing grinding the guide wider click after click: the POM pads take the rub"'],
     ['good information, execution just need medium improvement', 'The information kept (one post, a second post, POM pads), the execution rebuilt as a demonstration with one number']
   ],
   sfx: [[B02_RL.f1 + 0.2, 'click'], [B02_RL.f2 + 0.2, 'click'], [B02_RL.f3 + 0.2, 'click'], [B02_RL.f4 + 0.2, 'click']],
@@ -1636,7 +1642,7 @@ S({
     const Q = B02_RL, F = Q.flick;
     header(t, 'Dual rail main clicks');
     captions(t, [[0.5, 'Under each button, a post rides in a guide. With one post, a sideways push in a flick swings the button about its spring.'],
-      [Q.f1 + 0.1, 'Its front sways as far as the guide allows, and the post grinds the guide wider with every click.'],
+      [Q.f1 + 0.1, 'Its front sways as far as the guide allows, a rattle that feels cheap, and the post grinds the guide wider with every click.'],
       [Q.mo[0], 'Theseus adds a second post near the front, the same as the first, both guides lined with POM pads fitted to the gap.'],
       [Q.v + 0.4, 'The button now moves in one plane only: straight down and back up, wherever and however you press.']]);
     const k = ep(t, Q.mo[0], Q.mo[0] + Q.mo[1], E.io3);
@@ -1651,11 +1657,20 @@ S({
     /* the finger on the button, pushing down and a little sideways */
     if (A) {
       const fp = A.at(-B02.sw.x, Q.fz), fa = ep(t, 0.9, 1.3);
-      finger(fp[0], fp[1] + (1 - ep(t, 0.9, 1.4, E.out3)) * 220, -Math.PI / 2 - 0.08, { s: est.s, press: Math.abs(nudge), view: 'top', alpha: fa, len: 22 });
+      /* seen through from the first flick (the kit's ghost), so the posts under it read (A1) */
+      finger(fp[0], fp[1] + (1 - ep(t, 0.9, 1.4, E.out3)) * 220, -Math.PI / 2 - 0.08, { s: est.s, press: Math.abs(nudge), view: 'top', alpha: fa, len: 22, ghost: 0.6 * ep(t, Q.f1 - 0.4, Q.f1) });
       if (Math.abs(nudge) > 0.02) forceArrow(fp[0] + Math.sign(nudge) * 70, fp[1] + 60, nudge > 0 ? 0 : Math.PI, 60, { k: Math.abs(nudge), color: C.ink, w: 3 });
       if (k < 0.5) faultTag(t, Q.f1 + 0.4, A.postA, 'One post: swings about it', { to: [A.postA[0] + 170, A.postA[1] + 70], side: 'r', alpha: 1 - ep(t, Q.mo[0] - 0.2, Q.mo[0]) });
       if (A.postB && k > 0.98) fixTag(t, Q.mo[0] + Q.mo[1], A.postB, 'A second post, the same', { to: [A.postB[0] + 170, A.postB[1] - 40], side: 'r' });
       scaleNote(box[0] + 20, box[1] + 200, 'Sideways play drawn ' + Q.ex + '×', { t, t0: 1.6, size: 21 });
+      /* the posts themselves, 2.25× the view, beside the mouse (A1, F26.2: both the same post, both with the same pads): the
+         rear post in its bare guide from the first flick, swinging and leaving rub marks; the front post as the second arrives */
+      const sL = est.s * 2.25, lx = 245, LR = 92, lyF = 590, lyR = 800, kR = ep(t, Q.f1 - 0.4, Q.f1), kF = ep(t, Q.mo[0] + 0.2, Q.mo[0] + Q.mo[1]);
+      const gA = A.fix(-B02.sw.x, Q.pA), gB = A.fix(-B02.sw.x, Q.pB);
+      if (kR > 0.003) { line(lx + LR * 0.96, lyR - LR * 0.28, gA[0] - 14, gA[1] + 8, { color: C.faint, w: 1.2, dash: [4, 4], alpha: kR });
+        b02_railLoupe(lx, lyR, LR, sL, Q.pA, phi, k, { a: kR, wear: wear * (1 - k), label: 'Rear post' }); }
+      if (kF > 0.003) { line(lx + LR * 0.96, lyF - LR * 0.28, gB[0] - 14, gB[1] + 8, { color: C.faint, w: 1.2, dash: [4, 4], alpha: kF });
+        b02_railLoupe(lx, lyF, LR, sL, Q.pB, phi, k, { a: kF, label: 'Front post', pads: ep(t, Q.mo[0] + Q.mo[1], Q.mo[0] + Q.mo[1] + 0.4) }); }
     }
     /* the play at the fingertip, measured: the guide's gap times the lever */
     const play = g => 2 * g * (Q.fz - H.c[1]) / (g === Q.gapPom ? LB : Lp);
@@ -1666,11 +1681,14 @@ S({
       const v = k > 0.98 ? play(Q.gapPom) : play(Q.gapBare);
       text((k > 0.98 ? fmtT(v) : fmtR(v)) + ' mm', x, y + 64, { role: 'num', size: 52, weight: 800, color: k > 0.98 ? C.heroText : C.red, alpha: a });
       text(k > 0.98 ? 'two posts, POM pads fitted to the gap' : 'one post in a bare guide', x, y + 100, { role: 'small', size: 23, weight: 600, color: C.mute, alpha: a }); }
-    { const r = demoPanel(t, 0.25, [1180, 470, 660, 250], { label: 'The classroom version' }), ka = ep(t, 0.45, 0.85);
+    /* the classroom version, then (once the verdict lands) what the player feels in its place (A1: "feels cheap", the pads);
+       once the note's tile has landed (0.45 s) the panel under it is no longer drawn */
+    { const r = demoPanel(t < Q.v + 1.2 + 0.45 ? t : -1, 0.25, [1180, 470, 660, 250], { label: 'The classroom version' }), ka = ep(t, 0.45, 0.85) * (1 - ep(t, Q.v + 0.8, Q.v + 1.15));
       const push = Math.max(...[Q.f1, Q.f2, Q.f3, Q.f4].map(f => pressCurve(t, f, F)));
       b02_drawers([r[0], r[1] + 4, r[2], r[3] - 40], push, ka);
       text('One runner: it twists', r[0] + r[2] * 0.25, r[1] + r[3] + 16, { role: 'small', size: 21, weight: 600, color: C.red, align: 'center', alpha: ka });
-      text('Two runners: straight in', r[0] + r[2] * 0.75, r[1] + r[3] + 16, { role: 'small', size: 21, weight: 600, color: C.ink2, align: 'center', alpha: ka }); }
+      text('Two runners: straight in', r[0] + r[2] * 0.75, r[1] + r[3] + 16, { role: 'small', size: 21, weight: 600, color: C.ink2, align: 'center', alpha: ka });
+      noteBox(t, Q.v + 1.2, 1180, 470, 660, { label: 'What you feel', head: 'Solid, not cheap', body: 'No side-to-side rattle under your finger, and nothing grinding the guide wider click after click: the POM pads take the rub.', h: 250 }); }
     verdict(t, Q.v, 1180, 905, { from: fmtR(play(Q.gapBare)), to: fmtT(play(Q.gapPom)), unit: 'mm', label: 'Side-to-side play at your fingertip', better: 'lower', who: ['One post, bare', 'Theseus'], rivalCol: 'grey', size: 104, maxW: 660 });
     source(t, 'Derived: the button swings about its spring as far as a post\'s guide gap allows; play at the fingertip = gap × lever (fingertip ' + (Q.fz - H.c[1]).toFixed(1) + ' mm from the spring; posts at ' + Lp.toFixed(1) + ' and ' + LB.toFixed(1) + ' mm). Gaps: ±0.15 mm bare (molds ±0.076 mm a face, Protolabs), ±0.025 mm with pads fitted in 0.05 mm steps (#28).', { t0: 1.6, maxW: 1060, y: 977 });
   }

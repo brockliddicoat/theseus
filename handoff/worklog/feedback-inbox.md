@@ -1,0 +1,133 @@
+# Brock's messages, 2026-11-06 (Chicago time), verbatim, for FEEDBACK.md (F50.1)
+
+Newest last. The integrator appends each new message here as it arrives (with the live version at the time). AskUserQuestion
+answers are given as question → answer. Check each against FEEDBACK.md (F34, F35, F38 to F50) and add what's missing.
+Builds that were live, saved for rendering frames: /home/claude/work/int/film/main-0836.html (the 08:36 build; live then:
+v1793975367-421d from ~08:27), main-0950.html (09:50 build), main-pub.html (published 09:52 as v1793980369-8a53),
+main-all.html (published ~10:05 as v1793981126-8865). Git: 7fb9826 (morning), 70a6109 (08:48), c1a3913 (~09:45),
+c4a530d (~10:05).
+
+- 06:33: "https://claude.ai/share/4ce6f186-6380-4611-a871-d79aeee98304 / pick back up with the revamp that was planned for
+  yesterday before i ran out of usage / make sure you don’t lose too much content, you should still have well over 100
+  slides, every animation should be vastly improved and more intuitive, make sure to recover all the context we had in the
+  conversation in that link as to the revamp and everything else, rely heavily on my feedback document, double check that all
+  archived feedback has actually been addressed / set the bar for this new presentation 10x higher than it was before"
+- ~06:40 answers: Palette → "Neutral + blue (Recommended)"; Codex → "mostly ignore codex, the output was very poor and a step
+  backwards on almost all fronts"; Length → "at least 100, play it by ear as you work as to what you think is necessary to
+  be most effective, probably less than 120 slides though".
+- ~06:45: "do you have any other questions you could ask me that you think would improve your execution?"
+- ~06:50 answers: Photos → "I'll attach them now"; Pace → "this is an ultra account, it doesn’t have 5 hour limits. i don’t
+  want you to worry about usage at all, i want you to be as thorough as possible, unless you’re worried being inefficient
+  with usage my result in a worse execution, again the bar for this presentation and how understandable and impactful it is
+  is 10x higher than quality than the last one. i’d like you to check in often and post live updates you aren’t drifting
+  from what i want and you stay aligned"; Audience → "it’s mostly clips that will be used on social media and for parts of
+  the website, but the flow between clips has to be extremely good, the organization has to be as interconnected as
+  possible for the most invested of customers and investors that sit down and watch the whole thing, the pacing also has to
+  be amazing to keep people invested for when they watch the whole thing"; 3D → "mostly drop the 3d version, but don’t
+  delete its assets, as many of the 2d visualizations should be derived from 3d assets as possible to make sure they stay
+  contestant, and then those assets are also usable for develope, when you do full shell designs they should be based of a
+  mouse that is clearly slightly simplified as well and only showing the parts of the design that matter for the concept
+  because your last full design wasn't really up to par and i dint want people to think the indicative of the end product".
+- ~07:00: "here are all the old pictures that ships be relevant, this should be everything the other chat had" (19 images:
+  refs/photos/brock-2026-11-06/, INDEX.md).
+- 07:33: "you have permission to access my computer or any website in any way you’d like that helps you create the best
+  product possible, when you constantly ask me for permission to access a website instead of just doing it automatically it
+  slows down our progress"
+- 08:18: "continually evaluate slides even after they are done to look for errors or things that could be made better so the
+  watcher can learn better, understand at a glance better, or so that the slides are more convincing and flow better/inter
+  connect better between eachother or in the most persuasive order / make sure no bad conventions are carried forward
+  without thinking about them or flawed models are silently used again without evaluating them for errors first / some of
+  the backgrounds i’m seeing still feel yellowish to me instead of gray, make sure that is resolved"
+- ~08:30 answers (F40): hold → "Longer, 2–6 s"; chapter openings → "advanced motion transitions"; vertical clips → "allow for
+  both letterboxed and the same as before as options"; radio module → "Keep facing forward (Recommended)".
+- 08:36: "i’m sending another message so you js web search more"
+- 08:53: "i’m sending another message so you can keeping search"
+- ~08:58 answer (F41): strength rule → "Two strengths (Recommended)".
+- 09:31: "i did not approve such a wacky scroll wheel wheel cutout design, and the filets on the rear cutouts do not look
+  natural or have good glow at all, they all are way to big, i’ve drawn in something closer to what i want but i want to to
+  take what i drew and vastly improve it, also i need you to make the shape you’re using center jumped like the starlight x,
+  right the hump is way too far back/rear humped" / "this is in reference to the side profile not the top down" / "run a
+  simulation to determine the perfect lattice and lattice beam dimension and filet size for the mouse and explain how that
+  conclusion was arrived at in the presentation" / "i feel like the simplified mouse design you’re using in some places is a
+  little too simple, i still need to be able to see things like the lattice and the creases above the scroll wheel the sora
+  v2 has" (with his marked-up screenshot of b02_cutouts: refs/photos/brock-2026-11-06b/0931-cutouts-markup.jpg; the original
+  upload: /mnt/user-data/uploads/d8e0db9d-image.jpg).
+- 09:38: "the bottom rim (the lower part after the hard cease) of the shape shouldn’t have the lattice, it’ll make it too
+  complicated to manufacture"
+- ~09:40 answers (F42): battery → "Forward and up"; board weight → "Keep 5.6 g as target".
+- 09:50: "the codex version had a good demo with a ruler to show that structure of material matters more than weight of
+  materials (they had a better way of saying this tho)" / "this could be tied tied into the how the dimensions of the beams in
+  lattice/interwoven arches are chosen, also. also keep manufacturability in mind when you choose dimensions"
+- ~10:05 answers (F44): side rail → "show all 3, it’s hard to visualize these things with text, that is the point of this
+  presentation"; side switches → "From the shell"; POM pads → "Fit each trigger"; wheels → "research more".
+- 10:06 (delivered ~11:00): "the fingers look really bad right now, and the trigger cutouts in the side profile also don’t
+  look correct at all, they should be smooth and naturally arching, an offset from the top of the profile, not jaggy like they
+  are right now"
+- ~10:30 answers (F46, on S1's sheets /home/claude/work/s1/s1_options_A.png and _B.png): wheel opening → "O1 even 1.0 mm";
+  corners → "K3 flowing"; hump → "don’t change side profile, all of the options you presented are really bad so we’ll have to
+  wait until there is a smarter model available to make a more involved changed like that apparently"; height → "39.9 mm".
+- ~10:40 answers (F47): simplified mouse detail → "don’t change the side profile at all, just say it’s 39.9 and we’ll use that
+  model until we can dk something better later, also you did the bottom rim very wrong, it’s supposed to slope down in a
+  straight line from the back, you cut off way too much, reference the 3d scan"; rib feet (on
+  /home/claude/work/p4/sheet/rib-foot-joint-options.png) → "keep as options, i haven’t decided yet"; board path → "0.6 mm,
+  5.63 g"; wheels → "Show the two found".
+- ~10:50 answers (F48, on /home/claude/work/p2/shots/rail4/30_b03_rail_11.5.png and
+  /home/claude/work/p1/opts/b09_radio_clearance_options.png): side rail → "Tied posts (wire)"; antenna → "A accept plan 5".
+- 11:00: "make sure pretty much every message i send is logged in feedback.md, with references of what each slide looked like
+  when i sent the feedback, this way when smarter models come out they will have as much context as possible to make the
+  presentation even better by looking at all of my feedback, make sure to mark when old feedback is outdated and has been
+  overruled by new feedback"
+- 11:06: "the last 2 messages i sent were hanging for like 20 minutes so i hit send now, its information that you needed but it
+  shouldn’t interrupt your work, read them and then proceed"
+- ~11:10 (after "[Request interrupted by user]"): "Continue from where you left off." (may be the app's resume prompt; the
+  server had restarted and stopped every agent; the integrator relaunched them).
+- 11:45 (integrator → Brock, no reply yet): sent /home/claude/work/s2/s2_rim_cutout_before_after.png (the bottom rim and the
+  side-view trigger cutout, before/after, over the scan) and said it is being applied.
+- 11:52 (on S2's before/after, which he re-sent as an image: feedback/attachments/F51/1152-s2-before-after-as-he-saw-it.png;
+  the sheet itself is /home/claude/work/s2/s2_rim_cutout_before_after.png): "trigger cutouts are still very wonky from the side
+  especially near the front, the bottom rim should be an angled straight line as this will be better for manufacturing (i
+  think)". Integrator's reading: (1) the side-view cutout must be smooth to the front (no step into the nose lip); (2) the
+  rim's crease becomes one angled straight line (supersedes S2's scan-following curve and refines F47.2). Relayed to S2.
+- ~12:10 answers (F52), to the integrator's questions: fingers (FG's options sheet in /home/claude/work/fg/sheets/) → "A Line";
+  grip tape in Theseus's box (FILM F35: b11_box listed tape against b08_tape's "this has none") → "Drop it from the box";
+  skin floor (FILM F42: the 0.60 mm skin against b05_wall's 0.89 mm floor) → "0.60 mm, to be proven".
+- 12:16 (integrator → Brock): sent /home/claude/work/s2/s2_f51_front_rim.png (S2's fix for F51: the cutout's front as one
+  arch to the nose tip, or the nearly flat lip eased in; the rim's crease as one straight line from the tail tip, 8.6 mm, to
+  the nose's lower corner, 3.0 mm, trimming the top view by up to 0.6 mm round the tail, or filled out) with two questions.
+- ~12:30 answers (F53), on the 12:16 sheet (as he saw it: /home/claude/work/s2/s2_f51_front_rim_1216_as-sent.jpg, the
+  integrator's 1300 px copy; S2 overwrote the full-size file at 12:21, now kept as s2_f51_front_rim_v2_1221.png): front →
+  typed "it needs to properly connect completely" (neither option); rim → clicked "Widen the tail".
+- 12:34: "i accidentally hit the wrong but on the last question, i was typing a new answer" / "i was saying the bottom rim
+  line needs to be at ~2 degrees, prioritizing matching as much in the front and middle as possible instead of the back"
+  (so "Widen the tail" is void; the rim is a straight line at ~2°, fitted to the scan's crease over the front and middle).
+- ~12:40 answers (F54), with s2_f51_front_rim_v2_1221.png, fg/sheets/fg_questions.png, p3/questions/q1_targets_press_row.png:
+  nose seam (C, the run-out into the flat lip, or B with a nose redesign?) → typed "i can’t tell, but both the options you
+  presented in that image aren’t anywhere near good enough"; finger size on the shell's lattice slides → "To scale
+  (Recommended)"; end-on finger → "Turned 13° (Recommended)"; press-to-PC target → "Under 4.2 ms, derived (Recommended)".
+- ~12:50 answers (F55), with s2/s2_rim_2deg_1240.png, p3/questions/q2_module_warning.png, q3_cover_close_count.png,
+  p4/shots/final/b07_emg_11.png: rim crease angle (2.0° recommended, or 1.75° fitting front and middle closer) → "1.75°";
+  PixArt's warning on b04_module → "Keep as is (Recommended)"; compromise count → "Eight, per chapter (Recommended)";
+  b07_emg's ending (keep the rule / target verdict / measured stat) → typed "i have no idea what you’re asking here" (the
+  integrator kept the default: the rule stays).
+- ~13:05 F56: board mass (h3/shots/mass_options.png) → "Accept 5.68 g (Recommended)".
+- ~13:10 answers (F57), with l1/shots/final/81_b12_latopt_12.png and 82_b12_ribs_12.5.png: lattice pattern (woven kagome
+  recommended / squares / true triangles) → typed "show kagome and true triangles" (the integrator reads it as "show me
+  both, side by side, before I pick"; a picture is being made); rib depth (1.80 steel-safe / 1.80 as is / 1.08) → "1.80,
+  cut steel-safe (Recommended)".
+- 13:18: "the fingers look better but the nails on them don’t look quite right still" / "i need a preview of your progress soon
+  and an estimate of how complete you are" (fingers as live in v1793991510-57ae, the 12:53 build).
+- ~13:40 answers (F58), on /home/claude/work/s2/s2_nose_study_1333_full.jpg (S2's 3D nose study; the full-size original is
+  s2_nose_study_1333.png, 4520x4330; NOTE: its top row embeds four RTINGS product photos, so keep that row out of the repo
+  and attach a crop without it, or reference the file outside the repo): nose (candidate 1 / candidate 2 / C without the tuck)
+  → typed "image is too low resolution for me to tell. stop wasting usage on this problem, i’m unsure if your model is
+  advanced enough to solve it yet."; lip overhang (0.8 / 1.2 / 0.5 mm) → typed "i have no idea what you are talking about".
+  Integrator: the nose is DEFERRED to a future model (like F46.3's side profile); today's nose (the scan's own) stays.
+- ~13:58 answer (F60): nails (fg2/fg2_nail_options_1351_a.png and _b.png: Today, A Soft, B Line, C Tone) → "A Soft (Recommended)".
+- 13:58: "i need a live presentation link relatively soon, you need to get to a good stopping point that doesn’t waste work" (integrator: every agent finishes its current item by 14:25 and checkpoints; publish ~14:40; handoff docs updated).
+- ~14:15 answer (F61), on /home/claude/work/l2/l2_kagome_vs_triangles_1_inside_1401.png and _2_nodes_1400.png: lattice
+  pattern (woven kagome recommended / true triangles) → typed "show both options in presentation" (integrator: the film
+  presents both patterns as the two candidates rather than one winner; logged in WORK-LEFT.md for the next session).
+- 13:59: "you should log all the work that is left to do though so you don’t lost ideas" (answered by WORK-LEFT.md).
+- 14:22: "the animation pacing is very hard to follow and feels all over the place c largely a regression from the old video,
+  the autoplay was definitely a bad idea as well" (integrator: autoplay off by default, live 14:30 as v1793996750-29cc;
+  pacing is WORK-LEFT §0).

@@ -1,0 +1,88 @@
+{
+ "rib": {
+  "plan": {
+   "D": 0.36,
+   "centre": [
+    0,
+    0
+   ]
+  },
+  "ball": {
+   "case": "rib",
+   "D": 0.7657675887630659,
+   "centre": [
+    -1.6,
+    1.3322676295501878e-15,
+    0.3800000000000001
+   ],
+   "grid": 0.01,
+   "secs": 8.0
+  },
+  "hole_d": 0.0
+ },
+ "kag": {
+  "plan": {
+   "D": 0.6270948891515542,
+   "centre": [
+    0.23000000000000154,
+    0.13200000000000145
+   ]
+  },
+  "ball": {
+   "case": "kag",
+   "D": 0.8840814442120138,
+   "centre": [
+    -0.22999999999999887,
+    -0.12999999999999878,
+    0.4400000000000001
+   ],
+   "grid": 0.01,
+   "secs": 10.8
+  },
+  "hole_d": 0.0
+ },
+ "tri": {
+  "plan": {
+   "D": 1.1605033390731798,
+   "centre": [
+    1.3322676295501878e-15,
+    1.3322676295501878e-15
+   ]
+  },
+  "ball": {
+   "case": "tri",
+   "D": 1.2204917041913885,
+   "centre": [
+    1.3322676295501878e-15,
+    1.3322676295501878e-15,
+    0.6100000000000001
+   ],
+   "grid": 0.01,
+   "secs": 8.5
+  },
+  "hole_d": 0.0
+ },
+ "tri_cored": {
+  "plan": {
+   "D": 0.484,
+   "centre": [
+    -0.23199999999999887,
+    -0.399999999999999
+   ]
+  },
+  "ball": {
+   "case": "tri_cored",
+   "D": 0.8200000000000001,
+   "centre": [
+    -0.4699999999999991,
+    1.3322676295501878e-15,
+    0.4000000000000001
+   ],
+   "grid": 0.01,
+   "secs": 11.5
+  },
+  "hole_d": 0.44050333907317984
+ },
+ "hole_d": 0.44050333907317984,
+ "note": "L2 node close-ups: the kagome's two-rib crossing, the true triangles' six-rib knot, and that knot cored, to scale.\n\nGeometry (L1 final): skin 0.60; ribs 0.36 at the root, 1.80 deep, 0.5 deg draft per side; root fillets 0.24 (rib to skin, in\nsection); node fillets 0.22 (rib to rib, in plan). Kagome: two ribs cross at 60 deg. Triangles: three ribs (six arms) at 60 deg.\nCored knot: a round-ended core pin down the knot's axis to the skin's inner face (the skin stays 0.60 under it), its diameter\nchosen so the ring wall left at its thinnest equals the rib (0.36): d = 2 (r_plan - 0.36).\n\nMeasures (the sink risk):\n  plan circle: the largest circle inside the node's plan at the root (ribs + node fillets), 2D distance transform;\n  junction ball: the largest ball inside the solid where the node meets the skin (skin + node + root fillets), 3D distance\n  transform on a 0.01 mm grid; against the skin's own 0.60 and a single rib's root (0.36 rib, 0.24 fillets).\nOutput: out/nodes.json (+ out/nodes_sections.npz for drawing)."
+}

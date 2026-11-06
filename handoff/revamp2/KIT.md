@@ -226,10 +226,14 @@ lit, a blue box on the focus. `establish` draws it for you.
 a lit and a shadow side in two flat greys), mono grey on both grounds (F9.24). (x, y) is the contact on the surface, `ang`
 the way it points (0 right, PI/2 down; pointing left it mirrors so the pad stays down); move (x, y) with the part you
 press. `s` is px per mm: pass the part's own scale, so the finger is to scale with what it presses (an index fingertip is
-14.3 mm across at the nail and 16 mm at the joint, its nail 11.2 by 12.7 mm: AIST hand data x 1.03); inside part() or a
-camera pass s in its units (1 in mm). The last joint is a little flexed, so only the fingertip's pad reaches the surface.
+14.3 mm across at the nail and 16 mm at the joint: AIST hand data x 1.03; its nail 10.3 by 12.7 mm between the folds, its
+cuticle 7 mm ahead of the joint's crease); inside part() or a camera pass s in its units (1 in mm). The last joint is a
+little flexed, so only the fingertip's pad reaches the surface. The nail (Brock's pick "A Soft", FG2 14:00): the skin's own
+grey a shade lighter, a soft sheen along its curve, the skin's fold drawn round its sides and U-shaped base, a paler free
+edge; no outline of its own; from the side a thin plate (at most 1.5 mm shows). The shadow side wraps round the tip in
+every view, so the tip reads round.
 `press` 0..1 moves the bone and nail 1.5 mm toward the surface: the pad flattens on it (about a 10 mm contact, as at 1 N),
-the skin beside bulges, the nail stays rigid and pales from its free edge.
+rolling onto it with no corner; the skin beside bulges, the nail stays rigid and pales from its free edge.
 - `view: 'side'` (default): with no `surf` it rests along `ang`, as before. **Pass `surf` (the surface's direction on the
   stage) whenever the finger meets a part at a slant**: the fingertip meets it at ang - surf and the pad lands flat ON it;
   the side the finger points into is the pad's side (a finger pressing up into an egg, or poking a wall, needs no `flip`).
@@ -483,3 +487,19 @@ on the right (the simplified mouse with it lit, neutral until the answer, then b
   `KEY_PARTS.board.g` (the generator's output differs from the block in the file by that field only). No slide reads it
   yet: b01_budget's `B01_PCB_PATH.g` (5.63), b10_board and b11 are the polish owner's to switch. Built (all 30-*.js own,
   geo2d) and checked; in deck/.snapshot/src (identical to src before).
+- 2026-11-06 14:00 (FG2, Brock 13:18: "the fingers look better but the nails on them don't look quite right still"; his
+  pick "A Soft" from /home/claude/work/fg2/fg2_nail_options_1351_a.png and _b.png; no signature or option changed) **`finger`'s
+  nail redrawn, and the tip reads round.** The nail as a real one sits (Ha et al., "Fingernail configuration", Arch Plast
+  Surg 2015: men's index nail 12.3 x 13.0 mm, 8.9 mm radius across; AIST): a U-shaped cuticle 2.75 mm deep 14.6 mm back from
+  the tip (7 mm ahead of the joint's crease), a rounded free edge 1.9 mm short of the tip, 10.3 mm across between the folds
+  (72 % of the tip); the thumb's broader, with its lunula. Drawn in the skin's own greys a shade lighter, a soft sheen on its
+  lit side, the skin's fold as one soft line round its sides and base, a paler free edge, no outline of its own (was a
+  near-white outlined slab: "a sticker"). From the side it is the strip of plate above the fold, at most 1.5 mm, tapering at
+  both ends, with a sheen on its crest (was a 2.2 mm white visor). The chisel: the shadow side now wraps round the tip in
+  every view (side and top: the light/shadow line carried to where the outline is square to the light; end-on: the line
+  traced on the model's surface, round under the tip), the pressed pad rolls onto the surface with rounded ends (no
+  corners), and from above the shadow keeps to the finger's side, clear of the nail. Checked: a 0.5 s sweep of all 107
+  slides (0 exceptions, 0 console errors) on the build from the installed src; errs ok on the 22 slides that call
+  `finger` and on kit_finger_p, kit_finger_n, kit_agents, kit_zoom, kit_demo. Before / after: /home/claude/work/fg2/
+  fg2_after_zoom_1401_1.png and _2.png. The hunk is applied to deck/src and deck/.snapshot/src (only the finger section
+  changed in each; backups in /home/claude/work/fg2/backup/).

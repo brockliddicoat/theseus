@@ -1163,15 +1163,17 @@ S({
       const bw = 600, bh = Bx[3], bx0 = 330, by0 = Bx[1];
       G.save(); G.globalAlpha = kX; view3D('pcb', t, bx0, by0, bw, bh, { view: 'bottom', view2d: 'bottom', zoom: 1.45 }); G.restore();
       const A = B11_ART, ap = (fx, fy) => [bx0 + bw * fx, by0 + bh * fy];
-      /* measured on the drawing (box fractions, re-measured 11:4x on the 10:20 plan-5 twin, R3-b11-1; re-check on H3's 0.6 mm regen): the lattice, the QR (its
-         right edge), the wordmark (its right end), ON/OFF, the gold cluster. The QR's label above the wordmark's, so the two
-         leaders don't cross */
+      /* measured on the drawing (box fractions, re-measured 11:4x on the 10:20 plan-5 twin, R3-b11-1; and by P5 13:3x on H3's
+         12:33 regen of the 0.6 mm two-layer board, from the settle frame's pixels): the mosaic (the dark triangles above the
+         right-hand screws; the old point now sat beside the new bus routes), the QR (its right edge), the wordmark (its right
+         end), ON/OFF, a gold triangle in the cluster (the nearest gold one; the old point fell between them). The QR's label
+         above the wordmark's, so the two leaders don't cross */
       const tags = [
-        [ap(0.70, 0.50), 'Dark triangles, filleted: the old board\'s art on plan 5\'s outline', [bx0 + 500, by0 + 200], 'r'],
+        [ap(0.683, 0.319), 'Dark triangles, filleted: the old board\'s art on plan 5\'s outline', [bx0 + 500, by0 + 200], 'r'],
         [ap(0.69, 0.685), 'QR: scan it for the web software', [bx0 + 500, by0 + 372], 'r'],
         [ap(0.60, 0.78), 'The wordmark', [bx0 + 500, by0 + 520], 'r'],
         [ap(0.342, 0.555), 'ON and OFF at the switch (#100)', [bx0 + 100, by0 + 300], 'l'],
-        [ap(0.325, 0.766), 'Gold triangles (#63)', [bx0 + 100, by0 + 470], 'l']
+        [ap(0.3245, 0.7941), 'Gold triangles (#63)', [bx0 + 100, by0 + 470], 'l']
       ];
       tags.forEach(([pt, lab, to, sd], i) => callout(t, Q.tags + i * 0.4, pt, lab, { to, side: sd, color: C.mute, tcolor: C.ink, maxW: sd === 'r' ? 300 : 260, size: 22 }));
     }
@@ -1223,20 +1225,28 @@ const B11_BOXROWS = [
   { name: 'Sora V3', v: [1, 1, 0, 1, 0, 0] },
   { name: 'X2 CrazyLight', v: [1, 1, 0, 1, 0, 0] },
   { name: 'OP1 8K (wired)', v: [-1, -1, 0, 1, 1, 0] },
-  { name: 'Theseus', v: [1, 1, 1, 1, 1, 1], hero: true }
+  /* no grip tape (F52.2, Brock: "Drop it from the box"): its grip is etched into the surface (b08_grip, b08_tape), so its cell
+     says so in words, not a tick, and every count below leaves the tape column out */
+  { name: 'Theseus', v: [1, 1, 'etched', 1, 1, 1], hero: true }
 ];
+/** what a new owner needs, tape aside: the five other items a row's box lists (n/a, a wired mouse's receiver and cable, not
+   counted); the next best is the best wireless row, so the wired OP1 8K (two n/a) is compared on what applies to it */
+const B11_BOXTAPE = 2;
+function b11_boxCount(m) { return m.v.filter((v, j) => j !== B11_BOXTAPE && v === 1).length; }
+function b11_boxBest() { return Math.max(...B11_BOXROWS.filter(m => !m.hero && m.v[0] !== -1).map(b11_boxCount)); }
 S({
   id: 'b11_box', ch: 'own', theme: 'paper', title: 'In the box: the driver, and a manual that stands up', settle: 11, ideas: [72, 73, 13],
   replaces: ['box', 'ownsheet1', 'ownsheet2'], src: ['ownPsV4', 'b11TtV4', 'ownLogiBox', 'b11PsX3', 'b11LogiX2Box', 'ownB2gSlx', 'ownSoraBox', 'ownX2Box', 'ownTrOp1Box', 'ownPcgSkates', 'ownRazerWarranty', 'b11Jnd', 'b11Brock'],
   answers: [
-    ['box (not rated): trifold box with driver (#72, #73)', 'The envelope opens and the trifold stands up (setup with its QR, spares, repair steps); the driver slides out beside it, one size for every screw, cross or slot. Table: what seven flagships\' boxes list (the Pro X3 Superstrike added from ProSettings\' list, its cable from Logitech\'s own X2 Superstrike list); the next best list 3 of 6, Theseus\'s plan 6 of 6; only the wired OP1 8K adds a driver.'],
+    ['box (not rated): trifold box with driver (#72, #73)', 'The envelope opens and the trifold stands up (setup with its QR, spare skates, repair steps); the driver slides out beside it, one size for every screw, cross or slot. Table: what seven flagships\' boxes list (the Pro X3 Superstrike added from ProSettings\' list, its cable from Logitech\'s own X2 Superstrike list); the verdict counts the five items other than tape: the next best wireless box lists 3 of 5 (Sora V3, X2 CrazyLight), Theseus\'s plan 5 of 5; only the wired OP1 8K adds a driver (its receiver and cable n/a, so it is not set against the count).'],
+    ['F52.2 (Brock, on FILM F35): grip tape in the box: "Drop it from the box"', 'Theseus\'s box ships no tape: its tape cell reads "Etched" (the grip is etched into the surface, the Surface chapter\'s answer), the trifold\'s spares panel shows skates only, and the verdict counts the other five items for every row, "tape aside". The rivals\' tape ticks stay on the table, so no rival is undercounted.'],
     ['ownsheet1, rated 2/10: "feels redundant, most of this should be moved to other slides"', 'Each point moved and said where: wire leads against a ribbon (#51) → b10_wires; twisted pairs (#69) → b10_twist; the skate file (DXF) stays here, as one line beside the spares, with why it matters: Razer at first refused a reviewer\'s Viper V4 Pro warranty claim because its feet had been changed (PC Gamer, May 2026).'],
     ['ownsheet2: keep the colourways and the paper cover', 'Colourways stay here (#13: matched to GMK keycap sets, the colour difference published, a ΔE target of 1.0, about the smallest difference an eye can see). The paper battery cover (#74) moved to b11_board, where the underside is shown. The 9-ending serials are out: serials and engravings stay hidden (F26.11); the 9-ending price is b01\'s.']
   ],
   draw: t => {
     const Q = B11X;
     header(t, 'In the box: the driver, and a manual that stands up');
-    captions(t, [[0.3, 'An envelope, and in it a trifold: opened, it stands up with setup, spares and the repair steps printed on it.'], [Q.drv[0], 'Beside it, the driver: one size fits every screw in the mouse, cross or slot. Most flagships ship none.']]);
+    captions(t, [[0.3, 'An envelope, and in it a trifold: opened, it stands up with setup, spare skates and the repair steps printed on it.'], [Q.drv[0], 'Beside it, the driver: one size fits every screw in the mouse, cross or slot. Most flagships ship none.']]);
     /* left: the envelope and the trifold, then the driver */
     const lx = LM, ly = 286, lw0 = 760, lh0 = 640;
     demoWindow(lx, ly, lw0, lh0, 1);
@@ -1250,7 +1260,8 @@ S({
     }
     /* right: the verdict, then what each box lists, then the skate file and the colourways */
     const rx = 900, rw = RM - rx;
-    verdict(t, Q.verdict, rx, 396, { from: 3, to: 6, unit: ' of 6', label: 'What a new owner needs, in the box', better: 'higher', who: ['Next best', 'Theseus'], net: false, size: 100, maxW: rw });
+    const nOf = 5, best = b11_boxBest(), ours = b11_boxCount(B11_BOXROWS.find(m => m.hero));
+    verdict(t, Q.verdict, rx, 396, { from: best, to: ours, unit: ' of ' + nOf, label: 'What a new owner needs in the box, tape aside', better: 'higher', who: ['Next best wireless', 'Theseus'], net: false, size: 100, maxW: rw });
     const items = ['Receiver', 'Cable', 'Grip tape', 'Spare skates', 'Driver', 'Repair steps'], nw = 300, cw = (rw - nw) / items.length, ty = 470, rh = 36;
     const gx = j => rx + nw + cw * (j + 0.5);
     items.forEach((it, j) => text(it, gx(j), ty - 8, { role: 'label', size: 20, color: it === 'Driver' ? C.ink : C.mute, align: 'center', alpha: ep(t, Q.table, Q.table + 0.4), maxW: cw - 6 }));
@@ -1259,7 +1270,7 @@ S({
       if (i) line(rx, y - rh / 2 - 1, RM, y - rh / 2 - 1, { color: C.hair, w: 1, alpha: a });
       if (m.hero) rect(rx - 8, y - rh / 2 + 1, rw + 16, rh - 3, { fill: C.heroSoft, alpha: ep(t, Q.verdict - 0.6, Q.verdict - 0.2) });
       text(m.name + (m.hero ? ' (the plan)' : ''), rx, y + 7, { role: 'small', size: 21, weight: m.hero ? 800 : 600, color: m.hero ? C.heroText : C.ink, alpha: a, maxW: nw - 10 });
-      m.v.forEach((v, j) => { const X = gx(j), kk = ep(t, Q.table + 0.5 + i * 0.12 + j * 0.04, Q.table + 0.9 + i * 0.12 + j * 0.04); if (v === 1) own_tick(X, y, 20, m.hero ? C.hero : C.ink2, kk); else if (v === 0) own_dash(X, y, 20, C.faint, kk); else text('n/a', X, y + 6, { role: 'label', size: 20, color: C.faint, align: 'center', alpha: kk }); });
+      m.v.forEach((v, j) => { const X = gx(j), kk = ep(t, Q.table + 0.5 + i * 0.12 + j * 0.04, Q.table + 0.9 + i * 0.12 + j * 0.04); if (v === 1) own_tick(X, y, 20, m.hero ? C.hero : C.ink2, kk); else if (v === 0) own_dash(X, y, 20, C.faint, kk); else if (v === 'etched') text('Etched', X, y + 6, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: kk, maxW: cw - 6 }); else text('n/a', X, y + 6, { role: 'label', size: 20, color: C.faint, align: 'center', alpha: kk }); });
     });
     const yb = ty + 40 + B11_BOXROWS.length * rh + 6;
     /* the skate file, and why it matters: changing a flagship's feet can cost its warranty (G2, a real case) */
@@ -1271,6 +1282,6 @@ S({
       sw.forEach(([m, k], i) => { const x = rx + i * 76; rr(x, yc, 32, 32, 6, m, inkA(0.25), 1.2, kc); rr(x + 34, yc, 32, 32, 6, k, inkA(0.25), 1.2, kc); });
       text('Colourways matched to GMK keycap sets (#13): shell beside keycap within ΔE 1.0, about the least an eye can tell', rx + 240, yc + 14, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kc, maxW: rw - 240, lh: 1.25 });
     }
-    source(t, 'Box lists (a dash: not listed): ProSettings and TweakTown (Viper V4 Pro: "I do miss a set of replacement mouse feet"), Logitech, ProSettings for the X3 (its cable from Logitech\'s X2 Superstrike list; Logitech lists none for the X3), Back2Gaming, AusModShop, TechRadar (OP1 8K: "A small screwdriver is included"). Warranty: PC Gamer, May 2026. ΔE 1.0: the usual just-noticeable difference (Datacolor). Theseus\'s box: Brock\'s plan (#72, #73).', { t0: 1.0, maxW: 1760 });
+    source(t, 'Box lists (a dash: not listed): ProSettings and TweakTown (Viper V4 Pro: "I do miss a set of replacement mouse feet"), Logitech, ProSettings for the X3 (its cable from Logitech\'s X2 Superstrike list; Logitech lists none for the X3), Back2Gaming, AusModShop, TechRadar (OP1 8K: "A small screwdriver is included"). Warranty: PC Gamer, May 2026. ΔE 1.0: the usual just-noticeable difference (Datacolor). Theseus\'s box: Brock\'s plan (#72, #73), with no grip tape: its grip is etched.', { t0: 1.0, maxW: 1760 });
   }
 });

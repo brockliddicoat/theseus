@@ -1,0 +1,1 @@
+[["const SHC_FR4 = { uts: 430, E: [18, 20], rho: 1.85 }, SHC_MG = { uts: 230, E: 44.8, rho: 1.81 };", "const SHC_FR4 = { uts: SIM_MAT.fr4.ft, E: [matOf('fr4').E, matOf('fr4').EL], rho: matOf('fr4').rho }, SHC_MG = { uts: SIM_MAT.mg.ft, E: matOf('mg').E, rho: matOf('mg').rho };   /* SIM_MAT */"]]

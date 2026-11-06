@@ -47,9 +47,14 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 13:18 (Chicago): F57 (~13:10) logged with L1's frames. (13:14: F56. 12:58: F54, F55. 12:38:
-F53. 12:22: F52, F40.4's measure. 12:08: frames for the older entries, F9 to F31 and F27. 11:55: F51. 11:38: the missing
-messages, frames and attachments for F39 to F49, overruled items marked, F50.1.)
+Last updated: 2026-11-06 14:35 (Chicago): F62 (the pacing, a regression; autoplay off, live as v1793996750-29cc). Before that, 14:23: F61 completed: the lattice pattern (~14:15, F61.1, on L2's two sheets, now in
+attachments/F61/; F57.1 and F43.4 point to it), the live link (13:58, F61.2; F38.6's live-link updates CONFIRMED) and
+the work left (13:59, F61.3, answered by WORK-LEFT.md); F59.1 given the integrator's lesson. (13:56: F60, with FG2's
+nail sheets; F58.1 points to it. 13:47: F59, with S2's nose sheet, the RTINGS photos left out; F51.1's front, F53.1 and
+F54.1 marked DEFERRED by F59.1. 13:38: F58, with frames of the 22 finger slides and the 13:28 preview sheets; F52.1
+marked DONE, pointers on F49.1 and F38.6. 13:18: F57, with L1's frames. 13:14: F56. 12:58: F54, F55. 12:38: F53. 12:22:
+F52, F40.4's measure. 12:08: frames for the older entries, F9 to F31 and F27. 11:55: F51. 11:38: the missing messages,
+frames and attachments for F39 to F49, overruled items marked, F50.1.)
 
 ## F34, F35. Brock's own steering given to Codex on 2026-11-05 (carried over; Codex's work itself is set aside, F38.4)
 On 2026-11-05, out of Claude usage, Brock had Codex continue from this branch. On 2026-11-06 he called its output "very
@@ -86,11 +91,13 @@ feedback on the deck, so they are kept here (numbered as on Codex's branch, code
   works from Claude's last commit (7d8f926); Codex's branch stays on GitHub untouched. One exception since: F45.1 (Codex's
   ruler demonstration, its message carried once).
 - **F38.5 DECIDED** Palette: "Neutral + blue (Recommended)" (F35.1 over F11.2).
-- **F38.6 STANDING** Usage: "this is an ultra account, it doesn't have 5 hour limits. i don't want you to worry about usage
-  at all, i want you to be as thorough as possible, unless you're worried being inefficient with usage my result in a worse
-  execution, again the bar for this presentation and how understandable and impactful it is is 10x higher than quality
-  than the last one. i'd like you to check in often and post live updates you aren't drifting from what i want and you stay
-  aligned". (F10.1's pacing is retired for this account; check-ins and live-link updates are standing.)
+- **F38.6 STANDING** Usage: "this is an ultra account, it doesn't have 5 hour limits. i don't want you to worry about
+  usage at all, i want you to be as thorough as possible, unless you're worried being inefficient with usage my result
+  in a worse execution, again the bar for this presentation and how understandable and impactful it is is 10x higher
+  than quality than the last one. i'd like you to check in often and post live updates you aren't drifting from what i
+  want and you stay aligned". (F10.1's pacing is retired for this account; check-ins and live-link updates are
+  standing.) Check-ins **CONFIRMED by F58.2** (13:18: a preview soon, with how complete it is); live-link updates
+  **CONFIRMED by F61.2** (13:58: a live link soon, from a good stopping point).
 - **F38.7 STANDING** Audience: "it's mostly clips that will be used on social media and for parts of the website, but the
   flow between clips has to be extremely good, the organization has to be as interconnected as possible for the most
   invested of customers and investors that sit down and watch the whole thing, the pacing also has to be amazing to keep
@@ -135,6 +142,8 @@ Frames: feedback/frames/F39/ (the live film at 08:18, v1793972706-6cdc: the warm
 ## F40. Answers on the player and the radio (2026-11-06 ~08:30, logged at 09:00)
 Frames: feedback/frames/F40/ (b09_radio in the live film, v1793975367-421d).
 - **F40.1 DECIDED** Autoplay hold after a slide settles: "Longer, 2–6 s". **IN PROGRESS (F0c; F0b could not be resumed).**
+  **OVERRULED by F62.2** (14:22: "the autoplay was definitely a bad idea"): autoplay is off by default; the holds apply
+  only with ?auto=1.
 - **F40.2 DECIDED** Chapter openings: "advanced motion transitions" (not a pass through black). **IN PROGRESS (F0c):** a
   camera flight across the simplified mouse from the last chapter's part to the next, landing in the chapter card.
 - **F40.3 DECIDED** Vertical clips: "allow for both letterboxed and the same as before as options" (horizontal and 9:16
@@ -195,7 +204,7 @@ profile on b01_lighter, the simplified mouse on b11_repair).
 - **F43.4** "run a simulation to determine the perfect lattice and lattice beam dimension and filet size for the mouse and
   explain how that conclusion was arrived at in the presentation". **TODO (L1):** the study, and a shell-chapter slide that
   shows how the answer was reached. Since then: the skin 0.60 mm, to be proven (F52.3); ribs 1.80 mm deep, cut steel-safe
-  (F57.2); the pattern still open (F57.1).
+  (F57.2); the pattern: woven kagome and true triangles both shown, as the two candidates (F61.1).
 - **F43.5** "i feel like the simplified mouse design you’re using in some places is a little too simple, i still need to be
   able to see things like the lattice and the creases above the scroll wheel the sora v2 has": the simplified mouse keeps
   the lattice and the creases above the wheel (from the scan). **TODO (S1).**
@@ -284,12 +293,12 @@ Frames: feedback/frames/F49/ (fingers on b02_front, b02_rails, b06_arch, b08_gri
 on b01_lighter and b07_balance; the 09:52 publish showed the same).
 - **F49.1** "the fingers look really bad right now": every fingertip drawn on the slides (the kit's finger and the builders'
   own fingers). **TODO (FG):** a redesign, shown to him as an options sheet first, then rolled out across the film.
-  **Decided: F52.1** ("A Line").
+  **Decided: F52.1** ("A Line"). F58.1 (13:18): "the fingers look better", but the nails still don't look right.
 - **F49.2** "and the trigger cutouts in the side profile also don’t look correct at all, they should be smooth and naturally
   arching, an offset from the top of the profile, not jaggy like they are right now": the line where the triggers are cut
   from the body, seen from the side (the simplified mouse's side views and the 3D twin it comes from), must be a smooth arch
   offset below the top of the profile. This doesn't change the profile itself (F47.1). **TODO (S1).** Refined by F51.1:
-  smooth all the way to the front, with no step into the nose lip.
+  smooth all the way to the front, with no step into the nose lip (that front part DEFERRED by F59.1).
 
 ## F50. Log every message, with what the slides looked like (2026-11-06 11:00) STANDING
 - **F50.1 STANDING** "make sure pretty much every message i send is logged in feedback.md, with references of what each slide
@@ -310,9 +319,10 @@ on b01_lighter and b07_balance; the 09:52 publish showed the same).
 At 11:45 the integrator sent him S2's sheet (/home/claude/work/s2/s2_rim_cutout_before_after.png: the bottom rim and the
 side-view trigger cutout, before and after, over his scan) and said it was being applied; he answered on it, re-sending it as
 an image. Attachments: feedback/attachments/F51/ (the sheet as he sent it back). No frames: the sheet is what he saw.
-- **F51.1** "trigger cutouts are still very wonky from the side especially near the front,": the cutout seen from the side
-  must be smooth all the way to the nose, with no step into the nose lip (S2's "after" still steps into it). Refines F49.2.
-  **TODO (S2).**
+- **F51.1** "trigger cutouts are still very wonky from the side especially near the front,": the cutout seen from the
+  side must be smooth all the way to the nose, with no step into the nose lip (S2's "after" still steps into it).
+  Refines F49.2. **TODO (S2).** **The front DEFERRED by F59.1:** where the cutout meets the nose waits for a more
+  capable model; today's nose, the scan's own, stays.
 - **F51.2** "the bottom rim should be an angled straight line as this will be better for manufacturing (i think)": the
   crease above the rim becomes one angled straight line, not the scan-following curve S2 drew (8.6 mm at the tail tip, 6.8,
   5.5, 4.8 at 30 mm in, then about 4 mm to the nose). Refines F47.2. **TODO (S2).** Refined by F53.3: a straight line at
@@ -327,7 +337,8 @@ Answers to the integrator's questions. Attachments: feedback/attachments/F52/ (F
 feedback/frames/F52/ (the film as it stood at 12:18, built from the working tree; nothing was published after 10:05).
 - **F52.1 DECIDED** The fingers (FG's options sheet: A line, B shaded, C graphic): **"A Line"**. Reading: an outline with
   flat light and shadow tones, like the deck's drawn parts, in mono grey on paper and night (FG's recommendation). Settles
-  F49.1. **TODO (FG):** rolled out across the film.
+  F49.1. **DONE (FG, 12:25: rolled out across the film's 22 finger slides; live since the 12:58 publish).** The nails:
+  F58.1.
 - **F52.2 DECIDED** Grip tape in Theseus's box (FILM F35: b11_box listed grip tape among the spares while b08_tape says the
   best thickness is none): **"Drop it from the box"**. Reading: the tape goes; the other spares stay (skates and POM pads).
   His idea #72 ("extra sets of grip tape and skates") is **SUPERSEDED by F52.2** for the tape. **TODO (b11_box).**
@@ -341,10 +352,11 @@ feedback/frames/F52/ (the film as it stood at 12:18, built from the working tree
 Answers to the integrator's two questions on S2's fix for F51, then a correction. Attachments: feedback/attachments/F53/
 (the sheet as he saw it: the integrator's 1300 px copy; S2 overwrote the full-size file at 12:21). No frames: the sheet is
 what he saw.
-- **F53.1** (~12:30) The cutout's front (one arch to the nose tip, recommended, or the lip kept nearly flat and eased into):
-  typed, neither option: "it needs to properly connect completely". Reading: neither drawing joins the cutout to the front
-  properly; the line must connect into the nose completely, nothing stopping short or left hanging. Refines F51.1.
-  **TODO (S2):** shown to him again. Still open after F54.1 (both of the next options rejected too).
+- **F53.1** (~12:30) The cutout's front (one arch to the nose tip, recommended, or the lip kept nearly flat and eased
+  into): typed, neither option: "it needs to properly connect completely". Reading: neither drawing joins the cutout to
+  the front properly; the line must connect into the nose completely, nothing stopping short or left hanging. Refines
+  F51.1. **TODO (S2):** shown to him again. Still open after F54.1 (both of the next options rejected too). **DEFERRED
+  by F59.1** (to a more capable model; today's nose stays).
 - **F53.2 OVERRULED by F53.3** (~12:30) The rim (the tail-tip-to-nose straight line with a top-view trim of up to 0.6 mm
   round the tail, or the tail widened to keep the outline): clicked **"Widen the tail"**, by accident (F53.3).
 - **F53.3 DECIDED** (12:34) "i accidentally hit the wrong but on the last question, i was typing a new answer" / "i was
@@ -358,7 +370,8 @@ Answers to the integrator's questions, each asked on a picture. Attachments: fee
 FG's question sheet, P3's targets row). No frames: the pictures are what he saw.
 - **F54.1** The nose seam (S2's sheet: C, one smooth run-out into the flat lip, or B, the arch to the nose tip, which needs
   a nose redesign?): typed: "i can’t tell, but both the options you presented in that image aren’t anywhere near good
-  enough". Reading: neither; the front stays open (F51.1, F53.1) and needs a better proposal. **TODO (S2).**
+  enough". Reading: neither; the front stays open (F51.1, F53.1) and needs a better proposal. **TODO (S2).** **DEFERRED
+  by F59.1** (S2's 3D nose study, 13:33, was answered "stop wasting usage on this problem"; today's nose stays).
 - **F54.2 DECIDED** The finger on the shell's lattice slides (FG's Q1: to scale, to scale and see-through, or smaller as
   b06 drew it): **"To scale (Recommended)"**.
 - **F54.3 DECIDED** The finger seen end-on (FG's Q2: square to the viewer, or turned 13° so its side and nail show):
@@ -393,9 +406,90 @@ Asked on L1's frames of b12_latopt and b12_ribs. Attachments: feedback/attachmen
 pictures are what he saw.
 - **F57.1** The lattice pattern (b12_latopt: woven kagome, recommended; squares; true triangles): typed: "show kagome and
   true triangles". Reading: show him the two side by side before he picks (the integrator's reading; a picture is being
-  made). Open. **TODO (L1).**
+  made). Open. **TODO (L1).** **DONE (L2's two sheets, 14:01, in attachments/F61/); answered: F61.1** (both shown in the
+  film).
 - **F57.2 DECIDED** The rib depth (b12_ribs: 1.80 mm cut steel-safe, 1.80 mm as is, or 1.08 mm): **"1.80, cut steel-safe
   (Recommended)"**.
+
+## F58. The fingers' nails; a preview and how complete the film is (2026-11-06 13:18)
+Live link at the time: v1793991510-57ae (published 12:58; the 12:52 build, saved as
+/home/claude/work/int/film/main-1253.html), the first publish with FG's A Line finger (F52.1). Frames:
+feedback/frames/F58/ (the 22 slides that draw the kit's finger, at the moment the finger shows and at settle; the nails
+are clearest on b02_seams, b02_cutouts, b08_uv and b08_grip from above, b02_flush end-on, b03_side's thumb, and the side
+views on b02_direct, b02_wedge and the shell slides). Attachments: feedback/attachments/F58/ (the preview sent in reply
+to F58.2).
+- **F58.1** "the fingers look better but the nails on them don’t look quite right still". Reading: the A Line finger is
+  an improvement on what F49.1 called "really bad", but its nails still look wrong, in the drawing used on every finger
+  slide. He didn't say what is wrong with them; the frames show the nails as he saw them. The nail needs another pass,
+  then the 22 slides re-checked. **TODO (FG2, from 13:28; options shown to him first).** **Decided: F60.1** ("A Soft").
+- **F58.2** "i need a preview of your progress soon and an estimate of how complete you are". Reading: a check-in
+  (F38.6): send him a preview of the film as it stands, soon, with an estimate of how complete it is. **DONE (the
+  integrator, 13:28):** three contact sheets of the live film, every slide at its settled frame (attachments/F58/), and
+  the estimate: about 75 to 80 % complete, done about 17:30 to 18:30.
+
+## F59. The nose, deferred; the lip's overhang (2026-11-06 ~13:40, answers)
+Answers to the integrator's two questions on S2's 3D nose study (13:33: one cut from the side round the front, shaded 3D
+at true scale, his Sora V2 scan and three noses from the side, the front, above and 3/4 front). Attachments:
+feedback/attachments/F59/ (the sheet as sent, with the four RTINGS product photos in its top row replaced by labels:
+third-party images stay out of the repo). No frames: the sheet is what he saw.
+- **F59.1 DECIDED (deferred)** The nose (candidate 1, C's smooth bend with a proud lip; candidate 2, the Sora's own knee
+  with a proud lip; or C without the tuck): typed: "image is too low resolution for me to tell. stop wasting usage on
+  this problem, i’m unsure if your model is advanced enough to solve it yet.". Reading: no more work on the nose now; it
+  waits for a more capable model, as the side profile's hump does (F46.3), and today's nose, the scan's own, stays. The
+  sheet was a 4520 x 4330 px JPG, but he couldn't judge it at the size he saw it. F51.1's front, F53.1 and F54.1 are
+  **DEFERRED by F59.1**. The integrator's lesson (13:42): send him each view as its own crop at full size, not one huge
+  sheet; ask fewer, plainer questions; he watches usage.
+- **F59.2 NOTED** The lip's overhang (how far the lip, the buttons' front edge, stands out over the body tucked under
+  it: 0.8 mm as drawn, 1.2 or 0.5 mm; "the Viper V3 Pro’s is larger"): typed: "i have no idea what you are talking
+  about". Reading: the question wasn't clear to him (as with F55.4); nothing decided, and with the nose deferred it
+  falls with it.
+
+## F60. The nails: A Soft (2026-11-06 ~13:52, answer)
+Answer to FG2's question for F58.1, asked on two options sheets (13:51). Attachments: feedback/attachments/F60/ (both
+sheets). No frames: the sheets are what he saw; the nails as they were live are in feedback/frames/F58/.
+- **F60.1 DECIDED** The nails (FG2's sheets: today's nail, "White, outlined, square-based: a sticker from above, a visor
+  from the side", against three treatments, the same finger in every row, its tip's shading now wrapping round "so it
+  reads round, not as a chisel"): **"A Soft (Recommended)"**. Reading: the nail becomes "Skin grey, a shade lighter; a
+  soft sheen; the skin's fold drawn round its sides, base" (not B Line's lines for the fold, free edge and cuticle's
+  crease, nor C Tone's brighter, line-free nail); the rounder tip shading comes with it. Settles F58.1. **TODO (FG2):**
+  into the kit's finger, then the 22 finger slides checked.
+
+## F61. The pattern, both; a live link from a stopping point; the work left, logged (2026-11-06 13:58 to ~14:15)
+The session's last three messages. F61.1 is the latest (~14:15) but comes first because WORK-LEFT.md cites it as F61.1;
+F61.2 (13:58) and F61.3 (13:59) keep their own times. Live link then: v1793991510-57ae (published 12:58); the next
+build, main-1420 (14:20), was publishing at about 14:35. Attachments: feedback/attachments/F61/ (L2's two sheets, for
+F61.1). No frames: F61.1 was answered on the sheets, and F61.2 and F61.3 name no slide (the whole film as it was live
+then is in feedback/attachments/F58/, the 13:28 preview sheets).
+- **F61.1 DECIDED** (~14:15) The lattice pattern, asked again on L2's two sheets (14:00, 14:01: woven kagome,
+  recommended, against true triangles, inside the shell at the same 9.35 g: flex 112.2 against 111.6 µm, "a tie"; the
+  skin's hottest spot 14.6 against 20.7 %; the thickest spot at a node 0.88 against 1.22 mm, where a sink could start):
+  typed: "show both options in presentation". Reading: no single winner; the film presents woven kagome and true
+  triangles as the two candidates, with what each does (the integrator's reading). Answers F57.1. **TODO (the next
+  session; WORK-LEFT.md, section 1):** b12_latopt, and b06 where it draws Theseus's node, show both.
+- **F61.2** (13:58) "i need a live presentation link relatively soon, you need to get to a good stopping point that
+  doesn’t waste work". Reading: publish a new live link soon, but first bring the work to a clean stopping point, so
+  nothing half-done is thrown away: each agent finishes the item it is on and checkpoints, then the film is built,
+  checked and published. The integrator's plan: every agent done and checkpointed by 14:25, publish at about 14:40, the
+  handoff documents updated. **DONE (the integrator):** published v1793996750-29cc at 14:25 (the 14:30 build, main-1430:
+  107 slides, errs ok on all 107; autoplay off, F62.2).
+- **F61.3** (13:59) "you should log all the work that is left to do though so you don’t lost ideas". Reading: before
+  stopping, write down all the work still to do and every idea not yet used, so the next session loses none of them.
+  **DONE (the integrator, 14:00 to 14:40): WORK-LEFT.md** at the repo's root; the agents' working notes go to
+  handoff/worklog/.
+
+
+## F62. The pacing, a regression; autoplay off (2026-11-06 14:22)
+Live then: v1793991510-57ae (the 12:53 build; the film he had been watching). Frames: the whole film as it was live is in
+feedback/attachments/F58/ (the 13:28 preview sheets).
+- **F62.1 TODO, FIRST (the next session; WORK-LEFT.md, section 0)** "the animation pacing is very hard to follow and feels
+  all over the place c largely a regression from the old video". Reading: the motion inside the slides has too many cues
+  at once and no steady rhythm; the old video (v18–v22) was easier to follow. A pacing pass over every slide against the
+  old video's timing: one idea per beat, a steady rhythm, the caption with its motion, the verdict last and held; one slide
+  per chapter shown to him first, then a shared timing helper rolled out.
+- **F62.2 DONE** "the autoplay was definitely a bad idea as well". Reading: the film should not advance by itself. **DONE
+  (the integrator, 14:25):** autoplay off by default in the player (20-app.js; ?auto=1 turns it on); each slide plays once
+  and waits; the viewer steps with the arrows, a click or a swipe. Live as v1793996750-29cc. Overrules F40.1's holds as
+  the default (they apply only with ?auto=1).
 
 ## Open with Brock
 

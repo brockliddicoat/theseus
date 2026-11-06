@@ -2,6 +2,12 @@
 
 Read this first if you are picking this project up in a new session.
 
+**Latest (2026-11-06, the revamp session stopped at 14:30 Chicago at Brock's request for a live link):** start with
+`WORK-LEFT.md` (everything left to do, what each agent stopped on, the decisions waiting on Brock, the ideas not to lose),
+then `FEEDBACK.md` (every message of his, verbatim, with frames; F38–F61 are that day's) and `REVAMP.md`. The agents'
+working notes, review findings and scripts are archived in `handoff/worklog/` (start at its README). The live film is the
+107-slide revamp; `PUBLISHING.md` has its version.
+
 ## What this is
 **Theseus** is Brock Liddicoat's concept flagship wireless gaming mouse (Brock owns Nitrite Labs and designed the shape of the Finalmouse Starlight X). This repo holds the motion-designed, data-first presentation that sells it, *In Pursuit of an Objectively Better Mouse — Optimization Over Opinion*, plus the 3D assets, research and references behind it. **Weight target: 29 g.**
 

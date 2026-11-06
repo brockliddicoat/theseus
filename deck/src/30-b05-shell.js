@@ -444,7 +444,10 @@ S({
     /* the readout names one material at a time (review R3, M8): the drawing morphs, but the number is ABS's until the swap is
        half done, then carbon PP's, each at the press now on (so it agrees with the force arrow at every frame) */
     const sagNow = b05_sag(P, kw > 0.5 ? B05_MAT.pp.E : B05_MAT.abs.E, Mt.t);
-    if (kp > 0) { finger(st.top[0], st.top[1] - 2, 0.42, { s: 4.5, press: kp, len: 16, alpha: ep(t, T.press[0] - 0.3, T.press[0]) }); forceArrow(st.top[0] + 80, st.top[1] - 4, Math.PI / 2, 70, { N: P, dec: 1, color: C.ink, k: 1 }); }
+    /* the finger to scale with the strip (F54.2), its pad flat on it (FG), coming from the upper right so its body stays clear of
+       the sag readout; the force beside it on the left */
+    if (kp > 0) { finger(st.top[0], st.top[1], Math.PI - 0.42, { s, surf: 0, press: kp, len: 26, alpha: ep(t, T.press[0] - 0.3, T.press[0]) });
+      forceArrow(st.top[0] - 9 * s, st.top[1] - 4, Math.PI / 2, 70, { N: P, dec: 1, color: C.ink, k: 1, side: 'l' }); }
     rich([{ s: kw > 0.5 ? 'Carbon PP, PP-C-20A' : 'ABS', role: 'label', size: 22, color: kw > 0.5 ? C.heroText : C.ink2 }, { s: 'Sags', role: 'label', size: 19, color: C.mute, gap: 24 }, { s: (kw > 0.5 ? fmtN(Math.ceil(sagNow * 100 - 1e-9) / 100, 2) : b05_dn(sagNow, 2)) + ' mm', role: 'num', size: 30, weight: 800, color: kw > 0.5 ? C.heroText : C.ink, tnum: true, gap: 10 }], x0, y0 - 90);
     /* the weights, then the thin strip as stiff as the ABS one */
     const kg = ep(t, T.kg, T.kg + 0.4);
@@ -643,19 +646,24 @@ S({
    Release it. Turn it on its edge. Press again. The weight did not change." A 60 mm span of a 10 × 3.3 mm carbon PP strip,
    2.00 g, pressed with 10 N (a hard press): flat it bends 111 µm; turned on edge, 12 µm: 9.1× stiffer, the same grams
    (beam theory; stiffness goes with depth cubed). Structure beats weight. Then the same law against the mold: a mold's
-   ±0.076 mm (Protolabs) on nine walls from nine cavities swings a 0.70 mm wall (magnesium at its typical floor) from −29 %
-   to +36 % in stiffness, carbon PP's 1.00 mm only −21 % to +25 %: 1.4× more alike. The symptom, said as such: reviewers'
-   units of one mouse disagree (RTINGS's ULX Competition creaked, Periview's had solid sides). The lattice-study slide (L1)
-   calls back to this ruler: "the ribs are rulers on edge, as deep as the mould can fill". */
+   ±0.076 mm (Protolabs) on nine walls from nine cavities swings a 0.70 mm wall (magnesium's typical wall) from −29 % to +36 %
+   in stiffness, a 1.00 mm carbon PP wall only −21 % to +25 %: 1.4× more alike. Both rows are plain walls (the cube law), so
+   neither is Theseus: its shell is a 0.60 mm skin on 0.36 × 1.80 mm ribs (the lattice study), and on that study's own 3D
+   model the same ±0.076 mm on every moulded size swings it −20.6 to +23.9 % against −14.2 to +16.1 % for a plain wall of
+   its weight (P6, work/p6/fe: ±0.076 mm is ±21 % of a 0.36 mm rib). So the 1.00 mm row is a generic wall in neutral ink, the
+   headline two plain stats, and one line says Theseus's skin is ribbed, its tolerances proven at first shots like the skin
+   (main, 13:3x: plan B). The symptom, said as such: reviewers' units of one mouse disagree (RTINGS's ULX Competition
+   creaked, Periview's had solid sides). The lattice-study slide calls back to this ruler (b12_ribs reads B05_C live). */
 const B05_CUBE_T = { p1: [0.5, 1.6], rel: [2.0, 2.4], turn: [2.6, 3.8], p2: [4.0, 5.0], same: 5.2, rows: [6.2, 8.4], v: 9.0, sym: 9.8 };
 S({
   id: 'b05_cubed', ch: 'shell', theme: 'night', title: 'Wall tolerance, cubed', settle: 12, ideas: [5, 75],
-  src: ['b05Strip', 'shlPyrofil', 'b05Ji', 'b05Ucsb', 'b05ProtoTol', 'rtingsUlx', 'b05Peri', 'b05Fm', 'b05Won'],
+  src: ['b05Strip', 'shlPyrofil', 'b05Ji', 'b05Ucsb', 'b05ProtoTol', 'rtingsUlx', 'b05Peri', 'b05Fm', 'b05Won', 'b12Study'],
   replaces: ['shlScatter'],
   answers: [
-    ['"don\'t use points"', 'No points anywhere: each wall\'s stiffness swing in %, and the headline "1.4× more alike".'],
+    ['"don\'t use points"', 'No points anywhere: each wall\'s stiffness swing in %, and the headline "1.4× more alike" as two plain stats.'],
     ['"a little more intuitive"', 'The ruler first, the demonstration Brock liked (F45): pressed flat it bends; released, turned on its edge and pressed again, it barely moves: the same 2.00 g, 9.1× stiffer. Then nine walls from nine cavities, the swing landing on each.'],
-    ['"but still quite lazy"', 'A demonstration now: the ruler pressed, released, turned on edge on screen and pressed again; the nine walls of each thickness laid out with their swing; and the symptom reviewers meet, units of one mouse that disagree.']
+    ['"but still quite lazy"', 'A demonstration now: the ruler pressed, released, turned on edge on screen and pressed again; the nine walls of each thickness laid out with their swing; and the symptom reviewers meet, units of one mouse that disagree.'],
+    ['Checked (P6, 13:3x): is the 1.00 mm row Theseus?', 'No, and the slide no longer says so. Theseus is a 0.60 mm skin on 0.36 × 1.80 mm ribs. On the lattice study\'s own 3D model (fine mesh), the mould\'s ±0.076 mm on every moulded size swings its stiffness −20.6 to +23.9 % (span 44 %), a plain wall of the same 9.35 g −14.2 to +16.1 % (span 30 %): ±0.076 mm is ±21 % of a 0.36 mm rib. So both rows are generic plain walls in neutral ink (the cube law: 0.70 mm magnesium\'s typical wall against a 1.00 mm carbon PP wall), the headline is two plain stats, and one line says Theseus\'s skin is ribbed, its tolerances proven at first shots like the skin (review b05, P6).']
   ],
   draw: t => {
     const T = B05_CUBE_T, Cc = B05_C, R = Cc.ruler;
@@ -672,7 +680,10 @@ S({
     for (let i = 1; i < 30; i++) { const p = pts[Math.round(i * 40 / 30)]; line(p[0], p[1] - hpx / 2, p[0], p[1] - hpx / 2 + (i % 5 ? 6 : 12), { color: C.bg, w: 1.5, alpha: 0.8 }); }
     G.restore();
     feSupport([x1, y1 + hpx / 2 + 2], 'pin', {}); feSupport([x1 + Lp, y1 + hpx / 2 + 2], 'roll', {});
-    const mid = pts[20]; if (load > 0.01) { G.save(); G.shadowColor = rgba(C.ink, 0.6); G.shadowBlur = 10; finger(mid[0], mid[1] - hpx / 2 - 2, 0.42, { s: 4.6, press: load, len: 16 }); G.restore(); forceArrow(mid[0] + 90, mid[1] - hpx / 2 - 4, Math.PI / 2, 60, { N: R.P * load, dec: 0, color: C.ink, k: 1 }); }
+    /* the finger to scale with the ruler (F54.2), lit on night (no glow: FG), from the upper right so it stays inside the panel;
+       the force on its left */
+    const mid = pts[20]; if (load > 0.01) { finger(mid[0], mid[1] - hpx / 2, Math.PI - 0.42, { s, surf: 0, press: load, len: 20 });
+      forceArrow(mid[0] - 9 * s, mid[1] - hpx / 2 - 4, Math.PI / 2, 60, { N: R.P * load, dec: 0, color: C.ink, k: 1, side: 'l' }); }
     /* its section, end on, turning (the pointer turns it), with its size */
     const scx = r[0] + r[2] - 90, scy = r[1] + 70; G.save(); G.translate(scx, scy); G.rotate(th); rr(-R.b * 4.5, -R.h * 4.5, R.b * 9, R.h * 9, 2, mix(C.hero, C.bg, 0.25), C.hero, 2, 1); G.restore();
     if (t > T.turn[0] - 0.4 && t < T.turn[1] + 0.4) { const aa = th + 0.35; cursorAt(t, [[T.turn[0] - 0.3, [scx + 90, scy + 60]], [T.turn[0], [scx + Math.cos(aa) * 52, scy + Math.sin(aa) * 52]], [T.turn[1], [scx + Math.cos(0.35 + Math.PI / 2) * 52, scy + Math.sin(0.35 + Math.PI / 2) * 52]]], [], { a: ep(t, T.turn[0] - 0.4, T.turn[0] - 0.1) * (1 - ep(t, T.turn[1], T.turn[1] + 0.3)), grab: t > T.turn[0] }); }
@@ -683,24 +694,39 @@ S({
     const ks = ep(t, T.same, T.same + 0.4);
     if (ks > 0) rich([{ s: b05_dn(Cc.rulerK, 1) + '×', font: 'disp', size: 40, weight: 800, color: C.heroText, grad: C.heroGrad, caps: false }, { s: 'stiffer on edge, the same ' + fmtN(R.g, 2) + ' g', role: 'small', size: 23, weight: 650, color: C.ink2, gap: 14, sentence: false }], r[0], yS + 50, { alpha: ks });
     /* ---- the walls: nine cavities, each off by up to the mold's tolerance; each wall's stiffness against its nominal ---- */
-    const rows = [{ w: Cc.thin, name: 'A 0.70 mm wall (magnesium\'s typical wall, Design News)', hero: false }, { w: Cc.ths, name: 'Carbon PP\'s 1.00 mm wall', hero: true }], gx = 960, gw = 860;
+    /* both rows are plain walls (the cube law): neither is Theseus, whose skin is ribbed (the line under the ruler says so) */
+    const rows = [{ w: Cc.thin, name: 'A 0.70 mm wall (magnesium\'s typical wall, Design News)', col: C.comp, tcol: C.ink2 }, { w: Cc.ths, name: 'A 1.00 mm carbon PP wall (and lighter)', col: C.ink2, tcol: C.ink }], gx = 960, gw = 860;
     const kR = ep(t, T.rows[0] - 0.4, T.rows[0]);
     text('Nine walls, nine cavities, each within a mold\'s ±0.076 mm (Protolabs)', gx, 300, { role: 'label', size: 19, color: C.mute, maxW: RM - gx, alpha: 0.35 + 0.65 * kR });
     rows.forEach((rw, i) => {
       const yb = 470 + i * 200, ka = ep(t, T.rows[0] + i * 1.1, T.rows[0] + i * 1.1 + 1.0), md = yb - 60, sc = 160;
-      text(rw.name, gx, yb - 136, { role: 'label', size: 20, color: rw.hero ? C.heroText : C.ink2, maxW: RM - gx, alpha: 0.35 + 0.65 * kR });
+      text(rw.name, gx, yb - 136, { role: 'small', size: 22, weight: 600, color: rw.tcol, maxW: RM - gx - 220, alpha: 0.35 + 0.65 * kR });   /* one style for both rows (a label over 48 characters turns small) */
       line(gx, md, gx + gw, md, { color: C.hair, w: 1.5 });
-      Cc.offs.forEach((o, j) => { const dd = Math.pow((rw.w.t + o) / rw.w.t, 3) - 1, x = gx + 40 + j * 92, h = -dd * sc * clamp(ka * 1.2 - j * 0.05); rr(x - 14, Math.min(md, md + h), 28, Math.abs(h), 2, rw.hero ? C.hero : C.comp, null, 0, 1); });
+      Cc.offs.forEach((o, j) => { const dd = Math.pow((rw.w.t + o) / rw.w.t, 3) - 1, x = gx + 40 + j * 92, h = -dd * sc * clamp(ka * 1.2 - j * 0.05); rr(x - 14, Math.min(md, md + h), 28, Math.abs(h), 2, rw.col, null, 0, 1); });
       const kb = ep(t, T.rows[0] + i * 1.1 + 1.0, T.rows[0] + i * 1.1 + 1.4);
-      text('−' + b05_dn(-rw.w.lo * 100) + ' % to +' + fmtN(rw.w.hi * 100, 0) + ' %', gx + gw, yb - 136, { role: 'num', size: 26, weight: 800, color: rw.hero ? C.heroText : C.ink, align: 'right', alpha: kb });
+      text('−' + b05_dn(-rw.w.lo * 100) + ' % to +' + fmtN(rw.w.hi * 100, 0) + ' %', gx + gw, yb - 136, { role: 'num', size: 26, weight: 800, color: rw.tcol, align: 'right', alpha: kb });
       text('stiffness', gx + gw, yb - 108, { role: 'small', size: 19, weight: 600, color: C.faint, align: 'right', alpha: kb, sentence: false });
     });
     /* ---- the headline: how far apart two walls of one design can be, thin wall → carbon PP's ---- */
     const sp0 = (Cc.thin.hi - Cc.thin.lo) * 100, sp1 = (Cc.ths.hi - Cc.ths.lo) * 100;
-    verdict(t, T.v, gx, 880, { from: Math.round(sp0), to: Math.ceil(sp1), unit: '%', dec: 0, label: 'Stiffness swing between two walls of one design', better: 'lower', who: ['0.70 mm', '1.00 mm, carbon PP'], rivalCol: 'grey', net: b05_dn(sp0 / sp1, 1) + '×', netWord: 'more alike', size: 88, maxW: RM - gx });
+    /* the headline as two plain stats in neutral ink (FILM F8: blue is Theseus's alone, and neither wall is Theseus); the thin wall
+       is magnesium's, so it is the one struck */
+    { const k = ep(t, T.v, T.v + 0.5), k2 = ep(t, T.v + 0.4, T.v + 0.9), hy = 868, v0 = Math.round(sp0) + ' %', v1 = Math.ceil(sp1) + ' %', w0 = tw(v0, { font: 'disp', size: 64, weight: 800 });
+      if (k > 0.003) {
+        text('Stiffness swing between two walls of one design {(lower is better)}', gx, hy - 96, { role: 'label', size: 20, color: C.mute, alpha: k, maxW: RM - gx });
+        text(v0, gx, hy, { font: 'disp', size: 64, weight: 800, color: C.mute, alpha: k, caps: false });
+        line(gx - 4, hy - 22, gx + w0 + 4, hy - 22, { color: C.mute, w: 4, alpha: k * k2 });
+        arrow(gx + w0 + 18, hy - 22, gx + w0 + 70, hy - 22, { color: C.faint, w: 3, hs: 12, alpha: k });
+        text(v1, gx + w0 + 88, hy, { font: 'disp', size: 96, weight: 800, color: C.ink, alpha: k2, caps: false });
+        text('0.70 mm wall', gx, hy + 38, { role: 'label', size: 19, color: C.mute, alpha: k });
+        text('1.00 mm wall', gx + w0 + 88, hy + 38, { role: 'label', size: 19, color: C.ink2, alpha: k2 });
+        text(b05_dn(sp0 / sp1, 1) + '× more alike', gx + w0 + 88 + tw(v1, { font: 'disp', size: 96, weight: 800 }) + 30, hy - 10, { role: 'small', size: 26, weight: 750, color: C.ink, alpha: k2, sentence: false });
+      } }
+    /* Theseus is not either wall: its skin is ribbed (the lattice study), and its tolerances are proven at first shots like its skin */
+    text('Theseus\'s shell isn\'t a plain wall: a 0.60 mm skin on 0.36 × 1.80 mm ribs (the lattice study); its tolerances are proven at first shots.', LM, 862, { role: 'small', size: 21, weight: 650, color: C.ink2, maxW: 820, lh: 1.3, sentence: false, alpha: ep(t, T.sym + 0.6, T.sym + 1.0) });
     text('Thin shells differ unit to unit. One mouse, two verdicts: RTINGS\'s ULX Competition (a carbon-composite shell), "noticeable creaking, popping, and flexibility"; Periview\'s, "The sides are solid"', LM, 760, { role: 'small', size: 21, weight: 600, color: C.mute, maxW: 820, sentence: false, alpha: ep(t, T.sym, T.sym + 0.4) });
     scaleNote(LM, 952, 'a hard press: a 1 kg bag of sugar (Won 2009: five times the hardest desk grip)', { lead: '10 N', t, t0: T.p1[0], size: 22 });
-    text('Beam theory: a 60 mm span, PP-C-20A (13.5 GPa); bend drawn ' + 100 + '× real. Walls: stiffness ∝ thickness³', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false });
+    text('Beam theory: a 60 mm span, PP-C-20A (13.5 GPa); bend drawn ' + 100 + '× real. Walls: flat, stiffness ∝ thickness³', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false });
   }
 });
 
@@ -741,12 +767,13 @@ S({
     ['"also you expect the right to mean weaker and lighter at a glance be because it has the least area under the curve, not the other way around"', 'Higher is better on the new axis, so the line rises to the right: the right is heavier and stiffer, and the area under it grows that way.'],
     ['"maybe y should measure strength not flex, i feel as if that would be more intuitive to understand."', 'Partly: y is now a press (higher is better), not a flex: the press it takes to bend the piece by a sheet of paper. It is stiffness, not the press to break, because under his two strengths (F41.1) the triangles\' win that the next slide shows is in stiffness; a question for Brock in the report.'],
     ['F2.11: "show how most mice make you pick between strength and weight"', 'The line is the pick: a solid plane only gets stiffer by getting heavier. The next slide opens on the same line and answers it.'],
-    ['F14.5: call it the fallacy', 'The title says it, and the payoff line names it on the two mice.']
+    ['F14.5: call it the fallacy', 'The title says it, and the payoff line names it on the two mice.'],
+    ['FILM F34 (the ruler\'s message, structure over weight, is this slide\'s thesis)', 'The ruler stays on b05_cubed, the slide before, where it demonstrates the cube law that slide applies to the mould; this slide\'s last caption calls it back in words a clip viewer needs no slide for: "Where the material goes is: a ruler is stiffer on its edge."']
   ],
   draw: t => {
     const T = B05_FAL_T, B = b05_fr();
     header(t, 'The strength–weight fallacy');
-    captions(t, [[0.4, 'The fallacy: heavier is stronger. The GPX 2 weighs 18 g more than the Sora V2.'], [2.0, 'Squeeze both at the sides: the heavier GPX 2 creaks. The Sora V2 feels solid.'], [4.8, 'A solid plane does trade weight for stiffness: the press it takes to flex it grows gram for gram.'], [8.4, 'Weight isn\'t what makes a shell solid. Where the material goes is.']]);
+    captions(t, [[0.4, 'The fallacy: heavier is stronger. The GPX 2 weighs 18 g more than the Sora V2.'], [2.0, 'Squeeze both at the sides: the heavier GPX 2 creaks. The Sora V2 feels solid.'], [4.8, 'A solid plane does trade weight for stiffness: the press it takes to flex it grows gram for gram.'], [8.4, 'Weight isn\'t what makes a shell solid. Where the material goes is: a ruler is stiffer on its edge.']]);
     const gGpx = 59.4, gUlx = 40.9, dG = gGpx - gUlx;
     /* ---- left, top: the balance. GPX 2 on the left pan, the Sora V2 on the right ---- */
     const bal = b05_balance(470, 330, 230, 118, { m1: gGpx, m2: gUlx, m0: 40, max: 0.16, t, t0: T.tip, panW: 210,
@@ -845,7 +872,7 @@ S(b05_live({
       if (!rw.hero) b05_drawPlane(F, P, { sc, alpha: a0 }); else b05_drawTri(rw.r, F, P, s, t, { sc, alpha: a0, flow: 0.45 });
       /* the finger lies along the part with its pad on the middle and rides it down; a pale edge on the night stage (R-b05-2) */
       const tp = b05_topMid(rw.r, P, F, sc, H), kf = ep(t, 0.5, 1.0, E.out3);
-      G.save(); G.shadowColor = rgba(C.ink, 0.6); G.shadowBlur = 10; finger(tp[0] - (1 - kf) * 26, tp[1] - (1 - kf) * 18, 0.42, { s, press: clamp(F / B.P0), len: 13, alpha: kf }); G.restore();
+      finger(tp[0] - (1 - kf) * 26, tp[1] - (1 - kf) * 12, 0.42, { s, surf: 0, press: clamp(F / B.P0), len: 24, alpha: kf });   /* to scale (s), pad flat; lit on night (FG) */
       const nm = text(rw.name, rx, ty, { role: 'label', size: 22, color: rw.hero ? C.heroText : C.ink2, alpha: a0, maxW: 330, lh: 1.2 });
       const yw = ty + nm.h + 4;
       rich([{ s: 'Weight', role: 'label', size: 19, color: C.mute }, { s: fmtN(B.g, 2) + ' g', role: 'num', size: 24, weight: 750, color: rw.hero ? C.heroText : C.ink, gap: 10 }], rx, yw, { alpha: a0 });
@@ -961,7 +988,7 @@ function b05_hanger(t, x, y, discs, o = {}) {
 const B05_HOT_T = { press1: [0.2, 1.25], crack: [1.25, 1.5], cam: [1.4, 2.1, 2.65, 3.25], swap: [3.25, 3.65], mill: [3.7, 5.1], press2: [5.3, 6.55], v: 6.9 };
 const B05_HOT_F = 0.85;   /* the milled part's weight, a fraction of the solid plane's */
 S(b05_live({
-  id: 'b05_hotspot', ch: 'shell', theme: 'paper', title: 'Stress hotspots', settle: 10.5, ideas: [75, 93],
+  id: 'b05_hotspot', ch: 'shell', theme: 'night', title: 'Stress hotspots', settle: 10.5, ideas: [75, 93],
   src: ['shlHot2d', 'shlPyrofil'],
   replaces: ['shlHotspot'],
   answers: B => {
@@ -1004,7 +1031,7 @@ S(b05_live({
     /* the finger, its pad on the top middle; the same finger and press on both */
     const r = milled ? B.sized : B.plate, Fn = milled ? F2 : F1, tp = b05_topMid(r, P, Fn, sc, H, milled ? f : 1);
     const kf = clamp((1 - ep(t, T.swap[0] - 0.5, T.swap[0])) + ep(t, T.press2[0] - 0.4, T.press2[0], E.out3));
-    finger(tp[0] - (1 - kf) * 20, tp[1] - (1 - kf) * 14, 0.42, { s: c.s * 0.62, press: clamp(Fn / 40), len: 13, alpha: kf });
+    finger(tp[0] - (1 - kf) * 20, tp[1] - (1 - kf) * 9, 0.42, { s: c.s, surf: 0, press: clamp(Fn / 40), len: 20, alpha: kf });   /* to scale with the camera (F54.2, was 0.62×), pad flat */
     G.restore();
     /* ---- the right column: the press, the part, its weight, the share of its strength used ---- */
     const rx = 1220, kN = ep(t, T.swap[0], T.swap[1]), a1 = Math.abs(1 - 2 * kN);
@@ -1196,7 +1223,7 @@ function b05_icon(kind, x, y, col, a) {
   G.restore();
 }
 S(b05_live({
-  id: 'b05_work', ch: 'shell', theme: 'paper', title: 'Putting that weight to work', settle: 12, ideas: [75, 93, 94],
+  id: 'b05_work', ch: 'shell', theme: 'night', title: 'Putting that weight to work', settle: 12, ideas: [75, 93, 94],
   src: ['shlPyrofil', 'b05Won'],
   replaces: ['shlWork'],
   answers: (B, Cl) => [

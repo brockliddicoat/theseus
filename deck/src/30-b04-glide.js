@@ -9,6 +9,7 @@
    Helpers are b04_*; nothing here edits shared code.
    ============================================================================================ */
 Object.assign(SRC, {
+  b04_paw3950: { t: 'PixArt PAW3950DM-T5QU, as PixArt\'s distributor EPS Global lists it: "750 ips (High Performance Mode)", "50 g (High Performance Mode)", "Up to 30,000 cpi (50 cpi step size)", "1.3 mA typical (includes LED)". The same 750 ips, 50 G and 30,000 at PixArt\'s launch (MechKeys, 27 Apr 2024). PixArt publishes no datasheet for it', u: 'https://www.epsglobal.com/products/semiconductors/sensing-and-haptics/optical-navigation/paw3950dm-t5qu-optical-gaming-navigation-chip', n: 'R3-b04-1, found by P5 (2026-11-06): GamesRadar (15 May 2025, unsourced table) prints 70 G for the PAW3950; the film takes PixArt\'s 50 G (two sources quoting PixArt). The verdict is tracking speed, 750 ips in every source. Also https://mechkeys.com/blogs/news/pixart-introduces-paw3950-upcoming-flagship-optical-sensor-for-gaming-mice' },
   b04_paw3395: { t: 'PixArt PAW3395DM-T6QU datasheet v1.2 (15 Nov 2022): lens 1:1; Z, lens reference plane to surface, 2.2 / 2.4 / 2.6 mm; 650 ips and 50 g (HP mode); up to 26,000 cpi in 50-cpi steps; lift cut-off 1 or 2 mm; "optically acquiring sequential surface images (frames) and mathematically determining the direction and magnitude of movement"; lens LM19-LSI assembled 18.85 × 21.15 × 9.81 mm, L0AE-LSI1 10.90 × 16.80 × 9.81 mm. §3.5: "Place the lens onto the base plate"; "The optical position reference for the PCB is set by the base plate and lens. Note that the PCB motion due to button presses must be minimized to maintain optical alignment"; "It is recommended to place mouse feet around the base plate opening to stabilize mouse tracking on the surface."', u: 'https://atta.szlcsc.com/upload/public/pdf/source/20251201/5A54B75DA77586FABF8CEFBD8F21947D.pdf' },
   b04_pmw3360: { t: 'PixArt PMW3360DM-T2QU datasheet: up to 12,000 frames a second; 1,296 raw values a frame; lens 1:1; Z 2.2 / 2.4 / 2.6 mm; "Lift detection height = nominal height + 2 mm (default value)"', u: 'https://datasheet.lcsc.com/datasheet/pdf/c018c3e1d470821feefadd37e2f785d5.pdf?productCode=C20612443' },
   b04_adns2610: { t: 'Agilent ADNS-2610 datasheet: 1,500 frames/s; 324 pixels (18 × 18); Z 2.3 / 2.4 / 2.5 mm, "results in ±0.2 mm DOF"; the sensor "measures changes in position by optically acquiring sequential surface images (frames)"; the picture can be read out: "It takes at least 324 frames to complete an image as we can only read 1 pixel per frame", each pixel 0 (black) to 63 (white)', u: 'https://fab.cba.mit.edu/classes/863.09/people/labrune/files/camera/ADNS2610.pdf' },
@@ -637,7 +638,7 @@ function b04_detail(z) {
   const r = Math.min(1, a / b); B04FD.set(key, r); return r;
 }
 S({
-  id: 'b04_focus', ch: 'glide', ideas: [11], theme: 'night', title: 'A focus window of 0.2 mm, not 0.4', settle: 10.5,
+  id: 'b04_focus', ch: 'glide', ideas: [11], theme: 'paper', title: 'A focus window of 0.2 mm, not 0.4', settle: 10.5,
   replaces: ['focus'],
   src: ['b04_paw3395', 'b04_pmw3360', 'b04_adns3080', 'b04_adns2610', 'b04_brock', 'b04_zowie'],
   answers: [
@@ -1094,7 +1095,7 @@ S({
     ['gld_module: "i like this slide, it feels like a good slide"', 'Kept: the castellated module and the clip-on lens in section, drawn from the 3D board, and the lenses\' footprints to scale.'],
     ['gld_module: "just your normal above average slide right here"', 'Raised: it now opens on the problem, PixArt\'s own assembly (the lens sits on the base plate, the board on the lens, the top case presses it down, and PixArt warns that a click moving the board moves the optics), builds that stack, then snaps Theseus\'s lens up through the board; the verdict is against PixArt\'s smaller (trim) lens, not its biggest.'],
     ['R2-b04-3 (the rival\'s fault drawn; the payoff said)', 'PixArt\'s own warning is named on its board in red ("Clicks move it") and said in full in the narration and the foot line; Theseus\'s clip is labelled for what it does ("Clipped round the chip": chip and lens held as one, by the board alone); the closing line says what one dot wide buys: the lens carries its own two dots, the dots that keep it in focus (Dots at the lens). Not animated: PixArt gives no mechanism or size for the motion'],
-    ['F9.14: "the sensor and snap on lens are both not as accurate as id like"', 'Drawn to the 3D board: the 8.4 × 9.8 × 0.62 mm castellated module, its half-holes at 1.2 mm, the clip-on lens 5.2 × 14.2 mm with a clip through the board at each end, the imaging and light lenses where the 3D has them.']
+    ['F9.14: "the sensor and snap on lens are both not as accurate as id like"', 'Drawn to the 3D board: the 8.4 × 9.8 × 0.62 mm castellated module, its half-holes at 1.2 mm, the clip-on lens 5.2 × 14.2 mm with a clip through the board at each end, the imaging and light lenses where the 3D has them.'],
     ['F47.4 (the board is 0.6 mm)', 'Every lens section in the chapter draws Theseus\'s board 0.6 mm thick (the shared BOARD_T), its top still 5.03 mm over the pad, copper on its two faces only; the lens\'s optics do not move (the imaging dome 2.63 mm under the board\'s top, PixArt\'s 2.40 mm over the pad): its upper block grows up to meet the thinner board (H3, 11:05). PixArt\'s own stack keeps its 1.6 mm board.']
   ],
   draw: t => {
@@ -1165,15 +1166,14 @@ S({
    of the viper v4 pro sensor specs". The pattern so far (the deck's validation report, an analogy): Razer's Focus+ became
    PixArt's PAW3395, its Focus Pro 30K the PAW3950; both now in 10 of the 35 mice in this deck's data. The third: the
    Viper V4 Pro's Focus Pro 50K Gen-3 (marked FP-3), suspected to be the PAW3970, Theseus's plan once Razer's exclusivity
-   ends. Specs: the PAW3395's datasheet against Razer's figures for the V4 Pro's sensor. Razer's glass claim is tagged as
+   ends. Specs: PixArt's figures for the PAW3950 against Razer's for the V4 Pro's sensor. Razer's glass claim is tagged as
    Razer's, with the stalls owners and one reviewer report. Theme night. */
-/* the foil's figures (grey bars, the struck value, the foot line) in one place. R3-b04-1 (should): the honest foil is the
-   PAW3950 (the flagships' sensor, b04_reports, b09_sync), not the older PAW3395; its datasheet isn't in the repo yet
-   (REQUESTS.md, R3 12:1x). When research lands it: foil 'PAW3950', its four figures as each row's third value, foilSrc, and
-   a source entry; nothing else changes */
+/* the foil's figures (grey bars, the struck value, the foot line) in one place. R3-b04-1: the honest foil is the PAW3950,
+   the flagships' sensor (b04_reports, b09_sync), not the older PAW3395. PixArt publishes no PAW3950 datasheet; its figures
+   are PixArt's as its distributor lists them (b04_paw3950, P5 13:0x): 750 ips, 50 G, 30,000 cpi in 50-cpi steps */
 const B04SN = {
-  foil: 'PAW3395', foilSrc: 'PixArt PAW3395 datasheet (2022)',
-  rows: [['Tracking speed', 'ips', 650, 930, 'higher'], ['Acceleration', 'G', 50, 90, 'higher'], ['Highest CPI', 'cpi', 26000, 50000, 'higher'], ['CPI step', 'cpi', 50, 1, 'lower']]
+  foil: 'PAW3950', foilSrc: 'PAW3950: PixArt\'s figures via its distributor EPS Global',   /* the figures are on the bars; the foot names whose */
+  rows: [['Tracking speed', 'ips', 750, 930, 'higher'], ['Acceleration', 'G', 50, 90, 'higher'], ['Highest CPI', 'cpi', 30000, 50000, 'higher'], ['CPI step', 'cpi', 50, 1, 'lower']]
 };
 /** a sensor package, drawn: a dark DIP body with its lens window and a few leads; label under it */
 function b04_chip(x, y, w, h, col, a, mark) {
@@ -1186,11 +1186,12 @@ function b04_chip(x, y, w, h, col, a, mark) {
 S({
   id: 'b04_sensor', ch: 'glide', ideas: [76], theme: 'night', title: 'The PAW3970: the plan', settle: 10,
   replaces: ['sensor'],
-  src: ['b04_paw3395', 'b04_razer', 'b04_igor', 'b04_brock', 'b04_pcgV4', 'b04_insider', 'b04_valid'],
+  src: ['b04_paw3950', 'b04_paw3395', 'b04_razer', 'b04_igor', 'b04_brock', 'b04_pcgV4', 'b04_insider', 'b04_valid'],
   answers: [
     ['sensor: "says it\'s the \\"suspected\\" sensor inside the viper v4 pro"', 'On screen in those words: "suspected", under the Viper V4 Pro\'s Focus Pro 50K Gen-3 (FP-3) and again in the narration.'],
     ['sensor: "and that this is the plan, AFTER exclusivity expires"', 'The third row of the timeline ends in "Theseus\'s plan, after Razer\'s exclusivity (about two years)", drawn dashed until then; the narration says the same. The pattern before it (Focus+ → PAW3395, Focus Pro 30K → PAW3950) is shown as the reason, labelled an analogy.'],
-    ['F21.6: "use all of the viper v4 pro sensor specs"', 'The spec rows use Razer\'s figures for the V4 Pro\'s sensor (930 ips, 90 G, 50,000 cpi in 1-cpi steps) against the PAW3395\'s datasheet; the verdict is tracking speed, 650 → 930 ips.']
+    ['F21.6: "use all of the viper v4 pro sensor specs"', 'The spec rows use Razer\'s figures for the V4 Pro\'s sensor (930 ips, 90 G, 50,000 cpi in 1-cpi steps) against PixArt\'s figures for the PAW3950, the flagships\' sensor (750 ips, 50 G, 30,000 cpi in 50-cpi steps, as PixArt\'s distributor lists them); the verdict is tracking speed, 750 → 930 ips.'],
+    ['(R3-b04-1) strike the PAW3950, not the older PAW3395', 'Done: the grey bars, the struck 750 ips and its owner are the PAW3950\'s (PixArt\'s figures via its distributor EPS Global, the same at PixArt\'s 2024 launch); the verdict reads +24 %, not the +43 % the older sensor gave']
   ],
   draw: t => {
     header(t, 'The PAW3970: the plan');
@@ -1216,10 +1217,10 @@ S({
       text(px, bx + 520, y + 112, { role: 'small', size: 25, weight: 700, color: plan ? C.heroText : C.ink, alpha: kb });
       text(note, bx + 520, y + 144, { role: 'label', size: 22, color: plan ? C.heroText : C.mute, alpha: kb, maxW: bw - 560 });
     });
-    /* ---- right: what it brings, row by row: PixArt's datasheet for the PAW3395, Razer's figures for the V4 Pro's sensor ---- */
+    /* ---- right: what it brings, row by row: PixArt's figures for the PAW3950, Razer's figures for the V4 Pro's sensor ---- */
     const rx = 1020, rw = RM - rx;
     demoWindow(rx, by, rw, bh, 1);
-    cardHead(t, 0, rx, by, rw, 'What it brings', [{ ev: 'datasheet', by: 'PixArt' }, { ev: 'claim', by: 'Razer' }]);
+    cardHead(t, 0, rx, by, rw, 'What it brings', [{ ev: 'claim', by: 'PixArt' }, { ev: 'claim', by: 'Razer' }]);
     const nf = v => v >= 10000 ? Math.round(v).toLocaleString('en-US') : fmtN(v, 0);
     B04SN.rows.forEach(([lab, unit, A, B, better], i) => {
       const y = by + 120 + i * 72, k = ep(t, 3.6 + i * 0.25, 4.4 + i * 0.25, E.io3), mx = Math.max(A, B), x0 = rx + 260, L = rw - 260 - 180;

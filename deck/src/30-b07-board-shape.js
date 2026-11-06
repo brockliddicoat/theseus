@@ -892,8 +892,9 @@ S(b07_live({
     const kw = ep(t, 5.8, 8.4, E.lin), zNow = lerp(SW.z[0], SW.z[SW.z.length - 1], kw), kf = ep(t, 5.5, 5.8) * (1 - ep(t, 8.6, 9.0));
     if (kf > 0.003) {
       const hw = msHalfW ? msHalfW(-zNow) : 30.5, pl = est.P(-hw - 0.4, -zNow), pr = est.P(hw + 0.4, -zNow);
-      finger(pl[0], pl[1], 0, { s: est.s, view: 'top', press: 0.6, alpha: kf, len: 20 });
-      finger(pr[0], pr[1], Math.PI, { s: est.s, view: 'top', press: 0.6, alpha: kf, len: 20 });
+      /* a squeeze is the thumb and the ring finger lying along the sides, pads in (FG), to scale with the board (est.s) */
+      finger(pl[0], pl[1], -Math.PI / 2, { s: est.s, digit: 'thumb', press: 0.6, alpha: kf, len: 30 });
+      finger(pr[0], pr[1], -Math.PI / 2, { s: est.s, flip: true, press: 0.6, alpha: kf, len: 30 });
     }
     /* ---------- the right column: the photo's tabs, the tab in a jolt, then the squeeze along the board ---------- */
     const rx = LM + 1040, rw = RM - rx;

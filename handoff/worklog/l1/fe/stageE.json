@@ -1,0 +1,70 @@
+[
+ {
+  "kind": "tri",
+  "lam": 0.2809,
+  "w": 0.3593,
+  "hr": 1.7965,
+  "draft": 0.5,
+  "r_root": 0.1797,
+  "r_node": 0.1797,
+  "h": 0.9,
+  "rails": true,
+  "label": "E-kagomeP-s-half",
+  "phase": [
+   0.0,
+   -0.5,
+   0.5
+  ]
+ },
+ {
+  "kind": "tri",
+  "lam": 0.2809,
+  "w": 0.3593,
+  "hr": 1.7965,
+  "draft": 0.5,
+  "r_root": 0.1797,
+  "r_node": 0.1797,
+  "h": 0.9,
+  "rails": true,
+  "label": "E-kagomeP-z-quarter",
+  "phase": [
+   -0.25,
+   -0.125,
+   -0.125
+  ]
+ },
+ {
+  "kind": "kagome",
+  "lam": 0.2786,
+  "w": 0.3601,
+  "hr": 1.8003,
+  "draft": 0.5,
+  "r_root": 0.18,
+  "r_node": 0.18,
+  "h": 0.9,
+  "rails": true,
+  "label": "E-triP-s-half",
+  "phase": [
+   0.0,
+   -0.5,
+   0.5
+  ]
+ },
+ {
+  "kind": "kagome",
+  "lam": 0.2786,
+  "w": 0.3601,
+  "hr": 1.8003,
+  "draft": 0.5,
+  "r_root": 0.18,
+  "r_node": 0.18,
+  "h": 0.9,
+  "rails": true,
+  "label": "E-triP-z-quarter",
+  "phase": [
+   -0.25,
+   -0.125,
+   -0.125
+  ]
+ }
+]

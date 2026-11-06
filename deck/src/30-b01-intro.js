@@ -311,16 +311,17 @@ S({
    battery; XBAB's breakdown in RDATA for the buttons; NTR_BUD, the 3D model's volumes and densities, for the wheel, axle,
    screws, inserts and lead), and the shell and skates get what is left (F21.1: "Budget is the target"). */
 /* the board's path to its 5.6 g target (F47.4, Brock: "0.6 mm, 5.63 g"): a 0.6 mm (BOARD_T) two-layer board with
-   half-ounce outer copper, a lighter encoder (its nickel-silver frame dropped) and a cored support: 5.63 g in the hardware
-   model (mass.py; derived). The budget keeps 5.6 g, the target (F42.2, THESEUS.pcb); the path is said beside it (H3 11:05).
-   H3's rebuild reports the final figure: if it moves off 5.63, or a shared field comes to carry it, change it here only */
-const B01_PCB_PATH = { g: 5.63 };
+   half-ounce outer copper, a lighter encoder (its nickel-silver frame dropped) and a cored support: 5.68 g as built in the
+   hardware model (mass.py, H3 12:46; Brock's estimate 5.63), read from the shared BOARD_G (03-parts.js, KEY_PARTS.board.g).
+   Brock accepted the board as built (main, 13:0x). The budget keeps 5.6 g, the target (F42.2, THESEUS.pcb); the as-built
+   figure is said beside it, never in its place */
+const B01_PCB_PATH = { g: BOARD_G };   /* never a literal: the board agent may still move it by a hair (main, 13:0x) */
 function b01_budget() {
   const B = (typeof ntr_budget === 'function') ? ntr_budget() : null, batt = b01_thsBatt();
   if (!B) return null;
   const parts = [
     { key: 'battery', name: 'Battery, ' + batt.mAh + ' mAh', g: B.cell.g, note: 'Example part, ' + batt.part, ev: 'datasheet', by: 'Jauch' },
-    { key: 'board', name: 'One board, a target', g: THESEUS.pcb, note: 'Radio, antenna and USB-C on it; a ' + fmtN(BOARD_T, 1) + ' mm two-layer board builds to ' + fmtN(B01_PCB_PATH.g, 2) + ' g, derived (F47.4)' },
+    { key: 'board', name: 'One board, a target', g: THESEUS.pcb, note: 'Radio, antenna and USB-C on it; as built, the ' + fmtN(BOARD_T, 1) + ' mm two-layer board is ' + fmtN(B01_PCB_PATH.g, 2) + ' g against the ' + fmtN(THESEUS.pcb, 2) + ' g target (F47.4, H3)' },
     { key: 'buttons', name: 'Buttons', g: B.xa.btn, note: 'As XBAB weighed the XA25\'s', ev: 'claim', by: 'XBAB' },
     /* Brock, F44.2: the two side switches, full-size SPDT, about 0.5 g each (H1's typical figure), "from the shell" */
     { key: 'sideSw', name: 'Side switches', count: 2, g: 2 * 0.5, note: 'Two full-size SPDT, about 0.5 g each, typical', ev: 'estimate' },
@@ -386,7 +387,10 @@ function b01_tradeIcon(t, t0, kind, box, o = {}) {
       const pts = top.map(p => [p[0], p[1] + d * Math.exp(-Math.pow((p[0] - zc) / sig, 2))]);
       G.save(); G.globalAlpha = PA * lit; G.strokeStyle = C.red; G.lineWidth = lw(2.8); G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.stroke(); G.restore();
     }, { alpha: a });
-    const pz = [ox + zc * s, oy + (b01_rvTopAt(top, zc) + d) * s]; finger(pz[0], pz[1], 2.55, { s: s * 0.62, press: clamp(d / 3.4), alpha: a * ep(t, t0, t0 + 0.25), len: 26 });
+    /* the fingertip to the mouse's own scale (F52.1), its pad flat on the top where it presses (the bow is level there, so
+       the surface's slope is the top line's own) */
+    const pz = [ox + zc * s, oy + (b01_rvTopAt(top, zc) + d) * s], sl = Math.atan2(b01_rvTopAt(top, zc + 1) - b01_rvTopAt(top, zc - 1), 2);
+    finger(pz[0], pz[1], 2.55, { s, surf: sl, press: clamp(d / 3.4), alpha: a * ep(t, t0, t0 + 0.25), len: 26 });
   } else if (kind === 'half') {
     /* the X2 from above, nose right: a cut runs across it and its back half comes away; the X2F is what's left (87.5 of 120 mm).
        Its own traced outline (a real shape is the point), in the rival's grey like every other flagship */
@@ -535,8 +539,9 @@ function b01_bigFlex(t, s0, box, o = {}) {
     const ck = clamp(d / 3.0) * ep(t, s0 + 0.22, s0 + 0.36) * (1 - ep(t, s0 + 0.62, s0 + 0.74));
     for (const zz of [zc - 30, zc + 30]) { const yz = b01_rvTopAt(top, zz); G.save(); G.globalAlpha = PA * ck; G.strokeStyle = C.red; G.lineWidth = lw(2.4); for (const r of [3, 5.5]) { G.beginPath(); G.arc(zz, yz, r, -Math.PI * 0.95, -Math.PI * 0.05); G.stroke(); } G.restore(); }
   });
-  const pz = [ox + zc * s, oy + (b01_rvTopAt(top, zc) + d) * s];
-  finger(pz[0], pz[1], 2.15, { s: s * 0.7, press: clamp(d / 3.0), len: 34 });
+  /* the fingertip to the mouse's own scale (F52.1), its pad flat on the top line where it presses */
+  const pz = [ox + zc * s, oy + (b01_rvTopAt(top, zc) + d) * s], sl = Math.atan2(b01_rvTopAt(top, zc + 1) - b01_rvTopAt(top, zc - 1), 2);
+  finger(pz[0], pz[1], 2.15, { s, surf: sl, press: clamp(d / 3.0), len: 34 });
   text('Pressed at the top', pz[0] + 150, pz[1] - 120, { role: 'label', size: 21, color: C.ink2, alpha: ta * ep(t, s0 + 0.1, s0 + 0.3) });
   text('Bend drawn larger than life', x + w, y + h + 22, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ta * 0.9 });
 }
@@ -1422,7 +1427,7 @@ S({
     ['F21.1 (budget is the target)', 'The shell\'s allowance is shown as what the budget leaves, never as a weighed or computed shell'],
     ['F44.2 (the two side switches, "From the shell")', 'A line for the two full-size SPDT side switches, about 0.5 g each (typical), taken from the shell: the total stays 29.31 g and the shell\'s allowance falls to about 9.35 g, computed'],
     ['F42.2 (keep 5.6 g as a target)', 'The board\'s block reads "One board, a target"'],
-    ['F47.4 (the board\'s path, "0.6 mm, 5.63 g")', 'Said over the board\'s block, "At 0.6 mm: 5.63 g, derived", and in the foot line (two layers, a lighter encoder, a cored support); the block stays 5.60 g, the target (F42.2), so the shell\'s allowance and the 2.8 g read the same at the printed precision (H3, 11:05)']
+    ['F47.4 (the board\'s path, "0.6 mm, 5.63 g")', 'Said over the board\'s block, "As built at 0.6 mm: ' + fmtN(B01_PCB_PATH.g, 2) + ' g" (H3\'s rebuild of the board on that path, the shared BOARD_G; Brock\'s estimate was 5.63 g, and he accepted the board as built), and in the foot line (two layers, a lighter encoder, a cored support); the block stays 5.60 g, the target (F42.2), so the shell\'s allowance and the 2.8 g read the same at the printed precision']
   ],
   draw: t => {
     header(t, 'The weight budget');
@@ -1437,7 +1442,7 @@ S({
     /* the parts drop in, one after another, each as long as it is heavy */
     let gx = 0, total = 0;
     /* over the board's block, where its path lands (F47.4; the block itself says "a target") */
-    const noteOf = { battery: 'Example part, ' + BG.batt.part, board: 'At ' + fmtN(BOARD_T, 1) + ' mm: ' + fmtN(B01_PCB_PATH.g, 2) + ' g, derived', buttons: 'The XA25\'s, a stand-in' };
+    const noteOf = { battery: 'Example part, ' + BG.batt.part, board: 'As built at ' + fmtN(BOARD_T, 1) + ' mm: ' + fmtN(B01_PCB_PATH.g, 2) + ' g', buttons: 'The XA25\'s, a stand-in' };
     /* the small parts' labels: one list under the pan, past the last small part, nearest part on top, each on an elbow
        leader from its block, so no leader crosses a label or another leader; the leaders break round the gram labels
        (the two-row fan ran a leader through "Wheel and axle" and two through "20 g": P3's re-watch, 11:30) */
@@ -1482,7 +1487,7 @@ S({
       text('On the scale', RM, 300, { role: 'label', size: 21, color: C.mute, align: 'right' });
       rich([{ s: fmtN(shown, 2), role: 'd1', size: 110, weight: 800, color: shown >= THESEUS.mass - 1e-6 ? C.heroText : C.ink, grad: shown >= THESEUS.mass - 1e-6 ? C.heroGrad : null, tnum: true }, { s: 'g', role: 'small', size: 36, weight: 700, color: C.mute, gap: 10, sentence: false }], RM, 420, { align: 'right' });
       text('Battery: ' + BG.batt.mAh + ' mAh, ' + fmtN(Math.floor(BG.hours), 0) + ' h at 1 khz (derived), the ' + THESEUS.hours + ' h target covered', RM, 466, { role: 'small', size: 22, weight: 650, color: C.ink2, align: 'right', alpha: ep(t, 0.8, 1.2), sentence: false }); }
-    source(t, 'Battery: Jauch LP402535JU, 8 g (the distributor lists it to the gram, so the shell\'s share is good to about ± 0.5 g). Board: ' + fmtN(THESEUS.pcb, 2) + ' g, the target; at ' + fmtN(BOARD_T, 1) + ' mm on two layers, with a lighter encoder and a cored support, it builds to ' + fmtN(B01_PCB_PATH.g, 2) + ' g (derived). Buttons: the XA25\'s, as XBAB weighed them, a stand-in. Wheel: 0.9 g magnesium on a 0.12 g POM axle. Inserts: 4 × 15.23 mm³ of brass at 8.47 g/cm³. Screws: 4 × 23.59 mm³ of Ti-6Al-4V at 4.43 g/cm³. Side switches: two full-size SPDT at about 0.5 g each, typical. Wire: 109.1 mm of 32 AWG at 0.729 mg/mm. The shell gets what is left of the 29.31 g target.', { t0: 0.8 });
+    source(t, 'Battery: Jauch LP402535JU, 8 g (the distributor lists it to the gram, so the shell\'s share is good to about ± 0.5 g). Board: ' + fmtN(THESEUS.pcb, 2) + ' g, the target; as built at ' + fmtN(BOARD_T, 1) + ' mm on two layers, with a lighter encoder and a cored support, it is ' + fmtN(B01_PCB_PATH.g, 2) + ' g in the hardware model (derived). Buttons: the XA25\'s, as XBAB weighed them, a stand-in. Wheel: 0.9 g magnesium on a 0.12 g POM axle. Inserts: 4 × 15.23 mm³ of brass at 8.47 g/cm³. Screws: 4 × 23.59 mm³ of Ti-6Al-4V at 4.43 g/cm³. Side switches: two full-size SPDT at about 0.5 g each, typical. Wire: 109.1 mm of 32 AWG at 0.729 mg/mm. The shell gets what is left of the 29.31 g target.', { t0: 0.8 });
   }
 });
 

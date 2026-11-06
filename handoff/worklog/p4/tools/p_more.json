@@ -1,0 +1,9 @@
+[
+ ["      moves the one mouse between them and falls back to a dissolve if the declarations don't match. Only where it's real.",
+  "      moves the one mouse between them and falls back to a dissolve if the declarations don't match. Only where it's real.\n      > P4 (b05-b07): one real case, declared: b05_card (out: left, [1000, 200, 840, 500], pad 0.04, as chapterCard2 draws its part)\n      > → b05_material (in: left, [LM, 280, 340, 220], pad 0.06): the lit shell goes on to have a strip cut from its wall; both\n      > flPlace() resolve in the page. No other seam in b05-b07 ends and opens on the whole simplified mouse."],
+ ["- [ ] Decided, no change: b05_fallacy's light mouse is the Sora V2", "- [x] Decided, no change: b05_fallacy's light mouse is the Sora V2"],
+ ["- [ ] Decided, no change: both the strip's 8.6× and the 3D shell's 1.2× shown;", "- [x] Decided, no change: both the strip's 8.6× and the 3D shell's 1.2× shown;"],
+ ["- [ ] Decided, no change: the film sticker left out; the ±0.10 mm seam allowance", "- [x] Decided, no change: the film sticker left out; the ±0.10 mm seam allowance"],
+ ["- [ ] L1's LATTICE STUDY (review/b06.md when it lands): put its rib and arch-beam sizes into B06_STRIP / the arch models (one\n      place each, as b06 set them up) and re-run what depends on them; quote the numbers where the slides state sizes.",
+  "- [ ] L1's LATTICE STUDY (review/b06.md when it lands): put its rib and arch-beam sizes into B06_STRIP / the arch models (one\n      place each, as b06 set them up) and re-run what depends on them; quote the numbers where the slides state sizes.\n      > P4 (11:1x): not landed yet (L1 at its stage A). Ready for it: B06_STRIP (ribs 2.0 × 1.0 mm, 12 mm cells), SHB_A (the arch),\n      > FILLET are the one place each; b05's four strip slides and their answers read B06_STRIP live (b05_live)."]
+]

@@ -1,0 +1,45 @@
+{
+ "before (v1 board, battery at the key plan's old place)": {
+  "com": [
+   -0.35,
+   12.05,
+   -0.87
+  ],
+  "board_com": [
+   -0.48,
+   4.95,
+   22.35
+  ],
+  "battery_z": -22.72,
+  "total_g": 29.31
+ },
+ "plan 5, battery unmoved": {
+  "com": [
+   -0.26,
+   12.05,
+   -1.0
+  ],
+  "board_com": [
+   -0.03,
+   4.93,
+   21.69
+  ],
+  "battery_z": -22.72,
+  "total_g": 29.31
+ },
+ "after (plan 5, battery 2.23 mm back)": {
+  "com": [
+   -0.26,
+   12.05,
+   -1.61
+  ],
+  "board_com": [
+   -0.03,
+   4.93,
+   21.69
+  ],
+  "battery_z": -24.95,
+  "total_g": 29.31
+ },
+ "battery z for CoM z 0": -19.05
+}

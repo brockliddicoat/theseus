@@ -12,13 +12,14 @@
      'wipe' | 'flight' | 'chapter' (F0b's pass through black) | 'iris' | 'push' | 'cut'; 'iris' opens a circle round irisAt.
    - Autoplay: each slide plays to its settle, holds there as long as its text takes to read (holdOf: 2 to 6 s, Brock
      F40.1, or the slide's own `hold`), then the film moves on. Manual stepping works at any time; a panel open or a note
-     being typed holds the slide. ?auto=0 turns it off.
+     being typed holds the slide. OFF by default since 2026-11-06 14:22 (Brock: "the autoplay was definitely a bad idea"): the
+     viewer steps; ?auto=1 turns it on.
    - Clips (?clip=<slide id>): that slide alone, once, from its first frame to its settled frame, no bar, no progress
      tick, no page counter, a small THESEUS mark; &vertical=1 lays it out 9:16 for phone feeds. tools/clip.js renders
      one to MP4 through the capture hook (?cap=1&s=<id>&t=<t>, and window.__seek(t) to step without reloading).
    ============================================================================================ */
 const APP = { i: 0, t0: 0, tPause: 0, playing: true, dpr: 1, scale: 1, trStart: -1, trDur: 0.6, trans: 'dissolve', frozenT: null, reduced: false, lastT: 0,
-  auto: true, hold: null, holdFor: null, blockT: 0, clip: null, vert: false };
+  auto: false, hold: null, holdFor: null, blockT: 0, clip: null, vert: false };   /* manual by default (Brock, 14:22: "the autoplay was definitely a bad idea"); ?auto=1 turns it on */
 const $ = id => document.getElementById(id);
 const OFF = document.createElement('canvas'), SNAP = document.createElement('canvas'), BAND = document.createElement('canvas');
 
@@ -1092,7 +1093,7 @@ async function start() {
     /* a clip stands alone: the section label drops its "03 / 12" chapter count (chapterInfo feeds only that label) */
     const ci0 = chapterInfo; chapterInfo = s => Object.assign(ci0(s), { n: 0 });
   }
-  if (/^(0|false|off|no)$/i.test(q.get('auto') || '')) APP.auto = false;
+  if (q.get('auto') != null) APP.auto = !/^(0|false|off|no)$/i.test(q.get('auto'));   /* ?auto=1 on, ?auto=0 off; off by default */
   fit(); window.addEventListener('resize', () => { fit(); if (APP.frozenT != null) frame(); });
   /* the fonts are embedded (00-head.html); canvas never asks for a font by itself, so load every face before the first frame */
   QA.on = !!q.get('qa');

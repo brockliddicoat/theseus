@@ -1,0 +1,8 @@
+[
+ ["**F22. Chapter cards should index the whole chapter", "**P4 (11:1x): b05_card done:** nine lines for the chapter's 24 slides (b05's six ideas, then \"Triangles and arches\", \"Fibres and fillets\", \"The board, tolerance, Poron\")."],
+ ["**F26. Shell II teaches after it shows", "**P4: done** as proposed (b06_arches `after: 'b06_thrust'`); b06_arches' last caption calls back \"each held at its feet (21× stiffer than a flat strip)\"."],
+ ["**F27. Open Shape with its own flagship", "**P4: done** (b07_size `after: 'b07_shcard'`; the card's list reordered)."],
+ ["**F28. The fillet trio repeats one number", "**P4: done.** fillet: the Comet pair 4.0× → 2.0× (neutral ink), ending on the node's 16.6×; filletsize keeps 16.6 → 8.3×; mold plots the radius drift each corner tolerates (±13 µm → ±0.13 mm), not the peak curve."],
+ ["**F30. Verdict owners", "**P4: done in b05, b06, b07:** owners on b07_board (\"Rim alone\" / \"Tied to the board\"), b07_balance (\"Battery in the hump\" / \"Theseus\"), b07_sides (\"Spread evenly\" / \"On the low sides\"), b06_mold (\"A near-sharp corner\" / \"Theseus, r 0.6\"), b05_work (\"Solid plane\" / \"Triangles\"), and the others in the three files (arms, poron, sheet, newton, material, cubed, hotspot, margin)."],
+ ["**F31. One voice", "**P4: done** (b07_arms \"on Brock's HTS Ultra 8K\"; b06_filletsize \"Theseus: 0.6 mm ...\")."]
+]

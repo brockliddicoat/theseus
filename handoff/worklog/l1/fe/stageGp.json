@@ -1,0 +1,14 @@
+[
+ {
+  "label": "G-plain+rails-h0.7",
+  "kind": "none",
+  "rails": true,
+  "h": 0.7
+ },
+ {
+  "label": "G-plain+rails-h0.55",
+  "kind": "none",
+  "rails": true,
+  "h": 0.55
+ }
+]

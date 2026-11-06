@@ -1,0 +1,123 @@
+{
+ "model": "H2 (screws at the board holes, core centroid, encoder + support in the board)",
+ "board_com": [
+  0.84,
+  6.51,
+  23.44
+ ],
+ "board_parts_g_before_scaling": 7.925,
+ "posts": [
+  {
+   "hole": "MH1",
+   "g": 0.272,
+   "centre": [
+    10.1,
+    15.34,
+    26.62
+   ],
+   "length": 20.62,
+   "from_": "triggerL"
+  },
+  {
+   "hole": "MH2",
+   "g": 0.272,
+   "centre": [
+    -10.1,
+    15.34,
+    26.62
+   ],
+   "length": 20.62,
+   "from_": "triggerR"
+  },
+  {
+   "hole": "MH3",
+   "g": 0.387,
+   "centre": [
+    14.59,
+    19.69,
+    -5.13
+   ],
+   "length": 29.32,
+   "from_": "body"
+  },
+  {
+   "hole": "MH4",
+   "g": 0.387,
+   "centre": [
+    -14.59,
+    19.69,
+    -5.13
+   ],
+   "length": 29.32,
+   "from_": "body"
+  }
+ ],
+ "side_switches": [
+  [
+   22.4,
+   19.82,
+   15.0
+  ],
+  [
+   22.4,
+   22.65,
+   -3.55
+  ]
+ ],
+ "old key-plan place (2.23 fwd of H1's)": {
+  "com": [
+   0.701,
+   12.603,
+   1.163
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -22.72
+  ],
+  "total_g": 29.31
+ },
+ "H1's place (2.23 back)": {
+  "com": [
+   0.701,
+   12.603,
+   0.554
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -24.95
+  ],
+  "total_g": 29.31
+ },
+ "Brock's literal (5.90 fwd, 1.5 up)": {
+  "com": [
+   0.701,
+   13.013,
+   2.164
+  ],
+  "battery": [
+   -0.41,
+   8.96,
+   -19.05
+  ],
+  "total_g": 29.31
+ },
+ "board.py BATTERY now": {
+  "com": [
+   0.701,
+   12.603,
+   -0.0
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -26.98
+  ],
+  "total_g": 29.31
+ },
+ "battery z for CoM z 0, without the posts (side switches in)": -23.952,
+ "battery z for CoM z 0, without the side switches and the posts": -21.936,
+ "battery z for CoM z 0": -26.979,
+ "forward of H1's place": -2.029
+}

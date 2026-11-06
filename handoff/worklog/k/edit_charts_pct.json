@@ -1,0 +1,1 @@
+[["    if (o.pctCol !== false) text(fmtN(100 * r.g / (o.pctOf || o.total), 1) + '%', x + w - 172, vy,", "    if (o.pctCol !== false) text(fmtN(100 * r.g / (o.pctOf || o.total), 1) + ' %', x + w - 172, vy,"]]

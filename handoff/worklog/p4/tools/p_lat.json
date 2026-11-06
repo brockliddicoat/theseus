@@ -1,0 +1,4 @@
+[
+ ["- [ ] L1's LATTICE STUDY (review/b06.md when it lands): put its rib and arch-beam sizes into B06_STRIP / the arch models (one\n      place each, as b06 set them up) and re-run what depends on them; quote the numbers where the slides state sizes.",
+  "- [x] L1's LATTICE STUDY (review/b06.md when it lands): put its rib and arch-beam sizes into B06_STRIP / the arch models (one\n      place each, as b06 set them up) and re-run what depends on them; quote the numbers where the slides state sizes.\n      > P4 (12:3x): applied as wording, WHY NOT the strip: L1's study says B06_STRIP's 1.0 mm is the 2D teaching strip's, not the\n      > shell's rib (0.36 × 1.80 mm), so the strip and its chain stay; every \"Theseus\" size in b06 now quotes the study (0.36 mm\n      > ribs, 0.22 mm node fillets, 10.7 mm apart, kagome) or names the proportion (60 % of the rib). SHB_A is shared code (not\n      > mine). F42 applied too (no 0.89 mm floor). review/b06.md 12:3x."]
+]

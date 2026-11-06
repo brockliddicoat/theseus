@@ -1,0 +1,63 @@
+{
+ "model": "H1 (2026-11-06 08:57)",
+ "board_com": [
+  -0.03,
+  4.93,
+  21.69
+ ],
+ "board_parts_g_before_scaling": 6.872,
+ "old key-plan place (2.23 fwd of H1's)": {
+  "com": [
+   -0.262,
+   12.05,
+   -1.002
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -22.72
+  ],
+  "total_g": 29.31
+ },
+ "H1's place (2.23 back)": {
+  "com": [
+   -0.262,
+   12.05,
+   -1.611
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -24.95
+  ],
+  "total_g": 29.31
+ },
+ "Brock's literal (5.90 fwd, 1.5 up)": {
+  "com": [
+   -0.262,
+   12.46,
+   -0.0
+  ],
+  "battery": [
+   -0.41,
+   8.96,
+   -19.05
+  ],
+  "total_g": 29.31
+ },
+ "board.py BATTERY now": {
+  "com": [
+   -0.262,
+   12.05,
+   -1.611
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -24.95
+  ],
+  "total_g": 29.31
+ },
+ "battery z for CoM z 0": -19.049,
+ "forward of H1's place": 5.901
+}

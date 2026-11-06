@@ -1,0 +1,20 @@
+[
+ {
+  "kind": "tri",
+  "lam": 0.2809,
+  "w": 0.3593,
+  "hr": 1.7965,
+  "draft": 0.5,
+  "r_root": 0.1797,
+  "r_node": 0.1797,
+  "h": 0.9,
+  "rails": true,
+  "label": "Db-win"
+ },
+ {
+  "label": "Db-plain+rails",
+  "kind": "none",
+  "rails": true,
+  "h": 0.9
+ }
+]

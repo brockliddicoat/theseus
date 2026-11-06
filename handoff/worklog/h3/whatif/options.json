@@ -1,0 +1,186 @@
+{
+ "as built": {
+  "enc": 0.475,
+  "sup": 0.202,
+  "encParts": {
+   "housing": 0.166,
+   "cover": 0.114,
+   "fixings": 0.008,
+   "rotor": 0.028,
+   "magnet": 0.042,
+   "spring": 0.005,
+   "sensorBoard": 0.066,
+   "hallIC": 0.013,
+   "capacitor": 0.001,
+   "pins": 0.031,
+   "frame": 0
+  },
+  "supParts": {
+   "seat": 0.044,
+   "foot": 0.069,
+   "post": 0.087,
+   "tabs": 0.003
+  }
+ },
+ "B encoder walls 0.35": {
+  "enc": 0.443,
+  "sup": 0.202,
+  "encParts": {
+   "housing": 0.147,
+   "cover": 0.1,
+   "fixings": 0.008,
+   "rotor": 0.028,
+   "magnet": 0.042,
+   "spring": 0.005,
+   "sensorBoard": 0.066,
+   "hallIC": 0.013,
+   "capacitor": 0.001,
+   "pins": 0.031,
+   "frame": 0
+  },
+  "supParts": {
+   "seat": 0.044,
+   "foot": 0.069,
+   "post": 0.087,
+   "tabs": 0.003
+  }
+ },
+ "C sensor board 0.4": {
+  "enc": 0.462,
+  "sup": 0.202,
+  "encParts": {
+   "housing": 0.166,
+   "cover": 0.114,
+   "fixings": 0.008,
+   "rotor": 0.028,
+   "magnet": 0.042,
+   "spring": 0.005,
+   "sensorBoard": 0.053,
+   "hallIC": 0.013,
+   "capacitor": 0.001,
+   "pins": 0.031,
+   "frame": 0
+  },
+  "supParts": {
+   "seat": 0.044,
+   "foot": 0.069,
+   "post": 0.087,
+   "tabs": 0.003
+  }
+ },
+ "D post walls 0.45": {
+  "enc": 0.475,
+  "sup": 0.191,
+  "encParts": {
+   "housing": 0.166,
+   "cover": 0.114,
+   "fixings": 0.008,
+   "rotor": 0.028,
+   "magnet": 0.042,
+   "spring": 0.005,
+   "sensorBoard": 0.066,
+   "hallIC": 0.013,
+   "capacitor": 0.001,
+   "pins": 0.031,
+   "frame": 0
+  },
+  "supParts": {
+   "seat": 0.044,
+   "foot": 0.069,
+   "post": 0.075,
+   "tabs": 0.003
+  }
+ },
+ "E foot 1.8 tall": {
+  "enc": 0.475,
+  "sup": 0.189,
+  "encParts": {
+   "housing": 0.166,
+   "cover": 0.114,
+   "fixings": 0.008,
+   "rotor": 0.028,
+   "magnet": 0.042,
+   "spring": 0.005,
+   "sensorBoard": 0.066,
+   "hallIC": 0.013,
+   "capacitor": 0.001,
+   "pins": 0.031,
+   "frame": 0
+  },
+  "supParts": {
+   "seat": 0.044,
+   "foot": 0.052,
+   "post": 0.091,
+   "tabs": 0.003
+  }
+ },
+ "F seat 0.6 shorter": {
+  "enc": 0.475,
+  "sup": 0.192,
+  "encParts": {
+   "housing": 0.166,
+   "cover": 0.114,
+   "fixings": 0.008,
+   "rotor": 0.028,
+   "magnet": 0.042,
+   "spring": 0.005,
+   "sensorBoard": 0.066,
+   "hallIC": 0.013,
+   "capacitor": 0.001,
+   "pins": 0.031,
+   "frame": 0
+  },
+  "supParts": {
+   "seat": 0.033,
+   "foot": 0.069,
+   "post": 0.087,
+   "tabs": 0.003
+  }
+ },
+ "B+C+D": {
+  "enc": 0.43,
+  "sup": 0.191,
+  "encParts": {
+   "housing": 0.147,
+   "cover": 0.1,
+   "fixings": 0.008,
+   "rotor": 0.028,
+   "magnet": 0.042,
+   "spring": 0.005,
+   "sensorBoard": 0.053,
+   "hallIC": 0.013,
+   "capacitor": 0.001,
+   "pins": 0.031,
+   "frame": 0
+  },
+  "supParts": {
+   "seat": 0.044,
+   "foot": 0.069,
+   "post": 0.075,
+   "tabs": 0.003
+  }
+ },
+ "B+C+D+E+F": {
+  "enc": 0.43,
+  "sup": 0.167,
+  "encParts": {
+   "housing": 0.147,
+   "cover": 0.1,
+   "fixings": 0.008,
+   "rotor": 0.028,
+   "magnet": 0.042,
+   "spring": 0.005,
+   "sensorBoard": 0.053,
+   "hallIC": 0.013,
+   "capacitor": 0.001,
+   "pins": 0.031,
+   "frame": 0
+  },
+  "supParts": {
+   "seat": 0.033,
+   "foot": 0.052,
+   "post": 0.079,
+   "tabs": 0.003
+  }
+ }
+}

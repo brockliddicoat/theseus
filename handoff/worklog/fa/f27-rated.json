@@ -1,0 +1,686 @@
+[
+{
+"id": "cover",
+"ch": "intro",
+"n": 1,
+"score": 8
+},
+{
+"id": "thesis",
+"ch": "intro",
+"n": 2,
+"score": 3
+},
+{
+"id": "targets",
+"ch": "intro",
+"n": 3,
+"score": 8
+},
+{
+"id": "targets2",
+"ch": "intro",
+"n": 4,
+"score": 7
+},
+{
+"id": "flagships",
+"ch": "intro",
+"n": 5,
+"score": 6
+},
+{
+"id": "ntr_stats",
+"ch": "intro",
+"n": 6,
+"score": 4
+},
+{
+"id": "zerograms",
+"ch": "intro",
+"n": 7,
+"score": 5
+},
+{
+"id": "weightgap",
+"ch": "intro",
+"n": 8,
+"score": 10
+},
+{
+"id": "ntr_density",
+"ch": "intro",
+"n": 9,
+"score": 9
+},
+{
+"id": "ntr_sizewt",
+"ch": "intro",
+"n": 10,
+"score": 9
+},
+{
+"id": "ntr_densrank",
+"ch": "intro",
+"n": 11,
+"score": 9
+},
+{
+"id": "pricefront",
+"ch": "intro",
+"n": 12,
+"score": 7
+},
+{
+"id": "market",
+"ch": "intro",
+"n": 13,
+"score": 8
+},
+{
+"id": "budget",
+"ch": "intro",
+"n": 14,
+"score": 6
+},
+{
+"id": "map",
+"ch": "intro",
+"n": 15,
+"score": 2
+},
+{
+"id": "clicks",
+"ch": "click",
+"n": 16,
+"score": 7
+},
+{
+"id": "arc",
+"ch": "click",
+"n": 17,
+"score": 7
+},
+{
+"id": "clk_wedge",
+"ch": "click",
+"n": 18,
+"score": 4
+},
+{
+"id": "clk_switch",
+"ch": "click",
+"n": 19,
+"score": 5
+},
+{
+"id": "clk_switch2",
+"ch": "click",
+"n": 20,
+"score": 2
+},
+{
+"id": "cutouts",
+"ch": "click",
+"n": 21,
+"score": 3
+},
+{
+"id": "tensioner",
+"ch": "click",
+"n": 22,
+"score": 8
+},
+{
+"id": "clk_tenmat",
+"ch": "click",
+"n": 23,
+"score": 4
+},
+{
+"id": "anchors",
+"ch": "click",
+"n": 24,
+"score": 7
+},
+{
+"id": "clk_pomtune",
+"ch": "click",
+"n": 25,
+"score": 6
+},
+{
+"id": "clk_front",
+"ch": "click",
+"n": 26,
+"score": 8
+},
+{
+"id": "clk_hotswap",
+"ch": "click",
+"n": 27,
+"score": 4
+},
+{
+"id": "clk_spdt",
+"ch": "click",
+"n": 28,
+"score": 5
+},
+{
+"id": "latency",
+"ch": "click",
+"n": 29,
+"score": 6
+},
+{
+"id": "clk_debounce",
+"ch": "click",
+"n": 30,
+"score": 3
+},
+{
+"id": "clk_wait",
+"ch": "click",
+"n": 31,
+"score": 3
+},
+{
+"id": "clk_methods",
+"ch": "click",
+"n": 32,
+"score": 3
+},
+{
+"id": "sidebuttons",
+"ch": "click",
+"n": 33,
+"score": 5
+},
+{
+"id": "glide",
+"ch": "glide",
+"n": 34,
+"score": 7
+},
+{
+"id": "gld_under",
+"ch": "glide",
+"n": 35,
+"score": 4
+},
+{
+"id": "dots",
+"ch": "glide",
+"n": 36,
+"score": 6
+},
+{
+"id": "gld_camera",
+"ch": "glide",
+"n": 37,
+"score": 4
+},
+{
+"id": "gld_corr",
+"ch": "glide",
+"n": 38,
+"score": 5
+},
+{
+"id": "gld_blur",
+"ch": "glide",
+"n": 39,
+"score": 2
+},
+{
+"id": "gld_sag",
+"ch": "glide",
+"n": 41,
+"score": 5
+},
+{
+"id": "gld_module",
+"ch": "glide",
+"n": 42,
+"score": 8
+},
+{
+"id": "sensor",
+"ch": "glide",
+"n": 43,
+"score": 6
+},
+{
+"id": "gld_reports",
+"ch": "glide",
+"n": 44,
+"score": 3
+},
+{
+"id": "gld_position",
+"ch": "glide",
+"n": 45,
+"score": 1
+},
+{
+"id": "gld_soft",
+"ch": "glide",
+"n": 46,
+"score": 7
+},
+{
+"id": "gld_sheet",
+"ch": "glide",
+"n": 47,
+"score": 4
+},
+{
+"id": "shellcard",
+"ch": "shell",
+"n": 48,
+"score": 7
+},
+{
+"id": "materials",
+"ch": "shell",
+"n": 49,
+"score": 6
+},
+{
+"id": "shlSpecific",
+"ch": "shell",
+"n": 50,
+"score": 4
+},
+{
+"id": "thinwall",
+"ch": "shell",
+"n": 51,
+"score": 3
+},
+{
+"id": "shlScatter",
+"ch": "shell",
+"n": 52,
+"score": 7
+},
+{
+"id": "shlPick",
+"ch": "shell",
+"n": 53,
+"score": 7
+},
+{
+"id": "shlNoPick",
+"ch": "shell",
+"n": 54,
+"score": 3
+},
+{
+"id": "shlHotspot",
+"ch": "shell",
+"n": 55,
+"score": 8
+},
+{
+"id": "shlMargin",
+"ch": "shell",
+"n": 56,
+"score": 2
+},
+{
+"id": "shlWork",
+"ch": "shell",
+"n": 57,
+"score": 8
+},
+{
+"id": "shlShell3d",
+"ch": "shell",
+"n": 58,
+"score": 2
+},
+{
+"id": "lattice",
+"ch": "shell",
+"n": 59,
+"score": 7
+},
+{
+"id": "shlDeterminate",
+"ch": "shell",
+"n": 60,
+"score": 5
+},
+{
+"id": "shlThin",
+"ch": "shell",
+"n": 61,
+"score": 7
+},
+{
+"id": "shlLattice3d",
+"ch": "shell",
+"n": 62,
+"score": 1
+},
+{
+"id": "shbArches",
+"ch": "shell",
+"n": 63,
+"score": 7
+},
+{
+"id": "shbPress",
+"ch": "shell",
+"n": 64,
+"score": 3
+},
+{
+"id": "shbThrust",
+"ch": "shell",
+"n": 65,
+"score": 3
+},
+{
+"id": "shbBend",
+"ch": "shell",
+"n": 66,
+"score": 3
+},
+{
+"id": "shbFibres",
+"ch": "shell",
+"n": 67,
+"score": 3
+},
+{
+"id": "fillet",
+"ch": "shell",
+"n": 68,
+"score": 4
+},
+{
+"id": "filletsize",
+"ch": "shell",
+"n": 69,
+"score": 10
+},
+{
+"id": "shbGates",
+"ch": "shell",
+"n": 71,
+"score": 1
+},
+{
+"id": "shbWidth",
+"ch": "shell",
+"n": 72,
+"score": 3
+},
+{
+"id": "shbMill",
+"ch": "shell",
+"n": 73,
+"score": 2
+},
+{
+"id": "shbMillDirect",
+"ch": "shell",
+"n": 74,
+"score": 2
+},
+{
+"id": "shbTol",
+"ch": "shell",
+"n": 75,
+"score": 3
+},
+{
+"id": "shbSides",
+"ch": "shell",
+"n": 76,
+"score": 4
+},
+{
+"id": "shlPcbRib",
+"ch": "shell",
+"n": 77,
+"score": 6
+},
+{
+"id": "shcCarry",
+"ch": "shell",
+"n": 78,
+"score": 5
+},
+{
+"id": "shcArms",
+"ch": "shell",
+"n": 79,
+"score": 6
+},
+{
+"id": "shlStructs",
+"ch": "shell",
+"n": 80,
+"score": 3
+},
+{
+"id": "tolerance",
+"ch": "shell",
+"n": 81,
+"score": 7
+},
+{
+"id": "sealed",
+"ch": "shell",
+"n": 82,
+"score": 1
+},
+{
+"id": "shlGrams",
+"ch": "shell",
+"n": 83,
+"score": 1
+},
+{
+"id": "mass",
+"ch": "shell",
+"n": 84,
+"score": 5
+},
+{
+"id": "grind",
+"ch": "shell",
+"n": 85,
+"score": 7
+},
+{
+"id": "shlsheet1",
+"ch": "shell",
+"n": 86,
+"score": 4
+},
+{
+"id": "shlsheet2",
+"ch": "shell",
+"n": 87,
+"score": 5
+},
+{
+"id": "pltPlate",
+"ch": "shell",
+"n": 88,
+"score": 3
+},
+{
+"id": "pltSim",
+"ch": "shell",
+"n": 89,
+"score": 3
+},
+{
+"id": "pltOptions",
+"ch": "shell",
+"n": 90,
+"score": 2
+},
+{
+"id": "surfacecard",
+"ch": "surface",
+"n": 91,
+"score": 4
+},
+{
+"id": "coating",
+"ch": "surface",
+"n": 92,
+"score": 5
+},
+{
+"id": "srf_texture",
+"ch": "surface",
+"n": 93,
+"score": 6
+},
+{
+"id": "srf_weight",
+"ch": "surface",
+"n": 94,
+"score": 4
+},
+{
+"id": "srf_uv",
+"ch": "surface",
+"n": 95,
+"score": 7
+},
+{
+"id": "grip",
+"ch": "surface",
+"n": 96,
+"score": 8
+},
+{
+"id": "srf_gripmap",
+"ch": "surface",
+"n": 97,
+"score": 5
+},
+{
+"id": "srf_tape",
+"ch": "surface",
+"n": 98,
+"score": 8
+},
+{
+"id": "srf_twotone",
+"ch": "surface",
+"n": 99,
+"score": 6
+},
+{
+"id": "srf_marks",
+"ch": "surface",
+"n": 100,
+"score": 1
+},
+{
+"id": "details",
+"ch": "surface",
+"n": 101,
+"score": 3
+},
+{
+"id": "wheel",
+"ch": "surface",
+"n": 102,
+"score": 5
+},
+{
+"id": "srf_encoder",
+"ch": "surface",
+"n": 103,
+"score": 2
+},
+{
+"id": "eleccard",
+"ch": "elec",
+"n": 104,
+"score": 7
+},
+{
+"id": "cells",
+"ch": "elec",
+"n": 116,
+"score": 4
+},
+{
+"id": "elc_oneside",
+"ch": "elec",
+"n": 118,
+"score": 7
+},
+{
+"id": "elecsheet1",
+"ch": "elec",
+"n": 119,
+"score": 7
+},
+{
+"id": "elc_tear",
+"ch": "elec",
+"n": 120,
+"score": 8
+},
+{
+"id": "elc_flex",
+"ch": "elec",
+"n": 123,
+"score": 7
+},
+{
+"id": "cable",
+"ch": "elec",
+"n": 124,
+"score": 3
+},
+{
+"id": "software",
+"ch": "elec",
+"n": 125,
+"score": 6
+},
+{
+"id": "elc_sheet2",
+"ch": "elec",
+"n": 126,
+"score": 2
+},
+{
+"id": "repair",
+"ch": "own",
+"n": 133,
+"score": 8
+},
+{
+"id": "ownscrew",
+"ch": "own",
+"n": 134,
+"score": 7
+},
+{
+"id": "serial",
+"ch": "own",
+"n": 140,
+"score": 1
+},
+{
+"id": "ownsheet1",
+"ch": "own",
+"n": 141,
+"score": 2
+}
+]

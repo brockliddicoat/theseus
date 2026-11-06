@@ -1,0 +1,402 @@
+# Review findings for b01
+
+## CRITIC (R2), 2026-11-06 10:46 (machine clock), build 1044: re-check of P3's replies
+Frames: /home/claude/work/r2/sheets/r1044_a.jpg (cover), r1044_b.jpg (targets 0 and settle, budget, close).
+**R2-b01-1, -2, -3, -4, -5 CONFIRMED FIXED.** The cover says "TARGET" under every figure that isn't measured (29.31 g, 0.14 ms
+"by PIAKNOW'S measure", 0.099 g/cm³) and strikes eight marks; b01_targets derives "Under 4.2 ms, derived" (5.7 ms less the
+1.5 ms flight, Direct Drive's 6 % unquantified, all in the foot line) and shows every row's label and track from t = 0; the
+budget's 2.8 g is neutral and hands to the Shell chapter; the close answers eight with the cover's own counter landing on a
+blue 0. The intro now opens and closes on the same count: the film's spine is visible at both ends.
+
+## CRITIC (R2), 2026-11-06 (R2 clock 10:30, about 30 min ahead of the machine), build 0955: b01_cover, listed, illusion, rank, price, targets, budget, close (first look)
+Sheets: /home/claude/work/r2/sheets/<id>_0955.jpg (0, 40 %, settle, phone). Reply under each finding (FIXED / WHY NOT).
+
+Good, and a lot of it: the intro now runs in the order FILM F11 proposed; b01_listed keeps its 10/10 honesty (Razer and
+Logitech list true, 9 of the 15 others run over 3 %, the MCHOSE's +17.7 % left out as likely another variant: generous to
+rivals); b01_illusion's classroom balance (Wolf 2018: 161 against 211 g) with "roughly a tenth lighter, derived; no study
+has measured mice"; b01_rank's re-sort (12th → 2nd of 48) that admits the HTS Plus Pro 8K ahead on its maker's 28 g and the
+XA25 better but wired; b01_price's front now continues past its last point with no kink (his pricefront note), the
+UltralightX named as one model (TechPowerUp's 2023 medium, $189, 38 g, "flex"), and "G-Wolves sells lighter for less, and
+lists 80 h of battery, or none" (an honest concession that calls back to b01_battery); b01_budget sums right (19.97 g of
+parts, about 9.3 g left) and labels the board a target (F42.2); b01_close answers the eight chapters with each flagship
+inside its row (FILM F1, resolved).
+
+**R2-b01-1 (must, b01_cover): the cover presents a target as a measurement.** "MOTION LATENCY, WIRELESS 0.14 ms — ON
+PIAKNOW'S RIG" reads as timed on piaknow's rig; it is Theseus's target from Kunai's timing model (b09's source line:
+"Theseus: 0.14 and 0.13 ms, targets"; your own b01_targets marks it "Theseus's target"). The cover is the film's most-seen
+frame: make the sub-label "TARGET, AS PIAKNOW'S RIG TIMES IT" (or "TARGET · FASTEST MEASURED 0.34" without the dot).
+**R2-b01-2 (must, b01_targets): "Press to PC: under 2.0 ms" has no derivation, and its stated basis contradicts b03.** Your
+comment rests it on "reading the switch as its NC contact releases, at the start of the travel". The GT01 is a snap switch:
+b03 draws "Pressed, the leaf snaps from NC to NO", and the kit has it actuate at 0.35 of its 0.5 mm. NC releases at the snap,
+after the pre-travel; reading it saves the flight (about 1.4 ms, b03_timing), not the travel. Against the fastest
+mechanical on that rig (OP1 8K V2, 5.7 ms) that gives a target nearer 4 ms than under 2.0, and "faster than a magnetic
+switch with a mechanical one" is the claim an engineer will test first. Derive the target from the click chapter (5.7 ms
+less the flight, less any debounce wait, less b02_direct's 6 % of travel), label it derived, or show "under 5.7 ms, the
+fastest mechanical" until a measurement exists. (Brock's note asked for shorter: it can be shorter and still honest.)
+**R2-b01-3 (should, b01_cover + b01_close): the bookends count differently, and the close never says it.** The cover's
+"COMPROMISES 0" strikes six marks ("every flagship makes one"); the close answers "eight compromises". The film's spine is
+ZERO compromises (F33.7), yet the last frame is THESEUS and "In pursuit of an objectively better mouse": the word "zero"
+never lands. Let the close run the cover's own counter as the rows are answered (COMPROMISES 8 → 0, the six flagships inside
+the eight as now), ending on "0" in blue before THESEUS; and give the cover the same count (eight, or "six flagships, one
+each" said so it matches what the close answers).
+**R2-b01-4 (should, b01_targets): frame one is a legend.** At t = 0 only "BEST SHOWN / THESEUS'S TARGET" and one faint label
+are on screen: draw the four rows' labels and tracks from t = 0, and let the bars grow as the motion.
+**R2-b01-5 (should, b01_budget): "ABOUT 2.8 G TO FIND" in red is an open fault on Theseus's side of the intro.** It is honest
+and it's the shell chapter's job: say so ("2.8 g under the XA25's shell: the Shell chapter shows where it comes from") and
+set it in neutral ink, so the intro hands the problem to the chapters instead of ending on it.
+(could, b01_close) Each answer is a slogan; one proof number under each, in small blue, the way each compromise carries its
+flagship in small red ("0.0 gf spread", "0.05 g of dots", "0.14 ms target, dual 8khz" ...), would make the last frame the
+film's summary. (could, b01_rank) the struck "12th by weight" is Theseus's own rank: label it as the industry's ruler ("the
+way mice are sold: by weight") so it reads as the old measure, not a rival.
+
+> P3 reply (polish, build p3, machine clock ~10:40):
+> - R2-b01-1: FIXED (also the integrator's must). Each cover figure that isn't measured says "Target" first, brighter than the
+>   rest of its line: "TARGET  BY PIAKNOW'S MEASURE" (0.14 ms), "TARGET  EVERY UNIT WEIGHED" (29.31 g, b01_listed's promise
+>   words), "TARGET  WEIGHT PER CM³ OF ITS BOX" (0.099, from the target weight); the grid's + row is knocked out under them.
+> - R2-b01-2: FIXED as your first option, and flagged to the integrator (POLISH.md had "under 2.0 ms" as decided; one data row
+>   switches it back). The row now compares mechanical switches: best shown, the OP1 8K V2's 5.7 ms (the fastest mechanical on
+>   Finalmouse's rig); Theseus "Under 4.2 ms, derived" = 5.7 less the snap's 1.5 ms flight that reading NC saves (B03.flightMs,
+>   read live), rounded up; the foot line states the one assumption (Finalmouse timed the OP1 without its own NC mode) and that
+>   Direct Drive's 6 % of the travel comes on top. The magnetic Starlight X's 2.0 stays on the track as a labelled tick
+>   ("Starlight X, magnetic"), so nothing is hidden and nothing reads as a mechanical switch beating a magnet. The answers row's
+>   false "NC at the start of the travel" is gone (it also claimed the slide said so; it didn't).
+> - R2-b01-4: FIXED: every row's label and track is on screen from t = 0 at half strength; each comes to full as its race
+>   runs (M7). qa clean at 0.02, mid and settle.
+> - R2-b01-5: FIXED: the gap to the XA25's shell is drawn in neutral ink, and its line reads "About 2.8 g lighter than the
+>   XA25's: the Shell chapter shows how" (on its own line under the XA25 label, so they can't collide).
+> Frames: /home/claude/work/p3/shots/tg_sheet.jpg, tg_sheet2.jpg, budget_gap.png, cover_foot2.png. R2-b01-3 and the coulds next.
+> - R2-b01-3: FIXED. Both bookends count the film's eight: the cover's "Compromises" now strikes eight marks ("Eight that most
+>   mice make"), the count stepping down with each strike to 0 in blue; the close runs the same counter in its right column
+>   ("Compromises" 8, a mark struck as each ledger row is answered), landing on 0 in blue at 3.8 s, just before THESEUS rises
+>   (4.4 s). Frames /home/claude/work/p3/shots/cl_sheet.jpg (cover 3.2 / 7.5, close 0 / 2.2 / 4.2 / 9).
+> - (could, b01_rank): FIXED: the struck rank reads "12th by weight, as mice are sold" (shots/rank_head.png).
+> - (could, b01_close, a proof number under each answer): WHY NOT yet: the numbers live in other builders' files (b02-b11);
+>   copied here they would drift. If the integrator wants it, each chapter could export its verdict and the close read them.
+> errs ok, qa clean at 0.02, mid and settle on cover, close, rank.
+
+## MODEL CHECK (M, model auditor), 2026-11-06 09:18: b01_lighter as rebuilt (09:17)
+
+- **OK:** the claims now hold exactly within the stated model. Under a constant push every time is k × (fingers + mouse),
+  so "the time the mouse itself adds" (132 → 66 ms) halves whatever the fingers weigh; "half the force spent on the mouse"
+  is F = m·a at the same motion; the fixed-time shot that only worked at 0 g of finger is gone; "with your fingertips too:
+  at least 28 % less" is right for up to 45 g of moving fingertip ((29.31 + 45) / (59.0 + 45) = 0.714, floored), and "at
+  least" points the right way (more finger mass, a smaller share). The foot line states the constant push and no friction.
+- **Should (Chen, Lee & Cheng 2012):** nothing on the slide claims a study shows lighter aims better, so it doesn't
+  contradict their finding (wrist range and forearm muscle activity lowest at a 130 g mouse in a fast task). Keep "finer
+  control: a higher skill ceiling" as the argument it is (F33.7), and don't add "less effort" or "less strain": that is
+  the claim their result would contest.
+
+## CRITIC (R), 2026-11-06 09:40 (machine clock), build 0912: b01_density (first look)
+Sheet /home/claude/work/r/sheets/b01_density_0912.jpg. Good, keep it: his ntr_density note answered point by point: outlines
+only, the X2F's wrong idea first (cut to 87.5 mm, "your palm rests here, on nothing"), the boxes L × W × H drawn round both,
+the arithmetic on screen and right (168.9 cm³ → 0.1747 shown as 0.174, in the rival's favour; 297.0 cm³ → 0.0987 shown as
+0.099, against Theseus: both conservative), −43 % never rounded up, "a whole mouse under your palm, at a cut-down mouse's weight". The 0.099
+matches the cover's. No findings.
+
+## CRITIC (R), 2026-11-06 09:20 (machine clock), build 0903: b01_battery (first look); frame-one sweep
+Frames: /home/claude/work/r/shots/s0903/*_b01_battery_{0,0.6,4.4,11}.png; sheet /home/claude/work/r/sheets/b01_battery_0903.jpg.
+Sweep of every slide's t = 0: /home/claude/work/r/sheets/t0_0903_a.jpg. b01_compromise: R-b01-3 confirmed FIXED (Theseus
+in blue on the right pan from frame one).
+
+**b01_battery.** Good, keep it: his important idea argued, not asserted: the frontier of the most hours listed at each
+weight, the pointer walking down it while the panel's battery shrinks (306 → 250 mAh) and the hours fall (180 → 80 h);
+Theseus lands above it; "under 32 g" is an honest comparison class; "a charge every 33 days, not every 13" is the player's
+gain; 208 h is shown as 200 (rounded down).
+
+**R-b01-11 (should): the verdict sets a maker's listing against Theseus's derived hours, and leaves four rivals blank.**
+"80 → 200 h, 2.5×": 80 h is G-Wolves' listing (a 250 mAh battery, so ~11.6 mW), 200 h is Theseus's 370 mAh at the
+Viper V4 Pro's 6.58 mW. The four "none listed" mice carry 210 to 300 mAh; at the same draw you give Theseus they would run
+about 118 to 123 h (X2F, 210 mAh), 141 to 147 h (250 mAh: UltralightX, Starlight X, HTR Pro 8K) and 169 to 177 h (Beast X,
+300 mAh), at 3.7 or 3.87 V cells. G5 asks for derived blanks, and the honest same-basis comparison under 32 g is the X2F's
+~120 h → Theseus 200 h (about 1.6×). Either derive
+them (marked derived, open circles that fill in), or keep 2.5× but say on the verdict "listed → derived" so nobody reads it
+as like for like. Theseus still wins clearly either way; the bigger battery (+48 % over 250 mAh) is the honest reason.
+(FILM.md F19 on how the 200 h relates to b03's and b10's battery claims.)
+
+## MODEL (M, model auditor), 2026-11-06 09:10: the weight budget, density and the battery hours
+
+**M-b01-4 (OK, b01_budget): every derived part reproduces**, from the deck's own data, as you intended: the wheel 0.9006 g
+(508.8 mm³ of AZ31B at 1.77 g/cm³) plus its POM axle 0.120 g (84.3 mm³ at 1.42) = 1.02 g; four titanium M2 × 4 screws
+0.418 g (23.59 mm³ each at 4.43; 0.745 g in steel at 7.9, the old 0.75); four brass inserts 0.516 g (15.23 mm³ each at
+8.47); the side-button lead 0.080 g (109.1 mm of GORE 32 AWG at 0.729 mg/mm, which is the 0.49 lb per 1,000 ft); the shell
+and skates get 10.35 g. One precision issue (should): the battery's 8 g is a distributor's whole-gram listing (Endrich;
+Farnell gives the same part 380 mAh against Endrich's 370 mAh), so the remainder for the shell is about ±0.5 g, not
+±0.01. Show the battery as "8 g, listed" and the shell's share as "about 10.3 g", or keep 0.01 g and say the battery is
+listed to the gram.
+
+**M-b01-5 (OK, b01_density):** 29.31 g / (119.3 × 62.4 × 39.9 mm = 297.03 cm³) = 0.0987 → 0.099 g/cm³ (F12.11); the X2F
+CrazyLight 29.5 g in 87.5 × 61.1 × 31.6 mm = 0.1746 → 0.174, both rounded against Theseus as your answer says: right.
+
+**M-b01-6 (should, b01_battery): the derived hours are not an upper bound.** `b01_hoursAt` calls the hours at the Viper V4
+Pro's draw "an upper bound for a mouse that lists none". No law makes the V4 Pro the thriftiest mouse, and its draw
+includes the optical switches the deck says take 17.6 % of it: a rival with mechanical switches and otherwise the same
+draw would run longer (the SLX's 250 mAh: 141 h at the V4 Pro's draw, 171 h without the optical pair). Call them "an
+estimate at the Viper V4 Pro's draw" and keep the "derived" mark.
+
+**M-b01-7 (should, film-wide, tell b09 and b10): one battery story.** The 370 mAh example battery gives 208 h at the V4
+Pro's 1 khz draw (the budget prints that); everywhere else Theseus's figure is the 200 h target. Both are honest if each
+slide says which ("200 h target; the example battery covers it with 208 h"). And the 8 khz draw differs between slides:
+b09_life uses Razer's 45 h claim (26.3 mW), b10_charge TechPowerUp's measured ~40 h (29.6 mW). Pick one for the film
+(the measured one is the cautious choice) so Theseus's 8 khz hours agree: 50 h on the claim, 46 h on the measurement.
+
+**M-b01-8 (should, chapter-wide, for b05 to b07 too): the 15.2 g study body is not the 10.35 g shell.** The shell
+chapter's absolute numbers (N/mm, MPa at 10 N) come from the 15.18 g stress study; the budget leaves 10.35 g for shell and
+skates. By the study's own plain-wall law (stiffness ∝ mass^2.37) a 10.35 g wall is 0.40× as stiff. Ratios at the same
+weight carry over (and triangles gain more on a lighter shell); absolute figures must keep saying "the 15.2 g stress
+study" (F21.1).
+
+## CRITIC (R), 2026-11-06 08:58 (machine clock), build 0849: b01_lighter (first look) and b01_compromise (re-check)
+Frames: /home/claude/work/r/shots/s0849/*_b01_lighter_{0,0.6,4.2,10.5}.png, sheet /home/claude/work/r/sheets/b01_lighter_0849.jpg;
+b01_compromise: /home/claude/work/r/sheets/b01_compromise_0849.jpg.
+
+**b01_compromise re-check:** R-b01-1 FIXED in the frames ("Cut to 87.5 mm"); the 17.6 % now prints. Still open in 0849:
+R-b01-2 (Theseus "0 %" to its clicks, b03 prints 0.4 %), R-b01-3 (the counterweight unnamed at t = 0), R-b01-4 (no
+"at 1 khz"), R-b01-5 (ULX model and source), R-b01-6 (no "Derived" before 17.6 % in the foot line).
+
+**b01_lighter.** Good, keep it: frame one has everything (the classroom panel, the two lanes, the two crosshairs); the carts
+are a real demonstration with stroboscopic ghosts and "turns at t / at 2t"; the same 0.54 N push drawn on both mice; the
+overshoot measured on a ruler (13.7 against 6.8 mm); the shot as the consequence; "half the push for the same move ... a
+higher skill ceiling" is exactly his "theoretical ease of control" (F33.7). OpenStax cited.
+
+**R-b01-8 (should, b01_lighter): headline the claim that doesn't depend on the assumptions.** Every time on the slide is
+m·v/F: the 132 and 66 ms are set by the 0.5 m/s and the 0.54 N you chose (a correction at 0.2 m/s gives 53 and 26 ms; at
+1 N, 71 and 35 ms); only the ratio is fixed by the masses. A sceptical viewer who changes either number in their head
+sees the ms as arbitrary, and his note on the old slide was about exactly this ("overall speed feels outlandish"). Make
+the verdict scale-free, e.g. "The mouse's share of a correction (lower is better) 59.0 → 29.3 g: −50 %" or "Push for the
+same correction 0.54 → 0.27 N", and keep 132 / 66 ms as the worked example in the lanes ("at 0.5 m/s").
+
+
+> b01 reply: FIXED in part (09:15 build). The verdict is now the mouse's own part with its conditions in its label ("The time the mouse itself adds, at 0.5 m/s and 0.54 N"); its net, −50 %, is the scale-free part, and the payoff line is the scale-free claim ("Half the force spent on the mouse"). New beside it, for a player's real hand: "With your fingertips too: at least 28 % less" (up to 45 g of fingertip moving with the mouse, Mirakhorlo 2016 via Q2, derived). WHY NOT the N verdict: the lanes show the same push and different times, so a verdict in N would switch experiments at the climax.
+
+**R-b01-9 (should, b01_lighter): the shot's 70 ms is picked between the two answers.** "FIRED AT 70 ms" sits just past
+Theseus's 66 ms, so the hit / miss is decided by where you put the trigger pull; any time between 66 and 132 ms gives the
+same picture and any time outside it doesn't. Compare at the same instant instead: freeze both lanes when Theseus is back
+on target (66 ms) and show the X3 still 13.1 mm past (13.7 mm out at 54.6 ms, 0.5 mm back by 65.5 ms), then fire. The same drama, no chosen threshold.
+
+
+> b01 reply: FIXED: the shot is gone (since 09:00); each lane runs a bar of real milliseconds until its mouse is back on target.
+
+**R-b01-10 (could, b01_lighter):** at settle the left half (the classroom panel) is still at full strength beside the
+verdict; dim it once the flick starts (M7). Phone: the lanes' labels (~18 px) vanish at 0.44×; the verdict reads.
+
+> b01 reply: FIXED: the classroom panel dims to half as the mouse lanes start.
+
+Film-level: FILM.md F11 (intro order: "Why lighter wins" before "Battery life, traded for weight") is still to weigh.
+
+## MODEL (M, model auditor), 2026-11-06 08:48: b01_lighter's flick model (B01_LT, b01_flickInfo), at the integrator's request
+
+**What reproduces (OK as arithmetic):** a mass m crossing the target at 0.5 m/s, braked and brought back by a constant
+0.54 N: stop in m·v/F, overshoot m·v²/2F, back in 2√(d·m/F). 59.0 g: 54.6 ms to stop, 13.7 mm past, 132 ms back on
+target; 29.31 g: 66 ms; at 70 ms the 59 g mouse is 12.6 mm past. The carts beat (same speed, same push: half the mass
+stops in half the time and half the distance) is right. Every time in this model is proportional to the moving mass, so
+"half" is exactly the mass ratio 29.31 / 59.0.
+
+**M-b01-1 (must): "back on the target in half the time" and "half the push for the same move" hold only if nothing
+but the mouse moves.** The finger segments that move the mouse move with it, and the same push has to stop them too.
+With an effective moving mass m_eff = mouse + the finger mass that moves with it, the times scale with m_eff
+(the same 0.5 m/s, 0.54 N):
+
+| moving with the mouse | 59.0 g mouse | Theseus 29.31 g | less time | Theseus back by 70 ms? |
+|---|---|---|---|---|
+| 0 g (the slide now) | 132 ms | 66 ms | 50 % | yes |
+| 10 g of fingertip | 154 ms | 88 ms | 43 % | no |
+| 20 g | 177 ms | 110 ms | 38 % | no |
+| 40 g | 221 ms | 155 ms | 30 % | no |
+| the hand, 420 g (0.6 % of 70 kg, b01HandMass) | 1,072 ms | 1,005 ms | 6 % | no |
+
+The repo's own research says the same (research/data/weight-science.json, physics_context: "cutting 31 g removes ~6 %
+of the moving mass" for wrist and arm flicks; "for finger-driven micro-corrections the mouse is a larger share (no
+finger-mass source found)"). So scoping the slide to the fingers' final correction (the integrator's instruction) is
+right, and then:
+- The headline must be computed with m_eff, not the mouse alone. Until Q2's finger-segment masses land
+  (research/FILLS.md), the honest forms are either the ratio with the finger mass stated ("with 10 to 20 g of fingertip
+  moving with it: 38 to 43 % sooner back on target"), or a headline about the mouse's own share only ("half the mouse's
+  inertia", not "half the time").
+- The hit-and-miss at 70 ms only works at 0 g of finger: with 5 g or more Theseus is not back by 70 ms either. If the
+  shot stays, put its moment between the two m_eff return times and say the finger mass used.
+- "Half the push for the same move" becomes (m_f + 29.3) / (m_f + 59.0) of the push: about 60 % at 15 g.
+- The foot line "the mouse's own inertia only" is not enough when the headline number depends on it (F14.10: a glance
+  must not read wrong).
+
+
+> b01 reply: FIXED, by claiming only the part that is exact. Every time in the model is k × (all moving mass), so the mouse's own part, k × m_mouse, is additive and halves whatever the fingers weigh. The lanes are now "The mouse's own part, slowed 20×: the same 0.54 N push on each", each lane runs a bar of "Time the mouse adds, ms" (132 and 66), the verdict reads "The time the mouse itself adds to a correction", the payoff is "Half the force spent on the mouse" (F = m a for the mouse, exact), and the captions say "The arm moves the hand; your fingers finish by pushing the mouse, and its part of that halves at 29.3 g" / "Whatever your fingers weigh, the mouse's share of each correction halves". The shot at 70 ms is removed (it held only at 0 g of finger). When Q2's finger masses land I can add the m_eff ratio (about 40 % sooner with 10 to 20 g) as a second line.
+
+**M-b01-2 (should): two assumptions to say in the method line.** No pad friction (skates on cloth add a braking force
+from the mouse's weight and the hand's press; it helps the stop and opposes the return, and its weight part halves with
+the mouse too); and a constant 0.54 N (a click's force) as the push: the absolute milliseconds scale with 1/F, only the
+ratio is general. Both are fine as stated assumptions.
+
+
+> b01 reply: FIXED. The foot line now reads "Derived: m v ÷ F to stop, 2 √(d m ÷ F) back, at 0.5 m/s and 0.54 N (a GT01 click), no pad friction. Times grow with all the mass that moves; these are the mouse's own. Moves drawn 5× larger."
+
+**M-b01-3 (should, honesty, G5): the counter-evidence already in the repo.** weight-science.json lists Chen, Lee and
+Cheng 2012 (Eur J Appl Physiol 112(6):2205-2212): in a fast task, wrist movement range and forearm muscle activity were
+lowest at a 130 g mouse (a V-shape across mouse weights). It is about wrist motion and muscle load, not aim time, so it
+doesn't refute F = m·a, but the slide must not say or imply that studies show lighter aims better. Brock's F9.26 asks
+for the argument from F = m·a, which this slide makes; keep it a physics argument.
+
+> b01 reply: Agreed, nothing to change: the slide cites no aim study and implies none; it is F = m a only (OpenStax for the carts).
+
+## CRITIC (R), 2026-11-06 08:44 (machine clock), build 0829 (your file as of ~08:27): b01_compromise
+Frames: /home/claude/work/r/shots/cp1/10_b01_compromise_{0,0.6,3.6,9}.png; sheet /home/claude/work/r/sheets/b01_compromise_A.jpg;
+phone /home/claude/work/r/sheets/b01_compromise_phone.png. Reply under each finding (FIXED / WHY NOT).
+
+Good, keep it: the hook is right (header on, the X3 already tipping a balance at t = 0, its red 59.0 g); one trade a
+second, each caused by something you can see; the ledger fills as you go; Theseus lands big and blue, "Gives up nothing",
+with its six answers; one precision for every weight. It reads at phone size.
+
+**R-b01-1 (must, b01_compromise): "Half a shell" overclaims.** Settled frame (9 s), the X2F row, and its 1 s beat. The X2F
+is 87.5 mm against the X2 family's 120 mm (B01_X2F, b01X2Trace): the cut takes 32.5 mm, 27 % of the length, not half
+(your own comment says "its back half comes away"). Change the figure to the true one, e.g. THE SHAPE "Cut to 87.5 mm",
+so it pairs with Theseus's "Full, 119.3 mm". The cut animation at 87.5 mm is right; only the words are wrong.
+
+
+> b01 reply: FIXED. The X2F's figure is now "Cut to 87.5 mm" (stage and ledger row), paired with Theseus's "Full, 119.3 mm"; also logged in PROGRESS.md "Models and conventions checked" #12.
+
+**R-b01-2 (must, b01_compromise): Theseus's "0 %" to its clicks contradicts b03.** Settled frame, left list "TO ITS CLICKS
+0 %" and the blue ledger answer. b03_switch derives Theseus's switch drain as 0.35 % (a strobed pull-up, 3 µA a switch,
+B03.mechShare) and prints it 17.6 % → 0.4 %. Print 0.4 % here too (one precision with 17.6 %, never rounded in Theseus's
+favour), ideally from B03 so the two can't drift.
+
+
+> b01 reply: FIXED. Theseus's answer is now 0.4 % in the answers column and the ledger's answer, from b01_mechPct(): b03's B03.mechShare read at draw time (30-b03 loads after my file), printed as b03_switch prints it (to 0.1 %, rounded up), with a fallback of the same derivation if B03 is absent. The label is "Spent on clicks".
+
+**R-b01-3 (should): name the counterweight on frame one.** t = 0 and 0.6: the 29.3 g mouse on the right pan is an
+unlabelled grey outline; a first-time viewer can't tell what it is. Put "Theseus" under its 29.3 g in C.heroText and draw
+its outline blue (blue is Theseus), so the hook reads "59.0 g against Theseus's 29.3 g".
+
+
+> b01 reply: FIXED. The right pan's mouse is drawn in Theseus's blue (shell lit) with "29.3 g" in C.heroText and "Theseus" under it, from frame one.
+
+**R-b01-4 (should): battery hours need their polling rate.** HTS Ultra 8K "80 h" is G-Wolves' claim at 1000 Hz
+(b01TpuHtsU) and Theseus's 200 h is derived at 1 khz; the slide shows neither condition. Write "at 1 khz" in the BATTERY
+LIFE head (one condition for both), so nobody sets it against b09_life's 8 khz hours.
+
+
+> b01 reply: FIXED. The trade reads "Battery life at 1 khz" (stage head and ledger head) and Theseus's answer row reads "Battery life at 1 khz: 200 h".
+
+**R-b01-5 (should): the ULX claim needs its model and its source on the slide.** "ULX: Flexes, creaks" rests on RTINGS's
+ULX Pro Series (b01RtUlx); b05's sources say Finalmouse's newer ULX Competition has "solid sides" and "less flex"
+(b05Peri) and TechPowerUp's flex note is for the first batches (b05TpuUlx). Write "ULX Pro Series" in the row and put
+RTINGS on it (today the foot line names RTINGS only as a scale). Check that 38.0 g and $189 belong to that model (your
+line 101 says RTINGS doesn't say which ULX size it weighed).
+
+
+> b01 reply: PARTLY FIXED. Read RTINGS's compare page (ULX Pro Series vs UltralightX Competition): the creaking is RTINGS's finding on the UltralightX Competition ("noticeable flexibility, popping, and creaking in the body"); the Pro Series had "a mushy button feel". So the row is now "Finalmouse UltralightX" (RTINGS's review title, 38.0 g its Default Weight; $189 is the UltralightX launch price, Notebookcheck 2023), and the foot line now carries RTINGS's words. SRC.b01RtUlx rewritten with both quotes and a note that Finalmouse's later ULX Competition is reported stiffer (b05Peri). Open: whether RTINGS's 38.0 g unit is the Competition and its size; asked of Q1 (REQUESTS.md). WHY NOT "ULX Pro Series": RTINGS's creak finding is not about that model.
+
+**R-b01-6 (should): the Viper V4 Pro's share is a derivation with a stand-in switch: say "Derived".** The 0829 build
+printed 18 % in the row and the foot line (your source now says 17.6 %: re-check it lands). The foot line must read
+"17.6 %, derived: Omron D2FP's test pulse ..." (common.md: only derivations say Derived), because Razer's own switch
+current is unpublished. Keep it byte-identical to b03_switch's figure and wording.
+
+
+> b01 reply: FIXED. The foot line now reads "17.6 % and 0.4 %, derived: two optical switches at Omron's datasheet drive (5 mA for 30 µs each 1 ms) on a Viper V4 Pro's 306 mAh over 180 h at 1 khz; a mechanical read, about 3 µA", b03_switch's foot wording verbatim after "derived:".
+
+**R-b01-7 (could):** "TO ITS CLICKS" / "BATTERY, TO ITS CLICKS" reads oddly; "Battery spent on clicks" says it. The ULX
+is drawn with Theseus's simplified side view; an outline of its own (EloShapes) would be truer, but it's a 1 s beat.
+
+> b01 reply: FIXED (words): the trade is "Battery spent on clicks" and Theseus's row "Spent on clicks". The outline point (F9): the ULX beat still uses the kit's simplified side view; a mouseRival() helper would be the kit's (noted for the integrator).
+
+Film-level (also in FILM.md): this slide's six flagship trades are a different ledger from the kit's chapter LEDGER that
+every chapter card carries. Proposal in FILM.md (F1).
+
+
+- 08:56 RESEARCH: INT b01_compromise rival lines checked (X3 Superstrike, V4 Pro, ULX, XA25 hold as printed; MUST: X2F 29.5 g has no source, show Pulsar's claimed 29 g ± 2 g; SHOULD: HTS Ultra pairs the Standard's $119 with a 31 g that is probably TechPowerUp's $149 unit; ULX's flex quote is about the later ULX Competition) filled, see research/FILLS.md
+- 08:59 RESEARCH: INT-0855 finger masses filled (index+middle distal+middle phalanges about 25 g, Mirakhorlo 2016; with them the lighter-mouse time ratio is 0.65, about 188 to 122 ms, not half: the 132 to 66 ms verdict is the mouse's own inertia only and needs that in its label; measured gains are about 4 %, Conroy 2022), see research/FILLS.md
+- 09:00 RESEARCH: b01-1 Viper Mini SE filled ($279.99 confirmed but launched Feb 2023, not 2022; up to 60 h HyperSpeed, ~119 x 62 x 39 mm, Razer claims), see research/FILLS.md
+- 09:00 RESEARCH: b01-2 X3 Superstrike dims resolved (125.0 x 63.5 x 40.0 per Logitech via LDLC; ProSettings is the outlier); no scale weight, no mAh published, see research/FILLS.md
+- 09:00 RESEARCH: b01-3 X2F: no independent scale weight exists; MUST show Pulsar's 29 g ± 2 g (claim) instead of 29.5 g, see research/FILLS.md
+- 09:00 RESEARCH: b01-5 HTS Plus Pro 8K: no independent weight found (MaxGaming lists 27.7 g; G-Wolves ~28 g), keep as claim, see research/FILLS.md
+- 09:00 RESEARCH: b01-6 Sora V2 80-90 h (retailer, self-contradicting; Ninjutso page unreachable); Sora V3: Ninjutso says 'up to 3 weeks', '3x longer than V2', no hours, see research/FILLS.md
+- 09:00 RESEARCH: b01-7 M2K filled (EUR 299; Zaunkoenig claims 24 g, TechPowerUp scale ~23 g ± 1; wired; dims: length 79 mm only), see research/FILLS.md
+- 09:00 RESEARCH: b01-12 X2 length filled (Pulsar X2 V2 medium 120.4 x 63 x 38 mm, maker), see research/FILLS.md
+- 09:08 RESEARCH: b01-10 filled (Finalmouse's rig, press start to packet, includes pre-travel: OP1 8K V2 mechanical 5.7 ms; Starlight X 2.0, X2 Superstrike 3.0, V4 Pro 7.5; maker's own test); b01-11: one review claims '200 h at 1 khz' for the Starlight X, unattributed, don't use, see research/FILLS.md
+- 09:08 RESEARCH: b01-9 size-weight filled (no data at 29 g or 1.76x; measured 24 to 34 % lighter at 18.6x volume, 200 g, Wolf 2018; derived roughly a tenth lighter at 1.76x, label it Derived), see research/FILLS.md
+- 09:10 RESEARCH: RTINGS ULX variant: RTINGS unreadable here, but TechPowerUp's medium (Lion) UltralightX, $189, ~38 g ± 1 on its scale settles the row; re-tag the weight TechPowerUp; b01-4 EloShapes not fillable (client-side), see research/FILLS.md
+- 09:11 RESEARCH: battery mAh part 1 (Viper V3 Pro 306 mAh 3.87 V; GPX2 290 mAh 3.8 V, TechPowerUp); V4 Pro row check: Logitech's own optical-only vs hybrid hours (96 vs 104 h at 1 khz) put full-time optics at about 0.23 mA, i.e. about 13.7 % of a V4 Pro's draw against the derived 17.6 %, see research/FILLS.md
+
+- 09:13 RESEARCH: R ULX Competition build: RTINGS (creak) and Periview/Finalmouse (solid sides, less flex) conflict, owners split; keep 'flexes, creaks' tagged as RTINGS' unit; battery mAh part 2: DA V4 Pro and EC2-DW mAh not published, see research/FILLS.md
+- 09:15 RESEARCH: battery mAh part 3: Keychron G3 500 mAh (140 h at 1 khz, 37 h at 8 khz, Keychron), see research/FILLS.md
+- 09:18 RESEARCH: b01-8/b01-13 flick speeds not found; derived bound peak about 0.26 m/s for a 5.6 cm target switch (Donovan 2022 + NVIDIA 2022), so 0.5 m/s is about twice that; times scale with v, the ratio does not, see research/FILLS.md
+- 09:21 RESEARCH: b01-3 addendum: Japanese sources also have no measured X2F weight (Gaming-ST: Pulsar's 29 g ± 2 g vs old X2F ~38 g ± 1; launched 2026-09-28); keep the MUST (show 29 g, claim), see research/FILLS.md
+
+> b01 reply to the RESEARCH lines and BROADCAST-0930/0945 (09:40 build):
+> - X2F weight (MUST): FIXED everywhere: Pulsar's claim, 29.0 g (± 2 in the foot lines); density 0.171 (rounded down), the
+>   density verdict 0.171 → 0.099 (−42 %); the rank now reads Theseus 12th by weight (the X2F at 29.0 g is lighter), 2nd by
+>   density; Brock's "at least 29.5 g" goes to him as a question.
+> - HTS Ultra 8K: FIXED: one unit, TechPowerUp's ($149 in its spec table, its scale's 31 g ± 1).
+> - UltralightX: FIXED: one model, TechPowerUp's 2023 UltralightX (medium): $189, 38 g ± 1 on its scale, and its own build
+>   finding ("minor creaking and significant flexing of the shell"); RTINGS's Competition quote is off the row and its sources.
+> - V4 Pro click share: FIXED: 13.6 % (Logitech's own 96 h against 104 h on the G Pro X Superlight 2, 290 mAh, on the V4 Pro's
+>   1.70 mA), printed rounded down; B01_TRADES' fig feeds the cards (ledgerFlag reads "13.6 % of its battery to its clicks").
+> - Viper Mini SE: FIXED (launched February 2023, KitGuru), used on b01_price.
+> - Battery on one basis (BROADCAST-0930 #3): FIXED: rings now put every known battery at the V4 Pro's draw, the same basis as
+>   Theseus's 200 h; the verdict is 141 → 200 h (under 32 g, same draw, +41 %); the foot line says the 200 h is computed at the
+>   V4 Pro's whole draw, optical switches and wheel included.
+> - Finger masses: used: "With your fingertips too: at least 28 % less" (up to 45 g, Mirakhorlo 2016, derived) on b01_lighter.
+> - Size-weight: used on b01_illusion (Wolf 2018 measured 161 g against 211 g; "roughly a tenth lighter", derived).
+> - Flick speed (0.26 m/s bound): the times on b01_lighter are labelled with their 0.5 m/s and 0.54 N; only the ratio is
+>   claimed (the verdict's net and "half the force").
+> - F1 (one ledger): b01_compromise now ends by folding its six trades into the eight-chapter strip (X3 and HTS → Weight, V4
+>   Pro → Clicks, UltralightX → Shell, X2F → Shape, XA25 → Electronics; Glide, Surface, Ownership red as "most mice").
+
+## KIT (K, shared code), 2026-11-06 09:58: mouseRival has landed (FILM F9, your R-b01 reply "a mouseRival() helper would be the kit's")
+`mouseRival(view, o)` / `rivalFit(box, view, o)` / `rvBox` / `rvAt` are in the snapshot (KIT.md §3 "The rival mouse"): a
+neutral rounded mouse in the rival grey, sized from `dims: [L, W, H]`, in mouseSimple's frames (same `part(..., { rot })`
+calls). **Must:** every mouse that isn't Theseus switches to it; Theseus's own answers (`hero`, `b01_bigTheseus`, the blue
+counterweight) stay on mouseSimple. The places, by function:
+- `b01_tradeIcon` (non-hero branches): `weight` and `flex` (side, 'right'), `battery`, `optical`, `wire` (top, rotated):
+  `mouseRival(view, { dims, lw: 1.6 })` with each flagship's sourced dims. `half` keeps your traced X2F outline.
+- `b01_bigWeight` (the left pan's mouse), `b01_bigBattery`, `b01_bigOptical`, `b01_bigFlex`, `b01_bigWire`: the same.
+- The battery that empties: `rvBox('top', 'battery', { dims })` in place of `MS_BATTERY` (draw the red fill yourself, in the
+  same part()); the optical switches: `rvAt('top', 'switchL' | 'switchR', { dims })` in place of `[[-11, -34], [11, -34]]`;
+  the source of the current: `rvAt('top', 'battery', { dims })`; the cable: the nose is `rvAt('top', 'cable', { dims })`
+  (with `rot: PI/2` the stage x is `mx + dims[0] / 2 * sm`) instead of `-KEY.nose * MS_K.y`.
+- The ULX's bow: `const m = mouseRival('right', { dims })` inside the part, then bow `m.pts` (the outline in mm, the same
+  frame) where you bow `MS_SIDE` now; its hump is `rvAt('right', 'hump', { dims })`.
+- Check also b01_lighter's two flick mice and b01_battery's right-hand mouse before it turns blue: if one stands for a rival
+  (or "most mice"), use mouseRival; if both are Theseus at two weights, keep them.
+Colour: grey by default; `col: 'rival'` only for the one rival a slide names and beats; your red stays on the fault you draw
+(the battery fill, the bowed stretch), not on the body.
+
+> P3 reply (polish, build p3 10:45): FIXED, every place listed. Rivals read their dims from the data (b01_dims: EloShapes'
+> makers' figures via mice.json, or B01_MICE): X3 125 × 63.5 × 40, HTS Ultra 8K 113 × 61 × 40, V4 Pro 127.1 × 63.9 × 39.9,
+> UltralightX 121.3 × 62 × 37, XA25 116.8 × 63 × 36.3.
+> - b01_tradeIcon: weight / flex (side 'right') and battery / optical / wire (top, rot π/2) are mouseRival({ dims, lw: 1.6 }),
+>   grey; the battery's red fill and outline sit in the rival's battery (rvBox less its 6 mm margin); the switches are red
+>   bodies at rvAt switchL / switchR at the kit's switch size (RV_AT.swS), the current running from the rival's battery; the
+>   cable leaves rvAt('top', 'cable'). `half` keeps the traced X2F outline, now in the rival grey (rvCols) like the rest.
+> - b01_bigWeight's left pan, bigBattery, bigOptical, bigFlex (the bow on the rival's own top line from m.pts, its hump from
+>   rvAt), bigWire: the same. Theseus's counterweight, bigTheseus and the 'theseus' icon stay mouseSimple in blue.
+> - b01_lighter: the X3 lane is mouseRival at its own dims with col 'rival' (the slide's one named rival, already yellow in its
+>   name and bar), the dashed overshoot ghost too; the force arrows use each mouse's own box. Theseus's lane unchanged.
+> - b01_battery: the right-hand mouse is the rival along the frontier, sized from the V4 Pro's dims at the start to the HTX
+>   Mini 8K's at the end (quantised 0.25 mm, so the kit's cache holds ~70 outlines at most), and cross-fades to Theseus's
+>   simplified mouse as Theseus lands; its battery moves from the rival's place to Theseus's. The weight readout now starts
+>   counting when the name turns to Theseus (it ran 0.2 s early under "HTX Mini 8K").
+> - Also: "A firm press" on the ULX beat is now "Pressed at the top" (BROADCAST-0945 #3; TechPowerUp's own finding).
+> errs ok (9 times on compromise), qa clean at settle and mid on all three; frames /home/claude/work/p3/shots/rv_sheet.jpg,
+> rv_detail.png, rv_detail2.png.
+
+> b01 reply (10:15 build) to the newer findings:
+> - R-b01-11: FIXED (09:30): the rings now place every known battery at the Viper V4 Pro's draw (the basis of Theseus's
+>   200 h): X2F 118 h, 250 mAh mice 141 h, Beast X 169 h; the verdict is on that one basis, 141 → 200 h (under 32 g, the best
+>   battery at the same draw, rounded up against Theseus): +41 %; the foot line says the 200 h is at the V4 Pro's whole draw.
+> - M-b01-4: FIXED: the battery block reads "8 g, listed" and the foot line says the distributor lists it to the gram, so
+>   the shell's share is good to about ± 0.5 g; the shell reads "About 9.3 g" (F44.2's side switches now come out of it).
+> - M-b01-6: FIXED: the code comment and the slide say "estimate at the Viper V4 Pro's draw" ("Battery at the same draw"
+>   in the legend); nothing calls it a bound.
+> - M-b01-7: FIXED on my slides: the budget prints "370 mAh, 208 h at 1 khz (derived), the 200 h target covered"; the
+>   battery slide's foot line says 208 h shown as 200. The 8 khz choice is b09/b10's (BROADCAST-0930 picked Razer's 45 h).
+> - M-b01-8: for b05 to b07; the integrator has the new allowance (about 9.35 g, F44.2).
+> - M-b01-5: note the X2F is now at Pulsar's 29.0 g (research MUST): 0.171 g/cm³, −42 %.
+
+## KIT (K, shared code), 2026-11-06 10:31: verdict changes that touch your slides
+- `verdict` now keeps a row inside `maxW` by setting it smaller (KIT.md §4, 10:30). b01_density's row ran 30 px past the
+  right margin (its maxW 520 from x 1330 ends at 1850, RM is 1840); it is now 520 px, so it still ends 10 px past RM. **Should:**
+  pass `maxW: RM - x` (510) there.
+- A space before `%` in every verdict now ("13.6 %"). Write it the same way in your own strings.
+
+> P3 reply (10:50): FIXED: b01_density's verdict takes `maxW: RM - RX` (510); b01_price and b01_targets had the same 1330 + 520
+> overrun and now take `RM - 1330`. My own strings already write " %"; the only "%" without a space are inside quoted sources
+> ("+50% battery life", Razer's "99.8% resolution accuracy"), kept verbatim. errs ok, qa clean at settle on all three.

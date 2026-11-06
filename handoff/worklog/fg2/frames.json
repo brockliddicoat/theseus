@@ -1,0 +1,90 @@
+{
+"b01_compromise": {
+"t": 3.5,
+"press": 1
+},
+"b02_cutouts": {
+"t": 5.5,
+"press": 0.9999999965084031
+},
+"b02_seams": {
+"t": 2.5,
+"press": 0.9999999999999991
+},
+"b02_flush": {
+"t": 2.5,
+"press": 0.599999957921641
+},
+"b02_direct": {
+"t": 6,
+"press": 1
+},
+"b02_rails": {
+"t": 2.5,
+"press": 0.9999996286942451
+},
+"b03_debounce": {
+"t": 0,
+"press": 1
+},
+"b03_side": {
+"t": 2,
+"press": 0.9999101227403604
+},
+"b05_material": {
+"t": 2.5,
+"press": 1
+},
+"b05_cubed": {
+"t": 2,
+"press": 1
+},
+"b05_nopick": {
+"t": 3.5,
+"press": 1
+},
+"b05_hotspot": {
+"t": 1,
+"press": 1
+},
+"b06_lattice": {
+"t": 0.5,
+"press": 1
+},
+"b06_light": {
+"t": 1,
+"press": 1
+},
+"b06_arch": {
+"t": 1,
+"press": 1
+},
+"b06_thrust": {
+"t": 6,
+"press": 1
+},
+"b12_latopt": {
+"t": 1,
+"press": 0.9999999998261636
+},
+"b07_arms": {
+"t": 6,
+"press": 0.6
+},
+"b07_tolerance": {
+"t": 10.5,
+"press": 0.25
+},
+"b02_wedge": {
+"t": 4.5,
+"press": 0.9999999742003948
+},
+"b08_uv": {
+"t": 0,
+"press": 0.3
+},
+"b08_grip": {
+"t": 0,
+"press": 0.6
+}
+}

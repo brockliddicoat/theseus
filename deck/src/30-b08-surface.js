@@ -714,10 +714,11 @@ S({
         () => clipPiece(() => srf_macro(t, rf, box[0] + sx - 60, box[1] + sy - 120, box[2] + 120, box[3] + 240, { light, alpha: kd, vignette: true, r: 0 })),
         { rival: 'Grip tape', ly: box[1] + box[3] - 24 });
     }
-    /* the fingertip: from above before the push lands, then (seen through) its print where it touches */
-    const home = P(cxm, cym), fa = 1 - ep(t, 1.3, 1.7);
-    if (fa > 0.003) clipped(box[0], box[1], box[2], box[3], () => finger(home[0], home[1], -Math.PI / 2, { s, view: 'top', press: 0.6, alpha: fa }));
+    /* the fingertip from above, to scale (F52.1), on its print: solid until the push lands, then seen through (the kit's
+       ghost) so the print under it shows and stays a fingertip's; it travels with the print when the print slides */
     const pc = P(cxm + st.off[0], cym + st.off[1]), kp = ep(t, 1.25, 1.6), halo = { glow: 'rgba(0,0,0,0.95)', glowR: 12 };
+    const tip = () => clipped(box[0], box[1], box[2], box[3], () => finger(pc[0], pc[1], -Math.PI / 2, { s, view: 'top', press: 0.6, ghost: 0.8 * ep(t, 1.3, 1.7) }));
+    if (kp <= 0.003) tip();
     if (kp > 0.003) {
       const m = st.act, hold = m && m.hold, ang = m ? m.ang : 0, k = st.k, ux = Math.cos(ang), uy = Math.sin(ang);
       /* a sliding print leaves a short trail on the still surface behind it */
@@ -730,6 +731,7 @@ S({
       /* the skin shears toward a pull it resists; a sliding print smears */
       const shear = hold ? [ux * 10 * k, uy * 10 * k] : [0, 0];
       b08_print(pc[0], pc[1], R, { a: kp, rot: 0.06, shear, slide: m && !hold ? Math.sin(Math.PI * clamp(k)) : 0, dir: ang });
+      tip();
       if (m) {
         const ka = ep(t, m.t, m.t + 0.12) * (1 - ep(t, m.t + 0.72, m.t + 0.86)), L = G0.pull * G0.pxN;
         /* the pull: a force arrow from the fingertip, the way the finger pulls */
@@ -846,7 +848,7 @@ S({
     ['F2.14 "grip in exactly the right places in exactly the right directions"', 'Each zone is etched across the slip it must stop: the pull on the buttons, the lift on the sides, smooth under the palm; each named on the map'],
     ['F21.9 (he wants to see the map before deciding it)', 'Labelled as the proposed map, to be tuned on hands; the question is in the report'],
     ['(why texture at all: a sweaty hand)', 'A plain stat under the side view, from Derler 2012 (skin on glass, wet): smooth 0.61, rough 1.43 grip per newton of squeeze; sweat floats skin on smooth, and roughness keeps it gripping'],
-    ['(problem first, G1)', 'The problem is the naive etch, the button\'s ridges run one way over the whole grip: down the sides they run up and down, and at the same 0.30 N squeeze the lift slips; the laser turns them across the lift and the same squeeze holds. One-way ridges are Theseus\'s own simpler etch, so the payoff is two plain stats, nothing struck (R3-b08-1): least squeeze to lift 0.327 against 0.285 N a side, 12 % less (derived from Zhang 2017)']
+    ['(problem first, G1)', 'The problem is the naive etch, the button\'s ridges run one way over the whole grip: down the sides they run up and down, and at the same 0.30 N squeeze the lift slips; the laser turns them across the lift and the same squeeze holds. One-way ridges are Theseus\'s own simpler etch, so the payoff is two plain stats, nothing struck (R3-b08-1): least squeeze to lift 0.33 against 0.29 N a side (0.327 and 0.285 to two decimals, the map\'s rounded up), 12 % less (derived from Zhang 2017)']
   ],
   draw: t => {
     header(t, 'A grip map for the hand');
@@ -945,16 +947,19 @@ S({
       [['Ridges', 0.08], ['Dashes', 0.38], ['Dots', 0.62], ['Smooth', 0.9]].forEach(([nm, f], i) => text(nm, sx + sw * f, sy + sh + 30, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: stagger(t, 4.0, i, 0.15, 0.4) }));
     }
     /* two plain stats, not a struck verdict (R3-b08-1; the film's grammar, common.md 11:20): ridges one way are Theseus's own
-       simpler etch, so nothing is struck. Three decimals, so neither rounds our way (0.327 and 0.285 N; the old 0.33 → 0.28 did
-       both); the net from the true values, rounded toward zero (12.8 % → 12 %) */
+       simpler etch, so nothing is struck. Two decimals (R3's could: a modelled figure reads better so): the map rounded up
+       (lower is better, so against it), the one-way ridges to the nearest unless that would show a wider gap than the true
+       one (0.33 and 0.29 N: a 0.04 N gap shown against 0.042 true; the old 0.33 → 0.28 widened it); the net from the true
+       values, rounded toward zero (12.8 % → 12 %) */
+    const mapS = Math.ceil(LF.map * 100 - 1e-9) / 100, oneN = Math.round(LF.one * 100) / 100, oneS = oneN - mapS > LF.one - LF.map + 1e-9 ? Math.floor(LF.one * 100 + 1e-9) / 100 : oneN;
     { const a1 = ep(t, 6.6, 7.0), a2 = ep(t, 7.1, 7.6), dy = k => (1 - E.out3(k)) * 14, less = Math.floor((1 - LF.map / LF.one) * 100 + 1e-9);
       text('Least squeeze to lift, per side (lower is better)', rx, 616, { role: 'label', size: 21, color: C.mute, alpha: a1, maxW: RM - rx });
       G.save(); G.translate(0, dy(a1));
-      rich([{ s: fmtN(LF.one, 3), role: 'd1', size: 60, weight: 800, color: C.ink2, tnum: true }, { s: 'N', font: 'sans', size: 24, weight: 650, color: C.mute, gap: 8 }], rx, 692, { alpha: a1 });
+      rich([{ s: fmtN(oneS, 2), role: 'd1', size: 60, weight: 800, color: C.ink2, tnum: true }, { s: 'N', font: 'sans', size: 24, weight: 650, color: C.mute, gap: 8 }], rx, 692, { alpha: a1 });
       text('Ridges one way', rx + 220, 684, { role: 'small', size: 23, weight: 700, color: C.ink2, alpha: a1 });
       G.restore();
       G.save(); G.translate(0, dy(a2));
-      const wM = rich([{ s: fmtN(LF.map, 3), role: 'd1', size: 88, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: 'N', font: 'sans', size: 30, weight: 650, color: C.mute, gap: 10 }], rx, 806, { alpha: a2 }).w || 270;
+      const wM = rich([{ s: fmtN(mapS, 2), role: 'd1', size: 88, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: 'N', font: 'sans', size: 30, weight: 650, color: C.mute, gap: 10 }], rx, 806, { alpha: a2 }).w || 270;
       text('The map', rx + wM + 22, 772, { role: 'small', size: 23, weight: 700, color: C.heroText, alpha: a2 });
       text(less + ' % less squeeze', rx + wM + 22, 804, { role: 'small', size: 23, weight: 700, color: C.heroText, alpha: a2 });
       G.restore(); }
@@ -1280,18 +1285,34 @@ S({
    added, no glue, no edge; the fingertip slides back across with no step. */
 const B08T = { box: [LM, 300, 1100, 600], s: 150, slide1: [0.6, 2.0], age: [2.2, 3.4], tags: [1.5, 2.6, 2.9], tagsOut: [4.0, 4.4], new03: [4.4, 4.9], thin1: [4.4, 5.2], thin2: [5.6, 6.4], slide2: [6.6, 7.8], verdict: 7.8 };
 /** a fingertip in section, its front end at x1 (stage px): skin with papillary ridges along the underside, which rests on
-   the highest surface beneath it (a step drops it), the front rounding up. o = { a, s, top(x), x0, ridge (mm) } */
+   the highest surface beneath it (a step drops it). The front is the kit's own pad profile (fingerPad, F52.1: the pad's
+   height u mm back from the tip), pressed o.sink mm onto the surface (0.2: a light touch, about a 7 mm contact), so it
+   rounds up over about 5 mm as a real fingertip does. o = { a, s, top(x), x0, ridge (mm), sink (mm) } */
+const B08_TIP_SINK = 0.2;
+/** how far back from the tip the pad meets the surface, mm, at that sink (where fingerPad falls to it) */
+const B08_TIP_REACH = {};
+function b08_tipReach(sink = B08_TIP_SINK) { if (B08_TIP_REACH[sink] == null) { let u = 0; while (u < 12 && fingerPad(u) > sink) u += 0.01; B08_TIP_REACH[sink] = u; } return B08_TIP_REACH[sink]; }
 function b08_tip(x1, o = {}) {
   const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
-  const s = o.s || 150, sp = (o.ridge || 0.45) * s, amp = Math.min(0.06 * s, 10), x0 = o.x0, R = 1.6 * s, top = o.top, N = Math.ceil((x1 - x0) / 3);
-  const pts = [];
+  const s = o.s || 150, sp = (o.ridge || 0.45) * s, amp = Math.min(0.06 * s, 10), x0 = o.x0, top = o.top, sink = o.sink == null ? B08_TIP_SINK : o.sink, N = Math.ceil((x1 - x0) / 3);
+  /* where the pad meets the surface, and the level its lifted front hangs from: the surface under the contact's front end,
+     averaged over its last millimetre, so the front drops with the pad as the contact crosses a step (not in one frame) */
+  const xc = x1 - b08_tipReach(sink) * s; let mc = 0, nc = 0; for (let d = -s; d <= 0; d += 5) { mc += top(xc + d); nc++; } mc /= nc;
+  const base = [];
   for (let i = 0; i <= N; i++) {
-    const xx = x0 + i * 3; let m = Infinity; for (let d = -sp * 0.5; d <= sp * 0.5; d += 6) m = Math.min(m, top(xx + d));
-    const fr = Math.max(0, xx - (x1 - R)), up = R - Math.sqrt(Math.max(0, R * R - fr * fr));     /* the front rounds up */
-    pts.push([xx, m - up - amp * (0.5 - 0.5 * Math.cos((xx - x0) / sp * TAU))]);
+    const xx = Math.min(x0 + i * 3, x1); let m = Infinity; for (let d = -sp * 0.5; d <= sp * 0.5; d += 6) m = Math.min(m, top(xx + d));
+    const up = Math.max(0, fingerPad((x1 - xx) / s) - sink) * s;     /* the kit's pad, pressed sink mm flat */
+    base.push([xx, up > 0 ? Math.min(m, mc - up) : m]);               /* in contact it rests on the surface; lifted, it hangs, never through */
   }
+  /* the papillary ridges along the skin (crests on the line, valleys up into the pad), spaced along the curve */
+  let arc = 0;
+  const pts = base.map((p, i) => {
+    if (i) arc += Math.hypot(p[0] - base[i - 1][0], p[1] - base[i - 1][1]);
+    const q = base[Math.min(i + 1, N)], r = base[Math.max(i - 1, 0)], tx = q[0] - r[0], ty = q[1] - r[1], tl = Math.hypot(tx, ty) || 1, k = amp * (0.5 - 0.5 * Math.cos(arc / sp * TAU));
+    return [p[0] + ty / tl * k, p[1] - tx / tl * k];
+  });
   G.save(); G.globalAlpha = a;
-  G.beginPath(); G.moveTo(pts[0][0], pts[0][1] - 4 * s); pts.forEach(p => G.lineTo(p[0], p[1])); G.lineTo(x1, pts[N][1] - R); G.lineTo(x1, pts[N][1] - 4 * s); G.closePath();
+  G.beginPath(); G.moveTo(pts[0][0], pts[0][1] - 8 * s); pts.forEach(p => G.lineTo(p[0], p[1])); G.lineTo(x1, pts[N][1] - 8 * s); G.closePath();
   G.fillStyle = TH ? '#C8C8C8' : '#5E5E5E'; G.fill();
   G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.strokeStyle = TH ? 'rgba(40,40,40,0.6)' : 'rgba(229,229,229,0.45)'; G.lineWidth = 1.5; G.stroke();
   G.restore();
@@ -1304,7 +1325,7 @@ S({
     ['"the best thickness is no thickness"', 'His line is the title, and the payoff: added for grip, 0.5 mm of tape → 0 mm, the grip cut into the coat that is there anyway'],
     ['"people have been chasing really thin grip tape for a while now"', 'The chase is on screen: 0.5 mm tapes (Lizard Skins DSP, Pulsar SuperGrip), then 0.3 mm (TalonGames PU-0, Keychron), each a thinner sheet still on glue with an edge'],
     ['"this is a better solution"', 'Shown on the same fingertip: the tape\'s edge is a step it drops off; after the etch it slides across the same place with no step'],
-    ['(R2-b08-5) where is this?', 'From frame one: "Fingertip, in section" and "Grip tape on its glue" named on the drawing, and the kit\'s locator under it, the left button from the side; at 150 px a mm the fingertip\'s nail sits far above the box, so it reads by its name']
+    ['(R2-b08-5) where is this?', 'From frame one: "Fingertip, in section" and "Grip tape on its glue" named on the drawing, and the kit\'s locator under it, the left button from the side; at 150 px a mm the fingertip\'s nail sits far above the box, so it reads by its name'],
     ['F2.15 "doesn\'t need adhesives that wear down over time or collect gunk"', 'A month on: the glue creeps out of the cut edge (US 6,686,014), skin and lint stick to it, the edge lifts ("unpeeled after a month"); the etch has no glue and no edge']
   ],
   draw: t => {
@@ -1321,7 +1342,11 @@ S({
     let top = A.top;
     if (kN > 0.003) { G.save(); G.globalAlpha = kN; const B2 = b08_tapeSection(T0.box, { s: sc, base, mm, age: 0, edge: ex, t, etch }); G.restore(); if (kN > 0.5) top = B2.top; }
     /* the fingertip: slides right across the edge, rests, then (after the etch) slides back across where the edge was */
-    const x1 = t < T0.slide2[0] ? lerp(bx + bw * 0.34, bx + bw * 0.86, ep(t, T0.slide1[0], T0.slide1[1], E.io3)) : lerp(bx + bw * 0.86, bx + bw * 0.42, ep(t, T0.slide2[0], T0.slide2[1], E.io3));
+    /* the pad's contact (its front end, xc) starts on the tape, crosses the edge (1.5 mm past it) and, after the etch, comes
+       back across where the edge was; the fingertip's front rounds up b08_tipReach() mm ahead of it, so it leaves the box
+       on the right while the pad lies across the step */
+    const xc = t < T0.slide2[0] ? lerp(bx + bw * 0.12, ex + 1.5 * sc, ep(t, T0.slide1[0], T0.slide1[1], E.io3)) : lerp(ex + 1.5 * sc, bx + bw * 0.2, ep(t, T0.slide2[0], T0.slide2[1], E.io3));
+    const x1 = xc + b08_tipReach() * sc;
     clipped(bx, by, bw, bh, () => b08_tip(x1, { s: sc, top, x0: bx - 40 }));
     rrPath(bx, by, bw, bh, 6); G.strokeStyle = C.hair; G.lineWidth = 1.2; G.stroke();
     /* the layers named, quietly; and, from frame one, what the grey and the strip are (R2-b08-5: "where" at t = 0) */
@@ -1337,7 +1362,7 @@ S({
       if (t > T0.tags[0] && ko > 0.003) faultTag(t, T0.tags[0], [ex + 6, base - 0.55 * sc * 0.5], 'A step at the edge', { to: [tx, by + 60], side: 'r', alpha: ko });
       if (t > T0.tags[1] && ko > 0.003) faultTag(t, T0.tags[1], [ex - 60, base - (0.55 * sc) - 14], '"Unpeeled after a month"', { to: [tx, by + 170], side: 'r', alpha: ko });
       if (t > T0.tags[2] && ko > 0.003) faultTag(t, T0.tags[2], [ex + 22, base - 6], 'Glue creeps out, gunk sticks', { to: [tx, base + 20], side: 'r', alpha: ko }); }
-    if (t > T0.slide2[1] - 0.3) fixTag(t, T0.slide2[1] - 0.3, [ex, base - 0.019 * sc], 'No step, no glue', { to: [ex + 120, by + 60], side: 'r' });
+    if (t > T0.slide2[1] - 0.3) fixTag(t, T0.slide2[1] - 0.3, [ex, base - 0.019 * sc], 'No step, no glue', { to: [bx + bw - 225, base - 118], side: 'r' });   /* in the clear wedge under the fingertip's rising front */
     /* the right column: the chase, then the payoff */
     const rx = 1240, kc = ep(t, 4.5, 4.9);
     if (kc > 0.003) {

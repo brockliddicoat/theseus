@@ -1,0 +1,162 @@
+[
+ {
+  "kind": "tri",
+  "a": 10,
+  "t": 0.991,
+  "g": 0.4606,
+  "flex_um": 56.9,
+  "use": 0.0766,
+  "buckleN": 344.5,
+  "mech": false
+ },
+ {
+  "kind": "tri",
+  "a": 12,
+  "t": 1,
+  "g": 0.4606,
+  "flex_um": 45.9,
+  "use": 0.0639,
+  "buckleN": 291.6,
+  "mech": false
+ },
+ {
+  "kind": "tri",
+  "a": 15,
+  "t": 1.013,
+  "g": 0.4606,
+  "flex_um": 31.2,
+  "use": 0.0477,
+  "buckleN": 251.3,
+  "mech": false
+ },
+ {
+  "kind": "tri",
+  "a": 20,
+  "t": 1.036,
+  "g": 0.4606,
+  "flex_um": 25.5,
+  "use": 0.0365,
+  "buckleN": 183.2,
+  "mech": false
+ },
+ {
+  "kind": "diamond",
+  "a": 10,
+  "t": 0.787,
+  "g": 0.4606,
+  "flex_um": 62.5,
+  "use": 0.0832,
+  "buckleN": 253.5,
+  "mech": false
+ },
+ {
+  "kind": "diamond",
+  "a": 12,
+  "t": 0.787,
+  "g": 0.4606,
+  "flex_um": 68.3,
+  "use": 0.1057,
+  "buckleN": 215.6,
+  "mech": false
+ },
+ {
+  "kind": "diamond",
+  "a": 15,
+  "t": 0.787,
+  "g": 0.4606,
+  "flex_um": 143.1,
+  "use": 0.1476,
+  "buckleN": 176,
+  "mech": false
+ },
+ {
+  "kind": "diamond",
+  "a": 20,
+  "t": 0.787,
+  "g": 0.4606,
+  "flex_um": 70.4,
+  "use": 0.1312,
+  "buckleN": 118.1,
+  "mech": false
+ },
+ {
+  "kind": "square",
+  "a": 10,
+  "t": 1.2,
+  "g": 0.4606,
+  "flex_um": 409.1,
+  "use": 0.2328,
+  "buckleN": 584.4,
+  "mech": false
+ },
+ {
+  "kind": "square",
+  "a": 12,
+  "t": 1.188,
+  "g": 0.4606,
+  "flex_um": 527.7,
+  "use": 0.3097,
+  "buckleN": 512.6,
+  "mech": false
+ },
+ {
+  "kind": "square",
+  "a": 15,
+  "t": 1.169,
+  "g": 0.4606,
+  "flex_um": 829.6,
+  "use": 0.3249,
+  "buckleN": 394.9,
+  "mech": false
+ },
+ {
+  "kind": "square",
+  "a": 20,
+  "t": 1.14,
+  "g": 0.4606,
+  "flex_um": 1150.4,
+  "use": 0.4158,
+  "buckleN": 208,
+  "mech": false
+ },
+ {
+  "kind": "hex",
+  "a": 10,
+  "t": 1.274,
+  "g": 0.4606,
+  "flex_um": 234.7,
+  "use": 0.2622,
+  "buckleN": 940,
+  "mech": false
+ },
+ {
+  "kind": "hex",
+  "a": 12,
+  "t": 1.266,
+  "g": 0.4606,
+  "flex_um": 275.2,
+  "use": 0.2664,
+  "buckleN": 758.4,
+  "mech": false
+ },
+ {
+  "kind": "hex",
+  "a": 15,
+  "t": 1.254,
+  "g": 0.4606,
+  "flex_um": 254,
+  "use": 0.2793,
+  "buckleN": 614,
+  "mech": false
+ },
+ {
+  "kind": "hex",
+  "a": 20,
+  "t": 1.234,
+  "g": 0.4606,
+  "flex_um": 347.1,
+  "use": 0.2942,
+  "buckleN": 355.7,
+  "mech": false
+ }
+]
