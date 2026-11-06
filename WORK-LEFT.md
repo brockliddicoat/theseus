@@ -241,3 +241,5 @@ PROGRESS.md in the worklog (section 9 has its stop report).
   integrator's raw log (worklog/feedback-inbox.md); the archivist continues from the next F number.
 - Web search is capped at 200 calls per turn, shared by every agent; it resets only on a new message after a reply ends.
 - The machine has 2 CPUs: one browser at a time per agent; builds and renders are the bottleneck.
+- `deck/.snapshot/src` (what `build.py --own=<file>` uses for every other file) is not in git: recreate it with
+  `cp -r deck/src deck/.snapshot/` before the first agent builds. At the stop it was identical to deck/src.
