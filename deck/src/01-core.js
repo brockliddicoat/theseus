@@ -15,7 +15,10 @@ const W = 1920, H = 1080;
    The palette is the old vibrant one, pushed toward Apple's keynote colours (systemBlue, systemYellow, systemRed).
    Each chapter has one accent for its chrome (section label, chapter card, highlights in drawings). */
 let TH = 0;
-const PAPER = '#F7F6F2', NIGHT = '#0D0E0F';
+/* Brock, 2026-11-06 08:18: "some of the backgrounds i'm seeing still feel yellowish to me instead of gray, make sure that is
+   resolved". XBAB's #F7F6F2 and the old warm-grey ramps are gone: paper is Apple's light grey #F5F5F7, and every neutral on
+   both grounds is a true grey. warmGuard() below also turns any warm-tinted grey a drawing still asks for into a true grey. */
+const PAPER = '#F5F5F7', NIGHT = '#0D0E0F';
 /* Theseus's colour is a setting while Brock chooses: ?hue=blue | red | yellow (or THESEUS_HUE before the deck loads).
    Each hue brings its next best and its problem colour, so the three never collide: blue Theseus → yellow next best, red
    problems; red Theseus → yellow next best, problems in a flat grey; yellow Theseus (the deck's first) → blue next best,
@@ -24,7 +27,7 @@ const HUES = {
   blue: { hero: ['#0A6CFF', '#2F8CFF'], text: ['#0058D6', '#64B0FF'], grad: [['#1F9BFF', '#0A6CFF', '#3D4FE0'], ['#7AD4FF', '#2F8CFF', '#6A63FF']],
           second: ['#E3A800', '#FDC316'], secondText: ['#8F6A00', '#FDC316'], bad: ['#E5484D', '#E5484D'] },
   red: { hero: ['#D9343B', '#E5484D'], text: ['#C8292F', '#FF6369'], grad: [['#F2555A', '#D9343B', '#B81E3F'], ['#FF8A80', '#E5484D', '#D6336C']],
-         second: ['#E3A800', '#FDC316'], secondText: ['#8F6A00', '#FDC316'], bad: ['#8A8983', '#8E8D88'] },
+         second: ['#E3A800', '#FDC316'], secondText: ['#8F6A00', '#FDC316'], bad: ['#8A8A8F', '#8E8E93'] },
   yellow: { hero: ['#E3A800', '#FDC316'], text: ['#8F6A00', '#FDC316'], grad: [['#F2B600', '#D99000', '#C77700'], ['#FFE066', '#FDC316', '#FFAA00']],
             second: ['#0A6CFF', '#4F9BFF'], secondText: ['#0058D6', '#7AB4FF'], bad: ['#E5484D', '#E5484D'] }
 };
@@ -34,9 +37,42 @@ const HERO = HU.hero[1], HERO_P = HU.hero[0];   /* Theseus: the fill on night, t
 const YEL = '#FDC316';                         /* the deck's first yellow */
 const RAMP = {
   /*           ink        ink2       mute       faint      hair       track      panel      line                    comp       comp2    */
-  paper: ['#111111', '#2E2E2C', '#66655F', '#8A8983', '#DDDCD6', '#E7E6E1', '#FFFFFF', 'rgba(17,17,17,0.10)', '#B9B8B2', '#D3D2CC'],
-  night: ['#F3F2EE', '#CFCEC9', '#96958F', '#6E6D68', '#26272A', '#1F2023', '#151619', 'rgba(255,255,255,0.09)', '#55554F', '#3A3A37']
+  paper: ['#111111', '#2E2E30', '#66666B', '#8A8A8F', '#DCDCE0', '#E8E8EB', '#FFFFFF', 'rgba(17,17,17,0.10)', '#B8B8BC', '#D3D3D7'],
+  night: ['#F3F3F5', '#CECED2', '#96969B', '#6E6E73', '#26272A', '#1F2023', '#151619', 'rgba(255,255,255,0.09)', '#55555A', '#3A3A3E']
 };
+/* warmGuard: a grey with a warm (yellow) cast, asked for anywhere (old helpers, hard-coded hexes), is drawn as a true grey of
+   the same lightness. Colours with real hue (Theseus blue, the rival yellow, red, the heat ramp) are left alone: only
+   near-greys (channel spread ≤ 18) whose red sits above their blue are touched. Cached, so the cost per frame is a lookup. */
+(function warmGuard() {
+  if (typeof CanvasRenderingContext2D === 'undefined') return;
+  const cache = new Map();
+  function neutral(v) {
+    if (typeof v !== 'string') return v;
+    const hit = cache.get(v); if (hit !== undefined) return hit;
+    let out = v, r, g, b, a = null;
+    const s = v.trim().toLowerCase();
+    let m = /^#([0-9a-f]{3})$/.exec(s);
+    if (m) { r = parseInt(m[1][0] + m[1][0], 16); g = parseInt(m[1][1] + m[1][1], 16); b = parseInt(m[1][2] + m[1][2], 16); }
+    else if ((m = /^#([0-9a-f]{6})([0-9a-f]{2})?$/.exec(s))) { r = parseInt(m[1].slice(0, 2), 16); g = parseInt(m[1].slice(2, 4), 16); b = parseInt(m[1].slice(4, 6), 16); if (m[2]) a = parseInt(m[2], 16) / 255; }
+    else if ((m = /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/.exec(s))) { r = +m[1]; g = +m[2]; b = +m[3]; if (m[4] != null) a = +m[4]; }
+    if (r != null) {
+      const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+      if (mx - mn <= 18 && r - b >= 2 && mx > mn) {
+        const L = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+        out = a == null ? `rgb(${L},${L},${L})` : `rgba(${L},${L},${L},${a})`;
+      }
+    }
+    if (cache.size > 4000) cache.clear();
+    cache.set(v, out); return out;
+  }
+  const P = CanvasRenderingContext2D.prototype;
+  for (const prop of ['fillStyle', 'strokeStyle', 'shadowColor']) {
+    const d = Object.getOwnPropertyDescriptor(P, prop); if (!d || !d.set) continue;
+    Object.defineProperty(P, prop, { configurable: true, enumerable: d.enumerable, get() { return d.get.call(this); }, set(v) { d.set.call(this, neutral(v)); } });
+  }
+  if (typeof CanvasGradient !== 'undefined') { const add = CanvasGradient.prototype.addColorStop; CanvasGradient.prototype.addColorStop = function (o, c) { return add.call(this, o, neutral(c)); }; }
+  if (typeof window !== 'undefined') window.__neutral = neutral;
+})();
 const rampOf = i => (TH ? RAMP.paper : RAMP.night)[i];
 const C = {
   redL: '#EF7275', redD: '#B8383D',
@@ -71,7 +107,7 @@ Object.defineProperties(C, {
   comp2: { get: () => rampOf(9) },          /* a dimmed competitor (dominated, out of scope) */
   ref: { get: () => C.second },             /* the reference: the best one shipping today, the one to beat (yellow) */
   heroEdge: { get: () => 'rgba(0,0,0,0)' }, /* the old black edge round yellow bars on paper; blue needs none */
-  dot: { get: () => (TH ? 'rgba(17,17,17,0.30)' : 'rgba(243,242,238,0.30)') }, /* one sample in a chart */
+  dot: { get: () => (TH ? 'rgba(17,17,17,0.30)' : 'rgba(243,243,245,0.30)') }, /* one sample in a chart */
   good: { get: () => (TH ? '#14824F' : '#46B86E') },
   /* old names: yellow and gold meant Theseus when Theseus was yellow, so they answer with the hero colour;
      true yellow is C.yel / C.second */
@@ -82,7 +118,7 @@ Object.defineProperties(C, {
 });
 function hexRgb(h) { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
 function rgba(hex, a) { if (hex.startsWith('rgb')) return hex; const c = hexRgb(hex); return `rgba(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)},${a})`; }
-function inkA(a) { return TH ? `rgba(17,17,17,${a})` : `rgba(243,242,238,${a})`; }
+function inkA(a) { return TH ? `rgba(17,17,17,${a})` : `rgba(243,243,245,${a})`; }
 /** mix two hex colours */
 function mix(a, b, k) { const x = hexRgb(a), y = hexRgb(b); return '#' + x.map((v, i) => Math.round((v + (y[i] - v) * k) * 255).toString(16).padStart(2, '0')).join(''); }
 /** chapter accents: the deck's old set (Brock, 07:35: "Old chapter colours"). Clicks was blue, which is Theseus now, and

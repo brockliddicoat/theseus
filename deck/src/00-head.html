@@ -11,11 +11,13 @@
 /* layout: one 16:9 stage, letterboxed on a graphite ground, a quiet transport bar under it. Dark by design: it is a film. */
 :root {
   --bg: #0D0E0F; --stage: #0D0E0F; --surface: #16171a; --surface2: #1e2023; --line: #2a2c30;
-  --ink: #F3F2EE; --mute: #96958F; --hero: #2F8CFF; --steel: #8f9aa8;
+  --ink: #F3F3F5; --mute: #96969B; --hero: #2F8CFF; --steel: #8f9aa8;
   --f-disp: "Inter", system-ui, sans-serif; --f-mono: "JetBrains Mono", "Inter", ui-monospace, monospace;
   color-scheme: dark;
 }
-html, body { height: 100%; }
+/* no page margin: with the browser's 8 px the stage sat 8 px low (every capture lost its bottom 8 px) and on a phone the
+   bar came out 16 px narrower than the stage */
+html, body { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); overflow: hidden; }
 #app { box-sizing: border-box; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
   padding-top: max(12px, env(safe-area-inset-top, 0px)); padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
@@ -30,7 +32,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 .pill:hover { background: var(--surface2); }
 #segs { flex: 1 1 120px; display: flex; gap: 3px; height: 36px; align-items: center; min-width: 90px; }
 .seg { flex: 1 1 0; height: 6px; border-radius: 3px; background: rgba(255,255,255,.09); border: 0; padding: 0; cursor: pointer; position: relative; overflow: hidden; }
-.seg i { position: absolute; inset: 0; width: 0; background: rgba(236,235,229,.85); }
+.seg i { position: absolute; inset: 0; width: 0; background: rgba(236,236,238,.85); }
 .seg.on { background: rgba(47,140,255,.30); }
 .seg.on i { background: var(--hero); }
 #count { flex: none; font: 500 12px/1 var(--f-mono); color: var(--mute); font-variant-numeric: tabular-nums; min-width: 54px; text-align: right; }
@@ -40,25 +42,20 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 #src h2 { margin: 0 0 4px; font: 700 15px/1.3 var(--f-disp); }
 #src p.sub { margin: 0 0 12px; color: var(--mute); font: 500 12px/1.4 var(--f-mono); }
 #src ol { margin: 0; padding-left: 20px; display: grid; gap: 9px; }
-#src li { font: 400 14px/1.5 var(--f-disp); color: #d8d7d1; }
+#src li { font: 400 14px/1.5 var(--f-disp); color: #d8d8dc; }
 #src a { color: var(--hero); text-underline-offset: 3px; word-break: break-word; }
 #src .row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
-#viewBtn { display: flex; align-items: center; gap: 5px; }
-#viewBtn[hidden] { display: none; }
-#viewBtn span { opacity: .42; }
-#viewBtn .vs { opacity: .25; }
-#viewBtn[aria-pressed="true"] .v2, #viewBtn[aria-pressed="false"] .v3 { opacity: 1; color: var(--hero); }
 #rate, #edit { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); bottom: calc(var(--barH, 44px) + 20px + env(safe-area-inset-bottom, 0px)); width: min(600px, calc(100% - 32px)); box-sizing: border-box;
   background: rgba(20,21,23,.96); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; z-index: 6; box-shadow: 0 24px 60px -24px #000; }
 #rate .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 #rate h2 { margin: 0; font: 700 14px/1.3 var(--f-disp); }
 #rate .hint { margin-left: 6px; color: var(--mute); font: 500 11px/1 var(--f-mono); }
 #rate .state { color: var(--mute); font: 500 11px/1.3 var(--f-mono); white-space: nowrap; }
-#rate .slide { margin: 4px 0 8px; font: 600 12px/1.35 var(--f-disp); color: #bdbcb6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rate .slide { margin: 4px 0 8px; font: 600 12px/1.35 var(--f-disp); color: #bdbdc2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #rate .was { margin: 0 0 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); max-height: 32vh; overflow: auto; }
 #rate .was[hidden] { display: none; }
 #rate .wnote { margin: 0 0 4px; font: 500 12px/1.4 var(--f-disp); color: var(--ink); }
-#rate .wans { margin: 0 0 6px; padding-left: 18px; font: 400 12px/1.4 var(--f-disp); color: #bdbcb6; }
+#rate .wans { margin: 0 0 6px; padding-left: 18px; font: 400 12px/1.4 var(--f-disp); color: #bdbdc2; }
 #rate .wans q { color: var(--ink); }
 #rate .wrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 #rate .wq { color: var(--mute); font: 500 11px/1.3 var(--f-mono); }
@@ -76,7 +73,7 @@ body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--f-disp); 
 #edit h2 { margin: 0; font: 700 14px/1.3 var(--f-disp); }
 #edit .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 #edit .state { color: var(--mute); font: 500 11px/1.3 var(--f-mono); white-space: nowrap; }
-#edit .hint { margin: 6px 0 0; color: #bdbcb6; font: 500 13px/1.4 var(--f-disp); }
+#edit .hint { margin: 6px 0 0; color: #bdbdc2; font: 500 13px/1.4 var(--f-disp); }
 #edit .was { margin: 8px 0 6px; color: var(--mute); font: 500 12px/1.4 var(--f-disp); max-height: 4.2em; overflow: auto; }
 #edit textarea { box-sizing: border-box; width: 100%; min-height: 64px; resize: vertical; background: var(--surface); color: var(--ink); border: 1px solid var(--hero); border-radius: 6px; padding: 8px 10px; font: 500 16px/1.35 var(--f-disp); }
 #edit .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
@@ -86,7 +83,7 @@ body.editing #stage { cursor: text; }
 body.clean #rate, body.clean #edit { display: none; }
 body.clean #bar, body.clean #src { display: none; }
 body.clean #stage { border-radius: 0; box-shadow: none; }
-body.cap #app { padding: 0; }
+body.cap #app, body.clip #app { padding: 0; }
 @media (max-width: 720px) { #chap, #cleanBtn { display: none; }
   #rate, #edit, #src { top: calc(env(safe-area-inset-top, 0px) + 8px); bottom: auto; left: 8px; right: 8px; width: auto; max-height: 46vh; overflow: auto; }
   #rate .vals button { height: 40px; } .pill { height: 38px; } }
@@ -104,7 +101,6 @@ body.cap #app { padding: 0; }
     <div id="segs"></div>
     <span id="count"></span>
     <button class="pill" id="sndBtn" type="button" aria-pressed="false" title="Mechanical sound design (S)">sound off</button>
-    <button class="pill" id="viewBtn" type="button" aria-pressed="false" title="Show the drawings in 2D or 3D (D)"><span class="v2">2D</span><span class="vs">/</span><span class="v3">3D</span></button>
     <button class="pill" id="rateBtn" type="button" aria-expanded="false" aria-controls="rate" hidden title="Rate how valuable this slide is, 1 to 10">rate</button>
     <button class="pill" id="editBtn" type="button" aria-pressed="false" aria-controls="edit" hidden title="Tap any text on a slide to edit it (E)">edit text</button>
     <button class="pill opt" id="srcBtn" type="button" aria-expanded="false" aria-controls="src">sources</button>

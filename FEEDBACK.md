@@ -74,6 +74,20 @@ feedback on the deck, so they are kept here (numbered as on Codex's branch, code
   undersides, lattice bases, the Sora V2 board, top and side, the long-antenna Raytac module, the Razer FP-3 sensor, ARYE's
   sensor-position drawing, Apple's M1 bento). Kept in refs/photos/brock-2026-11-06/ (INDEX.md).
 
+## F39. Keep evaluating; no flawed model reused; greys (2026-11-06 08:18)
+- **F39.1 STANDING** "continually evaluate slides even after they are done to look for errors or things that could be made
+  better so the watcher can learn better, understand at a glance better, or so that the slides are more convincing and flow
+  better/inter connect better between eachother or in the most persuasive order". **IN PLACE:** a standing critic reviews
+  every finished slide and the film's order (handoff/revamp2/critic-brief.md), findings in work/review/<builder>.md and
+  FILM.md; builders act on them before a slide counts as finished.
+- **F39.2 STANDING** "make sure no bad conventions are carried forward without thinking about them or flawed models are
+  silently used again without evaluating them for errors first". **IN PLACE:** a model auditor (models-brief.md) and a rule
+  in common.md that every reused model or convention is checked and recorded. Caught already: the old cutouts slide's "33.4 %
+  sideways" was sin(lean), not a sideways share of the press.
+- **F39.3 DONE** "some of the backgrounds i'm seeing still feel yellowish to me instead of gray, make sure that is resolved".
+  Paper #F7F6F2 → #F5F5F7, both grey ramps neutral, the page CSS too, and a canvas guard that draws any warm-tinted grey as a
+  true grey (01-core.js warmGuard). Measured: the paper ground was (247, 246, 242), now (245, 245, 247).
+
 ## Open with Brock
 
 - **Pushing:** this branch (claude/review-notes-rework) can't be pushed from the session. GitHub answers "not in this

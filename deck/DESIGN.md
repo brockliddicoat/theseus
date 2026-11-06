@@ -115,7 +115,7 @@ Apple does. What Apple does, from its keynotes and its own design tokens (resear
 | `src/07-sim.js` | Force simulations: a 2D frame solver (`feSolve`, `simSolve` caches a load case), `feDraw` (the bent frame coloured by stress, with `fillet` at every joint), `feFlow` (force running through the members), `feEngaged` (grams of material that work), `feLattice`, `feChain`, `feSupport`, `heatCol`, materials `SIM_MAT` with their sources |
 | `src/10-d-0-meter.js` | The shell chapter's running meter: `shellStep()` registers a strength step, `shellMeter()` draws the strip (flex and peak stress at the same press and mass; a plain thin wall, no ribbing, = 100 %) |
 | `src/08-r3d.js` | `view3D()`: a 3D shot from the bundle (`vendor/r3d.js`, scenes in `3d/integration/entry.js`), composited into the stage |
-| `src/08-v2d.js` | 2D mode: `view2D()`, the flat twin of every 3D shot, drawn from `geo2d/*.json`; the setting (`setView2D`, the 2D / 3D pill, `D`, `?2d=1`) |
+| `src/08-v2d.js` | The 2D film: `view2D()`, the flat twin of every 3D shot, drawn from `geo2d/*.json`; 3D only on a development page (`R3D_DEV`, section 7) |
 | `geo2d/*.json` | Outlines traced off the 3D scenes, per part and per axis, with how each state key moves them (`tools/geo2d/build.sh`) |
 | `src/10-slides-main.js` | The film's slides; `S()` registers a slide |
 | `src/12-*.js` | Idea sheets (`12-00-ideas.js` is their framework: `ideaPanel`, `IDEA`, `dLabel`, `miniAxes`) |
@@ -123,9 +123,10 @@ Apple does. What Apple does, from its keynotes and its own design tokens (resear
 | `src/13-sort.js` | Puts slides in chapter order; honours `after`, `before`, `first`, `replaces` |
 | `src/11-slides-rec.js` | The companion "Recommendations" deck (`dist/rec.html`). Shares the core, but its slides still use the old small type |
 | `src/19-components-test.js` | Test page for the charts and cards no film slide uses yet (`python3 tools/build.py comps`) |
-| `src/20-app.js` | Player: font gating, transitions, chrome, QA hooks |
+| `src/20-app.js` | Player: font gating, transitions, autoplay, chrome, clip mode, QA and capture hooks (section 11) |
 | `tools/build.py` | Concatenates `src/` into `dist/main.html` and `dist/rec.html`, and embeds `../research/data/*.json` as `RDATA` |
 | `tools/errs.js`, `tools/qa.js`, `tools/shoot.js`, `tools/sheet.py` | Checks and screenshots (section 10) |
+| `tools/clip.js` | A slide as an MP4 clip, horizontal or vertical (section 11) |
 | `tools/fonts/` | Font build (section 3) |
 
 ---
@@ -480,17 +481,26 @@ linear, so a load scaled by k scales every displacement, force and stress by k (
 
 ### 3D shots and their 2D twins
 
+**The film is 2D** (Brock, 2026-11-06, F38.8: "mostly drop the 3d version, but don't delete its assets"). It always draws
+the flat twins: there is no 2D / 3D control in the bar and no `D` key, `tools/build.py main` embeds no 3D bundle, and no
+URL (`?2d=0`, `#3d`, an old saved choice) turns 3D on in it. The 3D assets stay in the repo (`3d/`), because the twins
+are traced from them (draw parts from the shared drawings, so a change to an asset reaches every slide) and they serve
+development: `08-v2d.js` draws 3D only on a page that embeds the bundle and sets `window.R3D_DEV` (`tools/build.py
+three`, the 3D test page, or `tools/build.py main --with3d`, the film with 3D for comparing twins against renders),
+3D by default there, `?2d=1` for the twins, and the twins again wherever WebGL is missing or a scene fails to build. In
+2D no WebGL context is created and no 3D asset is fetched, so the film publishes as its one HTML file.
+
 `view3D(key, t, x, y, w, h, state, o)` draws a scene into a box (scenes, state keys and camera keys are listed in
-`08-r3d.js`). A scene applies its full rest state under each call, so a key a slide leaves out returns to rest; set
-the keys the shot needs and nothing else. Scenes frame themselves at rest when built, so `zoom: 1` always means the
-same thing.
+`08-r3d.js`); in the film that is its flat twin. A scene applies its full rest state under each call, so a key a slide
+leaves out returns to rest; set the keys the shot needs and nothing else. Scenes frame themselves at rest when built, so
+`zoom: 1` always means the same thing.
 
-Every 3D shot has a flat twin, drawn instead when the deck is in 2D mode, when the browser has no WebGL, or when a
-scene fails to build (assets missing). It is the same parts, traced off the same assets, as an orthographic
-elevation along the world axis nearest the shot's camera, filled flat and outlined in the ink of the ground; a
-camera between two axes cross-fades the two views. In a slide:
+Every 3D shot's flat twin is the same parts, traced off the same assets, as an orthographic elevation along the world
+axis nearest the shot's camera, filled flat and outlined in the ink of the ground; a camera between two axes
+cross-fades the two views. In a slide:
 
-- `in2D(a, b)` picks a value for 2D or 3D: a tighter `zoom`, another `target`, another callout position.
+- `in2D(a, b)` picks a value for 2D or 3D (the film always takes `a`): a tighter `zoom`, another `target`, another
+  callout position.
 - `view2d: 'top' | 'bottom' | 'left' | 'right' | 'front' | 'back'` names the flat view (the scene's +X is the
   user's left, so `right` is the side-button side). Name it whenever the camera turns across an axis.
 - `hi2d: { re, color, w }` outlines the parts whose path matches `re` in a colour (the triggers on the cutout slide).
@@ -572,8 +582,52 @@ node tools/shoot.js $PWD/dist/main.html shots/x settle [ids]   # screenshots; DS
 python3 tools/sheet.py sheet.png 5 384 shots/x/*.png           # contact sheet
 ```
 
-Every checker takes `Q='&2d=1'` to run in 2D mode (`Q='&2d=0'` forces 3D). Check a slide with a 3D shot in both.
+The film is 2D, so the checkers see what ships (`Q='&2d=1'` is still accepted and changes nothing). `Q` adds to every
+checker's query: `Q='&clip=<id>'` checks that slide as a clip (no chrome, the mark). To compare a twin with its render,
+build `main --with3d` and check it with `Q='&2d=0'`.
 
 `?qa=1` makes `text()` and `demoWindow()` record their boxes in `window.__qa`; `qa.js` reads them. It cannot
 see a label over a dot or a line, so look at the screenshots too. A slide is done when `errs.js` prints `ok`,
 `qa.js` reports nothing at settle and mid, and the 384 px contact sheet reads.
+
+---
+
+## 11. Clips and the flow
+
+Brock, 2026-11-06 (F38.7): "it's mostly clips that will be used on social media and for parts of the website, but the
+flow between clips has to be extremely good ... the pacing also has to be amazing". Every slide is also a clip; the
+player (`20-app.js`) strings them into one film.
+
+**The flow.** The stage never moves between slides: both frames stay registered, so the grid holds still and only the
+content changes.
+- Same ground (paper to paper, night to night): a **dissolve**, 0.55 s. The new frame fades in over the old, so whatever
+  is the same on both (the chapter's label, the footer, a part drawn in the same place) holds perfectly still while the
+  rest changes. Keep two slides on the same ground when one hands a part to the next (M9).
+- A change of ground: a **wipe**, 0.7 s. A soft edge, slanted 10°, carries the new slide across from the left (from the
+  right going back), so its header shows first (G9).
+- A new chapter, going forward: the **chapter** move, 1.1 s, the film's one pass through black. The old slide recedes as
+  it fades, and the card comes up from a hair nearer; its clock starts as it emerges, so its first frame is seen.
+- A slide may ask for its own: `trans: 'dissolve' | 'wipe' | 'chapter' | 'iris' | 'push' | 'cut'`; `iris` opens a circle
+  round `irisAt: [x, y]` (stage px). Transitions carry no colour (blue is Theseus's). Reduced motion: a 0.25 s dissolve
+  onto the settled frame.
+
+**Pacing.** Autoplay plays each slide to its `settle`, holds it while its text is read, then moves on. The hold is
+counted on the settled frame (reading text in full, labels and ticks under 24 px at 0.3, nothing faint or under the
+rule): 0.5 s plus 250 characters a second, between 1.2 and 4 s (a chapter card about 2 s, a dense sheet 4 s); `hold: s`
+on a slide sets its own. An open panel or a note being typed holds the slide (the film waits 1.5 s after it closes);
+pause holds; the last slide stays; `?auto=0` turns it off. So nothing important appears after settle, and a slide
+doesn't idle long before it (M6).
+
+**Clip mode.** `?clip=<slide id>` plays the slide alone, once, from its first frame to its settled frame, and stays there
+(a tap, Space or R plays it again): no bar, no progress tick, no page counter, no "03 / 12" chapter count, and a small
+THESEUS mark under the rule where the footer's name sits. A clip is silent and stands alone: frame one shows the header
+and the subject, the payoff lands by about 8 s. `&vertical=1` lays it out 9:16 for phone feeds: the stage letterboxed full
+width at 600 of 1920 px, the grid running on above and below, the chapter and the title large above it from frame one
+(the stage's own type is too small at that width), the mark below, the bottom third clear for the apps' captions.
+
+**Exporting.** `node tools/clip.js <abs html> <slide id> <out.mp4> [--fps=30] [--hold=1.5] [--size=1920x1080]
+[--vertical] [--crf=18]` renders the clip frame by frame through the capture hook (`?cap=1&clip=<id>&t=0`, then
+`window.__seek(t)` per frame: every frame is a function of t, so a clip comes out the same every time), holds the settled
+frame for `--hold` s, and encodes H.264, yuv420p, BT.709, `-preset veryfast`, faststart. It takes two to five times the
+clip's length here, by how heavy the slide is. Pull frames back out to check one: `ffmpeg -ss 4 -i out.mp4 -frames:v 1 f.png`. For tools, the capture hook
+also draws a moment of a transition: `&from=<id>&ft=<t>&k=<0..1>[&kind=]`, or `__seek(t, { from: [id, t], k, kind })`.

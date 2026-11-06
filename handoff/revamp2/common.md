@@ -188,3 +188,24 @@ Per slide: what it shows in one line, the old slides it replaces, every clause a
 and the hand-offs. Then the checks you ran, anything you needed from shared code, and questions for Brock as
 multiple-choice options (he answers with a question tool; never stop to wait for him: take the best reading and say
 which).
+
+## Added 08:45 (Brock, 08:18): keep improving, check every model, true greys
+- **Your review file.** A standing critic keeps evaluating finished slides ("continually evaluate slides even after they are
+  done ... so the watcher can learn better, understand at a glance better, or so that the slides are more convincing and
+  flow better/inter connect better between eachother or in the most persuasive order"), and a model auditor checks every
+  reused model. Both write to /home/claude/work/review/<your code>.md. Read it before starting each slide and before your
+  report; act on every "must", weigh every "should", and reply in the file under the finding (FIXED / WHY NOT) so the
+  critic can re-check. A slide is never finished while its file has an open "must".
+- **No model, number or convention carried forward unchecked.** "make sure no bad conventions are carried forward without
+  thinking about them or flawed models are silently used again without evaluating them for errors first". Before you reuse
+  anything from the old slides (a solver model, a figure, a chart convention, a label), check it: units, assumptions, the
+  physics, the source, the evidence label, the rounding. Record each in PROGRESS.md under "## Models and conventions
+  checked" (what, where, the check, the verdict). Example found today: the old cutouts slide's "33.4 % sideways" was
+  sin(lean), the share of the button's motion that is a roll, not of the press going sideways.
+- **True greys.** "some of the backgrounds i'm seeing still feel yellowish to me instead of gray". Paper is now #F5F5F7 and
+  every neutral on both grounds is a true grey (01-core.js); a guard turns any warm grey you hard-code into a true grey, but
+  use the tokens (C.bg, C.panel, C.ink, C.mute, C.faint, C.hair, C.track, C.comp) and never a warm hex.
+- **Frame one.** header() now sets the label and title at t = 0; your subject must be on screen at t = 0 too.
+- **The player** (F0b, finished): 2D only, smooth transitions (dissolve on the same ground, a wipe between paper and
+  night, a pass through black into a chapter card), autoplay holds by text length, `?clip=<id>` and tools/clip.js for MP4
+  clips. Screenshots now start at the true top of the stage (the page's 8 px margin is gone).

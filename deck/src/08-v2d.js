@@ -4,48 +4,41 @@
    whichever is nearest the shot's camera), filled flat and outlined, from outlines traced off the 3D assets themselves
    (GEO2D, built by tools/geo2d from the same scenes view3D renders), so nothing is redrawn by hand or guessed.
 
-   The setting: the 2D / 3D pill in the bar, the D key, or the URL (?2d=1 forces 2D, ?2d=0 forces 3D). A choice made in
-   the bar is remembered on this device. 2D is also the fallback when WebGL is missing, the 3D bundle is absent, or a
+   The film is 2D (Brock, 2026-11-06, F38.8: "mostly drop the 3d version, but don't delete its assets"): it always draws
+   the flat twins, has no 2D / 3D control, and no URL turns 3D on in it. The twins stay derived from the 3D assets, which
+   stay in the repo for development. 3D is drawn only on a development page that embeds the bundle and says so
+   (tools/build.py three, or main --with3d: both set window.R3D_DEV); there the URL picks the view (?2d=1 forces 2D,
+   ?2d=0 3D, also ?3d=, ?mode=, ?view=, #2d, #3d), 3D by default, and 2D stays the fallback when WebGL is missing or a
    scene fails to build. In 2D no WebGL context is created and no 3D asset is fetched.
 
      view2D(key, t, x, y, w, h, state, o)   draws the flat twin into the box (same state keys and camera keys as view3D)
      v2dProj(key, state, box)               where a point [X, Y, Z] (mm) lands on that drawing, for callouts
    ============================================================================================ */
-const V2D = { on: false, forced: null, why: '', scenes: new Map(), pats: {} };
+const V2D = { on: true, forced: null, why: '', scenes: new Map(), pats: {} };
 (function () {
+  const dev = typeof R3D !== 'undefined' && typeof window !== 'undefined' && window.R3D_DEV === true;
+  if (!dev) { V2D.on = true; V2D.can3D = false; V2D.why = typeof R3D === 'undefined' ? 'no 3D bundle' : 'the film is 2D (only a page with R3D_DEV draws 3D)'; return; }
   let on = null;
   try {
     const q = new URLSearchParams(location.search);
     for (const k of ['2d', 'mode', 'view']) if (q.has(k)) { const v = (q.get(k) || '').toLowerCase(); on = k === '2d' ? !(v === '0' || v === 'false' || v === 'off') : v === '2d'; V2D.forced = on; }
     if (q.has('3d')) { const v = (q.get('3d') || '').toLowerCase(); on = v === '0' || v === 'false' || v === 'off'; V2D.forced = on; }
-    /* a shared artifact link carries only a #name, so #2d and #3d work too (the deck then opens on its first slide) */
     const hm = /^#(2d|3d)$/i.exec(location.hash || '');
     if (hm) { on = hm[1].toLowerCase() === '2d'; V2D.forced = on; V2D.fromHash = true; }
   } catch (e) { }
-  if (on == null) { try { const v = localStorage.getItem('theseus.view'); if (v) on = v === '2d'; } catch (e) { } }
   V2D.on = !!on;
-  /* no bundle, or no WebGL: the deck is 2D whatever the setting says */
-  let gl = typeof R3D !== 'undefined';
-  if (gl) { try { const c = document.createElement('canvas'); gl = !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { gl = false; } }
-  if (!gl) { V2D.on = true; V2D.why = typeof R3D === 'undefined' ? 'no 3D bundle' : 'no WebGL'; }
+  /* no WebGL: 2D whatever the URL says */
+  let gl = false;
+  try { const c = document.createElement('canvas'); gl = !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { gl = false; }
+  if (!gl) { V2D.on = true; V2D.why = 'no WebGL'; }
   V2D.can3D = gl;
 })();
-/** switch the deck between 2D and 3D; remembered unless the URL forced it */
-function setView2D(on, o = {}) {
+/** switch a development page between 2D and 3D (the console's; the film is always 2D) */
+function setView2D(on) {
   if (!V2D.can3D) on = true;
   V2D.on = !!on;
-  if (o.remember !== false) { try { localStorage.setItem('theseus.view', on ? '2d' : '3d'); } catch (e) { } }
   if (on && typeof R3D !== 'undefined' && R3D.gc) { try { R3D.gc(-1); } catch (e) { } }
   if (!on && typeof curSlide === 'function') { try { prepare3D(curSlide()); } catch (e) { } }
-  v2dButton();
-}
-function v2dButton() {
-  const b = typeof document !== 'undefined' && document.getElementById('viewBtn'); if (!b) return;
-  b.setAttribute('aria-pressed', String(V2D.on));
-  b.title = !V2D.can3D ? '2D only: this browser has no WebGL' + (V2D.why ? ' (' + V2D.why + ')' : '') : V2D.on ? 'Drawings are flat (2D only). Switch to 3D (D)' : 'Drawings are 3D renders. Switch to 2D only (D)';
-  b.setAttribute('aria-label', V2D.on ? 'View: 2D only. Switch to 3D' : 'View: 3D. Switch to 2D only');
-  if (!V2D.can3D) b.disabled = true;
-  if (typeof DECK !== 'undefined' && !DECK.slides.some(s => s.three && s.three.length)) b.hidden = true;
 }
 
 /* ---------- the scenes: outlines decoded once into Path2D, per mesh and per axis ---------- */

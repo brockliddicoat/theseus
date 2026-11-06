@@ -96,11 +96,15 @@ function chips(t, t0, xr, y, items, o = {}) {
 const HDR = { bottom: LAY.titleY + 10, lead: LAY.leadY };
 function header(t, title, o = {}) {
   const s = curSlide();
-  if (o.eyebrow) { const parts = o.eyebrow.split('//').map(p => p.trim()); sectionLabel(t, 0.05, LM, LAY.labelY, { text: parts[parts.length > 1 ? 1 : 0] || parts[0], n: false }); }
-  else sectionLabel(t, 0.05, LM, LAY.labelY);
+  /* frame one already shows the header (G9, common.md M6): a slide is also a standalone social clip, and its first frame
+     is the thumbnail. So the label and the title are fully set at t = 0; in the film, the transition is their entrance.
+     (2026-11-06, F38.7: the label typed in from 0.05 s and the title rose from 0.12 s, so every clip opened on a bare grid.) */
+  const HT0 = -2;
+  if (o.eyebrow) { const parts = o.eyebrow.split('//').map(p => p.trim()); sectionLabel(t, HT0, LM, LAY.labelY, { text: parts[parts.length > 1 ? 1 : 0] || parts[0], n: false }); }
+  else sectionLabel(t, HT0, LM, LAY.labelY);
   if (s.ideas && s.ideas.length && !o.noIdeas) chips(t, 0.5, RM, LAY.labelY, s.ideas);
   const size = o.size || T.h1.size;
-  const r = text(title, LM - 3, LAY.titleY, { role: 'h1', size, color: C.ink, t, rise: [0.12, 0.8], maxW: o.maxW || (RM - LM), lh: 1.0 });
+  const r = text(title, LM - 3, LAY.titleY, { role: 'h1', size, color: C.ink, t, maxW: o.maxW || (RM - LM), lh: 1.0 });
   HDR.bottom = LAY.titleY + (r.lines.length - 1) * size + 14; HDR.lead = LAY.leadY + (r.lines.length - 1) * size;
   if (o.sub) text(o.sub, LM, HDR.lead, { role: 'lead', color: C.mute, sentence: true, t, t0: 0.6, cps: 90, maxW: o.subW || 1500 });
   return HDR.bottom;

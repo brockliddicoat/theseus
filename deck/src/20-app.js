@@ -1,20 +1,48 @@
 /* ============================================================================================
-   app: one canvas. Each frame the current slide is drawn off screen on its own ground (paper or night),
-   then composed onto the stage; during a change the old frame and the new one meet in one of the film's
-   transitions: iris (a disc of the accent opens, the new frame opens inside it a beat later), sweep (a slanted
-   band of the accent crosses), push (the new frame slides in, the old one slides away slower and dims).
+   app: one canvas. Each frame the current slide is drawn off screen on its own ground (paper or night), then composed
+   onto the stage. The film is one take on one stage (F0b, 2026-11-06, Brock: "the flow between clips has to be extremely
+   good ... the pacing also has to be amazing"):
+   - Transitions never move the stage: both frames stay registered, so the 40 px grid holds still while the content
+     changes over it. On the same ground the new frame fades in over the old, so what both share holds still (dissolve,
+     0.55 s); when the ground changes, paper to night or back, a soft slanted edge carries the new slide across from the
+     left, so its header shows first (wipe, 0.7 s); a new chapter gets its own, longer move, the film's one pass through
+     black: the old slide recedes as it fades and the chapter comes up out of the dark (chapter, 1.1 s). A slide may ask
+     for one: trans: 'dissolve' | 'wipe' | 'chapter' | 'iris' | 'push' | 'cut'; 'iris' opens a circle round irisAt.
+   - Autoplay: each slide plays to its settle, holds there as long as its text takes to read (holdOf: 1.2 to 4 s, or the
+     slide's own `hold`), then the film moves on. Manual stepping works at any time; a panel open or a note being typed
+     holds the slide. ?auto=0 turns it off.
+   - Clips (?clip=<slide id>): that slide alone, once, from its first frame to its settled frame, no bar, no progress
+     tick, no page counter, a small THESEUS mark; &vertical=1 lays it out 9:16 for phone feeds. tools/clip.js renders
+     one to MP4 through the capture hook (?cap=1&s=<id>&t=<t>, and window.__seek(t) to step without reloading).
    ============================================================================================ */
-const APP = { i: 0, t0: 0, tPause: 0, playing: true, dpr: 1, scale: 1, trStart: -1, TR: 0.95, trans: 'push', trAcc: '#F3F2EE', frozenT: null, reduced: false, lastT: 0 };
+const APP = { i: 0, t0: 0, tPause: 0, playing: true, dpr: 1, scale: 1, trStart: -1, trDur: 0.6, trans: 'dissolve', frozenT: null, reduced: false, lastT: 0,
+  auto: true, hold: null, holdFor: null, blockT: 0, clip: null, vert: false };
 const $ = id => document.getElementById(id);
-const OFF = document.createElement('canvas'), SNAP = document.createElement('canvas');
+const OFF = document.createElement('canvas'), SNAP = document.createElement('canvas'), BAND = document.createElement('canvas');
 
-function slideT() { if (APP.frozenT != null) return APP.frozenT; return APP.playing ? (performance.now() - APP.t0) / 1000 : APP.tPause; }
+function slideT() {
+  const t = APP.frozenT != null ? APP.frozenT : APP.playing ? Math.max(0, (performance.now() - APP.t0) / 1000) : APP.tPause;
+  /* a clip ends on its settled frame */
+  return APP.clip ? Math.min(t, (DECK.slides[APP.i] && DECK.slides[APP.i].settle) || 9) : t;
+}
 function themeOf(s) { return s.theme === 'paper' ? 1 : 0; }
 
+/* the vertical clip (9:16, for phone feeds): the stage letterboxed full width at VERT.top, in frame units of 1080 × 1920 */
+const VERT = { w: 1080, h: 1920, top: 600 };
 function fit() {
   const cap = document.body.classList.contains('cap'), clean = document.body.classList.contains('clean');
   const cs = getComputedStyle($('app')), num = v => parseFloat(v) || 0, bar = $('bar');
-  const padX = cap ? 0 : num(cs.paddingLeft) + num(cs.paddingRight), padY = cap ? 0 : num(cs.paddingTop) + num(cs.paddingBottom) + 10;
+  const bare = cap || !!APP.clip, padX = bare ? 0 : num(cs.paddingLeft) + num(cs.paddingRight), padY = bare ? 0 : num(cs.paddingTop) + num(cs.paddingBottom) + 10;
+  APP.dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (APP.vert) {
+    /* the frame is 9:16 and fills the window's height; the stage is its full width */
+    const fw = Math.floor(Math.max(180, Math.min(window.innerWidth - padX, (window.innerHeight - padY) * 9 / 16))), fh = Math.round(fw * 16 / 9);
+    const st = $('stage'); st.style.width = fw + 'px'; st.style.height = fh + 'px';
+    APP.scale = fw / W;
+    const fwp = Math.round(fw * APP.dpr), fhp = Math.round(fh * APP.dpr), sh = Math.round(fwp * 9 / 16);
+    for (const [c, cw, ch] of [[$('fx'), fwp, fhp], [OFF, fwp, sh], [SNAP, fwp, sh]]) if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; }
+    return;
+  }
   /* the bar wraps onto a second line when it is wider than the stage (Brock, on an iPhone 16 Pro Max): measure it at the
      stage's width and fit the stage again until the two agree */
   let bh = clean || cap ? 0 : 44, w = 200;
@@ -31,27 +59,42 @@ function fit() {
   document.documentElement.style.setProperty('--barH', bh + 'px');
   const st = $('stage'); st.style.width = w + 'px'; st.style.height = h + 'px';
   if (!(clean || cap)) bar.style.width = w + 'px';
-  APP.dpr = Math.min(2, window.devicePixelRatio || 1); APP.scale = w / W;
+  APP.scale = w / W;
   const cw = Math.round(w * APP.dpr), ch = Math.round(h * APP.dpr);
   for (const c of [$('fx'), OFF, SNAP]) { if (c.width !== cw || c.height !== ch) { c.width = cw; c.height = ch; } }
+}
+/* ---------- the transitions ----------
+   How long each takes (s). Quick enough to keep a viewer, long enough never to read as a cut. */
+const TRN = { dissolve: 0.55, wipe: 0.7, chapter: 1.1, iris: 1.15, push: 0.6, cut: 0, reduced: 0.25 };
+/* when the new slide's clock starts, as a fraction of its transition: the chapter move holds it until the slide begins to
+   come up out of the dark, so its first frame is the first thing seen (every other move starts it at once) */
+const TRS = { chapter: 0.38 };
+/** the new slide's time at k (0 → 1) through a transition of this kind and length */
+const trClock = (kind, k, dur) => Math.max(0, (k - (TRS[kind] || 0)) * dur);
+/** which transition takes the film from slide a to slide b: a slide's own `trans` first; a new chapter (forward) gets the
+    chapter move; a change of ground the wipe; the same ground the dissolve */
+function trKind(a, b, back) {
+  if (b.trans && TRN[b.trans] != null) return b.trans;
+  if (!back && a.ch !== b.ch) return 'chapter';
+  return themeOf(a) !== themeOf(b) ? 'wipe' : 'dissolve';
 }
 function go(i, opts = {}) {
   i = clamp(i, 0, DECK.slides.length - 1);
   if (i === APP.i && !opts.force) return;
   try { rateFlush(); if (EDIT.on) editSave(); } catch (e) { }
   const now = performance.now(), prev = DECK.slides[APP.i], next = DECK.slides[i];
-  if (!opts.instant && !APP.reduced && prev) {
+  APP.back = i < APP.i;
+  /* while editing text there is no transition: the outlines would ride along on the old frame */
+  const kind = opts.instant || !prev || EDIT.on ? 'cut' : APP.reduced ? 'dissolve' : (opts.kind || trKind(prev, next, APP.back));
+  if (kind !== 'cut') {
     SNAP.getContext('2d').drawImage($('fx'), 0, 0);
-    APP.trStart = now;
-    APP.trans = next.trans || (next.card ? 'iris' : themeOf(prev) !== themeOf(next) ? 'sweep' : 'push');
-    APP.back = i < APP.i;
-    TH = themeOf(next); APP.trAcc = next.card ? acc(next.ch) : (themeOf(next) ? '#111111' : '#F3F2EE');
-    if (APP.trans === 'sweep') APP.trAcc = acc(next.ch) === C.ink ? C.hero : acc(next.ch);
+    APP.trStart = now; APP.trans = kind; APP.trDur = APP.reduced ? TRN.reduced : TRN[kind];
+    APP.irisAt = next.irisAt || null;
   } else APP.trStart = -1;
-  APP.i = i; APP.t0 = now; APP.tPause = 0; APP.lastT = 0;
+  APP.i = i; APP.t0 = now + (kind !== 'cut' && !APP.reduced ? (TRS[kind] || 0) * APP.trDur * 1000 : 0); APP.tPause = 0; APP.lastT = 0; APP.hold = null; APP.holdFor = null;
   if (APP.reduced) { APP.t0 = now - (next.settle || 9) * 1000; APP.tPause = next.settle || 9; }
   if (EDIT.on) { editFreeze(next); EDIT.sel = null; requestAnimationFrame(() => requestAnimationFrame(() => editSync())); }
-  if (APP.frozenT == null) { try { history.replaceState(null, '', '#' + next.id); } catch (e) { } }
+  if (APP.frozenT == null && !APP.clip) { try { history.replaceState(null, '', '#' + next.id); } catch (e) { } }
   updateBar(); renderSources(); editSync();
   try { prepare3D(next); prepare3D(DECK.slides[i + 1]); } catch (e) { }
 }
@@ -383,8 +426,8 @@ function togglePlay() {
   $('playIcon').setAttribute('d', APP.playing ? 'M6 5h4v14H6zM14 5h4v14h-4z' : 'M7 5v14l11-7z');
   $('play').setAttribute('aria-label', APP.playing ? 'Pause' : 'Play');
 }
-/** draw slide s at time t into a 2D context */
-function drawSlide(ctx, s, t) {
+/** draw slide s at time t into a 2D context. o = { chrome: false (a clip draws its own mark), vignette: false } */
+function drawSlide(ctx, s, t, o = {}) {
   G = ctx; TH = themeOf(s);
   EDIT.slide = s.id; EDIT.depth = 0; EDIT.rec = EDIT.on && ctx.canvas === OFF; if (EDIT.rec) EDIT.boxes.length = 0;
   const sc = APP.scale * APP.dpr;
@@ -397,42 +440,81 @@ function drawSlide(ctx, s, t) {
   paper(s.paper == null ? 1 : (typeof s.paper === 'function' ? s.paper(t) : s.paper));
   if (s.draw) { try { s.draw(t); } catch (e) { console.error(s.id, e); } }
   ctx.setTransform(sc, 0, 0, sc, 0, 0); ctx.globalAlpha = 1;
-  /* the deck's chrome: the rule, THESEUS / chapter, n / N */
-  try { slideChrome(t, s); } catch (e) { console.error(s.id, 'chrome', e); }
+  /* the deck's chrome: the rule, THESEUS / chapter, n / N; a clip carries only its mark */
+  if (APP.clip) { if (o.chrome !== false) { try { clipMark(t, s); } catch (e) { console.error(s.id, 'mark', e); } } }
+  else { try { slideChrome(t, s); } catch (e) { console.error(s.id, 'chrome', e); } }
   /* night gets a soft lens fall-off at the edges; paper stays flat, like a printed sheet */
-  if (!TH) {
+  if (!TH && o.vignette !== false) {
     const vg = ctx.createRadialGradient(W / 2, H * 0.5, H * 0.62, W / 2, H * 0.5, H * 1.15);
     vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.18)');
     ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
   }
   EDIT.rec = false;
 }
+/* the easings of the moves: a wipe starts promptly and lands softly; the chapter's circle opens like a lens */
+const TRE = { wipe: bezier(0.42, 0, 0.18, 1), iris: bezier(0.6, 0, 0.16, 1), out: bezier(0.3, 0, 0.6, 1) };
+/** compose the stage: the new frame (OFF) over the old (SNAP), k = 0 → 1 through the transition */
 function compose(k) {
   const fx = $('fx').getContext('2d'), w = $('fx').width, h = $('fx').height, sx = w / W;
-  fx.setTransform(1, 0, 0, 1, 0, 0); fx.globalAlpha = 1;
+  fx.setTransform(1, 0, 0, 1, 0, 0); fx.globalAlpha = 1; fx.globalCompositeOperation = 'source-over';
+  if (APP.vert) { composeVert(fx); return; }
   if (k >= 1 || APP.trStart < 0) { fx.drawImage(OFF, 0, 0); return; }
-  const A = SNAP, B = OFF, accent = APP.trAcc, dir = APP.back ? -1 : 1;
-  if (APP.trans === 'iris') {
-    /* a soft iris: the new slide opens in a circle with a feathered ring of light in the chapter's colour, while the
-       old one swells a little and dims behind it (no solid colour fills the screen) */
-    const x = (APP.irisX || 300) * sx, y = (APP.irisY || 760) * sx, R = Math.hypot(Math.max(x, w - x), Math.max(y, h - y)) + 8;
-    const ea = E.io3(clamp(k / 0.9)), eb = E.cam(clamp((k - 0.05) / 0.95));
-    fx.save(); fx.translate(x, y); fx.scale(1 + 0.06 * ea, 1 + 0.06 * ea); fx.translate(-x, -y); fx.drawImage(A, 0, 0); fx.restore();
-    fx.fillStyle = `rgba(0,0,0,${0.35 * ea})`; fx.fillRect(0, 0, w, h);
-    const rr0 = Math.max(0.01, R * eb);
-    fx.save(); fx.beginPath(); fx.arc(x, y, rr0, 0, Math.PI * 2); fx.clip();
-    fx.translate(x, y); fx.scale(1.06 - 0.06 * eb, 1.06 - 0.06 * eb); fx.translate(-x, -y); fx.drawImage(B, 0, 0); fx.restore();
-    if (eb > 0 && eb < 1) { fx.strokeStyle = rgba(accent, 0.7 * (1 - eb)); fx.lineWidth = 2 * sx; fx.beginPath(); fx.arc(x, y, rr0, 0, Math.PI * 2); fx.stroke(); }
-  } else if (APP.trans === 'sweep') {
-    /* a wipe of light: a soft diagonal edge carries the new slide across, a thin glow on its leading edge; the old
-       slide drifts back and dims (no band of solid colour) */
-    const sl = 0.32 * h, x0 = -sl - 80 * sx, x1 = w + 80 * sx, e = E.cam(clamp(k));
-    const xe = lerp(x0, x1, e);
-    fx.save(); fx.translate(-50 * sx * e, 0); fx.drawImage(A, 0, 0); fx.restore();
-    fx.fillStyle = `rgba(0,0,0,${0.3 * e})`; fx.fillRect(0, 0, w, h);
-    const band = xx => { fx.beginPath(); fx.moveTo(-10, 0); fx.lineTo(xx + sl, 0); fx.lineTo(xx, h); fx.lineTo(-10, h); fx.closePath(); };
-    fx.save(); band(xe); fx.clip(); fx.translate(40 * sx * (1 - e), 0); fx.drawImage(B, 0, 0); fx.restore();
-    if (e > 0 && e < 1) { fx.strokeStyle = rgba(accent, 0.8 * Math.sin(e * Math.PI)); fx.lineWidth = 2 * sx; fx.beginPath(); fx.moveTo(xe + sl, 0); fx.lineTo(xe, h); fx.stroke(); }
+  const A = SNAP, B = OFF, dir = APP.back ? -1 : 1;
+  if (APP.trans === 'dissolve') {
+    /* the same ground: the new frame fades in over the old, so whatever is the same on both (the chapter's label, the
+       footer, a part one slide hands to the next, M9) holds perfectly still while the rest changes; steeply eased, so
+       the two frames share the stage only for a moment (20 to 80 % in under a tenth of a second) */
+    fx.drawImage(A, 0, 0);
+    fx.globalAlpha = E.io5(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1;
+  } else if (APP.trans === 'wipe') {
+    /* the ground changes: a soft, slightly slanted edge carries the new slide across over the old one, left to right
+       (right to left going back), so its header is the first thing to show. Both frames stay where they are: the grid's
+       lines run on across the edge, the light changes behind it. Behind the feather the new frame is drawn through a
+       clip; only the feather's band, about an eighth of the stage, goes through a small canvas and a gradient mask */
+    const e = TRE.wipe(k), F = 0.03 * w, s = Math.tan(10 * Math.PI / 180), n = Math.hypot(1, s);
+    const xm = lerp(-h * s / 2, w + h * s / 2 + F * n, e);                   /* the edge's x at mid-height, going forward */
+    /* the line d px behind the edge (along its normal), at the top and the bottom of the stage; X mirrors going back */
+    const xt = d => xm + h * s / 2 - d * n, xb = d => xm - h * s / 2 - d * n, X = x => (dir > 0 ? x : w - x);
+    fx.drawImage(A, 0, 0);
+    const far = w + 2 * h * s + 2 * F * n;
+    fx.save(); fx.beginPath(); fx.moveTo(X(xt(far)), 0); fx.lineTo(X(xt(F)), 0); fx.lineTo(X(xb(F)), h); fx.lineTo(X(xb(far)), h); fx.closePath(); fx.clip();
+    fx.drawImage(B, 0, 0); fx.restore();
+    /* the feather: B over the band from d = F (whole) to the edge (nothing), on a canvas just the band's size */
+    const bw = Math.ceil(h * s + F * n) + 4, f0 = Math.floor(xb(F)) - 2, bx = dir > 0 ? f0 : Math.floor(w - f0 - bw);
+    if (bx < w && bx + bw > 0) {
+      if (BAND.width !== bw || BAND.height !== h) { BAND.width = bw; BAND.height = h; }
+      const bc = BAND.getContext('2d'), cx = X(xm) - bx;
+      bc.setTransform(1, 0, 0, 1, 0, 0); bc.globalAlpha = 1; bc.globalCompositeOperation = 'source-over';
+      bc.clearRect(0, 0, bw, h); bc.drawImage(B, -bx, 0);
+      const gr = bc.createLinearGradient(cx - dir * F / n, h / 2 - s * F / n, cx, h / 2);
+      gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      bc.globalCompositeOperation = 'destination-in'; bc.fillStyle = gr; bc.fillRect(0, 0, bw, h); bc.globalCompositeOperation = 'source-over';
+      fx.drawImage(BAND, bx, 0);
+    }
+  } else if (APP.trans === 'chapter') {
+    /* a new chapter, the film's one pass through the dark: the old slide recedes as it fades out, a breath of black, and
+       the chapter comes up out of it, settling from a hair nearer */
+    const ea = TRE.out(prog(k, 0, 0.48)), eb = E.out3(prog(k, 0.38, 1));
+    fx.fillStyle = '#050506'; fx.fillRect(0, 0, w, h);
+    if (ea < 1) { const sc = 1 - 0.045 * ea; fx.save(); fx.globalAlpha = 1 - ea; fx.translate(w / 2, h / 2); fx.scale(sc, sc); fx.translate(-w / 2, -h / 2); fx.drawImage(A, 0, 0); fx.restore(); }
+    if (eb > 0) { const sc = 1.03 - 0.03 * eb; fx.save(); fx.globalAlpha = eb; fx.translate(w / 2, h / 2); fx.scale(sc, sc); fx.translate(-w / 2, -h / 2); fx.drawImage(B, 0, 0); fx.restore(); }
+  } else if (APP.trans === 'iris') {
+    /* the chapter opens in a circle (round its part when the card says where: irisAt), settling from a hair larger, as
+       the old slide recedes into the dark; a quiet ring of light rides the circle's edge */
+    const at = APP.irisAt || [W / 2, H / 2], x = at[0] * sx, y = at[1] * sx, R = Math.hypot(Math.max(x, w - x), Math.max(y, h - y)) + 4;
+    const ea = TRE.out(prog(k, 0, 0.55)), eb = TRE.iris(prog(k, 0.16, 1));
+    fx.fillStyle = NIGHT; fx.fillRect(0, 0, w, h);
+    if (ea < 1) {
+      const sc = 1 - 0.06 * ea;
+      fx.save(); fx.globalAlpha = 1 - ea; fx.translate(w / 2, h / 2); fx.scale(sc, sc); fx.translate(-w / 2, -h / 2); fx.drawImage(A, 0, 0); fx.restore();
+    }
+    const r = R * eb;
+    if (r > 0.5) {
+      const sc = 1.04 - 0.04 * eb;
+      fx.save(); fx.beginPath(); fx.arc(x, y, r, 0, Math.PI * 2); fx.clip();
+      fx.translate(x, y); fx.scale(sc, sc); fx.translate(-x, -y); fx.drawImage(B, 0, 0); fx.restore();
+      if (eb < 1) { fx.strokeStyle = `rgba(243,242,238,${0.32 * Math.sin(Math.PI * Math.min(1, eb * 1.6))})`; fx.lineWidth = 1.5 * sx; fx.beginPath(); fx.arc(x, y, r, 0, Math.PI * 2); fx.stroke(); }
+    }
   } else if (APP.trans === 'push') {
     const e = E.io5(k);
     fx.drawImage(A, -0.38 * w * e * dir, 0);
@@ -445,24 +527,133 @@ function compose(k) {
     fx.fillStyle = gsh; fx.fillRect(dir > 0 ? lx - sw : lx, 0, sw, h);
   } else { fx.drawImage(A, 0, 0); fx.globalAlpha = E.io3(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1; }
 }
+/* ---------- autoplay: play to settle, hold for the reading, move on ----------
+   The hold scales with the text the settled frame shows: reading text (24 px and up) counts in full, small labels and
+   ticks a third (they are scanned, not read), the chrome and anything faint not at all; HOLD.cps characters a second on
+   top of HOLD.base, between HOLD.min and HOLD.max. Most of a slide is read while it builds; the hold is the last look. */
+const HOLD = { base: 0.5, cps: 250, small: 0.3, min: 1.2, max: 4, guess: 2.2 };
+function holdOf(s, list) {
+  if (s.hold != null) return +s.hold;
+  let read = 0, small = 0; const seen = new Set();
+  for (const q of list || []) {
+    if (q.a < 0.25 || q.y0 > LAY.ruleY - 8 || q.x1 < 0 || q.x0 > W || q.y1 < 0 || q.y0 > H) continue;
+    const str = q.s.trim(); if (!str) continue;
+    const key = str + '|' + Math.round(q.x0) + '|' + Math.round(q.y0); if (seen.has(key)) continue; seen.add(key);
+    const n = (q.s.length >= 60 ? Math.max(q.s.length, (q.x1 - q.x0) / (0.56 * q.px)) : str.length) + 1;
+    if (q.px >= 24) read += n; else small += n;
+  }
+  return clamp(HOLD.base + (read + HOLD.small * small) / HOLD.cps, HOLD.min, HOLD.max);
+}
+/** the slide's hold, once its settled frame has been seen (the first frame past settle is measured) */
+function holdNow(s) { return APP.holdFor === s.id && APP.hold != null ? APP.hold : (s.hold != null ? +s.hold : null); }
+/** a panel open, a note being typed, or edit mode: the slide stays */
+function autoBlocked() {
+  const ae = document.activeElement;
+  return EDIT.on || !$('rate').hidden || !$('src').hidden || !$('edit').hidden || (ae && /^(TEXTAREA|INPUT|SELECT)$/.test(ae.tagName));
+}
+function autoStep(s, t, now) {
+  if (!APP.auto || APP.clip || APP.frozenT != null || !APP.playing || APP.i >= DECK.slides.length - 1) return;
+  if (autoBlocked()) { APP.blockT = now; return; }
+  const hold = holdNow(s); if (hold == null || t < (s.settle || 9) + hold) return;
+  if (now - APP.blockT < 1500) return;                     /* a panel just closed: a beat before the film moves on */
+  go(APP.i + 1);
+}
 function frame() {
   const s = DECK.slides[APP.i], t = slideT(), now = performance.now();
   V3.pending = 0;
-  if (APP.frozenT == null) sfxRun(s, APP.lastT, t); APP.lastT = t;
-  drawSlide(OFF.getContext('2d'), s, t);
-  let k = APP.trStart > 0 ? prog((now - APP.trStart) / 1000, 0, APP.TR) : 1; if (k >= 1) APP.trStart = -1;
+  if (APP.frozenT == null && !APP.clip) sfxRun(s, APP.lastT, t); APP.lastT = t;
+  /* the first frame past settle is the settled frame on screen: count its text for the hold */
+  const qa0 = QA.on, measure = APP.auto && !APP.clip && APP.frozenT == null && APP.holdFor !== s.id && t >= (s.settle || 9);
+  if (measure) QA.on = true;
+  drawSlide(OFF.getContext('2d'), s, t, APP.vert ? { chrome: false, vignette: false } : {});
+  if (measure) { APP.hold = holdOf(s, QA.text); APP.holdFor = s.id; QA.on = qa0; if (!qa0) { QA.text.length = 0; QA.boxes.length = 0; } }
+  let k = APP.trStart > 0 ? prog((now - APP.trStart) / 1000, 0, APP.trDur) : 1; if (k >= 1) APP.trStart = -1;
   compose(k);
   if (EDIT.on && k >= 1) editOverlay();
-  /* progress inside the chapter segment */
+  /* progress inside the chapter segment, counting each slide's hold */
   const segs = [...document.querySelectorAll('.seg')], si = segs.findIndex(b => b.dataset.ch === s.ch);
   segs.forEach((b, kk) => { if (kk < si) b.firstChild.style.width = '100%'; else if (kk > si) b.firstChild.style.width = '0%'; });
-  if (segs[si]) { const list = DECK.slides.filter(x => x.ch === s.ch); segs[si].firstChild.style.width = ((list.indexOf(s) + clamp(t / (s.settle || 9))) / list.length * 100) + '%'; }
+  if (segs[si]) {
+    const list = DECK.slides.filter(x => x.ch === s.ch), hd = APP.auto ? (holdNow(s) != null ? holdNow(s) : HOLD.guess) : 0;
+    segs[si].firstChild.style.width = ((list.indexOf(s) + clamp(t / ((s.settle || 9) + hd))) / list.length * 100) + '%';
+  }
+  autoStep(s, t, now);
 }
 function loop() { frame(); if (typeof R3D !== 'undefined' && (APP.gcN = (APP.gcN || 0) + 1) % 120 === 0) R3D.gc(); if (APP.frozenT == null) requestAnimationFrame(loop); }
+
+/* ---------- clips ----------
+   ?clip=<slide id>: the slide alone, once, from its first frame to its settled frame, where it stays (a tap plays it
+   again). No bar, no progress tick, no page counter, no chapter count; a small THESEUS mark where the footer's name sits,
+   so a clip carries the brand when shared. &vertical=1: 9:16 for phone feeds, the stage letterboxed full width with the
+   chapter and the title set large above it (the stage's own type is too small there) and the mark below. */
+/** the clip's mark: the footer's rule and the name, larger than the footer's, nothing else */
+function clipMark(t, s) {
+  line(LM, LAY.ruleY, RM, LAY.ruleY, { color: C.hair, w: 1.5 });
+  text('Theseus', LM, LAY.footY + 2, { font: 'disp', size: 26, weight: 800, track: 0.3, caps: true, color: C.ink2 });
+}
+/** the vertical frame: the ground and grid run on above and below the stage; the chapter and title over it, large; the mark under it */
+function composeVert(fx) {
+  const s = DECK.slides[APP.i], fw = $('fx').width, k = fw / VERT.w, ks = VERT.w / W, top = VERT.top;
+  TH = themeOf(s); G = fx;
+  fx.setTransform(k, 0, 0, k, 0, 0);
+  fx.fillStyle = C.bg; fx.fillRect(0, 0, VERT.w, VERT.h);
+  /* the stage's grid, continued: 40 stage px a cell, a + on every fourth crossing, registered to the stage */
+  fx.save(); fx.translate(0, top); fx.scale(ks, ks);
+  const y0 = -Math.ceil(top / ks / 160) * 160, y1 = Math.ceil((VERT.h - top) / ks / 160) * 160;
+  fx.lineWidth = 1; fx.strokeStyle = inkA(TH ? 0.042 : 0.03); fx.beginPath();
+  for (let x = 0; x <= W; x += 40) { fx.moveTo(x + 0.5, y0); fx.lineTo(x + 0.5, y1); }
+  for (let y = y0; y <= y1; y += 40) { fx.moveTo(0, y + 0.5); fx.lineTo(W, y + 0.5); }
+  fx.stroke();
+  fx.strokeStyle = inkA(TH ? 0.26 : 0.2); fx.lineWidth = 1.5; fx.beginPath();
+  for (let x = 0; x <= W; x += 160) for (let y = y0; y <= y1; y += 160) { fx.moveTo(x - 7, y); fx.lineTo(x + 7, y); fx.moveTo(x, y - 7); fx.lineTo(x, y + 7); }
+  fx.stroke(); fx.restore();
+  fx.setTransform(1, 0, 0, 1, 0, 0); fx.drawImage(OFF, 0, Math.round(top * k));
+  fx.setTransform(k, 0, 0, k, 0, 0);
+  /* the header, large: the chapter on a label row, the title under it, bottom-aligned a little above the stage */
+  const mx = LM * ks, maxW = VERT.w - 2 * mx, ch = DECK.chapters.find(c => c.key === s.ch);
+  const tl = caps(edTxt(s.title || '')), nl = z => wrap(tl, { role: 'h1', size: z }, maxW).length;
+  let size = 84; while (size > 64 && nl(size) > 3) size -= 4;
+  const lines = nl(size), yb = top - 60, y1t = yb - (lines - 1) * size;
+  text(s.title || '', mx - 2, y1t, { role: 'h1', size, color: C.ink, maxW, lh: 1.0 });
+  if (ch) { chapterIcon(s.ch, mx, y1t - size - 40 - 27, 30, acc(s.ch), 1); text(ch.name, mx + 46, y1t - size - 40, { role: 'label', size: 30, color: acc(s.ch) }); }
+  /* the mark under the stage */
+  text('Theseus', mx, top + H * ks + 104, { font: 'disp', size: 36, weight: 800, track: 0.3, caps: true, color: C.ink2 });
+  fx.setTransform(1, 0, 0, 1, 0, 0);
+}
+function clipRestart() { APP.t0 = performance.now(); APP.tPause = 0; APP.playing = true; APP.lastT = 0; }
+/** a frozen frame for the capture hook: slide i at time t, or a transition into it (from = [slide index, its time],
+    k = how far through, kind = which; the old frame is drawn and composed as the film would have shown it) */
+async function capFrame(t, tr) {
+  window.__ready = false;
+  if (tr) {
+    const i1 = APP.i, A = DECK.slides[tr.from[0]], B = DECK.slides[i1];
+    APP.i = tr.from[0]; APP.frozenT = tr.from[1]; APP.trStart = -1; frame();
+    SNAP.getContext('2d').drawImage($('fx'), 0, 0);
+    APP.i = i1; APP.back = tr.from[0] > i1; APP.trans = tr.kind || trKind(A, B, APP.back); APP.irisAt = B.irisAt || null;
+    APP.frozenT = t; APP.trStart = 1; APP.trDur = 1;
+    const s = DECK.slides[APP.i]; V3.pending = 0;
+    drawSlide(OFF.getContext('2d'), s, t); compose(clamp(tr.k)); APP.trStart = -1;
+  } else { APP.frozenT = t; frame(); }
+  /* a 3D shot streams its geometry in (development pages only): redraw until every scene on this slide has rendered */
+  const t0w = performance.now();
+  while (V3.pending > 0 && performance.now() - t0w < 120000) { await new Promise(r => setTimeout(r, 250)); frame(); }
+  window.__qa = QA.on ? { text: QA.text.slice(), boxes: QA.boxes.slice() } : null; window.__ready = true;
+  return true;
+}
 async function start() {
   const q = new URLSearchParams(location.search);
   APP.reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (q.get('cap')) document.body.classList.add('cap', 'clean');
+  /* a clip: one slide, once, no bar (?clip=<id>, &vertical=1 for 9:16) */
+  if (q.get('clip') != null) {
+    const c = q.get('clip'), n = DECK.slides.findIndex(s => s.id === c), ci = n >= 0 ? n : clamp(parseInt(c) || 0, 0, DECK.slides.length - 1);
+    if (n < 0 && !/^\d+$/.test(c)) console.error('clip: no slide', c);
+    APP.clip = DECK.slides[ci].id; APP.vert = /^(1|true|on|yes)$/i.test(q.get('vertical') || '');
+    document.body.classList.add('clean', 'clip');
+    /* a clip stands alone: the section label drops its "03 / 12" chapter count (chapterInfo feeds only that label) */
+    const ci0 = chapterInfo; chapterInfo = s => Object.assign(ci0(s), { n: 0 });
+  }
+  if (/^(0|false|off|no)$/i.test(q.get('auto') || '')) APP.auto = false;
   fit(); window.addEventListener('resize', () => { fit(); if (APP.frozenT != null) frame(); });
   /* the fonts are embedded (00-head.html); canvas never asks for a font by itself, so load every face before the first frame */
   QA.on = !!q.get('qa');
@@ -473,15 +664,22 @@ async function start() {
   try { await Promise.race([Promise.all(faces.map(f => document.fonts.load(f, 'THESEUS 0123456789 µs →'))).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 8000))]); } catch (e) { }
   try { await Promise.race([Promise.all((window.IMGS || []).map(im => im.decode ? im.decode().catch(() => { }) : null)), new Promise(r => setTimeout(r, 3000))]); } catch (e) { }
   buildBar();
-  let first = 0; const h0 = (q.get('s') || location.hash.slice(1)), h = /^(2d|3d)$/i.test(h0) ? '' : h0;
+  let first = 0; const h0 = APP.clip || q.get('s') || location.hash.slice(1), h = /^(2d|3d)$/i.test(h0) ? '' : h0;
   if (h) { const n = DECK.slides.findIndex(s => s.id === h); first = n >= 0 ? n : (parseInt(h) || 0); }
   APP.i = -1; go(first, { instant: true, force: true });
   if (q.get('t') != null) {
-    APP.frozenT = parseFloat(q.get('t')); frame();
-    /* a 3D shot streams its geometry in: redraw until every scene on this slide has rendered (screenshots wait for it) */
-    const t0w = performance.now();
-    while (V3.pending > 0 && performance.now() - t0w < 120000) { await new Promise(r => setTimeout(r, 250)); frame(); }
-    window.__qa = QA.on ? { text: QA.text.slice(), boxes: QA.boxes.slice() } : null; window.__ready = true; return;
+    /* the capture hook: ?cap=1&s=<id>&t=<seconds> is that frame, frozen (screenshots, qa, tools/clip.js), and with
+       &from=<id>&ft=<seconds>&k=<0..1>[&kind=dissolve|wipe|chapter|push] a moment of the transition into it.
+       window.__seek(t[, { from: [id or index, t], k, kind }]) draws another frame without reloading; __ready says done */
+    const tr = (from, ft, k, kind) => {
+      const fi = typeof from === 'number' ? from : DECK.slides.findIndex(s => s.id === from);
+      if (fi < 0 || fi >= DECK.slides.length) { if (from != null) console.error('capture: no slide', from); return null; }
+      return { from: [fi, ft != null && ft !== '' ? +ft : (DECK.slides[fi].settle || 9)], k: k == null || k === '' ? 0.5 : +k, kind: kind || null };
+    };
+    window.__seek = (t, o) => capFrame(+t, o && o.from ? tr(o.from[0], o.from[1], o.k, o.kind) : null);
+    const f0 = q.get('from');
+    await capFrame(parseFloat(q.get('t')), f0 != null ? tr(f0, q.get('ft'), q.get('k'), q.get('kind')) : null);
+    return;
   }
   $('prev').onclick = e => { e.stopPropagation(); go(APP.i - 1); };
   $('next').onclick = e => { e.stopPropagation(); go(APP.i + 1); };
@@ -489,19 +687,19 @@ async function start() {
   $('fs').onclick = e => { e.stopPropagation(); const el = document.documentElement; const p = document.fullscreenElement ? document.exitFullscreen() : (el.requestFullscreen ? el.requestFullscreen() : null); if (p && p.catch) p.catch(() => { }); };
   $('rateBtn').onclick = e => { e.stopPropagation(); const b = $('rate'); b.hidden = !b.hidden; $('rateBtn').setAttribute('aria-expanded', String(!b.hidden)); if (!b.hidden && EDIT.on) editToggle(false); rateSync(); };
   $('editBtn').onclick = e => { e.stopPropagation(); editToggle(); };
-  rateInit();
+  if (!APP.clip) rateInit();
   $('srcBtn').onclick = e => { e.stopPropagation(); const b = $('src'); b.hidden = !b.hidden; $('srcBtn').setAttribute('aria-expanded', String(!b.hidden)); };
   $('sndBtn').onclick = e => { e.stopPropagation(); auInit(); AU.on = !AU.on; $('sndBtn').textContent = AU.on ? 'sound on' : 'sound off'; $('sndBtn').setAttribute('aria-pressed', String(AU.on)); if (AU.on) sfx('click'); };
   $('cleanBtn').onclick = e => { e.stopPropagation(); document.body.classList.toggle('clean'); fit(); };
-  $('viewBtn').onclick = e => { e.stopPropagation(); setView2D(!V2D.on); };
-  v2dButton();
-  $('stage').addEventListener('click', e => { if (EDIT.on) { editPick(e); return; } const r = $('stage').getBoundingClientRect(); go(APP.i + ((e.clientX - r.left) < r.width * 0.3 ? -1 : 1)); });
+  /* a clip plays again on a tap; the film steps (the left third of the stage goes back) */
+  $('stage').addEventListener('click', e => { if (APP.clip) { clipRestart(); return; } if (EDIT.on) { editPick(e); return; } const r = $('stage').getBoundingClientRect(); go(APP.i + ((e.clientX - r.left) < r.width * 0.3 ? -1 : 1)); });
   let tx = null; $('stage').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
-  $('stage').addEventListener('touchend', e => { if (tx == null) return; const d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 40) go(APP.i + (d < 0 ? 1 : -1)); tx = null; });
+  $('stage').addEventListener('touchend', e => { if (tx == null || APP.clip) return; const d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 40) go(APP.i + (d < 0 ? 1 : -1)); tx = null; });
   window.addEventListener('keydown', e => {
     if (e.target && /^(TEXTAREA|INPUT|SELECT)$/.test(e.target.tagName)) return;   /* typing a rating note */
     if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
     const k = e.key;
+    if (APP.clip) { if (k === ' ' || k === 'r' || k === 'R' || k === 'Enter') { e.preventDefault(); clipRestart(); } else if (k === 'f' || k === 'F') $('fs').click(); return; }
     if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') { e.preventDefault(); go(APP.i + 1); }
     else if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); go(APP.i - 1); }
     else if (k === 'Home') go(0); else if (k === 'End') go(DECK.slides.length - 1);
@@ -510,16 +708,16 @@ async function start() {
     else if (k === 'r' || k === 'R') go(APP.i, { force: true, instant: true });
     else if (k === 'f' || k === 'F') $('fs').click();
     else if (k === 's' || k === 'S') $('sndBtn').click();
-    else if (k === 'd' || k === 'D') setView2D(!V2D.on);
-    else if (k === '2') setView2D(true);
-    else if (k === '3') setView2D(false);
     else if ((k === 'e' || k === 'E') && !$('editBtn').hidden) editToggle();
     else if (k === 'Escape') { $('src').hidden = true; $('rate').hidden = true; $('rateBtn').setAttribute('aria-expanded', 'false'); if (EDIT.on) editToggle(false); }
   });
-  window.addEventListener('hashchange', () => {
-    const hv = location.hash.slice(1);
-    if (/^(2d|3d)$/i.test(hv)) { setView2D(hv.toLowerCase() === '2d'); try { history.replaceState(null, '', '#' + DECK.slides[APP.i].id); } catch (e) { } return; }
-    const n = DECK.slides.findIndex(s => s.id === hv); if (n >= 0 && n !== APP.i) go(n);
+  /* the film doesn't run on while nobody watches: a hidden tab pauses it where it is, and it plays on when seen again */
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { if (APP.playing && APP.frozenT == null) { APP.tPause = slideT(); APP.playing = false; APP.hidPaused = true; } }
+    else if (APP.hidPaused) { APP.hidPaused = false; APP.t0 = performance.now() - APP.tPause * 1000; APP.playing = true; }
+  });
+  if (!APP.clip) window.addEventListener('hashchange', () => {
+    const hv = location.hash.slice(1), n = DECK.slides.findIndex(s => s.id === hv); if (n >= 0 && n !== APP.i) go(n);
   });
   requestAnimationFrame(loop);
 }

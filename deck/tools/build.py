@@ -10,6 +10,7 @@ data_dir = root.parent / 'research' / 'data'
 #     snapshot (--base=dir, default deck/.snapshot/src): a builder working on one chapter is never broken by another
 #     builder's half-saved file. A file that exists only in src/ and is not yours is left out. The 2D twins (geo2d/) and the
 #     3D bundle (vendor/r3d.js) come from the snapshot too, unless 'geo2d' / 'vendor' is in the list.
+#   --with3d embeds the 3D bundle in main for development; the film itself is 2D and ships without it (F38.8)
 # research/data/*.json is embedded as RDATA (RDATA.batteries, RDATA['weight-science'], ...), so slides read sourced data.
 def rdata():
     out = {}
@@ -27,12 +28,13 @@ def geo2d():
             out[p.stem] = json.loads(p.read_text())
     return 'const GEO2D = ' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ';\n'
 def r3d_tag():
-    """the 3D bundle (built by 3d/integration/build.mjs); assets load from ./assets/ next to the page"""
+    """the 3D bundle (built by 3d/integration/build.mjs); assets load from ./assets/ next to the page. R3D_DEV marks a
+    development page: only there does 08-v2d.js draw 3D (the film is 2D, F38.8)"""
     v = root / 'vendor' / 'r3d.js' if OWN is None or 'vendor' in OWN else BASE.parent / 'vendor' / 'r3d.js'
     if not v.exists(): return ''
-    return ("\n<script>window.R3D_MODURL = new URL('assets/', location.href).href;</script>\n<script>\n"
+    return ("\n<script>window.R3D_MODURL = new URL('assets/', location.href).href; window.R3D_DEV = true;</script>\n<script>\n"
             + v.read_text() + "\n</script>")
-def build(name, title, slides, dev=False, flat=True):
+def build(name, title, slides, dev=False, flat=True, r3d=True):
     head = read_src('00-head.html').replace('%%TITLE%%', title)
     parts = ['01-core.js', '03-parts.js', '04-ui.js', '07-charts.js', '07-sim.js', '08-r3d.js', '08-v2d.js', '05-data.js', '06-audio.js'] + [p for p in ('05-f27.js', '06-motion.js') if (src / p).exists()] + slides + ['20-app.js']
     js = rdata() + (geo2d() if flat else 'const GEO2D = {};\n') + '\n'.join(read_src(p) for p in parts)
@@ -41,7 +43,7 @@ def build(name, title, slides, dev=False, flat=True):
     if 'name="viewport"' not in head_part:
         head_part = head_part.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">', 1)
     out = ('<!DOCTYPE html>\n<html lang="en">\n<head>\n' + head_part + '</head>\n<body>\n' + body_part
-           + r3d_tag() + '\n<script>\n' + js + '\n</script>\n</body>\n</html>\n')
+           + (r3d_tag() if r3d else '') + '\n<script>\n' + js + '\n</script>\n</body>\n</html>\n')
     d = root / ('dev' if dev else 'dist'); d.mkdir(exist_ok=True)
     (d / name).write_text(out)
     print(name, len(out))
@@ -62,8 +64,11 @@ extra = sorted(p.name for p in src.glob('14-*.js'))
 revamp = sorted(p.name for p in src.glob('30-*.js'))
 main_slides = (['09-fillet-data.js'] if (src/'09-fillet-data.js').exists() else []) + sorted(p.name for p in src.glob('10-*.js')) + sheets + extra + revamp + (['13-sort.js'] if (src/'13-sort.js').exists() else [])
 out = ('main-' + opt['out'] + '.html') if 'out' in opt else 'main.html'
-if 'main' in which: build(out, 'Theseus', main_slides, dev)
+# the film is 2D (Brock, 2026-11-06, F38.8): main embeds no 3D bundle; --with3d embeds it for development (3D via ?2d=0)
+if 'main' in which: build(out, 'Theseus', main_slides, dev, r3d='--with3d' in args)
 if 'parts' in which: build('parts.html', 'Parts test', ['19-parts-test.js'], dev)
 if 'comps' in which: build('components.html', 'Component test', ['19-components-test.js'], dev)
+# the motion kit's test page and exemplar (F0a): every kit element animating, in both themes (dist/kit.html)
+if 'kit' in which: build('kit.html', 'Motion kit', ['19-kit-test.js'], dev, r3d=False)
 if 'three' in which: build('three.html', '3D test', ['18-three-test.js'], dev)
 if 'rec' in which: build('rec.html', 'THESEUS — Recommendations', ['11-slides-rec.js'], dev, flat=False)
