@@ -241,8 +241,9 @@ function caps(s) {
     return seg.split(/(\s+)/).map(w => { if (/^\s+$/.test(w) || !w) return w; const r = capsWord(w, prev); prev = w; return r; }).join('');
   }).join('');
 }
-/** sentence case: a capital at the start of each sentence; leaves the rest alone (brand names keep their capitals) */
-function sentence(s) { return String(s).replace(/(^|[.!?]\s+|\n)([a-z])/g, (m, a, b) => a + b.toUpperCase()); }
+/** sentence case: a capital at the start of each sentence; leaves the rest alone (brand names keep their capitals), and a
+   first word with a capital inside it is a name as written (iFixit, iPhone, eBay, mAh): it keeps its small first letter */
+function sentence(s) { return String(s).replace(/(^|[.!?]\s+|\n)([a-z])(\S*)/g, (m, a, b, w) => a + (/[A-Z]/.test(w) ? b : b.toUpperCase()) + w); }
 
 /* ---------- 2D drawing (stage units 1920 x 1080) ---------- */
 let G = null; /* the overlay context, set by the app each frame */

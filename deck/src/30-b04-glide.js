@@ -23,6 +23,8 @@ Object.assign(SRC, {
   b04_zowie: { t: 'ZOWIE FAQ: original skates "approximately 0.5 mm thick"; "lag or tracking issues may occur if the new skates are thicker than the original ones"; "the sensor height may change"', u: 'https://zowie.benq.eu/en-eu/support/faq/product/explanation/zowiegear-faq-kn-00024.html' },
   b04_johnson: { t: 'Johnson, Hagberg, Hjelm & Rempel, "Measuring and characterizing force exposure during computer mouse use", Scand J Work Environ Health 2000;26(5):398-405: grip on the sides 0.35 to 0.43 N on average, the button 0.43 N, dragging 0.90 N', u: 'https://www.sjweh.fi/article/560' },
   b04_deleva: { t: 'de Leva 1996, "Adjustments to Zatsiorsky-Seluyanov\'s segment inertia parameters", J Biomech 29(9):1223-1230, Table 4: the hand is 0.61 % of body mass in men (reference body 73.0 kg), 0.56 % in women; so a 73 kg man\'s hand weighs 4.4 N (derived). No study measures the downward force on a mouse in play (research fill, 2026-11-06), so a resting hand\'s weight stands in', u: 'https://ebm.ufabc.edu.br/wp-content/uploads/2013/12/Leva-1996.pdf' },
+  b04_insider: { t: 'Razer Insider, "Viper V4 Pro tracking issues on glass mousepad" (2026-09-29 to 10-03): owners report it "stops tracking and stutters sometimes" on a Pulsar meiy glass pad and a white Razer Atlas at Low or Medium Smart Tracking, with stock feet; anecdotal', u: 'https://insider.razer.com/razer-support-45/viper-v4-pro-tracking-issues-on-glass-mousepad-91843' },
+  b04_valid: { t: 'This deck\'s validation report (research/validation-report-2026-11-03.md): Razer\'s Focus Pro 50K Gen-3 has no public PixArt part number; the historical pattern, Focus+ → PAW3395 and Focus Pro 30K → PAW3950, is an analogy; TechPowerUp: "a completely different package and a new tracking engine"', u: '' },
   b04_dempster: { t: 'Dempster\'s segment masses (as used by Visual3D): the hand is 0.006 of body mass, so 0.48 kg (4.7 N) for an 80 kg adult', u: 'https://wiki.has-motion.com/Segment_Mass' },
   b04_zk: { t: 'Zaunkoenig, "M1K weight in review": the PMW3360\'s lens weighed 0.8 g, more than the sensor (0.6 g)', u: 'https://zaunkoenig.co/blog/m1k-weight-in-review' },
   b04_tpuUlx: { t: 'TechPowerUp, Finalmouse UltralightX review: the rear screws sit under the rear skates', u: 'https://www.techpowerup.com/review/finalmouse-ultralightx/' },
@@ -405,6 +407,39 @@ function b04_padsAt(k) {
 }
 const b04_gOf = A => A * B04SP.gPOM;                                                    /* grams of skate, POM stack */
 
+/* ============================== 1. The chapter card ==============================
+   Replaces `glide` (7/10, no note). The kit's chapter card: the compromise (LEDGER: "Skates and sensors that cost your
+   aim"), struck as the answer lands ("Aim that goes where you put it"); this chapter's slides in film order; the ledger
+   strip. On the right, the chapter in one picture: the sensor in section over the cloth; the lens drifts 0.3 mm toward the
+   pad (red, out of its window) while the compromise stands, and is held back at 2.40 mm (blue) as the answer lands. */
+S({
+  id: 'b04_card', ch: 'glide', card: true, first: true, theme: 'night', title: 'Glide and tracking', settle: 5.5,
+  replaces: ['glide'],
+  answers: [
+    ['glide (7/10, no note)', 'Rebuilt in the kit\'s chapter-card family: the compromise most mice make here, struck as Theseus\'s answer lands in blue; the ledger strip; the chapter\'s seven slides in film order with Brock\'s idea numbers; on the right the sensor in section over the cloth, its lens drifting out of its 0.2 mm window and held back in it as the answer lands.'],
+    ['F35.1: palette', 'Red only for the lens out of its window; blue for Theseus; everything else neutral.']
+  ],
+  draw: t => chapterCard2(t, {
+    ch: 'glide', turn: 2.1,
+    list: [['', 'Your sensor is a camera'], [11, 'A focus window of 0.2 mm'], [10, 'Dots at the lens'], [[10, 8, 52], 'Skates where they count'], [37, 'A snap-on lens, one dot wide'], [76, 'The PAW3970: the plan'], ['16-bit', 'Every frame as it comes']],
+    part: (t, box, kt) => {
+      const s = 34, cx = box[0] + box[2] / 2 + 40, yPad = box[1] + box[3] - 70, drift = 0.3 * ep(t, 0.6, 1.6, E.io3) * (1 - kt), Z = 2.4 - drift;
+      clipped(box[0], box[1], box[2], box[3], () => {
+        b04_padSec(box[0] + 40, box[0] + box[2] - 40, yPad, s, 0, 1, { foam: 1.6, cells: true });
+        b04_section(cx, yPad - (2.63 + Z) * s, s, { pad: false, z0: -9.5, z1: 9.5 });
+        /* the window, ±0.1 mm round 2.40 over the cloth, and the lens's lowest point against it */
+        const ax = cx + B04S.axis * s, yW = yPad - 2.4 * s, hw = 0.1 * s, yL = yPad - Z * s, out = drift > 0.1, col = out ? C.red : kt > 0.5 ? C.hero : C.ink;
+        rect(ax - 60, yW - hw, 120, hw * 2, { fill: inkA(0.14) });
+        for (const yy of [yW - hw, yW + hw]) line(ax - 60, yy, ax + 60, yy, { color: C.ink2, w: 1.5, dash: [5, 4] });
+        line(ax - 40, yL, ax + 40, yL, { color: col, w: 3.5 });
+        rich([{ s: fmtN(Z, 2), role: 'd1', size: 44, weight: 800, color: out ? C.red : kt > 0.5 ? C.heroText : C.ink, tnum: true }, { s: 'mm', font: 'sans', size: 22, weight: 700, color: C.mute, gap: 6 }], box[0] + 40, box[1] + 96);
+        text('Lens to pad', box[0] + 40, box[1] + 44, { role: 'label', size: 22, color: C.mute });
+        text(out ? 'Out of its 0.2 mm window' : 'In its 0.2 mm window', box[0] + 40, box[1] + 134, { role: 'label', size: 22, color: out ? C.red : kt > 0.5 ? C.heroText : C.mute });
+      });
+    }
+  })
+});
+
 /* ============================== 2. Your sensor is a camera ==============================
    Camera, correlation and defocus in one slide (Brock on gld_camera, gld_corr and gld_blur: "combine them"). The whole
    mouse from the side, the lens lit; the camera pushes in to the sensor in section, to scale; the LED lights a spot and the
@@ -424,7 +459,7 @@ const b04_padU = t => B04C.u0 + B04C.vel * Math.max(0, t - B04C.t0);
 const B04ZK = [[0, 2.4], [6.2, 2.4], [6.8, 2.8], [7.3, 2.8], [8.0, 2.0], [8.5, 2.0], [9.1, 2.4]];
 const b04_camZ = t => kf(t, B04ZK, E.io3);
 S({
-  id: 'b04_camera', ch: 'glide', theme: 'paper', title: 'Your sensor is a camera', settle: 11.5,
+  id: 'b04_camera', ch: 'glide', theme: 'paper', title: 'Your sensor is a camera', settle: 12,
   replaces: ['gld_camera', 'gld_corr', 'gld_blur'],
   src: ['b04_pmw3360', 'b04_adns2610', 'b04_paw3395', 'b04_adns3080', 'b04_r3d'],
   answers: [
@@ -445,7 +480,7 @@ S({
     captions(t, [[0.5, 'An optical sensor is a camera. An LED lights the pad, a lens images one millimetre of it, and the chip takes thousands of pictures a second.'],
       [3.7, 'Nothing in it measures motion. It slides each picture over the last until they line up: that shift is how far you moved.'],
       [6.0, 'Drag the lens too far or too close and the picture blurs, as a phone\'s camera does at the wrong distance. The count changes with it.'],
-      [9.2, 'Every count rests on a sharp picture from the right height. Built anywhere in PixArt\'s 0.4 mm, a lens can keep ' + Math.round(b04_detail(2.2) * 100) + ' % of the detail; held to the middle 0.2 mm, at least ' + Math.round(b04_detail(2.3) * 100) + ' %.']]);
+      [9.2, 'Every count rests on a sharp picture. Built anywhere in PixArt\'s 0.4 mm, a lens can keep ' + Math.round(b04_detail(2.2) * 100) + ' % of the detail; held to the middle 0.2 mm, at least ' + Math.round(b04_detail(2.3) * 100) + ' %.']]);
     const lz = b04_lensZ(), z = b04_camZ(t), dz = z - B04.Z, u = b04_padU(t), top = B04S.top;
     /* ---- left: the whole mouse, then the sensor in section (the camera pushes in once) ---- */
     const box = [LM, 280, 920, 660], sx = lz;
@@ -598,7 +633,7 @@ function b04_detail(z) {
   const r = Math.min(1, a / b); B04FD.set(key, r); return r;
 }
 S({
-  id: 'b04_focus', ch: 'glide', theme: 'night', title: 'A focus window of 0.2 mm, not 0.4', settle: 10.5,
+  id: 'b04_focus', ch: 'glide', ideas: [11], theme: 'night', title: 'A focus window of 0.2 mm, not 0.4', settle: 10.5,
   replaces: ['focus'],
   src: ['b04_paw3395', 'b04_pmw3360', 'b04_adns3080', 'b04_adns2610', 'b04_brock', 'b04_zowie'],
   answers: [
@@ -615,10 +650,10 @@ S({
     /* ---- left: the lens over the cloth, the chip's picture, and the ruler the pointer sets the height on ---- */
     const bx = LM, by = 280, bw = 860, bh = 660;
     demoWindow(bx, by, bw, bh, 1, { plain: true });
-    const s = 30, ox = bx + 380, yPad = by + bh - 170;
+    const s = 30, ox = bx + 360, yPad = by + bh - 170;
     clipped(bx, by, bw, bh, () => {
       b04_padSec(bx - 10, bx + 590, yPad, s, 0, 1, { foam: 6, cells: true });
-      b04_section(ox, yPad - (2.63 + Z) * s, s, { pad: false, z0: -7.4, z1: 7.4 });
+      b04_section(ox, yPad - (2.63 + Z) * s, s, { pad: false, z0: -6.8, z1: 6.8 });
       /* the lens's height, measured where the picture is taken */
       const ax = ox + B04S.axis * s, yL = yPad - Z * s, out = Z < 2.3 - 1e-6 || Z > 2.5 + 1e-6, col = out ? C.red : C.ink;
       line(ax, yL + 2, ax, yPad - 2, { color: col, w: 2, dash: [5, 4] });
@@ -633,13 +668,13 @@ S({
       text('Detail kept', fx + fs + 24, fy + 70, { role: 'label', size: 22, color: C.mute });
       rich([{ s: String(det), role: 'd1', size: 60, weight: 800, color: out ? C.red : C.ink, tnum: true }, { s: '%', font: 'disp', size: 32, weight: 800, color: out ? C.red : C.ink, gap: 4 }], fx + fs + 22, fy + 134); }
     /* the ruler: 2.0 to 2.8 mm, PixArt's window and Theseus's, a handle at the lens's height */
-    const rx = bx + 650, yR = z => by + 600 - (z - 2.0) * 560, kB = ep(t, 3.6, 4.0);
+    const rx = bx + 620, yR = z => by + 600 - (z - 2.0) * 560, kB = ep(t, 3.6, 4.0);
     line(rx, yR(2.8), rx, yR(2.0), { color: C.faint, w: 2 });
     for (let v = 2.0; v <= 2.8001; v += 0.1) { const maj = Math.abs(v * 5 - Math.round(v * 5)) < 1e-6; line(rx - (maj ? 12 : 7), yR(v), rx, yR(v), { color: C.faint, w: 1.5 }); }
     rr(rx + 6, yR(2.6), 14, yR(2.2) - yR(2.6), 3, rgba(C.second, 0.85));
-    text('PixArt', rx + 34, yR(2.6) + 18, { role: 'label', size: 22, color: C.secondText });
+    text('PixArt ±0.2', rx + 34, yR(2.6) + 18, { role: 'label', size: 22, color: C.secondText });
     text('2.2–2.6 mm', rx + 34, yR(2.6) + 46, { role: 'small', size: 25, weight: 700, color: C.secondText });
-    if (kB > 0.003) { rr(rx + 24, yR(2.5), 14, yR(2.3) - yR(2.5), 3, C.hero, null, 0, kB); text('Theseus', rx + 48, yR(2.3) - 34, { role: 'label', size: 22, color: C.heroText, alpha: kB }); text('2.3–2.5 mm', rx + 48, yR(2.3) - 6, { role: 'small', size: 25, weight: 700, color: C.heroText, alpha: kB }); }
+    if (kB > 0.003) { rr(rx + 24, yR(2.5), 14, yR(2.3) - yR(2.5), 3, C.hero, null, 0, kB); text('Theseus ±0.1', rx + 48, yR(2.3) - 34, { role: 'label', size: 22, color: C.heroText, alpha: kB }); text('2.3–2.5 mm', rx + 48, yR(2.3) - 6, { role: 'small', size: 25, weight: 700, color: C.heroText, alpha: kB }); }
     text('Lens height', rx, yR(2.8) - 22, { role: 'label', size: 22, color: C.mute, align: 'center' });
     const hy = yR(Z), hcol = Z < 2.3 - 1e-6 || Z > 2.5 + 1e-6 ? C.red : C.ink;
     line(rx - 24, hy, rx + 6, hy, { color: hcol, w: 3 }); circle(rx - 24, hy, 9, { fill: C.panel, color: hcol, w: 3 });
@@ -755,7 +790,7 @@ function b04_sagWindow(r, col, a = 1) {
   line(r.ax - 44, r.yL, r.ax + 44, r.yL, { color: col, w: 3.5, alpha: a });
 }
 S({
-  id: 'b04_sag', ch: 'glide', theme: 'paper', title: 'Dots at the lens keep it in focus', settle: 10.5,
+  id: 'b04_sag', ch: 'glide', ideas: [10], theme: 'paper', title: 'Dots at the lens keep it in focus', settle: 10.5,
   replaces: ['gld_sag', 'dots'],
   src: ['b04_model', 'b04_deleva', 'b04_brock', 'b04_paw3395', 'b04_proset', 'b04_r3d', 'b04_adns3080'],
   answers: [
@@ -947,7 +982,7 @@ function b04_ledgeSec(cx, yC, s, sinks, a, o = {}) {
   return { X, yF, touch, top: yF(0) - 1.6 * s };
 }
 S({
-  id: 'b04_skates', ch: 'glide', theme: 'night', title: 'Skates where they count', settle: 11,
+  id: 'b04_skates', ch: 'glide', ideas: [10, 8, 52], theme: 'night', title: 'Skates where they count', settle: 11,
   replaces: ['gld_under', 'gld_sheet'],
   src: ['b04_model', 'b04_brock', 'b04_r3d', 'b04_tpuUlx', 'b04_zowie'],
   answers: [
@@ -1041,7 +1076,7 @@ function b04_pixStack(ox, yP, s, k, a = 1) {
   return { X, Y, post: [X(0), Y(12.5 + d3)], plate: [X(-10), Y(1.4 + d0)], lens: [X(6), Y(3.3 + d1)], board: [X(11), Y(5.15 + d2)], chip: [X(4), Y(6.95 + d2)] };
 }
 S({
-  id: 'b04_module', ch: 'glide', theme: 'paper', title: 'Snap-on lens: one dot wide', settle: 10,
+  id: 'b04_module', ch: 'glide', ideas: [37], theme: 'paper', title: 'Snap-on lens: one dot wide', settle: 10,
   replaces: ['gld_module'],
   src: ['b04_paw3395', 'b04_r3d', 'b04_brock'],
   answers: [
@@ -1065,7 +1100,7 @@ S({
       for (const [p, l, dy] of [[r.post, 'Top case presses down', -10], [r.chip, 'Chip', 0], [r.board, 'Board', 0], [r.lens, 'Lens', 0], [r.plate, 'Base plate', 0]]) {
         line(p[0], p[1], lx - 10, p[1] + dy, { color: inkA(0.3), w: 1.2, alpha: kl }); text(l, lx, p[1] + dy + 7, { role: 'label', size: 22, color: C.ink2, alpha: kl });
       }
-      if (kA > 0.7) forceArrow(r.post[0], r.post[1] - 2, Math.PI / 2, 46, { k: ep(t, 2.0, 2.4), color: C.ink, w: 3 });
+      if (kA > 0.7) forceArrow(r.post[0] + 4, r.post[1] + 6, 2.25, 52, { k: ep(t, 2.0, 2.4), color: C.ink, w: 3 });
     }
     line(bx + 30, by + 340, bx + bw - 30, by + 340, { color: C.hair, w: 1.5 });
     /* ---- bottom: Theseus's: the module on the board, the lens snapping up through it; no plate ---- */
@@ -1103,6 +1138,158 @@ S({
       verdict(t, 5.0, rx + 40, by + 548, { from: 10.9 * 16.8, to: 4 * K.hw * K.hl, unit: 'mm²', dec: 0, label: 'Board under the lens', better: 'lower', who: ['PixArt trim', 'Theseus'], size: 84 });
     }
     source(t, 'PixArt PAW3395 datasheet §3.5: "Place the lens onto the base plate"; "The optical position reference for the PCB is set by the base plate and lens. Note that the PCB motion due to button presses must be minimized to maintain optical alignment"; the top case must "press down onto the PCB". Outlines: PixArt (bounding boxes), the 3D board.', { t0: 0.8, maxW: RM - LM });
+  }
+});
+
+/* ============================== 7. The PAW3970 ==============================
+   Brock (sensor, 6/10): "says it's the 'suspected' sensor inside the viper v4 pro and that this is the plan, AFTER
+   exclusivity expires"; F21.6: "the viper v4 pro is just a renamed PAW3970, razer only has exclusivity on it for 2 years
+   ... it was the same process with razer viper mini signature edition sensor really just being a renamed 3950, use all
+   of the viper v4 pro sensor specs". The pattern so far (the deck's validation report, an analogy): Razer's Focus+ became
+   PixArt's PAW3395, its Focus Pro 30K the PAW3950; both now in 10 of the 35 mice in this deck's data. The third: the
+   Viper V4 Pro's Focus Pro 50K Gen-3 (marked FP-3), suspected to be the PAW3970, Theseus's plan once Razer's exclusivity
+   ends. Specs: the PAW3395's datasheet against Razer's figures for the V4 Pro's sensor. Razer's glass claim is tagged as
+   Razer's, with the stalls owners and one reviewer report. Theme night. */
+const B04SN = {
+  rows: [['Tracking speed', 'ips', 650, 930, 'higher'], ['Acceleration', 'G', 50, 90, 'higher'], ['Highest CPI', 'cpi', 26000, 50000, 'higher'], ['CPI step', 'cpi', 50, 1, 'lower']]
+};
+/** a sensor package, drawn: a dark DIP body with its lens window and a few leads; label under it */
+function b04_chip(x, y, w, h, col, a, mark) {
+  if (a <= 0.003) return;
+  for (let i = 0; i < 4; i++) { rect(x + 8 + i * (w - 16) / 3 - 2, y - 6, 4, 6, { fill: C.faint, alpha: a }); rect(x + 8 + i * (w - 16) / 3 - 2, y + h, 4, 6, { fill: C.faint, alpha: a }); }
+  rr(x, y, w, h, 6, TH ? '#1F2023' : '#0B0C0E', col, 2, a);
+  circle(x + w * 0.62, y + h / 2, Math.min(w, h) * 0.17, { fill: TH ? '#3A3B40' : '#2A2B30', color: col, w: 1.5, alpha: a });
+  if (mark) text(mark, x + 10, y + h / 2 + 7, { role: 'label', size: 21, color: TH ? '#E6E6EA' : '#CECED2', alpha: a, caps: false });
+}
+S({
+  id: 'b04_sensor', ch: 'glide', ideas: [76], theme: 'night', title: 'The PAW3970: the plan', settle: 10,
+  replaces: ['sensor'],
+  src: ['b04_paw3395', 'b04_razer', 'b04_igor', 'b04_brock', 'b04_pcgV4', 'b04_insider', 'b04_valid'],
+  answers: [
+    ['sensor: "says it\'s the \\"suspected\\" sensor inside the viper v4 pro"', 'On screen in those words: "suspected", under the Viper V4 Pro\'s Focus Pro 50K Gen-3 (FP-3) and again in the narration.'],
+    ['sensor: "and that this is the plan, AFTER exclusivity expires"', 'The third row of the timeline ends in "Theseus\'s plan, after Razer\'s exclusivity (about two years)", drawn dashed until then; the narration says the same. The pattern before it (Focus+ → PAW3395, Focus Pro 30K → PAW3950) is shown as the reason, labelled an analogy.'],
+    ['F21.6: "use all of the viper v4 pro sensor specs"', 'The spec rows use Razer\'s figures for the V4 Pro\'s sensor (930 ips, 90 G, 50,000 cpi in 1-cpi steps) against the PAW3395\'s datasheet; the verdict is tracking speed, 650 → 930 ips.']
+  ],
+  draw: t => {
+    header(t, 'The PAW3970: the plan');
+    captions(t, [[0.3, 'Razer gets PixArt\'s newest sensor first. Its Focus+ became PixArt\'s PAW3395, its Focus Pro 30K the PAW3950: between them, 20 of the 35 mice in this deck\'s data.'],
+      [3.4, 'The Viper V4 Pro\'s sensor is suspected to be the next one, the PAW3970. Theseus plans on it once Razer\'s exclusivity ends, in about two years.'],
+      [7.4, 'Razer says it tracks flawlessly on glass; a few owners and one reviewer report stalls on some glass pads. It goes in when it\'s sold to everyone.']]);
+    const bx = LM, by = 280, bw = 900, bh = 660;
+    demoWindow(bx, by, bw, bh, 1, { plain: true });
+    text('Razer first', bx + 40, by + 52, { role: 'label', size: 22, color: C.mute }); text('Then PixArt, for everyone', bx + 520, by + 52, { role: 'label', size: 22, color: C.mute });
+    const rows = [['Focus+', 'PixArt PAW3395', 'In 10 of 35 mice', 0.5, false], ['Focus Pro 30K', 'PixArt PAW3950', 'In 10 of 35 mice', 1.3, false], ['Focus Pro 50K Gen-3', 'PAW3970, suspected', 'Theseus\'s plan, after Razer\'s exclusivity', 2.3, true]];
+    rows.forEach(([rz, px, note, t0, plan], i) => {
+      const y = by + 110 + i * 170, a = 1, ka = ep(t, t0, t0 + 0.7, E.io3);
+      b04_chip(bx + 40, y, 150, 74, plan ? C.ink2 : C.comp, a, '');
+      text(rz, bx + 40, y + 112, { role: 'small', size: 25, weight: 700, color: C.ink, alpha: a });
+      if (plan) text('In the Viper V4 Pro, marked FP-3', bx + 40, y + 144, { role: 'label', size: 22, color: C.mute });
+      /* the arrow across: solid where it happened, dashed for the one to come */
+      const ax0 = bx + 230, ax1 = bx + 500;
+      if (ka > 0.003) { if (plan) poly([[ax0, y + 37], [lerp(ax0, ax1, ka), y + 37]], { color: C.hero, w: 3, dash: [10, 8] }); else arrow(ax0, y + 37, lerp(ax0, ax1, ka), y + 37, { color: C.ink2, w: 3, hs: 14 }); }
+      if (plan && ka > 0.99) arrow(ax1 - 30, y + 37, ax1, y + 37, { color: C.hero, w: 3, hs: 14 });
+      if (plan) text('About two years', (ax0 + ax1) / 2, y + 24, { role: 'label', size: 22, color: C.heroText, align: 'center', alpha: ep(t, t0 + 0.4, t0 + 0.8) });
+      const kb = ep(t, t0 + 0.5, t0 + 0.9);
+      b04_chip(bx + 520, y, 150, 74, plan ? C.hero : C.comp, kb, '');
+      text(px, bx + 520, y + 112, { role: 'small', size: 25, weight: 700, color: plan ? C.heroText : C.ink, alpha: kb });
+      text(note, bx + 520, y + 144, { role: 'label', size: 22, color: plan ? C.heroText : C.mute, alpha: kb, maxW: bw - 560 });
+    });
+    /* ---- right: what it brings, row by row: PixArt's datasheet for the PAW3395, Razer's figures for the V4 Pro's sensor ---- */
+    const rx = 1020, rw = RM - rx;
+    demoWindow(rx, by, rw, bh, 1);
+    cardHead(t, 0, rx, by, rw, 'What it brings', [{ ev: 'datasheet', by: 'PixArt' }, { ev: 'claim', by: 'Razer' }]);
+    const nf = v => v >= 10000 ? Math.round(v).toLocaleString('en-US') : fmtN(v, 0);
+    B04SN.rows.forEach(([lab, unit, A, B, better], i) => {
+      const y = by + 120 + i * 72, k = ep(t, 3.6 + i * 0.25, 4.4 + i * 0.25, E.io3), mx = Math.max(A, B), x0 = rx + 260, L = rw - 260 - 180;
+      text(lab, rx + 32, y + 8, { role: 'label', size: 22, color: C.ink2 });
+      rr(x0, y - 16, Math.max(6, L * A / mx), 12, 6, C.comp, null, 0, 1);
+      rr(x0, y + 2, Math.max(6, L * lerp(A, B, k) / mx), 12, 6, C.hero, null, 0, 1);
+      text(nf(A), x0 + Math.max(6, L * A / mx) + 10, y - 4, { role: 'num', size: 22, weight: 700, color: C.mute, tnum: true });
+      text(nf(Math.round(lerp(A, B, k))) + ' ' + unit, x0 + Math.max(6, L * lerp(A, B, k) / mx) + 10, y + 16, { role: 'num', size: 24, weight: 800, color: C.heroText, tnum: true, caps: false });
+    });
+    verdict(t, 5.2, rx + 36, by + 494, { from: 650, to: 930, unit: 'ips', dec: 0, label: 'Tracking speed', better: 'higher', who: ['PAW3395', 'PAW3970, planned'], size: 90 });
+    source(t, 'PixArt PAW3395 datasheet (2022). Razer\'s figures for the Focus Pro 50K Gen-3 (igor\'sLAB) and its "tracks flawlessly on glass". Stalls on glass: PC Gamer 2026-05-22 (after a skate swap), Razer Insider 2026-10 (stock feet). PAW3970, two years: Brock. Focus+ → PAW3395, Focus Pro 30K → PAW3950: validation report (an analogy).', { t0: 0.8, maxW: RM - LM });
+  }
+});
+
+/* ============================== 8. Full reports, no smoothing ==============================
+   Brock (gld_reports, 3/10): "i don't understand what is being demonstrated this slide, it's a graphic but it's not a
+   demonstration. i would have to understand it to know if the information is good or not". One plain demonstration: set
+   the mouse down and flick, slowed 20×. XBAB (2026): the PAW3950 averages its last 16 frames for about 450 ms after every
+   set-down; turning smoothing off leaves 2 frames; XBAB's corded test runs it at 20,000 frames a second (high-performance
+   modes run under 8,000). A moving average of N frames runs (N − 1) / 2 frames behind: 7.5 frames, 0.375 ms, against 0.5
+   frame, 0.025 ms. The flick: 10 cm in 100 ms, a smooth (minimum-jerk) stroke, peak 1.9 m/s; at 1,600 cpi, 63 counts a
+   mm, one count a pixel. Two screens follow the hand at 1:1 pixels: the averaged cursor trails it by up to 44 px; Theseus's
+   by 3. Theme paper. */
+const B04R = { D: 100, T: 100, t0: 50, slow: 20, cpi: 1600, fps: 20000, nR: 16, nT: 2, tStart: 1.0, tAgain: 5.2 };
+/** the flick's position (mm) and speed (mm/ms) at event time tau (ms after the set-down) */
+function b04_flick(tau) { const R = B04R, s = clamp((tau - R.t0) / R.T); return { x: R.D * (10 * s ** 3 - 15 * s ** 4 + 6 * s ** 5), v: tau < R.t0 || tau > R.t0 + R.T ? 0 : R.D / R.T * (30 * s * s - 60 * s ** 3 + 30 * s ** 4) }; }
+/** how far behind the hand an N-frame average puts the cursor at tau, in pixels at 1,600 cpi (the average of the last N
+   frames' positions, exactly) */
+function b04_lagPx(tau, N) { const R = B04R, ft = 1000 / R.fps; let s = 0; for (let i = 0; i < N; i++) s += b04_flick(tau - i * ft).x; return (b04_flick(tau).x - s / N) * R.cpi / 25.4; }
+S({
+  id: 'b04_reports', ch: 'glide', theme: 'paper', title: 'Every frame as it comes', settle: 11.5,
+  replaces: ['gld_reports'],
+  src: ['b04_xbab', 'b04_tpu', 'b04_valid'],
+  answers: [
+    ['gld_reports: "i don\'t understand what is being demonstrated this slide"', 'One demonstration: the mouse is set down and flicked, slowed 20 times; a timeline shows the 450 ms after the set-down in which the PAW3950 averages its frames, and two screens follow the hand at 1:1 pixels: the averaged cursor falls up to 44 px behind it at the flick\'s peak, Theseus\'s 3 px.'],
+    ['gld_reports: "it\'s a graphic but it\'s not a demonstration"', 'The main visual is now the event in motion: the set-down, the flick, and the cursor trailing the hand on screen.'],
+    ['gld_reports: "i would have to understand it to know if the information is good or not"', 'Every number sits on the event it describes, in plain words, with the test it comes from (XBAB, PAW3950, 16 frames for about 450 ms, at the test\'s 20,000 frames a second) and the arithmetic said (an average of 16 frames runs 7.5 frames behind).']
+  ],
+  draw: t => {
+    header(t, 'Every frame as it comes');
+    captions(t, [[0.3, 'Many sensors still smooth: for about 450 ms after every set-down, the PAW3950 averages its last 16 frames (XBAB, 2026). Set the mouse down and flick, slowed 20 times.'],
+      [2.4, 'The averaged cursor runs behind your hand, most at the flick\'s peak: 44 pixels at 1,600 cpi in XBAB\'s test, more than twice that in slower modes.'],
+      [5.3, 'Theseus\'s firmware turns it off: two frames, the least the sensor allows, and full 16-bit counts. The same set-down and flick again; the test will be published.']]);
+    const R = B04R, again = t >= R.tAgain, tau = Math.max(0, (t - (again ? R.tAgain : R.tStart)) * 1000 / R.slow), fl = b04_flick(tau), hi = again ? 1 : 0;
+    /* ---- top: the 600 ms after the set-down, the smoothing window, the flick in it ---- */
+    const bx = LM, by = 280, bw = 1120, bh = 250;
+    demoWindow(bx, by, bw, bh, 1);
+    cardHead(t, 0, bx, by, bw, 'After you set the mouse down', []);
+    const tx0 = bx + 40, tx1 = bx + bw - 40, ty = by + 170, TX = ms => lerp(tx0, tx1, ms / 600);
+    line(tx0, ty, tx1, ty, { color: C.faint, w: 2 });
+    for (const ms of [0, 100, 200, 300, 400, 500, 600]) { line(TX(ms), ty, TX(ms), ty + 8, { color: C.faint, w: 1.5 }); text(ms + ' ms', TX(ms), ty + 34, { role: 'tick', size: 21, color: C.mute, align: ms === 0 ? 'left' : ms === 600 ? 'right' : 'center' }); }
+    const kw = ep(t, 0.6, 1.2);
+    rr(TX(0), ty - 52, (TX(450) - TX(0)) * kw, 18, 4, rgba(C.red, 0.75));
+    text('PAW3950: 16 frames averaged, about 450 ms', TX(0) + 8, ty - 60, { role: 'label', size: 22, color: C.red, alpha: kw });
+    rr(TX(0), ty - 26, 6, 18, 2, C.hero, null, 0, ep(t, 5.3, 5.7));
+    text('Theseus: 2 frames', TX(0) + 16, ty - 11, { role: 'label', size: 22, color: C.heroText, alpha: ep(t, 5.3, 5.7) });
+    /* the flick on the timeline, and the playhead */
+    rr(TX(R.t0), ty - 4, TX(R.t0 + R.T) - TX(R.t0), 8, 4, C.ink2, null, 0, ep(t, 1.4, 1.8));
+    text('The flick', TX(R.t0 + R.T) + 12, ty + 64, { role: 'label', size: 22, color: C.ink2, alpha: ep(t, 1.4, 1.8) });
+    const ph = TX(Math.min(600, tau));
+    if (t > R.tStart) { line(ph, ty - 70, ph, ty + 10, { color: C.ink, w: 2.5 }); circle(ph, ty, 6, { fill: C.ink }); }
+    text('Set down', TX(0), ty + 64, { role: 'label', size: 22, color: C.mute });
+    /* ---- the verdict, beside the timeline ---- */
+    const peak = b04_lagPx(R.t0 + R.T / 2, R.nR), peakT = b04_lagPx(R.t0 + R.T / 2, R.nT);
+    verdict(t, 8.4, 1250, by + 166, { from: peak, to: peakT, unit: 'px', dec: 0, label: 'Behind your hand at the peak', better: 'lower', who: ['PAW3950', 'Theseus'], size: 80 });
+    /* ---- bottom: two screens following the hand at 1:1 pixels ---- */
+    const sy = 556, sh = 384, sw = (RM - LM - 40) / 2;
+    [[LM, 'Averaged: 16 frames (PAW3950, XBAB\'s test)', R.nR, C.red], [LM + sw + 40, 'Theseus: 2 frames', R.nT, C.hero]].forEach(([x, lab, N, col], i) => {
+      const a = i === 0 ? 1 : ep(t, 5.3, 5.8);
+      demoWindow(x, sy, sw, sh, 1);
+      text(lab, x + 32, sy + 46, { role: 'label', size: 22, color: i === 0 ? C.red : C.heroText, alpha: i === 0 ? 1 : Math.max(0.35, a) });
+      const scx = x + 32, scy = sy + 70, scw = sw - 64, sch = sh - 150, cx = scx + scw / 2, cy = scy + sch / 2;
+      rr(scx, scy, scw, sch, 10, TH ? '#1E1F22' : '#0A0A0C');
+      /* the game's world sliding past as the hand turns: a wall of panels, 1:1 pixels, the view centred on the hand */
+      const px = fl.x * R.cpi / 25.4;
+      clipped(scx, scy, scw, sch, () => {
+        const sp = 120, off = ((-px % sp) + sp) % sp;
+        for (let xx = scx - sp + off; xx < scx + scw + sp; xx += sp) { rect(xx, scy + 40, 4, sch - 80, { fill: 'rgba(255,255,255,0.10)' }); }
+        rect(scx, cy + 50, scw, 3, { fill: 'rgba(255,255,255,0.08)' });
+      });
+      /* where the hand is (a ring) and the cursor the game draws (a crosshair) */
+      const lag = b04_lagPx(tau, N), ccx = cx - lag;
+      circle(cx, cy, 22, { color: 'rgba(255,255,255,0.55)', w: 2 });
+      const ca = i === 0 ? 1 : Math.max(0.35, a), cc = i === 0 ? '#FF6B6B' : '#7AB8FF';
+      for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) line(ccx + dx * 6, cy + dy * 6, ccx + dx * 18, cy + dy * 18, { color: cc, w: 3, alpha: ca });
+      if (lag > 1.5) { line(ccx, cy - 34, cx, cy - 34, { color: cc, w: 2, alpha: ca }); }
+      text('Your hand', cx, cy + 48, { role: 'label', size: 22, color: '#CECED2', align: 'center' });
+      rich([{ s: fmtN(Math.abs(lag), 0), role: 'd1', size: 48, weight: 800, color: i === 0 ? C.red : C.heroText, tnum: true }, { s: 'px behind', role: 'small', size: 24, weight: 600, color: C.mute, gap: 10, sentence: false }], x + 32, sy + sh - 30, { alpha: i === 0 ? 1 : Math.max(0.35, a) });
+      /* once a flick has passed its peak, the most it fell behind stays */
+      if (tau > R.t0 + R.T / 2 && (i === 0 || again)) text('Most: ' + fmtN(b04_lagPx(R.t0 + R.T / 2, N), 0) + ' px', x + sw - 32, sy + sh - 30, { role: 'small', size: 24, weight: 700, color: i === 0 ? C.red : C.heroText, align: 'right' });
+    });
+    source(t, 'XBAB (qsxcv), 2026: the PAW3950 averages 16 frames for about 450 ms after every set-down, 2 with smoothing off; tested at 20,000 frames a second (high-performance modes run under 8,000). Derived: an N-frame average runs (N − 1) / 2 frames behind; a 10 cm flick in 100 ms at 1,600 cpi. Slowed 20×. V4 Pro wireless: 12-bit counts (TechPowerUp).', { t0: 0.8, maxW: RM - LM });
   }
 });
 

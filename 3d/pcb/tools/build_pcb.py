@@ -207,7 +207,9 @@ def main():
         battery=dict(part=BATTERY['part'], g=BATTERY['g'], t=BATTERY['t'], yMid_in_mouse=BATTERY['yMid'],
                      box=[round(-BATTERY['x1'], 3), round(BATTERY['z0'], 3), round(-BATTERY['x0'], 3), round(BATTERY['z1'], 3)],
                      note='board frame (+X the user\'s left, z as the layout); 35 across x 25 along x 4.0, behind the board, '
-                          '2.23 mm further back than the old key plan (H1 job 3)'),
+                          'its front 3.99 mm behind the rear lobes: placed for a centre of mass at mouse z 0 (F42.1; balance.py, '
+                          'H2: with the side switches and the estimated boss posts), 2.03 mm behind H1\'s place, 4.26 behind the '
+                          'old key plan\'s'),
     )
     import power_paths
     pw = power_paths.paths(L)

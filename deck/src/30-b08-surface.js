@@ -778,7 +778,7 @@ S({
     }
     verdict(t, 6.9, rx, 700, { from: 0, to: Math.floor(B08.mu.gain * 100), unit: '%', dec: 0, label: 'Extra grip where you pull, over where you adjust', better: 'higher', who: ['Grip tape', 'Etched ridges'], size: 132, maxW: RM - rx });
     scaleNote(rx, 832, "a light touch, about half an egg's weight", { lead: '0.3 N press', t, t0: 8.1 });
-    { const a = ep(t, 8.3, 8.7); pill(rx, 880, 'study', a, { by: 'Zhang 2017' }); text('Laser grooves in steel, one fingertip. Tape has no direction, so it grips the same every way (as Zhang\'s pillar grid did). Ridges drawn far coarser than life.', rx, 916, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: a, maxW: RM - rx }); }
+    { const a = ep(t, 8.3, 8.7); pill(rx, 880, 'study', a, { by: 'Zhang 2017' }); text('Laser grooves in steel, one fingertip; the etch copies their size (20 µm wide, 10 deep, 25 apart). Tape has no direction, so it grips the same every way (as Zhang\'s pillar grid did). Ridges drawn far coarser than life.', rx, 916, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: a, maxW: RM - rx }); }
   }
 });
 
@@ -944,7 +944,7 @@ S({
       clipped(sx, sy, sw * clamp((t - 3.6) / 1.2), sh, () => b08_drawStreams(LB, [sc0, 0, 0, sc0, sx, sy], { w: 1.8, alpha: kb }));
       [['Ridges', 0.08], ['Dashes', 0.38], ['Dots', 0.62], ['Smooth', 0.9]].forEach(([nm, f], i) => text(nm, sx + sw * f, sy + sh + 30, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: stagger(t, 4.0, i, 0.15, 0.4) }));
     }
-    verdict(t, 6.6, rx, 690, { from: LF.one, to: LF.map, dec: 2, unit: 'N', label: 'Least squeeze to lift, per side', better: 'lower', who: ['One direction', 'The map'], rivalCol: 'grey', size: 128, maxW: RM - rx });
+    verdict(t, 6.6, rx, 690, { from: LF.one, to: LF.map, dec: 2, unit: 'N', label: 'Least squeeze to lift, per side: the same ridges run one way, against the map', better: 'lower', who: ['Ridges one way', 'The map'], rivalCol: 'grey', size: 128, maxW: RM - rx });
     scaleNote(rx, 880, "about half an egg's weight", { lead: '0.3 N', t, t0: 8.3 });
     { const a = ep(t, 8.5, 8.9), w0 = pillW('study', { by: 'Zhang 2017' }); pill(rx, 926, 'study', a, { by: 'Zhang 2017' }); pill(rx + w0 + 20, 926, 'derived', a); text('Laser grooves in steel, one fingertip, 0.2 to 0.4 N: grip 0.50 to 0.51 of the squeeze across the ridges, 0.41 to 0.47 along', rx, 962, { role: 'small', size: 22, weight: 600, color: C.faint, alpha: a, maxW: RM - rx }); }
   }
@@ -1081,7 +1081,7 @@ S({
     captions(t, [[0.5, 'Soft-touch is sprayed over the moulded shell: RadTech\'s test film is 51 µm thick, standing above it.'],
       [3.0, 'Cerakote starts with a blast that takes a skin off. Its 19 µm coat fills that back to about the height the shell was moulded at.']]);
     const F0 = B08F, sc = F0.s, ys = F0.y + F0.top * F0.h;
-    const kSoft = ep(t, F0.soft[0], F0.soft[1], E.io3), kb = ep(t, F0.blast[0], F0.blast[1], E.io3), kc = ep(t, F0.coat[0], F0.coat[1], E.io3);
+    const kSoft = 1, kb = ep(t, F0.blast[0], F0.blast[1], E.io3), kc = ep(t, F0.coat[0], F0.coat[1], E.io3);   /* soft-touch is on from frame one */
     /* Theseus's half: the blast, then the coat */
     const BL = [F0.L[0], F0.y, F0.L[1], F0.h], BR = [F0.R[0], F0.y, F0.R[1], F0.h];
     const sec = b08_section(BL, { s: sc, top: F0.top, blast: kb, coat: kc, seed: 11 });
@@ -1091,7 +1091,6 @@ S({
       clipped(B[0], B[1], B[2], B[3], () => { for (let i = 0; i < n; i++) { const x0 = B[0] + r() * B[2], ph = r(), tt = t0 + ph * (t1 - t0); const f = (t - tt) / 0.35; if (f < 0 || f > 1) continue; fn(x0, B[1] + f * (ys - B[1] + 20), f, r); } }); };
     particles(BL, F0.blast[0], F0.blast[1], 120, 5, (x, y, f, r) => { G.save(); G.translate(x, y); G.rotate(r() * 3); G.fillStyle = rgba(C.ink, 0.75 * (1 - f * 0.5)); G.fillRect(-3, -2, 6, 4.5); G.restore(); });
     particles(BL, F0.coat[0], F0.coat[1], 140, 6, (x, y, f, r) => circle(x, y, 2.6, { fill: rgba(C.ink, 0.55 * (1 - f * 0.4)) }));
-    particles(BR, F0.soft[0], F0.soft[1], 70, 7, (x, y, f, r) => circle(x, y, 3, { fill: rgba(C.second, 0.55 * (1 - f * 0.4)) }));
     /* the moulded height, across both halves, from the first frame */
     line(F0.L[0], ys, F0.R[0] + F0.R[1], ys, { color: C.ink, w: 1.8, dash: [10, 7] });
     text('As moulded', F0.L[0] + 12, ys - 12, Object.assign({ role: 'label', size: 20, color: C.ink }, { glow: 'rgba(0,0,0,0.9)', glowR: 10 }));
@@ -1101,7 +1100,7 @@ S({
     /* dimensions, each as its layer arrives */
     const dim = (x, y0, y1, label, col, a, side = 1) => { if (a <= 0.003) return; line(x, y0, x, y1, { color: col, w: 2, alpha: a }); line(x - 8, y0, x + 8, y0, { color: col, w: 2, alpha: a }); line(x - 8, y1, x + 8, y1, { color: col, w: 2, alpha: a });
       text(label, x + side * 14, (y0 + y1) / 2 + 8, Object.assign({ role: 'label', size: 22, color: col, align: side > 0 ? 'left' : 'right', alpha: a }, { glow: 'rgba(0,0,0,0.9)', glowR: 10 })); };
-    dim(F0.R[0] + F0.R[1] - 46, ys, soft.top, Math.round(51 * kSoft) + ' µm', C.secondText, ep(t, F0.soft[0] + 0.2, F0.soft[0] + 0.5), -1);
+    dim(F0.R[0] + F0.R[1] - 46, ys, soft.top, '51 µm', C.secondText, ep(t, 0.3, 0.6), -1);
     { const xb = F0.L[0] + F0.L[1] * 0.08, yb = sec.mean; if (kb > 0.02) { dim(xb, ys, yb, 'Blasted off: about 13 µm (drawn)', C.mute, ep(t, F0.blast[0] + 0.3, F0.blast[0] + 0.6)); } }
     { const xf = F0.L[0] + F0.L[1] * 0.86, y0 = sec.mean, y1 = sec.mean - 19 * sc * kc; if (kc > 0.02) dim(xf, y0, y1, Math.round(19 * kc) + ' µm', C.heroText, ep(t, F0.coat[0] + 0.2, F0.coat[0] + 0.5)); }
     /* a fibre named once: 7 µm across, along the flow */

@@ -196,3 +196,64 @@ S({ id: 'kit_zoom', ch: 'click', theme: 'night', title: 'close up', settle: 2, d
 S({ id: 'kit_card_e', ch: 'elec', card: true, theme: 'night', title: 'Electronics', settle: 5.5, draw: t => {
   chapterCard2(t, { part: { view: 'top', hi: ['board'], show: ['battery'] }, list: [['#102', 'The radio, clear of the wheel'], ['#77', 'One chip, 8 khz'], ['sync', 'Frame sync: 202 → 42 µs'], ['link', 'Second Shot'], ['pmic', 'One chip runs the power'], ['#92', 'One board, one side, one reflow'], ['#69', 'Braided, not ribbon'], ['#23', 'Set it once, in the browser'], ['#70', 'Nothing lights up but the sensor']] });
 } });
+
+/* ---------- 12. the rival mouse (FILM F9): any mouse that isn't Theseus, five views, its anchors; beside Theseus ---------- */
+[['night', 'n'], ['paper', 'p']].forEach(([th, sfx]) => {
+  S({ id: 'kit_rival_' + sfx, ch: 'click', theme: th, title: 'mouseRival', settle: 3, draw: t => {
+    header(t, 'A rival mouse, five views');
+    const lab = (s, x, y, al = 'center') => text(s, x, y, { role: 'label', size: 20, color: C.mute, align: al });
+    /* top, in x-ray: its hidden parts dashed, and the three places builders point at */
+    const mt = rivalFit([80, 300, 250, 560], 'top', { show: ['switches', 'sensor', 'battery', 'board'] });
+    callout(t, 0.3, mt.at('cable'), 'Cable exit', { to: [mt.at('cable')[0] + 150, mt.at('cable')[1] + 24] });
+    callout(t, 0.4, mt.at('switchR'), 'Switches', { to: [mt.at('switchR')[0] + 130, mt.at('switchR')[1] + 70] });
+    callout(t, 0.5, mt.at('sensor'), 'Sensor', { to: [mt.at('sensor')[0] + 150, mt.at('sensor')[1] + 40] });
+    lab('top, x-ray: show board, battery,', 80, 900, 'left'); lab('switches, sensor', 80, 930, 'left');
+    /* the side, nose right, the same three anchors */
+    const mr = rivalFit([620, 290, 620, 250], 'right', { show: ['switches', 'sensor'] });
+    callout(t, 0.6, mr.at('cable'), 'Cable exit', { to: [mr.at('cable')[0] + 20, mr.at('cable')[1] - 140], side: 'r' });
+    callout(t, 0.7, mr.at('switch'), 'Switch', { to: [mr.at('switch')[0] - 150, mr.at('switch')[1] - 150], side: 'l' });
+    callout(t, 0.8, mr.at('sensor'), 'Sensor', { to: [mr.at('sensor')[0] - 60, mr.at('sensor')[1] + 52], side: 'l' });
+    lab("right (nose right)", 930, 600);
+    /* the side, nose left, as the one named rival (yellow), with a lower hump further forward */
+    rivalFit([620, 640, 620, 220], 'left', { col: 'rival', hump: 0.5, dims: [126, 64, 40] });
+    lab("left: col 'rival', hump 0.5, dims 126 × 64 × 40", 930, 900);
+    /* front and bottom */
+    rivalFit([1420, 300, 210, 170], 'front', { show: ['port'] });
+    lab('front: show port', 1525, 500);
+    rivalFit([1660, 290, 180, 430], 'bottom');
+    lab('bottom', 1750, 760);
+    /* one scale: Theseus's simplified mouse (the only whole Theseus) beside a rival */
+    const s = 2.1, yb = 920, V = msView('right'), cx = V.box[0] + V.box[2] / 2;
+    part(1420 - cx * s, yb, s, () => mouseSimple('right', {}));
+    part(1700, yb, s, () => mouseRival('right', {}));
+    lab('Theseus: mouseSimple', 1420, 966); lab('Rival: mouseRival', 1700, 966);
+  } });
+});
+S({ id: 'kit_rival_dims', ch: 'click', theme: 'night', title: 'mouseRival dims', settle: 3, draw: t => {
+  header(t, 'Rivals sized from their dims, on one scale');
+  const lab = (s, x, y, al = 'left') => text(s, x, y, { role: 'label', size: 20, color: C.mute, align: al });
+  /* three sizes, side views on one pad line and top views nose right (as b01 and b09 draw rows), all at one scale */
+  const s = 3.0, rows = [[[116, 60, 37], 'small 116 × 60 × 37'], [[120, 63, 39], 'default 120 × 63 × 39'], [[128, 67, 43], 'large 128 × 67 × 43']];
+  rows.forEach(([d, name], i) => {
+    const x = 300 + i * 520;
+    part(x, 520, s, () => mouseRival('right', { dims: d }));
+    part(x, 760, s, () => mouseRival('top', { dims: d }), { rot: Math.PI / 2 });
+    lab(name, x - 180, 330);
+  });
+  line(80, 520, 1840, 520, { color: C.hair, w: 1.5 });
+  /* colours: grey (any rival), the one you name (yellow), a fault in the whole body (red), and the outline drawn on */
+  const cols = [['grey', 'grey (default)', 1], ['rival', "col 'rival'", 1], ['bad', "col 'bad'", 1], ['grey', 'reveal', ep(t, 0.3, 1.6)]];
+  cols.forEach(([c, name, rv], i) => { const x = 220 + i * 300; part(x, 950, 1.3, () => mouseRival('right', { col: c, reveal: rv })); lab(name, x, 990, 'center'); });
+  part(1500, 950, 1.3, () => mouseRival('right', { hump: 0.5 })); lab('hump 0.5', 1500, 990, 'center');
+  part(1740, 950, 1.3, () => mouseRival('right', { hump: 0.66 })); lab('hump 0.66', 1740, 990, 'center');
+} });
+
+/* ---------- 13. verdict's edge cases: a short old value under a long rival name; % takes a space, ° and × attach ---------- */
+S({ id: 'kit_verdict', ch: 'own', theme: 'paper', title: 'verdict', settle: 4, draw: t => {
+  header(t, 'The verdict: names that never overlap');
+  verdict(t, 0.2, 120, 450, { from: 0, to: 4, unit: 'repairs', dec: 0, size: 110, label: 'Switch swaps before the threads strip', better: 'higher', who: ['Plastic threads, ten re-screws', 'Theseus'] });
+  verdict(t, 0.4, 1000, 450, { from: 2, to: 9, unit: 'H', dec: 0, size: 110, label: 'Pencil hardness', better: 'higher', who: ['UltralightX', 'Theseus'], net: false });
+  verdict(t, 0.6, 120, 800, { from: 0.007, to: 0, unit: '%', dec: 3, size: 110, label: 'Share of the battery, idle', better: 'lower', who: ['Viper V4 Pro', 'Theseus'] });
+  verdict(t, 0.8, 1000, 800, { from: 19.5, to: 0, unit: '°', dec: 1, size: 110, label: 'Bend line, off square', better: 'lower', who: ['Most mice', 'Theseus'] });
+  verdict(t, 1.0, 1840, 960, { from: 1.0, to: 2.4, unit: '×', dec: 1, size: 80, label: 'Load before it bends', better: 'higher', who: ['Most mice', 'Theseus'], align: 'right' });
+} });

@@ -204,7 +204,7 @@ function breakdown(t, o) {
     /* grams, then the share, on one line (XBAB stacks them; a slide has less height than a poster) */
     const gs = countUp(fmtN(r.g, o.dec == null ? 3 : o.dec), k) || fmtN(r.g, o.dec == null ? 3 : o.dec), vy = ry + rh * 0.6;
     rich([{ s: gs, font: 'mono', size: 30, weight: 700, color: C.ink }, { s: o.unit || 'g', font: 'mono', size: 20, weight: 500, color: C.faint, gap: 8 }], x + w, vy, { align: 'right', alpha: a });
-    if (o.pctCol !== false) text(fmtN(100 * r.g / (o.pctOf || o.total), 1) + '%', x + w - 172, vy, { font: 'mono', size: 23, weight: 500, color: C.mute, align: 'right', alpha: a });
+    if (o.pctCol !== false) text(fmtN(100 * r.g / (o.pctOf || o.total), 1) + ' %', x + w - 172, vy, { font: 'mono', size: 23, weight: 500, color: C.mute, align: 'right', alpha: a });
   });
   const yb = y + rh * o.rows.length;
   line(x, yb, x + w * ep(t, t0 + 0.4, t0 + 1.2, E.cam), yb, { color: C.hair, w: 1.5 });

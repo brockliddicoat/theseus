@@ -187,11 +187,18 @@ def square_cut_poly():
 
 
 # The battery (the deck's example, Jauch LP402535JU: 35 across x 25 along x 4.0 mm, 8 g) in the tail behind the board,
-# 0.43 mm above the board's top (its middle 7.46 mm over the pad). Layout frame (x right, z nose; mouse z = z - 2.88).
-# H1 job 3 (the 2026-11-05 decision): 2.23 mm back from the key plan's old place (front at layout z -7.34, which plan 5's
-# rear lobes, back edge at -7.61, overlapped by 0.27 mm in plan): its front now 1.96 mm behind the lobes. x as before
-# (0.41 mm to the user's right of the centre line).
-BATTERY = dict(part='LP402535JU', x0=-17.09, x1=17.91, z0=-7.34 - 2.23 - 25.0, z1=-7.34 - 2.23, t=4.0, yMid=7.46, g=8.0)
+# 0.43 mm above the board's top level (its middle 7.46 mm over the pad). Layout frame (x right, z nose; mouse z = z - 2.88).
+# History: the key plan's old place had its front at layout z -7.34; H1 (2026-11-06, the 2026-11-05 decision) moved it
+# 2.23 mm back (front -9.57). F42.1 (Brock, "Forward and up": the balance at the mouse's centre) asked for H1's model's
+# answer, about 5.9 mm forward and 1.5 mm up over the board's rear edge. H2 corrected that model (balance.py: the board's
+# screws at its holes, not at the optional plate's; the bare board at its core's centroid; the encoder and support inside
+# the board's 5.6 g target) and, at the integrator's request (10:1x), added the two side switches (F44.2, out of the shell's
+# allowance) and the four boss posts the board hangs from (#54, an ESTIMATE until the 3D shell has them). With all of that
+# the centre of mass lands at mouse z 0 with the battery 2.03 mm BEHIND H1's place: front edge at layout z -11.60, 3.99 mm
+# behind the rear lobes (-7.61), so it no longer passes over the board and the 1.5 mm rise (needed only to clear the board's
+# rear edge) is not taken: yMid stays 7.46 (the balance point 0.41 mm lower). Re-run balance.py when the shell gets its posts.
+# x as before (0.41 mm to the user's right of the centre line).
+BATTERY = dict(part='LP402535JU', x0=-17.09, x1=17.91, z0=-11.60 - 25.0, z1=-11.60, t=4.0, yMid=7.46, g=8.0)
 
 
 # Sora V2 component boxes as seen in the photo (for the layout comparison image). (x0, z0, x1, z1) mm

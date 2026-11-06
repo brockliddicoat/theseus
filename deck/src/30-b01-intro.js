@@ -289,15 +289,17 @@ function b01_budget() {
   if (!B) return null;
   const parts = [
     { key: 'battery', name: 'Battery, ' + batt.mAh + ' mAh', g: B.cell.g, note: 'Example part, ' + batt.part, ev: 'datasheet', by: 'Jauch' },
-    { key: 'board', name: 'One board', g: THESEUS.pcb, note: 'Radio, antenna and USB-C on it' },
+    { key: 'board', name: 'One board, a target', g: THESEUS.pcb, note: 'Radio, antenna and USB-C on it; built to this figure (F42.2)' },
     { key: 'buttons', name: 'Buttons', g: B.xa.btn, note: 'As XBAB weighed the XA25\'s', ev: 'claim', by: 'XBAB' },
+    /* Brock, F44.2: the two side switches, full-size SPDT, about 0.5 g each (H1's typical figure), "from the shell" */
+    { key: 'sideSw', name: 'Side switches', count: 2, g: 2 * 0.5, note: 'Two full-size SPDT, about 0.5 g each, typical', ev: 'estimate' },
     { key: 'wheel', name: 'Wheel and axle', g: B.wheel, note: 'Magnesium, 0.9 g, on a POM axle', ev: 'derived' },
     { key: 'inserts', name: 'Brass inserts', count: NTR_BUD.inserts, g: B.ins, note: fmtN(B.ins1, 2) + ' g each', ev: 'derived' },
     { key: 'screws', name: 'Titanium screws', count: NTR_BUD.screws, g: B.screws, note: 'M2 × 4, ' + fmtN(B.screw1, 2) + ' g each', ev: 'derived' },
     { key: 'wires', name: 'Side-button lead', g: B.wires, note: '32 AWG, braided', ev: 'derived' }
   ];
   const used = parts.reduce((s, p) => s + p.g, 0);
-  return { parts, used, shell: THESEUS.mass - used, xaShell: B.xa.shell, hours: batt.h, batt, B };
+  return { parts, used, shell: THESEUS.mass - used, xaShell: B.xa.shell, cut: B.xa.shell - (THESEUS.mass - used), hours: batt.h, batt, B };
 }
 
 /* ================================ small demonstrations of each trade ================================
@@ -1234,21 +1236,21 @@ S({
     text('Weight', x0 + w + 18, y0 + h + 34, { role: 'label', size: 21, color: C.mute });
     const P = b01_all().filter(q => q.price && q.g), wl = P.filter(q => q.conn !== 'wired');
     /* the flagship band: the ledger's flagships' prices */
-    { const kb = ep(t, T.band, T.band + 0.5); if (kb > 0) { rect(x0, m.Y(199.99), w, m.Y(159.99) - m.Y(199.99), { fill: inkA(0.08), alpha: kb }); text('Flagships, $159.99 to $199.99', x0 + w - 10, m.Y(199.99) - 10, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kb }); } }
+    { const kb = ep(t, T.band, T.band + 0.5); if (kb > 0) { rect(x0, m.Y(199.99), w, m.Y(159.99) - m.Y(199.99), { fill: inkA(0.08), alpha: kb }); } }
     /* the frontier: the cheapest at each weight among wireless mice, one smooth curve with no kink */
     { const F = b01_front(wl.map(q => ({ x: q.g, y: q.price, q })), { x: -1, y: -1 }), curve = b01_frontCurve(F.map(f => [f.x, f.y]), [0.1, 0.1], { x: xr, y: yr });
       const kf = ep(t, T.front, T.front + 1.4, E.io3), pts = curve.filter(c => c[0] <= lerp(curve[0][0], curve[curve.length - 1][0], kf)).map(c => [m.X(c[0]), m.Y(c[1])]);
       if (pts.length > 1) poly(pts, { color: C.ink, w: 3 });
       if (kf > 0.95) text('Cheapest at each weight', m.X(F[F.length - 1].x) - 6, m.Y(F[F.length - 1].y) + 34, { role: 'label', size: 19, color: C.ink2, alpha: ep(t, T.front + 1.4, T.front + 1.8) }); }
     /* every mouse: wireless dots, wired rings; the named ones labelled */
-    const lab = { 'razer-viper-mini-se': ['Viper Mini SE, $279.99', 1], 'zaunkoenig-m3k': ['M3K, €340, wired', 1], 'zaunkoenig-m2k': ['M2K, €299, wired', 1], 'logitech-x3': ['Pro X3 Superstrike, $199.99', 1], 'finalmouse-ulx': ['UltralightX, $189', 0], 'razer-viper-v4-pro': ['Viper V4 Pro', 1], 'gw-lycan': ['G-Wolves Lycan 8K, $132', 0], 'pulsar-x2f-crazylight': ['X2F, $149.95', 0] };
+    const lab = { 'razer-viper-mini-se': ['Viper Mini SE, $279.99', 1], 'zaunkoenig-m3k': ['M3K, €340, wired', 1], 'zaunkoenig-m2k': ['M2K, €299, wired', 1], 'logitech-x3': ['Pro X3 Superstrike, $199.99', 1, 1], 'finalmouse-ulx': ['UltralightX, $189', 0], 'gw-lycan': ['Lycan 8K, $132', 0] };
     P.forEach(q => {
       const px = m.X(q.g), py = m.Y(q.price), rv = q.id === 'finalmouse-ulx', wired = q.conn === 'wired';
       if (wired) { circle(px, py, 7, { fill: C.bg }); circle(px, py, 7, { color: C.comp, w: 2.5 }); }
       else circle(px, py, rv ? 9 : 7, { fill: rv ? C.second : C.comp });
       const L = lab[q.id]; if (!L) return;
       const kl = ep(t, L[1] ? T.lab : T.ths - 0.4, (L[1] ? T.lab : T.ths - 0.4) + 0.4);
-      text(L[0], px + 14, py + (q.id === 'gw-lycan' ? 26 : 7), { role: 'label', size: 19, color: rv ? C.secondText : C.ink2, alpha: kl });
+      text(L[0], px + (L[2] ? -14 : 14), py + (q.id === 'gw-lycan' ? 34 : L[2] ? -14 : 7), { role: 'label', size: 19, color: rv ? C.secondText : C.ink2, align: L[2] ? 'right' : 'left', alpha: kl });
     });
     /* Theseus at the UltralightX's price: the same $189, 8.7 g to the left */
     { const kT = ep(t, T.ths, T.ths + 0.4), ka = ep(t, T.ths + 0.2, T.ths + 1.0, E.io3), ulx = P.find(q => q.id === 'finalmouse-ulx'), py = m.Y(THESEUS.price);
@@ -1257,9 +1259,197 @@ S({
         heroMark(m.X(THESEUS.mass), py, 12, kT * ep(t, T.ths + 0.8, T.ths + 1.1));
         text('Theseus, 29.3 g, $189', m.X(THESEUS.mass), py - 22, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, T.ths + 0.9, T.ths + 1.2) });
       } }
-    legend(t, -1, x0, y0 + h + 72, [{ kind: 'line', color: C.ink, label: 'Cheapest at each weight' }, { kind: 'dot', color: C.comp, label: 'Wireless' }, { kind: 'ring', color: C.comp, label: 'Wired' }], { size: 20 });
+    legend(t, -1, x0, y0 + h + 72, [{ kind: 'line', color: C.ink, label: 'Cheapest at each weight' }, { kind: 'dot', color: C.comp, label: 'Wireless' }, { kind: 'ring', color: C.comp, label: 'Wired' }, { kind: 'area', color: C.ink2, label: 'Flagships, $160 to $200' }], { size: 20 });
     verdict(t, T.verdict, 1330, 760, { from: 38.0, to: 29.3, unit: 'g', dec: 1, size: 96, label: 'Weight at $189: the UltralightX, then Theseus', better: 'lower', maxW: 520, who: ['UltralightX', 'Theseus'] });
     { const k = ep(t, T.verdict + 1.4, T.verdict + 1.9); text('G-Wolves sells lighter for less, and lists 80 h of battery, or none.', 1330, 470, { role: 'small', size: 24, weight: 650, color: C.ink2, alpha: ep(t, T.lab + 0.6, T.lab + 1.0), maxW: 500, sentence: false }); }
     source(t, 'Prices: makers\' US list prices; the Zaunkoenig mice sell in euros, plotted at the M3K\'s own rate (€340 ~ $396). Weights: scales where weighed, else makers\' (the X2F, Pulsar\'s 29 g ± 2). The UltralightX: TechPowerUp\'s 2023 medium, $189, 38 g. Theseus\'s $189 and 29.3 g are targets.', { t0: 0.8, maxW: 1160 });
+  }
+});
+
+/* ================================ 10. Targets (replaces targets and targets2) ================================
+   His notes: "marker it as dual 8khz, press to pc should be shorter, we've done numerous things to optimize mechanical
+   latency"; "compare to starlight x weight for the headline value. set down and idle sleep settings are not important
+   enough to talk about this early". So: the headline is weight against the Starlight X (41.7 g on RTINGS's scale → 29.3 g);
+   "Dual 8khz wired and wireless"; set-down and idle sleep are gone. The latency targets race: the best anyone has shown
+   against Theseus's target, each pulse running to its time on one track (shorter is better), a row at a time (M7).
+   Press to PC: Finalmouse's rig times from the touch on the button, so it includes the switch's travel; the Starlight X's
+   2.0 ms is a magnetic switch at 0.01 mm. Theseus's target, under 2.0 ms, rests on reading the switch as its NC contact
+   releases, at the start of the travel, with no free play (the clicks chapter); the fastest mechanical on that rig, the
+   OP1 8K V2, reads 5.7 ms, and the foot line says so. */
+const B01_TG = [
+  { cat: 'Press to PC, with travel', unit: 'ms', best: 2.0, who: 'Starlight X, magnetic, its maker\'s rig', tgt: 2.0, tgtTxt: 'Under 2.0', under: true, max: 8, dec: 1, extra: [['OP1 8K V2', 5.7], ['Viper V4 Pro', 7.5]] },
+  { cat: 'Motion latency, wireless', unit: 'ms', best: 0.34, who: 'Viper V4 Pro, PIAKNOW\'S rig', tgt: 0.14, tgtTxt: '0.14', max: 0.4, dec: 2 },
+  { cat: 'Click latency, wired', unit: 'µs', best: 72, who: 'XA25 at NC release, XBAB', tgt: 70, tgtTxt: '70', max: 80, dec: 0 },
+  { cat: 'Frame sync, frame to USB', unit: 'µs', best: 42, who: 'XBAB SensorLock', tgt: 42, tgtTxt: '42, a match', max: 50, dec: 0 }
+];
+S({
+  id: 'b01_targets', ch: 'intro', theme: 'paper', title: 'Targets', settle: 10, ideas: ['weight', 'latency'],
+  replaces: ['targets', 'targets2'],
+  src: ['b01FmClick', 'pcgSlx', 'exPiaknow', 'kunai', 'ntrXbabClick', 'xbabSensorLock', 'ntrV4Sensor', 'ntrRtSlx', 'ntrJauch', 'exNbcV4'],
+  answers: [
+    ['targets: "marker it as dual 8khz"', 'Set as "Dual 8khz, wired and wireless"'],
+    ['targets: "press to pc should be shorter, we\'ve done numerous things to optimize mechanical latency"', 'The target is now under 2.0 ms, faster than the Starlight X\'s magnetic switch on its maker\'s rig, and the slide says how: the switch is read as its NC contact releases, at the start of the travel, with no free play. The foot line gives the fastest mechanical on that rig (OP1 8K V2, 5.7 ms), so the claim is seen against it'],
+    ['targets2: "compare to starlight x weight for the headline value"', 'The headline: the Starlight X, 41.7 g on RTINGS\'s scale, against Theseus\'s 29.3 g'],
+    ['targets2: "set down and idle sleep settings are not important enough to talk about this early"', 'Both removed'],
+    ['F33.5 (show, don\'t list)', 'Each latency target races the best shown on one time track, a row at a time']
+  ],
+  draw: t => {
+    header(t, 'Targets');
+    captions(t, [[0.3, 'For each figure, the best anyone has shown, against Theseus\'s target. Shorter is faster.'],
+      [5.4, 'The headline: the Starlight X weighs 41.7 g on RTINGS\'s scale; Theseus\'s target is 29.3 g.']]);
+    const x0 = LM, tx = 520, tw0 = 640, y0 = 330, rh = 140;
+    B01_TG.forEach((r, i) => {
+      const y = y0 + i * rh, t0 = 0.2 + i * 1.1, a = ep(t, t0 - 0.3, t0), X = v => tx + tw0 * Math.min(v, r.max) / r.max;
+      text(r.cat, x0, y, { role: 'label', size: 21, color: C.ink, alpha: a });
+      text(r.who, x0, y + 30, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: a, maxW: tx - x0 - 30, sentence: false });
+      /* the track: 0 to its max, ticks at the start and end */
+      line(tx, y + 6, tx + tw0, y + 6, { color: C.track, w: 6, alpha: a });
+      text('0', tx, y + 40, { role: 'tick', color: C.mute, alpha: a, align: 'center' });
+      /* the pulses: each runs from 0 at the same speed and stops at its time (the race) */
+      const run = v => clamp((t - t0) / 1.0 * r.max / Math.max(v, 1e-6)), lanes = [[r.best, C.comp, C.ink2, fmtN(r.best, r.dec)]].concat((r.extra || []).map(e => [e[1], inkA(0.25), C.mute, fmtN(e[1], 1), e[0]]));
+      lanes.forEach(([v, c, tc, txt, nm], j) => {
+        const k = clamp((t - t0) / 1.0 / (v / r.max)), xe = lerp(tx, X(v), Math.min(1, k)), yy = y + 6;
+        if (k <= 0) return;
+        line(tx, yy, xe, yy, { color: c, w: 6, alpha: a });
+        circle(xe, yy, j ? 6 : 8, { fill: c, alpha: a });
+        if (k >= 1) text(txt + (j ? '' : ' ' + r.unit), X(v), yy - 16 - (j ? 0 : 0), { role: 'num', size: j ? 19 : 22, weight: j ? 600 : 750, color: tc, align: 'center', alpha: a });
+        if (k >= 1 && nm) text(nm, X(v), yy + 28, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: a });
+      });
+      /* Theseus's target, in blue, on its own track just under */
+      const kT = clamp((t - t0 - 0.15) / 1.0 / (r.tgt / r.max)), yT = y + 50, xe = lerp(tx, X(r.tgt), Math.min(1, kT));
+      if (kT > 0) { line(tx, yT, tx + tw0, yT, { color: C.track, w: 6, alpha: a * 0.6 }); line(tx, yT, xe, yT, { color: C.hero, w: 6, alpha: a }); heroMark(xe, yT, 9, a);
+        if (kT >= 1) text((r.under ? '' : '') + r.tgtTxt + ' ' + (r.tgtTxt.includes('match') ? '' : r.unit), X(r.tgt) + 20, yT + 8, { role: 'num', size: 24, weight: 800, color: C.heroText, alpha: ep(t, t0 + 0.15 + r.tgt / r.max, t0 + 0.45 + r.tgt / r.max) }); }
+      if (i < B01_TG.length - 1) line(x0, y + rh - 46, tx + tw0, y + rh - 46, { color: C.hair, w: 1, alpha: a });
+    });
+    legend(t, -1, tx, y0 - 44, [{ kind: 'dot', color: C.comp, label: 'Best shown' }, { kind: 'hero', label: 'Theseus\'s target' }], { size: 19 });
+    /* the right column: the headline, then the quiet tiles */
+    verdict(t, 5.4, 1330, 470, { from: 41.7, to: 29.3, unit: 'g', dec: 1, size: 110, label: 'Weight: the Starlight X on RTINGS\'s scale, then Theseus', better: 'lower', who: ['Starlight X', 'Theseus, target'], maxW: 520 });
+    [['Report rate', 'Dual 8khz', 'Wired and wireless'], ['Sensor', 'PAW3970', 'The Viper V4 Pro\'s'], ['Battery, 1 khz', '200 h', 'Derived, its 370 mAh']].forEach(([lab, v, sub], j) => {
+      const y = 700 + j * 92, a = ep(t, 6.6 + j * 0.15, 7.0 + j * 0.15);
+      line(1330, y - 40, RM, y - 40, { color: C.hair, w: 1, alpha: a });
+      text(lab, 1330, y - 8, { role: 'label', size: 19, color: C.mute, alpha: a });
+      text(v, RM, y + 8, { role: 'h3', size: 30, weight: 800, color: C.heroText, align: 'right', alpha: a, sentence: false });
+      text(sub, 1330, y + 22, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: a, sentence: false });
+    });
+    source(t, 'Best shown: Finalmouse\'s own rig (PC Gamer, Sept 2026), from the touch on the button, so the switch\'s travel counts: Starlight X 2.0 ms (magnetic), OP1 8K V2 5.7 ms (the fastest mechanical), Viper V4 Pro 7.5 ms; PIAKNOW\'S rig at 8 khz; XBAB\'s analyzer and SensorLock by their developers. Theseus: targets; its weight and hours are planned.', { t0: 0.8, maxW: 1160 });
+  }
+});
+
+/* ================================ 11. The weight budget (replaces budget and ntr_stats) ================================
+   His note on budget: "it's a lot of work to keep updating this one". So nothing is typed: every part comes from b01_budget()
+   (ntr_budget, THESEUS, the Jauch family in RDATA, the deck's wheel, titanium screws, brass inserts and wire). The parts drop
+   onto one long scale pan, each as long as it is heavy, the display counting up; then what is left of 29.31 g is the
+   shell's (F21.1, "Budget is the target"), drawn against the lightest shell anyone has weighed, the XA25's 12.16 g on
+   XBAB's scale. The buttons are the XA25's, a stand-in, and the slide says so (models checked #11). ntr_stats's contents
+   went where they belong: density on the cover and its own slide, PIAKNOW'S on the cover, Dual 8khz on the targets. */
+S({
+  id: 'b01_budget', ch: 'intro', theme: 'night', title: 'The weight budget', settle: 11, ideas: ['weight', 'battery'],
+  replaces: ['budget', 'ntr_stats'],
+  src: ['exXbabWeight', 'ntrJauch', 'exJauch', 'srf_pmm', 'srf_wheel3d', 'srf_az31b', 'ntrDelrinRho', 'ntrModel3d', 'ntrTiRho', 'ntrGoreWire', 'ntrBrassRho'],
+  answers: [
+    ['budget: "it\'s a lot of work to keep updating this one"', 'Nothing on it is typed: every part, the total and the shell\'s remainder are computed when the slide draws, from the shared data (the Jauch battery, the board target, the wheel, the titanium screws, the inserts, the wire), so a change anywhere updates it'],
+    ['ntr_stats: "density is so important it could be on the cover"', 'Density is on the cover (0.099 g/cm³) and has its own slide'],
+    ['ntr_stats: "capitalize the P in Piaknow"; "8khz wired and wireless is better market as Dual 8khz"; "don\'t capitalize the H in khz"', 'PIAKNOW\'S on the cover; "Dual 8khz, wired and wireless" on the targets; khz in lower case throughout'],
+    ['ntr_stats: "all of this information is important but would fit better in other slides"', 'Moved: weight and hours here, density on the cover and its slide, price on the price slide, latency on the targets'],
+    ['F21.1 (budget is the target)', 'The shell\'s allowance is shown as what the budget leaves, never as a weighed or computed shell'],
+    ['F44.2 (the two side switches, "From the shell")', 'A line for the two full-size SPDT side switches, about 0.5 g each (typical), taken from the shell: the total stays 29.31 g and the shell\'s allowance falls to about 9.35 g, computed'],
+    ['F42.2 (keep 5.6 g as a target)', 'The board\'s block reads "One board, a target"']
+  ],
+  draw: t => {
+    header(t, 'The weight budget');
+    const BG = b01_budget();
+    captions(t, [[0.3, 'Every part on one scale, as long as it is heavy: the weight budget, from the parts list.'],
+      [5.4, 'What is left of 29.31 g is the shell\'s: about ' + (BG ? fmtN(BG.shell, 1) : '–') + ' g with its skates, ' + (BG ? fmtN(BG.cut, 1) : '–') + ' g under the XA25\'s shell on XBAB\'s scale.']]);
+    if (!BG) return;
+    const x0 = 160, x1 = 1660, gpx = (x1 - x0) / THESEUS.mass, py = 650, bh = 96, step = 0.5, tS = 0.3 + BG.parts.length * step + 0.3;
+    /* the pan: one long scale, with its gram ticks */
+    rr(x0 - 20, py, x1 - x0 + 40, 12, 6, inkA(TH ? 0.18 : 0.24));
+    for (let g = 0; g <= THESEUS.mass + 1e-6; g += 5) { line(x0 + g * gpx, py + 16, x0 + g * gpx, py + 28, { color: inkA(0.4), w: 1.5 }); text(g + ' g', x0 + g * gpx, py + 54, { role: 'tick', color: C.mute, align: 'center' }); }
+    /* the parts drop in, one after another, each as long as it is heavy */
+    let gx = 0, total = 0; const rowEnd = [-1e9, -1e9];
+    const noteOf = { battery: 'Example part, ' + BG.batt.part, board: 'A target, everything on it', buttons: 'The XA25\'s, a stand-in' };
+    BG.parts.forEach((p, i) => {
+      const t0 = 0.3 + i * step, k = spring(t, t0, { f: 2.2, z: 0.62 }), kl = ep(t, t0 + 0.25, t0 + 0.5), x = x0 + gx * gpx, w = p.g * gpx;
+      if (t >= t0) {
+        const drop = (1 - Math.min(1, k)) * -260;
+        rr(x + 1, py - bh + drop, Math.max(2, w - 2), bh - 2, 6, i === 0 ? inkA(TH ? 0.3 : 0.36) : inkA(TH ? 0.18 : 0.24), C.ink2, 1.5);
+        if (t >= t0 + 0.2) total += p.g;
+        if (w > 150) { text(p.name, x + 14, py - bh + 34, { role: 'label', size: 20, color: C.ink, alpha: kl }); text(p.key === 'battery' ? fmtN(p.g, 0) + ' g, listed' : fmtN(p.g, 2) + ' g', x + 14, py - bh + 70, { role: 'num', size: 28, weight: 800, color: C.ink, alpha: kl }); }
+        else { /* small parts: labels fanned out along a row under the pan, each on a leader from its block */
+          const lab = p.name + ', ' + fmtN(p.g, 2) + ' g', lw0 = tw(lab, { role: 'label', size: 19 }), bx = x + w / 2;
+          let r = 0, lx = Math.max(bx - lw0 / 2, rowEnd[0] + 28); if (lx + lw0 > RM) { r = 1; lx = Math.min(RM - lw0, Math.max(bx - lw0 / 2, rowEnd[1] + 28)); }
+          const ly = py + 112 + r * 44; rowEnd[r] = lx + lw0;
+          poly([[bx, py + 32], [bx, py + 70], [lx + lw0 / 2, ly - 26]], { color: C.hair, w: 1.2, alpha: kl });
+          text(lab, lx, ly, { role: 'label', size: 19, color: C.ink2, alpha: kl }); }
+        if (noteOf[p.key] && w > 150) text(noteOf[p.key], x + 14, py - bh - 14, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: kl, sentence: false, maxW: Math.max(w - 20, 280) });
+      }
+      gx += p.g;
+    });
+    /* what is left: the shell's budget, against the lightest shell anyone has weighed */
+    { const k = ep(t, tS, tS + 0.6, E.io3), x = x0 + gx * gpx, w = BG.shell * gpx, kx = ep(t, tS + 0.8, tS + 1.3);
+      if (k > 0) {
+        G.save(); G.globalAlpha = k; G.setLineDash([8, 6]); G.strokeStyle = C.hero; G.lineWidth = 2.5; rrPath(x + 2, py - bh, w - 4, bh - 2, 6); G.stroke(); G.restore();
+        rr(x + 2, py - bh, w - 4, bh - 2, 6, 'rgba(10,132,255,0.16)', null, 0, k);
+        text('Shell and skates: what is left', x + 14, py - bh + 34, { role: 'label', size: 20, color: C.heroText, alpha: k });
+        text('About ' + fmtN(BG.shell, 1) + ' g', x + 14, py - bh + 72, { role: 'num', size: 30, weight: 800, color: C.heroText, alpha: k });
+        /* the XA25's shell, 12.16 g on XBAB's scale: the lightest weighed, and longer than the budget leaves */
+        const xa = BG.xaShell * gpx, yb = py - bh - 70;
+        line(x, yb, x + xa * kx, yb, { color: C.comp, w: 4, alpha: kx });
+        line(x, yb - 10, x, yb + 10, { color: C.comp, w: 2, alpha: kx }); if (kx > 0.98) line(x + xa, yb - 10, x + xa, yb + 10, { color: C.comp, w: 2 });
+        text('The XA25\'s shell, ' + fmtN(BG.xaShell, 2) + ' g (XBAB)', x, yb + 30, { role: 'label', size: 19, color: C.mute, alpha: kx });
+        if (kx > 0.98) { line(x + w, yb, x + xa, yb, { color: C.red, w: 4 }); text('About ' + fmtN(BG.cut, 1) + ' g to find', x + xa - 4, yb + 28, { role: 'label', size: 19, color: C.red, align: 'right', alpha: ep(t, tS + 1.3, tS + 1.6) }); }
+        total += BG.shell * k;
+      } }
+    /* the scale's display */
+    { const shown = Math.min(THESEUS.mass, total);
+      text('On the scale', RM, 300, { role: 'label', size: 21, color: C.mute, align: 'right' });
+      rich([{ s: fmtN(shown, 2), role: 'd1', size: 110, weight: 800, color: shown >= THESEUS.mass - 1e-6 ? C.heroText : C.ink, grad: shown >= THESEUS.mass - 1e-6 ? C.heroGrad : null, tnum: true }, { s: 'g', role: 'small', size: 36, weight: 700, color: C.mute, gap: 10, sentence: false }], RM, 420, { align: 'right' });
+      text('Battery: ' + BG.batt.mAh + ' mAh, ' + fmtN(Math.floor(BG.hours), 0) + ' h at 1 khz (derived), the ' + THESEUS.hours + ' h target covered', RM, 466, { role: 'small', size: 22, weight: 650, color: C.ink2, align: 'right', alpha: ep(t, 0.8, 1.2), sentence: false }); }
+    source(t, 'Battery: Jauch LP402535JU, 8 g (the distributor lists it to the gram, so the shell\'s share is good to about ± 0.5 g). Board: 5.6 g, the target. Buttons: the XA25\'s, as XBAB weighed them, a stand-in. Wheel: 0.9 g magnesium on a 0.12 g POM axle. Inserts: 4 × 15.23 mm³ of brass at 8.47 g/cm³. Screws: 4 × 23.59 mm³ of Ti-6Al-4V at 4.43 g/cm³. Side switches: two full-size SPDT at about 0.5 g each, typical (F44.2). Wire: 109.1 mm of 32 AWG at 0.729 mg/mm. The shell gets what is left of the 29.31 g target.', { t0: 0.8 });
+  }
+});
+
+/* ================================ 12. The close (replaces close) ================================
+   FILM F1: the close answers the film's one ledger: the eight chapters' compromises (the kit's LEDGER, as every chapter card
+   carried them), each struck and answered in Theseus's blue, row by row, with the flagship that made it named in red under
+   it (from b01_compromise's B01_TRADES), struck as its chapter is answered. Then THESEUS, the way the film opened, and the
+   byline. No mouse drawing and no shell (F12.2). */
+S({
+  id: 'b01_close', ch: 'end', theme: 'night', chrome: false, title: 'Close', settle: 9,
+  replaces: ['close'],
+  src: ['b01X3', 'b01TpuHtsU', 'b01Optical', 'b01TpuUlx', 'b01X2f', 'exXbabWeight'],
+  answers: [
+    ['close (not rated)', 'The close now answers the film\'s ledger: the eight compromises every chapter card carried, struck and answered in blue one by one, each with the flagship that made it (Pro X3 Superstrike and HTS Ultra 8K, Viper V4 Pro, UltralightX, X2F CrazyLight, XA25) struck under it; then THESEUS, as the film opened'],
+    ['FILM F1 (c): the close answers the eight bars and the six flagships inside them', 'Done: the kit\'s ledger, answered row by row, and B01_TRADES\' flagships under their chapters, read live']
+  ],
+  draw: t => {
+    chapterIcon('intro', LM, LAY.labelY - 19, 22, C.hero, ep(t, 0.1, 0.4));
+    text('Nitrite Labs', LM + 36, LAY.labelY, { role: 'label', color: C.ink2, t, t0: 0.15, cps: 40 });
+    rich([{ s: 'Eight compromises', role: 'label', color: C.faint }, { s: 'answered', role: 'label', color: C.heroText, grad: C.heroGrad, gap: 12 }], RM, LAY.labelY, { align: 'right', alpha: ep(t, 0.4, 0.8) });
+    const area = [LM, 150, RM - LM, 720], rh = 88, turn = 0.6, step = 0.42;
+    ledger(t, -0.6, area, { answered: 'all', turn, turnStep: step, rh, nameW: 230 });
+    /* the flagships under their chapters, struck as their chapter is answered */
+    LEDGER.forEach((e, i) => {
+      const by = area[1] + i * rh + rh * 0.62 + 30, tt = turn + i * step, kt = ep(t, tt, tt + 0.5);
+      const ids = Object.keys(B01_FOLD).filter(id => B01_FOLD[id] === e.ch), names = ids.map(id => (B01_TRADES.find(x => x.id === id) || {}).name).filter(Boolean);
+      const lab = names.length ? names.join(', ') + ': ' + ids.map(id => { const x = B01_TRADES.find(y => y.id === id); return x ? x.fig.charAt(0).toLowerCase() + x.fig.slice(1) : ''; }).join(', ') : 'Most mice';
+      const x = area[0] + 230, wv = tw(lab, { role: 'small', size: 19, weight: 650 });
+      text(lab, x, by, { role: 'small', size: 19, weight: 650, color: names.length ? mix(C.red, C.faint, kt) : C.faint, sentence: false, alpha: ep(t, -0.4, 0.2) });
+      if (kt > 0) line(x - 2, by - 6, x - 2 + (wv + 4) * clamp(kt * 1.6), by - 6, { color: C.mute, w: 1.5 });
+    });
+    /* THESEUS, rising letter by letter, the way the film opened */
+    const t0 = turn + LEDGER.length * step + 0.4, st = { role: 'hero', size: 120, track: -0.028 }, word = 'THESEUS', x0 = LM - 6, yb = 976;
+    setFont(sty(st)); const ls = lsPx(sty(st));
+    const advs = [...word].map((ch, i) => G.measureText(word.slice(0, i + 1)).width - G.measureText(word.slice(0, i)).width);
+    let xx = x0;
+    [...word].forEach((ch, i) => {
+      const k = E.rise(prog(t, t0 + i * 0.06, t0 + 0.7 + i * 0.06));
+      if (k > 0) { G.save(); G.beginPath(); G.rect(xx - 6, yb - st.size * 0.8, advs[i] + 12, st.size * 0.86); G.clip(); text(ch, xx, yb + (1 - k) * st.size * 0.82, Object.assign({}, st, { caps: false, color: C.ink })); G.restore(); }
+      xx += advs[i] + ls;
+    });
+    rich([{ s: 'In pursuit of an', role: 'labelL', size: 26, color: C.mute }, { s: 'objectively better', role: 'labelL', size: 26, color: C.ink2, gap: 12 }, { s: 'mouse', role: 'labelL', size: 26, color: C.heroText, grad: C.heroGrad, gap: 12 }], RM, yb - 8, { align: 'right', alpha: ep(t, t0 + 0.8, t0 + 1.3) });
+    line(LM, LAY.ruleY, LM + (RM - LM) * ep(t, 0.3, 1.4, E.cam), LAY.ruleY, { color: C.hair, w: 1.5 });
+    rich([{ s: 'Brock Liddicoat', role: 'foot', weight: 700, caps: true, track: 0.16, color: C.ink2 }, { s: '/', role: 'foot', color: C.faint, gap: 14 }, { s: 'Nitrite Labs', role: 'foot', caps: true, track: 0.12, color: C.mute, gap: 14 }, { s: '/', role: 'foot', color: C.faint, gap: 14 }, { s: 'Shape designer of the Finalmouse Starlight X', role: 'foot', caps: true, track: 0.12, color: C.faint, gap: 14 }], LM, LAY.footY, { alpha: ep(t, t0 + 1.0, t0 + 1.5) });
+    text(`${pad2(DECK.slides.length)} / ${pad2(DECK.slides.length)}`, RM, LAY.footY, { role: 'foot', weight: 600, color: C.mute, align: 'right', alpha: ep(t, t0 + 1.0, t0 + 1.5) });
   }
 });

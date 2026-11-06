@@ -21,6 +21,7 @@ Object.assign(SRC, {
   b11Cumbicus: { t: 'Cumbicus, Estrems, Arizmendi & Jiménez 2023, Int. J. Adv. Manuf. Technol. 126: 5163-5178 (open copy: University of Navarra): 5 mm thread-forming screws in 30 % glass-fibre PEI, assembled ten times; the tightening torque lost, measured as the loosening torque at each release (Sec. 4.3, 5): PF-30 11.95 % by the 3rd assembly, 15.31 % by the 5th, 17.16 % by the 10th; DELTA PT 56.73 % by the 5th, 41.93 % by the 10th; the first disassembly negligible', u: 'https://dadun.unav.edu/handle/10171/67216' },
   b11Unitar: { t: 'UNITAR and ITU, Global E-waste Monitor 2024: 62 million tonnes of e-waste in 2022, 22.3 % documented as collected and recycled', u: 'https://www.unitar.org/about/news-stories/press/global-e-waste-monitor-2024-electronic-waste-rising-five-times-faster-documented-e-waste-recycling' },
   b11PsX3: { t: 'ProSettings, Logitech G Pro X3 SUPERSTRIKE review (6 Oct 2026): in the box: the mouse, grip tape, a USB receiver, a USB-C to A adapter, documentation, a POWERPLAY puck; "Replacement mouse feet feel like a bare minimum"', u: 'https://prosettings.net/reviews/logitech-g-pro-x3-superstrike/' },
+  b11LogiX2Box: { t: 'Logitech, PRO X2 SUPERSTRIKE setup guide, package contents: mouse, optional grip tape, receiver in an extension adapter, USB charging and data cable, surface preparation cloth, optional POWERPLAY aperture door with foot. Logitech\'s X3 pages show an empty "In the box" list; the X3 keeps the X2 Superstrike\'s shape (Notebookcheck), so its cable is counted from this list', u: 'https://www.logitech.com/content/dam/support/g-mice/pro-x-superstrike/user-manual/pro-x2-superstrike-setup-guide-amr.pdf' },
   b11Jnd: { t: 'Datacolor (Techkon), A simple review of CIE ΔE colour difference equations: "The barely noticeable difference (JND) of dE is usually 1"', u: 'https://techkon.datacolor.com/a-simple-review-of-cie-de-color-difference-equations/' },
   b11TtV4: { t: 'TweakTown, Razer Viper V4 Pro review: in the box: the mouse, the dongle, a cable, grip tape, product information (no screwdriver, no spare skates; Profesional Review lists the same)', u: 'https://www.tweaktown.com/reviews/11398/razer-viper-v4-pro-wireless-gaming-mouse-built-for-competition/index.html' },
   b11Brock: { t: 'Brock Liddicoat, In Pursuit of an Objectively Better Mouse: #52 screws not under the skates ("prevent skate waste"); #54 the board\'s screws inserted from the bottom ("easier to access for disassembly"); #63 art on the board, constantly visible with no bottom plate; #71 the battery plug turned so owners do their own battery replacements; silicone bands, "adhesive usually gets ruined if you ever have to change the battery"; #72 an envelope with a trifold display that doubles as the manual; #73 a screwdriver in the box; #74 a laminated satin paper battery cover; #9 the combination drive; one screw size for everything; "with metal on plastic even the tiniest difference in the angle you screw it will turn the screw into a bore"', u: '', n: 'His own design: no tag.' }
@@ -287,8 +288,9 @@ function b11_tape(t, t0, x, y, w, h, o = {}) {
    pull 0..1; o = { hole (the ground colour) }. Returns stage points ---------- */
 function b11_plugMM(kind, pull, o = {}) {
   const T = b11_tone(), nyl = TH ? '#FFFFFF' : '#D8D8D8', ne = 'rgba(16,17,20,0.6)', out = {};
-  pcbSec(-16, 9, 0, 1.0, { brk: [1, 1], mask: kind === 'side' ? '#16171A' : C.comp });
-  const pad = (x0, x1, lift, bad) => { G.fillStyle = '#C9A15C'; G.fillRect(x0, -0.05, x1 - x0, 0.05); solid(() => { G.beginPath(); G.moveTo(x0 - 0.15, 0); G.quadraticCurveTo(x0, -0.25 - lift, x0 + 0.25, -0.3 - lift); G.lineTo(x1 - 0.25, -0.3 - lift); G.quadraticCurveTo(x1, -0.25 - lift, x1 + 0.15, 0); G.closePath(); }, MT.tin, [x0, -0.4 - lift, x1 - x0, 0.4 + lift], { lw: 0.8 }); if (bad > 0.01) { ga(bad); G.fillStyle = C.bad; G.fillRect(x0 - 0.1, -0.12, x1 - x0 + 0.2, 0.16); ga(1); } };
+  pcbSec(-16, 9, 0, 1.0, kind === 'side' ? { brk: [1, 1] } : { brk: [1, 1], rival: true });
+  /* the pads' finish: Theseus's gold (ENIG), a rival's grey (M's board-colour rule, as pcbSec's rings) */
+  const pad = (x0, x1, lift, bad) => { G.fillStyle = kind === 'side' ? '#d9b25a' : '#c9ccd1'; G.fillRect(x0, -0.05, x1 - x0, 0.05); solid(() => { G.beginPath(); G.moveTo(x0 - 0.15, 0); G.quadraticCurveTo(x0, -0.25 - lift, x0 + 0.25, -0.3 - lift); G.lineTo(x1 - 0.25, -0.3 - lift); G.quadraticCurveTo(x1, -0.25 - lift, x1 + 0.15, 0); G.closePath(); }, MT.tin, [x0, -0.4 - lift, x1 - x0, 0.4 + lift], { lw: 0.8 }); if (bad > 0.01) { ga(bad); G.fillStyle = C.bad; G.fillRect(x0 - 0.1, -0.12, x1 - x0 + 0.2, 0.16); ga(1); } };
   const wires = (x0, y0, dx, dy, len) => { OWN_WIRE.forEach((c, i) => { const oy = (i - 1) * 0.42; G.beginPath(); G.moveTo(x0, y0 + oy); G.bezierCurveTo(x0 + dx * len * 0.4, y0 + oy, x0 + dx * len * 0.7, y0 + oy + dy * len * 0.3, x0 + dx * len, y0 + oy + dy * len); G.strokeStyle = c; G.lineWidth = lw(5); G.lineCap = 'round'; G.stroke(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = lw(1); G.stroke(); }); };
   if (kind === 'side') {
     /* the header: shell with the plug opening toward the tail, a back wall, three contacts, legs soldered at the back */
@@ -533,7 +535,7 @@ function b11_underMM(o = {}) {
    the board's top face, y down */
 function b11_switchSoldered(melt, up) {
   const T = b11_tone(); xsave(); xmove(-6.4, 0);
-  pcbSec(-2.6, 15.4, 0.2, 1.2, { holes: SWG.pins, mask: C.comp });
+  pcbSec(-2.6, 15.4, 0.2, 1.2, { holes: SWG.pins, rival: true });
   xsave(); xmove(0, -up); swMM({ press: 0 }); xrest();
   const m = clamp(melt), gone = clamp(up / 1.2);
   for (const x of SWG.pins) {
@@ -549,7 +551,7 @@ function b11_switchSoldered(melt, up) {
 }
 function b11_switchClaws(up) {
   const holes = [-5.08, 0, 5.08];
-  pcbSec(-9.4, 9.4, 0, 1.2, { holes, mask: '#16171A' });
+  pcbSec(-9.4, 9.4, 0, 1.2, { holes });
   /* the sockets: a barrel pressed into each plated hole, a flange on the top face, six fingers inside (two seen) */
   for (const x of holes) {
     solid(() => { G.beginPath(); G.moveTo(x - 0.95, -0.18); G.lineTo(x + 0.95, -0.18); G.lineTo(x + 0.95, 0.05); G.lineTo(x + 0.7, 0.05); G.lineTo(x + 0.7, 1.95); G.lineTo(x + 0.45, 2.15); G.lineTo(x - 0.45, 2.15); G.lineTo(x - 0.7, 1.95); G.lineTo(x - 0.7, 0.05); G.lineTo(x - 0.95, 0.05); G.closePath(); }, MT.brass, [x - 0.95, -0.18, 1.9, 2.33], { lw: 0.8 });
@@ -558,6 +560,57 @@ function b11_switchClaws(up) {
   }
   xsave(); xmove(0, -up); clk_gt01MM({ press: 0, clear: false, board: false }); xrest();
 }
+/** own_jointMM (10-h2-own.js: the M2 joint from the 3D model's geometry), copied here with one change, the board's colour
+   (integrator, POLISH b11; M's board-colour rule): o.rival draws the board under a joint screwed straight into plastic as a
+   rival's (grey mask and trim, pcbSec's rival); otherwise Theseus's black mask with gold pads (pcbSec's default). The rest is
+   own_jointMM's, line for line, through its own helpers (own_wallTF, own_insHalf, own_screwMM, own_bitMM). Same options and
+   returns as own_jointMM, plus rival */
+function b11_jointMM(o = {}) {
+  const kind = o.kind || 'insert', ins = kind === 'insert', T = OWN_TH[ins ? 'm2' : 'tf'], hole = o.hole || C.panel, out = {};
+  const fw = 4.6, bossM = OWN_MAT[ins ? 'cf' : kind], rB = 2.65, hB = o.crop || 5.4, I = OWN_INS;
+  const pass2 = o.pass === 2, ph = pass2 ? (o.ph2 || 0) : (ins ? 0.2 : 0), tip = o.tip == null ? 4.0 : o.tip, zb = tip - OWN_M2.len;
+  /* the boss, cut and hatched; it runs on down into the shell, so it ends in a break line */
+  const bossPath = () => { G.beginPath(); G.moveTo(-rB, hB); G.lineTo(-rB, 0.25); G.arcTo(-rB, 0, -rB + 0.25, 0, 0.25); G.lineTo(rB - 0.25, 0); G.arcTo(rB, 0, rB, 0.25, 0.25); G.lineTo(rB, hB); G.bezierCurveTo(rB * 0.36, hB + 0.3, -rB * 0.36, hB - 0.3, -rB, hB); G.closePath(); };
+  solid(bossPath, bossM, [-rB, 0, 2 * rB, hB], { hatch: Object.assign({ sp: 9 }, bossM.hatch || {}) });
+  let W = null;
+  if (ins) {
+    /* under the insert: the clearance hole and its drill point */
+    G.beginPath(); G.moveTo(-1.12, 3.0); G.lineTo(-1.12, 4.6); G.lineTo(-0.7, 4.95); G.lineTo(0.7, 4.95); G.lineTo(1.12, 4.6); G.lineTo(1.12, 3.0); G.closePath(); G.fillStyle = hole; G.fill();
+    G.beginPath(); G.moveTo(-1.12, 3.02); G.lineTo(-1.12, 4.6); G.lineTo(-0.7, 4.95); G.lineTo(0.7, 4.95); G.lineTo(1.12, 4.6); G.lineTo(1.12, 3.02); G.strokeStyle = edgeCol(bossM); G.lineWidth = lw(1); G.stroke();
+    /* the bore inside the insert's thread */
+    G.beginPath(); for (let z = 0; z <= I.L + 1e-6; z += 0.01) { const x = -own_insR(z, -1, 0.2); z ? G.lineTo(x, z) : G.moveTo(x, z); } for (let z = I.L; z >= 0; z -= 0.01) G.lineTo(own_insR(z, 1, 0.2), z); G.closePath(); G.fillStyle = hole; G.fill();
+    /* the insert's two cut halves, hatched the other way from the boss */
+    for (const sd of [-1, 1]) solid(() => own_insHalf(sd, 0.2), MT.brass, [-1.8, 0, 3.6, 3], { hatch: { dir: -1, sp: 6, color: 'rgba(80,55,10,0.34)' }, lw: 0.9 });
+    out.insert = SP(I.R, 0.9); out.knurl = SP(-I.R, 0.7); out.groove = SP(I.rGroove, (I.gTop + I.gBot) / 2);
+  } else {
+    W = own_wallTF(o.reach1 || 0, o.reach2 || 0, o.tilt || 0, o.ph2 || 0);
+    const N = W.N, poly2 = (L, R, open) => { G.beginPath(); G.moveTo(L[0], 0); for (let i = 1; i <= N; i++) G.lineTo(L[i], i * OWN_DY); G.lineTo(-0.45, OWN_HOLE + 0.3); G.lineTo(0.45, OWN_HOLE + 0.3); for (let i = N; i >= 0; i--) G.lineTo(R[i], i * OWN_DY); if (!open) G.closePath(); };
+    poly2(W.L2, W.R2); G.fillStyle = hole; G.fill();
+    /* the bore tinted in the problem colour where the screw reached: the screw covers its own thread, so what stays
+       visible is the room the first thread left round it, loose */
+    const rc = clamp(o.recut || 0);
+    if (rc > 0.01) {
+      const zr = Math.max(0, (o.reach2 || 0) - 0.12), n2 = Math.round(zr / OWN_DY);
+      G.save(); ga(rc * 0.9); G.fillStyle = C.bad; G.beginPath(); G.moveTo(W.L2[0], 0); for (let i = 1; i <= n2; i++) G.lineTo(W.L2[i], i * OWN_DY); for (let i = n2; i >= 0; i--) G.lineTo(W.R2[i], i * OWN_DY); G.closePath(); G.fill(); G.restore(); ga(1);
+    }
+    poly2(W.L2, W.R2, true); G.strokeStyle = edgeCol(bossM); G.lineWidth = lw(1); G.stroke();
+  }
+  /* the board, clamped: Theseus's black mask both faces with the gold pad under the head and the plated hole (ENIG); a
+     rival's board grey, mask and trim (M's board-colour rule: the plastic joint is the rival's way) */
+  const trim = o.rival ? '#c9ccd1' : '#d9b25a';
+  for (const [x0, x1, b] of [[-fw, -1.15, [1, 0]], [1.15, fw, [0, 1]]]) pcbSec(x0, x1, -1.0, 1.0, o.rival ? { brk: b, rival: true } : { brk: b });
+  G.fillStyle = trim; G.fillRect(-2.25, -1.03, 1.1, 0.04); G.fillRect(1.15, -1.03, 1.1, 0.04); G.fillRect(-1.19, -1.0, 0.04, 1.0); G.fillRect(1.15, -1.0, 0.04, 1.0);
+  /* the screw in view, and the bit in its head; the second drive comes in tilted about the boss's mouth */
+  const a = pass2 ? (o.tilt || 0) : 0;
+  xsave(); xturn(a);
+  if (o.bit && o.bit.a > 0.003) own_bitMM('ph', zb - OWN_HD.yc, { a: o.bit.a, turn: o.bit.turn, bg: hole, fade: 4.2 });
+  const s = own_screwMM(ins ? 'm2' : 'tf', zb, ph, {});
+  xrest();
+  Object.assign(out, s, { boss: SP(-rB, 2.6), plate: SP(fw - 0.6, -0.5), axisTop: SP(0, zb - OWN_M2.k), bossTop: SP(0, 0), bossR: SP(rB, 1.4), bossL: SP(-rB, 1.4) });
+  if (W) { let best = 0, bi = 0; for (let i = 0; i <= W.N; i++) { const d = W.R2[i] - W.R1[i]; if (d > best) { best = d; bi = i; } } out.recutPt = SP(W.R2[bi], bi * OWN_DY); out.recutMax = best; out.mouth = SP(OWN_RP, 0.5); }
+  return out;
+}
+
 /* ============================== b11_card: the chapter card (replaces owncard) ============================== */
 /* The compromise most mice make here, "Glued, soldered, thrown away", in red; the answer lands in blue. The part: the mouse
    cut open side-on: most mice (the battery glued, the switch soldered, the skates over the screws, a ribbon between the
@@ -574,6 +627,9 @@ function b11_cardPart(t, box, kt) {
 }
 S({
   id: 'b11_card', ch: 'own', card: true, first: true, theme: 'night', title: 'Made to last, and to open', settle: 5.5, replaces: ['owncard'],
+  /* the player's chapter flight lands exactly on the card's mouse: b11_cardPart fits the 'left' view into chapterCard2's
+     part box less its 20 / 30 px margins (b11_fit, pad 0.05), and draws the rival's outline by hand, so the kit can't see it */
+  flight: { view: 'left', box: [1020, 230, 800, 440], pad: 0.05 },
   answers: [
     ['owncard (not rated): the chapter card', 'Rebuilt in the kit\'s chapter-card family: the compromise most mice make here, "Glued, soldered, thrown away", in red, struck as "Made to last, and to open" lands in blue; the part is the mouse cut open side-on, most mice\'s insides (glued battery, soldered switch, screws under the skates) turning into Theseus\'s (battery in bands, switches in sockets, four screws from below); the seven slides listed.'],
     ['Brief: "glued, soldered, thrown away"', 'The card\'s red line, as the ledger has it.']
@@ -699,7 +755,8 @@ S({
       note(2, 0, R.iron[0] + 0.35, 'Soldered: an iron at ' + B11.ironC + ' °C', true, null);
       note(0, 1, R.tdrv[0] + 0.25, 'Four screws from below: skates stay on', false, null);
       note(1, 1, R.drop + 0.25, 'The board comes down on its plugs', false, null);
-      note(2, 1, R.tsw[0] + 0.2, 'Claw sockets: it pulls straight out', false, null);
+      /* the switch step is the Clicks chapter's mechanism (b03_hotswap): said as a callback, not a second demonstration (FILM F5) */
+      note(2, 1, R.tsw[0] + 0.2, 'Claw sockets, as in Clicks', false, null);
     }
     verdict(t, R.verdict, 1120, 922, { from: 4, to: 1, label: 'Tools iFixit lists to swap a worn switch', better: 'lower', net: false, size: 116, maxW: 720 });
     text('Rated Difficult by iFixit: 40 to 50 minutes, with the four tools and an optional heat gun for the skates.', 300, 846, { role: 'small', size: 24, weight: 650, color: C.ink2, maxW: 780, lh: 1.3, alpha: ep(t, R.verdict + 0.4, R.verdict + 0.8) });
@@ -815,7 +872,7 @@ S({
   answers: [
     ['Brief: the second drive in plastic cuts a new thread; in brass it follows the same one', 'One pointer drives both joints in, backs them out and drives them in again 2° off (0.14 mm at the tip, about two hairs: 4.0 mm of thread × sin 2°): the carbon-filled boss is left with a second, red thread beside the first; the screw in the brass insert runs down the same thread.'],
     ['Brief and F21.5: 70 % → 0 % chance the joint feels different', 'The verdict counts 70 % down to 0 %; the bars under it give ABS 90 %, carbon-filled 70 %, brass 0 % (brass 0 % from Brock\'s experience, F21.3).'],
-    ['F2.01: "how metal threaded inserts increase longevity"', 'Longevity is the next slide, b11_wear: brass keeps 98.6 % of its hold after 20 heavy loads, plastic 82.8 % and 43.3 % after re-assembly.'],
+    ['F2.01: "how metal threaded inserts increase longevity"', 'Longevity is the next slide, b11_wear, as two measured results side by side: a brass insert keeps 98.6 % of its pull strength after 20 heavy pulls; screws straight into plastic keep 82.9 % (and 43.3 %) of their undo torque after re-assembly.'],
     ['F2.01: "increase chances of tolerances be correct when assembled the first time, show chances of getting tolerances right"; F21.12: first assembly in words', 'In words, no number until it is simulated (F21.12): "Right the first time, too: the thread is finished in brass before the screw ever meets it, so no hand can start it crooked."'],
     ['F2.01: "chances of it feeling different after unscrewing it (it should be like a 90% chance for abs plastic, and slightly lower for carbon filled plastic, which be the other material you\'re comparing to)"', 'Bars: ABS 90 %, carbon-filled 70 %, brass 0 %. The joint drawn beside brass is the carbon-filled one, named on its panel, and the verdict compares those two.'],
     ['F2.08: the screws "need a massive revamp to look proper"', 'Both joints are drawn from the 3D model\'s exact M2 head, combination recess, thread and knurled insert, in section, at the board\'s front boss.']
@@ -832,7 +889,7 @@ S({
     const est = establish(t, 0, boxTh, { view: 'left', hi: { board: 'ink' }, focus, hold: 0.45, dur: 1.0, fade: 0.25, dimFill: 0.6, locator: 'tr', locW: 150,
       draw: () => b11_bossesSide(1 - kj, C.ink) });
     const c = est.cam, bit = ep(t, Q.d1[0] - 0.4, Q.d1[0]), turn = t * 1.1;
-    const joint = (kind, box) => { let o = {}; withCam(c, box, () => { o = part(-fz, -B11_SIDE.boardTop, 1, () => own_jointMM({ kind, tip: P.tip, pass: P.pass, reach1: P.reach1, reach2: P.reach2, tilt: Q.tilt, ph2: Q.ph2, recut: kind === 'cf' ? ep(t, Q.d2[0] + 0.9, Q.d2[1] + 0.2) : 0, bit: { a: bit, turn: P.dir ? turn * P.dir : 0 }, hole: C.bg, crop: 5.4 }), { rot: Math.PI, alpha: kj }) || {}; }); return o; };
+    const joint = (kind, box) => { let o = {}; withCam(c, box, () => { o = part(-fz, -B11_SIDE.boardTop, 1, () => b11_jointMM({ kind, rival: kind !== 'insert', tip: P.tip, pass: P.pass, reach1: P.reach1, reach2: P.reach2, tilt: Q.tilt, ph2: Q.ph2, recut: kind === 'cf' ? ep(t, Q.d2[0] + 0.9, Q.d2[1] + 0.2) : 0, bit: { a: bit, turn: P.dir ? turn * P.dir : 0 }, hole: C.bg, crop: 5.4 }), { rot: Math.PI, alpha: kj }) || {}; }); return o; };
     const Rj = joint('insert', boxTh), L = kS > 0.001 ? joint('cf', boxRv) : {};
     /* the panels, named at the top, the divider between */
     const kl = ep(t, Q.split[1] - 0.25, Q.split[1] + 0.15);
@@ -875,6 +932,21 @@ S({
    re-assembled ten times (each pass shaves the flank; the dial follows Cumbicus 2023's measured points); the brass insert is
    pulled twenty times to 80 % of what breaks it, then measured (3D People 2022). Different tests: each is named on its row. */
 const B11W = { a0: 0.6, aDur: 0.4, p0: 4.95, pDur: 0.1, meas: 7.0, verdict: 7.45, bars: 8.1, human: 8.9 };
+/* the two results as shown: each rounded against Theseus (higher is better: the plastic's up, the brass's down) */
+const B11W_SHOW = { pf30: Math.ceil(B11.pf30[3][1] * 10 - 1e-9) / 10, dpt5: Math.ceil(B11.dpt[1][1] * 10 - 1e-9) / 10, brass: Math.floor(B11.brass20 * 10 + 1e-9) / 10 };
+/** a plain measured result, no before → after (two different tests can't share an arrow: M-b11-3, POLISH b11_wear): who and
+   what over it, the figure, what it measures under it. Theseus's in its gradient, the other in ink. o = { who, what, v
+   (number), size, hero, sub, maxW } */
+function b11_result(t, t0, x, y, o) {
+  const a = ep(t, t0, t0 + 0.45); if (a <= 0.003) return;
+  const z = o.size || 100, hero = !!o.hero, dy = (1 - E.out3(clamp((t - t0) / 0.45))) * 12;
+  G.save(); G.translate(0, dy);
+  ltag(x, y - Math.round(z * 0.78) - 26, o.who, o.what, { size: 21, color: hero ? C.heroText : C.mute, vcolor: hero ? C.heroText : C.secondText, a });
+  rich([{ s: o.v.toFixed(1), role: 'd1', size: z, weight: 800, track: -0.03, color: hero ? C.heroText : C.ink2, grad: hero ? C.heroGrad : null, tnum: true },
+    { s: '%', font: 'disp', size: Math.round(z * 0.55), weight: 700, color: hero ? C.heroText : C.mute, grad: hero ? C.heroGrad : null, gap: Math.round(z * 0.03), caps: false }], x, y, { alpha: a });
+  if (o.sub) text(o.sub, x, y + 42, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: a, maxW: o.maxW || 600, lh: 1.25 });
+  G.restore();
+}
 function b11_pf30(i) {   /* torque to undo the joint, % of the torque that closed it, at assembly i (1..10), PF-30 */
   const P = B11.pf30; if (i <= P[0][0]) return P[0][1];
   for (let j = 1; j < P.length; j++) if (i <= P[j][0]) return lerp(P[j - 1][1], P[j][1], (i - P[j - 1][0]) / (P[j][0] - P[j - 1][0]));
@@ -884,8 +956,8 @@ S({
   id: 'b11_wear', ch: 'own', theme: 'night', title: 'Thread wear: brass keeps its hold', settle: 11, ideas: [101],
   replaces: ['own_life'], src: ['b11Cumbicus', 'own3dp', 'ownPemM2'],
   answers: [
-    ['Brief: brass keeps 98.6 % of its hold after 20 heavy loads; screws straight into plastic keep 82.8 % and 43.3 % after re-assembly: both tests, labelled (F21.12 "Keep both")', 'Two rows, each named with its own test: plastic re-assembled ten times (the dial follows Cumbicus 2023: 82.8 % for the better screw by the 10th), the brass insert pulled 20 times to 80 % of its failure force, then measured: 98.6 %. The bars repeat all three with their tests, and the other screw\'s 43.3 % (5th) and 58.1 % (10th) are both in the source.'],
-    ['F2.01: "how metal threaded inserts increase longevity"', 'Each plastic re-assembly visibly shaves the thread\'s flank (red slivers pile up, magnified) while the dial drops; the brass thread is never re-cut and the insert\'s grip survives the pulls. Verdict: hold kept 82.8 % → 98.6 %.'],
+    ['Brief: brass keeps 98.6 % of its hold after 20 heavy loads; screws straight into plastic keep 82.8 % and 43.3 % after re-assembly: both tests, labelled (F21.12 "Keep both")', 'Two rows, each named with its own test: plastic re-assembled ten times (the dial follows Cumbicus 2023: ' + B11W_SHOW.pf30.toFixed(1) + ' % for the better screw by the 10th, 82.84 rounded up, never in Theseus\'s favour), the brass insert pulled 20 times to 80 % of its failure force, then measured: ' + B11W_SHOW.brass.toFixed(1) + ' %. On the right the two results stand side by side, each with its test, under "Hold kept: two tests, each as measured": no arrow joins them (they are different measures); the other screw\'s ' + B11W_SHOW.dpt5.toFixed(1) + ' % by the 5th is said under the plastic\'s, and its 58.1 % by the 10th is in the source.'],
+    ['F2.01: "how metal threaded inserts increase longevity"', 'Each plastic re-assembly visibly shaves the thread\'s flank (red slivers pile up, magnified) while the dial drops; the brass thread is never re-cut and the insert\'s grip survives the pulls. The payoff: two measured results, each named (plastic ' + B11W_SHOW.pf30.toFixed(1) + ' % of its undo torque after 10 re-assemblies; brass ' + B11W_SHOW.brass.toFixed(1) + ' % of its pull strength after 20 heavy pulls), Theseus\'s the larger.'],
     ['F2.08: the screws "need a massive revamp to look proper"', 'Both joints are the 3D model\'s M2 joints in section (as on b11_inserts); the magnified flank is the thread-forming profile, the brass side the ISO thread.'],
     ['What moved from own_life', 'The insert\'s half-section with its dimensions and knurl callouts is out: the insert is drawn in every joint now, and its pull strength is what the brass row tests. New: the human scale (one M2 insert holds 255 N in ABS, a 26 kg suitcase, PEM) and the hand-off to the battery.']
   ],
@@ -904,7 +976,7 @@ S({
       ltag(x0 + 24, y + 34, plast ? 'Straight in' : 'Theseus', plast ? 'Plastic, re-assembled 10 times' : 'Brass insert, pulled 20 times to 80 % of failure', { size: 21, color: plast ? C.mute : C.heroText, vcolor: col, a: A });
       /* where: the joint at the board's boss, in section, as on the slide before */
       G.save(); G.beginPath(); G.rect(x0 + 2, y + 52, 300, rh - 54); G.clip();
-      const J = part(x0 + 160, y + (plast ? 216 : 178), 30, () => own_jointMM({ kind: R.kind, tip: 4.0, pass: 1, reach1: 4.0, reach2: 0, tilt: 0, ph2: 0, recut: 0, bit: { a: 0 }, hole: C.panel, crop: 5.4 }), { rot: Math.PI, alpha: A }) || {};
+      const J = part(x0 + 160, y + (plast ? 216 : 178), 30, () => b11_jointMM({ kind: R.kind, rival: R.kind !== 'insert', tip: 4.0, pass: 1, reach1: 4.0, reach2: 0, tilt: 0, ph2: 0, recut: 0, bit: { a: 0 }, hole: C.panel, crop: 5.4 }), { rot: Math.PI, alpha: A }) || {};
       G.restore();
       /* the loupe: a ring on the thread, a line to the magnified flank */
       const ring = plast ? J.recutPt || J.mouth : J.insert;
@@ -926,7 +998,8 @@ S({
         const v = ai < 1 ? 100 : ai < 2 ? 100 : lerp(b11_pf30(ai - 1), b11_pf30(ai), ak);
         text(ai >= 1 ? 'Assembly ' + ai + ' of 10' : 'First assembly', dx, y + 34, { role: 'small', size: 22, weight: 700, color: ai >= 2 ? C.red : C.ink2, align: 'center', alpha: A });
         b11_dial(dx, dy, 76, v, { col: C.second, lost: true, a: A });
-        text(v.toFixed(1) + ' %', dx, dy + 62, { role: 'num', size: 34, weight: 760, color: C.ink, align: 'center', alpha: A });
+        /* the plastic's hold, rounded up (a rival's higher-is-better figure: never rounded in Theseus's favour) */
+        text((Math.ceil(v * 10 - 1e-9) / 10).toFixed(1) + ' %', dx, dy + 62, { role: 'num', size: 34, weight: 760, color: C.ink, align: 'center', alpha: A });
         text('Torque to undo it, of what closed it', dx, dy + 110, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: A, maxW: 236, lh: 1.15 });
       } else {
         const kM = ep(t, W.meas, W.meas + 0.6, E.io3), v = lerp(100, B11.brass20, kM), done = t >= W.meas;
@@ -936,17 +1009,17 @@ S({
         text('Pull strength kept', dx, dy + 110, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: A, maxW: 236 });
       }
     });
-    /* right: the verdict, the three tests, the human scale */
-    const cx = 1220, cw = RM - cx;
-    verdict(t, W.verdict, cx, 450, { from: 82.8, to: 98.6, unit: '%', dec: 1, label: 'Hold kept after repeated use', better: 'higher', net: false, size: 124, maxW: cw });
-    own_bars(t, W.bars, cx, 570, cw, [
-      { label: 'Brass insert: 20 heavy pulls', v: B11.brass20, s: B11.brass20.toFixed(1) + ' %', kind: 'hero' },
-      { label: 'Screw in plastic: 10 re-assemblies', v: 82.84, s: '82.8 %', kind: 'second' },
-      { label: 'Another screw: 5 re-assemblies', v: 43.27, s: '43.3 %', kind: 'comp' }
-    ], { max: 100, title: 'Each test, as measured', better: 'Higher is better', rh: 70 });
+    /* right: the two results, each named with its own test, side by side in one column (two measures, so no before → after
+       arrow and nothing struck: M-b11-3, POLISH b11_wear); Theseus's the larger; then the human scale */
+    const cx = 1220, cw = RM - cx, SW = B11W_SHOW;
+    text('Hold kept: two tests, each as measured (higher is better)', cx, 330, { role: 'label', size: 22, color: C.mute, alpha: ep(t, W.verdict, W.verdict + 0.4), maxW: cw });
+    b11_result(t, W.verdict, cx, 470, { who: 'Straight in', what: 'Screw in plastic', v: SW.pf30, size: 76, maxW: cw,
+      sub: 'Torque to undo it, after 10 re-assemblies (the better of two screws; the other kept ' + SW.dpt5.toFixed(1) + ' % by the 5th)' });
+    b11_result(t, W.verdict + 0.4, cx, 712, { who: 'Theseus', what: 'Brass insert', v: SW.brass, size: 120, hero: true, maxW: cw,
+      sub: 'Pull strength, after 20 pulls to 80 % of what breaks it' });
     scaleNote(cx, 846, 'holds 255 N in ABS, a 26 kg suitcase', { lead: 'One M2 insert', t, t0: W.human, size: 22 });
     text('Open it as often as you need: first, the battery.', cx, 892, { role: 'small', size: 23, weight: 700, color: C.ink2, alpha: ep(t, W.human + 0.6, W.human + 1.0), maxW: cw });
-    source(t, 'Plastic: Cumbicus et al. 2023, 5 mm thread-forming screws in 30 % glass-fibre PEI, assembled ten times; the torque to undo each joint against the torque that closed it. PF-30: 88.1 % by the 3rd, 84.7 % by the 5th, 82.8 % by the 10th; DELTA PT: 43.3 % by the 5th, 58.1 % by the 10th. Brass: 3D People 2022, M2 to M5 inserts in four printed plastics, 20 loads to 80 % of the failure force, then pulled to failure: 1.37 % weaker on average. PEM: IUTF-M2 in ABS, 255 N.', { t0: 1.0, maxW: 1760 });
+    source(t, 'Plastic: Cumbicus et al. 2023, 5 mm thread-forming screws in 30 % glass-fibre PEI, assembled ten times; the torque to undo each joint against the torque that closed it, lost: PF-30 11.95 % by the 3rd, 15.31 % by the 5th, 17.16 % by the 10th; DELTA PT 56.73 % by the 5th, 41.93 % by the 10th (kept figures on screen rounded against Theseus). Brass: 3D People 2022, M2 to M5 inserts in four printed plastics, 20 loads to 80 % of the failure force, then pulled to failure: 1.37 % weaker on average. PEM: IUTF-M2 in ABS, 255 N.', { t0: 1.0, maxW: 1760 });
   }
 });
 
@@ -1112,6 +1185,10 @@ const B11X = { tri: 1.2, drv: [3.2, 3.8], dxf: 4.4, col: 5.2, table: 0.3, verdic
 const B11_BOXROWS = [
   { name: 'Viper V4 Pro', v: [1, 1, 1, 0, 0, 0] },
   { name: 'G Pro X Superlight 2', v: [1, 1, 1, 0, 0, 0] },
+  /* the X3 (FILLS INT-b11_box): ProSettings' X3 list (receiver and adapter, grip tape, a POWERPLAY puck with a foot: no spare
+     skates); Logitech publishes no X3 list (its X3 pages show an empty "In the box"), so the cable is counted from Logitech's
+     own list for the X2 Superstrike rather than left out (never undercount a rival) */
+  { name: 'Pro X3 Superstrike', v: [1, 1, 1, 0, 0, 0] },
   { name: 'Starlight X', v: [1, 1, 0, 0, 0, 0] },
   { name: 'Sora V3', v: [1, 1, 0, 1, 0, 0] },
   { name: 'X2 CrazyLight', v: [1, 1, 0, 1, 0, 0] },
@@ -1120,10 +1197,10 @@ const B11_BOXROWS = [
 ];
 S({
   id: 'b11_box', ch: 'own', theme: 'paper', title: 'In the box: the driver, and a manual that stands up', settle: 11, ideas: [72, 73, 13],
-  replaces: ['box', 'ownsheet1', 'ownsheet2'], src: ['ownPsV4', 'b11TtV4', 'ownLogiBox', 'ownB2gSlx', 'ownSoraBox', 'ownX2Box', 'ownTrOp1Box', 'ownRazerWarranty', 'b11Jnd', 'b11Brock'],
+  replaces: ['box', 'ownsheet1', 'ownsheet2'], src: ['ownPsV4', 'b11TtV4', 'ownLogiBox', 'b11PsX3', 'b11LogiX2Box', 'ownB2gSlx', 'ownSoraBox', 'ownX2Box', 'ownTrOp1Box', 'ownPcgSkates', 'ownRazerWarranty', 'b11Jnd', 'b11Brock'],
   answers: [
-    ['box (not rated): trifold box with driver (#72, #73)', 'The envelope opens and the trifold stands up (setup with its QR, spares, repair steps); the driver slides out beside it, one size for every screw, cross or slot. Table: what each flagship\'s box lists; the next best lists 3 of 6, Theseus\'s plan 6 of 6; only the wired OP1 8K adds a driver.'],
-    ['ownsheet1, rated 2/10: "feels redundant, most of this should be moved to other slides"', 'Each point moved and said where: wire leads against a ribbon (#51) → b10_wires; twisted pairs (#69) → b10_twist; the skate file (DXF) stays here, as one line beside the spares.'],
+    ['box (not rated): trifold box with driver (#72, #73)', 'The envelope opens and the trifold stands up (setup with its QR, spares, repair steps); the driver slides out beside it, one size for every screw, cross or slot. Table: what seven flagships\' boxes list (the Pro X3 Superstrike added from ProSettings\' list, its cable from Logitech\'s own X2 Superstrike list); the next best list 3 of 6, Theseus\'s plan 6 of 6; only the wired OP1 8K adds a driver.'],
+    ['ownsheet1, rated 2/10: "feels redundant, most of this should be moved to other slides"', 'Each point moved and said where: wire leads against a ribbon (#51) → b10_wires; twisted pairs (#69) → b10_twist; the skate file (DXF) stays here, as one line beside the spares, with why it matters: Razer at first refused a reviewer\'s Viper V4 Pro warranty claim because its feet had been changed (PC Gamer, May 2026).'],
     ['ownsheet2: keep the colourways and the paper cover', 'Colourways stay here (#13: matched to GMK keycap sets, the colour difference published, a ΔE target of 1.0, about the smallest difference an eye can see). The paper battery cover (#74) moved to b11_board, where the underside is shown. The 9-ending serials are out: serials and engravings stay hidden (F26.11); the 9-ending price is b01\'s.']
   ],
   draw: t => {
@@ -1144,7 +1221,7 @@ S({
     /* right: the verdict, then what each box lists, then the skate file and the colourways */
     const rx = 900, rw = RM - rx;
     verdict(t, Q.verdict, rx, 396, { from: 3, to: 6, unit: ' of 6', label: 'What a new owner needs, in the box', better: 'higher', net: false, size: 100, maxW: rw });
-    const items = ['Receiver', 'Cable', 'Grip tape', 'Spare skates', 'Driver', 'Repair steps'], nw = 300, cw = (rw - nw) / items.length, ty = 470, rh = 44;
+    const items = ['Receiver', 'Cable', 'Grip tape', 'Spare skates', 'Driver', 'Repair steps'], nw = 300, cw = (rw - nw) / items.length, ty = 470, rh = 36;
     const gx = j => rx + nw + cw * (j + 0.5);
     items.forEach((it, j) => text(it, gx(j), ty - 8, { role: 'label', size: 20, color: it === 'Driver' ? C.ink : C.mute, align: 'center', alpha: ep(t, Q.table, Q.table + 0.4), maxW: cw - 6 }));
     B11_BOXROWS.forEach((m, i) => {
@@ -1155,13 +1232,15 @@ S({
       m.v.forEach((v, j) => { const X = gx(j), kk = ep(t, Q.table + 0.5 + i * 0.12 + j * 0.04, Q.table + 0.9 + i * 0.12 + j * 0.04); if (v === 1) own_tick(X, y, 20, m.hero ? C.hero : C.ink2, kk); else if (v === 0) own_dash(X, y, 20, C.faint, kk); else text('n/a', X, y + 6, { role: 'label', size: 20, color: C.faint, align: 'center', alpha: kk }); });
     });
     const yb = ty + 40 + B11_BOXROWS.length * rh + 6;
-    text('The skate file (DXF) is published: cut your own, no warranty fight.', rx, yb + 10, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.dxf, Q.dxf + 0.4), maxW: rw });
+    /* the skate file, and why it matters: changing a flagship's feet can cost its warranty (G2, a real case) */
+    const dx2 = text('The skate file (DXF) is published: cut your own and keep the warranty. Razer at first refused a reviewer\'s V4 Pro claim because its feet had been changed (PC Gamer, May 2026).', rx, yb + 10, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.dxf, Q.dxf + 0.4), maxW: rw, lh: 1.25 });
+    const yc = yb + 10 + Math.max(1, (dx2 && dx2.lines ? dx2.lines.length : 2)) * 27.5;
     const kc = ep(t, Q.col, Q.col + 0.4);
     if (kc > 0.003) {
       const sw = [['#E8C8C8', '#E7C6C7'], ['#2F4A3A', '#304A3B'], ['#D9D2C0', '#DAD3C1']];
-      sw.forEach(([m, k], i) => { const x = rx + i * 76; rr(x, yb + 30, 32, 32, 6, m, inkA(0.25), 1.2, kc); rr(x + 34, yb + 30, 32, 32, 6, k, inkA(0.25), 1.2, kc); });
-      text('Colourways matched to GMK keycap sets (#13): shell beside keycap within ΔE 1.0, about the least an eye can tell', rx + 240, yb + 44, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kc, maxW: rw - 240, lh: 1.25 });
+      sw.forEach(([m, k], i) => { const x = rx + i * 76; rr(x, yc, 32, 32, 6, m, inkA(0.25), 1.2, kc); rr(x + 34, yc, 32, 32, 6, k, inkA(0.25), 1.2, kc); });
+      text('Colourways matched to GMK keycap sets (#13): shell beside keycap within ΔE 1.0, about the least an eye can tell', rx + 240, yc + 14, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kc, maxW: rw - 240, lh: 1.25 });
     }
-    source(t, 'Box lists from setup guides, reviews and retailer pages (a dash: not listed): ProSettings and TweakTown (Viper V4 Pro: "I do miss a set of replacement mouse feet"), Logitech, Back2Gaming, AusModShop, TechRadar (OP1 8K: "A small screwdriver is included"). Razer may exclude issues it blames on third-party skates from the warranty (May 2026). ΔE 1.0: the usual just-noticeable difference (Datacolor). Theseus\'s box: Brock\'s plan (#72, #73).', { t0: 1.0, maxW: 1760 });
+    source(t, 'Box lists from setup guides, reviews and retailer pages (a dash: not listed): ProSettings and TweakTown (Viper V4 Pro: "I do miss a set of replacement mouse feet"), Logitech, ProSettings for the X3 (its cable from Logitech\'s own X2 Superstrike list: Logitech publishes none for the X3), Back2Gaming, AusModShop, TechRadar (OP1 8K: "A small screwdriver is included"). Warranty: PC Gamer, May 2026; Razer may exclude issues it blames on third-party skates. ΔE 1.0: the usual just-noticeable difference (Datacolor). Theseus\'s box: Brock\'s plan (#72, #73).', { t0: 1.0, maxW: 1760 });
   }
 });

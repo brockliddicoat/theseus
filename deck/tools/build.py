@@ -69,6 +69,6 @@ if 'main' in which: build(out, 'Theseus', main_slides, dev, r3d='--with3d' in ar
 if 'parts' in which: build('parts.html', 'Parts test', ['19-parts-test.js'], dev)
 if 'comps' in which: build('components.html', 'Component test', ['19-components-test.js'], dev)
 # the motion kit's test page and exemplar (F0a): every kit element animating, in both themes (dist/kit.html)
-if 'kit' in which: build('kit.html', 'Motion kit', ['19-kit-test.js'], dev, r3d=False)
+if 'kit' in which: build(('kit-' + opt['out'] + '.html') if 'out' in opt else 'kit.html', 'Motion kit', ['19-kit-test.js'], dev, r3d=False)   # --out=x: dist/kit-x.html
 if 'three' in which: build('three.html', '3D test', ['18-three-test.js'], dev)
 if 'rec' in which: build('rec.html', 'THESEUS — Recommendations', ['11-slides-rec.js'], dev, flat=False)

@@ -40,6 +40,7 @@ Object.assign(SRC, {
   b10PulsarCable: { t: 'Pulsar USB-C Paracord Cable: a "Head Bent", L-shaped USB-C connector that "prevents cable drag against the desk"; 1.8 m', u: 'https://www.pulsar.gg/products/usb-c-cable' },
   b10MdtTmr: { t: 'MDT, TMR1228D (press release, 2026-07-13): always-on dual-axis magnetic switch, "as little as 1.5μA per axis", DC to 1 kHz, "Continuous (always-on) magnetic field detection without duty-cycling", for quadrature encoder systems', u: 'https://en.prnasia.com/releases/apac/mdt-introduces-tmr1228d-always-on-high-sensitivity-dual-axis-magnetic-switch-ic-with-microamp-level-power-consumption-540448.shtml' },
   b10Plan5: { t: 'Theseus board, placement plan 5 (approved by Brock, 2026-11-05): the PMIC in the left-middle spot beside the sensor (z 19.45), the radio module at the rear centre (z 4.80), J2 battery and J3 side lead at z 8.50, battery front z −4.82', u: '', n: 'handoff/plan-images/board-plan-5.jpg; 3d/pcb/plans/plan5.py' },
+  b10Gpx2Hours: { t: 'TechPowerUp, Logitech G Pro X Superlight 2 review, page 7, Logitech\'s own figures: "if set to 1000 Hz, battery life will be 96 hours in optical switch mode and 104 hours in hybrid switch mode" (290 mAh). Running the two main switches\' optics full time costs 290/96 − 290/104 = 0.23 mA, 0.116 mA a switch: derived', u: 'https://techpowerup.com/review/logitech-g-pro-x-superlight-2/7.html' },
   b10G703: { t: 'Logitech G703 LIGHTSPEED spec sheet (2017): "up to 32 hours non-stop gaming at 1ms report rate with lights off", "24 hours non-stop gaming at 1ms report rate with RGB color cycling on"', u: 'https://logitech.com/assets/65259/2/g703-lightspeed-wireless-gaming-mouse.pdf' },
   b10Aqa: { t: 'AQA A-level Physics required practical, "Investigating EMF and internal resistance": a variable load, an ammeter and a voltmeter; V = ε − I r (Save My Exams revision notes)', u: 'https://www.savemyexams.com/a-level/physics/aqa/17/revision-notes/5-electricity/5-4-electromotive-force-and-internal-resistance/5-4-2-required-practical-investigating-emf-and-internal-resistance/' },
   b10Brock: { t: 'Brock Liddicoat, "In Pursuit of an Objectively Better Mouse": #19 angling the charging cable ("prone to sucking the cable in"; Lamzu and Pulsar do it), #20 a Goldilocks cable ("the tension in the bent cable is stronger than the weight of the mouse"), #51 wires instead of ribbon cables ("so easy to rip"), #69 braids not too tight ("wires are heavy"), #70 paracord, #98 a conformal urethane coat, #99 no RGB LED; "0.1 mm LOD steps is a must"; "very few companies advertise the use of the lithium polymer battery"', u: '', n: 'research/brock-doc-in-pursuit.txt' }
@@ -50,8 +51,10 @@ Object.assign(SRC, {
 const B10 = (() => {
   const cell = typeof elc_cell === 'function' ? elc_cell() : { mAh: 370, g: 8, wh: 1.369, whV4: 1.184 };
   const whV4 = cell.whV4 || 1.184;
-  /* the Viper V4 Pro's draw (its 1.184 Wh battery over Razer's 180 h at 1 khz, and TechPowerUp's 40 h measured at 8 khz) */
-  const w1 = whV4 / 180, w8 = whV4 / 40, h1 = cell.wh / w1, h8 = cell.wh / w8;
+  /* the Viper V4 Pro's draw: its 1.184 Wh battery over Razer's 180 h at 1 khz and Razer's 45 h at 8 khz (claims, like for
+     like with Theseus's derivation: the film's one 8 khz figure, BROADCAST-0930; TechPowerUp measured about 40 h, which
+     the source lines keep as corroboration) */
+  const w1 = whV4 / 180, w8 = whV4 / 45, h1 = cell.wh / w1, h8 = cell.wh / w8;
   /* Li-ion in a steel can, mouse-sized (Brock, F27 cells: "look at smaller batteries"): two sellers' 10440s at 350 mAh */
   const cyl = [{ who: 'akkuteile', mAh: 350, g: 9, src: 'elc10440' }, { who: 'Keeppower', mAh: 350, g: 10, src: 'b10Keep10440' }]
     .map(c => Object.assign(c, { at: c.g * cell.mAh / c.mAh, whkg: c.mAh / 1000 * 3.6 / c.g * 1000 }));
@@ -62,14 +65,25 @@ const B10 = (() => {
   return {
     cell, w1, w8, h1, h8,
     /* the V4 Pro charges at 0.169 A on 306 mAh (TechPowerUp): 0.55C. Theseus at its battery's rated 1C (Jauch) */
-    v4: { mAh: 306, A: 0.169, c: 0.169 / 0.306, h1: 180, h8: 40 },
+    v4: { mAh: 306, A: 0.169, c: 0.169 / 0.306, h1: 180, h8: 45 },
     cyl, can, foil, mass: THESEUS.mass,
     /* the coat: urethane at 1.05 g/cm³ over both sides with the parts' flanks (≈35.6 cm²), 25 / 50 / 75 µm */
     coat: [25, 50, 75].map(um => ({ um, g: 35.6 * um / 1e4 * 1.05 })),
-    /* lights, against a Viper V4 Pro's average draw at 1 khz (306 mAh over 180 h): Omron's optical switch pulse
-       (5 mA for 30 µs every 1 ms), an optical wheel's LED (Avago: 40 µs every 2 ms; 5 mA assumed, as Omron's), and a
-       magnetic wheel on an always-on TMR sensor (MDT: 1.5 µA per axis, two axes) */
-    lights: (() => { const avg = 306 / 180, sw = 2 * 5 * 0.030, wh = 5 * 0.040 / 2.0, tmr = 0.003; return { avg, sw, wh, tmr, share: (sw + wh) / avg, shareT: tmr / avg, more: 1 / (1 - (sw + wh) / avg) - 1 }; })(),
+    /* lights, against a Viper V4 Pro's average draw at 1 khz (306 mAh over 180 h). An optical switch: 0.116 mA, from
+       Logitech's own hours for the G Pro X Superlight 2 (TechPowerUp: 96 h optical-only against 104 h hybrid at 1 khz, 290
+       mAh), the lower of the film's two derivations and the one it claims (BROADCAST-0945; Omron's datasheet pulse, 5 mA for
+       30 µs every 1 ms, would give 0.15 mA). Read from b03's B03 where it exists, so Clicks and this slide can't drift.
+       An optical wheel's LED (Avago: pulsed 40 µs every 2 ms; 5 mA assumed, as Omron's), and a magnetic wheel on an
+       always-on TMR sensor (MDT: 1.5 µA per axis, two axes) */
+    lights: (() => {
+      const B3 = typeof B03 !== 'undefined' ? B03 : null;
+      const avg = B3 && B3.v4MA ? B3.v4MA : 306 / 180, swOne = B3 && B3.optMA ? B3.optMA : (290 / 96 - 290 / 104) / 2;
+      const swOmron = B3 && B3.omronMA ? B3.omronMA : 5 * 0.030, sw = 2 * swOne, wh = 5 * 0.040 / 2.0, tmr = 0.003;
+      /* Theseus's own: two mechanical switches read by strobed pull-ups (b03's 3 µA a switch) and the TMR; the gain is the
+         same battery's hours with Theseus's draw in place of the lights (+23.4 %: shown +23 %, never rounded up) */
+      const mUA = B3 && B3.mechUA ? B3.mechUA : 3, thsMA = 2 * mUA / 1000 + tmr, gain = avg / (avg - sw - wh + thsMA) - 1;
+      return { avg, swOne, swOmron, sw, wh, tmr, mUA, thsMA, gain, share: (sw + wh) / avg, shareT: tmr / avg };
+    })(),
     /* second-side reflow: 30 g per square inch of pad (Liu 2006) in mg per mm² */
     padRule: 30 / 645.16 * 1000
   };
@@ -95,6 +109,14 @@ function b10_ccv(c, s0 = 0.2) {
   const at = m => { if (m <= 0) return s0; const i = Math.min(pts.length - 1, Math.floor(m / dt)); return pts[i][1]; };
   const r = { pts, cc, end: pts[pts.length - 1], t80, at };
   B10_CCV.set(key, r); return r;
+}
+/** b10_charge's payoff: the hours of play at 8 khz that ten minutes of charge from 20 % buy, on the V4 Pro (0.55C) and on
+   Theseus (1C), both at the V4 Pro's 8 khz draw (B10.w8, Razer's 45 h). The true values (4.14 and 8.67 h), and the shown
+   ones rounded against Theseus (higher is better: the rival's up, Theseus's down, never in its favour): 4.2 → 8.6 h */
+function b10_tenMin() {
+  const A = b10_ccv(B10.v4.c, 0.2), Bc = b10_ccv(1.0, 0.2);
+  const hA = (A.at(10) - 0.2) * B10.cell.whV4 / B10.w8, hB = (Bc.at(10) - 0.2) * B10.cell.wh / B10.w8;
+  return { hA, hB, sA: Math.ceil(hA * 10 - 1e-9) / 10, sB: Math.floor(hB * 10 + 1e-9) / 10 };
 }
 
 /** b10_pmic's session: one battery over one long session, read two ways. u: 0..1 through the session.
@@ -840,7 +862,7 @@ S({
     captions(t, [[0.6, 'Most mice guess the charge from the battery\'s voltage, and that voltage moves with load, cold and every restart.'],
       [5.8, 'Theseus\'s nPM1300 counts charge in and out: it reads within 3 %, and does six parts\' work.']]);
     const u = clamp((t - 0.3) / 5.0), S0 = b10_session(u);
-    /* the session chart: % left against hours of play (the session starts at 46 %: 21 h at 8 khz) */
+    /* the session chart: % left against hours of play (the session starts at 46 %: about 24 h at 8 khz) */
     const cx = 170, cy = 300, cw = 980, ch = 400, X = v => cx + v * cw, Y = p => cy + ch - p / 0.6 * ch;
     for (const p of [0, 0.2, 0.4, 0.6]) { line(cx, Y(p), cx + cw, Y(p), { color: p ? C.hair : C.faint, w: p ? 1.2 : 1.5 }); text(Math.round(p * 100) + ' %', cx - 14, Y(p) + 7, { role: 'tick', color: C.mute, align: 'right' }); }
     const hrs = 0.46 * B10.h8; for (let h = 0; h <= hrs; h += 5) text(h + ' h', X(h / hrs), Y(0) + 30, { role: 'tick', color: C.mute, align: 'center' });
@@ -905,20 +927,20 @@ S({
    In from b10_pmic's empty battery. The demonstration: two batteries plugged in at 20 % on the same clock: the Viper V4
    Pro's at 0.169 A (TechPowerUp: 0.55C of its 306 mAh), Theseus's at its battery's rated 1C (Jauch: 370 mA). The current
    arrows are sized by amps, the fills rise, and the CC/CV curves (Battery University: constant current, then constant
-   voltage) are drawn under them. Ten minutes: +9.2 % → 3.7 h against +16.7 % → 7.7 h at 8 khz. Then the four guards that
+   voltage) are drawn under them. Ten minutes: +9.2 % → 4.2 h against +16.7 % → 8.6 h at 8 khz (b10_tenMin). Then the four guards that
    make 1C safe act in turn, each a cause and its effect: cold, a bad charger, a short, storage. */
 S({
   id: 'b10_charge', ch: 'elec', theme: 'night', title: 'Fast charging, safely', settle: 11, ideas: ['pmic', 'battery'],
-  src: ['b10TpuV3', 'elcLp4025', 'b10Npm', 'b10Bu409', 'b10Bu410'],
+  src: ['elcTpuV4', 'nbcV4', 'elcLp4025', 'b10Npm', 'b10Bu409', 'b10Bu410'],
   replaces: ['elc_charge', 'elc_safe'],
   answers: [
-    ['elc_charge (not rated, no note)', 'Rebuilt as a demonstration: two batteries on one clock, current arrows sized by amps, fills rising, the CC/CV curve under each; ten minutes buy 3.7 h on the V4 Pro, 7.7 h on Theseus at 8 khz'],
+    ['elc_charge (not rated, no note)', 'Rebuilt as a demonstration: two batteries on one clock, current arrows sized by amps, fills rising, the CC/CV curve under each; ten minutes buy ' + b10_tenMin().sA.toFixed(1) + ' h on the V4 Pro, ' + b10_tenMin().sB.toFixed(1) + ' h on Theseus at 8 khz (at Razer\'s 45 h for the V4 Pro at 8 khz)'],
     ['elc_safe (not rated, no note)', 'The four guards act in turn, each cause with its effect: cold (waits until 10 °C), a bad charger (stopped at the input, 22 V rated), a short (the battery\'s own board opens), storage (ship mode, 370 nA)'],
     ['(F0.5) honest wording: the PMIC is not the limit, the battery is', 'Said: Theseus charges at its battery\'s rated 1C; the nPM1300 could go to 800 mA. Its charger is linear too, so the guards, not less heat, make 1C safe']
   ],
   draw: t => {
     header(t, 'Fast charging, safely');
-    captions(t, [[0.6, 'The Viper V4 Pro charges at 0.17 A, half its battery\'s capacity an hour. Theseus charges at its battery\'s rated 1C.'],
+    captions(t, [[0.6, 'The Viper V4 Pro charges at 0.17 A, just over half its battery\'s capacity an hour. Theseus charges at its battery\'s rated 1C.'],
       [5.8, 'Four guards make 1C safe: cold, a bad charger, a short and storage are each caught in time.']]);
     const mins = 10 * ep(t, 0.8, 4.8, E.lin), V = B10.v4, A = b10_ccv(V.c, 0.2), Bc = b10_ccv(1.0, 0.2);
     const sA = A.at(mins), sB = Bc.at(mins);
@@ -962,9 +984,9 @@ S({
         text(why, px + 484, y + 30, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: kk }); });
     }
     /* the payoff */
-    const hA = (A.at(10) - 0.2) * B10.cell.whV4 / B10.w8, hB = (Bc.at(10) - 0.2) * B10.cell.wh / B10.w8;
-    verdict(t, 5.2, 980, 846, { from: Math.round(hA * 10) / 10, to: Math.floor(hB * 10) / 10, unit: 'h', dec: 1, label: 'Play from a 10-minute charge, at 8 khz', better: 'higher', who: ['Viper V4 Pro', 'Theseus'], size: 110, maxW: 800 });
-    source(t, 'V4 Pro: 0.169 A on 306 mAh (TechPowerUp). Theseus: Jauch LP402535JU, maximum charge 1.0C (370 mA); the nPM1300 charges up to 800 mA, 22 V input tolerance, NTC and JEITA, ship mode 370 nA. CC/CV curves from the deck\'s battery model; hours at the V4 Pro\'s measured 8 khz draw. Cold charging plates lithium (Battery University BU-410).', { t0: 2.4 });
+    const H10 = b10_tenMin();
+    verdict(t, 5.2, 980, 846, { from: H10.sA, to: H10.sB, unit: 'h', dec: 1, label: 'Play from a 10-minute charge, at 8 khz', better: 'higher', who: ['Viper V4 Pro', 'Theseus'], size: 110, maxW: 800 });
+    source(t, 'V4 Pro: 0.169 A on 306 mAh (TechPowerUp). Theseus: Jauch LP402535JU, rated to 1.0C (370 mA); nPM1300: up to 800 mA, 22 V input, NTC, JEITA, ship mode 370 nA. CC/CV: the deck\'s battery model; hours derived at the V4 Pro\'s 8 khz draw (Razer\'s 45 h; TechPowerUp measured about 40). Cold charging plates lithium (Battery University BU-410).', { t0: 2.4 });
   }
 });
 
@@ -1417,7 +1439,7 @@ S({
       }
       }
     }
-    source(t, 'Lift from the shell model: its outline, port (5.25 mm up), skates and lens; a 3 mm stock cable for illustration (diameters unmeasured). Lift-off 1 mm: the PAW3395\'s lower setting. Pulsar\'s bent plug "prevents cable drag against the desk"; TechPowerUp on the Viper V3 Pro\'s cable: its "extraordinary stiffness prevents playing while charging".', { t0: 2.4 });
+    source(t, 'Lift from the shell model: its outline, port (5.25 mm up), skates and lens; a 3 mm stock cable for illustration (no maker or reviewer publishes a diameter). Lift-off 1 mm: the PAW3395\'s lower setting. Pulsar\'s bent plug "prevents cable drag against the desk"; TechPowerUp on the Viper V3 Pro\'s cable: its "extraordinary stiffness prevents playing while charging".', { t0: 2.4 });
   }
 });
 
@@ -1433,7 +1455,7 @@ S({
    step counts, its clear top showing the spring and magnet. */
 S({
   id: 'b10_lights', ch: 'elec', theme: 'night', title: 'Nothing lights up but the sensor', settle: 12, ideas: ['encoder', 78, 84, 99],
-  src: ['srf_razerAllOptical', 'b03_d2fp', 'srf_avagoWheel', 'b10MdtTmr', 'b10G703', 'srf_mpsMag', 'pulsarEnc', 'srf_fmSupport'],
+  src: ['srf_razerAllOptical', 'b10Gpx2Hours', 'b03_logiHybrid', 'b03_d2fp', 'srf_avagoWheel', 'b10MdtTmr', 'b10G703', 'srf_mpsMag', 'pulsarEnc', 'srf_fmSupport'],
   replaces: ['srf_encoder'],
   answers: [
     ['srf_encoder (2/10, rated, no note)', 'Rebuilt as a demonstration: the mouse from above in x-ray with the Viper V4 Pro\'s three pulsing LEDs (two optical switches, an optical wheel), each with its share of the battery; they go out one by one for Theseus, leaving only the sensor; then a dust test with both wheels turning the same steps'],
@@ -1442,11 +1464,11 @@ S({
     ['(sealed) "transparent top housing to see when it\'s broken like switches"', 'Called out on the encoder: "Clear top: the spring and magnet in sight"'],
     ['(elc_sheet2) "add the no rgb light to the slide about having no optical components"', 'The RGB light is here with its cost: Logitech rates the G703 for 32 h with the lights off, 24 h with RGB cycling (spec sheet); Theseus has none'],
     ['(elc_sheet2) "put it next to the web software"', 'Placed just before b10_software'],
-    ['(F31.1) Razer staff: the switches and wheel cost "almost half" the battery', 'Not repeated as a fact: the slide derives its own share (about a quarter at 1 khz) from Omron\'s and Avago\'s pulses, with the wheel\'s 5 mA said to be assumed']
+    ['(F31.1) Razer staff: the switches and wheel cost "almost half" the battery', 'Not repeated as a fact: the slide derives its own share, about a fifth at 1 khz (' + (Math.floor(B10.lights.share * 1000) / 10).toFixed(1) + ' %): the switches from Logitech\'s own hours for the G Pro X Superlight 2 (0.116 mA a switch, the lower of the film\'s two derivations; Omron\'s pulse would say 0.15), the wheel from Avago\'s timing with its 5 mA said to be assumed. So the same battery lasts ' + Math.floor(B10.lights.gain * 100 + 1e-9) + ' % longer with Theseus\'s switches and wheel in their place (their own 9 µA counted), the film\'s figure (b03_switch shows the switches alone, +15 %)']
   ],
   draw: t => {
     header(t, 'Nothing lights up but the sensor');
-    captions(t, [[0.6, 'The Viper V4 Pro\'s optical switches and wheel pulse their LEDs hundreds of times a second, pressed or not: about a quarter of its battery.'],
+    captions(t, [[0.6, 'The Viper V4 Pro\'s optical switches and wheel pulse their LEDs hundreds of times a second, pressed or not: about a fifth of its battery.'],
       [4.4, 'Mechanical switches and a magnetic wheel draw nothing until used: only Theseus\'s sensor lights up.']]);
     const L = B10.lights, off = [ep(t, 2.6, 2.9), ep(t, 2.9, 3.2), ep(t, 3.3, 3.6)];   /* left switch, right switch, wheel */
     /* the mouse from above, in x-ray, its lights pulsing */
@@ -1467,15 +1489,14 @@ S({
     const pc = v => (Math.floor(v * 1000) / 10).toFixed(1) + ' %', pcU = v => (Math.ceil(v * 1000) / 10).toFixed(1) + ' %';
     row(392, at('wheel'), 'Optical wheel', pc(L.wh / L.avg), lights[2].k, 'Magnetic wheel', pcU(L.tmr / L.avg));
     /* a mechanical switch draws only its pull-up's trickle: b03's 3 µA a switch (B03.mechUA), so the three slides agree */
-    const mUA = typeof B03 !== 'undefined' && B03.mechUA ? B03.mechUA : 3, mSh = mUA / 1000 / L.avg;
-    row(492, at('trigR'), 'Optical switch', pc(L.sw / 2 / L.avg), lights[1].k, 'Mechanical switch', pcU(mSh));
-    row(592, at('trigL'), 'Optical switch', pc(L.sw / 2 / L.avg), lights[0].k, 'Mechanical switch', pcU(mSh));
+    const mSh = L.mUA / 1000 / L.avg;
+    row(492, at('trigR'), 'Optical switch', pc(L.swOne / L.avg), lights[1].k, 'Mechanical switch', pcU(mSh));
+    row(592, at('trigL'), 'Optical switch', pc(L.swOne / L.avg), lights[0].k, 'Mechanical switch', pcU(mSh));
     { const p = at('sensor'); line(p[0] + 12, p[1], lx - 16, 684, { color: C.faint, w: 1.5, alpha: 0.7 }); text('Sensor', lx, 692, { role: 'label', size: 21, color: C.mute }); text('Both have it', lx, 724, { role: 'small', size: 22, weight: 600, color: C.ink2 }); }
     text(t < 3.6 ? 'Viper V4 Pro' : 'Theseus', 290, 900, { role: 'label', size: 22, color: t < 3.6 ? C.secondText : C.heroText, align: 'center' });
     text('No RGB either: Logitech rates its G703 for 32 h with the lights off, 24 h with RGB cycling.', lx, 790, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 360, lh: 1.3, alpha: ep(t, 4.0, 4.4) });
     /* the payoff */
-    const thsMA = 2 * mUA / 1000 + L.tmr, more = L.avg / (L.avg - L.sw - L.wh + thsMA) - 1;
-    verdict(t, 4.9, 980, 846, { from: Math.floor(L.share * 1000) / 10, to: Math.ceil(thsMA / L.avg * 1000) / 10, unit: '%', dec: 1, label: 'Battery to the switches and wheel (wheel current assumed)', better: 'lower', who: ['Viper V4 Pro', 'Theseus'], net: '+' + Math.floor(more * 100) + ' % hours, same battery', size: 96, maxW: 700 });
+    verdict(t, 4.9, 980, 846, { from: Math.floor(L.share * 1000) / 10, to: Math.ceil(L.thsMA / L.avg * 1000) / 10, unit: '%', dec: 1, label: 'Battery to the switches and wheel (wheel current assumed)', better: 'lower', who: ['Viper V4 Pro', 'Theseus'], net: '+' + Math.floor(L.gain * 100 + 1e-9) + ' % hours, same battery', size: 96, maxW: 700 });
     /* the dust test: both wheels turn the same steps while dust falls in */
     { const px = 980, py = 290, pw = 860, ph = 420, hw = (pw - 24) / 2, kd = ep(t, 6.4, 8.6, E.lin), turn = Math.max(0, t - 6.0) * 4, total = 16, n = Math.min(total, Math.floor(turn));
       demoWindow(px, py, pw, ph, 1, { plain: true });
@@ -1498,7 +1519,7 @@ S({
       }
       if (enc.cover) callout(t, 9.2, enc.cover, 'Clear top', { to: [px + pw - 150, py + 130], side: 'r', color: C.heroText, tcolor: C.ink, sub: 'Spring and magnet in sight', maxW: 140 });
     }
-    source(t, 'Shares of a Viper V4 Pro\'s draw at 1 khz (1.70 mA: 306 mAh over 180 h), derived: Omron\'s switch LED 5 mA for 30 µs a millisecond; Avago\'s wheel LED 40 µs every 2 ms at 5 mA (assumed); MDT\'s TMR 1.5 µA an axis; a mechanical switch\'s pull-up 3 µA (as Clicks). Dust test: how each gate works (MPS); the counts are an illustration.', { t0: 2.4 });
+    source(t, 'Shares of a Viper V4 Pro\'s 1.70 mA at 1 khz (306 mAh, 180 h), derived: an optical switch 0.116 mA, from Logitech\'s 96 h optical-only against 104 h hybrid (Superlight 2, TechPowerUp; Omron\'s pulse: 0.15 mA); its wheel LED 40 µs every 2 ms (Avago) at 5 mA, assumed; TMR 1.5 µA an axis (MDT); a mechanical switch 3 µA. Dust counts: an illustration (MPS).', { t0: 2.4 });
   }
 });
 

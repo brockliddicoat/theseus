@@ -525,6 +525,37 @@ function b02_swingLoupe(t, x, y, r, o = {}) {
   return { tip: [ex, ey], cross: [(x + ex) / 2, ey] };
 }
 
+/* ============================== 1. b02_card: the chapter card (Clicks) ==============================
+   Replaces clicks (7/10): "switch plunger on the gt01s is still turned vertical, bottom part looks fine but the part that
+   actually sticks out above the housing looks like it needs to be turned 90 degrees". The kit's chapter card: the ledger's
+   compromise in red, struck as the answer lands in blue, the flagship line (ledgerFlag: the Viper V4 Pro), the chapter's
+   slides along the foot; the part is the shared GT01 (clk_gt01MM, H1's walls), its cap turned (1.5 mm along the switch,
+   round-topped), pressing slowly. */
+S({
+  id: 'b02_card', ch: 'click', card: true, first: true, theme: 'night', title: 'Clicks that land the same, every time', settle: 5.5,
+  replaces: ['clicks'],
+  src: ['clk_gt01', 'clk_gateronRender'],
+  answers: [
+    ['switch plunger on the gt01s is still turned vertical', 'The part is the shared GT01 drawing (clk_gt01MM: Gateron\'s render, H1\'s 0.70 mm walls), its cap shown 1.5 mm along the switch with its round top, as Gateron draws it'],
+    ['bottom part looks fine', 'Kept: the bottom housing with its 20° seat, as H1 redrew it'],
+    ['(the chapter opener)', 'Rebuilt in the kit\'s chapter-card family: the compromise struck, the answer in blue, the flagship line, the chapter\'s slides in film order, the ledger strip']
+  ],
+  sfx: [[2.45, 'click']],
+  draw: t => {
+    const turn = 2.1;
+    chapterCard2(t, {
+      ch: 'click', turn,
+      list: [[[17, 18], 'Straight rear cutouts'], [58, 'One split, between your fingers'], [[46, 47], 'A flat front, grooves that hold'], [48, 'Flush walls, no pinch'],
+        [2, 'Direct Drive, one flat board'], [50, 'The bridge, in a stiff button'], [[3, 28], 'Dual rails on POM pads']],
+      part: (tt, box, kt) => {
+        const [bx, by, bw, bh] = box, sc = Math.min(bw / 19, bh / 15), sw = clk_swc(tt, 2.4, 2.6), a = ep(tt, 0.8, 1.6);
+        part(bx + bw / 2 + 1.5 * sc, by + bh * 0.62, sc, () => clk_gt01MM({ press: sw.pr, state: sw.state }), { alpha: a });
+        text('Gateron GT01, on its 20° housing', bx + bw / 2, by + bh - 6, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: ep(tt, 1.6, 2.0) });
+      }
+    });
+  }
+});
+
 /* ============================== 2. b02_cutouts: Straight rear cutouts (#17, #18) ==============================
    His most important idea in this chapter (F33.5), the old slide his worst rated (3/10: "you can hardly tell which part of
    the mouse you're looking at", "the benefit to the player isn't really sold"). So: the whole mouse first, the cutout lit;

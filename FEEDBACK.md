@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 09:45 (Chicago).
+Last updated: 2026-11-06 10:10 (Chicago).
 
 ## F34, F35. Brock's own steering given to Codex on 2026-11-05 (carried over; Codex's work itself is set aside, F38.4)
 On 2026-11-05, out of Claude usage, Brock had Codex continue from this branch. On 2026-11-06 he called its output "very
@@ -143,6 +143,31 @@ opening and the slot above and below it; red curves at the two ends of the strai
 - **F43.6** (09:38) "the bottom rim (the lower part after the hard cease) of the shape shouldn’t have the lattice, it’ll make it
   too complicated to manufacture": the lattice stops at the hard crease; the rim below it is plain wall. **TODO (S1, L1,
   the 3D shell and the lattice study's design space).**
+
+## F44. Side rail, the budget, POM pads, wheels (2026-11-06 ~10:05, answers)
+- **F44.1 STANDING** Asked in words which side-rail design to use (an off-centre press tilts the post; POM on POM, μ ≈ 0.2:
+  ×1.2 at the tip with a 14 mm guide, ×1.85 at 5 mm, ×4.3 at 3 mm, jams at 2 mm; or two posts). His answer: **"show all 3,
+  it’s hard to visualize these things with text, that is the point of this presentation"**. So: (1) the film shows all three
+  rail designs as a demonstration (b03_side or beside it): the press, the tilt, the friction, the force at the tip; (2) design
+  questions to Brock come with pictures (an options sheet or the slide itself), not text alone.
+- **F44.2 DECIDED** The two side switches (full-size SPDT, about 0.5 g each) missing from the 29.31 g budget: **"From the
+  shell"**: the total stays 29.31 g; the shell's allowance drops from 10.35 g to about 9.35 g. **TODO:** the budget gets the
+  line (b01), the shell chapters' and the lattice study's shell weight follow it.
+- **F44.3 DECIDED** POM pads (#28): **"Fit each trigger"**: each trigger fitted at assembly from a tray of pads in 0.05 mm
+  steps (b02_pom as built).
+- **F44.4** The wheel test group (two sellers' figures and two "to weigh" slots): **"research more"**: find more stock
+  wheels' weights, each sourced. **TODO (research).**
+
+## F45. The ruler, and beam sizes chosen for the mould (2026-11-06 09:50)
+- **F45.1** "the codex version had a good demo with a ruler to show that structure of material matters more than weight of
+  materials (they had a better way of saying this tho)". Codex's slide (origin/codex/theseus-revamp-2026-11-05,
+  deck/revamp/40-structure.js, rv_thin_wall): title "Shape buys more than thinning."; "Try bending a ruler flat. Release it.
+  Turn it on its edge. Press again. The weight did not change."; "On edge. Same weight."; the same grams before and after, and
+  how many times stiffer. **TODO:** the film carries this demonstration and this message (structure beats weight), once.
+- **F45.2** "this could be tied into the how the dimensions of the beams in lattice/interwoven arches are chosen, also. also
+  keep manufacturability in mind when you choose dimensions": the lattice study (F43.4) explains its rib and arch-beam
+  proportions with the ruler (ribs are rulers on edge: as deep as the mould can fill), and every chosen dimension respects
+  moulding limits (rib-to-wall ratio against sink, minimum rib width, draft, fillet minimums), cited. **TODO (L1, b05, b06).**
 
 ## Open with Brock
 

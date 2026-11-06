@@ -385,6 +385,13 @@ S({
 `settle` is the time the slide is designed to be read at (screenshots and QA use it). Alternate `paper` and
 `night` with the slide before when you can.
 
+The player (§11) reads a few more, all optional: `hold` (seconds the film holds the settled frame in autoplay, instead of
+the hold counted from its text), `trans` (its own transition in: `'dissolve' | 'wipe' | 'flight' | 'chapter' | 'iris' |
+'push' | 'cut'`), `irisAt: [x, y]`, and `flight`: `{ view, box: [x, y, w, h], pad }` says where the slide's simplified mouse
+sits (as `mouseFit(box, view, { pad })` would draw it), so a chapter flight starts or lands exactly on it; `flight: false`
+keeps the flight out of the slide's chapter changes. A chapter card built with `chapterCard2` needs none of these: the kit
+shows the player its mouse.
+
 ### Furniture (`04-ui.js`)
 
 | Call | What it does |
@@ -598,25 +605,50 @@ Brock, 2026-11-06 (F38.7): "it's mostly clips that will be used on social media 
 flow between clips has to be extremely good ... the pacing also has to be amazing". Every slide is also a clip; the
 player (`20-app.js`) strings them into one film.
 
-**The flow.** The stage never moves between slides: both frames stay registered, so the grid holds still and only the
-content changes.
+**The flow.** The stage never moves between slides: the ground, the 40 px grid and the footer hold still and only the
+content changes. The footer (the rule, THESEUS / chapter, n / N) is the stage's, drawn settled on every slide, so it never
+redraws or dims between them.
 - Same ground (paper to paper, night to night): a **dissolve**, 0.55 s. The new frame fades in over the old, so whatever
   is the same on both (the chapter's label, the footer, a part drawn in the same place) holds perfectly still while the
   rest changes. Keep two slides on the same ground when one hands a part to the next (M9).
 - A change of ground: a **wipe**, 0.7 s. A soft edge, slanted 10°, carries the new slide across from the left (from the
   right going back), so its header shows first (G9).
-- A new chapter, going forward: the **chapter** move, 1.1 s, the film's one pass through black. The old slide recedes as
-  it fades, and the card comes up from a hair nearer; its clock starts as it emerges, so its first frame is seen.
-- A slide may ask for its own: `trans: 'dissolve' | 'wipe' | 'chapter' | 'iris' | 'push' | 'cut'`; `iris` opens a circle
-  round `irisAt: [x, y]` (stage px). Transitions carry no colour (blue is Theseus's). Reduced motion: a 0.25 s dissolve
-  onto the settled frame.
+- A change of chapter, either way: the **flight** across the simplified mouse (Brock, F40.2: "advanced motion
+  transitions"), 1.6 s. The old slide's content recedes, a hair smaller, while the film's one mouse comes up where that
+  chapter was, its part lit in Theseus's blue; one camera then carries it (one eased move, `E.cam`) to where the next
+  chapter is, turning between views when the next part faces another way (top, side, below: the mouse rolls about its
+  long axis and turns in the plane as one solid), and lands exactly where the chapter card draws its own mouse; the card's
+  words land over it and the card lights its part. The ground changes, when it must, after the old content has gone,
+  while only the mouse moves. Going back plays the reverse: the card's words go, the camera flies back, the slide comes
+  up out of the mouse at its first frame.
+  - Each chapter's part (`FLY.st` in `20-app.js`, Brock's list): intro the battery (its trade, light or long-lasting),
+    clicks the triggers, glide the sensor and skates (below), shell the shell and the hump (side), surface the sides
+    (side), electronics the board, shape the side profile, ownership the base and its four screws (below), the close the
+    whole shell. A slide that is not a card recedes into, or emerges from, that part framed large at the centre.
+  - The card: `chapterCard2` shows the player its mouse through the kit (`CARD2`), whether the part is `{ view, hi }` or
+    your own function drawing with `mouseFit` or `mouseSimple`; the flight lands on that mouse to the pixel and the card
+    draws it from then on. A part drawn without the kit's mouse gets a soft hand-off in the card's part box: where its
+    mouse sits at the card's settle if it has one there (b11's), or else the chapter's part lit as the words begin, then
+    the box handed to the card's own drawing (b02's switch, b08's swatch; 1.85 s). Show the part from frame one (M6), so
+    the hand-off meets it. Any slide can say where its mouse sits with `flight: { view, box, pad }` (the flight then
+    starts or ends exactly on it), or opt out with `flight: false`.
+  - Timeline (s): the old content recedes 0 to 0.4 as the mouse comes up; the old part's light goes 0.3 to 0.56; the
+    camera moves 0.22 to 1.28, turning 0.58 to 1.18 when it must (the kit's own drawing before and after the turn, a loft
+    of its outlines during it); a card's clock starts on landing (1.28) and the flight's layer goes at 1.6, when the
+    card's mouse is fully up; a slide emerges 1.2 to 1.6 instead. Nothing on it is blue but Theseus's lit part, and
+    nothing moves that the camera doesn't move.
+- A slide may ask for its own: `trans: 'dissolve' | 'wipe' | 'flight' | 'chapter' | 'iris' | 'push' | 'cut'`; `chapter` is
+  F0b's pass through black (1.1 s), kept for a slide that asks for it; `iris` opens a circle round `irisAt: [x, y]` (stage
+  px). Transitions carry no colour (blue is Theseus's). Reduced motion: a 0.25 s dissolve onto the settled frame. Edit
+  mode: no transition.
 
 **Pacing.** Autoplay plays each slide to its `settle`, holds it while its text is read, then moves on. The hold is
 counted on the settled frame (reading text in full, labels and ticks under 24 px at 0.3, nothing faint or under the
-rule): 0.5 s plus 250 characters a second, between 1.2 and 4 s (a chapter card about 2 s, a dense sheet 4 s); `hold: s`
-on a slide sets its own. An open panel or a note being typed holds the slide (the film waits 1.5 s after it closes);
-pause holds; the last slide stays; `?auto=0` turns it off. So nothing important appears after settle, and a slide
-doesn't idle long before it (M6).
+rule): a third of a second plus 150 characters a second, between 2 and 6 s (Brock, F40.1: "Longer, 2–6 s"). On the
+revamp's slides that is about 3 s for a typical slide and for a chapter card, up to 4 s for the busiest, and 6 s for a
+dense idea sheet; `hold: s` on a slide sets its own. An open panel or a note being typed holds the slide (the film waits
+1.5 s after it closes); pause holds; the last slide stays; `?auto=0` turns it off. So nothing important appears after
+settle, and a slide doesn't idle long before it (M6).
 
 **Clip mode.** `?clip=<slide id>` plays the slide alone, once, from its first frame to its settled frame, and stays there
 (a tap, Space or R plays it again): no bar, no progress tick, no page counter, no "03 / 12" chapter count, and a small
@@ -625,9 +657,16 @@ and the subject, the payoff lands by about 8 s. `&vertical=1` lays it out 9:16 f
 width at 600 of 1920 px, the grid running on above and below, the chapter and the title large above it from frame one
 (the stage's own type is too small at that width), the mark below, the bottom third clear for the apps' captions.
 
+**Two kinds of clip, both kept** (Brock, F40.3: "allow for both letterboxed and the same as before as options"): the
+film's own 16:9 frame, for the website and landscape feeds, and the 9:16 letterbox above for phone feeds. A clip has no
+transitions: a chapter card plays from its own first frame, untouched by the flight.
+
 **Exporting.** `node tools/clip.js <abs html> <slide id> <out.mp4> [--fps=30] [--hold=1.5] [--size=1920x1080]
-[--vertical] [--crf=18]` renders the clip frame by frame through the capture hook (`?cap=1&clip=<id>&t=0`, then
+[--vertical | --both] [--crf=18]` renders the clip frame by frame through the capture hook (`?cap=1&clip=<id>&t=0`, then
 `window.__seek(t)` per frame: every frame is a function of t, so a clip comes out the same every time), holds the settled
-frame for `--hold` s, and encodes H.264, yuv420p, BT.709, `-preset veryfast`, faststart. It takes two to five times the
-clip's length here, by how heavy the slide is. Pull frames back out to check one: `ffmpeg -ss 4 -i out.mp4 -frames:v 1 f.png`. For tools, the capture hook
-also draws a moment of a transition: `&from=<id>&ft=<t>&k=<0..1>[&kind=]`, or `__seek(t, { from: [id, t], k, kind })`.
+frame for `--hold` s, and encodes H.264, yuv420p, BT.709, `-preset veryfast`, faststart. The default is the 16:9 clip
+(1920 × 1080; `--size=3840x2160` for 4K); `--vertical` makes the 9:16 one (1080 × 1920); `--both` writes the two in one run,
+`<out>.mp4` and `<out>-vertical.mp4`. It takes two to five times the clip's length here, by how heavy the slide is. Pull
+frames back out to check one: `ffmpeg -ss 4 -i out.mp4 -frames:v 1 f.png`. For tools, the capture hook also draws a
+moment of a transition: `&from=<id>&ft=<t>&k=<0..1>[&kind=]` (with `&t=auto`, the new slide's own clock at k, as the film
+runs it), or `__seek(t, { from: [id, t], k, kind })` (t `null`: the same).

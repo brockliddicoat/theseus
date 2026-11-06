@@ -157,6 +157,46 @@ twins, so H1's move of the sensor reaches every slide.
 named point (mm): `nose`, `tail`, `hump`, `wheel`, `trigL`, `trigR`, `seam` (top), `cut` (side: the rear cutout's top),
 `trig` (side: on the trigger surface), `tip`, `side1`, `side2`, `sensor`, `base`, `skateF`, `skateR`, `usb`, `c`.
 
+### The rival mouse (FILM F9)
+
+The simplified mouse is Theseus, and only Theseus. **Any other mouse, named or "most mice", is drawn with `mouseRival`**: a
+plain rounded body in the rival grey, sized from its dims, with no Theseus detail (no centre split, no rear cutout, no
+triggers, no side buttons, nothing lit), so a viewer never mistakes whose mouse is whose. The shape is generic on purpose: it
+stands for "a typical mouse", never for a named mouse's real outline (where a slide needs a real outline, say b01's X2F cut,
+trace it in your file from a sourced drawing).
+
+**`mouseRival(view, o)`** draws in mm at the current transform (inside `part()`, `withCam()`, `establish`'s draw), in
+**mouseSimple's frames**, so a rival drops in where Theseus was drawn: `'top'` (nose up, the user's left on the left; the
+length's middle at y = 0, the nose at −L/2), `'bottom'` (from below: the user's left on the right), `'left'` = `'side'`
+(nose left) and `'right'` (nose right) with the pad at y = 0 and the length's middle at x = 0, `'front'` (facing the nose:
+the user's left on the viewer's right; x = 0 on the centre line, the pad at y = 0).
+- `o = { dims: [L, W, H] mm (default RV_DIMS, a typical 120 × 63 × 39), hump (0.58: where the hump peaks, a fraction of the
+  length from the nose; side views), col: 'grey' (the default: C.comp's family, any rival) | 'rival' (the one rival you
+  name, C.second) | 'bad' (only when the whole body is the fault) | a colour (the outline), show: ['board', 'battery',
+  'switches', 'sensor', 'port'] (hidden parts dashed at a typical mouse's places; 'port' is the front view's cable port),
+  hide: ['wheel', 'skates', 'sensor', 'base', 'nose'], fill, line, lw (2), alpha, lineA, reveal (0..1), dimFill }`
+- it draws the body, the wheel (in the side views only its cap above the shell), the skates (side, bottom, front), the
+  sensor's window from below, the base plate's edge (bottom) and the nose's front edge (front). Nothing else.
+- returns `{ view, P(mx, my), at(name), box, pts, dims }`: `pts` is the outline in mm (to bow it under a press or clip to it).
+- anchors (`m.at(name)`): `c`, `nose`, `tail`, `hump`, `wheel`, `sensor`, `cable` (the cable exit), `switchL`, `switchR`,
+  `switches` (top, bottom, front; in the side views `switch`: the main switch's top), `btnL`, `btnR` (`btn` in the side
+  views: where a finger presses; `trigL`, `trigR`, `trig` answer too, so code written against mouseSimple keeps working),
+  `sideL`, `sideR`, `battery`, `board`, `skateF`, `skateR`, `base` / `pad`.
+
+**`rivalFit(box, view, o)`** → the rival fitted into a stage box (as `mouseFit`); returns the anchors and `s`.
+`const m = rivalFit([80, 300, 420, 560], 'top', { show: ['switches', 'sensor'] }); callout(t, 1, m.at('switchL'), 'Optical switch');`
+
+**`rvBox(view, name, o)`** / **`rvAt(view, name, o)`** → a rival's focus rectangle / named point in mm (as `msBox` /
+`msAt`; `o` carries `dims` and `hump`). Boxes: `nose`, `tail`, `wheel`, `cable`, `switches`, `switchL`, `switchR` (`switch`
+in the side views), `sensor`, `battery`, `board`, `hump`, `skates`, and the whole mouse with no name.
+`part(xm, yc, s, () => mouseRival('top', { dims: [120, 62, 38] }), { rot: Math.PI / 2 }); const nose = xm + 60 * s;   // nose right`
+
+Rules: one rival grey across the film; yellow only for the one rival a slide names and beats (F35.1); red only when the
+whole body is the fault (a whole-shell flex), otherwise mark the fault on it at an anchor (`faultTag`). Never light
+Theseus's parts on a rival, and never draw a rival with `mouseSimple`. The test page shows every view: `kit_rival_n`,
+`kit_rival_p`, `kit_rival_dims` (build `python3 tools/build.py kit --own=06-motion.js,19-kit-test.js --out=<you>` →
+dist/kit-<you>.html).
+
 ### Place
 
 **`establish(t, t0, box, o)`** → the opening move of a part-level slide: the whole mouse in `box` from t0, the part lit
@@ -281,3 +321,19 @@ on the right (the simplified mouse with it lit, neutral until the answer, then b
   read live from b01's B01_TRADES (Weight: Pro X3 Superstrike and HTS Ultra 8K; Clicks: Viper V4 Pro; Shell: UltralightX;
   Shape: X2F CrazyLight; Electronics: XA25; glide, surface, ownership: none). chapterCard2 prints it small under the
   compromise (o.flag: a string to override, false to hide); the answer moves down 34 px when there is one. Snapshot updated.
+- 2026-11-06 09:44 (F0c, the chapter flight; no signature changed): **`CARD2`** (new): while `chapterCard2` draws its part,
+  every `mouseSimple` call is recorded (view, transform, options) in `CARD2.rec[slide id]`, so the player's chapter flight
+  (20-app.js, F40.2) lands exactly on the card's own mouse and leaves from it going back; while a flight is on screen
+  (`CARD2.hide`) the card's kit mouse is left to the flight, which draws the same one. Nothing to do in a card: a part given
+  as `{ view, hi }`, or drawn in your own function with `mouseFit`/`mouseSimple` (as b09's is), is seen; a part drawn some
+  other way (b11's hand-drawn outline) gets a soft cross-fade in the card's part box, or the slide can say where its mouse
+  sits: `flight: { view, box: [x, y, w, h], pad }` on the S({...}) object. `chapterCard2`'s part now draws through a helper,
+  `chapterCardPart(t, o, box, ka, kt)` (same drawing). **`mouseSimple('bottom')`**: two new parts to light, `base` (the base's
+  face and its edge) and `screws` (the board's four M2 screws from below, at `KEY_PARTS.board.holes`); a part flagged
+  `opt` (the screws) is drawn only when lit or in `show`, so existing bottom views are unchanged.
+- 2026-11-06 09:52 (K, FILM F9; additive): **`mouseRival(view, o)`**, **`rivalFit(box, view, o)`**, **`rvBox`**, **`rvAt`**,
+  `RV_DIMS`: the neutral rival mouse (§3, "The rival mouse"). Any mouse that isn't Theseus is drawn with it from now on
+  (b01_compromise's trade icons, b09_chip / b09_second's rival rows, b10_lights / b10_cable's V4 Pro, and any "most mice"
+  whole-mouse view): same frames as mouseSimple, so the swap is the call's name plus `dims`. Test slides `kit_rival_n`,
+  `kit_rival_p`, `kit_rival_dims`. tools/build.py: the `kit` target takes `--out=<name>` (dist/kit-<name>.html), so agents
+  stop overwriting one another's dist/kit.html; without it the page is still dist/kit.html.

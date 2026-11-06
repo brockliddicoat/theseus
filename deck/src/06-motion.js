@@ -7,6 +7,7 @@
      time ........ spring, springKeys, pressCurve, pressInfo, pressCross, beats, stagger, recount
      camera ...... cam, camFit, withCam
      the mouse ... mouseSimple, mouseFit, msBox, msAt, MS_DIMS   (one simplified Theseus, from the scan)
+     rivals ...... mouseRival, rivalFit, rvBox, rvAt, RV_DIMS   (a neutral rival mouse: any mouse that isn't Theseus)
      place ....... establish, locator
      agents ...... finger, forceArrow, faultTag, fixTag   (and the deck's pointer: cursorAt)
      compare ..... abSplit, wipeTo, verdict, betterTag
@@ -352,6 +353,9 @@ function mouseSimple(view, o = {}) {
   const V = msView(view), a0 = (o.alpha == null ? 1 : o.alpha) * PA;
   /* a chapter card's mouse, seen by the player's flight; while a flight draws it, the card leaves it to the flight */
   if (CARD2.cap) { CARD2.cap.push({ view: view === 'side' ? 'left' : view, m: XF.m.slice(), a0, o: Object.assign({}, o) }); if (CARD2.hide) return msAnchors(V, view); }
+  /* a mouse a slide has declared (S({ handoff }) or S({ flight })) while the player's flight or hand-off draws it: the
+     player learns it is really drawn there, and the slide leaves it to the player (CARD2.skip) */
+  if (CARD2.skip) { const vv = view === 'side' ? 'left' : view; for (const e of CARD2.skip) if (e.view === vv && msSameM(e.m, XF.m)) { e.hit = { o: Object.assign({}, o), a0 }; return msAnchors(V, view); } }
   if (a0 <= 0.003) return msAnchors(V, view);
   const hiMap = {};
   if (Array.isArray(o.hi)) o.hi.forEach(n => (hiMap[n] = o.col || 'hero')); else if (o.hi && typeof o.hi === 'object') Object.assign(hiMap, o.hi); else if (typeof o.hi === 'string') hiMap[o.hi] = o.col || 'hero';
@@ -402,6 +406,8 @@ function mouseSimple(view, o = {}) {
   G.restore();
   return msAnchors(V, view);
 }
+/** the same placement: one transform as another (scale within 0.2 %, offset within 0.75 px) */
+function msSameM(a, b) { const s = Math.abs(a[0]) || 1; for (let i = 0; i < 4; i++) if (Math.abs(a[i] - b[i]) > 0.002 * s) return false; return Math.abs(a[4] - b[4]) < 0.75 && Math.abs(a[5] - b[5]) < 0.75; }
 function msAnchors(V, view) {
   const M = XF.m.slice(), P = (x, y) => SPm(M, x, y);
   return { view, P, at: n => P(...(V.at[n] || V.at.c || [0, 0])), box: V.box };
@@ -413,6 +419,236 @@ function mouseFit(box, view, o = {}) {
   const r = part(x + w / 2 - c.cx * c.s, y + h / 2 - c.cy * c.s, c.s, () => mouseSimple(view, Object.assign({}, o, { alpha: 1 })), { alpha: o.alpha == null ? 1 : o.alpha });
   return Object.assign(r || {}, { s: c.s });
 }
+
+/* ================================ the rival mouse (FILM F9) ================================
+   Any mouse that isn't Theseus, so the simplified mouse stays Theseus's alone ("whose mouse is whose"): a plain rounded
+   body in the rival grey, sized from its dims [L, W, H], with no Theseus detail (no centre split, no rear cutout, no
+   triggers, no side buttons, nothing lit). It has a wheel, skates and, when asked, its hidden parts dashed at a typical
+   mouse's places (board, battery, switches, sensor), and anchors for callouts (the switches, the sensor, the cable exit).
+   Its frames are mouseSimple's, so a rival drops in where Theseus was drawn: 'top' (nose up, the user's left on the left),
+   'bottom' (seen from below: the user's left on the right), 'left' = 'side' (nose left), 'right' (nose right), 'front'
+   (facing the nose: the user's left on the viewer's right); mm, y down; the length's middle at y = 0 (top, bottom) or
+   x = 0 (sides); y = 0 on the pad in the side and front views; x = 0 on the centre line. The shape is generic on purpose
+   (a full front, a slight waist, the widest point over the palm, a rear hump at o.hump): it stands for "a typical mouse",
+   never for a named one's real outline. */
+const RV_DIMS = [120, 63, 39];                                           /* a typical flagship: length, width, height, mm */
+const RV_SK = 0.8;                                                       /* skate thickness, mm: the body stands this far off the pad */
+/* the outlines, normalised. Top: the right half from the nose (y -1) to the tail (y 1), x in half-widths. Front: the right
+   half from the pad's centre to the top, x in half-widths, y from the body's foot (0) to the top (1) */
+const RV_TOP = [[0, -1], [0.30, -0.993], [0.56, -0.970], [0.76, -0.925], [0.88, -0.850], [0.935, -0.740], [0.945, -0.600], [0.925, -0.420], [0.905, -0.240],
+  [0.915, -0.060], [0.955, 0.140], [0.990, 0.340], [1, 0.500], [0.975, 0.650], [0.900, 0.790], [0.760, 0.900], [0.540, 0.965], [0.280, 0.993], [0, 1]];
+const RV_FRONT = [[0, 0], [0.60, 0], [0.84, 0], [0.885, 0.012], [0.915, 0.045], [0.94, 0.10], [0.965, 0.20], [0.988, 0.31], [1, 0.42], [0.995, 0.52], [0.975, 0.61],
+  [0.935, 0.70], [0.865, 0.785], [0.765, 0.86], [0.635, 0.92], [0.48, 0.963], [0.31, 0.988], [0.15, 0.998], [0, 1]];
+/* a typical mouse's places: u = the fraction of the length from the nose; x = of the half-width; heights in mm over the pad
+   (parts keep their size whatever the shell's). Switches 12.8 × 5.8 mm (an Omron-size body, long axis along the mouse) */
+const RV_AT = { wheel: 0.255, wheelL: 0.125, wheelW: 7, sw: 0.21, swX: 0.38, swS: [5.8, 12.8], swH: [5.6, 11.4], btn: 0.32, btnX: 0.5, grip: 0.40,
+  sensor: 0.5, snH: [1.4, 4.0], cableH: 0.2, board: [0.10, 0.80, 0.70], bdH: [4.0, 5.6], battery: [0.535, 0.805, 0.40], btH: [6.6, 11.6],
+  skates: [[0.035, 0.11], [0.89, 0.965]] };
+/** centripetal Catmull-Rom through points (closed or open), per samples a span: a smooth outline from a few points, with
+   no loops or overshoot where the points are unevenly spaced */
+function rvSpline(P, closed = true, per = 5) {
+  const n = P.length, at = i => closed ? P[(i % n + n) % n] : P[Math.max(0, Math.min(n - 1, i))], out = [];
+  const dt = (a, b) => Math.max(1e-4, Math.sqrt(Math.hypot(b[0] - a[0], b[1] - a[1])));
+  const L = (a, b, ta, tb, t) => { const k = (t - ta) / (tb - ta); return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k]; };
+  for (let i = 0; i < (closed ? n : n - 1); i++) {
+    const p0 = at(i - 1), p1 = at(i), p2 = at(i + 1), p3 = at(i + 2), t1 = dt(p0, p1), t2 = t1 + dt(p1, p2), t3 = t2 + dt(p2, p3);
+    for (let j = 0; j < per; j++) {
+      const t = t1 + (t2 - t1) * j / per, A1 = L(p0, p1, 0, t1, t), A2 = L(p1, p2, t1, t2, t), A3 = L(p2, p3, t2, t3, t);
+      out.push(L(L(A1, A2, 0, t2, t), L(A2, A3, t1, t3, t), t1, t2, t));
+    }
+  }
+  if (!closed) out.push(P[n - 1]);
+  return out;
+}
+/** the side profile's top line at u (0 the nose, 1 the tail): 0 at the body's foot, 1 at the hump (uh) */
+function rvTop(u, uh) {
+  const uf = 0.03, vf = 0.40, ut = 0.955, vt = 0.36;
+  if (u <= uh) { const x = clamp((u - uf) / (uh - uf)); return vf + (1 - vf) * x * (1.1 + x * (0.8 - 0.9 * x)); }
+  return 1 - (1 - vt) * Math.pow(clamp((u - uh) / (ut - uh)), 2.1);
+}
+function rvPath(pts, close = true) { const p = new Path2D(); pts.forEach((q, i) => i ? p.lineTo(q[0], q[1]) : p.moveTo(q[0], q[1])); if (close) p.closePath(); return p; }
+function rvRR(x, y, w, h, r) { const p = new Path2D(); if (w < 0) { x += w; w = -w; } if (h < 0) { y += h; h = -h; } r = Math.min(r, w / 2, h / 2); p.moveTo(x + r, y); p.arcTo(x + w, y, x + w, y + h, r); p.arcTo(x + w, y + h, x, y + h, r); p.arcTo(x, y + h, x, y, r); p.arcTo(x, y, x + w, y, r); p.closePath(); return p; }
+function rvCirc(x, y, r) { const p = new Path2D(); p.arc(x, y, r, 0, TAU); return p; }
+/** a closed outline moved inward by d mm along its normals */
+function rvInset(P, d) {
+  let A2 = 0; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; A2 += a[0] * b[1] - b[0] * a[1]; }
+  const sg = A2 > 0 ? 1 : -1;
+  return P.map((p, i) => { const a = P[(i - 1 + P.length) % P.length], b = P[(i + 1) % P.length], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1; return [p[0] - sg * dy / l * d, p[1] + sg * dx / l * d]; });
+}
+/** a closed outline cut by the line y = y0, keeping the side toward the nose (keepFront) or the tail */
+function rvCutY(P, y0, keepFront) {
+  const out = [], inn = p => keepFront ? p[1] <= y0 : p[1] >= y0;
+  for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length], ia = inn(a), ib = inn(b); if (ia) out.push(a); if (ia !== ib) out.push([a[0] + (b[0] - a[0]) * (y0 - a[1]) / (b[1] - a[1]), y0]); }
+  return out;
+}
+function rvDims(o) { const d = o && o.dims; return !d ? RV_DIMS : Array.isArray(d) ? d : [d.L, d.W, d.H]; }
+/* each view, built once per view, dims and hump: { view, dims, box, out, outPts, len, parts: { name: { solid, dash, cap,
+   opt, lines } }, lines, lineParts, at: { name: [x, y] }, boxes: { name: [x, y, w, h] } } */
+const RVV = {};
+function rvView(view, o = {}) {
+  if (view === 'side') view = 'left';
+  if (!/^(top|bottom|left|right|front)$/.test(view)) view = 'top';
+  const [L, W, H] = rvDims(o), uh = o.hump == null ? 0.58 : clamp(o.hump, 0.35, 0.75), id = [view, L, W, H, uh].join('|');
+  if (RVV[id]) return RVV[id];
+  const A = RV_AT, sk = RV_SK, hw = W / 2, hOf = v => sk + v * (H - sk), V = { view, dims: [L, W, H], hump: uh, parts: {}, at: {}, boxes: {} };
+  const add = (n, p) => (V.parts[n] = p), plen = P => { let s = 0; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; s += Math.hypot(b[0] - a[0], b[1] - a[1]); } return s; };
+  const wTop = hOf(rvTop(A.wheel, uh)) + 1.0;                             /* the wheel stands 1 mm proud of the shell */
+  const around = (x0, y0, x1, y1, m) => [Math.min(x0, x1) - m, Math.min(y0, y1) - m, Math.abs(x1 - x0) + 2 * m, Math.abs(y1 - y0) + 2 * m];
+  if (view === 'top' || view === 'bottom') {
+    const sg = view === 'top' ? 1 : -1, yOf = u => (u - 0.5) * L, half = RV_TOP.map(([x, y]) => [x * hw, y * L / 2]);
+    const P = rvSpline(half.concat(half.slice(1, -1).reverse().map(([x, y]) => [-x, y])), true, 5);
+    V.outPts = P; V.out = rvPath(P); V.len = plen(P); V.box = [-hw, -L / 2, W, L];
+    const hwAt = y => { let b = 0; for (let i = 0; i < P.length; i++) { const a = P[i], c = P[(i + 1) % P.length]; if ((y - a[1]) * (y - c[1]) <= 0 && a[1] !== c[1]) b = Math.max(b, Math.abs(a[0] + (c[0] - a[0]) * (y - a[1]) / (c[1] - a[1]))); } return b; };
+    const yW = yOf(A.wheel), wl = A.wheelL * L, ww = A.wheelW, ySw = yOf(A.sw), xSw = A.swX * hw, ySn = yOf(A.sensor), yG = yOf(A.grip);
+    const [b0, b1, bx] = A.board, [t0, t1, tx] = A.battery;
+    if (view === 'top') {
+      const tread = new Path2D(); for (let k = 0; k < 5; k++) { const ry = yW - wl / 2 + (k + 0.5) * wl / 5; tread.moveTo(-ww / 2 + 0.8, ry); tread.lineTo(ww / 2 - 0.8, ry); }
+      add('wheel', { solid: rvRR(-ww / 2, yW - wl / 2, ww, wl, ww / 2), lines: [tread], clipLines: true });
+      add('sensor', { dash: [rvRR(-4, ySn - 5, 8, 10, 2), rvCirc(0, ySn, 1.8)] });
+    } else {
+      /* from below: the base plate's edge, the sensor's window, and two skates (front and rear) inside the edge */
+      const base = rvInset(P, 2.6), sk3 = rvInset(P, 3.6);
+      V.lines = [rvPath(base)]; V.lineParts = ['base'];
+      add('sensor', { solid: rvRR(-4, ySn - 5, 8, 10, 2), lines: [rvCirc(0, ySn, 1.8)] });
+      const skF = rvCutY(sk3, yOf(A.skates[0][1]), true), skR = rvCutY(sk3, yOf(A.skates[1][0]), false), s2 = new Path2D();
+      s2.addPath(rvPath(skF)); s2.addPath(rvPath(skR)); add('skates', { solid: s2 });
+    }
+    const sws = new Path2D(); for (const sx of [-1, 1]) sws.addPath(rvRR(sx * xSw - A.swS[0] / 2, ySw - A.swS[1] / 2, A.swS[0], A.swS[1], 0.8));
+    add('switches', { dash: [sws] });
+    add('board', { dash: [rvRR(-bx * hw, yOf(b0), 2 * bx * hw, (b1 - b0) * L, 3)] });
+    add('battery', { dash: [rvRR(-tx * hw, yOf(t0), 2 * tx * hw, (t1 - t0) * L, 2)] });
+    const uL = -sg, sk0 = (A.skates[0][0] + A.skates[0][1]) / 2, sk1 = (A.skates[1][0] + A.skates[1][1]) / 2;
+    V.at = { c: [0, 0], nose: [0, -L / 2], tail: [0, L / 2], cable: [0, -L / 2], wheel: [0, yW], sensor: [0, ySn], hump: [0, yOf(uh)],
+      switches: [0, ySw], switchL: [uL * xSw, ySw], switchR: [-uL * xSw, ySw], btnL: [uL * A.btnX * hw, yOf(A.btn)], btnR: [-uL * A.btnX * hw, yOf(A.btn)],
+      sideL: [uL * hwAt(yG), yG], sideR: [-uL * hwAt(yG), yG], battery: [0, yOf((t0 + t1) / 2)], board: [0, yOf((b0 + b1) / 2)], skateF: [0, yOf(sk0)], skateR: [0, yOf(sk1)] };
+    V.boxes = { nose: [-hw - 2, -L / 2 - 4, W + 4, 0.3 * L], tail: [-hw - 2, L / 2 - 0.3 * L + 4, W + 4, 0.3 * L], wheel: [-18, yW - 22, 36, 44], cable: [-20, -L / 2 - 8, 40, 30],
+      switches: [-hw - 2, ySw - 20, W + 4, 40], switchL: [uL * xSw - 16, ySw - 20, 32, 40], switchR: [-uL * xSw - 16, ySw - 20, 32, 40], sensor: [-18, ySn - 18, 36, 36],
+      battery: around(-tx * hw, yOf(t0), tx * hw, yOf(t1), 6), board: around(-bx * hw, yOf(b0), bx * hw, yOf(b1), 5), hump: [-hw - 2, yOf(uh) - 22, W + 4, 44], skates: V.box };
+  } else if (view === 'left' || view === 'right') {
+    const sg = view === 'right' ? 1 : -1, xOf = u => sg * (0.5 - u) * L, M = ([u, v]) => [xOf(u), -hOf(v)];
+    const front = [[0.045, 0], [0.022, 0.01], [0.01, 0.045], [0.003, 0.11], [0, 0.2], [0, 0.27], [0.004, 0.33], [0.014, 0.375], [0.03, 0.4]];
+    const us = []; for (let i = 0; i <= 29; i++) us.push(0.06 + i * 0.03); if (!us.some(u => Math.abs(u - uh) < 0.012)) us.push(uh); us.sort((a, b) => a - b);
+    const topL = us.map(u => [u, rvTop(u, uh)]), tail = [[0.955, rvTop(0.955, uh)], [0.975, 0.255], [0.99, 0.15], [0.998, 0.07], [0.993, 0.022], [0.975, 0]];
+    const pad = [[0.8, 0], [0.6, 0], [0.4, 0], [0.2, 0]];
+    const P = rvSpline(front.concat(topL, tail, pad).map(M), true, 4).map(([x, y]) => [x, Math.min(y, -sk)]);   /* no dip under the foot */
+    V.outPts = P; V.out = rvPath(P); V.len = plen(P); V.box = [-L / 2, -H, L, H];
+    /* the wheel: only its cap above the shell shows */
+    const R = 0.29 * H, xw = xOf(A.wheel), cap = new Path2D(); cap.rect(-L, -3 * H, 2 * L, 6 * H); cap.addPath(V.out);
+    add('wheel', { solid: rvCirc(xw, -(wTop - R), R), cap });
+    const skP = new Path2D(); for (const [u0, u1] of A.skates) skP.addPath(rvRR(xOf(u0), -sk, xOf(u1) - xOf(u0), sk, 0.3));
+    add('skates', { solid: skP });
+    const box2 = (u0, u1, h0, h1) => rvRR(xOf(u0), -h1, xOf(u1) - xOf(u0), h1 - h0, 0.4);
+    const swU = A.swS[1] / 2 / L, snU = 4 / L;
+    add('switches', { dash: [box2(A.sw - swU, A.sw + swU, A.swH[0], A.swH[1])] });
+    add('sensor', { dash: [box2(A.sensor - snU, A.sensor + snU, A.snH[0], A.snH[1])] });
+    add('board', { dash: [box2(A.board[0], A.board[1], A.bdH[0], A.bdH[1])] });
+    add('battery', { dash: [box2(A.battery[0], A.battery[1], A.btH[0], A.btH[1])] });
+    const sk0 = (A.skates[0][0] + A.skates[0][1]) / 2, sk1 = (A.skates[1][0] + A.skates[1][1]) / 2, bm = (A.battery[0] + A.battery[1]) / 2, dm = (A.board[0] + A.board[1]) / 2;
+    V.at = { c: [0, -H / 2], nose: [xOf(0), -hOf(0.235)], tail: [xOf(0.998), -hOf(0.12)], cable: [xOf(0), -A.cableH * H], hump: [xOf(uh), -H], wheel: [xw, -wTop],
+      switch: [xOf(A.sw), -A.swH[1]], btn: [xOf(A.btn), -hOf(rvTop(A.btn, uh))], sensor: [xOf(A.sensor), 0], base: [0, 0], pad: [0, 0],
+      skateF: [xOf(sk0), 0], skateR: [xOf(sk1), 0], battery: [xOf(bm), -(A.btH[0] + A.btH[1]) / 2], board: [xOf(dm), -(A.bdH[0] + A.bdH[1]) / 2] };
+    V.boxes = { nose: [sg > 0 ? L / 2 - 36 : -L / 2 - 4, -H - 2, 40, H + 6], tail: [sg > 0 ? -L / 2 - 4 : L / 2 - 36, -H - 2, 40, H + 6], wheel: [xw - 22, -H - 4, 44, 30],
+      cable: [xOf(0) - 20, -A.cableH * H - 14, 40, 28], switch: [xOf(A.sw) - 20, -24, 40, 26], sensor: [xOf(A.sensor) - 20, -18, 40, 22],
+      battery: around(xOf(A.battery[0]), -A.btH[0], xOf(A.battery[1]), -A.btH[1], 6), board: around(xOf(A.board[0]), -A.bdH[0], xOf(A.board[1]), -A.bdH[1], 6),
+      hump: [xOf(uh) - 36, -H - 4, 72, 30], skates: [-L / 2, -14, L, 18] };
+  } else {
+    const M = ([x, v]) => [x * hw, -hOf(v)], half = RV_FRONT.map(M);
+    const P = rvSpline(half.concat(half.slice(1, -1).reverse().map(([x, y]) => [-x, y])), true, 5);
+    V.outPts = P; V.out = rvPath(P); V.len = plen(P); V.box = [-hw, -H, W, H];
+    /* the nose's front edge, where the buttons turn down into the front face; the wheel above it */
+    const nose = new Path2D(), hn = hOf(0.33), hc = hOf(0.51); nose.moveTo(-0.86 * hw, -hn); nose.quadraticCurveTo(0, -hc, 0.86 * hw, -hn);
+    V.lines = [nose]; V.lineParts = ['nose'];
+    add('wheel', { solid: rvRR(-A.wheelW / 2, -wTop, A.wheelW, 4, 1.2) });
+    const sx = 0.62 * hw; add('skates', { solid: rvRR(-sx, -sk, 2 * sx, sk, 0.3) });
+    add('port', { solid: rvRR(-4.47, -(A.cableH * H + 1.63), 8.94, 3.26, 1.4), opt: true });
+    const xSw = A.swX * hw, sws = new Path2D(); for (const s of [-1, 1]) sws.addPath(rvRR(s * xSw - A.swS[0] / 2, -A.swH[1], A.swS[0], A.swH[1] - A.swH[0], 0.6));
+    add('switches', { dash: [sws] });
+    add('sensor', { dash: [rvRR(-4, -A.snH[1], 8, A.snH[1] - A.snH[0], 0.6)] });
+    add('board', { dash: [rvRR(-A.board[2] * hw, -A.bdH[1], 2 * A.board[2] * hw, A.bdH[1] - A.bdH[0], 0.4)] });
+    add('battery', { dash: [rvRR(-A.battery[2] * hw, -A.btH[1], 2 * A.battery[2] * hw, A.btH[1] - A.btH[0], 0.6)] });
+    const hb = hOf(rvTop(A.btn, uh)) - 2;
+    V.at = { c: [0, -H / 2], hump: [0, -H], wheel: [0, -wTop], cable: [0, -A.cableH * H], base: [0, 0], pad: [0, 0], skateF: [0, 0],
+      switches: [0, -A.swH[1]], switchL: [xSw, -A.swH[1]], switchR: [-xSw, -A.swH[1]], btnL: [A.btnX * hw, -hb], btnR: [-A.btnX * hw, -hb], sensor: [0, -A.snH[0]],
+      sideL: [hw, -hOf(0.42)], sideR: [-hw, -hOf(0.42)], battery: [0, -(A.btH[0] + A.btH[1]) / 2], board: [0, -(A.bdH[0] + A.bdH[1]) / 2] };
+    V.boxes = { wheel: [-16, -H - 2, 32, 26], cable: [-16, -A.cableH * H - 12, 32, 22], switches: [-hw - 2, -24, W + 4, 26], switchL: [xSw - 14, -24, 28, 26], switchR: [-xSw - 14, -24, 28, 26],
+      sensor: [-16, -14, 32, 18], hump: [-hw - 2, -H - 4, W + 4, 22], skates: [-hw - 2, -10, W + 4, 12], battery: [-hw - 2, -18, W + 4, 18], board: [-hw - 2, -12, W + 4, 14] };
+  }
+  /* aliases, so code written against mouseSimple's anchors finds the same places on a rival */
+  const al = { trigL: 'btnL', trigR: 'btnR', trig: 'btn', usb: 'cable', side: 'sideL', switchF: 'switch' };
+  for (const [a, b] of Object.entries(al)) if (!V.at[a] && V.at[b]) V.at[a] = V.at[b];
+  V.boxes.all = V.box; V.boxes.shell = V.box; V.boxes.body = V.box;
+  return (RVV[id] = V);
+}
+/** the rival's colours: the outline (grey by default; the one rival you name in yellow), its quiet lines, body and solids */
+function rvCols(col) {
+  const grey = !col || col === 'grey' || col === 'comp';
+  const out = grey ? mix(C.comp, C.mute, 0.4) : col === 'rival' ? C.second : col === 'bad' ? C.red : col === 'ink' ? C.ink2 : col;
+  return { out, line: mix(C.comp, C.mute, 0.4), body: mix(C.bg, C.comp2, 0.5), solid: mix(C.comp2, C.comp, TH ? 0.15 : 0.3) };
+}
+function rvAnchors(V) {
+  const M = XF.m.slice(), P = (x, y) => SPm(M, x, y);
+  return { view: V.view, P, at: n => P(...(V.at[n] || V.at.c || [0, 0])), box: V.box, pts: V.outPts, dims: V.dims };
+}
+/**
+ * Draw a rival mouse in mm at the current transform (inside part(), withCam() or establish's draw), in mouseSimple's frames.
+ * view: 'top' | 'bottom' | 'left' (= 'side') | 'right' | 'front'.
+ * o = { dims ([L, W, H] mm, default RV_DIMS: a typical 120 × 63 × 39), hump (0.58: where the hump peaks, a fraction of the
+ *   length from the nose; side views), col ('grey' (default, C.comp's family) | 'rival' (the one rival you name, C.second) |
+ *   'bad' (only when the whole body is the fault) | 'ink' | a colour: the outline), show: ['board', 'battery', 'switches',
+ *   'sensor', 'port']: hidden parts dashed (the port is drawn solid, front view), hide: ['wheel', 'skates', 'sensor', 'base',
+ *   'nose'], fill (the body), line (the outline's colour), lw (outline px, 2), alpha, lineA, reveal (0..1, the outline
+ *   drawn on), dimFill (0..1) }
+ * Anchors (m.at(name)): c, nose, tail, hump, wheel, sensor, cable (the cable exit), switchL, switchR, switches (top, bottom,
+ *   front; switch in the side views: the main switches' tops), btnL, btnR (btn: where a finger presses; trigL, trigR, trig
+ *   answer too), sideL, sideR, battery, board, skateF, skateR, base / pad. rvBox(view, name, o) is a part's focus rectangle.
+ * Returns { view, P(mx, my), at(name), box, pts (the outline, mm), dims }.
+ * e.g. part(960, 560, 4, () => mouseRival('right', { dims: [126, 64, 40], show: ['switches'] }))
+ */
+function mouseRival(view, o = {}) {
+  const V = rvView(view, o), a0 = (o.alpha == null ? 1 : o.alpha) * PA;
+  if (a0 <= 0.003) return rvAnchors(V);
+  const lA = o.lineA == null ? 1 : o.lineA, cs = rvCols(o.col), show = new Set(o.show || []), hide = new Set(o.hide || []);
+  G.save(); G.lineJoin = 'round'; G.lineCap = 'round';
+  /* the body, flat */
+  G.globalAlpha = a0 * (1 - (o.dimFill || 0)); G.fillStyle = o.fill || cs.body; G.fill(V.out);
+  /* its features: the wheel (in the side views only its cap above the shell), the skates, the sensor's window from below */
+  for (const [n, p] of Object.entries(V.parts)) {
+    if (!p.solid || hide.has(n) || (p.opt && !show.has(n))) continue;
+    G.save(); if (p.cap) G.clip(p.cap, 'evenodd');
+    G.globalAlpha = a0; G.fillStyle = cs.solid; G.fill(p.solid);
+    G.globalAlpha = a0 * lA * 0.9; G.strokeStyle = cs.line; G.lineWidth = lw(1.3); G.stroke(p.solid);
+    if (p.lines) { if (p.clipLines) G.clip(p.solid); G.globalAlpha = a0 * lA * 0.55; G.lineWidth = lw(1); for (const l of p.lines) G.stroke(l); }
+    G.restore();
+  }
+  /* quiet lines: the base plate's edge (from below), the nose's front edge (from the front) */
+  if (V.lines) { G.globalAlpha = a0 * lA * 0.6; G.strokeStyle = cs.line; G.lineWidth = lw(1.2); V.lines.forEach((l, i) => { if (!hide.has(V.lineParts[i])) G.stroke(l); }); }
+  /* hidden parts, dashed, when asked for */
+  for (const [n, p] of Object.entries(V.parts)) {
+    if (!p.dash || !show.has(n)) continue;
+    G.save(); G.setLineDash([lw(5), lw(4)]); G.lineWidth = lw(1.3); G.strokeStyle = cs.line; G.globalAlpha = a0 * lA * 0.9;
+    for (const d of p.dash) G.stroke(d);
+    G.restore();
+  }
+  /* the outline, on top; drawn on with reveal */
+  G.globalAlpha = a0 * lA; G.strokeStyle = o.line || cs.out; G.lineWidth = lw(o.lw || 2);
+  if (o.reveal != null && o.reveal < 1) { if (o.reveal > 0) { G.setLineDash([V.len * o.reveal, V.len * 2]); G.stroke(V.out); G.setLineDash([]); } }
+  else G.stroke(V.out);
+  G.restore();
+  return rvAnchors(V);
+}
+/** A rival fitted into a stage box [x, y, w, h] (o.pad, a fraction, 0.06) and centred in it, as mouseFit does for Theseus.
+   Returns the anchors plus { s: px per mm }. o as mouseRival.
+   e.g. const m = rivalFit([80, 300, 420, 560], 'top', { show: ['switches', 'sensor'] }); callout(t, 1, m.at('switchL'), 'Optical switch') */
+function rivalFit(box, view, o = {}) {
+  const V = rvView(view, o), c = camFit(V.box, box, o.pad == null ? 0.06 : o.pad), [x, y, w, h] = box;
+  const r = part(x + w / 2 - c.cx * c.s, y + h / 2 - c.cy * c.s, c.s, () => mouseRival(view, o));
+  return Object.assign(r || {}, { s: c.s });
+}
+/** a rival's focus rectangle (mm) for a push-in or a crop: no name, the whole mouse; names: nose, tail, wheel, cable,
+   switches, switchL, switchR (switch in the side views), sensor, battery, board, hump, skates. o: { dims, hump } */
+function rvBox(view, name, o = {}) { const V = rvView(view, o); return (name && V.boxes[name]) || V.box; }
+/** a rival's named point (mm), as mouseRival's anchors. o: { dims, hump } */
+function rvAt(view, name, o = {}) { const V = rvView(view, o); return V.at[name] || V.at.c; }
 
 /* ================================ place: establish, then push in (M4) ================================ */
 
@@ -620,19 +856,26 @@ function betterTag(t, t0, x, y, s, dir = 'd', o = {}) {
  * re-counts to the new value in Theseus's gradient while a copy of the old slides left, shrinks, turns grey and is struck;
  * an arrow joins them; the net change lands under the row (by how much, never rounded up); the label says which way is better.
  * (x, y) = the row's left edge (or o.align's) and the big number's baseline.
- * o = { from, to (numbers or strings: one precision for both, G5), unit ('MPa', '%', '°', '×' attach without a space),
+ * o = { from, to (numbers or strings: one precision for both, G5), unit ('MPa', 'mm', '%': a space before it, as the film
+ *   writes "17.6 %"; only '°' (an angle) and '×' (a factor) attach, SI Brochure 9th ed. §5.4.3, §5.4.7),
  *   label ('Peak experienced stress'), better ('lower' | 'higher' | null), net ('auto' | a string | false; auto: −56 %, or
  *   2.3× when higher is better and it more than doubles), netWord (after the net: 'less stress'), size (the new value, 150),
  *   dec, who: [the rival's name, 'Theseus'] (small names under the two values), dur (the count, 1.0), morph (true: the old
  *   value starts big in the new one's place; false: it waits, small and grey, from the start), align ('left' | 'right' |
- *   'center'), rivalCol ('second' | 'grey': the colour of the rival's name), maxW (the label's width) }
+ *   'center'), rivalCol ('second' | 'grey': the colour of the rival's name), maxW (the room for the row and its label: a
+ *   row wider than it is set smaller, whole) }
+ * The grammar (FILM F8, F15): the struck grey value is always the rival's (or most mice's, or an old design's) and the
+ * blue one Theseus's. Never strike Theseus's own alternative: show an internal contrast as plain stats.
+ * The names under the values never overlap: the rival's stays left of the new value, wrapped to two lines when it is
+ * longer than the old value and the arrow, and only a single word too long for that moves Theseus's name right.
  * Returns { w, h, x0 } (the row's left edge and size, for layout).
  * e.g. verdict(t, 6.4, 120, 860, { from: 33.4, to: 0, unit: '%', dec: 1, label: 'Sideways at the switch', better: 'lower', who: ['Sora V2', 'Theseus'] })
  */
 function verdict(t, t0, x, y, o = {}) {
   const size = o.size || 150, dur = o.dur || 1.0, num = v => typeof v === 'number' ? v : parseFloat(String(v).replace(/−/g, '-').replace(/[^\d.\-]/g, ''));
   const f0 = num(o.from), f1 = num(o.to), dec = o.dec != null ? o.dec : Math.max(kitDec(o.from), kitDec(o.to));
-  const u = o.unit || '', tight = /^(%|°|×|x)$/.test(u), fmt = v => kitNum(v, dec), betterHigh = o.better === 'higher';
+  /* tight: a symbol set big (%, °, ×); glue: one that attaches to its number (° and ×; % and every unit take a space) */
+  const u = o.unit || '', tight = /^(%|°|×|x)$/.test(u), glue = /^(°|×|x)$/.test(u), fmt = v => kitNum(v, dec), betterHigh = o.better === 'higher';
   /* the net, by how much, from the true values and rounded toward zero, so a claim is never rounded up (DESIGN §9) */
   let net = null;
   if (typeof o.net === 'string' && o.net !== 'auto') net = o.net;
@@ -648,15 +891,18 @@ function verdict(t, t0, x, y, o = {}) {
   const km = morph ? ep(t, c0, c0 + 0.6, E.cam) : 1, ks = ep(t, c0 + 0.45, c0 + 0.8), kar = ep(t, c0 + 0.25, c0 + 0.7);
   /* sizes: the new value huge, its unit a third of it; the old value two fifths, its unit half of that */
   const bS = Math.max(36, Math.round(size * 0.4)), uK = tight ? 0.55 : 0.3, uS = Math.max(24, Math.round(size * uK));
-  const uGap = z => (tight ? 0.03 : 0.16) * z, stOld = { role: 'd1', size: bS, weight: 800, track: -0.02, tnum: true }, stBig = { role: 'd1', size, weight: 800, track: -0.03, tnum: true };
+  const uGap = z => (glue ? 0.03 : 0.16) * z, stOld = { role: 'd1', size: bS, weight: 800, track: -0.02, tnum: true }, stBig = { role: 'd1', size, weight: 800, track: -0.03, tnum: true };
   const sOld = fmt(f0), sNew = fmt(f1), uw = z => (u ? uGap(z) + tw(u, { font: 'disp', size: z === size ? uS : Math.max(21, Math.round(z * (tight ? 0.6 : 0.5))), weight: 700, caps: false }) : 0);
   const wOld = tw(sOld, stOld) + uw(bS), arW = Math.round(size * 0.34), g1 = Math.round(size * 0.13), wBig = tw(sNew, stBig) + uw(size);
   const total = wOld + g1 + arW + g1 + wBig;
+  /* the row keeps within maxW (callers pass the room to the margin): a row too wide for it is set smaller, whole */
+  if (o.maxW && total > o.maxW + 0.5 && (o.fitN || 0) < 4 && size > 40) return verdict(t, t0, x, y, Object.assign({}, o, { size: Math.max(40, size * o.maxW / total * 0.985), fitN: (o.fitN || 0) + 1 }));
   const x0 = o.align === 'right' ? x - total : o.align === 'center' ? x - total / 2 : x, xBig = x0 + wOld + g1 + arW + g1;
   /* the label, with which way is better (F14.8: "Peak experienced stress (lower is better)") */
   if (o.label || o.better) {
     const lab = (o.label || '') + (o.better ? (o.label ? ' ' : '') + '(' + o.better + ' is better)' : '');
-    text(lab, x0, y - size * 0.78 - 26, { role: 'label', size: 22, color: C.mute, alpha: a0, maxW: o.maxW || Math.max(total, 640) });
+    const la = o.align === 'right' || o.align === 'center' ? o.align : 'left';   /* the label keeps to the row's side */
+    text(lab, la === 'left' ? x0 : x, y - size * 0.78 - 26, { role: 'label', size: 22, color: C.mute, alpha: a0, maxW: o.maxW || Math.max(total, 640), align: la });
   }
   /* a unit run for a figure of size z, k of the way from the big figure's style (0) to the old value's (1) */
   const unitRun = (z, k, col, grad) => u ? { s: u, font: 'disp', size: Math.max(21, Math.round(z * lerp(uK, tight ? 0.6 : 0.5, k))), weight: 700, color: col, grad, gap: uGap(z), caps: false } : null;
@@ -676,9 +922,17 @@ function verdict(t, t0, x, y, o = {}) {
   /* under the row: whose each value is, then the net in Theseus's colour */
   let yy = y + Math.round(size * 0.06) + 34;
   if (o.who) {
-    const kw = ep(t, cs, cs + 0.4);
-    if (o.who[0]) text(o.who[0], x0, yy, { role: 'label', size: 19, color: o.rivalCol === 'grey' ? C.faint : C.secondText, alpha: kw * a0 });
-    if (o.who[1]) text(o.who[1], xBig, yy, { role: 'label', size: 19, color: C.heroText, alpha: kg * a0 });
+    const kw = ep(t, cs, cs + 0.4), wst = { role: 'label', size: 19 }, room = xBig - x0 - 20;
+    /* the rival's name keeps to its own column, left of the new value: wrapped to two lines when it is longer than the old
+       value and the arrow; only a single word too long for that moves Theseus's name right, so the two never overlap */
+    let l0 = o.who[0] ? [String(o.who[0])] : [];
+    if (l0.length && tw(l0[0], wst) > room) {                          /* two lines, split where they come out most even */
+      const ws = l0[0].split(' '); let bw = Infinity;
+      for (let i = 1; i < ws.length; i++) { const a = ws.slice(0, i).join(' '), b = ws.slice(i).join(' '), m = Math.max(tw(a, wst), tw(b, wst)); if (m < bw) { bw = m; l0 = [a, b]; } }
+    }
+    const w0 = l0.reduce((m, l) => Math.max(m, tw(l, wst)), 0), x1 = l0.length && x0 + w0 + 20 > xBig ? x0 + w0 + 24 : xBig;
+    l0.forEach((l, i) => text(l, x0, yy + i * 23, Object.assign({ color: o.rivalCol === 'grey' ? C.faint : C.secondText, alpha: kw * a0 }, wst)));
+    if (o.who[1]) text(o.who[1], x1, yy, Object.assign({ color: C.heroText, alpha: kg * a0 }, wst));
     yy += 52;
   } else yy += 10;
   if (net && kn > 0) {
@@ -879,7 +1133,7 @@ function ledgerStrip(t, t0, x, y, w, o = {}) {
    other way gets a soft hand-off instead, or the slide can say where its mouse sits with flight: { view, box, pad }.
    While the flight is on screen it sets CARD2.hide: the card's part still runs (so it is seen) but its kit mouse is left to
    the flight, which draws the same mouse, so there is only ever one */
-const CARD2 = { cap: null, rec: {}, hide: false };
+const CARD2 = { cap: null, rec: {}, hide: false, skip: null };
 function chapterCard2(t, o = {}) {
   const key = o.ch || (typeof curSlide === 'function' && curSlide() ? curSlide().ch : 'click'), L = ledgerOf(key) || { name: key, comp: '', ans: '' };
   const chs = typeof DECK !== 'undefined' ? DECK.chapters : [], ci = chs.findIndex(c => c.key === key), nCh = Math.max(1, chs.length - 2);

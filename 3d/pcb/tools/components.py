@@ -11,6 +11,7 @@ from geom import (Mesh, polys, cap, walls, raised, slab, box_mesh, rbox_mesh, ex
                   grid_surface, fillet_mesh, transform, trs, hershey_text, outline_text, qr_modules, matrix_polys)
 from board_geo import Y_PAD, T, Y_MASK
 from parts import FP, GND
+from board import BATTERY
 
 Y0 = Y_PAD + 0.018        # component seating plane (on the solder layer)
 MIRROR = np.diag([-1.0, 1.0, 1.0, 1.0])
@@ -779,10 +780,12 @@ def add_wires(glb):
     """battery lead (J2) and side-button lead (J3): 3 thin wires each, lightly twisted; layout frame then mirrored."""
     nodes, ntri = [], 0
     leads = {
-        # J2 faces the back (F26.4): the plug's tail 4.6 mm behind it (layout z 3.3); the lead runs back past MH4 (2.3 mm
-        # inboard of it) to the battery's tab end, its front edge at layout z -9.57 (board.py BATTERY), 2.43 mm over the board
-        'BATLEAD': dict(path=[(14.5, 1.45, 3.3), (14.45, 1.5, 2.1), (13.6, 1.8, 0.2), (12.3, 2.1, -2.3), (11.2, 2.3, -5.5),
-                              (10.4, 2.43, -8.6), (10.2, 2.43, -9.4)],
+        # J2 faces the back (F26.4): the plug's tail 4.6 mm behind it (layout z 3.3); the lead runs back, inboard of MH4 and
+        # of the shell's boss post over it (#54: the screws come from below, the post stands on the board's top, Ø5.3 as
+        # 3d/parts/fasteners.js's boss; the bundle's axis >= 3.5 mm from the hole's centre), then on to the battery's tab end
+        # at its front face (board.py BATTERY, H2: z1 -11.60, its middle 2.43 mm over the board's top), so it follows BATTERY
+        'BATLEAD': dict(path=[(14.5, 1.45, 3.3), (14.3, 1.5, 2.1), (12.9, 1.8, 0.5), (11.0, 2.1, -1.8), (10.6, 2.3, -4.6),
+                              (10.3, BATTERY['yMid'] - 5.03, BATTERY['z1'] + 2.17), (10.2, BATTERY['yMid'] - 5.03, BATTERY['z1'] + 0.17)],
                         mats=['wire_red', 'wire_white', 'wire_black']),
         # J3 (opening to the left, F30): the plug's tail at the board's left edge (layout x -19.1); the lead heads for the
         # side-button board on the left wall, between the two buttons, drawn as a short stub (that board is the shell's)
