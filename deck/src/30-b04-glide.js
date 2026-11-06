@@ -272,14 +272,16 @@ function b04_match(A, B, n, S) {
 /* ---------- the sensor in section, to scale ----------
    As the 3D board builds it (3d/parts/boardparts.js: buildSensorModule, buildSnapLens; plan 5's board), in the module's own
    frame: z along the mouse (mm, the module's centre at 0, + toward the nose), y up from the board's top face (the board is
-   1.0 mm, y −1 to 0; its top 5.03 mm over the pad in the mouse). The castellated module (8.4 × 9.8 × 0.62) sits on the
+   0.6 mm (F47.4), BOARD_T, y −0.6 to 0; its top BOARD_TOP, 5.03 mm over the pad in the mouse, both from 03-parts.js). The
+   lens's optics hang from the board's top, so the thinner board moved none of them: its upper block grows up to meet the
+   board's underside (1.15 mm tall, was 0.75; H3 11:05). The castellated module (8.4 × 9.8 × 0.62) sits on the
    board, its die looking down through a 4.8 mm aperture; the LED 1.9 mm behind the centre, the imaging axis 1.1 mm ahead.
    The snap-on lens hangs under the board: an upper block 5.2 × 9.6, a lower block 4.4 × 7.2, a boss up into the aperture,
    the imaging dome (Ø2.84) and the light dome (Ø2.0) on its face, and a clip at each end (z ±6) whose peg snaps up
    through the board. Its lowest point, the imaging dome (the lens reference plane), is 2.63 mm under the board's top, so
    the cloth is PixArt's Z = 2.40 mm under it (H1, 2026-11-06: the lens made 1.12 mm shallower than the first 3D cut,
    which put the dome 1.28 mm over the pad). */
-const B04S = { ref: -2.63, axis: 1.1, led: -1.9, slots: [6.0, -6.0], board: [-1.0, 0], top: 5.03, up: -1.75, lo: -2.13, col: -2.20 };
+const B04S = { ref: -2.63, axis: 1.1, led: -1.9, slots: [6.0, -6.0], board: [-BOARD_T, 0], top: BOARD_TOP, up: -1.75, lo: -2.13, col: -2.20 };
 const B04M = {
   board: () => (TH ? '#202126' : '#232429'), copper: '#8C8C92', mod: () => (TH ? '#0E0F11' : '#0B0C0E'), gold: '#B4B7BD', goldD: '#8C8C92', solder: '#D2D4D9',
   clear: () => (TH ? 'rgba(214,226,232,0.70)' : 'rgba(214,226,232,0.22)'), clearE: () => (TH ? '#6F8187' : '#AFC1C8'),
@@ -320,12 +322,14 @@ function b04_padSec(x0, x1, yS, s, off, a, o = {}) {
     poly(Array.from({ length: Math.ceil((x1 - x0) / 3) + 1 }, (_, k) => { const xx = Math.min(x1, x0 + k * 3); return [xx, Ys(xx)]; }), { color: B04M.yarnE(), w: 1.5, alpha: a });
   }
 }
-/** the board in section (y −1 to 0) from z0 to z1, with the aperture and the two clip holes cut through it, copper inside */
+/** the board in section (y −BOARD_T to 0: 0.6 mm, F47.4) from z0 to z1, with the aperture and the two clip holes cut
+   through it. A two-layer board: its copper is on its two faces only, drawn as a hairline just inside each (the four-layer
+   1.0 mm board's two inner planes are gone, H3 11:05) */
 function b04_boardSec(X, Y, z0, z1, a) {
   const holes = [[-6.85, -5.15], [-2.4, 2.4], [5.15, 6.85]], segs = []; let z = z0;
   for (const [h0, h1] of holes) { if (h1 < z0 || h0 > z1) continue; segs.push([z, Math.max(z0, h0)]); z = Math.min(z1, h1); } segs.push([z, z1]);
-  for (const [za, zb] of segs) { if (zb - za <= 0) continue; b04_shape(() => G.rect(X(za), Y(0), X(zb) - X(za), Y(-1) - Y(0)), B04M.board(), null, 0, a); line(X(za), Y(0), X(zb), Y(0), { color: inkA(TH ? 0.35 : 0.25), w: 1.2, alpha: a }); }
-  for (const yy of [-0.25, -0.75]) for (const [za, zb] of segs) if (zb > za) line(X(za), Y(yy), X(zb), Y(yy), { color: B04M.copper, w: 1, alpha: 0.35 * a });
+  for (const [za, zb] of segs) { if (zb - za <= 0) continue; b04_shape(() => G.rect(X(za), Y(0), X(zb) - X(za), Y(-BOARD_T) - Y(0)), B04M.board(), null, 0, a); line(X(za), Y(0), X(zb), Y(0), { color: inkA(TH ? 0.35 : 0.25), w: 1.2, alpha: a }); }
+  for (const yy of [-0.06, -(BOARD_T - 0.06)]) for (const [za, zb] of segs) if (zb > za) line(X(za), Y(yy), X(zb), Y(yy), { color: B04M.copper, w: 1, alpha: 0.35 * a });
 }
 /** the castellated module on the board, side view: black substrate, 8 gold half-holes along its edge with solder fillets
    onto the board's pads, and under it, in the aperture, the die (its pixel array facing down) and the LED */
@@ -352,12 +356,12 @@ function b04_lensSec(X, Y, s, a) {
     b04_shape(() => { G.moveTo(X(zc - 0.82), Y(0.1)); G.lineTo(X(zc - 1.02), Y(0.18)); G.lineTo(X(zc - 0.62), Y(0.72)); G.lineTo(X(zc + 0.62), Y(0.72)); G.lineTo(X(zc + 1.02), Y(0.18)); G.lineTo(X(zc + 0.82), Y(0.1)); G.closePath(); }, cf, ce, 1.5, a);   /* the split snap head */
     line(X(zc), Y(0.7), X(zc), Y(-0.3), { color: ce, w: 1.6, alpha: a });                                                     /* its split */
   }
-  box(-4.8, 4.8, B04S.up, -1.0, 0.4 * s);                                                                                     /* the upper block */
+  box(-4.8, 4.8, B04S.up, -BOARD_T, 0.4 * s);                                                                                 /* the upper block, up to the board's underside */
   box(-3.3, 3.9, B04S.lo, B04S.up, 0.18 * s);                                                                                 /* the lower block */
-  box(-1.12, 1.12, -1.0, -0.1, 0.1 * s);                                                                                      /* the boss */
+  box(-1.12, 1.12, -BOARD_T, -0.1, 0.1 * s);                                                                                  /* the boss, from the board's underside up into its aperture (3D: yb to −0.1) */
   const dome = (zc, collar, bulge) => b04_shape(() => { G.moveTo(X(zc - collar), Y(B04S.lo)); G.lineTo(X(zc - collar), Y(B04S.col)); G.quadraticCurveTo(X(zc), Y(B04S.col - bulge * 2), X(zc + collar), Y(B04S.col)); G.lineTo(X(zc + collar), Y(B04S.lo)); G.closePath(); }, cf, ce, 1.5, a);
   dome(B04S.axis, 1.42, 0.43); dome(B04S.led, 1.0, 0.3);
-  line(X(-4.4), Y(-1.12), X(4.4), Y(-1.12), { color: 'rgba(255,255,255,' + (TH ? 0.9 : 0.35) + ')', w: 2, alpha: a });           /* a moulded highlight: clear plastic */
+  line(X(-4.4), Y(-BOARD_T - 0.12), X(4.4), Y(-BOARD_T - 0.12), { color: 'rgba(255,255,255,' + (TH ? 0.9 : 0.35) + ')', w: 2, alpha: a });   /* a moulded highlight: clear plastic */
 }
 /** the whole stack over the pad. (ox, oy) is the module's centre on the board's top face; s px per mm. o = { z0, z1 (mm,
    the span drawn), gap (lens to cloth, mm, 2.4), off (mm the pad has slid), alpha, pad (false: no pad), padA }.
@@ -372,7 +376,7 @@ function b04_section(ox, oy, s, o = {}) {
     b04_lensSec(X, Y, s, a);
   }
   return { X, Y, yP, led: [X(B04S.led), Y(-0.25)], ll: [X(B04S.led), Y(B04S.col - 0.6)], il: [X(B04S.axis), Y(B04S.ref)], die: [X(B04S.axis), Y(-0.29)], spot: [X(B04S.axis), Y(yP)],
-    mod: [X(3.6), Y(0.67)], board: [X(z1 - 0.4), Y(-0.5)], clip: [X(6.0), Y(-1.55)], pad: [X(z0 + 1.0), Y(yP) + 0.6 * s] };
+    mod: [X(3.6), Y(0.67)], board: [X(z1 - 0.4), Y(-BOARD_T / 2)], clip: [X(6.0), Y(-1.55)], pad: [X(z0 + 1.0), Y(yP) + 0.6 * s] };
 }
 
 /* ---------- the pad model: what a press does to the lens (b04_sag) ----------
@@ -763,18 +767,18 @@ function b04_sagClose(P, pf, o = {}) {
   /* the mouse and everything on it: its sink here, a drop and a slight tilt (a shear, drawn X4× larger) */
   const bxs = k4 * pf * P.c2, bys = k4 * s * pf * (P.c0 + P.c2 * zc) - bxs * g.xc;
   G.save(); G.transform(1, bxs, 0, 1, 0, bys);
-  const oy = g.yC - 5.03 * s, Yb = y => oy - y * s, Xm = z => g.xc + z * s;           /* the board's frame: y up from its top, z from the module's centre */
-  /* the floor of the shell, 1 mm thick, 0.73 mm over the cloth, open round the lens (the window, ±7.7 mm) */
-  const fl = TH ? '#FFFFFF' : '#1A1B1E', fe = TH ? 'rgba(17,17,17,0.7)' : 'rgba(243,243,245,0.6)';
-  for (const [z0, z1] of [[Z(bx0 - 40) - zc, -7.7], [7.7, Z(bx1 + 40) - zc]]) b04_shape(() => rrPath(Xm(z0), Yb(-3.3), (z1 - z0) * s, s, 3), fl, fe, 1.6, 1);
-  text('Floor', Xm(-7.7) - 14, Yb(-3.3) + 23, { role: 'label', size: 22, color: C.mute, align: 'right' });
+  const oy = g.yC - BOARD_TOP * s, Yb = y => oy - y * s, Xm = z => g.xc + z * s;     /* the board's frame: y up from its top, z from the module's centre */
+  /* the floor of the shell, 1 mm thick, 0.73 mm over the cloth (its top 1.73), open round the lens (the window, ±7.7 mm) */
+  const fl = TH ? '#FFFFFF' : '#1A1B1E', fe = TH ? 'rgba(17,17,17,0.7)' : 'rgba(243,243,245,0.6)', yFl = -(BOARD_TOP - 1.73), yDot = -(BOARD_TOP - B04.stack);
+  for (const [z0, z1] of [[Z(bx0 - 40) - zc, -7.7], [7.7, Z(bx1 + 40) - zc]]) b04_shape(() => rrPath(Xm(z0), Yb(yFl), (z1 - z0) * s, s, 3), fl, fe, 1.6, 1);
+  text('Floor', Xm(-7.7) - 14, Yb(yFl) + 23, { role: 'label', size: 22, color: C.mute, align: 'right' });
   const r = b04_section(g.xc, oy, s, { pad: false, z0: -10.5, z1: 10.5 });
   /* Theseus's two dots, on legs of the clear clip-on lens */
   if (o.ldots > 0.003) {
     const cf = B04M.clear(), ce = B04M.clearE();
     for (const zr of [K.ldots[0] - zc, K.ldots[1] - zc]) {
-      b04_shape(() => rrPath(Xm(zr - 0.8), Yb(B04S.up), 1.6 * s, Yb(-4.38) - Yb(B04S.up), 3), cf, ce, 1.5, o.ldots);
-      b04_shape(() => rrPath(Xm(zr - 3.25), Yb(-4.38), 6.5 * s, 0.65 * s, 6), rgba(C.hero, 0.55), C.hero, 2, o.ldots);
+      b04_shape(() => rrPath(Xm(zr - 0.8), Yb(B04S.up), 1.6 * s, Yb(yDot) - Yb(B04S.up), 3), cf, ce, 1.5, o.ldots);
+      b04_shape(() => rrPath(Xm(zr - B04.dot / 2), Yb(yDot), B04.dot * s, B04.stack * s, 6), rgba(C.hero, 0.55), C.hero, 2, o.ldots);
     }
   }
   G.restore();
@@ -881,7 +885,8 @@ S({
       /* the pointer grows the end skates */
       if (t > 2.1 && t < 5.2) cursorAt(t, [[2.1, [kx + 60, ty + 70]], [2.55, [TX(B04SP.corners.area), ty]], [4.4, [TX(Am), ty]], [5.2, [TX(Am) + 50, ty + 80]]], [2.6], { grab: t > 2.6 && t < 4.45, a: ep(t, 2.1, 2.4) * (1 - ep(t, 4.6, 5.0)) });
     }
-    if (kv > 0.003) verdict(t, 5.8, rx + 36, sy + 212, { from: b04_gOf(Am) - b04_gOf(B04SP.corners.area), to: b04_gOf(TS.area) - b04_gOf(B04SP.corners.area), unit: 'g', dec: 2, label: 'Skate added to hold the lens', better: 'lower', who: ['Big skates', 'Theseus'], size: 90 });
+    /* the label on one line inside the card (552 px from rx + 36): "Skate added to hold the lens" wrapped, leaving "better)" alone */
+    if (kv > 0.003) verdict(t, 5.8, rx + 36, sy + 212, { from: b04_gOf(Am) - b04_gOf(B04SP.corners.area), to: b04_gOf(TS.area) - b04_gOf(B04SP.corners.area), unit: 'g', dec: 2, label: 'Skate to hold the lens', better: 'lower', who: ['Big skates', 'Theseus'], size: 90 });
     source(t, 'Derived (pad model): a rigid mouse on skates in a 4 mm soft pad, set so one dot a corner sinks 0.65 mm at a firm 10 N (Brock\'s report), pressed with a hand\'s weight, 4.4 N (de Leva 1996); all skates the same 0.65 mm POM stack; sensitivity 2.4 / Z. The V4 Pro also rings its lens (prosettings.net). PixArt: "place mouse feet around the base plate opening".', { t0: 0.8, maxW: RM - LM });
   }
 });
@@ -1090,6 +1095,7 @@ S({
     ['gld_module: "just your normal above average slide right here"', 'Raised: it now opens on the problem, PixArt\'s own assembly (the lens sits on the base plate, the board on the lens, the top case presses it down, and PixArt warns that a click moving the board moves the optics), builds that stack, then snaps Theseus\'s lens up through the board; the verdict is against PixArt\'s smaller (trim) lens, not its biggest.'],
     ['R2-b04-3 (the rival\'s fault drawn; the payoff said)', 'PixArt\'s own warning is named on its board in red ("Clicks move it") and said in full in the narration and the foot line; Theseus\'s clip is labelled for what it does ("Clipped round the chip": chip and lens held as one, by the board alone); the closing line says what one dot wide buys: the lens carries its own two dots, the dots that keep it in focus (Dots at the lens). Not animated: PixArt gives no mechanism or size for the motion'],
     ['F9.14: "the sensor and snap on lens are both not as accurate as id like"', 'Drawn to the 3D board: the 8.4 × 9.8 × 0.62 mm castellated module, its half-holes at 1.2 mm, the clip-on lens 5.2 × 14.2 mm with a clip through the board at each end, the imaging and light lenses where the 3D has them.']
+    ['F47.4 (the board is 0.6 mm)', 'Every lens section in the chapter draws Theseus\'s board 0.6 mm thick (the shared BOARD_T), its top still 5.03 mm over the pad, copper on its two faces only; the lens\'s optics do not move (the imaging dome 2.63 mm under the board\'s top, PixArt\'s 2.40 mm over the pad): its upper block grows up to meet the thinner board (H3, 11:05). PixArt\'s own stack keeps its 1.6 mm board.']
   ],
   draw: t => {
     header(t, 'Snap-on lens: one dot wide');
@@ -1107,14 +1113,15 @@ S({
       for (const [p, l, dy] of [[r.post, 'Top case presses down', -10], [r.chip, 'Chip', 0], [r.board, 'Board', 0], [r.lens, 'Lens', 0], [r.plate, 'Base plate', 0]]) {
         line(p[0], p[1], lx - 10, p[1] + dy, { color: inkA(0.3), w: 1.2, alpha: kl }); text(l, lx, p[1] + dy + 7, { role: 'label', size: 22, color: C.ink2, alpha: kl });
       }
-      if (kA > 0.7) forceArrow(r.post[0] + 4, r.post[1] + 6, 2.25, 52, { k: ep(t, 2.0, 2.4), color: C.ink, w: 3 });
+      /* the press, inside the post, down onto the chip: an arrow from above crossed the heading "PixArt's lens, on the base plate" */
+      if (kA > 0.7) forceArrow(r.post[0], r.post[1] + 78, Math.PI / 2, 62, { k: ep(t, 2.0, 2.4), color: C.ink, w: 3 });
       /* the rival's fault, in PixArt's own words (R2-b04-3): "PCB motion due to button presses must be minimized to maintain optical
          alignment" (datasheet §3.5, step 6). Named on its board, not animated: PixArt gives no mechanism or size to draw */
       faultTag(t, 2.5, [r.X(-13), r.Y(5.95)], 'Clicks move it', { dx: 0, dy: -84 });
     }
-    line(bx + 30, by + 340, bx + bw - 30, by + 340, { color: C.hair, w: 1.5 });
+    line(bx + 30, by + 356, bx + bw - 30, by + 356, { color: C.hair, w: 1.5 });   /* between the top's "Pad" and the heading under it (at 340 it ran through "Pad") */
     /* ---- bottom: Theseus's: the module on the board, the lens snapping up through it; no plate ---- */
-    { const s = 24, yP = by + 612, ob = yP - 5.03 * s, ox = bx + 340;
+    { const s = 24, yP = by + 612, ob = yP - BOARD_TOP * s, ox = bx + 340, yDot = -(BOARD_TOP - B04.stack);   /* the board's top over the pad; a dot's top */
       line(bx + 40, yP, bx + 640, yP, { color: C.ink2, w: 2 }); text('Pad', bx + 40, yP + 28, { role: 'label', size: 22, color: C.mute });
       text('Theseus\'s lens, clipped to the board', bx + 32, by + 384, { role: 'label', size: 22, color: C.heroText });
       /* the board and module, then the lens rising from below into its slots (a little overshoot: it snaps) */
@@ -1123,10 +1130,10 @@ S({
       b04_boardSec(X, Y, -10.5, 10.5, 1); b04_moduleSec(X, Y, s, 1);
       G.save(); G.beginPath(); G.rect(bx, by + 350, bw, bh - 350); G.clip(); G.translate(0, lift * s); b04_lensSec(X, Y, s, 1);
       /* its two dots, on the lens's legs, down to the pad */
-      for (const zr of [K.ldots[0] - K.lens, K.ldots[1] - K.lens]) { b04_shape(() => rrPath(X(zr - 0.8), Y(B04S.up), 1.6 * s, Y(-4.38) - Y(B04S.up), 2), B04M.clear(), B04M.clearE(), 1.4, 1); b04_shape(() => rrPath(X(zr - 3.25), Y(-4.38), 6.5 * s, 0.65 * s, 3), C.hero, null, 0, 1); }
+      for (const zr of [K.ldots[0] - K.lens, K.ldots[1] - K.lens]) { b04_shape(() => rrPath(X(zr - 0.8), Y(B04S.up), 1.6 * s, Y(yDot) - Y(B04S.up), 2), B04M.clear(), B04M.clearE(), 1.4, 1); b04_shape(() => rrPath(X(zr - B04.dot / 2), Y(yDot), B04.dot * s, B04.stack * s, 3), C.hero, null, 0, 1); }
       G.restore();
       const kl = ep(t, 3.6, 4.1), lx = bx + 690;
-      for (const [p, l, ly] of [[[X(-3.2), Y(0.67)], 'Module on the board', by + 418], [[X(6.0), Y(0.72)], 'Clipped round the chip', by + 456], [[X(2.5), Y(-2.2)], 'Lens, 5.2 mm wide', by + 540], [[X(K.ldots[0] - K.lens + 3.0), Y(-4.6)], 'A dot at each end', by + 590]]) {
+      for (const [p, l, ly] of [[[X(-3.2), Y(0.67)], 'Module on the board', by + 418], [[X(6.0), Y(0.72)], 'Clipped round the chip', by + 456], [[X(2.5), Y(-2.2)], 'Lens, 5.2 mm wide', by + 540], [[X(K.ldots[0] - K.lens + 3.0), Y(yDot - 0.22)], 'A dot at each end', by + 590]]) {
         poly([[p[0], p[1]], [lx - 40, ly], [lx - 10, ly]], { color: inkA(0.3), w: 1.2, alpha: kl }); text(l, lx, ly + 7, { role: 'label', size: 22, color: l === 'Lens, 5.2 mm wide' || l === 'A dot at each end' || l === 'Clipped round the chip' ? C.heroText : C.ink2, alpha: kl });
       }
       if (kS > 0.02 && kS < 0.98) arrow(X(-12.5), Y(-6.5), X(-12.5), Y(-4.0), { color: C.ink2, w: 2.5, hs: 10, alpha: Math.sin(kS * Math.PI) });
@@ -1160,7 +1167,12 @@ S({
    Viper V4 Pro's Focus Pro 50K Gen-3 (marked FP-3), suspected to be the PAW3970, Theseus's plan once Razer's exclusivity
    ends. Specs: the PAW3395's datasheet against Razer's figures for the V4 Pro's sensor. Razer's glass claim is tagged as
    Razer's, with the stalls owners and one reviewer report. Theme night. */
+/* the foil's figures (grey bars, the struck value, the foot line) in one place. R3-b04-1 (should): the honest foil is the
+   PAW3950 (the flagships' sensor, b04_reports, b09_sync), not the older PAW3395; its datasheet isn't in the repo yet
+   (REQUESTS.md, R3 12:1x). When research lands it: foil 'PAW3950', its four figures as each row's third value, foilSrc, and
+   a source entry; nothing else changes */
 const B04SN = {
+  foil: 'PAW3395', foilSrc: 'PixArt PAW3395 datasheet (2022)',
   rows: [['Tracking speed', 'ips', 650, 930, 'higher'], ['Acceleration', 'G', 50, 90, 'higher'], ['Highest CPI', 'cpi', 26000, 50000, 'higher'], ['CPI step', 'cpi', 50, 1, 'lower']]
 };
 /** a sensor package, drawn: a dark DIP body with its lens window and a few leads; label under it */
@@ -1219,8 +1231,8 @@ S({
       /* a row where the shorter bar wins says so on the row, beside its value (F14.10; R2-b04-4): a 1 cpi step is finer than 50 */
       if (better === 'lower') text('Finer is better', vx + vw + 16, y + 16, { role: 'label', size: 19, color: C.mute, alpha: k });
     });
-    verdict(t, 5.2, rx + 36, by + 494, { from: 650, to: 930, unit: 'ips', dec: 0, label: 'Tracking speed', better: 'higher', who: ['PAW3395', 'PAW3970, planned'], size: 90 });
-    source(t, 'PixArt PAW3395 datasheet (2022). Razer\'s figures for the Focus Pro 50K Gen-3 (igor\'sLAB) and its "tracks flawlessly on glass". Stalls on glass: PC Gamer 2026-05-22 (after a skate swap), Razer Insider 2026-10 (stock feet). PAW3970, two years: Brock. Focus+ → PAW3395, Focus Pro 30K → PAW3950: validation report (an analogy).', { t0: 0.8, maxW: RM - LM });
+    verdict(t, 5.2, rx + 36, by + 494, { from: B04SN.rows[0][2], to: B04SN.rows[0][3], unit: 'ips', dec: 0, label: 'Tracking speed', better: 'higher', who: [B04SN.foil, 'PAW3970, planned'], size: 90 });
+    source(t, B04SN.foilSrc + '. Razer\'s figures for the Focus Pro 50K Gen-3 (igor\'sLAB) and its "tracks flawlessly on glass". Stalls on glass: PC Gamer 2026-05-22 (after a skate swap), Razer Insider 2026-10 (stock feet). PAW3970, two years: Brock. Focus+ → PAW3395, Focus Pro 30K → PAW3950: validation report (an analogy).', { t0: 0.8, maxW: RM - LM });
   }
 });
 
@@ -1270,11 +1282,13 @@ S({
     rr(TX(R.t0), ty - 4, TX(R.t0 + R.T) - TX(R.t0), 8, 4, C.ink2, null, 0, ep(t, 1.4, 1.8));
     text('The flick', TX(R.t0 + R.T) + 12, ty + 64, { role: 'label', size: 22, color: C.ink2, alpha: ep(t, 1.4, 1.8) });
     const ph = TX(Math.min(600, tau));
-    if (t > R.tStart) { line(ph, ty - 70, ph, ty + 10, { color: C.ink, w: 2.5 }); circle(ph, ty, 6, { fill: C.ink }); }
+    /* the playhead spans the two bars and the axis; from ty − 70 it ran through the red label above the bars */
+    if (t > R.tStart) { line(ph, ty - 56, ph, ty + 10, { color: C.ink, w: 2.5 }); circle(ph, ty, 6, { fill: C.ink }); }
     text('Set down', TX(0), ty + 64, { role: 'label', size: 22, color: C.mute });
     /* ---- the verdict, beside the timeline ---- */
     const peak = b04_lagPx(R.t0 + R.T / 2, R.nR), peakT = b04_lagPx(R.t0 + R.T / 2, R.nT);
-    verdict(t, 8.4, 1250, by + 166, { from: peak, to: peakT, unit: 'px', dec: 0, label: 'Behind your hand at the peak', better: 'lower', who: ['PAW3950', 'Theseus'], size: 80 });
+    /* the label on one line (491 px to RM), in the panels' own words ("px behind, at the peak"); the longer one wrapped */
+    verdict(t, 8.4, 1250, by + 166, { from: peak, to: peakT, unit: 'px', dec: 0, label: 'Behind at the peak', better: 'lower', who: ['PAW3950', 'Theseus'], size: 80 });
     /* ---- bottom: two screens following the hand at 1:1 pixels ---- */
     const sy = 556, sh = 384, sw = (RM - LM - 40) / 2;
     [[LM, 'Averaged: 16 frames (PAW3950, XBAB\'s test)', R.nR, C.red], [LM + sw + 40, 'Theseus: 2 frames', R.nT, C.hero]].forEach(([x, lab, N, col], i) => {

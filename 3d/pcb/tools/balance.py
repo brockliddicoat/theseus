@@ -64,6 +64,18 @@ FPM = {'0402': 0.001, '0603': 0.0045, '0805': 0.010, 'L2016': 0.015, 'QFN32': 0.
 # heights of each part's centre of mass over the board's top (mm): the tall ones from pcb.glb's boxes (H2)
 FPY = {'ENCM': 7.2, 'BRACKET': 6.9, 'GT01': 3.7, 'USBC': 0.8, 'LENS': -0.6}
 BARE = dict(laminate=2.82, copper=0.964, mask=0.102, barrels=0.02)        # mass.py (work/mass.json), plan 5, 1.0 mm, 4 layers
+T_BOARD = 1.0
+# F47.4 (H3): the board as built now (0.6 mm, two layers, 0.5 oz; the lighter encoder and the cored support as drawn) comes
+# from mass.py's own run (work/mass.json), so the balance follows the board: its bare grams, its thickness (the bare board's
+# middle sits T/2 under its top) and the encoder's and support's grams. The figures above are plan 5 as first built (H2's)
+_MJ = os.path.join(R3, 'pcb', 'work', 'mass.json')
+if os.path.exists(_MJ):
+    _mj = json.load(open(_MJ)); _bd = _mj['board']
+    BARE = dict(laminate=_bd['laminate_g'], copper=_bd['copper_g'], mask=_bd['mask_g'], barrels=_bd['barrels_g'])
+    T_BOARD = _bd.get('thickness_mm', 1.0)
+    for _r in _mj['components']:
+        if _r['item'] in ('ENCM', 'BRACKET'):
+            FPM[_r['item']] = _r['each_g']
 EXTRA = [('MM3305 x3 under SW1', 0.09, 'SW1'), ('MM3305 x3 under SW2', 0.09, 'SW2'), ('solder', 0.06, None)]
 H1_FPM = dict(FPM, ENCM=0.0, BRACKET=0.0)
 meta = json.load(open(os.path.join(R3, 'shell', 'shell-theseus-1seam.json')))
@@ -95,7 +107,7 @@ def board_com(layout, mass=BUD['board'], h1=False):
         fpm, fpy, extra = H1_FPM, {}, []
     else:       # mass.py's bare board at the core's centroid (mouse X = -layout x)
         c = core_poly().centroid
-        mom = [(sum(BARE.values()), -c.x, y0 - 0.5, c.y)]
+        mom = [(sum(BARE.values()), -c.x, y0 - T_BOARD / 2, c.y)]
         fpm, fpy, extra = FPM, FPY, EXTRA
     comps = {k.get('ref'): k for k in layout['components']}
     for k in layout['components']:
@@ -204,7 +216,7 @@ if __name__ == '__main__':
              ('H1\'s place (2.23 back)', [H1_PLACE['x'], 7.46, H1_PLACE['z']]),
              ('Brock\'s literal (5.90 fwd, 1.5 up)', [H1_PLACE['x'], 8.96, H1_PLACE['z'] + 5.90]),
              ('board.py BATTERY now', battery_place())]
-    out = dict(model='H1 (2026-11-06 08:57)' if h1 else 'H2 (screws at the board holes, core centroid, encoder + support in the board)',
+    out = dict(model='H1 (2026-11-06 08:57)' if h1 else 'H2 (screws at the board holes, core centroid, encoder + support in the board); H3: the board as built (mass.py: %.1f mm, %s g bare, encoder %.3f g, support %.3f g)' % (T_BOARD, round(sum(BARE.values()), 3), FPM['ENCM'], FPM['BRACKET']),
                board_com=[round(v, 2) for v in bn], board_parts_g_before_scaling=round(mn, 3))
     print('model:', out['model']); print('board CoM (mouse X, Y, Z): %+.2f %.2f %+.2f  (its parts %.2f g before scaling to %.2f g)' % (*bn, mn, BUD['board']))
     if not h1:
@@ -225,5 +237,6 @@ if __name__ == '__main__':
     out['battery z for CoM z 0'] = round(zn, 3); out['forward of H1\'s place'] = round(zn - H1_PLACE['z'], 3)
     print('battery centre for a CoM at z 0: mouse z %+.3f (%.3f mm forward of H1\'s place; front edge at mouse z %+.2f = layout %+.2f;'
           ' plan 5\'s rear lobes end at mouse z %+.2f)' % (zn, zn - H1_PLACE['z'], zn + 12.5, zn + 12.5 - DZ, BD.ZB + DZ))
-    dst = '/home/claude/work/h2/balance%s.json' % ('_h1' if h1 else '')
+    # (H3: written in the repo's scratch folder, 3d/pcb/work/, not in an agent's work folder; --out=<path> to choose)
+    dst = next((a_[6:] for a_ in sys.argv if a_.startswith('--out=')), os.path.join(R3, 'pcb', 'work', 'balance%s.json' % ('_h1' if h1 else '')))
     json.dump(out, open(dst, 'w'), indent=1); print('wrote', dst)

@@ -42,7 +42,7 @@ Object.assign(SRC, {
   b07Zowie: { t: 'ZOWIE, "Sport science in ZOWIE U2 mouse design": the lab uses "electromyography (EMG) and motion capture"; the thumb\'s angle affects muscle firing rate; the force difference between the hand\'s two sides "less than 10%"', u: 'https://zowie.benq.com/en-au/knowledge/mouse/sport-science-in-zowie-u2-mouse-design.html' },
   b07Periview: { t: 'periview.gg, Zeromouse and Beanmouse review: the Zeromouse\'s "battery holder positioned at the rear" "shifts the center of gravity towards the back", which the reviewer found makes it feel lighter when pivoting', u: 'https://periview.gg/?p=1375' },
   b07Mass3d: { t: 'This deck, mass model from the 3D assets: the Theseus shell (3d/shell/shell-theseus-1seam.glb): body 12,166 mm³, centre at z −10.4 mm (behind the middle), 16.4 mm up; triggers centred at z 32.0, 22.1 mm up; wheel at z 34.9, 17.0 mm up; the board (plan 5, 3d/pcb/plans/outline_v5.json) x ±19.03, z −10.5 to 48.6, centred at z 19.1, 5 mm up; the battery (LP402535JU, 8 g) at board height in the tail; the weight budget\'s masses (29.31 g); the grip 12 mm up', n: 'derived, this model' },
-  b07Fe: { t: 'This deck, 2D frames solved in the page (07-sim.js): the shell cut across at the board\'s rearmost rib row (z −0.77, sliced from the Theseus shell), CF-PP 13.5 GPa, a 10 N press at the crown; its feet held by the rim (a CF-PP ring, 4.0 × 3.6 mm, the Sora outline) alone, or tied to the board (FR4 19 GPa, 1.0 mm, plan 5) by the side ribs; the plan frame under a 10 N squeeze each side, the board tied by six small arms or by every rib along its edge', n: 'derived, this model' }
+  b07Fe: { t: 'This deck, 2D frames solved in the page (07-sim.js): the shell cut across at the board\'s rearmost rib row (z −0.77, sliced from the Theseus shell), CF-PP ' + fmtN(SIM_MAT.ppcf.E / 1000, 1) + ' GPa, a 10 N press at the crown; its feet held by the rim (a CF-PP ring, 4.0 × 3.6 mm, the Sora outline) alone, or tied to the board (FR4 ' + fmtN(SIM_MAT.fr4.E / 1000, 0) + ' GPa across the weave, Gund; ' + fmtN(BOARD_T, 1) + ' mm, two layers, F47.4; plan 5) by the side ribs; the plan frame under a 10 N squeeze each side, the board tied by six small arms cut from the same board or by every rib along its edge, each rib tied both ways (how a foot joins the board is open, F47.3)', n: 'derived, this model' }
 });
 
 /* ============================== data ============================== */
@@ -90,6 +90,12 @@ const B07_POS = {
   battHigh: { z: -14.0, y: 20.0 }, battOld: { z: -22.72, y: 7.46 }, battH1: { z: -24.95, y: 7.46 },
   sensorOld: 1.12, sensorNew: 16.57, grip: 12.0
 };
+/* the mass model's source line, written from the places the balance uses (B07_POS; the battery from KEY_PARTS), so it follows
+   the hardware when H2/H3 move a part */
+{
+  const mm = v => (v < 0 ? '−' : '') + fmtN(Math.abs(v), 1), P = B07_POS;
+  SRC.b07Mass3d.t = 'This deck, mass model from the 3D assets, part for part as H2\'s balance model (3d/pcb/tools/balance.py; review b07, HARDWARE 10:14): the Theseus shell (3d/shell/shell-theseus-1seam.glb): its body centred at z ' + mm(P.body.z) + ' mm (behind the middle), ' + mm(P.body.y) + ' mm up; triggers at z ' + mm(P.btn.z) + ', ' + mm(P.btn.y) + ' mm up; wheel at z ' + mm(P.wheel.z) + ', ' + mm(P.wheel.y) + ' mm up; the board (plan 5, 3d/pcb/plans/outline_v5.json) at its 5.6 g target (F42.2), its centre of mass at z ' + mm(P.boardCom.z) + ', ' + mm(P.boardCom.y) + ' mm up; the two side switches, the four boss posts (estimated until the shell models them), the board\'s screws and inserts at their places; the battery (LP402535JU, 8 g) where the mouse balances (KEY_PARTS, 03-parts.js): z ' + mm(b07_battZ()) + ', ' + mm(b07_battY()) + ' mm up; the weight budget\'s masses (29.31 g); the grip 12 mm up';
+}
 /* hands and mice */
 const B07_HAND = { men: { mean: 193.3, sd: 9.9, p5: 177, p50: 193, p95: 210, breadth: 88.3 }, women: { mean: 181.1, sd: 10.1, p5: 165, p50: 180, p95: 199, breadth: 78.2 } };
 const B07_LEN = [['razer-viper-v4-pro', 'Viper V4 Pro', 127.1], ['logitech-gpx2', 'G Pro X Superlight 2', 125.0], ['finalmouse-slx', 'Starlight X', 124.8], ['finalmouse-ulx', 'UltralightX', 121.3]];
@@ -124,7 +130,7 @@ function b07_boardHalfW(z) { const P = b07_boardOut(); let w = 0; for (let i = 0
 
 /* ============================== model 1: the shell at board height, from above ==============================
    The rim at board height is a closed ring of CF-PP beams (the flange with the lower wall, one 4.0 × 3.6 mm section, 2.1 mm
-   inside the Sora outline). The board is the plan-5 outline as a 1.0 mm FR4 plate, modelled as a pin-jointed triangle
+   inside the Sora outline). The board is the plan-5 outline as a BOARD_T (0.6 mm) FR4 plate, modelled as a pin-jointed triangle
    lattice of 5 mm pitch whose bars carry the plate's in-plane stiffness (area 0.866 · s · t). It is tied to the rim:
      'none'   not at all (it floats on its screw bosses, as most boards do),
      'arms'   by six small FR4 arms, 3.8 mm wide, three on each long edge where G-Wolves puts them (Brock's photo: 52, 68 and
@@ -135,7 +141,7 @@ function b07_boardHalfW(z) { const P = b07_boardOut(); let w = 0; for (let i = 0
 /* bt: the board's thickness. F47.4 (Brock, "0.6 mm, 5.63 g"): a 0.6 mm two-layer board (was 1.0 mm). It ties the feet in its own
    plane, so its stiffness here goes with its thickness (60 % of the 1.0 mm board's), not with its cube (22 %, the bending
    figure); the arms in the 'arms' case are cut from the same board, so they are 0.6 mm too */
-const B07_PLAN = { ring: { w: 4.0, h: 3.6 }, ringIn: 2.1, lat: 5, armZ: [-1.0, 8.5, 18.0], armW: 3.8, rib: { w: 1.1, h: 1.2 }, sqZ: 4.0, sqN: 10, bt: 0.6 };
+const B07_PLAN = { ring: { w: 4.0, h: 3.6 }, ringIn: 2.1, lat: 5, armZ: [-1.0, 8.5, 18.0], armW: 3.8, rib: { w: 1.1, h: 1.2 }, sqZ: 4.0, sqN: 10, bt: BOARD_T };   /* BOARD_T: 03-parts.js, KEY_PARTS.board.t (H3) */
 const B07_ARM_L = 6.5;   /* the tab's free length, estimated from Brock's photo (5 to 8 mm): one length for the plan model and the edge-on tab */
 function b07_planModel(kind) {
   const nodes = [], els = [], rowNode = {}, pp = SIM_MAT.ppcf, fr = SIM_MAT.fr4, B = b07_boardOut();
@@ -262,9 +268,10 @@ function b07_board() {
     return res;
   });
 }
-/* the same weight of FR4 and magnesium alloy, pulled until it breaks: strips 50 mm long, FR4 10 × 1.0 mm (0.93 g), the
-   magnesium 1.0 mm thick and as wide as the same weight allows (shlFr4 Gund 430 MPa, 1.85; shlMg MatWeb 230 MPa, 1.81) */
-const B07_PULL = (() => { const L = 50, aF = 10, g = 1.85 * aF * L / 1000, aM = g * 1000 / (1.81 * L), fF = 430 * aF, fM = 230 * aM; return { L, aF, aM, g, fF, fM, ratio: fF / fM }; })();
+/* the same weight of FR4 and magnesium alloy, pulled until it breaks: strips 50 mm long, FR4 10 × 1.0 mm (0.93 g, a test
+   strip, not the board), the magnesium 1.0 mm thick and as wide as the same weight allows. SIM_MAT (KIT §4): FR4 Gund 430 MPa,
+   1.85 g/cm³ (shlFr4); magnesium MatWeb 230 MPa, 1.81 g/cm³ (shlMg) */
+const B07_PULL = (() => { const L = 50, aF = 10, rF = matOf('fr4').rho, rM = matOf('mg').rho, g = rF * aF * L / 1000, aM = g * 1000 / (rM * L), fF = SIM_MAT.fr4.ft * aF, fM = SIM_MAT.mg.ft * aM; return { L, aF, aM, g, fF, fM, ratio: fF / fM }; })();
 
 /* ============================== model 3: tolerance stack-up (Scholz 1995) ==============================
    Parts around one seam, each off its drawing by up to ±T (T = 3σ, normal, centred, independent). Worst case: T₁ + … + Tₙ.
@@ -519,7 +526,7 @@ function b07_bracket(x, y0, y1, col, a, label, o = {}) {
    its ribs on the board's edge, which holds the feet apart: the same squeeze moves the sides a third as far, nothing added. The cut is the real shell's,
    across the board's rear rib row (model 2); the classroom panels are the two weaves side by side and the same weight of
    FR4 and magnesium pulled apart. */
-const B07_BRD = { ex: 10, by: 5.03 - B07_PLAN.bt / 2, bt: B07_PLAN.bt, rodY: 2.2, rodR: 1.0, z: -0.77 };   /* the board's top stays at 5.03 mm (the posts' ends), F47.4's 0.6 mm below it */
+const B07_BRD = { ex: 10, by: BOARD_TOP - B07_PLAN.bt / 2, bt: B07_PLAN.bt, rodY: 2.2, rodR: 1.0, z: -0.77 };   /* the board's top stays at BOARD_TOP (5.03 mm, the posts' ends), F47.4's 0.6 mm below it */
 /** a plain-weave swatch in [x, y, w, h]: strands passing over and under each other, set in resin. kind 'carbon' | 'glass' */
 function b07_weave(x, y, w, h, kind, a, o = {}) {
   if (a <= 0.003) return;
@@ -568,7 +575,7 @@ function b07_pullPanel(t, t0, r) {
     const yy = inner[1] + 16 + i * 48, kb = ep(t, t0 + 0.35 + i * 0.35, t0 + 1.05 + i * 0.35, E.out3), bw = Math.max(3, bwMax * F / B07_PULL.fF * kb);
     text(name, inner[0], yy + 8, { role: 'label', size: 19, color: tcol, alpha: a });
     rr(bx, yy - 9, bw, 24, 3, col, null, 0, a);
-    const v = Math.floor(F * kb / 50) * 50;
+    const v = i ? Math.floor(F * kb / 10) * 10 : Math.ceil(F * kb / 10 - 1e-9) * 10;   /* one precision (10 N): the board's FR4 floored, the rival rounded up */
     rich([{ s: b07_k(v), role: 'num', size: 26, weight: 750, color: i ? C.heroText : C.ink2, tnum: true }, { s: 'N', role: 'small', size: 20, weight: 650, color: C.mute, gap: 6 },
       i && kb >= 1 ? { s: fmtN(Math.floor(B07_PULL.ratio * 10) / 10, 1) + '×', font: 'disp', size: 30, weight: 800, color: C.heroText, grad: C.heroGrad, gap: 16, caps: false } : null], bx + bw + 14, yy + 10, { alpha: a });
   });
@@ -625,21 +632,26 @@ function b07_secHands(est, r, sq, o = {}) {
   });
   return out;
 }
-S({
+S(b07_live({
   id: 'b07_board', ch: 'shell', theme: 'night', title: 'The board you already carry', settle: 11, ideas: [94],
   replaces: ['shlPcbRib', 'shcCarry', 'shlStructs'],
   src: ['b07Fe', 'b07Fr4Wiki', 'shlFr4', 'shlMg', 'b01GwPlusPro', 'b01GwWarg', 'b07Sabre', 'b07Harpe', 'shlPyrofil'],
-  answers: [
-    ['shlPcbRib: "unintuitive"', 'One demonstration on the real shell, cut across the board\'s rear rib row, problem first: squeeze it at the grip and its feet slide inward, the sides come in 0.64 mm; the usual added part; then the board, anchored to the ribs, holds the feet and the same squeeze moves the sides 0.21 mm.'],
-    ['"explain how fr4 is like carbon fiber because it\'s also a woven composite"', 'A panel sets the two weaves side by side, carbon cloth in epoxy and glass cloth in epoxy (Wikipedia, FR-4: "woven fiberglass cloth with an epoxy resin binder"), and the narration says it: carbon fibre\'s recipe, made with glass cloth.'],
-    ['"using the pcb is an alternative to having carbon fiber rods in your mouse"', 'The rival fix is drawn in place and named: a carbon rod, as G-Wolves braces its HTS Plus Pro 8K and Warg 8K ("Single-shell + carbon rod", the maker\'s words; where the rod sits isn\'t published, so it is drawn generically across the feet), with the paid route, carbon or magnesium shells, in the narration. It leaves, and the board does its job.'],
-    ['"that doesn\'t require extra parts with extra tolerancing"', 'The rod is tagged "+1 part" and "2 glued joints to hold to size" (the next slides take up tolerance); Theseus\'s result says "with no added part".'],
-    ['"you\'re just using what you already have"', 'The title, and the line "the board already spans the feet": the board is carried anyway (its 5.6 g is a target, F42.2).'],
-    ['shcCarry: "meg slide"', 'Read as "meh": the square-per-gram grid is gone. Its point, use the weight you already carry (the board, 5.6 g target), is this slide\'s result (+0 g, no added part).'],
-    ['shlStructs: "viewer will have no idea what that spec means in big blue poor setup"', 'The published N/mm figure is left out. The measurement is set up on screen instead: 10 N on each side (the weight of a 1 kg bag of sugar) and how far the sides move, in mm (six sheets of copy paper), solved for this shell.'],
-    ['F2.26 (FR4 as strong as magnesium; the whole board)', 'The same weight of each pulled until it breaks: FR4 4,300 N, magnesium alloy 2,350 N, 1.8× (Gund; MatWeb, the higher magnesium figure, so the ratio is the cautious one).'],
-    ['F47.4 (the 0.6 mm board)', 'Re-solved with the 0.6 mm two-layer board (FR4 18 GPa across the weave). The board ties the feet in its own plane, so there it keeps 60 % of the 1.0 mm board\'s stiffness (the 22 % is its bending stiffness); its tie is still about 70× the rim\'s (586 against 8.5 N/mm), so the sides move 0.21 mm either way (0.2078 against 0.2073 mm solved): the verdict stands, and the section draws the board 0.6 mm thick.']
-  ],
+  answers: () => {
+    /* written from the live models (b07_live): the numbers on the frames, rounded as they are (the rim alone floored, Theseus up) */
+    const R = b07_squeeze(), Bd = b07_board(), RB = b07_rodTie(), dn2 = v => b07_dn(v, 2), up2 = v => fmtN(Math.ceil(v * 100 - 1e-9) / 100, 2);
+    const fr = v => b07_k(Math.floor(v / 10) * 10), mgv = v => b07_k(Math.ceil(v / 10 - 1e-9) * 10);
+    return [
+      ['shlPcbRib: "unintuitive"', 'One demonstration on the real shell, cut across the board\'s rear rib row, problem first: squeeze it at the grip and its feet slide inward, the sides come in ' + dn2(R.flex0) + ' mm; the usual added part; then the board, anchored to the ribs, holds the feet and the same squeeze moves the sides ' + up2(R.flex1) + ' mm (the rim alone floored, Theseus rounded up).'],
+      ['"explain how fr4 is like carbon fiber because it\'s also a woven composite"', 'A panel sets the two weaves side by side, carbon cloth in epoxy and glass cloth in epoxy (Wikipedia, FR-4: "woven fiberglass cloth with an epoxy resin binder"), and the narration says it: carbon fibre\'s recipe, made with glass cloth.'],
+      ['"using the pcb is an alternative to having carbon fiber rods in your mouse"', 'The rival fix is drawn in place and named: a carbon rod, as G-Wolves braces its HTS Plus Pro 8K and Warg 8K ("Single-shell + carbon rod", the maker\'s words; where the rod sits isn\'t published, so it is drawn generically across the feet), with the paid route, carbon or magnesium shells, in the narration. Solved on the same slice, a 2 mm rod does about the same (' + dn2(RB.flex) + ' mm against the board\'s ' + up2(R.flex1) + '), and the slide says so: the board\'s win is the part it doesn\'t add.'],
+      ['"that doesn\'t require extra parts with extra tolerancing"', 'The rod is tagged "+1 part" and "2 glued joints to hold to size" (the next slides take up tolerance); Theseus\'s result says "with no added part".'],
+      ['"you\'re just using what you already have"', 'The title, and the line "the board already spans the feet": the board is carried anyway (its 5.6 g is a target, F42.2).'],
+      ['shcCarry: "meg slide"', 'Read as "meh": the square-per-gram grid is gone. Its point, use the weight you already carry (the board, 5.6 g target), is this slide\'s result (+0 g, no added part).'],
+      ['shlStructs: "viewer will have no idea what that spec means in big blue poor setup"', 'The published N/mm figure is left out. The measurement is set up on screen instead: 10 N on each side (the weight of a 1 kg bag of sugar) and how far the sides move, in mm (six sheets of copy paper), solved for this shell.'],
+      ['F2.26 (FR4 as strong as magnesium; the whole board)', 'The same weight of each pulled until it breaks: FR4 ' + fr(B07_PULL.fF) + ' N, magnesium alloy ' + mgv(B07_PULL.fM) + ' N, ' + fmtN(Math.floor(B07_PULL.ratio * 10) / 10, 1) + '× (Gund; MatWeb, the higher magnesium figure, so the ratio is the cautious one; one precision, the magnesium rounded up).'],
+      ['F47.4 (the 0.6 mm board)', 'Re-solved with the ' + fmtN(BOARD_T, 1) + ' mm two-layer board (FR4 ' + fmtN(SIM_MAT.fr4.E / 1000, 0) + ' GPa across the weave). The board ties the feet in its own plane, so there it keeps ' + Math.round(BOARD_T / 1.0 * 100) + ' % of the 1.0 mm board\'s stiffness (the 22 % is its bending stiffness); its tie is still ' + Math.floor(Bd.kW / Bd.kN) + '× the rim\'s (' + Math.round(Bd.kW) + ' against ' + fmtN(Bd.kN, 1) + ' N/mm), so the sides move ' + up2(R.flex1) + ' mm (' + fmtN(R.flex1, 4) + ' solved; 0.2073 with the 1.0 mm board): the verdict stands, and the section draws the board ' + fmtN(BOARD_T, 1) + ' mm thick.']
+    ];
+  },
   draw: t => {
     const R = b07_squeeze(), ex = B07_BRD.ex;
     header(t, 'The board you already carry');
@@ -675,9 +687,9 @@ S({
     /* phase 1, top right: how far the sides bow in, live, with its human scale */
     const kr = ep(t, 1.6, 1.9) * (1 - ep(t, 4.8, 5.1));
     if (kr > 0.003) {
-      const v = R.flex0 * ep(t, 1.6, 2.4, E.io3);
+      const v = R.flex0 * ep(t, 1.6, 2.4, E.io3);   /* shown floored: the same 0.63 the verdict strikes (never rounded in Theseus's favour) */
       text('How far the sides come in', RM, 330, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: kr });
-      rich([{ s: fmtN(v, 2), font: 'disp', size: 84, weight: 800, color: C.ink, tnum: true }, { s: 'mm', font: 'disp', size: 32, weight: 700, color: C.mute, gap: 10, caps: false }], RM, 418, { align: 'right', alpha: kr });
+      rich([{ s: b07_dn(v, 2), font: 'disp', size: 84, weight: 800, color: C.ink, tnum: true }, { s: 'mm', font: 'disp', size: 32, weight: 700, color: C.mute, gap: 10, caps: false }], RM, 418, { align: 'right', alpha: kr });
       if (t > 2.5) { const s6 = 'about six sheets of copy paper'; scaleNote(RM - 34 - tw(s6, { role: 'small', size: 23, weight: 600 }), 466, s6, { t, t0: 2.5, size: 23 }); }
     }
     if (t > 2.1) scaleNote(LM, 920, 'a side, a hard press: a 1 kg bag of sugar, five times the hardest grip measured at a desk', { lead: '10 N', t, t0: 2.1, size: 22 });
@@ -688,20 +700,20 @@ S({
     /* the rival's fix, solved the same way (R2-b07-1): a 2 mm pultruded carbon rod (134 GPa, TAP Plastics, research b07-10) glued
        across the feet ties them about as well, for a part, its weight and two joints: the board's win is the added nothing */
     { const RB = b07_rodTie(), kr2 = ep(t, 8.0, 8.4); if (kr2 > 0.003) text('A 2 mm carbon rod glued across does about the same (' + fmtN(RB.flex, 2) + ' mm), for +1 part, +' + fmtN(RB.g, 2) + ' g and 2 glued joints.', rx, 744, { role: 'small', size: 21, weight: 600, color: C.mute, maxW: rw, lh: 1.25, alpha: kr2 }); }
-    verdict(t, 8.4, rx, 905, { from: +fmtN(R.flex0, 2), to: +fmtN(R.flex1, 2), unit: 'mm', dec: 2, label: 'How far the sides come in', better: 'lower', who: ['Rim alone', 'Tied to the board'], rivalCol: 'grey', size: 84, netWord: 'with no added part', maxW: rw });
-    source(t, 'Solved here in 2D: a 10 mm slice of the shell (CF-PP), its feet on the rim alone or on rim and the 0.6 mm board (F47.4); 10 N a side, drawn ' + ex + '× real. Stiffness only: the tie raises the wall\'s peak stress 9 %. The rod: 134 GPa, 1.5 g/cm³ (TAP Plastics), glued at the feet.', { t0: 2.2, maxW: rx - LM - 40 });
+    verdict(t, 8.4, rx, 905, { from: Math.floor(R.flex0 * 100 + 1e-9) / 100, to: Math.ceil(R.flex1 * 100 - 1e-9) / 100, unit: 'mm', dec: 2, label: 'How far the sides come in', better: 'lower', who: ['Rim alone', 'Tied to the board'], rivalCol: 'grey', size: 84, netWord: 'with no added part', maxW: rw });
+    source(t, 'Solved here in 2D: one 10 mm slice of the CF-PP shell, on its rim or tied to the ' + fmtN(BOARD_T, 1) + ' mm board; 10 N a side, drawn ' + ex + '× real. The tie raises the wall\'s peak stress ' + fmtN(Math.ceil((R.pk1 / R.pk0 - 1) * 1000 - 1e-9) / 10, 1) + ' %. Rod: 134 GPa, 1.5 g/cm³ (TAP Plastics).', { t0: 2.2, maxW: rx - LM - 40 });
     if (kx > 0.003) text('One 10 mm slice, solved in 2D', box[0] + box[2], box[1] + 18, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kx * (1 - ep(t, 7.6, 7.8)) + ep(t, 8.7, 9.0) });
   }
-});
+}));
 
 /* ============================== 2. b07_arms: Small arms snap, the whole board holds ==============================
    Brock (shcArms, 6/10): "these aren't what the arms or pcb would look like, important idea tho"; F2.26, F6.3 (the arms on
    his HTS Ultra broke in shipping), F28.3 (his two G-Wolves photos). The plan frame (model 1) under one squeeze, 10 N on
    each side over the board: six small arms where G-Wolves puts them against every rib tied to the board's own edge, the
-   FR4 coloured by its stress on one scale. The arm, edge on: a fixed-guided FR4 tab 6.5 mm long and 1.0 mm thick (its
-   length estimated from the photo): σ = 3·E·h·δ / L², so 0.36 mm at its tip takes its root to 483 MPa (Gund, crosswise
-   flexural). Only the squeeze is modelled on both; the drop is shown on the arm alone. */
-const B07_ARM = { L: B07_ARM_L, h: 1.0, E: 18000, sf: 483 };   /* crosswise FR4 (a tab off the long edge): modulus 18 GPa, bending strength 483 MPa (Gund, shlFr4) */
+   FR4 coloured by its stress on one scale. The arm, edge on: a fixed-guided FR4 tab 6.5 mm long and 1.0 mm thick (G-Wolves'
+   own board: its length estimated from the photo, its thickness an estimate): σ = 3·E·h·δ / L², so 0.38 mm at its tip takes
+   its root to 483 MPa (Gund, crosswise flexural). Only the squeeze is modelled on both; the drop is shown on the arm alone. */
+const B07_ARM = { L: B07_ARM_L, h: 1.0, E: SIM_MAT.fr4.E, sf: SIM_MAT.fr4.fb };   /* crosswise FR4 (a tab off the long edge): SIM_MAT's 18 GPa, 483 MPa bent (Gund, shlFr4); h: G-Wolves' board, est. */
 B07_ARM.perMM = 3 * B07_ARM.E * B07_ARM.h / (B07_ARM.L * B07_ARM.L);
 B07_ARM.snap = B07_ARM.sf / B07_ARM.perMM;
 /** the board's outline in the top view's frame (key plan: x as given, y = −z) */
@@ -821,18 +833,23 @@ function b07_sweepChart(t, t0, r, SW, kw) {
   });
   if (kw > 0 && kw < 1) line(X(zNow), py0, X(zNow), py1, { color: C.ink2, w: 1.5, dash: [4, 4], alpha: a * 0.6 });
 }
-S({
+S(b07_live({
   id: 'b07_arms', ch: 'shell', theme: 'paper', title: 'Small arms snap, the whole board holds', settle: 11, ideas: [94],
   replaces: ['shcArms'],
   src: ['b07Fe', 'shcTpuHati', 'shcTpuHatiR', 'b01TpuHtsU', 'b07GwPhoto', 'shlFr4'],
-  answers: [
-    ['"these aren\'t what the arms or pcb would look like"', 'Drawn from his two photos: narrow FR4 tabs on the board\'s long edge, square at the root, silkscreen corner marks at the tips and a locating hole in one, reaching under the shell\'s rim (a close-up tile), placed along the board where G-Wolves puts them (52, 68 and 84 % back from its front) in the top view.'],
-    ['"important idea tho"', 'Kept and led with the failure he lived: a jolt snaps an arm at its root, and the edge-on arm shows how little it takes (a 6.5 mm tab breaks when its tip moves 0.38 mm). Then the important idea itself: the whole board, every rib tied along its edge, stiffens the length of the board instead of three spots.'],
-    ['F2.26 (small FR4 arms easy to snap; THE WHOLE PCB)', 'The same 10 N squeeze moved along the board (solved): arms hold the shell hard at their three places and leave the front soft; every rib tied along the edge spreads it, so the softest spot moves less (derived). No strength claim: a drop is not modelled, and the slide says so.'],
-    ['F6.3, F28.3 (his HTS Ultra\'s arms broke in shipping; his photos)', 'Said in the narration; the photos are the drawing\'s reference (drawn, not shown, F34.1).'],
-    ['F33.5, F41.1', 'One of his important ideas, problem first. Its point leads with stiffness (F41.1): under a squeeze nothing here comes near breaking, and a drop is not modelled.'],
-    ['F47.3, F47.4 (the rib feet\'s joint is open; the 0.6 mm board)', 'Re-solved with the 0.6 mm two-layer board (FR4 18 GPa across the weave), the arms cut from the same board: the softest spot along the board 53 → 45 µm (each rounded against Theseus; 53.2 and 44.4 solved). The model ties each rib to the board both ways, and the source line says so: how a foot joins the board is still open (Brock: "keep as options"); a push-only joint would let the pulling feet go and lose this lead (55.7 µm, worse than the arms). No drop claim.']
-  ],
+  answers: () => {
+    /* written from the live models (b07_live); the two checks in the last row were run by P4 on the same model (tools/armsrob.js,
+       co.js in /home/claude/work/p4/tools): G-Wolves' arms on their own 1.0 mm board, and push-only feet */
+    const SW = b07_sweep(), aS = Math.floor(SW.worstArms * 1000), wS = Math.ceil(SW.worstWhole * 1000);
+    return [
+      ['"these aren\'t what the arms or pcb would look like"', 'Drawn from his two photos: narrow FR4 tabs on the board\'s long edge, square at the root, silkscreen corner marks at the tips and a locating hole in one, reaching under the shell\'s rim (a close-up tile), placed along the board where G-Wolves puts them (52, 68 and 84 % back from its front) in the top view.'],
+      ['"important idea tho"', 'Kept and led with the failure he lived: a jolt snaps an arm at its root, and the edge-on arm shows how little it takes (a ' + fmtN(B07_ARM.L, 1) + ' mm tab breaks when its tip moves ' + fmtN(B07_ARM.snap, 2) + ' mm). Then the important idea itself: the whole board, every rib tied along its edge, stiffens the length of the board instead of three spots.'],
+      ['F2.26 (small FR4 arms easy to snap; THE WHOLE PCB)', 'The same 10 N squeeze moved along the board (solved): arms hold the shell hard at their three places and leave the front soft; every rib tied along the edge spreads it, so the softest spot moves less (derived). No strength claim: a drop is not modelled, and the slide says so.'],
+      ['F6.3, F28.3 (his HTS Ultra\'s arms broke in shipping; his photos)', 'Said in the narration; the photos are the drawing\'s reference (drawn, not shown, F34.1).'],
+      ['F33.5, F41.1', 'One of his important ideas, problem first. Its point leads with stiffness (F41.1): under a squeeze nothing here comes near breaking, and a drop is not modelled.'],
+      ['F47.3, F47.4 (the rib feet\'s joint is open; the 0.6 mm board)', 'Re-solved with the ' + fmtN(BOARD_T, 1) + ' mm two-layer board (FR4 ' + fmtN(SIM_MAT.fr4.E / 1000, 0) + ' GPa across the weave), the arms cut from the same board: the softest spot along the board ' + aS + ' → ' + wS + ' µm (each rounded against Theseus; ' + fmtN(SW.worstArms * 1000, 1) + ' and ' + fmtN(SW.worstWhole * 1000, 1) + ' solved). It holds if G-Wolves\' arms keep their own 1.0 mm board (51.0 µm, checked on the same model). The model ties each rib to the board both ways, and the source line says so: how a foot joins the board is still open (Brock: "keep as options"); a push-only joint would let the pulling feet go and lose this lead (55.7 µm, worse than the arms). No drop claim.']
+    ];
+  },
   draw: t => {
     const R = b07_plan(), Ca = R.arms, Cw = R.whole, SW = b07_sweep();
     header(t, 'Small arms snap, the whole board holds');
@@ -886,9 +903,9 @@ S({
     if (t > 3.6 && t < 5.35) scaleNote(rx, 790, 'about four sheets of copy paper', { lead: fmtN(B07_ARM.snap, 2) + ' mm', t, t0: 3.6, size: 23 });
     b07_sweepChart(t, 5.5, [rx, 560, rw, 250], SW, kw);
     verdict(t, 8.6, rx, 912, { from: Math.floor(SW.worstArms * 1000), to: Math.ceil(SW.worstWhole * 1000), unit: 'µm', dec: 0, label: 'Softest spot along the board', better: 'lower', who: ['G-Wolves arms', 'Every rib tied'], size: 72, maxW: rw });
-    source(t, 'Solved here in 2D: CF-PP rim, plan-5 FR4 board, 10 N a side; tabs 3.8 × ' + fmtN(B07_ARM_L, 1) + ' mm FR4 (photo), ribs CF-PP. Tab: 18 GPa, 483 MPa bent, crosswise (Gund). Board 0.6 mm (F47.4); each rib tied both ways (how a foot joins the board is open). A drop isn\'t modelled.', { t0: 2.2, maxW: rx - LM - 40 });
+    source(t, 'Solved here in 2D: CF-PP rim and ribs, the ' + fmtN(BOARD_T, 1) + ' mm board, 10 N a side. Tabs 3.8 × ' + fmtN(B07_ARM_L, 1) + ' × ' + fmtN(B07_ARM.h, 1) + ' mm (est.), FR4 ' + fmtN(B07_ARM.E / 1000, 0) + ' GPa, ' + B07_ARM.sf + ' MPa bent across the weave (Gund). Ribs tied both ways (joint open). No drop modelled.', { t0: 2.2, maxW: rx - LM - 40 });
   }
-});
+}));
 
 /** what a missed seam is to its owner: two seams magnified, flush inside the allowance and stepped outside it, a fingertip
    gliding across each (it slides over the flush one and catches on the step) */
@@ -945,11 +962,11 @@ S({
     ['F33.8 (stacked coins)', 'The classroom version is stacked coins in a gauge, the law drawn on the stack.']
   ],
   draw: t => {
-    const TOL = b07_tol(), T = B07_TOL.T, Sx = B07_TOL.S, V = B07_TOLV, outF = k => TOL[k].mcOut, oneIn = v => Math.round(1 / Math.max(1e-9, v));
+    const TOL = b07_tol(), T = B07_TOL.T, Sx = B07_TOL.S, V = B07_TOLV, outF = k => TOL[k].mcOut;
     header(t, 'Tolerance stack-up');
     captions(t, [[0.6, 'Every part comes out a little off its drawing. Stack parts and their errors add up, like coins in a stack.'],
       [3.0, 'One sloppy part owns most of the spread. The others can be perfect, and the seam still misses.'],
-      [5.4, 'Four shell parts: 1 mouse in ' + oneIn(outF('four')) + ' misses a seam\'s allowance. Rim, hump and sides in one body: 1 in ' + oneIn(outF('two')) + '.'],
+      [5.4, 'Four shell parts: 1 mouse in ' + Math.ceil(1 / Math.max(1e-9, outF('four')) - 1e-9) + ' misses a seam\'s allowance. Rim, hump and sides in one body: 1 in ' + Math.floor(1 / Math.max(1e-9, outF('two')) + 1e-9) + '.'],   /* "1 in N": the four parts' N rounded up, Theseus's down (never in its favour) */
       [9.7, 'Every part you remove is a tolerance you don\'t stack. And a miss isn\'t a number to its owner: it\'s a step at the seam under a finger.']]);
     /* ---------------- the classroom version: coins in a gauge (left), the law and where the stack lands (right) ---------------- */
     /* frame one already shows the subject: the gauge in its panel with two coins in it; the other two drop in */
@@ -1051,14 +1068,14 @@ S({
         }
       }
       const outNow = shown ? outN / shown : 0;
-      rich([{ s: fmtN(outNow * 100, 1) + ' %', font: 'disp', size: 34, weight: 800, color: outNow > 0.02 ? C.red : b.hero ? C.heroText : C.ink, tnum: true }, { s: 'out', role: 'label', size: 19, color: C.mute, gap: 10 }], ox + 24, baseY + 70, { alpha: a * ep(t, b.t0 + 0.2, b.t0 + 0.5) });
+      rich([{ s: (b.hero ? fmtN(Math.ceil(outNow * 1e4 - 1e-9) / 100, 2) : fmtN(Math.floor(outNow * 1e4 + 1e-9) / 100, 2)) + ' %', font: 'disp', size: 34, weight: 800, color: outNow > 0.02 ? C.red : b.hero ? C.heroText : C.ink, tnum: true }, { s: 'out', role: 'label', size: 19, color: C.mute, gap: 10 }], ox + 24, baseY + 70, { alpha: a * ep(t, b.t0 + 0.2, b.t0 + 0.5) });
     });
     const ky = ep(t, 5.4, 5.8);
     text('Seam gap, off nominal, {mm}', RM, R0[1] + R0[3] + 30, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: ky });
     scaleNote(R0[0], R0[1] + R0[3] + 30, 'one sheet of copy paper, the allowance either way', { lead: '0.10 mm', t, t0: 5.6 });
     /* ---------------- the payoff ---------------- */
     const v0 = outF('four') * 100, v1 = outF('two') * 100;
-    verdict(t, 8.7, R0[0], 872, { from: v0, to: v1, unit: '%', dec: 1, label: 'Seams outside the allowance', better: 'lower', who: ['Four parts', 'Theseus'], size: 96, maxW: 760 });
+    verdict(t, 8.7, R0[0], 872, { from: Math.floor(v0 * 100 + 1e-9) / 100, to: Math.ceil(v1 * 100 - 1e-9) / 100, unit: '%', dec: 2, label: 'Seams outside the allowance', better: 'lower', who: ['Four parts', 'Theseus'], size: 96, maxW: 760 });
     b07_seamInset(t, 9.8, [RM - 500, 826, 500, 136]);
     source(t, 'Parts ±T at 3σ, normal, independent (Scholz 1995). 24,000 mice a build, one seed. The allowance is an example. Starlight X: three parts, down from four (Back2Gaming).', { t0: 5.4 });
   }
@@ -1094,7 +1111,7 @@ function b07_contact(t, t0, r, S, o) {
   text(o.name, x + 22, y + 36, { role: 'label', size: 20, color: o.hero ? C.heroText : o.bad ? C.red : C.mute, alpha: a });
   const u = clamp((t - t0) / 2.0), i = Math.min(S.n, Math.floor(u * S.n)), cx = x + w / 2, by = y + 196;
   /* the board, edge on (the shared section) */
-  G.save(); G.globalAlpha = a; part(cx, by, 9, () => pcbSec(-18, 18, 0, 1.2, {})); G.restore();
+  G.save(); G.globalAlpha = a; part(cx, by, 9, () => pcbSec(-18, 18, 0, null, {})); G.restore();   /* Theseus's board: th null draws BOARD_T (0.6 mm, H3); its top face, where the post stands, stays at by */
   /* the post, from the shell above; on Theseus a Poron pad between */
   const sc = 60 / S.xmax, dx = o.pad ? 0 : S.xs[i] * sc - 30, padH = 18, shear = o.pad ? 26 * u : 0;
   const px = cx + dx - 24, pyTop = y + 74, pyBot = by - (o.pad ? padH : 0);
@@ -1160,7 +1177,8 @@ S({
     const kd = ep(t, 2.4, 2.8);
     if (kd > 0.003) text('Contacts drawn magnified; one-mass model, illustrative', RM, cy + ch + 30, { role: 'tick', size: 19, color: C.faint, align: 'right', alpha: kd });
     verdict(t, 8.9, cx0, 880, { from: dry.slips.length, to: 0, unit: 'slips', dec: 0, label: 'Creaks in one squeeze (modelled)', better: 'lower', who: ['Dry', 'Poron'], rivalCol: 'grey', size: 84, net: 'Silent', netWord: 'for a few square millimetres of foam', maxW: 900 });
-    if (t > 7.2) scaleNote(LM, 770, 'PORON 4701-30: soft, 21 to 62 kPa at a quarter squeeze', { t, t0: 7.2, size: 21 });
+    /* under the Poron panel, the pad it describes, right-aligned to the margin (review R3-b07-1: at LM it ran into the verdict's label) */
+    if (t > 7.2) scaleNote(RM - 601, 846, 'soft, 21 to 62 kPa at a quarter squeeze', { lead: 'PORON 4701-30', t, t0: 7.2, size: 21 });
     source(t, 'Stick-slip: static friction above sliding friction (TU Delft demo 17.5). Pads: Rogers PORON, which "fill gaps caused by variations in manufacturing tolerances".', { t0: 2.0 });
   }
 });
@@ -1184,7 +1202,7 @@ S({
     ['F41.1 (lead with stiffness)', 'Walls and struts lead with flex and sink at equal weight; the struts\' peak stress rising 13 % is said, not hidden.']
   ],
   draw: t => {
-    const GR = b07_grade(), ST = b07_struts(), mg = 1.81, pps = 1.40, cut = 1 - pps / mg;
+    const GR = b07_grade(), ST = b07_struts(), mg = matOf('mg').rho, pps = 1.40, cut = 1 - pps / mg;   /* magnesium from SIM_MAT; carbon PPS isn't in it (MakeItFrom) */
     header(t, 'The rest of the shell');
     captions(t, [[0.6, 'Three more ideas, each tested the same way: the usual part, then Theseus\'s, under the same load.'],
       [3.6, 'Walls graded thicker toward the rim flex less than even walls of the same weight. It costs nothing to mould, only to draw.'],
@@ -1203,7 +1221,7 @@ S({
         rr(bx, yy + 14, bw * (d / mg) * kb, 30, 4, col, null, 0, a);
         text(fmtN(d, 2) + ' g/cm³', bx + bw * (d / mg) * kb + 12, yy + 37, { role: 'num', size: 21, weight: 700, color: tc, alpha: a * kb });
       });
-      text('The same shape: ' + b07_dn(cut * 100) + ' % lighter (magnesium is the stiffer: 45 against 17 GPa)', bx, y + 352, { role: 'tick', size: 19, color: C.faint, alpha: a, maxW: w - 48 });
+      text('The same shape: ' + b07_dn(cut * 100) + ' % lighter (magnesium is the stiffer: ' + fmtN(SIM_MAT.mg.E / 1000, 0) + ' against 17 GPa)', bx, y + 352, { role: 'tick', size: 19, color: C.faint, alpha: a, maxW: w - 48 });
       verdict(t, 1.8, x + 24, y + 470, { from: 100, to: Math.ceil((1 - cut) * 100 - 1e-9), unit: '%', dec: 0, label: 'Trigger weight, the same shape', better: 'lower', who: ['Magnesium', 'PPS'], size: 52, maxW: w - 48 });
     }
     /* ---- 2: graded walls ---- */
@@ -1215,7 +1233,7 @@ S({
         const sq = ep(t, 4.2, 4.9, E.io3), box = [x + 20, y + 96, w - 40, 236], cf = camFit([-40, -40, 80, 44], box, 0.06), P0 = q => [q[0], -q[1]];
         withCam(cf, box, () => { for (const [r, col, dx] of [[GR.ev, C.comp, -0.0], [GR.gr, C.hero, 0]]) { G.save(); G.translate(dx, 0); b07_miniFrame(r, P0, sq, 25, col, a * (col === C.hero ? 1 : 0.85), { w: 1 }); G.restore(); } });
         text('Grey: even. Blue: graded. Squeeze drawn 25× real.', x + 24, y + 352, { role: 'tick', size: 19, color: C.faint, alpha: a });
-        verdict(t, 5.0, x + 24, y + 470, { from: Math.abs(GR.flexEv), to: Math.abs(GR.flexGr), unit: 'mm', dec: 3, label: 'Flex, 10 N each side', better: 'lower', who: ['Even wall', 'Graded'], rivalCol: 'grey', size: 72, maxW: w - 48 });
+        verdict(t, 5.0, x + 24, y + 470, { from: Math.floor(Math.abs(GR.flexEv) * 1000 + 1e-9) / 1000, to: Math.ceil(Math.abs(GR.flexGr) * 1000 - 1e-9) / 1000, unit: 'mm', dec: 3, label: 'Flex, 10 N each side', better: 'lower', who: ['Even wall', 'Graded'], rivalCol: 'grey', size: 72, maxW: w - 48 });
       }
     }
     /* ---- 3: joined struts ---- */
@@ -1231,11 +1249,11 @@ S({
           text(nm, x + 30, y + 118 + i * 118, { role: 'label', size: 19, color: i ? C.heroText : C.mute, alpha: a });
         });
         text('5 N on the roof, drawn 120× real; same strut weight. Peak stress +' + Math.round((ST.pkJo / ST.pkSep - 1) * 100) + ' %.', x + 24, y + 352, { role: 'tick', size: 19, color: C.faint, alpha: a, maxW: w - 48 });
-        verdict(t, 8.4, x + 24, y + 470, { from: ST.sinkSep * 1000, to: ST.sinkJo * 1000, unit: 'µm', dec: 1, label: 'Roof sink', better: 'lower', who: ['Separate struts', 'Joined'], rivalCol: 'grey', size: 52, maxW: w - 48 });
+        verdict(t, 8.4, x + 24, y + 470, { from: Math.floor(ST.sinkSep * 1e4 + 1e-9) / 10, to: Math.ceil(ST.sinkJo * 1e4 - 1e-9) / 10, unit: 'µm', dec: 1, label: 'Roof sink', better: 'lower', who: ['Separate struts', 'Joined'], rivalCol: 'grey', size: 52, maxW: w - 48 });
       }
     }
     if (t > 9) text('Elsewhere: the closed wheel well is with the cutouts. Not shown: the bottom cover (later).', LM, ty + th + 40, { role: 'small', size: 21, weight: 560, color: C.faint, alpha: ep(t, 9, 9.4) });
-    source(t, 'Carbon-filled PPS 1.40 g/cm³, 17 GPa (MakeItFrom); magnesium AZ91D 1.81 g/cm³, 44.8 GPa (MatWeb). Walls and struts: 2D frames solved here in CF-PP, 10 mm deep.', { t0: 2.0 });
+    source(t, 'Carbon-filled PPS 1.40 g/cm³, 17 GPa (MakeItFrom); magnesium AZ91D ' + fmtN(matOf('mg').rho, 2) + ' g/cm³, ' + fmtN(SIM_MAT.mg.E / 1000, 1) + ' GPa (MatWeb). Walls and struts: 2D frames solved here in CF-PP, 10 mm deep.', { t0: 2.0 });
   }
 });
 
@@ -1351,7 +1369,7 @@ S({
     if (t > 6.3) text('How fast the slope turns along it, °/mm; red: faster than a finger can follow', tx0, ty + th2 + 14 + 156 + 30, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: ep(t, 6.3, 6.7) });
     const pkS = b07_peakK(SH.sharp), pkR = b07_peakK(SH.round), thr = 180 / Math.PI / (B07_NEWT.m * B07_NEWT.v * B07_NEWT.v / B07_NEWT.F * 1000);
     verdict(t, 8.2, LM, 868, { from: pkS, to: pkR, unit: '°/mm', dec: 0, label: 'Sharpest turn on the shoulder', who: ['Sharp shoulder', 'Theseus'], size: 72, net: 'In the band', netWord: 'an edge to feel, a turn to follow', maxW: 540 });
-    source(t, 'Illustrative profiles (F21.12), drawn from their curvature. A 10 g fingertip at 0.5 m/s pressing 1.1 N turns no tighter than ' + fmtN(B07_NEWT.m * B07_NEWT.v * B07_NEWT.v / B07_NEWT.F * 1000, 1) + ' mm.', { t0: 2.0, maxW: 1260, x: RM, align: 'right' });
+    source(t, 'Illustrative profiles, drawn from their curvature. A 10 g fingertip at 0.5 m/s pressing 1.1 N turns no tighter than ' + fmtN(B07_NEWT.m * B07_NEWT.v * B07_NEWT.v / B07_NEWT.F * 1000, 1) + ' mm.', { t0: 2.0, maxW: 1260, x: RM, align: 'right' });
   }
 });
 
@@ -1430,7 +1448,10 @@ S({
       text('Fingers', tr[0] + 24, cy - 44, { role: 'label', size: 19, color: C.heroText, alpha: kt });
       text('Thumb rest', tr[0] + 24, cy + 58, { role: 'label', size: 19, color: C.heroText, alpha: kt });
     }
-    verdict(t, 6.8, LM + 560, 870, { from: R.fE, to: R.fB, unit: 'mm', dec: 2, label: 'Flex for the same added weight', better: 'lower', who: ['Spread evenly', 'On the low sides'], rivalCol: 'grey', size: 84, netWord: 'the same added weight', maxW: 700 });
+    verdict(t, 6.8, LM + 560, 870, { from: Math.floor(R.fE * 1000 + 1e-9) / 1000, to: Math.ceil(R.fB * 1000 - 1e-9) / 1000, unit: 'mm', dec: 3, label: 'Flex for the same added weight', better: 'lower', who: ['Spread evenly', 'On the low sides'], rivalCol: 'grey', size: 84, netWord: 'the same added weight', maxW: 700 });
+    /* the heat key (F19.3, KIT §2): the section is coloured by stress against the even section's own peak, linear (the slide is about
+       flex, not breaking), from the first squeeze */
+    heatKey(t, 2.8, 1530, 420, 240, { mode: 'peak' });
     source(t, 'Solved here in 2D: the shell cut across the hump, mirror-averaged, a 10 mm CF-PP strip; 10 N a side, 12 mm up; drawn ' + ex + '× real. The band adds 10 % weight.', { t0: 2.4 });
   }
 });

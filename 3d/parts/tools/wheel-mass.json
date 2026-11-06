@@ -1,0 +1,40 @@
+{
+ "note": "H3, F47.4: the lighter encoder (no nickel-silver frame, 0.4 mm walls) and the cored support, as drawn in 3d/parts/scrollwheel.js (volumes x densities: WHEEL_SPEC.densities); made by work/h3/tools/wheel_mass.mjs",
+ "encoder_g": 0.475,
+ "encoderParts_g": {
+  "housing": 0.166,
+  "cover": 0.114,
+  "fixings": 0.008,
+  "rotor": 0.028,
+  "magnet": 0.042,
+  "spring": 0.005,
+  "sensorBoard": 0.066,
+  "hallIC": 0.013,
+  "capacitor": 0.001,
+  "pins": 0.031,
+  "frame": 0
+ },
+ "support_g": 0.202,
+ "supportParts_g": {
+  "seat": 0.044,
+  "foot": 0.069,
+  "post": 0.087,
+  "tabs": 0.003
+ },
+ "wheel_g": 0.9,
+ "axle_g": 0.116,
+ "framedEncoder_g": 1.025,
+ "framedEncoderParts_g": {
+  "housing": 0.199,
+  "cover": 0.136,
+  "fixings": 0,
+  "rotor": 0.028,
+  "magnet": 0.042,
+  "spring": 0.005,
+  "sensorBoard": 0.066,
+  "hallIC": 0.013,
+  "capacitor": 0.001,
+  "pins": 0.031,
+  "frame": 0.503
+ }
+}

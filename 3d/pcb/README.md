@@ -1,5 +1,43 @@
 # Theseus main PCB (`3d/pcb/`)
 
+**0.6 mm, two layers (H3, 2026-11-06; F47.4, Brock: "0.6 mm, 5.63 g").** The board's path to its 5.6 g target (F42.2) is
+built: plan 5, both variants, now **0.6 mm finished, two copper layers, half-ounce outer copper** (`tools/stackup.py`, one
+place every tool reads: `T`, `LAYERS`, `CU`, `FAR`). Its top stays where it was in the mouse (5.03 mm over the pad: the
+posts, the switches, the wheel's axle 12 mm up and the lens's focus are set from it); the underside comes up 0.4 mm. What
+changed, and how it was checked:
+- **Re-routed on two layers.** What ran on the inner L3 (power and long runs) runs on the bottom, L4, which also carries the
+  underside's art (#63). The left channel (encoder, left switch, USB) leaves the PMIC's underside, runs down the board's left
+  edge, round and under the art's QR and up through one column of vias left of the wordmark; the bottom's routes keep out of
+  the QR, the wordmark and the fab block (`silk.art_zones`, `ART_KEEP`; the DRC checks it), so the art stays whole. The rest
+  is the autorouter's (`tools/autoroute.py`; the bottom costs 1.25× the top per mm, a via 3 mm), each variant with its own
+  fill-in (`routes_auto.py` A, `routes_auto_b.py` B: B's edge switch and right channel sit where A's runs). **DRC 0 (A and
+  B), every net routed.** New rules: no via in or touching an SMD pad (the four-layer routing had eight vias biting into
+  their pads; via-in-pad needs plugged, capped vias, so it is a question, not something the router does); other nets keep
+  0.12 mm off the plated mounting holes' gold rings.
+- **The ground is one piece** (`tools/gnd.py`: the build adds its repair vias; run on its own it is the check): with no L2 plane, the ground is the top pour, the bottom's
+  art pour and the vias between. The triangle mosaic's corners are joined to their lattice vertices by 0.25 mm bars (the
+  grooves still run nearly corner to corner), parts of the art too narrow for whole triangles are poured solid, a "repair"
+  via goes wherever a cut-off piece overlaps the main ground on the other face (4 on A, 5 on B), and copper tied to no GND
+  pad is removed (with the vias that only joined it). Result: one ground, no floating copper, on both variants.
+- **Two placement changes, both small:** the module's VDD decoupling (C10, C11 under its bottom pads) moved apart (C11
+  0.5 mm left, C10 0.3 mm right) to open one via site between them: on four layers the 1.8 V reached the module's B3 pad
+  through a via in the pad; on two layers B3, C10's and C11's VDD pads were walled in by GND pads. CC1's via moved 0.15 mm
+  off R3's pad. The encoder's footprint (ENCM) lost its two SMD feet pads (the lighter encoder has no frame to bend into
+  feet) and gained two copper-free holes for its moulded locating pegs.
+- **The stack-up shows:** the underside's fab line reads "2L 0.6mm ENIG" (was "4L 1.0mm ENIG"); X-ray shows the bottom's
+  routes in teal through the board (no L2 veil); `pcb-layout.json` carries `thickness`, `layers`, `copperOuter_um`, `stackup`.
+  The relief heights are drawn as for 1 oz (a 17.5 µm difference no view shows; drawn thinner, the gold pads sat level with
+  the mask and the 2D twins hid them); the masses use the real stack.
+- **The parts that ride on it:** the clip-on lens's optics hang from the board's top (`boardparts.js` `buildSnapLens`,
+  `boardThickness`, PixArt's Z unchanged: the dome 2.63 mm under the top); the lighter encoder and the cored support
+  (`3d/parts/scrollwheel.js`, see the parts README); the stand-in encoder in `pcb.glb` follows.
+- **Numbers:** 5.68 g with everything the 5.6 g target covers (table below): 0.08 g over the target, 0.05 g over the 5.63
+  the path predicted, because the encoder and support as drawn weigh 0.475 g and 0.202 g against the 0.45 and 0.16
+  estimated. Bending stiffness: 21.6 % of the 1.0 mm board's (t³); stretched in its own plane, 60 % (t).
+- **Not done here, said:** the USB pair is still 0.13 mm (see "Two layers: what it costs"); the battery's place is not
+  moved (balance.py, below: 0.47 mm back would put the centre of mass at z 0; the posts are still estimates).
+
+
 **Board plan 5 (H1, 2026-11-06; Brock's approved plan, F30).** One mirrored outline (W 19.03, waist 15.42, one notch depth
 3.61 mm for the side notches, the rear notch and the front trapezoid, every chamfer at 35.24°, every corner filleted at one
 tangent length, 1.0 mm), the rear notch as long as the side notches (F30.25), the wheel bay centred on x 0, chamfered and
@@ -18,6 +56,11 @@ battery's place for the 2D drawings and the balance: `BATTERY` in `tools/board.p
 behind H1's place, at the same height. The model now has the board's screws at its holes, the bare board at its core's
 centroid, the encoder and support inside the 5.6 g, the side switches (F44.2) and the shell's four boss posts, the last an
 estimate until the 3D shell has them; `--h1` gives H1's model; the battery lead in `components.py` follows `BATTERY`).
+H3 (F47.4): the board as built (0.6 mm, 2.25 g bare, the encoder 0.475 g, the support 0.202 g, all scaled to the 5.6 g
+target) puts the board's centre of mass at mouse (+0.39, 6.58, +24.11) and the mouse's at z +0.13 with the battery where
+`BATTERY` has it (centre z −26.98): z 0 wants it 0.47 mm further back (−27.45). Not moved: the shell's posts are still
+estimates (S2 is placing the real ones), and 0.13 mm is inside their uncertainty. `balance.json` now goes to `work/`
+(`--out=` to change it).
 The 2D drawings (deck `boardMM`, `keyPlanMM`, the kit's mouse) come from these tools: deck/tools/geo2d/board2d.py and
 key_parts.py. The text below is the v1 board's description (2026-11-04), kept for its method and honesty labels.
 
@@ -38,13 +81,15 @@ numbered callouts on what changed.
 | File | What |
 |---|---|
 | `pcb.js` | `buildPcb(opts) → THREE.Group` + state setters. Loads `pcb.glb` + `pcb-layout.json`. |
-| `pcb.glb` | All geometry, 141.8k triangles, 5.45 MB (1.78 MB with the deck's meshopt FILTER compression). Nodes carry `extras` (`kind`, `ref`, `layer`, `value`, `label`, `smd`) → `userData`. |
+| `pcb.glb` | All geometry, 145.9k triangles, 6.36 MB (2.06 MB with the deck's meshopt FILTER compression; H3, 0.6 mm two-layer build; `pcb-b.glb` variant B). Nodes carry `extras` (`kind`, `ref`, `layer`, `value`, `label`, `smd`) → `userData`. |
 | `pcb-layout.json` | Outline, antenna keep-out, component list (position, value, honesty label), every route and via, power-flow paths and nodes. Mouse frame (see below). |
 | `test.html` | Standalone viewer (URL params below), sets `window.__ready`. |
 | `shots/` | Finals at 2× (paper `#f7f6f2` and night `#0d0e0f`); `top_transparent.png` has an alpha background for slides. |
-| `tools/` | Python generators: `board.py` (photo trace), `parts.py` (footprints + pin maps), `routes.py` (hand routing), `layout.py` (build + DRC), `board_geo.py` (pours, vias, mask relief, trim, inner layers), `silk.py` (silkscreen, bottom art, QR), `components.py` (3D parts), `power_paths.py`, `geom.py` (mesh + GLB writer), `build_pcb.py` (writes the GLB + JSON), `mass.py` (mass estimate), `compare.py` (Sora vs Theseus image), `render_finals.sh` / `shot.mjs` / `shot.sh` (renders). |
+| `tools/` | Python generators: `board.py` (photo trace), `parts.py` (footprints + pin maps), `stackup.py` (thickness, layers, copper: H3), `routes.py` (hand routing), `autoroute.py` (grid router: `routes_auto.py` A, `routes_auto_b.py` B), `layout.py` (build + DRC), `gnd.py` (two-layer ground check), `board_geo.py` (pours, vias, mask relief, trim, inner layers), `silk.py` (silkscreen, bottom art, QR), `components.py` (3D parts), `power_paths.py`, `geom.py` (mesh + GLB writer), `build_pcb.py` (writes the GLB + JSON), `mass.py` (mass estimate), `compare.py` (Sora vs Theseus image), `render_finals.sh` / `shot.mjs` / `shot.sh` (renders). |
 
-Rebuild everything (deterministic, ~10 s): `cd 3d/pcb/tools && python3 build_pcb.py [--qr URL]`;
+Rebuild everything (deterministic, ~10 s a variant): `cd 3d/pcb/tools && python3 build_pcb.py [--qr URL]` (`PCB_VARIANT=B`,
+`PCB_OUT=<dir>`); re-route: `python3 autoroute.py` and `PCB_VARIANT=B python3 autoroute.py` (~5 min each); the ground:
+`python3 gnd.py` (one piece, no floating copper);
 DRC: `python3 layout.py` (currently **0 issues**); mass: `python3 mass.py`; comparison: `python3 compare.py paper|night`;
 finals: `bash tools/render_finals.sh` (skips existing files).
 
@@ -65,7 +110,8 @@ U.setPower(k, { mode, t });           // k 0..1, mode 'charge' | 'run' | 'both',
                                       //   the real copper: USB-C → nPM1300 → battery, or battery → bucks → module + sensor
 U.setReflow(k);                       // 0 finished board; 0<k<1 one heat front crosses nose → tail: matte paste ahead,
                                       //   wetted joints behind, parts self-align as it passes; 1 done
-U.setXray(k);                         // mask clears: L1 routing in copper, GND pour dimmed, L3 teal, L2 a faint veil,
+U.setXray(k);                         // mask clears: L1 routing in copper, GND pour dimmed, the bottom's routes teal (two
+                                      //   layers: no L2 veil; on four layers L3 teal, L2 a faint veil),
                                       //   via barrels; the bottom mask stays as a dark floor; antenna keep-out reads as void
 U.setPress('L' | 'R', k);             // GT01 plunger (parts model: real 0.35 mm travel + contact snap). 'L' = SW1 = +X
 U.parts['U1'], U.parts['SW1_MM2'] …   // every component node by refdes; U.layers[layer] lists them by explode layer
@@ -108,13 +154,15 @@ bench), so the user's left is on the right there.
   (8.94 mm), the 2.0 mm programming-pad pitch and the sensor pin pitch: **±1.5 %** [MEAS]. 38.64 × 57.52 mm
   (x ±19.32, z −5.02 … 52.5), 1863 mm² outline, 1532 mm² net of the wheel bay (14.4 × 17.5 mm), the square power-switch
   window (3.8 × 4.3 mm), sensor aperture, 4 mounting holes (2 × Ø2.9 plated rear, 2 × Ø2.2 front) and slots.
-- **Stack**: 4-layer FR4, **1.0 mm** finished (the Sora's laminate reads the same in the photo), ENIG.
-  L1 signals + GND pour, L2 solid GND, L3 power + long runs, L4 GND pour cut into the triangle mosaic.
-  Rules (own DRC): 0.12 mm clearance, 0.20 mm pour clearance, copper 0.65 mm from the plated edge, 0.45/0.2 mm tented
-  vias, antenna keep-out on all layers; connectivity checked across layers. 86 vias (stitching fence along edges and
-  bays, QFN thermal vias, module GND vias).
+- **Stack** (F47.4, H3): 2-layer FR4, **0.6 mm** finished, 0.5 oz (17.5 µm) outer copper, ENIG. L1 signals + GND pour;
+  L4 the bottom: its routes (the long runs and power crossings) and the GND pour cut into the triangle mosaic, its corners
+  joined. Rules (own DRC): 0.12 mm clearance, 0.20 mm pour clearance, copper 0.65 mm from the plated edge, 0.45/0.2 mm
+  tented vias, no via in a pad, antenna keep-out on all layers, the bottom's routes and vias out of the art's QR,
+  wordmark and fab block; connectivity checked across layers, the ground by gnd.py. 120 vias on A (50 routing; 70 GND:
+  the stitching fence along the edges and bays, QFN thermal vias, module GND vias, 4 repair). *Plan 5 as first built:
+  4-layer FR4, 1.0 mm (the Sora's laminate reads the same in the photo), L2 solid GND, L3 power + long runs, 1 oz outer.*
 - **Routing** (real pads to real pads): USB D+/D− routed as a pair through a flow-through ESD array to the module's
-  USB pins; CC1/CC2 to local 5.1 k Rd; VBUS bus → TVS + bulk caps → L3 spine → nPM1300; VBAT (0.5 mm) to the battery
+  USB pins; CC1/CC2 to local 5.1 k Rd; VBUS bus → TVS + bulk caps → the bottom's spine → nPM1300; VBAT (0.5 mm) to the battery
   JST + NTC; buck 1 (1.8 V) → module + sensor I/O; buck 2 → sensor core; TWI + interrupt PMIC ↔ module; sensor SPI +
   motion; switch NO/NC pairs (both throws, for debounce-free latching), encoder A/B, side buttons, power switch → PMIC
   SHPHLD (ship mode), SWD to test pads. Raised copper under glossy black mask with tented vias (relief modelled).
@@ -124,8 +172,30 @@ bench), so the user's left is on the right there.
   **ON ↑ / OFF ↓** at the power switch (#100), dashed RF keep-out with "ANT", "THESEUS MAIN PCB V1.0", L/R switch marks,
   a 4.3 mm QR "WEB APP" (#90). Bottom (#63, no components): triangle-mosaic GND pour with a duotone gradient (ENIG
   triangles from one corner, silk-outlined triangles from the other), "THESEUS", a 7.2 mm QR "SCAN FOR THE WEB SOFTWARE",
-  ON/OFF/POWER arrows at the window, rail test-pad labels, fab block (94V-0, 4L 1.0 mm ENIG). The QR encodes a
+  ON/OFF/POWER arrows at the window, rail test-pad labels, fab block (94V-0, 2L 0.6 mm ENIG; was 4L 1.0 mm). The QR encodes a
   **placeholder** (`https://theseus.example/software`): rebuild with `--qr <real URL>`.
+
+## Two layers: what it costs (H3, F47.4)
+
+- **Stiffness.** A plate bends with its thickness cubed (E t³ / 12): the 0.6 mm board keeps **21.6 %** of the 1.0 mm
+  board's bending stiffness, and **60 %** of its stiffness stretched in its own plane (t). It leans on the shell's posts and
+  ribs (b07_board's tie); where the posts land decides how far it sags under a click. No FEA behind either number.
+- **The USB pair.** USB 2.0 high speed wants 90 Ω ± 15 % differential. With no L2 plane, the pair's reference is the other
+  face's copper, 0.565 mm away. The pair is 0.13 mm wide and about 76 mm long (27 mm on the top, 47 to 49 on the bottom),
+  its gap 0.15 to 0.87 mm (median 0.27 on the bottom, 0.37 on the top): about 120 Ω single-ended and 150 to 215 Ω as a
+  pair (IPC-2141 microstrip, εr 4.3). About 90 Ω on this stack wants ~0.55 mm traces 0.15 mm apart over unbroken copper
+  on the other face, or a coplanar pair with the pour beside it. The drawing keeps 0.13 mm, representative: which way is
+  a question for Brock (the handoff's report, H3).
+- **The ground.** Two faces and their vias, not a plane: `gnd.py` checks it is one piece with no floating copper (A and
+  B). Return currents under the bottom's routes cross the top pour's cuts; the stitching fence and the repair vias are the
+  representative answer, not a simulated one.
+- **No via in a pad.** The four-layer routing had eight vias biting into SMD pads; now every via keeps 0.05 mm off them.
+  The one place that forced a change is the module's B3 (VDD 1.8 V): C10 and C11 moved apart (C11 0.5 mm left, C10 0.3 mm
+  right) for one via site between them, the 1.8 V reaching B3 on the top. A plugged, capped via in B3's pad would leave
+  them where they were; a question for Brock.
+- **The Mill-Max sockets.** The 3305's body is fixed (Ø1.473 × 2.667 below the flange): on the 0.6 mm board 0.4 mm more of
+  it stands below the underside; its tip stays where it was in the mouse (the board's top did not move). Whether the
+  press-fit holds in 0.6 mm of laminate is Mill-Max's to say; the model carries no minimum board thickness.
 
 ## Components (all on the top side: one reflow pass)
 
@@ -171,54 +241,60 @@ module and sensor I/O; a second rail for the sensor core) → the loads. Only tw
 
 ## Mass estimate (`tools/mass.py`)
 
-FR4 **1.85 g/cm³**, 1.0 mm finished board (0.895 mm dielectric), copper 8.96 g/cm³ (outer 35 µm, inner 17.5 µm, on the
-real copper areas), mask 2 × 20 µm. Component masses are typical values for the package class, not weighed parts.
+FR4 **1.85 g/cm³**, **0.6 mm** finished board (0.565 mm dielectric), copper 8.96 g/cm³ (two layers, 17.5 µm, on the real
+copper areas), mask 2 × 20 µm. Component masses are typical values for the package class, not weighed parts; the
+encoder and the support are as drawn (volumes × densities, `3d/parts/tools/wheel-mass.json`, H3).
 
-| Item (plan 5, H1 2026-11-06; v1 in brackets) | g |
+| Item (F47.4, H3 2026-11-06: 0.6 mm, 2 layers; plan 5 as first built, 1.0 mm and 4 layers, in brackets) | g |
 |---|---:|
-| Laminate (1703 mm² core × 0.895 mm) [1532 mm²: 2.54] | 2.82 |
-| Copper (L1 1233 mm², L2 1426, L3 117, L4 1069) + via barrels [0.88] | 0.98 |
-| Solder mask [0.09] | 0.10 |
-| **Bare board** [3.50] | **3.91** |
+| Laminate (1702 mm² core × 0.565 mm) [× 0.895 mm: 2.82] | 1.78 |
+| Copper (L1 1189 mm², L4 1091 mm², 17.5 µm) + via barrels [four layers: 0.98] | 0.37 |
+| Solder mask [0.10] | 0.10 |
+| **Bare board** [3.91] | **2.25** |
 | GT01 × 2 (~0.5 g each, typical micro switch) | 1.00 |
 | Raytac module (geometry estimate) | 0.45 |
 | USB-C receptacle | 0.40 |
 | Sensor (0.25) + clip-on lens (0.07) | 0.32 |
 | Mill-Max 3305 × 6 (0.03 g each from geometry; **Brock: 0.11 g each**) | 0.18 (0.66) |
-| JST × 2, slide, tact, PMIC, inductors, passives, ESD, TVS, solder | 0.40 |
-| **Board + on-board parts** [6.28] | **6.66** |
-| Wheel assembly: six-arm magnesium wheel 0.900 + POM axle 0.116 (parts spec) + magnetic encoder ~1.0 (hollow-shell estimate) + support 0.26 [2.42] | 2.28 |
-| **Total, comparable to the Sora V2's "PCB & wheel" 8.29 g** [≈ 8.7] | **≈ 8.9 (9.4 with Brock's Mill-Max figure), ± ~1 g** |
+| JST × 2, slide, tact, PMIC, inductors, passives, ESD, TVS, solder | 0.41 |
+| **Board + on-board parts** [6.66] | **5.01** |
+| Wheel assembly: six-arm magnesium wheel 0.900 + POM axle 0.116 (parts spec) + the lighter encoder 0.475 + the cored support 0.202 (as drawn) [encoder ~1.0, support 0.26: 2.28] | 1.69 |
+| **Total, comparable to the Sora V2's "PCB & wheel" 8.29 g** [≈ 8.9] | **6.70 (7.18 with Brock's Mill-Max figure)** |
 
-Leads and plugs are excluded (not in the Sora's 8.29 g either). The board is ~40 % of it; a 0.8 mm board would save
-≈ 0.5 g of laminate, and the wheel + encoder estimate is the least certain line.
+Leads and plugs are excluded (not in the Sora's 8.29 g either). The bare board is a third of it (2.25 of 6.70).
+Uncertain lines: the Mill-Max sockets (Brock: 0.11 g each, +0.48 g on the 0.03 g modelled), the GT01s (0.5 g each,
+typical, not weighed), the encoder and support (from their 3D models, not weighed parts).
 
 **One board.** Brock: "we don't have a front and back pcb, it'll be a single ~5.6g pcb." Every scene has exactly one
 board: `pcb.glb` (one outline, top-side assembly), the lattice's single PCB stand-in, none in the shell.
 
-**5.6 g is the target (F42.2, Brock: "Keep 5.6 g as target").** The film stays at 29.31 g and calls the board's figure a
-target; the board gets built to it. It covers the board with everything on it, the wheel's encoder and support included
-("thinner laminate, fewer layers, a lighter encoder"). The model stays as built, 1.0 mm and 4 layers, until the next board
-redesign (F21.11: "keep it as 1mm for now"). `mass.py` prints the path and writes it to `work/mass.json` (`target`):
+**5.6 g is the target (F42.2, Brock: "Keep 5.6 g as target"); the board is built on its path (F47.4, Brock: "0.6 mm,
+5.63 g").** The film stays at 29.31 g and calls the board's figure a target. It covers the board with everything on it,
+the wheel's encoder and support included. The model is the path's end, as built: 0.6 mm, two layers, half-ounce outer
+copper, the lighter encoder, the cored support (F21.11's "keep it as 1mm for now" held until F47.4). `mass.py` prints the
+path and writes it to `work/mass.json` (`target`: each step, the stiffness, the uncertain lines):
 
 | | g | total (g) |
 |---|---:|---:|
+| Plan 5 as first built: 1.0 mm, 4 layers (1 oz outer, 0.5 oz inner), board + parts 6.66, encoder ~1.0 (hollow-shell estimate), support 0.26 | | **7.92** (2.32 over) |
+| 1. Laminate 1.0 → 0.8 mm finished (1702 mm² × 0.2 mm × 1.85 g/cm³) | −0.63 | 7.29 |
+| 2. 4 → 2 layers (no GND plane, no inner power layer; their copper becomes laminate at the same thickness) | −0.13 | 7.16 |
+| 3. The lighter encoder as drawn, 0.475 g: no nickel-silver frame, 0.4 mm housings, the Hall IC on its own small board (estimated −0.55, to ~0.45 g, with the IC on the main board) | −0.53 | 6.63 |
+| 4. The cored support as drawn, 0.202 g: a tube post, a slotted foot, the seat solid (estimated −0.10, to ~0.16 g) | −0.06 | 6.58 |
+| 5. Laminate 0.8 → 0.6 mm | −0.63 | 5.94 |
+| 6. Outer copper 1 oz → 0.5 oz (35 → 17.5 µm) | −0.25 | 5.69 |
+| 7. Re-routed on two layers, as built (the bottom's routes, the art pour's joints, the repair vias) | −0.01 | **5.68** |
 | **Target** | | **5.60** |
-| Estimate now: board + on-board parts (plan 5) | | 6.66 |
-| Estimate now: + the wheel's encoder (~1.0, hollow-shell estimate) and support (0.26) | | **7.92** (2.32 over) |
-| 1. Laminate 1.0 → 0.8 mm finished (1703 mm² × 0.2 mm × 1.85 g/cm³) | −0.63 | 7.29 |
-| 2. 4 → 2 layers (the GND plane into the bottom pour; its 35 µm become laminate at the same thickness) | −0.13 | 7.16 |
-| 3. A lighter encoder (~0.45 g): no nickel-silver frame (49.5 mm³ × 8.7 g/cm³ = 0.43 g, nearly half of today's ~1.0 g), 0.4 mm housings, the Hall IC on the board; the clear top housing stays | −0.55 | 6.61 |
-| 4. A cored support (162 mm³ of POM solid, to ~60 %: ~0.16 g) | −0.10 | 6.51 |
-| 5. Laminate 0.8 → 0.6 mm | −0.63 | 5.88 |
-| 6. Outer copper 1 oz → 0.5 oz | −0.25 | 5.63 |
 
-What it says: the thickness is the big lever (0.63 g per 0.2 mm); fewer layers barely help by weight at the same thickness;
-the encoder's metal frame is the heaviest single part to lose. The cost: stiffness goes with the cube of the thickness
-(0.8 mm keeps 51 %, 0.6 mm 22 % of the 1.0 mm board's), so a 0.6 mm board leans on the shell's posts and the ribs
-(b07_board's tie) and the Mill-Max sockets need a thin-board length. Uncertain lines: the Mill-Max sockets (Brock: 0.11 g
-each, +0.48 g on the 0.03 g modelled), the GT01s (0.5 g each, typical, not weighed), the encoder (1.49 g solid, ~1.0 as
-0.5 mm shells).
+**It lands at 5.68 g, not 5.63:** 0.08 g over the target, 0.05 g over Brock's figure. Steps 1, 2, 5 and 6 came in as
+estimated; the encoder and the support, drawn, weigh 0.475 and 0.202 g against the 0.45 and 0.16 estimated (the Hall IC
+keeps its small board, 0.066 g: on the main board it would sit ~10 mm from the magnet; the support's seat stays solid).
+The 0.08 g left is a question for Brock (the handoff's report, H3), not something the model hides.
+
+What it says: the thickness is the big lever (0.63 g per 0.2 mm); fewer layers barely help by weight at the same
+thickness; the encoder's frame was the heaviest single part to lose (0.50 g as drawn). The cost: **bending stiffness 21.6 %**
+of the 1.0 mm board's (in-plane 60 %), the USB pair's impedance, and the Mill-Max sockets' grip (see "Two layers: what it
+costs").
 
 ## Shots (`shots/`, 2×)
 

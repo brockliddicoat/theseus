@@ -6,9 +6,10 @@ from shapely.geometry import Polygon, Point, LineString, box, MultiPolygon
 from shapely.ops import unary_union
 from shapely import affinity
 from geom import polys, hershey_text, outline_text, qr_modules, matrix_polys
-from layout import pad_poly, ANT_KEEPOUT, EDGE_BAND
+from layout import pad_poly, ANT_KEEPOUT, EDGE_BAND, POUR_CLR
 from board import wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, WIN, VARIANT, WX
 from parts import GND, ZS
+from stackup import T as BOARD_T, LAYERS
 
 LW = 0.10          # silk line width
 # fillets on the underside triangles (F26.6). Each triangle is rounded on its own (rounded_inset), so the mosaic keeps
@@ -251,8 +252,45 @@ def tri_lattice(region, s=2.45, origin=(0.0, -3.2)):
     return cells
 
 
+QR_C, QR_S = (-11.0, 9.8), 7.2           # the underside's QR: centre (layout) and size
+ART_KEEP = ('qr', 'word', 'fab')         # zones the bottom's routes and vias keep out of, so the art stays whole (layout.py)
+JOINT_W, JOINT_L = 0.25, 0.70            # two layers: each mosaic triangle's corner joined to its lattice vertex by a bar this
+                                         # wide reaching this far from the vertex (its rounded corner starts 0.46 from it)
+NARROW = 0.9                             # two layers: parts of the art's region narrower than 2 x this are poured solid
+
+
+def art_zones():
+    """the underside's reserved zones (solid pour, no mosaic): QR, wordmark, fab block, the lens, the switch window, the
+    rail pads' labels (plan 5's RES). Layout frame."""
+    z = dict(qr=rrect(QR_C[0], QR_C[1] - 0.5, QR_S + 1.2, QR_S + 2.2, 0.4),
+             word=rrect(0.0, 2.6, 15.0, 2.8, 0.4),
+             fab=rrect(0.0, -0.05, 8.0, 2.1, 0.4),
+             lens=rrect(0.0, ZS, 10.6, 13.6, 0.8),
+             sw=rrect(WIN['c'][0], WIN['c'][1], WIN['w'] + 4.6, WIN['h'] + 4.6, 0.4) if VARIANT != 'B' else rrect(WX - 2.6, ZS, 4.6, 8.6, 0.4),
+             rail=rrect(14.2, 13.6, 7.8, 2.6, 0.4))
+    return z
+
+
+def lattice_joints(cells, region):
+    """two layers (H3): the mosaic is the bottom's ground pour, so its triangles can't be islands. Every corner of a mosaic
+    cell is joined to its lattice vertex by a short bar along the corner's bisector (JOINT_W wide); the six bars at a vertex
+    meet, so every triangle connects to its neighbours and the grooves still run nearly corner to corner."""
+    bars = []
+    for poly, r, c in cells:
+        if not poly.intersects(region):
+            continue
+        cen = poly.centroid
+        for vx, vz in list(poly.exterior.coords)[:-1]:
+            dx, dz = cen.x - vx, cen.y - vz
+            d = math.hypot(dx, dz)
+            bars.append(LineString([(vx, vz), (vx + dx / d * JOINT_L, vz + dz / d * JOINT_L)]).buffer(JOINT_W / 2, cap_style=1))
+    return unary_union(bars)
+
+
 def build_bottom(L, B, qr_url, seed=11):
-    """bottom side: GND pour cut into a triangle mosaic (relief), sparse ENIG gold triangles, silk accents, QR, text."""
+    """bottom side: GND pour cut into a triangle mosaic (relief), sparse ENIG gold triangles, silk accents, QR, text.
+    Two layers (F47.4, H3): the bottom also carries routes (the far layer's, B['far_nongnd']): the pour keeps POUR_CLR off
+    them, and the mosaic's triangles are joined at their corners so the pour is one ground."""
     rnd = random.Random(seed)
     outline = L['outline']
     pads = L['pads']
@@ -266,15 +304,11 @@ def build_bottom(L, B, qr_url, seed=11):
             region = region.difference(Point(h['x'], h['z']).buffer(h['d'] / 2 + 0.75 + 0.3))
     nongnd_via = unary_union([Point(v['x'], v['z']).buffer(0.225) for v in B['vias'] if v['net'] != GND])
     region = region.difference(nongnd_via.buffer(0.2))
+    if LAYERS == 2 and not B.get('far_nongnd', Polygon()).is_empty:
+        region = region.difference(B['far_nongnd'].buffer(POUR_CLR))
     # reserved (solid pour, no mosaic): QR, wordmark, fab block, lens, switch window, the rail pads' labels (plan 5's RES)
-    qr_c = (-11.0, 9.8); qr_s = 7.2
-    qr_zone = rrect(qr_c[0], qr_c[1] - 0.5, qr_s + 1.2, qr_s + 2.2, 0.4)
-    word_zone = rrect(0.0, 2.6, 15.0, 2.8, 0.4)
-    fab_zone = rrect(0.0, -0.05, 8.0, 2.1, 0.4)
-    lens_zone = rrect(0.0, ZS, 10.6, 13.6, 0.8)
-    sw_zone = rrect(WIN['c'][0], WIN['c'][1], WIN['w'] + 4.6, WIN['h'] + 4.6, 0.4) if VARIANT != 'B' else rrect(WX - 2.6, ZS, 4.6, 8.6, 0.4)
-    rail_zone = rrect(14.2, 13.6, 7.8, 2.6, 0.4)
-    reserved = unary_union([qr_zone, word_zone, lens_zone, sw_zone, fab_zone, rail_zone])
+    qr_c = QR_C; qr_s = QR_S
+    reserved = unary_union(list(art_zones().values()))
     cells = tri_lattice(region)
     edges = []
     gold, silk_tri = [], []
@@ -299,10 +333,18 @@ def build_bottom(L, B, qr_url, seed=11):
             inner = rounded_inset(poly, 0.45, TRI_FILLET_SILK)
             if not inner.is_empty:
                 silk_tri.append(inner.exterior.buffer(0.05, cap_style=2, join_style=2)); kinds[id(poly)] = 's'
+    if not B.get('drop_bottom', Polygon()).is_empty:
+        gold = [g for g in gold if not B['drop_bottom'].buffer(0.02).contains(g)]
     # the copper mosaic: every cell inset by half the 0.26 mm gap and its corners rounded on their own (F26.6); cells that
     # touch a reserved zone stay solid there, as before; the region's own edges cut the partial triangles, nothing else
     mos = [rounded_inset(poly, 0.13, TRI_FILLET) if not poly.intersects(reserved) else poly for poly, r, c in cells if poly.intersects(region)]
-    l4 = region.intersection(unary_union(mos + [reserved]))
+    joints = lattice_joints(cells, region) if LAYERS == 2 else Polygon()
+    # two layers: where the region is too narrow for whole triangles (a strip between the bottom's routes, round a via, a neck
+    # between holes) it is filled solid: the mosaic there would be fragments, and the ground needs the passage
+    narrow = region.difference(region.buffer(-NARROW, join_style=2).buffer(NARROW, join_style=2)) if LAYERS == 2 else Polygon()
+    l4 = region.intersection(unary_union(mos + [reserved, joints, narrow]))
+    if not B.get('drop_bottom', Polygon()).is_empty:
+        l4 = l4.difference(B['drop_bottom'].buffer(0.02))        # copper tied to no GND pad (board_geo, gnd.py): removed
     # GND ring copper around the THT pads stays as pads
     gold = unary_union(gold)
     # --- bottom silk (reads correctly when viewed from below -> mirrored in x)
@@ -323,7 +365,8 @@ def build_bottom(L, B, qr_url, seed=11):
     lab.append(hershey_text('POWER', 0.5, sq[0] - 1.6, (sq[1] + sq[3]) / 2, w=0.085, rot=90, mirror=True))
     # fab block, under the wordmark
     lab.append(hershey_text('94V-0  2611', 0.5, 0.0, 0.45, w=0.085, mirror=True))
-    lab.append(hershey_text('4L  1.0mm  ENIG', 0.45, 0.0, -0.5, w=0.08, mirror=True))
+    # the stack-up as built (F47.4: '2L  0.6mm  ENIG'; plan 5 as first built read '4L  1.0mm  ENIG')
+    lab.append(hershey_text('%dL  %.1fmm  ENIG' % (LAYERS, BOARD_T), 0.45, 0.0, -0.5, w=0.08, mirror=True))
     # the rail test pads' names, over each pad (plan 5: the row at z 13.0)
     for ref, t_ in (('TP10', '1V8'), ('TP11', 'GND'), ('TP12', 'GND'), ('TP13', 'SNS')):
         c = next(c for c, f in L['comps'] if c['ref'] == ref)
@@ -345,4 +388,4 @@ def build_bottom(L, B, qr_url, seed=11):
                cells=[(poly.centroid.x, poly.centroid.y, 1 if (c % 2 == 0) else 0, kinds.get(id(poly), 'm'))
                       for poly, r, c in cells if poly.intersects(region) and not poly.intersects(reserved)],
                reserved=reserved)
-    return dict(l4=l4, gold=gold, silk=silk, tht_rings=tht_rings, region=region, art=art)
+    return dict(l4=l4, gold=gold, silk=silk, tht_rings=tht_rings, region=region, art=art, joints=joints)

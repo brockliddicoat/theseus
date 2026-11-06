@@ -31,14 +31,11 @@ Object.assign(SRC, {
   b05Ucsb: { t: 'UC Santa Barbara lecture demonstration 32.30, bending wood beams: stiffness goes with the cube of the thickness (boards 8.3 and 14.6 mm thick)', u: 'https://web.physics.ucsb.edu/~lecturedemonstrations/Composer/Pages/32.30.html' },
   b05Strip: { t: 'This deck: beam theory for a strip on two supports pressed in the middle, sag = P L³ / (48 E I), stress = P L t / (8 I); a 60 mm span, a 10 mm wide strip; moduli and strengths from the datasheets named (PP-C-20A and FR4 at break, ABS and PC at yield, the metals at their ultimate strength)', n: 'derived, beam theory' },
   b05RtGpx2: { t: 'RTINGS, Logitech G Pro X Superlight 2 review (2023-10-06): measured "Default Weight" 59.4 g', u: 'https://www.rtings.com/mouse/reviews/logitech/g-pro-x-superlight-2' },
-  b05AbsFlex: { t: 'Denka ABS GR-2000 datasheet (typical): flexural strength 82 MPa (ISO 178); tensile stress at yield 50 MPa', u: 'https://www.denka.co.kr/pdf/DENKA-ABS_grade_English.pdf' },
-  b05PcFlex: { t: 'Covestro Makrolon 2405, CAMPUS datasheet: flexural strength 97 MPa (ISO 178); tensile yield stress 65 MPa', u: 'https://www.materialdatacenter.com/ms/en/Makrolon/Covestro+Deutschland+AG/Makrolon%C2%AE+2405/986598f8/410' },
-  b05Fr4Flex: { t: 'The Gund Company, NEMA FR4 (typical): flexural strength 80 ksi (552 MPa) lengthwise, 70 ksi (483 MPa) crosswise; tensile 430 MPa lengthwise', u: 'https://thegundcompany.com/wp-content/uploads/2024/03/NEMA-FR4-Glass-Epoxy-Laminate-by-The-Gund-Co.pdf' },
   b05Won: { t: 'Won, Johnson, Punnett & Dennerlein 2009, J Electromyogr Kinesiol 19:428-436, Table 3 (five computer tasks, a force-sensing mouse, 17 people): mean side force 0.9 to 1.0 N, mean peak side force 2.0 to 2.1 N', u: 'https://stacks.cdc.gov/view/cdc/187303/cdc_187303_DS1.pdf' },
   b05RtSora: { t: 'RTINGS, Ninjutso Sora V2 review (2024-05-24): measured "Default Weight" 40.9 g', u: 'https://www.rtings.com/mouse/reviews/ninjutso/sora-v2' },
   b05Peri: { t: 'Periview, Finalmouse ULX Competition review: "The sides are solid, which feels like a significant improvement over the more flexible, creaky bodies of previous models"', u: 'https://periview.gg/?p=3024' },
   b05Card: { t: 'ISO/IEC 7810 ID-1: a payment card is 0.76 mm thick (the kit\'s SCALE.card)', u: 'https://www.iso.org/standard/70483.html' },
-  b05Fill: { t: 'This deck: how far the melt gets before its frozen skin closes the wall, reach ∝ (thickness ÷ floor)², the freeze time growing with thickness squared (MIT 2.008), set so each material just fills a shell at its own floor (Protolabs, Design News)', n: 'derived, this model' }
+  b05Fill: { t: 'This deck: walls of flow, the farthest edge from the gate under the crown (about 105 mm along the shell, measured on the 3D shell mesh by the lattice study) divided by the wall, against polypropylene\'s flow ratio of 150 to 280 (MIT 2.008); magnesium is held to its own minimum walls (Design News), no flow ratio for it being published in the guides searched (PlasticsToday, Phillips Medisize, Chicago White Metal)', n: 'derived, this model' },
 });
 
 /* ---------- the materials (datasheets in 10-d-shell.js's SRC: shlPyrofil, shlAbs, shlPc, shlMg, shlAl, shlFr4) ----------
@@ -48,12 +45,15 @@ Object.assign(SRC, {
    MPa lengthwise, NEMA; the metals have no separate bending figure, so their ultimate, the generous one, G5); y: a metal's
    yield, where it bends for good; rho in g/cm³. Every strip on these slides is bent, so its break is fb. */
 const B05_MAT = {
-  pp: { key: 'pp', name: 'PP-C-20A', long: 'Carbon PP, PP-C-20A', E: 13500, s: 120, fb: 207, rho: 1.01, src: 'shlPyrofil', hero: true },
-  abs: { key: 'abs', name: 'ABS', long: 'ABS', E: 2550, s: 50, fb: 82, rho: 1.05, src: 'shlAbs' },
+  /* one value per material (KIT §4, K 11:01): the four SIM_MAT carries read it; PC and aluminium aren't in SIM_MAT, so they stay
+     here. FR4 is ranked as a material, so it takes its higher, along-the-weave figures (EL, fbL: the ones that don't flatter
+     carbon PP; b05_specific says which) */
+  pp: { key: 'pp', name: 'PP-C-20A', long: 'Carbon PP, PP-C-20A', E: SIM_MAT.ppcf.E, s: SIM_MAT.ppcf.ft, fb: SIM_MAT.ppcf.fb, rho: matOf('ppcf').rho, src: SIM_MAT.ppcf.src, hero: true },
+  abs: { key: 'abs', name: 'ABS', long: 'ABS', E: SIM_MAT.abs.E, s: SIM_MAT.abs.ft, fb: SIM_MAT.abs.fb, rho: matOf('abs').rho, src: SIM_MAT.abs.src },
   pc: { key: 'pc', name: 'PC', long: 'Polycarbonate', E: 2350, s: 65, fb: 97, rho: 1.20, src: 'shlPc' },
-  mg: { key: 'mg', y: 150, name: 'Magnesium', long: 'Magnesium AZ91D', E: 44800, s: 230, fb: 230, rho: 1.81, src: 'shlMg', metal: true },
+  mg: { key: 'mg', y: SIM_MAT.mg.fy, name: 'Magnesium', long: 'Magnesium AZ91D', E: SIM_MAT.mg.E, s: SIM_MAT.mg.ft, fb: SIM_MAT.mg.fb, rho: matOf('mg').rho, src: SIM_MAT.mg.src, metal: true },
   al: { key: 'al', y: 276, name: 'Aluminium', long: 'Aluminium 6061', E: 68900, s: 310, fb: 310, rho: 2.70, src: 'shlAl', metal: true },
-  fr4: { key: 'fr4', name: 'FR4', long: 'FR4 (the board)', E: 20000, s: 430, fb: 552, rho: 1.85, src: 'shlFr4', board: true }
+  fr4: { key: 'fr4', name: 'FR4', long: 'FR4 (the board)', E: SIM_MAT.fr4.EL, s: SIM_MAT.fr4.ft, fb: SIM_MAT.fr4.fbL, rho: matOf('fr4').rho, src: SIM_MAT.fr4.src, board: true }
 };
 /* the test strip: a 60 mm span, 10 mm wide, on two supports, pressed in the middle */
 const B05_STRIP = { L: 60, b: 10 };
@@ -95,14 +95,23 @@ const B05_SP = (() => {
   };
 })();
 
-/* ---------- b05_wall: the same weight per area of wall (10 g per 100 cm²) in carbon PP and in magnesium ---------- */
+/* ---------- b05_wall: the same weight per area of wall (10 g per 100 cm²) in carbon PP and in magnesium ----------
+   A wall's limit is its flow length, not a fixed thickness (FILM F42, decided ~12:10): polypropylene runs 150 to 280 times its
+   thickness (MIT 2.008, b05Mit); the melt goes in at the gate under the crown (F19.1) and the farthest edge is about 105 mm
+   along the shell (L1, computed on the 3D shell mesh). Magnesium has no flow ratio in any source found (PlasticsToday's and
+   Phillips Medisize's thixomolding guides, CWM's die-casting guide: none), so it is held only to its own minimum walls (Design
+   News: 0.7 mm typical, 0.5 mm only on small parts) and nothing is claimed about its reach. Protolabs' 0.889 mm and 0.635 mm
+   are rules of thumb for a part of unknown flow length, not a floor. Theseus's own skin, 0.60 mm, is a target to be proven. */
+const B05_FLOW = { L: 105, lo: 150, hi: 280, skin: 0.60 };
 const B05_W = (() => {
   const gpa = 10, wall = rho => gpa / (rho * 100) * 10;      /* mm: g per 100 cm² ÷ (g/cm³ × 100 cm²) × 10 mm/cm */
-  const pp = { m: B05_MAT.pp, t: wall(B05_MAT.pp.rho), floor: 0.889, floorBy: 'Protolabs' };
-  const mg = { m: B05_MAT.mg, t: wall(B05_MAT.mg.rho), floor: 0.70, floorBy: 'Design News', small: 0.5 };
-  for (const w of [pp, mg]) w.reach = Math.min(1, Math.pow(w.t / w.floor, 2));       /* b05Fill: reach ∝ (t / floor)² */
-  mg.atFloor = B05_MAT.mg.rho * mg.floor * 100 / 10;                                  /* g per 100 cm² at its floor */
-  return { gpa, pp, mg, kT: pp.t / mg.t, mgMore: mg.atFloor / gpa - 1 };
+  const pp = { m: B05_MAT.pp, t: wall(B05_MAT.pp.rho) };
+  const mg = { m: B05_MAT.mg, t: wall(B05_MAT.mg.rho), typ: 0.70, small: 0.5 };
+  pp.walls = B05_FLOW.L / pp.t;                 /* the flow length in walls: 106, under PP's 150 */
+  pp.reach = B05_FLOW.lo * pp.t / B05_FLOW.L;   /* the melt's reach at PP's cautious end, as a share of the 105 mm: 1.41 */
+  mg.walls = B05_FLOW.L / mg.t;
+  mg.atTyp = B05_MAT.mg.rho * mg.typ * 100 / 10;                                      /* g per 100 cm² at its usual wall */
+  return { gpa, pp, mg, kT: pp.t / mg.t, mgMore: mg.atTyp / gpa - 1, skinWalls: B05_FLOW.L / B05_FLOW.skin };
 })();
 
 /* ---------- b05_cubed: the mold's ±0.076 mm (Protolabs) on a thin wall and a thicker one ---------- */
@@ -332,8 +341,8 @@ function b05_fr() {
   const sized = simSolve('b05-st-sized', () => sizedOf(hs));
   /* each element's use of its strength at the press (a rigid joint end reads its rib's middle), its peak, its mean */
   const read = (r, xo) => {
-    const els = r.model.els, raw = els.map((el, e) => { const A = el.w * el.h, I = el.w * el.h ** 3 / 12; return Math.abs(r.N[e]) / A / FT + (el.truss ? 0 : Math.max(Math.abs(r.M1[e]), Math.abs(r.M2[e])) * el.h / 2 / I / FB); });
-    const use = els.map((el, e) => el.rigid ? raw[el.flex] : raw[e]), uMax = Math.max(...use);
+    /* F41.1's rule, shared (07-sim.js feUse, K 11:01): axial over FT plus bending over FB, a rigid joint zone reading its rib */
+    const els = r.model.els, use = feUse(r, FT, FB), uMax = Math.max(...use);
     let s0 = 0, w = 0; els.forEach((el, e) => { if (el.rigid) return; const A = el.w * el.h, I = el.w * el.h ** 3 / 12, ax = Math.abs(r.N[e]) / A / FT, gm = r.mass[e] / 256;
       for (let i = 0; i < 16; i++) { const xi = (i + 0.5) / 16, Mx = el.truss ? 0 : r.M1[e] * (1 - xi) + r.M2[e] * xi; for (let j = 0; j < 16; j++) { const y = el.h * ((j + 0.5) / 16 - 0.5); s0 += (ax + Math.abs(Mx * y / I) / FB) * gm; w += gm; } } });
     const info = { use, uMax, crack: P0 / uMax, flex: -r.d[r.model.mid * 3 + 1], g: grams(r), mean: s0 / w, xo, heat: Object.assign({}, r, { sig: use.map(u => u * FT) }) };
@@ -369,6 +378,9 @@ function b05_drawTri(r, F, P, s, t, o = {}) {
   if (o.flow) feFlow(r, Q, t, { scale: o.sc || 10, load: k, alpha: a * o.flow * clamp(F / B.P0) });
   if (o.supports !== false) { feSupport(P([-30, 0]), 'pin', { alpha: a }); feSupport(P([30, 0]), 'roll', { alpha: a }); }
 }
+/** a value rounded never in Theseus's favour: a rival's (rival true) toward its own advantage, Theseus's against it; better is
+   'lower' or 'higher'. b05_rv(4.7587, 2, true, 'lower') → '4.75'; b05_rv(13.333, 1, false, 'higher') → '13.3' */
+function b05_rv(v, d, rival, better) { const k = Math.pow(10, d), down = (better === 'lower') === rival; return fmtN((down ? Math.floor(v * k + 1e-9) : Math.ceil(v * k - 1e-9)) / k, d); }
 /** a number rounded toward zero (DESIGN §9), as text: b05_dn(89.6) → '89' */
 function b05_dn(v, d = 0) { const k = Math.pow(10, d); return fmtN(Math.floor(v * k + 1e-6) / k, d); }
 /** a slide whose `answers` are written from the live model (review R2-b05-1): pass `answers: (B, Cl) => [[clause, what
@@ -380,13 +392,7 @@ function b05_live(o) {
   Object.defineProperty(o, 'answers', { enumerable: true, configurable: true, get: () => { try { return rows(b05_fr(), b05_cells()); } catch (e) { return [['(answers)', 'The model behind these answers could not be read: ' + e.message]]; } } });
   return o;
 }
-/** the heat key (F19.3, review M 09:15): a short ramp from unused to breaking, squared as the drawings are */
-function b05_heatKey(x, y, w, o = {}) {
-  const a = o.alpha == null ? 1 : o.alpha; if (a <= 0.003) return;
-  for (let i = 0; i < 40; i++) rr(x + w * i / 40, y, w / 40 + 0.6, 10, 0, heatCol(Math.pow(i / 39, SHL_GAMMA)), null, 0, a);
-  text('0', x, y + 32, { role: 'tick', size: 18, color: C.mute, alpha: a }); text('Breaks', x + w, y + 32, { role: 'tick', size: 18, color: C.red, align: 'right', alpha: a });
-  text(o.label || 'Colour: share of its strength used (squared)', x, y - 10, { role: 'small', size: 19, weight: 600, color: C.faint, sentence: false, alpha: a });
-}
+/* the heat key: the kit's heatKey (06-motion.js, K 11:16) replaces b05's own ramp, which no slide drew */
 
 /* ============================== b05_card: the chapter card (the kit's chapterCard2: the compromise, the ledger, the ideas) ============================== */
 S({
@@ -410,7 +416,7 @@ S({
    baseline, #5; Finalmouse benchmarks against it): it sags 4.2 mm, drawn to scale. The same strip in PP-C-20A, the same finger
    and press: 0.80 mm. The weights (his note): 0.63 g and 0.61 g, and the carbon PP strip as stiff as the ABS one: 0.57 mm,
    0.35 g. Strength, the strip bent until it gives: on pull-test strengths ABS gives at 5.6 N, carbon PP holds to 13.3 N; on their
-   bending strengths (ABS 82 MPa, PP-C-20A 207, F41.1) 9.1 and 23.0 N (review R2-b05-3). Beam theory (b05Strip). */
+   bending strengths (ABS 82 MPa, PP-C-20A 207, F41.1) 9.2 (9.11 rounded up: a rival's strength) and 23.0 N (review R2-b05-3). Beam theory (b05Strip). */
 const B05_MAT_T = { lift: [0.3, 1.2], press: [1.5, 2.4], swap: [4.0, 4.6], kg: 5.6, v: 6.6, thin: 7.8 };
 S({
   id: 'b05_material', ch: 'shell', theme: 'paper', title: 'Carbon-filled polypropylene', settle: 10.5, ideas: [5],
@@ -421,12 +427,12 @@ S({
     ['"explain that this is just on a flat plane"', 'A strip is lifted out of the simplified mouse\'s wall and laid flat on two supports, and the slide says so: "A strip of the wall, laid flat: the material alone, no curve helping" (the curve\'s gain is b06_arch).'],
     ['"scale the force to what a mouse would experience from a hand and note that"', '2 N, and the slide says what that is: about the hardest grip measured at a desk (Won 2009: peaks of about 2 N).'],
     ['"do that more throughout the presentation"', 'Every b05 slide with a force says its human scale: 2 N here and on b05_specific, 10 N (a hard press, a 1 kg bag of sugar) on b05_nopick, and the presses that break things in bags of sugar.'],
-    ['"add the projected weights of these 2 beams"', 'Under each strip, its weight: ABS 0.63 g, carbon PP 0.61 g; then the carbon PP strip as stiff as the ABS one, drawn beside it: 0.57 mm thick, 0.35 g.']
+    ['"add the projected weights of these 2 beams"', 'Under each strip, its weight: ABS 0.63 g, carbon PP 0.61 g; then the carbon PP strip as stiff as the ABS one, drawn beside it: 0.58 mm thick, 0.35 g (0.574 mm solved, rounded up: never in Theseus\'s favour).']
   ],
   draw: t => {
     const T = B05_MAT_T, Mt = B05_M, s = 10, x0 = 520, y0 = 560;
     header(t, 'Carbon-filled polypropylene');
-    captions(t, [[0.3, 'A strip of the wall, laid flat: the material alone, no curve helping.'], [1.5, 'ABS, the common mouse plastic, under a 2 N press: it sags ' + fmtN(Mt.sagA, 1) + ' mm.'], [4.0, 'The same strip in carbon-filled PP, the same press: ' + fmtN(Mt.sagP, 2) + ' mm, and it weighs less.'], [7.8, 'Or make it as stiff as the ABS strip: ' + fmtN(Mt.tMatch, 2) + ' mm thick, ' + fmtN(Mt.gMatch, 2) + ' g.']]);
+    captions(t, [[0.3, 'A strip of the wall, laid flat: the material alone, no curve helping.'], [1.5, 'ABS, the common mouse plastic, under a 2 N press: it sags ' + fmtN(Mt.sagA, 1) + ' mm.'], [4.0, 'The same strip in carbon-filled PP, the same press: ' + fmtN(Mt.sagP, 2) + ' mm, and it weighs less.'], [7.8, 'Or make it as stiff as the ABS strip: ' + fmtN(Math.ceil(Mt.tMatch * 100 - 1e-9) / 100, 2) + ' mm thick, ' + fmtN(Mt.gMatch, 2) + ' g.']]);
     /* where the strip comes from: the simplified mouse, its shell lit (M4), the strip lifting out of it */
     const kl = ep(t, T.lift[0], T.lift[1], E.io3), m = mouseFit([LM, 280, 340, 220], 'left', { hi: ['shell'], col: 'ink', lit: 1 - kl * 0.6 });
     text('A strip of the wall, laid flat', LM, 540, { role: 'label', size: 20, color: C.mute });
@@ -435,16 +441,19 @@ S({
     const sag = lerp(b05_sag(P, B05_MAT.abs.E, Mt.t), b05_sag(P, B05_MAT.pp.E, Mt.t), kw);
     if (kw > 0) b05_strip(x0, y0, s, Mt.t, b05_sag(Mt.P, B05_MAT.abs.E, Mt.t), { fill: C.comp, alpha: 0.25 * kw, supports: false });
     const st = b05_strip(x0, y0, s, Mt.t, sag, { fill: kw > 0.5 ? C.hero : C.comp });
+    /* the readout names one material at a time (review R3, M8): the drawing morphs, but the number is ABS's until the swap is
+       half done, then carbon PP's, each at the press now on (so it agrees with the force arrow at every frame) */
+    const sagNow = b05_sag(P, kw > 0.5 ? B05_MAT.pp.E : B05_MAT.abs.E, Mt.t);
     if (kp > 0) { finger(st.top[0], st.top[1] - 2, 0.42, { s: 4.5, press: kp, len: 16, alpha: ep(t, T.press[0] - 0.3, T.press[0]) }); forceArrow(st.top[0] + 80, st.top[1] - 4, Math.PI / 2, 70, { N: P, dec: 1, color: C.ink, k: 1 }); }
-    rich([{ s: kw > 0.5 ? 'Carbon PP, PP-C-20A' : 'ABS', role: 'label', size: 22, color: kw > 0.5 ? C.heroText : C.ink2 }, { s: 'Sags', role: 'label', size: 19, color: C.mute, gap: 24 }, { s: fmtN(sag, 2) + ' mm', role: 'num', size: 30, weight: 800, color: kw > 0.5 ? C.heroText : C.ink, tnum: true, gap: 10 }], x0, y0 - 90);
+    rich([{ s: kw > 0.5 ? 'Carbon PP, PP-C-20A' : 'ABS', role: 'label', size: 22, color: kw > 0.5 ? C.heroText : C.ink2 }, { s: 'Sags', role: 'label', size: 19, color: C.mute, gap: 24 }, { s: (kw > 0.5 ? fmtN(Math.ceil(sagNow * 100 - 1e-9) / 100, 2) : b05_dn(sagNow, 2)) + ' mm', role: 'num', size: 30, weight: 800, color: kw > 0.5 ? C.heroText : C.ink, tnum: true, gap: 10 }], x0, y0 - 90);
     /* the weights, then the thin strip as stiff as the ABS one */
     const kg = ep(t, T.kg, T.kg + 0.4);
     rich([{ s: 'Weight', role: 'label', size: 19, color: C.mute }, { s: fmtN(Mt.gA, 2) + ' g', role: 'num', size: 26, weight: 800, color: C.ink, gap: 10 }, { s: 'ABS', role: 'small', size: 21, weight: 600, color: C.faint, gap: 8, sentence: false }, { s: fmtN(Mt.gP, 2) + ' g', role: 'num', size: 26, weight: 800, color: C.heroText, gap: 28 }, { s: 'carbon PP, the same strip', role: 'small', size: 21, weight: 600, color: C.faint, gap: 8, sentence: false }], x0, y0 + 120, { alpha: kg });
     const kt = ep(t, T.thin, T.thin + 0.5);
-    if (kt > 0) { b05_strip(x0, y0 + 230, s, Mt.tMatch, b05_sag(Mt.P, B05_MAT.pp.E, Mt.tMatch), { fill: C.hero, alpha: kt }); rich([{ s: 'As stiff as the ABS strip:', role: 'small', size: 22, weight: 600, color: C.ink2, sentence: false }, { s: fmtN(Mt.tMatch, 2) + ' mm, ' + fmtN(Mt.gMatch, 2) + ' g', role: 'num', size: 26, weight: 800, color: C.heroText, gap: 10 }, { s: '(−' + b05_dn((1 - Mt.gMatch / Mt.gA) * 100) + ' %)', role: 'small', size: 22, weight: 600, color: C.heroText, gap: 8, sentence: false }], x0, y0 + 330, { alpha: kt }); }
+    if (kt > 0) { b05_strip(x0, y0 + 230, s, Mt.tMatch, b05_sag(Mt.P, B05_MAT.pp.E, Mt.tMatch), { fill: C.hero, alpha: kt }); rich([{ s: 'As stiff as the ABS strip:', role: 'small', size: 22, weight: 600, color: C.ink2, sentence: false }, { s: fmtN(Math.ceil(Mt.tMatch * 100 - 1e-9) / 100, 2) + ' mm, ' + fmtN(Mt.gMatch, 2) + ' g', role: 'num', size: 26, weight: 800, color: C.heroText, gap: 10 }, { s: '(−' + b05_dn((1 - Mt.gMatch / Mt.gA) * 100) + ' %)', role: 'small', size: 22, weight: 600, color: C.heroText, gap: 8, sentence: false }], x0, y0 + 330, { alpha: kt }); }
     /* the headline */
-    verdict(t, T.v, 1300, 470, { from: Mt.sagA, to: Math.ceil(Mt.sagP * 100) / 100, unit: 'mm', dec: 2, label: 'Sag under 2 N, one strip', better: 'lower', who: ['ABS', 'Carbon PP'], net: b05_dn(Mt.kE, 1) + '×', netWord: 'stiffer', size: 90, maxW: RM - 1300 });
-    text('Bent until it gives, on pull-test strengths: ABS ' + fmtN(Mt.givesA, 1) + ' N, carbon PP ' + b05_dn(Mt.givesP, 1) + ' N (' + b05_dn(Mt.kS, 1) + '×); on bending strengths ' + fmtN(b05_gives(B05_MAT.abs.fb, Mt.t), 1) + ' and ' + b05_dn(b05_gives(B05_MAT.pp.fb, Mt.t), 1) + ' N', 1300, 600, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: RM - 1300, sentence: false, alpha: ep(t, T.v + 1.4, T.v + 1.8) });
+    verdict(t, T.v, 1300, 470, { from: Math.floor(Mt.sagA * 100 + 1e-9) / 100, to: Math.ceil(Mt.sagP * 100 - 1e-9) / 100, unit: 'mm', dec: 2, label: 'Sag under 2 N, one strip', better: 'lower', who: ['ABS', 'Carbon PP'], net: b05_dn(Mt.kE, 1) + '×', netWord: 'stiffer', size: 90, maxW: RM - 1300 });
+    text('Bent until it gives, on pull-test strengths: ABS ' + fmtN(Math.ceil(Mt.givesA * 10 - 1e-9) / 10, 1) + ' N, carbon PP ' + b05_dn(Mt.givesP, 1) + ' N (' + b05_dn(Mt.kS, 1) + '×); on bending strengths ' + fmtN(Math.ceil(b05_gives(B05_MAT.abs.fb, Mt.t) * 10 - 1e-9) / 10, 1) + ' and ' + b05_dn(b05_gives(B05_MAT.pp.fb, Mt.t), 1) + ' N', 1300, 600, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: RM - 1300, sentence: false, alpha: ep(t, T.v + 1.4, T.v + 1.8) });
     scaleNote(LM, 952, 'about the hardest grip measured at a desk (Won 2009)', { lead: '2 N', t, t0: T.press[0] });
     text('Beam theory: a 60 mm span, 10 mm wide, 1 mm thick; flexural moduli 2,550 (ABS) and 13,500 MPa (PP-C-20A); sag drawn to scale', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false });
   }
@@ -466,7 +475,7 @@ S({
     ['"just feels like a graphic which is quite convoluted"', 'The slide leads with the classroom test (a bridge contest scores the load held ÷ the bridge\'s weight, Science Olympiad); the graphic comes after it and is filled by it.'],
     ['"i like the graphic"', 'Kept, simplified to two plain bump charts, stiffness and strength, each from the datasheet\'s order to the order at one weight, for all six materials.'],
     ['"but the explanation for it needs to be so much better."', 'The explanation is the demonstration: the same size first (magnesium bends less, the datasheet\'s story), then the strips cut to one weight on screen (the magnesium comes out about half as thick), the same discs, and the results land in the charts beside them.'],
-    ['F14.6: "the sort of value/efficiency each material buys and how it\'s not just about who has the highest tensile strength or flexural modulus"', 'Said and shown: carbon PP is 4th of six on the datasheet for both, and, bent at one weight (the slide says so: the textbook E/ρ would rank it 3rd), 1st for stiffness and 2nd for strength behind FR4, every bar on one basis, the pull test, each labelled (yield for ABS and PC, break for PP-C-20A and FR4, ultimate for the metals); FR4, 1st, comes only as flat board (Theseus\'s own board, b07). The six: PP-C-20A, ABS, PC, magnesium alloy, aluminium, FR4.'],
+    ['F14.6: "the sort of value/efficiency each material buys and how it\'s not just about who has the highest tensile strength or flexural modulus"', 'Said and shown: carbon PP is 4th of six on the datasheet for both, and, bent at one weight (the slide says so: the textbook E/ρ would rank it 3rd), 1st for stiffness and 2nd for strength behind FR4, every bar on one basis, the pull test, each labelled (yield for ABS and PC, break for PP-C-20A and FR4, ultimate for the metals); FR4, 1st, comes only as flat board (Theseus\'s own board, b07), and is ranked by its along-the-weave figures, which the slide says (20 GPa; across the weave, 18 GPa, it would bend 3.69 mm instead of 3.32, still 4th). The six: PP-C-20A, ABS, PC, magnesium alloy, aluminium, FR4.'],
     ['F33.5: one of the important ideas, executed wrong', 'Rebuilt around a demonstration, with the bump charts kept as its record and one headline: 4th → 1st in stiffness, bent at one weight. The caption says what the player gets: 1.7× less flex in the hand than magnesium at the same weight.']
   ],
   draw: t => {
@@ -510,10 +519,10 @@ S({
     /* ---- right: the graphic he liked, filled by the tests: all six, the datasheet's order, then at one weight, like for like ---- */
     const kB = 1, bx = 1170, cA = T.d2[1] + 0.6, cB = T.crack + 0.4;
     const itemsOf = (rawRank, wRank, vf) => B05_SP.rows.map((row, i) => ({ name: row.m.name, l: rawRank[i], r: wRank[i], hero: !!row.m.hero, second: row.k === 'mg', ring: !!row.m.board, vR: vf(row) }));
-    b05_bump(bx, 340, RM - bx, 28, { t, t0: cA, a: kB, title: 'Stiffness {(1st bends least)}', head: ['Datasheet', 'Bent, at one weight'], items: itemsOf(B05_SP.rawE, B05_SP.stiff, row => fmtN(row.sag, 2) + ' mm'), rightW: 330 });
-    b05_bump(bx, 588, RM - bx, 28, { t, t0: cB, a: kB, title: 'Strength bent, on pull-test strengths {(1st holds most)}', head: ['Datasheet', 'Bent, at one weight'], items: itemsOf(B05_SP.rawS, B05_SP.strong, row => fmtN(row.holds, 1) + ' N (' + ({ pp: 'break', fr4: 'break', abs: 'yield', pc: 'yield', mg: 'ultimate', al: 'ultimate' })[row.k] + ')'), rightW: 330 });
+    b05_bump(bx, 340, RM - bx, 28, { t, t0: cA, a: kB, title: 'Stiffness {(1st bends least)}', head: ['Datasheet', 'Bent, at one weight'], items: itemsOf(B05_SP.rawE, B05_SP.stiff, row => b05_rv(row.sag, 2, row.k !== 'pp', 'lower') + ' mm'), rightW: 330 });
+    b05_bump(bx, 588, RM - bx, 28, { t, t0: cB, a: kB, title: 'Strength bent, on pull-test strengths {(1st holds most)}', head: ['Datasheet', 'Bent, at one weight'], items: itemsOf(B05_SP.rawS, B05_SP.strong, row => b05_rv(row.holds, 1, row.k !== 'pp', 'higher') + ' N (' + ({ pp: 'break', fr4: 'break', abs: 'yield', pc: 'yield', mg: 'ultimate', al: 'ultimate' })[row.k] + ')'), rightW: 330 });
     text('Bent, PP-C-20A\'s datasheet allows 207 MPa (23 N)', bx, 802, { role: 'small', size: 20, weight: 600, color: C.faint, alpha: ep(t, cB + 1.0, cB + 1.4), maxW: RM - bx, sentence: false });
-    text('FR4 comes only as flat board: it is Theseus\'s board (#94)', bx, 830, { role: 'small', size: 20, weight: 600, color: C.faint, alpha: ep(t, cB + 1.0, cB + 1.4), maxW: RM - bx });
+    text('FR4: only flat board (#94); ranked along its weave, its stronger way', bx, 830, { role: 'small', size: 20, weight: 600, color: C.faint, alpha: ep(t, cB + 1.0, cB + 1.4), maxW: RM - bx });
     /* ---- the headline: carbon PP's rank, from the datasheet to per gram ---- */
     b05_rankVerdict(t, 7.9, bx, 984, { from: 4, to: 1, size: 116, label: 'Carbon PP\'s stiffness, bent at one weight {(1st is best)}' });
   }
@@ -521,17 +530,17 @@ S({
 
 /* ============================== b05_wall: how thin a wall can go (Brock: "super important concept"; F33.5) ==============================
    The same weight per area of wall (10 g per 100 cm²; not the shell's budget, F44.2) is a 0.99 mm wall in carbon PP and a 0.55 mm
-   wall in magnesium. The melt goes in at the gate under the crown (F13.3) and has to reach the front rim, about 80 mm away
-   along the shell (measured on the simplified side outline), before its frozen skin closes the wall. How far it gets is
-   modelled from each process's own floor (the thinnest wall it fills: Protolabs 0.89 mm for polypropylene, Design News
-   0.7 mm typical for thixomolded magnesium, 0.5 mm only on small parts): freeze time grows with thickness squared (MIT 2.008),
-   so the reach goes with (t / floor)². Carbon PP fills with room to spare; at the typical floor the magnesium freezes short
-   at 62 %: a short shot (at the small-part floor it would just fill: the slide says both floors, review B05_W). */
-const B05_WALL_T = { go: 0.35, tc: 0.9, L: 80, s: 46 };
-/** the melt front (0..1 of the flow length) and the time it reached x (s from the start), for a wall t mm thick with this
-   floor: the free reach R = (t / floor)², the front x = R (1 − e^(−τ / tc)) */
-function b05_front(tau, t, floor) {
-  const R = Math.pow(t / floor, 2), tc = B05_WALL_T.tc;
+   wall in magnesium. The melt goes in at the gate under the crown (F19.1) and has to reach the farthest edge, about 105 mm along
+   the shell (L1, on the 3D shell), before its frozen skin closes the wall. A wall's limit is its flow length (FILM F42, decided
+   ~12:10, "Skin: 0.60 mm, to be proven"): polypropylene runs 150 to 280 times its thickness (MIT 2.008), so carbon PP's wall needs
+   107 walls of flow and fills with room to spare (shown at the cautious 150). Magnesium has no flow ratio in the sources searched,
+   so it is held to its own minimum walls (Design News: 0.7 mm typical, 0.5 mm only on small parts) and no short shot is claimed.
+   Theseus's own skin, 0.60 mm, is a target: 175 walls, inside PP's range; a mould-flow check or first shots confirm it. */
+const B05_WALL_T = { go: 0.35, tc: 0.9, s: 46 };
+/** the melt front (0..1 of the flow length) and the time it reached x (s from the start), for a free reach R (the share of the
+   flow length the melt could cover: carbon PP's from its flow ratio, B05_W.pp.reach): the front x = R (1 − e^(−τ / tc)) */
+function b05_front(tau, R) {
+  const tc = B05_WALL_T.tc;
   return { R, xf: Math.min(1, R * (1 - Math.exp(-Math.max(0, tau) / tc))), at: x => x >= R ? Infinity : -tc * Math.log(1 - x / R), done: R >= 1 ? -tc * Math.log(1 - 1 / R) : Infinity };
 }
 /**
@@ -540,7 +549,7 @@ function b05_front(tau, t, floor) {
  * since the shot started), t, floor (mm), sfreeze (s: the time the skin takes to close this wall), floorPx (the floor's
  * thickness, dashed), shortK (0..1: the short shot named), hero }. Returns { xf (px of the front), stop } */
 function b05_cavity(x, y, len, h, o = {}) {
-  const st = 26, top = y - h / 2, bot = y + h / 2, F = b05_front(o.tau, o.t, o.floor), xf = x + F.xf * len;
+  const st = 26, top = y - h / 2, bot = y + h / 2, F = b05_front(o.tau, o.R == null ? 1 : o.R), xf = x + F.xf * len;
   /* the steel, both halves, with section hatching */
   for (const [y0, hh] of [[top - st, st], [bot, st]]) {
     rr(x - 8, y0, len + 16, hh, 2, C.track, null, 0, 1);
@@ -568,7 +577,7 @@ function b05_cavity(x, y, len, h, o = {}) {
     /* the front: a rounded meniscus, the melt fountaining to the walls */
     if (xf < x + len - 1) { G.save(); G.beginPath(); G.ellipse(xf, y, Math.min(14, h * 0.4), h / 2, 0, -Math.PI / 2, Math.PI / 2); G.fillStyle = F.xf >= F.R * 0.985 ? frozen : melt; G.fill(); G.restore(); }
   }
-  /* the floor: the thinnest wall this process fills, dashed, centred on the cavity */
+  /* a reference wall, dashed, centred on the cavity (magnesium's usual 0.7 mm) */
   if (o.floorA > 0) { const fh = o.floorPx; G.save(); G.globalAlpha = o.floorA; G.setLineDash([7, 5]); G.strokeStyle = o.hero ? C.heroText : C.red; G.lineWidth = 2; G.strokeRect(x, y - fh / 2, len, fh); G.restore(); }
   /* the short shot, named: the part of the wall the melt never reached */
   if (o.shortK > 0 && F.R < 1) {
@@ -579,50 +588,53 @@ function b05_cavity(x, y, len, h, o = {}) {
 }
 S({
   id: 'b05_wall', ch: 'shell', theme: 'paper', title: 'How thin a wall can go', settle: 11, ideas: [5, 'wall'],
-  src: ['protoWall', 'thixoDN', 'b05Mit', 'b05Fill', 'shlPyrofil', 'shlMg', 'b05Razer', 'b05Card'],
+  src: ['b05Mit', 'thixoDN', 'b05Fill', 'protoWall', 'shlPyrofil', 'shlMg', 'b05Razer', 'b05Card'],
   replaces: ['thinwall'],
   answers: [
-    ['"confusing and lazy graphic"', 'A molding demonstration replaces it: the melt goes in at the gate and runs along the wall while its skin freezes in from the cold steel; in the magnesium wall the skin closes it before the melt gets there.'],
-    ['"hard to understand at a glance and with longer analysis"', 'At a glance: two walls of the same weight, one fills, one freezes short (red), and the headline: 0.55 → 0.99 mm, the same weight. For the longer look: each process\'s own floor (dashed, sourced), and what magnesium has to do instead: 0.70 mm at 12.6 g where carbon PP needs 10 g (+26 %), or holes. Magnesium\'s floor is the typical 0.7 mm; the slide also says that small parts go to 0.5 mm (Design News), where this wall would just fill.'],
+    ['"confusing and lazy graphic"', 'A molding demonstration replaces it: the melt goes in at the gate under the crown and runs about 105 mm to the farthest edge while its skin freezes in from the cold steel. Carbon PP\'s same-weight wall needs 107 walls of flow, under polypropylene\'s 150 to 280 (MIT 2.008): it fills, with room to spare. Magnesium is held to its own minimum walls (0.7 mm typical, 0.5 mm only on small parts, Design News): no flow ratio for magnesium was found, so the slide claims no short shot (FILM F42).'],
+    ['"hard to understand at a glance and with longer analysis"', 'At a glance: two walls of the same weight, carbon PP filling with room to spare, magnesium\'s thinner than it is usually molded (its usual 0.7 mm dashed round it), and the headline: 0.56 → 0.99 mm, the same weight (magnesium\'s 0.552 rounded up, carbon PP\'s 0.990 down: never in Theseus\'s favour). For the longer look: what magnesium has to do instead, 0.70 mm at 12.6 g where carbon PP needs 10 g (+26 %), or holes; and Theseus\'s own skin, 0.60 mm, a target: 175 walls of flow, inside the range, to be proven at the chin\'s rim (Brock, ~12:10: "Skin: 0.60 mm, to be proven").'],
     ['"super important concept though."', 'Given the chapter\'s molding demonstration and its own headline (F33.5); it hands straight to the next slide: a wall\'s stiffness goes with its thickness cubed.']
   ],
   draw: t => {
-    const W0 = B05_W, T = B05_WALL_T, tau = t - T.go, x = 640, len = RM - x - 20;
+    const W0 = B05_W, T = B05_WALL_T, F0 = B05_FLOW, tau = t - T.go, x = 640, len = RM - x - 20, mgT = b05_rv(W0.mg.t, 2, true, 'higher');
+    const ppWalls = Math.ceil(W0.pp.walls - 1e-9), skinWalls = Math.ceil(W0.skinWalls - 1e-9);   /* walls of flow needed: rounded up */
     header(t, 'How thin a wall can go');
-    captions(t, [[0.3, 'The melt goes in at one gate and has to reach the rim before its skin freezes shut.'], [3.6, 'At the same weight, magnesium makes a 0.55 mm wall. It freezes short: a short shot.'], [6.2, 'To fill, magnesium needs 0.7 mm: 12.6 g of wall where carbon PP needs 10 g. Or holes.']]);
+    captions(t, [[0.3, 'The melt goes in at one gate and has to reach the farthest edge, about ' + F0.L + ' mm along the shell, before its skin freezes shut.'],
+      [3.6, 'At the same weight, magnesium makes a ' + mgT + ' mm wall: thinner than it is usually molded.'],
+      [6.2, 'Molded as usual, at 0.7 mm, magnesium is ' + b05_dn(W0.mg.atTyp, 1) + ' g of wall where carbon PP needs ' + W0.gpa + ' g. Or holes.'],
+      [8.4, 'Theseus\'s skin, 0.60 mm, is a target to prove: ' + F0.L + ' mm is ' + skinWalls + ' skins, inside polypropylene\'s ' + F0.lo + ' to ' + F0.hi + '. A mould-flow check or first shots confirm it at the chin\'s rim.']]);
     /* ---- where: the simplified mouse, its wall lit, the gate under the crown, the flow to the front rim (M4) ---- */
     const m = mouseFit([LM, 270, 500, 200], 'left', { hi: ['shell'], col: 'ink', lit: 1 });
     const V = msView('left'), out = V.outPts, iTop = out.reduce((b, p, i) => (p[1] < out[b][1] ? i : b), 0);
     const path = []; for (let k = 0, i = iTop; k < out.length; k++) { path.push(m.P(out[i][0], out[i][1])); if (out[i][1] > -9.6 && k > 3) break; i = (i + 1) % out.length; }
-    const nose = m.P(...msAt('left', 'nose')), pathRev = path[path.length - 1][0] < path[0][0];
-    poly(pathRev ? path : path, { color: C.hero, w: 4, p: ep(t, 0.35, 1.9, E.lin) });
+    poly(path, { color: C.hero, w: 4, p: ep(t, 0.35, 1.9, E.lin) });
     const gp = path[0]; circle(gp[0], gp[1], 7, { fill: C.hero }); text('Gate', gp[0], gp[1] - 18, { role: 'label', size: 19, color: C.heroText, align: 'center' });
-    text('The wall, from the gate under the crown to the front rim: about ' + T.L + ' mm', LM, 520, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 500 });
-    /* ---- the same weight, two walls: each process's cavity, the melt pushed in together (M3: the same shot) ---- */
-    const rows = [{ M: B05_MAT.mg, w: W0.mg, y: 420, hero: false }, { M: B05_MAT.pp, w: W0.pp, y: 670, hero: true }];
-    const kFloor = ep(t, 4.4, 4.9), kShort = ep(t, 3.4, 3.8);
+    text('From the gate under the crown to the farthest edge: about ' + F0.L + ' mm, measured on the 3D shell', LM, 520, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 500 });
+    /* ---- the same weight, two walls: each process's cavity. Carbon PP's melt runs at its flow ratio's cautious end (150 walls) and
+       fills; magnesium has no published flow ratio, so no melt is drawn in it: its wall is set against its own usual 0.7 mm ---- */
+    const rows = [{ w: W0.mg, y: 420, hero: false }, { w: W0.pp, y: 670, hero: true }];
+    const kFloor = ep(t, 3.6, 4.1), kDone = (() => { const d = b05_front(9, W0.pp.reach).done; return ep(t, T.go + d, T.go + d + 0.4); })();
     rows.forEach(rw => {
       const h = rw.w.t * T.s, sf = 2.4 * Math.pow(rw.w.t / W0.mg.t, 2);
-      const c = b05_cavity(x, rw.y, len, h, { tau, t: rw.w.t, floor: rw.w.floor, sfreeze: sf, floorPx: rw.w.floor * T.s, floorA: kFloor, shortK: kShort, hero: rw.hero });
+      b05_cavity(x, rw.y, len, h, rw.hero ? { tau, t: rw.w.t, R: W0.pp.reach, sfreeze: sf, hero: true } : { tau: -1, t: rw.w.t, R: 0, floorPx: W0.mg.typ * T.s, floorA: kFloor });
       const ya = rw.y - h / 2 - 26 - 20;
-      rich([{ s: rw.hero ? 'Carbon PP, PP-C-20A' : 'Magnesium AZ91D', role: 'label', size: 22, color: rw.hero ? C.heroText : C.secondText }, { s: fmtN(rw.w.t, 2) + ' mm', role: 'num', size: 26, weight: 800, color: rw.hero ? C.heroText : C.ink, gap: 16 }, { s: 'at the same weight', role: 'small', size: 22, weight: 600, color: C.faint, gap: 12, sentence: false }], x, ya);
-      /* under it: its floor (sourced), then what happened, at the end of the wall */
+      rich([{ s: rw.hero ? 'Carbon PP, PP-C-20A' : 'Magnesium AZ91D', role: 'label', size: 22, color: rw.hero ? C.heroText : C.secondText }, { s: b05_rv(rw.w.t, 2, !rw.hero, 'higher') + ' mm', role: 'num', size: 26, weight: 800, color: rw.hero ? C.heroText : C.ink, gap: 16 }, { s: 'at the same weight', role: 'small', size: 22, weight: 600, color: C.faint, gap: 12, sentence: false }], x, ya);
+      /* under it: its own sourced limit, then (carbon PP) what happened, at the end of the wall */
       const yb = rw.y + h / 2 + 26 + 36;
-      text(rw.hero ? 'Fills down to 0.89 mm (Protolabs)' : 'Thixomolding: 0.7 mm typical; 0.5 only on small parts (Design News)', x, yb, { role: 'small', size: 22, weight: 600, color: rw.hero ? C.heroText : C.red, alpha: kFloor, sentence: false });
-      const kr = rw.hero ? ep(t, T.go + b05_front(9, rw.w.t, rw.w.floor).done, T.go + b05_front(9, rw.w.t, rw.w.floor).done + 0.4) : kShort;
-      text(rw.hero ? 'Fills to the rim' : 'Short shot: frozen at ' + Math.round(c.R * 100) + ' %', x + len, yb, { role: 'label', size: 21, color: rw.hero ? C.heroText : C.red, align: 'right', alpha: kr });
+      text(rw.hero ? 'Polypropylene runs ' + F0.lo + ' to ' + F0.hi + ' × its thickness (MIT 2.008)' : 'Thinner than its usual 0.7 mm (dashed); 0.5 mm only on small parts (Design News)', x, yb, { role: 'small', size: 22, weight: 600, color: rw.hero ? C.heroText : C.red, alpha: rw.hero ? kDone : kFloor, sentence: false });
+      if (rw.hero) text('Fills: ' + ppWalls + ' walls of flow', x + len, yb, { role: 'label', size: 21, color: C.heroText, align: 'right', alpha: kDone });
     });
-    text('Thickness drawn ' + T.s + '× the length\'s scale', x + len, 420 - W0.mg.t * T.s / 2 - 46, { role: 'small', size: 21, weight: 560, color: C.faint, align: 'right', sentence: false });
+    text('Thickness drawn ' + T.s + '× the length\'s scale', x + len, 420 - W0.mg.typ * T.s / 2 - 46, { role: 'small', size: 21, weight: 560, color: C.faint, align: 'right', sentence: false });
     /* ---- what magnesium must do instead, and the headline ---- */
     const kp = ep(t, 6.2, 6.6), lx = LM;
-    text('For the magnesium wall to fill', lx, 610, { role: 'label', size: 21, color: C.mute, alpha: kp });
-    rich([{ s: '0.70 mm', role: 'num', size: 30, weight: 800, color: C.ink }, { s: 'and', role: 'small', size: 24, weight: 600, color: C.ink2, gap: 12, sentence: false }, { s: b05_dn(W0.mg.atFloor, 1) + ' g', role: 'num', size: 30, weight: 800, color: C.red, gap: 12 }, { s: 'per 100 cm²', role: 'small', size: 24, weight: 600, color: C.ink2, gap: 10, sentence: false }], lx, 652, { alpha: kp });
+    text('Magnesium at its usual wall', lx, 610, { role: 'label', size: 21, color: C.mute, alpha: kp });
+    rich([{ s: '0.70 mm', role: 'num', size: 30, weight: 800, color: C.ink }, { s: 'and', role: 'small', size: 24, weight: 600, color: C.ink2, gap: 12, sentence: false }, { s: b05_dn(W0.mg.atTyp, 1) + ' g', role: 'num', size: 30, weight: 800, color: C.red, gap: 12 }, { s: 'per 100 cm²', role: 'small', size: 24, weight: 600, color: C.ink2, gap: 10, sentence: false }], lx, 652, { alpha: kp });
     rich([{ s: 'against carbon PP\'s', role: 'small', size: 24, weight: 600, color: C.ink2, sentence: false }, { s: W0.gpa + ' g', role: 'num', size: 26, weight: 800, color: C.heroText, gap: 10 }, { s: '(+' + b05_dn(W0.mgMore * 100) + ' %), or holes', role: 'small', size: 24, weight: 600, color: C.red, gap: 10, sentence: false }], lx, 692, { alpha: kp });
     text('Razer\'s magnesium Viper Mini SE: an open exoskeleton, 49 g (2023)', lx, 740, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: ep(t, 6.8, 7.2), maxW: 500, sentence: false });
-    verdict(t, 7.3, 1180, 900, { from: W0.mg.t, to: W0.pp.t, unit: 'mm', dec: 2, label: 'The same weight\'s wall', better: 'thicker', who: ['Magnesium', 'Carbon PP'], size: 100, maxW: 660 });
-    scaleNote(lx, 852, 'thinner than a credit card (0.76 mm)', { lead: fmtN(W0.mg.t, 2) + ' mm', t, t0: 3.8 });
+    verdict(t, 7.3, 1180, 900, { from: mgT, to: b05_rv(W0.pp.t, 2, false, 'higher'), unit: 'mm', dec: 2, label: 'The same weight\'s wall', better: 'thicker', who: ['Magnesium', 'Carbon PP'], size: 100, maxW: 660 });
+    scaleNote(lx, 852, 'thinner than a credit card (0.76 mm)', { lead: mgT + ' mm', t, t0: 3.8 });
     text('Thickness cubed: the carbon PP wall is 1.7× stiffer, magnesium\'s modulus included.', lx, 950, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, 8.6, 9.0), sentence: false });
-    text('Derived: the melt\'s reach goes with (thickness ÷ floor)², its freeze time with thickness² (MIT 2.008)', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false });
+    text('Derived: walls of flow = ' + F0.L + ' mm ÷ the wall (PP ' + F0.lo + ' to ' + F0.hi + ', MIT 2.008). Protolabs\' 0.889 mm is a rule of thumb, not a floor.', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false, maxW: 1080 });
   }
 });
 
@@ -671,7 +683,7 @@ S({
     const ks = ep(t, T.same, T.same + 0.4);
     if (ks > 0) rich([{ s: b05_dn(Cc.rulerK, 1) + '×', font: 'disp', size: 40, weight: 800, color: C.heroText, grad: C.heroGrad, caps: false }, { s: 'stiffer on edge, the same ' + fmtN(R.g, 2) + ' g', role: 'small', size: 23, weight: 650, color: C.ink2, gap: 14, sentence: false }], r[0], yS + 50, { alpha: ks });
     /* ---- the walls: nine cavities, each off by up to the mold's tolerance; each wall's stiffness against its nominal ---- */
-    const rows = [{ w: Cc.thin, name: 'A 0.70 mm wall (magnesium at its typical floor)', hero: false }, { w: Cc.ths, name: 'Carbon PP\'s 1.00 mm wall', hero: true }], gx = 960, gw = 860;
+    const rows = [{ w: Cc.thin, name: 'A 0.70 mm wall (magnesium\'s typical wall, Design News)', hero: false }, { w: Cc.ths, name: 'Carbon PP\'s 1.00 mm wall', hero: true }], gx = 960, gw = 860;
     const kR = ep(t, T.rows[0] - 0.4, T.rows[0]);
     text('Nine walls, nine cavities, each within a mold\'s ±0.076 mm (Protolabs)', gx, 300, { role: 'label', size: 19, color: C.mute, maxW: RM - gx, alpha: 0.35 + 0.65 * kR });
     rows.forEach((rw, i) => {
@@ -840,6 +852,8 @@ S(b05_live({
       rich([{ s: fmtN(rw.i.flex * F / B.P0, 3), role: 'num', size: 40, weight: 800, color: rw.hero ? C.heroText : C.ink, tnum: true }, { s: 'mm', role: 'label', size: 19, color: C.mute, gap: 8, caps: false }], rx, yw + 58, { alpha: kr });
     });
     scaleNote(LM, 952, 'a hard press: a 1 kg bag of sugar, five times the hardest grip measured at a desk (Won 2009)', { lead: '10 N', t, t0: 3.2, size: 22 });
+    /* the heat key (F19.3, M's must via K 11:16): the parts are coloured by the share of their strength used, squared */
+    heatKey(t, 1.0, 770, 630, 240, { gamma: SHL_GAMMA, title: 'Strength used, colour squared' });
     text(fmtN(B.g, 2) + ' g pieces of a strip across the top, 60 mm (the mouse\'s width), in 2D; flex drawn ' + sc + '× real; colour: strength used, squared', LM, 990, { role: 'small', size: 21, weight: 560, color: C.faint, alpha: ep(t, 1.2, 1.6), sentence: false });
     /* ---- right: the chart. The press it takes to flex each piece 0.1 mm (a sheet of copy paper), against its weight ---- */
     const cx = 1200, cy = 340, cw = 620, ch = 270, xr = [0, 0.6], yr = [0, 40];
@@ -953,7 +967,7 @@ S(b05_live({
   answers: B => {
     const f = B05_HOT_F, gS = B05_MAT.pp.rho / 1000 * 60 * B.H * B.ST.ribH * f, Fp = fmtN(B.Fp, 0), uM = Math.ceil(B.use(B.sized, B.Fp, f) * 100 - 1e-9);
     return [
-      ['"show the weight of the 2 parts"', `Both weights are on the slide beside their parts: the solid plane ${fmtN(B.g, 2)} g (${fmtN(B.plate.model.w, 2)} mm thick, its end drawn); the milled part counts down from its ${fmtN(gS, 2)} g sheet (${fmtN(B.ST.ribH * f, 2)} mm) to ${fmtN(B.g * f, 2)} g as the mill passes, and the headline is the weight: ${fmtN(B.g, 2)} → ${fmtN(B.g * f, 2)} g, −${b05_dn((1 - f) * 100)} %, holding the ${Fp} N that cracked the solid plane.`],
+      ['"show the weight of the 2 parts"', `Both weights are on the slide beside their parts: the solid plane ${fmtN(B.g, 2)} g (${fmtN(B.plate.model.w, 2)} mm thick, its end drawn); the milled part counts down from its ${fmtN(gS, 2)} g sheet (${fmtN(B.ST.ribH * f, 2)} mm) to ${b05_rv(B.g * f, 3, false, 'lower')} g as the mill passes, and the headline is the weight: ${b05_rv(B.g, 3, true, 'lower')} → ${b05_rv(B.g * f, 3, false, 'lower')} g, −${b05_dn((1 - f) * 100)} %, holding the ${Fp} N that cracked the solid plane.`],
       ['"and to tie into how a milled out part can be stronger a solid part, point this out"', `Pointed out in words and shown: the triangles are milled out of a thicker sheet on screen, each rib sized to its force, and the caption says it: "Cut material out, and it holds: the same ${Fp} N runs along every member." Under that press it uses ${uM} % of its strength where the solid plane used all of it and cracked.`],
       ['F2.10: hotspots, one break point, the rest of the material wasted', `The press builds from nothing on the solid plane to ${Fp} N (about 18 bags of sugar: pressed to where it breaks), the heat rising into the one spot under the finger until it cracks there; the camera pushes in on it ("It cracks here") and the slide says the rest of it averages ${fmtN(B.iP.mean / B.iP.uMax * 100, 0)} %: idle weight. On the triangles the same press runs along every member.`]
     ];
@@ -997,7 +1011,7 @@ S(b05_live({
     rich([{ s: 'Press', role: 'label', size: 21, color: C.mute }, { s: fmtN(milled ? F2 : F1, 0), role: 'd1', size: 56, weight: 800, color: C.ink, tnum: true, gap: 14 }, { s: 'N', role: 'label', size: 24, color: C.mute, gap: 8, caps: false }], rx, 340);
     text(kN < 0.5 ? 'A solid plane' : 'Triangles sized to their force', rx, 430, { role: 'label', size: 22, color: kN < 0.5 ? C.ink2 : C.heroText, alpha: a1 });
     const gSheet = B05_MAT.pp.rho / 1000 * 60 * H * B.ST.ribH * f, gNow = kN < 0.5 ? B.g : lerp(gSheet, B.g * f, km), thick = kN < 0.5 ? B.plate.model.w : B.ST.ribH * f;
-    rich([{ s: 'Weight', role: 'label', size: 19, color: C.mute }, { s: fmtN(gNow, 2) + ' g', role: 'num', size: 34, weight: 800, color: kN < 0.5 ? C.ink : C.heroText, tnum: true, gap: 10 }], rx, 482, { alpha: a1 });
+    rich([{ s: 'Weight', role: 'label', size: 19, color: C.mute }, { s: b05_rv(gNow, 3, kN < 0.5, 'lower') + ' g', role: 'num', size: 34, weight: 800, color: kN < 0.5 ? C.ink : C.heroText, tnum: true, gap: 10 }], rx, 482, { alpha: a1 });
     b05_sheetEnd(rx + 6, 506, thick, 40, 70, { fill: kN < 0.5 ? C.comp : C.hero, alpha: a1, label: fmtN(thick, 2) + ' mm thick (drawn 40× real)', col: C.mute });
     if (milled) text('Milled from a ' + fmtN(thick, 2) + ' mm sheet of ' + fmtN(gSheet, 2) + ' g', rx, 612, { role: 'small', size: 21, weight: 600, color: C.mute, maxW: RM - rx, sentence: false, alpha: ep(t, T.mill[1], T.mill[1] + 0.3) });
     text('Strength used at its peak', rx, 676, { role: 'label', size: 19, color: C.mute });
@@ -1011,8 +1025,10 @@ S(b05_live({
     const kRest = ep(t, T.cam[1] - 0.2, T.cam[1] + 0.2) * (1 - kN);
     if (kRest > 0) text('That is its hot spot. The rest of it averages ' + fmtN(B.iP.mean / B.iP.uMax * 100, 0) + ' %: idle weight.', rx, 806, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: RM - rx, sentence: false, alpha: kRest });
     /* ---- the headline: the weight that holds the press that cracked the solid plane ---- */
-    verdict(t, T.v, rx, 908, { from: B.g, to: B.g * f, unit: 'g', dec: 2, label: 'Weight that holds ' + fmtN(B.Fp, 0) + ' N', better: 'lower', who: ['Solid plane', 'Milled triangles'], rivalCol: 'grey', net: '−' + b05_dn((1 - f) * 100) + ' %', netWord: 'weight', size: 84, maxW: RM - rx });
+    verdict(t, T.v, rx, 908, { from: b05_rv(B.g, 3, true, 'lower'), to: b05_rv(B.g * f, 3, false, 'lower'), unit: 'g', dec: 3, label: 'Weight that holds ' + fmtN(B.Fp, 0) + ' N', better: 'lower', who: ['Solid plane', 'Milled triangles'], rivalCol: 'grey', net: '−' + b05_dn((1 - f) * 100) + ' %', netWord: 'weight', size: 84, maxW: RM - rx });
     scaleNote(LM, 952, 'about 18 bags of sugar: pressed to where the solid plane breaks', { lead: fmtN(B.Fp, 0) + ' N', t, t0: -1, size: 22 });
+    /* the heat key (F19.3): coloured by the share of strength used, squared, red where it breaks */
+    heatKey(t, 0.3, LM + 100, 836, 240, { gamma: SHL_GAMMA, title: 'Strength used, colour squared' });
     text('Ribs sized to their force (#93): one-width ribs break first. Breaks at 120 MPa stretched, 207 bent; flex 5× real', LM, 990, { role: 'small', size: 21, weight: 560, color: C.faint, sentence: false });
   }
 }));
@@ -1134,6 +1150,8 @@ S(b05_live({
       text(!rw.hero && broke ? 'Cracks: 0 % left' : (100 - uPct) + ' % left', gx + 42, gy + 60, { role: 'label', size: 21, color: !rw.hero && broke ? C.red : rw.hero ? C.heroText : C.ink2, alpha: ka });
     });
     scaleNote(xl, 952, 'about 18 bags of sugar: pressed to where the solid plane breaks', { lead: fmtN(B.Fp, 0) + ' N', t, t0: T.press[1], size: 22 });
+    /* the heat key (F19.3): the plane and the triangles are coloured by the share of strength used, squared */
+    heatKey(t, B05_MARGIN_T.press[0], 480, 884, 240, { gamma: SHL_GAMMA, title: 'Strength used, colour squared' });
     text('Breaks at 120 MPa stretched, 207 bent; flex 5× real; colour: share used, squared', xl, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false, alpha: ka });
     /* ---- the headline: the strength left when the solid plane cracks ---- */
     verdict(t, 7.9, LM, 928, { from: 0, to: Math.floor((1 - B.use(B.sized, B.Fp)) * 100 + 1e-6), unit: '%', dec: 0, label: 'Strength left at ' + fmtN(B.Fp, 0) + ' N, the same weight', better: 'higher', who: ['Solid', 'Sized triangles'], rivalCol: 'grey', size: 96, net: false, maxW: 760 });
@@ -1213,7 +1231,12 @@ S(b05_live({
     verdict(t, T.v, 1330, 470, { from: Math.round(Cl.plate.mean * 100), to: Math.floor(Cl.tri.mean * 100 + 1e-6), unit: '%', dec: 0, label: 'Share at work', better: 'higher', who: ['Solid plane', 'Triangles'], rivalCol: 'grey', net: b05_dn(Cl.tri.mean / Cl.plate.mean, 1) + '×', netWord: 'the work', size: 96, maxW: RM - 1330 });
     text('Of every 10 g: ' + fmtN(Cl.plate.mean * 10, 1) + ' g at work in a solid plane, ' + b05_dn(Cl.tri.mean * 10, 1) + ' g in triangles, ' + b05_dn(Cl.sized.mean * 10, 1) + ' g sized', 1330, 590, { role: 'small', size: 22, weight: 600, color: C.ink2, maxW: RM - 1330, sentence: false, alpha: ep(t, T.v + 1.6, T.v + 2.0) });
     /* ---- the design choices this reasoning drives, and where the film shows each ---- */
-    const ch = [['tri', 'Triangles, not hexagons', 'next (b06)'], ['arch', 'Arches', 'b06'], ['fillet', 'Fillets at every joint', 'b06'], ['fibre', 'Fibres along the load', 'b06'], ['wall', 'Walls graded to the force', '#93, b07'], ['board', 'The board as a tie', '#94, b07']];
+    /* where the film shows each, as the viewer reads it: the slide's number in this chapter (the header's "11 / 24"), found live
+       so a reordered chapter stays right; never our builders' codes (FILM F40) */
+    const noOf = id => { const sl = DECK.slides.find(x => x.id === id), ci = sl && typeof chapterInfo === 'function' ? chapterInfo(sl) : null; return ci && ci.n ? ci.n : 999; };
+    const here = noOf('b05_work'), at = n => n === 999 ? 'Later in the film' : n === here + 1 ? 'Next slide' : 'Slide ' + n;
+    const ch = [['tri', 'Triangles, not hexagons', 'b06_lattice'], ['arch', 'Arches', 'b06_arch'], ['fillet', 'Fillets at every joint', 'b06_fillet'], ['fibre', 'Fibres along the load', 'b06_fibres'], ['wall', 'Walls graded to the force', 'b07_sheet'], ['board', 'The board as a tie', 'b07_board']]
+      .map(([k, name, id]) => [k, name, noOf(id)]).sort((p, q) => p[2] - q[2]).map(([k, name, n]) => [k, name, at(n)]);   /* in the film's order */
     const cy = 850, cwid = (RM - LM) / ch.length;
     text('The choices it drives', LM, cy - 60, { role: 'label', size: 19, color: C.mute, alpha: ep(t, T.choices - 0.3, T.choices) });
     ch.forEach(([k, name, where], i) => {
@@ -1222,6 +1245,8 @@ S(b05_live({
       text(name, x + 50, cy - 4, { role: 'label', size: 19, color: lit > 0.5 ? C.heroText : C.ink2, alpha: a, maxW: cwid - 110, lh: 1.15 });
       text(where, x + 50, cy + 44, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: a, sentence: false });
     });
-    text('The test strip (b06), ' + fmtN(B.g, 2) + ' g each, in 2D, each pressed to its own limit; breaks at 120 MPa stretched, 207 bent; colour: share used, squared', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false });
+    /* the heat key (F19.3): the parts and every bar are coloured by the share of strength used, squared */
+    heatKey(t, 0.6, 1330, 716, 300, { gamma: SHL_GAMMA, title: 'Strength used, colour squared' });
+    text('The test strip, ' + fmtN(B.g, 2) + ' g each, in 2D, each pressed to its own limit; breaks at 120 MPa stretched, 207 bent; colour: share used, squared', LM, 990, { role: 'small', size: 20, weight: 560, color: C.faint, sentence: false });
   }
 }));

@@ -1,4 +1,5 @@
 # Theseus PCB layout assembly + DRC + 2D plot.  python3 tools/layout.py [--plot out.png]
+# Layers: L1 (top) and the far routing layer (stackup.FAR: L4, the bottom, on the 0.6 mm two-layer board; L3 on four).
 import json, math, sys, os
 import numpy as np
 import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/README.md)
@@ -8,6 +9,7 @@ from shapely import affinity
 from board import theseus_outline, wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, P, BAY_TRIM
 import parts
 from parts import C, world_pads, FP, GND
+from stackup import ROUTE_LAYERS, FAR, LAYERS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 EDGE_BAND = 0.35          # ENIG edge trim width on top/bottom (Viper V4 Pro style)
@@ -101,7 +103,16 @@ def drc(L, verbose=True):
     # on the top layer the wheel bay and the switch window carry gold trim (0.35 / 0.28 mm): traces keep CLR off it
     trims = [(wheel_cut_poly(), BAY_TRIM), (square_cut_poly(), 0.28)]
     hole_keep1 = unary_union([hole_keep3] + [c.buffer(t + CLR) for c, t in trims if not c.is_empty])
-    for layer in ('L1', 'L3'):
+    # the plated mounting holes' gold rings (MH3, MH4: r = d/2 + 0.75, on both faces, GND): other nets keep CLR off them
+    mh_ring_keep = unary_union([Point(h['x'], h['z']).buffer(h['d'] / 2 + 0.75 + CLR) for h in L['npth'] if h['plated']])
+    # two layers (H3): the bottom's routes and the vias keep out of the underside art's QR, wordmark and fab block (silk.py
+    # ART_KEEP), so the art stays whole (the mosaic pour itself keeps POUR_CLR off whatever routes it meets)
+    art_keep = None
+    if LAYERS == 2:
+        import silk as _SK
+        Z = _SK.art_zones()
+        art_keep = unary_union([Z[k] for k in _SK.ART_KEEP])
+    for layer in ROUTE_LAYERS:
         hole_keep = hole_keep1 if layer == 'L1' else hole_keep3
         items = layer_items(L, layer)
         for i, (n1, g1, k1, l1, _k1) in enumerate(items):
@@ -110,8 +121,12 @@ def drc(L, verbose=True):
                     errs.append('%s %s %s too close to board edge' % (layer, k1, l1))
                 if g1.intersects(hole_keep):
                     errs.append('%s %s %s too close to a cutout/hole at %s' % (layer, k1, l1, tuple(np.round(g1.intersection(hole_keep).centroid.coords[0], 2))))
+                if n1 != GND and g1.intersects(mh_ring_keep):
+                    errs.append('%s %s %s too close to a plated mounting hole\'s ring at %s' % (layer, k1, l1, tuple(np.round(g1.intersection(mh_ring_keep).centroid.coords[0], 2))))
                 if g1.intersects(ANT_KEEPOUT):
                     errs.append('%s %s %s inside the antenna keep-out' % (layer, k1, l1))
+                if art_keep is not None and layer == FAR and n1 != GND and g1.intersects(art_keep):
+                    errs.append('%s %s %s crosses the underside art (QR / wordmark / fab block) at %s' % (layer, k1, l1, tuple(np.round(g1.intersection(art_keep).centroid.coords[0], 2))))
             for j in range(i + 1, len(items)):
                 n2, g2, k2, l2, _k2 = items[j]
                 if n1 == n2 and n1 != 'NC':
@@ -140,6 +155,14 @@ def drc(L, verbose=True):
                 continue
             if g.distance(h) < 0.15 - 1e-6:
                 errs.append('pads %s.%s (%s) and %s.%s (%s) %.3f apart' % (p['ref'], p['name'], p['net'], q['ref'], q['name'], q['net'], g.distance(h)))
+    # no via in (or touching) an SMD pad, its own net's included (H3): via-in-pad needs plugged, capped vias, a question for
+    # Brock, not something the router does on its own
+    smd = [(p, g) for p, g in pp if not (p.get('drill') or p.get('slot'))]
+    for v in L['vias']:
+        vg = Point(v['x'], v['z']).buffer(v.get('d', 0.45) / 2 + 0.05, quad_segs=10)
+        for p, g in smd:
+            if g.intersects(vg):
+                errs.append('via %s (%.2f, %.2f) in or touching pad %s.%s' % (v['net'], v['x'], v['z'], p['ref'], p['name']))
     # vias clear of other nets' pads on L1 (already in layer_items) and of each other (any net) by 0.12
     vs = L['vias']
     for i in range(len(vs)):
@@ -147,9 +170,9 @@ def drc(L, verbose=True):
             a, b = vs[i], vs[j]
             if math.hypot(a['x'] - b['x'], a['z'] - b['z']) < a.get('d', 0.45) / 2 + b.get('d', 0.45) / 2 + 0.12 - 1e-6:
                 errs.append('vias %s (%.2f, %.2f) and %s (%.2f, %.2f) too close' % (a['net'], a['x'], a['z'], b['net'], b['x'], b['z']))
-    # connectivity per net (L1+L3+vias/THT joined across layers), GND excluded (pour + plane)
+    # connectivity per net (L1 + the far layer + vias/THT joined across layers), GND excluded (the pours: gnd.py checks it)
     nets = {}
-    for layer in ('L1', 'L3'):
+    for layer in ROUTE_LAYERS:
         for (n, g, k, l, key) in layer_items(L, layer):
             nets.setdefault(n, []).append((layer, g, k, l, key))
     for n, items in nets.items():
@@ -208,7 +231,7 @@ def plot(L, out, zoom=None):
     draw(L['outline'].difference(L['outline'].buffer(-EDGE_BAND)), fc='#d4a93c', ec='none')
     draw(ANT_KEEPOUT, fc='#ff00ff22', ec='#ff00ff', lw=0.8, ls='--')
     for t in L['routes']:
-        col = NET_COL.get(t['net'], '#c87533' if t['layer'] == 'L1' else '#4f7cff')
+        col = NET_COL.get(t['net'], '#c87533' if t['layer'] == 'L1' else '#4f7cff')     # the far layer (L3 / L4) dashed
         draw(trace_poly(t), fc=col if t['layer'] == 'L1' else 'none', ec=col, lw=0.6 if t['layer'] != 'L1' else 0.2,
              alpha=0.95 if t['layer'] == 'L1' else 0.9, ls='-' if t['layer'] == 'L1' else '--')
     for p in L['pads']:

@@ -21,7 +21,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';   
 const HERE = new URL('.', import.meta.url).href;
 
 export const PCB_INFO = {
-  thickness: 1.0,
+  thickness: 0.6,              // F47.4 (H3): 0.6 mm, two layers (was 1.0, four); pcb-layout.json carries thickness and layers
   boardTopYInMouse: 5.03,      // = shell wheel centre y 17.03 - parts axleHeight 12
   boardOffsetZInMouse: -2.88,  // aligns the encoder/bracket axle (layout z 37.75) with the shell wheel centre z 34.87
   layers: ['board', 'passives', 'pmic', 'module', 'sensor', 'lens', 'sockets', 'switches', 'mechanics', 'wheel', 'connectors', 'wires'],
@@ -282,7 +282,7 @@ export async function buildPcb(opts = {}) {
       const [x0, z0] = sg.pts[0];
       let s0 = sMax, best = 1.6;
       for (const [x, z, sv] of seen) { const d = Math.hypot(x - x0, z - z0); if (d < best) { best = d; s0 = sv + d; } }
-      const L3 = sg.layer === 'L3';
+      const L3 = sg.layer !== 'L1';      // the far layer: the inner L3 on four layers, the bottom (L4) on two (F47.4)
       const { geo, end } = ribbon(sg.pts, L3 ? Math.max(0.8, sg.w * 2.4) : Math.max(0.95, sg.w * 2.6), L3 ? 0.07 : 0.075, s0);
       let acc = s0;
       sg.pts.forEach((q, i) => { if (i > 0) acc += Math.hypot(q[0] - sg.pts[i - 1][0], q[1] - sg.pts[i - 1][1]); seen.push([q[0], q[1], acc]); });
@@ -383,8 +383,9 @@ export async function buildPcb(opts = {}) {
     m.transparent = tr; m.opacity = op; m.depthWrite = tr ? depthWrite : true;
   }
   function setXray(k) {
-    // the solder mask clears: L1 routing lights up in copper, the GND pour dims, L3 (power + long runs) glows teal
-    // through the board, the L2 ground plane is a faint copper veil and the via barrels show as gold points.
+    // the solder mask clears: L1 routing lights up in copper, the GND pour dims, the far layer's routes (L3, power + long
+    // runs, on four layers; the bottom's on the 0.6 mm two-layer board, F47.4) glow teal through the board, the L2 ground
+    // plane (four layers only) is a faint copper veil and the via barrels show as gold points.
     k = Math.min(1, Math.max(0, k)); state.xray = k;
     fade(M.mask, 1 - 0.8 * k, k < 0.5);
     fade(M.silk, 1 - 0.55 * k);
@@ -476,16 +477,17 @@ export async function buildPcb(opts = {}) {
   // the radio module (Raytac AN54LM-P20A): black, the long meander antenna at the part's +z end, which plan 5 points
   // forward, toward the sensor (F30.3; no turn: the land pattern and the keep-out in pcb.glb are already there);
   // the sensor as a castellated module on the 2 × 8 pads; the clear snap-on lens through the aperture and clip holes
-  const swap = (ref, factory) => {
+  const swap = (ref, factory, extra = {}) => {
     const node = parts[ref]; if (!factory || !node) return null;
-    const m = factory({ materials: Object.assign({ maskBlack: M.mask, maskRelief: M.mask_cu, solder: M.solder }, opts.partMaterials || {}) }); if (!m) return null;
+    const m = factory(Object.assign({ materials: Object.assign({ maskBlack: M.mask, maskRelief: M.mask_cu, solder: M.solder }, opts.partMaterials || {}) }, extra)); if (!m) return null;
     node.children.forEach((c) => { c.visible = false; });
     m.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
     node.add(m); owned.push(m); return m;
   };
   const radio = swap('U1', opts.radio);
   const sensor = swap('U3', opts.sensor);
-  const lens = swap('LENS', opts.lens);
+  // the lens's optics hang from the board's top (PixArt's Z); its upper block meets the underside of a board this thick
+  const lens = swap('LENS', opts.lens, { boardThickness: layout.thickness ?? PCB_INFO.thickness });
 
   function dispose() {
     for (const o of owned) o.dispose?.();

@@ -467,8 +467,10 @@ def bracket_template():
 def encoder_mag_template():
     """the magnetic (Hall) scroll encoder in a normal encoder outline (3d/parts/scrollwheel.js; the deck swaps that part in):
     black bottom housing to the split 3.15 mm under the axle, clear PC top housing to 4 mm over it (its nose-side top
-    corner chamfered), the nickel-silver frame plate on the wheel side, the rotor and magnet seen through the clear top,
-    four pins in a row (1.25 mm pitch) and the frame's two side tabs bent out into SMD feet. Local +x toward the wheel."""
+    corner chamfered), the rotor and magnet seen through the clear top, four pins in a row (1.25 mm pitch). F47.4 (H3): the
+    lighter encoder: no nickel-silver frame (its plate on the wheel side and its tabs bent out into SMD feet are gone); the
+    housings reach the wheel-side face themselves and two moulded pegs locate the bottom one in the board. Local +x toward
+    the wheel."""
     d = {}
     AX, ZH, YS, YT, CH = 12.0, 5.5, -3.15, 4.0, 2.6
     yb = Y0 + 0.02
@@ -479,10 +481,8 @@ def encoder_mag_template():
         merge_into(d, mat, m, PERM)
     bot = Polygon([(-ZH, yb), (ZH, yb), (ZH, yb + AX + YS), (-ZH, yb + AX + YS)])
     top = Polygon([(-ZH, yb + AX + YS), (ZH, yb + AX + YS), (ZH, yb + AX + YT - CH), (ZH - CH, yb + AX + YT), (-ZH, yb + AX + YT)])
-    yz_slab(bot, x0, x1, 'black_plastic')
-    yz_slab(top, x0, x1, 'clear')
-    plate = Polygon([(-ZH, yb), (ZH, yb), (ZH, yb + AX + YT - CH), (ZH - CH, yb + AX + YT), (-ZH, yb + AX + YT)]).difference(Point(0, yb + AX).buffer(1.85))
-    yz_slab(plate, x1, x1 + 0.25, 'nickel')
+    yz_slab(bot, x0, x1 + 0.25, 'black_plastic')            # (to where the frame plate's wheel-side face was)
+    yz_slab(top, x0, x1 + 0.25, 'clear')
     # the rotor (orange POM) and the magnet's disc inside the clear top, on the axle
     merge_into(d, 'kapton', cyl_mesh(1.65, 2.2, seg=32, axis='x'), trs(x1 - 2.25, yb + AX, 0))
     merge_into(d, 'nickel', cyl_mesh(1.5, 0.8, seg=32, axis='x'), trs(x1 - 3.05, yb + AX, 0))
@@ -490,12 +490,9 @@ def encoder_mag_template():
     for z in (-1.875, -0.625, 0.625, 1.875):
         merge_into(d, 'tin', box_mesh(0.5, 3.0, 0.3), trs(-1.95, Y0 - 1.75 + 1.5, z))
         merge_into(d, 'solder', cyl_mesh(0.5, 0.14, seg=16, y0=Y_PAD - 0.01, r_top=0.28), trs(-1.95, 0, z))
-    # the frame's side tabs run down and bend out into SMD feet on F1/F2 (local x 0.85, z +/-5.9)
+    # the bottom housing's two locating pegs (Ø0.8) down through the board's copper-free holes (local x 0, z +/-4.6)
     for s in (-1, 1):
-        merge_into(d, 'nickel', box_mesh(0.94, AX - 4.1 - 0.12, 0.22), trs(0.85, yb + 0.12 + (AX - 4.1 - 0.12) / 2, s * (ZH + 0.11)))
-        merge_into(d, 'nickel', box_mesh(0.94, 0.12, 0.95), trs(0.85, Y0 + 0.06, s * (ZH + 0.53)))
-        f = fillet_mesh(0.0, 0.25, 0.9, 0.2, y0=Y_PAD - 0.002, nu=4, nv=6)
-        merge_into(d, 'solder', f, trs(0.85, 0, s * 6.45) @ trs(ry_deg=90 * s))
+        merge_into(d, 'black_plastic', cyl_mesh(0.4, 0.3 + T + 0.3, seg=20, y0=-T - 0.3), trs(0.0, 0, s * 4.6))
     return d
 
 

@@ -50,8 +50,12 @@ ol = BD.theseus_outline()
 pts = [K(x, z) for x, z in mirrored(ol)]
 xs, ys = [p[0] for p in pts], [p[1] for p in pts]
 # t: the finished thickness (board_geo.T); top: its top face over the pad in the mouse (pcb-layout.json: the shell's posts,
-# the switches and the wheel's axle are set from it, so a thinner board keeps its top and brings its underside up)
-board = dict(anchor=K(0, 0), t=r2(BOARD_T), top=r2(lay.get('boardTopY_in_mouse', 5.03)), box=[min(xs), min(ys), max(xs), max(ys)], pts=pts,
+# the switches and the wheel's axle are set from it, so a thinner board keeps its top and brings its underside up);
+# g: the board as built, with everything the 5.6 g target covers (F42.2: the wheel's encoder and support included), from
+# 3d/pcb/pcb-mass.json (written by 3d/pcb/tools/mass.py; H3, F47.4: 5.68 g). The target itself stays THESEUS.pcb (5.6)
+mass = json.load(open(os.path.join(R3, 'pcb', 'pcb-mass.json')))
+board = dict(anchor=K(0, 0), t=r2(BOARD_T), top=r2(lay.get('boardTopY_in_mouse', 5.03)), g=r2(mass['as_built_g']),
+             box=[min(xs), min(ys), max(xs), max(ys)], pts=pts,
              holes=[K(v[0], v[1]) + [v[2] / 2] for k, v in sorted(BD.SORA_HOLES.items())],
              bay=[K(x, z) for x, z in mirrored(BD.wheel_cut_poly())])
 # the parts on it

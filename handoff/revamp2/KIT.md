@@ -221,12 +221,33 @@ lit, a blue box on the focus. `establish` draws it for you.
 
 ### Agents and forces
 
-**`finger(x, y, ang, { s = 3.2, press, view = 'side' | 'top' | 'end', len = 46, alpha, flip })`** → a mono-grey fingertip
-to scale: (x, y) is the contact point, `ang` the way it points (0 right, PI/2 down; pointing left it flips so the pad stays
-down); `press` flattens the pad on the surface and, from above, blanches the nail. `'end'` is the fingertip end-on, as a
-front view of a button sees it (`ang` then tilts it: 0 upright); end-on a fingertip is hard to recognise, so in a front view
-prefer the pointer for the press and keep `'end'` for grip and groove slides where the finger's section is the point. Pass the camera's scale as `s` and move (x, y)
-with the part you press. `finger(p[0], p[1] + d * 9, -0.06, { s: est.s, press: d });`
+**`finger(x, y, ang, { s = 3.2, press, view = 'side' | 'top' | 'end', len = 46, alpha, flip, surf, digit, floor, floorKey, mark, ghost, flex, pitch, yaw, lod })`**
+→ a fingertip drawn from one anatomical model, to scale, in the deck's line style (F49.1, Brock's pick "A Line": outlined,
+a lit and a shadow side in two flat greys), mono grey on both grounds (F9.24). (x, y) is the contact on the surface, `ang`
+the way it points (0 right, PI/2 down; pointing left it mirrors so the pad stays down); move (x, y) with the part you
+press. `s` is px per mm: pass the part's own scale, so the finger is to scale with what it presses (an index fingertip is
+14.3 mm across at the nail and 16 mm at the joint, its nail 11.2 by 12.7 mm: AIST hand data x 1.03); inside part() or a
+camera pass s in its units (1 in mm). The last joint is a little flexed, so only the fingertip's pad reaches the surface.
+`press` 0..1 moves the bone and nail 1.5 mm toward the surface: the pad flattens on it (about a 10 mm contact, as at 1 N),
+the skin beside bulges, the nail stays rigid and pales from its free edge.
+- `view: 'side'` (default): with no `surf` it rests along `ang`, as before. **Pass `surf` (the surface's direction on the
+  stage) whenever the finger meets a part at a slant**: the fingertip meets it at ang - surf and the pad lands flat ON it;
+  the side the finger points into is the pad's side (a finger pressing up into an egg, or poking a wall, needs no `flip`).
+- `view: 'top'`: from above, the nail toward the viewer; (x, y) the pad's centre.
+- `view: 'end'`: the fingertip coming toward the viewer, pitched onto the surface (`pitch` 0.5 rad), so its nail shows
+  foreshortened and the finger rises behind it (no more "grey blob"); `ang` turns it about its own axis (0 the pad down,
+  -PI/2 the pad facing right, against a wall).
+- `digit: 'thumb'` (20.7 mm at its joint, a broad nail and its lunula). `len` (mm shown; the far end fades over its last
+  30 %, at most 12 mm): under about 24 shows only the fingertip, 30 to 40 shows the joint, which is what reads as a finger.
+- `floor` (X mm along the surface from the contact → the surface's height, + toward the finger) with `floorKey` (a
+  string that changes when the floor does): the pad drapes over a step. `mark: [X0, X1, colour]`: a stretch of the pad
+  (a pinch). `ghost` 0..1: see-through over what is under it.
+- Returns `{ contact: [p0, p1], tip }` in the caller's units. Detail follows the size on the stage (from 2.6 px/mm all of
+  it; 1.2 to 2.6 the nail and the two greys; below, the silhouette and the nail).
+`finger(p[0], p[1] + d * 9, -0.06, { s: est.s, press: d });` `finger(c[0], c[1], Math.PI / 2 - 0.45, { s, surf: 0, press: k, len: 30 });`
+
+**`fingerPad(u, digit)`** → the pad's height (mm) above its lowest point, u mm back from the tip (for a section drawn at
+another scale, as b08_tape's).
 
 **`forceArrow(x, y, ang, len, { N, label, k | t + t0 + dur, color, w, dec, side })`** → a force whose tip sits on the point it
 acts on and whose length grows with it, labelled in newtons as it grows (red for a fault's force, blue for Theseus's).
@@ -427,3 +448,38 @@ on the right (the simplified mouse with it lit, neutral until the answer, then b
   the thinner board: `OWN_SEAT` = 4.4 mm reach for the M2 × 5, was 4.0). Rival and generic drawings keep their own
   (`swMM`'s o.board, `sensorMM`, `railMM`, `wheelFrontMM`, `clk_hingeMM`, `mouseRival`'s board). Builders' own copies
   (b03, b04, b07, b10, b11) are listed in their review files (HARDWARE, H3): read `BOARD_T` / `BOARD_TOP`, never a literal.
+- 2026-11-06 12:25 (FG, F49.1: "the fingers look really bad right now"; Brock's pick at ~12:10, "A Line"; no signature
+  changed) **`finger` rebuilt** from one anatomical model in every view: the side silhouette through measured landmarks, the
+  width from above, superellipse sections between, the nail a plate on the back (its free edge, lateral folds, the thumb's
+  lunula), the joint's creases; the last joint flexed 11.5° so only the pad touches; the press moves the rigid part 1.5 mm
+  and lays the pad on the surface. Sizes: AIST Japanese hand dimension data (Kouchi 2012) x 1.03 and Dandekar 2003; the
+  press: Jindrich 2003 (1.7 to 2.0 mm of pulp at a tap's peak), Serhat 2022 (~10 mm, ~1 cm2 at 1 N). New options `surf`,
+  `digit`, `floor`/`floorKey`, `mark`, `ghost`, `flex`, `pitch`, `yaw`, `lod`; returns `{ contact, tip }`; new `fingerPad`.
+  Drawn whole into a layer and set down once (a clean fade; a partial alpha never shows the pieces through). Every call
+  draws the new finger with no change; the calls that tilt it onto a level part need `surf`, and b03_side wants
+  `digit: 'thumb'` (FINGER notes in work/review/b01, b02, b03, b05, b06, b07, b08, b12.md). Checked: errs ok on all 25
+  slides that draw a fingertip (22 call the kit) in the 12:26 live build (107 slides) and on the kit page's kit_agents,
+  kit_zoom, kit_demo and the new kit_finger_p / kit_finger_n (19-kit-test.js: every view, surf, the thumb, a floor, small
+  sizes); a sweep of every slide at 0.5 s steps, no errors. Sheets: /home/claude/work/fg/sheets/fg_options.png (the
+  options), fg_after.png (every changed slide), fg_after_zoom.png (each finger before and after). Applied to deck/src and
+  deck/.snapshot/src (identical before; old copies in /home/claude/work/fg/backup/).
+- 2026-11-06 12:33 (H3, F47.4; no signature changed) **The 0.6 mm two-layer board in 3D, and what it moves in 2D.** The 3D
+  board (3d/pcb, plan 5 A and B) is rebuilt at 0.6 mm, two layers, half-ounce outer copper: re-routed on two layers (the
+  long runs and power crossings on the bottom, around the underside art's QR, wordmark and fab block), DRC 0, every net
+  routed, the ground one piece (new 3d/pcb/tools/gnd.py). Regenerated under the lock and copied to deck/.snapshot/geo2d:
+  **GEO2D.pcb** (b09_radio from above, b11_board from below: the bottom's routes now show among the triangle mosaic, whose
+  corners are joined so it is one ground; its fab line reads "2L 0.6mm ENIG"; the camera frame stays pinned), **GEO2D.wheel**
+  (b08_wheel: the lighter encoder; its camera frame is now pinned too, tools/geo2d/extras.py --pin-wheel, so the view didn't
+  move) and **GEO2D.board2d** (`boardMM`: the new copper on both faces; b07_arms). 03-parts.js: **`k2_encMagFront` /
+  `encoderMM`** draw the lighter encoder (its nickel-silver frame dropped: no side tabs, no SMD feet, no top tabs; two
+  moulded pegs into the board, a clear snap hook each side; b10_lights' `cover` anchor unchanged); **`boardMM`** draws the
+  far layer's routes in x-ray whatever its name (L4 on two layers) and, from below, the bottom's own routes. errs clean on
+  every slide that draws them. Before / after: /home/claude/work/h3/shots/zoom_*.png, cmp_b10lights.png.
+- 2026-11-06 12:50 (H3, F47.4; new constant, no signature changed) **`BOARD_G`: the board's grams as built.** 03-parts.js:
+  `const BOARD_G = KEY_PARTS.board.g` = **5.68** (g), beside `BOARD_T` / `BOARD_TOP`: the 0.6 mm two-layer board with
+  everything the 5.6 g target covers (its parts, the wheel's encoder 0.475 and support 0.202 g included; F42.2). The
+  target stays `THESEUS.pcb` (5.60): a slide says "5.68 g as built" against "the 5.60 g target". Source: 3d/pcb/tools/mass.py
+  writes 3d/pcb/pcb-mass.json (new, committed; work/mass.json is scratch), deck/tools/geo2d/key_parts.py reads it into
+  `KEY_PARTS.board.g` (the generator's output differs from the block in the file by that field only). No slide reads it
+  yet: b01_budget's `B01_PCB_PATH.g` (5.63), b10_board and b11 are the polish owner's to switch. Built (all 30-*.js own,
+  geo2d) and checked; in deck/.snapshot/src (identical to src before).

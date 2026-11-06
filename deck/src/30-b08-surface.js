@@ -846,7 +846,7 @@ S({
     ['F2.14 "grip in exactly the right places in exactly the right directions"', 'Each zone is etched across the slip it must stop: the pull on the buttons, the lift on the sides, smooth under the palm; each named on the map'],
     ['F21.9 (he wants to see the map before deciding it)', 'Labelled as the proposed map, to be tuned on hands; the question is in the report'],
     ['(why texture at all: a sweaty hand)', 'A plain stat under the side view, from Derler 2012 (skin on glass, wet): smooth 0.61, rough 1.43 grip per newton of squeeze; sweat floats skin on smooth, and roughness keeps it gripping'],
-    ['(problem first, G1)', 'The rival is the naive etch, the button\'s ridges run one way over the whole grip: down the sides they run up and down, and at the same 0.30 N squeeze the lift slips; the laser turns them across the lift and the same squeeze holds (least squeeze 0.33 → 0.28 N a side, derived from Zhang 2017)']
+    ['(problem first, G1)', 'The problem is the naive etch, the button\'s ridges run one way over the whole grip: down the sides they run up and down, and at the same 0.30 N squeeze the lift slips; the laser turns them across the lift and the same squeeze holds. One-way ridges are Theseus\'s own simpler etch, so the payoff is two plain stats, nothing struck (R3-b08-1): least squeeze to lift 0.327 against 0.285 N a side, 12 % less (derived from Zhang 2017)']
   ],
   draw: t => {
     header(t, 'A grip map for the hand');
@@ -944,7 +944,20 @@ S({
       clipped(sx, sy, sw * clamp((t - 3.6) / 1.2), sh, () => b08_drawStreams(LB, [sc0, 0, 0, sc0, sx, sy], { w: 1.8, alpha: kb }));
       [['Ridges', 0.08], ['Dashes', 0.38], ['Dots', 0.62], ['Smooth', 0.9]].forEach(([nm, f], i) => text(nm, sx + sw * f, sy + sh + 30, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: stagger(t, 4.0, i, 0.15, 0.4) }));
     }
-    verdict(t, 6.6, rx, 690, { from: LF.one, to: LF.map, dec: 2, unit: 'N', label: 'Least squeeze to lift, per side: the same ridges run one way, against the map', better: 'lower', who: ['Ridges one way', 'The map'], rivalCol: 'grey', size: 128, maxW: RM - rx });
+    /* two plain stats, not a struck verdict (R3-b08-1; the film's grammar, common.md 11:20): ridges one way are Theseus's own
+       simpler etch, so nothing is struck. Three decimals, so neither rounds our way (0.327 and 0.285 N; the old 0.33 → 0.28 did
+       both); the net from the true values, rounded toward zero (12.8 % → 12 %) */
+    { const a1 = ep(t, 6.6, 7.0), a2 = ep(t, 7.1, 7.6), dy = k => (1 - E.out3(k)) * 14, less = Math.floor((1 - LF.map / LF.one) * 100 + 1e-9);
+      text('Least squeeze to lift, per side (lower is better)', rx, 616, { role: 'label', size: 21, color: C.mute, alpha: a1, maxW: RM - rx });
+      G.save(); G.translate(0, dy(a1));
+      rich([{ s: fmtN(LF.one, 3), role: 'd1', size: 60, weight: 800, color: C.ink2, tnum: true }, { s: 'N', font: 'sans', size: 24, weight: 650, color: C.mute, gap: 8 }], rx, 692, { alpha: a1 });
+      text('Ridges one way', rx + 220, 684, { role: 'small', size: 23, weight: 700, color: C.ink2, alpha: a1 });
+      G.restore();
+      G.save(); G.translate(0, dy(a2));
+      const wM = rich([{ s: fmtN(LF.map, 3), role: 'd1', size: 88, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: 'N', font: 'sans', size: 30, weight: 650, color: C.mute, gap: 10 }], rx, 806, { alpha: a2 }).w || 270;
+      text('The map', rx + wM + 22, 772, { role: 'small', size: 23, weight: 700, color: C.heroText, alpha: a2 });
+      text(less + ' % less squeeze', rx + wM + 22, 804, { role: 'small', size: 23, weight: 700, color: C.heroText, alpha: a2 });
+      G.restore(); }
     scaleNote(rx, 880, "about half an egg's weight", { lead: '0.3 N', t, t0: 8.3 });
     { const a = ep(t, 8.5, 8.9), w0 = pillW('study', { by: 'Zhang 2017' }); pill(rx, 926, 'study', a, { by: 'Zhang 2017' }); pill(rx + w0 + 20, 926, 'derived', a); text('Laser grooves in steel, one fingertip, 0.2 to 0.4 N: grip 0.50 to 0.51 of the squeeze across the ridges, 0.41 to 0.47 along', rx, 962, { role: 'small', size: 22, weight: 600, color: C.faint, alpha: a, maxW: RM - rx }); }
   }

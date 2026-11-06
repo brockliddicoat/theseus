@@ -1,0 +1,14 @@
+{
+ "note": "3d/pcb/tools/mass.py (H3, F47.4): the board as built; the 5.6 g target (F42.2) covers the board with everything on it, the wheel's encoder and support included",
+ "thickness_mm": 0.6,
+ "layers": 2,
+ "outer_cu_um": 17.5,
+ "target_g": 5.6,
+ "as_built_g": 5.68,
+ "board_and_parts_g": 5.01,
+ "bare_board_g": 2.25,
+ "encoder_g": 0.475,
+ "support_g": 0.202,
+ "bending_share": 0.216,
+ "in_plane_share": 0.6
+}

@@ -310,12 +310,17 @@ S({
    weight comes from where the deck keeps it (THESEUS for the whole and the board; the Jauch family in RDATA for the
    battery; XBAB's breakdown in RDATA for the buttons; NTR_BUD, the 3D model's volumes and densities, for the wheel, axle,
    screws, inserts and lead), and the shell and skates get what is left (F21.1: "Budget is the target"). */
+/* the board's path to its 5.6 g target (F47.4, Brock: "0.6 mm, 5.63 g"): a 0.6 mm (BOARD_T) two-layer board with
+   half-ounce outer copper, a lighter encoder (its nickel-silver frame dropped) and a cored support: 5.63 g in the hardware
+   model (mass.py; derived). The budget keeps 5.6 g, the target (F42.2, THESEUS.pcb); the path is said beside it (H3 11:05).
+   H3's rebuild reports the final figure: if it moves off 5.63, or a shared field comes to carry it, change it here only */
+const B01_PCB_PATH = { g: 5.63 };
 function b01_budget() {
   const B = (typeof ntr_budget === 'function') ? ntr_budget() : null, batt = b01_thsBatt();
   if (!B) return null;
   const parts = [
     { key: 'battery', name: 'Battery, ' + batt.mAh + ' mAh', g: B.cell.g, note: 'Example part, ' + batt.part, ev: 'datasheet', by: 'Jauch' },
-    { key: 'board', name: 'One board, a target', g: THESEUS.pcb, note: 'Radio, antenna and USB-C on it; built to this figure (F42.2)' },
+    { key: 'board', name: 'One board, a target', g: THESEUS.pcb, note: 'Radio, antenna and USB-C on it; a ' + fmtN(BOARD_T, 1) + ' mm two-layer board builds to ' + fmtN(B01_PCB_PATH.g, 2) + ' g, derived (F47.4)' },
     { key: 'buttons', name: 'Buttons', g: B.xa.btn, note: 'As XBAB weighed the XA25\'s', ev: 'claim', by: 'XBAB' },
     /* Brock, F44.2: the two side switches, full-size SPDT, about 0.5 g each (H1's typical figure), "from the shell" */
     { key: 'sideSw', name: 'Side switches', count: 2, g: 2 * 0.5, note: 'Two full-size SPDT, about 0.5 g each, typical', ev: 'estimate' },
@@ -897,8 +902,11 @@ S({
       const rival = p.id === 'gw-hts-ultra', px = m.X(p.g), py = m.Y(p.h);
       circle(px, py, rival ? 8 : 7, { fill: rival ? C.second : C.comp });
       const nm = B01_BT_NAME[p.id]; if (!nm || p.id === 'gw-htx-mini' && t < T.d1 - 0.3) continue;
-      const right = !['razer-viper-v4-pro', 'keychron-g3', 'gw-htx-mini'].includes(p.id), dy = { 'keychron-g3': 22, 'gw-hts-ultra': 26, 'gw-htx-mini': 30 }[p.id] || -12;
-      text(nm + ', ' + fmtN(p.g, 1) + ' g', px + (right ? 14 : -14), py + dy, { role: 'label', size: 19, color: rival ? C.secondText : C.mute, align: right ? 'left' : 'right' });
+      const right = !['razer-viper-v4-pro', 'keychron-g3', 'gw-htx-mini'].includes(p.id), dy = { 'keychron-g3': 16, 'gw-hts-ultra': 26, 'gw-htx-mini': 30 }[p.id] || -12;
+      /* the Keychron's label sits in the clear band between the same-draw rings, its end short of the frontier's curve (at
+         dy 22, 14 px off, the curve cut its "g" and two rings sat under it: P3's re-watch) */
+      const dx = p.id === 'keychron-g3' ? -40 : right ? 14 : -14;
+      text(nm + ', ' + fmtN(p.g, 1) + ' g', px + dx, py + dy, { role: 'label', size: 19, color: rival ? C.secondText : C.mute, align: right ? 'left' : 'right' });
     }
     /* the lightest that list no hours: on the axis, with their batteries */
     { const kn = ep(t, T.none, T.none + 0.5), rows = [], RH = 26;
@@ -912,7 +920,7 @@ S({
           const kr = E.io3(prog(t, T.ths + 0.4 + i * 0.06, T.ths + 1.3 + i * 0.06)), hy = lerp(y0 + h, m.Y(b01_hoursAt(p.mAh, p.V)), kr), kl = ka * (1 - ep(t, T.ths + 0.2, T.ths + 0.5));
           circle(px, hy, 7, { fill: C.bg, alpha: ka }); circle(px, hy, 7, { color: C.comp, w: 2.5, alpha: ka });
           if (kl > 0.003) { line(px, y0 + h - 9, px, ly + 6, { color: C.hair, w: 1.2, alpha: kl }); text(lab, px, ly, { role: 'label', size: 19, color: C.ink2, align: 'center', alpha: kl }); }
-          if (p.id === 'pulsar-x2f-crazylight' && kr > 0.5) text('X2F, ' + fmtN(b01_hoursAt(p.mAh, p.V), 0) + ' h', px + 14, hy + 26, { role: 'label', size: 19, color: C.ink2, alpha: ep(t, T.ths + 1.2, T.ths + 1.5) });
+          if (p.id === 'pulsar-x2f-crazylight' && kr > 0.5) text('X2F, ' + fmtN(b01_hoursAt(p.mAh, p.V), 0) + ' h', px + 12, hy - 10, {   /* above its ring: below it the curve cut its "h" */ role: 'label', size: 19, color: C.ink2, alpha: ep(t, T.ths + 1.2, T.ths + 1.5) });
         });
         /* the HTX Mini 8K's own battery at the same draw: above its listed 80 h */
         { const lo = D.lo, hl = b01_hoursAt(lo.mAh, lo.V), kr = E.io3(prog(t, T.ths + 0.5, T.ths + 1.4));
@@ -958,7 +966,10 @@ S({
     if (kT > 0.5) pill(RX, 670, 'derived', kT, { by: 'V4 Pro draw' });
     /* the verdict and what it means */
     const same = Math.ceil(b01_hoursAt(D.lo.mAh, D.lo.V));   /* a rival's figure rounded up: against Theseus */
-    verdict(t, T.verdict, 1180, 935, { from: same, to: THESEUS.hours, unit: 'h', dec: 0, size: 84, label: 'Under 32 g, same draw', better: 'higher', maxW: 660 });
+    /* both owners named under the row (R3's could: the struck 141 h is the HTX Mini 8K's 250 mAh at the Viper's draw, D.lo);
+       the row sits 35 px higher and a little smaller so the owners and the net clear the foot rule and the label clears the
+       mouse drawing */
+    verdict(t, T.verdict, 1180, 900, { from: same, to: THESEUS.hours, unit: 'h', dec: 0, size: 76, label: 'Under 32 g, same draw', better: 'higher', maxW: 660, who: [D.lo.short || D.lo.name, 'Theseus'] });
     { const k = ep(t, T.line, T.line + 0.5), day = 6;
       rich([{ s: 'At ' + day + ' hours a day:', role: 'small', size: 28, weight: 700, color: C.ink }, { s: 'a charge every ' + Math.floor(THESEUS.hours / day) + ' days, not every ' + Math.floor(same / day) + '.', role: 'small', size: 28, weight: 700, color: C.heroText, gap: 10 }], x0 - 110, 888, { alpha: k }); }
     source(t, 'Dots: makers\' listed hours at 1 khz. Rings: each battery at the Viper V4 Pro\'s draw (1.184 Wh over 180 h), as Theseus\'s 370 mAh (1.369 Wh) gives 208 h, shown as 200. That draw includes the Viper\'s optical switches and wheel, so Theseus\'s own save more on top.', { t0: 0.8, maxW: 1080 });
@@ -1410,12 +1421,13 @@ S({
     ['ntr_stats: "all of this information is important but would fit better in other slides"', 'Moved: weight and hours here, density on the cover and its slide, price on the price slide, latency on the targets'],
     ['F21.1 (budget is the target)', 'The shell\'s allowance is shown as what the budget leaves, never as a weighed or computed shell'],
     ['F44.2 (the two side switches, "From the shell")', 'A line for the two full-size SPDT side switches, about 0.5 g each (typical), taken from the shell: the total stays 29.31 g and the shell\'s allowance falls to about 9.35 g, computed'],
-    ['F42.2 (keep 5.6 g as a target)', 'The board\'s block reads "One board, a target"']
+    ['F42.2 (keep 5.6 g as a target)', 'The board\'s block reads "One board, a target"'],
+    ['F47.4 (the board\'s path, "0.6 mm, 5.63 g")', 'Said over the board\'s block, "At 0.6 mm: 5.63 g, derived", and in the foot line (two layers, a lighter encoder, a cored support); the block stays 5.60 g, the target (F42.2), so the shell\'s allowance and the 2.8 g read the same at the printed precision (H3, 11:05)']
   ],
   draw: t => {
     header(t, 'The weight budget');
     const BG = b01_budget();
-    captions(t, [[0.3, 'Every part on one scale, as long as it is heavy: the weight budget, from the parts list.'],
+    captions(t, [[0.3, 'Every part on one scale, each drawn to its weight: the weight budget, from the parts list.'],
       [5.4, 'What is left of 29.31 g is the shell\'s: about ' + (BG ? fmtN(BG.shell, 1) : '–') + ' g with its skates, ' + (BG ? fmtN(BG.cut, 1) : '–') + ' g under the XA25\'s shell on XBAB\'s scale.']]);
     if (!BG) return;
     const x0 = 160, x1 = 1660, gpx = (x1 - x0) / THESEUS.mass, py = 650, bh = 96, step = 0.5, tS = 0.3 + BG.parts.length * step + 0.3;
@@ -1423,8 +1435,14 @@ S({
     rr(x0 - 20, py, x1 - x0 + 40, 12, 6, inkA(TH ? 0.18 : 0.24));
     for (let g = 0; g <= THESEUS.mass + 1e-6; g += 5) { line(x0 + g * gpx, py + 16, x0 + g * gpx, py + 28, { color: inkA(0.4), w: 1.5 }); text(g + ' g', x0 + g * gpx, py + 54, { role: 'tick', color: C.mute, align: 'center' }); }
     /* the parts drop in, one after another, each as long as it is heavy */
-    let gx = 0, total = 0; const rowEnd = [-1e9, -1e9];
-    const noteOf = { battery: 'Example part, ' + BG.batt.part, board: 'A target, everything on it', buttons: 'The XA25\'s, a stand-in' };
+    let gx = 0, total = 0;
+    /* over the board's block, where its path lands (F47.4; the block itself says "a target") */
+    const noteOf = { battery: 'Example part, ' + BG.batt.part, board: 'At ' + fmtN(BOARD_T, 1) + ' mm: ' + fmtN(B01_PCB_PATH.g, 2) + ' g, derived', buttons: 'The XA25\'s, a stand-in' };
+    /* the small parts' labels: one list under the pan, past the last small part, nearest part on top, each on an elbow
+       leader from its block, so no leader crosses a label or another leader; the leaders break round the gram labels
+       (the two-row fan ran a leader through "Wheel and axle" and two through "20 g": P3's re-watch, 11:30) */
+    const small = BG.parts.filter(p => p.g * gpx <= 150), sX = x0 + BG.used * gpx + 56, sRow = p => py + 92 + (small.length - 1 - small.indexOf(p)) * 30;
+    const tickBox = []; for (let g = 0; g <= THESEUS.mass + 1e-6; g += 5) { const wT = tw(g + ' g', { role: 'tick' }); tickBox.push([x0 + g * gpx - wT / 2 - 6, py + 34, wT + 12, 30]); }
     BG.parts.forEach((p, i) => {
       const t0 = 0.3 + i * step, k = spring(t, t0, { f: 2.2, z: 0.62 }), kl = ep(t, t0 + 0.25, t0 + 0.5), x = x0 + gx * gpx, w = p.g * gpx;
       if (t >= t0) {
@@ -1432,12 +1450,12 @@ S({
         rr(x + 1, py - bh + drop, Math.max(2, w - 2), bh - 2, 6, i === 0 ? inkA(TH ? 0.3 : 0.36) : inkA(TH ? 0.18 : 0.24), C.ink2, 1.5);
         if (t >= t0 + 0.2) total += p.g;
         if (w > 150) { text(p.name, x + 14, py - bh + 34, { role: 'label', size: 20, color: C.ink, alpha: kl }); text(p.key === 'battery' ? fmtN(p.g, 0) + ' g, listed' : fmtN(p.g, 2) + ' g', x + 14, py - bh + 70, { role: 'num', size: 28, weight: 800, color: C.ink, alpha: kl }); }
-        else { /* small parts: labels fanned out along a row under the pan, each on a leader from its block */
-          const lab = p.name + ', ' + fmtN(p.g, 2) + ' g', lw0 = tw(lab, { role: 'label', size: 19 }), bx = x + w / 2;
-          let r = 0, lx = Math.max(bx - lw0 / 2, rowEnd[0] + 28); if (lx + lw0 > RM) { r = 1; lx = Math.min(RM - lw0, Math.max(bx - lw0 / 2, rowEnd[1] + 28)); }
-          const ly = py + 112 + r * 44; rowEnd[r] = lx + lw0;
-          poly([[bx, py + 32], [bx, py + 70], [lx + lw0 / 2, ly - 26]], { color: C.hair, w: 1.2, alpha: kl });
-          text(lab, lx, ly, { role: 'label', size: 19, color: C.ink2, alpha: kl }); }
+        else { /* small parts: a row of the list, on an elbow leader from its block */
+          const lab = p.name + ', ' + fmtN(p.g, 2) + ' g', bx = x + w / 2, ly = sRow(p), ym = ly - 7;
+          G.save(); G.beginPath(); G.rect(-W, -H, 3 * W, 3 * H); for (const b of tickBox) G.rect(b[0], b[1], b[2], b[3]); G.clip('evenodd');
+          poly([[bx, py + 32], [bx, ym], [sX - 12, ym]], { color: C.hair, w: 1.2, alpha: kl });
+          G.restore();
+          text(lab, sX, ly, { role: 'label', size: 19, color: C.ink2, alpha: kl }); }
         if (noteOf[p.key] && w > 150) text(noteOf[p.key], x + 14, py - bh - 14, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: kl, sentence: false, maxW: Math.max(w - 20, 280) });
       }
       gx += p.g;
@@ -1464,7 +1482,7 @@ S({
       text('On the scale', RM, 300, { role: 'label', size: 21, color: C.mute, align: 'right' });
       rich([{ s: fmtN(shown, 2), role: 'd1', size: 110, weight: 800, color: shown >= THESEUS.mass - 1e-6 ? C.heroText : C.ink, grad: shown >= THESEUS.mass - 1e-6 ? C.heroGrad : null, tnum: true }, { s: 'g', role: 'small', size: 36, weight: 700, color: C.mute, gap: 10, sentence: false }], RM, 420, { align: 'right' });
       text('Battery: ' + BG.batt.mAh + ' mAh, ' + fmtN(Math.floor(BG.hours), 0) + ' h at 1 khz (derived), the ' + THESEUS.hours + ' h target covered', RM, 466, { role: 'small', size: 22, weight: 650, color: C.ink2, align: 'right', alpha: ep(t, 0.8, 1.2), sentence: false }); }
-    source(t, 'Battery: Jauch LP402535JU, 8 g (the distributor lists it to the gram, so the shell\'s share is good to about ± 0.5 g). Board: 5.6 g, the target. Buttons: the XA25\'s, as XBAB weighed them, a stand-in. Wheel: 0.9 g magnesium on a 0.12 g POM axle. Inserts: 4 × 15.23 mm³ of brass at 8.47 g/cm³. Screws: 4 × 23.59 mm³ of Ti-6Al-4V at 4.43 g/cm³. Side switches: two full-size SPDT at about 0.5 g each, typical (F44.2). Wire: 109.1 mm of 32 AWG at 0.729 mg/mm. The shell gets what is left of the 29.31 g target.', { t0: 0.8 });
+    source(t, 'Battery: Jauch LP402535JU, 8 g (the distributor lists it to the gram, so the shell\'s share is good to about ± 0.5 g). Board: ' + fmtN(THESEUS.pcb, 2) + ' g, the target; at ' + fmtN(BOARD_T, 1) + ' mm on two layers, with a lighter encoder and a cored support, it builds to ' + fmtN(B01_PCB_PATH.g, 2) + ' g (derived). Buttons: the XA25\'s, as XBAB weighed them, a stand-in. Wheel: 0.9 g magnesium on a 0.12 g POM axle. Inserts: 4 × 15.23 mm³ of brass at 8.47 g/cm³. Screws: 4 × 23.59 mm³ of Ti-6Al-4V at 4.43 g/cm³. Side switches: two full-size SPDT at about 0.5 g each, typical. Wire: 109.1 mm of 32 AWG at 0.729 mg/mm. The shell gets what is left of the 29.31 g target.', { t0: 0.8 });
   }
 });
 

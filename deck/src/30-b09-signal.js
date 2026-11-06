@@ -87,7 +87,7 @@ const B09B = (() => {
    Theseus's favour). Plan 5: the nearer of the two, floored. Smaller metal (the board's screws and their brass inserts, the
    connectors' pins) is H2's keep-out check, not this slide's. */
 const B09C = (() => {
-  const KP = typeof KEY_PARTS !== 'undefined' ? KEY_PARTS : null, an = KP ? KP.board.anchor[1] : 2.88, B = B09B, top = 5.03;
+  const KP = typeof KEY_PARTS !== 'undefined' ? KEY_PARTS : null, an = KP ? KP.board.anchor[1] : 2.88, B = B09B, top = typeof BOARD_TOP !== 'undefined' ? BOARD_TOP : 5.03;
   const R = 22.74 / 2, AH = 12.0, hA = 0.8, aLen = 3.5, modHL = (KP ? KP.module.h : 13.3) / 2;
   const bat = KP && KP.battery ? KP.battery : { x: -17.09, y: 12.45, w: 35, h: 25, t: 4.0, yMid: 7.46 };
   const bF = an - bat.y, bH0 = bat.yMid - bat.t / 2 - top, bH1 = bat.yMid + bat.t / 2 - top;
@@ -99,7 +99,8 @@ const B09C = (() => {
   const c0 = at(B.mod0), c1 = at(B.mod1);
   const fl = v => Math.floor(v * 10 + 1e-9) / 10, cl = v => Math.ceil(v * 10 - 1e-9) / 10;
   return { R, AH, hA, aLen, bF, bH0, bH1, bat, at, toWheel, toBatt, c0, c1, fl, cl,
-    show0: cl(c0.min), show1: fl(c1.min), ratio: fl(c1.min / c0.min), min: 4, best: 20 };
+    show0: cl(c0.min), show1: fl(c1.min), ratio: fl(c1.min / c0.min), min: 4, best: 20,
+    times: ['', 'as much', 'twice', 'three times', 'four times', 'five times', 'six times'][Math.floor(fl(c1.min / c0.min))] || 'many times' };
 })();
 
 /* ---------------------------------------------------------------- battery against polling rate ----------------------------------------------------------------
@@ -234,7 +235,7 @@ S({
     const turn = 2.1;
     chapterCard2(t, {
       ch: 'elec', compromise: 'Wireless that costs latency, battery or weight', answer: 'Wireless with no penalty', turn,
-      list: [[77, 'One chip, 8 khz'], [102, 'The radio, clear of the wheel'], ['latency', 'No wireless penalty'], ['sync', 'Frame sync: 202 → 42 µs'], ['link', 'Second Shot'], ['battery', 'Battery at every polling rate'], ['pmic', 'A battery reading you can trust'], [92, 'One board, one side, one reflow'], [19, 'Angled plug, paracord cable']],
+      list: [[77, 'One chip, 8 khz'], [102, 'The radio, further from metal'], ['latency', 'No wireless penalty'], ['sync', 'Frame sync: 202 → 42 µs'], ['link', 'Second Shot'], ['battery', 'Battery at every polling rate'], ['pmic', 'A battery reading you can trust'], [92, 'One board, one side, one reflow'], [19, 'Angled plug, paracord cable']],
       part: (tt, box, kt) => b09_cardPart(tt, box, kt, turn)
     });
   }
@@ -371,13 +372,13 @@ function b09_channels(t, g) {
   return out;
 }
 
-/* ============================== 3. b09_radio: the radio, clear of the wheel (F9.13, F9.25, F21.4; plan 5) ============================== */
+/* ============================== 3. b09_radio: the radio, further from metal (F9.13, F9.25, F21.4; plan 5; F48.2) ============================== */
 /** the pcb scene's flat twin in the kit's top-view camera c (mm, x = the user's right, y = toward the tail), so the board
    lines up with mouseSimple('top') through a push-in. Returns the twin's projector (mouse-frame [X, Y, Z] → stage px) */
 function b09_board(t, c, box, st = {}, o = {}) {
   const base = { explode: 0, xray: 0, power: 0, powerMode: 'charge', powerT: 0, reflow: 0, pressL: 0, pressR: 0, view: [0, 0.98, -0.2], view2d: 'top', zoom: 1 };
   const s0 = v2dCam('pcb', base, box).s;
-  const sto = Object.assign(base, st, { zoom: c.s / s0, target: [-c.cx, 5.03, -c.cy] });
+  const sto = Object.assign(base, st, { zoom: c.s / s0, target: [-c.cx, typeof BOARD_TOP !== 'undefined' ? BOARD_TOP : 5.03, -c.cy] });
   view3D('pcb', t, box[0], box[1], box[2], box[3], sto, o);
   return V3.proj || v2dProj('pcb', sto, box);
 }
@@ -442,11 +443,33 @@ function b09_gauge(x, y, w, o = {}) {
     rich([{ s: o.v.toFixed(1) + ' mm', role: 'num', size: 26, weight: 800, color: o.tcol || col, tnum: true }, o.note ? { s: o.note, role: 'label', size: 19, color: C.mute, gap: 10 } : null], xm, y - 20, { alpha: a, align: 'center' });
   }
 }
+/** an internal contrast as two plain stats (K's convention, 11:20; FILM F8, F15): Theseus's own earlier layout is never struck
+   as if it were a rival. The label (which way is better) over one row: Theseus's figure big in its gradient, named under it;
+   the other figure beside it at half the size in ink, named; then the net, in Theseus's colour, with its word under it.
+   o = { label, maxW, main: { v, unit, who }, other: { v, unit, who }, net, netWord, size (96) } */
+function b09_twoStats(t, t0, x, y, o) {
+  const a = ep(t, t0, t0 + 0.45), a2 = ep(t, t0 + 0.3, t0 + 0.75), a3 = ep(t, t0 + 0.7, t0 + 1.15); if (a <= 0.003) return;
+  const z = o.size || 96, z2 = Math.round(z * 0.5), dy = (1 - E.out3(clamp((t - t0) / 0.45))) * 12;
+  const ust = zz => ({ font: 'disp', size: Math.max(24, Math.round(zz * 0.3)), weight: 700, caps: false }), ug = zz => Math.round(zz * 0.16);
+  const st = { role: 'd1', size: z, weight: 800, track: -0.03, tnum: true }, st2 = { role: 'd1', size: z2, weight: 800, track: -0.02, tnum: true };
+  const wMain = tw(o.main.v, st) + ug(z) + tw(o.main.unit, ust(z)), x2 = x + wMain + 60;
+  const wOther = tw(o.other.v, st2) + ug(z2) + tw(o.other.unit, ust(z2)), x3 = x2 + Math.max(wOther, tw(o.other.who, { role: 'label', size: 19 })) + 56;
+  const yn = y + Math.round(z * 0.06) + 34;
+  text(o.label, x, y - Math.round(z * 0.78) - 26, { role: 'label', size: 22, color: C.mute, alpha: a, maxW: o.maxW });
+  G.save(); G.translate(0, dy);
+  rich([Object.assign({ s: o.main.v, color: C.heroText, grad: C.heroGrad }, st), Object.assign({ s: o.main.unit, color: C.heroText, gap: ug(z) }, ust(z))], x, y, { alpha: a });
+  text(o.main.who, x, yn, { role: 'label', size: 19, color: C.heroText, alpha: a });
+  G.restore();
+  rich([Object.assign({ s: o.other.v, color: C.ink2 }, st2), Object.assign({ s: o.other.unit, color: C.mute, gap: ug(z2) }, ust(z2))], x2, y, { alpha: a2 });
+  text(o.other.who, x2, yn, { role: 'label', size: 19, color: C.mute, alpha: a2 });
+  if (o.net) { rich([{ s: o.net, font: 'disp', size: 30, weight: 800, color: C.heroText, caps: false }], x3, y, { alpha: a3 });
+    if (o.netWord) text(o.netWord, x3, yn, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: a3, maxW: (o.maxW ? x + o.maxW : RM) - x3 }); }
+}
 /** the classroom version (University of Iowa demo 5B20.35): a call reaches a phone and it rings; wrapped in foil (in a bag)
    the same call stops at the foil and the phone stays silent. r = the panel's inner rect */
 function b09_foil(t, t0, r) {
   const [x, y, w, h] = r, a = ep(t, t0, t0 + 0.4); if (a <= 0.003) return;
-  const mast = [x + 44, y + h * 0.5], pw = 62, phh = 122, ph = [[x + w * 0.45, y + h * 0.42], [x + w * 0.8, y + h * 0.42]];
+  const mast = [x + 44, y + h * 0.5], pw = 58, phh = 112, ph = [[x + w * 0.45, y + h * 0.4], [x + w * 0.8, y + h * 0.4]];   /* the foil's foot clears its label */
   /* the mast, sending: a call goes out every half second */
   line(mast[0], mast[1] + 60, mast[0], mast[1] - 40, { color: C.mute, w: 3.5, alpha: a });
   line(mast[0] - 16, mast[1] + 60, mast[0] + 16, mast[1] + 60, { color: C.mute, w: 3.5, alpha: a });
@@ -470,22 +493,22 @@ function b09_foil(t, t0, r) {
   for (let i = 0; i < 22; i++) { const u = i / 22 * TAU, rx = fw / 2 * (1 + 0.05 * Math.sin(i * 2.7)), ry = fh / 2 * (1 + 0.04 * Math.cos(i * 3.1)); foil.push([fx + Math.cos(u) * rx, fy + Math.sin(u) * ry]); }
   poly(foil, { close: true, fill: TH ? '#C9C9CD' : '#8E8E93', color: TH ? '#9A9A9F' : '#B9B9BD', w: 1.5, alpha: a });
   for (let i = 0; i < 6; i++) line(fx - fw * 0.32 + i * 8, fy - fh * 0.36 + i * 16, fx + fw * 0.26 - i * 4, fy - fh * 0.22 + i * 17, { color: 'rgba(255,255,255,0.38)', w: 1.3, alpha: a });
-  text('Rings', ph[0][0], y + h - 6, { role: 'label', size: 20, color: C.ink2, align: 'center', alpha: a });
-  text('In foil: silent', ph[1][0], y + h - 6, { role: 'label', size: 20, color: C.red, align: 'center', alpha: a });
+  text('Rings', ph[0][0], y + h - 2, { role: 'label', size: 20, color: C.ink2, align: 'center', alpha: a });
+  text('In foil: silent', ph[1][0], y + h - 2, { role: 'label', size: 20, color: C.red, align: 'center', alpha: a });
 }
 S({
-  id: 'b09_radio', ch: 'elec', theme: 'night', title: 'The radio, clear of the wheel', settle: 11, ideas: [68, 102],
+  id: 'b09_radio', ch: 'elec', theme: 'night', title: 'The radio, ' + B09C.times + ' further from metal', settle: 11, ideas: [68, 102],
   src: ['antDetune', 'finalInnov', 'b09Taoglas', 'b09GearPatrol', 'b09Iowa', 'b09Plan5', 'elcRaytac', 'b09RaytacMdbt', 'elcLayout'], replaces: ['elc_module', 'antenna'],
-  answers: [['the raytac module needs to be flipped so it\'s further from the scroll wheels metal (F9.13)', 'Plan 5 (your sensor and MCU swap, F30.3) moves the module to the back of the board, facing forward with no 180° turn. The slide measures what matters to the radio: the 3D clearance from the antenna (the module\'s front 3.5 mm) to the nearest big metal, against Taoglas\'s rule for PCB antennas (at least 4 mm, 20 mm or more for best efficiency). The first board, the radio right behind the wheel and facing it, left ' + B09C.show0.toFixed(1) + ' mm to the wheel\'s magnesium; plan 5 leaves ' + B09C.fl(B09C.c1.wheel).toFixed(1) + ' mm to the wheel and ' + B09C.fl(B09C.c1.batt).toFixed(1) + ' mm to the battery (its foil is metal): ' + B09C.ratio.toFixed(1) + '× the clearance, and the slide says plainly that it is still short of 20 mm. What it would take to clear 20 mm from both is a question in the report, with numbers. Turned 180° on plan 5, the antenna would face the battery instead.'],
+  answers: [['the raytac module needs to be flipped so it\'s further from the scroll wheels metal (F9.13)', 'Plan 5 (your sensor and MCU swap, F30.3) moves the module to the back of the board, facing forward with no 180° turn. The slide measures what matters to the radio: the 3D clearance from the antenna (the module\'s front 3.5 mm) to the nearest big metal, against Taoglas\'s rule for PCB antennas (at least 4 mm, 20 mm or more for best efficiency). The first board, the radio right behind the wheel and facing it, left ' + B09C.show0.toFixed(1) + ' mm to the wheel\'s magnesium; plan 5 leaves ' + B09C.fl(B09C.c1.wheel).toFixed(1) + ' mm to the wheel and ' + B09C.fl(B09C.c1.batt).toFixed(1) + ' mm to the battery (its foil is metal): ' + B09C.ratio.toFixed(1) + '× the clearance, shown as two plain stats (the first board is Theseus\'s own layout, so nothing is struck), and the slide says plainly that it is still short of 20 mm. You accepted plan 5 as built (F48.2; on the options sheet, clearing 20 mm from both would move the module 3.0 mm and the battery 3.5 mm back). Turned 180° on plan 5, the antenna would face the battery instead.'],
     ['id lowk you to use the long antenna design i\'ve attached (F9.13)', 'The module is drawn with the long meander antenna across its end, from the photo you sent'],
     ['it should be black instead of blue (F9.25)', 'Drawn black'],
     ['AN54LM-P20A, long antenna (F21.4)', 'Named on the slide: Raytac AN54LM-P20A, the long PCB antenna'],
     ['elc_module and antenna: not rated, no notes', 'Merged into one demonstration: the fault (the antenna beside the wheel\'s metal, its signal stopped and shadowed), the classroom version (a phone in foil won\'t ring), the move, and the clearance to the wheel and the battery against Taoglas\'s 4 mm minimum and 20 mm best']],
   draw: t => {
-    const Cc = B09C, c1 = Cc.c1, words = ['', 'as much', 'twice', 'three times', 'four times', 'five times', 'six times'];
-    header(t, 'The radio, clear of the wheel');
+    const Cc = B09C, c1 = Cc.c1;
+    header(t, 'The radio, ' + Cc.times + ' further from metal');
     captions(t, [[0.6, 'The wheel is metal, and metal beside an antenna reflects its signal and throws it off tune. Our first board put the radio right behind it.'],
-      [4.6, 'So the radio moves to the back of the board and the sensor forward: ' + (words[Math.floor(Cc.ratio)] || 'many times') + ' the clearance from metal' + (c1.near === 'battery' ? ', the battery now the nearest' : '') + ', but still short of the 20 mm Taoglas recommends.']]);
+      [4.6, 'So the radio moves to the back of the board and the sensor forward: ' + Cc.times + ' the clearance from metal' + (c1.near === 'battery' ? ', the battery now the nearest' : '') + ', but still short of the 20 mm Taoglas recommends.']]);
     const box = [LM, 272, 860, 708], B = B09B;
     /* where on the mouse: the whole simplified mouse with its board lit, then the push-in to the board, far enough back to
        take in the battery's front (the second piece of metal near the antenna) */
@@ -545,9 +568,9 @@ S({
       text(lab, xd - 16, my + (big ? 30 : 26), { role: 'label', size: 19, color: C.mute, alpha: k, align: 'right' });
     };
     { const c0 = Cc.c0, wP = c0.wPt;
-      clr(kL0, W(c0.zf, Cc.hA, 0), W(wP[0], wP[1], 0), Cc.cl(c0.wheel), C.red, true, 'To the wheel\'s metal', 0); }
+      clr(kL0, W(c0.zf, Cc.hA, 0), W(wP[0], wP[1], 0), Cc.cl(c0.wheel), C.red, true, 'To the wheel\'s rim', 0); }
     { const nearW = c1.near === 'wheel', wP = c1.wPt;
-      clr(kL1, W(c1.zf, Cc.hA, 0), W(wP[0], wP[1], 0), Cc.fl(c1.wheel), nearW ? C.heroText : C.ink2, nearW, 'To the wheel\'s metal', 0);
+      clr(kL1, W(c1.zf, Cc.hA, 0), W(wP[0], wP[1], 0), Cc.fl(c1.wheel), nearW ? C.heroText : C.ink2, nearW, 'To the wheel\'s rim', 0);
       clr(kL1, W(c1.zb, Cc.hA, 0), W(Cc.bF, clamp(Cc.hA, Cc.bH0, Cc.bH1), 0), Cc.fl(c1.batt), nearW ? C.ink2 : C.heroText, !nearW, 'To the battery', 0); }
     /* the pointer: in, takes the module, carries it back, lets go, out */
     if (t > t1 - 0.8 && t < t2 + 0.9) {
@@ -578,7 +601,9 @@ S({
     text('Metal phones carry plastic antenna lines for the same reason.', rx, 588, { role: 'small', size: 25, weight: 600, color: C.ink2, alpha: ep(t, 3.4, 3.9), maxW: rw });
     { const kg = ep(t, 2.4, 2.8), kc = ep(t, t2, t2 + 0.9, E.out3), v = lerp(Cc.show0, Cc.show1, kc), short = t >= t2 + 0.9 && Cc.show1 < Cc.best;
       b09_gauge(rx, 680, 800, { a: kg, v, col: kc > 0.5 ? C.hero : C.red, tcol: kc > 0.5 ? C.heroText : C.red, note: short ? 'short of 20' : null }); }
-    verdict(t, 6.6, rx, 838, { from: Cc.show0.toFixed(1), to: Cc.show1.toFixed(1), unit: 'mm', label: 'Antenna to the nearest big metal (further is better)', who: ['First board', 'Plan 5'], size: 88, rivalCol: 'grey', net: Cc.ratio.toFixed(1) + '× the clearance', netWord: 'a steadier link', maxW: rw });
+    b09_twoStats(t, 6.6, rx, 866, { label: 'Antenna to the nearest big metal' + (c1.near === 'wheel' && Cc.c0.near === 'wheel' ? ', the wheel\'s rim' : '') + ' (further is better)', maxW: rw,   /* names the rim while both nearest points are the wheel's (B09C) */
+      main: { v: Cc.show1.toFixed(1), unit: 'mm', who: 'Plan 5' }, other: { v: Cc.show0.toFixed(1), unit: 'mm', who: 'Our first board' },
+      net: Cc.ratio.toFixed(1) + '× the clearance', netWord: 'a steadier link' });
     source(t, 'Detuning: Antenova. Magnesium reflects radio: Finalmouse. Metal near a PCB antenna: Taoglas APN-13-8-001.A. Phone in foil: University of Iowa demo 5B20.35. Antenna lines: Gear Patrol 2024. Clearances in 3D, from plan 5, the wheel (Ø 22.74 mm, axle 12 mm up) and the battery\'s place.', { t0: 3 });
   }
 });

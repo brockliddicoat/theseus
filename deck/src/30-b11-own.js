@@ -288,7 +288,7 @@ function b11_tape(t, t0, x, y, w, h, o = {}) {
    pull 0..1; o = { hole (the ground colour) }. Returns stage points ---------- */
 function b11_plugMM(kind, pull, o = {}) {
   const T = b11_tone(), nyl = TH ? '#FFFFFF' : '#D8D8D8', ne = 'rgba(16,17,20,0.6)', out = {};
-  pcbSec(-16, 9, 0, 1.0, kind === 'side' ? { brk: [1, 1] } : { brk: [1, 1], rival: true });
+  pcbSec(-16, 9, 0, kind === 'side' ? null : 1.0, kind === 'side' ? { brk: [1, 1] } : { brk: [1, 1], rival: true });   /* Theseus's board BOARD_T (0.6 mm, F47.4); a rival's its own */
   /* the pads' finish: Theseus's gold (ENIG), a rival's grey (M's board-colour rule, as pcbSec's rings) */
   const pad = (x0, x1, lift, bad) => { G.fillStyle = kind === 'side' ? '#d9b25a' : '#c9ccd1'; G.fillRect(x0, -0.05, x1 - x0, 0.05); solid(() => { G.beginPath(); G.moveTo(x0 - 0.15, 0); G.quadraticCurveTo(x0, -0.25 - lift, x0 + 0.25, -0.3 - lift); G.lineTo(x1 - 0.25, -0.3 - lift); G.quadraticCurveTo(x1, -0.25 - lift, x1 + 0.15, 0); G.closePath(); }, MT.tin, [x0, -0.4 - lift, x1 - x0, 0.4 + lift], { lw: 0.8 }); if (bad > 0.01) { ga(bad); G.fillStyle = C.bad; G.fillRect(x0 - 0.1, -0.12, x1 - x0 + 0.2, 0.16); ga(1); } };
   const wires = (x0, y0, dx, dy, len) => { OWN_WIRE.forEach((c, i) => { const oy = (i - 1) * 0.42; G.beginPath(); G.moveTo(x0, y0 + oy); G.bezierCurveTo(x0 + dx * len * 0.4, y0 + oy, x0 + dx * len * 0.7, y0 + oy + dy * len * 0.3, x0 + dx * len, y0 + oy + dy * len); G.strokeStyle = c; G.lineWidth = lw(5); G.lineCap = 'round'; G.stroke(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = lw(1); G.stroke(); }); };
@@ -378,9 +378,11 @@ function b11_topH(z) {
   return best;
 }
 /* where things sit, mouse mm (z toward the nose, height up). The four board screws are plan 5's mirror pairs (MH1/MH2 at
-   layout z 29.50, MH3/MH4 at −2.25; mouse z = layout z − 2.88): side-on, one of each pair shows */
+   layout z 29.50, MH3/MH4 at −2.25; mouse z = layout z − 2.88): side-on, one of each pair shows. Theseus's board is the
+   shared one: its top at BOARD_TOP (5.03 mm over the pad), BOARD_T thick (0.6 mm since F47.4: only its underside moved up,
+   4.0 → 4.43); the rival's board keeps its own, the 1.05 mm slab it was drawn with (H3: a rival's board passes its own) */
 const B11_SIDE = {
-  screwsZ: [29.50 - 2.88, -2.25 - 2.88], boardTop: 5.05, boardBot: 4.0,
+  screwsZ: [29.50 - 2.88, -2.25 - 2.88], boardTop: BOARD_TOP, boardBot: BOARD_TOP - BOARD_T, rivalTop: 5.05, rivalBot: 4.0,
   rivalSkates: [[37, 52], [-6, 6], [-52, -37]], rivalScrews: [44, 0, -44, 21, -23], rivalHidden: 3, parting: 9.3
 };
 function b11_board() { const b = msLive().board; return { z0: b[1], z1: b[3] }; }
@@ -431,7 +433,7 @@ function b11_theseusInside(o = {}) {
   xrest();
   /* the four screws (one of each pair shows), coming down out of their bosses as they are undone; their heads under the
      board, never under a skate */
-  B11_SIDE.screwsZ.forEach((z, i) => { const k = (o.out || [0, 0])[i] || 0, dy = drop + k * 6.5; b11_screwSide(-z, B11_SIDE.boardBot - dy, 5, { hi: hi.screws }); });
+  B11_SIDE.screwsZ.forEach((z, i) => { const k = (o.out || [0, 0])[i] || 0, dy = drop + k * 6.5; b11_screwSide(-z, B11_SIDE.boardBot - dy, OWN_M2.len, { hi: hi.screws }); });
   ga(1);
 }
 /** most mice inside, side-on (schematic): two shells, the board on the bottom one, skates over the screws, a ribbon
@@ -451,22 +453,23 @@ function b11_rivalInside(o = {}) {
   /* the parting line */
   const zs = MS_SIDE.filter(p => Math.abs(p[1] - par) < 1.0).map(p => p[0]), pz0 = Math.min(...zs), pz1 = Math.max(...zs);
   if (lift < 0.2) mmLine([[-pz1 + 0.6, -par], [-pz0 - 0.6, -par]], inkA(0.55), 1.3);
-  /* the board on the bottom shell's posts; the battery glued on a pad behind it */
-  G.fillStyle = C.comp; G.fillRect(-B.z1, -B11_SIDE.boardTop, B.z1 - B.z0, B11_SIDE.boardTop - B11_SIDE.boardBot);
+  /* the board on the bottom shell's posts (the rival's own thickness); the battery glued on a pad behind it */
+  const rT = B11_SIDE.rivalTop, rB = B11_SIDE.rivalBot;
+  G.fillStyle = C.comp; G.fillRect(-B.z1, -rT, B.z1 - B.z0, rT - rB);
   G.fillStyle = TH ? '#3A3B40' : '#141518'; G.fillRect(-Bt.z1 + 1, -Bt.h0, Bt.z1 - Bt.z0 - 2, 0.6);
   G.beginPath(); pathRR(-Bt.z1, -Bt.h1 - 0.6, Bt.z1 - Bt.z0, Bt.h1 - Bt.h0, 0.8); G.fillStyle = TH ? '#C9CDD3' : '#7E848C'; G.fill(); G.strokeStyle = T.edge; G.lineWidth = lw(1); G.stroke();
   /* the switch on the board, its three pins soldered through it */
   const swZ = 37.6;
-  xsave(); xmove(-swZ - 6.4, -B11_SIDE.boardTop - (o.swOut || 0));
+  xsave(); xmove(-swZ - 6.4, -rT - (o.swOut || 0));
   swMM({ press: 0 });
   xrest();
   for (const px of SWG.pins) {
     const x = -swZ - 6.4 + px, m = clamp(o.melt || 0);
-    G.beginPath(); G.moveTo(x - 0.8, -B11_SIDE.boardBot); G.quadraticCurveTo(x - 0.3, -B11_SIDE.boardBot + 0.5 * (1 - m), x, -B11_SIDE.boardBot + 0.75 * (1 - m)); G.quadraticCurveTo(x + 0.3, -B11_SIDE.boardBot + 0.5 * (1 - m), x + 0.8, -B11_SIDE.boardBot); G.closePath();
+    G.beginPath(); G.moveTo(x - 0.8, -rB); G.quadraticCurveTo(x - 0.3, -rB + 0.5 * (1 - m), x, -rB + 0.75 * (1 - m)); G.quadraticCurveTo(x + 0.3, -rB + 0.5 * (1 - m), x + 0.8, -rB); G.closePath();
     G.fillStyle = m > 0.05 ? mix('#C8CDD3', b11_hot(m), m) : '#C8CDD3'; G.fill(); G.strokeStyle = T.edge; G.lineWidth = lw(0.8); G.stroke();
   }
   /* the ribbon: from the board's connector up to the top shell, stretched as the shell lifts */
-  { const x0 = 0.5, y0 = -B11_SIDE.boardTop - 0.6, x1 = -9, y1 = -24 - lift, u = clamp(o.unlatched || 0), strain = clamp(o.ribbon || 0) * (1 - u);
+  { const x0 = 0.5, y0 = -rT - 0.6, x1 = -9, y1 = -24 - lift, u = clamp(o.unlatched || 0), strain = clamp(o.ribbon || 0) * (1 - u);
     const slack = Math.max(0, 9 - lift * 0.8) * (1 - u) + u * 6;
     G.beginPath(); G.moveTo(x0, y0 - (u > 0 ? u * 3 : 0)); G.bezierCurveTo(x0 + slack, y0 - 6, x1 + slack, y1 + 6, x1, y1);
     G.strokeStyle = strain > 0.05 ? mix('#C98A4E', C.red, strain) : '#C98A4E'; G.lineWidth = lw(4.2); G.lineCap = 'butt'; G.stroke();
@@ -551,8 +554,9 @@ function b11_switchSoldered(melt, up) {
 }
 function b11_switchClaws(up) {
   const holes = [-5.08, 0, 5.08];
-  pcbSec(-9.4, 9.4, 0, 1.2, { holes });
-  /* the sockets: a barrel pressed into each plated hole, a flange on the top face, six fingers inside (two seen) */
+  pcbSec(-9.4, 9.4, 0, null, { holes });   /* Theseus's board, BOARD_T (0.6 mm, F47.4; was drawn 1.2) */
+  /* the sockets: a barrel pressed into each plated hole, a flange on the top face, six fingers inside (two seen); the barrel
+     is the part's own length, so on the thinner board more of it shows below */
   for (const x of holes) {
     solid(() => { G.beginPath(); G.moveTo(x - 0.95, -0.18); G.lineTo(x + 0.95, -0.18); G.lineTo(x + 0.95, 0.05); G.lineTo(x + 0.7, 0.05); G.lineTo(x + 0.7, 1.95); G.lineTo(x + 0.45, 2.15); G.lineTo(x - 0.45, 2.15); G.lineTo(x - 0.7, 1.95); G.lineTo(x - 0.7, 0.05); G.lineTo(x - 0.95, 0.05); G.closePath(); }, MT.brass, [x - 0.95, -0.18, 1.9, 2.33], { lw: 0.8 });
     G.fillStyle = '#16171A'; G.fillRect(x - 0.42, -0.18, 0.84, 2.1);
@@ -565,10 +569,12 @@ function b11_switchClaws(up) {
    rival's (grey mask and trim, pcbSec's rival); otherwise Theseus's black mask with gold pads (pcbSec's default). The rest is
    own_jointMM's, line for line, through its own helpers (own_wallTF, own_insHalf, own_screwMM, own_bitMM). Same options and
    returns as own_jointMM, plus rival */
+const B11_RIVAL_BT = 1.0;   /* most mice's board under a joint screwed straight into plastic (its own; H3) */
 function b11_jointMM(o = {}) {
   const kind = o.kind || 'insert', ins = kind === 'insert', T = OWN_TH[ins ? 'm2' : 'tf'], hole = o.hole || C.panel, out = {};
   const fw = 4.6, bossM = OWN_MAT[ins ? 'cf' : kind], rB = 2.65, hB = o.crop || 5.4, I = OWN_INS;
-  const pass2 = o.pass === 2, ph = pass2 ? (o.ph2 || 0) : (ins ? 0.2 : 0), tip = o.tip == null ? 4.0 : o.tip, zb = tip - OWN_M2.len;
+  const bT = o.rival ? B11_RIVAL_BT : BOARD_T, seat = OWN_M2.len - bT;   /* the board under the head, and how deep the M2 × 5 then reaches */
+  const pass2 = o.pass === 2, ph = pass2 ? (o.ph2 || 0) : (ins ? 0.2 : 0), tip = o.tip == null ? seat : o.tip, zb = tip - OWN_M2.len;
   /* the boss, cut and hatched; it runs on down into the shell, so it ends in a break line */
   const bossPath = () => { G.beginPath(); G.moveTo(-rB, hB); G.lineTo(-rB, 0.25); G.arcTo(-rB, 0, -rB + 0.25, 0, 0.25); G.lineTo(rB - 0.25, 0); G.arcTo(rB, 0, rB, 0.25, 0.25); G.lineTo(rB, hB); G.bezierCurveTo(rB * 0.36, hB + 0.3, -rB * 0.36, hB - 0.3, -rB, hB); G.closePath(); };
   solid(bossPath, bossM, [-rB, 0, 2 * rB, hB], { hatch: Object.assign({ sp: 9 }, bossM.hatch || {}) });
@@ -596,10 +602,11 @@ function b11_jointMM(o = {}) {
     poly2(W.L2, W.R2, true); G.strokeStyle = edgeCol(bossM); G.lineWidth = lw(1); G.stroke();
   }
   /* the board, clamped: Theseus's black mask both faces with the gold pad under the head and the plated hole (ENIG); a
-     rival's board grey, mask and trim (M's board-colour rule: the plastic joint is the rival's way) */
+     rival's board grey, mask and trim (M's board-colour rule: the plastic joint is the rival's way). Theseus's BOARD_T thick
+     (0.6 mm, F47.4, as own_jointMM); the rival's most mice's own 1.0 mm (H3: their boards are 1.0 to 1.6 mm) */
   const trim = o.rival ? '#c9ccd1' : '#d9b25a';
-  for (const [x0, x1, b] of [[-fw, -1.15, [1, 0]], [1.15, fw, [0, 1]]]) pcbSec(x0, x1, -1.0, 1.0, o.rival ? { brk: b, rival: true } : { brk: b });
-  G.fillStyle = trim; G.fillRect(-2.25, -1.03, 1.1, 0.04); G.fillRect(1.15, -1.03, 1.1, 0.04); G.fillRect(-1.19, -1.0, 0.04, 1.0); G.fillRect(1.15, -1.0, 0.04, 1.0);
+  for (const [x0, x1, b] of [[-fw, -1.15, [1, 0]], [1.15, fw, [0, 1]]]) pcbSec(x0, x1, -bT, bT, o.rival ? { brk: b, rival: true } : { brk: b });
+  G.fillStyle = trim; G.fillRect(-2.25, -bT - 0.03, 1.1, 0.04); G.fillRect(1.15, -bT - 0.03, 1.1, 0.04); G.fillRect(-1.19, -bT, 0.04, bT); G.fillRect(1.15, -bT, 0.04, bT);
   /* the screw in view, and the bit in its head; the second drive comes in tilted about the boss's mouth */
   const a = pass2 ? (o.tilt || 0) : 0;
   xsave(); xturn(a);
@@ -707,7 +714,7 @@ S({
     b11_cell(t, 0.12, [col(0), ry[1], cw, rh], r => part(r[0] + r[2] / 2 - 46, r[1] + (r[3] - dh) / 2 + 4, sb, () => { b11_underMM({ lit: ep(t, R.tdrv[0], R.tdrv[0] + 0.25), outs: tOut }); A.tscr = SP(14.59, 5.13); A.dot = SP(17.2, 43.2); }, { rot: -Math.PI / 2 }), { dim: 1 - kTh });
     /* 2 · reach the board: the whole mouse side-on */
     const camB = { cx: 0, cy: -21.5, s: 3.2 }, inner = r => [r[0], r[1] + 4, r[2], r[3] - dh];
-    b11_cell(t, 0.1, [col(1), ry[0], cw, rh], r => withCam(camB, inner(r), () => { b11_rivalInside({ lift, skatesOff: 1, heat: 0, screwsOut: 1, ribbon: strain, unlatched: unl, melt: 0, swOut: 0, fade: 1 }); A.rib = SP(-4, -14 - lift); A.latch = SP(0.5, -B11_SIDE.boardTop - 1.2); }));
+    b11_cell(t, 0.1, [col(1), ry[0], cw, rh], r => withCam(camB, inner(r), () => { b11_rivalInside({ lift, skatesOff: 1, heat: 0, screwsOut: 1, ribbon: strain, unlatched: unl, melt: 0, swOut: 0, fade: 1 }); A.rib = SP(-4, -14 - lift); A.latch = SP(0.5, -B11_SIDE.rivalTop - 1.2); }));
     b11_cell(t, 0.17, [col(1), ry[1], cw, rh], r => withCam(camB, inner(r), () => { mouseSimple('left', { show: ['skates'] }); b11_theseusInside({ drop, out: [Math.max(tOut[0], 0) > 0.99 ? 1 : tOut[0], tOut[2]], swOut: 0, noBoss: true }); A.brd = SP(-14, -B11_SIDE.boardBot + drop + 0.2); }), { dim: 1 - kTh });
     /* 3 · free the switch: the switch on its board, close */
     b11_cell(t, 0.15, [col(2), ry[0], cw, rh], r => part(r[0] + r[2] / 2 - 26, r[1] + (r[3] - dh) * 0.8 + 2, 10.5, () => { b11_switchSoldered(melt, swOut); A.joint = SP(SWG.pins[1] - 6.4, 1.75); }));
@@ -758,7 +765,7 @@ S({
       /* the switch step is the Clicks chapter's mechanism (b03_hotswap): said as a callback, not a second demonstration (FILM F5) */
       note(2, 1, R.tsw[0] + 0.2, 'Claw sockets, as in Clicks', false, null);
     }
-    verdict(t, R.verdict, 1120, 922, { from: 4, to: 1, label: 'Tools iFixit lists to swap a worn switch', better: 'lower', net: false, size: 116, maxW: 720 });
+    verdict(t, R.verdict, 1120, 922, { from: 4, to: 1, label: 'Tools iFixit lists to swap a worn switch', better: 'lower', who: ['G Pro Wireless', 'Theseus'], net: false, size: 116, maxW: 720 });
     text('Rated Difficult by iFixit: 40 to 50 minutes, with the four tools and an optional heat gun for the skates.', 300, 846, { role: 'small', size: 24, weight: 650, color: C.ink2, maxW: 780, lh: 1.3, alpha: ep(t, R.verdict + 0.4, R.verdict + 0.8) });
     text('No heat, no solder, nothing peeled', 1330, 898, { role: 'small', size: 27, weight: 750, color: C.heroText, alpha: ep(t, R.verdict + 1.3, R.verdict + 1.7) });
     text('Swap it at your desk and keep the mouse', 1330, 934, { role: 'small', size: 24, weight: 650, color: C.ink2, alpha: ep(t, R.verdict + 1.6, R.verdict + 2.0) });
@@ -808,7 +815,7 @@ S({
     if (kx > 0.003) cols.forEach((c, i) => {
       const a = kx, y = E0[1], sx = c.x + 150, sy = y + 300, ss = 56, tx = c.x + 380, ty = y + 210;
       demoWindow(c.x, y, c.w, E0[3], a);
-      ltag(c.x + 22, y + 32, c.steel ? 'Most mice' : 'Theseus', c.steel ? 'Class 4.8 steel, 220 HV' : 'Grade 5 titanium, 349 HV', { size: 21, color: c.steel ? C.mute : C.heroText, vcolor: c.steel ? C.ink2 : C.heroText, a });
+      ltag(c.x + 22, y + 32, c.steel ? 'Common steel' : 'Theseus', c.steel ? 'Class 4.8, 220 HV' : 'Grade 5 titanium, 349 HV', { size: 21, color: c.steel ? C.mute : C.heroText, vcolor: c.steel ? C.ink2 : C.heroText, a });
       const dmg = nSl * 0.5 * (c.steel ? 1 : B11.hv.steel / B11.hv.ti);
       /* cut through the head (B-B), the bit in its cross */
       G.save(); G.beginPath(); G.rect(c.x + 2, y + 58, c.w - 4, 330); G.clip();
@@ -833,8 +840,8 @@ S({
     const kv = ep(t, Q.vick, Q.vick + 0.4);
     if (kv > 0.003) { demoWindow(rx - 20, 290, rw + 20, 340, kv); text('The hardness test: one diamond, one force', rx, 322, { role: 'label', size: 20, color: C.mute, alpha: kv }); }
     b11_vickers(t, Q.vick, rx, 336, rw, 270);
-    verdict(t, Q.verdict, rx, 800, { from: B11.hv.steel, to: B11.hv.ti, unit: ' HV', label: 'Head hardness', better: 'higher', net: false, size: 104, maxW: rw });
-    rich([{ s: 'Four screws: ', role: 'small', size: 24, weight: 650, color: C.ink2 }, { s: '0.75 g', role: 'small', size: 24, weight: 650, color: C.mute }, { s: ' → ', role: 'small', size: 24, weight: 650, color: C.mute }, { s: '0.42 g', role: 'small', size: 24, weight: 800, color: C.heroText }], rx, 866, { alpha: ep(t, Q.mass, Q.mass + 0.4), align: 'left' });
+    verdict(t, Q.verdict, rx, 800, { from: B11.hv.steel, to: B11.hv.ti, unit: ' HV', label: 'Head hardness', better: 'higher', who: ['Steel', 'Theseus'], net: false, size: 104, maxW: rw });
+    rich([{ s: 'Four screws: ', role: 'small', size: 24, weight: 650, color: C.ink2 }, { s: '0.75 g', role: 'small', size: 24, weight: 650, color: C.mute }, { s: ' → ', role: 'small', size: 24, weight: 650, color: C.mute }, { s: '0.42 g', role: 'small', size: 24, weight: 800, color: C.heroText }], rx, 884, { alpha: ep(t, Q.mass, Q.mass + 0.4), align: 'left' });
     /* three plain lines, under the heads */
     const L3 = ['If a cross ever rounds, a flat blade still turns the slot.', 'A thread strips in its softer half: the brass insert, never the screw.', 'Not magnetic: a magnetised driver won\'t hold it.'];
     L3.forEach((s2, i) => text(s2, LM + i * 360, 836, { role: 'small', size: 22, weight: 650, color: i === 2 ? C.mute : C.ink2, alpha: ep(t, Q.lines + i * 0.35, Q.lines + i * 0.35 + 0.4), maxW: 330, lh: 1.25 }));
@@ -849,8 +856,12 @@ S({
    second thread beside the first (own_wallTF), the brass can only be followed. The chance the joint then feels different is
    Brock's estimate (F2.01, F21.5): ABS 90 %, carbon-filled 70 %, brass 0 %. The first fit stays in words (F21.12). */
 const B11I = { d1: [2.05, 3.35], out: [3.5, 4.35], d2: [4.6, 6.5], split: [1.55, 2.05], tilt: 2 * Math.PI / 180, ph2: 0.18, verdict: 6.55 };
-function b11_inPose(t) {
-  const P = B11I, d = 4.0;
+/* how far aside the plastic joint's second drive lands at its tip: the screw's reach into the boss on most mice's 1.0 mm
+   board (4.0 mm) × sin 2° = 0.1396 mm, shown 0.14 (two decimals, nearest) */
+B11I.aside = Math.round((OWN_M2.len - B11_RIVAL_BT) * Math.sin(B11I.tilt) * 100) / 100;
+function b11_inPose(t, d = OWN_SEAT) {   /* d: how deep the screw seats (Theseus's OWN_SEAT, 4.4 mm on the 0.6 mm board; the
+     rival's 4.0 on its 1.0 mm board): one pose, each joint at its own depth */
+  const P = B11I;
   if (t < P.out[0]) { const k = ep(t, P.d1[0], P.d1[1], E.io3); return { pass: 1, tip: d * k, reach1: d * k, reach2: 0, dir: t > P.d1[0] && t < P.d1[1] ? 1 : 0, step: 0 }; }
   if (t < P.d2[0]) { const k = ep(t, P.out[0], P.out[1], E.io3); return { pass: 1, tip: d * (1 - k), reach1: d, reach2: 0, dir: t < P.out[1] ? -1 : 0, step: 1 }; }
   const k = ep(t, P.d2[0], P.d2[1], E.io3); return { pass: 2, tip: d * k, reach1: d, reach2: d * k, dir: t < P.d2[1] ? 1 : 0, step: 2 };
@@ -862,7 +873,7 @@ function b11_bossesSide(a = 1, hiFront) {
   for (const z of B11_SIDE.screwsZ) {
     const top = b11_topH(z) - 1.4, front = z === B11_SIDE.screwsZ[0];
     G.setLineDash([lw(4), lw(3)]); G.strokeStyle = front && hiFront ? hiFront : inkA(0.45); G.lineWidth = lw(front && hiFront ? 2 : 1.2); G.strokeRect(-z - 2.65, -top, 5.3, top - B11_SIDE.boardTop); G.setLineDash([]);
-    b11_screwSide(-z, B11_SIDE.boardBot, 4.5, { hi: front && hiFront ? hiFront : null });
+    b11_screwSide(-z, B11_SIDE.boardBot, OWN_M2.len, { hi: front && hiFront ? hiFront : null });   /* the M2 × 5, its head under the board */
   }
   ga(1);
 }
@@ -870,7 +881,7 @@ S({
   id: 'b11_inserts', ch: 'own', theme: 'paper', title: 'Brass inserts: the same fit every time', settle: 11, ideas: [101, 9],
   replaces: ['own_insert'], src: ['ownBrock', 'ownCovestro', 'b11Brock'],
   answers: [
-    ['Brief: the second drive in plastic cuts a new thread; in brass it follows the same one', 'One pointer drives both joints in, backs them out and drives them in again 2° off (0.14 mm at the tip, about two hairs: 4.0 mm of thread × sin 2°): the carbon-filled boss is left with a second, red thread beside the first; the screw in the brass insert runs down the same thread.'],
+    ['Brief: the second drive in plastic cuts a new thread; in brass it follows the same one', 'One pointer drives both joints in, backs them out and drives them in again 2° off (' + B11I.aside.toFixed(2) + ' mm at the plastic joint\'s tip, about two hairs: ' + (OWN_M2.len - B11_RIVAL_BT).toFixed(1) + ' mm of thread × sin 2°): the carbon-filled boss is left with a second, red thread beside the first; the screw in the brass insert runs down the same thread.'],
     ['Brief and F21.5: 70 % → 0 % chance the joint feels different', 'The verdict counts 70 % down to 0 %; the bars under it give ABS 90 %, carbon-filled 70 %, brass 0 % (brass 0 % from Brock\'s experience, F21.3).'],
     ['F2.01: "how metal threaded inserts increase longevity"', 'Longevity is the next slide, b11_wear, as two measured results side by side: a brass insert keeps 98.6 % of its pull strength after 20 heavy pulls; screws straight into plastic keep 82.9 % (and 43.3 %) of their undo torque after re-assembly.'],
     ['F2.01: "increase chances of tolerances be correct when assembled the first time, show chances of getting tolerances right"; F21.12: first assembly in words', 'In words, no number until it is simulated (F21.12): "Right the first time, too: the thread is finished in brass before the screw ever meets it, so no hand can start it crooked."'],
@@ -889,7 +900,7 @@ S({
     const est = establish(t, 0, boxTh, { view: 'left', hi: { board: 'ink' }, focus, hold: 0.45, dur: 1.0, fade: 0.25, dimFill: 0.6, locator: 'tr', locW: 150,
       draw: () => b11_bossesSide(1 - kj, C.ink) });
     const c = est.cam, bit = ep(t, Q.d1[0] - 0.4, Q.d1[0]), turn = t * 1.1;
-    const joint = (kind, box) => { let o = {}; withCam(c, box, () => { o = part(-fz, -B11_SIDE.boardTop, 1, () => b11_jointMM({ kind, rival: kind !== 'insert', tip: P.tip, pass: P.pass, reach1: P.reach1, reach2: P.reach2, tilt: Q.tilt, ph2: Q.ph2, recut: kind === 'cf' ? ep(t, Q.d2[0] + 0.9, Q.d2[1] + 0.2) : 0, bit: { a: bit, turn: P.dir ? turn * P.dir : 0 }, hole: C.bg, crop: 5.4 }), { rot: Math.PI, alpha: kj }) || {}; }); return o; };
+    const joint = (kind, box) => { let o = {}; const Pk = b11_inPose(t, kind === 'insert' ? OWN_SEAT : OWN_M2.len - B11_RIVAL_BT); withCam(c, box, () => { o = part(-fz, -B11_SIDE.boardTop, 1, () => b11_jointMM({ kind, rival: kind !== 'insert', tip: Pk.tip, pass: Pk.pass, reach1: Pk.reach1, reach2: Pk.reach2, tilt: Q.tilt, ph2: Q.ph2, recut: kind === 'cf' ? ep(t, Q.d2[0] + 0.9, Q.d2[1] + 0.2) : 0, bit: { a: bit, turn: P.dir ? turn * P.dir : 0 }, hole: C.bg, crop: 5.4 }), { rot: Math.PI, alpha: kj }) || {}; }); return o; };
     const Rj = joint('insert', boxTh), L = kS > 0.001 ? joint('cf', boxRv) : {};
     /* the panels, named at the top, the divider between */
     const kl = ep(t, Q.split[1] - 0.25, Q.split[1] + 0.15);
@@ -907,7 +918,7 @@ S({
     if (step === 0 && kS > 0.5) text('Closed: the screw drives in', sx, sy, { role: 'small', size: 25, weight: 700, color: C.ink2, alpha: ep(t, Q.d1[0], Q.d1[0] + 0.3) * (1 - ep(t, Q.out[0] - 0.2, Q.out[0])) });
     if (step === 1) text('Opened: it backs out', sx, sy, { role: 'small', size: 25, weight: 700, color: C.ink2, alpha: ep(t, Q.out[0], Q.out[0] + 0.3) * (1 - ep(t, Q.d2[0] - 0.2, Q.d2[0])) });
     if (step === 2) text('Closed again, 2° off', sx, sy, { role: 'small', size: 25, weight: 700, color: C.red, alpha: ep(t, Q.d2[0], Q.d2[0] + 0.3) });
-    scaleNote(sx, sy + 36, '0.14 mm aside, about two hairs', { lead: 'At the tip:', t, t0: Q.d2[0] + 0.3, size: 23 });
+    scaleNote(sx, sy + 36, B11I.aside.toFixed(2) + ' mm aside, about two hairs', { lead: 'At the tip:', t, t0: Q.d2[0] + 0.3, size: 23 });
     /* what each joint is left with: a line at the foot of each panel, a mark on the thread */
     const k2 = ep(t, Q.d2[0] + 1.0, Q.d2[0] + 1.3), k3 = ep(t, Q.d2[0] + 1.2, Q.d2[0] + 1.5);
     if (L.recutPt && k2 > 0) { circle(L.recutPt[0], L.recutPt[1], 5, { fill: C.red, alpha: k2 }); circle(L.recutPt[0], L.recutPt[1], 12, { color: C.red, w: 1.6, alpha: 0.5 * k2 });
@@ -916,7 +927,7 @@ S({
       text('The same thread, the same joint', boxTh[0] + 20, y0 + h0 - 22, { role: 'small', size: 23, weight: 700, color: C.heroText, alpha: k3, t, t0: Q.d2[0] + 1.2, cps: 90 }); }
     /* the right: the verdict, the three joints, the first fit in words */
     const cx = 1240;
-    verdict(t, Q.verdict, cx, 470, { from: 70, to: 0, unit: '%', label: 'Chance the joint feels different after a re-screw', better: 'lower', net: false, size: 150, maxW: 600 });
+    verdict(t, Q.verdict, cx, 470, { from: 70, to: 0, unit: '%', label: 'Chance the joint feels different after a re-screw', better: 'lower', who: ['Straight into carbon-filled', 'Theseus'], net: false, size: 150, maxW: 600 });
     own_bars(t, Q.verdict + 1.4, cx, 600, RM - cx, [
       { label: 'Straight into ABS', v: OWN_FEEL.abs, s: OWN_FEEL.abs + ' %', kind: 'comp' },
       { label: 'Straight into carbon-filled', v: OWN_FEEL.cf, s: OWN_FEEL.cf + ' %', kind: 'second' },
@@ -976,7 +987,7 @@ S({
       ltag(x0 + 24, y + 34, plast ? 'Straight in' : 'Theseus', plast ? 'Glass-filled PEI, re-assembled 10 times' : 'Brass insert, pulled 20 times to 80 % of failure', { size: 21, color: plast ? C.mute : C.heroText, vcolor: col, a: A });
       /* where: the joint at the board's boss, in section, as on the slide before */
       G.save(); G.beginPath(); G.rect(x0 + 2, y + 52, 300, rh - 54); G.clip();
-      const J = part(x0 + 160, y + (plast ? 216 : 178), 30, () => b11_jointMM({ kind: R.kind, rival: R.kind !== 'insert', tip: 4.0, pass: 1, reach1: 4.0, reach2: 0, tilt: 0, ph2: 0, recut: 0, bit: { a: 0 }, hole: C.panel, crop: 5.4 }), { rot: Math.PI, alpha: A }) || {};
+      const J = part(x0 + 160, y + (plast ? 216 : 178), 30, () => b11_jointMM({ kind: R.kind, rival: R.kind !== 'insert', tip: plast ? OWN_M2.len - B11_RIVAL_BT : OWN_SEAT, pass: 1, reach1: plast ? OWN_M2.len - B11_RIVAL_BT : OWN_SEAT, reach2: 0, tilt: 0, ph2: 0, recut: 0, bit: { a: 0 }, hole: C.panel, crop: 5.4 }), { rot: Math.PI, alpha: A }) || {};
       G.restore();
       /* the loupe: a ring on the thread, a line to the magnified flank */
       const ring = plast ? J.recutPt || J.mouth : J.insert;
@@ -1099,8 +1110,8 @@ S({
     const rx = 1220, rw = RM - rx, kt2 = ep(t, Q.tape, Q.tape + 0.4);
     if (kt2 > 0.003) { demoWindow(rx - 20, 286, rw + 20, 300, kt2); text('Why the direction matters: a strip of tape', rx, 318, { role: 'label', size: 20, color: C.mute, alpha: kt2 }); }
     b11_tape(t, Q.tape, rx, 330, rw, 250);
-    verdict(t, Q.verdict, rx, 760, { from: 7, to: 1, label: 'Tools and supplies to change the battery', better: 'lower', net: false, size: 110, maxW: rw });
-    text('The one tool is the driver in the box. No heat, no solvent: what the EU asks of every portable battery from 18 February 2027.', rx, 820, { role: 'small', size: 22, weight: 650, color: C.ink2, maxW: rw, lh: 1.3, alpha: ep(t, Q.eu, Q.eu + 0.4) });
+    verdict(t, Q.verdict, rx, 736, { from: 7, to: 1, label: 'Tools and supplies to change the battery', better: 'lower', who: ['Superlight', 'Theseus'], net: false, size: 110, maxW: rw });
+    text('The one tool is the driver in the box. No heat, no solvent: what the EU asks of every portable battery from 18 February 2027.', rx, 824, { role: 'small', size: 22, weight: 650, color: C.ink2, maxW: rw, lh: 1.3, alpha: ep(t, Q.eu, Q.eu + 0.4) });
     source(t, 'G Pro X Superlight: iFixit\'s battery guide (adhesive: heat it and pry; the plug pulled "straight up"; tools: spudger, Phillips driver, tweezers, angled tweezers, iOpener or hair dryer, isopropyl alcohol, double-sided tape); Glorious Model O 2 Wireless (glued, "this will rip"); a punctured battery can catch fire (iFixit). Peel and shear: 3M. EU Regulation 2023/1542 Art. 11.', { t0: 1.0, maxW: 1760 });
   }
 });
@@ -1152,11 +1163,13 @@ S({
       const bw = 600, bh = Bx[3], bx0 = 330, by0 = Bx[1];
       G.save(); G.globalAlpha = kX; view3D('pcb', t, bx0, by0, bw, bh, { view: 'bottom', view2d: 'bottom', zoom: 1.45 }); G.restore();
       const A = B11_ART, ap = (fx, fy) => [bx0 + bw * fx, by0 + bh * fy];
-      /* measured on the drawing (box fractions): wordmark, lattice, ON/OFF, gold cluster, QR */
+      /* measured on the drawing (box fractions, re-measured 11:4x on the 10:20 plan-5 twin, R3-b11-1; re-check on H3's 0.6 mm regen): the lattice, the QR (its
+         right edge), the wordmark (its right end), ON/OFF, the gold cluster. The QR's label above the wordmark's, so the two
+         leaders don't cross */
       const tags = [
-        [ap(0.70, 0.50), 'Dark triangles, filleted: the old board\'s art on plan 5\'s outline (F30.15)', [bx0 + 500, by0 + 200], 'r'],
-        [ap(0.50, 0.6125), 'The wordmark', [bx0 + 500, by0 + 372], 'r'],
-        [ap(0.658, 0.758), 'QR: scan it for the web software', [bx0 + 500, by0 + 520], 'r'],
+        [ap(0.70, 0.50), 'Dark triangles, filleted: the old board\'s art on plan 5\'s outline', [bx0 + 500, by0 + 200], 'r'],
+        [ap(0.69, 0.685), 'QR: scan it for the web software', [bx0 + 500, by0 + 372], 'r'],
+        [ap(0.60, 0.78), 'The wordmark', [bx0 + 500, by0 + 520], 'r'],
         [ap(0.342, 0.555), 'ON and OFF at the switch (#100)', [bx0 + 100, by0 + 300], 'l'],
         [ap(0.325, 0.766), 'Gold triangles (#63)', [bx0 + 100, by0 + 470], 'l']
       ];
@@ -1188,8 +1201,8 @@ S({
         });
       });
       text('New skates every time', rx + rw - 8, 578, { role: 'label', size: 19, color: C.red, align: 'right', alpha: kr * kp }); }
-    verdict(t, Q.verdict, rx, 760, { from: 0, to: 4, label: 'Board screws you can reach from outside', better: 'higher', net: false, size: 110, maxW: rw });
-    text('Back in with the same four turns.', rx, 830, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.hand, Q.hand + 0.4), maxW: rw, lh: 1.3 });
+    verdict(t, Q.verdict, rx, 760, { from: 0, to: 4, label: 'Board screws you can reach from outside', better: 'higher', who: ['Viper V3 Pro', 'Theseus'], net: false, size: 110, maxW: rw });
+    text('Back in with the same four turns.', rx, 858, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.hand, Q.hand + 0.4), maxW: rw, lh: 1.3 });
     source(t, 'Viper V3 Pro: TechPowerUp\'s review (Torx T6 screws beneath the front and rear skates, two clips at the sides, a cable between the shells, four screws hold the board to the bottom shell). Theseus: Brock\'s doc #54 (the board\'s screws inserted from the bottom), #63 (art on the board\'s underside), #74 (the paper cover); the art and outline: plan 5 (H1).', { t0: 1.0, maxW: 1760 });
   }
 });
@@ -1237,7 +1250,7 @@ S({
     }
     /* right: the verdict, then what each box lists, then the skate file and the colourways */
     const rx = 900, rw = RM - rx;
-    verdict(t, Q.verdict, rx, 396, { from: 3, to: 6, unit: ' of 6', label: 'What a new owner needs, in the box', better: 'higher', net: false, size: 100, maxW: rw });
+    verdict(t, Q.verdict, rx, 396, { from: 3, to: 6, unit: ' of 6', label: 'What a new owner needs, in the box', better: 'higher', who: ['Next best', 'Theseus'], net: false, size: 100, maxW: rw });
     const items = ['Receiver', 'Cable', 'Grip tape', 'Spare skates', 'Driver', 'Repair steps'], nw = 300, cw = (rw - nw) / items.length, ty = 470, rh = 36;
     const gx = j => rx + nw + cw * (j + 0.5);
     items.forEach((it, j) => text(it, gx(j), ty - 8, { role: 'label', size: 20, color: it === 'Driver' ? C.ink : C.mute, align: 'center', alpha: ep(t, Q.table, Q.table + 0.4), maxW: cw - 6 }));

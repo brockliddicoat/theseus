@@ -181,41 +181,45 @@ export function buildSensorModule(opts = {}) {
 // H1, 2026-11-06 (b04's catch): PixArt's Z, lens reference plane to the surface, is 2.4 mm (2.2 to 2.6, PAW3395 / PMW3360
 // datasheets). With the board's top 5.03 mm over the pad, the lens's lowest point (the imaging dome) sits 2.63 below the board's
 // top, 1.12 mm shallower than before (it was 1.28 mm over the pad, out of focus): the upper block to board top − 1.75, the
-// lower block to − 2.13, the collars to − 2.20, the imaging dome to − 2.63, the light dome to − 2.50; the optics unchanged
-export const LENS_SPEC = { body: [5.2, 9.6, 1.63], belowBoardTop: 2.63, referencePlaneOverPad: 2.40, pegs: 'Ø1.7 through the board, split snap heads', label: 'proposal' };
+// lower block to − 2.13, the collars to − 2.20, the imaging dome to − 2.63, the light dome to − 2.50; the optics unchanged.
+// H3, 2026-11-06 (F47.4, the 0.6 mm board): every height is set from the board's TOP (the sensor sits on it, the optics hang
+// from it), so a thinner board moves no optic: only the upper block grows up to meet the underside (0.75 mm tall on the
+// 1.0 mm board, 1.15 on the 0.6), and the boss in the aperture spans the board. boardThickness defaults to Theseus's 0.6
+export const LENS_SPEC = { body: [5.2, 9.6, 2.03], belowBoardTop: 2.63, referencePlaneOverPad: 2.40, pegs: 'Ø1.7 through the board, split snap heads', label: 'proposal' };
 
 export function buildSnapLens(opts = {}) {
   const M = partMaterials(opts.materials);
   const userMats = new Set(Object.values(opts.materials || {}));
   const own = new Set(Object.values(M).filter(m => !userMats.has(m)));
   const root = new THREE.Group(); root.name = 'SnapLens';
-  const tB = opts.boardThickness ?? 1.0, yb = -tB;                    // the board's underside
+  const tB = opts.boardThickness ?? 0.6, yb = -tB;                    // the board's underside
+  const yo = -1.0;                         // the optics' datum, 1.0 mm under the board's top (the 1.0 mm board's underside)
   const mat = M.lensPC;
   const body = new THREE.Group(); body.name = 'lensBody';
   // the body: a rounded block under the board, with a shoulder step along its length
   const blk = (w, d, ya, yz, r, bev) => yFlip(extrude(roundedRectShape(w, d, r), { depth: yz - ya, front: bev ? { r: bev, s: 3 } : null, back: { r: 0.08, s: 2 }, curveSegments: 8 })).translate(0, ya, 0);
-  body.add(meshOf(blk(5.2, 9.6, yb - 0.75, yb - 0.004, 0.6, 0.12), mat, 'upper'));
-  body.add(meshOf(blk(4.4, 7.2, yb - 1.13, yb - 0.75, 0.5, 0.0).translate(0, 0, 0.3), mat, 'lower'));
+  body.add(meshOf(blk(5.2, 9.6, yo - 0.75, yb - 0.004, 0.6, 0.12), mat, 'upper'));
+  body.add(meshOf(blk(4.4, 7.2, yo - 1.13, yo - 0.75, 0.5, 0.0).translate(0, 0, 0.3), mat, 'lower'));
   // the boss that sits in the board's sensor aperture
   body.add(meshOf(lathe([[0, yb - 0.01], [1.12, yb - 0.01], [1.12, -0.18], [1.04, -0.1], [0, -0.1]], { segments: 48 }), mat, 'boss'));
   // the optics on the bottom face: the imaging dome and the smaller illumination dome, each on a short collar
-  body.add(meshOf(lathe((() => { const p = [[0, yb - 1.63], ...Array.from({ length: 12 }, (_, i) => { const a = (1 - (i + 1) / 12) * Math.PI / 2; return [1.25 * Math.cos(a), yb - 1.20 - 0.43 * Math.sin(a)]; }), [1.42, yb - 1.20], [1.42, yb - 1.126]]; return p; })(), { segments: 56 }).translate(0, 0, 1.1), mat, 'imagingLens'));
-  body.add(meshOf(lathe((() => { const p = [[0, yb - 1.50], ...Array.from({ length: 10 }, (_, i) => { const a = (1 - (i + 1) / 10) * Math.PI / 2; return [0.85 * Math.cos(a), yb - 1.20 - 0.3 * Math.sin(a)]; }), [1.0, yb - 1.20], [1.0, yb - 1.126]]; return p; })(), { segments: 48 }).translate(0, 0, -1.9), mat, 'lightLens'));
+  body.add(meshOf(lathe((() => { const p = [[0, yo - 1.63], ...Array.from({ length: 12 }, (_, i) => { const a = (1 - (i + 1) / 12) * Math.PI / 2; return [1.25 * Math.cos(a), yo - 1.20 - 0.43 * Math.sin(a)]; }), [1.42, yo - 1.20], [1.42, yo - 1.126]]; return p; })(), { segments: 56 }).translate(0, 0, 1.1), mat, 'imagingLens'));
+  body.add(meshOf(lathe((() => { const p = [[0, yo - 1.50], ...Array.from({ length: 10 }, (_, i) => { const a = (1 - (i + 1) / 10) * Math.PI / 2; return [0.85 * Math.cos(a), yo - 1.20 - 0.3 * Math.sin(a)]; }), [1.0, yo - 1.20], [1.0, yo - 1.126]]; return p; })(), { segments: 48 }).translate(0, 0, -1.9), mat, 'lightLens'));
   root.add(body);
   // the clips: an arm from each end of the body to a peg through the board, a split snap head above it
   const clips = new THREE.Group(); clips.name = 'clips';
   for (const s of [1, -1]) {
     const zc = s * 6.0;
-    const arm = yFlip(extrude(roundedRectShape(2.4, 1.9, 0.5), { depth: 0.65, front: { r: 0.12, s: 2 }, back: { r: 0.1, s: 2 }, curveSegments: 6 })).translate(0, yb - 0.75, zc - s * 0.25);
+    const arm = yFlip(extrude(roundedRectShape(2.4, 1.9, 0.5), { depth: 0.65, front: { r: 0.12, s: 2 }, back: { r: 0.1, s: 2 }, curveSegments: 6 })).translate(0, yo - 0.75, zc - s * 0.25);
     clips.add(meshOf(arm, mat, 'clipArm'));
-    const peg = lathe([[0, yb - 0.1], [0.82, yb - 0.1], [0.82, 0.05], [1.02, 0.1], [0.98, 0.42], [0.62, 0.72], [0, 0.72]], { segments: 40, crease: 40 });
+    const peg = lathe([[0, yo - 0.1], [0.82, yo - 0.1], [0.82, 0.05], [1.02, 0.1], [0.98, 0.42], [0.62, 0.72], [0, 0.72]], { segments: 40, crease: 40 });
     peg.translate(0, 0, zc); clips.add(meshOf(peg, mat, 'peg'));
     // the split in the snap head (a dark slot reads as the gap between the two fingers)
     const slit = yFlip(extrude(roundedRectShape(0.22, 2.2, 0.05), { depth: 0.66, curveSegments: 2 })).translate(0, 0.08, zc);
     clips.add(meshOf(slit, M.lensSlit, 'slit'));
   }
   root.add(clips);
-  root.userData.spec = { ...LENS_SPEC };
+  root.userData.spec = { ...LENS_SPEC, body: [5.2, 9.6, +(2.63 - tB).toFixed(2)], boardThickness: tB };
   root.userData.parts = { body, clips };
   root.dispose = () => { disposeTree(root, userMats); for (const m of own) m.dispose?.(); };
   return root;

@@ -1,8 +1,22 @@
 """Extras the 2D twins need beside the outlines: the board's power paths (pcb-layout.json), in the mouse frame.
 
   python3 tools/geo2d/extras.py ../3d/pcb/pcb-layout.json geo2d/pcb.json
+  python3 tools/geo2d/extras.py --pin-wheel geo2d/wheel.json      (H3: pins the wheel twin's camera frame, as below for the board)
 """
-import sys, json
+import sys, json, os
+if sys.argv[1] == '--pin-wheel':
+    # the wheel twin's camera frame (08-v2d.js frames every 2D view of the wheel from it). F47.4 (H3): the lighter encoder lost
+    # its nickel-silver frame, whose folded tabs set the scene's far edge, so the scene's own frame moved 0.1 mm and zoomed
+    # 0.3 %. Pinned to the frame before that (H2, 10:10), so b08_wheel's views and callouts stay put; the scene's own frame is
+    # kept as frameScene. Re-pin on purpose if the wheel itself changes size.
+    dst = sys.argv[2]; D = json.load(open(dst))
+    PINW = {'center': [0.6750001907348633, 10.809683322906494, 0], 'size': [24.75, 25.11936664581299, 22.738733291625977], 'r': 20.979722784122302}
+    if 'frame' in D:
+        D['frameScene'] = D.get('frameScene') or D['frame']
+        D['frame'] = PINW
+    json.dump(D, open(dst + '.tmp', 'w'), separators=(',', ':')); os.replace(dst + '.tmp', dst)
+    print('wheel frame pinned')
+    sys.exit(0)
 lay = json.load(open(sys.argv[1])); dst = sys.argv[2]
 D = json.load(open(dst))
 y0, dz = lay['boardTopY_in_mouse'], lay['boardOffsetZ_in_mouse']
@@ -24,6 +38,5 @@ PIN = {'center': [1.164677619934082, 14.372908143997194, 20.822985763549802],
 if 'frame' in D:
     D['frameScene'] = D.get('frameScene') or D['frame']
     D['frame'] = PIN
-import os
 json.dump(D, open(dst + '.tmp', 'w'), separators=(',', ':')); os.replace(dst + '.tmp', dst)
 print('power paths', {k: len(v) for k, v in power.items()})

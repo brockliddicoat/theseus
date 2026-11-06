@@ -23,5 +23,6 @@ for k in ${SCENES:-shell shell-sora pcb gt01 wheel claw screw skates battery}; d
   python3 tools/geo2d/silhouettes.py dev/geo2d-raw-$R/$k.json geo2d/$k.json $LINES
 done
 case " ${SCENES:-pcb} " in *" pcb "*) python3 tools/geo2d/extras.py ../3d/pcb/pcb-layout.json geo2d/pcb.json ;; esac
+case " ${SCENES:-wheel} " in *" wheel "*) python3 tools/geo2d/extras.py --pin-wheel geo2d/wheel.json ;; esac
 [ -n "${SCENES:-}" ] || python3 tools/geo2d/lattice2d.py ../3d/lattice/assets geo2d/lattice.json
 python3 tools/build.py main --out=$R --own=$OWN --with3d

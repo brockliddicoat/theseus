@@ -25,8 +25,8 @@ Status words:
 - **CONFIRMED by Fxx**: a later message said it again.
 
 ## How to log a message (F50.1)
-1. **Every message, the same hour.** The integrator appends each message to the day's inbox (work/feedback-inbox.md) with
-   the live version at the time; it goes here as the next section (F51, F52, ...) headed with its subject and time
+1. **Every message, as it lands.** The integrator appends each message to the day's inbox (work/feedback-inbox.md) with
+   the live version at the time; within minutes it goes here as the next section (F51, F52, ...) headed with its subject and time
    (Chicago), or as the next item of an open section when it only adds to it (each item keeps its own time).
 2. **His words, verbatim:** typos, lowercase and his punctuation kept; " / " between parts of one message; an answer to a
    question as question → "the option's label" exactly as picked (with "(Recommended)" when it was). After it, marked
@@ -34,9 +34,10 @@ Status words:
 3. **What he was looking at.** A live version's number is its Unix publish time (`date -d @1793981126` → 10:05). Take
    the build that was live (work/int/film/, or the commit rebuilt in a worktree: `git worktree add --detach /tmp/wt
    <commit>; cd /tmp/wt; python3 deck/tools/build.py main`) and run `feedback/snap.sh <entry> <build.html> <slide:t>...`
-   with WHEN, LIVE, COMMIT and NOTE set (the script's header explains them). Frame one, mid and settle for the slide he
-   talks about, the moment he names, settle for the others; only the slides he refers to. Link the folder from the entry
-   ("Frames: feedback/frames/<entry>/").
+   with WHEN, LIVE, COMMIT and NOTE set (the script's header explains them). Up to v23 (2026-11-05) each published page
+   is in git itself: `git show <commit>:deck/dist/main.html`. Frame one, mid and settle for the slide he talks about,
+   the moment he names, settle for the others; only the slides he refers to. Link the folder from the entry ("Frames:
+   feedback/frames/<entry>/").
 4. **What he sent or answered on:** his screenshots, and the option sheets or pictures he answered, copied unchanged into
    feedback/attachments/<entry>/ with a README (what it is, where from, his answer). Link it.
 5. **What it overrules:** find the earlier items it reverses or replaces and mark each where it stands (OVERRULED,
@@ -46,8 +47,9 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 11:38 (Chicago): FA logged the missing messages, linked frames and attachments for F39 to F49,
-and marked overruled items (F50.1).
+Last updated: 2026-11-06 12:38 (Chicago): F53 (~12:30, 12:34) logged with the sheet he answered on. (12:22: F52, F40.4's
+measure. 12:08: frames for the older entries, F9 to F31 and F27. 11:55: F51. 11:38: the missing messages, frames and
+attachments for F39 to F49, overruled items marked, F50.1.)
 
 ## F34, F35. Brock's own steering given to Codex on 2026-11-05 (carried over; Codex's work itself is set aside, F38.4)
 On 2026-11-05, out of Claude usage, Brock had Codex continue from this branch. On 2026-11-06 he called its output "very
@@ -140,7 +142,9 @@ Frames: feedback/frames/F40/ (b09_radio in the live film, v1793975367-421d).
 - **F40.4 DECIDED** The radio module: "Keep facing forward (Recommended)" (plan 5: at the board's rear, the long antenna facing forward,
   28.2 mm from the wheel's axle against 12.4 mm on the old board; no 180° turn, which would put it about 3 mm from the
   battery). Supersedes the old 180° turn (F9.13's aim is met by the move). **Re-derived from the built plan-5 board
-  (KEY_PARTS, b09, 09:15): 11.9 → 27.6 mm to the axle, 2.3×** (the antenna's place is its keep-out's centre).
+  (KEY_PARTS, b09, 09:15): 11.9 → 27.6 mm to the axle, 2.3×** (the antenna's place is its keep-out's centre). **The
+  measure SUPERSEDED by F48.2** (P1's note; FILM F37): b09_radio leads with the clearance to the nearest big metal, the
+  wheel's magnesium rim, 4.0 → 17.2 mm (4.3×), 2.8 mm short of Taoglas's 20 mm best; the axle figures are not the claim.
 
 ## F41. The strength rule for the shell slides (2026-11-06 08:58)
 Frames: feedback/frames/F41/ (b05_nopick and b06_light as live, both judged at 120 MPa).
@@ -247,7 +251,8 @@ attachments/F46/). Frames: feedback/frames/F47/ (b07_board and b10_board as live
   better later": no stretch, no hump move, in the 3D or the 2D; 39.9 mm is the stated height only.
 - **F47.2** "also you did the bottom rim very wrong, it’s supposed to slope down in a straight line from the back, you cut off
   way too much, reference the 3d scan": the rim below the crease at the back must match the scan (a straight slope down
-  from the back). **TODO (S1):** before/after at true scale, then the 3D and 2D.
+  from the back). **TODO (S1):** before/after at true scale, then the 3D and 2D. **The scan-following reading SUPERSEDED
+  by F51.2 (a refinement):** the crease is one angled straight line, as his words said, not the scan's curve.
 - **F47.3** The rib feet's joint to the board (P4's options sheet): "keep as options, i haven’t decided yet". Open; b07 makes
   no drop claim.
 - **F47.4 DECIDED** The board's path to its 5.6 g target: **"0.6 mm, 5.63 g"**: a 0.6 mm, two-layer board, half-ounce outer
@@ -277,10 +282,12 @@ Frames: feedback/frames/F49/ (fingers on b02_front, b02_rails, b06_arch, b08_gri
 on b01_lighter and b07_balance; the 09:52 publish showed the same).
 - **F49.1** "the fingers look really bad right now": every fingertip drawn on the slides (the kit's finger and the builders'
   own fingers). **TODO (FG):** a redesign, shown to him as an options sheet first, then rolled out across the film.
+  **Decided: F52.1** ("A Line").
 - **F49.2** "and the trigger cutouts in the side profile also don’t look correct at all, they should be smooth and naturally
   arching, an offset from the top of the profile, not jaggy like they are right now": the line where the triggers are cut
   from the body, seen from the side (the simplified mouse's side views and the 3D twin it comes from), must be a smooth arch
-  offset below the top of the profile. This doesn't change the profile itself (F47.1). **TODO (S1).**
+  offset below the top of the profile. This doesn't change the profile itself (F47.1). **TODO (S1).** Refined by F51.1:
+  smooth all the way to the front, with no step into the nose lip.
 
 ## F50. Log every message, with what the slides looked like (2026-11-06 11:00) STANDING
 - **F50.1 STANDING** "make sure pretty much every message i send is logged in feedback.md, with references of what each slide
@@ -293,8 +300,56 @@ on b01_lighter and b07_balance; the 09:52 publish showed the same).
 - **F50.2** (11:06) "the last 2 messages i sent were hanging for like 20 minutes so i hit send now, its information that you
   needed but it shouldn’t interrupt your work, read them and then proceed". (His stop at ~11:00 was only to push F49 and
   F50 through; the 0.6 mm board work, H3, carries on.)
-- **F50.3** (~11:15) "continue" (as the integrator logged it in INTEGRATOR.md; not yet in the inbox). Reading: after the
-  server restart at ~11:00 stopped every agent, carry on; the agents were relaunched at 11:15.
+- **F50.3 NOTED** (~11:10, after "[Request interrupted by user]") "Continue from where you left off." It may be the app's
+  resume prompt rather than typed. Reading: after the server restart at ~11:00 stopped every agent, carry on; the agents
+  were relaunched at 11:15.
+
+## F51. The trigger cutouts from the side, and the bottom rim, on S2's before/after (2026-11-06 11:52)
+At 11:45 the integrator sent him S2's sheet (/home/claude/work/s2/s2_rim_cutout_before_after.png: the bottom rim and the
+side-view trigger cutout, before and after, over his scan) and said it was being applied; he answered on it, re-sending it as
+an image. Attachments: feedback/attachments/F51/ (the sheet as he sent it back). No frames: the sheet is what he saw.
+- **F51.1** "trigger cutouts are still very wonky from the side especially near the front,": the cutout seen from the side
+  must be smooth all the way to the nose, with no step into the nose lip (S2's "after" still steps into it). Refines F49.2.
+  **TODO (S2).**
+- **F51.2** "the bottom rim should be an angled straight line as this will be better for manufacturing (i think)": the
+  crease above the rim becomes one angled straight line, not the scan-following curve S2 drew (8.6 mm at the tail tip, 6.8,
+  5.5, 4.8 at 30 mm in, then about 4 mm to the nose). Refines F47.2. **TODO (S2).** Refined by F53.3: a straight line at
+  about 2°, fitted over the front and middle.
+- 12:16 (the integrator to him, not his message): S2's fix sent (/home/claude/work/s2/s2_f51_front_rim.png) with two
+  questions: the front, one arch to the nose tip or the nearly flat lip eased in; the rim, one straight line from the tail
+  tip (8.6 mm) to the nose's lower corner (3.0 mm), accepting a top-view trim of up to 0.6 mm round the tail, or filled
+  out. Answered: F53.
+
+## F52. Fingers, the grip tape in the box, the skin floor (2026-11-06 ~12:10, answers)
+Answers to the integrator's questions. Attachments: feedback/attachments/F52/ (FG's finger sheets). Frames:
+feedback/frames/F52/ (the film as it stood at 12:18, built from the working tree; nothing was published after 10:05).
+- **F52.1 DECIDED** The fingers (FG's options sheet: A line, B shaded, C graphic): **"A Line"**. Reading: an outline with
+  flat light and shadow tones, like the deck's drawn parts, in mono grey on paper and night (FG's recommendation). Settles
+  F49.1. **TODO (FG):** rolled out across the film.
+- **F52.2 DECIDED** Grip tape in Theseus's box (FILM F35: b11_box listed grip tape among the spares while b08_tape says the
+  best thickness is none): **"Drop it from the box"**. Reading: the tape goes; the other spares stay (skates and POM pads).
+  His idea #72 ("extra sets of grip tape and skates") is **SUPERSEDED by F52.2** for the tape. **TODO (b11_box).**
+- **F52.3 DECIDED** The skin floor (FILM F42: the lattice study's 0.60 mm skin, b12_ribs, against b05_wall's 0.89 mm
+  moulding floor, which b06_filletsize and b06_mold also shade by): **"0.60 mm, to be proven"**. Reading: the film keeps the
+  study's 0.60 mm skin and says it is still to be proven (a moulding trial); 0.89 mm (Protolabs' design-guide figure) is no
+  longer a hard floor on any slide. No earlier FEEDBACK item set 0.89 mm. **TODO (L1, P4: b05_wall, b06_filletsize,
+  b06_mold, b12_ribs).**
+
+## F53. The cutout's front and the rim's angle, on S2's 12:16 sheet (2026-11-06 ~12:30 and 12:34)
+Answers to the integrator's two questions on S2's fix for F51, then a correction. Attachments: feedback/attachments/F53/
+(the sheet as he saw it: the integrator's 1300 px copy; S2 overwrote the full-size file at 12:21). No frames: the sheet is
+what he saw.
+- **F53.1** (~12:30) The cutout's front (one arch to the nose tip, recommended, or the lip kept nearly flat and eased into):
+  typed, neither option: "it needs to properly connect completely". Reading: neither drawing joins the cutout to the front
+  properly; the line must connect into the nose completely, nothing stopping short or left hanging. Refines F51.1.
+  **TODO (S2):** shown to him again.
+- **F53.2 OVERRULED by F53.3** (~12:30) The rim (the tail-tip-to-nose straight line with a top-view trim of up to 0.6 mm
+  round the tail, or the tail widened to keep the outline): clicked **"Widen the tail"**, by accident (F53.3).
+- **F53.3 DECIDED** (12:34) "i accidentally hit the wrong but on the last question, i was typing a new answer" / "i was
+  saying the bottom rim line needs to be at ~2 degrees, prioritizing matching as much in the front and middle as possible
+  instead of the back". Reading: "Widen the tail" is void; the rim's crease is one straight line at about 2°, fitted to the
+  scan's crease over the front and middle, letting the back depart from it (not the tail-tip-to-nose chord S2 drew).
+  Refines F51.2. **TODO (S2).**
 
 ## Open with Brock
 
@@ -522,6 +577,7 @@ on b01_lighter and b07_balance; the 09:52 publish showed the same).
   (**OVERRULED by F27**, see F2.09); a plain wall at the same weight is still the shell slides' baseline (b05_nopick).
 
 ## F7. 2026-11-04 04:52: the Apple direction (with four keynote slides)
+Frames: feedback/frames/F9/ (the nearest committed build, 04:45, seven minutes before this message: the look he meant).
 
 - **F7.1 STANDING** "make sure to keep working after your compactions"
 - **F7.2 DONE in shared code, IN PROGRESS per slide** "from the slides i'm seeing the visual quality took a massive step
@@ -552,6 +608,7 @@ on b01_lighter and b07_balance; the 09:52 publish showed the same).
   more in the right direction"
 
 ## F8. 2026-11-04 05:12
+Frames: feedback/frames/F9/ (the same build, 04:45: where the gradients were).
 
 - **F8.1 DONE in shared code, STANDING** "gradients make the most sense in the font, you need to use them everywhere else
   very sparingly other than where they are resided so the presentation doesn't look too vibe coded"
@@ -559,6 +616,8 @@ on b01_lighter and b07_balance; the 09:52 publish showed the same).
   - Tiles, bars, marks, the stage and transitions are flat.
 
 ## F9. 2026-11-04 07:20 (with eight photos)
+Frames: feedback/frames/F9/ (the nearest committed build before it, 04:45: the cover, magnetic clicks, the radio module,
+the GT01, the side buttons, the encoder, zero grams, an unfilleted lattice).
 
 - **F9.1 STANDING** "continue on everything you were working on, but i have some more notes"
 - **F9.2 DONE** "i don't like when tiles have the same color outline as there font color, that looks bad"
@@ -592,8 +651,8 @@ on b01_lighter and b07_balance; the 09:52 publish showed the same).
 - **F9.13 DONE** (3D, and `antenna`: the pointer turns the module 180°, 1.8× further from the wheel) "the raytac module needs to be flipped so it's further from the scroll wheels metal, and
   id lowk you to use the long antenna design i've attached"
   - **The 180° flip SUPERSEDED by F40.4:** on plan 5 the module sits at the board's rear, the antenna facing forward,
-    27.6 mm from the wheel's axle (11.9 mm on the old board); the aim, further from the wheel's metal, holds, and so does
-    the long antenna.
+    17.2 mm from the wheel's magnesium rim against 4.0 mm on the first board (F48.2); the aim, further from the wheel's
+    metal, holds, and so does the long antenna.
 - **F9.14 DONE** (3D, and 2D on `gld_camera` and `gld_module`) "the sensor and snap on lens are both not as accurate as id like, you need to squeak out
   a lot more accuracy using the images i've attached"
 - **F9.15 DONE in 3D (standard SPDT internals in the rotating housing); the 2D redraw is F14.3 (fixA)** "the internals on the gt01 switch are not right and it bothers me, before the old switch
@@ -681,6 +740,7 @@ on b01_lighter and b07_balance; the 09:52 publish showed the same).
   doesn't say it (b03_side).
 
 ## F12. 2026-11-04 09:28 (answers, new notes, six reference photos of mouse bases)
+Frames: feedback/frames/F12/ (the nearest committed build before it, 08:47: the notched rear cutouts, the base with big holes).
 
 Answers to the intro and clicks questions:
 - **F12.1 DECIDED** "yes, that 5.6g includes everything": the board's 5.6 g includes the radio module, PMIC, antenna and
@@ -727,6 +787,8 @@ Answers to the Shell A questions:
   (`sealed`). **SUPERSEDED by F27:** `sealed` is out and the encoder magnetic; the claim isn't in the film.
 
 ## F13. Answers to the Shell B questions (2026-11-04 ~10:20)
+Frames: feedback/frames/F13/ (Shell B as rebuilt at 10:10, the nearest committed build: arches, fibres, the mold, the
+gates, the low sides).
 
 - **F13.1 DECIDED** The strength bar on the arch and fibre slides. First answer: "i'm confused what you're asking".
   Asked again more plainly: "Show it, holding".
@@ -742,6 +804,8 @@ Answers to the Shell A questions:
 - **F13.4 DECIDED** The thumb band: "Both sides". **DONE** (`shbSides`).
 
 ## F14. 2026-11-04 10:17 (with three Gateron GT01 images), and answers to the questions after it
+Frames: feedback/frames/F14/ (the nearest committed build before it, 10:10: the GT01 on the clicks card, the dots, the
+mousepad image, the fallacy slide, the question alone on the next slide, the slide he retitled).
 
 - **F14.1 DONE** (3D and `gld_under`: wide front and back pills and a ring; plate off, two dots per corner plus two by the lens) "when you start on the bottom plate the 2 dot skates should join together to form a pill shape,
   not 2 independent circles like they do now, and without the bottom plate, there should only be be ledge to fit the 8
@@ -789,6 +853,7 @@ Answers to the Shell A questions:
   - Applies to F14.10: a slide that can't read at a glance gets rethought, not patched.
 
 ## F16. 2026-11-04 10:30 (with a screenshot of `arc`, Direct Drive Actuation)
+Frames: feedback/frames/F16/ (`arc` mid and settle in the nearest committed build before it, 10:10; his screenshot wasn't kept).
 
 - **F16.1 STANDING, DONE in every chapter** (the final review checks every slide) "in slides like this where you count down to zero, it's very hard to remember
   what the original numbers were and how much better they are now, you should find some way to always show the net
@@ -814,6 +879,8 @@ Answers to the Shell A questions:
 - **F17.4 DECIDED** The GT01 cover's taller end walls from the photo: "No, it's fine".
 
 ## F18. Answers to the Intro, Clicks and Glide builders' questions (2026-11-04 ~13:05)
+Frames: none of this time; the slides it names as they were after it, in v19 (11-05): frames/F27/ (035_gld_under,
+005_flagships, 029_latency, 022_tensioner, 043_sensor).
 
 - **F18.1 DECIDED** The pills with the plate on: "One wide front, one wide back". Two pills, mirrored about the sensor,
   each spanning most of the width, plus the ring. **DONE.** **SUPERSEDED by F20.4** (half-moons), then **DEFERRED by
@@ -836,6 +903,8 @@ Answers to the Shell A questions:
 - **F18.8 DECIDED** Measured sag or sink figures: "No, keep the models". The labelled illustrations stay.
 
 ## F19. Answers to the Shell at-a-glance builder's questions (2026-11-04 ~15:00)
+Frames: the gate and the thumb band as Shell B first had them: frames/F13/; as they were in v19: frames/F27/ (071_shbGates,
+076_shbSides).
 
 - **F19.1 DECIDED** The gate inside under the crown (needs a hot drop or a three-plate mold): "Fine, keep it".
 - **F19.2 DECIDED** The thumb side band against the fingers' side: "Same on both".
@@ -845,6 +914,8 @@ Answers to the Shell A questions:
 ## F20. Answers to the plate builder's questions (2026-11-04 ~15:20)
 **DEFERRED by F27** (all of F20): the plate is out of the film ("none are what i wanted we will worry about the bottom
 cover later"; `pltOptions`: "none are good options"); it comes back with the bottom cover.
+Frames: feedback/frames/F20/ (the plate at 15:13, the nearest committed build); later versions: frames/F21/ (21:44) and
+frames/F27/ (v19: 088_pltPlate, 089_pltSim, 090_pltOptions, the ones he rated 3, 3 and 2).
 
 - **F20.1 DECIDED** The plate's skates: "Inboard, plate only". They sit on the plate alone, about ±36 mm from the centre,
   and come off with it. **DONE.**
@@ -860,6 +931,8 @@ cover later"; `pltOptions`: "none are good options"); it comes back with the bot
   Viper V4 Pro's rear skate, measured off his photo (an estimate), cut round the corner dots.
 
 ## F21. Status question and answers (2026-11-04 21:47 to ~21:55)
+Frames: feedback/frames/F21/ (the nearest committed build, 21:44: the inserts, thread wear, Newtonian profiles, the size
+slide, the plate).
 - **F21.0** "how far are you into integrating all my feedback?" Answered with the counts above, the review and the fixers.
 - **F21.1 DECIDED** The shell's weight: "Budget is the target". The shell (with its skates) gets what the weight budget
   leaves; the Shell chapter's 15.2 g body is labelled a stress study, not the final shell. **DONE (fixK, fixI)**:
@@ -908,6 +981,7 @@ cover later"; `pltOptions`: "none are good options"); it comes back with the bot
   far". **NEXT ITERATION.** The tensioner's real size (F12.5): "Still unknown" (the labelled example stays).
 
 ## F22. Answers at ~23:00 (2026-11-04)
+Frames: feedback/frames/F22/ (v16, published 22:50: the wheel he called bulky, the Mars dome slide, frame sync, the budget).
 - **F22.1 DONE** The scroll wheel: "https://pmm.gg/products/magnesium-scroll-wheel-op1-8k-op1w-4k-pulse-cyber-op-for-modkit,
   this scroll wheel is 1.0g, ours will be 0.9g, right now the scroll wheel design you have is very bulky and unoptimized,
   it should be closer to the pmm wheel i've attached, but with 6 arms, i also don't like the texture your chosen, even if
@@ -942,6 +1016,7 @@ cover later"; `pltOptions`: "none are good options"); it comes back with the bot
   word and `map`'s note ends mid-sentence: both from this bug.
 
 ## F25. Answers on the new wheel and the screws (2026-11-05 ~01:45)
+Frames: in feedback/frames/F27/ (v19, live then): 102_wheel_v19.jpg, 134_ownscrew.jpg, 014_budget_v19.jpg.
 - **F25.1 DONE** (a coarse diamond knurl, 72 teeth at 1.0 mm pitch, 30° each way, flat tops; IS 3403) The wheel's tread: "research what you think is best, if assumed, coarse and diamond are my favorites".
   **DONE (whl).** **OVERRULED by F30.8** ("i liked the scroll wheel version with lines better"): straight lines, as in F22.1.
 - **F25.2 DONE** The wheel's form: "thinners arms". Arms 0.95 → 0.55 mm, the weight held at 0.900 g.
@@ -955,6 +1030,9 @@ cover later"; `pltOptions`: "none are good options"); it comes back with the bot
   supports (the recess, by hardness; the thread usually strips in the brass insert, not the screw).
 
 ## F26. Notes at 01:43 (2026-11-05)
+Frames: feedback/frames/F26/ (frame sync, v19, live then); the other slides it names are in frames/F27/ (the same v19):
+022_tensioner, 023_clk_tenmat, 017_arc, 024_anchors, 033_sidebuttons, 118_elc_oneside_v19, 042_gld_module, 043_sensor,
+100_srf_marks, 101_details, 140_serial. The board's notes (F26.4 to F26.9) were also about its 3D model, not reproduced.
 - **F26.1** "the click tensioning mechanism you're showing in the diagrams isn't anywhere near as accurate as it should be,
   i almost feel like it's potentially wrong as well, it needs a lot more effort". Asked what to build from: "Research
   real mice". **DONE (K1, v22).**
@@ -1002,6 +1080,8 @@ shouldn't be per chapter, it should be per slide and global derived lessons, per
 Also answered: units "khz" (all lowercase; **DONE** deck-wide); the scroll encoder: magnetic (Hall effect), "Yes, switch
 everywhere". The ratings are kept in the artifact's db (collection `ratings`); a slide changed since he rated it shows its
 old score as archived (F26.13).
+Frames: feedback/frames/F27/ (every rated slide at its settle time, from the published v18 for the intro and v19 for the
+rest, both where they differ; the README lists his score beside each frame; the 2D view, see the README).
 - **Out of the film (DONE, 2026-11-05 03:5x):** `map`, `gld_position`, `shlGrams`, `sealed`, `serial`, `srf_marks`,
   `details`, `shbGates`, `pltPlate`, `pltSim`, `pltOptions`, `shlLattice3d` (131 slides now).
 - **His notes, slide by slide (verbatim):**
@@ -1150,6 +1230,10 @@ old score as archived (F26.13).
   slides.)
 
 ## F28. The GT01 reference (2026-11-05 04:14)
+Frames: in feedback/frames/F27/ (v19; v20, live from 04:07, differs on these only in small details such as the slide
+counter): 016_clicks and 019_clk_switch (the GT01), 022_tensioner (F28.2), 079_shcArms (F28.3). His photos are
+third-party and stay out of the repo (refs/photos/; the G-Wolves and tensioner photos re-sent 2026-11-06 are listed in
+refs/photos/brock-2026-11-06/INDEX.md).
 - **F28.1** With a Gateron render ("Vertical push mouse switch": the GT01 side-on in its mouse, cut open; saved as
   attachments/8e779cef-image.jpg, annotated "best GT01 Reference"): "this picture should help you get the side profile as
   accurate as possible on the gt01, priories sus profile accuracy over everything else. you shouldn't have an issue
@@ -1166,6 +1250,7 @@ old score as archived (F26.13).
   that they broke in shipping.
 
 ## F29. Status, and archiving that proves the work (2026-11-05 05:05)
+Frames: the 13 slides of F29.2 as he had rated them are in frames/F27/ (v18 or v19).
 - **F29.1** "are all the agents still working?" / "give me a status update". Answered in chat (K1, K2 running; the board's
   before/after sent).
 - **F29.2 DONE (v21)** "you need a solution to make sure archived feedback was fully taken into account and it wasn't just
@@ -1184,6 +1269,8 @@ old score as archived (F26.13).
   notch is placed with the bottom cover (the Sora's slot and the room freed by J2's move are noted for then).
 
 ## F30. The board revamp, reviewed (2026-11-05 05:22, on board-first.png)
+Frames: feedback/frames/F30/ (the wheel with the diamond knurl he turned down in F30.8, from v20). Of the plan sheets he
+answered on, only plan 5 is kept: handoff/plan-images/board-plan-5.jpg (F30.25).
 - **F30.1** "i have a lot of issues with this design, you need to really think through the components placement a lot
   more, the pmic was supposed to bd moved as far from the mcu as possible" (the power chip's move was due at this
   redesign, F21.11; Claude's miss: it wasn't in K2's brief).
@@ -1217,6 +1304,7 @@ old score as archived (F26.13).
   three gaps along the centre line equal, no thin webs (shown in mm on the revised plan).
 
 ## F31. Answers on the click work (2026-11-05 ~06:30, on K1's questions)
+Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, sidebuttons).
 - **F31.1** Razer's "almost half the battery" (clk_switch): asked where he saw it, "Razer staff online". No public source:
   it goes on the slide as a claim, attributed to Razer staff online via Brock, beside the derived 18 % → +21 % for the
   two switches. **TODO (K3).** **The 18 % → +21 % SUPERSEDED by research** (BROADCAST-0945): the switches' share is

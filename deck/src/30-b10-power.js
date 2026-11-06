@@ -462,7 +462,8 @@ function b10_profileChart(t, x, y, w, h, fb, o = {}) {
   return { X, Y };
 }
 
-/** a board side on, in mm, for part(): a 1.0 mm FR4 slab (black mask both faces) from x 0 to L, centred on y 0, with
+/** a board side on, in mm, for part(): an FR4 slab o.th thick (default 1.0 mm, a rival's own; Theseus's passes BOARD_T,
+   0.6 mm since F47.4) with black mask both faces and copper just inside each face, from x 0 to L, centred on y 0, with
    parts on its two faces. Each part: { x (its left), w, h, kind ('qfn' | 'mod' | 'usb' | 'sw' | 'pas' | 'jst'), side
    ('a' or 'b': the face it is soldered to; face a is up when flip = 0), g (grams), pad (mm² of solder pad) }.
    o = { flip (0..1: turned over about its long axis; 1 = face b up), show: { a, b } (0..1: placed and visible), paste:
@@ -472,13 +473,14 @@ function b10_profileChart(t, x, y, w, h, fb, o = {}) {
    Returns { parts: stage centre of each part } */
 function b10_boardSideMM(L, parts, o = {}) {
   const flip = o.flip || 0, sy = Math.cos(Math.PI * flip), out = { parts: [] }, show = o.show || { a: 1, b: 1 }, paste = o.paste || {};
+  const th = o.th || 1.0, hf = th / 2;
   xsave(); G.scale(1, sy); XF.m[2] *= sy; XF.m[3] *= sy;
-  /* the slab: glass-fibre core, copper planes, black mask */
-  solid(() => { G.beginPath(); G.rect(0, -0.5, L, 1.0); }, { g: ['#1C1D21', '#121316'], dark: 1 }, [0, -0.5, L, 1], { lw: 0.8 });
-  G.fillStyle = 'rgba(214,170,92,0.5)'; G.fillRect(0, -0.44, L, 0.07); G.fillRect(0, 0.37, L, 0.07);
+  /* the slab: glass-fibre core, a copper layer just inside each face, black mask */
+  solid(() => { G.beginPath(); G.rect(0, -hf, L, th); }, { g: ['#1C1D21', '#121316'], dark: 1 }, [0, -hf, L, th], { lw: 0.8 });
+  G.fillStyle = 'rgba(214,170,92,0.5)'; G.fillRect(0, -hf + 0.06, L, 0.07); G.fillRect(0, hf - 0.13, L, 0.07);
   parts.forEach((p, i) => {
     const vis = show[p.side] == null ? 1 : show[p.side]; if (vis <= 0.003) { out.parts[i] = null; return; }
-    const onA = p.side === 'a', dir = onA ? -1 : 1, face = onA ? -0.5 : 0.5;     /* in the board's frame face a is y < 0 */
+    const onA = p.side === 'a', dir = onA ? -1 : 1, face = onA ? -hf : hf;     /* in the board's frame face a is y < 0 */
     const hanging = onA ? sy < 0 : sy > 0, liquid = (o.melt || 0) > 0.5, pasteK = paste[p.side] ? 1 : 0;
     const ratio = p.g / Math.max(0.01, p.pad) * 645.16;                         /* g per square inch of pad */
     const dy = hanging && liquid ? (o.sag || 0) * clamp(ratio / 30, 0.05, 1.6) : 0;
@@ -546,14 +548,16 @@ const B10_OV = (() => { let uMelt = null, uFreeze = null; for (let u = 0; u < 4;
 /** the state of one board on its lane at the scene's time u: mode 'rival' (pass 2 of 2: face b, reflowed first, hangs under
    the board; once the board is over 217 °C every joint is liquid and the hanging parts sink on their liquid joints, each by
    its weight-to-pad ratio, and stay sunk when the solder freezes) or 'ths' (pass 1 of 1: every part on top).
-   Returns { parts, L, di (the receptacle's index), sag, liquid, T, st (b10_boardSideMM's options) } */
+   Returns { parts, L, di (the receptacle's index), sag, liquid, T, th (the board's thickness: the rival's own 1.0 mm,
+   Theseus's BOARD_T), st (b10_boardSideMM's options) } */
 function b10_rideState(u, mode, fb) {
   const rival = mode === 'rival', T = b10_profile(fb - 0.015), liquid = T > B10_LIQ;
   const parts = rival ? B10_SLICE.rival : B10_SLICE.ths, L = rival ? B10_SLICE.L : B10_SLICE.thsL;
   const sag = rival ? B10_OV.sag * ep(u, B10_OV.uMelt, B10_OV.uMelt + 0.6, E.out3) : 0;
   const di = parts.findIndex(p => p.id === 'usb');
-  const st = { flip: 0, show: { a: 1, b: 1 }, paste: { a: !liquid && u < B10_OV.uMelt ? 1 : 0, b: 0 }, melt: liquid ? 1 : 0, sag };
-  return { parts, L, di, sag, liquid, T, st };
+  const th = rival ? 1.0 : BOARD_T;
+  const st = { flip: 0, show: { a: 1, b: 1 }, paste: { a: !liquid && u < B10_OV.uMelt ? 1 : 0, b: 0 }, melt: liquid ? 1 : 0, sag, th };
+  return { parts, L, di, sag, liquid, T, th, st };
 }
 /** one board riding a lane of the oven, centred in its window. W: the oven (b10_ovenWin's return), rail (y), s px per mm.
    Returns the state (b10_rideState) and { bx, by, s, partPt (the receptacle's centre), partTop, under (a point under the
@@ -562,7 +566,7 @@ function b10_boardRide(t, u, W, rail, s, mode, fb, o = {}) {
   const R = b10_rideState(u, mode, fb), bx = W.cx - R.L * s / 2, by = rail;
   const D = part(bx, by, s, () => b10_boardSideMM(R.L, R.parts, R.st), { alpha: o.a });
   const p = R.parts[R.di], partPt = D.parts && D.parts[R.di] ? D.parts[R.di] : [bx + (p.x + p.w / 2) * s, by];
-  const partTop = [partPt[0], partPt[1] - p.h * s / 2], under = [bx + R.L * s * 0.5, by + 0.5 * s];
+  const partTop = [partPt[0], partPt[1] - p.h * s / 2], under = [bx + R.L * s * 0.5, by + R.th / 2 * s];
   return Object.assign(R, { bx, by, s, partPt, partTop, under, part: p });
 }
 
@@ -570,7 +574,7 @@ function b10_boardRide(t, u, W, rail, s, mode, fb, o = {}) {
    centre of rect, clipped to it (the classroom panel's second picture). ride: b10_boardRide's return */
 function b10_neckZoom(rect, ride, sz, o = {}) {
   const [x, y, w, h] = rect, a = o.a == null ? 1 : o.a; if (a <= 0.003 || !ride) return;
-  const p = ride.parts[ride.di], fx = p.x + 0.1 * p.w, fy = 0.5 + 0.12 + Math.min(1.6, ride.sag * clamp(p.ratio / 30, 0.05, 1.6)) * 0.5 + 0.25;
+  const p = ride.parts[ride.di], fx = p.x + 0.1 * p.w, fy = (ride.th || 1.0) / 2 + 0.12 + Math.min(1.6, ride.sag * clamp(p.ratio / 30, 0.05, 1.6)) * 0.5 + 0.25;
   G.save(); G.globalAlpha *= a; rrPath(x, y, w, h, 6); G.clip();
   G.fillStyle = TH ? '#DCDCE0' : '#141518'; G.fillRect(x, y, w, h);
   part(x + w / 2 - fx * sz, y + h / 2 - fy * sz, sz, () => b10_boardSideMM(ride.L, ride.parts, ride.st));
@@ -1087,7 +1091,7 @@ S({
   replaces: ['elc_oneside'],
   answers: [
     ['"good but i wish it was even better visualized"', 'Rebuilt as a demonstration: two boards ride one reflow oven at the same moment, the camera riding with them and the oven\'s heat charted above with a dot for the boards. The two-faced board is on its second pass, its first face hanging upside down; as that solder melts again the parts sink on liquid joints and the Type-C is tagged over the 30 g/in² rule. Theseus\'s board, every part on top, rides the same heat once with nothing underneath. A classroom panel says why it matters: a drop hangs from a dropper until its weight beats surface tension and falls, beside the Type-C\'s joint zoomed ×4, hanging the same way'],
-    ['(F2.29) "we don\'t have a front and back pcb" / "it\'ll be a single ~5.6g pcb"', 'Theseus\'s lane reads "One 5.6 g board, every part on top" and a tag under its board says "Nothing underneath"; the verdict is oven passes 2 → 1'],
+    ['(F2.29) "we don\'t have a front and back pcb" / "it\'ll be a single ~5.6g pcb"', 'Theseus\'s lane reads "Every part on top. Board target: 5.6 g" (the budget\'s figure, a target: F42.2; the 0.6 mm two-layer board of F47.4 is drawn thinner than the two-faced one) and a tag under its board says "Nothing underneath"; the verdict is oven passes 2 → 1'],
     ['(F0.5) the single-sided reflow wording', 'As validated: one pass for a one-sided board; a two-sided board\'s second pass hangs its first face upside down while it melts again. Not claimed: weaker re-melted joints (Wirth et al. saw no change in shear strength), or that the Type-C falls (Liu\'s parts held at about 40 g/in²; the slide says only that it is over the 30 g/in² rule; the drop that falls is water)']
   ],
   draw: t => {
@@ -1113,8 +1117,8 @@ S({
     text('As in the Cougar Revenger Pro 4K', 80, 578, { role: 'small', size: 19, weight: 600, color: C.mute, maxW: 200, lh: 1.25, alpha: l1 });
     text('Theseus', 80, 768, { role: 'label', size: 22, color: C.heroText, alpha: l2 });
     text('Pass 1 of 1', 80, 802, { role: 'label', size: 24, color: C.ink, alpha: l2 });
-    text('One ' + THESEUS.pcb + ' g board,', 80, 834, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2 });
-    text('every part on top', 80, 858, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2 });
+    text('Every part on top', 80, 834, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2 });
+    text('Board target: ' + THESEUS.pcb + ' g', 80, 858, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2, maxW: 214 });   /* the budget's figure, a target (F42.2, R3-b10-1) */
     /* the fault, named while it happens: the receptacle hangs in liquid solder, over the rule */
     if (R1) faultTag(t, 0.3 + B10_OV.uMelt + 0.4, [R1.partPt[0] - R1.part.w * s * 0.3, R1.partPt[1] + R1.part.h * s * 0.5], 'Melted again, upside down', { to: [R1.partPt[0] - 110, 632], side: 'l', sub: 'About 40 g per in² of pad; the rule is 30', maxW: 460 });
     if (R2) fixTag(t, 4.7, [R2.under[0] - 120, R2.under[1]], 'Nothing underneath', { to: [R2.under[0] - 60, 842], side: 'r' });
@@ -1208,7 +1212,7 @@ S({
   ],
   draw: t => {
     header(t, 'Braided, not ribbon');
-    captions(t, [[0.6, 'Many mice reach the side buttons with a ribbon: copper printed on film. Nick its edge, and a pull piles up at the nick until it tears across.'], [6.6, 'Theseus braids three wires on a JST plug: pulled, they share the load; cut one, and two still carry it.']]);
+    captions(t, [[0.6, 'Many mice reach the side buttons with a ribbon: copper printed on film. Nick its edge, and a pull piles up at the nick until it tears across, as paper does.'], [6.6, 'Theseus braids three wires on a JST plug: pulled, they share the load; cut one, and two still carry it.']]);
     const X = 80, Y = 280, Wd = 1200, Ht = 440, ka = 1;
     demoWindow(X, Y, Wd, Ht, ka, { plain: true });
     const yA = Y + 132, yB = Y + 340, bx = X + 30, bw = 140, xc0 = bx + bw, xEnd = X + 1040, tabW = 56, wR = 90;

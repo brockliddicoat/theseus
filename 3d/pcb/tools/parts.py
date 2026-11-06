@@ -117,11 +117,12 @@ def fp_encoder():
 
 def fp_encoder_mag():
     # the magnetic (Hall) scroll encoder in a normal encoder outline (3d/parts/scrollwheel.js): 4 pins in a row along z at
-    # 1.25 mm pitch from its sensor board at the housing's far end (VDD, A, B, GND), and the nickel-silver frame's two side
-    # tabs bent out into SMD feet. Origin at the housing's centre; local +x toward the wheel [PR]
+    # 1.25 mm pitch from its sensor board at the housing's far end (VDD, A, B, GND). F47.4 (H3): the lighter encoder has no
+    # nickel-silver frame, so no frame tabs bent out into SMD feet (they were F1/F2, 1.0 x 1.2 at local x 0.85, z +/-5.9):
+    # the bottom housing's two moulded pegs locate it instead, in two copper-free holes under it. Origin at the housing's
+    # centre; local +x toward the wheel [PR]
     P = [pad(n, -1.95, z, 1.05, 1.05, shape='circle', drill=0.7) for n, z in (('GND', -1.875), ('B', -0.625), ('A', 0.625), ('VDD', 1.875))]
-    P += [pad('F1', 0.85, -5.9, 1.0, 1.2, r=0.1), pad('F2', 0.85, 5.9, 1.0, 1.2, r=0.1)]
-    return dict(pads=P, body=(4.6, 11.0))
+    return dict(pads=P, body=(4.6, 11.0), npth=[(0.0, -4.6, 0.9), (0.0, 4.6, 0.9)])
 
 
 def fp_edge_slide():
@@ -201,7 +202,7 @@ add('SW1', 'GT01', -16.0, 39.6, 0, 'Gateron GT01', '[REP] GT01 (no public datash
 add('SW2', 'GT01', 16.0, 39.6, 0, 'Gateron GT01', '[REP] GT01 (no public datasheet), in 3x Mill-Max 3305', 'switches',
     {'COM': GND, 'NC': 'SW2_NC', 'NO': 'SW2_NO'})
 add('ENC1', 'ENCM', -9.2, 37.75, 0, 'Encoder', '[PR] magnetic (Hall) scroll encoder, clear top housing (3d/parts/scrollwheel.js)', 'mechanics',
-    {'A': 'ENC_A', 'B': 'ENC_B', 'VDD': 'VDD_1V8', 'GND': GND, 'F1': GND, 'F2': GND})
+    {'A': 'ENC_A', 'B': 'ENC_B', 'VDD': 'VDD_1V8', 'GND': GND})
 add('WB1', 'BRACKET', 10.4, 37.75, 0, 'Wheel bracket', '[REP] POM wheel support with four hold-down tabs, over the middle click', 'mechanics',
     {'T1': GND, 'T2': GND, 'T3': GND, 'T4': GND})
 add('SW4', 'TACT', 10.4, 37.75, 0, 'Middle click', '[REP] SMD tact under the bracket', 'mechanics', {'1': GND, '2': 'MID'})
@@ -241,8 +242,12 @@ add('C1', '0402', 7.3, 46.3, 90, '2.2uF', 'VBUS bulk at the receptacle', 'passiv
 add('C2', '0402', 8.4, 46.3, 90, '100nF', 'VBUS HF', 'passives', {'1': GND, '2': 'VBUS'})
 
 # --- module + sensor decoupling
-add('C10', '0402', -2.0, -2.95, 0, '4.7uF', 'module VDD', 'passives', {'1': 'VDD_1V8', '2': GND})
-add('C11', '0402', -3.9, -2.95, 0, '100nF', 'module VDD HF', 'passives', {'1': GND, '2': 'VDD_1V8'})
+# the module's VDD decoupling under its bottom pads (B3 is VDD, between NC B2 and GND B4). Two layers (F47.4, H3): the 1.8 V
+# can't reach B3 from an inner layer any more, and the pocket B3 and the two caps' VDD pads made was walled in by GND pads,
+# so the caps move apart (C11 0.5 mm left, C10 0.3 mm right) to open one via site between them (routes.py: the supply comes
+# up there on the bottom); B3 still drops straight onto C10's VDD pad. Was C11 x -3.9, C10 x -2.0 (plan 5)
+add('C10', '0402', -1.7, -2.95, 0, '4.7uF', 'module VDD', 'passives', {'1': 'VDD_1V8', '2': GND})
+add('C11', '0402', -4.4, -2.95, 0, '100nF', 'module VDD HF', 'passives', {'1': GND, '2': 'VDD_1V8'})
 add('C20', '0402', -6.1, 20.1, 90, '1uF', 'sensor VDDIO', 'passives', {'1': GND, '2': 'VDD_1V8'})
 add('C21', '0402', -5.55, 25.5, 90, '1uF', 'sensor VDD', 'passives', {'1': 'VDD_SNS', '2': GND})
 add('C22', '0402', -6.6, 26.7, 90, '100nF', 'sensor VDD HF', 'passives', {'1': 'VDD_SNS', '2': GND})

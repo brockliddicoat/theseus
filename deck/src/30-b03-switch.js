@@ -1,12 +1,13 @@
 /* ============================================================================================
-   B03 · CLICKS II: THE SWITCH AND THE SIGNAL (revamp v2, 2026-11-06). Seven slides, in film order:
+   B03 · CLICKS II: THE SWITCH AND THE SIGNAL (revamp v2, 2026-11-06). Eight slides, in film order:
      b03_switch    A mechanical switch, for the battery        (replaces clk_switch)
      b03_binning   Provable switch binning                     (replaces clk_switch2)
      b03_spdt      Single pole, double throw                   (replaces clk_spdt)
      b03_timing    Negative latency                            (replaces latency, clk_wait, clk_methods)
      b03_debounce  Debounce: low, and yours to set             (replaces clk_debounce)
      b03_hotswap   Hot-swap switches, no solder                (replaces clk_hotswap)
-     b03_side      Dual rail side buttons                      (replaces sidebuttons)
+     b03_rail      Four ways to guide a side rail              (new, F44.1; before: 'b03_side', FILM F36)
+     b03_side      Dual rail side buttons                      (replaces sidebuttons; the chapter's last slide)
    Every top-level name here starts with b03_ (or B03). Shared drawings are called, never redrawn: the GT01 is clk_gt01MM
    (H1 owns it), a full-size SPDT switch is swMM (03-parts.js), the claw socket's numbers are the 3D asset's
    (3d/parts/millmax3305.js). The motion kit (06-motion.js) supplies the mouse, the camera, the finger, the verdict.
@@ -318,12 +319,12 @@ function b03_knifeMM(o = {}) {
    The Mill-Max 3305 as this deck's 3D part has it (3d/parts/millmax3305.js: the datasheet's outside, a representative
    inside): a brass shell, gold-plated, its flange 0.25 mm proud of the board (Ø 1.956), its body (Ø 1.473) through the
    1.575 mm hole and on below; inside it, under a lead-in funnel, a beryllium-copper barrel and its six fingers, which curl
-   in to a throat 0.54 mm across and spread to grip a leg. Cut through the axis, two fingers show. The board is 1.0 mm
-   (F21.11). The leg is the GT01's: 0.6 mm wide, its tip tapered to 0.2 over 0.32 mm. o = { insert 0..1 (0: the tip 2 mm
+   in to a throat 0.54 mm across and spread to grip a leg. Cut through the axis, two fingers show. The board is 0.6 mm
+   (BOARD_T, Brock F47.4; it was 1.0, F21.11), so the socket's own 2.67 mm hangs 1.82 mm below it. The leg is the GT01's: 0.6 mm wide, its tip tapered to 0.2 over 0.32 mm. o = { insert 0..1 (0: the tip 2 mm
    above the flange; 1: seated), solder (true) }. mm, y down, origin on the board's top at the hole's centre. */
 function b03_clawMM(o = {}) {
   const k = clamp(o.insert == null ? 1 : o.insert), out = {}, IN = 25.4;
-  const rF = 0.077 * IN / 2, rB = 0.058 * IN / 2, hF = 0.010 * IN, Lt = 0.105 * IN, yBot = Lt - hF, rBore = 0.56, tP = 1.0, hR = 0.062 * IN / 2;
+  const rF = 0.077 * IN / 2, rB = 0.058 * IN / 2, hF = 0.010 * IN, Lt = 0.105 * IN, yBot = Lt - hF, rBore = 0.56, tP = BOARD_T, hR = 0.062 * IN / 2;
   /* the board, cut: FR4 with its copper barrel and pads, the socket soldered in */
   const bw = 3.6;
   solid(() => { G.beginPath(); G.moveTo(-bw, 0); G.lineTo(-hR, 0); G.lineTo(-hR, tP); G.lineTo(-bw, tP); brk(-bw, tP, 0, 0.12); G.closePath(); }, MT.fr4, [-bw, 0, bw - hR, tP], { fill: B03C.fr4(), ec: edgeCol(MT.fr4), hatch: { sp: 3 } });
@@ -372,8 +373,8 @@ function b03_postMM(pts) {
   solid(() => b03_path(pts, [0, 0, 0.12, 0.12]), MT.shell, bx, { fill: B03C.shellLite(), ec: edgeCol(MT.shell), hatch: true });
 }
 /** where the switch sits in the kit's 'left' view (mm): the GT01's housing middle on the board's top (the 3D board: the
-   left trigger's switch 36.7 mm ahead of the sensor; the kit's board top at y = −5.05) */
-const B03_SW = { xG: -36.7, yB: -5.05 };
+   left trigger's switch 36.7 mm ahead of the sensor; the board's top face BOARD_TOP over the pad, 5.03 mm: H3, F47.4) */
+const B03_SW = { xG: -36.7, yB: -BOARD_TOP };
 /**
  * The LED's current on a trace that scrolls right to left (stage px; the right edge is now): Omron's drive, 5 mA for 30 µs of
  * every 1 ms, slowed down. o = { t0 (the trace starts), rate (ms of trace a second of slide), tOff (no new pulses: the LED
@@ -458,7 +459,7 @@ S({
     });
     const drawOurs = () => est.draw(() => {
       xsave(); xmove(Q.xG, Q.yB);
-      pcbSec(-20, 30, 0, 1.0, { holes: [-5.08, 0, 5.08] });
+      pcbSec(-20, 30, 0, BOARD_T, { holes: [-5.08, 0, 5.08] });   /* Theseus's board, 0.6 mm (H3, F47.4) */
       gt = clk_gt01MM({ press: p2, board: false });
       const d = p2 * K.tr; gt.arrow = SP(...b03_gS(K.zN + 1.75, K.cap - d + 2.0));
       xrest();
@@ -537,7 +538,7 @@ S({
     ['largely irrelevant', 'The force and rated-life chart is gone; the slide is now about one thing a player feels: two buttons that click alike'],
     ['we don\'t even know if we\'re going with the gt01 switch or just their style for the bottom housing', '"GT01-style" everywhere on the slide; the bin is Theseus\'s, not a Gateron claim'],
     ['if you want to keep this you\'d have to group it in with better binning practices', 'It is the binning slide: each switch tested, a narrow bin, the two in your mouse picked from it'],
-    ['a lot of companies lie about their binning practices for switches', 'Shown as what is public: makers sell bands (Endgame Gear: "binned for 60-65 gf") and publish no test data; no company is called a liar, since nothing public proves one'],
+    ['a lot of companies lie about their binning practices for switches', 'Shown as what is public: makers sell bands (Endgame Gear: "binned for 60-65 gf") and publish no test data; no company is called a liar, since nothing public proves one. The verdict sets binned against binned: Endgame Gear\'s 5.0 gf worst gap against Theseus\'s 3.0 gf, tested and published (the datasheet\'s unbinned 30.6 gf stays as context)'],
     ['whereas we could commit to proveable bins', 'The bin (55 ± 1.5 gf, a proposal) and every switch\'s test published with the mouse'],
     ['(potentially using hall effect tech)', 'The tester reads travel with a Hall-effect sensor on a magnet in the probe, force on a load cell: labelled a proposal']
   ],
@@ -577,10 +578,13 @@ S({
     const ka = 1;
     line(ax, yA, ax + aw, yA, { color: C.ink2, w: 1.5, alpha: ka });
     for (let f = F0; f <= F1; f += 5) { line(X(f), yA - 5, X(f), yA + 5, { color: C.faint, w: 1.2, alpha: ka }); text(f + (f === F1 ? ' gf' : ''), X(f), yA + 30, { role: 'label', size: 19, color: C.faint, align: 'center', caps: false, alpha: ka }); }
-    text('Operating force, one dot a switch (an illustrative lot)', ax, 302, { role: 'label', size: 20, color: C.mute, alpha: ka });
+    text('Operating force, one dot a switch (an illustrative lot)', ax, 298, { role: 'label', size: 20, color: C.mute, alpha: ka });
     const band = (lo, hi, y, label, col, k) => { if (k <= 0.003) return; G.save(); G.globalAlpha = k * 0.5; G.fillStyle = col; G.fillRect(X(lo), y - 9, X(hi) - X(lo), 18); G.restore(); text(label, X(lo), y - 18, { role: 'small', size: 21, weight: 650, color: C.ink2, alpha: k, maxW: X(F1) - X(lo) }); };
-    band(Math.max(F0, 60.2 - 15.3), Math.min(F1, 60.2 + 15.3), 370, 'Omron D2FP\'s datasheet: 60.2 ± 15.3 gf', C.comp, ep(t, 0.3, 0.7));
-    band(50, 60, 440, 'GT01\'s: 55 ± 5 gf (Gateron claim)', C.comp, ep(t, 0.5, 0.9));
+    band(Math.max(F0, 60.2 - 15.3), Math.min(F1, 60.2 + 15.3), 354, 'Omron D2FP\'s datasheet: 60.2 ± 15.3 gf', C.comp, ep(t, 0.3, 0.7));
+    /* the like-for-like rival (R2-b03-4): a maker that does bin, Endgame Gear, sells a 5 gf band and publishes no test */
+    { const k = ep(t, 0.4, 0.8); if (k > 0.003) { G.save(); G.globalAlpha = k * 0.55; G.fillStyle = C.second; G.fillRect(X(60), 395, X(65) - X(60), 18); G.restore();
+      text('Endgame Gear\'s bin: 60 to 65 gf, no test published', X(60), 386, { role: 'small', size: 21, weight: 650, color: C.secondText, alpha: k }); } }
+    band(50, 60, 450, 'GT01\'s: 55 ± 5 gf (Gateron claim)', C.comp, ep(t, 0.5, 0.9));
     /* Theseus's bin: closes in from the GT01's band to ±1.5 gf */
     const kb = ep(t, T.bin, T.bin + 0.8, E.io3), bLo = lerp(50, 55 - B03.bin, kb), bHi = lerp(60, 55 + B03.bin, kb);
     if (t > T.bin - 0.1) {
@@ -606,14 +610,14 @@ S({
       text('Your two buttons: ' + a0.toFixed(1) + ' and ' + a1.toFixed(1) + ' gf', ax + 140, 760, { role: 'small', size: 26, weight: 750, color: C.heroText, alpha: k });
       text('A finger notices about 7 % on firmer squeezes: ' + b03_floor(55 * B03.jnd, 1) + ' gf at 55 gf (Pang, Tan, Durlach 1991)', ax + 140, 798, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: ep(t, T.pair + 0.5, T.pair + 0.9) });
     }
-    /* the verdict: the worst gap between your two buttons */
-    verdict(t, T.verdict, LM + 140, 900, { from: (2 * 15.3).toFixed(1), to: (2 * B03.bin).toFixed(1), unit: 'gf', dec: 1, label: 'Worst gap between your two buttons', better: 'lower', who: ['', 'Theseus'], net: false, size: 110, maxW: 600 });
-    { const kw = ep(t, T.verdict + 0.77, T.verdict + 1.17), wOld = tw('30.6', { role: 'd1', size: 44, weight: 800 }) + 8 + tw('gf', { font: 'disp', size: 22, weight: 700 });
-      text('Omron D2FP', LM + 140 + wOld, 900 + 7 + 34, { role: 'label', size: 19, color: C.secondText, align: 'right', alpha: kw }); }
+    /* the verdict: the worst gap between your two buttons, binned against binned (R2-b03-4): Endgame Gear's 60 to 65 gf band
+       allows 5.0 gf (8 % at 62.5 gf, over the 7 % a finger notices); Theseus's ±1.5 gf, 3.0 (5.5 %). The datasheet's unbinned
+       30.6 gf stays on the axis as context */
+    verdict(t, T.verdict, LM + 140, 900, { from: '5.0', to: (2 * B03.bin).toFixed(1), unit: 'gf', dec: 1, label: 'Worst gap between your two buttons', better: 'lower', who: ['Endgame Gear', 'Theseus'], net: false, size: 110, maxW: 600 });
     const kn = ep(t, T.note, T.note + 0.4);
     if (kn > 0.003) {
-      text('Makers sell bands ("binned for 60-65 gf", Endgame Gear), and publish no test.', ax + 140, 862, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: kn, maxW: aw - 140 });
-      text('Provable: the bin and every switch\'s test, published with the mouse (a proposal)', ax + 140, 898, { role: 'small', size: 22, weight: 700, color: C.heroText, alpha: ep(t, T.note + 0.3, T.note + 0.7), maxW: aw - 140 });
+      text('Unbinned, a datasheet allows 30.6 gf apart (Omron D2FP); Endgame Gear bins to 5 gf, and publishes no test.', ax + 140, 856, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: kn, maxW: aw - 140, lh: 1.25 });
+      text('Provable: the bin and every switch\'s test, published with the mouse (a proposal)', ax + 140, 926, { role: 'small', size: 22, weight: 700, color: C.heroText, alpha: ep(t, T.note + 0.3, T.note + 0.7), maxW: aw - 140 });
     }
     text('Brock: "10 gf weaker at 60 gf is quite noticeable". The JND is from 2.5 to 10 N squeezes; at 0.54 N it is taken as the same 7 %', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, T.verdict + 1.0, T.verdict + 1.4), maxW: RM - LM });
   }
@@ -655,7 +659,7 @@ S({
     const est = establish(t, 0, box, { view: 'left', hi: ['triggers'], col: 'ink', focus: [Q.xG - 8.5, -16.2, 17, 13.2], locator: 'tr', fade: 0.3,
       mouse: { lit: ep(t, 0.12, 0.55) * (1 - 0.8 * ep(t, 1.2, 1.8)), hide: t > 0.95 ? ['side', 'side1', 'side2'] : [] } });
     let gt = {};
-    est.draw(() => { xsave(); xmove(Q.xG, Q.yB); pcbSec(-20, 30, 0, 1.0, { holes: [-5.08, 0, 5.08] }); gt = b03_gt01Pole({ pos, press: kt.th > -1 ? 1 : 0 }); xrest(); });
+    est.draw(() => { xsave(); xmove(Q.xG, Q.yB); pcbSec(-20, 30, 0, BOARD_T, { holes: [-5.08, 0, 5.08] }); gt = b03_gt01Pole({ pos, press: kt.th > -1 ? 1 : 0 }); xrest(); });
     if (est.kd > 0.5 && gt.nc) {
       const C2 = { color: C.ink2, tcolor: C.ink, side: 'r' }, xr = box[0] + box[2] - 78;
       text('GT01: 0.3 mm from NC to NO', box[0] + 24, box[1] + 44, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, 1.4, 1.8) });
@@ -696,7 +700,7 @@ S({
     }
     /* the verdict, under the knife switch: the rival's name set under its struck figure, right-aligned, so it clears ours */
     const vx = 860, vy = 900, vs = 120;
-    verdict(t, T.verdict, vx, vy, { from: '3', to: '1', dec: 0, label: 'Clicks from one press, with no wait', better: 'lower', who: ['', 'Theseus'], net: false, size: vs, maxW: RM - vx });
+    verdict(t, T.verdict, vx, vy, { from: '3', to: '1', dec: 0, label: 'Clicks from one press', better: 'lower', who: ['', 'Theseus'], net: false, size: vs, maxW: RM - vx });   /* the false clicks only: "no wait" is b03_debounce's payoff (R2-b03-5) */
     { const kw = ep(t, T.verdict + 0.77, T.verdict + 1.17), wOld = tw('3', { role: 'd1', size: Math.round(vs * 0.4), weight: 800 });
       text('Single throw', vx + wOld, vy + Math.round(vs * 0.06) + 34, { role: 'label', size: 19, color: C.secondText, align: 'right', alpha: kw }); }
     text('Bounce: about 0.5 to 1.5 ms on a new switch (Tom\'s Hardware 2016; Ganssle 2004, 16 switches); three bounces here are an illustration', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, T.verdict + 1.0, T.verdict + 1.4), maxW: RM - LM });
@@ -792,7 +796,8 @@ S({
     ['latency: difficult to understand', 'One press, slowed 1,000×, on one clock: the pole leaves NC (Theseus counts), flies 1.5 ms, lands on NO and bounces, and a single-throw mouse counts only after its wait. Nothing else moves'],
     ['i like that it sells something though', 'It still sells: counted 1.4 ms before the switch even closes, and the shot that hits instead of missing'],
     ['its hard to tell what is changing', 'Only the press moves; each reader marks the moment it counts, on the same clock, and the cost is one red bracket: 4.4 ms later'],
-    ['clk_wait: hard to understand, probably can be combined somewhere else', 'Combined here: the verdict is "moving or still", and the footnote carries XBAB\'s finding that the OP1 8k v2 adds 121 µs moving'],
+    ['clk_wait: hard to understand, probably can be combined somewhere else', 'Combined here: under the verdict, "70 µs to USB, moving or still: the target (XA25: 72 µs)" (F18.5), and the footnote carries XBAB\'s finding that the OP1 8k v2 adds 121 µs moving'],
+    ['(R3-b03-2) the headline', 'The verdict is the title\'s claim: when the click counts, from the switch closing, single throw 0.0 ms → Theseus −1.4 ms (a single throw at its best, with no debounce; the 4 ms debounce lane shows how much later it gets)'],
     ['clk_methods: probably can be combined somewhere else or removed', 'Removed as a slide: every number\'s method is in one quiet line at the foot']
   ],
   sfx: [[2.4, 'click']],
@@ -802,7 +807,7 @@ S({
     captions(t, [[0.3, 'A single-throw mouse can\'t count a click until the switch closes, and many then wait out the bounce.'],
       [T.go - 0.2, 'Slowed 1,000×: the pole leaves NC, and Theseus counts the click right then.'],
       [T.go + 1.5, 'It reaches NO 1.5 ms after leaving NC, and bounces; a single-throw mouse only starts counting there.'],
-      [T.verdict + 1.8, 'The shot leaves when your finger says: 70 µs, moving or still.']]);
+      [T.verdict + 1.8, 'Counted as the pole leaves NC, 1.4 ms before the switch closes: the shot leaves when your finger says.']]);
     /* where: the mouse from the side, pushed in to the GT01's contacts (the pole between NC and NO) */
     const c0 = b03_gS(K.zC, 4.4), fx = Q.xG + c0[0], fy = Q.yB + c0[1], focus = [fx - 2.5, fy - 1.45, 5.0, 2.9];
     const est = establish(t, 0, box, { view: 'left', hi: ['triggers'], col: 'ink', focus, locator: 'tr', fade: 0.3,
@@ -810,7 +815,7 @@ S({
     /* the press: the plunger down from 1.4 s; the pole leaves NC at T.go */
     const press = ep(t, T.go - 0.9, T.go - 0.05, E.io3), pos = b03_polePos(tau);
     let gt = {};
-    est.draw(() => { xsave(); xmove(Q.xG, Q.yB); pcbSec(-20, 30, 0, 1.0, { holes: [-5.08, 0, 5.08] }); gt = b03_gt01Pole({ pos, press }); xrest(); });
+    est.draw(() => { xsave(); xmove(Q.xG, Q.yB); pcbSec(-20, 30, 0, BOARD_T, { holes: [-5.08, 0, 5.08] }); gt = b03_gt01Pole({ pos, press }); xrest(); });
     const kd = est.kd;
     if (kd > 0.5 && gt.nc) {
       const C2 = { prose: true, maxW: 260, side: 'l', color: C.ink2, tcolor: C.ink }, xl = box[0] + 252;
@@ -824,9 +829,12 @@ S({
     const ka = ep(t, 1.4, 1.9);
     b03_race(t, LM, 724, RM - LM, tau, ka);
     b03_shotLate(t, 980, 260, RM - 980, 200, tau, ep(t, 1.6, 2.1));
-    /* the verdict, against the quickest rival measured (XBAB's XA25, also read at NC release) */
-    verdict(t, T.verdict, 980, 600, { from: String(Math.floor(B03.xa25Us)), to: String(B03.tgtUs), unit: 'µs', dec: 0, label: 'Click latency, moving or still', better: 'lower', who: ['XA25', 'Theseus'], net: false, size: 112, maxW: RM - 980 });
-    scaleNote(980, 690, 'before the switch even closes', { lead: b03_floor(B03.flightMs - B03_TM.ours, 1) + ' ms', t, t0: T.verdict + 1.6 });
+    /* the verdict is the title's claim (R3-b03-2): when the click counts, measured from the switch closing. A single throw at its
+       best (no debounce) counts as it closes, 0.0; Theseus counts as the pole leaves NC, 1.43 ms earlier with its own 70 µs to
+       USB included (the rival's left out: conservative), shown −1.4. The debounce's extra wait is b03_debounce's, not repeated
+       here; the end-to-end target against the quickest rival measured (XBAB's XA25, also read at NC release: F18.5) stays under it */
+    verdict(t, T.verdict, 980, 600, { from: '0.0', to: '−' + b03_floor(B03.flightMs - B03_TM.ours, 1), unit: 'ms', dec: 1, label: 'When the click counts, from the switch closing', better: 'lower', who: ['Single throw, at best', 'Theseus'], net: false, size: 112, maxW: RM - 980 });
+    scaleNote(980, 712, 'to USB, moving or still: the target (XA25: ' + Math.floor(B03.xa25Us) + ' µs)', { lead: B03.tgtUs + ' µs', t, t0: T.verdict + 1.6 });
     text('Electrical latency, NC edge to USB: XA25 72.04 µs, n 500 (XBAB 2026); the OP1 8k v2 adds 121 µs moving. Theseus: target. 4 ms debounce: Lamzu Atlantis, +3.0 ms (TechPowerUp)', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, T.verdict + 1.0, T.verdict + 1.4), maxW: RM - LM });
   }
 });
@@ -848,7 +856,8 @@ S({
     ['weak slide', 'Now a demonstration: one drag click\'s chatter on the contact, a reader\'s window shading what it ignores, the pointer dragging that window down from Fnatic\'s recommended 4 ms until the chatter counts, then Theseus\'s default'],
     ['minecraft kids want to be able to adjust their debounce to count more double clicks', 'They can: single-throw mode with a window from 0 to 20 ms (a proposal for the software), shown counting 1 → 5 from one press as the window comes down; Razer Insider\'s Minecraft player quoted'],
     ['so i\'m not sure how to feel about how this is being sold', 'Sold as low by default and yours to set: the default needs no window at all, and the window is there for players who want the doubles'],
-    ['low debounce is good and important though to most people', 'The default is double throw: counted as the pole leaves NC, 0 ms of wait and no false doubles (the verdict: Fnatic\'s 4 ms → 0 ms)'],
+    ['low debounce is good and important though to most people', 'The default is double throw: counted as the pole leaves NC, 0 ms of wait and no false doubles (the verdict, "Wait to count a click": Fnatic\'s advice 4 ms → Theseus default 0 ms)'],
+    ['(R2-b03-1) what a drag click is', 'Drawn: a fingertip dragged along the button while the trace draws, the switch under it flashing at each closing of NO, so the chatter has its visible cause'],
     ['there is just a sub group of people who really dislike it', 'Said plainly: some players want the doubles, and some want none; the setting serves both, and the default gives the second group no doubles without any wait'],
     ['(integrator, on b03\'s question 7) counting at NC release can take a slam or a drop as a click', 'A third mode in the panel: "Double throw, safe", counted when the pole lands on NO, 1.4 ms later, so a drop or a slam can\'t click; still no window']
   ],
@@ -880,13 +889,25 @@ S({
       for (const [m, nv] of ev) { if (m > now) break; pts.push([X(m), lane.no - v * amp], [X(m), lane.no - nv * amp]); v = nv; }
       pts.push([X(now), lane.no - v * amp]);
       poly(pts, { color: theseus ? C.faint : C.ink, w: 2.6, alpha: ka }); }
+    /* the cause (R2-b03-1, M2): a fingertip dragged along the button as the trace draws, the switch under it flashing at each
+       closing of NO; it gives its band to Theseus's note as the default is picked */
+    { const kd = 1 - ep(t, T.toTheseus - 0.4, T.toTheseus);
+      if (kd > 0.003) {
+        const bx0 = 730, bx1 = 1150, by = 344, kdr = ep(t, T.draw, T.draw + T.drawDur, E.lin), fx = lerp(bx0 + 110, bx1 - 50, kdr), swx = (bx0 + bx1) / 2;
+        rr(bx0, by, bx1 - bx0, 9, 4, TH ? C.comp2 : C.comp, inkA(0.45), 1.2, kd);
+        rr(swx - 18, by + 10, 36, 15, 3, TH ? '#2C2D32' : '#0E0E10', null, 0, kd);
+        let fl = 0; for (const c of D.closes) { const u = t - (T.draw + T.drawDur * c / D.span); if (u >= 0 && u < 0.18) fl = Math.max(fl, 1 - u / 0.18); }
+        if (fl > 0.01) circle(swx, by + 17, 14 + 10 * (1 - fl), { color: C.ink2, w: 2, alpha: kd * fl });
+        finger(fx, by, 0.16, { s: 2.2, press: 1, view: 'side', alpha: kd });
+        text('Dragged along the button', bx0 - 16, by + 4, { role: 'small', size: 20, weight: 600, color: C.mute, align: 'right', alpha: kd });
+      } }
     /* what the reader counts: single throw, a window of w after each counted closing; Theseus, once, as NC opens */
     const kr = ep(t, T.draw + T.drawDur - 0.2, T.draw + T.drawDur + 0.2);
     if (!theseus) {
       cnt.forEach((c, i) => {
         if (c > now) return;
         G.save(); G.globalAlpha = kr * (1 - ep(t, T.toTheseus, T.toTheseus + 0.25)) * 0.9; G.fillStyle = C.track; G.fillRect(X(c), lane.no - amp - 18, Math.max(2, X(Math.min(c + w, D.span)) - X(c)), amp + 30); G.restore();
-        circle(X(c), lane.no - amp - 30, 15, { fill: i === 0 ? C.ink2 : C.red, alpha: kr });
+        circle(X(c), lane.no - amp - 30, 15, { fill: C.ink2, alpha: kr });   /* neutral: the doubles drag clickers ask for (R2-b03-3) */
         text(String(i + 1), X(c), lane.no - amp - 23, { role: 'small', size: 19, weight: 800, color: C.onHero || '#FFFFFF', align: 'center', alpha: kr });
       });
       if (kr > 0.3) text('ignored: the window', X(cnt[0]) + 12, lane.no + 34, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kr * (1 - ep(t, T.drag[0] + 0.6, T.drag[0] + 1.0)) });
@@ -898,7 +919,7 @@ S({
     }
     /* the count, big */
     const n = cnt.filter(c => c <= now).length, kn = ep(t, 0.6, 1.0);
-    rich([{ s: String(n), role: 'stat', size: 96, weight: 800, color: theseus ? C.heroText : n > 1 ? C.red : C.ink, tnum: true }], x0 + tw0 - 36, 470, { align: 'right', alpha: kn });
+    rich([{ s: String(n), role: 'stat', size: 96, weight: 800, color: theseus ? C.heroText : C.ink, tnum: true }], x0 + tw0 - 36, 470, { align: 'right', alpha: kn });
     text(n === 1 ? 'click' : 'clicks', x0 + tw0 - 36, 506, { role: 'small', size: 24, weight: 650, color: C.mute, align: 'right', alpha: kn });
     /* the window, as a setting: a slider the pointer drags */
     const sy = 760, sx0 = x0 + 270, sw = tw0 - 270 - 40, SX = ms => sx0 + sw * ms / D.wMax, ks = ep(t, 1.2, 1.6) * (1 - ep(t, T.toTheseus, T.toTheseus + 0.4) * 0.6);
@@ -930,8 +951,9 @@ S({
     const kb = [[T.drag[0] - 0.6, [SX(4) + 60, sy + 60]], [T.drag[0], [SX(4), sy]], [T.drag[1], [SX(D.wTo), sy]], [T.toTheseus - 0.45, [px + 46, py + 110]], [T.toTheseus + 0.6, [px + 46, py + 110]], [T.toTheseus + 1.2, [px + 120, py + 200]]];
     if (t > T.drag[0] - 0.9 && t < T.toTheseus + 1.6) cursorAt(t, kb, [T.drag[0], T.toTheseus], { a: ep(t, T.drag[0] - 0.9, T.drag[0] - 0.5) * (1 - ep(t, T.toTheseus + 1.1, T.toTheseus + 1.5)) });
     /* the verdict: the default wait */
-    verdict(t, T.verdict, 1240, 850, { from: '4', to: '0', unit: 'ms', dec: 0, label: 'Default wait', better: 'lower', who: ['Fnatic', 'Theseus'], net: false, size: 120, maxW: RM - 1240 });
-    scaleNote(1240, 940, 'and no false doubles', { lead: 'No window', t, t0: T.verdict + 1.6 });
+    /* Fnatic advises 4 ms or more; it doesn't say its default (R2-b03-2), so the rival's side is named as advice */
+    verdict(t, T.verdict, 1240, 850, { from: '4', to: '0', unit: 'ms', dec: 0, label: 'Wait to count a click', better: 'lower', who: ['Fnatic\'s advice', 'Theseus default'], net: false, size: 120, maxW: RM - 1240 });
+    scaleNote(1240, 962, 'and no false doubles', { lead: 'No window', t, t0: T.verdict + 1.6 });
     text('Fnatic\'s help: 0 to 20 ms, 4 ms or more advised, lower "may result in double clicks". Razer Insider (2022): "FPS and Minecrafter\'s could BOTH be good with it". Chatter illustrated', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, T.verdict + 1.0, T.verdict + 1.4), maxW: RM - LM });
   }
 });
@@ -1050,7 +1072,7 @@ S({
     ['it\'s way overbuilt', 'Only what the slide needs: two 5 mm guides with POM pads, two posts, the stabiliser wire in two clips (the tilt needs it: b03_rail), and a 1 mm pocket in the shell round the switch: no arms, no glove skirts'],
     ['important information though, it gets the point across okay', 'Every fact kept but one: "0 mice ship SPDT side buttons" (F11.4) turned out wrong (TechPowerUp: the Gamesense MVP\'s side buttons are Kailh GM 4.0s, full-size, on a side board), so the slide says what is true: full-size side switches are rare, and Theseus\'s are held by the shell with 0 side boards; full-size switches at 29.31 g (F9.17), held by the shell with no side board (F12.4), the stop on the guide (#64)'],
     ['it just feels lazy', 'Now a demonstration: established on the mouse, pushed in, the same three thumb presses on the hinge and on the rail, the classroom door (torque) beside it, and the verdict (FILM F3): click force spread across the button, 125 → 4 gf'],
-    ['F31.4: "i\'d have to see" the guide over the full-size switch', 'Shown plainly, held by the shell, as the slide\'s second half; its friction and four ways to build the guide are shown on the next slide, b03_rail (F44.1)'],
+    ['F31.4: "i\'d have to see" the guide over the full-size switch', 'Shown plainly, held by the shell, as the slide\'s second half; its friction and four ways to build the guide are shown on b03_rail, which now plays just before this slide (F44.1, FILM F36)'],
     ['(F44.1, F48.1) the guide: Brock picked "Tied posts (wire)" from b03_rail', 'Drawn as picked: two posts in 5 mm guides, tied by a stabiliser wire under them (dashed: hidden by the section), its two clips on the shell as pivots; the readouts are that design\'s (55 / 59 / 59 gf with the wire\'s pivots dry, b03_rail\'s model, the wire 0.6 mm on 3 mm arms, assumed) and the verdict its spread, 125 → 4 gf; "friction aside" and the placeholder are gone']
   ],
   sfx: B03_SIDE_T.rival.concat(B03_SIDE_T.ours).map(t0 => [t0 + 0.16, 'click']),
@@ -1144,7 +1166,7 @@ S({
     scaleNote(RX, 548, 'about an egg\'s weight', { lead: B03.gt01.f + ' to ' + Math.max(...B03.spots.map(b03_tiedGf)) + ' gf', t, t0: T.verdict + 1.7 });
     statTile(t, T.facts, [RX, 600, RW, 160], { value: '0', unit: 'side boards', label: 'SPDT side switches held by the shell', align: 'left' });
     statTile(t, T.facts + 0.3, [RX, 800, RW, 160], { value: THS.mass, unit: 'g', label: 'with four full-size SPDT switches', hero: true, align: 'left' });
-    source(t, 'Lever model: 14.5 mm button, nub 9 mm from the hinge, 55 gf on both (2-pin Omron D2LS-21: 61 ± 20 gf). Tied posts, derived (next slide): only the wire\'s pivots rub, taken dry (μ 0.35, DuPont), the wire\'s size assumed (0.6 mm on 3 mm arms). Full-size side switches are rare: the Gamesense MVP\'s sit on a side board.', { t0: T.verdict + 1.9, maxW: RM - LM, y: 994 });
+    source(t, 'Lever model: 14.5 mm button, nub 9 mm from the hinge, 55 gf on both (2-pin Omron D2LS-21: 61 ± 20 gf). Tied posts, derived (Four ways to guide a side rail): only the wire\'s pivots rub, taken dry (μ 0.35, DuPont), the wire\'s size assumed (0.6 mm on 3 mm arms). Full-size side switches are rare: the Gamesense MVP\'s sit on a side board.', { t0: T.verdict + 1.9, maxW: RM - LM, y: 994 });
   }
 });
 
@@ -1281,7 +1303,9 @@ const B03_RL_T = { drawer: 0.5, press: 1.6, count: [1.7, 1.0], tags: [2.85, 3.15
 /** a range of gf, rounded up, one precision (G5); one figure when both ends meet */
 const b03_gfRange = (v, k = 1, from = B03.gt01.f) => { const a = b03_ceil(lerp(from, v[0], k)), b = b03_ceil(lerp(from, v[1], k)); return a === b ? String(a) : a + ' to ' + b; };
 S({
-  id: 'b03_rail', ch: 'click', theme: 'paper', title: 'Four ways to guide a side rail', settle: 11.5, ideas: [80],
+  /* plays before b03_side (FILM F36): the rail's own problem and the tied fix first, then b03_side's "same click at every spot"
+     closes the chapter on its thesis */
+  id: 'b03_rail', ch: 'click', before: 'b03_side', theme: 'paper', title: 'Four ways to guide a side rail', settle: 11.5, ideas: [80],
   src: ['b03_delrinPair', 'b03_delrinM3', 'b03_molykote', 'b03_lubeStatic', 'b03_gt01'],
   answers: [
     ['F44.1: "show all 3, it\'s hard to visualize these things with text, that is the point of this presentation"', 'All three are on screen under the same press at the tip: a 14 mm guide, two posts (one at each end of the button), and a 5 mm guide (dry, then greased). Each tilts in its guide (drawn 5× larger than life, said on the slide), its contact points light red with the friction drawn there, and the force the click needs at the tip counts up, with a bar splitting it into the switch\'s 55 gf and the friction'],
@@ -1330,7 +1354,8 @@ S({
       }
       /* the force at the tip, counted; a bar: the switch's 55 gf, then the friction (to the low end solid, to the high end light) */
       const tx = x + 20, ka = ep(t, T.press - 0.2, T.press + 0.2), pay = d.tie ? ep(t, T.pay, T.pay + 0.6) : 0;
-      const col = d.tie ? C.heroText : short ? (g > 0.5 ? C.heroText : C.red) : d.key === 'posts' ? C.red : C.ink;
+      /* blue is Theseus's alone: the tied pair Brock chose (F48.1); the greased 5 mm guide is an option, in neutral ink (R2-b03-6) */
+      const col = d.tie ? C.heroText : short ? (g > 0.5 ? C.ink : C.red) : d.key === 'posts' ? C.red : C.ink;
       if (short) text('Dry: ' + b03_gfRange(dry, 1, 0) + ' gf', tx, 668, { role: 'small', size: 20, weight: 650, color: C.red, alpha: ep(t, T.grease + 0.5, T.grease + 0.9) });
       rich([{ s: b03_gfRange(F, 1, 0), role: 'num', size: 44, weight: 800, color: col, tnum: true, grad: pay > 0.5 ? C.heroGrad : null }], tx, 712, { alpha: ka });
       text('gf to click at the tip', tx, 742, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: ka, sentence: false });
@@ -1338,7 +1363,7 @@ S({
         G.save(); G.globalAlpha = ka; G.fillStyle = C.comp; G.fillRect(bx, by, b55, 12);
         G.fillStyle = C.red; G.fillRect(bx + b55, by, f0, 12); G.globalAlpha = ka * 0.38; G.fillRect(bx + b55 + f0, by, f1 - f0, 12); G.restore(); }
       /* what happened, in a few words */
-      const tags = { long: ['Barely tilts; dry POM still rubs', C.ink2], posts: ['Both tilt together, as one guide', C.red], short: g > 0.5 ? ['Greased: it slides once moving', C.heroText] : ['Short and dry: it grips hard', C.red], tied: ['Nothing tilts: the wire carries it', C.heroText] };
+      const tags = { long: ['Barely tilts; dry POM still rubs', C.ink2], posts: ['Both tilt together, as one guide', C.red], short: g > 0.5 ? ['Greased: it slides once moving', C.ink2] : ['Short and dry: it grips hard', C.red], tied: ['Nothing tilts: the wire carries it', C.heroText] };
       const [tg, tc] = tags[d.key];
       text(tg, tx, 808, { role: 'small', size: 21, weight: 650, color: tc, maxW: w - 30, alpha: ep(t, T.tags[i], T.tags[i] + 0.35), lh: 1.25 });
     });

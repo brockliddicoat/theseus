@@ -17,6 +17,7 @@ from geom import Mesh, GLB, polys, cap, walls, raised, slab, cyl_mesh, trs
 from layout import build as build_layout, pad_poly, drill_poly, trace_poly, ANT_KEEPOUT, EDGE_BAND
 import board_geo as BG
 from board_geo import build_board, T, CU, Y_MASK, Y_MASKCU, Y_PAD, Y_SILK, Y_L2, Y_L3, BEVEL, ybot
+from stackup import LAYERS, FAR
 from silk import build_silk_top, build_bottom
 from board import BATTERY, SORA_HOLES, wheel_cut_poly, square_cut_poly
 from parts import GND
@@ -124,9 +125,12 @@ def board_meshes(L, B, SB, silk_top):
     m = Mesh()
     cap(m, S(silk_top, 0.006), Y_SILK, up=True)
     out['top_silk'] = [(m, 'silk')]
-    # ---- bottom: L4 relief (triangle mosaic pour), ENIG accents + THT rings, silk
+    # ---- bottom: L4 relief (triangle mosaic pour), ENIG accents + THT rings, silk. Two layers (F47.4): the bottom's routes
+    #      (the far layer's copper, B['l3']) are relief under the mask too, the pour cut back round them (silk.build_bottom)
     l4 = SB['l4'].difference(unary_union([pad_poly(q, 0.05) for q in L['pads'] if q.get('drill') or q.get('slot')]))
     l4 = l4.difference(SB['gold'].buffer(0.05))
+    if LAYERS == 2:
+        l4 = unary_union([l4, B['l3'].difference(unary_union([pad_poly(q, 0.05) for q in L['pads'] if q.get('drill') or q.get('slot')]))])
     # tented GND vias on the bottom too
     vring = unary_union([Point(v['x'], v['z']).buffer(v['d'] / 2, quad_segs=10) for v in B['vias']])
     vholes = unary_union([Point(v['x'], v['z']).buffer(v['drill'] / 2 + 0.01, quad_segs=8) for v in B['vias']])
@@ -141,14 +145,17 @@ def board_meshes(L, B, SB, silk_top):
     m = Mesh()
     cap(m, S(SB['silk'], 0.006), ybot(Y_SILK), up=False)
     out['bot_silk'] = [(m, 'silk')]
-    # ---- inner layers (visible in X-ray)
-    m = Mesh()
-    l2s = S(B['l2'], 0.01)
-    cap(m, l2s, Y_L2, up=True); cap(m, l2s, Y_L2 - 0.001, up=False)
-    out['inner_l2'] = [(m, 'cu_l2')]
+    # ---- inner layers (visible in X-ray). Two layers (F47.4): no L2 plane; the 'inner_l3' mesh (cu_l3, teal in X-ray) is
+    #      the bottom's routes, drawn inside the bottom copper's thickness so the X-ray shows them through the board
+    if LAYERS == 4:
+        m = Mesh()
+        l2s = S(B['l2'], 0.01)
+        cap(m, l2s, Y_L2, up=True); cap(m, l2s, Y_L2 - 0.001, up=False)
+        out['inner_l2'] = [(m, 'cu_l2')]
     m = Mesh()
     l3 = S(unary_union([B['l3'], B['l3_vias']]), 0.006)
-    cap(m, l3, Y_L3, up=True); cap(m, l3, Y_L3 - 0.001, up=False)
+    y3 = Y_L3 if LAYERS == 4 else -T - CU * 0.5
+    cap(m, l3, y3, up=True); cap(m, l3, y3 - 0.001, up=False)
     out['inner_l3'] = [(m, 'cu_l3')]
     # via barrels (plated holes through the stack; tented, so only seen in X-ray)
     m = Mesh()
@@ -188,13 +195,15 @@ def main():
     board_node = glb.node('board', children=board_children, extras=dict(kind='group'))
     comp_node = glb.node('components', children=comp_root_children, extras=dict(kind='group'))
     root = glb.node('theseus_pcb', children=[board_node, comp_node], root=True,
-                    extras=dict(units='mm', boardTopY=0.0, thickness=T))
+                    extras=dict(units='mm', boardTopY=0.0, thickness=T, layers=LAYERS))
     size = glb.write(os.path.join(OUT, 'pcb.glb'))
     print('pcb.glb: %.2f MB, %d triangles, %.1fs' % (size / 1e6, ntri, time.time() - t0))
     # ------------------------------------------------------------------ layout json (animation data + metadata)
     meta = dict(
         units='mm', frame="mouse/three.js (right-handed): +X = user's LEFT (side-button side), +Y up, +Z forward (nose); board top copper at local y=0. Authored in the photo/top-view frame (x = user's right) and mirrored x -> -x at export",
-        boardTopY_in_mouse=5.03, boardOffsetZ_in_mouse=-2.88, thickness=T, qr=QR,
+        boardTopY_in_mouse=5.03, boardOffsetZ_in_mouse=-2.88, thickness=T, layers=LAYERS, copperOuter_um=round(CU * 1000, 1),
+        stackup=('two layers: L1 top, L4 bottom (the long runs and the underside art), %.1f mm finished, %.1f um outer copper '
+                 '(F47.4, H3)' % (T, CU * 1000)) if LAYERS == 2 else 'four layers, %.1f mm' % T, qr=QR,
         outline=[[round(-c[0], 3), round(c[1], 3)] for c in B['outline'].exterior.coords],
         antennaKeepout=[-ANT_KEEPOUT.bounds[2], ANT_KEEPOUT.bounds[1], -ANT_KEEPOUT.bounds[0], ANT_KEEPOUT.bounds[3]],
         components=comp_meta,

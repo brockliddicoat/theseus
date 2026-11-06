@@ -36,9 +36,9 @@ export const WHEEL_SPEC = {
   wheel: 'six thin tapered arms on an open hub, a thin crowned rim with a spine where the arms meet it; 0.9 g (Brock\'s figure, F22.1; thinner arms, F25.2)',
   tread: 'fine straight knurl: 144 V-grooves (90°) across the crown, 6 per encoder step, 0.12 mm deep, 0.50 mm pitch, running out to points 0.35 mm before the edge fillets',
   axle: 'POM (acetal), hex-keyed in the hub, D-flat drive into the encoder',
-  encoder: 'magnetic (Hall), in a normal encoder outline: nickel-silver frame (non-magnetic) with drawn bushing collar, black bottom housing with 4 pins at 1.25 mm, clear PC top housing; inside, a Ø3.0 x 0.8 mm diametric NdFeB magnet on the rotor, 0.4 mm from a 3D Hall angle sensor (KTH5791-class, QFN 3 x 3, A/B quadrature) on a small vertical board; 24-lobe detent star + leaf spring',
-  support: 'POM bracket: U seat with lead-in chamfers for the far journal, foot with two locating pegs, gusset',
-  densities: { AZ31B: 1.77, Al6061: 2.70, POM: 1.42 },
+  encoder: 'magnetic (Hall), in a normal encoder outline (F47.4, H3: the lighter encoder, no nickel-silver frame: the housings snap together, a moulded boss carries the rotor, two moulded pegs locate it in the board; 0.4 mm walls), black bottom housing with 4 pins at 1.25 mm, clear PC top housing; inside, a Ø3.0 x 0.8 mm diametric NdFeB magnet on the rotor, 0.4 mm from a 3D Hall angle sensor (KTH5791-class, QFN 3 x 3, A/B quadrature) on a small vertical board; 24-lobe detent star + leaf spring',
+  support: 'POM bracket: U seat with lead-in chamfers for the far journal, a cored post (a 0.55 mm-walled tube) and a cored foot (two slots beside the middle-click window), four tin hold-down tabs (F47.4, H3: cored)',
+  densities: { AZ31B: 1.77, Al6061: 2.70, POM: 1.42, PBT: 1.35, PC: 1.20, NdFeB: 7.50, phosphorBronze: 8.80, FR4: 1.85, brass: 8.50, tin: 7.30, nickelSilver: 8.70, moldCompound: 2.00, ceramic: 5.50 },
   sources: {
     pmm: 'PMM, Magnesium Scroll Wheel [PULSE, CYBER OP, OP1 8k, OP1w 4k]: magnesium alloy, 1.0 g, "the magnesium wheel only" (the pin ships beside it) [MC]',
     target: 'Brock (F22.1): "ours will be 0.9g", "closer to the pmm wheel ... but with 6 arms" [PR]',
@@ -172,8 +172,15 @@ export function buildScrollWheel(opts = {}) {
   // 24-lobe detent star under a leaf spring (the feel stays mechanical), and on the rotor's end a diametrically
   // magnetised NdFeB disc facing a 3D Hall angle sensor (KTH5791-class, QFN 3 x 3, A/B quadrature out) on a small
   // vertical board, 0.4 mm across the gap. Nothing touches, and there is no light path for dust to block.
+  // F47.4 (Brock, "0.6 mm, 5.63 g"; H3): the lighter encoder drops the nickel-silver frame (0.43 g of it). Without it the two
+  // housings snap together (two clear hooks a side over the split), the black one reaches the wheel-side face the plate
+  // had (6.65 from the wheel's centre), carries the rotor in a moulded boss where the frame's drawn collar was, and two
+  // moulded pegs (Ø0.8) locate it in the board's two copper-free holes; walls 0.4 mm (the 1.0 g estimate assumed 0.5).
+  // The Hall IC stays on its small board facing the magnet 0.4 mm away: on the main board it would sit about 10 mm from a
+  // Ø3 mm magnet. opts.encoderFrame: true draws the old framed encoder (plan 5 as first built)
+  const frameOn = opts.encoderFrame === true;
   const enc = new THREE.Group(); enc.name = 'encoder';
-  const XF0 = 6.65, XF1 = 6.90, XB0 = XF1, XB1 = 11.5;           // frame plate, then the housing (along the axle)
+  const XF0 = 6.65, XF1 = 6.90, XB0 = frameOn ? XF1 : XF0, XB1 = 11.5;   // frame plate, then the housing (along the axle)
   const ZH = 5.5, YT = 4.0, YB = -AH, CH = 2.6;                   // half width, top, board, top-front chamfer
   const YS = -3.15;                                               // split: black bottom housing below, clear top above
   const toYZ = (geo, x0) => { geo.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, x0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1)); return geo; };
@@ -201,7 +208,7 @@ export function buildScrollWheel(opts = {}) {
   const collar = lathe([[1.85, 0], [1.85, -0.42], [1.97, -0.5], [2.28, -0.5], [2.4, -0.38], [2.4, 0]], { segments: 72, crease: 40 });
   collar.rotateZ(-Math.PI / 2); collar.translate(XF0 + 0.005, 0, 0);
   frame.add(meshOf(collar, M.shieldNickel, 'frameCollar'));
-  for (const [u, v] of pegAt) {
+  if (frameOn) for (const [u, v] of pegAt) {
     const pg = lathe([[0, 0], [0.34, 0], [0.34, 0.06], ...arc(0.18, 0.06, 0.16, 0, Math.PI / 2, 4).slice(1).map(([r, y]) => [r, y]), [0, 0.22]], { segments: 20 });
     pg.rotateZ(Math.PI / 2); pg.translate(XF0 + 0.02, v, -u);
     enc.add(meshOf(pg, v > YS ? M.clearPC : M.housingBlack, 'peg'));
@@ -233,7 +240,26 @@ export function buildScrollWheel(opts = {}) {
     foot.rotateX(-Math.PI / 2); foot.translate((XFT0 + XFT1) / 2, YB, zs + s * 0.42);
     frame.add(meshOf(foot, M.shieldNickel, 'foot'));
   }
-  enc.add(frame);
+  if (frameOn) enc.add(frame);
+  // the lighter encoder's own fixings (no frame): the bearing boss round the rotor on the wheel-side face, two locating pegs
+  // into the board (at 9.2 from the wheel's centre, z +/-4.6: the footprint ENCM's holes), two snap hooks a side
+  const fixings = [];
+  if (!frameOn) {
+    const boss = lathe([[1.68, 0], [1.68, -0.42], [1.8, -0.5], [2.28, -0.5], [2.4, -0.38], [2.4, 0]], { segments: 72, crease: 40 });
+    boss.rotateZ(-Math.PI / 2); boss.translate(XF0 + 0.005, 0, 0);
+    fixings.push(meshOf(boss, M.housingBlack, 'bearingBoss'));
+    for (const sz of [-4.6, 4.6]) {
+      const pg = lathe([[0, 0], [0.4, 0], [0.4, -0.75], [0.3, -0.9], [0, -0.9]], { segments: 24, crease: 40 });
+      pg.translate(9.2, YB, sz);
+      fixings.push(meshOf(pg, M.housingBlack, 'locatingPeg'));
+    }
+    for (const sz of [-1, 1]) for (const hx of [8.0, 10.4]) {
+      const hk = extrude(roundedRectShape(0.8, 1.7, 0.12), { depth: 0.24, front: { r: 0.05, s: 1 }, back: { r: 0.05, s: 1 }, curveSegments: 3 });
+      hk.translate(hx, YS - 0.15, sz * (ZH + 0.12) - 0.12);
+      fixings.push(meshOf(hk, M.clearPC, 'snapHook'));
+    }
+    for (const f of fixings) { if (f.material === M.clearPC) f.renderOrder = 3; enc.add(f); }
+  }
 
   // the rotor: the orange POM hub on the D drive, the detent star near the wheel side, the magnet on its far end
   const rot = new THREE.Group(); rot.name = 'encoderRotor';
@@ -292,11 +318,13 @@ export function buildScrollWheel(opts = {}) {
   enc.add(sensor);
   // four pins in a row along the bottom, 1.25 mm pitch, from the sensor board down into the main board
   const XP = (XSB0 + XSB1) / 2, pins = new THREE.Group(); pins.name = 'pins';
+  let pinV = 0;
   for (let i = 0; i < 4; i++) {
     const z = (i - 1.5) * 1.25;
     const pp = [[-0.25, YB + 4.6 - YB], [-0.25, -1.45], [-0.08, -1.75], [0.08, -1.75], [0.25, -1.45], [0.25, YB + 4.6 - YB]];
     const g = extrude(filletPolygon(pp, [0, 0.06, 0.03, 0.03, 0.06, 0], false, 2), { depth: 0.3, front: { r: 0.04, s: 1 }, back: { r: 0.04, s: 1 } });
     g.rotateY(-Math.PI / 2); g.translate(XP + 0.15, YB, z);
+    pinV += meshVolume(g);
     pins.add(meshOf(g, M.tin, 'pin'));
   }
   enc.add(pins);
@@ -339,13 +367,21 @@ export function buildScrollWheel(opts = {}) {
   // the base on the board, with a window over the middle-click switch (WB1: 5.4 x 7.9, the window 3.8 x 3.6)
   const baseSh = roundedRectShape(BX1 - BX0, 2 * BZ, 0.5, (BX0 + BX1) / 2, 0);
   baseSh.holes.push(roundedRectPath(3.8, 3.6, 0.3, (BX0 + BX1) / 2, 0));
+  // F47.4 (H3): cored, two slots through the foot beside the window (walls 0.55 to 0.6 mm, POM-mouldable)
+  for (const sz of [-1, 1]) baseSh.holes.push(roundedRectPath(3.8, 1.0, 0.3, (BX0 + BX1) / 2, sz * 2.9));
   const baseG = extrude(baseSh, { depth: BH, front: { r: 0.2, s: 2 }, curveSegments: 6 });
   baseG.rotateX(-Math.PI / 2); baseG.translate(0, -AH, 0);
   sup.add(meshOf(baseG, M.housingBlack, 'supportFoot'));
   // the post from the base up to the seat's top, at the bay's edge
-  const postG = extrude(roundedRectShape(sx0 - XP0, sw, 0.4, (XP0 + sx0) / 2, 0), { depth: yt - (-AH + BH), front: { r: 0.2, s: 2 }, curveSegments: 6 });
+  const postSh = roundedRectShape(sx0 - XP0, sw, 0.4, (XP0 + sx0) / 2, 0);
+  postSh.holes.push(roundedRectPath(sx0 - XP0 - 1.1, sw - 1.1, 0.15, (XP0 + sx0) / 2, 0));   // cored: a tube, 0.55 mm walls (F47.4)
+  const yCap = yt - 1.0;                                            // the tube ends under a solid 1 mm cap (the top stays closed)
+  const postG = extrude(postSh, { depth: yCap - (-AH + BH), curveSegments: 6 });
   postG.rotateX(-Math.PI / 2); postG.translate(0, -AH + BH, 0);
   sup.add(meshOf(postG, M.housingBlack, 'supportPost'));
+  const capG = extrude(roundedRectShape(sx0 - XP0, sw, 0.4, (XP0 + sx0) / 2, 0), { depth: yt - yCap, front: { r: 0.2, s: 2 }, curveSegments: 6 });
+  capG.rotateX(-Math.PI / 2); capG.translate(0, yCap, 0);
+  sup.add(meshOf(capG, M.housingBlack, 'supportPostCap'));
   // four tin-plated hold-down tabs, bent from the base onto WB1's pads
   for (const [tx, tz] of [[-8.3, 3.45], [-12.5, 3.45], [-8.3, -3.45], [-12.5, -3.45]]) {
     const t = new THREE.BoxGeometry(1.0, 0.12, 0.8); t.translate(tx, -AH + 0.06, tz); sup.add(meshOf(t, M.tin, 'supportTab'));
@@ -358,7 +394,7 @@ export function buildScrollWheel(opts = {}) {
   xrayMat.color.set(0x9aa3ab); xrayMat.depthWrite = false; xrayMat.side = THREE.DoubleSide;
   const xrayFrame = M.ghost.clone(); own.add(xrayFrame);
   xrayFrame.color.set(0xc9ced3); xrayFrame.depthWrite = false; xrayFrame.side = THREE.DoubleSide;
-  const shellMeshes = [housing, ...enc.children.filter(c => c.name === 'peg' && c.material === M.housingBlack)];
+  const shellMeshes = [housing, ...enc.children.filter(c => (c.name === 'peg' || c.name === 'bearingBoss' || c.name === 'locatingPeg') && c.material === M.housingBlack)];
   const frameMeshes = []; frame.traverse(o => { if (o.isMesh) frameMeshes.push(o); });
 
   // ------------------------------------------------------------------ state
@@ -374,6 +410,7 @@ export function buildScrollWheel(opts = {}) {
     // explode: axle out to −X, support further; the encoder opens along +X: rotor, then the cover lifts, sensor and pins out
     axle.position.x = -11 * e; sup.position.x = -17 * e;
     frame.position.x = 2.2 * e;
+    for (const f of fixings) f.position.x = (f.name === 'snapHook' ? 11.5 : 15) * e;
     rot.position.x = 5.0 * e;
     spring.position.set(9.0 * e, 3.2 * e, 0);
     cover.position.set(11.5 * e, 6.0 * e, 0);
@@ -417,6 +454,30 @@ export function buildScrollWheel(opts = {}) {
   const axleV = ['axleL', 'axleR', 'axleHex', 'axleD'].reduce((s, n) => s + Math.abs(meshVolume(axle.getObjectByName(n).geometry)), 0) - 2 * 0.15 * hexA;
   const RHO = WHEEL_SPEC.densities;
   const encBox = { min: [XF0 - 0.5, 0, -ZH - 0.4], max: [XB1, AH + YT, ZH + 0.4] };
+  // ---- the encoder's and the support's grams as drawn (F47.4, H3): each part's volume x its material's density. The
+  // housings are drawn as solid blocks (only their outsides show); they are moulded with WALL-thick walls, the black one open
+  // at the split and the clear one closed over it, so their plastic is the outer prism less the cavity
+  const area = (pts) => { let a2 = 0; for (let i = 0; i < pts.length; i++) { const [x0, y0] = pts[i], [x1, y1] = pts[(i + 1) % pts.length]; a2 += x0 * y1 - x1 * y0; } return Math.abs(a2) / 2; };
+  const WALL = frameOn ? 0.5 : 0.4, Lh = XB1 - XB0;
+  const botIn = [[ZH - WALL, YB + WALL], [ZH - WALL, YS], [-ZH + WALL, YS], [-ZH + WALL, YB + WALL]];
+  const topIn = [[ZH - WALL, YS], [ZH - WALL, YT - WALL], [-ZH + CH - 0.41 * WALL, YT - WALL], [-ZH + WALL, YT - CH + 0.41 * WALL], [-ZH + WALL, YS]];
+  const vHousing = area(botPts) * Lh - area(botIn) * (Lh - 2 * WALL), vCover = area(topPts) * Lh - area(topIn) * (Lh - 2 * WALL);
+  let springL = 0; for (let i = 1; i < springPts.length; i++) springL += springPts[i].distanceTo(springPts[i - 1]);
+  const vFrame = frameOn ? (() => { let v = 0; frame.traverse(o => { if (o.isMesh) v += o.geometry.index ? 0 : meshVolume(o.geometry); }); return v; })() : 0;
+  const encParts = {   // grams
+    housing: vHousing * RHO.PBT / 1000, cover: vCover * RHO.PC / 1000,
+    fixings: frameOn ? 0 : (Math.PI * (2.4 ** 2 - 1.68 ** 2) * 0.45 * RHO.PBT + 2 * Math.PI * 0.4 ** 2 * 0.9 * RHO.PBT + 4 * 0.8 * 1.7 * 0.24 * RHO.PC) / 1000,
+    rotor: (meshVolume(rhG) + meshVolume(starG)) * RHO.POM / 1000, magnet: Math.PI * magR ** 2 * (XM1 - XM0) * RHO.NdFeB / 1000,
+    spring: 0.1 * 0.8 * springL * RHO.phosphorBronze / 1000,
+    sensorBoard: 7.4 * 9.6 * (XSB1 - XSB0) * RHO.FR4 / 1000, hallIC: 3.0 * 3.0 * (XIC1 - XIC0) * RHO.moldCompound / 1000, capacitor: 0.5 * 0.5 * 1.0 * RHO.ceramic / 1000,
+    pins: pinV * RHO.brass / 1000, frame: vFrame * RHO.nickelSilver / 1000,
+  };
+  const supParts = { // grams
+    seat: meshVolume(supG) * RHO.POM / 1000, foot: meshVolume(baseG) * RHO.POM / 1000,
+    post: (meshVolume(postG) + meshVolume(capG)) * RHO.POM / 1000, tabs: 4 * 1.0 * 0.12 * 0.8 * RHO.tin / 1000,
+  };
+  const sumG = (o) => Object.values(o).reduce((a, v) => a + v, 0);
+  const r3 = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, +v.toFixed(3)]));
   root.userData.spec = {
     ...WHEEL_SPEC, diameter: D, width: Wd, crownRadius: Rc, steps, axleHeight: AH, axleDiameter: 2 * rJ,
     knurl: { grooves: nK, perStep: nK / steps, depth: kd, angleDeg: 90, pitch: +(TAU * R / nK).toFixed(3), band: +(2 * yK).toFixed(2), runOut: run },
@@ -431,6 +492,8 @@ export function buildScrollWheel(opts = {}) {
     wheelVolume_mm3: +vol.toFixed(1), massEstimate_g: +(vol * RHO.AZ31B / 1000).toFixed(3), massAluminium_g: +(vol * RHO.Al6061 / 1000).toFixed(3),
     volumeParts_mm3: { skin: +skinV.toFixed(1), grooves: +(-grooveV).toFixed(1), arms: +armsV.toFixed(1), hub: +hubV.toFixed(1), overlaps: +(-overlapV).toFixed(1), fillets: +filletV.toFixed(1) },
     axleVolume_mm3: +axleV.toFixed(1), axleMass_g: +(axleV * RHO.POM / 1000).toFixed(3),
+    encoderFrame: frameOn, encoderWall_mm: WALL, encoderMass_g: +sumG(encParts).toFixed(3), encoderMassParts_g: r3(encParts),
+    supportMass_g: +sumG(supParts).toFixed(3), supportMassParts_g: r3(supParts),
   };
   root.userData.parts = { wheel, rim, tread, knurl: tread, arms, web: arms, hub, axle, magnet, detentStar, rotor: rot, rotorHub, encoder: enc, housing, cover, frame, pins,
     sensor, hallIC: ic, field, detent: spring, support: sup, spin };

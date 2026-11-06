@@ -293,3 +293,24 @@ function kx_truss() {
     source(t, 'Kit test. 2D frame, PP-C-20A ribs 10 × 1.0 mm; breaks (feBreakAt, F41.1: 120 MPa stretched, 207 bent) at ' + fmtN(Nb, 1) + ' N. Flex drawn 4×.', { t0: 0.3 });
   } });
 });
+
+/* ---------- the finger (FG, F49.1): every view, the press, a surface at a slant, the thumb, a floor, small sizes ---------- */
+[['paper', 'p'], ['night', 'n']].forEach(([th, sfx]) => {
+  S({ id: 'kit_finger_' + sfx, ch: 'click', theme: th, title: 'finger', settle: 3, draw: t => {
+    header(t, 'The finger, every view');
+    const d = pressCurve(t, 0.8, { hold: 0.8 }), lab = (s, x, y) => text(s, x, y, { role: 'label', size: 19, color: C.mute });
+    /* side: along a bar (no surf), and tilted onto a level bar (surf: 0) */
+    rect(80, 420, 420, 6, { fill: C.track }); finger(420, 420, 0, { s: 5, press: d, len: 40 }); lab('side, along the surface', 80, 470);
+    rect(560, 420, 380, 6, { fill: C.track }); finger(800, 420, 0.5, { s: 5, surf: 0, press: d, len: 40 }); lab('side, surf: 0 (tilted onto a level part)', 560, 470);
+    /* top and end */
+    finger(1110, 330, -Math.PI / 2, { s: 5, view: 'top', press: d, len: 24 }); lab('top', 1060, 470);
+    rect(1230, 420, 200, 6, { fill: C.track }); finger(1330, 420, 0, { s: 5, view: 'end', press: d, len: 34 }); lab('end', 1230, 470);
+    line(1680, 260, 1680, 440, { color: C.ink2, w: 3 }); finger(1680, 360, -Math.PI / 2, { s: 5, view: 'end', press: d, len: 34 }); lab('end, ang -PI/2 (pad to a wall)', 1520, 470);
+    /* the thumb, a poke, a step, small */
+    rect(80, 760, 420, 6, { fill: C.track }); finger(420, 760, 0, { s: 4.4, press: d, len: 46, digit: 'thumb' }); lab("digit: 'thumb'", 80, 810);
+    line(760, 600, 760, 780, { color: C.ink2, w: 3 }); finger(760, 690, 0, { s: 4.4, surf: Math.PI / 2, press: d, len: 36 }); lab('a poke: surf PI/2', 560, 810);
+    const fl = X => (X > 1 ? -1.6 : 0); rect(860, 760, 160, 6, { fill: C.track }); rect(1020, 760 + 1.6 * 5, 160, 6, { fill: C.track });
+    finger(1020, 760, 0, { s: 5, press: d, len: 36, floor: fl, floorKey: 'kitstep', mark: [-4, 1, C.red] }); lab('floor: a step; mark', 860, 810);
+    rect(1260, 740, 120, 4, { fill: C.track }); finger(1330, 740, 0, { s: 1.6, press: d, len: 26 }); rect(1420, 740, 60, 3, { fill: C.track }); finger(1460, 740, 0, { s: 0.55, press: d, len: 26 }); lab('1.6 and 0.55 px/mm', 1260, 810);
+  } });
+});
