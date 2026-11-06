@@ -90,7 +90,11 @@ function mix(a, b, k) { const x = hexRgb(a), y = hexRgb(b); return '#' + x.map((
 const ACCENTS = {
   shell: ['#8A70DD', '#A18BF3'], surface: ['#C35AA4', '#DA76BB'], elec: ['#009DBD', '#00B5D4'], shape: ['#6E9A10', '#8FAC31'], own: ['#6F7C8F', '#8C98AA']
 };
-const ACC = Object.fromEntries(Object.keys(ACCENTS).map(k => [k, () => ACCENTS[k][TH ? 0 : 1]]));
+/* F35.1 (Brock, 2026-11-05, confirmed 2026-11-06): "the primary color is blue for theseus, yellow for comparisons and
+   secondary items"; the stage, type and chapter labels are black, grey and white, red is only for faults, and the other
+   vibrant colours are out ("other vibrant colors made it less professional", F34.6). So every chapter's chrome is ink.
+   ACCENTS stays as a record of the old set; nothing draws with it. */
+const ACC = Object.fromEntries(Object.keys(ACCENTS).map(k => [k, () => C.ink]));
 ACC.intro = () => C.ink; ACC.end = () => C.ink; ACC.click = () => C.ink; ACC.glide = () => C.ink;
 function acc(key) { const f = ACC[key || (typeof curSlide === 'function' && curSlide() ? curSlide().ch : 'intro')]; return f ? f() : C.ink; }
 

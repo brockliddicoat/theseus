@@ -20,7 +20,59 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-05 04:00 (Chicago).
+Last updated: 2026-11-06 07:30 (Chicago).
+
+## F34, F35. Brock's own steering given to Codex on 2026-11-05 (carried over; Codex's work itself is set aside, F38.4)
+On 2026-11-05, out of Claude usage, Brock had Codex continue from this branch. On 2026-11-06 he called its output "very
+poor and a step backwards on almost all fronts" (F38.4), so nothing Codex made is used. His own words to it are his
+feedback on the deck, so they are kept here (numbered as on Codex's branch, codex/theseus-revamp-2026-11-05):
+- **F34.1 STANDING** "all visual assets must be generated with code, with elegant motion design, no AI-generated images,
+  and a human tone".
+- **F34.5 STANDING** "the animations are currently the weakest area compared with Claude. Prioritize a substantive
+  causal-motion pass, not static diagrams with decorative movement." (said to Codex about its own animations; the point
+  stands: motion that performs the explanation, F38.3).
+- **F34.6 PARTLY OVERRIDDEN by F35.1** "the presentation should be mostly black, grey/white, yellow, and a little red.
+  Other vibrant colors made it less professional."
+- **F35.1 DECIDED, STANDING (confirmed 2026-11-06, F38.5)** "you're using too much yellow, the primary color is blue for
+  theseus, yellow for comparisons and secondary items". The stage, type and chapter labels are black, grey and white;
+  red only for faults; no other vibrant chapter colours. Overrides F11.2 (the old chapter colours). **DONE in shared code:**
+  every chapter accent is ink (01-core.js).
+- (F36 and F37 on Codex's branch are about Codex's own preview site and an Astra experiment: not carried.)
+
+## F38. The revamp, picked back up (2026-11-06 06:33 to 07:20)
+- **F38.1** "pick back up with the revamp that was planned for yesterday before i ran out of usage / make sure you don't
+  lose too much content, you should still have well over 100 slides, every animation should be vastly improved and more
+  intuitive, make sure to recover all the context we had in the conversation in that link as to the revamp and everything
+  else, rely heavily on my feedback document, double check that all archived feedback has actually been addressed / set
+  the bar for this new presentation 10x higher than it was before". **IN PROGRESS:** the context recovered from the shared
+  chat (yesterday's plan and briefs are in handoff/briefs/revamp-claude-2026-11-05/); REVAMP.md is the new film (104
+  slides); handoff/revamp2/ holds the common brief (the 10x bar, M1 to M10), the builders' briefs and the kit brief.
+- **F38.2 DECIDED** Slide count: "at least 100, play it by ear as you work as to what you think is necessary to be most
+  effective, probably less than 120 slides though".
+- **F38.3 STANDING** "every animation should be vastly improved and more intuitive": the motion standard in
+  handoff/revamp2/common.md (M1 to M10: a demonstration, not a graphic; causal motion; the rival's fault then the fix under
+  the same input; establish then push in; human scale; a hook in the first second and a payoff by about 8 s).
+- **F38.4 DECIDED** "mostly ignore codex, the output was very poor and a step backwards on almost all fronts". The revamp
+  works from Claude's last commit (7d8f926); Codex's branch stays on GitHub untouched.
+- **F38.5 DECIDED** Palette: "Neutral + blue" (F35.1 over F11.2).
+- **F38.6 STANDING** Usage: "this is an ultra account, it doesn't have 5 hour limits. i don't want you to worry about usage
+  at all, i want you to be as thorough as possible, unless you're worried being inefficient with usage may result in a worse
+  execution, again the bar for this presentation and how understandable and impactful it is is 10x higher than quality
+  than the last one. i'd like you to check in often and post live updates you aren't drifting from what i want and you stay
+  aligned". (F10.1's pacing is retired for this account; check-ins and live-link updates are standing.)
+- **F38.7 STANDING** Audience: "it's mostly clips that will be used on social media and for parts of the website, but the
+  flow between clips has to be extremely good, the organization has to be as interconnected as possible for the most
+  invested of customers and investors that sit down and watch the whole thing, the pacing also has to be amazing to keep
+  people invested for when they watch the whole thing". So every slide stands alone as a silent clip, the film is threaded
+  (the compromise ledger, callbacks, hand-offs), and a clip mode and exporter are being built (F0b).
+- **F38.8 DECIDED, STANDING** 3D: "mostly drop the 3d version, but don't delete its assets, as many of the 2d
+  visualizations should be derived from 3d assets as possible to make sure they stay contestant, and then those assets are
+  also usable for develope, when you do full shell designs they should be based of a mouse that is clearly slightly
+  simplified as well and only showing the parts of the design that matter for the concept because your last full design
+  wasn't really up to par and i dint want people to think the indicative of the end product".
+- **F38.9** The reference photos: he re-sent all of them (19 images: tensioners, G-Wolves board and arm, Viper V3 / V4 Pro
+  undersides, lattice bases, the Sora V2 board, top and side, the long-antenna Raytac module, the Razer FP-3 sensor, ARYE's
+  sensor-position drawing, Apple's M1 bento). Kept in refs/photos/brock-2026-11-06/ (INDEX.md).
 
 ## Open with Brock
 

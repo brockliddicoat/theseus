@@ -34,7 +34,7 @@ def r3d_tag():
             + v.read_text() + "\n</script>")
 def build(name, title, slides, dev=False, flat=True):
     head = read_src('00-head.html').replace('%%TITLE%%', title)
-    parts = ['01-core.js', '03-parts.js', '04-ui.js', '07-charts.js', '07-sim.js', '08-r3d.js', '08-v2d.js', '05-data.js', '06-audio.js'] + slides + ['20-app.js']
+    parts = ['01-core.js', '03-parts.js', '04-ui.js', '07-charts.js', '07-sim.js', '08-r3d.js', '08-v2d.js', '05-data.js', '06-audio.js'] + [p for p in ('05-f27.js', '06-motion.js') if (src / p).exists()] + slides + ['20-app.js']
     js = rdata() + (geo2d() if flat else 'const GEO2D = {};\n') + '\n'.join(read_src(p) for p in parts)
     i = head.index('<div id="app">')
     head_part, body_part = head[:i], head[i:]
@@ -58,7 +58,9 @@ which = [a for a in args if not a.startswith('--')] or ['main', 'rec']
 sheets = sorted(p.name for p in src.glob('12-*.js'))
 if 'only' in opt: sheets = [s for s in sheets if s == '12-00-ideas.js' or s == opt['only']]
 extra = sorted(p.name for p in src.glob('14-*.js'))
-main_slides = (['09-fillet-data.js'] if (src/'09-fillet-data.js').exists() else []) + sorted(p.name for p in src.glob('10-*.js')) + sheets + extra + (['13-sort.js'] if (src/'13-sort.js').exists() else [])
+# the revamp (2026-11-05): one file per builder, deck/src/30-*.js; their slides replace old ones with { replaces: [ids] }
+revamp = sorted(p.name for p in src.glob('30-*.js'))
+main_slides = (['09-fillet-data.js'] if (src/'09-fillet-data.js').exists() else []) + sorted(p.name for p in src.glob('10-*.js')) + sheets + extra + revamp + (['13-sort.js'] if (src/'13-sort.js').exists() else [])
 out = ('main-' + opt['out'] + '.html') if 'out' in opt else 'main.html'
 if 'main' in which: build(out, 'Theseus', main_slides, dev)
 if 'parts' in which: build('parts.html', 'Parts test', ['19-parts-test.js'], dev)

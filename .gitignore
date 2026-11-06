@@ -24,3 +24,7 @@ deck/dist/main-*.html
 # builders' temporary 3D build folders
 3d/.k2*/
 3d/pcb/.k2tmp/
+
+# third-party reference photos Brock re-sent on 2026-11-06 (local only; INDEX.md is committed)
+refs/photos/brock-2026-11-06/*
+!refs/photos/brock-2026-11-06/INDEX.md

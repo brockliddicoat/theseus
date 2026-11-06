@@ -4,7 +4,11 @@
    to open its chapter. A slide with { replaces: 'slideId' } removes that slide (used when a slide is rebuilt in a new file). */
 (function () {
   const idx = s => DECK.chapters.findIndex(c => c.key === s.ch);
-  for (const s of DECK.slides.slice()) if (s.replaces) { const k = DECK.slides.findIndex(x => x.id === s.replaces && x !== s); if (k >= 0) DECK.slides.splice(k, 1); }
+  /* replaces may be one id or a list (the revamp's new slides each replace the old slides they absorb); an old slide's
+     place is kept for anything anchored after or before it: the anchor moves to the slide that replaced it */
+  const repl = {};
+  for (const s of DECK.slides.slice()) if (s.replaces) for (const id of [].concat(s.replaces)) { repl[id] = repl[id] || s.id; const k = DECK.slides.findIndex(x => x.id === id && x !== s); if (k >= 0) DECK.slides.splice(k, 1); }
+  for (const s of DECK.slides) { if (s.after && repl[s.after]) s.after = repl[s.after]; if (s.before && repl[s.before]) s.before = repl[s.before]; }
   const all = DECK.slides.map((s, i) => [s, i]).sort((a, b) => (idx(a[0]) - idx(b[0])) || ((b[0].first ? 1 : 0) - (a[0].first ? 1 : 0)) || (a[1] - b[1]));
   DECK.slides.length = 0; all.forEach(p => DECK.slides.push(p[0]));
   for (const s of DECK.slides.filter(x => x.after || x.before)) {

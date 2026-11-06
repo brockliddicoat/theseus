@@ -130,15 +130,23 @@ function rateSync() {
   const p = $('rate'); if (p.hidden) return;
   if (!p.dataset.built) rateBuild(p);
   p.querySelector('.slide').textContent = (APP.i + 1) + '. ' + (s.title || s.id) + (old && old.value ? '   (rated ' + old.value + ' before it changed)' : '');
-  const was = p.querySelector('.was'), hasOld = !!(old && (old.value || old.note));
+  /* the revamp's slides replace old ones (s.replaces): his ratings and notes on those show here beside the new slide's
+     answers, so he can check every note was taken into account (Brock, 05:05 and 07:10) */
+  const prior = [].concat(s.replaces || []).map(id => RATE.all[rateKey(id)] || (typeof F27R !== 'undefined' && F27R[id]) || null).filter(x => x && (x.value || x.note));
+  const was = p.querySelector('.was'), hasOld = !!(old && (old.value || old.note)) || prior.length > 0;
   was.hidden = !hasOld;
   if (hasOld) {
-    p.querySelector('.wnote').textContent = 'You rated it ' + (old.value || '–') + (old.note ? ': \u201c' + old.note + '\u201d' : '') + '. What changed for it:';
+    const parts = [];
+    if (old && (old.value || old.note)) parts.push('You rated it ' + (old.value || '–') + (old.note ? ': \u201c' + old.note + '\u201d' : ''));
+    prior.forEach(x => parts.push('It replaces \u201c' + (x.title || x.id) + '\u201d, rated ' + (x.value || '–') + (x.note ? ': \u201c' + x.note + '\u201d' : '')));
+    const cur = RATE.all[rateKey(s.id)], told = prior.length && cur && (cur.reopened || []).some(z => z.replaces);
+    p.querySelector('.wnote').textContent = parts.join('. ') + '. What changed for ' + (prior.length ? 'them' : 'it') + ':' + (told ? ' (you marked this not done)' : '');
     const ol = p.querySelector('.wans'), ans = Array.isArray(s.answers) ? s.answers : [];
     ol.innerHTML = '';
     if (!ans.length) { const li = document.createElement('li'); li.textContent = 'No answers listed for this change yet.'; ol.appendChild(li); }
     ans.forEach(a => { const li = document.createElement('li'), q = document.createElement('q'), d = document.createElement('span'); q.textContent = a[0]; d.textContent = ' \u2192 ' + a[1]; li.appendChild(q); li.appendChild(d); ol.appendChild(li); });
-    p.querySelector('[data-act="reopen"]').disabled = RATE.ro;
+    const rb = p.querySelector('[data-act="reopen"]'); rb.disabled = RATE.ro;
+    rb.textContent = old && (old.value || old.note) ? 'not done: bring my note back' : 'not done';
   }
   p.querySelectorAll('.vals button').forEach(b => { b.classList.toggle('on', !!(r && +b.dataset.v === r.value)); b.disabled = RATE.ro; });
   const ta = p.querySelector('textarea'); ta.disabled = RATE.ro;
@@ -149,8 +157,17 @@ function rateSync() {
 /* "not done": the archived score and note come back as current at the slide's new rev, and the press is recorded */
 function rateReopen() {
   if (!RATE.db || RATE.ro) return;
-  const s = DECK.slides[APP.i], old = rateOld(s); if (!old) return;
+  const s = DECK.slides[APP.i], old = rateOld(s);
   const k = rateKey(s.id), rev = slideRev(s);
+  if (!old) {
+    /* a revamp slide: record that its answers don't cover his notes on the slides it replaces */
+    if (!s.replaces) return;
+    const cur = RATE.all[k] || {};
+    const doc = Object.assign({ id: s.id, title: s.title || '', ch: s.ch || '', value: null, note: '', history: [] }, cur, { rev, ver: slideVer(s), n: APP.i + 1, of: DECK.slides.length, at: new Date().toISOString(),
+      reopened: (cur.reopened || []).concat([{ at: new Date().toISOString(), replaces: [].concat(s.replaces), answers: (s.answers || []).length }]) });
+    RATE.all[k] = doc; RATE.note = 'Marked not done: Claude will see it'; rateSync();
+    rateWrite(k); return;
+  }
   const doc = Object.assign({}, old, { rev, ver: slideVer(s), n: APP.i + 1, of: DECK.slides.length, at: new Date().toISOString(),
     reopened: (old.reopened || []).concat([{ at: new Date().toISOString(), fromRev: ratedRev(old), rev, answers: (s.answers || []).length }]) });
   RATE.all[k] = doc; RATE.taSlide = null; RATE.note = 'Your note is back on this slide'; rateSync();
