@@ -1,0 +1,131 @@
+1 | intro | cover | 8 | PIAKNOW’S should be all capital, also instead of 8kh it should say something a lot there being zero compromises, 8khz is pretty much standard now
+2 | intro | thesis | 3 | all of these numbers feel very random, they’d message is good but you can add it to the slide about other companies misadvertising weights
+3 | intro | targets | 8 | marker it as dual 8khz, press to pc should be shorter, we’ve done numerous things to optimize mechanical latency
+4 | intro | targets2 | 7 | compare to starlight x weight for the headline value. set down and idle sleep settings are not important enough to talk about this early
+5 | intro | flagships | 6 | need to derive all empty data, also it bothers me when one number has more decimal places than others, superstrike x3 is more id a flagship than gpx2
+6 | intro | ntr_stats | 4 | density is so important it could be on the cover instead of the 100+ ideas, capitalize the P in Piaknow, it’s a name, all of this information is impor
+7 | intro | zerograms | 5 | needs more reasoning, argument feels weak here, it should be more about theoretical ease of control and target changing speed, overall speed feels out
+8 | intro | weightgap | 10 | no comment
+9 | intro | ntr_density | 9 | only use the outline or the shape/silhouete instead of something so detailed, good understandable demonstration, but you need to sell why low density 
+10 | intro | ntr_sizewt | 9 | find an outline of the x2f to add to the box, and same thing as last slide, the theseus should only be the shape outline
+11 | intro | ntr_densrank | 9 | it bother me the the x2f is lighter and lacks decimal points, this probably isn’t the most exact weight available for the x2f crazylight (reports onli
+12 | intro | pricefront | 7 | the bottom pareto lineinstantly going straight bothers me a lot i should continue on the trajectory it was at for a little but bit, there should never
+13 | intro | market | 8 | we need to man’s a bigger argument here how most mice compromise battery life for weight, research harder to find missing weights or derive
+14 | intro | budget | 6 | it’s a lot of work to keep updating this one
+15 | click | clicks | 7 | switch plunger on the gt01s is still turned vertical, bottom part looks fine but the part that actually sticks out above the housing looks like it nee
+16 | click | arc | 7 | tensioner doesn’t look accurate, i dont like the use of the metrics “pts” or “points” anywhere. this is a really important slide the concept is good b
+17 | click | clk_wedge | 4 | important concept, very poor execution, could be closer to the less parts is better demonstration, show after youve shown the problem with having more
+18 | click | clk_switch | 5 | bottom housing doesn’t look very accurate at all, i’ll attach a new reference when you ask, show the effect on battery life, razer says their optical 
+19 | click | clk_switch2 | 2 | largely irrelevant, we don’t even know if we’re going with the gt01 switch or just their style for the bottom housing, if you want to keep this you’d 
+20 | click | cutouts | 3 | everything here is among the most important concepts, but probably has the worst graphic design in the entire deck, it’s super unintuitive to understa
+21 | click | tensioner | 8 | reference the starlight x’s stufd clicks from using such a stiff composite materiak with no bridge, market top as “as seen in starlight x” or somethin
+22 | click | clk_tenmat | 4 | hard to understand, and stiffer is better doesn’t seem right
+23 | click | anchors | 7 | locking the motion to one plane/ direction needs to be better explained, and the visualization here is too abstract and difficult to tell what you’re 
+24 | click | clk_pomtune | 6 | more cornered should be rounded here in the visualization, this one also just feels lazy compare to another mouse’s tolerances directly
+25 | click | clk_front | 8 | this slide has second worst execution in the deck. it fails to intuitively communicate what is going on. if they were not my ideas i’d be very lost. t
+26 | click | clk_hotswap | 4 | demonstration is plane and it’s hard to see the claw clips, there also is no argument as to why this is important
+27 | click | clk_spdt | 5 | difficult to understand
+28 | click | latency | 6 | difficult to understand, i like that it sells something though, its hard to tell what is changing
+29 | click | clk_debounce | 3 | weak slide, also minecraft kids want to be able to adjust their debounce to count more double clicks, so i’m not sure how to feel about how this is be
+30 | click | clk_wait | 3 | hard to understand, probably can be combined somewhere else
+31 | click | clk_methods | 3 | probably can be combined somewhere else or removed
+32 | click | sidebuttons | 5 | left visualization fells lazy, right visualization doesn’t match the other dial rail plungers with prfe and it’s way overbuilt, important information 
+33 | glide | glide | 7 | 
+34 | glide | gld_under | 4 | corner dots ledges should be the sable length as the sensor distance between the sensor skate ledge (possible to fit up to 3 skates), and they shouldn
+35 | glide | dots | 6 | show how this is targeted and more weight efficient compared to how big of skates it takes to reduce the sink that aren’t placed in the most optimal p
+36 | glide | gld_camera | 4 | execution still feels lazy here for the visualization, the pad looks so realistic it’s uncanny, it’s weird irs not drawn like everything else, and thi
+37 | glide | gld_corr | 5 | cool slide but it should probability be combined with the last slide
+38 | glide | gld_blur | 2 | probably could be combined with the last 2 slides
+39 | glide | focus | - | 
+40 | glide | gld_sag | 5 | visualization feels lazy and needs more detail, this could also be group with a comparison to bigger skates and weight efficiency
+41 | glide | gld_module | 8 | i like this slide, it feels like a good slide, just your normal above average slide right here
+42 | glide | sensor | 6 | says it’s the “suspected” sensor inside the viper v4 pro and that this is the plan, AFTER exclusivity expires
+43 | glide | gld_reports | 3 | i don’t understand what is being demonstrated this slide, it’s a graphic but it’s not a demonstration. i would have to understand it to know if the in
+44 | glide | gld_soft | 7 | place near web software, better sell the importance of liftoff distance being 0.1mm configurable
+45 | glide | gld_sheet | 4 | visualizations feel lazy
+46 | shell | shellcard | 7 | 
+47 | shell | materials | 6 | explain that this is just on a flat plane, scale the force to what a mouse would experience from a hand and note that, do that more throughout the pre
+48 | shell | shlSpecific | 4 | doesn’t shot how higher specific strength is better, just feels like a graphic which is quite convoluted. i like the graphic but the explanation for i
+49 | shell | thinwall | 3 | confusing and lazy graphic, hard to understand at a glance and with longer analysis, super important concept though.
+50 | shell | shlScatter | 7 | don’t use points, a little more intuitive, but still quite lazy.
+51 | shell | shlPick | 7 | gpx 2 has worse build quality than the ulx even though it was heavier, this demonstrates the fallacy, i dont like that it says the gpx 2 has good buil
+52 | shell | shlNoPick | 3 | the what if uoh didn’t have to pick shouldn’t be the only thing on the screen for a start animation, it should just be the header, i’ve pointed this o
+53 | shell | shlHotspot | 8 | show the weight of the 2 parts to tie into how a milled out part can be stronger a solid part, point this out
+54 | shell | shlMargin | 2 | really hard to understand, probably important
+55 | shell | shlWork | 8 | tie this into how we designed the stricter more, this page could be sized to have a more information, this example is part of the reasoning for a lot 
+56 | shell | shlShell3d | 2 | hard to understand, and cut the strength graphs that last multiple slides, they were a bad idea
+57 | shell | lattice | 7 | use human force that would be exerted on a mouse and point that out make hexagons bend a lot more
+58 | shell | shlDeterminate | 5 | could be combined with another slide
+59 | shell | shlThin | 7 | needs a better explanation and more information to be more inituitive, i really like the fact that triangles win more as the mouse gets lighter, this 
+60 | shell | shbArches | 7 | arches shojdkne be on the photon rim and for some reason sole of the lines look wobbly, cool animation other than the poor execution
+61 | shell | shbPress | 3 | hard to understand, need real world examples and it’s just unintuitive for a social media brain
+62 | shell | shbThrust | 3 | hard to understand, need real world examples and it’s just unintuitive for a social media brain
+63 | shell | shbBend | 3 | hard to understand, need real world examples and it’s just unintuitive for a social media brain
+64 | shell | shbFibres | 3 | hard to understand, need real world examples and it’s just unintuitive for a social media brain
+65 | shell | fillet | 4 | she’ll study isn’t needed to be shoes here, rest can be combined with other slides
+66 | shell | filletsize | 10 | 
+67 | shell | shbFlow | - | 
+68 | shell | shbWidth | 3 | hard to understand, feels contradictory to things we’ve says before at a glance
+69 | shell | shbMill | 2 | doesn’t need its own slide
+70 | shell | shbMillDirect | 2 | doesnt need its own slide
+71 | shell | shbTol | 3 | unintuitive, better visualization needed, mediocre idea
+72 | shell | shbSides | 4 | show equal pressure on both sides, just for show. the asymmetry looks bad, this should be in the shape category
+73 | shell | shlPcbRib | 6 | unintuitive, explain how fr4 is like carbon fiber because it’s also a woven composite, using the pcb is an alternative to having carbon fiber rods in 
+74 | shell | shcCarry | 5 | meg slide
+75 | shell | shcArms | 6 | these aren’t what the arms or pcb would look like, important idea tho
+76 | shell | shlStructs | 3 | viewer will have no idea what that spec means in big blue poor setup
+77 | shell | tolerance | 7 | needs to be explained with some sort of law for more validity, don’t show the theseus teardown, improve the diagram, the little drops should be simpli
+78 | shell | mass | 5 | in review, research why some people are pushing for higher battery placement
+79 | shell | grind | 7 | factory poron pads, many people already mod there g wolves mice with these for where it hits the pcb to reduce creaking
+80 | shell | shlsheet1 | 4 | most important thing here is the right cutouts thing, and it should be back by the other cutouts slides and it meds a lot more detail, especially how 
+81 | shell | shlsheet2 | 5 | 
+82 | surface | surfacecard | 4 | surfaces looks bad in 2d and 3d visualization
+83 | surface | coating | 5 | lazy visualizations, show flames and more realistic pots
+84 | surface | srf_texture | 6 | needs to show previous height before sanding and coat, i like the comparisons to soft touch
+85 | surface | srf_weight | 4 | can be combined with previous slide, cerakote film numbers before sand blasting look way too heavy, 0.49g is a lot, especially with how much thinner c
+86 | surface | srf_uv | 7 | 
+87 | surface | grip | 8 | really good visualization but needs to be more intuitive
+88 | surface | srf_gripmap | 5 | grip designs need massive optimizations to look cool, and blend between there different textures better
+89 | surface | srf_tape | 8 | the best thickness is no thickness, people have been chasing really thin grip tape for a while now, this is a better solution
+90 | surface | srf_twotone | 6 | not a universal dah of the design, but i love how realistic it is
+91 | surface | wheel | 5 | poor comparison figure, we should be comparing ti average plastic wheels with heavy rubber, a test group
+92 | surface | srf_encoder | 2 | 
+93 | elec | eleccard | 7 | 
+94 | elec | onechip | - | 
+95 | elec | elc_module | - | 
+96 | elec | antenna | - | 
+97 | elec | motion | - | 
+98 | elec | elc_rate | - | 
+99 | elec | framesync | - | 
+100 | elec | secondshot | - | 
+101 | elec | power | - | 
+102 | elec | elc_pmic | - | 
+103 | elec | elc_charge | - | 
+104 | elec | elc_safe | - | 
+105 | elec | cells | 4 | lithium ion numbers are way off, look at smaller batteries, you’re probably looking at too big of ones, lithium ion batteries are a usually a gram or 
+106 | elec | frontier | - | 
+107 | elec | elc_oneside | 7 | good but i wish it was even better visualized
+108 | elec | elecsheet1 | 7 | show joe this protects against water for very little weight, something few might do
+109 | elec | elc_tear | 8 | 
+110 | elec | elc_twist | - | 
+111 | elec | elc_lay | - | 
+112 | elec | elc_flex | 7 | 
+113 | elec | cable | 3 | extremely lazy visualizations, paracord needs better assets
+114 | elec | software | 6 | 
+115 | elec | elc_sheet2 | 2 | remove this slide, add the no rgb light to the slide about having no opticak components, and put it next to the web software
+116 | shape | shapecard | - | 
+117 | shape | shp_newton | - | 
+118 | shape | grooves | - | 
+119 | shape | size | - | 
+120 | shape | emg | - | 
+121 | own | owncard | - | 
+122 | own | repair | 8 | 
+123 | own | ownscrew | 7 | 
+124 | own | own_insert | - | 
+125 | own | own_life | - | 
+126 | own | ownbatt | - | 
+127 | own | ownboard | - | 
+128 | own | box | - | 
+129 | own | ownsheet1 | 2 | feels redundant, most of this should be moved to other slides
+130 | own | ownsheet2 | - | 
+131 | end | close | - | 
