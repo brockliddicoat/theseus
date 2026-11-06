@@ -80,7 +80,18 @@ autoplay was definitely a bad idea as well". Autoplay is now OFF by default (the
 5. **b07_emg's ending (F55.4).** He didn't understand the question; the default (the rule "The revision that wins all three
    ships.") stays. Re-ask in plain words only if it matters.
 
-## 2. Deferred to a more capable model (his words: "i'm unsure if your model is advanced enough to solve it yet")
+## 2. Deferred to a more capable model
+
+00. **"Specific density" (Brock, 16:42, an idea "to keep in the tank").** A grippable-area bar (maybe not a main bar) that
+    penalizes mice with lots of holes, sharp edges or missing bottom rims (G-Wolves): divide a mouse's volume by the area
+    a hand can actually grip, so mice that "cheat" on density by removing grippable shell score worse. Hard to calculate
+    (it needs each mouse's real geometry); revisit with custom silhouettes or scans for every mouse.
+
+0. **The x-ray silhouettes on the density slides (Brock, 16:30: "remember that").** "in the future when we have better
+   models again i would like to bring back the xray effects that were on the old silhouettes for the density again" / "by
+   xray silhouettes i mesh where it slides their a cross section or something similar, that was so cool". The old (v23-era)
+   density slides slid a cross-section through each mouse's silhouette; bring that back once custom silhouettes for every
+   mouse are possible (for now only the X2F has its own silhouette; the rest use the generic outline, 16:25). (his words: "i'm unsure if your model is advanced enough to solve it yet")
 
 1. **The nose: where the trigger cutout meets the front (F51.1's front, F53.1, F54.1, F59.1).** Today's nose stays (the
    Sora V2 scan's own; Theseus matches it within 0.2 mm). What was learned, so the next attempt starts ahead:

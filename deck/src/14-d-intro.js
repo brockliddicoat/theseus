@@ -27,7 +27,7 @@ const NTR_DN = {
 };
 const ntr_dname = m => NTR_DN.names[m.id] || exShort(m.name);
 /** a mouse's box: length × width × height as its maker lists them (EloShapes), and its volume in cm³ */
-function ntr_box(id) { const m = exMouse(id); if (!m) return null; const L = rv(m.length_mm), Wd = rv(m.width_mm), Hh = rv(m.height_mm); return L && Wd && Hh ? { L, W: Wd, H: Hh, v: L * Wd * Hh / 1000 } : null; }
+function ntr_box(id) { const d = exDims(id); if (!d) return null; const [L, Wd, Hh] = d; return { L, W: Wd, H: Hh, v: L * Wd * Hh / 1000 }; }
 /** Theseus's box: its own, 119.3 x 62.4 x 39.9 mm (Brock, F12.11). The drawn shape is still the Sora-based model */
 function ntr_thsBox() { const [L, W, H] = THESEUS.dims; return { L, W, H, v: L * W * H / 1000 }; }
 const ntr_thsRho = () => THESEUS.mass / ntr_thsBox().v;
@@ -66,6 +66,8 @@ function ntr_gwolves() {
   return B01_MICE.filter(m => m.brand === 'G-Wolves' && m.conn === 'wireless' && m.L && m.W && m.H && m.g).map(m => {
     const v = m.L * m.W * m.H / 1000; return { id: m.id, name: m.name, g: m.g, ev: m.gEv === 'measured' ? 'measured' : 'claim', box: { L: m.L, W: m.W, H: m.H, v }, v, rho: m.g / v, gw: true }; });
 }
+/** the XBAB XA25's density: XBAB's own scale weight (its nine parts) in its maker's box. Wired (V2, Brock 16:25) */
+function ntr_xa25d() { const b = ntr_box('xbab-xa25'), w = exWeight('xbab-xa25'); return b && w ? { id: 'xbab-xa25', name: 'XBAB XA25, wired', g: w.g, ev: 'measured', box: b, v: b.v, rho: w.g / b.v, wired: true } : null; }
 const ntr_ord = n => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
 /* ---------- drawing helpers ---------- */
 /** a light that passes over a region once (o.per: again every per seconds): the keynote sweep */
@@ -237,11 +239,11 @@ S({
 /* ============================== density 1: the definition, on the mouse's own box ============================== */
 S({
   id: 'ntr_density', ch: 'intro', theme: 'night', title: 'Density, not weight', settle: 10, after: 'weightgap', ideas: ['weight'],
-  src: ['ntrPwnTrinity', 'ntrPwnVanta', 'ntrScan'],
+  src: ['ntrPwnTrinity', 'ntrPwnVanta', 'ntrScan', 'brockWeighed', 'xbabSite', 'exEloshapes'],
   draw: t => {
     header(t, 'Density, not weight');
     captions(t, [[0.6, 'Weight alone rewards a small mouse. Density says how much mouse you get for the weight.'],
-      [5.4, 'Mass over the box the mouse fits in, the way Pwnage and physics both do it. Lower is lighter for its size, and no wireless mouse is lower than Theseus.']]);
+      [5.4, 'Weight over the box the mouse fits in, the way Pwnage and physics both do it. Lower is lighter for its size: of every mouse weighed on a scale, only the wired XA25 is lower than Theseus.']]);
     const B = ntr_shellBox(), bx = ntr_thsBox(), k = 4.2, O = [530, 505], P = ntr_iso(O, k, B);
     const c = (X, Y, Z) => P([X, Y, Z]);
     /* the corners: back bottom (hidden) b0; the box is drawn edge by edge, then the three views land on its faces */
@@ -279,9 +281,9 @@ S({
         text('H ' + fmtN(bx.H, 1) + ' mm', xh - 16, ym + 8, { role: 'num', size: 22, weight: 700, color: C.ink, align: 'right', alpha: ep(t, 4.1, 4.5) });
       } }
     rich([{ s: 'Fig. 01', role: 'label', size: 21, color: C.mute }, { s: 'Theseus\'s box, 119.3 × 62.4 × 39.9 mm', role: 'label', size: 21, color: C.faint, gap: 16 }], LM, 318, { alpha: ep(t, 4.4, 5.0) });
-    /* the sum, in the right column: mass over the box's volume */
+    /* the sum, in the right column: weight over the box's volume */
     const fx = 1240, fw = RM - fx, a1 = ep(t, 4.2, 4.6), a2 = ep(t, 4.6, 5.0), a3 = ep(t, 5.2, 5.6);
-    text('Mass', fx, 324, { role: 'label', size: 21, color: C.mute, alpha: a1 });
+    text('Weight', fx, 324, { role: 'label', size: 21, color: C.mute, alpha: a1 });
     rich([{ s: THS.mass, role: 'stat', size: 66, color: C.ink, tnum: true, count: [4.25, 0.8] }, { s: 'g', font: 'mono', size: 26, weight: 600, color: C.mute, gap: 8 }], fx, 400, { t, alpha: a1 });
     pill(fx, 444, 'proposal', a1, { by: 'Brock' });
     const vx = fx + 330;
@@ -296,30 +298,65 @@ S({
     rich([{ s: ntr_rf(ntr_thsRho()), role: 'd1', size: 118, color: C.hero, grad: C.heroGrad, tnum: true, count: [5.25, 1.1] }, { s: 'g/cm³', font: 'mono', size: 34, weight: 600, color: C.mute, gap: 12 }], fx - 4, 696, { t, alpha: a3 });
     /* at a glance: Theseus against Pwnage's own figures and the best wireless mouse weighed, one bar each (lower is better) */
     { const nb = ntr_dens({ measured: true, theseus: false }).sort((a, b) => a.rho - b.rho)[0], ka = ep(t, 6.2, 6.6);
-      const R = [{ n: 'Average gaming mouse', v: 0.30 }, { n: 'Pwnage Vanta', v: 0.17 }, { n: 'Pwnage Trinity CF', v: 0.14 }].concat(nb ? [{ n: nb.name.replace(/^Pulsar /, ''), v: nb.rho, ref: true }] : [], [{ n: 'Theseus', v: ntr_thsRho(), hero: true }]);
+      /* the XBAB XA25 too (Brock, 16:25: "the xa25 also needs to be in the density metrics"): wired, XBAB's own scale weight in its
+         maker's box, and lower than Theseus (V2) */
+      const xa = ntr_xa25d();
+      const R = [{ n: 'Average gaming mouse', v: 0.30 }, { n: 'Pwnage Vanta', v: 0.17 }, { n: 'Pwnage Trinity CF', v: 0.14 }].concat(nb ? [{ n: nb.name.replace(/^Pulsar /, ''), v: nb.rho, ref: true }] : [], [{ n: 'Theseus', v: ntr_thsRho(), hero: true }], xa ? [{ n: 'XBAB XA25, wired', v: xa.rho }] : []);
       text('Density, g/{cm³} (lower is lighter for its size)', fx, 778, { role: 'label', size: 19, color: C.mute, alpha: ka });
       const bx = fx + 300, bw = fw - 300 - 78;
-      R.forEach((r, i) => { const y = 812 + i * 34, k = ep(t, 6.3 + i * 0.1, 7.0 + i * 0.1, E.snap), a = ep(t, 6.2 + i * 0.1, 6.6 + i * 0.1);
+      R.forEach((r, i) => { const y = 812 + i * 31, k = ep(t, 6.3 + i * 0.1, 7.0 + i * 0.1, E.snap), a = ep(t, 6.2 + i * 0.1, 6.6 + i * 0.1);
         text(r.n, fx, y + 7, { role: 'small', size: 21, weight: r.hero ? 800 : 600, color: r.hero ? C.heroText : r.ref ? C.secondText : C.ink2, alpha: a, maxW: 290 });
         rr(bx, y - 6, Math.max(6, bw * r.v / 0.30 * k), 12, 3, r.hero ? C.hero : r.ref ? C.ref : C.comp, null, 0, a);
         text(ntr_rf(r.v), RM, y + 7, { role: 'num', size: 21, weight: r.hero ? 800 : 600, color: r.hero ? C.heroText : C.ink, align: 'right', alpha: a }); }); }
-    source(t, 'Pwnage\'s own figures for its Trinity CF, its Vanta and the average gaming mouse; its volumes are length × width × height to within 1 %. The best wireless: RTINGS\'s weight in its maker\'s box.', { t0: 6.6, maxW: 1080 });
+    source(t, 'Pwnage\'s own figures (Trinity CF, Vanta, the average mouse; its volumes are L × W × H within 1 %). Best wireless: RTINGS\'s weight in its maker\'s box. XA25: Brock\'s 25.37 g (listed 25 ± 1) in XBAB\'s 117 × 63 × 36 mm.', { t0: 6.6, maxW: 1080 });
   }
 });
 
+/** the three silhouettes on a size-weight box (ntr_sizewt): it = { hero, x, t0, box }, yb = the box's bottom, k px per mm */
+function ntr_boxSils(t, it, yb, k, aa) {
+  const B = it.box, c45 = k * 0.5 * Math.SQRT1_2, fw = B.L * k, fh = B.H * k, yt = yb - fh, col = it.hero ? C.hero : inkA(0.8), oc = { fill: it.hero ? C.heroSoft : inkA(0.08), w: it.hero ? 2.4 : 2 };
+  const Lo = it.hero ? THESEUS.dims[0] : B01_X2F.L, Wo = it.hero ? THESEUS.dims[1] : B01_X2F.W;
+  /* the lid: from above, the nose at the left */
+  const top = ntr_topPts(it.hero ? 'ths' : 'x2f').map(([l, w]) => { const d = (w / Wo + 0.5) * B.W; return [it.x + l * B.L / Lo * k + d * c45, yt - d * c45]; });
+  /* the front face: from the side, nose left; the end face (the tail's, sheared back at 45°): from the end */
+  let side, end;
+  if (it.hero) {
+    const zs = MS_SIDE.map(q => q[0]), z0 = Math.min(...zs), z1 = Math.max(...zs), hT = 39.9;
+    side = MS_SIDE.map(([z, h]) => [it.x + (z1 - z) / (z1 - z0) * fw, yb - h / hT * fh]);
+    end = MS_FRONT.map(([x, h]) => { const d = (x / Wo + 0.5) * B.W; return [it.x + fw + d * c45, yb - h / hT * fh - d * c45]; });
+  } else {
+    /* the kit's generic side, a whole X2 length at the X2F's height, cut where the X2F stops */
+    const Vs = rvView('left', { dims: [120, B.W, B.H] }), cut = -60 + B01_X2F.cut;
+    side = ntr_clipX(Vs.outPts, cut).map(([x, y]) => [it.x + (x + 60) * k, yb + y * k]);
+    end = rvView('front', { dims: [B.L, B.W, B.H] }).outPts.map(([x, y]) => { const d = x + B.W / 2; return [it.x + fw + d * c45, yb + y * k - d * c45]; });
+  }
+  ntr_outline(top, ep(t, it.t0 + 0.55, it.t0 + 1.35) * aa, col, oc);
+  ntr_outline(side, ep(t, it.t0 + 0.75, it.t0 + 1.55) * aa, col, oc);
+  ntr_outline(end, ep(t, it.t0 + 0.95, it.t0 + 1.75) * aa, col, oc);
+}
+/** a closed outline cut by the line x = xc, keeping x <= xc (Sutherland-Hodgman, one edge): the cut becomes an edge */
+function ntr_clipX(P, xc) {
+  const out = [];
+  for (let i = 0; i < P.length; i++) {
+    const a = P[i], b = P[(i + 1) % P.length], ina = a[0] <= xc, inb = b[0] <= xc;
+    if (ina) out.push(a);
+    if (ina !== inb) { const u = (xc - a[0]) / (b[0] - a[0]); out.push([xc, a[1] + (b[1] - a[1]) * u]); }
+  }
+  return out;
+}
 /* ============================== density 2: why it beats weight. Same grams, more mouse ============================== */
 S({
   id: 'ntr_sizewt', ch: 'intro', theme: 'paper', title: 'The size–weight illusion', settle: 10, after: 'ntr_density', ideas: ['weight'],
-  src: ['ntrSwi', 'ntrCharp', 'ntrPwnVanta', 'ntrX2f', 'exEloshapes'],
+  src: ['ntrSwi', 'ntrCharp', 'ntrPwnVanta', 'ntrX2f', 'brockWeighed', 'exEloshapes'],
   draw: t => {
     header(t, 'The size–weight illusion');
     const X2F = ntr_dens({ theseus: false }).find(r => r.id === 'pulsar-x2f-crazylight'), bx = ntr_thsBox(), rhoT = ntr_thsRho();
     const more = X2F ? 100 * (bx.v / X2F.v - 1) : 0;
     captions(t, [[0.6, 'Two mice that weigh the same. The Pulsar X2F gets there by being less mouse: the front half of a shell.'],
-      [5.6, `Theseus puts the same weight into ${fmtN(more, 0)}% more mouse, and at the same mass the bigger one feels lighter in the hand.`]]);
+      [5.6, `Theseus puts the same weight into ${fmtN(more, 0)}% more mouse, and at the same weight the bigger one feels lighter in the hand.`]]);
     const k = 3.45, gy = 700;
     const items = [
-      { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29, gs: fmtN(X2F ? X2F.g : 29, 1), ev: 'claim', by: 'Pulsar', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 720, t0: 1.1 },
+      { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29.5, gs: fmtN(X2F ? X2F.g : 29.5, 1), ev: 'measured', by: 'Brock', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 720, t0: 1.1 },
       { key: 'ths', name: 'Theseus', g: THESEUS.mass, gs: fmtN(THESEUS.mass, 1), ev: 'proposal', box: bx, rho: rhoT, x: 1200, t0: 2.7, hero: true }
     ];
     /* the pointer brings each box in and sets it down */
@@ -330,10 +367,11 @@ S({
       ntr_shadow(it.x + fw / 2 + dxp * 0.5, gy + 6, fw * 0.62, 16, a * kd);
       ntr_cab(it.x, y, B.L, B.W, B.H, k, {
         a, edge: it.hero ? C.hero : inkA(0.62), lw: it.hero ? 2 : 1.6,
-        /* on the lid, the mouse's own outline from above (Brock, F27: the X2F's outline in its box, Theseus's shape outline only) */
-        face: aa => { const c45 = k * 0.5 * Math.SQRT1_2, yt = y - B.H * k, Lo = it.hero ? THESEUS.dims[0] : B01_X2F.L, Wo = it.hero ? THESEUS.dims[1] : B01_X2F.W;
-          const Q = ntr_topPts(it.hero ? 'ths' : 'x2f').map(([l, w]) => { const d = (w / Wo + 0.5) * B.W; return [it.x + l * B.L / Lo * k + d * c45, yt - d * c45]; });
-          ntr_outline(Q, ep(t, it.t0 + 0.55, it.t0 + 1.35) * aa, it.hero ? C.hero : inkA(0.8), { fill: it.hero ? C.heroSoft : inkA(0.08), w: it.hero ? 2.4 : 2 }); }
+        /* the mouse on every face it shows (Brock, 16:25: "show all the silhouettes, not just the silhouettes from one direction"):
+           from above on the lid, from the side on the front face (nose left), from the end on the right face. Theseus's are the
+           simplified mouse's own (its top, MS_SIDE, MS_FRONT); the X2F's top is its traced cut, its side and end the kit's
+           generic rival in its box, the side cut at its 87.5 mm (V2) */
+        face: aa => ntr_boxSils(t, it, y, k, aa) 
       });
       /* under each box: the name, the weight and the box in one quiet line (the weights are the same: they do not lead), then the
          density, Theseus's in its colour (lower is better) */
@@ -357,25 +395,28 @@ S({
       { t0: 6.3, a: 'Buckingham 2014', b: 'The best known of the weight illusions, and over a century of studies keep finding it.' },
       { t0: 6.8, a: 'Pwnage', b: '"Two mouses with the same weight can feel totally different."' }
     ]);
-    source(t, 'Weights: the X2F\'s is Pulsar\'s, Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is 119.3 × 62.4 × 39.9 mm.', { t0: 5.0, x: 720, maxW: RM - 720 });
+    source(t, 'Weights: the X2F\'s weighed by Brock (Pulsar lists 29 g ± 2), Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is 119.3 × 62.4 × 39.9 mm. Silhouettes: Theseus\'s own; the X2F\'s top traced from Pulsar, its side and end the generic mouse in its box.', { t0: 5.0, x: 720, maxW: RM - 720 });
   }
 });
 
 /* ============================== density 3: the same mice ranked by weight, then by density ============================== */
 S({
   id: 'ntr_densrank', ch: 'intro', theme: 'night', title: 'Ranked by density', settle: 10, after: 'ntr_sizewt', ideas: ['weight'],
-  src: ['exRtings', 'exEloshapes', 'ntrX2f', 'ntrPwnTrinity', 'exXbabWeight'],
+  src: ['exRtings', 'exEloshapes', 'ntrX2f', 'ntrPwnTrinity', 'brockWeighed', 'xbabSite', 'b01Gw', 'b01GwPlusPro', 'b01TpuHtsU'],
   draw: t => {
     header(t, 'Ranked by density');
-    const R = ntr_dens({ measured: true, keep: ['pulsar-x2f-crazylight'] }).concat(ntr_gwolves());
+    const R = ntr_dens({ measured: true, keep: ['pulsar-x2f-crazylight'] }).concat(ntr_gwolves(), [ntr_xa25d()].filter(Boolean));   /* the XA25 ranked, wired (Brock, 16:25; V2) */
     const byW = R.slice().sort((a, b) => a.g - b.g || a.rho - b.rho), byD = R.slice().sort((a, b) => a.rho - b.rho || a.g - b.g);
     byW.forEach((r, i) => { r.rw = i; }); byD.forEach((r, i) => { r.rd = i; });
     const nb = byD.find(r => !r.hero), x2f = R.find(r => r.id === 'pulsar-x2f-crazylight'), da = R.find(r => r.id === 'razer-deathadder-v4-pro');
     if (nb) nb.ref = true; if (x2f) x2f.story = true; if (da) da.story = true;
     const ord = ntr_ord;
     const th0 = R.find(r => r.hero), first = byD[0];
-    captions(t, [[0.6, `The same ${R.length} wireless mice, ranked twice: by weight on the left, by density on the right.`],
-      [5.8, (x2f ? `The X2F falls from ${ord(x2f.rw + 1)} to ${ord(x2f.rd + 1)}: it is light because it is short. ` : '') + (th0 && first && !first.hero ? `Theseus is ${ord(th0.rd + 1)}, behind only the ${first.name} on its maker\u2019s figure.` : da ? `The DeathAdder V4 Pro climbs from ${ord(da.rw + 1)} to ${ord(da.rd + 1)}.` : '')]]);
+    /* who is ahead of Theseus, each with what qualifies it: wired, or on its maker's figure */
+    const ahead = th0 ? byD.slice(0, th0.rd).map(r => (r.wired ? 'the wired ' + r.name.replace(', wired', '') : 'the ' + r.name + (r.ev !== 'measured' ? ' on its maker\u2019s figure' : ''))) : [];
+    const aheadS = ahead.length > 1 ? ahead.slice(0, -1).join(', ') + ' and ' + ahead[ahead.length - 1] : ahead[0] || '';
+    captions(t, [[0.6, `The same ${R.length} mice, ranked twice: by weight on the left, by density on the right. One is wired, the XBAB XA25.`],
+      [5.8, (x2f ? `The X2F falls from ${ord(x2f.rw + 1)} to ${ord(x2f.rd + 1)}: it is light because it is short. ` : '') + (th0 && ahead.length ? `Theseus is ${ord(th0.rd + 1)}, behind ${aheadS}.` : da ? `The DeathAdder V4 Pro climbs from ${ord(da.rw + 1)} to ${ord(da.rd + 1)}.` : '')]]);
     /* more rows since G-Wolves's line came in (V1): the list runs taller and its type is the deck's smallest */
     const n = R.length, dense = n > 30, y0 = dense ? 352 : 374, y1 = dense ? 948 : 926, p = (y1 - y0) / (n - 1), xL = 560, xR = 1352, Y = i => y0 + i * p, fs = dense ? 19 : 22, fv = dense ? 19 : 21;
     const a0 = ep(t, 0.3, 0.8), th = R.find(r => r.hero);
@@ -383,13 +424,7 @@ S({
     text('By density, lowest first', xR + 14, 300, { role: 'label', size: 21, color: C.mute, alpha: a0 });
     /* the headline, over the middle of the chart, where no line runs yet (F14.10) */
     if (th) ntr_hl(t, 5.8, (xL + xR) / 2 - 150, dense ? 334 : 360, ntr_ord(th.rd + 1), 'by density', { size: 96, count: false });
-    /* the XBAB XA25, shown above the density column and kept out of the ranking: it is wired (Brock, F12.3). Its density from
-       XBAB's own scale weight in its maker's box */
-    { const xb = ntr_box('xbab-xa25'), xw = exWeight('xbab-xa25'), rho = xb && xw ? xw.g / xb.v : 0.093, kx = ep(t, 6.2, 6.7), gy = y0 - (dense ? 30 : 46);
-      if (kx > 0) { text(ntr_rf(rho), xR + 14, gy + 8, { font: 'mono', size: 21, weight: 600, color: C.faint, alpha: kx });
-        text('XBAB XA25', xR + 96, gy + 8, { role: 'small', size: 24, weight: 600, color: C.faint, alpha: kx });
-        text('Wired: not ranked', RM, gy + 8, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kx });
-        line(xR + 14, gy + 24, RM, gy + 24, { color: C.faint, w: 1.5, dash: [6, 6], alpha: kx }); } }
+    /* the XBAB XA25 used to stand above the density column, unranked as wired (F12.3); Brock, 16:25, put it in the ranking (V2) */
     const kH = ep(t, 4.8, 5.6), lineT = r => 1.5 + r.rw * 0.09;
     /* the lines: an S from each mouse's weight rank to its density rank, drawn left to right */
     const order = R.slice().sort((a, b) => (a.hero ? 3 : a.ref ? 2 : a.story ? 1 : 0) - (b.hero ? 3 : b.ref ? 2 : b.story ? 1 : 0));
@@ -415,6 +450,6 @@ S({
       const mv = r.rw - r.rd, ms = mv > 0 ? '▲' + mv : mv < 0 ? '▼' + (-mv) : '–';
       text(ms, RM, yb, { font: 'mono', size: 19, weight: strong ? 700 : 500, color: strong ? (mv > 0 ? C.ink : C.ink2) : C.faint, align: 'right', alpha: kr });
     });
-    source(t, 'Weights: a scale\'s (RTINGS, TechPowerUp, XBAB) or, with an open dot, the maker\'s own. Boxes: the makers\' L × W × H (EloShapes). The ULX and the MCHOSE L7 Ultra left out.', { t0: 6.0 });
+    source(t, 'Weights: scales (RTINGS, TechPowerUp; Brock: XA25 25.37 g, X2F 29.5 g) or, open dot, makers\'. Boxes: makers\' L × W × H. G-Wolves: no bottom rim (Brock). ULX, L7 Ultra out.', { t0: 6.0 });
   }
 });

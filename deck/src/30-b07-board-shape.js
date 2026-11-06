@@ -1515,7 +1515,7 @@ S({
     const kh = ep(t, 6.2, 6.6);
     if (kh > 0.003) text('Too short costs too: in a lab study, a mouse 87 mm long raised big hands\' wrist-extensor load by up to 5.5 % of its maximum (Oude Hengel 2008, office mice).', qx, 660, { role: 'small', size: 21, weight: 560, color: C.mute, maxW: qw, lh: 1.3, alpha: kh });
     verdict(t, 6.8, qx, 860, { from: B07_X2F.L, to: 119.3, unit: 'mm', dec: 1, label: 'Full length at about 29 g', who: ['X2F', 'Theseus'], size: 72, maxW: qw });
-    source(t, 'Hands: ANSUR II public data (US Army 2012), men n 4,082, women n 1,986. Lengths: the makers\'; X2F CrazyLight 87.5 mm, 29 g ± 2 (Pulsar; no scale weight is published).', { t0: 2.0 });
+    source(t, 'Hands: ANSUR II public data (US Army 2012), men n 4,082, women n 1,986. Lengths: the makers\'; X2F CrazyLight 87.5 mm, 29.5 g on Brock\'s scale (Pulsar lists 29 g ± 2).', { t0: 2.0 });
   }
 });
 

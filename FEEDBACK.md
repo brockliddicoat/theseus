@@ -47,7 +47,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 15:06 (Chicago): F63 (the revamp judged a regression; the next version starts from v23; the comparison viewer). Before that, 14:35: F62 (the pacing, a regression; autoplay off, live as v1793996750-29cc). Before that, 14:23: F61 completed: the lattice pattern (~14:15, F61.1, on L2's two sheets, now in
+Last updated: 2026-11-06 17:00 (Chicago): F64 (the underdog that compounds; the loadout bars). Before that, 15:06: F63 (the revamp judged a regression; the next version starts from v23; the comparison viewer). Before that, 14:35: F62 (the pacing, a regression; autoplay off, live as v1793996750-29cc). Before that, 14:23: F61 completed: the lattice pattern (~14:15, F61.1, on L2's two sheets, now in
 attachments/F61/; F57.1 and F43.4 point to it), the live link (13:58, F61.2; F38.6's live-link updates CONFIRMED) and
 the work left (13:59, F61.3, answered by WORK-LEFT.md); F59.1 given the integrator's lesson. (13:56: F60, with FG2's
 nail sheets; F58.1 points to it. 13:47: F59, with S2's nose sheet, the RTINGS photos left out; F51.1's front, F53.1 and
@@ -518,6 +518,37 @@ Live then: v1793996750-29cc (the 14:30 build). Frames: the whole film is in feed
   opus v23 and opus today and compare and rate equivalent slides to guide you better". **DONE (the integrator, 15:05):**
   https://claude.ai/artifact/AEPJHpx9KNeqNdMRwQBNjn (51 topics, each version live in its own player, ratings saved to the
   page's database); handoff/compare/README.md says how it was made and how to read his ratings.
+
+
+## F64. The underdog that compounds; the loadout bars (2026-11-06 15:06 to ~17:00)
+Live then: the revamp (v1793996750-29cc) until 15:58, then the v23 refinement's pilot (v1794002308-7273), then the pilot
+with the loadout bars (v1794005831-7601). Pictures he answered on: /home/claude/work/v2/out/ (archived in
+handoff/v23refine/ notes). The raw messages, verbatim, are in handoff/worklog/feedback-inbox.md (15:06 onward).
+- **F64.1** (15:06) "“There's no hierarchy of what matters most, and no slide builds on the one before.” i don’t
+  understand how this happened, it was something i explicitly asked for maximum flow and most compelling slide order
+  multiple times". Answered in the session (how "flow" was read as links between slides instead of structure).
+- **F64.2 STANDING** (15:12) "the whole side show needs to be grounded in interconnected themes" / "people like to watch
+  videos where you show the steps to level something up to where it becomes the best, it has to be a process, not self
+  contained where every slide shows something a mouse is insignificantly good at" / "your comparison tool was super
+  broken, just proceed with the v23 refinement" (the viewer is dropped).
+- **F64.3 STANDING** (15:15) "people love a story about a underdog winning, every slide should feel like it’s pushing
+  towards a compounding goal instead of just win after win where it gets building, the concepts should visible and
+  statically show how they build upon one another and combine to supercharge and compound on eachother". **IN PLACE:**
+  handoff/v23refine/PLAN.md (moves 0–9), the build board and move cards (V1).
+- **F64.4 STANDING** (15:57) Call of Duty-style stat bars for every flagship, "never fully filled in all the
+  categories"; Theseus's bars "fill up throughout the presentation" and "whenever theseus does something that is better
+  than best in class, those bars overfill". **IN PLACE (V2):** the giants' loadouts slide and Theseus's docked bars.
+- **F64.5 STANDING** (16:25) The generic mouse outline "that we know is good" for every rival; only the X2F keeps a custom
+  silhouette (for now); the box views show every silhouette (top, side, front); one bar starts as "weight" ("not grams")
+  and switches to density; the XA25 in the density metrics. **DONE (V2).**
+- **F64.6** (16:30) A size bar by volume; density shown as the weight bar divided by the size bar (**DONE, V2**). "remember
+  that": bring back the old x-ray (sliding cross-section) silhouettes on the density slides with a better model
+  (**DEFERRED**, WORK-LEFT.md section 2).
+- **F64.7** (16:42) The XA25 weighs 25.37 g; the X2F 29.5 g ("you never updated that"): **DONE (V2)**, as weighed, beside
+  the makers' 25 ± 1 g and 29 ± 2 g. "Specific density" (volume over grippable area, penalizing holes, sharp edges and
+  missing rims) is an idea "to keep in the tank" (**DEFERRED**, WORK-LEFT.md).
+- **F64.8 DECIDED** (~17:00) Density: "Every mouse (as now)": Theseus's bar ends at 97 %, the wired XA25 holding the line,
+  the tags saying why. Click bar: "Leave it out (Recommended)".
 
 ## Open with Brock
 

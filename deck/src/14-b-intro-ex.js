@@ -211,7 +211,10 @@ const NTR_BAR_SPEED = [
      65 µs" claim, which matches its SR latch mode, a clock that starts at NO, about 1.5 ms later in the press (Brock, F18.5: "Tighten it") */
   { cat: 'Click latency, wired', best: '72 µs', bv: 72, who: 'XBAB XA25, NC release', note: 'XBAB\'s analyzer, n = 500', ev: 'claim', tgt: '70 µs', tv: 70, tq: 'moving or still', better: 'low' },
   { cat: 'Click latency, wireless', best: '0.175 ms', bv: 0.175, who: 'VGN Dragonfly 3 Master GT', note: 'VGN, "as low as"', ev: 'claim', tgt: '0.1 ms', tv: 0.1, tq: 'or less', better: 'low' },
-  { cat: 'Press to PC, with travel', sub: 'Same as the Starlight X', best: '2.0 ms', bv: 2.0, who: 'Finalmouse Starlight X', note: 'Own rig, pre-release', ev: 'claim', tgt: '2.0 ms', tv: 2.0, tq: 'on an outside rig', better: 'low' },
+  /* Brock, F54.4: "Under 4.2 ms, derived" (V2): the fastest mechanical switch on Finalmouse's rig, the OP1 8K V2's 5.7 ms, less
+     the 1.5 ms of the snap that reading NC saves, rounded up (b01_pressTgt). The magnetic Starlight X's 2.0 ms is a faster
+     technology, named in the foot line */
+  { cat: 'Press to PC, with travel', best: '5.7 ms', bv: 5.7, who: 'OP1 8K V2, the fastest mechanical', note: 'Finalmouse\u2019s rig', ev: 'claim', get tgt() { return 'Under ' + fmtN(typeof b01_pressTgt === 'function' ? b01_pressTgt() : 4.2, 1) + ' ms'; }, get tv() { return typeof b01_pressTgt === 'function' ? b01_pressTgt() : 4.2; }, tq: 'derived', better: 'low' },
   { cat: 'Report rate', sub: 'Wired and wireless', best: '8 khz', bv: 8, who: 'Wired and wireless', note: 'USB high speed, 125 µs', ev: 'datasheet', tgt: 'Dual 8khz', tv: 8, tq: 'wired and wireless', better: 'high' },   /* Brock, F27: "marker it as dual 8khz" (V1) */
   { cat: 'Lost reports rescued', sub: 'Same as Kunai Second Shot', best: '99 to 100%', bv: 99, who: 'Kunai Second Shot, 4 khz', note: 'Its developer, unreleased', ev: 'claim', tgt: '99%', tv: 99, tq: 'or more, at every rate', better: 'high' }
 ];
@@ -281,7 +284,7 @@ S({
     captions(t, [[0.6, 'For every speed figure, the best anyone has shown, and my target. Theseus matches or beats every one.'], [5.0, 'The big one is wireless motion: 0.14 ms, 59% under the fastest wireless mouse anyone has measured.']]);
     const m = NTR_BAR_SPEED.find(r => /wireless/.test(r.cat) && /Motion/.test(r.cat));
     ntr_targets(t, NTR_BAR_SPEED, { head: ['−' + fmtN(100 * (m.bv - m.tv) / m.bv, 0) + '%', 'latency', 'Wireless motion: ' + m.tgt + ' against ' + m.best + ', the fastest measured ({piaknow}, 8 khz)'] });
-    source(t, 'Change = (target − best) ÷ best. Best shown: piaknow, Razer, VGN and Finalmouse rigs as named; Kunai and XBAB by their developers.', { t0: 3.4 });
+    source(t, 'Change = (target − best) ÷ best. Best shown: piaknow, Razer, VGN and Finalmouse rigs as named; Kunai and XBAB by their developers. Press to PC: Finalmouse\u2019s own rig, from the touch, so travel counts; the magnetic Starlight X 2.0 ms is faster, the OP1 8K V2 the fastest mechanical. Theseus\u2019s, derived: the OP1\u2019s 5.7 ms less the 1.5 ms snap that reading NC saves.', { t0: 3.4 });
   }
 });
 S({

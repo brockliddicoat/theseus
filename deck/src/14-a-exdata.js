@@ -11,7 +11,14 @@ const evOf = x => { const l = x && (Array.isArray(x) ? x[0] : x).label; return E
 function exMouse(id) { return ((RD.mice || {}).mice || []).find(m => m.id === id) || null; }
 /** a mouse's weight: measured (RTINGS) when there is one, else the maker's figure. A maker weighing its own mouse (the XA25,
    XBAB's scale) is a claim, so the evidence follows the field's own label */
-function exWeight(id) { const m = exMouse(id); if (!m) return null; const me = rv(m.weight_measured_g), cl = rv(m.weight_claimed_g); return me != null ? { g: me, ev: evOf(m.weight_measured_g) === 'measured' ? 'measured' : 'claim', name: m.name } : cl != null ? { g: cl, ev: 'claim', name: m.name } : null; }
+/* weighed by Brock (2026-11-06, 16:42): "the xa25 appears to be 25.37 grams" / "also the x2f is 29.5g". Every weight comparison
+   reads them through exWeight (the makers list 25 g \u00B1 1 g and 29 g \u00B1 2 g); XBAB's weighing of the XA25's nine parts stays
+   the weight budget's reference for each part. And the XA25's box as XBAB gives it, 117 \u00D7 63 \u00D7 36 mm (V2) */
+const EX_WEIGHED = { 'xbab-xa25': { g: 25.37, by: 'Brock' }, 'pulsar-x2f-crazylight': { g: 29.5, by: 'Brock' } };
+const EX_DIMS = { 'xbab-xa25': [117, 63, 36] };
+/** a mouse's box [L, W, H] mm: its maker's (EloShapes' sheet, or the maker's own page where it differs) */
+function exDims(id) { if (EX_DIMS[id]) return EX_DIMS[id].slice(); const m = exMouse(id); if (!m) return null; const L = rv(m.length_mm), W = rv(m.width_mm), H = rv(m.height_mm); return L && W && H ? [L, W, H] : null; }
+function exWeight(id) { const ow = EX_WEIGHED[id]; if (ow) { const mm = exMouse(id); return { g: ow.g, ev: 'measured', name: mm ? mm.name : id, by: ow.by }; } const m = exMouse(id); if (!m) return null; const me = rv(m.weight_measured_g), cl = rv(m.weight_claimed_g); return me != null ? { g: me, ev: evOf(m.weight_measured_g) === 'measured' ? 'measured' : 'claim', name: m.name } : cl != null ? { g: cl, ev: 'claim', name: m.name } : null; }
 const exShort = n => String(n).replace(/\s*\((?:[^()]*|\([^()]*\))*\)\s*$/, '').replace('Logitech G Pro X Superlight 2', 'Logitech GPX2').replace('Logitech G Pro X2 Superstrike', 'Logitech Superstrike').replace('Finalmouse UltralightX', 'Finalmouse ULX').replace('Finalmouse Starlight X', 'Finalmouse Starlight X');
 
 Object.assign(SRC, {
@@ -30,6 +37,8 @@ Object.assign(SRC, {
   exWang: { t: 'Wang et al. 2023, Int. J. Industrial Ergonomics 97:103493: n = 16 professionals, 80 vs 87 g, no significant difference', u: 'https://www.coeh.berkeley.edu/node/1668' },
   exChen: { t: 'Chen, Lee & Cheng 2012, Eur. J. Applied Physiology 112(6): n = 25, office task, 70 to 190 g; wrist motion and muscle activity lowest at 130 g', u: 'https://scholars.lib.ntu.edu.tw/entities/publication/dce55077-b4b2-41a8-b4da-43130768a1f3' },
   exEloshapes: { t: 'EloShapes spec sheets (manufacturer weights, dimensions, sensors), via research/data/mice.json', u: 'https://www.eloshapes.com/' },
+  brockWeighed: { t: 'Weighed by Brock (2026-11-06): XBAB XA25 25.37 g; Pulsar X2F CrazyLight 29.5 g', u: '', n: 'The makers list 25 g \u00B1 1 g (XBAB) and 29 g \u00B1 2 g (Pulsar).' },
+  xbabSite: { t: 'XBAB, XA25: 25 g \u00B1 1 g; 117 \u00D7 63 \u00D7 36 mm', u: 'https://xbabtech-site.pages.dev/' },
   exRtings: { t: 'RTINGS reviews, measured "Default Weight", via research/data/mice.json', u: 'https://www.rtings.com/mouse' },
   exPiaknow: { t: 'piaknow, "Motion Latency of Some Computer Mice 2026-09-15", read from the original chart (research/data/latency.json)', u: 'https://x.com/Tw1tterIsGood/status/2099778999849549856' },
   exNbcV4: { t: 'Notebookcheck, Razer Viper V4 Pro: 180 h at 1 khz, 45 h at 8 khz (maker claim); 1.184 Wh cell (TechPowerUp)', u: 'https://www.notebookcheck.com/Razer-enthuellt-Viper-V4-Pro-mit-180h-Laufzeit-und-8-000-Hz-Polling-im-49g-Gehaeuse.1257839.0.html' }

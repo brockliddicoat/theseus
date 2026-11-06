@@ -32,18 +32,18 @@ const FILM = {
       unlocks: 'A volume fixed by hands, not by weight: every later move must fill it without shrinking it.' },
     { n: 2, ch: 'shell', name: 'A light, stiff shell', title: 'A light, stiff shell',
       builds: 'Move 1’s shape, kept full: the volume to make light, and flat low sides to hold.',
-      unlocks: 'Grams freed at the same stiffness, for every move after it.' },
+      unlocks: 'Weight saved at the same stiffness, for every move after it.' },
     { n: 3, ch: 'shell', name: 'The weight you carry', title: 'Use the weight you already carry',
       builds: 'Move 2’s light, stiff shell: the skin the board can tie.',
-      unlocks: 'Stiffer again, for zero added grams.' },
+      unlocks: 'Stiffer again, for no added weight.' },
     { n: 4, ch: 'click', name: 'Clicks', title: 'Clicks the stiff shell makes possible',
       builds: 'The stiff top of moves 2 and 3: a top that doesn’t flex lets the click be direct.',
       unlocks: 'The same click wherever you press, and the latency to match.' },
     { n: 5, ch: 'glide', name: 'Glide and tracking', title: 'Glide and tracking',
       builds: 'A shell that doesn’t flex (moves 2 and 3) keeps the lens at its height.',
       unlocks: 'Aim that goes where you put it.' },
-    { n: 6, ch: 'elec', name: 'Power', title: 'Power, paid for in grams',
-      builds: 'The grams freed in moves 2 and 3 buy battery.',
+    { n: 6, ch: 'elec', name: 'Power', title: 'Power, paid for in weight',
+      builds: 'The weight saved in moves 2 and 3 buys battery.',
       unlocks: 'The battery the light flagships gave up, at their weight.' },
     { n: 7, ch: 'surface', name: 'The finish', title: 'A finish that weighs nothing',
       builds: 'Move 2’s shell: a film-thin coat on it, no tape.',
@@ -58,13 +58,13 @@ const FILM = {
   /* the build board's links: [from, to, what flows]. From the plan: 1 fixes the volume (density, from 0); 2 frees grams at the
      same stiffness; 3 builds on 2; 4, 5 and 6 on 2 and 3; 7 on 2; 8 on 3; the close on every move */
   edges: [[0, 1, 'Density, not size'], [1, 2, 'The volume'], [2, 3, 'A stiff skin'], [2, 4, 'Stiffness'], [3, 4, 'Stiffness'],
-    [2, 5, 'No flex'], [3, 5, 'No flex'], [2, 6, 'Grams'], [3, 6, 'Grams'], [2, 7, 'The skin'], [3, 8, 'Its screws'],
+    [2, 5, 'No flex'], [3, 5, 'No flex'], [2, 6, 'Weight'], [3, 6, 'Weight'], [2, 7, 'The skin'], [3, 8, 'Its screws'],
     [1, 9], [2, 9], [3, 9], [4, 9], [5, 9], [6, 9], [7, 9], [8, 9]],
   /* the film. Moves 0 and 1 are the pilot (V1); moves 2 to 9 are v23's slides in the plan's order until each is piloted
      (v23's chapter cards give way to the move cards; elc_sheet2 and ownsheet1 out, Brock F27: "remove this slide",
      "feels redundant") */
   order: [
-    [0, ['b01_cover', 'weightgap', 'ntr_sizewt', 'ntr_density', 'ntr_densrank', 'b01_battery', 'b01_compromise', 'targets', 'rule']],
+    [0, ['b01_cover', 'weightgap', 'ntr_sizewt', 'ntr_density', 'ntr_densrank', 'b01_battery', 'loadouts', 'targets', 'rule']],   /* V2: the giants' loadouts in b01_compromise's place */
     [1, ['mv1', 'b07_size', 'shp_newton', 'grooves', 'emg', 'b07_sides']],
     [2, ['mv2', 'materials', 'shlSpecific', 'thinwall', 'shlScatter', 'shlPick', 'shlNoPick', 'shlHotspot', 'shlMargin', 'shlWork', 'shlShell3d',
       'lattice', 'shlDeterminate', 'shlThin', 'shbArches', 'shbPress', 'shbThrust', 'shbBend', 'shbFibres', 'fillet', 'filletsize', 'shbFlow',
@@ -82,28 +82,22 @@ const FILM = {
   /* each slide's place in the chain, said in the footer beside the board: what it builds on, or what it pushes toward.
      The pilot's; successors add theirs as they pilot each move */
   link: {
-    weightgap: { s: 'Every gram from here on is counted on the scale, not the box' },
+    weightgap: { s: 'Every weight from here on is the scale\u2019s, not the box\u2019s' },
     ntr_sizewt: { s: 'The giants\u2019 shortcut: light by being less mouse. Move 1 keeps the mouse', to: [1] },
     ntr_density: { s: 'The bar every move answers to: weight per cm\u00B3 of a full-size box' },
-    ntr_densrank: { s: 'Where the moves must take it: the lowest density at full size', to: [9] },
-    b01_battery: { s: 'The trade move 6 refuses: the grams moves 2 and 3 free buy the battery back', to: [6] },
-    b01_compromise: { s: 'Each giant wins one row by giving up another. Theseus must hold every row at once', to: [9] },
+    ntr_densrank: { s: 'Lighter for their size than Theseus: one is wired, one has no bottom rim', to: [9] },
+    b01_battery: { s: 'The trade move 6 refuses: the weight moves 2 and 3 save buys the battery back', to: [6] },
+    loadouts: { s: 'Each giant fills a bar or two by giving others up. Theseus must fill every bar at once', to: [9] },
     targets: { s: 'The bar on speed: moves 4 to 6 must clear every row', to: [4, 5, 6] },
     b07_size: { s: 'Move 1 keeps the volume full: the volume moves 2 to 8 must make light', to: [2] },
     shp_newton: { s: 'The curve the finger rests on: the outline move 2\u2019s shell must hold', to: [2] },
     grooves: { s: 'The grip is in the shape: the skin move 7 coats keeps it', to: [7] },
-    emg: { s: 'Measured on players before a single gram is cut' },
+    emg: { s: 'Measured on players before any weight is cut' },
     b07_sides: { s: 'What the shape asks of the shell: flat low sides that hold. Move 2 builds it', to: [2] }
   },
 
-  /* the scoreboard: the best flagship figure on each axis (the bar), and Theseus's once the move that earns it lands (at).
-     Rows read the deck's own sources (the targets' NTR_BAR_* rows, ntr_dens, ntr_hours). Successors set `at` as they pilot */
-  score: [
-    { key: 'density', name: 'Density, weighed', better: 'lower', at: 6 },
-    { key: 'battery8', name: 'Battery at 8 khz', better: 'higher', at: 6 },
-    { key: 'click', name: 'Click latency, wireless', better: 'lower', at: 4 },
-    { key: 'motion', name: 'Motion latency, wireless', better: 'lower', at: 6 }
-  ]
+  /* V1's scoreboard (FILM.score) became the loadout (V2): LO below, its categories, the flagships and the moves that fill
+     each of Theseus's bars (LO.cats[].earn) */
 };
 
 /* ---------- the manifest applied: DECK.slides rebuilt from FILM.order (13-sort.js stands aside when FILM.on) ---------- */
@@ -237,51 +231,348 @@ function filmChrome(t, s) {
     for (const n of (lk && lk.to) || []) if (n !== m.n) { G.save(); G.beginPath(); G.arc(G0.xs[n], G0.y, FILM_DOCK.r + 3.4, 0, TAU); G.strokeStyle = C.heroText; G.lineWidth = 1.6; G.stroke(); G.restore(); }
   }
   text(`${pad2(i + 1)} / ${pad2(N)}`, RM, y, { role: 'foot', weight: 600, color: C.mute, align: 'right' });
+  /* Theseus's loadout, docked top right on the label row (V2): its bars as the moves so far have filled them */
+  if (lo_dockOn(s)) lo_dock(s.move);
 }
 
-/* ============================== the scoreboard: the bar against the giants ==============================
-   Each row: the best flagship figure anyone has shown (the targets' sources), who holds it, and Theseus's once the move that
-   earns it has landed; until then the row is open. One precision per row (G5). */
-function filmScoreRows() {
-  const sp = typeof NTR_BAR_SPEED !== 'undefined' ? NTR_BAR_SPEED : [], rs = typeof NTR_BAR_REST !== 'undefined' ? NTR_BAR_REST : [];
-  const row = (arr, re) => arr.find(r => re.test(r.cat)) || {};
-  const dn = typeof ntr_dens === 'function' ? ntr_dens({ measured: true, theseus: false }).sort((a, b) => a.rho - b.rho)[0] : null;
-  const h8 = typeof ntr_hours === 'function' ? Math.round(ntr_hours().h8) : null, b8 = row(rs, /Battery, 8 khz/), ck = row(sp, /Click latency, wireless/), mo = row(sp, /Motion latency, wireless/);
-  const R = {
-    density: dn ? { best: fmtN(dn.rho, 3), unit: 'g/cm³', who: dn.name.replace(/^Pulsar /, 'Pulsar ') + ', weighed by RTINGS', ths: fmtN(ntr_thsRho(), 3), d: (ntr_thsRho() - dn.rho) / dn.rho } : null,
-    battery8: b8.bv != null && h8 ? { best: fmtN(b8.bv, 0), unit: 'h', who: (b8.who || '').replace(/, TechPowerUp$/, '') + ', TechPowerUp', ths: fmtN(h8, 0), d: (h8 - b8.bv) / b8.bv, note: 'derived' } : null,
-    click: ck.bv != null ? { best: fmtN(ck.bv * 1000, 0), unit: 'µs', who: ck.who + ', its maker\u2019s \u201Cas low as\u201D', ths: fmtN(ck.tv * 1000, 0), d: (ck.tv - ck.bv) / ck.bv } : null,
-    motion: mo.bv != null ? { best: fmtN(mo.bv, 2), unit: 'ms', who: mo.who + ', PIAKNOW’S rig', ths: fmtN(mo.tv, 2), d: (mo.tv - mo.bv) / mo.bv } : null
-  };
-  return FILM.score.map(r => Object.assign({}, r, R[r.key] || {})).filter(r => r.best != null);
+/* ============================== THE LOADOUT (V2, 2026-11-06): the film's persistent visual ==============================
+   Brock, 15:57: "you know how when you look at guns in a game like call of duty and they have a bunch of different bars
+   for their specs (recoil, handling, damage, fire rate etc)? but they're never fully filled in all the categories? i think
+   we should visualize the different flagships like that ... and if makes thesesus having full bars much more impressive,
+   but theseus should have bars that fill up throughout the presentation" / "and whenever theseus does something that is
+   better than best in class, those bars overfill". 16:25: "one of the bars should start off as weight ... and then we show
+   it switching to density later as much more accurate metric"; "the xa25 also needs to be in the density metrics". 16:30:
+   "size of mouse should be shown in a bar too by volume"; "we can show density being calculated by dividing the weight bar
+   by the size bar".
+   - Categories: what a player reads that has a real figure, on one method, for the flagships shown (the deck's own data;
+     nothing typed here). Weight (as weighed: RTINGS's, TechPowerUp's or XBAB's scale; the X2F has only Pulsar's listing,
+     and says so), Size (its box's volume: not a score, drawn hollow, against the largest box here), Density (weight ÷
+     size: the weight bar's successor, from the giants' slide on), Battery (hours at 1 khz, the makers' ratings: few rate
+     8 khz), Motion latency (wireless at 8 khz, PIAKNOW'S rig). Click (press to PC, Finalmouse's rig) is built but off
+     (?click=1): on that rig the magnetic Starlight X's 2.0 ms beats Theseus's derived "under 4.2 ms" (F54.4), so the bar
+     could never fill. Brock's call.
+   - A blank is said in words ("No rating", "Not measured", "Wired only") on a dashed track, never drawn as a short bar.
+   - The scale, said once on the giants' slide: in each column the best of the six is the line (100 %); a lower-is-better
+     figure is best ÷ figure. Only Theseus passes the line: its overflow drawn to scale to LO.max of the line, past that a
+     break and the factor ("2.4×").
+   - Theseus's bars fill a step with each move that earns them (cats[].earn), each step a share toward the line, and reach
+     their figure with the last. The dock (top right, every slide after the giants') shows them as they stand.
+   ============================== */
+const LO = {
+  max: 1.3,
+  click: FILM_Q.get('click') === '1',
+  cats: [
+    { key: 'weight', name: 'Weight', mt: 'As weighed, g', metric: 'As weighed, g', ms: 'as weighed, g', better: 'lower', dec: 1, unit: 'g' },
+    { key: 'density', name: 'Density', mt: 'Weight ÷ size, g/cm³', metric: 'Weight ÷ size, g/cm³', ms: 'weight ÷ size, g/cm³', better: 'lower', dec: 3, unit: 'g/cm³', earn: [2, 3, 7, 8] },
+    { key: 'size', name: 'Size', mt: 'Its box, cm³, not a score', mt5: 'Its box, not a score', metric: 'Volume of its box, cm³ (not a score)', ms: 'its box, cm³', size: true, dec: 1, unit: 'cm³', earn: [1] },
+    { key: 'battery', name: 'Battery', mt: 'Hours at 1 khz, as rated', mt5: 'Hours at 1 khz, rated', metric: 'Hours at 1 khz, the maker’s rating', ms: 'hours at 1 khz', better: 'higher', dec: 0, unit: 'h', earn: [6] },
+    { key: 'motion', name: 'Motion latency', short: 'Motion', mt: 'Wireless, 8 khz, PIAKNOW’S rig', mt5: 'Wireless, at 8 khz', metric: 'Wireless at 8 khz, ms, PIAKNOW’S rig', ms: 'wireless, 8 khz, ms', better: 'lower', dec: 2, unit: 'ms', earn: [5, 6] },
+    { key: 'click', name: 'Click', mt: 'Press to PC, Finalmouse’s rig', mt5: 'Press to PC, Finalmouse’s', metric: 'Press to PC, ms, Finalmouse’s rig', ms: 'press to PC, ms', better: 'lower', dec: 1, unit: 'ms', earn: [4], opt: true }
+  ],
+  /* the seven flagships, heaviest first: the four with the fullest data, the X2F (its size is its trick), and the two that are
+     lighter for their size than Theseus, each with how it gets there (Brock, 16:42: "punish their density scores for
+     cheating"): the HTS Plus Pro 8K (no bottom rim, its maker's weight) and the XA25 (wired: no battery, no radio). tag: said
+     on the lightness bar, in red; holes: TechPowerUp; bottom rims: Brock */
+  mice: [
+    { id: 'logitech-superstrike', brand: 'Logitech', name: 'G Pro X2 Superstrike', pk: 'Logitech G PRO X2 SUPERSTRIKE', fm: 'GPX2 Superstrike' },
+    { id: 'razer-viper-v4-pro', brand: 'Razer', name: 'Viper V4 Pro', pk: 'Razer Viper V4 Pro', fm: 'Viper V4 Pro' },
+    { id: 'finalmouse-slx', brand: 'Finalmouse', name: 'Starlight X', fm: 'Starlight X' },
+    { id: 'gw-hts-ultra', brand: 'G-Wolves', name: 'HTS Ultra 8K', tag: 'holes, no rim' },
+    { id: 'pulsar-x2f-crazylight', brand: 'Pulsar', name: 'X2F CrazyLight', x2f: true, tag: 'half a shell' },
+    { id: 'gw-hts-plus-pro', brand: 'G-Wolves', name: 'HTS Plus Pro 8K', tag: 'no rim' },
+    { id: 'xbab-xa25', brand: 'XBAB', name: 'XA25', wired: true, tag: 'wired' }
+  ]
+};
+const lo_cat = k => LO.cats.find(c => c.key === k);
+/** the columns: the lightness bar as weight (before the giants' division) or density (after it), then size, battery,
+   motion, and click when it is on */
+const lo_cols = post => [lo_cat(post ? 'density' : 'weight'), lo_cat('size'), lo_cat('battery'), lo_cat('motion')].concat(LO.click ? [lo_cat('click')] : []);
+/** PIAKNOW'S wireless 8 khz figure for a mouse, by the name on the chart */
+function lo_pk(name) { const rows = (((RD.latency || {}).motion_latency_piaknow_2026_09_15 || {}).rows || []); const r = rows.find(q => q.mouse === name && q.connection === 'Wireless' && rv(q.ms_8000Hz) != null); return r ? rv(r.ms_8000Hz) : null; }
+/** Finalmouse's press-to-PC figure (its own rig, PC Gamer, Sept 2026) */
+function lo_fm(name) { const e = ((RD.latency || {}).click_latency_other || []).find(q => q && q.value && typeof q.value === 'object' && q.value['Starlight X'] != null); return e && e.value[name] != null ? e.value[name] : null; }
+function lo_vals(M) {
+  const m = (typeof b01_get === 'function' && b01_get(M.id)) || {}, o = {};
+  const scale = m.gEv === 'measured';   /* a scale's: RTINGS, TechPowerUp, or Brock's (the XA25 and the X2F, exWeight) */
+  o.weight = m.g != null ? { v: m.g, by: scale ? m.gBy : null, listed: !scale } : { none: 'Not weighed' };
+  o.size = m.L && m.W && m.H ? { v: m.L * m.W * m.H / 1000 } : { none: 'No box' };
+  o.density = o.weight.v != null && o.size.v != null ? { v: o.weight.v / o.size.v, listed: o.weight.listed } : { none: 'Not weighed' };
+  o.battery = M.wired ? { none: 'Wired only', bad: true } : m.h1k != null ? { v: m.h1k } : { none: 'No rating' };
+  const pk = M.pk ? lo_pk(M.pk) : null; o.motion = M.wired ? { none: 'Wired only', bad: true } : pk != null ? { v: pk } : { none: 'Not measured' };
+  const fm = M.fm ? lo_fm(M.fm) : null; o.click = fm != null ? { v: fm } : { none: 'Not measured' };
+  return o;
 }
-/** the scoreboard at (x, y), w wide: rows land one after another from t0; `act` is the move in play (Theseus's figure shows
-   from its row's move on) */
-function filmScoreboard(t, t0, x, y, w, act, o = {}) {
-  const rows = filmScoreRows(), rh = o.rh || 92, cB = x + (o.cB || 0), cT = x + w - (o.cT || 230);
-  const a0 = ep(t, t0, t0 + 0.4);
-  text('Best flagship, as shown', cB, y, { role: 'label', size: 19, color: C.mute, alpha: a0 });
-  text('Theseus, so far', x + w, y, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: a0 });
-  rows.forEach((r, i) => {
-    const yy = y + 34 + i * rh, k = ep(t, t0 + 0.25 + i * 0.32, t0 + 0.75 + i * 0.32, E.snap);
-    if (k <= 0.003) return;
-    line(x, yy - 4, x + w, yy - 4, { color: C.hair, w: 1.2, alpha: k });
-    rich([{ s: r.name, role: 'label', size: 19, color: C.ink2 }, o.compact ? null : { s: '(' + r.better + ' is better)', role: 'label', size: 19, color: C.faint, gap: 10 }], x, yy + 26, { alpha: k });
-    rich([{ s: r.best, role: 'num', size: o.compact ? 30 : 36, weight: 800, color: C.secondText, tnum: true }, { s: r.unit, role: 'small', size: 20, weight: 600, color: C.mute, gap: 6, sentence: false }], cB, yy + (o.compact ? 60 : 70), { alpha: k });
-    if (!o.compact) text(r.who, cB + tw(r.best, { role: 'num', size: 36, weight: 800 }) + tw(r.unit, { role: 'small', size: 20 }) + 26, yy + 66, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: k, maxW: cT - cB - 210, sentence: false });
-    const landed = act >= r.at;
-    if (landed) {
-      rich([{ s: r.ths, role: 'num', size: o.compact ? 30 : 36, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: r.unit, role: 'small', size: 20, weight: 600, color: C.mute, gap: 6, sentence: false }], x + w, yy + (o.compact ? 60 : 70), { alpha: k, align: 'right' });
-    } else {
-      /* open: a dashed slot, and the move that will fill it */
-      const sw = 150, sx = x + w - sw;
-      const sy = yy + (o.compact ? 30 : 38);
-      G.save(); G.globalAlpha = k; G.setLineDash([5, 5]); G.strokeStyle = inkA(TH ? 0.3 : 0.28); G.lineWidth = 1.5; G.strokeRect(sx, sy, sw, 40); G.restore();
-      text('Move ' + r.at, sx + sw / 2, sy + 28, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: k });
+function lo_thsVals() {
+  const sp = typeof NTR_BAR_SPEED !== 'undefined' ? NTR_BAR_SPEED : [], mo = sp.find(r => /Motion latency, wireless/.test(r.cat)) || {}, bx = ntr_thsBox();
+  return { weight: { v: THESEUS.mass }, size: { v: bx.v }, density: { v: THESEUS.mass / bx.v }, battery: { v: THESEUS.hours }, motion: { v: mo.tv != null ? mo.tv : 0.14 },
+    click: { v: typeof b01_pressTgt === 'function' ? b01_pressTgt() : 4.2, under: true } };
+}
+/** the table: each flagship's figures and fills, the best (the line) in each column, Theseus's figures and final fills */
+function lo_table() {
+  if (lo_table.v) return lo_table.v;
+  const rows = LO.mice.map(M => Object.assign({ M }, lo_vals(M))), ths = lo_thsVals(), best = {};
+  const sizeMax = Math.max(ths.size.v, ...rows.map(r => r.size.v || 0));
+  for (const c of LO.cats) {
+    if (c.size) { for (const x of rows.map(r => r.size).concat([ths.size])) if (x.v != null) x.f = x.v / sizeMax; best.size = { v: sizeMax }; continue; }
+    const have = rows.filter(r => r[c.key].v != null); if (!have.length) continue;
+    const b = c.better === 'lower' ? Math.min(...have.map(r => r[c.key].v)) : Math.max(...have.map(r => r[c.key].v));
+    best[c.key] = { v: b, who: have.find(r => r[c.key].v === b).M };
+    const fOf = v => c.better === 'lower' ? b / v : v / b;
+    for (const r of have) { r[c.key].f = fOf(r[c.key].v); r[c.key].best = r[c.key].v === b; }
+    ths[c.key].f = fOf(ths[c.key].v);
+  }
+  return (lo_table.v = { rows, ths, best });
+}
+/** a figure as shown: one precision per column; a blank's words */
+const lo_fmt = (c, x) => x.none ? x.none : (x.under ? 'Under ' : '') + fmtN(x.v, c.dec) + ' ' + c.unit;
+/** Theseus's bar for column c with move n landed and k of the way through move n's own step: { f, d (steps landed), N, F
+   (its final fill), done }. A step a move, each its share toward the line; the last step takes the bar to its figure */
+function lo_thsAt(c, n, k = 1) {
+  const E0 = c.earn || [], N = Math.max(1, E0.length), F = lo_table().ths[c.key].f || 0;
+  const d = E0.filter(m => m < n).length + (E0.includes(n) ? clamp(k) : 0);
+  const f = d <= N - 1 ? d / N : lerp((N - 1) / N, F, d - (N - 1));
+  return { f: c.size ? F * Math.min(1, d) : f, d, N, F, done: d >= N - 1e-6 };
+}
+
+/* ---------- one bar ----------
+   x, y: top left; L: the line's length (100 %); h: its thickness. o = { f (fill; 1 = the line), ths (Theseus's), d, N
+   (Theseus: steps landed of N), size (not a score: hollow, against the largest box, no line), best (holds the line), none
+   (a blank: dashed track, no fill), gap (false: no red shortfall), tick (false: no line tick; the table draws one line per
+   column), pulse (0..1, the overflow's one-shot ring), a } */
+function lo_bar(x, y, L, h, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
+  const r = Math.min(3, h / 2), f = Math.max(0, o.f || 0), ths = !!o.ths;
+  G.save(); G.globalAlpha = a;
+  if (o.size) {
+    if (f > 0.003) { rrPath(x, y, Math.max(h, f * L), h, r); G.fillStyle = ths ? rgba(C.hero, 0.2) : inkA(TH ? 0.07 : 0.1); G.fill(); G.lineWidth = 1.6; G.strokeStyle = ths ? C.hero : inkA(TH ? 0.5 : 0.55); G.stroke(); }
+    else { G.setLineDash([3, 4]); rrPath(x + 0.5, y + 0.5, L - 1, h - 1, r); G.lineWidth = 1.2; G.strokeStyle = ths ? rgba(C.hero, 0.5) : inkA(0.25); G.stroke(); G.setLineDash([]); }
+    G.restore(); return;
+  }
+  if (o.none) { G.setLineDash([3, 4]); rrPath(x + 0.5, y + 0.5, L - 1, h - 1, r); G.lineWidth = 1.2; G.strokeStyle = inkA(0.28); G.stroke(); G.setLineDash([]); }
+  else { rrPath(x, y, L, h, r); G.fillStyle = ths ? rgba(C.hero, TH ? 0.1 : 0.16) : C.track; G.fill(); }
+  if (!o.none && f > 0.002) {
+    if (!ths) {
+      const w = Math.min(1, f) * L;
+      rrPath(x, y, w, h, r); G.fillStyle = o.best ? C.ink2 : C.comp; G.fill();
+      /* what it gives up: the shortfall to the line, faintly red */
+      if (f < 0.995 && o.gap !== false) { G.fillStyle = rgba(C.red, TH ? 0.2 : 0.3); G.fillRect(x + w + 2, y, Math.max(0, L - w - 2), h); }
+    } else lo_thsFill(x, y, L, h, r, f, o);
+  }
+  G.restore();
+  if (o.tick !== false) line(x + L, y - 4, x + L, y + h + 4, { color: C.ink2, w: 2, alpha: a });
+}
+/** Theseus's fill: steps landed at half strength with a hairline between them; from its last step on, solid, and past the
+   line the overflow, brighter, with a soft glow; capped at LO.max with a break and the factor */
+function lo_thsFill(x, y, L, h, r, f, o) {
+  const N = o.N || 1, d = o.d == null ? N : o.d, X = v => x + Math.min(v, LO.max) * L, blue = C.hero;
+  if (d <= N - 1 + 1e-6) {
+    const nd = Math.floor(d + 1e-6);
+    for (let j = 0; j <= nd; j++) { const a0 = j / N, a1 = Math.min((j + 1) / N, f); if (a1 <= a0 + 1e-4) continue; rrPath(X(a0) + (j ? 1.5 : 0), y, X(a1) - X(a0) - (j ? 1.5 : 0), h, r); G.fillStyle = rgba(blue, 0.55); G.fill(); }
+    return;
+  }
+  rrPath(x, y, Math.min(1, f) * L, h, r); G.fillStyle = blue; G.fill();
+  if (f <= 1) return;
+  const x0 = x + L, x1 = X(f), gr = G.createLinearGradient(x0, 0, x1 + 1, 0);
+  gr.addColorStop(0, blue); gr.addColorStop(1, C.heroGrad[0]);
+  G.save(); G.shadowColor = rgba(blue, 0.9); G.shadowBlur = Math.max(6, h * 1.1);
+  rrPath(x0 - r, y, x1 - x0 + r, h, r); G.fillStyle = gr; G.fill(); G.restore();
+  if (o.pulse > 0 && o.pulse < 1) { const p = E.out3(o.pulse), sp = 3 + 9 * p; G.save(); G.globalAlpha *= (1 - p) * 0.9; G.lineWidth = 2; G.strokeStyle = C.heroGrad[0]; rrPath(x0 - sp, y - sp, x1 - x0 + 2 * sp, h + 2 * sp, r + sp); G.stroke(); G.restore(); }
+  if (f > LO.max + 1e-6) {
+    /* the break: the bar runs on past the page; the factor says how far */
+    const bx = x0 + (LO.max - 1) * L * 0.62;
+    G.save(); G.strokeStyle = C.bg; G.lineWidth = Math.max(2.5, h * 0.3); G.beginPath();
+    G.moveTo(bx - h * 0.35, y + h + 2); G.lineTo(bx + h * 0.35, y - 2); G.moveTo(bx + h * 0.45, y + h + 2); G.lineTo(bx + h * 1.15, y - 2); G.stroke(); G.restore();
+  }
+}
+/** the factor printed past a capped bar ("2.4×"), and its width */
+const lo_capTxt = f => fmtN(f, 1) + '×';
+
+/* ---------- the silhouettes: the kit's generic rival for every flagship at its own length and width (Brock, 16:25: "use
+   the generic outline that we know is good"), the X2F its own traced cut, Theseus the simplified mouse. Nose left ---------- */
+function lo_sil(M, cx, cy, s, a) {
+  if (a <= 0.003) return;
+  if (!M) { part(cx, cy, s, () => mouseSimple('top', { lw: 1.6, col: 'hero', hi: ['shell'], lit: 0.5 }), { rot: -Math.PI / 2, alpha: a }); return; }
+  if (M.x2f && typeof b01_outline === 'function') {
+    const cut = b01_outline(B01_X2_HALF, B01_X2F.cut, B01_X2F.r), rc = b01_rvCol();
+    part(cx, cy, s, () => { G.save(); G.translate(0, -B01_X2F.cut / 2); G.globalAlpha = PA; G.fillStyle = rc.body; G.fill(cut.path); G.strokeStyle = rc.out; G.lineWidth = lw(1.6); G.stroke(cut.path); G.restore(); }, { rot: -Math.PI / 2, alpha: a });
+    return;
+  }
+  const m = typeof b01_get === 'function' ? b01_get(M.id) : null, dims = m && m.L ? [m.L, m.W, m.H] : RV_DIMS;
+  part(cx, cy, s, () => {
+    mouseRival('top', { dims, lw: 1.6 });
+    /* the XA25's cable, out of its nose: it is wired */
+    if (M.wired) { G.save(); G.globalAlpha = PA; G.strokeStyle = C.red; G.lineWidth = lw(2.2); G.lineCap = 'round'; G.beginPath(); G.moveTo(0, -dims[0] / 2); G.bezierCurveTo(0, -dims[0] / 2 - 8, 4, -dims[0] / 2 - 10, 3, -dims[0] / 2 - 18); G.stroke(); G.restore(); }
+  }, { rot: -Math.PI / 2, alpha: a });
+}
+
+/* ---------- the dock: Theseus's bars on every slide after the giants', top right on the label row ---------- */
+const LO_DOCK = { y: 79, h: 8, L: 92, gap: 30, labY: 68 };
+const LO_DLAB = { role: 'foot', size: 19, weight: 700, caps: true, track: 0.1 }, LO_DFIG = { role: 'foot', size: 19, weight: 750, tnum: true };
+/** the cells, right-aligned at RM: { c, x, w, L, y, h }. Space for every final figure is kept, so nothing moves as bars fill */
+function lo_dockGeo() {
+  if (lo_dockGeo.v && lo_dockGeo.th === TH) return lo_dockGeo.v;
+  const D = LO_DOCK, T = lo_table(), out = []; let xr = RM;
+  for (const c of lo_cols(true).slice().reverse()) {
+    const fin = T.ths[c.key], cap = !c.size && fin.f > LO.max ? tw(lo_capTxt(fin.f), LO_DFIG) + 10 : 0;
+    const lab = tw(c.short || c.name, LO_DLAB), fig = tw(lo_fmt(c, fin), LO_DFIG);
+    const w = Math.ceil(Math.max(D.L * (c.size ? 1 : LO.max) + cap, lab + 10 + fig));
+    out.unshift({ c, x: xr - w, w, L: D.L, y: D.y, h: D.h }); xr -= w + D.gap;
+  }
+  lo_dockGeo.th = TH; return (lo_dockGeo.v = out);
+}
+/** the dock with move n landed (k: how far move n's own steps are, for a slide that animates it). o = { a, cells (from a
+   flight: per-cell overrides { x, y, L, h, la (label alpha) }) } */
+function lo_dock(n, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
+  lo_dockGeo().forEach((g, i) => {
+    const c = g.c, st = lo_thsAt(c, n, o.k == null ? 1 : o.k), ov = o.cells ? o.cells[i] : null, x = ov ? ov.x : g.x, y = ov ? ov.y : g.y, L = ov ? ov.L : g.L, h = ov ? ov.h : g.h, la = (ov && ov.la != null ? ov.la : 1) * a;
+    text(c.short || c.name, g.x, LO_DOCK.labY, Object.assign({ color: C.ink2, alpha: la }, LO_DLAB));
+    if (st.done && st.d > 0) text(lo_fmt(c, lo_table().ths[c.key]), g.x + g.w, LO_DOCK.labY, Object.assign({ color: C.heroText, align: 'right', alpha: la }, LO_DFIG));
+    lo_bar(x, y, L, h, { f: st.f, ths: true, d: st.d, N: st.N, size: c.size, a, tick: !c.size });
+    if (!c.size && st.done && st.f > LO.max) text(lo_capTxt(st.f), x + L * LO.max + 6, y + h + 1, Object.assign({ color: C.heroText, alpha: a }, LO_DFIG));
+  });
+}
+/** the dock is on from the slide after the giants' slide, on every slide with chrome that isn't a move card */
+function lo_dockOn(s) {
+  if (!FILM.on || !s || s.filmCard || s.chrome === false || s.loSelf) return false;
+  const i = DECK.slides.indexOf(s), iG = DECK.slides.findIndex(x => x.id === 'loadouts');
+  return iG >= 0 && i > iG;
+}
+
+/* ---------- Theseus's loadout at full size (the move cards, the rule): a row a column, label and metric, the figure at
+   the right when its bar is done, the bar, and under it the moves that fill it ---------- */
+/** x, y: top left; w wide; n: the move landed, k: how far move n's own steps are; o = { rh, plan (the rule: no fills, the
+   moves that fill each bar and who holds the line), pulse (t of this move's overflow ring, or a function of the column), a,
+   head } */
+function lo_panel(t, x, y, w, n, o = {}) {
+  const a0 = o.a == null ? 1 : o.a; if (a0 <= 0.003) return;
+  const T = lo_table(), cols = lo_cols(true), rh = o.rh || 70, capW = 54, L = Math.floor((w - capW) / LO.max), bh = o.bh || 14;
+  if (o.head !== false) {
+    text(o.head || 'Theseus’s loadout', x, y, { role: 'label', size: 19, color: C.heroText, alpha: a0 });
+    const lx = x + w - tw('The line: the best flagship', { role: 'label', size: 19 });
+    line(lx - 14, y - 15, lx - 14, y + 3, { color: C.ink2, w: 2, alpha: a0 });
+    text('The line: the best flagship', x + w, y, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: a0 });
+  }
+  cols.forEach((c, i) => {
+    const yy = y + 26 + i * rh, st = o.plan ? { f: 0, d: 0, N: (c.earn || []).length || 1, done: false } : lo_thsAt(c, n, o.k == null ? 1 : o.k), fin = T.ths[c.key];
+    rich([{ s: c.name, role: 'label', size: 20, color: C.ink2 }, { s: c.ms, role: 'foot', size: 19, weight: 600, color: C.faint, gap: 12, sentence: false }], x, yy + 20, { alpha: a0 });
+    const by = yy + 30;
+    if (o.plan) {
+      const mv = (c.earn || []), ms = (mv.length > 1 ? 'Moves ' : 'Move ') + mv.join(', ');
+      text(ms, x + w, yy + 20, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: a0 });
+      const b = T.best[c.key];
+      if (b && !c.size) text('The line: ' + b.who.brand + ' ' + b.who.name + ', ' + lo_fmt(c, b) + (b.who.tag && (c.key === 'density' || c.key === 'weight') ? ', ' + b.who.tag : ''), x + L, by + bh + 24, { role: 'foot', size: 19, weight: 600, color: C.mute, align: 'right', alpha: a0, sentence: false });
+      else if (c.size) text('Not a score: the volume Theseus keeps, against the largest box', x, by + bh + 24, { role: 'foot', size: 19, weight: 600, color: C.mute, alpha: a0, sentence: false });
+    } else if (st.done && st.d > 0) {
+      text(lo_fmt(c, fin), x + w, yy + 20, { role: 'num', size: 24, weight: 800, color: C.heroText, align: 'right', alpha: a0 });
+    }
+    const pulse = typeof o.pulse === 'function' ? o.pulse(c) : 0;
+    lo_bar(x, by, L, bh, { f: st.f, ths: true, d: st.d, N: st.N, size: c.size, a: a0, pulse });
+    if (!o.plan && !c.size && st.done && st.f > LO.max) text(lo_capTxt(st.f), x + L * LO.max + 8, by + bh, { role: 'num', size: 22, weight: 800, color: C.heroText, alpha: a0 });
+    /* where it came from: the move under each step */
+    if (!o.plan && (c.earn || []).length && st.d > 0) {
+      const N = st.N, X = v => x + Math.min(v, LO.max) * L;
+      c.earn.forEach((m, j) => {
+        if (j + 1 > Math.ceil(st.d - 1e-6)) return;
+        const a1 = j === N - 1 ? Math.min(st.f, LO.max) : (j + 1) / N, cxm = (X(j / N) + X(a1)) / 2;
+        text(String(m), c.size ? x + 12 : cxm, by + bh + (rh < 70 ? 16 : 19), { role: 'foot', size: 19, weight: 700, color: m === n ? C.heroText : C.faint, align: c.size ? 'left' : 'center', alpha: a0 });
+      });
     }
   });
-  return { h: 34 + rows.length * rh, rows };
+  return { h: 26 + cols.length * rh };
 }
+
+/* ---------- the giants' loadouts (move 0's hero slide, in b01_compromise's place) ----------
+   A loadout screen: six flagships, a row each, the generic silhouette at its own size, its bars in five columns (weight,
+   size, battery, motion latency). Then the weight bar is divided by the size bar and becomes density (Brock, 16:30): the
+   X2F, light because it is small, falls; the wired XA25 holds the line. Theseus's row arrives empty, and its bars dock top
+   right, where they fill through the film. */
+const LO_G = { hy: 318, y0: 386, rh: 64, yT: 862, x0: 520, silX: 128, sil: 0.66, nameX: 196 };
+const LO_T = { bars: 0.45, row: 0.4, div: 4.7, ths: 7.4, dock: 9.2, dockD: 1.1 };
+function lo_giants(t) {
+  header(t, 'No flagship fills every bar');
+  const nW = ['five', 'six', 'seven', 'eight'][LO.mice.length - 5] || String(LO.mice.length);
+  captions(t, [[0.3, 'Each flagship’s specs as bars, the way a game shows a loadout. The line in each column is the best of these ' + nW + '.'],
+    [LO_T.div - 0.3, 'Weight flatters a small mouse. Divide each weight by its size and the bar becomes density: the X2F falls, and the wired XA25 leads.'],
+    [LO_T.ths - 0.2, 'None fills every bar: each wins one or two and gives others up. Theseus starts with every bar to fill.']]);
+  /* the columns: the lightness column wider (its figures carry how each got light), every bar on one length */
+  const T = lo_table(), G0 = LO_G, pre = lo_cols(false), post = lo_cols(true), nC = pre.length, wts = pre.map((c, i) => (i === 0 ? 1.35 : c.key === 'motion' ? 1.0 : 0.9)), sw = wts.reduce((a, b) => a + b, 0);
+  const cws = wts.map(w => (RM - G0.x0) * w / sw), xs = cws.map((w, i) => G0.x0 + cws.slice(0, i).reduce((a, b) => a + b, 0));
+  const L = Math.floor((Math.min(...cws) - 40) / LO.max), bh = 13, cx = i => xs[i], mt = c => (nC > 4 && c.mt5) || c.mt;
+  const t1 = LO_T.div, kG = ep(t, t1 + 0.1, t1 + 0.8, E.io3), kDiv = ep(t, t1 + 0.7, t1 + 1.5, E.io3), kDivTxt = ep(t, t1 + 1.0, t1 + 1.4);
+  const lastY = G0.y0 + (T.rows.length - 1) * G0.rh;
+  /* the column heads: name, metric; the first turns from weight into density */
+  pre.forEach((c, i) => {
+    const x = cx(i), a = ep(t, -1, 0);
+    if (i === 0) {
+      const d = post[0];
+      text(c.name, x, G0.hy, { role: 'label', size: 21, color: C.ink, alpha: a * (1 - kDivTxt) });
+      text(mt(c), x, G0.hy + 26, { role: 'foot', size: 19, weight: 600, color: C.mute, alpha: a * (1 - kDivTxt), sentence: false });
+      text(d.name, x, G0.hy, { role: 'label', size: 21, color: C.ink, alpha: kDivTxt });
+      text(mt(d), x, G0.hy + 26, { role: 'foot', size: 19, weight: 600, color: C.mute, alpha: kDivTxt, sentence: false });
+    } else {
+      text(c.name, x, G0.hy, { role: 'label', size: 21, color: C.ink, alpha: a });
+      text(mt(c), x, G0.hy + 26, { role: 'foot', size: 19, weight: 600, color: C.mute, alpha: a, sentence: false });
+    }
+    /* the line: one per score column, through every row */
+    if (!c.size) line(x + L, G0.y0 - 22, x + L, lastY + G0.rh - 30, { color: C.ink2, w: 1.6, alpha: 0.55 * a });
+  });
+  /* the division: weight ÷ size, said in the heads, then each size bar slides onto its weight bar and the bar becomes density */
+  { const kd = env(t, t1, t1 + 0.35, t1 + 1.3, t1 + 1.7); if (kd > 0.003) text('÷', cx(1) - 22, G0.hy + 4, { font: 'disp', size: 40, weight: 700, color: C.ink, align: 'center', alpha: kd }); }
+  /* the rows */
+  T.rows.forEach((r, j) => {
+    const y = G0.y0 + j * G0.rh, ta = ep(t, -1, 0), M = r.M;
+    lo_sil(M, G0.silX, y + 6, G0.sil, ta);
+    text(M.brand, G0.nameX, y - 6, { role: 'label', size: 19, color: C.mute, alpha: ta });
+    text(M.name, G0.nameX, y + 24, { role: 'h3', size: 25, weight: 750, color: C.ink, alpha: ta, sentence: false, maxW: G0.x0 - G0.nameX - 20 });
+    pre.forEach((c, i) => {
+      const x = cx(i), tb = LO_T.bars + j * LO_T.row + i * 0.07, kb = ep(t, tb, tb + 0.5, E.snap), kf = ep(t, tb + 0.15, tb + 0.45);
+      let v = r[c.key], f = v.f || 0, txt = lo_fmt(c, v), best = !!v.best;
+      if (i === 0) {
+        const d = r.density, fd = d.f || 0;
+        f = lerp(f, fd, kDiv); best = kDiv < 0.5 ? best : !!d.best;
+        /* the figure rolls from weight to density; a listed weight says so, and how a mouse gets light is said in red */
+        const fig = (s0, b0, a) => rich([{ s: s0, role: 'num', size: 22, weight: 700, color: b0 ? C.ink : C.ink2 }, v.listed ? { s: 'listed', role: 'foot', size: 19, weight: 650, color: C.mute, gap: 8 } : null,
+          M.tag ? { s: M.tag, role: 'foot', size: 19, weight: 700, color: C.red, gap: 8 } : null], x, y - 2, { alpha: a });
+        fig(txt, !!v.best, kf * (1 - kDivTxt)); if (kDivTxt > 0) fig(lo_fmt(post[0], d), !!d.best, kf * kDivTxt);
+        txt = null;
+      }
+      if (txt != null) text(txt, x, y - 2, { role: 'num', size: 22, weight: 700, color: v.none ? (v.bad ? C.red : C.faint) : best ? C.ink : C.ink2, alpha: kf });
+      lo_bar(x, y + 8, L, bh, { f: f * kb, best, none: v.none, size: c.size, tick: false, gap: kb > 0.99 });
+    });
+    /* the size bar's copy slides onto the weight bar: weight ÷ size */
+    if (kG > 0.003 && kG < 0.999 && r.size.v != null) {
+      const gx = lerp(cx(1), cx(0), kG), ga = Math.sin(Math.PI * kG);
+      lo_bar(gx, y + 8, L, bh, { f: r.size.f, size: true, a: ga * 0.9, tick: false });
+    }
+  });
+  /* the scale, said once */
+  text('The line: the best of these ' + (['five', 'six', 'seven', 'eight'][LO.mice.length - 5] || LO.mice.length) + '. Lower is better: best ÷ figure. Size is not a score.', RM, G0.hy - 44, { role: 'foot', size: 19, weight: 600, color: C.mute, align: 'right', alpha: ep(t, 0.8, 1.3), sentence: false });
+  /* Theseus's row: empty, every bar to fill */
+  { const y = G0.yT, ka = ep(t, LO_T.ths, LO_T.ths + 0.5), rise = (1 - E.out3(ka)) * 16;
+    if (ka > 0.003) {
+      rr(LM - 16, y - 40 + rise, RM - LM + 32, G0.rh + 4, 6, rgba(C.hero, TH ? 0.07 : 0.12), null, 0, ka);
+      lo_sil(null, G0.silX, y + 6 + rise, G0.sil, ka);
+      text('Nitrite Labs', G0.nameX, y - 6 + rise, { role: 'label', size: 19, color: C.heroText, alpha: ka });
+      text('Theseus', G0.nameX, y + 24 + rise, { role: 'h3', size: 27, weight: 800, color: C.heroText, grad: C.heroGrad, alpha: ka, sentence: false });
+      post.forEach((c, i) => {
+        const x = cx(i);
+        text(c.earn ? ((c.earn.length > 1 ? 'Moves ' : 'Move ') + c.earn.join(', ')) : '', x, y - 2 + rise, { role: 'foot', size: 19, weight: 700, color: C.heroText, alpha: ka * ep(t, LO_T.ths + 0.5, LO_T.ths + 0.9) });
+        lo_bar(x, y + 8 + rise, L, bh, { f: 0, ths: true, size: c.size, a: ka, tick: !c.size });
+      });
+    }
+    /* the dock: a copy of the row's bars flies top right, where they will fill */
+    const kF = i => ep(t, LO_T.dock + i * 0.06, LO_T.dock + LO_T.dockD + i * 0.06, E.cam);
+    if (t >= LO_T.dock) {
+      const geo = lo_dockGeo(), cells = geo.map((g, i) => { const k = kF(i); return { x: lerp(cx(i), g.x, k), y: lerp(y + 8, g.y, k), L: lerp(L, g.L, k), h: lerp(bh, g.h, k), la: ep(t, LO_T.dock + LO_T.dockD - 0.3, LO_T.dock + LO_T.dockD + 0.1) }; });
+      lo_dock(0, { cells });
+    }
+  }
+  source(t, 'Weights: RTINGS’s scale (Superstrike, Viper V4 Pro, Starlight X), TechPowerUp’s (HTS Ultra 8K, ± 1 g), Brock’s (XA25 25.37 g, X2F 29.5 g; listed 25 ± 1 and 29 ± 2); the HTS Plus Pro 8K only lists 28 g. Size: the makers’ L × W × H. Battery: makers’ hours at 1 khz; Finalmouse, Pulsar and the Plus Pro rate none. Motion: PIAKNOW’S rig. Holes: TechPowerUp; rims: Brock. Theseus: targets.', { t0: 1.0 });
+}
+S({ id: 'loadouts', ch: 'intro', theme: 'night', title: 'No flagship fills every bar', settle: 11, loSelf: true,
+  src: ['exRtings', 'b01TpuHtsU', 'b01GwHtsU', 'b01GwPlusPro', 'brockWeighed', 'xbabSite', 'b01X2f', 'exEloshapes', 'exNbcV4', 'logiSuperstrike', 'b01SlxBatt', 'exPiaknow', 'ntrJauch', 'kunai'].concat(LO.click ? ['b01FmClick'] : []),
+  draw: t => lo_giants(t) });
 
 /* ============================== the weight ledger ==============================
    Grams saved and grams spent, against the lightest flagship weighed part by part (the XA25, on XBAB's scale), from the
@@ -292,7 +583,7 @@ function filmLedger() {
   const B = ntr_budget(); if (!B || !B.ok) return null;
   return { B, lines: [
     { move: 2, name: 'Shell and skates', was: B.xa.shell, now: B.shell, why: 'the goal: lighter than the lightest flagship’s, at full size' },
-    { move: 6, name: 'Battery, ' + B.cell.mAh + ' mAh', was: 0, now: B.cell.g, why: 'bought with the grams moves 2 and 3 free' }
+    { move: 6, name: 'Battery, ' + B.cell.mAh + ' mAh', was: 0, now: B.cell.g, why: 'bought with the weight moves 2 and 3 save' }
   ] };
 }
 
@@ -300,10 +591,13 @@ function filmLedger() {
    The board comes forward from the dock (0 to 0.9 s); the move before completes and hands on along its links (to 1.6 s);
    what this move builds on lights blue and the move fills (1.6 to 2.6 s); what it unlocks draws out, dashed (2.8 to 3.9 s).
    Frame one carries the label and the title (the thumbnail); the lines type with their motion. */
+/** the move's own figure, one line under the loadout on its card (the volume it keeps, the shell's weight goal, why a move
+   fills no bar) */
 function filmCardStat(n) {
-  if (n === 1 && typeof ntr_thsBox === 'function') { const b = ntr_thsBox(); return { label: 'The volume to keep', value: fmtN(b.v, 1), unit: 'cm³', sub: fmtN(b.L, 1) + ' × ' + fmtN(b.W, 1) + ' × ' + fmtN(b.H, 1) + ' mm, a full-size mouse: the box every later move must fill', ev: 'derived' }; }
+  if (n === 1 && typeof ntr_thsBox === 'function') { const b = ntr_thsBox(); return 'The box it keeps: ' + fmtN(b.L, 1) + ' \u00D7 ' + fmtN(b.W, 1) + ' \u00D7 ' + fmtN(b.H, 1) + ' mm, ' + fmtN(b.v, 1) + ' cm\u00B3, a full-size mouse every later move must fill.'; }
+  if (n === 4 && !LO.click) { const ft = typeof b01_pressTgt === 'function' ? b01_pressTgt() : 4.2; return 'Clicks fill no bar: on Finalmouse\u2019s rig, its press to PC (under ' + fmtN(ft, 1) + ' ms, derived) beats every mechanical switch timed there, not the magnetic Starlight X (2.0 ms).'; }
   const L = filmLedger(), ln = L && L.lines.find(l => l.move === n);
-  if (ln && ln.was) return { label: 'The weight ledger: this move’s goal', value: '−' + fmtN(ln.was - ln.now, 2), unit: 'g', sub: ln.name + ': ' + fmtN(ln.now, 2) + ' g against the XA25’s ' + fmtN(ln.was, 2) + ' g on XBAB’s scale, the lightest flagship weighed part by part; the grams move 6 spends on battery', ev: 'derived' };
+  if (ln && ln.was) return 'The shell\u2019s goal: ' + fmtN(ln.was - ln.now, 2) + ' g under the XA25\u2019s ' + fmtN(ln.was, 2) + ' g on XBAB\u2019s scale, the lightest flagship weighed part by part. Derived.';
   return null;
 }
 function filmCard(t, n) {
@@ -314,21 +608,19 @@ function filmCard(t, n) {
   const ttl = caps(m.title), size = Math.min(112, Math.floor(1700 / Math.max(1, tw(ttl, { role: 'd2', size: 1, weight: 900, caps: false }))));
   text(ttl, LM - size * 0.04, 236, { role: 'd2', size, weight: 900, color: C.ink, caps: false });
   /* the two lines: what it builds on, what it unlocks */
-  const stat = filmCardStat(n), tx = LM, tw0 = stat || n === FILM.moves.length - 1 || FILM.score.some(r => r.at === n) ? 1020 : 1500;
+  const stat = filmCardStat(n), tx = LM, tw0 = 1020;
   if (m.builds) rich([{ s: 'Builds on', role: 'label', size: 20, color: C.heroText }], tx, 318, { alpha: ep(t, 0.9, 1.2) });
   if (m.builds) text(m.builds, tx, 356, { role: 'lead', size: 30, color: C.ink2, t, t0: 1.0, cps: 75, maxW: tw0, lh: 1.3 });
   const yU = 356 + (m.builds ? wrap(sentence(m.builds), { role: 'lead', size: 30 }, tw0).length * 39 + 34 : 0);
   rich([{ s: 'Unlocks', role: 'label', size: 20, color: C.mute }], tx, yU, { alpha: ep(t, 2.6, 2.9) });
   text(m.unlocks, tx, yU + 38, { role: 'lead', size: 30, color: C.ink2, t, t0: 2.7, cps: 75, maxW: tw0, lh: 1.3 });
-  /* the move's figure, at the right: the scoreboard where this move lands a row against the giants, else its own figure */
-  const lands = n === FILM.moves.length - 1 || FILM.score.some(r => r.at === n);   /* the close shows the whole board against the giants */
-  if (lands) filmScoreboard(t, 4.0, 1200, 300, RM - 1200, n, { rh: 66, compact: true, cT: 150 });
-  else if (stat) {
-    const sx = 1200, ka = ep(t, 4.1, 4.5);
-    rich([{ s: stat.label, role: 'label', size: 19, color: C.mute }], sx, 318, { alpha: ka });
-    rich([{ s: stat.value, role: 'stat', size: 84, color: C.heroText, grad: C.heroGrad, tnum: true, count: [4.15, 0.8] }, { s: stat.unit, role: 'small', size: 28, weight: 650, color: C.mute, gap: 10, sentence: false }], sx, 408, { t, alpha: ka });
-    text(stat.sub, sx, 452, { role: 'small', size: 21, weight: 600, color: C.mute, maxW: RM - sx, lh: 1.3, alpha: ep(t, 4.5, 4.9) });
-  }
+  /* Theseus's loadout, at the right (V2): as it stood, then this move's steps land with the move's node (2.1 to 3.0 s), an
+     overflow ringing once as its bar passes the line (the close rings every one); under it, the move's own figure */
+  const close = n === FILM.moves.length - 1, kS = ep(t, 2.1, 3.0, E.io3), cols = lo_cols(true);
+  const pulse = c => { const E0 = c.earn || [], F = lo_table().ths[c.key].f; if (c.size || !(F > 1)) return 0; const j = cols.indexOf(c);
+    return close ? prog(t, 2.4 + 0.3 * j, 3.3 + 0.3 * j) : E0[E0.length - 1] === n ? prog(t, 2.85, 3.75) : 0; };
+  const P = lo_panel(t, 1200, 292, RM - 1200, n, { k: kS, pulse, rh: cols.length > 4 ? 62 : 72 });
+  if (stat) text(stat, 1200, 292 + P.h + 24, { role: 'small', size: 21, weight: 600, color: C.mute, maxW: RM - 1200, lh: 1.3, alpha: ep(t, 3.2, 3.6) });
   /* the board, from the dock to full size */
   const from = n === 1 ? FILM_RULE : FILM_DOCK, g = {}; for (const k of Object.keys(FILM_FULL)) g[k] = lerp(from[k], FILM_FULL[k], kFly);
   /* before 0.95 s the board is as the last slide's dock had it (the move before in play); then that move completes (its
@@ -358,13 +650,13 @@ for (let n = 1; n < FILM.moves.length; n++) {
 /* ============================== the underdog's rule (move 0's last slide) ==============================
    The bar against the giants (each row held by a flagship that gives another up; Theseus's column open), the rule, and the
    plan: the whole board, faint, with move 0 done and its link to move 1 lit. */
-S({ id: 'rule', ch: 'intro', theme: 'night', title: 'The underdog’s rule', settle: 9.6, src: ['exPiaknow', 'ntrTpuV4', 'vgnClick', 'exRtings', 'exEloshapes', 'ntrJauch'],
+S({ id: 'rule', ch: 'intro', theme: 'night', title: 'The underdog’s rule', settle: 9.6, src: ['exPiaknow', 'exRtings', 'exEloshapes', 'exXbabWeight', 'exNbcV4', 'ntrJauch'],
   draw: t => {
     header(t, 'The underdog’s rule');
-    captions(t, [[0.4, 'Each giant holds a row by giving up another. Theseus has no factory and no budget to out-spend them.'],
+    captions(t, [[0.4, 'Each giant fills a bar or two by giving others up. Theseus has no factory and no budget to out-spend them.'],
       [3.6, 'So it never trades. Each move is built so its gain pays for the next, and the gains compound.']]);
-    /* the bar: four rows, held by different flagships; Theseus's column open, each slot naming the move that fills it */
-    filmScoreboard(t, 1.0, LM, 292, 960, -1, { rh: 82, cT: 200 });
+    /* Theseus's loadout, empty: each bar names the moves that fill it and the flagship that holds its line (V2) */
+    lo_panel(t, LM, 300, 960, 0, { plan: true, rh: 82, a: ep(t, 0.9, 1.4), head: 'Theseus\u2019s loadout: the moves that fill each bar' });
     /* the rule */
     const rx = 1180, kR = ep(t, 3.4, 3.9);
     text('Never trade.', rx - 4, 410, { role: 'd2', size: 96, weight: 900, color: C.heroText, grad: C.heroGrad, caps: false, alpha: kR, rise: [3.4, 0.6], t });
@@ -395,6 +687,8 @@ if (FILM.on) {
     return { name: m ? 'Move ' + m.n + ': ' + m.name : '', n: list.indexOf(s) + 1, of: list.length, num: m ? m.n : 0 };
   };
   slideChrome = filmChrome;
+  /* the dock takes the label row's right end: the idea tags there step aside on the slides that carry it (V2) */
+  const chips0 = chips; chips = function (...a) { return lo_dockOn(curSlide()) ? 0 : chips0(...a); };
   updateBar = function () {
     const s = DECK.slides[APP.i], m = filmMove(s);
     $('count').textContent = (APP.i + 1) + ' / ' + DECK.slides.length;

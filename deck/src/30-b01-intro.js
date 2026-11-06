@@ -71,7 +71,7 @@ const B01_MICE = [
 const B01_MORE = {
   'finalmouse-ulx': { mAh: 250, V: 3.87, src: ['b01TpuUlx'] },
   'finalmouse-slx': { mAh: 250, src: ['b01SlxBatt'] },
-  'pulsar-x2f-crazylight': { g: 29.0, gBy: 'Pulsar', gEv: 'claim', mAh: 210, src: ['b01X2f', 'b01X2fWt'] }
+  'pulsar-x2f-crazylight': { mAh: 210, src: ['b01X2f', 'b01X2fWt', 'brockWeighed'] }   /* its weight: Brock's 29.5 g (exWeight; V2), Pulsar's listing 29 g \u00B1 2 */
 };
 
 /* ================================ reading the mice ================================ */
@@ -85,8 +85,8 @@ function b01_all() {
     const me = rv(m.weight_measured_g), measured = me != null && evOf(m.weight_measured_g) === 'measured';
     out.push(Object.assign({
       id: m.id, name: exShort(m.name), short: typeof ntr_mk === 'function' ? ntr_mk(m.name) : exShort(m.name), brand: m.brand, conn: m.connection === 'wired' ? 'wired' : 'wireless',
-      g: w ? w.g : null, gBy: measured ? 'RTINGS' : m.id === 'xbab-xa25' ? 'XBAB' : 'maker', gEv: w ? w.ev : 'claim',
-      L: rv(m.length_mm), W: rv(m.width_mm), H: rv(m.height_mm), h1k: rv(m.battery_claim_1k_h), mAh: rv(m.battery_mAh), V: null,
+      g: w ? w.g : null, gBy: w && w.by ? w.by : measured ? 'RTINGS' : m.id === 'xbab-xa25' ? 'XBAB' : 'maker', gEv: w ? w.ev : 'claim',
+      L: (exDims(m.id) || [])[0], W: (exDims(m.id) || [])[1], H: (exDims(m.id) || [])[2], h1k: rv(m.battery_claim_1k_h), mAh: rv(m.battery_mAh), V: null,
       price: (() => { const p = parseFloat(String(rv(m.price_usd))); return isFinite(p) ? p : null; })()
     }, more));
   }
