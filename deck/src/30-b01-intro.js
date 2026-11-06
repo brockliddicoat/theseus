@@ -427,7 +427,7 @@ function b01_tradeIcon(t, t0, kind, box, o = {}) {
    and figure. Then Theseus lands, whole and blue, giving up nothing. Frame one is already mid-compromise (M6). */
 const B01_STAGE = { box: [80, 384, 1010, 410], beat: 1.05, t0: -0.45, list: { x: 1180, y: 300, rh: 72, icon: [118, 60] }, fold: 7.4, strip: 852 };
 /* beat i starts at b01_beatT(i): the first is already playing at frame one and holds a little longer (the hook), then one a second */
-const b01_beatT = i => i <= 0 ? -0.35 : 1.15 + (i - 1) * 1.0;
+const b01_beatT = i => i <= 0 ? -0.35 : (typeof FILM !== 'undefined' && FILM.on) ? 1.45 + (i - 1) * 1.5 : 1.15 + (i - 1) * 1.0;   /* the film (V1): a flagship every 1.5 s, the first held to 1.45 s */
 /** the ledger list's row i (0..5; 6 = Theseus): its top y */
 const b01_rowY = i => B01_STAGE.list.y + i * B01_STAGE.list.rh + (i >= 6 ? 18 : 0);
 /** draw fn while its box flies from `from` to `to` (stage px), k 0..1: a zoom about a moving centre, so the drawing shrinks into
@@ -659,7 +659,7 @@ function b01_fold(t, t0) {
   });
 }
 S({
-  id: 'b01_compromise', ch: 'intro', theme: 'paper', title: 'Every flagship compromises', settle: 10.5,
+  id: 'b01_compromise', ch: 'intro', theme: 'paper', title: 'Every flagship compromises', get settle() { return typeof FILM !== 'undefined' && FILM.on ? 11.6 : 10.5; },
   replaces: ['flagships', 'thesis'],
   src: ['b01X3', 'b01X3Psn', 'b01X3Pcg', 'b01TpuHtsU', 'b01GwHtsU', 'b01Optical', 'clk_d2fp', 'ntrTpuV4', 'b01RtUlx', 'rtingsUlx', 'b01X2f', 'b01X2fWt', 'x2fCrazy', 'b01X2Trace', 'exXbabWeight', 'ntrStores', 'ntrRazerV4', 'nbcUlx', 'exRtings'],
   answers: [
@@ -675,7 +675,10 @@ S({
   ],
   draw: t => {
     header(t, 'Every flagship compromises');
-    captions(t, [[0.3, 'Six flagships, six trades: each one gives something up to win something else.'],
+    const filmOn = typeof FILM !== 'undefined' && FILM.on;
+    captions(t, filmOn ? [[0.3, 'Six flagships, six trades: each one gives something up to win something else.'],
+      [b01_beatT(6) - 0.1, 'Theseus has to give up nothing. Optimization over opinion: measure every trade, then design it out.']]
+      : [[0.3, 'Six flagships, six trades: each one gives something up to win something else.'],
       [6.1, 'Theseus gives up nothing. Optimization over opinion: measure every trade, then design it out.'],
       [7.7, 'Eight chapters, eight compromises: each trade lands in its chapter, and three more that most mice make.']]);
     const SB = B01_STAGE.box, n = B01_TRADES.length, Lt = B01_STAGE.list, tT = b01_beatT(n) + 0.05;
@@ -699,7 +702,7 @@ S({
       b01_bigTheseus(t, tT, SB);
       text('Nitrite Labs', LM, 312, { role: 'label', size: 22, color: C.heroText, alpha: kT });
       text('Theseus', LM - 2, 364, { role: 'h2', size: 50, color: C.heroText, grad: C.heroGrad, alpha: kT });
-      const kG = kT * (1 - ep(t, B01_STAGE.fold - 0.3, B01_STAGE.fold));
+      const kG = kT * (filmOn ? 1 : 1 - ep(t, B01_STAGE.fold - 0.3, B01_STAGE.fold));
       text('Gives up', LM, 813, { role: 'label', size: 22, color: C.heroText, alpha: kG });
       text('Nothing', LM - 3, 903, { role: 'd1', size: 88, weight: 800, track: -0.02, color: C.heroText, grad: C.heroGrad, alpha: kG, rise: [tT + 0.12, 0.6], t });
       /* no figure reads as a measurement it isn't (integrator, the cover's rule): Theseus's answers are its targets */
@@ -712,7 +715,7 @@ S({
       });
     }
     b01_ledgerList(t, { rowT: i => b01_beatT(i + 1) - 0.04, thsT: tT + 0.25 });
-    b01_fold(t, B01_STAGE.fold);
+    if (!filmOn) b01_fold(t, B01_STAGE.fold);   /* the revamp's chapter ledger: not in the film (V1), whose spine is the build board */
     source(t, 'Weights to 0.1 g: TechPowerUp\'s scale (HTS Ultra 8K, ± 1 g; UltralightX, 2023 medium, which it found to "flex" and "creak"), else makers\' (X3; X2F, Pulsar\'s 29 g ± 2; XA25). ' + b01_optPct() + ' and ' + b01_mechPct() + ', derived: Logitech\'s own 96 h optical against 104 h hybrid (G Pro X Superlight 2, 290 mAh, 1 khz) put two switches\' optics at 0.23 mA, on a Viper V4 Pro\'s 306 mAh over 180 h; a mechanical read, about 3 µA', { t0: 0.6 });
   }
 });

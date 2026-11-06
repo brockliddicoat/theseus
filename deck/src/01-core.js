@@ -297,7 +297,8 @@ function drawStr(s, x, y, o) {
 /** apply the role's case rules to a string */
 /** a number and its unit never part at a line break: '60 g' is glued with a no-break space */
 const GLUE = /(\d) (?=(?:g|ms|µs|us|ns|mm|µm|khz|kHz|Hz|MHz|h|s|min|%|mAh|mA|Wh|V|W|mW|N|gf|dB|dBm|C|°C|K|cycles|mm²)\b)/g;
-function prepare(s, o) { s = String(s); if (o.caps) s = caps(s); else if (o.sentence) s = sentence(s); if (s.indexOf('{') >= 0) s = s.replace(/[{}]/g, ''); return s.replace(GLUE, '$1\u00A0'); }
+function prepare(s, o) { s = String(s); if (s.indexOf('iaknow') >= 0) s = s.replace(/\{piaknow\}|\bpiaknow\b/g, 'Piaknow');   /* a name (Brock, F27: "capitalize the P in Piaknow, it's a name"; caps: PIAKNOW'S) */
+  if (o.caps) s = caps(s); else if (o.sentence) s = sentence(s); if (s.indexOf('{') >= 0) s = s.replace(/[{}]/g, ''); return s.replace(GLUE, '$1\u00A0'); }
 /** width of a string in the given style */
 function tw(s, o = {}) { o = sty(o); setFont(o); return measureStr(prepare(edTxt(s), o), o); }
 /** split text into lines that fit maxW */

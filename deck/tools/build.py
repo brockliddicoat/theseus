@@ -62,7 +62,9 @@ if 'only' in opt: sheets = [s for s in sheets if s == '12-00-ideas.js' or s == o
 extra = sorted(p.name for p in src.glob('14-*.js'))
 # the revamp (2026-11-05): one file per builder, deck/src/30-*.js; their slides replace old ones with { replaces: [ids] }
 revamp = sorted(p.name for p in src.glob('30-*.js'))
-main_slides = (['09-fillet-data.js'] if (src/'09-fillet-data.js').exists() else []) + sorted(p.name for p in src.glob('10-*.js')) + sheets + extra + revamp + (['13-sort.js'] if (src/'13-sort.js').exists() else [])
+# the film's manifest (V1, 2026-11-06, the v23 refinement): after every slide file, before the sort, which stands aside when it is on
+film = ['25-film.js'] if (src/'25-film.js').exists() else []
+main_slides = (['09-fillet-data.js'] if (src/'09-fillet-data.js').exists() else []) + sorted(p.name for p in src.glob('10-*.js')) + sheets + extra + revamp + film + (['13-sort.js'] if (src/'13-sort.js').exists() else [])
 out = ('main-' + opt['out'] + '.html') if 'out' in opt else 'main.html'
 # the film is 2D (Brock, 2026-11-06, F38.8): main embeds no 3D bundle; --with3d embeds it for development (3D via ?2d=0)
 if 'main' in which: build(out, 'Theseus', main_slides, dev, r3d='--with3d' in args)

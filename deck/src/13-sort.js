@@ -3,6 +3,8 @@
    A slide can ask for a place: { after: 'slideId' } or { before: 'slideId' } (same chapter or not), or { first: true }
    to open its chapter. A slide with { replaces: 'slideId' } removes that slide (used when a slide is rebuilt in a new file). */
 (function () {
+  /* the film's manifest (25-film.js) has already set the order: nothing to sort */
+  if (typeof FILM !== 'undefined' && FILM.on) return;
   const idx = s => DECK.chapters.findIndex(c => c.key === s.ch);
   /* replaces may be one id or a list (the revamp's new slides each replace the old slides they absorb); an old slide's
      place is kept for anything anchored after or before it: the anchor moves to the slide that replaced it */

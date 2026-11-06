@@ -212,7 +212,7 @@ const NTR_BAR_SPEED = [
   { cat: 'Click latency, wired', best: '72 µs', bv: 72, who: 'XBAB XA25, NC release', note: 'XBAB\'s analyzer, n = 500', ev: 'claim', tgt: '70 µs', tv: 70, tq: 'moving or still', better: 'low' },
   { cat: 'Click latency, wireless', best: '0.175 ms', bv: 0.175, who: 'VGN Dragonfly 3 Master GT', note: 'VGN, "as low as"', ev: 'claim', tgt: '0.1 ms', tv: 0.1, tq: 'or less', better: 'low' },
   { cat: 'Press to PC, with travel', sub: 'Same as the Starlight X', best: '2.0 ms', bv: 2.0, who: 'Finalmouse Starlight X', note: 'Own rig, pre-release', ev: 'claim', tgt: '2.0 ms', tv: 2.0, tq: 'on an outside rig', better: 'low' },
-  { cat: 'Report rate', sub: 'Wired and wireless', best: '8 khz', bv: 8, who: 'Wired and wireless', note: 'USB high speed, 125 µs', ev: 'datasheet', tgt: '8 khz', tv: 8, tq: 'wired and wireless', better: 'high' },
+  { cat: 'Report rate', sub: 'Wired and wireless', best: '8 khz', bv: 8, who: 'Wired and wireless', note: 'USB high speed, 125 µs', ev: 'datasheet', tgt: 'Dual 8khz', tv: 8, tq: 'wired and wireless', better: 'high' },   /* Brock, F27: "marker it as dual 8khz" (V1) */
   { cat: 'Lost reports rescued', sub: 'Same as Kunai Second Shot', best: '99 to 100%', bv: 99, who: 'Kunai Second Shot, 4 khz', note: 'Its developer, unreleased', ev: 'claim', tgt: '99%', tv: 99, tq: 'or more, at every rate', better: 'high' }
 ];
 /* Theseus doesn't exist yet, so its hours are derived, never measured (review item 10): the Jauch cell at the Viper V4 Pro's
@@ -274,10 +274,10 @@ function ntr_targets(t, rows, o) {
   });
 }
 S({
-  id: 'targets', ch: 'intro', theme: 'night', title: 'Targets, part one: speed', settle: 9,
+  id: 'targets', ch: 'intro', theme: 'night', title: 'Targets: speed', settle: 9,   /* was "part one": the film has no part two (targets2's rows belong to the moves that earn them; V1) */
   src: ['exPiaknow', 'kunai', 'xbab', 'ntrXbabClick', 'xbabFw', 'xbabSensorLock', 'vgnClick', 'pcgSlx', 'usbHs', 'ntrTpuV4'],
   draw: t => {
-    header(t, 'Targets, part one: speed');
+    header(t, 'Targets: speed');
     captions(t, [[0.6, 'For every speed figure, the best anyone has shown, and my target. Theseus matches or beats every one.'], [5.0, 'The big one is wireless motion: 0.14 ms, 59% under the fastest wireless mouse anyone has measured.']]);
     const m = NTR_BAR_SPEED.find(r => /wireless/.test(r.cat) && /Motion/.test(r.cat));
     ntr_targets(t, NTR_BAR_SPEED, { head: ['−' + fmtN(100 * (m.bv - m.tv) / m.bv, 0) + '%', 'latency', 'Wireless motion: ' + m.tgt + ' against ' + m.best + ', the fastest measured ({piaknow}, 8 khz)'] });

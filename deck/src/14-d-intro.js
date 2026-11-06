@@ -57,6 +57,15 @@ function ntr_lightest() {
   return best;
 }
 
+/** G-Wolves's wireless line on its own figures (the revamp's B01_MICE: the maker's weight and L × W × H as listed, two of them
+   weighed by TechPowerUp), for the density ranking (V1, 2026-11-06; Brock, F27 on ntr_densrank: "you also need to use eloshapes
+   to take g wolves mice into account for there weights and density, yes this will make the theseus look worse, but its more
+   honest") */
+function ntr_gwolves() {
+  if (typeof B01_MICE === 'undefined') return [];
+  return B01_MICE.filter(m => m.brand === 'G-Wolves' && m.conn === 'wireless' && m.L && m.W && m.H && m.g).map(m => {
+    const v = m.L * m.W * m.H / 1000; return { id: m.id, name: m.name, g: m.g, ev: m.gEv === 'measured' ? 'measured' : 'claim', box: { L: m.L, W: m.W, H: m.H, v }, v, rho: m.g / v, gw: true }; });
+}
 const ntr_ord = n => { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
 /* ---------- drawing helpers ---------- */
 /** a light that passes over a region once (o.per: again every per seconds): the keynote sweep */
@@ -124,6 +133,35 @@ function ntr_cab(x, yb, L, Wd, H, k, o = {}) {
   ntr_quad(F); G.stroke(); ntr_quad([F[3], F[2], Bk[2], Bk[3]]); G.stroke(); ntr_quad([F[1], Bk[1], Bk[2], F[2]]); G.stroke();
   G.restore();
   return { fw, fh, dx, dy, F, Bk };
+}
+/* ---------- outlines, not the detailed drawing (V1, 2026-11-06; Brock, F27: ntr_density "only use the outline or the
+   shape/silhouete instead of something so detailed"; ntr_sizewt "find an outline of the x2f to add to the box ... the theseus
+   should only be the shape outline"). Theseus's from the kit's simplified mouse (the scan's own outlines: MS_SIDE, MS_FRONT,
+   the top view); the X2F's the revamp's trace of Pulsar's own photo (B01_X2_HALF, cut at its 87.5 mm) ---------- */
+/** a mouse from above as points [l, w]: l along from the nose (0 to L mm), w across (-W/2 to W/2 mm) */
+function ntr_topPts(which) {
+  ntr_topPts.c = ntr_topPts.c || {}; if (ntr_topPts.c[which]) return ntr_topPts.c[which];
+  let pts;
+  if (which === 'x2f' && typeof B01_X2_HALF !== 'undefined') {
+    const cut = B01_X2F.cut, H = B01_X2_HALF, hw = y => { for (let i = 1; i < H.length; i++) if (H[i][0] >= y) { const [y0, w0] = H[i - 1], [y1, w1] = H[i]; return w0 + (w1 - w0) * (y - y0) / Math.max(1e-9, y1 - y0); } return H[H.length - 1][1]; };
+    const right = H.filter(q => q[0] < cut - 3).map(q => [q[0], q[1]]).concat([[cut - 1.2, hw(cut) - 0.4], [cut, hw(cut) - 2.4], [cut, 0]]);
+    pts = right.concat(right.slice(0, -1).reverse().map(([l, w]) => [l, -w]));
+  } else {
+    const V = msView('top'), P = V.outPts; let y0 = Infinity; for (const q of P) y0 = Math.min(y0, q[1]);
+    pts = P.map(([x, y]) => [y - y0, x]);
+  }
+  return (ntr_topPts.c[which] = pts);
+}
+/** stroke (and lightly fill) a closed outline of stage points, drawn on from its start as k goes 0 to 1 */
+function ntr_outline(Q, k, col, o = {}) {
+  if (k <= 0.003 || Q.length < 3) return;
+  let len = 0; for (let i = 0; i < Q.length; i++) { const a = Q[i], b = Q[(i + 1) % Q.length]; len += Math.hypot(b[0] - a[0], b[1] - a[1]); }
+  G.save(); G.lineJoin = 'round'; G.lineCap = 'round';
+  G.beginPath(); Q.forEach((q, i) => (i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]))); G.closePath();
+  if (o.fill) { G.globalAlpha = (o.a == null ? 1 : o.a) * E.out3(k); G.fillStyle = o.fill; G.fill(); }
+  G.globalAlpha = o.a == null ? 1 : o.a; G.strokeStyle = col; G.lineWidth = o.w || 2;
+  if (k < 1) G.setLineDash([len * E.io3(k), len * 2]);
+  G.stroke(); G.restore();
 }
 /** a soft shadow on the ground under something set down */
 function ntr_shadow(cx, cy, rx, ry, a) { if (a <= 0.003) return; G.save(); G.globalAlpha = a; G.fillStyle = inkA(TH ? 0.07 : 0.25); G.beginPath(); G.ellipse(cx, cy, rx, ry, 0, 0, TAU); G.fill(); G.restore(); }
@@ -220,9 +258,14 @@ S({
       G.restore();
     }
     /* the mouse, three times: plan on the lid, the side-button side on the left face, the nose on the right face */
-    ntr_onFace(t, 'top', p => P([p[0], B.y1, p[2]]), k, ep(t, 1.8, 2.6));
-    ntr_onFace(t, 'right', p => P([B.x1, p[1], p[2]]), k, ep(t, 2.2, 3.0));
-    ntr_onFace(t, 'front', p => P([p[0], p[1], B.z1]), k, ep(t, 2.6, 3.4));
+    /* as outlines (Brock, F27): the plan on the lid, the side on the side face, the front on the nose's face */
+    { const Lo = THESEUS.dims[0], Wo = THESEUS.dims[1], fy = y => B.y0 + (B.y1 - B.y0) * y / 39.9, cx = (B.x0 + B.x1) / 2;
+      const top = ntr_topPts('ths').map(([l, w]) => P([cx + w * (B.x1 - B.x0) / Wo, B.y1, B.z1 - l * (B.z1 - B.z0) / Lo]));
+      const zs = MS_SIDE.map(q => q[0]), z0 = Math.min(...zs), z1 = Math.max(...zs);
+      const side = MS_SIDE.map(([z, y]) => P([B.x1, fy(y), lerp(B.z0, B.z1, (z - z0) / (z1 - z0))]));
+      const front = MS_FRONT.map(([x, y]) => P([cx + x * (B.x1 - B.x0) / 62.4, fy(y), B.z1]));
+      const oc = { fill: inkA(0.07), w: 2 };
+      ntr_outline(top, ep(t, 1.8, 2.8), inkA(0.85), oc); ntr_outline(side, ep(t, 2.2, 3.2), inkA(0.85), oc); ntr_outline(front, ep(t, 2.6, 3.4), inkA(0.85), oc); }
     /* visible edges */
     const vis = [[bW, bLW], [bLW, bL], [bW, tW], [bLW, tLW], [bL, tL], [t0_, tL], [tL, tLW], [tLW, tW], [tW, t0_]];
     vis.forEach(([p, q], i) => line(p[0], p[1], lerp(p[0], q[0], kE(i + 3)), lerp(p[1], q[1], kE(i + 3)), { color: C.ink, w: 1.8, alpha: 0.9 }));
@@ -276,8 +319,8 @@ S({
       [5.6, `Theseus puts the same weight into ${fmtN(more, 0)}% more mouse, and at the same mass the bigger one feels lighter in the hand.`]]);
     const k = 3.45, gy = 700;
     const items = [
-      { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29, ev: 'claim', by: 'Pulsar', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 720, t0: 1.1 },
-      { key: 'ths', name: 'Theseus', g: THESEUS.mass, gs: THS.mass, ev: 'proposal', box: bx, rho: rhoT, x: 1200, t0: 2.7, hero: true }
+      { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29, gs: fmtN(X2F ? X2F.g : 29, 1), ev: 'claim', by: 'Pulsar', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 720, t0: 1.1 },
+      { key: 'ths', name: 'Theseus', g: THESEUS.mass, gs: fmtN(THESEUS.mass, 1), ev: 'proposal', box: bx, rho: rhoT, x: 1200, t0: 2.7, hero: true }
     ];
     /* the pointer brings each box in and sets it down */
     const lift = 210;
@@ -287,7 +330,10 @@ S({
       ntr_shadow(it.x + fw / 2 + dxp * 0.5, gy + 6, fw * 0.62, 16, a * kd);
       ntr_cab(it.x, y, B.L, B.W, B.H, k, {
         a, edge: it.hero ? C.hero : inkA(0.62), lw: it.hero ? 2 : 1.6,
-        face: it.hero ? aa => { const S0 = ntr_shellBox(); ntr_onFace(t, 'right', p => [it.x + (S0.z1 - p[2]) * k * (B.L / (S0.z1 - S0.z0)), y - (p[1] - S0.y0) * k * (B.H / (S0.y1 - S0.y0))], k, aa); } : null
+        /* on the lid, the mouse's own outline from above (Brock, F27: the X2F's outline in its box, Theseus's shape outline only) */
+        face: aa => { const c45 = k * 0.5 * Math.SQRT1_2, yt = y - B.H * k, Lo = it.hero ? THESEUS.dims[0] : B01_X2F.L, Wo = it.hero ? THESEUS.dims[1] : B01_X2F.W;
+          const Q = ntr_topPts(it.hero ? 'ths' : 'x2f').map(([l, w]) => { const d = (w / Wo + 0.5) * B.W; return [it.x + l * B.L / Lo * k + d * c45, yt - d * c45]; });
+          ntr_outline(Q, ep(t, it.t0 + 0.55, it.t0 + 1.35) * aa, it.hero ? C.hero : inkA(0.8), { fill: it.hero ? C.heroSoft : inkA(0.08), w: it.hero ? 2.4 : 2 }); }
       });
       /* under each box: the name, the weight and the box in one quiet line (the weights are the same: they do not lead), then the
          density, Theseus's in its colour (lower is better) */
@@ -304,7 +350,7 @@ S({
     /* the ground */
     line(680, gy + 1, RM, gy + 1, { color: C.hair, w: 1.5, alpha: ep(t, 0.4, 0.9) });
     /* the headline over the two boxes: how much more mouse the same weight makes (F14.10) */
-    ntr_hl(t, 5.6, 720, 400, '+' + fmtN(more, 0) + '%', 'more mouse', { size: 136, count: false, sub: `The same weight, ${X2F ? ntr_g(X2F.g) : 29} g and ${THS.mass} g: Theseus's density is ${fmtN(100 * (1 - rhoT / (X2F ? X2F.rho : 0.1717)), 0)}% lower. Lower is better.`, maxW: RM - 720 });
+    ntr_hl(t, 5.6, 720, 400, '+' + fmtN(more, 0) + '%', 'more mouse', { size: 136, count: false, sub: `The same weight, ${fmtN(X2F ? X2F.g : 29, 1)} g and ${fmtN(THESEUS.mass, 1)} g: Theseus's density is ${fmtN(100 * (1 - rhoT / (X2F ? X2F.rho : 0.1717)), 0)}% lower. Lower is better.`, maxW: RM - 720 });
     /* the words, in the left column */
     ntr_stack(t, LM, 280, 560, [
       { t0: 5.8, gloss: true, a: 'Size–weight illusion', b: 'Of two things with the same mass, the smaller one feels heavier. Charpentier measured it in 1891.' },
@@ -321,23 +367,25 @@ S({
   src: ['exRtings', 'exEloshapes', 'ntrX2f', 'ntrPwnTrinity', 'exXbabWeight'],
   draw: t => {
     header(t, 'Ranked by density');
-    const R = ntr_dens({ measured: true, keep: ['pulsar-x2f-crazylight'] });
+    const R = ntr_dens({ measured: true, keep: ['pulsar-x2f-crazylight'] }).concat(ntr_gwolves());
     const byW = R.slice().sort((a, b) => a.g - b.g || a.rho - b.rho), byD = R.slice().sort((a, b) => a.rho - b.rho || a.g - b.g);
     byW.forEach((r, i) => { r.rw = i; }); byD.forEach((r, i) => { r.rd = i; });
     const nb = byD.find(r => !r.hero), x2f = R.find(r => r.id === 'pulsar-x2f-crazylight'), da = R.find(r => r.id === 'razer-deathadder-v4-pro');
     if (nb) nb.ref = true; if (x2f) x2f.story = true; if (da) da.story = true;
     const ord = ntr_ord;
+    const th0 = R.find(r => r.hero), first = byD[0];
     captions(t, [[0.6, `The same ${R.length} wireless mice, ranked twice: by weight on the left, by density on the right.`],
-      [5.8, (x2f ? `The X2F falls from ${ord(x2f.rw + 1)} to ${ord(x2f.rd + 1)}: it is light because it is short. ` : '') + (da ? `The DeathAdder V4 Pro climbs from ${ord(da.rw + 1)} to ${ord(da.rd + 1)}.` : '')]]);
-    const n = R.length, y0 = 374, y1 = 926, p = (y1 - y0) / (n - 1), xL = 560, xR = 1352, Y = i => y0 + i * p;
+      [5.8, (x2f ? `The X2F falls from ${ord(x2f.rw + 1)} to ${ord(x2f.rd + 1)}: it is light because it is short. ` : '') + (th0 && first && !first.hero ? `Theseus is ${ord(th0.rd + 1)}, behind only the ${first.name} on its maker\u2019s figure.` : da ? `The DeathAdder V4 Pro climbs from ${ord(da.rw + 1)} to ${ord(da.rd + 1)}.` : '')]]);
+    /* more rows since G-Wolves's line came in (V1): the list runs taller and its type is the deck's smallest */
+    const n = R.length, dense = n > 30, y0 = dense ? 352 : 374, y1 = dense ? 948 : 926, p = (y1 - y0) / (n - 1), xL = 560, xR = 1352, Y = i => y0 + i * p, fs = dense ? 19 : 22, fv = dense ? 19 : 21;
     const a0 = ep(t, 0.3, 0.8), th = R.find(r => r.hero);
     text('By weight, lightest first', xL - 14, 300, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: a0 });
     text('By density, lowest first', xR + 14, 300, { role: 'label', size: 21, color: C.mute, alpha: a0 });
     /* the headline, over the middle of the chart, where no line runs yet (F14.10) */
-    if (th) ntr_hl(t, 5.8, (xL + xR) / 2 - 150, 360, ntr_ord(th.rd + 1), 'by density', { size: 96, count: false });
+    if (th) ntr_hl(t, 5.8, (xL + xR) / 2 - 150, dense ? 334 : 360, ntr_ord(th.rd + 1), 'by density', { size: 96, count: false });
     /* the XBAB XA25, shown above the density column and kept out of the ranking: it is wired (Brock, F12.3). Its density from
        XBAB's own scale weight in its maker's box */
-    { const xb = ntr_box('xbab-xa25'), xw = exWeight('xbab-xa25'), rho = xb && xw ? xw.g / xb.v : 0.093, kx = ep(t, 6.2, 6.7), gy = y0 - 46;
+    { const xb = ntr_box('xbab-xa25'), xw = exWeight('xbab-xa25'), rho = xb && xw ? xw.g / xb.v : 0.093, kx = ep(t, 6.2, 6.7), gy = y0 - (dense ? 30 : 46);
       if (kx > 0) { text(ntr_rf(rho), xR + 14, gy + 8, { font: 'mono', size: 21, weight: 600, color: C.faint, alpha: kx });
         text('XBAB XA25', xR + 96, gy + 8, { role: 'small', size: 24, weight: 600, color: C.faint, alpha: kx });
         text('Wired: not ranked', RM, gy + 8, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: kx });
@@ -356,17 +404,17 @@ S({
     R.forEach(r => {
       const kl = ep(t, 0.5 + r.rw * 0.05, 0.9 + r.rw * 0.05), kr = ep(t, lineT(r) + 0.8, lineT(r) + 1.2);
       const strong = r.hero || r.ref || r.story;
-      const st = { role: 'small', size: 22, weight: strong ? 700 : 560, color: r.hero ? C.heroText : r.ref ? C.secondText : strong ? C.ink : C.mute };
-      const ya = Y(r.rw) + 8, yb = Y(r.rd) + 8;
+      const st = { role: 'small', size: fs, weight: strong ? 700 : 560, color: r.hero ? C.heroText : r.ref ? C.secondText : strong ? C.ink : C.mute };
+      const ya = Y(r.rw) + (dense ? 7 : 8), yb = Y(r.rd) + (dense ? 7 : 8), gs = fmtN(r.g, 1) + ' g';   /* one precision for every weight (F27: the X2F's 29.0, Theseus's 29.3) */
       text(pad2(r.rw + 1), LM, ya, { font: 'mono', size: 19, weight: 500, color: C.faint, alpha: kl });
       text(r.name, LM + 40, ya, Object.assign({ alpha: kl }, st));
-      text((r.hero ? THS.mass : ntr_g(r.g)) + ' g', xL - 14, ya, { font: 'mono', size: 21, weight: strong ? 700 : 500, color: strong ? C.ink : C.mute, align: 'right', alpha: kl });
-      if (r.ev !== 'measured') evDot(xL - 22 - tw((r.hero ? THS.mass : ntr_g(r.g)) + ' g', { font: 'mono', size: 21, weight: 700 }) - 6, ya - 7, r.ev, 5, kl);
-      text(ntr_rf(r.rho), xR + 14, yb, { font: 'mono', size: 21, weight: strong ? 700 : 500, color: strong ? C.ink : C.mute, alpha: kr });
+      text(gs, xL - 14, ya, { font: 'mono', size: fv, weight: strong ? 700 : 500, color: strong ? C.ink : C.mute, align: 'right', alpha: kl });
+      if (r.ev !== 'measured') evDot(xL - 22 - tw(gs, { font: 'mono', size: fv, weight: 700 }) - 6, ya - 6, r.ev, 5, kl);
+      text(ntr_rf(r.rho), xR + 14, yb, { font: 'mono', size: fv, weight: strong ? 700 : 500, color: strong ? C.ink : C.mute, alpha: kr });
       text(r.name, xR + 96, yb, Object.assign({ alpha: kr }, st));
       const mv = r.rw - r.rd, ms = mv > 0 ? '▲' + mv : mv < 0 ? '▼' + (-mv) : '–';
       text(ms, RM, yb, { font: 'mono', size: 19, weight: strong ? 700 : 500, color: strong ? (mv > 0 ? C.ink : C.ink2) : C.faint, align: 'right', alpha: kr });
     });
-    source(t, 'Weights: RTINGS; the X2F\'s is Pulsar\'s, the XA25\'s XBAB\'s own scale. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is 119.3 × 62.4 × 39.9 mm. Left out: the ULX and the MCHOSE L7 Ultra.', { t0: 6.0 });
+    source(t, 'Weights: a scale\'s (RTINGS, TechPowerUp, XBAB) or, with an open dot, the maker\'s own. Boxes: the makers\' L × W × H (EloShapes). The ULX and the MCHOSE L7 Ultra left out.', { t0: 6.0 });
   }
 });
