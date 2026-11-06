@@ -22,6 +22,7 @@ Object.assign(SRC, {
   b11Unitar: { t: 'UNITAR and ITU, Global E-waste Monitor 2024: 62 million tonnes of e-waste in 2022, 22.3 % documented as collected and recycled', u: 'https://www.unitar.org/about/news-stories/press/global-e-waste-monitor-2024-electronic-waste-rising-five-times-faster-documented-e-waste-recycling' },
   b11PsX3: { t: 'ProSettings, Logitech G Pro X3 SUPERSTRIKE review (6 Oct 2026): in the box: the mouse, grip tape, a USB receiver, a USB-C to A adapter, documentation, a POWERPLAY puck; "Replacement mouse feet feel like a bare minimum"', u: 'https://prosettings.net/reviews/logitech-g-pro-x3-superstrike/' },
   b11Jnd: { t: 'Datacolor (Techkon), A simple review of CIE ΔE colour difference equations: "The barely noticeable difference (JND) of dE is usually 1"', u: 'https://techkon.datacolor.com/a-simple-review-of-cie-de-color-difference-equations/' },
+  b11TtV4: { t: 'TweakTown, Razer Viper V4 Pro review: in the box: the mouse, the dongle, a cable, grip tape, product information (no screwdriver, no spare skates; Profesional Review lists the same)', u: 'https://www.tweaktown.com/reviews/11398/razer-viper-v4-pro-wireless-gaming-mouse-built-for-competition/index.html' },
   b11Brock: { t: 'Brock Liddicoat, In Pursuit of an Objectively Better Mouse: #52 screws not under the skates ("prevent skate waste"); #54 the board\'s screws inserted from the bottom ("easier to access for disassembly"); #63 art on the board, constantly visible with no bottom plate; #71 the battery plug turned so owners do their own battery replacements; silicone bands, "adhesive usually gets ruined if you ever have to change the battery"; #72 an envelope with a trifold display that doubles as the manual; #73 a screwdriver in the box; #74 a laminated satin paper battery cover; #9 the combination drive; one screw size for everything; "with metal on plastic even the tiniest difference in the angle you screw it will turn the screw into a bore"', u: '', n: 'His own design: no tag.' }
 });
 
@@ -286,7 +287,7 @@ function b11_tape(t, t0, x, y, w, h, o = {}) {
    pull 0..1; o = { hole (the ground colour) }. Returns stage points ---------- */
 function b11_plugMM(kind, pull, o = {}) {
   const T = b11_tone(), nyl = TH ? '#FFFFFF' : '#D8D8D8', ne = 'rgba(16,17,20,0.6)', out = {};
-  pcbSec(-16, 9, 0, 1.0, { brk: [1, 1], mask: '#141518' });
+  pcbSec(-16, 9, 0, 1.0, { brk: [1, 1], mask: kind === 'side' ? '#16171A' : C.comp });
   const pad = (x0, x1, lift, bad) => { G.fillStyle = '#C9A15C'; G.fillRect(x0, -0.05, x1 - x0, 0.05); solid(() => { G.beginPath(); G.moveTo(x0 - 0.15, 0); G.quadraticCurveTo(x0, -0.25 - lift, x0 + 0.25, -0.3 - lift); G.lineTo(x1 - 0.25, -0.3 - lift); G.quadraticCurveTo(x1, -0.25 - lift, x1 + 0.15, 0); G.closePath(); }, MT.tin, [x0, -0.4 - lift, x1 - x0, 0.4 + lift], { lw: 0.8 }); if (bad > 0.01) { ga(bad); G.fillStyle = C.bad; G.fillRect(x0 - 0.1, -0.12, x1 - x0 + 0.2, 0.16); ga(1); } };
   const wires = (x0, y0, dx, dy, len) => { OWN_WIRE.forEach((c, i) => { const oy = (i - 1) * 0.42; G.beginPath(); G.moveTo(x0, y0 + oy); G.bezierCurveTo(x0 + dx * len * 0.4, y0 + oy, x0 + dx * len * 0.7, y0 + oy + dy * len * 0.3, x0 + dx * len, y0 + oy + dy * len); G.strokeStyle = c; G.lineWidth = lw(5); G.lineCap = 'round'; G.stroke(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = lw(1); G.stroke(); }); };
   if (kind === 'side') {
@@ -360,26 +361,6 @@ function b11_battSecMM(kind, k, o = {}) {
   return out;
 }
 
-/* ---------- the lab: every helper above on one page, for checking (only when the URL asks: &b11lab=1) ---------- */
-if (typeof location !== 'undefined' && /b11lab=1/.test(location.search)) S({
-  id: 'b11_lab', ch: 'own', theme: 'paper', title: 'b11 lab', settle: 6,
-  draw: t => {
-    header(t, 'b11 lab');
-    ['heat', 'spudger', 'tweezers', 'driver', 'iron', 'box'].forEach((k, i) => part(120 + (i % 3) * 300, 330 + Math.floor(i / 3) * 110, 3.2, () => b11_toolMM(k, { hot: k === 'heat' || k === 'iron' ? 1 : 0, t })));
-    b11_vickers(t, 0.2, 1000, 280, 800, 330);
-    part(200, 620, 70, () => b11_headTopMM({ dmg: 1, rot: 0.2, bitA: 1 }));
-    part(420, 620, 70, () => b11_headTopMM({ dmg: 0.63, rot: 0.2, bitA: 0 }));
-    part(640, 640, 60, () => b11_headSecMM({ lift: 0.3, dmg: 1, turn: t }));
-    b11_dial(860, 640, 80, 82.8, { col: C.comp, lost: true, label: 'Plastic' });
-    b11_dial(1060, 640, 80, 98.6, { col: C.hero, label: 'Brass' });
-    part(1300, 700, 70, () => b11_flankN(4, 0.5, {}));
-    b11_tape(t, 0.2, 1480, 560, 360, 220);
-    part(300, 880, 18, () => b11_plugMM('side', clamp(t / 4)));
-    part(760, 880, 18, () => b11_plugMM('top', clamp(t / 4)));
-    part(1150, 860, 9, () => b11_battSecMM('glue', clamp(t / 4), { heat: 1 }));
-    part(1600, 860, 9, () => b11_battSecMM('bands', clamp(t / 5)));
-  }
-});
 
 /* ============================== the mouse, side-on, with what is inside (b11_card, b11_repair) ==============================
    Drawn in mouseSimple('left')'s frame (mm: nose left, x = −z, y = −height, the pad at y = 0), over the kit's outline, so
@@ -401,7 +382,7 @@ const B11_SIDE = {
   rivalSkates: [[37, 52], [-6, 6], [-52, -37]], rivalScrews: [44, 0, -44, 21, -23], rivalHidden: 3, parting: 9.3
 };
 function b11_board() { const b = msLive().board; return { z0: b[1], z1: b[3] }; }
-function b11_batt() { const B = MS_BATTERY; return { z0: -(B[1] + B[3]), z1: -B[1], h0: 5.05, h1: 9.05 }; }
+function b11_batt() { const B = MS_BATTERY, P = KEY_PARTS.battery; return { z0: -(B[1] + B[3]), z1: -B[1], h0: P.yMid - P.t / 2, h1: P.yMid + P.t / 2 }; }   /* plan 5 (KEY_PARTS), as mouseSimple draws it */
 /** a screw seen side-on (a fastener: not hatched): head at the bottom (y = hy, mm height of the head's bearing face), shank
    up, len mm; a quiet grey, titanium */
 function b11_screwSide(x, hy, len, o = {}) {
@@ -434,7 +415,7 @@ function b11_theseusInside(o = {}) {
   /* the board and everything on it comes down together */
   xsave(); xmove(0, drop);
   G.beginPath(); G.rect(-B.z1, -B11_SIDE.boardTop, B.z1 - B.z0, B11_SIDE.boardTop - B11_SIDE.boardBot);
-  G.fillStyle = hi.board ? mix('#1C1D21', hi.board, 0.45) : '#1C1D21'; G.fill(); G.strokeStyle = hi.board || (TH ? 'rgba(17,17,17,0.8)' : 'rgba(235,235,235,0.5)'); G.lineWidth = lw(hi.board ? 2 : 1); G.stroke();
+  G.fillStyle = hi.board ? mix('#16171A', hi.board, 0.45) : '#16171A'; G.fill(); G.strokeStyle = hi.board || (TH ? 'rgba(17,17,17,0.8)' : 'rgba(235,235,235,0.5)'); G.lineWidth = lw(hi.board ? 2 : 1); G.stroke();
   /* the battery's plug at the board's back edge, facing the tail (F26.4) */
   G.beginPath(); G.rect(-0.2 - 4.25, -B11_SIDE.boardTop - 3, 4.25, 3); G.fillStyle = TH ? '#FFFFFF' : '#D8D8D8'; G.fill(); G.strokeStyle = T.edge; G.lineWidth = lw(0.9); G.stroke();
   /* the main switch under the left trigger, standing on its claw sockets: the GT01 drawn as the click chapter draws it */
@@ -469,7 +450,7 @@ function b11_rivalInside(o = {}) {
   const zs = MS_SIDE.filter(p => Math.abs(p[1] - par) < 1.0).map(p => p[0]), pz0 = Math.min(...zs), pz1 = Math.max(...zs);
   if (lift < 0.2) mmLine([[-pz1 + 0.6, -par], [-pz0 - 0.6, -par]], inkA(0.55), 1.3);
   /* the board on the bottom shell's posts; the battery glued on a pad behind it */
-  G.fillStyle = '#1C1D21'; G.fillRect(-B.z1, -B11_SIDE.boardTop, B.z1 - B.z0, B11_SIDE.boardTop - B11_SIDE.boardBot);
+  G.fillStyle = C.comp; G.fillRect(-B.z1, -B11_SIDE.boardTop, B.z1 - B.z0, B11_SIDE.boardTop - B11_SIDE.boardBot);
   G.fillStyle = TH ? '#3A3B40' : '#141518'; G.fillRect(-Bt.z1 + 1, -Bt.h0, Bt.z1 - Bt.z0 - 2, 0.6);
   G.beginPath(); pathRR(-Bt.z1, -Bt.h1 - 0.6, Bt.z1 - Bt.z0, Bt.h1 - Bt.h0, 0.8); G.fillStyle = TH ? '#C9CDD3' : '#7E848C'; G.fill(); G.strokeStyle = T.edge; G.lineWidth = lw(1); G.stroke();
   /* the switch on the board, its three pins soldered through it */
@@ -507,41 +488,8 @@ function b11_rivalInside(o = {}) {
 function b11_flipX() { G.scale(-1, 1); const m = XF.m; m[0] = -m[0]; m[1] = -m[1]; }
 /** the part() placement that fits a kit view into a stage box: { x, y, s } */
 function b11_fit(box, view, pad = 0.06) { const V = msView(view), c = camFit(V.box, box, pad); return { x: box[0] + box[2] / 2 - c.cx * c.s, y: box[1] + box[3] / 2 - c.cy * c.s, s: c.s }; }
-if (typeof location !== 'undefined' && /b11lab=1/.test(location.search)) S({
-  id: 'b11_lab2', ch: 'own', theme: 'paper', title: 'b11 lab 2', settle: 6,
-  draw: t => {
-    header(t, 'b11 lab 2');
-    const A = b11_fit([80, 300, 860, 360], 'left'), Bf = b11_fit([980, 300, 860, 360], 'left');
-    part(A.x, A.y, A.s, () => b11_rivalInside({ lift: 14 * clamp((t - 2) / 2), skatesOff: clamp(t / 2), heat: 1, screwsOut: clamp((t - 1) / 1), ribbon: clamp((t - 2) / 2), melt: clamp((t - 4) / 1), swOut: 0 }));
-    part(Bf.x, Bf.y, Bf.s, () => { mouseSimple('left', { show: [] }); b11_theseusInside({ drop: 10 * clamp((t - 3) / 1), out: [clamp((t - 1) / 1), clamp((t - 1.5) / 1)], swOut: 6 * clamp((t - 4.5) / 1) }); });
-    part(A.x, A.y + 420, A.s, () => b11_rivalInside({}));
-    part(Bf.x, Bf.y + 420, Bf.s, () => { mouseSimple('left', { show: ['skates'] }); b11_theseusInside({}); });
-  }
-});
 
 
-/* ---------- the job's tools as a list that grows: each tool works where it is needed on the drawing, then settles into its
-   row with its name. items = [{ kind, at: [x, y] (where it works), ang, sAt (its scale there), t0, t1 (at work), hot, name,
-   note, strike (time it is struck) }]; (x, y) = the first row's top left; rh = row height ---------- */
-function b11_toolList(t, x, y, items, o = {}) {
-  const rh = o.rh || 66, s = o.s || 1.6, iw = 112;
-  items.forEach((it, i) => {
-    if (t < it.t0) return;
-    const ry = y + i * rh + rh / 2, L = (B11_TOOL[it.kind] || {}).len || 50, fly = ep(t, it.t1, it.t1 + 0.45, E.cam), aIn = ep(t, it.t0, it.t0 + 0.25);
-    const home = [x + (iw - L * s) / 2, ry];
-    const p = it.at ? [lerp(it.at[0], home[0], fly), lerp(it.at[1], home[1], fly)] : home;
-    const ang = it.at ? lerp(it.ang || 0, 0, fly) : 0, sc = it.at ? lerp(it.sAt || s, s, fly) : s;
-    const hot = (it.hot || 0) * ep(t, it.t0 + 0.1, it.t0 + 0.4) * (1 - fly);
-    const ks = it.strike != null ? ep(t, it.strike, it.strike + 0.4) : 0;
-    part(p[0], p[1], sc, () => b11_toolMM(it.kind, { hot, t }), { alpha: aIn * (1 - 0.6 * ks), rot: ang });
-    const kn = ep(t, it.t1 + 0.25, it.t1 + 0.55);
-    if (kn > 0) {
-      const col = it.hero ? C.heroText : mix(C.ink, TH ? '#898989' : '#6D6D6D', ks), r = text(it.name || B11_TOOL[it.kind].name, x + iw + 22, ry + 2, { role: 'small', size: 26, weight: 700, color: col, alpha: kn });
-      if (it.note) text(it.note, x + iw + 22 + r.w + 14, ry + 2, { role: 'small', size: 23, weight: 600, color: it.noteBad && !ks ? C.red : C.mute, alpha: kn * (1 - 0.4 * ks) });
-      if (ks > 0) line(x - 6, ry - 6, x - 6 + (iw + 34 + r.w + (it.note ? tw(it.note, { role: 'small', size: 23, weight: 600 }) + 14 : 0)) * ks, ry - 6, { color: C.mute, w: 2.5 });
-    }
-  });
-}
 /** the mouse from below, small, for "where the screws are": most mice (pads over the screws) or Theseus (the kit's dots,
    the four board screws between them). mm, the kit's 'bottom' frame. o = { rival, skatesOff (0..1), screwsOut (0..1),
    lit (0..1: the screws lit) } */
@@ -577,15 +525,6 @@ function b11_underMM(o = {}) {
   });
 }
 
-if (typeof location !== 'undefined' && /b11lab=1/.test(location.search)) S({
-  id: 'b11_lab3', ch: 'own', theme: 'night', title: 'b11 lab 3', settle: 6,
-  draw: t => {
-    header(t, 'b11 lab 3');
-    view3D('pcb', t, 80, 280, 700, 700, { view: 'bottom', view2d: 'bottom' });
-    view3D('pcb', t, 820, 280, 500, 500, { view: 'bottom', view2d: 'bottom', zoom: 3.2, target: [14.59, 4, -2.25] });
-    view3D('claw', t, 1360, 280, 460, 500, { view: 'front', view2d: 'front', insert: clamp(t / 4) });
-  }
-});
 
 /* ---------- step 3 of the job, close: the switch on its board ----------
    most mice: a switch soldered through the board (swMM, the deck's D2F-class switch), the iron melting its joints (melt
@@ -594,7 +533,7 @@ if (typeof location !== 'undefined' && /b11lab=1/.test(location.search)) S({
    the board's top face, y down */
 function b11_switchSoldered(melt, up) {
   const T = b11_tone(); xsave(); xmove(-6.4, 0);
-  pcbSec(-2.6, 15.4, 0.2, 1.2, { holes: SWG.pins });
+  pcbSec(-2.6, 15.4, 0.2, 1.2, { holes: SWG.pins, mask: C.comp });
   xsave(); xmove(0, -up); swMM({ press: 0 }); xrest();
   const m = clamp(melt), gone = clamp(up / 1.2);
   for (const x of SWG.pins) {
@@ -610,7 +549,7 @@ function b11_switchSoldered(melt, up) {
 }
 function b11_switchClaws(up) {
   const holes = [-5.08, 0, 5.08];
-  pcbSec(-9.4, 9.4, 0, 1.2, { holes, mask: '#141518' });
+  pcbSec(-9.4, 9.4, 0, 1.2, { holes, mask: '#16171A' });
   /* the sockets: a barrel pressed into each plated hole, a flange on the top face, six fingers inside (two seen) */
   for (const x of holes) {
     solid(() => { G.beginPath(); G.moveTo(x - 0.95, -0.18); G.lineTo(x + 0.95, -0.18); G.lineTo(x + 0.95, 0.05); G.lineTo(x + 0.7, 0.05); G.lineTo(x + 0.7, 1.95); G.lineTo(x + 0.45, 2.15); G.lineTo(x - 0.45, 2.15); G.lineTo(x - 0.7, 1.95); G.lineTo(x - 0.7, 0.05); G.lineTo(x - 0.95, 0.05); G.closePath(); }, MT.brass, [x - 0.95, -0.18, 1.9, 2.33], { lw: 0.8 });
@@ -619,6 +558,35 @@ function b11_switchClaws(up) {
   }
   xsave(); xmove(0, -up); clk_gt01MM({ press: 0, clear: false, board: false }); xrest();
 }
+/* ============================== b11_card: the chapter card (replaces owncard) ============================== */
+/* The compromise most mice make here, "Glued, soldered, thrown away", in red; the answer lands in blue. The part: the mouse
+   cut open side-on: most mice (the battery glued, the switch soldered, the skates over the screws, a ribbon between the
+   shells) turning into Theseus's (the battery in bands, the switch in claw sockets, four screws from below). It picks up the
+   battery from b07_balance. */
+function b11_cardPart(t, box, kt) {
+  const F = b11_fit([box[0] + 20, box[1] + 30, box[2] - 40, box[3] - 60], 'left', 0.05), k = ep(kt, 0, 1);
+  if (k < 1) part(F.x, F.y, F.s, () => b11_rivalInside({ a: 1 - k, heat: 0, melt: 0 }), { alpha: 1 - k });
+  if (k > 0) part(F.x, F.y, F.s, () => { mouseSimple('left', { show: [], alpha: k }); b11_theseusInside({ a: k, hi: { battery: C.hero, board: C.hero } }); }, { alpha: k });
+  /* what each side is, named under the drawing */
+  const y = F.y + 64;
+  text('Glued battery, soldered switches, screws under the skates', box[0] + box[2] / 2, y, { role: 'small', size: 22, weight: 650, color: C.red, align: 'center', alpha: (1 - k) * ep(t, 0.6, 1.0), maxW: box[2] });
+  text('A battery in bands, switches in sockets, four screws from below', box[0] + box[2] / 2, y, { role: 'small', size: 22, weight: 650, color: C.heroText, align: 'center', alpha: k, maxW: box[2] });
+}
+S({
+  id: 'b11_card', ch: 'own', card: true, first: true, theme: 'night', title: 'Made to last, and to open', settle: 5.5, replaces: ['owncard'],
+  answers: [
+    ['owncard (not rated): the chapter card', 'Rebuilt in the kit\'s chapter-card family: the compromise most mice make here, "Glued, soldered, thrown away", in red, struck as "Made to last, and to open" lands in blue; the part is the mouse cut open side-on, most mice\'s insides (glued battery, soldered switch, screws under the skates) turning into Theseus\'s (battery in bands, switches in sockets, four screws from below); the seven slides listed.'],
+    ['Brief: "glued, soldered, thrown away"', 'The card\'s red line, as the ledger has it.']
+  ],
+  draw: t => {
+    chapterCard2(t, {
+      ch: 'own', compromise: 'Glued, soldered, thrown away', answer: 'Made to last, and to open', turn: 2.1,
+      list: [['repair', 'Made to be opened'], [9, 'Titanium screws'], [101, 'Brass inserts'], ['wear', 'Thread wear'], [71, 'A battery you can unplug'], [63, 'Art on the board'], [72, 'The driver in the box']],
+      part: (tt, box, kt) => b11_cardPart(tt, box, kt)
+    });
+  }
+});
+
 /* ============================== b11_repair: made to be opened ============================== */
 /* The job: swap a worn main switch, in three steps (open it, reach the board, free the switch), on most mice (top row, as
    iFixit lays it out for the Logitech G Pro Wireless, b11Gpw) and on Theseus (bottom row), each step in the same camera on
@@ -651,7 +619,7 @@ S({
   replaces: ['repair'], src: ['b11Gpw', 'b11TpuV3', 'b11GpxOpen', 'b11Hakko', 'b11Brock'],
   answers: [
     ['repair: rated 8, no note', 'Kept what earned the 8 (what wears out and what each fix takes, the driver in the box) and rebuilt it problem first as a demonstration: the same switch swap done on a Logitech G Pro Wireless as iFixit lays it out, then on Theseus, step by step, each step in the same camera on both.'],
-    ['Brief: "What breaks, and what you need to fix it: a driver, no heat, no solder"', 'Top row: heat and five peeled skates, a ribbon between the shells, solder melted with an iron at 350 °C, five tools kept in their cells. Bottom row: four screws from below, the board down on its plugs, the switch pulled from its claw sockets, one driver. Verdict 5 → 1 tools, "No heat, no solder, nothing peeled".'],
+    ['Brief: "What breaks, and what you need to fix it: a driver, no heat, no solder"', 'Top row: heat and five peeled skates, a ribbon between the shells, solder melted with an iron at 350 °C, the tools kept in their cells. Bottom row: four screws from below, the board down on its plugs, the switch pulled from its claw sockets, one driver. Verdict 4 → 1 (the four tools iFixit requires; its optional heat gun said, not counted), with iFixit\'s "Difficult, 40 to 50 minutes" beside it; "No heat, no solder, nothing peeled".'],
     ['Idea #52: screws not under the skates', 'Open it: the rival\'s skates are heated and peeled to reach the screws, and set aside in red (new ones to buy); Theseus\'s four screws sit between its skates, which stay on.'],
     ['Idea #54: the board\'s screws from below', 'Reach the board: once its four screws are out, Theseus\'s board comes down on its plugs; the shell is never split and there is no ribbon to tear.'],
     ['Idea #14: hot-swap claw sockets', 'Free the switch: the GT01 pulls straight out of three claw sockets (pointer). The sockets close up are the Clicks chapter\'s (b03_hotswap), so this slide does not repeat them.'],
@@ -733,7 +701,8 @@ S({
       note(1, 1, R.drop + 0.25, 'The board comes down on its plugs', false, null);
       note(2, 1, R.tsw[0] + 0.2, 'Claw sockets: it pulls straight out', false, null);
     }
-    verdict(t, R.verdict, 1120, 922, { from: 5, to: 1, label: 'Tools to swap a worn switch', better: 'lower', net: false, size: 100, maxW: 720 });
+    verdict(t, R.verdict, 1120, 922, { from: 4, to: 1, label: 'Tools iFixit lists to swap a worn switch', better: 'lower', net: false, size: 116, maxW: 720 });
+    text('Rated Difficult by iFixit: 40 to 50 minutes, with the four tools and an optional heat gun for the skates.', 300, 846, { role: 'small', size: 24, weight: 650, color: C.ink2, maxW: 780, lh: 1.3, alpha: ep(t, R.verdict + 0.4, R.verdict + 0.8) });
     text('No heat, no solder, nothing peeled', 1330, 898, { role: 'small', size: 27, weight: 750, color: C.heroText, alpha: ep(t, R.verdict + 1.3, R.verdict + 1.7) });
     text('Swap it at your desk and keep the mouse', 1330, 934, { role: 'small', size: 24, weight: 650, color: C.ink2, alpha: ep(t, R.verdict + 1.6, R.verdict + 2.0) });
     source(t, 'G Pro Wireless, iFixit\'s switch guide: Difficult, 40 to 50 min; heat and lift five skates, seven screws, ribbon latches, desolder; it uses an iron, a spudger, tweezers, a #00 driver, and a heat gun for the skates (optional). Viper V3 Pro: screws beneath its skates (TechPowerUp).', { t0: 1.0, maxW: 960 });
@@ -1060,5 +1029,139 @@ S({
     verdict(t, Q.verdict, rx, 760, { from: 7, to: 1, label: 'Tools and supplies to change the battery', better: 'lower', net: false, size: 110, maxW: rw });
     text('The one tool is the driver in the box. No heat, no solvent: what the EU asks of every portable battery from 18 February 2027.', rx, 820, { role: 'small', size: 22, weight: 650, color: C.ink2, maxW: rw, lh: 1.3, alpha: ep(t, Q.eu, Q.eu + 0.4) });
     source(t, 'Most mice: iFixit\'s G Pro X Superlight battery guide (adhesive: heat it and pry; the plug pulled "straight up"; tools: spudger, Phillips driver, tweezers, angled tweezers, iOpener or hair dryer, isopropyl alcohol, double-sided tape); Glorious Model O 2 Wireless (glued, "this will rip"); a punctured battery can catch fire (iFixit). Peel and shear: 3M. EU Regulation 2023/1542 Art. 11.', { t0: 1.0, maxW: 1760 });
+  }
+});
+
+/* ============================== b11_board: screws from below, art on the board (replaces ownboard; F30.15) ============================== */
+/* The mouse from below: the four screws back out with the driver, the board comes down, and its underside, the face you see
+   with no bottom plate, turns out to be designed: the old board's artwork adapted to plan 5's outline (F30.15). */
+const B11D = { lit: [0.3, 0.7], outs: [1.0, 1.45, 1.9, 2.35], out: 0.42, cross: [2.85, 3.45], tags: 3.8, rival: 0.4, verdict: 6.6, hand: 8.0 };
+const B11_ART = { box: [LM, 286, 1060, 640] };
+S({
+  id: 'b11_board', ch: 'own', theme: 'night', title: 'Screws from below, art on the board', settle: 11, ideas: [54, 63, 74, 100],
+  replaces: ['ownboard'], src: ['b11TpuV3', 'b11Brock', 'ownBrock'],
+  answers: [
+    ['Brief: the board comes out from below', 'The mouse from below: the four screws back out one by one with the driver (no skate touched), the board comes down; the rival column says what most mice ask first (Viper V3 Pro: skates, screws, clips, a cable, then the board\'s own screws inside). Verdict: board screws you can reach from outside 0 → 4.'],
+    ['Brief and F30.15: its underside artwork, the old design\'s, adapted ("i really liked the old designs artwork, you should try the match/adapt")', 'The board\'s underside as plan 5 draws it (H1: the old dark triangles, filleted, the gold clusters, the wordmark, the labels and the QR, fitted to the new outline), named part by part.'],
+    ['#63 art on the PCB bottom; #100 ON/OFF; #74 the paper battery cover (moved here from ownbatt and ownsheet2)', 'Callouts: the gold triangles (#63), ON and OFF at the switch (#100), the QR to the web software; the laminated satin paper cover over the battery drawn and named on the mouse from below (#74: "battery exposed makes a mouse look like a prototype").'],
+    ['F26.11: serials and engravings stay hidden', 'No serial and no shell engraving on screen; the board\'s silkscreen art is the board\'s own (F30.15).']
+  ],
+  draw: t => {
+    const Q = B11D, Bx = B11_ART.box;
+    header(t, 'Screws from below, art on the board');
+    captions(t, [[0.3, 'Theseus has no bottom plate: four screws from below hold the board, and the driver reaches every one without lifting a skate.'], [Q.cross[1] + 0.1, 'So the underside of the board is the face you see, and it is drawn like one: the old board\'s artwork, fitted to the new outline.']]);
+    /* the mouse from below, nose up, lit screws backing out, the paper cover over the battery */
+    const kX = ep(t, Q.cross[0], Q.cross[1]);
+    const outs = Q.outs.map(t0 => ep(t, t0, t0 + Q.out, E.io3));
+    /* the push-in: the mouse grows until its board sits where the board's own drawing comes in (8.68 px/mm, centred) */
+    const kZ = ep(t, Q.cross[0] - 0.25, Q.cross[1], E.cam), sArt = 8.68, bcx = 330 + 300, bcy = Bx[1] + 330, byK = -19.04 * MS_K.y;
+    const sM = lerp(4.9, sArt, kZ), mx = lerp(Bx[0] + Bx[2] / 2, bcx, kZ), my = lerp(Bx[1] + Bx[3] / 2 + 6, bcy - byK * sArt, kZ);
+    let P = {};
+    if (kX < 1) {
+      G.save(); G.beginPath(); G.rect(Bx[0], Bx[1] - 6, Bx[2], Bx[3] + 12); G.clip();
+      part(mx, my, sM, () => {
+        b11_underMM({ lit: ep(t, Q.lit[0], Q.lit[1]), outs });
+        /* #74: laminated satin paper over the battery, behind the board */
+        const B = MS_BATTERY; ga(1 - kX); G.beginPath(); pathRR(-(B[0] + B[2]) * MS_K.x, B[1] * MS_K.y, B[2] * MS_K.x, B[3] * MS_K.y, 2.2); G.fillStyle = '#E8E8E8'; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = lw(1); G.stroke();
+        G.save(); G.clip(); G.strokeStyle = 'rgba(255,255,255,0.7)'; G.lineWidth = lw(5); G.beginPath(); G.moveTo(-14, B[1] * MS_K.y + 30); G.lineTo(10, B[1] * MS_K.y - 2); G.stroke(); G.restore(); ga(1);
+        P.cover = SP(-(B[0] + B[2] / 2) * MS_K.x, (B[1] + B[3] * 0.7) * MS_K.y);
+        P.scr = B11_SCREWS_BOTTOM.map(([X, Z]) => SP(X * MS_K.x, -Z * MS_K.y));
+      }, { alpha: 1 - kX });
+      G.restore();
+      /* the driver's pointer goes from screw to screw */
+      if (P.scr) { const i = clamp(Math.floor((t - Q.outs[0] + 0.25) / 0.45), 0, 3), ka = ep(t, Q.outs[0] - 0.4, Q.outs[0] - 0.1) * (1 - ep(t, Q.outs[3] + Q.out, Q.outs[3] + Q.out + 0.3)); if (ka > 0.01) cursorPtr(P.scr[i][0] + 6, P.scr[i][1] + 8, { a: ka * (1 - kX), grab: true }); }
+      const kPre = 1 - ep(t, Q.cross[0] - 0.55, Q.cross[0] - 0.2);
+      if (P.cover && kPre > 0.01) callout(t, 0.9, P.cover, 'Laminated satin paper over the battery (#74)', { to: [P.cover[0] + 230, P.cover[1] + 40], side: 'r', color: C.mute, tcolor: C.ink2, maxW: 300, alpha: kPre });
+      if (P.scr) text('Four turns each, skates untouched', P.scr[0][0] + 150, P.scr[0][1] - 40, { role: 'small', size: 22, weight: 700, color: C.heroText, alpha: ep(t, Q.outs[3], Q.outs[3] + 0.3) * kPre });
+    }
+    /* the board, down and turned to the light: its underside, the old artwork on plan 5's outline */
+    if (kX > 0.003) {
+      const bw = 600, bh = Bx[3], bx0 = 330, by0 = Bx[1];
+      G.save(); G.globalAlpha = kX; view3D('pcb', t, bx0, by0, bw, bh, { view: 'bottom', view2d: 'bottom', zoom: 1.45 }); G.restore();
+      const A = B11_ART, ap = (fx, fy) => [bx0 + bw * fx, by0 + bh * fy];
+      /* measured on the drawing (box fractions): wordmark, lattice, ON/OFF, gold cluster, QR */
+      const tags = [
+        [ap(0.70, 0.50), 'Dark triangles, filleted: the old board\'s art on plan 5\'s outline (F30.15)', [bx0 + 500, by0 + 200], 'r'],
+        [ap(0.50, 0.6125), 'The wordmark', [bx0 + 500, by0 + 372], 'r'],
+        [ap(0.658, 0.758), 'QR: scan it for the web software', [bx0 + 500, by0 + 520], 'r'],
+        [ap(0.342, 0.555), 'ON and OFF at the switch (#100)', [bx0 + 100, by0 + 300], 'l'],
+        [ap(0.325, 0.766), 'Gold triangles (#63)', [bx0 + 100, by0 + 470], 'l']
+      ];
+      tags.forEach(([pt, lab, to, sd], i) => callout(t, Q.tags + i * 0.4, pt, lab, { to, side: sd, color: C.mute, tcolor: C.ink, maxW: sd === 'r' ? 300 : 260, size: 22 }));
+    }
+    /* right: what most mice ask first, the verdict, the hand-off */
+    const rx = 1220 + 0, rw = RM - rx, kr = ep(t, Q.rival, Q.rival + 0.4);
+    demoWindow(rx - 20, 286, rw + 20, 300, kr);
+    ltag(rx, 318, 'Most mice', 'Razer Viper V3 Pro', { size: 21, color: C.mute, vcolor: C.secondText, a: kr });
+    ['Peel the front and rear skates', 'Undo the screws beneath them', 'Pop two side clips, free a cable', 'Then the board\'s four screws, inside'].forEach((s2, i) => {
+      const k = ep(t, Q.rival + 0.3 + i * 0.25, Q.rival + 0.6 + i * 0.25);
+      text((i + 1) + '', rx, 372 + i * 50, { role: 'small', size: 22, weight: 800, color: C.mute, alpha: k });
+      text(s2, rx + 32, 372 + i * 50, { role: 'small', size: 22, weight: 650, color: i === 3 ? C.red : C.ink2, alpha: k, maxW: rw - 40 });
+    });
+    verdict(t, Q.verdict, rx, 760, { from: 0, to: 4, label: 'Board screws you can reach from outside', better: 'higher', net: false, size: 110, maxW: rw });
+    text('Back in with the same four turns. Next: what comes in the box.', rx, 830, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.hand, Q.hand + 0.4), maxW: rw, lh: 1.3 });
+    source(t, 'Viper V3 Pro: TechPowerUp\'s review (Torx T6 screws beneath the front and rear skates, two clips at the sides, a cable between the shells, four screws hold the board to the bottom shell). Theseus: Brock\'s doc #54 (the board\'s screws inserted from the bottom), #63 (art on the board\'s underside), #74 (the paper cover); the art and outline: plan 5 (H1).', { t0: 1.0, maxW: 1760 });
+  }
+});
+
+/* ============================== b11_box: in the box (replaces box, ownsheet1, ownsheet2) ============================== */
+/* The envelope opens and the trifold stands up (own_trifold, the old drawing, started 1.2 s in so frame one already shows the
+   envelope): setup, spares, repair; the driver slides out beside it; then the skate file and the colourways. On the right,
+   what each flagship's box lists, against Theseus's. */
+const B11X = { tri: 1.2, drv: [3.2, 3.8], dxf: 4.4, col: 5.2, table: 0.3, verdict: 6.6, hand: 8.4 };
+const B11_BOXROWS = [
+  { name: 'Viper V4 Pro', v: [1, 1, 1, 0, 0, 0] },
+  { name: 'G Pro X Superlight 2', v: [1, 1, 1, 0, 0, 0] },
+  { name: 'Starlight X', v: [1, 1, 0, 0, 0, 0] },
+  { name: 'Sora V3', v: [1, 1, 0, 1, 0, 0] },
+  { name: 'X2 CrazyLight', v: [1, 1, 0, 1, 0, 0] },
+  { name: 'OP1 8K (wired)', v: [-1, -1, 0, 1, 1, 0] },
+  { name: 'Theseus', v: [1, 1, 1, 1, 1, 1], hero: true }
+];
+S({
+  id: 'b11_box', ch: 'own', theme: 'paper', title: 'In the box: the driver, and a manual that stands up', settle: 11, ideas: [72, 73, 13],
+  replaces: ['box', 'ownsheet1', 'ownsheet2'], src: ['ownPsV4', 'b11TtV4', 'ownLogiBox', 'ownB2gSlx', 'ownSoraBox', 'ownX2Box', 'ownTrOp1Box', 'ownRazerWarranty', 'b11Jnd', 'b11Brock'],
+  answers: [
+    ['box (not rated): trifold box with driver (#72, #73)', 'The envelope opens and the trifold stands up (setup with its QR, spares, repair steps); the driver slides out beside it, one size for every screw, cross or slot. Table: what each flagship\'s box lists; the next best lists 3 of 6, Theseus\'s plan 6 of 6; only the wired OP1 8K adds a driver.'],
+    ['ownsheet1, rated 2/10: "feels redundant, most of this should be moved to other slides"', 'Each point moved and said where: wire leads against a ribbon (#51) → b10_wires; twisted pairs (#69) → b10_twist; the skate file (DXF) stays here, as one line beside the spares.'],
+    ['ownsheet2: keep the colourways and the paper cover', 'Colourways stay here (#13: matched to GMK keycap sets, the colour difference published, a ΔE target of 1.0, about the smallest difference an eye can see). The paper battery cover (#74) moved to b11_board, where the underside is shown. The 9-ending serials are out: serials and engravings stay hidden (F26.11); the 9-ending price is b01\'s.']
+  ],
+  draw: t => {
+    const Q = B11X;
+    header(t, 'In the box: the driver, and a manual that stands up');
+    captions(t, [[0.3, 'An envelope, and in it a trifold: opened, it stands up with setup, spares and the repair steps printed on it.'], [Q.drv[0], 'Beside it, the driver: one size fits every screw in the mouse, cross or slot. Most flagships ship none.']]);
+    /* left: the envelope and the trifold, then the driver */
+    const lx = LM, ly = 286, lw0 = 760, lh0 = 640;
+    demoWindow(lx, ly, lw0, lh0, 1);
+    ltag(lx + 24, ly + 34, 'Theseus', 'An envelope and a trifold (#72)', { size: 21, color: C.heroText, vcolor: C.heroText });
+    own_trifold(t + Q.tri, lx, ly + 100, lw0, 470);
+    const kd = ep(t, Q.drv[0], Q.drv[1], E.cam);
+    if (kd > 0.003) {
+      const dx = lx + 60, dy = ly + 470 + 100 * kd;
+      part(dx, dy, 3.0, () => b11_toolMM('box', { t }), { alpha: kd });
+      text('The driver (#73): every screw, cross or slot', dx + 186, dy + 7, { role: 'small', size: 22, weight: 700, color: C.heroText, alpha: ep(t, Q.drv[1] - 0.2, Q.drv[1] + 0.2), maxW: lw0 - 220 });
+    }
+    /* right: the verdict, then what each box lists, then the skate file and the colourways */
+    const rx = 900, rw = RM - rx;
+    verdict(t, Q.verdict, rx, 396, { from: 3, to: 6, unit: ' of 6', label: 'What a new owner needs, in the box', better: 'higher', net: false, size: 100, maxW: rw });
+    const items = ['Receiver', 'Cable', 'Grip tape', 'Spare skates', 'Driver', 'Repair steps'], nw = 300, cw = (rw - nw) / items.length, ty = 470, rh = 44;
+    const gx = j => rx + nw + cw * (j + 0.5);
+    items.forEach((it, j) => text(it, gx(j), ty - 8, { role: 'label', size: 20, color: it === 'Driver' ? C.ink : C.mute, align: 'center', alpha: ep(t, Q.table, Q.table + 0.4), maxW: cw - 6 }));
+    B11_BOXROWS.forEach((m, i) => {
+      const y = ty + 40 + i * rh, a = ep(t, Q.table + 0.2 + i * 0.12, Q.table + 0.6 + i * 0.12);
+      if (i) line(rx, y - rh / 2 - 1, RM, y - rh / 2 - 1, { color: C.hair, w: 1, alpha: a });
+      if (m.hero) rect(rx - 8, y - rh / 2 + 1, rw + 16, rh - 3, { fill: C.heroSoft, alpha: ep(t, Q.verdict - 0.6, Q.verdict - 0.2) });
+      text(m.name + (m.hero ? ' (the plan)' : ''), rx, y + 7, { role: 'small', size: 21, weight: m.hero ? 800 : 600, color: m.hero ? C.heroText : C.ink, alpha: a, maxW: nw - 10 });
+      m.v.forEach((v, j) => { const X = gx(j), kk = ep(t, Q.table + 0.5 + i * 0.12 + j * 0.04, Q.table + 0.9 + i * 0.12 + j * 0.04); if (v === 1) own_tick(X, y, 20, m.hero ? C.hero : C.ink2, kk); else if (v === 0) own_dash(X, y, 20, C.faint, kk); else text('n/a', X, y + 6, { role: 'label', size: 20, color: C.faint, align: 'center', alpha: kk }); });
+    });
+    const yb = ty + 40 + B11_BOXROWS.length * rh + 6;
+    text('The skate file (DXF) is published: cut your own, no warranty fight.', rx, yb + 10, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, Q.dxf, Q.dxf + 0.4), maxW: rw });
+    const kc = ep(t, Q.col, Q.col + 0.4);
+    if (kc > 0.003) {
+      const sw = [['#E8C8C8', '#E7C6C7'], ['#2F4A3A', '#304A3B'], ['#D9D2C0', '#DAD3C1']];
+      sw.forEach(([m, k], i) => { const x = rx + i * 76; rr(x, yb + 30, 32, 32, 6, m, inkA(0.25), 1.2, kc); rr(x + 34, yb + 30, 32, 32, 6, k, inkA(0.25), 1.2, kc); });
+      text('Colourways matched to GMK keycap sets (#13): shell beside keycap within ΔE 1.0, about the least an eye can tell', rx + 240, yb + 44, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kc, maxW: rw - 240, lh: 1.25 });
+    }
+    source(t, 'Box lists from setup guides, reviews and retailer pages (a dash: not listed): ProSettings and TweakTown (Viper V4 Pro: "I do miss a set of replacement mouse feet"), Logitech, Back2Gaming, AusModShop, TechRadar (OP1 8K: "A small screwdriver is included"). Razer may exclude issues it blames on third-party skates from the warranty (May 2026). ΔE 1.0: the usual just-noticeable difference (Datacolor). Theseus\'s box: Brock\'s plan (#72, #73).', { t0: 1.0, maxW: 1760 });
   }
 });

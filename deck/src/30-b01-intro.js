@@ -25,16 +25,19 @@ Object.assign(SRC, {
   b01GwLycan: { t: 'PC Gamer, 2026-03-05: the G-Wolves Lycan 8K "weighs around 28.8 grams", "a regular size at 119 x 63 x 37 mm", without "poking holes in the shell"; $129 at preorder', u: 'https://www.pcgamer.com/hardware/gaming-mice/this-upcoming-gaming-mouse-weighs-just-over-28-grams-without-poking-holes-in-it/' },
   b01GwHtxMini: { t: 'G-Wolves, HTX Mini 8K: ~26.9 g; 109 × 60 × 35 mm; "250mAh; about 80h at 1K report rate"; $159', u: 'https://shop.g-wolves.com/products/htx-mini-8k-wireless-gaming-mouse-1' },
   b01X2f: { t: 'Pulsar X2F CrazyLight: 29 g ± 2 g, a 210 mAh battery, no battery life published, 87.5 × 61.1 × 31.6 mm, $149.95 (gaming-st.com and Prisjakt\'s review, quoting Pulsar)', u: 'https://gaming-st.com/peripherals/pulsar-x2f-crazylight-29g-vs-x2f/' },
-  b01X2fWt: { t: 'The X2F CrazyLight at 29.5 g: reports online put it at 29.5 g or more on a scale (Brock); Pulsar lists 29 g ± 2 g', u: '', n: 'No independent scale figure was readable from this session. The slide uses 29.5 g, the best reported.' },
+  b01X2fWt: { t: 'The X2F CrazyLight\'s weight: Pulsar lists 29 g ± 2 g; no independent scale weight is published (research Q1, 2026-11-06, English and Japanese sources); Brock\'s note says reports online put it at 29.5 g or more', u: '', n: 'Shown at the maker\'s 29.0 g until the report Brock saw is found.' },
   b01X2Trace: { t: 'The X2F\'s outline: the Pulsar X2 family\'s top silhouette, traced from Pulsar\'s own product photo of the X2H CrazyLight\'s base, scaled to the X2F\'s 61.1 mm width and cut at its 87.5 mm length', u: '', n: 'EloShapes\' outlines load in the browser and could not be read from this session.' },
-  b01TpuUlx: { t: 'TechPowerUp, Finalmouse UltralightX review: "The battery has a capacity of 250 mAh (3.87 V)"; Finalmouse states "up to two months"; about 20 h at 4000 Hz in the reviewer\'s use; 38 g on its scale', u: 'https://techpowerup.com/review/finalmouse-ultralightx/7.html' },
-  b01RtUlx: { t: 'RTINGS, Ninjutso Sora V2 against the Finalmouse ULX Pro Series: the Sora V2 "feels solid", the ULX "flexes and creaks with pressure" (research/validation-report-2026-11-03.md)', u: 'https://www.rtings.com/mouse/tools/compare/finalmouse-ulx-pro-series-finalmouse-ultralightx-competition/58188/78570' },
+  b01TpuUlx: { t: 'TechPowerUp, Finalmouse UltralightX review (the medium): $189 in its spec table; "My scale shows around 38 g (+/- 1 g)"; build quality: "minor creaking and significant flexing of the shell can be observed", "when applying pressure exactly at the top, the entire top contracts"; "The battery has a capacity of 250 mAh (3.87 V)"; Finalmouse states "up to two months"', u: 'https://techpowerup.com/review/finalmouse-ultralightx/4.html', n: 'Research Q1 (FILLS, INT-b01_compromise): the medium size; Finalmouse\'s later ULX Competition has "solid sides" (b05Peri).' },
+  b01RtUlx: { t: 'RTINGS, Finalmouse ULX Pro Series against the UltralightX Competition: "noticeable flexibility, popping, and creaking in the body of the UltralightX Competition we tested" (the Pro Series: "a mushy button feel"); RTINGS weighed its UltralightX at 38.0 g; in its Sora V2 review the ULX "flexes and creaks with pressure" (research/validation-report-2026-11-03.md)', u: 'https://www.rtings.com/mouse/tools/compare/finalmouse-ulx-pro-series-finalmouse-ultralightx-competition/58188/78570', n: 'Which UltralightX variant and size RTINGS weighed is not stated on the pages read; Finalmouse\'s later ULX Competition is reported stiffer (b05Peri).' },
   b01SlxBatt: { t: 'Finalmouse Starlight X technical overview: a Jauch 250 mAh battery, nRF54LM20 in the mouse and the receiver, 38 g; no hour rating (research/validation-report-2026-11-03.md)', u: 'https://cdn.shopify.com/s/files/1/2377/4861/files/26.5.27_Starlight_X_Technical_Overview.pdf?v=1779939240' },
-  b01MiniSe: { t: 'Razer, Viper Mini Signature Edition: 49 g, a magnesium alloy chassis, Optical Mouse Switches Gen-3, true 8000 Hz', u: 'https://www.razer.com/gaming-mice/razer-viper-mini-signature-edition', n: 'Its $279.99 is Razer\'s launch price (2022); the page did not show a price to this session.' },
+  b01MiniSe: { t: 'Razer Viper Mini Signature Edition: $279.99 at launch (KitGuru, 2023-02-02; TechSpot); 49 g; about 119 × 62 × 39 mm; a magnesium alloy chassis; "up to 60 hours" on HyperSpeed wireless (no polling rate given)', u: 'https://www.kitguru.net/blog/2023/02/02/the-razer-viper-mini-signature-edition-arrives-with-eye-watering-price-tag/', n: 'Razer\'s page now lists only "< 49 g" and 8000 Hz (research Q1, FILLS b01-1).' },
+  b01M2k: { t: 'Zaunkoenig M2K: €299 (TechPowerUp, Club386, The FPS Review); Zaunkoenig claims 24 g, TechPowerUp\'s scale "around 23 g (+/- 1 g)"; wired', u: 'https://techpowerup.com/review/zaunkoenig-m2k/2.html', n: 'Plotted in dollars at the M3K\'s own rate (€340 ~ $396): about $348. Research Q1 (FILLS b01-7).' },
   b01M3k: { t: 'Zaunkoenig M3K: 24 g, "a wired 8,000 hertz connection", "The M3K costs €340 (~396 USD)"', u: 'https://www.zaunkoenig.co/m3k' },
   b01FmClick: { t: 'PC Gamer, Sept 2026, on Finalmouse\'s own click test: from the start of the press to the packet at the PC, mean of 50 presses: Starlight X 2.0 ms, Superstrike 3.0 ms, OP1 8K V2 5.7 ms, Viper V4 Pro 7.5 ms (a maker testing its own mouse and its rivals)', u: 'https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/' },
   b01OpenStax: { t: 'OpenStax, College Physics 2e, §4.3 Newton\'s second law, Fig. 4.6: "The same force exerted on systems of different masses produces different accelerations"; "acceleration is exactly inversely proportional to mass"', u: 'https://openstax.org/books/college-physics-2e/pages/4-3-newtons-second-law-of-motion-concept-of-a-system' },
-  b01Optical: { t: 'Derived, as the clicks chapter: an optical switch pulses its LED at 5 mA for 30 µs every 1 ms (Omron D2FP\'s test pulse), 0.15 mA a switch; a Viper V4 Pro draws 306 mAh over 180 h at 1 khz, 1.70 mA; two optical mains take 0.30 ÷ 1.70 = 17.6 % of it', u: 'https://www.fa.omron.co.jp/data_pdf/cat/d2fp_cdva-002_1_1.pdf', n: 'Razer staff have said online that the switches and the encoder take almost half (Brock, F31.1): no public source, so the slide uses the derived 17.6 %.' },
+  b01Optical: { t: 'Derived from Logitech\'s own figures, as TechPowerUp reports them: the G Pro X Superlight 2 lasts 96 h in optical switch mode and 104 h in hybrid mode at 1000 Hz on its 290 mAh battery, so running its two main switches\' optics full time costs 0.23 mA (0.116 mA a switch); on a Viper V4 Pro\'s 306 mAh over 180 h at 1 khz (1.70 mA) that is 13.6 %. Omron\'s D2FP test pulse (5 mA for 30 µs each 1 ms) would give 17.6 %: the film claims the lower', u: 'https://techpowerup.com/review/logitech-g-pro-x-superlight-2/7.html', n: 'Research Q1 (FILLS); integrator decision BROADCAST-0945 #1.' },
+  b01Wolf: { t: 'Wolf, Bergmann Tiest & Drewing 2018, "A mass-density model can account for the size-weight illusion", PLOS ONE 13(2):e0190624: equal 200 g objects, 32 and 596 cm³; matched in a precision grip the big one felt like 161 g, the small 211 g (in the whole hand 134 and 202 g); perceived heaviness mixes a mass and a density estimate', u: 'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0190624', n: 'Research Q2 (FILLS b01-9); the mice figure is derived from its model.' },
+  b01FingerMass: { t: 'Mirakhorlo et al. 2016, "Anatomical parameters for musculoskeletal modeling of the hand and wrist", International Biomechanics 3(1), Table 1 (one specimen, segment masses estimated): index middle phalanx 6.74 g; middle finger middle 6.41, distal 5.84 g; ring middle 5.77, distal 4.83 g; thumb distal 10.08 g. Derived: the tips of the four fingers that hold a mouse, about 45 g, an upper estimate (fingers rotate as well as move)', u: 'https://research.tudelft.nl/files/4755868/Anatomical_parameters_for_musculoskeletal_modeling_of_the_hand_and_wrist.pdf', n: 'Research Q2 (FILLS, INT-0855 + b01-8).' },
   b01HandMass: { t: 'Body segment parameters (Dempster via Winter 2009; de Leva 1996): the hand is about 0.6 % of body mass, about 420 g at 70 kg (research/data/weight-science.json)', u: 'https://nbviewer.jupyter.org/github/demotu/BMC/blob/master/notebooks/BodySegmentParameters.ipynb' }
 });
 
@@ -44,7 +47,7 @@ Object.assign(SRC, {
    price (US $), shell (a few words), src (SRC keys) }. G-Wolves weights are the black (lightest) colour's, as listed. */
 const B01_MICE = [
   { id: 'logitech-x3', name: 'Logitech Pro X3 Superstrike', short: 'Pro X3 Superstrike', brand: 'Logitech', conn: 'wireless', g: 59.0, gBy: 'Logitech', gEv: 'claim', L: 125.0, W: 63.5, H: 40.0, h1k: 135, price: 199.99, shell: 'Solid', src: ['b01X3', 'b01X3Pcg', 'b01X3Psn'] },
-  { id: 'gw-hts-ultra', name: 'G-Wolves HTS Ultra 8K', short: 'HTS Ultra 8K', brand: 'G-Wolves', conn: 'wireless', g: 31.0, gBy: 'TechPowerUp', gEv: 'measured', L: 113, W: 61, H: 40, h1k: 80, price: 119, shell: 'Honeycomb', src: ['b01TpuHtsU', 'b01GwHtsU'] },
+  { id: 'gw-hts-ultra', name: 'G-Wolves HTS Ultra 8K', short: 'HTS Ultra 8K', brand: 'G-Wolves', conn: 'wireless', g: 31.0, gBy: 'TechPowerUp', gEv: 'measured', L: 113, W: 61, H: 40, h1k: 80, price: 149, shell: 'Honeycomb', src: ['b01TpuHtsU', 'b01GwHtsU'] },
   { id: 'gw-hts-plus-pro', name: 'G-Wolves HTS Plus Pro 8K', short: 'HTS Plus Pro 8K', brand: 'G-Wolves', conn: 'wireless', g: 28.0, gBy: 'G-Wolves', gEv: 'claim', L: 117, W: 61, H: 40, price: 159, shell: 'Solid, carbon rod', src: ['b01GwPlusPro'] },
   { id: 'gw-warg', name: 'G-Wolves Warg 8K', short: 'Warg 8K', brand: 'G-Wolves', conn: 'wireless', g: 28.9, gBy: 'G-Wolves', gEv: 'claim', L: 117, W: 61, H: 40, price: 149, shell: 'Solid, carbon rod', src: ['b01GwWarg'] },
   { id: 'gw-lycan', name: 'G-Wolves Lycan 8K', short: 'Lycan 8K', brand: 'G-Wolves', conn: 'wireless', g: 28.8, gBy: 'G-Wolves', gEv: 'claim', L: 119, W: 63, H: 37, price: 132, shell: 'Solid', src: ['b01GwLycan', 'b01Gw'] },
@@ -61,13 +64,14 @@ const B01_MICE = [
   { id: 'gw-hsk-pro', name: 'G-Wolves HSK Pro v2.0 8K', short: 'HSK Pro v2.0 8K', brand: 'G-Wolves', conn: 'wireless', g: 26.8, gBy: 'G-Wolves', gEv: 'claim', L: 73.7, W: 56, H: 29, price: 149, src: ['b01Gw'] },
   { id: 'gw-hts-plus', name: 'G-Wolves HTS Plus 8K', short: 'HTS Plus 8K', brand: 'G-Wolves', conn: 'wireless', g: 46.0, gBy: 'G-Wolves', gEv: 'claim', L: 117, W: 61, H: 40, price: 159, src: ['b01Gw'] },
   { id: 'razer-viper-mini-se', name: 'Razer Viper Mini Signature Edition', short: 'Viper Mini SE', brand: 'Razer', conn: 'wireless', g: 49.0, gBy: 'Razer', gEv: 'claim', price: 279.99, shell: 'Magnesium alloy', src: ['b01MiniSe'] },
-  { id: 'zaunkoenig-m3k', name: 'Zaunkoenig M3K', short: 'M3K', brand: 'Zaunkoenig', conn: 'wired', g: 24.0, gBy: 'Zaunkoenig', gEv: 'claim', price: 396, priceNote: '€340', src: ['b01M3k'] }
+  { id: 'zaunkoenig-m3k', name: 'Zaunkoenig M3K', short: 'M3K', brand: 'Zaunkoenig', conn: 'wired', g: 24.0, gBy: 'Zaunkoenig', gEv: 'claim', price: 396, priceNote: '€340', src: ['b01M3k'] },
+  { id: 'zaunkoenig-m2k', name: 'Zaunkoenig M2K', short: 'M2K', brand: 'Zaunkoenig', conn: 'wired', g: 23.0, gBy: 'TechPowerUp', gEv: 'measured', price: Math.round(299 * 396 / 340), priceNote: '€299', src: ['b01M2k'] }
 ];
 /* facts this file adds to mice already in mice.json (their batteries, where a review measured one) */
 const B01_MORE = {
   'finalmouse-ulx': { mAh: 250, V: 3.87, src: ['b01TpuUlx'] },
   'finalmouse-slx': { mAh: 250, src: ['b01SlxBatt'] },
-  'pulsar-x2f-crazylight': { g: 29.5, gBy: 'reported', gEv: 'reported', mAh: 210, src: ['b01X2f', 'b01X2fWt'] }
+  'pulsar-x2f-crazylight': { g: 29.0, gBy: 'Pulsar', gEv: 'claim', mAh: 210, src: ['b01X2f', 'b01X2fWt'] }
 };
 
 /* ================================ reading the mice ================================ */
@@ -110,7 +114,8 @@ function b01_dens(o = {}) {
 function b01_draw1k() { try { return ntr_loads().w1; } catch (e) { return 1.184 / 180; } }
 /** Theseus's battery: the example part (LP402535JU) from the Jauch family in RDATA, its hours at that draw */
 function b01_thsBatt() { const p = (typeof ntr_pack === 'function' && ntr_pack('LP402535JU')) || { part: 'LP402535JU', mAh: 370, g: 8, wh: 1.369 }; return Object.assign({}, p, { h: p.wh / b01_draw1k() }); }
-/** the hours a battery would give at the V4 Pro's draw: an upper bound for a mouse that lists none (V nominal 3.7 unless known) */
+/** the hours a battery would give at the V4 Pro's draw: an estimate, not a bound (each mouse's draw is its own; V nominal 3.7
+   unless known). Used for Theseus's own hours; rivals' are not plotted (models checked #9) */
 const b01_hoursAt = (mAh, V) => mAh * (V || 3.7) / 1000 / b01_draw1k();
 /** the battery chart's points: wireless mice with a weight. Listed hours where the maker lists them ({ h, kind: 'listed' });
    else, where the battery is known, its hours at the V4 Pro's draw ({ h, kind: 'derived' }); else none */
@@ -146,19 +151,24 @@ function b01_frontCurve(P, ext = [0.06, 0.06], lim = null) {
 }
 
 /** the share of a Viper V4 Pro's battery its two optical main switches draw: Omron D2FP's LED test pulse (5 mA for 30 µs every
-   1 ms, 0.15 mA a switch) over the mouse's 306 mAh in Razer's 180 h at 1 khz (1.70 mA): 17.6 %. The clicks chapter (b03) works it
+   1 ms, 0.15 mA a switch) over the mouse's 306 mAh in Razer's 180 h at 1 khz (1.70 mA) gave 17.6 %; the film now claims Logitech's own figure, 13.6 % (BROADCAST-0945). The clicks chapter (b03) works it
    the same way. Shown to 0.1 %: rounding a rival's fault up would be rounding a claim in our favour */
-const B01_OPT = (() => { const sw = 5 * 30 / 1000, mA = 306 / 180; return { sw, mA, share: 2 * sw / mA }; })();
+/** Theseus's two mechanical switches' share of the same draw (b03's B03.mechShare: a strobed pull-up, about 3 µA a switch),
+   printed as b03_switch prints it: to 0.1 %, rounded up (never in Theseus's favour) */
+function b01_mechPct() { const sh = (typeof B03 !== 'undefined' && B03.mechShare) || 2 * 3 / 1000 / (306 / 180); return (Math.ceil(sh * 1000 - 1e-9) / 10).toFixed(1) + ' %'; }
+const B01_OPT = (() => { const gpx = { mAh: 290, hOpt: 96, hHyb: 104 }, sw = (gpx.mAh / gpx.hOpt - gpx.mAh / gpx.hHyb) / 2, mA = 306 / 180; return { sw, mA, share: 2 * sw / mA }; })();
+/** the share as printed: to 0.1 %, rounded down (a rival's fault is never rounded up in our favour) */
+const b01_optPct = () => (Math.floor(B01_OPT.share * 1000 + 1e-9) / 10).toFixed(1) + ' %';
 /* ================================ the trades: what each flagship gives up ================================
    The film's spine (F33.7): every flagship gives one thing up; Theseus gives up nothing. Each: the mouse, what it gives up
    (red), the figure, what it bought with it, the evidence, and Theseus's answer (the close reads `ans`). The icon names the
    small demonstration drawn beside the row (b01_tradeIcon). */
 const B01_TRADES = [
   { id: 'logitech-x3', brand: 'Logitech', name: 'Pro X3 Superstrike', price: '$199.99', small: 'Logitech, $199.99, haptic triggers', what: 'Weight', fig: '59.0 g', why: 'Haptic, inductive triggers', ev: 'claim', tag: 'Logitech 2026', src: ['b01X3', 'b01X3Psn'], icon: 'weight', ans: THS.massG },
-  { id: 'gw-hts-ultra', brand: 'G-Wolves', name: 'HTS Ultra 8K', price: '$119', small: 'G-Wolves, $119, 31.0 g', what: 'Battery life', fig: '80 h', why: '31.0 g', ev: 'claim', tag: 'G-Wolves claim', src: ['b01TpuHtsU'], icon: 'battery', ans: THESEUS.hours + ' h' },
-  { id: 'razer-viper-v4-pro', brand: 'Razer', name: 'Viper V4 Pro', price: '$159.99', small: 'Razer, $159.99, optical switches', what: 'Battery, to its clicks', fig: fmtN(B01_OPT.share * 100, 1) + ' %', why: 'Optical switches', ev: 'derived', tag: 'Derived', src: ['b01Optical'], icon: 'optical', ans: '0 %' },
-  { id: 'finalmouse-ulx', brand: 'Finalmouse', name: 'ULX', price: '$189', small: 'Finalmouse, $189, 38.0 g', what: 'Strength', fig: 'Flexes, creaks', why: '38.0 g', ev: 'measured', tag: 'RTINGS', src: ['b01RtUlx'], icon: 'flex', ans: 'Solid, arched' },
-  { id: 'pulsar-x2f-crazylight', brand: 'Pulsar', name: 'X2F CrazyLight', price: '$149.95', small: 'Pulsar, $149.95, 29.5 g', what: 'The shape', fig: 'Cut to 87.5 mm', why: '29.5 g', ev: 'claim', tag: 'Pulsar 2026', src: ['b01X2f', 'x2fCrazy'], icon: 'half', ans: 'A full 119.3 mm' },
+  { id: 'gw-hts-ultra', brand: 'G-Wolves', name: 'HTS Ultra 8K', price: '$149', small: 'G-Wolves, $149, 31.0 g', what: 'Battery life at 1 khz', fig: '80 h', why: '31.0 g', ev: 'claim', tag: 'G-Wolves claim', src: ['b01TpuHtsU'], icon: 'battery', ans: THESEUS.hours + ' h' },
+  { id: 'razer-viper-v4-pro', brand: 'Razer', name: 'Viper V4 Pro', price: '$159.99', small: 'Razer, $159.99, optical switches', what: 'Battery spent on clicks', fig: b01_optPct(), why: 'Optical switches', ev: 'derived', tag: 'Derived', src: ['b01Optical'], icon: 'optical', get ans() { return b01_mechPct(); } },
+  { id: 'finalmouse-ulx', brand: 'Finalmouse', name: 'UltralightX', price: '$189', small: 'Finalmouse 2023, $189, 38.0 g', what: 'Strength', fig: 'Flexes, creaks', why: '38.0 g', ev: 'measured', tag: 'TechPowerUp', src: ['b01TpuUlx'], icon: 'flex', ans: 'Solid, arched' },
+  { id: 'pulsar-x2f-crazylight', brand: 'Pulsar', name: 'X2F CrazyLight', price: '$149.95', small: 'Pulsar, $149.95, 29.0 g', what: 'The shape', fig: 'Cut to 87.5 mm', why: '29.0 g', ev: 'claim', tag: 'Pulsar 2026', src: ['b01X2f', 'x2fCrazy'], icon: 'half', ans: 'A full 119.3 mm' },
   { id: 'xbab-xa25', brand: 'XBAB', name: 'XA25', price: '$169', small: 'XBAB, $169, 24.9 g', what: 'Wireless', fig: 'Wired only', why: '24.9 g', ev: 'claim', tag: 'XBAB 2026', src: ['exXbabWeight'], icon: 'wire', ans: 'Dual 8khz wired and wireless' }
 ];
 
@@ -186,6 +196,88 @@ function b01_outline(half, yCut, r = 0) {
   const out = { path: p, w: 2 * Math.max(...all.map(q => Math.abs(q[0]))), h: yc };
   b01_outline.c.set(key, out); return out;
 }
+
+/* ================================ 1. The cover (replaces cover; the form kept, F9.11) ================================
+   His notes: "PIAKNOW'S should be all capital"; "instead of 8kh it should say something about there being zero
+   compromises"; "8khz is pretty much standard now"; and on ntr_stats, density "could be on the cover instead of the 100+
+   ideas". So the four figures are Weight 29.31 g, Motion latency 0.14 ms, Compromises 0 (counting down from the six the
+   next slide shows) and Density 0.099 g/cm³. No mouse drawing and no shell (F12.2). Theseus's own figures keep their
+   own precision here (29.31 g); comparisons elsewhere use 29.3 g. */
+const B01_COV = { size: 280, x0: 64, yb: 462 };
+S({
+  id: 'b01_cover', first: true, ch: 'intro', theme: 'night', chrome: false, title: 'Theseus: in pursuit of an objectively better mouse', settle: 7.5,
+  replaces: ['cover'],
+  sfx: [[2.15, 'tick'], [2.35, 'tick'], [2.55, 'tick'], [2.75, 'tick']],
+  src: ['kunai', 'piaknow', 'ntrScan'],
+  answers: [
+    ['cover: "PIAKNOW\'S should be all capital"', 'Set as PIAKNOW\'S, every letter a capital'],
+    ['cover: "instead of 8kh it should say something about there being zero compromises"', 'The third figure is now Compromises: it counts down from the six that the next slide shows every flagship making, to 0'],
+    ['cover: "8khz is pretty much standard now"', '8 khz is off the cover; dual 8 khz, wired and wireless, is on the targets slide'],
+    ['ntr_stats: density "could be on the cover instead of the 100+ ideas"', 'The fourth figure is density, 0.099 g/cm³ (weight per cm³ of the box it fills, rounded up, against Theseus)'],
+    ['F9.11 (keep the cover\'s form, no 2D mouse) and F12.2 (no shell on the cover)', 'Kept: the studio row, THESEUS rising letter by letter, the gram scale with 29.31 g in blue, the subtitle in three voices, four figures and the byline; no mouse and no shell']
+  ],
+  draw: t => {
+    const C0 = B01_COV;
+    /* top row: the studio, and the rule the whole deck follows */
+    chapterIcon('intro', LM, LAY.labelY - 19, 22, C.hero, ep(t, 0.1, 0.4));
+    text('Nitrite Labs', LM + 36, LAY.labelY, { role: 'label', color: C.ink2, t, t0: 0.15, cps: 40 });
+    rich([{ s: 'Optimization', role: 'label', color: C.faint }, { s: 'over', role: 'label', color: C.faint, gap: 12 }, { s: 'opinion', role: 'label', color: C.heroText, grad: C.heroGrad, gap: 12 }], RM, LAY.labelY, { align: 'right', alpha: ep(t, 0.4, 0.8) });
+    text('A Nitrite Labs mouse, in development for years', LM, 196, { role: 'label', size: 22, color: C.mute, t, t0: 0.5, cps: 60 });
+    /* THESEUS: each letter rises out of its own mask; the first is already rising on frame one */
+    const st = { role: 'hero', size: C0.size, track: -0.028 }, word = 'THESEUS', x0 = C0.x0, yb = C0.yb;
+    setFont(sty(st)); const ls = lsPx(sty(st));
+    const advs = [...word].map((ch, i) => G.measureText(word.slice(0, i + 1)).width - G.measureText(word.slice(0, i)).width);
+    const wordW = advs.reduce((a, b) => a + b, 0) + ls * (word.length - 1);
+    let xx = x0;
+    [...word].forEach((ch, i) => {
+      const k = E.rise(prog(t, -0.3 + i * 0.07, 0.6 + i * 0.07));
+      if (k > 0) { G.save(); G.beginPath(); G.rect(xx - 10, yb - C0.size * 0.8, advs[i] + 20, C0.size * 0.86); G.clip(); text(ch, xx, yb + (1 - k) * C0.size * 0.82, Object.assign({}, st, { caps: false, color: C.ink })); G.restore(); }
+      xx += advs[i] + ls;
+    });
+    /* the gram scale under the word, one tick a gram, with Theseus's 29.31 g in its colour */
+    const ry = yb + 44, kr = ep(t, 0.8, 1.7, E.cam), rx1 = x0 + 14 + (wordW - 14) * kr, gpx = 12, mx = x0 + 14 + THESEUS.mass * gpx;
+    line(x0 + 14, ry, rx1, ry, { color: inkA(0.35), w: 1.5 });
+    for (let i = 0; x0 + 14 + i * gpx <= rx1; i++) { const X = x0 + 14 + i * gpx, L = i % 10 === 0 ? 16 : i % 5 === 0 ? 10 : 6; line(X, ry, X, ry + L, { color: inkA(i % 10 === 0 ? 0.5 : 0.25), w: 1.2 }); }
+    rect(x0 + 14, ry - 3, THESEUS.mass * gpx * ep(t, 1.4, 1.9, E.out3), 6, { fill: C.hero });
+    text('0', x0 + 14, ry + 40, { role: 'tick', size: 19, color: C.faint, alpha: ep(t, 1.2, 1.6) });
+    text(THS.mass, mx, ry + 40, { role: 'tick', size: 19, weight: 700, color: C.heroText, align: 'center', alpha: ep(t, 1.7, 2.0) });
+    /* the subtitle in three voices: a quiet run-in, the display claim, and the one word in Theseus's colour */
+    rich([
+      { s: 'In pursuit of an', role: 'labelL', size: 28, color: C.mute, t0: 1.1, cps: 40 },
+      { s: 'objectively better', role: 'h2', size: 60, color: C.ink, gap: 22, rise: [1.4, 0.8] },
+      { s: 'mouse', role: 'h2', size: 60, color: C.heroText, grad: C.heroGrad, gap: 18, rise: [1.55, 0.8] }
+    ], LM, 640, { t });
+    /* four figures, display numbers next to their units */
+    const rho = b01_rhoTxt(THESEUS.mass / (THESEUS.dims[0] * THESEUS.dims[1] * THESEUS.dims[2] / 1000), true);
+    const cols = [
+      { lab: 'Weight', n: THS.mass, u: 'g', sub: 'Weighed, every unit' },
+      { lab: 'Motion latency, wireless', n: '0.14', u: 'ms', sub: 'On PIAKNOW\'S rig' },
+      { lab: 'Compromises', n: '0', u: '', sub: 'Every flagship makes one', down: 6 },
+      { lab: 'Density', n: rho, u: 'g/cm³', sub: 'Weight per cm³ of its box' }
+    ];
+    const cw = (RM - LM) / 4;
+    const nw = c => tw(c.n, { role: 'd1', size: 100, tnum: true }) / 100 + (c.u ? tw(c.u, { font: 'mono', size: 38, weight: 600 }) / 100 + 0.1 : 0);
+    const nS = Math.min(132, Math.floor((cw - 44) / Math.max(...cols.map(nw))));
+    cols.forEach((c, i) => {
+      const x = LM + i * cw, t0 = 2.0 + i * 0.2, a = ep(t, t0, t0 + 0.4);
+      if (i) line(x - 24, 770, x - 24, 770 + 190 * ep(t, t0 - 0.1, t0 + 0.5, E.cam), { color: inkA(0.14), w: 1.5 });
+      text(c.lab, x, 786, { role: 'label', size: 21, color: C.mute, alpha: a, t, t0, cps: 60 });
+      if (c.down) {
+        /* six trades, counted down to none: the six the next slide names, struck one by one */
+        const kd = E.out3(prog(t, t0 + 0.1, t0 + 1.3)), v = Math.round(lerp(c.down, 0, kd)), done = kd >= 0.999;
+        text(String(v), x - 6, 916, { role: 'd1', size: nS, color: done ? C.heroText : C.ink, grad: done ? C.heroGrad : null, tnum: true, alpha: a });
+        const xs = x + tw(String(v), { role: 'd1', size: nS, tnum: true }) + 26;
+        for (let j = 0; j < c.down; j++) { const kj = ep(t, t0 + 0.1 + j * 0.2, t0 + 0.3 + j * 0.2); const sx = xs + j * 26; line(sx, 860, sx, 900, { color: C.mute, w: 3, alpha: a * 0.8 }); if (kj > 0) line(sx - 8, 896, sx - 8 + 16 * kj, 864, { color: C.red, w: 3, alpha: a }); }
+      } else rich([{ s: c.n, role: 'd1', size: nS, color: C.ink, tnum: true, count: [t0, 1.0] }, c.u ? { s: c.u, font: 'mono', size: 38, weight: 600, color: C.mute, gap: 10, caps: false } : null], x - 6, 916, { t, alpha: a });
+      text(c.sub, x, 962, { role: 'label', size: 19, color: C.faint, alpha: ep(t, t0 + 0.4, t0 + 0.8) });
+    });
+    /* the byline, on the chrome's rule */
+    line(LM, LAY.ruleY, LM + (RM - LM) * ep(t, 0.3, 1.4, E.cam), LAY.ruleY, { color: C.hair, w: 1.5 });
+    rich([{ s: 'Brock Liddicoat', role: 'foot', weight: 700, caps: true, track: 0.16, color: C.ink2 }, { s: '/', role: 'foot', color: C.faint, gap: 14 }, { s: 'Nitrite Labs', role: 'foot', caps: true, track: 0.12, color: C.mute, gap: 14 }, { s: '/', role: 'foot', color: C.faint, gap: 14 }, { s: 'Shape designer of the Finalmouse Starlight X', role: 'foot', caps: true, track: 0.12, color: C.faint, gap: 14 }], LM, LAY.footY, { alpha: ep(t, 2.6, 3.2) });
+    text(`01 / ${pad2(DECK.slides.length)}`, RM, LAY.footY, { role: 'foot', weight: 600, color: C.mute, align: 'right', alpha: ep(t, 2.6, 3.2) });
+    for (const [mx2, my] of [[40, 160], [40, 600]]) regMark(mx2, my, ep(t, 0.8, 1.3) * 0.4, 8, C.ink);
+  }
+});
 
 /* ================================ the weight budget, computed ================================
    Brock on `budget`: "it's a lot of work to keep updating this one". So nothing here is typed as a total: every part's
@@ -292,10 +384,10 @@ function b01_tradeIcon(t, t0, kind, box, o = {}) {
    A stage, one flagship at a time (integrator, 08:35): each one drawn big while its compromise happens to it for about a
    second, caused by something you can see (M1, M2): the Pro X3 Superstrike's 59.0 g tips a balance against a 29.3 g mouse;
    the HTS Ultra 8K's battery runs dry at 80 h while the clock runs on to 200; the Viper V4 Pro's optical switches fire their
-   beams and eat 17.6 % of its battery; a fingertip bows the ULX's shell, red where it bends; a cut takes the back half off the
+   beams and eat 13.6 % of its battery; a fingertip bows the ULX's shell, red where it bends; a cut takes the back half off the
    X2; a cable runs out of the XA25's nose. Each then shrinks into its row of the ledger on the right, keeping its red word
    and figure. Then Theseus lands, whole and blue, giving up nothing. Frame one is already mid-compromise (M6). */
-const B01_STAGE = { box: [80, 384, 1010, 410], beat: 1.05, t0: -0.45, list: { x: 1180, y: 330, rh: 80, icon: [118, 62] } };
+const B01_STAGE = { box: [80, 384, 1010, 410], beat: 1.05, t0: -0.45, list: { x: 1180, y: 300, rh: 72, icon: [118, 60] }, fold: 7.4, strip: 852 };
 /* beat i starts at b01_beatT(i): the first is already playing at frame one and holds a little longer (the hook), then one a second */
 const b01_beatT = i => i <= 0 ? -0.35 : 1.15 + (i - 1) * 1.0;
 /** the ledger list's row i (0..5; 6 = Theseus): its top y */
@@ -330,10 +422,11 @@ function b01_bigWeight(t, s0, box, o = {}) {
   b01_pan(LP[0], LP[1], panW, C.red, 1); b01_pan(RP[0], RP[1], panW, ink, 1);
   /* the mice on the pans, side view (nose right), 2 px per mm */
   const V = msView('right'), s = 2.0, mcx = V.box[0] + V.box[2] / 2;
-  part(RP[0] - mcx * s, RP[1] - 2, s, () => mouseSimple('right', { lw: 1.6, lineA: 0.55, fill: 'rgba(0,0,0,0)' }));
+  part(RP[0] - mcx * s, RP[1] - 2, s, () => mouseSimple('right', { lw: 1.8, hi: ['shell'], col: 'hero', lit: 0.8 }));
   part(LP[0] - mcx * s, LP[1] - 2 - fall * 230, s, () => mouseSimple('right', { lw: 2, hi: ['shell'], col: 'bad', lit: ep(t, s0 + 0.15, s0 + 0.45) }));
   text('59.0 g', LP[0], LP[1] + 46, { role: 'num', size: 30, weight: 800, color: C.red, align: 'center', alpha: ta });
-  text('29.3 g', RP[0], RP[1] + 46, { role: 'num', size: 30, weight: 700, color: C.mute, align: 'center', alpha: ta });
+  text('29.3 g', RP[0], RP[1] + 46, { role: 'num', size: 30, weight: 800, color: C.heroText, align: 'center', alpha: ta });
+  text('Theseus', RP[0], RP[1] + 76, { role: 'label', size: 20, color: C.heroText, align: 'center', alpha: ta });
 }
 function b01_bigBattery(t, s0, box, o = {}) {
   const [x, y, w, h] = box, ta = o.textA == null ? 1 : o.textA;
@@ -383,7 +476,7 @@ function b01_bigOptical(t, s0, box, o = {}) {
   rr(gx, gy, gw, gh, 14, null, C.ink, 4); rr(gx + gw + 4, gy + gh / 2 - 24, 16, 48, 5, C.ink);
   rr(gx + 10, gy + 10, gw - 20 - eatW * eat, gh - 20, 8, inkA(TH ? 0.42 : 0.5));
   if (eat > 0.01) { G.save(); G.setLineDash([10, 8]); G.strokeStyle = C.red; G.lineWidth = 3; rrPath(gx + 10 + gw - 20 - eatW, gy + 10, eatW, gh - 20, 8); G.globalAlpha = eat; G.stroke(); G.restore(); }
-  text(fmtN(B01_OPT.share * 100, 1) + ' %', gx + gw - 10 - eatW / 2, gy + gh + 46, { role: 'num', size: 30, weight: 800, color: C.red, align: 'center', alpha: ta * eat });
+  text(b01_optPct(), gx + gw - 10 - eatW / 2, gy + gh + 46, { role: 'num', size: 30, weight: 800, color: C.red, align: 'center', alpha: ta * eat });
   text('to the switches', gx + gw - 10 - eatW / 2, gy + gh + 78, { role: 'label', size: 19, color: C.red, align: 'center', alpha: ta * eat });
 }
 function b01_bigFlex(t, s0, box, o = {}) {
@@ -479,13 +572,54 @@ function b01_ledgerList(t, o = {}) {
     text('Nothing', r, y + 66, { role: 'num', size: 32, weight: 800, color: C.heroText, grad: C.heroGrad, align: 'right', alpha: kT });
   }
 }
+/* ---- the fold (FILM F1, one ledger): the six trades fly into the film's eight-chapter ledger, the strip every chapter
+   card carries (the kit's ledgerStrip geometry: eight bars across the stage, 16 px apart, the name under each). Each
+   flagship lands in the chapter whose compromise it makes; glide, surface and ownership light red as "most mice". The
+   close answers the same strip (b01_close) ---- */
+const B01_FOLD = { 'logitech-x3': 'intro', 'gw-hts-ultra': 'intro', 'razer-viper-v4-pro': 'click', 'finalmouse-ulx': 'shell', 'pulsar-x2f-crazylight': 'shape', 'xbab-xa25': 'elec' };
+const B01_FLAGS = { intro: 'X3, HTS Ultra 8K', click: 'Viper V4 Pro', shell: 'UltralightX', shape: 'X2F CrazyLight', elec: 'XA25' };
+/** the strip's bars: { ch: [x, w] } over [x, x + w] (the kit's ledgerStrip geometry) */
+function b01_stripGeo(x, w) { const n = LEDGER.length, gap = 16, cw = (w - gap * (n - 1)) / n, out = {}; LEDGER.forEach((e, i) => (out[e.ch] = [x + i * (cw + gap), cw])); return out; }
+/** the strip itself: o.red(ch) 0..1 (an open compromise filling red), o.blue(ch) 0..1 (answered, filling blue over it),
+   o.flag(ch) the small print under the name (o.flagA(ch) its alpha, o.flagCol(ch) its colour) */
+function b01_strip(t, y, o = {}) {
+  const G0 = b01_stripGeo(LM, RM - LM), a0 = o.a == null ? 1 : o.a; if (a0 <= 0.003) return G0;
+  LEDGER.forEach(e => {
+    const [x, w] = G0[e.ch], kr = o.red ? o.red(e.ch) : 0, kb = o.blue ? o.blue(e.ch) : 0;
+    rect(x, y, w, 4, { fill: C.track, alpha: a0 });
+    if (kr > 0) rect(x, y, w * kr, 4, { fill: C.red, alpha: a0 });
+    if (kb > 0) rect(x, y, w * kb, 4, { fill: C.hero, alpha: a0 });
+    text(e.name, x, y + 32, { role: 'label', size: 21, color: kb > 0.5 ? C.ink2 : kr > 0.5 ? C.ink : C.faint, alpha: a0 });
+    const f = o.flag ? o.flag(e.ch) : null;
+    if (f) text(f, x, y + 60, { role: 'small', size: 19, weight: 650, color: o.flagCol ? o.flagCol(e.ch) : C.red, alpha: a0 * (o.flagA ? o.flagA(e.ch) : 1), sentence: false, maxW: w });
+  });
+  return G0;
+}
+function b01_fold(t, t0) {
+  const a0 = ep(t, t0, t0 + 0.4); if (a0 <= 0.003) return;
+  const y = B01_STAGE.strip, land = {}, step = 0.18, fly = 0.55;
+  B01_TRADES.forEach((tr, i) => { const ch = B01_FOLD[tr.id], tl = t0 + 0.2 + i * step + fly; land[ch] = Math.min(land[ch] == null ? 99 : land[ch], tl); });
+  const tMost = t0 + 0.2 + B01_TRADES.length * step + fly + 0.2;
+  const redOf = ch => land[ch] != null ? ep(t, land[ch], land[ch] + 0.35, E.out3) : ep(t, tMost, tMost + 0.45, E.out3);
+  const G0 = b01_strip(t, y, { a: a0, red: redOf, flag: ch => B01_FLAGS[ch] || 'Most mice', flagA: ch => land[ch] != null ? ep(t, land[ch], land[ch] + 0.3) : ep(t, tMost + 0.2, tMost + 0.5), flagCol: ch => B01_FLAGS[ch] ? C.red : C.mute });
+  text('The film\'s ledger: one compromise a chapter', LM, y - 22, { role: 'label', size: 20, color: C.mute, alpha: a0 });
+  /* each trade's red figure flies from its row to its chapter's bar */
+  B01_TRADES.forEach((tr, i) => {
+    const ts = t0 + 0.2 + i * step, k = prog(t, ts, ts + fly); if (k <= 0 || k >= 1) return;
+    const [bx, bw] = G0[B01_FOLD[tr.id]], x0 = RM - 70, y0 = b01_rowY(i) + 58, x1 = bx + bw / 2, y1 = y, e = E.io3(k);
+    const px = lerp(x0, x1, e), py = lerp(y0, y1, e) - Math.sin(Math.PI * e) * 40, sc = lerp(1, 0.82, e);
+    const lab = tr.fig, wv = tw(lab, { role: 'num', size: 24 * sc, weight: 800 }) + 18;
+    rr(px - wv / 2, py - 18 * sc, wv, 30 * sc, 8, C.red, null, 0, 1 - ep(t, ts + fly - 0.1, ts + fly));
+    text(lab, px, py + 3 * sc, { role: 'num', size: 24 * sc, weight: 800, color: '#FFFFFF', align: 'center', alpha: 1 - ep(t, ts + fly - 0.1, ts + fly) });
+  });
+}
 S({
-  id: 'b01_compromise', ch: 'intro', theme: 'paper', title: 'Every flagship compromises', settle: 9,
+  id: 'b01_compromise', ch: 'intro', theme: 'paper', title: 'Every flagship compromises', settle: 10.5,
   replaces: ['flagships', 'thesis'],
   src: ['b01X3', 'b01X3Psn', 'b01X3Pcg', 'b01TpuHtsU', 'b01GwHtsU', 'b01Optical', 'clk_d2fp', 'ntrTpuV4', 'b01RtUlx', 'rtingsUlx', 'b01X2f', 'b01X2fWt', 'x2fCrazy', 'b01X2Trace', 'exXbabWeight', 'ntrStores', 'ntrRazerV4', 'nbcUlx', 'exRtings'],
   answers: [
-    ['flagships: "need to derive all empty data"', 'No blanks left: each flagship shows the one thing it trades, and every one has its figure, sourced (Logitech, TechPowerUp, RTINGS, Pulsar, XBAB) or derived and marked so (the Viper V4 Pro\'s 17.6 %, worked from Omron\'s optical pulse and its own battery). The other numbers sit in each row\'s small print, none blank'],
-    ['flagships: "it bothers me when one number has more decimal places than others"', 'One precision per kind: every weight to 0.1 g (59.0, 31.0, 38.0, 29.5, 24.9, and Theseus 29.3), hours whole, the optical share to 0.1 % (17.6 %, not rounded up to 18)'],
+    ['flagships: "need to derive all empty data"', 'No blanks left: each flagship shows the one thing it trades, and every one has its figure, sourced (Logitech, TechPowerUp, RTINGS, Pulsar, XBAB) or derived and marked so (the Viper V4 Pro\'s 13.6 %, worked from Omron\'s optical pulse and its own battery). The other numbers sit in each row\'s small print, none blank'],
+    ['flagships: "it bothers me when one number has more decimal places than others"', 'One precision per kind: every weight to 0.1 g (59.0, 31.0, 38.0, 29.0, 24.9, and Theseus 29.3), hours whole, the optical share to 0.1 % (13.6 %, rounded down, never up)'],
     ['flagships: "superstrike x3 is more of a flagship than gpx2"', 'The GPX2 is gone; Logitech\'s flagship is the Pro X3 Superstrike (launched 2026-09-23): its 59.0 g tips a balance against a 29.3 g mouse'],
     ['thesis: "all of these numbers feel very random"', 'The eight specimen tiles are gone. Every number here belongs to a named flagship\'s trade, with its source in the foot line'],
     ['thesis: "the message is good but you can add it to the slide about other companies misadvertising weights"', 'Done: b01_listed (Listed against weighed) carries it ("the weight on the card is the scale\'s"); here it closes the slide in one line, "Optimization over opinion: measure every trade, then design it out"'],
@@ -495,7 +629,8 @@ S({
   draw: t => {
     header(t, 'Every flagship compromises');
     captions(t, [[0.3, 'Six flagships, six trades: each one gives something up to win something else.'],
-      [6.1, 'Theseus gives up nothing. Optimization over opinion: measure every trade, then design it out.']]);
+      [6.1, 'Theseus gives up nothing. Optimization over opinion: measure every trade, then design it out.'],
+      [7.4, 'Eight chapters, eight compromises: each trade lands in its chapter, and three more that most mice make.']]);
     const SB = B01_STAGE.box, n = B01_TRADES.length, Lt = B01_STAGE.list, tT = b01_beatT(n) + 0.05;
     /* the stage: the beat in play, big; as it ends it flies into its row */
     B01_TRADES.forEach((tr, i) => {
@@ -507,9 +642,9 @@ S({
       const kw = kin * (1 - ep(t, end - 0.38, end - 0.22));
       text(tr.brand, LM, 312, { role: 'label', size: 22, color: C.mute, alpha: kw });
       text(tr.name, LM - 2, 364, { role: 'h2', size: 50, color: C.ink, alpha: kw });
-      text('Gives up ' + tr.what.toLowerCase(), LM, 838, { role: 'label', size: 22, color: C.red, alpha: kw });
-      const fr = text(tr.fig, LM - 3, 928, { role: 'd1', size: 88, weight: 800, track: -0.02, color: C.red, alpha: kw, tnum: false });
-      text('for ' + tr.why.charAt(0).toLowerCase() + tr.why.slice(1), LM + fr.w + 36, 922, { role: 'small', size: 27, weight: 600, color: C.ink2, alpha: kw, sentence: false });
+      text('Gives up ' + tr.what.toLowerCase(), LM, 813, { role: 'label', size: 22, color: C.red, alpha: kw });
+      const fr = text(tr.fig, LM - 3, 903, { role: 'd1', size: 88, weight: 800, track: -0.02, color: C.red, alpha: kw, tnum: false });
+      text('for ' + tr.why.charAt(0).toLowerCase() + tr.why.slice(1), LM + fr.w + 36, 897, { role: 'small', size: 27, weight: 600, color: C.ink2, alpha: kw, sentence: false });
     });
     /* Theseus lands: whole, blue, nothing given up, and the six trades it doesn't make */
     const kT = ep(t, tT, tT + 0.3);
@@ -517,9 +652,10 @@ S({
       b01_bigTheseus(t, tT, SB);
       text('Nitrite Labs', LM, 312, { role: 'label', size: 22, color: C.heroText, alpha: kT });
       text('Theseus', LM - 2, 364, { role: 'h2', size: 50, color: C.heroText, grad: C.heroGrad, alpha: kT });
-      text('Gives up', LM, 838, { role: 'label', size: 22, color: C.heroText, alpha: kT });
-      text('Nothing', LM - 3, 928, { role: 'd1', size: 88, weight: 800, track: -0.02, color: C.heroText, grad: C.heroGrad, alpha: kT, rise: [tT + 0.12, 0.6], t });
-      [['Weight', '29.3 g'], ['Battery', '200 h'], ['To its clicks', '0 %'], ['Strength', 'Solid, arched'], ['The shape', 'Full, 119.3 mm'], ['Wireless', 'Dual 8khz wired and wireless']].forEach(([wd, v], j) => {
+      const kG = kT * (1 - ep(t, B01_STAGE.fold - 0.3, B01_STAGE.fold));
+      text('Gives up', LM, 813, { role: 'label', size: 22, color: C.heroText, alpha: kG });
+      text('Nothing', LM - 3, 903, { role: 'd1', size: 88, weight: 800, track: -0.02, color: C.heroText, grad: C.heroGrad, alpha: kG, rise: [tT + 0.12, 0.6], t });
+      [['Weight', '29.3 g'], ['Battery life at 1 khz', THESEUS.hours + ' h'], ['Spent on clicks', b01_mechPct()], ['Strength', 'Solid, arched'], ['The shape', 'Full, 119.3 mm'], ['Wireless', 'Dual 8khz wired and wireless']].forEach(([wd, v], j) => {
         const yy = 436 + j * 60, kj = ep(t, tT + 0.4 + j * 0.07, tT + 0.75 + j * 0.07);
         if (j) line(560, yy - 40, 1110, yy - 40, { color: C.hair, w: 1, alpha: kj });
         text(wd, 560, yy, { role: 'label', size: 20, color: C.mute, alpha: kj });
@@ -527,19 +663,22 @@ S({
       });
     }
     b01_ledgerList(t, { rowT: i => b01_beatT(i + 1) - 0.04, thsT: tT + 0.25 });
-    source(t, 'Weights to 0.1 g: TechPowerUp and RTINGS scales, makers\' figures, the X2F as reported (Pulsar: 29 g ± 2). 17.6 %: Omron\'s optical pulse over the V4 Pro\'s 306 mAh in 180 h.', { t0: 0.6 });
+    b01_fold(t, B01_STAGE.fold);
+    source(t, 'Weights to 0.1 g: TechPowerUp\'s scale (HTS Ultra 8K, ± 1 g; UltralightX, 2023 medium, which it found to "flex" and "creak"), else makers\' (X3; X2F, Pulsar\'s 29 g ± 2; XA25). ' + b01_optPct() + ' and ' + b01_mechPct() + ', derived: Logitech\'s own 96 h optical against 104 h hybrid (G Pro X Superlight 2, 290 mAh, 1 khz) put two switches\' optics at 0.23 mA, on a Viper V4 Pro\'s 306 mAh over 180 h; a mechanical read, about 3 µA', { t0: 0.6 });
   }
 });
 
 /* ================================ 5. Why lighter wins (his important idea, F9.26, F33.5) ================================
    Argued from F = m · a, not "overall speed" (his note): the same push stops and turns half the mass in half the time.
    The classroom version first (two carts, the same push back on each: OpenStax College Physics 2e §4.3), then the same
-   physics on a flick: a mouse crosses its target at 0.5 m/s and the same finger push, 0.54 N (one GT01 click's force, the
-   kit's SCALE.click), brakes it and brings it back. Time since crossing τ: brake to a stop in m v / F over m v² / 2F, then
-   back to the target in 2 √(d m / F) (push half way, brake half way). Pro X3 Superstrike 59.0 g: 132 ms; Theseus 29.3 g:
-   66 ms. The player fires at 70 ms: Theseus is on the target, the X3 is 12.6 mm past it. The mouse's own inertia only: the
-   hand's comes on top (b01HandMass), said in the foot line. */
-const B01_LT = { v: 0.5, F: SCALE.click.N, slow: 20, mR: 0.059, tF: 3.3, fire: 0.07, tc: 0.3 };
+   physics on the mouse: it crosses its target at 0.5 m/s and the same push, 0.54 N (one GT01 click's force, the kit's
+   SCALE.click), brakes it and brings it back. Time since crossing τ: brake to a stop in m v / F over m v² / 2F, then back
+   to the target in 2 √(d m / F) (push half way, brake half way): (1 + √2) m v / F in all, linear in the moving mass.
+   In a hand, the fingers move too: the total is k × (fingers + mouse), and the mouse's own part, k × mouse, is the same
+   whatever the fingers weigh. So the slide claims exactly that part (the model auditor's M-b01-1): Pro X3 Superstrike
+   59.0 g adds 132 ms to a correction, Theseus 29.3 g adds 66 ms, and half the force goes into the mouse. No shot at a
+   fixed time: a hit or a miss would depend on the fingers' unknown mass. No pad friction (said in the foot line). */
+const B01_LT = { v: 0.5, F: SCALE.click.N, slow: 20, mR: 0.059, tF: 3.3, tc: 0.3 };
 /** the flick's numbers for a mass m (kg): { a (m/s²), ts (s to stop), d (mm of overshoot), tr (s back to the target), total } */
 function b01_flickInfo(m) { const F = B01_LT.F, v = B01_LT.v, a = F / m, ts = m * v / F, d = v * v / (2 * a), tr = 2 * Math.sqrt(d / a); return { a, ts, d: d * 1000, tr, total: ts + tr }; }
 /** mm past the target, τ s after the mouse crosses it (negative before) */
@@ -563,46 +702,33 @@ function b01_cart(x, yT, mult, o = {}) {
   if (mult === 2) rr(x + 22, by - 34, bw - 44, 34, 4, inkA(TH ? 0.16 : 0.22), ln, 2, a);
   if (!o.ghost) text(mult === 2 ? '2×' : '1×', x + bw / 2, mult === 2 ? by - 10 : by + 27, { role: 'label', size: 19, color: C.ink2, align: 'center', alpha: a });
 }
-/** the player's screen for one lane: a target, the crosshair moved by the mouse (p mm past the target), and the shot at
-   fire time: HIT (a blue ring) or MISS (a red ×), in the kit's shotInset look, but driven by the flick's own physics */
-function b01_scope(t, x, y, w, h, p, shotT, o = {}) {
-  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
-  demoWindow(x, y, w, h, a, { fill: C.track });
-  const tx = x + w * 0.42, ty = y + h * 0.5, tr = 10, k = o.k || 7, cx = tx + p * k, ch = C.ink;
-  clipped(x, y, w, h, () => {
-    circle(tx, ty, tr * 2.4, { color: inkA(0.18), w: 1.5, alpha: a }); circle(tx, ty, tr, { fill: C.ink, alpha: a });
-    if (t >= shotT) {
-      const kh = prog(t, shotT, shotT + 0.4), hit = Math.abs(o.pShot * k) < tr * 0.8, sx = tx + o.pShot * k;
-      if (hit) { circle(tx, ty, tr * (1.4 + 1.6 * E.out3(kh)), { color: C.hero, w: 3 * (1 - kh) + 0.5, alpha: a * (1 - kh * 0.7) }); circle(sx, ty, tr * 0.42, { fill: C.hero, alpha: a }); }
-      else { const r = tr * 0.6; line(sx - r, ty - r, sx + r, ty + r, { color: C.red, w: 3.5, alpha: a }); line(sx - r, ty + r, sx + r, ty - r, { color: C.red, w: 3.5, alpha: a }); }
-      text(hit ? 'Hit' : 'Miss', x + w - 18, y + 34, { role: 'label', size: 22, color: hit ? C.heroText : C.red, align: 'right', alpha: a * ep(t, shotT, shotT + 0.2) });
-    }
-    const g = tr * 0.9, l2 = tr * 1.5;
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) line(cx + dx * g, ty + dy * g, cx + dx * (g + l2), ty + dy * (g + l2), { color: ch, w: 2.5, alpha: a });
-    circle(cx, ty, 1.8, { fill: ch, alpha: a });
-  });
-  if (o.label) text(o.label, x + 18, y + h - 16, { role: 'label', size: 19, color: C.mute, alpha: a });
-}
 S({
   id: 'b01_lighter', ch: 'intro', theme: 'night', title: 'Why lighter wins', settle: 10.5, ideas: ['weight'],
   replaces: ['zerograms'],
-  src: ['b01OpenStax', 'exZk', 'exConroy', 'b01X3', 'clk_gt01', 'b01HandMass'],
+  src: ['b01OpenStax', 'exZk', 'exConroy', 'b01X3', 'clk_gt01', 'b01FingerMass', 'b01HandMass'],
   answers: [
     ['zerograms: "needs more reasoning, argument feels weak here"', 'The argument is worked on screen from F = m · a: first the classroom demonstration (two carts given the same push back; the one with half the mass stops in half the time and half the distance and turns back first; OpenStax College Physics 2e §4.3), then the same physics on a flick, where the same 0.54 N finger push brings a 29.3 g Theseus back onto its target in 66 ms against 132 ms for the 59.0 g Pro X3 Superstrike'],
-    ['zerograms: "it should be more about theoretical ease of control and target changing speed"', 'It is now only that: how fast each mouse stops, turns and settles on a new target under the same push (back on target 132 → 66 ms, the shot at 70 ms a miss and a hit), and ease of control said outright: half the mass needs half the push for the same move'],
-    ['zerograms: "overall speed feels outlandish"', 'Gone: no claim about overall speed or time to cross the screen. The only numbers are the mouse\'s own stop and turn under one push, and the foot line says they are the mouse\'s share (the hand\'s own mass comes on top)'],
-    ['F9.26 (argue it from F = m · a, don\'t argue against it)', 'Argued from F = m · a and sold: "Half the push for the same move", no hedge'],
-    ['F33.5 (an important idea, vastly improved)', 'A classroom demonstration, a physics-driven flick on two named mice with the same input, the shot it decides, and the verdict, in place of three lanes of pucks'],
-    ['F33.7 (a higher skill ceiling as a selling point)', 'The payoff line: the same hands, finer control, a higher skill ceiling']
+    ['zerograms: "it should be more about theoretical ease of control and target changing speed"', 'It is now only that: how fast each mouse stops, turns and settles back on its target under the same push (the time the mouse itself adds to a correction, 132 → 66 ms, run on a bar in real milliseconds), and ease of control said outright: half the force spent on the mouse'],
+    ['zerograms: "overall speed feels outlandish"', 'Gone: no claim about overall speed or time to cross the screen. The only numbers are the mouse\'s own stop and turn under one push, labelled on screen as the mouse\'s own part'],
+    ['F9.26 (argue it from F = m · a, don\'t argue against it)', 'Argued from F = m · a and sold without a hedge, in words that are exactly true: "Half the force spent on the mouse", the mouse\'s share of every correction halved'],
+    ['F33.5 (an important idea, vastly improved)', 'A classroom demonstration, then the same physics on two named mice with the same push, the time each adds running on a bar, and the verdict, in place of three lanes of pucks'],
+    ['F33.7 (a higher skill ceiling as a selling point)', 'The payoff line: the same hands, finer control, a higher skill ceiling'],
+    ['Integrator: the headline must hold exactly as printed (the hand weighs far more than the mouse)', 'Scoped to where it is exact: every time grows with all the moving mass (k × (fingers + mouse)), so the slide claims the mouse\'s own part, k × mouse, which halves whatever the fingers weigh: the lanes, the time bars and the verdict say "the time the mouse itself adds", the caption names the arm\'s and the fingers\' parts, and the 70 ms shot is gone (it held only with no finger mass)'],
+    ['M-b01-1 (finger mass: the headline holds only if nothing but the mouse moves)', 'Fixed by claiming the mouse\'s additive part, exact for any finger mass; the m_eff ratio (about 40 % sooner with 10 to 20 g of fingertip) waits for Q2\'s finger-segment masses'],
+    ['M-b01-2 (say no pad friction and the constant push)', 'The foot line says both: 0.54 N, a GT01 click, and no pad friction'],
+    ['R-b01-8 (headline what does not depend on the assumptions)', 'The verdict\'s label now names its conditions (0.5 m/s and 0.54 N) and its net, −50 %, is the part fixed by the masses; beside it the honest floor for a player\'s hand: with up to 45 g of fingertip moving too (Mirakhorlo 2016, derived), at least 28 % less time'],
+    ['R-b01-9 (the shot\'s 70 ms is picked)', 'Removed: no shot at a chosen time'],
+    ['R-b01-10 (dim the classroom once the flick starts)', 'The classroom panel dims to half as the mouse lanes start'],
+    ['M-b01-3 (don\'t imply studies show lighter aims better)', 'Nothing on the slide cites a study of aim; it is a physics argument from F = m · a only']
   ],
   draw: t => {
     header(t, 'Why lighter wins');
     captions(t, [[0.3, 'The classroom version: the same push on two carts. Half the mass stops and turns back in half the time.'],
-      [2.9, 'Your flick is the same physics: the same finger push stops and turns 29.3 g twice as fast as 59.0 g.'],
-      [6.3, 'Back on the target in half the time, with half the push for the same move. That raises the skill ceiling.']]);
+      [2.9, 'The arm moves the hand; your fingers finish by pushing the mouse, and its part of that halves at 29.3 g.'],
+      [6.3, 'Whatever your fingers weigh, the mouse\'s share of each correction halves. A higher skill ceiling.']]);
     /* ---- the classroom version: two carts rolling right at the same speed, the same push back on each. On screen from
        frame one (M6): the panel is drawn and the carts are already rolling ---- */
-    const PN = [80, 262, 720, 572], inner = demoPanel(t, -0.8, PN, { src: 'OpenStax 2e, §4.3' });
+    const PN = [80, 262, 720, 552], inner = demoPanel(t, -0.8, PN, { src: 'OpenStax 2e, §4.3' });
     text('F = m · a', PN[0] + 28, PN[1] + 118, { role: 'h2', size: 44, color: C.ink, caps: false });
     text('Two carts, one twice the mass, the same push on each', PN[0] + 28, PN[1] + 156, { role: 'small', size: 24, weight: 600, color: C.mute, maxW: PN[2] - 56 });
     const tc = B01_LT.tc, v = 230, x0 = 236, aH = 115, tEnd = 2.3, tracks = [[PN[1] + 270, 2, aH], [PN[1] + 410, 1, aH * 2]];
@@ -619,37 +745,521 @@ S({
       const ts = v / acc, xs = X(ts) + 124, kst = ep(t, tc + ts, tc + ts + 0.25);
       if (kst > 0) { line(xs, yT - 6, xs, yT + 16, { color: C.ink, w: 2.5, alpha: kst }); text(mult === 2 ? 'Turns at {2t}' : 'Turns at {t}', xs, yT + 44, { role: 'label', size: 20, color: mult === 2 ? C.mute : C.ink, align: 'center', alpha: kst }); }
     });
+    { const kd = ep(t, B01_LT.tF - 0.4, B01_LT.tF + 0.3) * 0.5; if (kd > 0.003) rr(PN[0] - 4, PN[1] - 4, PN[2] + 8, PN[3] + 8, 14, C.bg, null, 0, kd); }
     text('Half the mass stops in half the time and half the distance, and is first to turn back.', inner[0], PN[1] + PN[3] - 62, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: inner[2], alpha: ep(t, 2.0, 2.4), lh: 1.3 });
-    /* ---- your flick: the same finger push on a 59.0 g and a 29.3 g mouse, slowed 20×, its movement drawn 5× larger ---- */
-    const lanes = [{ m: B01_LT.mR, name: 'Pro X3 Superstrike, 59.0 g', col: C.secondText, y: 292 }, { m: THESEUS.mass / 1000, name: 'Theseus, 29.3 g', col: C.heroText, y: 500, hero: true }];
-    const tF = B01_LT.tF, SL = B01_LT.slow, xt = 1110, sD = 1.6, sM = 8, V = msView('right'), shotT = tF + B01_LT.fire * SL;
-    text('Your flick, slowed 20×: the same 0.54 N push on both, one click\'s force', 840, 300, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 1000 });
+    /* ---- the mouse's own part of a correction: the same push on a 59.0 g and a 29.3 g mouse, slowed 20×, moves 5× larger.
+       Every time here grows with all the mass that moves (k × (fingers + mouse)), so the mouse's part, k × mouse, is its own
+       and halves whatever the fingers weigh (M-b01-1): the lanes and the verdict claim only that part ---- */
+    const lanes = [{ m: B01_LT.mR, name: 'Pro X3 Superstrike, 59.0 g', col: C.secondText, bar: C.second, y: 292 }, { m: THESEUS.mass / 1000, name: 'Theseus, 29.3 g', col: C.heroText, bar: C.hero, y: 500, hero: true }];
+    const tF = B01_LT.tF, SL = B01_LT.slow, xt = 1110, sD = 1.6, sM = 8, V = msView('right');
+    text('The mouse\'s own part, slowed 20×: the same 0.54 N push on each', 840, 300, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 1000 });
+    /* the time bars: 0 to 150 ms of real time since the mouse crossed its target */
+    const BX = 1470, BW = 370, msX = ms => BX + BW * Math.min(ms, 150) / 150;
     lanes.forEach((L, j) => {
-      const yT = L.y + 168, ka = 1, I = b01_flickInfo(L.m), tau = (t - tF) / SL, p = b01_flickP(L.m, Math.max(tau, -0.02));
-      if (ka <= 0.003) return;
-      text(L.name, 840, L.y + 52, { role: 'label', size: 22, color: L.col, alpha: ka });
-      line(840, yT, 1410, yT, { color: inkA(0.35), w: 2, alpha: ka });
-      line(xt, yT + 10, xt, L.y + 74, { color: inkA(0.5), w: 1.5, dash: [6, 6], alpha: ka });
+      const yT = L.y + 168, I = b01_flickInfo(L.m), tau = (t - tF) / SL, p = b01_flickP(L.m, Math.max(tau, -0.02));
+      text(L.name, 840, L.y + 52, { role: 'label', size: 22, color: L.col });
+      line(840, yT, 1410, yT, { color: inkA(0.35), w: 2 });
+      line(xt, yT + 10, xt, L.y + 74, { color: inkA(0.5), w: 1.5, dash: [6, 6] });
+      if (!j) text('Target', xt + 10, L.y + 94, { role: 'label', size: 21, color: C.mute });
       /* the sensor's path: a tick every 10 ms of the real flick, and a dashed ghost where it stopped */
-      for (let g = -0.02; g < tau - 0.004; g += 0.01) { const xg = xt + b01_flickP(L.m, g) * sM; line(xg, yT + 4, xg, yT + 14, { color: L.hero ? C.hero : C.ink2, w: 2, alpha: ka * 0.75 }); }
-      if (tau > I.ts) { const xs = xt + I.d * sM; part(xs, yT - 1, sD, () => mouseSimple('right', { lw: 1.4, lineA: 0.45, fill: 'rgba(0,0,0,0)' }), { alpha: ka * 0.8 });
-        text(fmtN(I.d, 1) + ' mm past', xs, yT + 40, { role: 'label', size: 19, color: L.hero ? C.heroText : C.mute, align: 'center', alpha: ka * ep(t, tF + I.ts * SL, tF + I.ts * SL + 0.3) }); }
+      for (let g = -0.02; g < tau - 0.004; g += 0.01) { const xg = xt + b01_flickP(L.m, g) * sM; line(xg, yT + 4, xg, yT + 14, { color: L.hero ? C.hero : C.ink2, w: 2, alpha: 0.75 }); }
+      if (tau > I.ts) { const xs = xt + I.d * sM; part(xs, yT - 1, sD, () => mouseSimple('right', { lw: 1.4, lineA: 0.45, fill: 'rgba(0,0,0,0)' }), { alpha: 0.8 });
+        text(fmtN(I.d, 1) + ' mm past', xs, yT + 40, { role: 'label', size: 19, color: L.hero ? C.heroText : C.mute, align: 'center', alpha: ep(t, tF + I.ts * SL, tF + I.ts * SL + 0.3) }); }
       const xm = xt + p * sM;
-      part(xm, yT - 1, sD, () => mouseSimple('right', { lw: 2, hi: L.hero ? ['shell'] : [], col: 'hero', lit: L.hero ? 0.6 : 0 }), { alpha: ka });
-      /* the finger's push: back while it brakes and heads home, forward as it eases onto the target */
+      part(xm, yT - 1, sD, () => mouseSimple('right', { lw: 2, hi: L.hero ? ['shell'] : [], col: 'hero', lit: L.hero ? 0.6 : 0 }));
+      /* the push: back while it brakes and heads home, forward as it eases onto the target */
       const dir = b01_flickPush(L.m, tau);
       if (dir) { const tip = dir < 0 ? xm + (V.box[0] + V.box[2]) * sD : xm + V.box[0] * sD; const fx = tip + (dir < 0 ? 4 : -4), fl = 56; forceArrow(fx, yT - 34, dir < 0 ? Math.PI : 0, fl, { k: 1, color: L.hero ? C.hero : C.ink }); text(fmtN(B01_LT.F, 2) + ' N', fx + (dir < 0 ? fl / 2 : -fl / 2), yT - 50, { role: 'num', size: 22, weight: 750, color: L.hero ? C.heroText : C.ink, align: 'center' }); }
-      /* back on the target: when, in real milliseconds */
-      const kb = ep(t, tF + I.total * SL, tF + I.total * SL + 0.3);
-      b01_scope(t, 1460, L.y + 56, 380, 150, p, shotT, { a: ka, pShot: b01_flickP(L.m, B01_LT.fire), label: j ? '' : 'Fired at 70 ms', k: 7 });
-      if (kb > 0) rich([{ s: fmtN(I.total * 1000, 0) + ' ms', role: 'num', size: 30, weight: 800, color: L.col }, { s: 'back on target', role: 'label', size: 19, color: C.mute, gap: 10 }], 1840, L.y + 232, { align: 'right', alpha: kb });
+      /* the time it adds, in real milliseconds: the bar runs while the mouse is off its target and stops when it is back */
+      const by = L.y + 150, msNow = Math.max(0, Math.min(tau, I.total) * 1000), back = tau >= I.total, kb = ep(t, tF + I.total * SL, tF + I.total * SL + 0.3);
+      if (!j) text('Time the mouse adds, ms', BX, L.y + 52, { role: 'label', size: 20, color: C.mute });
+      rr(BX, by - 9, BW, 18, 9, C.track);
+      for (const v of [0, 50, 100, 150]) { line(msX(v), by + 14, msX(v), by + 22, { color: inkA(0.4), w: 1.5 }); if (!j) text(String(v), msX(v), by + 46, { role: 'tick', color: C.mute, align: 'center' }); }
+      if (msNow > 0) rr(BX, by - 9, Math.max(18, msX(msNow) - BX), 18, 9, L.bar);
+      if (back) line(msX(I.total * 1000), by - 20, msX(I.total * 1000), by + 20, { color: L.col, w: 3, alpha: kb });
+      if (kb > 0) rich([{ s: fmtN(I.total * 1000, 0) + ' ms', role: 'num', size: 30, weight: 800, color: L.col }, { s: 'back on target', role: 'label', size: 19, color: C.mute, gap: 10 }], 1840, L.y + 112, { align: 'right', alpha: kb });
     });
     /* ---- the payoff ---- */
     const Rr = b01_flickInfo(B01_LT.mR), Tt = b01_flickInfo(THESEUS.mass / 1000);
-    verdict(t, 6.3, 840, 880, { from: Math.round(Rr.total * 1000), to: Math.round(Tt.total * 1000), unit: 'ms', dec: 0, size: 96, label: 'Back on target after a turn', better: 'lower', who: ['59.0 g', '29.3 g'] });
+    verdict(t, 6.3, 840, 880, { from: Math.round(Rr.total * 1000), to: Math.round(Tt.total * 1000), unit: 'ms', dec: 0, size: 96, label: 'The time the mouse itself adds, at 0.5 m/s and 0.54 N', better: 'lower', who: ['59.0 g', '29.3 g'], maxW: 1000 });
+    /* with the fingertips moving too: the honest floor (Q2: up to about 45 g of fingertip; times scale with all moving mass) */
+    { const mf = 45, cut = Math.floor((1 - (THESEUS.mass + mf) / (B01_LT.mR * 1000 + mf)) * 100 + 1e-9), kf = ep(t, 8.2, 8.7);
+      text('With your fingertips too', 1440, 862, { role: 'label', size: 21, color: C.mute, alpha: kf });
+      text('At least ' + cut + ' % less', 1440, 910, { role: 'h3', size: 34, weight: 800, color: C.heroText, alpha: kf, sentence: false });
+      text('Up to ' + mf + ' g of fingertip moving with it. Derived', 1440, 948, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: kf, maxW: 400, sentence: false }); }
     const kp2 = ep(t, 7.4, 7.9);
-    text('Half the push for the same move.', LM, 884, { role: 'h3', size: 34, weight: 800, color: C.ink, alpha: kp2, sentence: false });
-    text('The same hands, finer control: a higher skill ceiling.', LM, 926, { role: 'small', size: 26, weight: 600, color: C.heroText, alpha: ep(t, 7.7, 8.2), sentence: false });
-    source(t, 'Derived: m v ÷ F to stop, 2 √(d m ÷ F) back, at 0.5 m/s and 0.54 N (a GT01 click, Gateron). Moves drawn 5× larger. The mouse\'s own inertia only.', { t0: 3.0, maxW: 720 });
+    text('Half the force spent on the mouse.', LM, 858, { role: 'h3', size: 34, weight: 800, color: C.ink, alpha: kp2, sentence: false });
+    text('The same hands, finer control: a higher skill ceiling.', LM, 898, { role: 'small', size: 26, weight: 600, color: C.heroText, alpha: ep(t, 7.7, 8.2), sentence: false });
+    source(t, 'Derived: m v ÷ F to stop, 2 √(d m ÷ F) back, at 0.5 m/s and 0.54 N (a GT01 click), no pad friction. Times grow with all the mass that moves; these are the mouse\'s own. Moves drawn 5× larger.', { t0: 3.0, maxW: 740 });
+  }
+});
+
+/* ================================ 4. Battery life, traded for weight (F33.5; replaces market) ================================
+   His note on market: "make a bigger argument how most mice compromise battery life for weight; research harder to find
+   missing weights or derive". The argument, demonstrated: every wireless mouse that lists hours at 1 khz, by weight, and
+   the frontier of the most hours listed at each weight. The pointer drags a mouse lighter along that frontier, from the
+   Viper V4 Pro (48.9 g, 306 mAh, 180 h) to the G-Wolves HTX Mini 8K (26.9 g, 250 mAh, 80 h); on the right its battery,
+   drawn to scale by capacity inside the film's mouse, shrinks as the hours fall (cause on screen, M2). The lightest list
+   80 h, or none: five light mice list no hours and are shown with their batteries (210 to 300 mAh). Then Theseus at
+   29.3 g carries a battery bigger than the Viper's (370 mAh) and leaves the frontier for 200 h.
+   Not plotted: hours derived for rivals. A mouse's draw is its own (G-Wolves's 250 mAh lists 80 h; at the V4 Pro's draw it
+   would give 141 h), so a derived rival point would be a guess; their batteries are facts. Theseus's 200 h is derived at
+   the V4 Pro's draw and says so (models checked #2, #9). In between the two named mice the readouts are the frontier's,
+   in grey: no product sits there. */
+const B01_BT = { grab: 1.0, d0: 1.2, d1: 4.2, none: 4.6, ths: 5.2, verdict: 6.6, line: 7.6 };
+const B01_BT_NAME = { 'razer-viper-v4-pro': 'Viper V4 Pro', 'gw-htx-mini': 'HTX Mini 8K', 'gw-hts-ultra': 'HTS Ultra 8K', 'keychron-g3': 'Keychron G3', 'logitech-x3': 'Pro X3 Superstrike', 'gw-htr-pro': 'HTR Pro 8K', 'pulsar-x2f-crazylight': 'X2F', 'finalmouse-ulx': 'UltralightX', 'wlmouse-beast-x': 'Beast X', 'finalmouse-slx': 'Starlight X' };
+function b01_btData() {
+  if (b01_btData.v) return b01_btData.v;
+  const P = b01_battPts(), listed = P.filter(p => p.kind === 'listed'), none = P.filter(p => p.kind !== 'listed' && p.mAh).sort((a, b) => a.g - b.g);
+  const F = b01_front(listed.map(p => ({ x: p.g, y: p.h, p })), { x: -1, y: 1 }), curve = b01_frontCurve(F.map(q => [q.x, q.y]), [0.08, 0.08]);
+  const at = g => { for (let i = 1; i < curve.length; i++) if (curve[i][0] >= g) { const [x0, y0] = curve[i - 1], [x1, y1] = curve[i]; return y0 + (y1 - y0) * (g - x0) / Math.max(1e-9, x1 - x0); } return curve[curve.length - 1][1]; };
+  return (b01_btData.v = { listed, none, F, curve, at, hi: F[F.length - 1].p, lo: F[0].p });
+}
+/** a battery drawn to scale by capacity in the top view's mm (the example pouch, 35 × 25 mm at 4 mm thick, holds 370 mAh;
+   c mAh at the same thickness keeps its shape and scales its area by c / 370), centred where the key plan puts it */
+function b01_battRect(c) { const B = KEY_PARTS.battery, k = Math.sqrt(c / 370), cx = (B.x + B.w / 2) * MS_K.x, cy = (B.y + B.h / 2) * MS_K.y, w = B.w * k * MS_K.x, h = B.h * k * MS_K.y; return [cx - w / 2, cy - h / 2, w, h]; }
+S({
+  id: 'b01_battery', ch: 'intro', theme: 'paper', title: 'Battery life, traded for weight', settle: 11, ideas: ['battery', 'weight'],
+  replaces: ['market'],
+  src: ['exRtings', 'b01TpuHtsU', 'b01GwHtsU', 'b01Gw', 'exNbcV4', 'razerBatt', 'ntrKeychron', 'ntrDaV4', 'ntrXiaomi', 'ntrGpx2', 'ntrGpx2c', 'logiSuperstrike', 'ntrZowie', 'b01X3', 'b01X2f', 'b01TpuUlx', 'b01SlxBatt', 'ntrJauch'],
+  answers: [
+    ['market: "we need to make a bigger argument here how most mice compromise battery life for weight"', 'Demonstrated instead of plotted: the pointer drags a mouse lighter along the frontier of every mouse that lists hours, from the Viper V4 Pro (48.9 g, 180 h) to the HTX Mini 8K (26.9 g, 80 h), and its battery, drawn to scale inside it, shrinks from 306 to 250 mAh as the hours fall; the five lightest that list no hours appear with their batteries (210 to 300 mAh); then Theseus at 29.3 g carries 370 mAh, more than the Viper, and leaves the frontier for 200 h'],
+    ['market: "research harder to find missing weights or derive"', 'Twelve mice with listed hours and weights (scale weights where weighed), five more found with weights and batteries but no hours. Derived: Theseus\'s hours, from its battery at the Viper V4 Pro\'s draw (said in the foot line). Not derived for rivals: each mouse\'s draw is its own (G-Wolves\'s 250 mAh lists 80 h, where the V4 Pro\'s draw would give 141 h), so their batteries are shown instead of guessed hours'],
+    ['F33.5 (an important idea, vastly improved)', 'One causal demonstration: weight down, battery smaller, hours down, then the answer off the curve, with the verdict 80 → 200 h and what it means at 6 h a day'],
+    ['R-b01-4 (hours need their polling rate)', 'Every hour figure on the slide is at 1 khz and the axis says so'],
+    ['F27 (one precision per column) and F2.32', 'Weights to 0.1 g, hours whole, capacities in whole mAh; Theseus 29.3 g like the rest']
+  ],
+  draw: t => {
+    header(t, 'Battery life, traded for weight');
+    captions(t, [[0.3, 'Every wireless mouse that lists its battery life at 1 khz, by weight. The lighter it gets, the fewer the hours.'],
+      [4.4, 'Going lighter, the battery shrinks and the hours go: the lightest list 80 hours, or none at all.'],
+      [5.4, 'Give every light mouse the same draw: their batteries last 118 to 169 hours. Theseus\'s 370 mAh, 200.']]);
+    const D = b01_btData(), T = B01_BT, x0 = 190, y0 = 300, w = 820, h = 470;
+    const m = axes(t, { t0: -1, x: x0, y: y0, w, h, xr: [20, 64], yr: [0, 220], xticks: [20, 30, 40, 50, 60], yticks: [0, 50, 100, 150, 200], xfmt: v => v + ' g', yfmt: v => v + ' h', ylabel: 'Battery life at 1 khz' });
+    text('Weight', x0 + w + 18, y0 + h + 34, { role: 'label', size: 21, color: C.mute });
+    legend(t, -1, x0, y0 + h + 72, [{ kind: 'line', color: C.ink, label: 'Most hours listed' }, { kind: 'dot', color: C.comp, label: 'Hours listed' }, { kind: 'ring', color: C.comp, label: 'Battery at the same draw' }], { size: 20 });
+    /* the drag: a weight along the frontier, from the Viper V4 Pro to the HTX Mini 8K */
+    const kd = E.io3(prog(t, T.d0, T.d1)), g = lerp(D.hi.g, D.lo.g, kd), hrs = D.at(g), onEnd = t < T.d0 + 0.05 || t > T.d1 - 0.05;
+    const kT = ep(t, T.ths, T.ths + 0.4), kAll = ep(t, T.d1, T.d1 + 0.6);
+    /* the frontier: drawn as the marker traces it, then whole (its extensions carry on its own slopes, no kink) */
+    { const pts = D.curve.filter(p => p[0] >= Math.min(g, D.hi.g) - 1e-6 && p[0] <= D.hi.g + 1e-6).map(p => [m.X(p[0]), m.Y(p[1])]);
+      if (t > T.d0 && pts.length > 1) poly(pts, { color: C.ink, w: 3 });
+      if (kAll > 0) poly(D.curve.filter(p => p[0] >= 20 && p[0] <= 64).map(p => [m.X(p[0]), m.Y(p[1])]), { color: C.ink, w: 3, alpha: kAll }); }
+    /* the market: every mouse that lists hours (grey; the ledger's HTS Ultra 8K in the rival's yellow) */
+    for (const p of D.listed) {
+      const rival = p.id === 'gw-hts-ultra', px = m.X(p.g), py = m.Y(p.h);
+      circle(px, py, rival ? 8 : 7, { fill: rival ? C.second : C.comp });
+      const nm = B01_BT_NAME[p.id]; if (!nm || p.id === 'gw-htx-mini' && t < T.d1 - 0.3) continue;
+      const right = !['razer-viper-v4-pro', 'keychron-g3', 'gw-htx-mini'].includes(p.id), dy = { 'keychron-g3': 22, 'gw-hts-ultra': 26, 'gw-htx-mini': 30 }[p.id] || -12;
+      text(nm + ', ' + fmtN(p.g, 1) + ' g', px + (right ? 14 : -14), py + dy, { role: 'label', size: 19, color: rival ? C.secondText : C.mute, align: right ? 'left' : 'right' });
+    }
+    /* the lightest that list no hours: on the axis, with their batteries */
+    { const kn = ep(t, T.none, T.none + 0.5), rows = [], RH = 26;
+      if (kn > 0) {
+        text('No hours listed at 1 khz', x0 + w - 6, y0 + h - 18, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kn * (1 - ep(t, T.ths + 0.2, T.ths + 0.5)) });
+        D.none.forEach((p, i) => {
+          const px = m.X(p.g), lab = (B01_BT_NAME[p.id] || p.short) + ' ' + p.mAh + ' mAh', lw0 = tw(lab, { role: 'label', size: 19 }) + 16;
+          let r = 0; while (rows[r] != null && rows[r] > px - lw0 / 2) r++; rows[r] = px + lw0 / 2;
+          const ka = kn * ep(t, T.none + i * 0.08, T.none + i * 0.08 + 0.3), ly = y0 + h - 20 - r * RH;
+          /* at Theseus's beat every battery is given the same draw as Theseus's: it rises to its hours there (hollow) */
+          const kr = E.io3(prog(t, T.ths + 0.4 + i * 0.06, T.ths + 1.3 + i * 0.06)), hy = lerp(y0 + h, m.Y(b01_hoursAt(p.mAh, p.V)), kr), kl = ka * (1 - ep(t, T.ths + 0.2, T.ths + 0.5));
+          circle(px, hy, 7, { fill: C.bg, alpha: ka }); circle(px, hy, 7, { color: C.comp, w: 2.5, alpha: ka });
+          if (kl > 0.003) { line(px, y0 + h - 9, px, ly + 6, { color: C.hair, w: 1.2, alpha: kl }); text(lab, px, ly, { role: 'label', size: 19, color: C.ink2, align: 'center', alpha: kl }); }
+          if (p.id === 'pulsar-x2f-crazylight' && kr > 0.5) text('X2F, ' + fmtN(b01_hoursAt(p.mAh, p.V), 0) + ' h', px + 14, hy + 26, { role: 'label', size: 19, color: C.ink2, alpha: ep(t, T.ths + 1.2, T.ths + 1.5) });
+        });
+        /* the HTX Mini 8K's own battery at the same draw: above its listed 80 h */
+        { const lo = D.lo, hl = b01_hoursAt(lo.mAh, lo.V), kr = E.io3(prog(t, T.ths + 0.5, T.ths + 1.4));
+          if (kr > 0.003) { line(m.X(lo.g), m.Y(lo.h) - 8, m.X(lo.g), lerp(m.Y(lo.h), m.Y(hl), kr) + 8, { color: C.comp, w: 1.5, dash: [4, 4] }); circle(m.X(lo.g), lerp(m.Y(lo.h), m.Y(hl), kr), 7, { fill: C.bg }); circle(m.X(lo.g), lerp(m.Y(lo.h), m.Y(hl), kr), 7, { color: C.comp, w: 2.5 }); }
+          }
+        } }
+    /* the marker the pointer drags, and the pointer */
+    const kM = 1 - kT;
+    if (kM > 0.01) { const mx = m.X(g), my = m.Y(hrs); circle(mx, my, 14, { color: C.ink, w: 3, alpha: kM }); circle(mx, my, 5, { fill: C.ink, alpha: kM });
+      cursorPtr(mx + 6, my + 8, { a: ep(t, T.grab - 0.3, T.grab) * (1 - ep(t, T.d1 + 0.1, T.d1 + 0.4)), press: t > T.grab && t < T.grab + 0.45 ? prog(t, T.grab, T.grab + 0.45) : 0, grab: t > T.grab && t < T.d1 + 0.1 }); }
+    /* Theseus leaves the frontier: from the frontier's hours at its weight up to its own */
+    const gT = THESEUS.mass, hF = D.at(gT), kR = E.out3(prog(t, T.ths + 0.2, T.ths + 1.2)), hNow = lerp(hF, THESEUS.hours, kR);
+    if (kT > 0.003) {
+      line(m.X(gT), m.Y(hF), m.X(gT), m.Y(hNow), { color: C.hero, w: 2.5, dash: [6, 6], alpha: kT });
+      heroMark(m.X(gT), m.Y(hNow), 12, kT);
+      text('Theseus, 29.3 g, ' + fmtN(hNow, 0) + ' h', m.X(gT), m.Y(hNow) - 24, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: kT });
+    }
+    /* the mouse on the right, its battery drawn to scale by capacity */
+    const rival = D.hi.mAh + (D.lo.mAh - D.hi.mAh) * (D.hi.g - g) / (D.hi.g - D.lo.g), cap = lerp(rival, 370, E.out3(prog(t, T.ths + 0.1, T.ths + 0.9)));
+    const V = msView('top'), sc = 3.5, mcx = 1385, mcy = 575, ox = mcx - (V.box[0] + V.box[2] / 2) * sc, oy = mcy - (V.box[1] + V.box[3] / 2) * sc;
+    part(ox, oy, sc, () => {
+      mouseSimple('top', { lw: 2.2, hi: kT > 0 ? ['shell'] : [], col: 'hero', lit: kT * 0.75 });
+      const [bx, by, bw, bh] = b01_battRect(cap), heroB = kT > 0.5;
+      G.save(); G.globalAlpha = PA; rrPath(bx, by, bw, bh, 1.6); G.fillStyle = heroB ? 'rgba(10,132,255,0.22)' : inkA(TH ? 0.12 : 0.2); G.fill(); G.lineWidth = lw(2.2); G.strokeStyle = heroB ? C.hero : C.ink; G.stroke();
+      if (kT > 0) { const [gx, gy, gw, gh] = b01_battRect(D.lo.mAh); G.globalAlpha = PA * kT; G.setLineDash([lw(5), lw(4)]); G.lineWidth = lw(1.6); G.strokeStyle = C.ink2; rrPath(gx, gy, gw, gh, 1.6); G.stroke(); }
+      G.restore();
+    });
+    { const [bx, by, bw, bh] = b01_battRect(cap); text(fmtN(cap, 0) + ' mAh', ox + (bx + bw / 2) * sc, oy + (by + bh / 2) * sc + 7, { role: 'num', size: 20, weight: 750, color: kT > 0.5 ? C.heroText : (onEnd ? C.ink : C.mute), align: 'center' }); }
+    /* the readouts: whose mouse, its weight, its battery life */
+    const RX = 1590, who = kT > 0.5 ? ['Nitrite Labs', 'Theseus'] : t < T.d0 + 0.05 ? ['Razer', 'Viper V4 Pro'] : t > T.d1 - 0.05 ? ['G-Wolves', 'HTX Mini 8K'] : ['Along the frontier', 'No product here'];
+    const ink = kT > 0.5 ? C.heroText : onEnd ? C.ink : C.mute, gNow = lerp(g, gT, E.out3(prog(t, T.ths, T.ths + 0.6))), hShow = kT > 0 ? lerp(D.lo.h, THESEUS.hours, kR) : hrs;
+    text(who[0], RX, 360, { role: 'label', size: 20, color: kT > 0.5 ? C.heroText : C.mute });
+    text(who[1], RX, 398, { role: 'h3', size: 30, weight: 750, color: ink, sentence: false });
+    text('Weight', RX, 456, { role: 'label', size: 20, color: C.mute });
+    rich([{ s: fmtN(gNow, 1), role: 'd1', size: 56, weight: 800, color: ink, tnum: true }, { s: 'g', role: 'small', size: 26, weight: 700, color: C.mute, gap: 8, sentence: false }], RX, 516);
+    text('Battery life at 1 khz', RX, 576, { role: 'label', size: 20, color: C.mute });
+    rich([{ s: fmtN(hShow, 0), role: 'd1', size: 56, weight: 800, color: ink, grad: kT > 0.5 ? C.heroGrad : null, tnum: true }, { s: 'h', role: 'small', size: 26, weight: 700, color: C.mute, gap: 8, sentence: false }], RX, 636);
+    if (kT > 0.5) pill(RX, 670, 'derived', kT, { by: 'V4 Pro draw' });
+    /* the verdict and what it means */
+    const same = Math.ceil(b01_hoursAt(D.lo.mAh, D.lo.V));   /* a rival's figure rounded up: against Theseus */
+    verdict(t, T.verdict, 1180, 935, { from: same, to: THESEUS.hours, unit: 'h', dec: 0, size: 84, label: 'Under 32 g, same draw', better: 'higher', maxW: 660 });
+    { const k = ep(t, T.line, T.line + 0.5), day = 6;
+      rich([{ s: 'At ' + day + ' hours a day:', role: 'small', size: 28, weight: 700, color: C.ink }, { s: 'a charge every ' + Math.floor(THESEUS.hours / day) + ' days, not every ' + Math.floor(same / day) + '.', role: 'small', size: 28, weight: 700, color: C.heroText, gap: 10 }], x0 - 110, 888, { alpha: k }); }
+    source(t, 'Dots: makers\' listed hours at 1 khz. Rings: each battery at the Viper V4 Pro\'s draw (1.184 Wh over 180 h), as Theseus\'s 370 mAh (1.369 Wh) gives 208 h, shown as 200. That draw includes the Viper\'s optical switches and wheel, so Theseus\'s own save more on top.', { t0: 0.8, maxW: 1080 });
+  }
+});
+
+/* ================================ 5. Listed against weighed (replaces weightgap, rated 10/10) ================================
+   Kept: the data (every mouse RTINGS weighed against the weight its maker lists), the honesty (the signed gap, the ±3 %
+   band, Razer and Logitech singled out) and the thesis's message he asked for ("companies misadvertising weights"). Raised:
+   the motion. Each row's weight starts at the card's figure and runs to the scale's, its gap bar growing as it goes; a
+   mouse heavier than its card by more than 3 % turns red (the buyer was told less). Theseus comes last as a promise, not a
+   weighing (no unit exists yet): every unit weighed after assembly, the scale's figure printed on its card (models
+   checked #1). One precision: 0.1 g. */
+S({
+  id: 'b01_listed', ch: 'intro', theme: 'night', title: 'Listed against weighed', settle: 10, ideas: ['weight'],
+  replaces: ['weightgap'],
+  src: ['exRtings', 'exEloshapes', 'ntrB2g', 'ntrRtSlx', 'ntrEloSlx'],
+  answers: [
+    ['weightgap (10/10, no note)', 'Kept its data, its signed gap and its ±3 % band; raised the motion (each weight runs from the card\'s figure to the scale\'s as its bar grows; over 3 % heavier turns red) and gave Theseus\'s row as a promise, not a weighing'],
+    ['thesis: "a message about companies misadvertising weights"', 'The slide ends on it: "The weight on the card is the scale\'s", the worst gap struck against Theseus\'s 0.0 %, by design'],
+    ['F27 (one precision)', 'Every weight to 0.1 g']
+  ],
+  draw: t => {
+    header(t, 'Listed against weighed');
+    const R = typeof ntr_gapRows === 'function' ? ntr_gapRows() : [], big = R.filter(r => r.big), oth = R.filter(r => !r.big), nb = big.filter(r => Math.abs(r.gap) <= 3).length, nh = oth.filter(r => r.gap > 3).length;
+    captions(t, [[0.3, `Each mouse on a scale, against the weight its maker lists. Razer and Logitech: ${nb} of ${big.length} within 3 %.`],
+      [3.4, `${nh} of the other ${oth.length} weigh more than 3 % over their card: the buyer was told less than he got.`],
+      [6.0, 'Theseus: every unit weighed after assembly, and the weight on its card is the scale\'s.']]);
+    const all = R.concat([{ theseus: true }]), half = Math.ceil(all.length / 2), cols = [all.slice(0, half), all.slice(half)], colW = (RM - LM - 40) / 2, y0 = 300, rh = 38, lo = -7, hi = 13;
+    cols.forEach((rows, ci) => {
+      const x0 = LM + ci * (colW + 40), bx0 = x0 + 470, bw = colW - 470 - 92, X = v => bx0 + bw * (v - lo) / (hi - lo);
+      text('Mouse', x0, y0, { role: 'label', size: 21, color: C.mute });
+      text('Card → scale', x0 + 448, y0, { role: 'label', size: 21, color: C.mute, align: 'right' });
+      const yb0 = y0 + 18, yb1 = y0 + 18 + rh * rows.length;
+      rect(X(-3), yb0, X(3) - X(-3), yb1 - yb0, { fill: inkA(TH ? 0.05 : 0.07) });
+      for (const v of [-5, 0, 5, 10]) { line(X(v), yb0, X(v), yb1, { color: v ? C.hair : C.faint, w: v ? 1 : 1.5 }); text((v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) + ' %', X(v), y0, { role: 'tick', size: 20, color: v ? C.mute : C.ink, align: 'center' }); }
+      rows.forEach((r, i) => {
+        const y = yb0 + rh * i + rh / 2;
+        if (r.theseus) {
+          const k = ep(t, 5.6, 6.1);
+          rect(x0 - 8, y - rh / 2 + 2, colW + 16, rh - 4, { fill: C.heroSoft, alpha: k });
+          text('Theseus', x0, y + 8, { role: 'small', size: 24, weight: 800, color: C.heroText, alpha: k, sentence: false });
+          text('Every unit weighed', x0 + 448, y + 8, { role: 'small', size: 21, weight: 650, color: C.heroText, align: 'right', alpha: k, sentence: false });
+          heroMark(X(0), y, 12 * k, 1);
+          text('0.0 %', x0 + colW, y + 8, { role: 'num', size: 24, weight: 800, color: C.heroText, align: 'right', alpha: k });
+          return;
+        }
+        /* the card's figure runs to the scale's while the gap bar grows: one row after another, from the top */
+        const t0 = -0.3 + (ci * half + i) * 0.17, k = ep(t, t0, t0 + 0.3), kb = E.out3(prog(t, t0 + 0.15, t0 + 0.95)), over = r.gap > 3, wNow = lerp(r.c, r.w, kb);
+        if (i) line(x0, y - rh / 2, x0 + colW, y - rh / 2, { color: C.hair, w: 1, alpha: k * 0.6 });
+        text(r.name, x0, y + 8, { role: 'small', size: 24, weight: r.big ? 700 : 500, color: C.ink, alpha: k, sentence: false });
+        rich([{ s: fmtN(r.c, 1), role: 'num', size: 21, weight: 500, color: C.mute }, { s: '→', role: 'num', size: 21, color: C.faint, gap: 8 }, { s: fmtN(wNow, 1) + ' g', role: 'num', size: 21, weight: 700, color: over && kb > 0.6 ? C.red : C.ink2, gap: 8 }], x0 + 448, y + 8, { align: 'right', alpha: k });
+        const xa = X(0), xb = X(r.gap * kb);
+        rect(Math.min(xa, xb), y - 7, Math.abs(xb - xa), 14, { fill: over ? C.red : r.big ? C.ink2 : C.comp, alpha: k });
+        text((r.gap > 0 ? '+' : r.gap < 0 ? '−' : '') + fmtN(Math.abs(r.gap) * kb, 1) + ' %', x0 + colW, y + 8, { role: 'num', size: 24, weight: over ? 800 : 500, color: over ? C.red : C.mute, align: 'right', alpha: k });
+      });
+      if (ci === 1) legend(t, 4.6, x0, yb1 + rh / 2 + 8, [{ kind: 'comp', color: C.ink2, label: 'Razer, Logitech' }, { kind: 'comp', color: C.comp, label: 'Other brands' }, { kind: 'comp', color: C.red, label: 'Over 3 % heavy' }]);
+    });
+    /* at a glance: the worst listed gap against Theseus's, which is zero by design (every unit weighed) */
+    { const worst = R.reduce((m, r) => (!m || Math.abs(r.gap) > Math.abs(m.gap) ? r : m), null);
+      if (worst) verdict(t, 6.6, LM, 930, { from: '+' + fmtN(worst.gap, 1), to: '0.0', unit: '%', dec: 1, size: 80, label: 'Card against scale: the worst, then Theseus', better: 'closest to 0', net: false, maxW: 900 });
+      const k = ep(t, 7.6, 8.1); text('The weight on the card is the scale\'s.', 960, 930, { role: 'h3', size: 36, weight: 800, color: C.heroText, alpha: k, sentence: false }); }
+    source(t, 'Gap = (weighed − listed) ÷ listed. Weighed: RTINGS\' default weight; listed: the maker\'s, via EloShapes. Left out: the ULX (RTINGS doesn\'t say which size), the MCHOSE L7 Ultra (+17.7 %, likely another variant), the XA25 (weighed by its maker).', { t0: 0.8 });
+  }
+});
+
+/* ================================ 6. Density, not weight (F33.5; replaces ntr_density) ================================
+   His notes: "only use the outline or silhouette"; "good understandable demonstration" (the box); "sell why low density is
+   important a little better"; "the x2f having the wrong idea should come first, show the problem first". So: the problem
+   first, the X2F CrazyLight's way to 29 g: the X2 family's shape (traced from Pulsar's photo) cut to 87.5 mm, its back
+   gone from under the palm. Then Theseus, outline only, the whole 119.3 mm at 29.3 g. Then the fix to the comparison:
+   each mouse in the box it fills (L × W × H, drawn in cabinet projection), the volume, and weight ÷ volume. Densities to
+   3 decimals, rounded against Theseus (the X2F's down, Theseus's up); the next slide shows why the bigger mouse at the
+   same weight feels lighter. */
+const B01_DN = { cut: 0.3, slide: 0.75, palm: 1.3, ths: 2.4, box: 3.6, calc: 4.8, verdict: 6.4, line: 7.6 };
+/** density to 3 decimals, rounded against Theseus: a rival's down, Theseus's up (never in our favour) */
+function b01_rhoTxt(v, ths) { const k = 1000, r = ths ? Math.ceil(v * k - 1e-9) / k : Math.floor(v * k + 1e-9) / k; return r.toFixed(3); }
+/** a box in cabinet projection around a top view: footprint (x, y, w, l) px on the pad, its top face lifted by the height
+   h px and drawn up and to the right at half depth (45°) */
+function b01_cabinet(x, y, w, l, hpx, o = {}) {
+  const k = o.k == null ? 1 : o.k, d = 0.354 * hpx * k, col = o.color || C.ink, a = o.a == null ? 1 : o.a; if (a <= 0.003 || k <= 0.003) return;
+  const P = [[x, y], [x + w, y], [x + w, y + l], [x, y + l]], Q = P.map(([px, py]) => [px + d, py - d]);
+  G.save(); G.globalAlpha = a; G.strokeStyle = col; G.lineWidth = 2;
+  G.beginPath(); P.forEach(([px, py], i) => i ? G.lineTo(px, py) : G.moveTo(px, py)); G.closePath(); G.stroke();
+  G.globalAlpha = a * 0.75; G.setLineDash([6, 5]); G.lineWidth = 1.6;
+  G.beginPath(); Q.forEach(([px, py], i) => i ? G.lineTo(px, py) : G.moveTo(px, py)); G.closePath(); G.stroke();
+  G.beginPath(); for (let i = 0; i < 4; i++) { G.moveTo(P[i][0], P[i][1]); G.lineTo(Q[i][0], Q[i][1]); } G.stroke();
+  G.restore();
+  return { P, Q, d };
+}
+S({
+  id: 'b01_density', ch: 'intro', theme: 'paper', title: 'Density, not weight', settle: 11, ideas: ['weight'],
+  replaces: ['ntr_density'],
+  src: ['b01X2f', 'b01X2fWt', 'b01X2Trace', 'x2fCrazy'],
+  answers: [
+    ['ntr_density: "only use the outline or silhouette"', 'Outlines only, both: the X2F CrazyLight from the X2 family\'s silhouette traced from Pulsar\'s photo, Theseus from the film\'s one simplified mouse, its outline alone'],
+    ['ntr_density: "good understandable demonstration"', 'The box stays, now drawn as a box (cabinet projection) around each outline with its three dimensions, the volume counted, then weight ÷ volume worked on screen'],
+    ['ntr_density: "sell why low density is important a little better"', 'The problem is shown first (a light weight bought by cutting the mouse short, the palm left with nothing under it), and the payoff names what the player keeps: a whole mouse under the palm at a cut-down mouse\'s weight; the next slide shows why it then feels lighter still'],
+    ['ntr_density: "the x2f having the wrong idea should come first, show the problem first"', 'The cut opens the slide: on frame one the X2 shape is being cut to 87.5 mm and its back slides away'],
+    ['F27 (one precision) and F2.32', 'Weights 29.0 g (Pulsar\'s claim, ± 2) and 29.3 g, densities to 3 decimals, rounded against Theseus (0.171 and 0.099)']
+  ],
+  draw: t => {
+    header(t, 'Density, not weight');
+    captions(t, [[0.3, 'The X2F CrazyLight gets to 29 g by being less mouse: 87.5 mm long, its back stops short of your palm.'],
+      [2.4, 'Theseus weighs about the same with the whole mouse there. Weight alone hides that; the box it fills shows it.'],
+      [6.4, 'Density, the weight in the box a mouse fills: Theseus is 42 % less dense than the X2F.']]);
+    const T = B01_DN, s = 3.2, ny = 340, X2 = B01_X2F, x2c = 520, thc = 1010, slideMM = 10;
+    /* ---- the X2F: the X2 family's shape, cut to 87.5 mm, its back sliding off (outline only) ---- */
+    const full = b01_outline(B01_X2_HALF), cut = b01_outline(B01_X2_HALF, X2.cut, X2.r), kc = ep(t, T.cut - 0.3, T.cut + 0.2, E.cam), kk = ep(t, T.slide - 0.2, T.slide + 0.45, E.snap);
+    part(x2c, ny, s, () => {
+      G.save(); G.translate(0, kk * slideMM); G.beginPath(); G.rect(-40, X2.cut, 80, 40); G.clip();
+      G.globalAlpha = PA * lerp(1, 0.75, kk); if (kk > 0.03) G.setLineDash([lw(6), lw(5)]); G.strokeStyle = kk > 0.03 ? C.red : inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2.2); G.stroke(full.path); G.restore();
+      G.save(); G.globalAlpha = PA; G.strokeStyle = C.ink; G.lineWidth = lw(2.6); G.stroke(cut.path); G.restore();
+      if (kc > 0 && kk < 1) { G.save(); G.globalAlpha = PA * (1 - kk); G.strokeStyle = C.red; G.lineWidth = lw(4); G.beginPath(); G.moveTo(-X2.W / 2 - 6, X2.cut); G.lineTo(-X2.W / 2 - 6 + (X2.W + 12) * kc, X2.cut); G.stroke(); G.restore(); }
+    });
+    /* where the palm rests on a full-length mouse: on nothing here */
+    { const kp = ep(t, T.palm, T.palm + 0.4), yp = ny + (X2.cut + slideMM + 14) * s;
+      text('Your palm rests here,', x2c - X2.W / 2 * s - 22, yp - 6, { role: 'label', size: 20, color: C.red, align: 'right', alpha: kp });
+      text('on nothing', x2c - X2.W / 2 * s - 22, yp + 22, { role: 'label', size: 20, color: C.red, align: 'right', alpha: kp }); }
+    const nameY = ny + (120 + slideMM) * s + 46;
+    text('Pulsar X2F CrazyLight', x2c, nameY, { role: 'label', size: 22, color: C.ink, align: 'center' });
+    text('29.0 g', x2c, nameY + 36, { role: 'num', size: 30, weight: 800, color: C.ink, align: 'center' });
+    /* ---- Theseus: the whole mouse, outline only ---- */
+    const V = msView('top'), kT = ep(t, T.ths, T.ths + 0.5), kTs = spring(t, T.ths, { f: 1.6, z: 0.75 });
+    if (kT > 0.003) {
+      part(thc, ny - V.box[1] * s, s * lerp(0.94, 1, kTs), () => { G.save(); G.globalAlpha = PA; G.strokeStyle = C.hero; G.lineWidth = lw(2.6); G.stroke(V.out); G.restore(); }, { alpha: kT });
+      text('Theseus', thc, nameY, { role: 'label', size: 22, color: C.heroText, align: 'center', alpha: kT });
+      text('29.3 g', thc, nameY + 36, { role: 'num', size: 30, weight: 800, color: C.heroText, align: 'center', alpha: kT });
+    }
+    /* ---- the boxes they fill: the footprint on the pad, the top face lifted by the height (cabinet projection) ---- */
+    const kb = ep(t, T.box, T.box + 0.6, E.io3), kb2 = ep(t, T.box + 0.25, T.box + 0.85, E.io3), L2 = X2.L * s, W2 = X2.W * s, L3 = THESEUS.dims[0] * s, W3 = THESEUS.dims[1] * s;
+    b01_cabinet(x2c - W2 / 2, ny, W2, L2, X2.H * s, { k: kb, a: kb, color: C.ink2 });
+    b01_cabinet(thc - W3 / 2, ny, W3, L3, THESEUS.dims[2] * s, { k: kb2, a: kb2, color: C.hero });
+    if (kb > 0.5) { dim(t, T.box + 0.4, [x2c - W2 / 2, ny], [x2c - W2 / 2, ny + L2], fmtN(X2.L, 1) + ' mm', 30);
+      text(fmtN(X2.H, 1) + ' mm high', x2c + W2 / 2 + 0.354 * X2.H * s + 10, ny - 0.354 * X2.H * s + 22, { role: 'label', size: 20, color: C.ink2, alpha: ep(t, T.box + 0.6, T.box + 1.0) }); }
+    if (kb2 > 0.5) { dim(t, T.box + 0.65, [thc - W3 / 2, ny], [thc - W3 / 2, ny + L3], fmtN(THESEUS.dims[0], 1) + ' mm', 30, { tcolor: C.heroText });
+      text(fmtN(THESEUS.dims[2], 1) + ' mm high', thc + W3 / 2 + 0.354 * THESEUS.dims[2] * s + 10, ny - 0.354 * THESEUS.dims[2] * s + 22, { role: 'label', size: 20, color: C.heroText, alpha: ep(t, T.box + 0.85, T.box + 1.25) }); }
+    /* ---- the arithmetic, worked: volume, then weight ÷ volume ---- */
+    const RX = 1330, v2 = X2.L * X2.W * X2.H / 1000, v3 = THESEUS.dims[0] * THESEUS.dims[1] * THESEUS.dims[2] / 1000, r2 = 29.0 / v2, r3 = THESEUS.mass / v3;
+    [[0, 'X2F CrazyLight', X2.L, X2.W, X2.H, v2, '29.0', r2, false, C.ink], [1, 'Theseus', ...THESEUS.dims, v3, '29.3', r3, true, C.heroText]].forEach(([j, nm, l, w, hh, v, g, r, ths, col]) => {
+      const y = 360 + j * 200, k1 = ep(t, T.calc + j * 0.5, T.calc + j * 0.5 + 0.4), k2 = ep(t, T.calc + j * 0.5 + 0.5, T.calc + j * 0.5 + 0.9);
+      text(nm, RX, y, { role: 'label', size: 22, color: col, alpha: k1 });
+      text(fmtN(l, 1) + ' × ' + fmtN(w, 1) + ' × ' + fmtN(hh, 1) + ' mm = ' + fmtN(v, 1) + ' cm³', RX, y + 44, { role: 'small', size: 25, weight: 650, color: C.ink2, alpha: k1, sentence: false });
+      rich([{ s: g + ' g ÷ ' + fmtN(v, 1) + ' cm³ =', role: 'small', size: 25, weight: 650, color: C.ink2, sentence: false }, { s: b01_rhoTxt(r, ths), role: 'num', size: 40, weight: 800, color: col, gap: 12 }, { s: 'g/cm³', role: 'small', size: 22, weight: 700, color: C.mute, gap: 8, sentence: false }], RX, y + 100, { alpha: k2 });
+    });
+    verdict(t, T.verdict, RX, 930, { from: b01_rhoTxt(r2, false), to: b01_rhoTxt(r3, true), unit: 'g/cm³', dec: 3, size: 84, label: 'Density', better: 'lower', maxW: 520 });
+    { const k = ep(t, T.line, T.line + 0.5); text('A whole mouse under your palm, at a cut-down mouse\'s weight.', LM, 900, { role: 'h3', size: 30, weight: 750, color: C.ink, alpha: k, sentence: false }); }
+    source(t, 'Dimensions: Pulsar (X2F), Brock (Theseus). Weights: the X2F, Pulsar\'s claim (29 g ± 2; none weighed is published); Theseus\'s target. Density: weight ÷ (L × W × H), rounded against Theseus. X2F outline: the X2 family\'s, traced from Pulsar\'s photo, cut to 87.5 mm.', { t0: 0.8, maxW: 1180 });
+  }
+});
+
+/* ================================ 7. The size-weight illusion (replaces ntr_sizewt) ================================
+   His notes: "find an outline of the x2f to add to the box"; "the theseus should only be the shape outline". The classroom
+   version first, measured: two blocks of 200 g, 32 and 596 cm³; a balance says they are equal; lifted, the big one felt
+   like 161 g and the small one 211 g (precision grip; Wolf, Bergmann Tiest & Drewing 2018, PLOS ONE). Then the mice: the
+   X2F and Theseus weigh the same and Theseus fills 1.76 × the box. No study measures mice; Wolf's model gives 12 to 16 %
+   lighter by hand at 1.76 ×, and it overstates the measured effect by about a fifth: "roughly a tenth" (research Q2,
+   FILLS b01-9), shown as a bar about a tenth shorter with its range, labelled derived. */
+const B01_IL = { lift1: 0.7, lift2: 1.7, mice: 3.2, felt: 4.6, line: 6.4 };
+function b01_beamLevel(cx, py, half, hang, panW, col) {
+  rr(cx - 60, py + hang + 46, 120, 10, 4, inkA(TH ? 0.18 : 0.22));
+  line(cx, py + hang + 46, cx, py, { color: col, w: 4 }); line(cx - half, py, cx + half, py, { color: C.ink, w: 5, cap: 'round' });
+  circle(cx, py, 8, { fill: C.bg, color: C.ink, w: 3 });
+  for (const x of [cx - half, cx + half]) { line(x, py, x - panW / 2 + 4, py + hang - 6, { color: col, w: 1.5 }); line(x, py, x + panW / 2 - 4, py + hang - 6, { color: col, w: 1.5 }); b01_pan(x, py + hang, panW, col, 1); }
+}
+S({
+  id: 'b01_illusion', ch: 'intro', theme: 'night', title: 'Same weight, more mouse, feels lighter', settle: 10, ideas: ['weight'],
+  replaces: ['ntr_sizewt'],
+  src: ['b01Wolf', 'ntrSwi', 'ntrCharp', 'b01X2f', 'b01X2Trace'],
+  answers: [
+    ['ntr_sizewt: "find an outline of the x2f to add to the box"', 'The X2F is drawn from the X2 family\'s outline traced from Pulsar\'s own photo, cut to its 87.5 mm and 61.1 mm, in its box'],
+    ['ntr_sizewt: "the theseus should only be the shape outline"', 'Theseus is its outline only, in blue'],
+    ['F33.5 (show it, don\'t assert it)', 'The illusion is demonstrated with measured numbers first (two 200 g blocks: 161 g and 211 g felt, Wolf 2018), then applied to the two mice with the size of the effect derived and labelled (roughly a tenth lighter)']
+  ],
+  draw: t => {
+    header(t, 'Same weight, more mouse, feels lighter');
+    captions(t, [[0.3, 'Two blocks of the same 200 g: the balance says they are equal. Lift them, and the big one feels lighter.'],
+      [2.6, 'Measured: lifted, the big block felt like 161 g and the small one 211 g (Wolf 2018). The size-weight illusion.'],
+      [4.4, 'The X2F and Theseus weigh about the same, and Theseus fills 1.76 times the box: in the hand it should feel about a tenth lighter.']]);
+    const T = B01_IL;
+    /* ---- the classroom version: two 200 g blocks, small and big, level on a balance; lifted, they feel different ---- */
+    const PN = [80, 262, 760, 590], inner = demoPanel(t, -0.8, PN, { src: 'Wolf 2018, PLOS ONE' });
+    const cx = 460, py = 400, half = 200, hang = 120, ink = inkA(TH ? 0.7 : 0.62);
+    b01_beamLevel(cx, py, half, hang, 170, ink);
+    const cm = 13, sS = Math.cbrt(32) * cm, sB = Math.cbrt(596) * cm, l1 = Math.sin(Math.PI * clamp((t - T.lift1) / 0.8)) * 34, l2 = Math.sin(Math.PI * clamp((t - T.lift2) / 0.8)) * 34;
+    rr(cx - half - sS / 2, py + hang - 7 - sS - l1, sS, sS, 4, inkA(0.3), C.ink, 2);
+    rr(cx + half - sB / 2, py + hang - 7 - sB - l2, sB, sB, 6, inkA(0.3), C.ink, 2);
+    text('200 g', cx - half, py + hang + 34, { role: 'num', size: 24, weight: 750, color: C.ink, align: 'center' });
+    text('200 g', cx + half, py + hang + 34, { role: 'num', size: 24, weight: 750, color: C.ink, align: 'center' });
+    text('32 cm³', cx - half, py + hang + 62, { role: 'label', size: 19, color: C.mute, align: 'center' });
+    text('596 cm³', cx + half, py + hang + 62, { role: 'label', size: 19, color: C.mute, align: 'center' });
+    /* the felt weight: where each block lands when lifted (precision grip, matched against a reference) */
+    const gx = inner[0] + 150, gw = inner[2] - 170, gv = v => gx + gw * (v - 120) / (240 - 120), gy = PN[1] + 470;
+    text('Felt like', inner[0], gy - 34, { role: 'label', size: 20, color: C.mute });
+    line(gx, gy, gx + gw, gy, { color: inkA(0.35), w: 2 });
+    for (const v of [120, 160, 200, 240]) { line(gv(v), gy - 6, gv(v), gy + 6, { color: inkA(0.4), w: 1.5 }); text(v + ' g', gv(v), gy + 32, { role: 'tick', color: C.mute, align: 'center' }); }
+    line(gv(200), gy - 26, gv(200), gy + 8, { color: C.ink2, w: 1.5, dash: [4, 4] });
+    [[T.lift1, 211, 'Small'], [T.lift2, 161, 'Big']].forEach(([t0, v, nm], j) => {
+      const k = E.out3(prog(t, t0 + 0.3, t0 + 1.0)), x = gv(lerp(200, v, k)), a = ep(t, t0 + 0.2, t0 + 0.4);
+      circle(x, gy, 9, { fill: j ? C.ink : C.comp, alpha: a });
+      text(nm + ', ' + Math.round(lerp(200, v, k)) + ' g', x, gy - 20 - j * 0, { role: 'label', size: 19, color: C.ink, align: j ? 'right' : 'left', alpha: a });
+    });
+    /* ---- the mice: the same weight, Theseus in 1.76 × the box ---- */
+    const s2 = 2.6, ny = 320, xa = 1130, xb = 1590, X2 = B01_X2F, V = msView('top'), km = ep(t, T.mice, T.mice + 0.5);
+    if (km > 0.003) {
+      const cut = b01_outline(B01_X2_HALF, X2.cut, X2.r);
+      part(xa, ny, s2, () => { G.save(); G.globalAlpha = PA; G.strokeStyle = C.ink; G.lineWidth = lw(2.4); G.stroke(cut.path); G.restore(); }, { alpha: km });
+      part(xb, ny - V.box[1] * s2, s2, () => { G.save(); G.globalAlpha = PA; G.strokeStyle = C.hero; G.lineWidth = lw(2.4); G.stroke(V.out); G.restore(); }, { alpha: km });
+      b01_cabinet(xa - X2.W * s2 / 2, ny, X2.W * s2, X2.L * s2, X2.H * s2, { a: km * 0.9, color: C.ink2 });
+      b01_cabinet(xb - THESEUS.dims[1] * s2 / 2, ny, THESEUS.dims[1] * s2, THESEUS.dims[0] * s2, THESEUS.dims[2] * s2, { a: km * 0.9, color: C.hero });
+      const wy = ny + THESEUS.dims[0] * s2 + 44;
+      text('X2F CrazyLight', xa, wy, { role: 'label', size: 21, color: C.ink, align: 'center', alpha: km });
+      text('29.0 g, 168.9 cm³', xa, wy + 32, { role: 'small', size: 24, weight: 700, color: C.ink, align: 'center', alpha: km, sentence: false });
+      text('Theseus', xb, wy, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: km });
+      text('29.3 g, 297.0 cm³', xb, wy + 32, { role: 'small', size: 24, weight: 700, color: C.heroText, align: 'center', alpha: km, sentence: false });
+      text('=', (xa + xb) / 2, wy + 32, { role: 'h2', size: 40, color: C.mute, align: 'center', alpha: km });
+    }
+    /* ---- how heavy each should feel: the X2F the reference, Theseus about a tenth lighter (derived, with its range) ---- */
+    { const kf = ep(t, T.felt, T.felt + 0.4), fx = 960, fw = 820, fy = 790, k = E.out3(prog(t, T.felt + 0.3, T.felt + 1.3));
+      if (kf > 0.003) {
+        text('Should feel, in the hand', fx, fy - 40, { role: 'label', size: 20, color: C.mute, alpha: kf });
+        rr(fx, fy - 12, fw, 24, 12, C.track, null, 0, kf); rr(fx, fy - 12, fw, 24, 12, C.comp, null, 0, kf);
+        text('X2F', fx + fw + 14, fy + 8, { role: 'label', size: 20, color: C.ink, alpha: kf });
+        const f = lerp(1, 0.9, k), y2 = fy + 52;
+        rr(fx, y2 - 12, fw, 24, 12, C.track, null, 0, kf);
+        rr(fx + fw * 0.84, y2 - 18, fw * 0.10, 36, 6, 'rgba(10,132,255,0.16)', null, 0, kf * k);
+        rr(fx, y2 - 12, fw * f, 24, 12, C.hero, null, 0, kf);
+        text('Theseus', fx + fw + 14, y2 + 8, { role: 'label', size: 20, color: C.heroText, alpha: kf });
+        text('Roughly a tenth lighter. Derived', fx + fw * 0.84 - 12, y2 + 46, { role: 'small', size: 22, weight: 650, color: C.heroText, align: 'right', alpha: kf * k, sentence: false });
+      } }
+    { const k = ep(t, T.line, T.line + 0.5); text('Same weight, more mouse: next to an X2F, Theseus feels lighter.', LM, 920, { role: 'h3', size: 30, weight: 750, color: C.ink, alpha: k, sentence: false, maxW: 1100 }); }
+    source(t, 'Wolf, Bergmann Tiest & Drewing 2018, PLOS ONE: 200 g blocks of 32 and 596 cm³, precision grip, matched at 211 and 161 g; first shown by Charpentier, 1891. Derived for the mice, 1.76 × the volume: 12 to 16 % lighter by hand in Wolf\'s model, which overstates by about a fifth, so roughly a tenth; no study has measured mice.', { t0: 0.8 });
+  }
+});
+
+/* ================================ 8. Ranked by density (replaces ntr_densrank) ================================
+   His note: the X2F "lacks decimal points ... at least 29.5g"; "theseus has an extra decimal point"; "use eloshapes to take
+   g wolves mice into account for there weights and density, yes this will make the theseus look worse, but its more
+   honest". The twelve lightest wireless mice, listed by weight (Theseus 12th, the X2F now at Pulsar's 29.0 g), re-sort to their density ranks among all
+   48 wireless mice the deck has dimensions for (Theseus 2nd, the X2F 33rd). Sixteen G-Wolves mice are in, at G-Wolves's
+   own figures (the ones EloShapes aggregates; EloShapes itself loads in the browser and couldn't be read here), a scale
+   weight where TechPowerUp weighed one; the one ahead of Theseus ranks on its maker's ~28 g (none published, Q1). Wired
+   mice are shown, not ranked (F12.3). One precision: weights 0.1 g, densities 0.001, rounded against Theseus. */
+const B01_RK = { sort: 2.4, dur: 1.5, note: 5.2, verdict: 6.2 };
+S({
+  id: 'b01_rank', ch: 'intro', theme: 'paper', title: 'Ranked by density, not weight', settle: 11, ideas: ['weight'],
+  replaces: ['ntr_densrank'],
+  src: ['b01Gw', 'b01GwPlusPro', 'b01GwWarg', 'b01GwLycan', 'b01TpuHtsU', 'b01TpuHtrPro', 'b01X2f', 'b01X2fWt', 'exXbabWeight', 'exRtings'],
+  answers: [
+    ['ntr_densrank: "it bother me the the x2f is lighter and lacks decimal points ... at least 29.5g"', 'The X2F is shown to 0.1 g like every other mouse, at Pulsar\'s own 29.0 g (± 2): no scale weight is published (research Q1, in English and Japanese), so the 29.5 g reports could not be sourced (a question for Brock)'],
+    ['ntr_densrank: "i also don\'t like how the theseus has an extra decimal point"', 'Theseus is 29.3 g here, the same precision as every mouse it is ranked against'],
+    ['ntr_densrank: "you also need to use eloshapes to take g wolves mice into account ... more honest"', 'Sixteen G-Wolves wireless mice are ranked at G-Wolves\'s own figures (what EloShapes aggregates; EloShapes itself could not be read from this session) or TechPowerUp\'s scale where it weighed one. Theseus falls to 2nd of 48, behind the HTS Plus Pro 8K at its maker\'s ~28 g, and the slide says so'],
+    ['F12.3 (rank wireless only; the XA25 unranked)', 'The XA25 is shown under the list, wired, not ranked']
+  ],
+  draw: t => {
+    header(t, 'Ranked by density, not weight');
+    const _all = b01_dens(), _byW = _all.slice().sort((a, b) => a.g - b.g), _byR = _all.slice().sort((a, b) => a.rho - b.rho), _rk = id => _byR.findIndex(m => m.id === id) + 1, _ord = n => n + (n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th');
+    captions(t, [[0.3, 'The twelve lightest wireless mice, by weight. Theseus is ' + _ord(_byW.findIndex(m => m.id === 'theseus') + 1) + '.'],
+      [2.4, 'Ranked by density among all ' + _all.length + ', by the box each one fills: Theseus is ' + _ord(_rk('theseus')) + ', the X2F ' + _ord(_rk('pulsar-x2f-crazylight')) + '.'],
+      [5.2, 'Only the HTS Plus Pro 8K ranks ahead, on its maker\'s 28 g: no scale weight is published for it.']]);
+    const T = B01_RK, all = b01_dens(), byW = all.slice().sort((a, b) => a.g - b.g), byR = all.slice().sort((a, b) => a.rho - b.rho), N = all.length;
+    const rows = byW.slice(0, 12), dOrder = rows.slice().sort((a, b) => a.rho - b.rho);
+    const y0 = 320, rh = 47, xR = 128, xN = 160, xG = 720, xD = 860, bx = 890, bw = 380, bmax = 0.25;
+    text('By weight', xR - 40, y0 - 44, { role: 'label', size: 20, color: C.mute, alpha: 1 - ep(t, T.sort, T.sort + 0.4) });
+    text('By density, of ' + N, xR - 40, y0 - 44, { role: 'label', size: 20, color: C.heroText, alpha: ep(t, T.sort, T.sort + 0.4) });
+    text('Weight', xG, y0 - 44, { role: 'label', size: 20, color: C.mute, align: 'right' });
+    text('g/cm³', xD, y0 - 44, { role: 'label', size: 20, color: C.mute, align: 'right' });
+    text('Lower is better', bx + bw, y0 - 44, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: ep(t, T.sort, T.sort + 0.4) });
+    rows.forEach((m, i) => {
+      const j = dOrder.indexOf(m), stag = j * 0.02, k = E.io3(prog(t, T.sort + stag, T.sort + stag + T.dur)), y = lerp(y0 + i * rh, y0 + j * rh, k);
+      const wRank = i + 1, dRank = byR.indexOf(m) + 1, rk = Math.round(lerp(wRank, dRank, k)), ths = m.id === 'theseus', x2f = m.id === 'pulsar-x2f-crazylight';
+      const dip = Math.abs(j - i) > 0 ? 1 - 0.5 * Math.sin(Math.PI * k) : 1, xo = j < i ? 80 * Math.sin(Math.PI * k) : 0;
+      if (ths) rr(xR - 52 + xo, y - 34, bx + bw - xR + 66, rh - 6, 10, 'rgba(10,132,255,0.10)');
+      line(xR - 52 + xo, y + rh - 26, bx + bw + 14 + xo, y + rh - 26, { color: C.hair, w: 1 });
+      const col = ths ? C.heroText : x2f ? C.secondText : C.ink;
+      text(String(rk), xR + xo, y, { role: 'num', size: 30, weight: 800, color: col, align: 'right', tnum: true, alpha: dip });
+      rich([{ s: m.brand === 'Nitrite Labs' ? 'Theseus' : (m.short || m.name), role: 'small', size: 25, weight: 750, color: col, sentence: false }, { s: ths ? 'Nitrite Labs' : m.brand, role: 'label', size: 19, color: C.mute, gap: 12 }], xN + xo, y, { alpha: dip });
+      text(b01_g(m.g) + ' g', xG + xo, y, { role: 'num', size: 25, weight: 700, color: col, align: 'right', alpha: dip });
+      text(b01_rhoTxt(m.rho, ths), xD + xo, y, { role: 'num', size: 25, weight: 750, color: col, align: 'right', alpha: dip });
+      const kb = ep(t, T.sort + 0.2, T.sort + 1.2, E.out3);
+      rr(bx + xo, y - 16, bw, 14, 7, C.track, null, 0, dip); rr(bx + xo, y - 16, Math.max(14, bw * Math.min(m.rho, bmax) / bmax * kb), 14, 7, ths ? C.hero : x2f ? C.second : C.comp, null, 0, dip);
+      if (m.id === 'gw-hts-plus-pro') text('Maker\'s weight', bx + bw * m.rho / bmax + 16, y - 3, { role: 'label', size: 19, color: C.mute, alpha: ep(t, T.note, T.note + 0.4) });
+    });
+    /* the wired one, shown and not ranked (F12.3) */
+    { const xa = all.length ? b01_dens({ wired: true }).find(m => m.id === 'xbab-xa25') : null, y = y0 + 12 * rh + 18;
+      if (xa) { text('Wired, not ranked', xR - 40, y, { role: 'label', size: 19, color: C.mute });
+        rich([{ s: 'XA25', role: 'small', size: 23, weight: 700, color: C.ink2, sentence: false }, { s: 'XBAB', role: 'label', size: 19, color: C.mute, gap: 12 }], xN + 160, y);
+        text(b01_g(xa.g) + ' g', xG, y, { role: 'num', size: 23, weight: 650, color: C.ink2, align: 'right' }); text(b01_rhoTxt(xa.rho, false), xD, y, { role: 'num', size: 23, weight: 650, color: C.ink2, align: 'right' }); } }
+    /* the headline: Theseus's rank, by weight and by density */
+    { const ths = byR.find(m => m.id === 'theseus'), wR = byW.indexOf(ths) + 1, dR = byR.indexOf(ths) + 1, k = ep(t, T.verdict, T.verdict + 0.4), kn = ep(t, T.verdict + 0.5, T.verdict + 1.0, E.snap);
+      text('Theseus\'s rank of ' + N + ' wireless mice', 1380, 470, { role: 'label', size: 22, color: C.mute, alpha: k });
+      rich([{ s: wR + (wR % 10 === 1 && wR !== 11 ? 'st' : wR % 10 === 2 && wR !== 12 ? 'nd' : wR % 10 === 3 && wR !== 13 ? 'rd' : 'th'), role: 'd1', size: 64, weight: 800, color: C.mute }, { s: 'by weight', role: 'label', size: 20, color: C.mute, gap: 14 }], 1380, 560, { alpha: k });
+      line(1376, 540, 1376 + 104 * kn, 540, { color: C.mute, w: 4, alpha: k });
+      rich([{ s: dR + (dR === 2 ? 'nd' : dR === 1 ? 'st' : dR === 3 ? 'rd' : 'th'), role: 'd1', size: 150, weight: 800, color: C.heroText, grad: C.heroGrad }, { s: 'by density', role: 'label', size: 22, color: C.heroText, gap: 16 }], 1380, 720, { alpha: kn });
+      text('Lighter for its size than all but one.', 1380, 780, { role: 'small', size: 26, weight: 700, color: C.ink, alpha: ep(t, T.verdict + 1.0, T.verdict + 1.4), maxW: 460, sentence: false }); }
+    source(t, 'Weights: TechPowerUp and RTINGS scales where weighed, else the maker\'s (G-Wolves\'s own figures, what EloShapes aggregates); the X2F, Pulsar\'s claim (29 g ± 2). Density: weight ÷ (L × W × H), rounded against Theseus. 48 wireless mice with all three dimensions; wired ones are not ranked.', { t0: 0.8 });
+  }
+});
+
+/* ================================ 9. Price against weight (replaces pricefront; F18.4 keeps price charted) ================================
+   His note: "the bottom pareto line instantly going straight bothers me a lot ... there should never be a kink in a pareto
+   line, i think the viper mini signature edition and zaunkoenig mice need to be on this table as well, and the x3
+   superstrike". Every mouse with a price and a weight, wireless as dots, wired as rings: the frontier (the cheapest at each
+   weight, lighter and cheaper both better) drawn as one smooth curve carried on its own end slopes, never a kink; the
+   Viper Mini SE ($279.99), Zaunkoenig's M3K and M2K (in euros, converted) and the Pro X3 Superstrike ($199.99) on it. Honest
+   reading: G-Wolves sells lighter for less (and lists 80 h, or none: the battery slide), so Theseus is not on the price
+   frontier; its claim is the flagship price: $189, the UltralightX's, 8.7 g lighter, with no flex. */
+const B01_PR = { front: 0.8, band: 2.6, lab: 3.4, ths: 4.6, verdict: 6.0 };
+S({
+  id: 'b01_price', ch: 'intro', theme: 'night', title: 'Price against weight', settle: 10, ideas: ['weight'],
+  replaces: ['pricefront'],
+  src: ['exPrices', 'exRtings', 'b01MiniSe', 'b01M3k', 'b01M2k', 'b01X3', 'b01TpuUlx', 'b01Gw', 'b01X2f'],
+  answers: [
+    ['pricefront: "the bottom pareto line instantly going straight bothers me a lot ... continue on the trajectory"', 'The frontier is one smooth monotone curve through the cheapest mouse at each weight, carried on past both ends along its own end slopes: no straight run, no kink'],
+    ['pricefront: "the viper mini signature edition and zaunkoenig mice need to be on this table as well, and the x3 superstrike"', 'On it: Viper Mini SE $279.99 (49 g), Zaunkoenig M3K (€340, 24 g) and M2K (€299, 23 g on TechPowerUp\'s scale), both wired, and the Pro X3 Superstrike ($199.99, 59 g)'],
+    ['F18.4 (keep price charted)', 'Charted, and said honestly: G-Wolves sells lighter for less; Theseus is priced as a flagship, $189, the UltralightX\'s launch price, 8.7 g lighter']
+  ],
+  draw: t => {
+    header(t, 'Price against weight');
+    captions(t, [[0.3, 'Price against weight, every mouse with a US price. The line is the cheapest at each weight.'],
+      [2.6, 'Flagships cost $160 to $200. Lab-built ones cost more: the Viper Mini SE $279.99, Zaunkoenig\'s M3K about $396.'],
+      [4.6, 'Theseus is priced as a flagship, $189: the UltralightX\'s launch price, 8.7 g lighter and without the flex.']]);
+    const T = B01_PR, x0 = 200, y0 = 290, w = 1060, h = 560, xr = [15, 65], yr = [50, 420];
+    const m = axes(t, { t0: -1, x: x0, y: y0, w, h, xr, yr, xticks: [20, 30, 40, 50, 60], yticks: [100, 200, 300, 400], xfmt: v => v + ' g', yfmt: v => '$' + v, ylabel: 'US price' });
+    text('Weight', x0 + w + 18, y0 + h + 34, { role: 'label', size: 21, color: C.mute });
+    const P = b01_all().filter(q => q.price && q.g), wl = P.filter(q => q.conn !== 'wired');
+    /* the flagship band: the ledger's flagships' prices */
+    { const kb = ep(t, T.band, T.band + 0.5); if (kb > 0) { rect(x0, m.Y(199.99), w, m.Y(159.99) - m.Y(199.99), { fill: inkA(0.08), alpha: kb }); text('Flagships, $159.99 to $199.99', x0 + w - 10, m.Y(199.99) - 10, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kb }); } }
+    /* the frontier: the cheapest at each weight among wireless mice, one smooth curve with no kink */
+    { const F = b01_front(wl.map(q => ({ x: q.g, y: q.price, q })), { x: -1, y: -1 }), curve = b01_frontCurve(F.map(f => [f.x, f.y]), [0.1, 0.1], { x: xr, y: yr });
+      const kf = ep(t, T.front, T.front + 1.4, E.io3), pts = curve.filter(c => c[0] <= lerp(curve[0][0], curve[curve.length - 1][0], kf)).map(c => [m.X(c[0]), m.Y(c[1])]);
+      if (pts.length > 1) poly(pts, { color: C.ink, w: 3 });
+      if (kf > 0.95) text('Cheapest at each weight', m.X(F[F.length - 1].x) - 6, m.Y(F[F.length - 1].y) + 34, { role: 'label', size: 19, color: C.ink2, alpha: ep(t, T.front + 1.4, T.front + 1.8) }); }
+    /* every mouse: wireless dots, wired rings; the named ones labelled */
+    const lab = { 'razer-viper-mini-se': ['Viper Mini SE, $279.99', 1], 'zaunkoenig-m3k': ['M3K, €340, wired', 1], 'zaunkoenig-m2k': ['M2K, €299, wired', 1], 'logitech-x3': ['Pro X3 Superstrike, $199.99', 1], 'finalmouse-ulx': ['UltralightX, $189', 0], 'razer-viper-v4-pro': ['Viper V4 Pro', 1], 'gw-lycan': ['G-Wolves Lycan 8K, $132', 0], 'pulsar-x2f-crazylight': ['X2F, $149.95', 0] };
+    P.forEach(q => {
+      const px = m.X(q.g), py = m.Y(q.price), rv = q.id === 'finalmouse-ulx', wired = q.conn === 'wired';
+      if (wired) { circle(px, py, 7, { fill: C.bg }); circle(px, py, 7, { color: C.comp, w: 2.5 }); }
+      else circle(px, py, rv ? 9 : 7, { fill: rv ? C.second : C.comp });
+      const L = lab[q.id]; if (!L) return;
+      const kl = ep(t, L[1] ? T.lab : T.ths - 0.4, (L[1] ? T.lab : T.ths - 0.4) + 0.4);
+      text(L[0], px + 14, py + (q.id === 'gw-lycan' ? 26 : 7), { role: 'label', size: 19, color: rv ? C.secondText : C.ink2, alpha: kl });
+    });
+    /* Theseus at the UltralightX's price: the same $189, 8.7 g to the left */
+    { const kT = ep(t, T.ths, T.ths + 0.4), ka = ep(t, T.ths + 0.2, T.ths + 1.0, E.io3), ulx = P.find(q => q.id === 'finalmouse-ulx'), py = m.Y(THESEUS.price);
+      if (kT > 0.003 && ulx) {
+        arrow(m.X(ulx.g) - 12, py, lerp(m.X(ulx.g) - 12, m.X(THESEUS.mass) + 16, ka), py, { color: C.hero, w: 3, hs: 12, p: 1, alpha: kT });
+        heroMark(m.X(THESEUS.mass), py, 12, kT * ep(t, T.ths + 0.8, T.ths + 1.1));
+        text('Theseus, 29.3 g, $189', m.X(THESEUS.mass), py - 22, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, T.ths + 0.9, T.ths + 1.2) });
+      } }
+    legend(t, -1, x0, y0 + h + 72, [{ kind: 'line', color: C.ink, label: 'Cheapest at each weight' }, { kind: 'dot', color: C.comp, label: 'Wireless' }, { kind: 'ring', color: C.comp, label: 'Wired' }], { size: 20 });
+    verdict(t, T.verdict, 1330, 760, { from: 38.0, to: 29.3, unit: 'g', dec: 1, size: 96, label: 'Weight at $189: the UltralightX, then Theseus', better: 'lower', maxW: 520, who: ['UltralightX', 'Theseus'] });
+    { const k = ep(t, T.verdict + 1.4, T.verdict + 1.9); text('G-Wolves sells lighter for less, and lists 80 h of battery, or none.', 1330, 470, { role: 'small', size: 24, weight: 650, color: C.ink2, alpha: ep(t, T.lab + 0.6, T.lab + 1.0), maxW: 500, sentence: false }); }
+    source(t, 'Prices: makers\' US list prices; the Zaunkoenig mice sell in euros, plotted at the M3K\'s own rate (€340 ~ $396). Weights: scales where weighed, else makers\' (the X2F, Pulsar\'s 29 g ± 2). The UltralightX: TechPowerUp\'s 2023 medium, $189, 38 g. Theseus\'s $189 and 29.3 g are targets.', { t0: 0.8, maxW: 1160 });
   }
 });

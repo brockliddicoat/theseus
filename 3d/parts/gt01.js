@@ -58,8 +58,10 @@ const GAP = 0.30;                  // contact gap NC→NO (representative)
 const Y_NCARM = Y_BLADE + T_BLADE + 0.12 + 0.14;   // NC arm underside: its rivet's crown meets the moving contact at rest
 const Y_NOTAB = Y_BLADE - GAP - 0.12 - 0.14;        // NO tab top: its rivet's crown meets the moving contact after the snap
 const H_MIN = -0.52;               // the base plane's height at the low (plunger) end: below the board, as traced (the front face meets the board)
-const CAP_L = 1.5, CAP_W = 2.1, CAP_R = 0.75, CAP_PROUD = 0.80;
-const WALL = COVER_WALL;            // one wall thickness for the bottom housing, all round: the D2F-class cover's 0.45 mm (Brock, 2026-11-05: walls straight and one thickness)   // the plunger's cap: along × across the switch, its rounded top, how far it stands proud
+const CAP_L = 1.5, CAP_W = 2.1, CAP_R = 0.75, CAP_PROUD = 0.80;   // the plunger's cap: along × across the switch, its rounded top, how far it stands proud
+const WALL = 0.70;                  // one wall thickness for the bottom housing, all round (Brock, 2026-11-05: walls straight and one thickness;
+                                    // 11-06, F30.24: "the gt01s walls don't look thick"): 0.70 mm, the median web measured on Gateron's
+                                    // side-on render (0.39 to 1.27; H1, work/h1/gt01/measure.py). The cover's end walls stay COVER_WALL
 
 export function buildGT01(opts = {}) {
   const tilt = (opts.tilt ?? 20) * D2R;
@@ -90,10 +92,10 @@ export function buildGT01(opts = {}) {
   // Walls straight and one thickness (Brock, 2026-11-05: "the walls aren't straight ... and they aren't a consistent thickness").
   // As in Gateron's render, the clear cover's two end walls run down past the shoulder to the switch's base (the back one) and
   // to the board (the front one); the housing fits between them: its back face is one plumb wall from the switch's back-bottom
-  // corner to the board, its front face the cover's inner face, its top the shoulder. Every cut-out sits one wall (WALL, 0.45 mm)
-  // from the edges round it: the bottom, the back face, the shoulder.
+  // corner to the board, its front face the cover's inner face, its top the shoulder. Every cut-out sits one wall (WALL, 0.70 mm)
+  // from the edges round it: the bottom, the back face, the shoulder; the webs between them are wider than a wall (0.92 or more).
   const C = S2W(0, L / 2), F = S2W(0, -L / 2);          // the switch's bottom corners (front low, back high): [Y, Z]
-  const zi = L / 2 - WALL;                              // the end walls' inner faces, along the switch
+  const zi = L / 2 - COVER_WALL;                        // the cover's end walls' inner faces, along the switch
   const C2 = S2W(Y_SHOULDER - 0.004, zi), F2 = S2W(Y_SHOULDER - 0.004, -zi);   // the shoulder, between the end walls
   const Fi = S2W(0, -zi);                               // the back end wall's foot, on the switch's base plane
   const ysF = ((zi) * sT - lift) / cT;                  // where the front end wall's inner face meets the board
@@ -112,8 +114,9 @@ export function buildGT01(opts = {}) {
   // the long rounded triangle low at the back: its bottom one wall above the board, its back one wall in from the back face
   const zb = F[1] + WALL;
   const tri = () => filletPolygon([[0.07, WALL], [zb, 3.03], [zb, WALL]], [0.35, 0.25, 0.25], true, 5);
-  // the round holes and the slot, each one wall under the shoulder (the front hole one wall above the board too); render sizes
-  const HOLES = { back: [-2.86, 3.81, 1.01], front: [3.44, 1.49, 1.04], slot: [0.22, 3.37, 2.0, 0.74] };
+  // the round holes, each one wall under the shoulder (the front hole one wall above the board too): the render's centres,
+  // their radii less the thicker wall; the slot where the render has it (H1: v23's sat 1.07 mm too high), its render size
+  const HOLES = { back: [-2.86, 3.81, 1.01 - (WALL - COVER_WALL)], front: [3.44, 1.49, 1.04 - (WALL - COVER_WALL)], slot: [0.15, 2.30, 2.11, 1.10] };
   const pockets = tilt > 10 * D2R ? [() => circle(...HOLES.back), () => circle(...HOLES.front), () => slot(...HOLES.slot), tri] : [];
   const skinT = WALL, coreHalf = W / 2 - skinT;   // the side walls, one wall thick
   const mkSkin = (s) => {
@@ -235,8 +238,8 @@ export function buildGT01(opts = {}) {
   body.add(cover);
   // the cover's end walls carried down past the shoulder, as in Gateron's render: the back one to the switch's base, the front one
   // to the board; children of the cover, so they explode with it
-  const endB = meshOf(box(W, WALL, 0.0, Y_SHOULDER + 0.004, 0.06, 0, 0, -L / 2 + WALL / 2), coverMat, 'coverEndB');
-  const endF = meshOf(box(W, WALL, Math.max(0, ysF) + 0.17, Y_SHOULDER + 0.004, 0.06, 0, 0, L / 2 - WALL / 2), coverMat, 'coverEndF');
+  const endB = meshOf(box(W, COVER_WALL, 0.0, Y_SHOULDER + 0.004, 0.06, 0, 0, -L / 2 + COVER_WALL / 2), coverMat, 'coverEndB');
+  const endF = meshOf(box(W, COVER_WALL, Math.max(0, ysF) + 0.17, Y_SHOULDER + 0.004, 0.06, 0, 0, L / 2 - COVER_WALL / 2), coverMat, 'coverEndF');
   cover.add(endB, endF);
 
   // ================================================================ pins (world) and the terminals' run through the wedge
@@ -355,7 +358,7 @@ export function buildGT01(opts = {}) {
     plungerAxis: [0, +cT.toFixed(5), +sT.toFixed(5)],
     footprint: [[-W / 2, F[1]], [W / 2, F[1]], [W / 2, C[1]], [-W / 2, C[1]]],
     heightMax: +Math.max(...[[H, -L / 2], [H, L / 2], [Y_CAP, ZP]].map(([y, z]) => S2W(y, z)[0])).toFixed(3),
-    profile: { source: "traced off Gateron's 'Vertical push mouse switch' render (Brock's best reference), scaled to a 12.8 mm cover [DV]", housing: prof.map(([z, y]) => [+z.toFixed(3), +y.toFixed(3)]), wall: WALL, shoulder: Y_SHOULDER, cap: { along: CAP_L, across: CAP_W, radius: CAP_R, proud: CAP_PROUD, z: ZP } },
+    profile: { source: "traced off Gateron's 'Vertical push mouse switch' render (Brock's best reference), scaled to a 12.8 mm cover [DV]", housing: prof.map(([z, y]) => [+z.toFixed(3), +y.toFixed(3)]), wall: WALL, coverWall: COVER_WALL, holes: HOLES, shoulder: Y_SHOULDER, cap: { along: CAP_L, across: CAP_W, radius: CAP_R, proud: CAP_PROUD, z: ZP } },
     mechanism: 'SPDT snap-action: BeCu frame anchored on COM, cut-out tongue on a fulcrum, AgNi contacts NC above / NO below',
   };
   root.userData.parts = { body, base, core, switchBase: core, cover, plunger, blade, tongue, contactNC: ncRivet, contactNO: noRivet, contactCOM: movRivet, terminals: term, terminalRuns: runs, pins };

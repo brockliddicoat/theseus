@@ -18,7 +18,7 @@ from layout import build as build_layout, pad_poly, drill_poly, trace_poly, ANT_
 import board_geo as BG
 from board_geo import build_board, T, CU, Y_MASK, Y_MASKCU, Y_PAD, Y_SILK, Y_L2, Y_L3, BEVEL, ybot
 from silk import build_silk_top, build_bottom
-from board import SORA_HOLES, wheel_cut_poly, square_cut_poly
+from board import BATTERY, SORA_HOLES, wheel_cut_poly, square_cut_poly
 from parts import GND
 
 args = sys.argv[1:]
@@ -200,6 +200,14 @@ def main():
         components=comp_meta,
         routes=[dict(net=t['net'], layer=t['layer'], w=t['w'], pts=[[round(-a, 3), round(b, 3)] for a, b in t['pts']]) for t in L['routes']],
         vias=[dict(net=v['net'], x=round(-v['x'], 3), z=round(v['z'], 3)) for v in B['vias']],
+        variant=os.environ.get('PCB_VARIANT', 'A').strip().upper() or 'A',
+        antenna=dict(module='Raytac AN54LM-P20A (nRF54LM20A)', type='long meander PCB antenna at the module\'s front end',
+                     facing='forward (+Z), toward the sensor (board plan 5, F30.3); not turned', keepout='antennaKeepout: every '
+                     'layer copper-free, the module\'s antenna end and 0.8 mm past it'),
+        battery=dict(part=BATTERY['part'], g=BATTERY['g'], t=BATTERY['t'], yMid_in_mouse=BATTERY['yMid'],
+                     box=[round(-BATTERY['x1'], 3), round(BATTERY['z0'], 3), round(-BATTERY['x0'], 3), round(BATTERY['z1'], 3)],
+                     note='board frame (+X the user\'s left, z as the layout); 35 across x 25 along x 4.0, behind the board, '
+                          '2.23 mm further back than the old key plan (H1 job 3)'),
     )
     import power_paths
     pw = power_paths.paths(L)

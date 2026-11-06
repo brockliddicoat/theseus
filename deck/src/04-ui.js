@@ -124,8 +124,9 @@ function captions(t, steps, o = {}) {
    o = { x, y, align, maxW, t0 } */
 function source(t, str, o = {}) {
   const a = ep(t, o.t0 || 0.8, (o.t0 || 0.8) + 0.6), st = { role: 'foot', color: C.faint, alpha: a, sentence: true, lh: 1.3 };
-  const mw = o.maxW || (RM - LM), n = wrap(sentence(str), st, mw).length;
-  text(str, o.x || LM, (o.y || LAY.ruleY - 18) - (n - 1) * 25, Object.assign(st, { maxW: mw, align: o.align || 'left' }));
+  const mw = o.maxW || (RM - LM), ls = wrap(sentence(str), st, mw), n = ls.length;
+  const x = o.x || LM, y0 = (o.y || LAY.ruleY - 18) - (n - 1) * 25, al = o.align || 'left';
+  text(str, x, y0, Object.assign(st, { maxW: mw, align: al }));
 }
 /** the largest size (down to the reading minimum) at which s, wrapped to width w, fits avail px */
 function fitSize(s, size, w, avail, lhK, weight = 500) { let z = size; while (z > TYPE_MIN.read && wrap(s, { size: z, weight }, w).length > 1 + Math.floor(avail / (lhK * z))) z -= 0.5; return z; }

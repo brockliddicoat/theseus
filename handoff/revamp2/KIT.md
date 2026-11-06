@@ -275,3 +275,9 @@ on the right (the simplified mouse with it lit, neutral until the answer, then b
   the antenna keep-out forward of the module (z 5.07 to 9.37), the battery 2.23 mm further back (key y 12.45 to 37.45; side
   view 5.46 to 9.46 mm up). `MS_BATTERY` and `MS_CORNER_DOTS` remain, derived from `KEY_PARTS`; read `KEY_PARTS` in new code.
   No signature changed.
+- 09:05 integrator (FILM F1, one ledger): LEDGER's compromises reworded so the intro's six flagship trades fit them
+  (Weight: "Light or long-lasting: pick one"; Clicks: "A click that changes with where you press, or costs battery";
+  Shape: "Shapes cut down for weight, or chosen by taste"). New `ledgerFlag(ch)`: the flagship sentence for a chapter,
+  read live from b01's B01_TRADES (Weight: Pro X3 Superstrike and HTS Ultra 8K; Clicks: Viper V4 Pro; Shell: UltralightX;
+  Shape: X2F CrazyLight; Electronics: XA25; glide, surface, ownership: none). chapterCard2 prints it small under the
+  compromise (o.flag: a string to override, false to hide); the answer moves down 34 px when there is one. Snapshot updated.

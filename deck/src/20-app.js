@@ -65,17 +65,18 @@ function fit() {
 }
 /* ---------- the transitions ----------
    How long each takes (s). Quick enough to keep a viewer, long enough never to read as a cut. */
-const TRN = { dissolve: 0.55, wipe: 0.7, chapter: 1.1, iris: 1.15, push: 0.6, cut: 0, reduced: 0.25 };
+const TRN = { dissolve: 0.55, wipe: 0.7, chapter: 1.1, iris: 1.15, push: 0.6, cut: 0, reduced: 0.25, flight: 1.6 };
 /* when the new slide's clock starts, as a fraction of its transition: the chapter move holds it until the slide begins to
    come up out of the dark, so its first frame is the first thing seen (every other move starts it at once) */
 const TRS = { chapter: 0.38 };
 /** the new slide's time at k (0 → 1) through a transition of this kind and length */
 const trClock = (kind, k, dur) => Math.max(0, (k - (TRS[kind] || 0)) * dur);
-/** which transition takes the film from slide a to slide b: a slide's own `trans` first; a new chapter (forward) gets the
-    chapter move; a change of ground the wipe; the same ground the dissolve */
+/** which transition takes the film from slide a to slide b: a slide's own `trans` first; a change of chapter, either way,
+    the flight across the mouse (F40.2; `flight: false` on either slide opts out); a change of ground the wipe; the same
+    ground the dissolve. 'chapter' (F0b's pass through black) stays available as a slide's own `trans` */
 function trKind(a, b, back) {
   if (b.trans && TRN[b.trans] != null) return b.trans;
-  if (!back && a.ch !== b.ch) return 'chapter';
+  if (a.ch !== b.ch && a.flight !== false && b.flight !== false) return 'flight';
   return themeOf(a) !== themeOf(b) ? 'wipe' : 'dissolve';
 }
 function go(i, opts = {}) {
@@ -86,12 +87,17 @@ function go(i, opts = {}) {
   APP.back = i < APP.i;
   /* while editing text there is no transition: the outlines would ride along on the old frame */
   const kind = opts.instant || !prev || EDIT.on ? 'cut' : APP.reduced ? 'dissolve' : (opts.kind || trKind(prev, next, APP.back));
+  const tPrev = prev ? slideT() : 0;
   if (kind !== 'cut') {
     SNAP.getContext('2d').drawImage($('fx'), 0, 0);
     APP.trStart = now; APP.trans = kind; APP.trDur = APP.reduced ? TRN.reduced : TRN[kind];
     APP.irisAt = next.irisAt || null;
   } else APP.trStart = -1;
-  APP.i = i; APP.t0 = now + (kind !== 'cut' && !APP.reduced ? (TRS[kind] || 0) * APP.trDur * 1000 : 0); APP.tPause = 0; APP.lastT = 0; APP.hold = null; APP.holdFor = null;
+  /* the chapter flight: the old slide's content is drawn while it is still current, the new one once it is */
+  if (kind === 'flight') flBareA(prev, tPrev);
+  APP.i = i; APP.fl = kind === 'flight' ? flBegin(prev, tPrev, next, APP.back) : null;
+  if (APP.fl) APP.trDur = APP.fl.D;
+  APP.t0 = now + (APP.fl ? APP.fl.tB0 * 1000 : kind !== 'cut' && !APP.reduced ? (TRS[kind] || 0) * APP.trDur * 1000 : 0); APP.tPause = 0; APP.lastT = 0; APP.hold = null; APP.holdFor = null;
   if (APP.reduced) { APP.t0 = now - (next.settle || 9) * 1000; APP.tPause = next.settle || 9; }
   if (EDIT.on) { editFreeze(next); EDIT.sel = null; requestAnimationFrame(() => requestAnimationFrame(() => editSync())); }
   if (APP.frozenT == null && !APP.clip) { try { history.replaceState(null, '', '#' + next.id); } catch (e) { } }
@@ -426,28 +432,46 @@ function togglePlay() {
   $('playIcon').setAttribute('d', APP.playing ? 'M6 5h4v14H6zM14 5h4v14h-4z' : 'M7 5v14l11-7z');
   $('play').setAttribute('aria-label', APP.playing ? 'Pause' : 'Play');
 }
-/** draw slide s at time t into a 2D context. o = { chrome: false (a clip draws its own mark), vignette: false } */
+/** the film's chrome is the stage's, not the slide's: it is drawn settled, so the rule and the footer hold perfectly still
+    from one slide to the next (F0c: slideChrome drew its rule on from the left and faded its labels in at every slide's
+    t = 0, so the footer dipped and redrew through every dissolve) */
+const CHROME_T = 9;
+/** a slide's grid strength at t (s.paper: a number, a function of t, or nothing for the full grid) */
+const paperOf = (s, t) => (s.paper == null ? 1 : (typeof s.paper === 'function' ? s.paper(t) : s.paper));
+/** the night stage's soft lens fall-off at the edges, at strength a (paper stays flat, like a printed sheet) */
+function vignette(ctx, a = 1) {
+  if (a <= 0.003) return;
+  const vg = ctx.createRadialGradient(W / 2, H * 0.5, H * 0.62, W / 2, H * 0.5, H * 1.15);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.18)');
+  ctx.globalAlpha = a; ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+}
+/** draw slide s at time t into a 2D context. o = { chrome: false (a clip draws its own mark), vignette: false, bare: true
+    (the slide's own drawing only, on a clear canvas: no ground, grid, chrome or vignette; the chapter flight lays those
+    on the stage itself, so they hold still while the slide's content recedes or emerges) } */
 function drawSlide(ctx, s, t, o = {}) {
   G = ctx; TH = themeOf(s);
-  EDIT.slide = s.id; EDIT.depth = 0; EDIT.rec = EDIT.on && ctx.canvas === OFF; if (EDIT.rec) EDIT.boxes.length = 0;
+  EDIT.slide = s.id; EDIT.depth = 0; EDIT.rec = EDIT.on && ctx.canvas === OFF && !o.bare; if (EDIT.rec) EDIT.boxes.length = 0;
   const sc = APP.scale * APP.dpr;
+  if (o.bare) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); }
   ctx.setTransform(sc, 0, 0, sc, 0, 0);
   ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-  ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
-  try { stageLight(t, s.ch); } catch (e) { /* the light is decoration */ }
+  if (!o.bare) {
+    ctx.fillStyle = C.bg; ctx.fillRect(0, 0, W, H);
+    try { stageLight(t, s.ch); } catch (e) { /* the light is decoration */ }
+  }
   if (QA.on) { QA.text.length = 0; QA.boxes.length = 0; }
   const j = s.jolt ? s.jolt(t) : null; if (j) ctx.translate(j[0], j[1]);
-  paper(s.paper == null ? 1 : (typeof s.paper === 'function' ? s.paper(t) : s.paper));
+  if (!o.bare) paper(paperOf(s, t));
+  /* a bare draw is the chapter flight's: a card's kit mouse is then the flight's to draw (the kit's CARD2.hide) */
+  const kitHide = typeof CARD2 !== 'undefined'; if (kitHide) CARD2.hide = !!o.bare;
   if (s.draw) { try { s.draw(t); } catch (e) { console.error(s.id, e); } }
+  if (kitHide) CARD2.hide = false;
   ctx.setTransform(sc, 0, 0, sc, 0, 0); ctx.globalAlpha = 1;
-  /* the deck's chrome: the rule, THESEUS / chapter, n / N; a clip carries only its mark */
-  if (APP.clip) { if (o.chrome !== false) { try { clipMark(t, s); } catch (e) { console.error(s.id, 'mark', e); } } }
-  else { try { slideChrome(t, s); } catch (e) { console.error(s.id, 'chrome', e); } }
-  /* night gets a soft lens fall-off at the edges; paper stays flat, like a printed sheet */
-  if (!TH && o.vignette !== false) {
-    const vg = ctx.createRadialGradient(W / 2, H * 0.5, H * 0.62, W / 2, H * 0.5, H * 1.15);
-    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.18)');
-    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  if (!o.bare) {
+    /* the deck's chrome: the rule, THESEUS / chapter, n / N, settled (it is the stage's); a clip carries only its mark */
+    if (APP.clip) { if (o.chrome !== false) { try { clipMark(t, s); } catch (e) { console.error(s.id, 'mark', e); } } }
+    else if (o.chrome !== false) { try { slideChrome(CHROME_T, s); } catch (e) { console.error(s.id, 'chrome', e); } }
+    if (!TH && o.vignette !== false) vignette(ctx);
   }
   EDIT.rec = false;
 }
@@ -525,13 +549,353 @@ function compose(k) {
     const lx = dir > 0 ? bx : bx + w, sw = 60 * sx, gsh = fx.createLinearGradient(lx, 0, lx - dir * sw, 0);
     gsh.addColorStop(0, `rgba(0,0,0,${0.35 * Math.sin(e * Math.PI)})`); gsh.addColorStop(1, 'rgba(0,0,0,0)');
     fx.fillStyle = gsh; fx.fillRect(dir > 0 ? lx - sw : lx, 0, sw, h);
-  } else { fx.drawImage(A, 0, 0); fx.globalAlpha = E.io3(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1; }
+  } else if (APP.trans === 'flight' && APP.fl) flCompose(fx, k);
+  else { fx.drawImage(A, 0, 0); fx.globalAlpha = E.io3(k); fx.drawImage(B, 0, 0); fx.globalAlpha = 1; }
+}
+
+/* ============================================================================================
+   THE CHAPTER FLIGHT (F0c; Brock, F40.2: "advanced motion transitions", not a pass through black).
+   The film's one simplified mouse is the thread between chapters. At a chapter change the outgoing slide recedes into
+   the mouse (only its content goes: the ground, the grid and the footer stay where they are), the mouse shows where the
+   chapter was (its part lit in Theseus's blue), and one camera carries it to where the next chapter is, turning between
+   views when the next part faces another way (top, side, below), and lands exactly where the chapter card draws its own
+   mouse; the card's words land over it and the card lights its part. Stepping back plays the same move the other way:
+   the card's words go, the camera flies back, the slide comes up out of the mouse.
+   - Each end of the move is a card or a slide. A card is a slide whose kit mouse the player can see: chapterCard2's part,
+     read through the kit's capture (CARD2), or a slide's own `flight: { view, box, pad }`. A card's mouse IS the flight's
+     mouse at that end: the flight starts on it or lands on it exactly. A slide recedes into, or emerges out of, its
+     chapter's station: the chapter's part, lit, framed large at the centre (FLY.st).
+   - The turn: each view is a roll about the mouse's long axis and a turn in the plane (top 0°, side 90°, below 180°).
+     Between two views the mouse is a loft of the kit's own outlines (the top's width, the side's heights, the front's
+     section), so its silhouette and its lines (seams, skirt, wheel, buttons, skates, lens) turn as one solid; before and
+     after the turn it is the kit's own drawing, so the hand-off to a card is exact.
+   - Timeline, s (FLY.T): the slide recedes 0 to 0.42 as the mouse comes up; the camera moves 0.22 to 1.28 (E.cam),
+     turning 0.58 to 1.18 when it must; the old part's light goes 0.3 to 0.56; a card's clock starts on landing (1.28)
+     and its part comes up over the landed mouse until the flight's layer goes (1.6); a slide emerges 1.2 to 1.6 instead.
+   ============================================================================================ */
+const FLY = {
+  dur: TRN.flight,
+  /* rec: a slide recedes; up: the mouse comes up; words: a card's words go; theme: the ground changes (paper and night),
+     after the slide has gone, while only the mouse moves; move: the camera; off: the old part's light goes; k2l, l2k: the
+     kit's drawing hands over to the loft and back, around the turn; land: a card's clock starts; on: a slide's chapter
+     part lights; emerge: a slide comes up; chrome: the footer's chapter changes hands (on one ground) */
+  T: { rec: [0, 0.4], up: [0.03, 0.34], words: [0, 0.24], theme: [0.34, 0.66], move: [0.22, 1.28], off: [0.3, 0.56], k2l: [0.5, 0.58],
+    turn: [0.58, 1.18], l2k: [1.18, 1.26], land: 1.28, on: [1.22, 1.44], emerge: [1.2, 1.6], chrome: [0.5, 0.9] },
+  /* each chapter's station: its view, the part lit, and the large shot a slide recedes into or emerges from (focus: the
+     mm point at the stage's centre, in the view's frame; s: px per mm). The parts are Brock's (F40.2): the triggers for
+     clicks, the sensor and skates for glide, the shell and hump for shell, the sides for surface, the board for
+     electronics, the side profile for shape, the base and screws for ownership */
+  st: {
+    intro: { view: 'top', hi: [], focus: [0, 0], s: 6.6 },
+    click: { view: 'top', hi: ['triggers'], focus: [0, -30], s: 8.6 },
+    glide: { view: 'bottom', hi: ['sensor', 'skates'], focus: [0, -12], s: 8.0 },
+    shell: { view: 'left', hi: ['shell', 'hump'], focus: [6, -22], s: 10.5 },
+    surface: { view: 'left', hi: ['sides'], focus: [0, -19], s: 10.5 },
+    elec: { view: 'top', hi: ['board'], show: ['battery'], focus: [0, -18], s: 8.0 },
+    shape: { view: 'left', hi: ['shell'], focus: [0, -20], s: 12.2 },
+    own: { view: 'bottom', hi: ['base', 'screws'], focus: [0, -11], s: 8.6 },
+    end: { view: 'top', hi: ['shell'], focus: [0, 0], s: 6.6 }
+  },
+  ctr: [960, 540],
+  cardBox: [1000, 200, 840, 500],              /* chapterCard2's part box */
+  YM: 19.95,                                  /* the axis the mouse turns about: half its drawn height (MS_SIDE's 39.9 mm) */
+  V: { top: [0, 0], left: [90, -90], side: [90, -90], bottom: [180, 0], right: [-90, 90] },   /* view: [roll, in-plane], degrees */
+  loft: null
+};
+const BAREA = document.createElement('canvas'), SCR = document.createElement('canvas'), CHR = document.createElement('canvas');
+/** a view's turning centre (the mouse's axis, X = 0, Y = YM, Z = 0) in that view's mm frame */
+function flMv(view) { return view === 'left' || view === 'side' || view === 'right' ? [0, -FLY.YM] : [0, 0]; }
+/** the camera for a kit placement: view and transform matrix m (stage px per mm, no rotation) → { view, phi, psi, P, s } */
+function flCamOf(view, m) {
+  const v = view === 'side' ? 'left' : view, a = FLY.V[v], Mv = flMv(v);
+  return { view: v, phi: a[0], psi: a[1], s: m[0], P: [m[0] * Mv[0] + m[2] * Mv[1] + m[4], m[1] * Mv[0] + m[3] * Mv[1] + m[5]] };
+}
+/** one end of the flight: a card (its kit mouse seen, so the flight's mouse is exactly it there) or a slide (its chapter's
+    station). t: the slide's time at that end */
+function flEnd(s, t) {
+  const st = FLY.st[s.ch] || FLY.st.intro;
+  let view = null, m = null, o = null;
+  if (s.flight && s.flight.view && s.flight.box) {
+    const b = s.flight.box, c = camFit(msBox(s.flight.view), b, s.flight.pad == null ? 0.04 : s.flight.pad);
+    view = s.flight.view; m = [c.s, 0, 0, c.s, b[0] + b[2] / 2 - c.cx * c.s, b[1] + b[3] / 2 - c.cy * c.s];
+    o = { hi: s.flight.hi || [], show: s.flight.show, lit: 0, col: s.flight.col || 'ink' };
+  } else {
+    const rec = typeof CARD2 !== 'undefined' && CARD2.rec ? CARD2.rec[s.id] : null;
+    const cs = rec && rec.caps ? rec.caps.filter(c => FLY.V[c.view] && Math.abs(c.m[1]) + Math.abs(c.m[2]) < 1e-6) : [];
+    if (cs.length) { const c = cs.reduce((a, b) => (b.m[0] > a.m[0] ? b : a)); view = c.view; m = c.m; o = c.o; }
+  }
+  if (view && FLY.V[view]) return { card: true, view: view === 'side' ? 'left' : view, cam: flCamOf(view, m), o, st, s };
+  const v = st.view, Mv = flMv(v), a = FLY.V[v];
+  /* a card whose part the player can't see (drawn without the kit's mouse): the flight still lands where a card's part
+     sits, in its chapter's view, and hands over softly there */
+  if (s.card && s.flight !== false) {
+    const b = FLY.cardBox, c = camFit(msBox(v), b, 0.04);
+    return { card: true, soft: true, view: v, cam: flCamOf(v, [c.s, 0, 0, c.s, b[0] + b[2] / 2 - c.cx * c.s, b[1] + b[3] / 2 - c.cy * c.s]), o: { hi: st.hi, show: st.show, lit: 0, col: 'ink' }, st, s };
+  }
+  return { card: false, view: v, cam: { view: v, phi: a[0], psi: a[1], s: st.s, P: [FLY.ctr[0] + st.s * (Mv[0] - st.focus[0]), FLY.ctr[1] + st.s * (Mv[1] - st.focus[1])] }, st, s };
+}
+/** the flight from slide A (at its time tA) to slide B, going back or not. B must already have been drawn once (so a
+    card's mouse has been seen); A was the slide on screen */
+function flPlan(A, B, tA, back) {
+  const a = flEnd(A, tA), b = flEnd(B, 0), D = FLY.dur, T = FLY.T;
+  let p0 = a.cam.phi, p1 = b.cam.phi;
+  if (p1 - p0 > 180) p1 -= 360; else if (p0 - p1 > 180) p1 += 360;
+  const turn = a.view !== b.view;
+  return { A, B, tA, back, a, b, D, turn, p0, p1, thA: themeOf(A), thB: themeOf(B), tB0: b.card ? T.land : D,
+    gA: paperOf(A, tA), gB: paperOf(B, 0) };
+}
+/** the camera at flight time u (s): its scale moves geometrically and its point about the one fixed point a zoom has,
+    so the move reads as one push or pull; the roll and the in-plane turn ease through the turn's window */
+function flCam(pl, u) {
+  const T = FLY.T, A = pl.a.cam, B = pl.b.cam, e = E.cam(prog(u, T.move[0], T.move[1]));
+  const s = A.s * Math.pow(B.s / A.s, e);
+  let P;
+  if (Math.abs(B.s - A.s) > 1e-3 * Math.max(A.s, B.s)) {
+    const Q = [(B.P[0] * A.s - A.P[0] * B.s) / (A.s - B.s), (B.P[1] * A.s - A.P[1] * B.s) / (A.s - B.s)];
+    P = [Q[0] + (A.P[0] - Q[0]) * s / A.s, Q[1] + (A.P[1] - Q[1]) * s / A.s];
+  } else P = [lerp(A.P[0], B.P[0], e), lerp(A.P[1], B.P[1], e)];
+  const r = pl.turn ? E.io3(prog(u, T.turn[0], T.turn[1])) : 0;
+  return { s, P, phi: lerp(pl.p0, pl.p1, r), psi: lerp(A.psi, B.psi, r), r };
+}
+/** the kit's own drawing of a view under the flight's camera (exact when the camera sits on that view) */
+function flKit(view, cam, o) {
+  const Mv = flMv(view);
+  if (!XF.st.length) XF.m = [1, 0, 0, 1, 0, 0];
+  const pa = PA; PA = 1; xsave();
+  try { xmove(cam.P[0] - cam.s * Mv[0], cam.P[1] - cam.s * Mv[1]); xscale(cam.s); mouseSimple(view, o); }
+  finally { xrest(); PA = pa; }
+}
+/** the lit state at one end, at flight time u: a card's own (its capture), or the station's part */
+function flLit(pl, end, u, src) {
+  const T = FLY.T;
+  if (end.card) {
+    /* a card's own state as it was last drawn (its capture), else as planned */
+    const rec = !end.soft && typeof CARD2 !== 'undefined' && CARD2.rec ? CARD2.rec[end.s.id] : null;
+    const cs = rec && rec.caps ? rec.caps.filter(c => c.view === end.view) : [];
+    const o = Object.assign({}, cs.length ? cs.reduce((a, b) => (b.m[0] > a.m[0] ? b : a)).o : end.o || {});
+    if (src) o.lit = (o.lit == null ? 1 : o.lit) * (1 - E.io3(prog(u, T.off[0], T.off[1])));
+    return o;
+  }
+  const k = src ? 1 - E.io3(prog(u, T.off[0], T.off[1])) : E.io3(prog(u, T.on[0], T.on[1]));
+  return { hi: end.st.hi, show: end.st.show, lit: k, col: src || pl.back ? 'hero' : 'ink' };
+}
+/** the mouse at flight time u, in the current theme, at alpha al: the kit's drawing at either end, the loft in a turn */
+function flMouse(pl, u, al) {
+  if (al <= 0.003) return;
+  const T = FLY.T, cam = flCam(pl, u), B = pl.b, A = pl.a;
+  /* the light changes hands between the two ends' drawings: the old part goes before the camera leaves it, the new one
+     comes once it has landed */
+  const useB = pl.turn ? u >= T.turn[1] : u >= T.on[0] || (B.card && u >= T.land);
+  const end = useB ? B : A, ok = flLit(pl, end, u, !useB);
+  if (!pl.turn) { flKit(end.view, cam, Object.assign(ok, { alpha: al })); return; }
+  /* a turn: the kit's drawing hands over to the loft before it, the loft turns, and hands back after it */
+  const xIn = E.io3(prog(u, T.k2l[0], T.k2l[1])), xOut = 1 - E.io3(prog(u, T.l2k[0], T.l2k[1])), x = Math.min(xIn, xOut);
+  const kitCam = Object.assign({}, cam, { phi: useB ? pl.p1 : pl.p0 });
+  if (x <= 0.001) { flKit(end.view, kitCam, Object.assign(ok, { alpha: al })); return; }
+  flLoftDraw(cam, al, { body: true });
+  if (x < 0.999) flKit(end.view, kitCam, Object.assign(ok, { alpha: al * (1 - x), fill: 'rgba(0,0,0,0)' }));
+  flLoftDraw(cam, al * x, { body: false });
+}
+
+/* ---------- the loft: the kit's outlines as one solid, for the turns ----------
+   Scene mm: X the user's left, Y up from the pad, Z toward the nose. Stations along Z: the top view's half-width w (the
+   key plan's outline, as mouseSimple draws it), the side view's lowest and highest points (MS_SIDE), and the front
+   view's outline (MS_FRONT) as the section, scaled to them. Under a roll the stations stay flat to the screen, so the
+   silhouette is each station's extent: exact for the loft and cheap. The features are the kit's own lines, placed on it. */
+function flLoft() {
+  if (FLY.loft) return FLY.loft;
+  const SP = MS_SIDE, FP = MS_FRONT, fy0 = Math.min(...FP.map(p => p[1])), fy1 = Math.max(...FP.map(p => p[1]));
+  const fx1 = Math.max(...FP.map(p => Math.abs(p[0]))), fh = fy1 - fy0, YM = FLY.YM;
+  /* the side outline crossed at z: its lowest and highest points */
+  const env = z => { let lo = Infinity, hi = -Infinity; for (let i = 0; i < SP.length; i++) { const a = SP[i], b = SP[(i + 1) % SP.length]; if ((z - a[0]) * (z - b[0]) <= 0 && a[0] !== b[0]) { const y = a[1] + (b[1] - a[1]) * (z - a[0]) / (b[0] - a[0]); lo = Math.min(lo, y); hi = Math.max(hi, y); } } return lo <= hi ? [lo, hi] : null; };
+  /* the front outline crossed at height y: the outermost point each side, with the outline's outward normal there */
+  const front = y => { let L = null, R = null; for (let i = 0; i < FP.length; i++) { const a = FP[i], b = FP[(i + 1) % FP.length]; if ((y - a[1]) * (y - b[1]) <= 0 && a[1] !== b[1]) { const x = a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]); let nx = b[1] - a[1], ny = a[0] - b[0]; const l = Math.hypot(nx, ny) || 1; nx /= l; ny /= l; if (nx * x < 0) { nx = -nx; ny = -ny; } if (!L || x > L.x) L = { x, n: [nx, ny] }; if (!R || x < R.x) R = { x, n: [nx, ny] }; } } return { L, R }; };
+  /* the section: the front outline normalised (u -1..1 across, v 0..1 up); its convex hull carries the silhouette */
+  const nrm = FP.map(([x, y]) => [x / fx1, (y - fy0) / fh]).sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo = [], up = [];
+  for (const p of nrm) { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+  for (let i = nrm.length - 1; i >= 0; i--) { const p = nrm[i]; while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+  const hull = lo.slice(0, -1).concat(up.slice(0, -1));
+  /* the stations: denser at the nose and the tail, where the outlines turn fastest */
+  const zs0 = Math.min(...SP.map(p => p[0])), zs1 = Math.max(...SP.map(p => p[0])), zt1 = -KEY.nose * MS_K.y, zt0 = -KEY.tail * MS_K.y;
+  const z0 = Math.min(zs0, zt0), z1 = Math.max(zs1, zt1), N = 150, st = [];
+  for (let i = 0; i <= N; i++) {
+    const z = z0 + (z1 - z0) * (1 - Math.cos(Math.PI * i / N)) / 2, w = z > zt0 && z < zt1 ? msHalfW(-z) : 0;
+    let e = env(z); if (!e) { const ee = env(clamp(z, zs0 + 0.01, zs1 - 0.01)) || [10, 10], mid = (ee[0] + ee[1]) / 2; e = [mid, mid]; }
+    st.push({ z, w, yb: e[0], yt: e[1] });
+  }
+  const at = z => { let i = 1; while (i < st.length - 1 && st[i].z < z) i++; const a = st[i - 1], b = st[i], k = clamp((z - a.z) / ((b.z - a.z) || 1)); return { z, w: lerp(a.w, b.w, k), yb: lerp(a.yb, b.yb, k), yt: lerp(a.yt, b.yt, k) }; };
+  /* a point on the wall at station z, height y (side 1: the user's left, -1 the right), with its outward normal */
+  const wall = (z, y, side, proud = 0) => {
+    const q = at(z), h = q.yt - q.yb; if (q.w < 0.05 || h < 0.05 || y < q.yb || y > q.yt) return null;
+    const f = front(fy0 + (y - q.yb) / h * fh), c = side > 0 ? f.L : f.R; if (!c) return null;
+    const sx = q.w / fx1, sy = h / fh; let nx = c.n[0] / sx, ny = c.n[1] / sy; const l = Math.hypot(nx, ny) || 1; nx /= l; ny /= l;
+    return { p: [c.x * sx + nx * proud, y + ny * proud, z], n: [nx, ny] };
+  };
+  const F = [];   /* features: { pts: [[X, Y, Z]], ns: [[nX, nY]] (per point), close, kind: 'line' | 'solid', side } */
+  const line = (pts, ns, o = {}) => { if (pts.length > 1) F.push(Object.assign({ pts, ns, kind: 'line' }, o)); };
+  /* the skirt: the base chamfer's top edge, 9.3 mm up, both walls */
+  for (const side of [1, -1]) { const P = [], Nn = []; for (const q of st) { const r = wall(q.z, MS_SKIRT, side); if (r) { P.push(r.p); Nn.push(r.n); } } line(P, Nn, { w: 1.3 }); }
+  /* the triggers' edges down each wall to the nose (the side view's seam line) */
+  for (const side of [1, -1]) { const P = [], Nn = []; for (const [z, y] of MS_SIDE_SEAM[0]) { const r = wall(z, y, side, 0.05); if (r) { P.push(r.p); Nn.push(r.n); } } line(P, Nn, { w: 1.3 }); }
+  /* the centre split on top, broken where the wheel sits, and the straight rear cutout across the top */
+  const top = (za, zb) => { const P = [], Nn = []; for (let i = 0; i <= 40; i++) { const z = lerp(za, zb, i / 40), q = at(z); P.push([0, q.yt + 0.05, z]); Nn.push([0, 1]); } return [P, Nn]; };
+  const zN = -KEY.nose * MS_K.y - 0.6, zW1 = 46.4 * MS_K.y, zW0 = 28.4 * MS_K.y, zC = -KEY.seam * MS_K.y;
+  line(...top(zN, zW1), { w: 1.3 }); line(...top(zW0, zC), { w: 1.3 });
+  { const q = at(zC), h = q.yt - q.yb, P = [], Nn = [];
+    /* the cutout runs over the top from where the triggers' edges meet it on each wall */
+    const yA = Math.min(q.yt - 0.5, MS_SIDE_SEAM[0][MS_SIDE_SEAM[0].length - 1][1] - 6);
+    const arc = FP.filter(([x, y]) => (y - fy0) / fh * h + q.yb >= yA).sort((p, r) => r[0] - p[0]);
+    for (const [x, y] of arc) { const X = x / fx1 * q.w, Y = q.yb + (y - fy0) / fh * h, d = Math.hypot(X / (q.w || 1), (Y - (q.yb + h * 0.35)) / (h || 1)) || 1; P.push([X, Y + 0.05, zC]); Nn.push([X / (q.w || 1) / d, (Y - (q.yb + h * 0.35)) / (h || 1) / d]); }
+    line(P, Nn, { w: 1.3 }); }
+  /* the base plate's edge, 2.6 mm in from the widest outline, on the base */
+  { const Pb = msInset(KEY_PTS.map(([x, y]) => [x * MS_K.x, y * MS_K.y]), 2.6), P = [], Nn = [];
+    for (const [x, y] of Pb) { const z = -y, q = at(z); P.push([-x, q.yb - 0.05, z]); Nn.push([0, -1]); }
+    line(P, Nn, { w: 1.3, close: true }); }
+  /* the wheel: its cap above the shell (the side view's wheel), at both faces 7 mm apart */
+  F.push({ kind: 'hull', pts: MS_SIDE_WHEEL.flatMap(([z, y]) => [[3.5, y, z], [-3.5, y, z]]), n: [0, 1], proud: true });
+  /* the side buttons, just proud of the left wall */
+  for (const b of MS_SIDE_BTN) { const P = [], Nn = []; for (const [z, y] of b) { const r = wall(z, y, 1, 0.45); if (r) { P.push(r.p); Nn.push(r.n); } } if (P.length > 3) F.push({ kind: 'solid', pts: P, ns: Nn }); }
+  /* under it: the lens window, the lens, the skates (dots 0.74 mm proud of the base) */
+  { const L = msLive(), ln = L.lens, R = 1.6, P = [];
+    const rr = (x0, z0, x1, z1) => { const out = []; for (const [cx, cz, a0] of [[x1 - R, z1 - R, 0], [x0 + R, z1 - R, 90], [x0 + R, z0 + R, 180], [x1 - R, z0 + R, 270]]) for (let k = 0; k <= 6; k++) { const a = (a0 + k * 15) * Math.PI / 180; out.push([cx + R * Math.cos(a), cz + R * Math.sin(a)]); } return out; };
+    for (const [x, z] of rr(ln[0], ln[2] * MS_K.y, ln[3], ln[5] * MS_K.y)) P.push([x, at(z).yb - 0.05, z]);
+    F.push({ kind: 'solid', pts: P, ns: P.map(() => [0, -1]), under: true });
+    const zc = (ln[2] + ln[5]) / 2 * MS_K.y, C2 = []; for (let k = 0; k < 24; k++) { const a = k / 24 * TAU; C2.push([1.8 * Math.cos(a), at(zc).yb - 0.06, zc + 1.8 * Math.sin(a)]); }
+    line(C2, C2.map(() => [0, -1]), { w: 1.3, close: true });
+    for (const [X, Z] of L.corner.map(([x, z]) => [x * MS_K.x, z * MS_K.y]).concat(L.lensDots.map(([x, z]) => [x, z * MS_K.y]))) {
+      const pts = []; for (let k = 0; k < 20; k++) { const a = k / 20 * TAU; pts.push([X + 3.25 * Math.cos(a), 0, Z + 3.25 * Math.sin(a)], [X + 3.25 * Math.cos(a), 0.74, Z + 3.25 * Math.sin(a)]); }
+      F.push({ kind: 'hull', pts, n: [0, -1], proud: true });
+    }
+  }
+  const sup = (dx, dy) => { let mn = Infinity, mx = -Infinity; for (const p of hull) { const d = dx * p[0] + dy * p[1]; if (d < mn) mn = d; if (d > mx) mx = d; } return [mn, mx]; };
+  return (FLY.loft = { st, F, sup, YM });
+}
+/** the loft drawn under the flight's camera at alpha al: o.body draws the body only (its fill), otherwise everything but
+    the fill (the hidden protruding parts, the lines and solids by how far they face the camera, the outline) */
+function flLoftDraw(cam, al, o = {}) {
+  if (al <= 0.003) return;
+  const L = flLoft(), YM = L.YM, ph = cam.phi * Math.PI / 180, ps = cam.psi * Math.PI / 180;
+  const cp = Math.cos(ph), sp = Math.sin(ph), cq = Math.cos(ps), sq = Math.sin(ps), s = cam.s, [px, py] = cam.P;
+  const PJ = (X, Y, Z) => { const a = -X * cp + (Y - YM) * sp, b = -Z; return [px + s * (a * cq - b * sq), py + s * (a * sq + b * cq)]; };
+  const vis = n => n[0] * sp + n[1] * cp, va = v => clamp((v - 0.03) / 0.25);
+  const ink = TH ? '17,17,17' : '243,242,238', bodyF = TH ? '#FFFFFF' : '#1A1B1E', solidF = TH ? '#E9E8E3' : '#2A2B2F';
+  G.save(); G.lineJoin = 'round'; G.lineCap = 'round';
+  /* the silhouette: each station's extent across the screen */
+  const sil = new Path2D(), side = [];
+  for (const q of L.st) { const [mn, mx] = L.sup(-q.w * cp, (q.yt - q.yb) * sp), b = (q.yb - YM) * sp; side.push([b + mn, b + mx, -q.z]); }
+  const S2 = (a, b) => [px + s * (a * cq - b * sq), py + s * (a * sq + b * cq)];
+  side.forEach((q, i) => { const p = S2(q[1], q[2]); i ? sil.lineTo(p[0], p[1]) : sil.moveTo(p[0], p[1]); });
+  for (let i = side.length - 1; i >= 0; i--) { const p = S2(side[i][0], side[i][2]); sil.lineTo(p[0], p[1]); }
+  sil.closePath();
+  const hullOf = pts => { const Q = pts.map(p => PJ(...p)).sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o2, a, b) => (a[0] - o2[0]) * (b[1] - o2[1]) - (a[1] - o2[1]) * (b[0] - o2[0]), lo = [], up = [];
+    for (const p of Q) { while (lo.length > 1 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+    for (let i = Q.length - 1; i >= 0; i--) { const p = Q[i]; while (up.length > 1 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+    const h = lo.slice(0, -1).concat(up.slice(0, -1)), pa = new Path2D(); h.forEach((p, i) => (i ? pa.lineTo(p[0], p[1]) : pa.moveTo(p[0], p[1]))); pa.closePath(); return pa; };
+  const solid = (path, a) => { if (a <= 0.003) return; G.globalAlpha = al * a; G.fillStyle = solidF; G.fill(path); G.strokeStyle = `rgba(${ink},${TH ? 0.55 : 0.5})`; G.lineWidth = 1.2; G.stroke(path); };
+  if (o.body) { G.globalAlpha = al; G.fillStyle = bodyF; G.fill(sil); G.restore(); return; }
+  /* parts standing proud of the body that face away: drawn first, so the body hides them except where they stick out */
+  const proud = L.F.filter(f => f.kind === 'hull'), behind = f => vis(f.n) < 0;
+  for (const f of proud) if (behind(f)) solid(hullOf(f.pts), 1);
+  G.globalAlpha = al; G.fillStyle = bodyF; G.fill(sil);
+  /* the lines on the body, each segment as far as it faces the camera */
+  G.strokeStyle = `rgba(${ink},${TH ? 0.5 : 0.46})`;
+  for (const f of L.F) {
+    if (f.kind !== 'line') continue;
+    G.lineWidth = f.w || 1.3;
+    const P = f.pts.map(p => PJ(...p)), n = f.pts.length, m = f.close ? n : n - 1;
+    for (let i = 0; i < m; i++) { const j = (i + 1) % n, a = va((vis(f.ns[i]) + vis(f.ns[j])) / 2); if (a <= 0.003) continue; G.globalAlpha = al * a; G.beginPath(); G.moveTo(P[i][0], P[i][1]); G.lineTo(P[j][0], P[j][1]); G.stroke(); }
+  }
+  /* solids on the body (buttons, the lens window) and the proud parts that face the camera */
+  for (const f of L.F) {
+    if (f.kind !== 'solid') continue;
+    const nm = f.ns.reduce((a, q) => [a[0] + q[0], a[1] + q[1]], [0, 0]), a = va(vis(nm.map(x => x / f.ns.length)));
+    if (a <= 0.003) continue;
+    const pa = new Path2D(); f.pts.forEach((p, i) => { const q = PJ(...p); i ? pa.lineTo(q[0], q[1]) : pa.moveTo(q[0], q[1]); }); pa.closePath(); solid(pa, a);
+  }
+  for (const f of proud) if (!behind(f)) solid(hullOf(f.pts), 1);
+  /* the outline */
+  G.globalAlpha = al; G.strokeStyle = `rgba(${ink},${TH ? 0.78 : 0.7})`; G.lineWidth = 2; G.stroke(sil);
+  G.restore();
+}
+
+/** the stage under the flight at time u, in theme th: the ground and grid, the footer (A's handing over to B's), and
+    the mouse at alpha mA */
+function flStage(g, pl, u, th, mA, chromeK) {
+  G = g; TH = th;
+  const sc = APP.scale * APP.dpr; g.setTransform(sc, 0, 0, sc, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  g.fillStyle = C.bg; g.fillRect(0, 0, W, H);
+  paper(lerp(pl.gA, pl.gB, prog(u, FLY.T.theme[0], FLY.T.theme[1])));
+  /* the footer: the same rule and name on both; only the chapter and the count change hands */
+  if (chromeK <= 0.001 || chromeK >= 0.999) { try { slideChrome(CHROME_T, chromeK < 0.5 ? pl.A : pl.B); } catch (e) { } }
+  else {
+    const y0 = LAY.ruleY - 12, hh = H - y0, cw = Math.ceil(W * sc), chh = Math.ceil(hh * sc);
+    if (CHR.width !== cw || CHR.height !== chh) { CHR.width = cw; CHR.height = chh; }
+    const cg = CHR.getContext('2d');
+    for (const [s, a] of [[pl.A, 1 - chromeK], [pl.B, chromeK]]) {
+      G = cg; cg.setTransform(1, 0, 0, 1, 0, 0); cg.clearRect(0, 0, cw, chh); cg.setTransform(sc, 0, 0, sc, 0, -y0 * sc);
+      try { slideChrome(CHROME_T, s); } catch (e) { }
+      g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = a; g.drawImage(CHR, 0, Math.round(y0 * sc)); g.restore();
+    }
+    G = g;
+  }
+  g.setTransform(sc, 0, 0, sc, 0, 0);
+  flMouse(pl, u, mA);
+  g.setTransform(sc, 0, 0, sc, 0, 0); g.globalAlpha = 1;
+}
+/** compose the flight at k (0 → 1): the stage (blended across the two grounds when they differ), the old slide's content
+    receding or its words going, the new slide's content landing or emerging, and the night's fall-off on top */
+function flCompose(fx, k) {
+  const pl = APP.fl, T = FLY.T, u = k * pl.D, w = $('fx').width, h = $('fx').height;
+  if (SCR.width !== w || SCR.height !== h) { SCR.width = w; SCR.height = h; }
+  /* the mouse: up as a slide recedes, there at once on a card it leaves from, crossing with a card's part it can't see;
+     away as a slide emerges, under a card's own mouse to the end, or crossing with a card's part it can't see */
+  const mA = (pl.a.soft ? E.io3(prog(u, T.words[0], T.words[1])) : pl.a.card ? 1 : E.out3(prog(u, T.up[0], T.up[1])))
+    * (pl.b.soft ? 1 - E.io3(prog(u, T.land, pl.D)) : pl.b.card ? 1 : 1 - E.io3(prog(u, T.emerge[0] + 0.05, T.emerge[1])));
+  const g = pl.thA === pl.thB ? (u < T.theme[0] ? 0 : 1) : E.io3(prog(u, T.theme[0], T.theme[1]));
+  const chromeK = pl.thA === pl.thB ? E.io3(prog(u, T.chrome[0], T.chrome[1])) : g;
+  if (g <= 0.001) flStage(fx, pl, u, pl.thA, mA, chromeK);
+  else if (g >= 0.999) flStage(fx, pl, u, pl.thB, mA, chromeK);
+  else {
+    flStage(fx, pl, u, pl.thA, mA, 0);
+    const sg = SCR.getContext('2d'); flStage(sg, pl, u, pl.thB, mA, 1);
+    fx.setTransform(1, 0, 0, 1, 0, 0); fx.globalAlpha = g; fx.drawImage(SCR, 0, 0); fx.globalAlpha = 1;
+  }
+  fx.setTransform(1, 0, 0, 1, 0, 0); fx.globalAlpha = 1;
+  /* the old slide: a card's words go in place (its mouse is the flight's now); a slide recedes, a hair smaller, into the mouse */
+  const lay = (cv, a, sc) => { if (a <= 0.003) return; fx.save(); fx.globalAlpha = a; if (sc !== 1) { fx.translate(w / 2, h / 2); fx.scale(sc, sc); fx.translate(-w / 2, -h / 2); } fx.drawImage(cv, 0, 0); fx.restore(); };
+  if (pl.a.card) lay(BAREA, 1 - E.io3(prog(u, T.words[0], T.words[1])), 1);
+  else { const e = prog(u, T.rec[0], T.rec[1]); lay(BAREA, 1 - E.io3(prog(u, T.rec[0] + 0.02, T.rec[1])), 1 - 0.035 * E.out3(e)); }
+  /* the new slide: a card plays over the landed mouse from the landing; a slide emerges, from a hair smaller, at its first frame */
+  if (pl.b.card) { if (u >= pl.tB0) lay(OFF, pl.b.soft ? E.io3(prog(u, pl.tB0, pl.tB0 + 0.3)) : 1, 1); }
+  else if (u >= T.emerge[0]) { const e = prog(u, T.emerge[0], T.emerge[1]); lay(OFF, E.io3(e), 1 - 0.035 * (1 - E.out3(e))); }
+  /* the night's fall-off, over everything, as the grounds blend */
+  const sc = APP.scale * APP.dpr; fx.setTransform(sc, 0, 0, sc, 0, 0);
+  vignette(fx, (pl.thA ? 0 : 1 - g) + (pl.thB ? 0 : g));
+  fx.setTransform(1, 0, 0, 1, 0, 0);
+}
+/** does the flight need slide B drawn at flight time u (a card from its landing, a slide from its emergence) */
+function flNeedsB(pl, u) { return u >= (pl.b.card ? pl.tB0 : FLY.T.emerge[0]); }
+/** a flight's first step, while the old slide is still the current one (so its own calls to curSlide() see it): its
+    content, drawn once at its time without its ground, recedes over the stage's own */
+function flBareA(prev, tA) {
+  const w = $('fx').width, h = $('fx').height;
+  if (BAREA.width !== w || BAREA.height !== h) { BAREA.width = w; BAREA.height = h; }
+  drawSlide(BAREA.getContext('2d'), prev, tA, { bare: true });
+}
+/** its second, once the new slide is current: drawn once (so a card's mouse is seen through the kit's capture), then the plan */
+function flBegin(prev, tA, next, back) {
+  drawSlide(OFF.getContext('2d'), next, 0, { bare: true });
+  return flPlan(prev, next, tA, back);
 }
 /* ---------- autoplay: play to settle, hold for the reading, move on ----------
    The hold scales with the text the settled frame shows: reading text (24 px and up) counts in full, small labels and
    ticks a third (they are scanned, not read), the chrome and anything faint not at all; HOLD.cps characters a second on
-   top of HOLD.base, between HOLD.min and HOLD.max. Most of a slide is read while it builds; the hold is the last look. */
-const HOLD = { base: 0.5, cps: 250, small: 0.3, min: 1.2, max: 4, guess: 2.2 };
+   top of HOLD.base, between HOLD.min and HOLD.max. Most of a slide is read while it builds; the hold is the last look.
+   Brock (F40.1, 2026-11-06): "Longer, 2–6 s". Calibrated on the settled frames (F0c): the revamp's slides weigh 300 to
+   570 characters (median about 400; a chapter card 360 to 460), the old idea sheets up to 950. 250 maps to 2 s and 850 to
+   6 s, so a typical slide holds about 3 s, a card about 3, a dense sheet the full 6. */
+const HOLD = { base: 1 / 3, cps: 150, small: 0.3, min: 2, max: 6, guess: 3 };
 function holdOf(s, list) {
   if (s.hold != null) return +s.hold;
   let read = 0, small = 0; const seen = new Set();
@@ -565,9 +929,12 @@ function frame() {
   /* the first frame past settle is the settled frame on screen: count its text for the hold */
   const qa0 = QA.on, measure = APP.auto && !APP.clip && APP.frozenT == null && APP.holdFor !== s.id && t >= (s.settle || 9);
   if (measure) QA.on = true;
-  drawSlide(OFF.getContext('2d'), s, t, APP.vert ? { chrome: false, vignette: false } : {});
+  let k = APP.trStart > 0 ? prog((now - APP.trStart) / 1000, 0, APP.trDur) : 1;
+  /* in a flight the new slide is drawn without its ground, and only once the flight shows it */
+  if (APP.trans === 'flight' && APP.fl && APP.trStart > 0 && k < 1) { if (flNeedsB(APP.fl, k * APP.fl.D)) drawSlide(OFF.getContext('2d'), s, t, { bare: true }); }
+  else drawSlide(OFF.getContext('2d'), s, t, APP.vert ? { chrome: false, vignette: false } : {});
   if (measure) { APP.hold = holdOf(s, QA.text); APP.holdFor = s.id; QA.on = qa0; if (!qa0) { QA.text.length = 0; QA.boxes.length = 0; } }
-  let k = APP.trStart > 0 ? prog((now - APP.trStart) / 1000, 0, APP.trDur) : 1; if (k >= 1) APP.trStart = -1;
+  if (k >= 1) { APP.trStart = -1; APP.fl = null; }
   compose(k);
   if (EDIT.on && k >= 1) editOverlay();
   /* progress inside the chapter segment, counting each slide's hold */
@@ -622,17 +989,23 @@ function composeVert(fx) {
 }
 function clipRestart() { APP.t0 = performance.now(); APP.tPause = 0; APP.playing = true; APP.lastT = 0; }
 /** a frozen frame for the capture hook: slide i at time t, or a transition into it (from = [slide index, its time],
-    k = how far through, kind = which; the old frame is drawn and composed as the film would have shown it) */
+    k = how far through, kind = which; the old frame is drawn and composed as the film would have shown it). In a
+    transition t may be NaN: then it is the new slide's own clock at k, as the film runs it (trClock, or the flight's plan) */
 async function capFrame(t, tr) {
   window.__ready = false;
   if (tr) {
-    const i1 = APP.i, A = DECK.slides[tr.from[0]], B = DECK.slides[i1];
-    APP.i = tr.from[0]; APP.frozenT = tr.from[1]; APP.trStart = -1; frame();
+    const i1 = APP.i, A = DECK.slides[tr.from[0]], B = DECK.slides[i1], k = clamp(tr.k);
+    APP.i = tr.from[0]; APP.frozenT = tr.from[1]; APP.trStart = -1; APP.fl = null; frame();
     SNAP.getContext('2d').drawImage($('fx'), 0, 0);
-    APP.i = i1; APP.back = tr.from[0] > i1; APP.trans = tr.kind || trKind(A, B, APP.back); APP.irisAt = B.irisAt || null;
-    APP.frozenT = t; APP.trStart = 1; APP.trDur = 1;
+    APP.back = tr.from[0] > i1; APP.trans = tr.kind || trKind(A, B, APP.back); APP.irisAt = B.irisAt || null;
+    if (APP.trans === 'flight') flBareA(A, tr.from[1]);
+    APP.i = i1; APP.fl = APP.trans === 'flight' ? flBegin(A, tr.from[1], B, APP.back) : null;
+    if (!(t >= 0)) t = APP.fl ? Math.max(0, k * APP.fl.D - APP.fl.tB0) : trClock(APP.trans, k, TRN[APP.trans] || 1);
+    APP.frozenT = t; APP.trStart = 1; APP.trDur = APP.fl ? APP.fl.D : 1;
     const s = DECK.slides[APP.i]; V3.pending = 0;
-    drawSlide(OFF.getContext('2d'), s, t); compose(clamp(tr.k)); APP.trStart = -1;
+    if (APP.fl && k < 1) { if (flNeedsB(APP.fl, k * APP.fl.D)) drawSlide(OFF.getContext('2d'), s, t, { bare: true }); }
+    else drawSlide(OFF.getContext('2d'), s, t);
+    compose(k); APP.trStart = -1; APP.fl = null;
   } else { APP.frozenT = t; frame(); }
   /* a 3D shot streams its geometry in (development pages only): redraw until every scene on this slide has rendered */
   const t0w = performance.now();
@@ -669,14 +1042,15 @@ async function start() {
   APP.i = -1; go(first, { instant: true, force: true });
   if (q.get('t') != null) {
     /* the capture hook: ?cap=1&s=<id>&t=<seconds> is that frame, frozen (screenshots, qa, tools/clip.js), and with
-       &from=<id>&ft=<seconds>&k=<0..1>[&kind=dissolve|wipe|chapter|push] a moment of the transition into it.
-       window.__seek(t[, { from: [id or index, t], k, kind }]) draws another frame without reloading; __ready says done */
+       &from=<id>&ft=<seconds>&k=<0..1>[&kind=dissolve|wipe|flight|chapter|push] a moment of the transition into it
+       (t=auto: the new slide's clock as the film runs it at k). window.__seek(t[, { from: [id or index, t], k, kind }])
+       draws another frame without reloading (t null: auto); __ready says done */
     const tr = (from, ft, k, kind) => {
       const fi = typeof from === 'number' ? from : DECK.slides.findIndex(s => s.id === from);
       if (fi < 0 || fi >= DECK.slides.length) { if (from != null) console.error('capture: no slide', from); return null; }
       return { from: [fi, ft != null && ft !== '' ? +ft : (DECK.slides[fi].settle || 9)], k: k == null || k === '' ? 0.5 : +k, kind: kind || null };
     };
-    window.__seek = (t, o) => capFrame(+t, o && o.from ? tr(o.from[0], o.from[1], o.k, o.kind) : null);
+    window.__seek = (t, o) => capFrame(t == null ? NaN : +t, o && o.from ? tr(o.from[0], o.from[1], o.k, o.kind) : null);
     const f0 = q.get('from');
     await capFrame(parseFloat(q.get('t')), f0 != null ? tr(f0, q.get('ft'), q.get('k'), q.get('kind')) : null);
     return;

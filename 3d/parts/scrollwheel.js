@@ -23,7 +23,7 @@ import * as THREE from 'three';
 import { partMaterials } from './lib/materials.js';
 import { HIGHLIGHT } from '../lib/studio.js';
 import {
-  extrude, lathe, sweep, arc, rectSection, roundedRectShape, circlePath, filletPolygon, meshOf,
+  extrude, lathe, sweep, arc, rectSection, roundedRectShape, roundedRectPath, circlePath, filletPolygon, meshOf,
   disposeTree, clamp01, smooth, lerp, makeGeometry, creaseNormals, circleSection,
 } from './lib/geom.js';
 
@@ -147,7 +147,7 @@ export function buildScrollWheel(opts = {}) {
 
   // ------------------------------------------------------------------ POM axle (round journals, hex in the hub, D drive)
   const axle = new THREE.Group(); axle.name = 'axle';
-  const xL = -8.3, rJ = 1.2;
+  const xL = -7.7, rJ = 1.2;                          // the left journal ends 0.2 mm inside the support's seat (H1: the seat moved to the bracket)
   const XJ = 6.35, XD = 11.15;                        // the right journal ends inside the encoder's rotor; D drive to XD
   const left = lathe([[0, xL], [rJ - 0.2, xL], [rJ, xL + 0.2], [rJ, -hubW / 2 - 0.6], [1.55, -hubW / 2 - 0.45], [1.55, -hubW / 2 + 0.05], [0, -hubW / 2 + 0.05]], { segments: 48 });
   const right = lathe([[0, hubW / 2 - 0.05], [1.55, hubW / 2 - 0.05], [1.55, hubW / 2 + 0.45], [rJ, hubW / 2 + 0.6], [rJ, XJ], [0, XJ]], { segments: 48 });
@@ -218,18 +218,18 @@ export function buildScrollWheel(opts = {}) {
     fold.rotateY(Math.PI / 2); fold.translate(XB1 - 0.02, (y0 + y1) / 2, s * (ZH - 0.38));
     frame.add(meshOf(fold, M.shieldNickel, 'tabFold'));
   }
-  // J-hook legs at the bottom corners, in the frame's plane, into the board
+  // two SMD feet (H1, board plan 5): the frame's side tabs run on down to the board and bend outward into feet on the
+  // footprint's F1/F2 pads (1.0 x 1.2 at 8.35 from the wheel's centre, z +/-5.9). The old J-hook legs stood in the frame's
+  // plane, 6.65 to 6.90 from the centre: over the wheel bay (x +/-7.20), so into nothing
+  const XFT0 = 7.88, XFT1 = 8.82;                                  // the feet's span along the axle
   for (const s of [1, -1]) {
-    const c = [];
-    for (let i = 0; i <= 14; i++) { const t = i / 14, a = Math.PI * t; c.push([s * (4.55 + 0.62 * (1 - Math.cos(a))), YB + 0.55 - 0.95 * Math.sin(a * 0.5)]); }
-    c.push([s * 5.79, YB - 0.9], [s * 5.79, YB - 1.75]);
-    const w = 0.55, left2 = [], right2 = [];
-    for (let i = 0; i < c.length; i++) {
-      const a = c[Math.max(0, i - 1)], b = c[Math.min(c.length - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
-      const nx = -dy / l, ny = dx / l; left2.push([c[i][0] + nx * w / 2, c[i][1] + ny * w / 2]); right2.push([c[i][0] - nx * w / 2, c[i][1] - ny * w / 2]);
-    }
-    const poly = [...left2, ...right2.reverse()].map(([z, y]) => [-z, y]);
-    frame.add(meshOf(toYZ(extrude(filletPolygon(poly, 0, false, 1), { depth: XF1 - XF0, curveSegments: 2 }), XF0), M.shieldNickel, 'leg'));
+    const zs = s * (ZH + 0.11);
+    const strip = new THREE.BoxGeometry(XFT1 - XFT0, (-4.1) - (YB + 0.12), 0.22);
+    strip.translate((XFT0 + XFT1) / 2, ((-4.1) + (YB + 0.12)) / 2, zs);
+    frame.add(meshOf(strip, M.shieldNickel, 'leg'));
+    const foot = extrude(roundedRectShape(XFT1 - XFT0, 0.95, 0.08), { depth: 0.12, front: { r: 0.03, s: 1 }, curveSegments: 3 });
+    foot.rotateX(-Math.PI / 2); foot.translate((XFT0 + XFT1) / 2, YB, zs + s * 0.42);
+    frame.add(meshOf(foot, M.shieldNickel, 'foot'));
   }
   enc.add(frame);
 
@@ -316,11 +316,14 @@ export function buildScrollWheel(opts = {}) {
   if (opts.encoder !== false) assy.add(enc);
 
   // ------------------------------------------------------------------ support bracket (−X): a moulded POM bracket
-  // a U seat the journal clicks into (lead-in chamfers), a foot with two locating pegs into the board, a gusset
+  // H1 (board plan 5): it stands on the board's bracket footprint WB1 (10.4 from the wheel's centre, its four hold-down
+  // tabs at 8.3 and 12.5, z +/-3.45) beside the wheel bay, not in it: a base with a window over the middle-click tact
+  // switch, a post at the bay's edge, and the U seat the journal clicks into (lead-in chamfers) cantilevered over the bay
   const sup = new THREE.Group(); sup.name = 'support';
-  const sx0 = xL + 0.6, sx1 = -hw - 1.0;
+  const sx0 = -7.9, sx1 = -hw - 1.8;                               // the seat: 5.3 to 7.9 from the centre (WB1's boss)
+  const XP0 = -9.7, BX0 = -13.05, BX1 = -7.75, BZ = 3.95, BH = 2.4;   // the post (7.9 to 9.7), the base (7.75 to 13.05)
   const supShape = new THREE.Shape();
-  const sw = 4.2, yb = -AH, yt = 1.6, rcS = 0.8, rsS = rJ + 0.05;
+  const sw = 4.2, yb = -2.4, yt = 1.6, rcS = 0.8, rsS = rJ + 0.05;
   supShape.moveTo(-sw / 2, yb); supShape.lineTo(sw / 2, yb); supShape.lineTo(sw / 2, yt - rcS);
   supShape.absarc(sw / 2 - rcS, yt - rcS, rcS, 0, Math.PI / 2, false);
   supShape.lineTo(rsS + 0.35, yt); supShape.lineTo(rsS, yt - 0.35); supShape.lineTo(rsS, 0);
@@ -331,17 +334,20 @@ export function buildScrollWheel(opts = {}) {
   const supG = extrude(supShape, { depth: sx1 - sx0, front: { r: 0.25, s: 3 }, back: { r: 0.25, s: 3 }, curveSegments: 16 });
   supG.rotateY(Math.PI / 2); supG.translate(sx0, 0, 0);
   sup.add(meshOf(supG, M.housingBlack, 'supportBlock'));
-  const footG = extrude(roundedRectShape(sx1 - sx0 + 1.6, sw + 2.2, 0.5), { depth: 0.9, front: { r: 0.2, s: 2 }, curveSegments: 6 });
-  footG.rotateX(-Math.PI / 2); footG.translate((sx0 + sx1) / 2 - 0.4, yb, 0);
-  sup.add(meshOf(footG, M.housingBlack, 'supportFoot'));
-  for (const zp of [-1.75, 1.75]) {
-    const pg = lathe([[0, -1.3], [0.38, -1.3], [0.5, -1.0], [0.5, 0.2], [0, 0.2]], { segments: 24 });
-    pg.translate((sx0 + sx1) / 2 - 0.4, yb, zp); sup.add(meshOf(pg, M.housingBlack, 'supportPeg'));
+  // the base on the board, with a window over the middle-click switch (WB1: 5.4 x 7.9, the window 3.8 x 3.6)
+  const baseSh = roundedRectShape(BX1 - BX0, 2 * BZ, 0.5, (BX0 + BX1) / 2, 0);
+  baseSh.holes.push(roundedRectPath(3.8, 3.6, 0.3, (BX0 + BX1) / 2, 0));
+  const baseG = extrude(baseSh, { depth: BH, front: { r: 0.2, s: 2 }, curveSegments: 6 });
+  baseG.rotateX(-Math.PI / 2); baseG.translate(0, -AH, 0);
+  sup.add(meshOf(baseG, M.housingBlack, 'supportFoot'));
+  // the post from the base up to the seat's top, at the bay's edge
+  const postG = extrude(roundedRectShape(sx0 - XP0, sw, 0.4, (XP0 + sx0) / 2, 0), { depth: yt - (-AH + BH), front: { r: 0.2, s: 2 }, curveSegments: 6 });
+  postG.rotateX(-Math.PI / 2); postG.translate(0, -AH + BH, 0);
+  sup.add(meshOf(postG, M.housingBlack, 'supportPost'));
+  // four tin-plated hold-down tabs, bent from the base onto WB1's pads
+  for (const [tx, tz] of [[-8.3, 3.45], [-12.5, 3.45], [-8.3, -3.45], [-12.5, -3.45]]) {
+    const t = new THREE.BoxGeometry(1.0, 0.12, 0.8); t.translate(tx, -AH + 0.06, tz); sup.add(meshOf(t, M.tin, 'supportTab'));
   }
-  const gus = new THREE.Shape(); gus.moveTo(0, 0); gus.lineTo(1.5, 0); gus.lineTo(0, 6.0); gus.lineTo(0, 0);
-  const gusG = extrude(gus, { depth: 1.0, front: { r: 0.12, s: 2 }, back: { r: 0.12, s: 2 }, curveSegments: 2 });
-  gusG.rotateY(Math.PI); gusG.translate(sx0 + 0.05, yb + 0.9, 0.5);
-  sup.add(meshOf(gusG, M.housingBlack, 'supportRib'));
   if (opts.support !== false) assy.add(sup);
 
   // ------------------------------------------------------------------ x-ray: the bottom housing and the frame become smoke glass

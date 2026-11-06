@@ -12,7 +12,7 @@ set -e
 R=${R3D:-r3d}
 OWN=08-r3d.js,08-v2d.js,vendor,geo2d
 mkdir -p dev/geo2d-raw geo2d
-python3 tools/build.py main --out=$R --own=$OWN
+python3 tools/build.py main --out=$R --own=$OWN --with3d
 mkdir -p dev/geo2d-raw-$R && node tools/geo2d/export.js "$PWD/dist/main-$R.html" dev/geo2d-raw-$R ${SCENES:-}
 for k in ${SCENES:-shell shell-sora pcb gt01 wheel claw screw skates battery}; do
   case $k in
@@ -24,4 +24,4 @@ for k in ${SCENES:-shell shell-sora pcb gt01 wheel claw screw skates battery}; d
 done
 case " ${SCENES:-pcb} " in *" pcb "*) python3 tools/geo2d/extras.py ../3d/pcb/pcb-layout.json geo2d/pcb.json ;; esac
 [ -n "${SCENES:-}" ] || python3 tools/geo2d/lattice2d.py ../3d/lattice/assets geo2d/lattice.json
-python3 tools/build.py main --out=$R --own=$OWN
+python3 tools/build.py main --out=$R --own=$OWN --with3d

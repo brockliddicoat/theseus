@@ -11,13 +11,17 @@ Object.assign(SRC, {
   /* the coat: Cerakote's coverage convention, read from its own sheets (the old 0.49 g read F-110's coverage at the wrong film) */
   b08_c299: { t: 'Cerakote C-299 (C-Series, air cure) technical data: 1 mil recommended; theoretical coverage 924 ft² (58 % solids, 1604 × 0.58 at 1 mil); 1.28 g/mL; pencil hardness gouge 3H, scratch 3H (ASTM D3363); air cure: tack free 45 to 60 minutes, full cure 5 days; results on blasted steel', u: 'https://www.cerakoteeu.com/wp-content/uploads/2025/07/C-299.pdf' },
   b08_c192: { t: 'Cerakote C-192 Armor Black technical data: 1 mil recommended; 48 % solids; 772 ft² per gallon (1604 × 0.48 at 1 mil); 1.35 g/mL', u: 'https://www.cerakoteeu.com/?p=1120' },
-  b08_coverage: { t: 'Derived here from Cerakote\'s own sheets: its theoretical coverage is per gallon at 1.0 mil (the H-167 sheet labels it "per Gallon at 1.0 Mil", 606 ft² at 38 % solids by weight; C-192 772 ft² at 48 %; C-299 924 ft² at 58 %: each is 1604 ft² × solids). So F-110\'s 604 ft² is a 1 mil figure: 3.785 L × 1.44 g/mL × 38 % = 2.07 kg of solids over 56.1 m² = 36.9 g/m² per mil, 27.7 g/m² at the 0.75 mil standard film, 0.37 g over the shell\'s 133 cm². The old slide read 604 ft² as a 0.75 mil figure and got 0.49 g.', u: '', n: 'Cerakote counts its solids by weight in the coverage formula; a weighed shell would settle the last digit (open with Brock since F21.10).' },
+  b08_coverage: { t: 'Derived here from Cerakote\'s own sheets: coverage is per gallon at 1.0 mil (H-167: "per Gallon at 1.0 Mil", 606 ft² = 1604 ft² × 37.8 % volume solids). The F-Series solvent is PCBTF, 1.33 to 1.35 g/mL (F-118 SDS: 50 to < 75 wt %), so a dry film\'s density is (liquid − (1 − φ) × 1.34) / φ: H-167 1.39 g/cm³ (which reproduces its stated 38 % weight solids), F-110 (φ = 604 / 1604 = 37.7 %) 1.60 to 1.71 g/cm³ at 1.44 to 1.48 g/mL; reading F-110\'s 38 % as weight solids gives 1.45. The 0.75 mil (19.05 µm) film over the shell\'s 133 cm² then weighs 0.37 to 0.43 g. The old slide read 604 ft² as a 0.75 mil figure and got 0.49 g.', u: 'https://images.nicindustries.com/cerakote/documents/7090/cerakote-f-118-shale-dt20250219191608571971.pdf', n: 'Research fill b08-8 (Q2, 09:24). A weighed shell before and after coating would settle the last digit.' },
   b08_iso15184: { t: 'ISO 15184:1998, paints and varnishes, scratch hardness by pencil test: the lead squared flat, held at (45 ± 1)°, the tip loaded with (750 ± 10) g, pushed at least 7 mm at 0.5 to 1 mm/s; the pencil hardness is the hardest pencil that does not mark the coating', u: 'https://cdn.standards.iteh.ai/samples/25759/9e1251dca2bf4d5ca72a4e7bafb2bcb7/ISO-15184-1998.pdf' },
   b08_clay: { t: 'The Pottery Wheel, "What Happens to Clay When it is Fired in a Kiln?": unfired greenware "will dissolve, or \'slake down\' in the water"; "Bisque ware does not dissolve in water"; clay is "often bisque fired up to 1823F (995C), which is referred to as cone 06", by which point it "has been turned from clay to ceramic material"', u: 'https://thepotterywheel.com/what-happens-to-clay-when-it-is-fired/' },
   b08_pur: { t: 'Cultural Heritage Agency of the Netherlands, plastics identification tool, polyurethane ester: "Soft PUR esters undergo mainly hydrolysis"; esters "become tacky and lose their flexibility"', u: 'https://plastic-en.tool.cultureelerfgoed.nl/plastics/detail/PUR%20ester%20soft', n: 'The tool describes foams; soft-touch coatings are polyurethanes too, and the same hydrolysis is why they turn sticky.' },
   b08_doc16: { t: 'Brock Liddicoat, "In Pursuit of an Objectively Better Mouse", idea 16: a "baked ceramic coating" against PMM\'s "air dry ceramic coating", which "despite being extremely grippy, had durability issues"; "a dried clay pot is weaker than a pot put in a kiln"; the rubberized coating\'s "susceptibility to being rubbed off"; on polypropylene Cerakote "relies on how the surface is sanded rather than the material composition for its bond"', u: '', n: 'Brock\'s own document.' },
   /* directional grip */
   b08_zhang17: { t: 'Zhang, Zeng, Igartua, Rodriguez-Vidal & van der Heide 2017, Tribology Letters 65(3): laser-textured stainless steel against a fingertip (right index, one subject, dry skin, 17 mm/s). Grooves 20 µm wide, 10 µm deep, 25 µm apart: friction across them 0.51, 0.50, 0.50, 0.51, 0.53 and along them 0.41, 0.47, 0.44, 0.42, 0.42 at 0.2 to 1.0 N; at 45° 0.50 to 0.41. A pillar grid gave 0.23 to 0.27 every way ("orientation independent")', u: 'https://research.utwente.nl/files/17961970/Zhang2017texture.pdf', n: 'At 1 N: across 0.53, along 0.42, diagonal 0.41 (+26 %); over 0.2 to 1 N across beats along by 6 to 26 %. A coarser groove on tool steel (Zhang 2015) gripped more along: the direction is set by the groove\'s size, which is why the etch is specified, not just "grooved".' },
+  b08_johnson: { t: 'Johnson, Hagberg, Wigaeus Hjelm & Rempel 2000, Measuring and characterizing force exposures during computer mouse use, Scand J Work Environ Health 26(5): 398-405: mean force on the button 0.35 N, on the sides 0.43 N', u: 'https://www.sjweh.fi/article/560' },
+  b08_covestro: { t: 'Covestro, "Soft touch waterborne polyurethane coatings: control of optic and haptic properties" (white paper, July 2021): the haptic effect "can already be obtained in coatings of only a few micrometer thickness", matt soft-touch "even ... at very low film thickness (2 to 3 µm)"', u: 'https://solutions.covestro.com/-/media/covestro/solution-center/brands/downloads/imported/1652424150.pdf', n: 'No maker publishes the soft-touch film on a mouse; RadTech 2016 tested at 2 mil (51 µm).' },
+  b08_huntsman: { t: 'Buchanan (Huntsman), "UV-resistant epoxies", Coatings Trends & Technologies 2024: clear coats on glass under QUV-A (ASTM G53): a polyurethane clear coat ΔE 0.13 at 500 h and 0.19 at 1,000 h; aromatic (BADGE) epoxies ΔE 16.3 to 21.8 at 500 h, "failure before 1000 hours"', u: 'https://pcimag.com/ext/resources/Events/CTT/presentations/MitchBuchanan_Huntsman_UV-Resistant-Epoxies_2024-CTT-_New-Format.pdf', n: 'The chemistry decides; not a figure for any mouse coating.' },
+  b08_wheels: { t: 'Stock scroll wheels, sellers\' figures: Endgame Gear OP1 stock wheel "1.8g" (Forky Mods, which sells a lighter replacement); the Zeromouse V34/V35 kit\'s original wheel 1.5 g against its 0.7 g carbon wheel (Zeromouse)', u: 'https://forkymods.com/products/lightweight-scroll-wheel-op1', n: 'Neither says whether the tyre or axle is included. Zeromouse: https://zeromouse.co/products/carbon-scroll . Brock asked for four or more; two are published.' },
   b08_zhang15: { t: 'Zhang, Rodriguez Urribarri, Morales Hurtado, Zeng & van der Heide 2015, International Journal of Solids and Structures 56-57: 53-61: a grooved channel texture on tool steel; there, sliding parallel to the grooves gave the higher friction', u: 'https://research.utwente.nl/en/publications/the-role-of-the-sliding-direction-against-a-grooved-channel-textu/' },
   /* grip tape: thickness, and what it does in use */
   b08_tape05: { t: 'Mouse grip tapes at 0.5 mm: Lizard Skins DSP, Pulsar SuperGrip, Pwnage UltraGrip, TalonGames (NerdTechy roundup of mouse grip tapes; "Ultra-thin 0.5 mm tapes preserve your natural hand movement"; advice to "keep edges slightly curved to prevent lifting")', u: 'https://nerdtechy.com/?p=82833' },
@@ -30,30 +34,33 @@ Object.assign(SRC, {
 /* ---------- the numbers, in one place ---------- */
 const B08 = {
   /* Cerakote F-110 at its standard 0.75 mil (19.05 µm): 36.9 g/m² per mil (b08_coverage) × 0.75 = 27.7 g/m²; the shell's
-     coated area 133 cm² (srf_scan) → 0.368 g. Soft-touch: RadTech's 2 mil (51 µm) test film at 1.0 g/cm³ or more → 0.68 g. */
+     coated area 133 cm² (srf_scan) → 0.368 g; with the dry film's density from its PCBTF solvent (1.60 to 1.71 g/cm³,
+     b08_coverage) 0.41 to 0.43 g: the slide gives the range. Soft-touch: RadTech's 2 mil (51 µm) test film at 1.0 g/cm³ or
+     more → 0.68 g. */
   film: { um: 19, mil: 0.75, gm2: 36.914 * 0.75, cm2: 133, softUm: 51, softRho: 1.0, oldG: 0.49 },
-  /* fingertip friction on laser grooves, Zhang 2017 at 1 N: across, along, diagonal */
-  mu: { across: 0.53, along: 0.42, diag: 0.41, load: 1.0 },
+  /* fingertip friction on laser grooves, Zhang 2017: the means of its 0.2 and 0.4 N rows (a resting fingertip presses about
+     0.3 N; Johnson 2000 measured 0.35 N on a button in use): across 0.51/0.50, along 0.41/0.47, at 45° 0.50/0.44 */
+  mu: { across: 0.505, along: 0.44, diag: 0.47, load: 0.3 },
   /* tapes, thinnest first is the chase */
   tapes: [{ who: 'Lizard Skins DSP', mm: 0.5 }, { who: 'Pulsar SuperGrip', mm: 0.5 }, { who: 'TalonGames PU-0', mm: 0.3 }, { who: 'Keychron', mm: 0.3 }],
   /* pencil grades, softest first (ASTM D3363 / ISO 15184 scale) */
-  grades: ['6B', '5B', '4B', '3B', '2B', 'B', 'HB', 'F', 'H', '2H', '3H', '4H', '5H', '6H', '7H', '8H', '9H'],
+  grades: ['7B', '6B', '5B', '4B', '3B', '2B', 'B', 'HB', 'F', 'H', '2H', '3H', '4H', '5H', '6H', '7H', '8H', '9H'],
   wheel: { g: 0.9, pmm: 1.0 }
 };
 B08.film.g = B08.film.gm2 * B08.film.cm2 / 1e4;                          /* 0.368 g */
+B08.film.gHi = 1.71 * 19.05e-4 * B08.film.cm2;                            /* 0.433 g: the densest reading (F-118's 1.48 g/mL) */
 B08.film.softG = B08.film.softUm * B08.film.softRho * B08.film.cm2 / 1e4;  /* 0.678 g */
-B08.mu.gain = B08.mu.across / B08.mu.along - 1;                            /* +0.262 */
+B08.mu.gain = B08.mu.across / B08.mu.along - 1;                            /* +0.148: shown +14 % (never rounded up) */
 /* the lift: a pinch of thumb against ring finger holds the mouse up when 2 μ N ≥ m g. A pinch is about 0.3 N a side, so
    Zhang 2017's grip at 0.2 and 0.4 N applies: across the ridges 0.51 and 0.50, along them 0.41 and 0.47 (means 0.505, 0.44).
    Least squeeze a side: one direction everywhere (the sides' ridges run up and down: the lift slides along them) 0.327 N;
    the map (the sides' ridges run front to back: the lift crosses them) 0.285 N, −13 %. At the same 0.30 N squeeze the grip
    is 0.264 N along (below the 0.288 N weight: it slips) and 0.303 N across (above it: it holds). */
-B08.lift = (() => { const mg = THESEUS.mass / 1000 * 9.81, across = (0.51 + 0.50) / 2, along = (0.41 + 0.47) / 2, sq = 0.30;
+B08.lift = (() => { const mg = THESEUS.mass / 1000 * 9.81, across = B08.mu.across, along = B08.mu.along, sq = 0.30;
   return { mg, across, along, one: mg / (2 * along), map: mg / (2 * across), sq, gripOne: 2 * along * sq, gripMap: 2 * across * sq }; })();
 
 /* ============================== shared helpers (b08_) ============================== */
 /** dev slides (a lab for the helpers) register only with ?b08lab=1, so no other build ever sees them */
-const B08LAB = (() => { try { return /[?&]b08lab=1\b/.test(location.search); } catch (e) { return false; } })();
 /** an arrow for a force, with its value beside the head: (x, y) the tail, ang the direction, len px.
    o = { a, col, w, label, lcol, side (1 | -1: which side of the shaft the label sits), size } */
 function b08_force(x, y, ang, len, o = {}) {
@@ -131,21 +138,6 @@ function b08_genTape(f, o = {}) {
 }
 
 /* ============================== lab (dev only, ?b08lab=1) ============================== */
-if (B08LAB) S({
-  id: 'b08_lab', ch: 'surface', theme: 'night', title: 'B08 lab', settle: 6,
-  draw: t => {
-    header(t, 'B08 lab: macro fields');
-    const tf = srf_field('b08:tape', 520, 400, f => b08_genTape(f, { pitch: 30, width: 7 }));
-    const rf = srf_field('b08:ridge', 520, 400, f => srf_genFilm(f, { pat: 'ridge', pitch: 22, width: 12, depth: 4.2, ang: 0, seed: 5, col: [40, 41, 46], ecol: [92, 94, 102] }));
-    const L = { p: [520 * 0.2, -400 * 0.4, 400 * 0.5] };
-    srf_macro(t, tf, 80, 300, 820, 620, { light: L, vignette: true });
-    srf_macro(t, rf, 1000, 300, 840, 620, { light: L, vignette: true });
-    b08_print(490, 610, 130, { a: 1, rot: 0.1, shear: [0, 26] });
-    b08_print(1420, 640, 130, { a: 1, rot: 0.1, slide: 1, dir: 0 });
-    b08_spring(490, 610 + 102, 490, 610 + 230, { a: 1 });
-    b08_force(1420, 640, Math.PI, 90, { a: 1, label: '0.42 N' });
-  }
-});
 
 /* ---------- evenly spaced streamlines of a direction field (Jobard & Lefer 1997), for the grip map ----------
    The etch's ridges run across the slip each zone must stop, so the ridge direction is a field over the shell: it turns
@@ -272,26 +264,6 @@ function b08_fieldSide(u, v) {
   const on = (1 - smooth(clamp((u + 46) / -8))) * (1 - smooth(clamp((u - 44) / 10))) * (1 - 0.0 * dot);
   return { ang, sep, on, dot };
 }
-if (B08LAB) S({
-  id: 'b08_lab2', ch: 'surface', theme: 'night', title: 'B08 lab 2', settle: 6,
-  draw: t => {
-    header(t, 'B08 lab: grip map streams');
-    /* top view, key plan mm, 6 px/mm */
-    const s = 6.2, cx = 520, cy = 620, M = [s, 0, 0, s, cx, cy];
-    part(cx, cy, s, () => { keyPath(); G.fillStyle = '#26272B'; G.fill(); G.strokeStyle = rgba(C.ink, 0.5); G.lineWidth = lw(1.5); G.stroke(); });
-    const domT = { x0: -31, y0: -59, x1: 31, y1: 59, inside: b08_insideTop };
-    const LT = b08_streams('lab:top', domT, b08_fieldTop, { seeds: [[13, -34], [-13, -34]] });
-    b08_drawStreams(LT, M, { w: 2.0 });
-    /* side view from the twin */
-    const V = srf_shellView('left', 1380, 660, 7.0); if (!V) return;
-    srf_vFill(V, V.path(/^body\/body$/), '#26272B', rgba(C.ink, 0.5), 1.6, 1);
-    const sideP = V.path(/^body\/body$/), cv = document.createElement('canvas').getContext('2d');
-    const domS = { x0: -60, y0: 0, x1: 60, y1: 40, inside: (u, v) => cv.isPointInPath(sideP, u, v) && cv.isPointInPath(sideP, u + 1.4, v) && cv.isPointInPath(sideP, u - 1.4, v) && cv.isPointInPath(sideP, u, v + 1.4) && cv.isPointInPath(sideP, u, v - 1.4) };
-    const LS = b08_streams('lab:side', domS, b08_fieldSide, { seeds: [[-8, 11], [10, 20]] });
-    b08_drawStreams(LS, V.M, { w: 2.0 });
-    text(LT.length + ' top lines, ' + LS.length + ' side lines', 80, 1000 - 20, { role: 'label', color: C.mute });
-  }
-});
 
 /* ============================== the bake: pots, a kiln, flames, water, a pencil test ============================== */
 /* A neck amphora's profile, radius against height, both as fractions of its height (foot, waist, belly, shoulder, neck,
@@ -482,17 +454,6 @@ function b08_kiln(x, y, w, h, o = {}) {
   G.restore();
   return out;
 }
-if (B08LAB) S({
-  id: 'b08_lab3', ch: 'surface', theme: 'night', title: 'B08 lab 3', settle: 6,
-  draw: t => {
-    header(t, 'B08 lab: pots and the kiln');
-    b08_amphora(260, 900, 420, { fired: 0, t });
-    const K = b08_kiln(560, 330, 560, 600, { heat: 1, fire: 1, t });
-    b08_amphora(K.cx, K.floorY, 300, { fired: 0.8, heat: 1, glow: 0.8, t });
-    b08_amphora(1400, 900, 420, { fired: 0, slake: 0.6, t }); b08_amphora(1400, 960, 420, { fired: 0, slake: 1, t, a: 0.5 });
-    b08_amphora(1720, 900, 300, { fired: 1, wet: 1, t });
-  }
-});
 /**
  * The pencil hardness test (ISO 15184; ASTM D3363): a carriage holds a pencil at 45° with 750 g on its tip and rolls it
  * 7 mm across a coated panel. A coat softer than the lead is scratched (material torn out: the bright groove behind the
@@ -502,7 +463,7 @@ if (B08LAB) S({
  */
 function b08_pencilTest(x, y, w, h, o = {}) {
   const a = o.a == null ? 1 : o.a; if (a <= 0.003) return { tip: [x, y] };
-  const k = clamp(o.k || 0), mm = o.mm || w / 11, sx = x + w * (o.x0 == null ? 0.2 : o.x0), sy = y + h * 0.46, tx = sx + 7 * mm * k, coat = o.coat || '#2C2D32';
+  const k = clamp(o.k || 0), mm = o.mm || w / 11, sx = x + w * (o.x0 == null ? 0.2 : o.x0), sy = y + h * (o.sy == null ? 0.46 : o.sy), tx = sx + 7 * mm * k, coat = o.coat || '#2C2D32';
   G.save(); G.globalAlpha = a;
   /* the panel: a slab of coated shell, its edge cut to show the coat on the plastic */
   rrPath(x, y, w, h, 6); G.fillStyle = coat; G.fill();
@@ -526,7 +487,8 @@ function b08_pencilTest(x, y, w, h, o = {}) {
   G.restore();
   rrPath(x, y, w, h, 6); G.strokeStyle = rgba(C.ink, TH ? 0.2 : 0.16); G.lineWidth = 1.2; G.stroke();
   /* the pencil at 45°, its lead squared flat on the panel; the carriage over it carries the 750 g */
-  const ang = -Math.PI / 4 * 3, ux = Math.cos(ang), uy = Math.sin(ang), Lp = Math.min(h * 2.2, 330), wp = 18;   /* up and to the left of the tip */
+  G.globalAlpha = a * (o.pa == null ? 1 : o.pa);
+  const ang = -Math.PI / 4 * 3, ux = Math.cos(ang), uy = Math.sin(ang), Lp = o.len || Math.min(h * 2.2, 330), wp = 18;   /* up and to the left of the tip */
   G.save(); G.translate(tx, sy); G.rotate(ang);
   /* lead, cone of bare wood, then the hexagonal barrel in two greys (no colour), the grade printed on it */
   G.fillStyle = '#3B3D42'; G.fillRect(0, -2.6, 12, 5.2);
@@ -534,27 +496,17 @@ function b08_pencilTest(x, y, w, h, o = {}) {
   G.fillStyle = '#7C7E84'; G.fillRect(34, -wp / 2, Lp - 34, wp); G.fillStyle = '#9A9CA2'; G.fillRect(34, -wp / 2, Lp - 34, wp * 0.32); G.fillStyle = '#5C5E64'; G.fillRect(34, wp * 0.22, Lp - 34, wp * 0.28);
   G.restore();
   /* the carriage: a block clamped round the barrel, two wheels on the panel, the load on top */
-  const cx = tx + ux * Lp * 0.55, cy = sy + uy * Lp * 0.55, bw = 150, bh = 74;
+  const cx = tx + ux * Lp * 0.55, cy = sy + uy * Lp * 0.55, bw = o.bw || 150, bh = o.bh || 74;
   G.save(); G.translate(cx, cy);
   rrPath(-bw / 2, -bh / 2, bw, bh, 8); G.fillStyle = TH ? '#D7D7D7' : '#3C3E44'; G.fill(); G.strokeStyle = rgba(C.ink, TH ? 0.4 : 0.3); G.lineWidth = 1.4; G.stroke();
-  text('750 g', 0, 9, { role: 'label', size: 22, color: C.ink, align: 'center' });
+  text('750 g', 0, 9, { role: 'label', size: 22, color: C.ink, align: 'center', alpha: a * (o.pa == null ? 1 : o.pa) });
   G.restore();
-  for (const dx of [-1, 1]) { const wx = cx + dx * bw * 0.36, wy = sy - 12; line(wx, cy + bh / 2, wx, wy, { color: TH ? '#898989' : '#6D6D6D', w: 3 }); circle(wx, wy + 1, 11, { fill: TH ? '#B8B8B8' : '#545454' }); circle(wx, wy + 1, 3.4, { fill: TH ? '#656565' : '#959595' }); }
+  if (o.wheels !== false) for (const dx of [-1, 1]) { const wx = cx + dx * bw * 0.36, wy = sy - 12; line(wx, cy + bh / 2, wx, wy, { color: TH ? '#898989' : '#6D6D6D', w: 3 }); circle(wx, wy + 1, 11, { fill: TH ? '#B8B8B8' : '#545454' }); circle(wx, wy + 1, 3.4, { fill: TH ? '#656565' : '#959595' }); }
   /* the grade, on the barrel near the carriage */
-  if (o.grade) { const gx = tx + ux * Lp * 0.9, gy = sy + uy * Lp * 0.9; text(o.grade, gx, gy - 24, { role: 'label', size: 22, color: C.ink, align: 'center' }); }
+  if (o.grade) { const gx = tx + ux * Lp * 0.9, gy = sy + uy * Lp * 0.9; text(o.grade, gx, gy - 24, { role: 'label', size: 22, color: C.ink, align: 'center', alpha: a * (o.pa == null ? 1 : o.pa) }); }
   G.restore();
   return { tip: [tx, sy], carriage: [cx, cy] };
 }
-if (B08LAB) S({
-  id: 'b08_lab4', ch: 'surface', theme: 'night', title: 'B08 lab 4', settle: 6,
-  draw: t => {
-    header(t, 'B08 lab: the pencil test');
-    b08_pencilTest(120, 640, 760, 220, { k: 1, hard: false, grade: '6H' });
-    b08_pencilTest(1000, 640, 760, 220, { k: 1, hard: true, grade: '6H' });
-    b08_amphora(1500, 560, 300, { fired: 0, slake: 0.5, t });
-    b08_amphora(1750, 560, 300, { fired: 0, slake: 1, t });
-  }
-});
 
 /* ============================== the film: a section through the shell's skin, to scale ==============================
    PP-C-20A with short carbon fibres 7 µm across lying along the flow near the surface (Höftberger 2022, Yamaguchi 2024:
@@ -619,16 +571,6 @@ function b08_softSection(B, o = {}) {
   G.restore();
   return { ys, top: ys - um * s * k };
 }
-if (B08LAB) S({
-  id: 'b08_lab5', ch: 'surface', theme: 'night', title: 'B08 lab 5', settle: 6,
-  draw: t => {
-    header(t, 'B08 lab: the film in section');
-    const sec = b08_section([80, 300, 1100, 520], { s: 3, top: 0.36, blast: 1, coat: 1, seed: 11 });
-    line(80, sec.ys, 1180, sec.ys, { color: C.ink, w: 1.5, dash: [8, 6] });
-    const soft = b08_softSection([1240, 300, 600, 520], { s: 3, top: 0.36, k: 1 });
-    line(1240, soft.ys, 1840, soft.ys, { color: C.ink, w: 1.5, dash: [8, 6] });
-  }
-});
 
 /* ============================== tape: a section through grip tape on a button, to scale ==============================
    Grip tape is a polyurethane or rubber sheet on a pressure-sensitive adhesive: 0.5 mm (Lizard Skins DSP, Pulsar, Pwnage)
@@ -689,67 +631,70 @@ function b08_padSection(x0, x1, o = {}) {
   G.fillStyle = TH ? '#C8C8C8' : '#5E5E5E'; G.fill(); G.strokeStyle = TH ? 'rgba(40,40,40,0.6)' : 'rgba(229,229,229,0.45)'; G.lineWidth = 1.5; G.stroke();
   G.restore();
 }
-if (B08LAB) S({
-  id: 'b08_lab6', ch: 'surface', theme: 'night', title: 'B08 lab 6', settle: 6,
-  draw: t => {
-    header(t, 'B08 lab: tape in section');
-    const T1 = b08_tapeSection([80, 300, 840, 600], { s: 400, mm: 0.5, age: 0, t });
-    b08_padSection(200, 700, { s: 400, top: T1.top });
-    const T2 = b08_tapeSection([1000, 300, 840, 600], { s: 400, mm: 0.5, age: 1, t, etch: 0 });
-    const T3 = b08_tapeSection([1000, 300, 840, 600], { s: 400, mm: 0, age: 0, t, etch: 1 });
-  }
-});
 
 /* ============================== 5. b08_grip: directional grip (most important: F33.5) ==============================
    Brock (F2.14): "grip in exactly the right places in exactly the right directions, curation that grip tape doesn't allow
    for, because you need extra grip in a specific direction everywhere on the mouse, while allowing mobility in every other
    direction". His note on the old slide (8/10): "really good visualization but needs to be more intuitive".
-   The demonstration: the index fingertip on the left button, where a fingertip grip pulls the mouse back. The same pull
-   (0.47 N, through a spring you can see) in three directions, on grip tape (the rival: the same grip every way) and then,
-   in place, on laser-etched ridges that run side to side. With a 1 N press the grip in newtons is the friction coefficient,
-   so everything reads in newtons: across the ridges 0.53 N holds the 0.47 N pull; along them 0.42 N and diagonally
-   0.41 N let it slide (Zhang 2017, a fingertip at 1 N on grooves 20 µm wide, 10 µm deep). The tape's grip is drawn the
-   same every way and unnumbered: no paper measures it. */
+   The demonstration: the index fingertip resting on the left button (0.3 N: Zhang 2017's 0.2 and 0.4 N rows, about what a
+   resting fingertip presses, Johnson 2000), where a fingertip grip pulls the mouse back. The same 0.14 N pull (a force
+   arrow) back, then sideways, on grip tape (the rival: no direction, so the same grip every way) and then, in place, on
+   laser-etched ridges that run side to side. When the grip holds, the mouse moves with the finger (the camera stays on
+   the desk); when it slides, the fingertip crosses a still surface and leaves a trail. Across the ridges 0.15 N of grip
+   holds the pull; along them 0.13 N lets it slide. Tape holds both, so an adjustment drags the mouse. Verdict: the extra
+   grip where you pull over where you adjust, 0 % (tape: no direction, as Zhang's pillar grid) → 14 % (0.505 / 0.44). */
 const B08G = {
   c: [-14, -34],                                 /* the fingertip's contact, top view mm (the left button's front) */
-  focus: [-29, -44, 30, 20],                     /* the push-in's frame, mm */
+  focus: [-31.1, -42.8, 30, 20],                 /* the push-in's frame, mm: the fingertip starts up and right of centre and
+                                                    ends as far down and left, after the mouse has moved under it */
   tape: [-28.2, -53, 26.4, 33],                  /* the pre-cut tape on the left button, mm (x, y, w, h) */
-  pull: 0.47,                                    /* N, between the two grips */
-  pxN: 400,                                      /* px per newton for the arrows */
-  moves: [{ t: 1.8, ang: Math.PI / 2, name: 'Back' }, { t: 2.55, ang: Math.PI, name: 'Sideways' }, { t: 3.3, ang: Math.PI / 4, name: 'Diagonal' }],
-  wipe: [4.1, 0.8], etch: 4.95, step: 0.8       /* the etch's moves start at 4.95 s, one every 0.8 s */
+  pull: 0.14,                                    /* N: between the two grips at a 0.3 N press (0.132 along, 0.152 across) */
+  pxN: 1300,                                     /* px per newton for the arrows */
+  d: 1.2, dSlide: 3.0,                           /* mm a held pull carries the mouse; mm a fingertip slides */
+  moves: [{ t: 1.8, ang: Math.PI / 2, name: 'Back' }, { t: 2.9, ang: Math.PI, name: 'Sideways' }],
+  wipe: [4.1, 0.8], etch: 5.0, step: 1.1         /* the etch's moves start at 5.0 s, one every 1.1 s */
 };
-/** where the print is and what it is doing at time t on one surface: moves = [{ t, ang, hold }] → { off: [dx, dy] mm, act
-   (the move in play or null), k (0..1 of it), slid (the print is sliding now) } */
-function b08_gripState(t, moves, d = 3.0) {
-  let off = [0, 0], act = null, k = 0, slid = false;
+/** where the print and the surface are at time t: moves = [{ t, ang, hold }] → { off: the print's slide over the surface (mm,
+   mouse frame), surf: the mouse's own travel on the desk (mm: a held pull carries it), act (the move in play or null), k
+   (0..1 of it), slid (sliding now) } */
+function b08_gripState(t, moves, d, dS = d) {
+  let off = [0, 0], surf = [0, 0], act = null, k = 0, slid = false;
   for (const m of moves) {
     const kk = ep(t, m.t, m.t + 0.55, E.io3);
-    if (t >= m.t && t < m.t + 0.85) { act = m; k = kk; }
-    if (!m.hold && kk > 0) { off = [off[0] + Math.cos(m.ang) * d * kk, off[1] + Math.sin(m.ang) * d * kk]; if (t >= m.t && kk < 1) slid = true; }
+    if (t >= m.t && t < m.t + 0.9) { act = m; k = kk; }
+    const dd = m.hold ? d : dS, dv = [Math.cos(m.ang) * dd * kk, Math.sin(m.ang) * dd * kk];
+    if (m.hold) surf = [surf[0] + dv[0], surf[1] + dv[1]];
+    else { off = [off[0] + dv[0], off[1] + dv[1]]; if (t >= m.t && kk < 1) slid = true; }
   }
-  return { off, act, k, slid };
+  return { off, surf, act, k, slid };
 }
 S({
   id: 'b08_grip', ch: 'surface', theme: 'night', title: 'Directional grip', settle: 10.5, ideas: [60],
   replaces: ['grip'],
-  src: ['b08_zhang17', 'b08_zhang15', 'srf_serg22', 'srf_lizard', 'srf_f110', 'srf_doc'],
+  src: ['b08_zhang17', 'b08_zhang15', 'b08_johnson', 'srf_serg22', 'srf_lizard', 'srf_doc'],
   answers: [
-    ['"really good visualization"', 'Kept what worked: the lit, magnified laser grooves under a fingertip print, and the pointer dragging it (F2.43)'],
-    ['"but needs to be more intuitive"', 'It now starts on the mouse: the index fingertip on the left button, where a fingertip grip pulls the mouse back, then one push-in to the fingertip (a locator stays in the corner)'],
-    ['"needs to be more intuitive" (the demonstration)', 'One input, shown: the same 0.47 N pull through a spring, back, sideways and diagonally. Tape holds every way, so it drags the sideways and diagonal pulls; the etch holds the pull back (0.53 N) and lets the other two slide (0.42 N, 0.41 N)'],
-    ['"needs to be more intuitive" (the abstractions)', 'No μ and no polar chart: every grip is an arrow on the fingertip in newtons at a 1 N touch, set against the pull drawn as a ring, and only Zhang 2017\'s measured values (the old ellipse interpolated values the paper doesn\'t give)'],
-    ['F2.14 "grip in exactly the right directions ... while allowing mobility in every other direction"', 'Said and shown: grip across the ridges only; along and diagonally the fingertip moves'],
-    ['F33.5 (an important idea, executed better)', 'Problem first (tape drags), the fix in place by a wipe, the payoff +26 % with what the player gets']
+    ['"really good visualization"', 'Kept what worked: the lit, magnified laser grooves under a fingertip print, pulled across them (F2.43)'],
+    ['"but needs to be more intuitive"', 'It starts on the mouse: the index fingertip on the left button, where a fingertip grip pulls the mouse back, then one push-in to the fingertip (a locator stays in the corner)'],
+    ['"needs to be more intuitive" (the demonstration)', 'One input, shown as a force arrow: the same 0.14 N pull, back and then sideways. When the grip holds, the mouse moves with the finger; when it slides, the fingertip crosses a still surface and leaves a trail. Tape holds both, so the sideways adjustment drags the mouse; the etch holds the pull back (0.15 N of grip) and lets the sideways one slide (0.13 N)'],
+    ['"needs to be more intuitive" (the abstractions)', 'No μ and no polar chart: every grip is an arrow in newtons at a 0.3 N touch (Zhang 2017\'s 0.2 and 0.4 N rows, where a resting fingertip presses), set against the pull drawn as a ring'],
+    ['F2.14 "grip in exactly the right directions ... while allowing mobility in every other direction"', 'Said and shown: grip across the ridges, where you pull; along them the fingertip moves and the mouse stays'],
+    ['F33.5 (an important idea, executed better)', 'Problem first (tape drags the mouse when you adjust), the fix in place by a wipe, the payoff: 14 % more grip where you pull than where you adjust, against none on tape']
   ],
   draw: t => {
     header(t, 'Directional grip');
     captions(t, [[0.6, 'Your fingertips pull the mouse back. Grip tape grips the same every way, so it fights your adjustments too.'],
       [4.7, 'Laser-etched ridges grip across them, where you pull, and let your fingertip slide along them.']]);
-    const box = [LM, 272, 1080, 688], G0 = B08G, [cxm, cym] = G0.c;
-    /* the tape on the left button, in mm, under the establishing camera; its edge in the rival's yellow */
+    const box = [LM, 272, 1080, 688], G0 = B08G, [cxm, cym] = G0.c, F = B08.mu.load;
+    /* the moves: the same two pulls on each surface; on tape both hold (the second drags the mouse), on the etch the pull
+       back holds and the sideways one slides */
+    const tapeMoves = G0.moves.map(m => ({ t: m.t, ang: m.ang, hold: true, name: m.name })), etchMoves = G0.moves.map((m, i) => ({ t: G0.etch + i * G0.step, ang: m.ang, hold: i === 0, name: m.name }));
+    const onEtch = t >= G0.wipe[0] + G0.wipe[1] * 0.5;
+    const s0 = b08_gripState(t, tapeMoves, G0.d, G0.dSlide), s1 = b08_gripState(t, etchMoves, G0.d, G0.dSlide);
+    const st = onEtch ? s1 : s0, surf = [s0.surf[0] + s1.surf[0], s0.surf[1] + s1.surf[1]];
+    /* the camera stays on the desk: a held pull carries the mouse, so the camera's frame on the mouse moves the other way */
+    const fo = [G0.focus[0] - surf[0], G0.focus[1] - surf[1], G0.focus[2], G0.focus[3]];
     const tapePath = () => { const [x, y, w, h] = G0.tape; pathRR(x, y, w, h, 3.2); };
-    const est = establish(t, 0, box, { view: 'top', hi: ['trigL'], col: 'ink', focus: G0.focus, hold: 0.55, dur: 1.15, locator: 'tl', fade: 0.35,
+    const est = establish(t, 0, box, { view: 'top', hi: ['trigL'], col: 'ink', focus: fo, hold: 0.55, dur: 1.15, locator: 'tl', fade: 0.35,
       draw: (P, c, k) => {
         G.save(); tapePath(); G.fillStyle = rgba(C.second, TH ? 0.16 : 0.12); G.fill();
         G.clip(); srf_lines([-40, -60, 10, -10], 1.2, Math.PI / 3, rgba(C.second, 0.5), lw(1), 1); srf_lines([-40, -60, 10, -10], 1.2, -Math.PI / 3, rgba(C.second, 0.5), lw(1), 1); G.restore();
@@ -757,79 +702,83 @@ S({
         const ke = 1 - ep(t, G0.wipe[0], G0.wipe[0] + G0.wipe[1]);
         if (ke > 0.003) { G.save(); G.globalAlpha *= ke; tapePath(); G.strokeStyle = C.second; G.lineWidth = lw(2); G.stroke(); G.restore(); }
       } });
-    const P = est.P, s = est.s, kd = est.kd, home = P(cxm, cym), R = 6 * s;
-    /* the surface under the fingertip, magnified: grip tape, then (in place) the etched ridges; clipped to the tape's piece */
+    const P = est.P, s = est.s, kd = est.kd, R = 6 * s;
+    /* the surface under the fingertip, magnified, moving with the mouse: grip tape, then (in place) the etched ridges */
     const tf = srf_field('b08g:tape', 900, 574, f => b08_genTape(f, { pitch: 30, width: 7, seed: 6 }));
     const rf = srf_field('b08g:ridge', 900, 574, f => srf_genFilm(f, { pat: 'ridge', pitch: 24, width: 13, depth: 4.4, ang: 0, seed: 5, col: [40, 41, 46], ecol: [96, 98, 106] }));
-    const light = { az: 2.35, el: 0.5 };
+    const light = { az: 2.35, el: 0.5 }, sx = surf[0] * s, sy = surf[1] * s;
     const clipPiece = fn => { G.save(); G.beginPath(); const [x, y, w, h] = G0.tape, a = P(x, y), b = P(x + w, y + h); rrPath(a[0], a[1], b[0] - a[0], b[1] - a[1], 3.2 * s); G.clip(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip(); fn(); G.restore(); };
     if (kd > 0.003) {
       wipeTo(t, G0.wipe[0], G0.wipe[1], box,
-        () => clipPiece(() => srf_macro(t, tf, box[0], box[1], box[2], box[3], { light, alpha: kd, vignette: true, r: 0 })),
-        () => clipPiece(() => srf_macro(t, rf, box[0], box[1], box[2], box[3], { light, alpha: kd, vignette: true, r: 0 })),
+        () => clipPiece(() => srf_macro(t, tf, box[0] + sx - 60, box[1] + sy - 120, box[2] + 120, box[3] + 240, { light, alpha: kd, vignette: true, r: 0 })),
+        () => clipPiece(() => srf_macro(t, rf, box[0] + sx - 60, box[1] + sy - 120, box[2] + 120, box[3] + 240, { light, alpha: kd, vignette: true, r: 0 })),
         { rival: 'Grip tape', ly: box[1] + box[3] - 24 });
     }
     /* the fingertip: from above before the push lands, then (seen through) its print where it touches */
-    const fa = 1 - ep(t, 1.3, 1.7);
+    const home = P(cxm, cym), fa = 1 - ep(t, 1.3, 1.7);
     if (fa > 0.003) clipped(box[0], box[1], box[2], box[3], () => finger(home[0], home[1], -Math.PI / 2, { s, view: 'top', press: 0.6, alpha: fa }));
-    /* the moves: the same three pulls on each surface; on tape every one holds, on the etch only the pull back does */
-    const etchT = G0.etch, tapeMoves = G0.moves.map(m => ({ t: m.t, ang: m.ang, hold: true, name: m.name })), etchMoves = G0.moves.map((m, i) => ({ t: etchT + i * G0.step, ang: m.ang, hold: i === 0, name: m.name }));
-    const onEtch = t >= G0.wipe[0] + G0.wipe[1] * 0.5, moves = onEtch ? etchMoves : tapeMoves, st = b08_gripState(t, moves, 2.6);
-    const pc = [home[0] + st.off[0] * s, home[1] + st.off[1] * s], kp = ep(t, 1.25, 1.6), halo = { glow: 'rgba(0,0,0,0.95)', glowR: 12 };
+    const pc = P(cxm + st.off[0], cym + st.off[1]), kp = ep(t, 1.25, 1.6), halo = { glow: 'rgba(0,0,0,0.95)', glowR: 12 };
     if (kp > 0.003) {
       const m = st.act, hold = m && m.hold, ang = m ? m.ang : 0, k = st.k, ux = Math.cos(ang), uy = Math.sin(ang);
-      /* the skin shears toward a pull it resists; a sliding print smears behind */
-      const shear = hold ? [ux * 14 * k, uy * 14 * k] : [0, 0];
+      /* a sliding print leaves a short trail on the still surface behind it */
+      if (onEtch && (st.off[0] || st.off[1])) {
+        const q0 = P(cxm, cym), ka = 1 - ep(t, 7.2, 7.6);
+        G.save(); G.globalAlpha = 0.5 * ka; G.strokeStyle = C.heroText; G.lineWidth = R * 1.1; G.lineCap = 'round'; G.setLineDash([]);
+        const gr = G.createLinearGradient(q0[0], q0[1], pc[0], pc[1]); gr.addColorStop(0, rgba(C.hero, 0)); gr.addColorStop(1, rgba(C.hero, 0.35)); G.strokeStyle = gr;
+        G.beginPath(); G.moveTo(q0[0], q0[1]); G.lineTo(pc[0], pc[1]); G.stroke(); G.restore();
+      }
+      /* the skin shears toward a pull it resists; a sliding print smears */
+      const shear = hold ? [ux * 10 * k, uy * 10 * k] : [0, 0];
       b08_print(pc[0], pc[1], R, { a: kp, rot: 0.06, shear, slide: m && !hold ? Math.sin(Math.PI * clamp(k)) : 0, dir: ang });
       if (m) {
-        const ry = R * 0.78, er = Math.hypot(ux * R, uy * ry) > 0 ? 1 / Math.hypot(ux / R, uy / ry) : R, edge = [pc[0] + ux * er, pc[1] + uy * er];
-        /* the pointer pulls through a spring (the pull you can see): holding, the spring stretches; sliding, it stays at the
-           grip's force and the print follows */
-        const L = 2.6 * s, stretch = hold ? lerp(0.3, 1, k) * L : lerp(0.3, 0.8, Math.min(1, k * 3)) * L, ptr = [edge[0] + ux * stretch, edge[1] + uy * stretch];
-        const ka = ep(t, m.t, m.t + 0.12) * (1 - ep(t, m.t + 0.66, m.t + 0.78));
-        b08_spring(edge[0], edge[1], ptr[0], ptr[1], { a: ka, n: 6, amp: 9, col: C.ink, w: 2.6 });
-        cursorPtr(ptr[0], ptr[1], { a: ka, grab: true, fill: '#FFFFFF', edge: '#111111' });
-        const kf = ka * ep(t, m.t + 0.05, m.t + 0.3);
-        if (kf > 0.5) { const vert = Math.abs(uy) > 0.7, lp = vert ? [edge[0] + 30, edge[1] + uy * stretch * 0.45 + 8] : [edge[0] + ux * stretch * 0.5, edge[1] + uy * stretch * 0.5 - 30]; text(fmtN(B08G.pull, 2) + ' N pull', lp[0], lp[1], Object.assign({ role: 'label', size: 22, color: C.ink, align: vert ? 'left' : 'center', alpha: kf }, halo)); }
-        /* the grip that answers it, opposite: yellow on tape (unnumbered: no paper measures it), blue on the etch */
-        const mu = onEtch ? (m.name === 'Back' ? B08.mu.across : m.name === 'Sideways' ? B08.mu.along : B08.mu.diag) : 0.56;
-        const gl = mu * B08G.pxN * kf, tip = [pc[0] - ux * gl, pc[1] - uy * gl];
+        const ka = ep(t, m.t, m.t + 0.12) * (1 - ep(t, m.t + 0.72, m.t + 0.86)), L = G0.pull * G0.pxN;
+        /* the pull: a force arrow from the fingertip, the way the finger pulls */
+        const vert = Math.abs(uy) > 0.7, tipP = [pc[0] + ux * L, pc[1] + uy * L];
+        forceArrow(tipP[0], tipP[1], ang, L, { k: ka, color: C.ink, w: 5, hs: 20 });
+        if (ka > 0.02) text(fmtN(G0.pull, 2) + ' N pull', vert ? tipP[0] : tipP[0] + ux * 18, vert ? tipP[1] + uy * 34 + 8 : tipP[1] + 8, Object.assign({ role: 'label', size: 22, color: C.ink, align: vert ? 'center' : ux < 0 ? 'right' : 'left', alpha: ka }, halo));
+        /* the grip that answers it, opposite: yellow on tape (unnumbered: no paper measures tape), blue on the etch */
+        const kf = ka * ep(t, m.t + 0.1, m.t + 0.35), mu = onEtch ? (m.name === 'Back' ? B08.mu.across : B08.mu.along) : B08.mu.across;
+        const gl = mu * F * G0.pxN * kf, tip = [pc[0] - ux * gl, pc[1] - uy * gl];
         if (gl > 2) arrow(pc[0], pc[1], tip[0], tip[1], { color: onEtch ? C.hero : C.second, w: 6, hs: 22, alpha: kf });
-        if (kf > 0.6) text(onEtch ? fmtN(mu, 2) + ' N grip' : 'Grip', tip[0] - ux * 22 + (Math.abs(uy) > 0.7 ? 14 : 0), tip[1] - uy * 22 + 8 + (Math.abs(uy) > 0.7 ? 0 : -20), Object.assign({ role: 'label', size: 22, color: onEtch ? C.heroText : C.secondText, align: Math.abs(uy) > 0.7 ? 'left' : ux > 0 ? 'right' : 'left', alpha: kf }, halo));
+        if (kf > 0.6) text(onEtch ? fmtN(mu * F, 2) + ' N grip' : 'Grip', tip[0] - ux * 22 + (Math.abs(uy) > 0.7 ? 14 : 0), tip[1] - uy * 22 + 8 + (Math.abs(uy) > 0.7 ? 0 : -20), Object.assign({ role: 'label', size: 22, color: onEtch ? C.heroText : C.secondText, align: Math.abs(uy) > 0.7 ? 'left' : ux > 0 ? 'right' : 'left', alpha: kf }, halo));
+        /* what happened, at the fingertip: the mouse came with it, or the finger moved on alone */
+        const kw = ep(t, m.t + 0.45, m.t + 0.6) * (1 - ep(t, m.t + 0.8, m.t + 0.95));
+        const word = onEtch ? (hold ? 'Holds: the mouse comes back' : 'Slides: the mouse stays') : (hold && m.name === 'Back' ? 'Holds: the mouse comes back' : 'Drags the mouse');
+        if (kw > 0.003) text(word, pc[0], vert ? tipP[1] + 84 : pc[1] + R * 0.78 + 52, Object.assign({ role: 'label', size: 24, color: !onEtch && m.name !== 'Back' ? C.red : onEtch ? C.heroText : C.ink, align: 'center', alpha: kw }, halo));
       }
       /* the settled frame: every grip at once, against the pull as a ring: an arrow past the ring holds */
-      const kr = ep(t, 7.45, 8.05);
+      const kr = ep(t, 7.6, 8.2);
       if (kr > 0.003 && !m) {
-        const rr0 = B08G.pull * B08G.pxN;
+        const rr0 = G0.pull * G0.pxN;
         circle(pc[0], pc[1], rr0, { color: C.ink, w: 2, dash: [7, 6], alpha: kr * 0.8 });
         for (const [ang2, mu2] of [[-Math.PI / 2, B08.mu.across], [Math.PI / 2, B08.mu.across], [0, B08.mu.along], [Math.PI, B08.mu.along], [Math.PI / 4, B08.mu.diag], [-Math.PI / 4, B08.mu.diag], [Math.PI * 0.75, B08.mu.diag], [-Math.PI * 0.75, B08.mu.diag]]) {
-          const L2 = mu2 * B08G.pxN * E.out3(kr); arrow(pc[0], pc[1], pc[0] + Math.cos(ang2) * L2, pc[1] + Math.sin(ang2) * L2, { color: mu2 > B08G.pull ? C.hero : rgba(C.hero, 0.55), w: mu2 > B08G.pull ? 6 : 4, hs: 18, alpha: kr });
+          const f2 = mu2 * F, L2 = f2 * G0.pxN * E.out3(kr); arrow(pc[0], pc[1], pc[0] + Math.cos(ang2) * L2, pc[1] + Math.sin(ang2) * L2, { color: f2 > G0.pull ? C.hero : rgba(C.hero, 0.55), w: f2 > G0.pull ? 6 : 4, hs: 18, alpha: kr });
         }
-        text('0.53 N: holds', pc[0] + 16, pc[1] - B08.mu.across * B08G.pxN - 6, Object.assign({ role: 'label', size: 22, color: C.heroText, alpha: kr }, halo));
-        text('0.42 N: slides', pc[0] + B08.mu.along * B08G.pxN + 18, pc[1] + 8, Object.assign({ role: 'label', size: 22, color: C.heroText, alpha: kr }, halo));
-        text('The 0.47 N pull', pc[0] - rr0 * 0.72 - 12, pc[1] + rr0 * 0.72 + 30, Object.assign({ role: 'label', size: 20, color: C.ink, align: 'right', alpha: kr }, halo));
+        text(fmtN(B08.mu.across * F, 2) + ' N: holds', pc[0] + 16, pc[1] - B08.mu.across * F * G0.pxN - 6, Object.assign({ role: 'label', size: 22, color: C.heroText, alpha: kr }, halo));
+        text(fmtN(B08.mu.along * F, 2) + ' N: slides', pc[0] + B08.mu.along * F * G0.pxN + 18, pc[1] + 8, Object.assign({ role: 'label', size: 22, color: C.heroText, alpha: kr }, halo));
+        text('The ' + fmtN(G0.pull, 2) + ' N pull', pc[0] - rr0 * 0.72 - 12, pc[1] + rr0 * 0.72 + 30, Object.assign({ role: 'label', size: 20, color: C.ink, align: 'right', alpha: kr }, halo));
       }
     }
-    /* the right column: the same three pulls on both surfaces, as they happen; then the headline */
-    const rx = 1240, cw = [rx + 220, rx + 340, rx + 470], ty = 330, ka0 = ep(t, 0.7, 1.1);
+    /* the right column: the same two pulls on both surfaces, as they happen; then the headline */
+    const rx = 1240, cw = [rx + 300, rx + 470], ty = 330, ka0 = ep(t, 0.7, 1.1);
     if (ka0 > 0.003) {
-      text('The same 0.47 N pull', rx, ty, { role: 'label', size: 21, color: C.mute, alpha: ka0 });
-      ['Back', 'Sideways', 'Diagonal'].forEach((nm, i) => text(nm, cw[i], ty + 46, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: ka0 }));
-      const rows = [{ name: 'Grip tape', col: C.secondText, ms: tapeMoves, et: false, y: ty + 98 }, { name: 'Etched ridges', col: C.heroText, ms: etchMoves, et: true, y: ty + 156 }];
+      text('The same ' + fmtN(G0.pull, 2) + ' N pull', rx, ty, { role: 'label', size: 21, color: C.mute, alpha: ka0 });
+      ['Back', 'Sideways'].forEach((nm, i) => text(nm, cw[i], ty + 46, { role: 'label', size: 20, color: C.faint, align: 'center', alpha: ka0 }));
+      const rows = [{ name: 'Grip tape', col: C.secondText, ms: tapeMoves, et: false, y: ty + 102 }, { name: 'Etched ridges', col: C.heroText, ms: etchMoves, et: true, y: ty + 164 }];
       for (const r of rows) {
         const kr0 = r.et ? ep(t, G0.wipe[0] + 0.5, G0.wipe[0] + 0.9) : ka0; if (kr0 <= 0.003) continue;
-        text(r.name, rx, r.y, { role: 'small', size: 25, weight: 750, color: r.col, alpha: kr0 });
+        text(r.name, rx, r.y, { role: 'small', size: 27, weight: 750, color: r.col, alpha: kr0 });
         r.ms.forEach((m, i) => {
           const kc = ep(t, m.t + 0.4, m.t + 0.6); if (kc <= 0.003) return;
           const word = r.et ? (m.hold ? 'Holds' : 'Slides') : (i === 0 ? 'Holds' : 'Drags'), col = r.et ? C.heroText : i === 0 ? C.ink2 : C.red;
-          text(word, cw[i], r.y, { role: 'small', size: 25, weight: 750, color: col, align: 'center', alpha: kc });
+          text(word, cw[i], r.y, { role: 'small', size: 27, weight: 750, color: col, align: 'center', alpha: kc });
         });
       }
       line(rx, ty + 66, RM, ty + 66, { color: C.hair, w: 1.2, alpha: ka0 });
     }
-    verdict(t, 6.4, rx, 690, { from: B08.mu.along, to: B08.mu.across, dec: 2, unit: 'N', label: 'Grip, along → across the ridges', better: 'higher', who: ['Along', 'Across'], rivalCol: 'grey', size: 132, netWord: 'grip where you pull' });
-    scaleNote(rx, 900, 'a light touch, about two eggs\' weight', { lead: '1 N press', t, t0: 8.1 });
-    { const a = ep(t, 8.3, 8.7); pill(rx, 946, 'study', a, { by: 'Zhang 2017' }); text('Ridges drawn far coarser than life', rx + pillW('study', { by: 'Zhang 2017' }) + 20, 946, { role: 'small', size: 22, weight: 600, color: C.faint, alpha: a }); }
+    verdict(t, 6.9, rx, 700, { from: 0, to: Math.floor(B08.mu.gain * 100), unit: '%', dec: 0, label: 'Extra grip where you pull, over where you adjust', better: 'higher', who: ['Grip tape', 'Etched ridges'], size: 132, maxW: RM - rx });
+    scaleNote(rx, 832, "a light touch, about half an egg's weight", { lead: '0.3 N press', t, t0: 8.1 });
+    { const a = ep(t, 8.3, 8.7); pill(rx, 880, 'study', a, { by: 'Zhang 2017' }); text('Laser grooves in steel, one fingertip. Tape has no direction, so it grips the same every way (as Zhang\'s pillar grid did). Ridges drawn far coarser than life.', rx, 916, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: a, maxW: RM - rx }); }
   }
 });
 
@@ -890,12 +839,13 @@ function b08_fieldSideUni(u, v) { const f = b08_fieldSideMap(u, v); return { ang
 S({
   id: 'b08_gripmap', ch: 'surface', theme: 'night', title: 'A grip map for the hand', settle: 11, ideas: [60],
   replaces: ['srf_gripmap'],
-  src: ['b08_zhang17', 'srf_doc'],
+  src: ['b08_zhang17', 'srf_derler', 'srf_doc'],
   answers: [
     ['"grip designs need massive optimizations to look cool"', 'The map is generated, not drawn: every ridge is a streamline of one direction field over the shell, evenly spaced, so the pattern flows over the buttons and wraps the shoulders like one designed surface'],
     ['"and blend between there different textures better"', 'No borders between textures: the ridges turn continuously from side to side (the buttons) to front to back (the sides), and where a zone ends they break into dashes, then dots, then smooth; a strip beside the map shows the blend on its own'],
     ['F2.14 "grip in exactly the right places in exactly the right directions"', 'Each zone is etched across the slip it must stop: the pull on the buttons, the lift on the sides, smooth under the palm; each named on the map'],
     ['F21.9 (he wants to see the map before deciding it)', 'Labelled as the proposed map, to be tuned on hands; the question is in the report'],
+    ['(why texture at all: a sweaty hand)', 'A plain stat under the side view, from Derler 2012 (skin on glass, wet): smooth 0.61, rough 1.43 grip per newton of squeeze; sweat floats skin on smooth, and roughness keeps it gripping'],
     ['(problem first, G1)', 'The rival is the naive etch, the button\'s ridges run one way over the whole grip: down the sides they run up and down, and at the same 0.30 N squeeze the lift slips; the laser turns them across the lift and the same squeeze holds (least squeeze 0.33 → 0.28 N a side, derived from Zhang 2017)']
   ],
   draw: t => {
@@ -971,6 +921,17 @@ S({
       callout(t, 7.15, q2, 'Palm: smooth', { to: [q2[0] + 200, q2[1] + 56], side: 'r', color: C.mute, tcolor: C.mute });
       fixTag(t, 7.3, q4, 'Lift: ridges across', { to: [q4[0] - 10, S0.y - 288], side: 'l' });
     }
+    /* why texture at all: a sweaty hand on smooth against rough (a plain stat, nothing struck) */
+    { const a = ep(t, 8.9, 9.3), x0 = 700, y0 = 846, sc = 230;
+      if (a > 0.003) {
+        text('When the hand sweats: skin on wet glass, grip per newton', x0, y0, { role: 'label', size: 19, color: C.mute, alpha: a });
+        [['Smooth', 0.61, C.comp, C.ink2], ['Rough', 1.43, C.hero, C.heroText]].forEach(([nm, v, col, tcol], i) => {
+          const yy = y0 + 34 + i * 34; text(nm, x0, yy, { role: 'small', size: 21, weight: 700, color: tcol, alpha: a });
+          G.save(); G.globalAlpha = a; G.fillStyle = col; G.fillRect(x0 + 100, yy - 15, v * sc * ep(t, 9.0 + i * 0.15, 9.5 + i * 0.15, E.out3), 16); G.restore();
+          text(fmtN(v, 2), x0 + 112 + v * sc, yy, { role: 'small', size: 21, weight: 750, color: tcol, alpha: a * ep(t, 9.4 + i * 0.15, 9.6 + i * 0.15) });
+        });
+        pill(x0 + 330, y0 + 34, 'study', a, { by: 'Derler 2012' });
+      } }
     text('Proposed map, to be tuned on hands. Ridges drawn far coarser than life.', box[0], box[1] + box[3] + 2, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 8.2, 8.6) });
     /* the right column: one pattern with no borders (it blends), then the payoff */
     const rx = 1320, kb = ep(t, 3.6, 4.1);
@@ -985,6 +946,607 @@ S({
     }
     verdict(t, 6.6, rx, 690, { from: LF.one, to: LF.map, dec: 2, unit: 'N', label: 'Least squeeze to lift, per side', better: 'lower', who: ['One direction', 'The map'], rivalCol: 'grey', size: 128, maxW: RM - rx });
     scaleNote(rx, 880, "about half an egg's weight", { lead: '0.3 N', t, t0: 8.3 });
-    { const a = ep(t, 8.5, 8.9), w0 = pillW('study', { by: 'Zhang 2017' }); pill(rx, 926, 'study', a, { by: 'Zhang 2017' }); pill(rx + w0 + 20, 926, 'derived', a); text('Grip per newton of squeeze, fingertip at 0.2 to 0.4 N: 0.51 across the ridges, 0.44 along', rx, 962, { role: 'small', size: 22, weight: 600, color: C.faint, alpha: a, maxW: RM - rx }); }
+    { const a = ep(t, 8.5, 8.9), w0 = pillW('study', { by: 'Zhang 2017' }); pill(rx, 926, 'study', a, { by: 'Zhang 2017' }); pill(rx + w0 + 20, 926, 'derived', a); text('Laser grooves in steel, one fingertip, 0.2 to 0.4 N: grip 0.50 to 0.51 of the squeeze across the ridges, 0.41 to 0.47 along', rx, 962, { role: 'small', size: 22, weight: 600, color: C.faint, alpha: a, maxW: RM - rx }); }
   }
 });
+
+/* ---------- b08_coating: the bake ----------
+   Brock's note on the old slide (5/10): "lazy visualizations, show flames and more realistic pots". His analogy (idea 16):
+   PMM's "air dry ceramic coating" is the pot that never went in the kiln. The classroom version (The Pottery Wheel): two
+   identical wheel-thrown pots; one fired in a cut-away updraft kiln (flames in the firebox under the perforated floor, the
+   chamber glowing, the ware glowing orange at cone 06, 995 °C), then rain on both: the dried pot slakes back to mud, the
+   fired one sheds it. The real version, on Cerakote's own sheets and the ISO 15184 pencil test: the same 4H pencil under
+   750 g pushed across an air-cured coat (C-299: 3H, cured 5 days) gouges it; across the baked coat (F-110: 9H, 82 °C for an
+   hour) it leaves no mark. Verdict 3H → 9H "on Cerakote's tests" (F21.10), gouge against gouge, both on blasted steel. */
+const B08C = {
+  panel: [LM, 272, 900, 664], ground: 754,
+  potA: { x: 270, H: 240 }, kiln: { x: 492, w: 440, h: 500 },
+  fire: [0.25, 0.9, 2.6, 3.1], heat: [0.6, 2.2, 2.8, 3.4], kilnOut: [3.0, 3.5],
+  rain: [3.5, 3.8, 5.0, 5.4], slake: [3.8, 5.3],
+  test: { x: 1040, y: 350, w: 380, h: 250, gap: 40, stroke: [5.6, 6.8] },
+  verdict: 7.1
+};
+/** rain over a box: short slanted streaks falling at a steady speed (positions a pure function of t), k its strength */
+function b08_rain(t, x, y, w, h, k, o = {}) {
+  if (k <= 0.003) return;
+  const r = rng(o.seed || 71), n = o.n || 90, slant = 0.18;
+  G.save(); G.beginPath(); G.rect(x, y, w, h); G.clip(); G.lineCap = 'round';
+  for (let i = 0; i < n; i++) {
+    const x0 = x + r() * (w + h * slant), ph = r(), spd = 1.25 + r() * 0.5, L = 14 + r() * 14, al = 0.35 + r() * 0.4;
+    const f = (ph + t * spd) % 1, yy = y + f * (h + L) - L, xx = x0 - (yy - y) * slant;
+    G.globalAlpha = k * al; G.strokeStyle = C.mute; G.lineWidth = 1.6;
+    G.beginPath(); G.moveTo(xx, yy); G.lineTo(xx - L * slant, yy + L); G.stroke();
+  }
+  G.restore();
+}
+S({
+  id: 'b08_coating', ch: 'surface', theme: 'paper', title: 'A baked ceramic coat', settle: 11.5, ideas: [16], before: 'b08_grip',
+  replaces: ['coating'],
+  src: ['b08_clay', 'b08_doc16', 'b08_c299', 'srf_f110', 'b08_iso15184', 'srf_soft', 'srf_fManual', 'srf_ppc20'],
+  answers: [
+    ['"lazy visualizations"', 'Two demonstrations with cause and effect: a kiln fires one of two identical pots and rain takes the air-dried one back to mud; then the same 4H pencil under 750 g gouges an air-cured coat and leaves no mark on the baked one'],
+    ['"show flames"', 'A cut-away updraft kiln: flames in the firebox under the floor lick up through its holes, the chamber glows, the pot glows orange as a readout counts to 995 °C, then the fire dies and it cools'],
+    ['"and more realistic pots"', 'Wheel-thrown amphorae drawn from a real profile: foot, belly, shoulder, neck, flared lip, handles, throwing rings and a meander band; the dried pot pale and matte, the fired one dark with a gloss'],
+    ['F21.10 ("9H on Cerakote\'s tests")', 'The payoff says exactly that: 9H "on Cerakote\'s tests", gouge rating, as a plain stat beside the air-cured coat\'s 3H and soft-touch\'s 7B to H. Nothing is struck: the two cures are both Cerakote\'s, so they are not a rival against Theseus (FILM F8/F15)'],
+    ['Idea 16, "a dried clay pot is weaker than a pot put in a kiln"', 'His analogy is the classroom version, with its source: unfired greenware slakes in water, bisque ware does not']
+  ],
+  draw: t => {
+    header(t, 'A baked ceramic coat');
+    captions(t, [[0.4, 'A pot dried in air is still clay, and rain turns it back to mud. Fired in a kiln, it turns to ceramic and the rain runs off.'],
+      [5.2, 'Coats work the same way. PMM\'s ceramic coat is air-dried; the pencil that gouges an air-cured coat leaves no mark on a baked one.']]);
+    const K0 = B08C, gy = K0.ground;
+    /* the classroom version: two identical pots, one in a kiln dug into the ground */
+    const ir = demoPanel(t, 0, K0.panel, { src: 'The Pottery Wheel' });
+    const fire = env(t, K0.fire[0], K0.fire[1], K0.fire[2], K0.fire[3]), heat = env(t, K0.heat[0], K0.heat[1], K0.heat[2], K0.heat[3]);
+    const Tpk = 20 + 975 * ep(t, K0.heat[0], K0.heat[1]), T = 20 + 975 * heat, fired = clamp((Tpk - 500) / 495), glow = clamp((T - 560) / 435);
+    const ka = 1 - ep(t, K0.kilnOut[0], K0.kilnOut[1]);
+    clipped(ir[0], ir[1], ir[2], ir[3], () => {
+      /* the ground and the earth under it, cut away */
+      G.save(); G.beginPath(); G.rect(ir[0], gy, ir[2], ir[1] + ir[3] - gy); G.clip(); G.strokeStyle = C.hair; G.lineWidth = 1.2; G.beginPath();
+      for (let xx = ir[0] - 200; xx < ir[0] + ir[2]; xx += 14) { G.moveTo(xx, ir[1] + ir[3]); G.lineTo(xx + 200, ir[1] + ir[3] - 200); } G.stroke(); G.restore();
+      line(ir[0], gy, ir[0] + ir[2], gy, { color: C.mute, w: 1.6 });
+      const Kn = K0.kiln, Kh = Kn.h, kgy = gy + 0.275 * Kh;
+      const KK = b08_kiln(Kn.x, kgy - Kh, Kn.w, Kh, { a: ka, heat, fire, t });
+      /* the rain, behind the pots */
+      const kr = env(t, K0.rain[0], K0.rain[1], K0.rain[2], K0.rain[3]);
+      b08_rain(t, ir[0], ir[1], ir[2], gy - ir[1], kr * 0.7, { seed: 71 });
+      const sl = ep(t, K0.slake[0], K0.slake[1], E.io3);
+      b08_amphora(K0.potA.x, gy, K0.potA.H, { fired: 0, slake: sl, t });
+      b08_amphora(KK.cx, KK.floorY, K0.potA.H, { fired, heat: heat * ka, glow: glow * ka, wet: kr > 0 ? 1 : 0, wetT: clamp((t - K0.rain[0]) / 1.3), t });
+      b08_rain(t, ir[0], ir[1], ir[2], gy - ir[1], kr * 0.45, { seed: 72, n: 40 });
+      /* the kiln's thermometer: it reads what the fire does */
+      if (ka > 0.01 && T > 25) text(Math.round(T) + ' °C', Kn.x + Kn.w - 6, kgy - Kh + 40, { role: 'label', size: 22, color: T > 900 ? C.heat : C.mute, align: 'right', alpha: ka * ep(t, 0.6, 0.9), caps: false });
+      /* the pots' names on the ground under them; the fired pot's once its kiln has gone */
+      text('Dried in air', K0.potA.x, gy + 34, { role: 'label', size: 20, color: C.secondText, align: 'center', alpha: ep(t, 0.2, 0.6) });
+      text('Fired in a kiln', KK.cx, gy + 34, { role: 'label', size: 20, color: C.heroText, align: 'center', alpha: ep(t, 3.3, 3.7) });
+      if (t > 4.9) faultTag(t, 4.9, [K0.potA.x + 24, gy - 28], 'Back to mud', { to: [K0.potA.x + 100, gy - 200], side: 'r' });
+      if (t > 5.2) fixTag(t, 5.2, [KK.cx - 50, gy - 150], 'Rain runs off', { to: [KK.cx - 120, gy - 270], side: 'l' });
+    });
+    /* the real version: Cerakote's test, the same pencil and load on both coats */
+    /* the two coats are on screen from the start; the pencil comes at 5 s */
+    const TS = K0.test, kp = ep(t, 5.0, 5.4), ks = ep(t, TS.stroke[0], TS.stroke[1], E.io3);
+    text("Cerakote's test: the same 4H pencil, 750 g on its tip", TS.x, 304, { role: 'label', size: 21, color: C.mute, alpha: kp });
+    [[false, 'Air-cured, 5 days', C.secondText], [true, 'Baked, 82 °C for an hour', C.heroText]].forEach(([hard, nm, col], i) => {
+      const px = TS.x + i * (TS.w + TS.gap), mm = 26, x0 = 0.38, sy = 0.76;
+      text(nm, px, 340, { role: 'label', size: 20, color: col });
+      b08_pencilTest(px, TS.y, TS.w, TS.h, { a: 1, k: ks, hard, coat: C.ink2, mm, x0, sy, len: 205, bw: 118, bh: 56, wheels: false, pa: kp });
+      const gx = px + TS.w * x0 + 3.5 * mm, gyy = TS.y + TS.h * sy;
+      if (!hard && t > 6.9) faultTag(t, 6.9, [gx, gyy], 'Gouged', { to: [gx + 40, TS.y + TS.h + 34], side: 'r' });
+      if (hard && t > 7.0) fixTag(t, 7.0, [gx, gyy], 'No mark', { to: [gx + 40, TS.y + TS.h + 34], side: 'r' });
+    });
+    scaleNote(TS.x, 688, "about a full water bottle's weight, on a pencil's tip", { lead: '750 g', t, t0: 6.0 });
+    text("Baked at 82 °C: the shell's plastic holds its shape to 155 °C", TS.x, 726, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: ep(t, 8.6, 9.0), maxW: RM - TS.x });
+    /* the result as a plain stat (FILM F8/F15): the baked coat's grade big, the air-cured coat's and soft-touch's beside it, nothing struck */
+    { const k = ep(t, K0.verdict, K0.verdict + 0.5), x0 = TS.x, y0 = 890, kb = ep(t, K0.verdict + 0.3, K0.verdict + 0.9);
+      text('Pencil hardness (harder is better)', x0, y0 - 132, { role: 'label', size: 22, color: C.mute, alpha: k });
+      rich([{ s: '9H', role: 'd1', size: 130, weight: 800, track: -0.03, color: C.heroText, grad: C.heroGrad, tnum: true }], x0, y0, { alpha: kb });
+      text("Baked F-Series, on Cerakote's tests", x0, y0 + 40, { role: 'label', size: 19, color: C.heroText, alpha: kb });
+      [['3H', "Air-cured C-Series, Cerakote's tests", C.secondText], ['7B to H', "Soft-touch, RadTech's test films", C.mute]].forEach(([g, nm, col], i) => {
+        const yy = y0 - 62 + i * 62, a = ep(t, K0.verdict + 0.2 + i * 0.15, K0.verdict + 0.6 + i * 0.15);
+        text(g, x0 + 250, yy, { role: 'small', size: 34, weight: 800, color: C.ink2, alpha: a });
+        text(nm, x0 + 400, yy - 2, { role: 'small', size: 20, weight: 600, color: col, alpha: a, maxW: RM - x0 - 400 });
+      }); }
+  }
+});
+
+/* ---------- b08_film: a fifth of a sheet of paper ----------
+   Replaces srf_texture (6/10: "needs to show previous height before sanding and coat, i like the comparisons to soft
+   touch") and srf_weight (4/10: "can be combined with previous slide, cerakote film numbers before sand blasting look way
+   too heavy, 0.49g is a lot, especially with how much thinner cerakote is to soft touch"). F2.13 (the fibres, to scale),
+   F2.22 (his claim: the blast takes off almost as much as the coat adds), F21.10 (the net weight stays unnumbered).
+   One section to scale (s px per µm), the moulded height dashed across both halves. The rival first: soft-touch sprayed over
+   the smooth moulded shell, 51 µm (RadTech 2016's test film) standing above the line. Then Theseus's shell: the blast takes
+   a skin off (its depth drawn, not measured) and the 19 µm F-Series film fills the roughness and levels back to about the
+   moulded height. Weights on the shell's 133 cm² (derived, B08.film): the film 0.37 to 0.43 g before the blast takes its share
+   (the old 0.49 g read Cerakote's 1 mil coverage as 0.75 mil), soft-touch at least 0.68 g. */
+const B08F = {
+  s: 4.5, y: 336, h: 580, top: 0.44,
+  L: [LM, 760], R: [880, 320],                  /* the two halves: x, w (px) */
+  soft: [0.8, 2.6], blast: [3.0, 4.5], coat: [4.7, 6.2], verdict: 6.6
+};
+S({
+  id: 'b08_film', ch: 'surface', theme: 'night', title: 'A fifth of a sheet of paper', settle: 11, ideas: [16], before: 'b08_grip',
+  replaces: ['srf_texture', 'srf_weight'],
+  src: ['srf_fManual', 'srf_f110', 'b08_coverage', 'srf_soft', 'b08_covestro', 'srf_hoft22', 'srf_yama24', 'srf_ppc20', 'srf_scan', 'b08_doc16'],
+  answers: [
+    ['"needs to show previous height before sanding and coat"', 'The moulded height is a dashed line across the whole section from the first frame; the blast takes the surface below it, and the coat brings it back to about that line'],
+    ['"i like the comparisons to soft touch"', 'Kept and made the rival: soft-touch sprayed over the same moulded shell on the same scale, 51 µm standing above the line, against 19 µm that ends about on it; thickness and weight both compared'],
+    ['"can be combined with previous slide"', 'Combined: one slide for the section (srf_texture) and the weight (srf_weight)'],
+    ['"cerakote film numbers before sand blasting look way too heavy, 0.49g is a lot"', 'Checked and corrected: the old figure read Cerakote\'s coverage (given per gallon at 1.0 mil) as a 0.75 mil figure. With the solvent found (PCBTF), the 0.75 mil standard film weighs 0.37 to 0.43 g over the shell\'s 133 cm², before the blast takes its share (derived; a weighed shell would settle it, question in the report)'],
+    ['"especially with how much thinner cerakote is to soft touch"', 'Shown both ways against RadTech\'s soft-touch test film: 19 µm against 51 µm (−62 %), and 0.37 to 0.43 g against at least 0.68 g on the same shell; the ceramic film is denser, so it weighs about 60 %, not 37 %. Said too: soft-touch can be sprayed as thin as 2 to 3 µm (Covestro 2021), and no mouse\'s film is published'],
+    ['F2.22 / F21.10 (the blast takes off almost what the coat adds; the net unnumbered)', 'The blast\'s skin is drawn hatched, "blasted off", against the film that replaces it; the net is said in words only ("the blast takes its share"), no number']
+  ],
+  draw: t => {
+    header(t, 'A fifth of a sheet of paper');
+    captions(t, [[0.5, 'Soft-touch is sprayed over the moulded shell: RadTech\'s test film is 51 µm thick, standing above it.'],
+      [3.0, 'Cerakote starts with a blast that takes a skin off. Its 19 µm coat fills that back to about the height the shell was moulded at.']]);
+    const F0 = B08F, sc = F0.s, ys = F0.y + F0.top * F0.h;
+    const kSoft = ep(t, F0.soft[0], F0.soft[1], E.io3), kb = ep(t, F0.blast[0], F0.blast[1], E.io3), kc = ep(t, F0.coat[0], F0.coat[1], E.io3);
+    /* Theseus's half: the blast, then the coat */
+    const BL = [F0.L[0], F0.y, F0.L[1], F0.h], BR = [F0.R[0], F0.y, F0.R[1], F0.h];
+    const sec = b08_section(BL, { s: sc, top: F0.top, blast: kb, coat: kc, seed: 11 });
+    const soft = b08_softSection(BR, { s: sc, top: F0.top, k: kSoft, seed: 13 });
+    /* grit, then spray: what moves the surface, seen arriving */
+    const particles = (B, t0, t1, n, seed, fn) => { if (t < t0 || t > t1 + 0.4) return; const r = rng(seed);
+      clipped(B[0], B[1], B[2], B[3], () => { for (let i = 0; i < n; i++) { const x0 = B[0] + r() * B[2], ph = r(), tt = t0 + ph * (t1 - t0); const f = (t - tt) / 0.35; if (f < 0 || f > 1) continue; fn(x0, B[1] + f * (ys - B[1] + 20), f, r); } }); };
+    particles(BL, F0.blast[0], F0.blast[1], 120, 5, (x, y, f, r) => { G.save(); G.translate(x, y); G.rotate(r() * 3); G.fillStyle = rgba(C.ink, 0.75 * (1 - f * 0.5)); G.fillRect(-3, -2, 6, 4.5); G.restore(); });
+    particles(BL, F0.coat[0], F0.coat[1], 140, 6, (x, y, f, r) => circle(x, y, 2.6, { fill: rgba(C.ink, 0.55 * (1 - f * 0.4)) }));
+    particles(BR, F0.soft[0], F0.soft[1], 70, 7, (x, y, f, r) => circle(x, y, 3, { fill: rgba(C.second, 0.55 * (1 - f * 0.4)) }));
+    /* the moulded height, across both halves, from the first frame */
+    line(F0.L[0], ys, F0.R[0] + F0.R[1], ys, { color: C.ink, w: 1.8, dash: [10, 7] });
+    text('As moulded', F0.L[0] + 12, ys - 12, Object.assign({ role: 'label', size: 20, color: C.ink }, { glow: 'rgba(0,0,0,0.9)', glowR: 10 }));
+    /* names over each half */
+    text('Soft-touch, a test film', F0.R[0], F0.y - 14, { role: 'label', size: 20, color: C.secondText });
+    text('Theseus: blast, then coat', F0.L[0], F0.y - 14, { role: 'label', size: 20, color: C.heroText });
+    /* dimensions, each as its layer arrives */
+    const dim = (x, y0, y1, label, col, a, side = 1) => { if (a <= 0.003) return; line(x, y0, x, y1, { color: col, w: 2, alpha: a }); line(x - 8, y0, x + 8, y0, { color: col, w: 2, alpha: a }); line(x - 8, y1, x + 8, y1, { color: col, w: 2, alpha: a });
+      text(label, x + side * 14, (y0 + y1) / 2 + 8, Object.assign({ role: 'label', size: 22, color: col, align: side > 0 ? 'left' : 'right', alpha: a }, { glow: 'rgba(0,0,0,0.9)', glowR: 10 })); };
+    dim(F0.R[0] + F0.R[1] - 46, ys, soft.top, Math.round(51 * kSoft) + ' µm', C.secondText, ep(t, F0.soft[0] + 0.2, F0.soft[0] + 0.5), -1);
+    { const xb = F0.L[0] + F0.L[1] * 0.08, yb = sec.mean; if (kb > 0.02) { dim(xb, ys, yb, 'Blasted off: about 13 µm (drawn)', C.mute, ep(t, F0.blast[0] + 0.3, F0.blast[0] + 0.6)); } }
+    { const xf = F0.L[0] + F0.L[1] * 0.86, y0 = sec.mean, y1 = sec.mean - 19 * sc * kc; if (kc > 0.02) dim(xf, y0, y1, Math.round(19 * kc) + ' µm', C.heroText, ep(t, F0.coat[0] + 0.2, F0.coat[0] + 0.5)); }
+    /* a fibre named once: 7 µm across, along the flow */
+    text('Carbon fibres, 7 µm across', F0.L[0] + 12, F0.y + F0.h - 18, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 0.3, 0.7) });
+    /* the right column: the headline, then the weight on the whole shell */
+    const rx = 1260;
+    verdict(t, F0.verdict, rx, 560, { from: 51, to: 19, unit: 'µm', dec: 0, label: "Coat thickness: RadTech's soft-touch test film, Cerakote's standard film", better: 'lower', who: ['Soft-touch', 'Cerakote'], size: 120, maxW: RM - rx });
+    scaleNote(rx, 712, 'about a fifth of a sheet of copy paper', { lead: '19 µm', t, t0: 7.6 });
+    const kw = ep(t, 8.0, 8.4);
+    if (kw > 0.003) {
+      text("On the shell's 133 cm²", rx, 786, { role: 'label', size: 20, color: C.mute, alpha: kw });
+      text('Soft-touch, 51 µm', rx, 828, { role: 'small', size: 25, weight: 700, color: C.secondText, alpha: kw });
+      text('0.68 g or more', RM, 828, { role: 'small', size: 25, weight: 750, color: C.ink, align: 'right', alpha: kw });
+      text('Cerakote, 19 µm', rx, 868, { role: 'small', size: 25, weight: 700, color: C.heroText, alpha: kw });
+      text(fmtN(B08.film.g, 2) + ' to ' + fmtN(B08.film.gHi, 2) + ' g', RM, 868, { role: 'small', size: 25, weight: 750, color: C.heroText, align: 'right', alpha: kw });
+      text('before the blast takes its share', RM, 900, { role: 'small', size: 20, weight: 600, color: C.mute, align: 'right', alpha: kw });
+      line(rx, 800, RM, 800, { color: C.hair, w: 1.2, alpha: kw });
+      const a2 = ep(t, 8.5, 8.9); pill(rx, 936, 'derived', a2); text("Cerakote's sheets; RadTech's test film", rx + pillW('derived') + 16, 936, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: a2, maxW: RM - rx - pillW('derived') - 16 });
+      text('Soft-touch can be sprayed as thin as 2 to 3 µm (Covestro 2021); no mouse\'s film is published', rx, 972, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: a2, maxW: RM - rx });
+    }
+  }
+});
+
+/* ---------- b08_uv: no yellowing ----------
+   Replaces srf_uv (7/10, rated, no note). F2.23: "with most coatings it's very hard to tell if they will yellow over time,
+   but cerakote is by far one of the safest because of its industry leading chemical and uv resistance (like how the ulx
+   pros yellowed)". Two halves, the rival first. Left: a white mouse under two fingertips as the months pass: the coat
+   yellows most where the fingers rest (drawn from ULX Pro owners' reports: no rate implied, and owners blame sweat,
+   lotions and the grippier coat as much as light); the maker published no UV or chemical test, so owners found out after
+   buying. Right: Cerakote's published test: a white panel in a UV chamber (ASTM D4587), one strip masked as the
+   reference, the hours counting to 1,000; the mask comes off: no visible change (Cerakote's photopolymer test, a C-Series
+   coat on 3D-printed plastic). Verdict: UV test hours published, 0 → 1,000 h. Chemicals in a line: F-Series is rated
+   "Excellent", a colour change under ΔE 2.5 (CIE76) after a day in each chemical. */
+const B08U = { use: [0.8, 3.4], lift: [3.4, 3.9], tags: [3.9, 4.2], lamps: 4.6, hours: [4.9, 7.5], peel: [7.6, 8.2], verdict: 8.2 };
+/** a UV weathering chamber, cut open: its lamps, a white panel on the rack with a masked strip, an hours readout.
+   (x, y, w, h); o = { on (0..1: the lamps), hours, peel (0..1: the mask comes off) }. Returns the panel's rect. */
+function b08_quv(x, y, w, h, o = {}) {
+  const on = clamp(o.on || 0), peel = clamp(o.peel || 0);
+  /* the cabinet */
+  rrPath(x, y, w, h, 14); G.fillStyle = TH ? '#D9D9DB' : '#2A2B2F'; G.fill(); G.strokeStyle = rgba(C.ink, 0.35); G.lineWidth = 1.5; G.stroke();
+  const ix = x + 26, iy = y + 26, iw = w - 52, ih = h - 96;
+  rrPath(ix, iy, iw, ih, 8); G.fillStyle = TH ? '#3A3B3F' : '#121316'; G.fill();
+  /* the lamps: four long tubes across the top of the chamber, glowing when on */
+  for (let i = 0; i < 4; i++) {
+    const ly = iy + 22 + i * 26;
+    if (on > 0.01) { G.save(); G.globalAlpha = on * 0.55; G.fillStyle = '#FFFFFF'; G.shadowColor = 'rgba(255,255,255,0.9)'; G.shadowBlur = 18; rrPath(ix + 30, ly - 5, iw - 60, 10, 5); G.fill(); G.restore(); }
+    rrPath(ix + 30, ly - 5, iw - 60, 10, 5); G.fillStyle = mix(TH ? '#8E8E92' : '#5A5B60', '#FFFFFF', on); G.fill();
+  }
+  /* the light falling on the rack */
+  if (on > 0.01) { const gl = G.createLinearGradient(0, iy, 0, iy + ih); gl.addColorStop(0, `rgba(255,255,255,${0.32 * on})`); gl.addColorStop(1, 'rgba(255,255,255,0)'); G.fillStyle = gl; G.fillRect(ix, iy, iw, ih); }
+  /* the panel: white coat, its left strip under foil until the test is done */
+  const pw = iw * 0.62, ph = ih * 0.5, px = ix + (iw - pw) / 2, py = iy + ih - ph - 22;
+  rrPath(px, py, pw, ph, 4); G.fillStyle = '#F7F7F8'; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = 1.2; G.stroke();
+  const mw = pw * 0.24;
+  if (peel < 1) {
+    /* the foil peels from its bottom edge up, curling over */
+    const hh = ph * (1 - peel), cy0 = py;
+    G.save(); G.beginPath(); G.rect(px, cy0, mw, hh); G.fillStyle = '#9A9A9E'; G.fill();
+    G.clip(); G.strokeStyle = 'rgba(255,255,255,0.35)'; G.lineWidth = 1; G.beginPath(); for (let xx = px - ph; xx < px + mw; xx += 7) { G.moveTo(xx, cy0 + ph); G.lineTo(xx + ph, cy0); } G.stroke(); G.restore();
+    if (peel > 0.01) { G.beginPath(); G.ellipse(px + mw / 2, cy0 + hh, mw / 2, 7, 0, 0, TAU); G.fillStyle = '#B4B4B8'; G.fill(); }
+  }
+  /* the hours readout */
+  const hrs = Math.round(o.hours || 0);
+  rrPath(x + w - 210, y + h - 58, 184, 40, 6); G.fillStyle = TH ? '#1E1F22' : '#0B0C0D'; G.fill();
+  text(String(hrs).padStart(4, '0') + ' h', x + w - 40, y + h - 30, { role: 'num', size: 26, weight: 750, color: on > 0.05 ? '#FFFFFF' : '#8A8A8E', align: 'right', tnum: true, caps: false });
+  text('UV lamps, ASTM D4587', x + 26, y + h - 30, { role: 'label', size: 19, color: C.mute });
+  return { px, py, pw, ph, mw };
+}
+S({
+  id: 'b08_uv', ch: 'surface', theme: 'paper', title: 'No yellowing', settle: 11.5, ideas: [16], before: 'b08_grip',
+  replaces: ['srf_uv'],
+  src: ['b08_ulx', 'srf_rdUlx', 'b08_huntsman', 'srf_quv', 'srf_f110', 'srf_chem', 'b08_doc16'],
+  answers: [
+    ['(rated 7/10, no note): kept what worked', 'Still a UV chamber, the hours and what each maker publishes; now a demonstration: the panel in the chamber with a masked reference strip that comes off at 1,000 h'],
+    ['F2.23 "with most coatings it\'s very hard to tell if they will yellow over time"', 'The rival first: a white mouse whose maker published no UV or chemical test, yellowing where the fingers rest as the months pass; its owners found out after buying'],
+    ['F2.23 "(like how the ulx pros yellowed)"', 'The rival is the white ULX Pro Series, with its owners\' own words ("known to yellow very badly"; the Aceu "a huge problem"), drawn from reports, no rate implied'],
+    ['F2.23 "cerakote is by far one of the safest because of its industry leading chemical and uv resistance"', 'Cerakote publishes both: 1,000 h under UV lamps with no visible change, and the F-Series rated Excellent for chemicals (a colour change under ΔE 2.5); verdict 0 → 1,000 h of published UV testing']
+  ],
+  draw: t => {
+    header(t, 'No yellowing');
+    captions(t, [[0.4, 'Finalmouse publishes no UV or chemical test for the ULX Pro\'s coat, so owners found out after buying: white ULX Pros yellowed where the fingers rest.'],
+      [4.6, 'Cerakote publishes its tests: a white panel under UV lamps for 1,000 hours, one strip covered to compare. Nothing changed.']]);
+    const U0 = B08U;
+    /* the left half: the rival in use */
+    const lx = LM, cx0 = 330, cy0 = 640, sM = 4.4;
+    text('ULX Pro Series, white', lx, 312, { role: 'label', size: 20, color: C.secondText });
+    text('No published UV or chemical test', lx, 340, { role: 'label', size: 19, color: C.faint });
+    const km = ep(t, U0.use[0], U0.use[1], E.lin), stain = E.io3(km);
+    part(cx0, cy0, sM, () => {
+      const V = msView('top');
+      mouseSimple('top', { lw: 1.6, fill: '#FCFCFD' });
+      /* the yellowing: a little over the whole coat, most under the fingertips (drawn from owners' reports, not measured) */
+      G.save(); G.clip(V.out);
+      G.fillStyle = `rgba(214,178,74,${0.16 * stain})`; G.fillRect(-40, -70, 80, 140);
+      for (const [fx, fy, rr] of [[-14, -36, 13], [14, -36, 13], [-26, 8, 10]]) {
+        const q = [fx * MS_K.x, fy * MS_K.y], g = G.createRadialGradient(q[0], q[1], 0, q[0], q[1], rr);
+        g.addColorStop(0, `rgba(188,146,52,${0.62 * stain})`); g.addColorStop(0.6, `rgba(204,166,64,${0.34 * stain})`); g.addColorStop(1, 'rgba(214,178,74,0)');
+        G.fillStyle = g; G.fillRect(q[0] - rr, q[1] - rr, rr * 2, rr * 2);
+      }
+      G.restore();
+      mouseSimple('top', { lw: 1.6, fill: 'rgba(0,0,0,0)' });
+    });
+    /* the hand that does it: two fingertips on the buttons through the months; then they lift off and show what they left */
+    { const kl = ep(t, U0.lift[0], U0.lift[1], E.io3);
+      for (const [fx, fy, ang] of [[-14, -36, -Math.PI / 2], [14, -36, -Math.PI / 2]]) { const q = [cx0 + fx * MS_K.x * sM, cy0 + fy * MS_K.y * sM]; finger(q[0], q[1] + 40 + 70 * kl, ang, { s: sM, view: 'top', press: 0.3 * (1 - kl), alpha: 0.9 * (1 - kl) }); } }
+    /* the months: a bar, no numbers on it (owners give none) */
+    { const bx = lx, by = 930, bw = 500; line(bx, by, bx + bw, by, { color: C.hair, w: 6 }); line(bx, by, bx + bw * km, by, { color: C.secondText, w: 6 }); text('Months in use', bx, by - 16, { role: 'label', size: 19, color: C.mute }); }
+    if (t > U0.tags[0]) faultTag(t, U0.tags[0], [cx0 - 14 * MS_K.x * sM + 10, cy0 - 36 * MS_K.y * sM - 20], '"Known to yellow very badly"', { to: [cx0 + 170, 420], side: 'r', prose: true, maxW: 300 });
+    if (t > U0.tags[1]) faultTag(t, U0.tags[1], [cx0 + 14 * MS_K.x * sM - 4, cy0 - 36 * MS_K.y * sM + 30], '"A huge problem" (Aceu edition)', { to: [cx0 + 190, 560], side: 'r', prose: true, maxW: 300 });
+    { const a = ep(t, 4.0, 4.4); text('The chemistry decides, and a mouse rarely says which it is: under the same UV lamps an aromatic epoxy clear coat shifted ΔE 16 in 500 h, a UV-stable polyurethane 0.13.', 560, 680, { role: 'small', size: 21, weight: 600, color: C.ink2, alpha: a, maxW: 380 });
+      pill(560, 846, 'study', a, { by: 'Huntsman 2024' }); }
+    text("Owners' reports, drawn: no rate given. They blame sweat, lotions and the grippier coat as much as light.", lx, 978, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: ep(t, 3.0, 3.4), maxW: 860 });
+    /* the right half: Cerakote's test */
+    const qx = 1000, qy = 296, qw = 840, qh = 420;
+    const on = ep(t, U0.lamps, U0.lamps + 0.3), hrs = 1000 * ep(t, U0.hours[0], U0.hours[1], E.io3), pk = ep(t, U0.peel[0], U0.peel[1], E.io3);
+    text('Cerakote, white', qx, 284, { role: 'label', size: 20, color: C.heroText });
+    const Q = b08_quv(qx, qy + 10, qw, qh, { on, hours: hrs, peel: pk });
+    if (pk > 0.6) {
+      const a = ep(t, U0.peel[0] + 0.4, U0.peel[0] + 0.8);
+      text('Covered', Q.px + Q.mw / 2, Q.py + Q.ph + 18, { role: 'label', size: 19, color: '#F3F3F5', align: 'center', alpha: a });
+      text('1,000 h of UV', Q.px + Q.mw + (Q.pw - Q.mw) / 2, Q.py + Q.ph + 18, { role: 'label', size: 19, color: '#F3F3F5', align: 'center', alpha: a });
+      text('No visible change', Q.px + Q.mw + (Q.pw - Q.mw) / 2, Q.py + Q.ph / 2 + 9, { role: 'label', size: 24, color: C.heroText, align: 'center', alpha: ep(t, U0.peel[1], U0.peel[1] + 0.3) });
+    }
+    verdict(t, U0.verdict, qx, 870, { from: 0, to: 1000, unit: 'h', dec: 0, label: 'UV testing published', better: 'higher', who: ['ULX Pro', 'Cerakote'], size: 112, maxW: 560 });
+    { const a = ep(t, 9.6, 10.0); text('Chemicals: the F-Series is rated Excellent, a colour change under ΔE 2.5 after a day in each', qx + 560, 800, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: a, maxW: RM - qx - 560 }); }
+    scaleNote(qx, 962, 'six weeks without a break', { lead: '1,000 h', t, t0: 9.4 });
+  }
+});
+
+/* ---------- b08_tape: the best thickness is no thickness ----------
+   Replaces srf_tape (8/10: "the best thickness is no thickness, people have been chasing really thin grip tape for a while
+   now, this is a better solution"); F2.15 ("the solid state solution that doesn't need adhesives that wear down over time
+   or collect gunk"). A section to scale (s px per mm) under a fingertip: grip tape on its glue, 0.5 mm, the edge a step
+   the fingertip drops off (two-thirds of a credit card). A month on (drawn from owners' reports and the adhesive patent,
+   not measured): the glue creeps out of the cut edge, skin and lint stick to it, the edge lifts. Then the chase: a thinner
+   tape (0.3 mm: TalonGames PU-0, Keychron), then none: the grip etched into the coat that is there anyway, so nothing is
+   added, no glue, no edge; the fingertip slides back across with no step. */
+const B08T = { box: [LM, 300, 1100, 600], s: 150, slide1: [0.6, 2.0], age: [2.2, 3.4], tags: [1.5, 2.6, 2.9], tagsOut: [4.0, 4.4], new03: [4.4, 4.9], thin1: [4.4, 5.2], thin2: [5.6, 6.4], slide2: [6.6, 7.8], verdict: 7.8 };
+/** a fingertip in section, its front end at x1 (stage px): skin with papillary ridges along the underside, which rests on
+   the highest surface beneath it (a step drops it), the front rounding up. o = { a, s, top(x), x0, ridge (mm) } */
+function b08_tip(x1, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
+  const s = o.s || 150, sp = (o.ridge || 0.45) * s, amp = Math.min(0.06 * s, 10), x0 = o.x0, R = 1.6 * s, top = o.top, N = Math.ceil((x1 - x0) / 3);
+  const pts = [];
+  for (let i = 0; i <= N; i++) {
+    const xx = x0 + i * 3; let m = Infinity; for (let d = -sp * 0.5; d <= sp * 0.5; d += 6) m = Math.min(m, top(xx + d));
+    const fr = Math.max(0, xx - (x1 - R)), up = R - Math.sqrt(Math.max(0, R * R - fr * fr));     /* the front rounds up */
+    pts.push([xx, m - up - amp * (0.5 - 0.5 * Math.cos((xx - x0) / sp * TAU))]);
+  }
+  G.save(); G.globalAlpha = a;
+  G.beginPath(); G.moveTo(pts[0][0], pts[0][1] - 4 * s); pts.forEach(p => G.lineTo(p[0], p[1])); G.lineTo(x1, pts[N][1] - R); G.lineTo(x1, pts[N][1] - 4 * s); G.closePath();
+  G.fillStyle = TH ? '#C8C8C8' : '#5E5E5E'; G.fill();
+  G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.strokeStyle = TH ? 'rgba(40,40,40,0.6)' : 'rgba(229,229,229,0.45)'; G.lineWidth = 1.5; G.stroke();
+  G.restore();
+}
+S({
+  id: 'b08_tape', ch: 'surface', theme: 'paper', title: 'The best thickness is no thickness', settle: 11.5, ideas: [60],
+  replaces: ['srf_tape'],
+  src: ['b08_tape05', 'b08_tape03', 'srf_lizard', 'srf_ooze', 'b08_peel', 'srf_f110'],
+  answers: [
+    ['"the best thickness is no thickness"', 'His line is the title, and the payoff: added for grip, 0.5 mm of tape → 0 mm, the grip cut into the coat that is there anyway'],
+    ['"people have been chasing really thin grip tape for a while now"', 'The chase is on screen: 0.5 mm tapes (Lizard Skins DSP, Pulsar SuperGrip), then 0.3 mm (TalonGames PU-0, Keychron), each a thinner sheet still on glue with an edge'],
+    ['"this is a better solution"', 'Shown on the same fingertip: the tape\'s edge is a step it drops off; after the etch it slides across the same place with no step'],
+    ['F2.15 "doesn\'t need adhesives that wear down over time or collect gunk"', 'A month on: the glue creeps out of the cut edge (US 6,686,014), skin and lint stick to it, the edge lifts ("unpeeled after a month"); the etch has no glue and no edge']
+  ],
+  draw: t => {
+    header(t, 'The best thickness is no thickness');
+    captions(t, [[0.4, 'Grip tape is a sheet on glue. At 0.5 mm its edge is a step your fingertip drops off: two-thirds of a credit card.'],
+      [2.2, 'A month on, the glue creeps out of the edge and catches skin and lint, and the edge starts to lift.'],
+      [4.4, 'So tapes chase thin, 0.5 mm, then 0.3 mm. The etch ends the chase: nothing on top, no glue, no edge.']]);
+    const T0 = B08T, [bx, by, bw, bh] = T0.box, sc = T0.s, base = by + bh * 0.66, ex = bx + bw * 0.58;
+    const age = ep(t, T0.age[0], T0.age[1], E.lin), kN = ep(t, T0.new03[0], T0.new03[1]);
+    const mm = t < T0.thin1[0] ? 0.5 : t < T0.thin2[0] ? lerp(0.5, 0.3, ep(t, T0.thin1[0], T0.thin1[1], E.io3)) : lerp(0.3, 0, ep(t, T0.thin2[0], T0.thin2[1], E.io3));
+    const etch = ep(t, T0.thin2[0] + 0.3, T0.thin2[1]);
+    /* the aged 0.5 mm tape, then (dissolving over it) a new, thinner one, then none */
+    const A = b08_tapeSection(T0.box, { s: sc, base, mm: 0.5, age, edge: ex, t });
+    let top = A.top;
+    if (kN > 0.003) { G.save(); G.globalAlpha = kN; const B2 = b08_tapeSection(T0.box, { s: sc, base, mm, age: 0, edge: ex, t, etch }); G.restore(); if (kN > 0.5) top = B2.top; }
+    /* the fingertip: slides right across the edge, rests, then (after the etch) slides back across where the edge was */
+    const x1 = t < T0.slide2[0] ? lerp(bx + bw * 0.34, bx + bw * 0.86, ep(t, T0.slide1[0], T0.slide1[1], E.io3)) : lerp(bx + bw * 0.86, bx + bw * 0.42, ep(t, T0.slide2[0], T0.slide2[1], E.io3));
+    clipped(bx, by, bw, bh, () => b08_tip(x1, { s: sc, top, x0: bx - 40 }));
+    rrPath(bx, by, bw, bh, 6); G.strokeStyle = C.hair; G.lineWidth = 1.2; G.stroke();
+    /* the layers named, quietly */
+    text('Shell', bx + 16, by + bh - 20, { role: 'label', size: 19, color: '#E8E8EA' });
+    text('Coat, 19 µm: a line at this scale', bx + 16, base + 30, { role: 'label', size: 19, color: '#E8E8EA' });
+    /* the tape's thickness, counted as it thins */
+    if (mm > 0.12) { const xd = bx + 40, y0 = base - 0.019 * sc, y1 = y0 - (mm + 0.05) * sc; line(xd, y0, xd, y1, { color: '#FFFFFF', w: 2 }); line(xd - 7, y1, xd + 7, y1, { color: '#FFFFFF', w: 2 });
+      text(fmtN(mm, 2) + ' mm', xd + 14, (y0 + y1) / 2 + 8, { role: 'label', size: 22, color: '#FFFFFF' }); }
+    /* what goes wrong, named where it happens */
+    { const ko = 1 - ep(t, T0.tagsOut[0], T0.tagsOut[1]), tx = bx + bw + 30;
+      if (t > T0.tags[0] && ko > 0.003) faultTag(t, T0.tags[0], [ex + 6, base - 0.55 * sc * 0.5], 'A step at the edge', { to: [tx, by + 60], side: 'r', alpha: ko });
+      if (t > T0.tags[1] && ko > 0.003) faultTag(t, T0.tags[1], [ex - 60, base - (0.55 * sc) - 14], '"Unpeeled after a month"', { to: [tx, by + 170], side: 'r', alpha: ko });
+      if (t > T0.tags[2] && ko > 0.003) faultTag(t, T0.tags[2], [ex + 22, base - 6], 'Glue creeps out, gunk sticks', { to: [tx, base + 20], side: 'r', alpha: ko }); }
+    if (t > T0.slide2[1] - 0.3) fixTag(t, T0.slide2[1] - 0.3, [ex, base - 0.019 * sc], 'No step, no glue', { to: [ex + 120, by + 60], side: 'r' });
+    /* the right column: the chase, then the payoff */
+    const rx = 1240, kc = ep(t, 4.5, 4.9);
+    if (kc > 0.003) {
+      text('The chase for thinner tape', rx, 320, { role: 'label', size: 21, color: C.mute, alpha: kc });
+      const rows = [['Lizard Skins DSP', 0.5], ['Pulsar SuperGrip', 0.5], ['TalonGames PU-0', 0.3], ['Keychron', 0.3], ['Theseus: etched', 0]], pxmm = 560;
+      rows.forEach(([nm, v], i) => {
+        const a = stagger(t, 4.6, i, i < 4 ? 0.18 : 1.4, 0.35), yy = 366 + i * 44, th = i === 4;
+        text(nm, rx, yy, { role: 'small', size: 22, weight: 650, color: th ? C.heroText : C.ink2, alpha: a });
+        if (v > 0) { G.save(); G.globalAlpha = a; G.fillStyle = C.comp; G.fillRect(rx + 250, yy - 15, v * pxmm * 0.6, 16); G.restore(); }
+        text(v > 0 ? fmtN(v, 1) + ' mm' : '0 mm', rx + 250 + (v > 0 ? v * pxmm * 0.6 + 12 : 0), yy, { role: 'small', size: 22, weight: 750, color: th ? C.heroText : C.ink, alpha: a });
+      });
+    }
+    verdict(t, T0.verdict, rx, 760, { from: 0.5, to: 0, unit: 'mm', dec: 1, label: 'Added for grip', better: 'lower', who: ['Grip tape', 'Theseus'], size: 120, maxW: RM - rx });
+    scaleNote(rx, 880, 'two-thirds of a credit card', { lead: '0.5 mm', t, t0: 8.6 });
+    text("Ageing drawn from owners' reports and the adhesive patent, not measured", rx, 926, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: ep(t, 8.8, 9.2), maxW: RM - rx });
+  }
+});
+
+/* ---------- b08_twotone: two tones in one coat ----------
+   Replaces srf_twotone (6/10: "not a universal dah of the design, but i love how realistic it is"); F2.21 ("2 tone designs
+   without having to worry about a second coat adding weight or coming off (as seen in the finalmouse prophecy series)");
+   F21.7 (etch through to carbon). The realistic macro is kept as it was loved (srf_genTwoTone, srf_macro): a laser rasters
+   a Greek key out of a white coat down to the carbon shell. The rival first: painted art on Prophecy (an undercoat, the
+   paint and a UV top coat on the shell: Finalmouse's own description) under a scuff, which takes the top layers off (the
+   mechanism, drawn; not a report about Prophecy units). Then the etch, then the same scuff on one coat with its second tone
+   cut out: nothing on top to chip. Verdict 3 → 1 layers on the shell. Said once: a colourway option, not the default. */
+const B08W = { scuff0: [1.0, 2.2], laser: [2.8, 6.6], sweep: [6.4, 2.6], scuff1: [6.9, 8.1], verdict: 8.1 };
+/** a stack of layers on the shell in section (not to scale): layers = [{ h, col }] from the shell up; o = { a, chip (0..1:
+   a scuff has taken the top `chipN` layers off in a ragged notch), chipN, cut ([x0, x1]: a window etched through the top
+   layer to the shell) }. Returns the y of the top. */
+function b08_stack(x, y, w, layers, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return y;
+  G.save(); G.globalAlpha *= a;
+  const sh = 64; rrPath(x, y - sh, w, sh, 4); G.fillStyle = '#2E2F33'; G.fill();
+  let yy = y - sh; const tops = [];
+  for (const L of layers) { G.fillStyle = L.col; G.fillRect(x, yy - L.h, w, L.h); tops.push([yy, L.h]); yy -= L.h; }
+  if (o.cut) { G.fillStyle = '#2E2F33'; const [c0, c1] = o.cut, Lt = tops[tops.length - 1]; G.fillRect(x + c0 * w, Lt[0] - Lt[1] - 1, (c1 - c0) * w, Lt[1] + 1); }
+  const ch = clamp(o.chip || 0);
+  if (ch > 0.01) {
+    /* a ragged notch where the scuff tore the top layers away, down to the undercoat */
+    const n = o.chipN || 2, yTop = yy, yBot = tops[tops.length - n][0] - tops[tops.length - n][1] + tops[tops.length - n][1], x0 = x + w * 0.3, x1 = x0 + w * 0.42 * ch, r = rng(19);
+    G.beginPath(); G.moveTo(x0, yTop - 1); for (let xx = x0; xx <= x1; xx += 10) G.lineTo(xx, yBot - 2 - r() * 4); G.lineTo(x1, yTop - 1); G.closePath();
+    G.fillStyle = C.bg; G.fill(); G.strokeStyle = C.red; G.lineWidth = 2; G.stroke();
+    /* flakes thrown off ahead of it */
+    for (let i = 0; i < 9; i++) { const fx = x1 + 6 + r() * 40 * ch, fy = yTop - 6 - r() * 26 * ch; G.save(); G.translate(fx, fy); G.rotate(r() * 3); G.fillStyle = layers[layers.length - 1 - (i % n)].col; G.fillRect(-4, -2, 8, 4); G.restore(); }
+  }
+  G.restore();
+  return yy;
+}
+/** a coin's edge dragged across a stack: a tilted grey blade from (x, y), its tip on the surface */
+function b08_scuffer(x, y, a) { if (a <= 0.003) return; G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(-0.5); rrPath(-6, -90, 12, 90, 5); G.fillStyle = '#9C9CA0'; G.fill(); G.strokeStyle = 'rgba(255,255,255,0.4)'; G.lineWidth = 1.2; G.stroke(); G.restore(); }
+S({
+  id: 'b08_twotone', ch: 'surface', theme: 'night', title: 'Two tones in one coat', settle: 11, ideas: [60, 16],
+  replaces: ['srf_twotone'],
+  src: ['srf_laserImg', 'srf_prophecy', 'srf_prophecyW', 'srf_f110', 'b08_doc16'],
+  answers: [
+    ['"i love how realistic it is"', 'Kept: the same lit macro of a laser rastering the key band out of a white coat down to the carbon shell, with one light sweep over the finished relief'],
+    ['"not a universal dah of the design"', 'Said on the slide: a colourway option, not the default design'],
+    ['F2.21 "without having to worry about a second coat adding weight or coming off (as seen in the finalmouse prophecy series)"', 'The rival first: Prophecy\'s painted art is three layers on the shell (undercoat, paint, UV top coat, Finalmouse\'s words); the same scuff takes its top layers off, and finds nothing on top to chip on the etched coat. Verdict 3 → 1 layers. The old "33 g painted, 29 g plain" is dropped: Finalmouse does not say what the 4 g is'],
+    ['F21.7 "Etch through to carbon"', 'As drawn: the second tone is the carbon shell itself']
+  ],
+  draw: t => {
+    header(t, 'Two tones in one coat');
+    captions(t, [[0.5, 'Painted art sits on top of the shell: an undercoat, the paint and a top coat. A scuff takes the top layers off.'],
+      [2.8, 'Etched art is cut out of one coat: the laser takes the white off, and the carbon shell under it is the second tone.']]);
+    const W0 = B08W;
+    /* the macro: a white coat; the laser rasters the key band out of it; one studio light sweep over the finished relief */
+    const T0 = [LM, 290, 1080, 640];
+    demoWindow(T0[0], T0[1], T0[2], T0[3], 1, { r: SRF.r });
+    const f = srf_field('twotone', SRF_TT.w, SRF_TT.h, srf_genTwoTone), kL = ep(t, W0.laser[0], W0.laser[1], E.lin);
+    const M = srf_macro(t, f, T0[0], T0[1], T0[2], T0[3], { light: srf_sweep(Math.min(t, W0.sweep[0] + W0.sweep[1]), f, W0.sweep[0], W0.sweep[1], { y: -0.4 }), k: kL, alpha: 1 });
+    if (kL > 0 && kL < 1) {
+      const row = Math.min(SRF_TT.rows - 1, Math.floor(kL * SRF_TT.rows)), u = kL * SRF_TT.rows - row, rh = (f.band[1] - f.band[0]) / SRF_TT.rows;
+      const q = M.map(u * f.w, f.band[0] + (row + 0.5) * rh);
+      G.save(); rrPath(T0[0], T0[1], T0[2], T0[3], SRF.r); G.clip(); glow(q[0], q[1], 34, C.hero, 0.6); circle(q[0], q[1], 4, { fill: '#FFFFFF' }); G.restore();
+    }
+    text('White coat', T0[0] + 32, T0[1] + 52, { role: 'label', size: 21, color: 'rgba(17,17,17,0.72)' });
+    text('Etched through: the carbon shell is the second tone', T0[0] + 32, T0[1] + T0[3] - 32, { role: 'small', size: 24, weight: 700, color: 'rgba(17,17,17,0.85)', alpha: ep(t, 4.6, 5.0) });
+    /* the right column: the two stacks under the same scuff */
+    const rx = 1220, sw = 380, yA = 452, yB = 662;
+    text('Prophecy: painted art', rx, 316, { role: 'label', size: 20, color: C.secondText });
+    const chipA = ep(t, W0.scuff0[0] + 0.25, W0.scuff0[1], E.io3);
+    const topA = b08_stack(rx, yA, sw, [{ h: 12, col: '#7C7C80' }, { h: 18, col: C.second }, { h: 10, col: 'rgba(235,235,238,0.6)' }], { chip: chipA, chipN: 2 });
+    text('Shell', rx + 14, yA - 22, { role: 'label', size: 19, color: '#C8C8CC' });
+    text('Undercoat, paint, top coat: 3 layers', rx, yA + 32, { role: 'label', size: 19, color: C.mute });
+    text('Theseus: one coat, etched', rx, 540, { role: 'label', size: 20, color: C.heroText });
+    const topB = b08_stack(rx, yB, sw, [{ h: 12, col: '#E6E6E8' }], { cut: [0.52, 0.78] });
+    text('Shell', rx + 14, yB - 22, { role: 'label', size: 19, color: '#C8C8CC' });
+    text('1 coat; the dark tone is the shell', rx, yB + 32, { role: 'label', size: 19, color: C.mute });
+    /* the scuff: a coin's edge dragged across each, the same way */
+    const sA = ep(t, W0.scuff0[0], W0.scuff0[1], E.io3), sB = ep(t, W0.scuff1[0], W0.scuff1[1], E.io3);
+    if (sA > 0 && sA < 1) b08_scuffer(lerp(rx + sw * 0.25, rx + sw * 0.95, sA), topA, 1);
+    if (sB > 0 && sB < 1) b08_scuffer(lerp(rx + sw * 0.25, rx + sw * 0.95, sB), topB, 1);
+    if (t > W0.scuff0[1] - 0.2) faultTag(t, W0.scuff0[1] - 0.2, [rx + sw * 0.5, topA + 8], 'The paint chips', { to: [rx + sw + 30, topA - 24], side: 'r' });
+    if (t > W0.scuff1[1] - 0.1) fixTag(t, W0.scuff1[1] - 0.1, [rx + sw * 0.65, topB + 4], 'Nothing to chip', { to: [rx + sw + 30, topB - 24], side: 'r' });
+    verdict(t, W0.verdict, rx, 866, { from: 3, to: 1, unit: '', dec: 0, label: 'Layers on the shell', better: 'lower', who: ['Painted', 'Etched'], size: 120, maxW: RM - rx, net: false });
+    text('A colourway option, not the default design', T0[0], T0[1] + T0[3] + 30, { role: 'small', size: 21, weight: 600, color: C.faint, alpha: ep(t, 8.6, 9.0) });
+  }
+});
+
+/* ---------- b08_wheel: a 0.9 g magnesium wheel ----------
+   Replaces wheel (5/10: "poor comparison figure, we should be comparing ti average plastic wheels with heavy rubber, a
+   test group"); F22.1 (PMM's wheel is 1.0 g, ours 0.9 g, six arms), F25.2 (thinner arms, 0.55 mm), F30.8 (the straight-line
+   tread). The test group he asked for (stock plastic wheels in rubber tyres) has no published weights yet (two research
+   passes, research/FILLS.md b08-1), so it stands on screen as a row of stock wheels under a red placeholder stamp: to be
+   weighed. The weighing that can be shown honestly is shown: a jeweller's scale from above, PMM's magnesium wheel set on its
+   pan by tweezers (1.00 g, PMM's own figure), taken off, then Theseus's (0.90 g, derived: 508.5 mm³ of AZ31B at 1.77 g/cm³,
+   the deck's 3D wheel). The wheel itself from the side (the shared 2D twin): six thin arms that make six triangles with the
+   rim, and the tread's straight grooves unrolled under it. */
+const B08H = { seq: [['stock', 1.0, 2.6, 1.8], ['pmm', 3.3, 4.9, 1.0], ['ths', 5.6, 99, 0.9]], dur: 0.9, off: 0.6, verdict: 7.4 };
+/** a wheel face-on (lying flat on a pan), centre (x, y), radius R px: kind 'stock' (a plastic wheel in a black rubber tyre),
+   'pmm' (a plain metal disc: its design is not drawn, only its size), 'ths' (six thin arms, an open hub, a thin rim) */
+function b08_wheelFace(x, y, R, kind, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
+  G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(o.rot || 0);
+  if (kind === 'stock') {
+    circle(0, 0, R, { fill: '#232326' }); circle(0, 0, R * 0.74, { fill: '#BDBDC1' });
+    G.strokeStyle = 'rgba(255,255,255,0.18)'; G.lineWidth = 1.2; for (let i = 0; i < 36; i++) { const an = i / 36 * TAU; G.beginPath(); G.moveTo(Math.cos(an) * R * 0.8, Math.sin(an) * R * 0.8); G.lineTo(Math.cos(an) * R * 0.97, Math.sin(an) * R * 0.97); G.stroke(); }
+    circle(0, 0, R * 0.2, { fill: '#8E8E92' }); circle(0, 0, R * 0.07, { fill: '#3A3A3E' });
+  } else if (kind === 'pmm') {
+    circle(0, 0, R, { fill: '#A9A9AE' }); circle(0, 0, R, { color: 'rgba(0,0,0,0.35)', w: 1.5 }); circle(0, 0, R * 0.16, { fill: '#7D7D82' });
+  } else {
+    const rimW = R * 0.1, hub = R * 0.2, col = '#B6B6BB';
+    G.beginPath(); G.arc(0, 0, R, 0, TAU); G.arc(0, 0, R - rimW, 0, TAU, true); G.fillStyle = col; G.fill();
+    for (let i = 0; i < 6; i++) { G.save(); G.rotate(i * TAU / 6); G.beginPath(); G.moveTo(-R * 0.045, hub * 0.9); G.lineTo(-R * 0.026, R - rimW * 0.6); G.lineTo(R * 0.026, R - rimW * 0.6); G.lineTo(R * 0.045, hub * 0.9); G.closePath(); G.fill(); G.restore(); }
+    G.beginPath(); G.arc(0, 0, hub, 0, TAU); G.arc(0, 0, hub * 0.55, 0, TAU, true); G.fill();
+    circle(0, 0, R, { color: C.hero, w: 2 });
+  }
+  G.restore();
+}
+/** tweezers holding a wheel at (x, y) from the upper left; open (0..1) */
+function b08_tweezers(x, y, R, open, a) {
+  if (a <= 0.003) return; const ang = -2.4, ux = Math.cos(ang), uy = Math.sin(ang), gap = R * (0.22 + 0.5 * open), L = 260;
+  G.save(); G.globalAlpha = a; G.lineCap = 'round';
+  for (const sd of [-1, 1]) { const px = -uy * sd, py = ux * sd, t0 = [x + ux * R * 0.9 + px * gap, y + uy * R * 0.9 + py * gap], t1 = [x + ux * (R + L) + px * 6, y + uy * (R + L) + py * 6]; line(t0[0], t0[1], t1[0], t1[1], { color: '#6E6E73', w: 6 }); }
+  G.restore();
+}
+S({
+  id: 'b08_wheel', ch: 'surface', theme: 'paper', title: 'A 0.9 g magnesium wheel', settle: 11.5, ideas: [84, 30],
+  replaces: ['wheel'],
+  src: ['b08_wheels', 'srf_pmm', 'srf_wheel3d', 'srf_az31b', 'srf_doc'],
+  answers: [
+    ['"poor comparison figure"', 'A weighing instead of a figure: a jeweller\'s scale from above, each wheel set on its pan by tweezers and the display settling: Endgame Gear\'s OP1 stock wheel 1.80 g, PMM\'s magnesium wheel 1.00 g, then Theseus\'s 0.90 g; verdict 1.8 → 0.9 g against the stock wheel'],
+    ['"we should be comparing ti average plastic wheels with heavy rubber, a test group"', 'The test group is on screen: the two stock wheels with published weights (OP1 1.8 g, the Zeromouse kit\'s 1.5 g, sellers\' figures) and two more under a red placeholder stamp, to weigh. Six research passes found no others; the report asks Brock to weigh two'],
+    ['F22.1 / F25.2 (six arms, thinner, 0.9 g against PMM\'s 1.0 g)', 'The wheel from the side (the shared 2D twin): six thin arms, 0.55 mm at the rim, six triangles with it; verdict 1.0 → 0.9 g'],
+    ['F30.8 (the straight-line tread)', 'The tread unrolled under the wheel: straight grooves across it, no rubber']
+  ],
+  draw: t => {
+    header(t, 'A 0.9 g magnesium wheel');
+    captions(t, [[0.4, 'A stock wheel is plastic in a rubber tyre: Endgame Gear\'s OP1 wheel weighs 1.8 g. PMM\'s magnesium wheel weighs 1.0 g.'],
+      [5.6, 'Theseus\'s is magnesium too, cut to six thin arms that make six triangles with the rim: 0.9 g, on a straight-grooved tread.']]);
+    const H0 = B08H, R = 104;
+    /* the test group: stock wheels in rubber tyres; two have published weights, two are still to weigh */
+    text('Stock wheels in rubber tyres: the test group', LM, 298, { role: 'label', size: 20, color: C.mute });
+    [[150, 'OP1', '1.8 g'], [290, 'Zeromouse kit', '1.5 g'], [530, 'To weigh', ''], [670, 'To weigh', '']].forEach(([x, nm, g]) => {
+      b08_wheelFace(x, 384, 46, 'stock');
+      text(nm, x, 456, { role: 'label', size: 19, color: g ? C.mute : C.red, align: 'center' });
+      if (g) text(g, x, 482, { role: 'small', size: 22, weight: 750, color: C.ink2, align: 'center' });
+    });
+    placeholderStamp(t, 466, 344, 268, 126, { t0: 0 });
+    /* the scale, from above: its pan, its display */
+    const bx = LM + 30, by = 520, bw = 820, bh = 380, pc = [bx + 230, by + bh / 2];
+    rrPath(bx, by, bw, bh, 28); G.fillStyle = TH ? '#E2E2E5' : '#2A2B2F'; G.fill(); G.strokeStyle = rgba(C.ink, 0.3); G.lineWidth = 1.5; G.stroke();
+    circle(pc[0], pc[1], 160, { fill: TH ? '#F1F1F3' : '#3A3B40' }); circle(pc[0], pc[1], 160, { color: rgba(C.ink, 0.25), w: 1.5 });
+    /* the wheels, one at a time: set on the pan by tweezers, read, taken off */
+    const from = [bx - 260, by - 120];
+    let val = 0, who = null;
+    clipped(bx - 40, by - 200, bw + 80, bh + 240, () => {
+      for (const [kind, t0, t1, g] of H0.seq) {
+        const kin = ep(t, t0, t0 + H0.dur, E.io3), kout = ep(t, t1, t1 + H0.off, E.io3); if (kin <= 0 || kout >= 1) continue;
+        const at = kout > 0 ? [lerp(pc[0], from[0], kout), lerp(pc[1], from[1], kout)] : [lerp(from[0], pc[0], kin), lerp(from[1], pc[1], kin)];
+        b08_wheelFace(at[0], at[1], R, kind);
+        const held = kin < 1 || kout > 0, rel = ep(t, t0 + H0.dur, t0 + H0.dur + 0.3), grab = ep(t, t1 - 0.3, t1);
+        b08_tweezers(at[0], at[1], R, held ? 0 : 1, held ? 1 : Math.max(1 - rel, grab));
+        if (kin >= 1 && kout <= 0) { val = g * ep(t, t0 + H0.dur, t0 + H0.dur + 0.6, E.out3); who = kind; }
+        else if (kout > 0) { val = g * (1 - ep(t, t1, t1 + 0.25)); who = kout < 0.4 ? kind : null; }
+      }
+    });
+    /* the display: it reads what is on the pan, counting up as the pan settles */
+    const dx = bx + 470, dy = by + 120, dw = 300, dh = 140;
+    rrPath(dx, dy, dw, dh, 12); G.fillStyle = '#1C1D20'; G.fill();
+    text(val.toFixed(2) + ' g', dx + dw - 24, dy + dh / 2 + 26, { role: 'num', size: 72, weight: 750, color: '#EDEDEF', align: 'right', tnum: true, caps: false });
+    const names = { stock: ['OP1 stock wheel', C.ink2], pmm: ['PMM magnesium', C.secondText], ths: ['Theseus', C.heroText] };
+    if (who) text(names[who][0], dx, dy + dh + 40, { role: 'label', size: 22, color: names[who][1] });
+    /* the wheel from the side: the shared 2D twin, with its two features named */
+    const sb = [1010, 286, 460, 366], sv = { view: [0.8, 0.48, 0.4], zoom: 2.05, target: [0, 11, 0], scroll: 0, xray: 0, explode: 0, view2d: 'right', hide2d: /encoder|support/, ground2d: false };
+    srf_3d(t, -1, 'wheel', sb[0], sb[1], sb[2], sb[3], sv);
+    const K = SRF_WH, D2R = Math.PI / 180, wp = (r, al, x = 0) => v2dAt('wheel', sv, sb, /wheel\/tread$/, [(x + K.band) / (2 * K.band), (r * Math.cos(al) + K.R) / (2 * K.R), (r * Math.sin(al) + K.R) / (2 * K.R)]);
+    const pArm = wp(6.2, -60 * D2R, 0.5) || [sb[0] + 300, sb[1] + 160], pRim = wp(10.45, -125 * D2R, 3.5) || [sb[0] + 360, sb[1] + 260];
+    if (t > 5.4) callout(t, 5.4, pArm, 'Six thin arms', { to: [1510, 350], side: 'r', color: C.hero, tcolor: C.heroText, sub: '0.55 mm wide at the rim', maxW: 260 });
+    if (t > 5.8) callout(t, 5.8, pRim, 'Six triangles with the rim', { to: [1510, 500], side: 'r', color: C.hero, tcolor: C.heroText, prose: true, maxW: 260 });
+    /* the tread, unrolled: straight grooves across it (F30.8) */
+    { const tx = 1010, ty = 688, tw = 460, th = 44, ka = ep(t, 6.0, 6.4);
+      if (ka > 0.003) { const tf = srf_field('b08w:tread', 460, 44, f => srf_genFilm(f, { pat: 'ridge', pitch: 12, width: 6, depth: 3, ang: Math.PI / 2, seed: 3, col: [176, 176, 182], ecol: [120, 120, 126] }));
+        G.save(); rrPath(tx, ty, tw, th, 6); G.clip(); srf_macro(t, tf, tx, ty, tw, th, { light: { az: 2.35, el: 0.6 }, alpha: ka, r: 0 }); G.restore();
+        text('Tread, unrolled: straight grooves', tx, ty - 12, { role: 'label', size: 19, color: C.mute, alpha: ka }); } }
+    verdict(t, H0.verdict, 1010, 872, { from: 1.8, to: 0.9, unit: 'g', dec: 1, label: 'Wheel weight', better: 'lower', who: ['OP1 stock', 'Theseus'], rivalCol: 'grey', size: 100, maxW: 460 });
+    { const a = ep(t, 8.6, 9.0); text("Stock wheels and PMM's: sellers' own figures (tyre and axle not stated). Theseus's derived: the 3D wheel's 508.5 mm³ of AZ31B at 1.77 g/cm³", 1510, 790, { role: 'small', size: 19, weight: 600, color: C.faint, alpha: a, maxW: RM - 1510 }); }
+  }
+});
+
+/* ---------- b08_card: the surface chapter ----------
+   Replaces surfacecard (4/10: "surfaces looks bad in 2d and 3d visualization"). The kit's chapter card with the ledger's
+   words; the part is the finish itself, as a lit height field (no 3D, no whole-shell render): a satin baked coat, and at the
+   answer a laser writes the grip into it, left to right: ridges that break into dots and then fade to smooth (the chapter's
+   grip map, in one swatch). The light rakes across once while the problem stands, then holds. */
+function b08_genSwatch(f) {
+  const { w, h } = f, seed = 7, col = [34, 35, 39], ecol = [96, 98, 106], D = 3.8, P = 18;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const p = y * w + x, i = p * 3;
+    f.z0[p] = 1.0 * srf_fbm(x / 44, y / 44, seed, 3) + 0.42 * srf_fbm(x / 8, y / 8, seed + 7, 2) + 0.16 * (srf_hash(x, y, seed + 3) - 0.5);
+    const sparkle = srf_hash(x, y, seed + 11) > 0.988, v = 5 * srf_vn(x / 3, y / 3, seed + 5);
+    for (let j = 0; j < 3; j++) f.a0[i + j] = col[j] + v + (sparkle ? 26 : 0);
+    f.g0[p] = sparkle ? 1 : 0.39;
+  }
+  srf_layer1(f, true); f.ramp = 0.02;
+  const shape = c0 => { let c = c0 > 0 ? Math.min(1, c0 / 0.42) : 0; return c * c * (3 - 2 * c); };
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const p = y * w + x, i = p * 3, u = x / w;
+    const wR = 1 - smooth(clamp((u - 0.4) / 0.18)), wD = smooth(clamp((u - 0.34) / 0.12)) * (1 - smooth(clamp((u - 0.7) / 0.16)));
+    const jx = 0.9 * srf_vn(x / 37, y / 37, seed + 21), [cr, rimR] = srf_cut('ridge', x + jx, y + jx, P, 9, 0), [cd, rimD] = srf_cut('dots', x + jx, y + jx, P * 0.9, 8, 0);
+    const c = Math.max(shape(cr) * wR, shape(cd) * wD), rim = Math.max(rimR * wR, rimD * wD);
+    f.z1[p] = f.z0[p] - D * c + 0.3 * D * rim * (1 - c) * (0.6 + 0.8 * Math.max(0, srf_vn(x / 3.4, y / 3.4, seed + 8)));
+    for (let j = 0; j < 3; j++) f.a1[i + j] = f.a0[i + j] + (ecol[j] - col[j]) * c;
+    f.g1[p] = f.g0[p] * (1 - c) + 0.05 * c;
+    f.th[p] = u * 0.96 + 0.04 * srf_hash(x, y, 5);
+  }
+  Object.assign(f.mat, { amb: 0.14, kd: 1.1, ks: 0.6, sh: 26, rz: 1.35, aoR: 5, aoK: 0.24, kf: 0.22 });
+}
+function b08_cardPart(t, box, kt, turn) {
+  const [x, y, w, h] = box, f = srf_field('b08c:swatch', 700, 416, b08_genSwatch);
+  const kE = ep(t, turn + 0.1, turn + 1.5, E.lin), lt = srf_sweep(Math.min(t, 2.0), f, 0, 1.9, { y: -0.45, from: 0.08, to: 0.66 });
+  srf_macro(t, f, x, y, w, h, { light: lt, k: kE, r: 18, vignette: true });
+  if (kE > 0 && kE < 1) { const lx = x + w * kE; G.save(); rrPath(x, y, w, h, 18); G.clip(); line(lx, y, lx, y + h, { color: C.hero, w: 2.5 }); G.globalAlpha = 0.16; G.fillStyle = C.hero; G.fillRect(lx - 14, y, 14, h); G.restore(); }
+  text('Baked ceramic coat', x + 24, y + 40, { role: 'label', size: 20, color: '#E8E8EA', alpha: ep(t, 0.3, 0.7) });
+  [['Ridges', 0.14], ['Dots', 0.52], ['Smooth', 0.86]].forEach(([nm, u], i) => text(nm, x + w * u, y + h - 22, { role: 'label', size: 19, color: '#E8E8EA', align: 'center', alpha: ep(t, turn + 0.4 + i * 0.4, turn + 0.8 + i * 0.4) }));
+}
+S({
+  id: 'b08_card', ch: 'surface', card: true, first: true, theme: 'night', title: 'Grip that holds, and stays', settle: 5.5,
+  replaces: ['surfacecard'],
+  answers: [
+    ['"surfaces looks bad in 2d and 3d visualization"', 'No 3D and no whole-shell render: the card shows the finish itself, a lit height field of the satin baked coat, and at the answer a laser writes the grip into it (ridges breaking into dots, then smooth), the light raking once'],
+    ['surfacecard (the chapter opener)', 'Rebuilt in the kit\'s chapter-card family: the ledger\'s compromise for surfaces in red, struck as the answer lands in blue; the chapter\'s eight slides in film order along the bottom; the ledger strip']
+  ],
+  draw: t => {
+    const turn = 2.1;
+    chapterCard2(t, {
+      ch: 'surface', turn,
+      list: [[16, 'A baked ceramic coat'], [16, 'A fifth of a sheet of paper'], [16, 'No yellowing'], [60, 'Directional grip'], [60, 'A grip map for the hand'], [60, 'No thickness'], [60, 'Two tones in one coat'], [84, 'A 0.9 g magnesium wheel']],
+      part: (tt, box, kt) => b08_cardPart(tt, box, kt, turn)
+    });
+  }
+});
+

@@ -7,8 +7,8 @@ from shapely.ops import unary_union
 from shapely import affinity
 from geom import polys, hershey_text, outline_text, qr_modules, matrix_polys
 from layout import pad_poly, ANT_KEEPOUT, EDGE_BAND
-from board import wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect
-from parts import GND
+from board import wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, WIN, VARIANT, WX
+from parts import GND, ZS
 
 LW = 0.10          # silk line width
 # fillets on the underside triangles (F26.6). Each triangle is rounded on its own (rounded_inset), so the mosaic keeps
@@ -128,47 +128,58 @@ def build_silk_top(L, B, qr_url):
     for k, (x, z, d, kind) in SORA_HOLES.items():
         if k in ('MH1', 'MH2'):
             items.append((dashed_circle(x, z, d / 2 + 0.55), 'mh'))
-    # --- labels
+    # --- labels (plan 5: the free board behind the module, either side of it; the switch labels beside its window)
     lab = []
-    lab.append(outline_text('THESEUS', 1.05, -12.15, 15.05, anchor='c', tracking=0.22))
-    lab.append(hershey_text('MAIN  PCB  V1.0', 0.5, -12.15, 13.85, w=0.085))
-    # QR to the web software (normal polarity: white quiet zone, black modules)
+    comp = {r: c for r, (c, f) in comps.items()}
+    lab.append(outline_text('THESEUS', 1.05, 11.2, 2.55, anchor='c', tracking=0.22))
+    lab.append(hershey_text('MAIN  PCB  V1.0', 0.5, 11.2, 1.25, w=0.085))
+    # QR to the web software (normal polarity: white quiet zone, black modules), left of the module
     M = qr_modules(qr_url, error='m')
-    lab.append(matrix_polys(M, 4.3, -12.15, 10.35, invert=True, quiet=1))
-    lab.append(hershey_text('WEB  APP', 0.45, -12.15, 7.75, w=0.08))
-    # power switch labels (#100): ON toward the nose, OFF toward the tail
-    # (SW3 sits in the middle of its window now, F26.8: the labels moved to the window's free side)
-    lab.append(outline_text('ON', 0.8, 7.05, 21.75, tracking=0.08))
-    lab.append(arrow(8.2, 21.75, 0.85, 0))
-    lab.append(outline_text('OFF', 0.8, 6.95, 18.45, tracking=0.08))
-    lab.append(arrow(8.2, 18.45, 0.85, 180))
-    # other test pads
-    for ref, t, dx, dz, an in (('TP1', 'VBUS', -0.65, 0.0, 'r'), ('TP2', 'GND', -0.65, 0.0, 'r'), ('TP3', 'VSYS', 0.0, -0.75, 'c'),
-                               ('TP4', 'VBAT', -0.65, 0.0, 'r'), ('TP5', 'SNS', 0.0, 0.75, 'c'), ('TP6', 'D-', -0.65, 0.0, 'r'),
-                               ('TP7', 'D+', -0.65, 0.0, 'r'), ('TP8', 'DIO', 0.0, -0.75, 'c'), ('TP9', 'CLK', 0.0, -0.75, 'c')):
-        c, fp = comps[ref]
+    lab.append(matrix_polys(M, 4.3, -9.3, 2.3, invert=True, quiet=1))
+    lab.append(hershey_text('WEB  APP', 0.45, -9.3, -0.4, w=0.08))
+    # power switch labels (#100): ON toward the nose, OFF toward the tail, on the window's sensor side (variant A); beside
+    # the edge switch's body (variant B)
+    if VARIANT == 'B':
+        c3 = comp['SW3']; xl = c3['x'] - 2.4
+        lab.append(outline_text('ON', 0.65, xl, c3['z'] + 2.2, tracking=0.08))
+        lab.append(arrow(xl, c3['z'] + 1.05, 0.7, 0))
+        lab.append(outline_text('OFF', 0.65, xl, c3['z'] - 2.2, tracking=0.08))
+        lab.append(arrow(xl, c3['z'] - 1.05, 0.7, 180))
+    else:
+        xl = WIN['c'][0] - WIN['w'] / 2 - 1.25
+        lab.append(outline_text('ON', 0.65, xl, WIN['c'][1] + 1.45, tracking=0.08))
+        lab.append(arrow(xl, WIN['c'][1] + 0.35, 0.7, 0))
+        lab.append(outline_text('OFF', 0.65, xl, WIN['c'][1] - 1.45, tracking=0.08))
+        lab.append(arrow(xl, WIN['c'][1] - 0.35, 0.7, 180))
+    # test pads
+    for ref, t, dx, dz, an in (('TP1', 'VBUS', 0.0, -0.75, 'c'), ('TP2', 'GND', 0.0, -0.75, 'c'), ('TP3', 'VSYS', 0.0, -0.8, 'c'),
+                               ('TP4', 'VBAT', 0.0, -0.75, 'c'), ('TP5', 'SNS', -0.65, 0.0, 'r'), ('TP6', 'D-', 0.65, 0.0, 'l'),
+                               ('TP7', 'D+', 0.65, 0.0, 'l'), ('TP8', 'DIO', 0.0, -0.75, 'c'), ('TP9', 'CLK', 0.0, -0.75, 'c'),
+                               ('TP10', '1V8', 0.0, 1.25, 'c'), ('TP11', 'GND', 0.0, 1.25, 'c'), ('TP12', 'GND', 0.0, 1.25, 'c'), ('TP13', 'SNS', 0.0, 1.25, 'c')):
+        c = comp[ref]
         lab.append(hershey_text(t, 0.42, c['x'] + dx, c['z'] + dz, w=0.08, anchor=an))
-    # polarity / pin-1
-    c, _ = comps['J2']                     # J2 faces the back (F26.4): pin 1 (VBAT) is the one at x + 1.0
-    lab.append(hershey_text('+', 0.7, c['x'] + 2.15, c['z'] + 3.25, w=0.12))
-    lab.append(hershey_text('BAT', 0.5, c['x'] + 4.5, c['z'] + 2.4, w=0.09))
-    c, _ = comps['J3']
-    lab.append(hershey_text('SIDE', 0.5, c['x'] - 0.3, c['z'] + 3.3, w=0.09))
-    for ref, dx, dz in (('U1', -5.35, 7.05), ('U3', -5.6, 6.0), ('U4', -1.25, 1.0)):
-        c, _ = comps[ref]
+    # polarity / pin-1: J2 faces the back (F26.4), its pin 1 (VBAT) at local x -1.0, turned: layout x + 1.0
+    c = comp['J2']
+    lab.append(hershey_text('+', 0.7, c['x'] + 1.85, c['z'] + 2.78, w=0.12))
+    lab.append(hershey_text('BAT', 0.5, c['x'] - 1.65, c['z'] + 2.78, w=0.09, anchor='r'))
+    c = comp['J3']                         # its mouth faces the left wall: the label between it and the edge
+    lab.append(hershey_text('SIDE', 0.5, c['x'] - 3.1, c['z'], w=0.09, rot=90))
+    for ref, dx, dz in (('U1', -5.35, -6.95), ('U3', -5.6, 4.9), ('U4', -1.25, 1.0)):
+        c = comp[ref]
         lab.append(Point(c['x'] + dx, c['z'] + dz).buffer(0.15))
-    c, _ = comps['D1']
-    lab.append(affinity.translate(affinity.rotate(box(-0.06, -0.45, 0.06, 0.45), 45, origin=(0, 0)), c['x'] + 0.95, c['z'] + 0.95))
+    c = comp['D1']
+    lab.append(affinity.translate(affinity.rotate(box(-0.06, -0.45, 0.06, 0.45), 45, origin=(0, 0)), c['x'] - 0.8, c['z'] + 0.95))
     # LT / RT under the hot-swap switches (visible with the switch pulled)
     lab.append(outline_text('LT', 1.0, -16.0, 37.2, tracking=0.1))
     lab.append(outline_text('RT', 1.0, 16.0, 37.2, tracking=0.1))
-    # RF keep-out frame
+    # RF keep-out frame, in front of the module (its antenna end, forward: plan 5), 'ANT' down both sides of it
     k = ANT_KEEPOUT.bounds
-    lab.append(dashed_rect(k[0], k[1], k[2], k[3], lw=0.08))
-    lab.append(hershey_text('ANT', 0.42, 5.75, 25.6, w=0.08, rot=90))
-    lab.append(hershey_text('ANT', 0.42, -5.75, 25.6, w=0.08, rot=90))
-    # revision at the rear edge (where SORA_V2_V1.4 was)
-    lab.append(hershey_text('THESEUS_MAIN_V1.0', 0.5, 0.0, -2.98, w=0.085))
+    u1 = comp['U1']
+    lab.append(dashed_rect(k[0], k[1], k[2], k[3], lw=0.08).difference(rrect(u1['x'], u1['z'], 9.9 + 0.6, 13.3 + 0.6, 0.3)))
+    for sx in (-1, 1):
+        lab.append(hershey_text('ANT', 0.42, sx * (k[2] - 0.65), (k[1] + k[3]) / 2, w=0.08, rot=90))
+    # revision, under the wordmark's line
+    lab.append(hershey_text('THESEUS_MAIN_V1.0', 0.45, 11.2, 0.1, w=0.08))
     for g in lab:
         items.append((g, 'label'))
     # --- refdes auto-placement
@@ -255,15 +266,14 @@ def build_bottom(L, B, qr_url, seed=11):
             region = region.difference(Point(h['x'], h['z']).buffer(h['d'] / 2 + 0.75 + 0.3))
     nongnd_via = unary_union([Point(v['x'], v['z']).buffer(0.225) for v in B['vias'] if v['net'] != GND])
     region = region.difference(nongnd_via.buffer(0.2))
-    # reserved (solid pour, no mosaic): QR, wordmark, labels, lens window
-    qr_c = (-11.0, 4.6); qr_s = 7.2
-    qr_zone = box(qr_c[0] - qr_s / 2 - 0.6, qr_c[1] - qr_s / 2 - 1.6, qr_c[0] + qr_s / 2 + 0.6, qr_c[1] + qr_s / 2 + 0.6)
-    word_zone = box(-14.4, 14.0, 14.4, 17.4).intersection(box(-14.4, 14.0, 14.4, 17.4))
-    word_zone = box(-7.9, 14.5, 7.9, 17.3)
-    lens_zone = rrect(0, 4.0, 10.6, 13.6, 0.8)
-    sw_zone = square_cut_poly().buffer(2.3)
-    fab_zone = box(4.9, -1.55, 9.7, 0.5)
-    rail_zone = box(13.0, 7.4, 16.6, 15.1)
+    # reserved (solid pour, no mosaic): QR, wordmark, fab block, lens, switch window, the rail pads' labels (plan 5's RES)
+    qr_c = (-11.0, 9.8); qr_s = 7.2
+    qr_zone = rrect(qr_c[0], qr_c[1] - 0.5, qr_s + 1.2, qr_s + 2.2, 0.4)
+    word_zone = rrect(0.0, 2.6, 15.0, 2.8, 0.4)
+    fab_zone = rrect(0.0, -0.05, 8.0, 2.1, 0.4)
+    lens_zone = rrect(0.0, ZS, 10.6, 13.6, 0.8)
+    sw_zone = rrect(WIN['c'][0], WIN['c'][1], WIN['w'] + 4.6, WIN['h'] + 4.6, 0.4) if VARIANT != 'B' else rrect(WX - 2.6, ZS, 4.6, 8.6, 0.4)
+    rail_zone = rrect(14.2, 13.6, 7.8, 2.6, 0.4)
     reserved = unary_union([qr_zone, word_zone, lens_zone, sw_zone, fab_zone, rail_zone])
     cells = tri_lattice(region)
     edges = []
@@ -271,6 +281,7 @@ def build_bottom(L, B, qr_url, seed=11):
     # duotone halftone gradient (#63): ENIG triangles thicken toward the rear corner on the user's right,
     # silk-outlined triangles toward the front wing on the user's left (layout frame: x = user's right)
     fg = np.array([17.5, -3.0]); fs = np.array([-17.0, 44.0])
+    kinds = {}
     for poly, r, c in cells:
         cen = poly.centroid
         if not poly.intersects(region) or poly.intersects(reserved):
@@ -283,11 +294,11 @@ def build_bottom(L, B, qr_url, seed=11):
         ps = max(0.0, 1.0 - ds / 19.0) ** 1.25 * 0.8
         u = rnd.random()
         if u < pg:
-            gold.append(rounded_inset(poly, 0.36, TRI_FILLET_GOLD))
+            gold.append(rounded_inset(poly, 0.36, TRI_FILLET_GOLD)); kinds[id(poly)] = 'g'
         elif rnd.random() < ps:
             inner = rounded_inset(poly, 0.45, TRI_FILLET_SILK)
             if not inner.is_empty:
-                silk_tri.append(inner.exterior.buffer(0.05, cap_style=2, join_style=2))
+                silk_tri.append(inner.exterior.buffer(0.05, cap_style=2, join_style=2)); kinds[id(poly)] = 's'
     # the copper mosaic: every cell inset by half the 0.26 mm gap and its corners rounded on their own (F26.6); cells that
     # touch a reserved zone stay solid there, as before; the region's own edges cut the partial triangles, nothing else
     mos = [rounded_inset(poly, 0.13, TRI_FILLET) if not poly.intersects(reserved) else poly for poly, r, c in cells if poly.intersects(region)]
@@ -299,21 +310,26 @@ def build_bottom(L, B, qr_url, seed=11):
     M = qr_modules(qr_url, error='m')
     lab.append(matrix_polys(M, qr_s, qr_c[0], qr_c[1], invert=True, quiet=1, mirror=True))
     lab.append(hershey_text('SCAN  FOR  THE  WEB  SOFTWARE', 0.5, qr_c[0], qr_c[1] - qr_s / 2 - 0.85, w=0.085, mirror=True))
-    lab.append(outline_text('THESEUS', 1.9, 0.0, 15.9, tracking=0.5, mirror=True))
-    # ON / OFF at the switch window, readable from below
-    sq = square_cut_poly().bounds
+    lab.append(outline_text('THESEUS', 1.9, 0.0, 2.6, tracking=0.5, mirror=True))
+    # ON / OFF at the switch, readable from below: round its window (A) or beside the edge switch (B)
+    if VARIANT == 'B':
+        sq = (WX - 3.4, ZS - 2.15, WX - 1.0, ZS + 2.15)
+    else:
+        sq = square_cut_poly().bounds
     lab.append(outline_text('ON', 0.95, (sq[0] + sq[2]) / 2 + 0.2, sq[3] + 0.95, tracking=0.08, mirror=True))
     lab.append(outline_text('OFF', 0.95, (sq[0] + sq[2]) / 2 + 0.2, sq[1] - 0.95, tracking=0.08, mirror=True))
     lab.append(arrow(sq[0] - 0.75, (sq[1] + sq[3]) / 2, 2.6, 0))
     lab.append(arrow(sq[0] - 0.75, (sq[1] + sq[3]) / 2, 2.6, 180))
     lab.append(hershey_text('POWER', 0.5, sq[0] - 1.6, (sq[1] + sq[3]) / 2, w=0.085, rot=90, mirror=True))
-    # fab block
-    lab.append(hershey_text('94V-0  2611', 0.5, 7.3, -0.05, w=0.085, mirror=True))
-    lab.append(hershey_text('4L  1.0mm  ENIG', 0.45, 7.3, -1.0, w=0.08, mirror=True))
-    for z_, t_ in ((14.25, '1V8'), (12.25, 'GND'), (10.25, 'GND'), (8.25, 'SNS')):
-        lab.append(hershey_text(t_, 0.45, 15.75, z_, w=0.08, anchor='r', mirror=True))
-    lab.append(hershey_text('LT', 0.9, -16.0, 30.2, w=0.13, mirror=True))
-    lab.append(hershey_text('RT', 0.9, 16.0, 30.2, w=0.13, mirror=True))
+    # fab block, under the wordmark
+    lab.append(hershey_text('94V-0  2611', 0.5, 0.0, 0.45, w=0.085, mirror=True))
+    lab.append(hershey_text('4L  1.0mm  ENIG', 0.45, 0.0, -0.5, w=0.08, mirror=True))
+    # the rail test pads' names, over each pad (plan 5: the row at z 13.0)
+    for ref, t_ in (('TP10', '1V8'), ('TP11', 'GND'), ('TP12', 'GND'), ('TP13', 'SNS')):
+        c = next(c for c, f in L['comps'] if c['ref'] == ref)
+        lab.append(hershey_text(t_, 0.45, c['x'], c['z'] + 1.25, w=0.08, mirror=True))
+    lab.append(hershey_text('LT', 0.9, -16.0, 32.0, w=0.13, mirror=True))
+    lab.append(hershey_text('RT', 0.9, 16.0, 32.0, w=0.13, mirror=True))
     # dashed rings around copper-free mounting holes (as on top)
     for k, (x, z, d, kind) in SORA_HOLES.items():
         if k in ('MH1', 'MH2'):
@@ -324,4 +340,9 @@ def build_bottom(L, B, qr_url, seed=11):
         silk = silk.difference(cut.buffer(0.15))
     for h in L['npth']:
         silk = silk.difference(Point(h['x'], h['z']).buffer(h['d'] / 2 + 0.15))
-    return dict(l4=l4, gold=gold, silk=silk, tht_rings=tht_rings, region=region)
+    # for the 2D drawings (deck/tools/geo2d/board2d.py): each mosaic cell (centroid, pointing up?) and what it carries
+    art = dict(s=2.45, origin=[0.0, -3.2], inset=dict(m=0.13, g=0.36, s=0.45), fillet=dict(m=TRI_FILLET, g=TRI_FILLET_GOLD, s=TRI_FILLET_SILK),
+               cells=[(poly.centroid.x, poly.centroid.y, 1 if (c % 2 == 0) else 0, kinds.get(id(poly), 'm'))
+                      for poly, r, c in cells if poly.intersects(region) and not poly.intersects(reserved)],
+               reserved=reserved)
+    return dict(l4=l4, gold=gold, silk=silk, tht_rings=tht_rings, region=region, art=art)

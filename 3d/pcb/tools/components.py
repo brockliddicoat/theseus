@@ -160,7 +160,7 @@ def module_template():
     sub_h0 = Y0 + 0.01
     # substrate (blue mask) with its FR4 side edges
     sub = rbox_mesh(W, Hs, Lm, 0.05, rb=0.02)
-    merge_into(d, 'module_pcb', sub, trs(0, sub_h0, 0))
+    merge_into(d, 'mask', sub, trs(0, sub_h0, 0))          # black (F9.25)
     # castellations: gold half-hole strips on the long sides and rear edge + solder fillets onto the main-board lands
     fp = FP['MODULE']()
     for p in fp['pads']:
@@ -188,36 +188,35 @@ def module_template():
     merge_into(d, 'nickel', can, trs(0, top, zc))
     # laser marking on the can (module identity per the brief; certifications are "intended", so no FCC ID printed)
     ytxt = top + can_h + 0.002
-    for t, z, h, wl in (('Raytac', zc + 3.35, 0.72, 0.09), ('AN54LM-20A', zc + 2.25, 0.62, 0.08),
+    for t, z, h, wl in (('Raytac', zc + 3.35, 0.72, 0.09), ('AN54LM-P20A', zc + 2.25, 0.62, 0.08),
                         ('nRF54LM20A', zc + 1.35, 0.5, 0.07), ('2.4GHz  BLE 6.0', zc + 0.55, 0.42, 0.06)):
         g = hershey_text(t, h, -0.8, z, w=wl)
         merge_into(d, 'laser', text_mesh(g, ytxt))
-    M = qr_modules('AN54LM-20A SN2611-0420', error='l')
+    M = qr_modules('AN54LM-P20A SN2611-0420', error='l')
     g = matrix_polys(M, 3.3, -0.8, zc - 2.5, invert=False, quiet=0)
     merge_into(d, 'laser', text_mesh(g, ytxt))
     g = hershey_text('MADE IN TAIWAN', 0.34, 2.75, zc - 2.5, w=0.05, rot=90)
     merge_into(d, 'laser', text_mesh(g, ytxt))
-    # antenna end: chip antenna + matching network + white silk outline on the blue mask
+    # antenna end (+z: forward, toward the sensor on plan 5): the long meander PCB antenna, copper under the black mask,
+    # fed from the can's corner; a white silk outline and 'ANT' (the AN54LM-P20A form, after Brock's photo of the long-
+    # antenna Raytac, refs/photos/brock-2026-11-06)
     ya = top
-    chip = rbox_mesh(3.2, 0.9, 1.6, 0.05, rb=0.04)
-    merge_into(d, 'epoxy', chip, trs(-0.6, ya + 0.02, 5.25))
-    for s in (-1, 1):
-        e = rbox_mesh(0.35, 0.92, 1.62, 0.04, rb=0.04)
-        merge_into(d, 'tin', e, trs(-0.6 + s * 1.43, ya + 0.015, 5.25))
-    for (x, z) in ((2.6, 4.7), (2.6, 5.6), (3.4, 4.7)):
-        c = rbox_mesh(0.6, 0.3, 0.3, 0.02, rb=0.02)
-        merge_into(d, 'ceramic', c, trs(x, ya + 0.01, z))
-        for s in (-1, 1):
-            merge_into(d, 'tin', box_mesh(0.14, 0.31, 0.31), trs(x + s * 0.24, ya + 0.155, z))
-    outline = box(-2.6, 4.2, 1.4, 6.3).exterior.buffer(0.05)
-    merge_into(d, 'silk', text_mesh(unary_union([outline, hershey_text('ANT', 0.4, 2.9, 6.15, w=0.06)]), ya + 0.004))
-    # module pads (gold) peeking on the substrate top near the antenna feed
-    merge_into(d, 'enig', text_mesh(unary_union([box(1.9, 3.7, 2.4, 4.1), box(-3.4, 3.7, -2.9, 4.1)]), ya + 0.006))
+    from shapely.geometry import LineString
+    xs_ = [2.9 - 0.62 * i for i in range(12)]                     # 12 legs across, 0.62 mm pitch
+    pts = [(3.6, 3.35), (2.9, 3.35)]
+    for i, x in enumerate(xs_):
+        zA, zB = (3.75, 6.15) if i % 2 == 0 else (6.15, 3.75)
+        pts += [(x, zA), (x, zB)]
+    trace = LineString(pts).buffer(0.13, cap_style=2, join_style=2)
+    merge_into(d, 'mask_cu', text_mesh(trace, ya + 0.012))
+    merge_into(d, 'enig', text_mesh(box(3.35, 3.15, 3.85, 3.55), ya + 0.006))     # the feed pad by the can
+    outline = box(-4.55, 3.45, 3.95, 6.45).exterior.buffer(0.05)
+    merge_into(d, 'silk', text_mesh(unary_union([outline, hershey_text('ANT', 0.4, 3.0, 6.0, w=0.06, rot=90)]), ya + 0.004))
     return d
 
 
 def sensor_template():
-    """next-gen PixArt FrameSync-class sensor (proposal): generic 9.0 x 11.0 x 2.2 mm package, 2 x 8 side lands."""
+    """the PixArt PAW3970 (F21.6) in a module package (the deck swaps in boardparts.js's), 9.0 x 11.0 x 2.2 mm, 2 x 8 side lands."""
     d = {}
     H = 2.2
     body = rbox_mesh(9.0, H, 11.0, 0.18, rb=0.12)
@@ -230,10 +229,11 @@ def sensor_template():
         f = fillet_mesh(0.0, 0.62, 0.55, 0.45, y0=Y_PAD - 0.002, nu=6, nv=8)
         merge_into(d, 'solder', f, trs(s * 4.5, 0, p['z']) @ trs(ry_deg=0 if s > 0 else 180))
     ytop = Y0 + 0.02 + H + 0.002
-    # top: shallow molded recess + marking (no part number: proposal)
+    # top: shallow molded recess + the PAW3970 marking (F26.9: no QR, the part number engraved), as boardparts.js's
+    # SENSOR_SPEC.marking (PAW3970DM-T5QU, the suffix derived)
     ring = Point(0, 1.6).buffer(1.35, quad_segs=24).difference(Point(0, 1.6).buffer(1.2, quad_segs=24))
     merge_into(d, 'laser', text_mesh(ring, ytop))
-    for t, z, h in (('FS-NEXT', -1.2, 0.8), ('ES  2611', -2.6, 0.55), ('PROPOSAL', -3.7, 0.5)):
+    for t, z, h in (('PixArt', -0.9, 0.6), ('PAW3970DM', -2.1, 0.75), ('-T5QU', -3.2, 0.6)):
         merge_into(d, 'laser', text_mesh(hershey_text(t, h, 0, z, w=0.08), ytop))
     merge_into(d, 'laser', text_mesh(Point(-3.6, 4.6).buffer(0.25), ytop))
     return d
@@ -463,6 +463,59 @@ def bracket_template():
     return d
 
 
+def encoder_mag_template():
+    """the magnetic (Hall) scroll encoder in a normal encoder outline (3d/parts/scrollwheel.js; the deck swaps that part in):
+    black bottom housing to the split 3.15 mm under the axle, clear PC top housing to 4 mm over it (its nose-side top
+    corner chamfered), the nickel-silver frame plate on the wheel side, the rotor and magnet seen through the clear top,
+    four pins in a row (1.25 mm pitch) and the frame's two side tabs bent out into SMD feet. Local +x toward the wheel."""
+    d = {}
+    AX, ZH, YS, YT, CH = 12.0, 5.5, -3.15, 4.0, 2.6
+    yb = Y0 + 0.02
+    x0, x1 = -2.3, 2.3                                    # the housing, along the axle (layout x -11.5 to -6.9 at ENC1)
+    def yz_slab(poly, xa, xb, mat):
+        m = Mesh(); slab(m, poly, xa, xb)
+        PERM = np.array([[0, 1, 0, 0], [0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 0, 1]], float)   # slab (u, t, v) -> (x = t, y = v, z = u)
+        merge_into(d, mat, m, PERM)
+    bot = Polygon([(-ZH, yb), (ZH, yb), (ZH, yb + AX + YS), (-ZH, yb + AX + YS)])
+    top = Polygon([(-ZH, yb + AX + YS), (ZH, yb + AX + YS), (ZH, yb + AX + YT - CH), (ZH - CH, yb + AX + YT), (-ZH, yb + AX + YT)])
+    yz_slab(bot, x0, x1, 'black_plastic')
+    yz_slab(top, x0, x1, 'clear')
+    plate = Polygon([(-ZH, yb), (ZH, yb), (ZH, yb + AX + YT - CH), (ZH - CH, yb + AX + YT), (-ZH, yb + AX + YT)]).difference(Point(0, yb + AX).buffer(1.85))
+    yz_slab(plate, x1, x1 + 0.25, 'nickel')
+    # the rotor (orange POM) and the magnet's disc inside the clear top, on the axle
+    merge_into(d, 'kapton', cyl_mesh(1.65, 2.2, seg=32, axis='x'), trs(x1 - 2.25, yb + AX, 0))
+    merge_into(d, 'nickel', cyl_mesh(1.5, 0.8, seg=32, axis='x'), trs(x1 - 3.05, yb + AX, 0))
+    # four pins (THT) at local x -1.95, and the solder fillets top and bottom
+    for z in (-1.875, -0.625, 0.625, 1.875):
+        merge_into(d, 'tin', box_mesh(0.5, 3.0, 0.3), trs(-1.95, Y0 - 1.75 + 1.5, z))
+        merge_into(d, 'solder', cyl_mesh(0.5, 0.14, seg=16, y0=Y_PAD - 0.01, r_top=0.28), trs(-1.95, 0, z))
+    # the frame's side tabs run down and bend out into SMD feet on F1/F2 (local x 0.85, z +/-5.9)
+    for s in (-1, 1):
+        merge_into(d, 'nickel', box_mesh(0.94, AX - 4.1 - 0.12, 0.22), trs(0.85, yb + 0.12 + (AX - 4.1 - 0.12) / 2, s * (ZH + 0.11)))
+        merge_into(d, 'nickel', box_mesh(0.94, 0.12, 0.95), trs(0.85, Y0 + 0.06, s * (ZH + 0.53)))
+        f = fillet_mesh(0.0, 0.25, 0.9, 0.2, y0=Y_PAD - 0.002, nu=4, nv=6)
+        merge_into(d, 'solder', f, trs(0.85, 0, s * 6.45) @ trs(ry_deg=90 * s))
+    return d
+
+
+def slide_edge_template():
+    """variant B (F30.17): a right-angle SMD slide switch at the board's right edge (C&K PCM12-class 6.7 x 2.6 x 1.4 mm), its
+    knob 1.5 mm past the edge on local +x; two terminals and two hold-down tabs on the inboard side"""
+    d = {}
+    yb = Y0 + 0.02
+    merge_into(d, 'black_plastic', rbox_mesh(2.6, 1.4, 6.7, 0.1, rb=0.06), trs(0, yb, 0))
+    merge_into(d, 'steel', rbox_mesh(2.66, 0.08, 6.76, 0.05, rb=0.02), trs(0, yb + 1.4, 0))
+    for s in (-1, 1):
+        merge_into(d, 'steel', box_mesh(2.66, 1.3, 0.06), trs(0, yb + 0.65, s * 3.36))
+    knob = rbox_mesh(1.6, 1.0, 1.2, 0.12, rb=0.1)
+    merge_into(d, 'black_plastic', knob, trs(1.3 + 0.8, yb + 0.2, 0.6))
+    for z in (-0.25, 0.0, 0.25):
+        merge_into(d, 'black_plastic', box_mesh(0.12, 1.02, 0.06), trs(2.85, yb + 0.21, 0.6 + z))
+    for (x, z, w, l) in ((-0.75, -1.5, 0.6, 0.9), (-0.75, 1.5, 0.6, 0.9), (-0.2, -3.05, 1.0, 0.7), (-0.2, 3.05, 1.0, 0.7)):
+        merge_into(d, 'tin', box_mesh(w, 0.08, l), trs(x, Y0 + 0.04, z))
+    return d
+
+
 def tact_template():
     d = {}
     body = rbox_mesh(3.5, 1.1, 2.9, 0.1, rb=0.05)
@@ -589,7 +642,8 @@ def template_for(c):
         TEMPLATES[key] = {'L2016': inductor_template, 'QFN32': qfn32_template, 'MODULE': module_template,
                           'SENSOR': sensor_template, 'USBC': usbc_template, 'SOT666': sot666_template,
                           'SOD523': sod523_template, 'JSTSH3': jst_template, 'SLIDE': slide_template, 'SLIDEB': slide_bridge_template,
-                          'ENC': encoder_template, 'BRACKET': bracket_template, 'TACT': tact_template}.get(fp, lambda: {})()
+                          'ENC': encoder_template, 'ENCM': encoder_mag_template, 'SLIDEE': slide_edge_template,
+                          'BRACKET': bracket_template, 'TACT': tact_template}.get(fp, lambda: {})()
     return key
 
 
@@ -631,7 +685,7 @@ def add_components(glb, L, B):
             kids.append(glb.node('%s_%s' % (c['ref'], mat), mesh=mi))
             ntri += nt
         layer = c['layer']
-        smd = c['fp'] not in ('ENC', 'BRACKET')
+        smd = c['fp'] not in ('ENC', 'ENCM', 'BRACKET')
         ex = dict(kind='component', ref=c['ref'], layer=layer, value=c['value'], label=c['label'], fp=c['fp'],
                   x=-c['x'], z=c['z'], smd=smd)
         nodes.append(glb.node(c['ref'], children=kids, T=place_T(c['x'], c['z'], c['rot']), extras=ex))
@@ -725,13 +779,14 @@ def add_wires(glb):
     """battery lead (J2) and side-button lead (J3): 3 thin wires each, lightly twisted; layout frame then mirrored."""
     nodes, ntri = [], 0
     leads = {
-        # J2 faces the back (F26.4): the plug's tail at layout z -5.5, the lead runs straight back to the battery behind
-        # the board (its tab end toward the board; centre at mouse z -22.7, 7.5 mm up: 3d/shell plate options)
-        'BATLEAD': dict(path=[(8.6, 1.45, -5.45), (8.6, 1.5, -6.6), (8.75, 1.85, -8.0), (9.1, 2.25, -9.4), (9.4, 2.45, -10.6)],
+        # J2 faces the back (F26.4): the plug's tail 4.6 mm behind it (layout z 3.3); the lead runs back past MH4 (2.3 mm
+        # inboard of it) to the battery's tab end, its front edge at layout z -9.57 (board.py BATTERY), 2.43 mm over the board
+        'BATLEAD': dict(path=[(14.5, 1.45, 3.3), (14.45, 1.5, 2.1), (13.6, 1.8, 0.2), (12.3, 2.1, -2.3), (11.2, 2.3, -5.5),
+                              (10.4, 2.43, -8.6), (10.2, 2.43, -9.4)],
                         mats=['wire_red', 'wire_white', 'wire_black']),
-        # J3: plug mouth at layout x ~ -16.2 (opening faces -x); the lead heads for the side-button board on the left
-        # wall and is drawn as a short stub (the side board belongs to the shell asset)
-        'SIDELEAD': dict(path=[(-16.2, 1.5, 3.4), (-18.0, 1.7, 3.5), (-20.0, 2.6, 4.0), (-21.8, 4.2, 4.9), (-23.0, 5.8, 5.9)],
+        # J3 (opening to the left, F30): the plug's tail at the board's left edge (layout x -19.1); the lead heads for the
+        # side-button board on the left wall, between the two buttons, drawn as a short stub (that board is the shell's)
+        'SIDELEAD': dict(path=[(-19.1, 1.5, 7.9), (-20.6, 1.8, 8.0), (-22.4, 2.8, 8.4), (-23.8, 4.4, 9.0), (-24.8, 6.0, 9.6)],
                          mats=['wire_black', 'wire_white', 'wire_yellow']),
     }
     for name, L_ in leads.items():

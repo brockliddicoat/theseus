@@ -218,7 +218,14 @@ function msView(view) {
       V.lines = [split, rear]; V.lineParts = ['seam', 'rear'];
     } else {
       /* from below: the base plate's edge, an inner line 2.6 mm in from the widest outline */
-      V.lines = [msPath(msInset(P, 2.6), true, true)]; V.lineParts = ['base'];
+      const base = msPath(msInset(P, 2.6), true, true);
+      V.lines = [base]; V.lineParts = ['base'];
+      /* the base, to light (its face and its edge), and the board's four M2 screws driven from below (#54), at plan 5's
+         mounting holes (KEY_PARTS.board.holes): drawn only when lit or shown, as the ownership chapter's part */
+      add('base', { fill: base, clip: true, lines: [base] });
+      const scr = new Path2D(), rec = new Path2D();
+      for (const [hx, hy] of KEY_PARTS.board.holes) { const x = -hx * MS_K.x, y = hy * MS_K.y; scr.addPath(msCirc(x, y, 1.9)); rec.moveTo(x - 1.05, y); rec.lineTo(x + 1.05, y); rec.moveTo(x, y - 1.05); rec.lineTo(x, y + 1.05); }
+      add('screws', { solid: scr, tread: rec, opt: true });
     }
     /* the wheel: 7 mm wide, 1 mm short of each end of its opening (keyPlanMM) */
     const [wx, wy, ww, wh] = KEY.wheel, wcx = (wx + ww / 2) * MS_K.x, wy0 = (wy + 1) * MS_K.y, wl = (wh - 2) * MS_K.y;
@@ -342,7 +349,10 @@ function msCol(c) { return c === 'rival' ? C.second : c === 'bad' ? C.red : c ==
  * e.g. part(960, 560, 5, () => mouseSimple('top', { hi: ['rear'], col: 'rival' }))
  */
 function mouseSimple(view, o = {}) {
-  const V = msView(view), a0 = (o.alpha == null ? 1 : o.alpha) * PA; if (a0 <= 0.003) return msAnchors(V, view);
+  const V = msView(view), a0 = (o.alpha == null ? 1 : o.alpha) * PA;
+  /* a chapter card's mouse, seen by the player's flight; while a flight draws it, the card leaves it to the flight */
+  if (CARD2.cap) { CARD2.cap.push({ view: view === 'side' ? 'left' : view, m: XF.m.slice(), a0, o: Object.assign({}, o) }); if (CARD2.hide) return msAnchors(V, view); }
+  if (a0 <= 0.003) return msAnchors(V, view);
   const hiMap = {};
   if (Array.isArray(o.hi)) o.hi.forEach(n => (hiMap[n] = o.col || 'hero')); else if (o.hi && typeof o.hi === 'object') Object.assign(hiMap, o.hi); else if (typeof o.hi === 'string') hiMap[o.hi] = o.col || 'hero';
   const lit = o.lit == null ? 1 : clamp(o.lit), names = Object.keys(hiMap).filter(n => V.parts[n]), anyLit = names.length > 0 && lit > 0.001;
@@ -360,7 +370,7 @@ function mouseSimple(view, o = {}) {
   }
   /* solid features: wheel, side buttons, skates, the lens window, the port */
   for (const [n, p] of Object.entries(V.parts)) {
-    if (!p.solid || (n === 'side' && V.parts.side1) || hide.has(n)) continue;
+    if (!p.solid || (n === 'side' && V.parts.side1) || hide.has(n) || (p.opt && hiMap[n] == null && !show.has(n))) continue;
     const key = hiMap[n] != null ? n : /^side\d$/.test(n) && hiMap.side != null ? 'side' : null, on = key != null, col = on ? msCol(hiMap[key]) : null;
     G.globalAlpha = a0; G.fillStyle = on ? mix(solidF, col, lit * (TH ? 0.55 : 0.6)) : solidF; G.fill(p.solid);
     G.globalAlpha = a0 * (on ? lerp(dimL, 1, lit) : dimL); G.strokeStyle = on ? col : lineC(TH ? 0.55 : 0.5); G.lineWidth = lw(on ? 1.8 : 1.2); G.stroke(p.solid);
@@ -744,7 +754,8 @@ function demoPanel(t, t0, area, o = {}) {
  */
 function scaleNote(x, y, s, o = {}) {
   const a = o.t0 != null ? ep(o.t, o.t0, o.t0 + 0.3) : 1; if (a <= 0.003) return 0;
-  const size = o.size || 25, runs = [o.lead ? { s: o.lead, role: 'small', size, weight: 750, color: C.ink2 } : null, { s, role: 'small', size, weight: 600, color: o.color || C.mute, gap: o.lead ? 10 : 0, sentence: !o.lead }];
+  const kn = o.knock == null ? y > 935 : o.knock;   /* at the foot, on the bare paper: knock the grid's + out from under it */
+  const size = o.size || 25, runs = [o.lead ? { s: o.lead, role: 'small', size, weight: 750, color: C.ink2, knock: kn } : null, { s, role: 'small', size, weight: 600, color: o.color || C.mute, gap: o.lead ? 10 : 0, sentence: !o.lead, knock: kn }];
   const r = rich(runs, x + 34, y, { alpha: a, align: 'left' });
   line(x, y - size * 0.32, x + 22, y - size * 0.32, { color: C.faint, w: 1.5, alpha: a });
   return r.w + 34;
@@ -766,16 +777,31 @@ const SCALE = {
    most mice make in its area and answers it; the close answers them all. A first draft of the words: the chapter builders
    may propose better ones (short: they set in one line at 25 to 40 px). */
 const LEDGER = [
-  { ch: 'intro', name: 'Weight', comp: 'Light, by giving up battery life', ans: THS.massG + ', ' + THS.hours + ' of battery' },
-  { ch: 'click', name: 'Clicks', comp: 'A click that changes with where you press', ans: 'Lands the same, every time' },
+  { ch: 'intro', name: 'Weight', comp: 'Light or long-lasting: pick one', ans: THS.massG + ', ' + THS.hours + ' of battery' },
+  { ch: 'click', name: 'Clicks', comp: 'A click that changes with where you press, or costs battery', ans: 'Lands the same, every time' },
   { ch: 'glide', name: 'Glide', comp: 'Skates and sensors that cost your aim', ans: 'Aim that goes where you put it' },
   { ch: 'shell', name: 'Shell', comp: 'Light shells that flex, creak and crack', ans: 'Light, without the flex, creak or crack' },
   { ch: 'surface', name: 'Surface', comp: 'Tape that peels, coatings that wear', ans: 'Grip that holds, and stays' },
   { ch: 'elec', name: 'Electronics', comp: 'Wireless that costs latency, battery or weight', ans: 'Wireless with no penalty' },
-  { ch: 'shape', name: 'Shape', comp: 'Shapes chosen by taste, not measured', ans: 'A shape measured on hands' },
+  { ch: 'shape', name: 'Shape', comp: 'Shapes cut down for weight, or chosen by taste', ans: 'A shape measured on hands' },
   { ch: 'own', name: 'Ownership', comp: 'Glued, soldered, thrown away', ans: 'Made to last, and to open' }
 ];
 function ledgerOf(ch) { return LEDGER.find(e => e.ch === ch) || null; }
+/* The flagships b01_compromise names, each under the chapter whose compromise it makes (FILM F1, 2026-11-06): read live
+   from b01's B01_TRADES, so the intro, the chapter cards and the close can't drift apart. Glide, surface and ownership
+   have no flagship ("most mice"). Returns a sentence, or null when there is none (or b01's file isn't in the build). */
+function ledgerFlag(ch) {
+  const T = id => (typeof B01_TRADES !== 'undefined' && B01_TRADES.find(x => x.id === id)) || null;
+  const lc = s => s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+  const say = {
+    intro: () => { const a = T('logitech-x3'), b = T('gw-hts-ultra'); return a && b ? 'Like the ' + a.name + ' at ' + a.fig + ', or the ' + b.name + ' at ' + b.fig + ' of battery' : null; },
+    click: () => { const a = T('razer-viper-v4-pro'); return a ? 'Like the ' + a.name + ': ' + a.fig + ' of its battery to its clicks (derived)' : null; },
+    shell: () => { const a = T('finalmouse-ulx'); return a ? 'Like the ' + a.name + ': flexes and creaks (' + a.tag + ')' : null; },
+    shape: () => { const a = T('pulsar-x2f-crazylight'); return a ? 'Like the ' + a.name + ': ' + lc(a.fig) : null; },
+    elec: () => { const a = T('xbab-xa25'); return a ? 'Like the ' + a.name + ': ' + lc(a.fig) : null; }
+  }[ch];
+  return say ? say() : null;
+}
 /** the set of chapters answered: o.answered = 'all' | 'before' (every chapter before o.focus) | [keys] | 'none' */
 function ledgerAnswered(o) {
   if (o.answered === 'all') return new Set(LEDGER.map(e => e.ch));
@@ -842,9 +868,18 @@ function ledgerStrip(t, t0, x, y, w, o = {}) {
  * o = { ch (default the slide's), name (the chapter's display name), compromise, answer (default from LEDGER), list
  *   ([[ideas, 'what'], ...], up to 9), part ({ view, hi } for the simplified mouse with the part lit, or a function
  *   (t, box, k) that draws its own part in box; k: 0 before the answer, 1 after), turn (2.1 s: when the answer lands),
- *   count (the number of ideas, default chapterIdeaCount) }.
+ *   count (the number of ideas, default chapterIdeaCount), flag (the flagship line under the compromise: default
+ *   ledgerFlag(ch), a string to override, false to hide) }.
  * e.g. draw: t => chapterCard2(t, { ch: 'click', part: { view: 'top', hi: ['triggers'] }, list: [[17, 'Straight rear cutouts']] })
  */
+/* what each chapter card's part last drew of the simplified mouse (F0c): while chapterCard2 draws its part, every
+   mouseSimple call is recorded (view, transform, options), and CARD2.rec[slide id] keeps the last frame's. The player's
+   chapter flight reads it to land exactly on the card's own mouse, and to leave from it going back. Nothing to do in a
+   slide: a part drawn with mouseSimple or mouseFit (as { view, hi } or in your own function) is seen; a part drawn some
+   other way gets a soft hand-off instead, or the slide can say where its mouse sits with flight: { view, box, pad }.
+   While the flight is on screen it sets CARD2.hide: the card's part still runs (so it is seen) but its kit mouse is left to
+   the flight, which draws the same mouse, so there is only ever one */
+const CARD2 = { cap: null, rec: {}, hide: false };
 function chapterCard2(t, o = {}) {
   const key = o.ch || (typeof curSlide === 'function' && curSlide() ? curSlide().ch : 'click'), L = ledgerOf(key) || { name: key, comp: '', ans: '' };
   const chs = typeof DECK !== 'undefined' ? DECK.chapters : [], ci = chs.findIndex(c => c.key === key), nCh = Math.max(1, chs.length - 2);
@@ -866,7 +901,10 @@ function chapterCard2(t, o = {}) {
   text('Most mice', LM, 430, { role: 'label', size: 22, color: C.mute, alpha: kp });
   const cr = text(comp, LM, 482, Object.assign({ color: mix(C.red, TH ? '#8A8983' : '#6E6D68', kt), t, t0: 0.55, cps: 75, maxW: colW, lh: 1.18 }, cSt));
   if (kt > 0) { const lines = wrap(sentence(comp), cSt, colW); lines.forEach((l, i) => { const lw2 = tw(l, cSt), kl = clamp(kt * lines.length - i); if (kl > 0) line(LM - 3, 482 + i * 36 * 1.18 - 11, LM - 3 + (lw2 + 6) * kl, 482 + i * 36 * 1.18 - 11, { color: C.mute, w: 2.5 }); }); }
-  const ay = 482 + Math.max(1, cr.lines.length) * 36 * 1.18 + 62;
+  /* which flagship makes this compromise (FILM F1): small, under it, so the card carries the intro's six trades */
+  const flag = o.flag === false ? null : (o.flag || ledgerFlag(key)), fy = 482 + Math.max(1, cr.lines.length) * 36 * 1.18 + 8;
+  if (flag) text(flag, LM, fy, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: colW, alpha: ep(t, 1.0, 1.4) });
+  const ay = 482 + Math.max(1, cr.lines.length) * 36 * 1.18 + 62 + (flag ? 34 : 0);
   text('Theseus', LM, ay, { role: 'label', size: 22, color: C.heroText, alpha: ep(t, turn, turn + 0.3) });
   text(ans, LM - 2, ay + 58, { font: 'disp', size: 48, weight: 800, track: -0.01, color: C.heroText, grad: C.heroGrad, t, rise: [turn + 0.05, 0.75], maxW: colW, lh: 1.05, caps: false });
   /* the ideas, in columns along the bottom */
@@ -885,6 +923,13 @@ function chapterCard2(t, o = {}) {
   ledgerStrip(t, 0.7, LM, 900, RM - LM, { focus: key, turn: turn + 0.1 });
   /* the part, on the right: frame one shows it (M6); lit neutral while the problem stands, Theseus's blue once answered */
   const box = [1000, 200, 840, 500], ka = lerp(0.55, 1, ep(t, 0, 0.3));
+  /* the player's chapter flight lands on this mouse: every mouseSimple drawn for the part is seen (CARD2) */
+  CARD2.cap = [];
+  try { chapterCardPart(t, o, box, ka, kt); }
+  finally { CARD2.rec[typeof curSlide === 'function' && curSlide() ? curSlide().id : key] = { box, caps: CARD2.cap, t }; CARD2.cap = null; }
+}
+/** chapterCard2's part (its own drawing, or the simplified mouse with the part lit) */
+function chapterCardPart(t, o, box, ka, kt) {
   if (typeof o.part === 'function') o.part(t, box, kt);
   else if (o.part) {
     const pv = o.part.view || 'top', hi = o.part.hi || [], lit = ep(t, 0.6, 1.1), col = mix(TH ? '#111111' : '#F3F2EE', HU.hero[TH ? 0 : 1], kt);

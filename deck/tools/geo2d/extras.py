@@ -11,12 +11,9 @@ for mode, v in lay.get('power', {}).items():
     if not isinstance(v, dict) or 'segments' not in v: continue
     power[mode] = [[[round(x, 3), round(y0 + 0.06, 3), round(z + dz, 3)] for x, z in seg['pts']] for seg in v['segments']]
 D['power'] = power
-# the radio module is turned so its antenna end sits away from the wheel (3d/pcb/pcb.js, Brock 2026-11-04): the keep-out
-# moves with it, mirrored about the module's centre (board frame, as in pcb-layout.json)
-k = lay.get('antennaKeepout')
-u1 = next((c for c in lay.get('components', []) if c.get('ref') == 'U1'), None)
-if k and u1: zc = u1['z']; k = [k[0], round(2 * zc - k[3], 3), k[2], round(2 * zc - k[1], 3)]
-D['keepout'] = k
+# the antenna keep-out as pcb-layout.json has it (board frame). Board plan 5 (H1): the module is not turned any more, its
+# long antenna faces forward and the keep-out sits in front of it, so there is nothing to mirror
+D['keepout'] = lay.get('antennaKeepout')
 import os
 json.dump(D, open(dst + '.tmp', 'w'), separators=(',', ':')); os.replace(dst + '.tmp', dst)
 print('power paths', {k: len(v) for k, v in power.items()})

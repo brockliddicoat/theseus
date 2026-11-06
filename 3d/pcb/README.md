@@ -1,15 +1,21 @@
 # Theseus main PCB (`3d/pcb/`)
 
-The Theseus main board as a detailed, animatable 3D asset: the **Ninjutso Sora V2 PCB outline and layout**, traced
-from Brock's photo (`refs/photos/sora-v2-pcb-8.29g.jpg`), rebuilt with Brock's changes: **Gateron GT01** switches in
-**Mill-Max 3305** sockets on their wedge (#2, #14), a **Raytac nRF54LM20A module** moved forward to the wheel bay,
-drawn black with the long meander PCB antenna of the MDBT50Q-style modules (Brock, 2026-11-04) and turned so the antenna
-end points away from the wheel, with a real antenna keep-out under it (#68, #77, #102), a **Nordic nPM1300** PMIC with
-only its real external parts, a **next-gen PixArt FrameSync-class sensor (proposal)** as a castellated module near the
-centre with a smaller snap-on lens (#37),
-**every part on the top side** (#92), the battery JST turned sideways (#71), side-button **wires instead of an FPC**
-(#51, lightly braided #69), ENIG gold trim, all the copper routed on four layers, an ON/OFF-marked power switch
-(#100), a QR to the web software, and triangle art + QR on the component-free bottom (#63).
+**Board plan 5 (H1, 2026-11-06; Brock's approved plan, F30).** One mirrored outline (W 19.03, waist 15.42, one notch depth
+3.61 mm for the side notches, the rear notch and the front trapezoid, every chamfer at 35.24°, every corner filleted at one
+tangent length, 1.0 mm), the rear notch as long as the side notches (F30.25), the wheel bay centred on x 0, chamfered and
+filleted the same way with a 0.35 mm gold trim, the USB-C receptacle 1.05 mm back and hanging 1.60 mm past the front, the
+mounting holes in mirror pairs (MH1/MH2 +/-10.10, 29.50; MH3/MH4 +/-14.59, -2.25), SH1, SH2, LH1, LH2 dropped. The sensor
+(PixArt PAW3970) as far forward as it goes and the Raytac **AN54LM-P20A** module behind it (black, its long meander antenna
+at its front end facing the sensor, no 180° turn; keep-out x +/-6.6, layout z 7.95 to 12.25), equal 1.60 mm gaps down the
+centre line; the nPM1300 PMIC in the left-middle spot; the battery JST (J2) opening to the back; the side-button JST (J3)
+opening to the left wall; the rail test pads in a row at z 13.0. **Two builds**: A (`pcb.glb`, `pcb-layout.json`, the deck's
+board) with the power switch over its window on the x +10 axis; B (`pcb-b.glb`, `pcb-layout-b.json`, renders) with a
+right-angle slide switch at the right waist edge (on the top side, so the board stays one reflow, #92; plan 5 drew it on the
+underside: a question for Brock). Every net routed (hand routes + `tools/autoroute.py`), DRC 0 for both. The underside's art
+is the old design's, adapted (plan 5's zones). Build: `PCB_OUT=<dir> PCB_VARIANT=A|B python3 tools/build_pcb.py`. The
+battery's place for the 2D drawings and the balance: `BATTERY` in `tools/board.py`; the balance: `python3 tools/balance.py`.
+The 2D drawings (deck `boardMM`, `keyPlanMM`, the kit's mouse) come from these tools: deck/tools/geo2d/board2d.py and
+key_parts.py. The text below is the v1 board's description (2026-11-04), kept for its method and honesty labels.
 
 ![top](shots/top_paper.png)
 
@@ -164,29 +170,30 @@ module and sensor I/O; a second rail for the sensor core) → the loads. Only tw
 FR4 **1.85 g/cm³**, 1.0 mm finished board (0.895 mm dielectric), copper 8.96 g/cm³ (outer 35 µm, inner 17.5 µm, on the
 real copper areas), mask 2 × 20 µm. Component masses are typical values for the package class, not weighed parts.
 
-| Item | g |
+| Item (plan 5, H1 2026-11-06; v1 in brackets) | g |
 |---|---:|
-| Laminate (1532 mm² × 0.895 mm) | 2.54 |
-| Copper (L1 1100 mm², L2 1284 mm², L3 37 mm², L4 995 mm²) + via barrels | 0.88 |
-| Solder mask | 0.09 |
-| **Bare board** | **3.50** |
+| Laminate (1703 mm² core × 0.895 mm) [1532 mm²: 2.54] | 2.82 |
+| Copper (L1 1233 mm², L2 1426, L3 117, L4 1069) + via barrels [0.88] | 0.98 |
+| Solder mask [0.09] | 0.10 |
+| **Bare board** [3.50] | **3.91** |
 | GT01 × 2 (~0.5 g each, typical micro switch) | 1.00 |
 | Raytac module (geometry estimate) | 0.45 |
 | USB-C receptacle | 0.40 |
 | Sensor (0.25) + clip-on lens (0.07) | 0.32 |
 | Mill-Max 3305 × 6 (0.03 g each from geometry; **Brock: 0.11 g each**) | 0.18 (0.66) |
-| JST × 2, slide, tact, PMIC, inductors, passives, ESD, TVS, solder | 0.43 |
-| **Board + on-board parts** | **6.28** |
-| Wheel assembly: magnesium wheel 1.52 (parts estimate) + axle, optical encoder, support ~0.9 | 2.42 |
-| **Total, comparable to the Sora V2's "PCB & wheel" 8.29 g** | **≈ 8.7 (9.2 with Brock's Mill-Max figure), ± ~1 g** |
+| JST × 2, slide, tact, PMIC, inductors, passives, ESD, TVS, solder | 0.40 |
+| **Board + on-board parts** [6.28] | **6.66** |
+| Wheel assembly: six-arm magnesium wheel 0.900 + POM axle 0.116 (parts spec) + magnetic encoder ~1.0 (hollow-shell estimate) + support 0.26 [2.42] | 2.28 |
+| **Total, comparable to the Sora V2's "PCB & wheel" 8.29 g** [≈ 8.7] | **≈ 8.9 (9.4 with Brock's Mill-Max figure), ± ~1 g** |
 
 Leads and plugs are excluded (not in the Sora's 8.29 g either). The board is ~40 % of it; a 0.8 mm board would save
 ≈ 0.5 g of laminate, and the wheel + encoder estimate is the least certain line.
 
 **One board.** Brock: "we don't have a front and back pcb, it'll be a single ~5.6g pcb." Every scene has exactly one
 board: `pcb.glb` (one outline, top-side assembly), the lattice's single PCB stand-in, none in the shell. The model's
-board + on-board parts estimate (6.28 g) sits within the component-mass uncertainty of Brock's ~5.6 g (the two GT01s
-alone are "typical micro switch" guesses at 1.0 g), so nothing in the geometry changed for it.
+board + on-board parts estimate (6.66 g on plan 5; 6.28 on v1) is 1.1 g over Brock's ~5.6 g, about the component-mass
+uncertainty (the two GT01s alone are "typical micro switch" guesses at 1.0 g); plan 5's larger outline adds 0.41 g of
+laminate and copper.
 
 ## Shots (`shots/`, 2×)
 

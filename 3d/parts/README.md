@@ -176,6 +176,25 @@ Built from (2026-11-04, to Gateron's three photos): the bottom housing as ONE bl
 - GT01: symmetric about its own X except the cutaway side (−X half removed); the locating peg is gone (2026-11-04).
 - The studio's `threeQuarter` view looks from the front-right of the user (camera at −X); `threeQuarterRight` from the front-left.
 
+## H1 changes (2026-11-06, board plan 5)
+- **GT01 bottom housing (`gt01.js`, F30.18, F30.24):** one housing wall, **0.70 mm** (it was 0.45, the D2F cover's): the median web
+  measured on Gateron's side-on render (cut-out to edge 0.39 to 0.43, cut-out to cut-out 0.62 to 1.27; work/h1/gt01/measure.py).
+  Side skins 0.70; every cut-out 0.70 from the edges round it (the triangle's bottom and back by the wall; the round holes keep
+  the render's centres, radii 0.76 back and 0.79 front); the webs between cut-outs 0.92 mm or more. The slot moved to where the
+  render has it, (0.15, 2.30), 2.11 x 1.10 (v23's sat 1.07 mm high). The cover's end walls stay 0.45 (`COVER_WALL`).
+  `spec.profile` carries `wall`, `coverWall`, `holes`. The 2D twin (`clk_gt01MM`, deck 10-b-click.js) has the same numbers.
+- **Encoder and support (`scrollwheel.js`), to sit on the plan-5 board:** the frame's J-hook legs stood in the frame's plane, 6.65
+  to 6.90 mm from the wheel's centre, over the wheel bay (x +/-7.20): they are now the side tabs run down to the board and bent
+  out into two SMD feet (7.88 to 8.82 from the centre, z +/-5.55 to 6.51) on the board's F1/F2 pads. The support stands on the
+  board's bracket footprint WB1 (10.4 from the centre): a base 7.75 to 13.05 with a window over the middle-click tact switch,
+  four tin hold-down tabs on WB1's pads (8.3 and 12.5, z +/-3.45), a post at the bay's edge (7.9 to 9.7) and the U seat
+  cantilevered over the bay (5.3 to 7.9); the axle's left end 7.7 (was 8.3, which ran into the post). Masses from the meshes:
+  encoder 1.59 g as modelled solid (about 1.0 g with 0.5 mm housing shells, the figure mass.py uses), support 0.26 g.
+- **Lens (`boardparts.js`):** 1.12 mm shallower, so its lowest point (the imaging dome) is 2.40 mm over the pad, PixArt's lens
+  reference plane (`LENS_SPEC.referencePlaneOverPad`); it was 1.28, out of focus.
+- **Skate sets (`skates.js`):** `buildSkateSets({ sensor, lensY })`: the stand-in base's lens window, the lens ring and the clip-on
+  lens with its two dots sit on the sensor (meta.sensor, z 16.57 since plan 5); the lens's pads reach from the dots to its face.
+
 ## Known gaps / stand-ins
 - GT01 has no public datasheet: footprint, pin form, internal mechanism and pin cover are representative. The snap mechanism is kinematic (no spring physics); hysteresis needs the caller to say `releasing`.
 - Wheel: the rim, arm and hub sizes are design values sized to Brock's 0.9 g, not an FEA result; PMM's photos were not visible from the build machine (its page text was), so the form follows Brock's description, not a measurement of PMM's wheel. The encoder's dimensions are read off a launch photo, not a drawing; its body is a shell around the interrupter, seen through in x-ray mode, not a moulding with draft and ribs.

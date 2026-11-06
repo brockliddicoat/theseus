@@ -72,23 +72,30 @@ function glow(x, y, r, col, a) { const g = G.createRadialGradient(x, y, 0, x, y,
 function mmLine(pts, col, px, o = {}) { G.beginPath(); pts.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); if (o.close) G.closePath(); G.strokeStyle = col; G.lineWidth = lw(px); G.setLineDash(o.dash ? o.dash.map(v => v * mmpx()) : []); G.lineCap = o.cap || 'round'; G.lineJoin = 'round'; G.stroke(); G.setLineDash([]); }
 function pathRR(x, y, w, h, r) { r = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2); G.beginPath(); G.moveTo(x + r, y); G.arcTo(x + w, y, x + w, y + h, r); G.arcTo(x + w, y + h, x, y + h, r); G.arcTo(x, y + h, x, y, r); G.arcTo(x, y, x + w, y, r); G.closePath(); }
 
-/* ---------- a circuit board in section: mask, copper, glass-fibre core, plated holes full of solder ---------- */
+/* ---------- a circuit board in section: mask, copper, glass-fibre core, plated holes full of solder ----------
+   The board convention (the model auditor's ruling, 2026-11-06): Theseus's board is black mask #16171a with gold #d9b25a
+   pads and rings in every view; in section the mask is the thin black skin, the FR4 core shows only on the cut face (muted,
+   hatched), the plated holes' surface rings are gold. o.rival: a rival's board, grey (C.comp) with tin rings, unless its
+   teardown is the point (then pass o.mask). o.mask, o.ring override the colours. */
 function pcbSec(x0, x1, y0, th, o = {}) {
   const y1 = y0 + th, bl = o.brk || [1, 1], holes = o.holes || [];
+  const mask = o.mask || (o.rival ? C.comp : '#16171a'), ring = o.ring || (o.rival ? '#c9ccd1' : '#d9b25a');
   const path = () => { G.beginPath(); G.moveTo(x0, y0); G.lineTo(x1, y0); if (bl[1]) brk(x1, y0, y1, 0.3); else G.lineTo(x1, y1); G.lineTo(x0, y1); if (bl[0]) brk(x0, y1, y0, 0.3); else G.lineTo(x0, y0); G.closePath(); };
-  path(); G.fillStyle = grad(MT.fr4, x0, y0, x0, y1); G.fill();
+  path(); G.fillStyle = grad({ g: ['#4c4f43', '#3d4037'] }, x0, y0, x0, y1); G.fill();
   G.save(); path(); G.clip();
-  G.strokeStyle = 'rgba(214,226,170,0.16)'; G.lineWidth = lw(1); G.beginPath();
-  for (let yy = y0 + th * 0.2; yy < y1 - th * 0.12; yy += th / 7) { G.moveTo(x0 - 1, yy); G.lineTo(x1 + 1, yy); } G.stroke();
+  /* the cut face: a muted hatch across the glass-fibre core */
+  G.strokeStyle = 'rgba(232,234,226,0.13)'; G.lineWidth = lw(0.9); G.beginPath();
+  const hs = Math.max(0.28, th * 0.32);
+  for (let xx = x0 - th - 1; xx < x1 + 1; xx += hs) { G.moveTo(xx, y1); G.lineTo(xx + th, y0); } G.stroke();
   G.fillStyle = '#c98a4e'; G.fillRect(x0 - 1, y0 + th * 0.05, x1 - x0 + 2, th * 0.05); G.fillRect(x0 - 1, y1 - th * 0.1, x1 - x0 + 2, th * 0.05);
-  G.fillStyle = o.mask || '#1c3a29'; G.fillRect(x0 - 1, y0 - 0.01, x1 - x0 + 2, th * 0.06); G.fillRect(x0 - 1, y1 - th * 0.05, x1 - x0 + 2, th * 0.06);
+  G.fillStyle = mask; G.fillRect(x0 - 1, y0 - 0.01, x1 - x0 + 2, th * 0.06); G.fillRect(x0 - 1, y1 - th * 0.05, x1 - x0 + 2, th * 0.06);
   for (const hx of holes) {
     G.fillStyle = grad(MT.tin, hx - 0.42, 0, hx + 0.42, 0); G.fillRect(hx - 0.42, y0 - 0.02, 0.84, th + 0.04);
     G.fillStyle = '#c98a4e'; G.fillRect(hx - 0.48, y0, 0.06, th); G.fillRect(hx + 0.42, y0, 0.06, th);
   }
   G.restore();
   path(); G.strokeStyle = edgeCol(MT.fr4); G.lineWidth = lw(1.1); G.stroke();
-  for (const hx of holes) { G.fillStyle = '#c98a4e'; G.fillRect(hx - 0.85, y0 - 0.05, 1.7, 0.05); G.fillRect(hx - 0.85, y1, 1.7, 0.05); }
+  for (const hx of holes) { G.fillStyle = ring; G.fillRect(hx - 0.85, y0 - 0.05, 1.7, 0.05); G.fillRect(hx - 0.85, y1, 1.7, 0.05); }
 }
 function solderFillet(x, yb, dir) { /* dir +1: hangs below the board, -1: sits on top */
   const h = 0.5 * dir;
@@ -475,10 +482,129 @@ function dongleMM(o = {}) {
   return out;
 }
 
-/* =================================== 8. a corner of a circuit board, from above ===================================
-   black solder mask with the copper showing faintly through, gold pads, an MCU in QFN, a crystal,
-   0402 passives, stitching vias, a printed antenna in its keep-out, silkscreen. a generic layout. */
+/* =================================== 8. the Theseus main board (board plan 5), from above or below ===================================
+   H1, 2026-11-06: drawn from the PCB tools' own geometry (GEO2D.board2d: deck/geo2d/board2d.json, made from 3d/pcb/tools by
+   deck/tools/geo2d/board2d.py), so it is the board the 3D model and the plan have: the mirrored outline with its gold edge,
+   the wheel bay with its gold trim, the holes, the L1 pour and traces under the black mask, the gold pads, the silkscreen and
+   the parts as simple bodies; from below, the triangle mosaic with its gold and silk triangles, the QR, the wordmark and the
+   clip-on lens. mm, y down, nose up, the origin at the board's middle (layout x 0, z 21.92; mouse z 19.04).
+   o = { side: 'top' | 'bottom', variant: 'A' (the switch in its window, default) | 'B' (the edge switch), hi: a ref ('U1')
+   or group ('module', 'sensor', 'pmic', 'usb', 'switches', 'power', 'encoder', 'wheel', 'battery', 'side', 'antenna',
+   'testpads', 'holes', 'bay') or a list of them, dim (0..1: what is not lit fades), xray (0..1: the mask clears to show the
+   traces, the inner layer L3 too), parts (false: the bare board), accent, generic (the old generic board corner) }.
+   Returns stage points: c, module, sensor, pmic, usb, ant, antArea, power, bay, sw1, sw2, enc, j2, j3, mcu, mcuR, xtal */
+const BRD = { mask: '#16171a', gold: '#d9b25a', silk: '#ebeae6', pour: '#1c1e22', trace: '#25282d', via: '#2c2f35', gap: '#2b2d33',
+  cu: '#121316', bare: '#232529', z0: 21.92,
+  groups: { module: ['U1', 'C10', 'C11'], sensor: ['U3', 'C20', 'C21', 'C22'], pmic: ['U2', 'L1', 'L2', 'C30', 'C31', 'C32', 'C33', 'C35', 'C36', 'R1', 'R2'],
+    usb: ['J1', 'U4', 'D1', 'R3', 'R4', 'C1', 'C2'], switches: ['SW1', 'SW2'], power: ['SW3'], encoder: ['ENC1'], wheel: ['ENC1', 'WB1', 'SW4'],
+    battery: ['J2'], side: ['J3'], testpads: ['TP1', 'TP2', 'TP3', 'TP4', 'TP5', 'TP6', 'TP7', 'TP8', 'TP9', 'TP10', 'TP11', 'TP12', 'TP13'] } };
+const BRD_CACHE = {};
+/** the board's paths (Path2D, drawing mm), built once per variant and side */
+function brdPaths(v, side) {
+  const key = v + side; if (BRD_CACHE[key]) return BRD_CACHE[key];
+  const D = GEO2D.board2d[v], mx = side === 'bottom' ? -1 : 1, z0 = BRD.z0, X = x => mx * x, Y = z => z0 - z;
+  const ring = (P, r) => { r.forEach(([x, z], i) => i ? P.lineTo(X(x), Y(z)) : P.moveTo(X(x), Y(z))); P.closePath(); };
+  const polys = list => { const P = new Path2D(); for (const pl of list) for (const r of pl) ring(P, r); return P; };
+  const circ = (P, x, z, r) => { P.moveTo(X(x) + r, Y(z)); P.arc(X(x), Y(z), r, 0, TAU); };
+  const out = { mx, D };
+  out.outline = new Path2D(); ring(out.outline, D.outline);
+  out.cuts = polys(D.cuts);
+  out.holes = new Path2D(); for (const [x, z, r] of D.holes) circ(out.holes, x, z, r);
+  out.board = new Path2D(); out.board.addPath(out.outline); out.board.addPath(out.cuts); out.board.addPath(out.holes);   /* evenodd */
+  out.plated = new Path2D(); for (const [x, z, r, k] of D.holes) if (k === 1) circ(out.plated, x, z, r + 0.75);
+  if (side === 'top') {
+    const T = D.top;
+    out.pour = polys(T.pour); out.pads = polys(T.pads); out.silk = polys(T.silk);
+    out.traces = T.traces.map(([l, w, pts]) => { const P = new Path2D(); pts.forEach(([x, z], i) => i ? P.lineTo(X(x), Y(z)) : P.moveTo(X(x), Y(z))); return { l, w, P }; });
+    out.vias = new Path2D(); for (const [x, z] of T.vias) circ(out.vias, x, z, 0.225);
+    out.parts = T.parts.map(([ref, fp, x, z, rot, w, h, val]) => ({ ref, fp, x: X(x), y: Y(z), w: rot % 180 ? h : w, h: rot % 180 ? w : h, rot, val }));
+    const k = T.keepout; out.keep = [Math.min(X(k[0]), X(k[2])), Y(k[3]), Math.abs(k[2] - k[0]), k[3] - k[1]];
+  } else {
+    const B = D.bottom, A = B.art, s = A.s, hh = s * Math.sqrt(3) / 2;
+    out.region = polys(A.region); out.reserved = polys(A.reserved); out.silk = polys(B.silk); out.tht = polys(B.tht);
+    const tri = (cx, cz, up, ins, rr) => {      /* a cell's triangle inset by ins, its corners rounded rr (silk.rounded_inset) */
+      const P0 = up ? [[cx - s / 2, cz - hh / 3], [cx + s / 2, cz - hh / 3], [cx, cz + 2 * hh / 3]] : [[cx - s / 2, cz + hh / 3], [cx, cz - 2 * hh / 3], [cx + s / 2, cz + hh / 3]];   /* both counter-clockwise */
+      const r0 = s / (2 * Math.sqrt(3)), f = (r0 - ins - rr) / r0, q = P0.map(([x, z]) => [cx + (x - cx) * f, cz + (z - cz) * f]);
+      const P = new Path2D(); let first = true;
+      for (const [x, z] of q) { const a = Math.atan2(z - cz, x - cx); for (let k = 0; k <= 6; k++) { const b = a + (k / 6 - 0.5) * 2 * Math.PI / 3, px = X(x + rr * Math.cos(b)), py = Y(z + rr * Math.sin(b)); if (first) { P.moveTo(px, py); first = false; } else P.lineTo(px, py); } }
+      P.closePath(); return P;
+    };
+    out.cells = new Path2D(); out.goldT = new Path2D();
+    for (const [x, z, up, k] of A.cells) { out.cells.addPath(tri(x, z, up, A.inset.m, A.fillet.m)); if (k === 'g') out.goldT.addPath(tri(x, z, up, A.inset.g, A.fillet.g)); }
+    out.lens = B.lens;
+  }
+  return (BRD_CACHE[key] = out);
+}
 function boardMM(o = {}) {
+  if (o.generic || typeof GEO2D === 'undefined' || !GEO2D.board2d) return boardGenericMM(o);
+  const v = o.variant === 'B' ? 'B' : 'A', side = o.side === 'bottom' ? 'bottom' : 'top', P = brdPaths(v, side), D = P.D, A = o.accent || acc();
+  const hiL = [].concat(o.hi || []), lit = new Set(); for (const h of hiL) for (const r of (BRD.groups[h] || [h])) lit.add(r);
+  const dim = o.dim == null ? (hiL.length ? 0.45 : 0) : o.dim, xr = clamp(o.xray || 0), out = {};
+  /* the board: its gold edge band (the outline stroked, clipped to the board), the mask inside */
+  G.save(); G.clip(P.board, 'evenodd');
+  G.fillStyle = BRD.gold; G.fill(P.board, 'evenodd');
+  G.fillStyle = side === 'top' ? BRD.mask : BRD.bare; G.beginPath(); G.save();
+  G.lineJoin = 'round'; G.strokeStyle = BRD.gold; G.lineWidth = 2 * D.edgeBand; G.fill(P.outline);
+  G.stroke(P.outline);
+  if (side === 'top') {
+    G.fillStyle = BRD.pour; G.fill(P.pour, 'evenodd');
+    for (const t of P.traces) if (t.l === 'L1') { G.strokeStyle = xr > 0 ? mixHex(BRD.trace, '#c98a4e', 0.75 * xr) : BRD.trace; G.lineWidth = t.w; G.lineCap = 'round'; G.stroke(t.P); }
+    if (xr > 0) { G.globalAlpha = PA * 0.8 * xr; for (const t of P.traces) if (t.l === 'L3') { G.strokeStyle = '#4fb8ae'; G.lineWidth = t.w; G.stroke(t.P); } G.globalAlpha = PA; }
+    G.fillStyle = BRD.via; G.fill(P.vias);
+    G.fillStyle = BRD.gold; G.fill(P.plated); G.fill(P.pads, 'evenodd');
+    G.fillStyle = BRD.silk; G.fill(P.silk, 'evenodd');
+  } else {
+    G.fillStyle = BRD.gap; G.fill(P.region, 'evenodd');
+    G.save(); G.clip(P.region, 'evenodd'); G.fillStyle = BRD.cu; G.fill(P.cells); G.restore();
+    G.fillStyle = BRD.cu; G.fill(P.reserved, 'evenodd');
+    G.fillStyle = BRD.gold; G.fill(P.goldT); G.fill(P.tht, 'evenodd'); G.fill(P.plated);
+    G.fillStyle = BRD.silk; G.fill(P.silk, 'evenodd');
+  }
+  /* the cut-outs' gold trim: each stroked, the half on the board shows */
+  G.strokeStyle = BRD.gold; G.lineWidth = 2 * D.trim; G.stroke(P.cuts);
+  G.restore(); G.restore();
+  /* the parts, as simple bodies, from above; from below, the clip-on lens and the switch's knob in its window */
+  const isLit = r => lit.has(r), hiCol = rgba(A, 0.9);
+  if (side === 'top' && o.parts !== false) {
+    const COL = { MODULE: '#0e0f11', SENSOR: '#23262b', QFN32: '#26282c', L2016: '#34363b', USBC: '#b9bdc4', JSTSH3: '#e6e3da', ENCM: '#2a2c31', BRACKET: '#1b1c1f', TACT: '#2a2c31', SLIDEB: '#202226', SLIDEE: '#202226', SOT666: '#2a2c30', SOD523: '#2a2c30' };
+    for (const q of P.parts) {
+      if (q.fp === 'TP' || q.fp === 'TPTHT' || q.fp === 'FID') continue;
+      const a = dim && !isLit(q.ref) ? 1 - dim : 1; G.globalAlpha = PA * a;
+      if (q.fp === 'GT01') { pathRR(q.x - q.w / 2, q.y - q.h / 2, q.w, q.h, 0.5); G.fillStyle = 'rgba(205,208,214,0.82)'; G.fill(); G.strokeStyle = 'rgba(30,32,36,0.5)'; G.lineWidth = lw(1); G.stroke(); pathRR(q.x - 1.05, q.y - 2.0 - 0.75 * 1, 2.1, 1.5, 0.7); G.fillStyle = '#4a4c52'; G.fill(); }
+      else if (/^0[46]0[23]$|^0805$/.test(q.fp)) { pathRR(q.x - q.w / 2, q.y - q.h / 2, q.w, q.h, 0.06); G.fillStyle = '#b39a70'; G.fill(); const e = Math.min(q.w, q.h) * 0.42, hz = q.w >= q.h; G.fillStyle = '#d6d9dd'; if (hz) { G.fillRect(q.x - q.w / 2, q.y - q.h / 2, e, q.h); G.fillRect(q.x + q.w / 2 - e, q.y - q.h / 2, e, q.h); } else { G.fillRect(q.x - q.w / 2, q.y - q.h / 2, q.w, e); G.fillRect(q.x - q.w / 2, q.y + q.h / 2 - e, q.w, e); } }
+      else {
+        pathRR(q.x - q.w / 2, q.y - q.h / 2, q.w, q.h, Math.min(0.4, q.w / 4, q.h / 4)); G.fillStyle = COL[q.fp] || '#2a2c30'; G.fill(); G.strokeStyle = 'rgba(255,255,255,0.10)'; G.lineWidth = lw(0.8); G.stroke();
+        const lab = { MODULE: 'AN54LM-P20A', SENSOR: 'PAW3970', QFN32: 'nPM1300' }[q.fp];
+        if (lab) { G.save(); G.translate(q.x, q.y + (q.fp === 'SENSOR' ? 3.2 : 0.4)); const k = (q.fp === 'MODULE' ? 1.05 : 0.8) / 26; G.scale(k, k); setFont({ size: 26, weight: 700 }); G.fillStyle = 'rgba(235,234,230,0.62)'; G.textAlign = 'center'; G.fillText(lab, 0, 0); G.restore(); }
+        if (q.fp === 'SLIDEE') { pathRR(q.x + q.w / 2, q.y - 0.6 - 0.6, 1.5, 1.2, 0.2); G.fillStyle = '#202226'; G.fill(); }
+      }
+      if (isLit(q.ref)) { pathRR(q.x - q.w / 2 - 0.3, q.y - q.h / 2 - 0.3, q.w + 0.6, q.h + 0.6, 0.5); G.strokeStyle = hiCol; G.lineWidth = lw(2.2); G.stroke(); }
+    }
+    G.globalAlpha = PA;
+  } else if (side === 'bottom' && o.parts !== false) {
+    const L = P.lens, x0 = P.mx * L.c[0], y0 = BRD.z0 - L.c[1];
+    pathRR(x0 - L.hw, y0 - L.hl, 2 * L.hw, 2 * L.hl, L.hw); G.fillStyle = 'rgba(201,204,210,0.92)'; G.fill(); G.strokeStyle = 'rgba(80,86,95,0.8)'; G.lineWidth = lw(1); G.stroke();
+    for (const [dz, r] of [[1.1, 1.05], [-1.9, 0.75]]) { G.beginPath(); G.arc(x0, y0 - dz, r, 0, TAU); G.fillStyle = '#33363c'; G.fill(); }
+    if (v === 'A') { const s3 = D.top.parts.find(q => q[0] === 'SW3'); if (s3) { pathRR(P.mx * s3[2] - 0.5, BRD.z0 - s3[3] - 0.45, 1.0, 0.9, 0.12); G.fillStyle = '#202226'; G.fill(); } }
+  }
+  /* the antenna keep-out, when named */
+  if (side === 'top' && (lit.has('antenna') || o.keepout)) { const k = P.keep; G.setLineDash([lw(5), lw(3)]); G.strokeStyle = A; G.lineWidth = lw(1.6); G.strokeRect(k[0], k[1], k[2], k[3]); G.fillStyle = rgba(A, 0.14); G.fillRect(k[0], k[1], k[2], k[3]); G.setLineDash([]); }
+  if (lit.has('bay')) { G.strokeStyle = A; G.lineWidth = lw(2.2); G.stroke(P.cuts); }
+  /* anchors */
+  const at = r => { const q = D.top.parts.find(p => p[0] === r); return q ? SP(P.mx * q[2], BRD.z0 - q[3]) : SP(0, 0); };
+  const kk = D.top.keepout, kc = SP(P.mx * (kk[0] + kk[2]) / 2, BRD.z0 - (kk[1] + kk[3]) / 2);
+  Object.assign(out, { c: SP(0, 0), module: at('U1'), sensor: at('U3'), pmic: at('U2'), usb: at('J1'), power: at('SW3'), sw1: at('SW1'), sw2: at('SW2'),
+    enc: at('ENC1'), j2: at('J2'), j3: at('J3'), bay: SP(0, BRD.z0 - 35.79), ant: kc, antArea: kc, mcu: at('U1') });
+  const u1 = D.top.parts.find(p => p[0] === 'U1'); out.mcuR = u1 ? SP(P.mx * (u1[2] + u1[5] / 2), BRD.z0 - u1[3]) : out.module; out.xtal = out.module;
+  return out;
+}
+/** a hex colour mixed toward another (k 0..1) */
+function mixHex(a, b, k) { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)), A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * k).toString(16).padStart(2, '0')).join(''); }
+
+/* the old drawing: a corner of a circuit board, from above (black solder mask with the copper showing faintly through, gold
+   pads, an MCU in QFN, a crystal, 0402 passives, stitching vias, a printed antenna in its keep-out, silkscreen; a generic
+   layout). boardMM({ generic: true }) */
+function boardGenericMM(o = {}) {
   const A = o.accent || acc(), W2 = o.w || 18, H2 = o.h || 12, out = {}, r = rng(o.seed || 9);
   const gold = '#d9b25a', mask = o.mask || '#16171a', trace = 'rgba(255,255,255,0.075)';
   const edge = () => { G.beginPath(); G.moveTo(-W2, -H2); G.lineTo(W2 - 1.6, -H2); G.quadraticCurveTo(W2, -H2, W2, -H2 + 1.6); G.lineTo(W2, H2); G.bezierCurveTo(W2 * 0.3, H2 + 0.5, -W2 * 0.3, H2 - 0.5, -W2, H2); G.bezierCurveTo(-W2 - 0.5, H2 * 0.3, -W2 + 0.5, -H2 * 0.3, -W2, -H2); G.closePath(); };
@@ -886,7 +1012,8 @@ function keyPlan(t, t0, x, y, o = {}) {
    builds it: a normal encoder outline (axle at 0, 0; the board at y = 11; top 4 mm above the axle, the nose-side corner
    chamfered), a black bottom housing up to the split 3.15 mm below the axle, a clear PC top housing over the moving
    parts: the orange POM rotor on the axle's D, the 24-lobe detent star under its bronze leaf spring, and on the rotor's
-   end the Ø3 mm diametric magnet (north and south halves) in front of the dark sensor board, four pins, the frame's legs.
+   end the Ø3 mm diametric magnet (north and south halves) in front of the dark sensor board, four pins, the frame's two
+   side tabs bent out into SMD feet on the board (H1, 2026-11-06: no legs over the wheel bay).
    o.th: the wheel angle; o.field (0..1): the magnet's field lines in the drawing plane, turning with it; o.dust (0..1):
    specks inside the housing (they change nothing); o.light: the paper theme. Returns anchors in stage px. */
 function k2_encMagFront(o = {}) {
@@ -895,9 +1022,10 @@ function k2_encMagFront(o = {}) {
   const ec = dk ? 'rgba(10,10,12,0.85)' : 'rgba(20,20,22,0.55)', clearF = dk ? 'rgba(196,214,230,0.13)' : 'rgba(150,170,190,0.16)';
   const clearE = dk ? 'rgba(226,236,246,0.62)' : 'rgba(60,80,100,0.55)';
   const fp = (f, col, st, w) => { f(); if (col) { G.fillStyle = col; G.fill('evenodd'); } if (st) { G.strokeStyle = st; G.lineWidth = lw(w || 1.1); G.lineJoin = 'round'; G.stroke(); } };
-  /* four pins and the frame's two bent legs into the board */
+  /* four pins through the board, and the frame's two side tabs run down to it and bend out into SMD feet (H1, board plan 5:
+     the feet sit on the board's F1/F2 pads beside the wheel bay; the old J-hook legs stood over the bay) */
   for (const px of [-1.875, -0.625, 0.625, 1.875]) fp(() => { G.beginPath(); G.rect(px - 0.25, 10.9, 0.5, 2.3); }, tin, ec, 0.8);
-  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.moveTo(sx * 4.3, 10.8); G.lineTo(sx * 5.45, 10.8); G.lineTo(sx * 5.45, 11.6); G.quadraticCurveTo(sx * 5.6, 12.7, sx * 6.45, 13.0); G.lineTo(sx * 6.15, 13.45); G.quadraticCurveTo(sx * 4.75, 13.0, sx * 4.3, 11.7); G.closePath(); }, nick, ec, 0.8);
+  for (const sx of [-1, 1]) fp(() => { G.beginPath(); G.moveTo(sx * 5.5, 4.1); G.lineTo(sx * 5.72, 4.1); G.lineTo(sx * 5.72, 10.82); G.quadraticCurveTo(sx * 5.74, 10.86, sx * 5.8, 10.86); G.lineTo(sx * 6.5, 10.86); G.lineTo(sx * 6.5, 11.0); G.lineTo(sx * 5.62, 11.0); G.quadraticCurveTo(sx * 5.5, 11.0, sx * 5.5, 10.88); G.closePath(); }, nick, ec, 0.8);
   /* the sensor board behind everything: a dark plate across the housing's far end, the Hall IC on it, on the axis */
   fp(() => pathRR(-3.7, -3.2, 7.4, 9.6, 0.3), dk ? '#101114' : '#141518', null);
   /* the black bottom housing, from the board up to the split */

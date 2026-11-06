@@ -145,9 +145,12 @@ R('MID', [(12.45, 37.75), (RC_C1[0], 37.75)], ch=0)
 R('SW2_NO', [(16.0, 39.6), (RC_C1[1], 39.6)], ch=0)
 R('SW2_NC', [(16.0, 34.52), (RC_C1[2], 34.52)], ch=0)
 RC_ENTRY = [37.75, 39.6, 34.52]
+import os as _os
+VARIANT = (_os.environ.get('PCB_VARIANT') or 'A').strip().upper()
+RC_DIAG = 17.9 if VARIANT != 'B' else 26.5     # B has no window: the channel turns in above where the edge switch sits
 for k, n in enumerate(RC):
     dd = RC_C2[k] - RC_C1[k]
-    R(n, [(RC_C1[k], RC_ENTRY[k]), (RC_C1[k], 17.9), (RC_C2[k], 17.9 + dd), (RC_C2[k], RC_PAD[k]), (4.95, RC_PAD[k])], ch=0)
+    R(n, [(RC_C1[k], RC_ENTRY[k]), (RC_C1[k], RC_DIAG), (RC_C2[k], RC_DIAG + dd), (RC_C2[k], RC_PAD[k]), (4.95, RC_PAD[k])], ch=0)
 
 # =============================================================== round the PMIC (U2 at (-10.2, 19.45)): the bucks up to their
 # inductors, the sense pins to the outputs, the charger and system rails down to their capacitors (L1, short and wide)
@@ -175,7 +178,16 @@ R('VSYS', [(-10.95, 21.9), (-10.95, 22.75), (-9.45, 22.75), (-9.45, 21.9)], w=0.
 # =============================================================== what the router filled in (tools/autoroute.py -> routes_auto.py)
 try:
     from routes_auto import AUTO_ROUTES, AUTO_VIAS
-    ROUTES += [dict(net=t['net'], pts=[tuple(p) for p in t['pts']], w=t['w'], layer=t['layer']) for t in AUTO_ROUTES]
-    VIAS += [dict(v) for v in AUTO_VIAS]
+    _skip = {'SW_PWR'} if VARIANT == 'B' else set()      # routed for A's window switch; B's is below
+    ROUTES += [dict(net=t['net'], pts=[tuple(p) for p in t['pts']], w=t['w'], layer=t['layer']) for t in AUTO_ROUTES if t['net'] not in _skip]
+    VIAS += [dict(v) for v in AUTO_VIAS if v['net'] not in _skip]
 except ImportError:
     pass
+if VARIANT == 'B':
+    # variant B's edge switch (SW3 at the right waist edge, pin 1 at (13.37, 17.95)): down and in to a via, along L3 at
+    # z 17.35 (A's row, run on to the right), up to the PMIC's SHPHLD (pin 18) as in A
+    R('SW_PWR', [(13.37, 17.95), (12.77, 17.35), (12.0, 17.35)], ch=0)
+    V('SW_PWR', 12.0, 17.35)
+    R('SW_PWR', [(12.0, 17.35), (-6.65, 17.35)], layer='L3', ch=0)
+    V('SW_PWR', -6.65, 17.35)
+    R('SW_PWR', [(-6.65, 17.35), (-6.65, 17.5), (-7.35, 18.2)], ch=0)

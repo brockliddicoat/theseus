@@ -376,6 +376,10 @@ function text(s, x, y, o = {}) {
     if (EDIT.rec) { bx0 = Math.min(bx0, x0); bx1 = Math.max(bx1, x0 + fullW); }
     /* a gradient across the line (Apple's big numbers): o.grad = [colours], left to right with a slight fall */
     if (o.grad) { const gr = G.createLinearGradient(x0, ly - size * 0.8, x0 + Math.max(1, fullW), ly + size * 0.15); o.grad.forEach((c, j) => gr.addColorStop(o.grad.length > 1 ? j / (o.grad.length - 1) : 0, c)); G.fillStyle = gr; }
+    /* the foot band: a source line (role 'foot') or a scale note (knock: true) knocks the paper's + row at y 960 out from
+       under its words (FILM F10). Only these, which sit on the bare paper (text inside a card would leave a square), and
+       only in the stage's own coordinates (not under a camera), where the paper is */
+    if (n && ly > 935 && ly < 1000 && (o.knock === true || (o.role === 'foot' && o.knock !== false)) && typeof paperClear === 'function') { const m = G.getTransform(); if (m.a === 1 && m.d === 1 && m.b === 0 && m.c === 0 && m.e === 0 && m.f === 0) paperClear(x0 - 4, ly - size * 0.85, fullW + 8, size * 1.1, a); G.globalAlpha = a; G.fillStyle = o.color || C.ink; }
     if (o.glow && n) { G.save(); G.shadowColor = o.glow; G.shadowBlur = o.glowR || size * 0.45; drawStr(vis, x0, ly, o); G.restore(); }
     if (o.rise) {
       const [r0, rd] = Array.isArray(o.rise) ? o.rise : [o.t0 || 0, 0.8], kk = E.rise(prog(o.t, r0 + i * 0.09, r0 + i * 0.09 + (rd || 0.8)));
@@ -495,6 +499,21 @@ function paper(a = 1) {
   G.strokeStyle = inkA(TH ? 0.26 : 0.2); G.lineWidth = 1.5; G.beginPath();
   for (let x = 0; x <= W + 160; x += 160) for (let y = 0; y <= H + 160; y += 160) { G.moveTo(x - 7, y); G.lineTo(x + 7, y); G.moveTo(x, y - 7); G.lineTo(x, y + 7); }
   G.stroke(); G.restore();
+}
+/** knock the paper's + marks out of a box (words set over the grid, FILM F10), keeping the 40 px lines: the ground under
+   each + is repainted and its two grid lines redrawn at the paper's own strength. k fades the knock-out in with the words. */
+function paperClear(x, y, w, h, k = 1) {
+  const s = typeof curSlide === 'function' ? curSlide() : null, tt = typeof DECK !== 'undefined' && DECK.t != null ? DECK.t : 0;
+  const pa = !s || s.paper == null ? 1 : typeof s.paper === 'function' ? s.paper(tt) : s.paper;
+  if (pa <= 0.003 || k <= 0.003) return;
+  for (let px = 0; px <= W; px += 160) for (let py = 0; py <= H; py += 160) {
+    if (px + 8 < x || px - 8 > x + w || py + 8 < y || py - 8 > y + h) continue;
+    G.save(); G.globalAlpha = k; G.fillStyle = C.bg; G.fillRect(px - 8, py - 8, 16, 16);
+    G.globalAlpha = k * pa; G.strokeStyle = inkA(TH ? 0.042 : 0.03); G.lineWidth = 1; G.beginPath();
+    G.moveTo(px + 0.5, py - 8); G.lineTo(px + 0.5, py + 8); G.moveTo(px - 8, py + 0.5); G.lineTo(px + 8, py + 0.5); G.stroke();
+    if (k < 1) { G.globalAlpha = (1 - k) * pa; G.strokeStyle = inkA(TH ? 0.26 : 0.2); G.lineWidth = 1.5; G.beginPath(); G.moveTo(px - 7, py); G.lineTo(px + 7, py); G.moveTo(px, py - 7); G.lineTo(px, py + 7); G.stroke(); }
+    G.restore();
+  }
 }
 /** rounded rectangle path */
 function rrPath(x, y, w, h, r) { r = Math.max(0, Math.min(r, w / 2, h / 2)); G.beginPath(); G.moveTo(x + r, y); G.arcTo(x + w, y, x + w, y + h, r); G.arcTo(x + w, y + h, x, y + h, r); G.arcTo(x, y + h, x, y, r); G.arcTo(x, y, x + w, y, r); G.closePath(); }

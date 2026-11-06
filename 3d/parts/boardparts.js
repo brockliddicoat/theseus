@@ -46,7 +46,7 @@ export function buildRadioModule(opts = {}) {
   const own = new Set(Object.values(M).filter(m => !userMats.has(m)));
   const root = new THREE.Group(); root.name = 'RadioModule';
   const W = 9.9, Lm = 13.3, T = 0.8;
-  const z0 = -Lm / 2, z1 = Lm / 2, zAnt = z1 - 3.6;                 // antenna band at +z (the board turns it to the rear)
+  const z0 = -Lm / 2, z1 = Lm / 2, zAnt = z1 - 3.6;                 // antenna band at +z: forward, toward the sensor (board plan 5)
   // substrate: black FR4, every edge broken
   const sub = meshOf(yFlip(extrude(roundedRectShape(W, Lm, 0.18), { depth: T, front: { r: 0.04, s: 1 }, back: { r: 0.03, s: 1 }, curveSegments: 6 })).translate(0, 0.04, 0), M.maskBlack, 'substrate');
   root.add(sub);

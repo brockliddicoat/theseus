@@ -290,7 +290,7 @@ function clk_life() {
 }
 /** the Gateron GT01 as Gateron's images show it (Brock, F12.7, F14.3), in the 3D model's own numbers. A black bottom housing
    sits flat on the board: its top is the switch's base plane at 20°, both ends lean with the switch, and four cut-outs go
-   through its 1 mm skin (two round holes, a slot along the tilt, a triangle). On it, a standard SPDT microswitch, 12.8 mm long:
+   through its 0.70 mm skin (two round holes, a slot along the tilt, a triangle), each one wall from the edges round it. On it, a standard SPDT microswitch, 12.8 mm long:
    the cover; a normal plunger (its cap 1.5 mm along the switch with a round top, 0.80 mm proud of the cover, a 2.1 mm bar across
    it; a captive flange; a nose on the leaf; 0.35 mm of travel); the flat gold leaf, riveted on the COM tab at the plunger end, carrying the moving contact at its free end between
    NC above and NO below (0.30 mm apart); its tongue, a flat strip from the window's tip to the fulcrum notch, nearly straight
@@ -304,7 +304,11 @@ function clk_life() {
    skirt ends at ys 2.5, the housing's back face drops almost vertically, the four cut-outs are where the render puts them, and
    the plunger sits 2.0 mm from the centre with its cap turned 90°: 1.5 mm along the switch with a round top, 0.80 mm proud.
    The same numbers as 3d/parts/gt01.js (scratchpad/k1/GT01-PLUNGER.md) */
-const CLK_G1 = { c: Math.cos(Math.PI / 9), s: Math.sin(Math.PI / 9), oy: 1.669, yL: 4.5, zA: 4.25, zN: 2.0, zE: -4.55, zC: -4.0, gap: 0.3, tr: 0.35, sh: 2.5, cap: 7.3 };
+const CLK_G1 = { c: Math.cos(Math.PI / 9), s: Math.sin(Math.PI / 9), oy: 1.669, yL: 4.5, zA: 4.25, zN: 2.0, zE: -4.55, zC: -4.0, gap: 0.3, tr: 0.35, sh: 2.5, cap: 7.3,
+  /* H1, 2026-11-06 (F30.24, "the gt01s walls don't look thick"): the housing's one wall 0.70 mm (the median web on Gateron's
+     render; v23 had 0.45), the cover's end walls the D2F cover's 0.45; the round holes keep the render's centres, their radii
+     less the thicker wall; the slot where the render has it (v23's sat 1.07 mm high). As 3d/parts/gt01.js's spec.profile */
+  wH: 0.70, wC: 0.45, holes: { back: [-2.86, 3.81, 0.76], front: [3.44, 1.49, 0.79], slot: [0.15, 2.30, 2.11, 1.10] } };
 function clk_gt01MM(o = {}) {
   const K = CLK_G1, d = clamp(o.press || 0) * K.tr, no = o.state ? o.state === 'no' : d >= 0.2, clear = o.clear !== false, out = {};
   const W = (z, y) => [-z, -y];                                                  /* world (z to the plunger end, y up) → drawing */
@@ -327,17 +331,18 @@ function clk_gt01MM(o = {}) {
   /* the bottom housing, one black block, as Gateron's render shows it side-on: flat on the board; in front the switch's own end
      face (square to its top, so it overhangs) runs straight down to the board; its top is the cover's edge (the shoulder); at the
      back the switch's end face runs down to its base corner, then the housing drops almost vertically to the board */
-  /* walls straight and one thickness (Brock, 2026-11-05): the cover's end walls run down past the shoulder, as in the render, and
-     the housing fits between them: one plumb back wall from the switch's back-bottom corner to the board, its front face the
-     cover's inner face, its top the shoulder; every cut-out one wall (0.45 mm, the D2F-class cover's) from the edges round it */
-  const WL = 0.45, zi = 6.4 - WL, ysF = (zi * K.s - K.oy) / K.c, ysF0 = (6.4 * K.s - K.oy) / K.c, Fb = S(-6.4, 0);
+  /* walls straight and one thickness (Brock, 2026-11-05; thicker, 11-06): the cover's end walls run down past the shoulder, as
+     in the render, and the housing fits between them: one plumb back wall from the switch's back-bottom corner to the board,
+     its front face the cover's inner face, its top the shoulder; every cut-out one housing wall (K.wH, 0.70 mm) from the edges */
+  const WL = K.wH, zi = 6.4 - K.wC, ysF = (zi * K.s - K.oy) / K.c, ysF0 = (6.4 * K.s - K.oy) / K.c, Fb = S(-6.4, 0);
   const hp = [[Fb[0], 0], S(zi, ysF), S(zi, K.sh), S(-zi, K.sh), S(-zi, 0), Fb];   /* Fb is drawing x = −z: the plumb foot under it */
   fill(() => path(hp, [0.1, 0.05, 0.04, 0.04, 0.04, 0.1]), blk, eB, 1.1);
   /* the four cut-outs through its skin, where the render puts them: dark pockets with a lit lower rim */
   const cut = (fn) => { fill(fn, pocket, null); G.save(); fn(); G.clip(); fn(); G.strokeStyle = 'rgba(255,255,255,0.13)'; G.lineWidth = lw(2.2); G.stroke(); G.restore(); fn(); G.strokeStyle = 'rgba(0,0,0,0.5)'; G.lineWidth = lw(1); G.stroke(); };
-  cut(() => { const p = W(-2.86, 3.81); G.beginPath(); G.arc(p[0], p[1], 1.01, 0, TAU); });
-  cut(() => { const p = W(3.44, 1.49); G.beginPath(); G.arc(p[0], p[1], 1.04, 0, TAU); });
-  { const p = W(0.22, 3.37), u = [-K.c, K.s], v = [-K.s, -K.c], h = 0.63, r = 0.37, a = Math.atan2(v[1], v[0]), ccw = u[0] * v[1] - u[1] * v[0] < 0;
+  const HB = K.holes.back, HF = K.holes.front, HS = K.holes.slot;
+  cut(() => { const p = W(HB[0], HB[1]); G.beginPath(); G.arc(p[0], p[1], HB[2], 0, TAU); });
+  cut(() => { const p = W(HF[0], HF[1]); G.beginPath(); G.arc(p[0], p[1], HF[2], 0, TAU); });
+  { const p = W(HS[0], HS[1]), u = [-K.c, K.s], v = [-K.s, -K.c], h = HS[2] / 2 - HS[3] / 2, r = HS[3] / 2, a = Math.atan2(v[1], v[0]), ccw = u[0] * v[1] - u[1] * v[0] < 0;
     cut(() => { G.beginPath(); G.moveTo(p[0] + u[0] * h + v[0] * r, p[1] + u[1] * h + v[1] * r); G.lineTo(p[0] - u[0] * h + v[0] * r, p[1] - u[1] * h + v[1] * r);
       G.arc(p[0] - u[0] * h, p[1] - u[1] * h, r, a, a + Math.PI, ccw); G.lineTo(p[0] + u[0] * h - v[0] * r, p[1] + u[1] * h - v[1] * r); G.arc(p[0] + u[0] * h, p[1] + u[1] * h, r, a + Math.PI, a, ccw); G.closePath(); }); }
   { const zb = -Fb[0] + WL; cut(() => path([W(0.07, WL), W(zb, 3.03), W(zb, WL)], [0.35, 0.25, 0.25])); }

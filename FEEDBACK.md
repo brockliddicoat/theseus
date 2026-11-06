@@ -20,7 +20,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 07:30 (Chicago).
+Last updated: 2026-11-06 09:45 (Chicago).
 
 ## F34, F35. Brock's own steering given to Codex on 2026-11-05 (carried over; Codex's work itself is set aside, F38.4)
 On 2026-11-05, out of Claude usage, Brock had Codex continue from this branch. On 2026-11-06 he called its output "very
@@ -89,14 +89,60 @@ feedback on the deck, so they are kept here (numbered as on Codex's branch, code
   true grey (01-core.js warmGuard). Measured: the paper ground was (247, 246, 242), now (245, 245, 247).
 
 ## F40. Answers on the player and the radio (2026-11-06 ~09:00)
-- **F40.1 DECIDED** Autoplay hold after a slide settles: "Longer, 2–6 s". **IN PROGRESS (F0b).**
-- **F40.2 DECIDED** Chapter openings: "advanced motion transitions" (not a pass through black). **IN PROGRESS (F0b):** a
+- **F40.1 DECIDED** Autoplay hold after a slide settles: "Longer, 2–6 s". **IN PROGRESS (F0c; F0b could not be resumed).**
+- **F40.2 DECIDED** Chapter openings: "advanced motion transitions" (not a pass through black). **IN PROGRESS (F0c):** a
   camera flight across the simplified mouse from the last chapter's part to the next, landing in the chapter card.
 - **F40.3 DECIDED** Vertical clips: "allow for both letterboxed and the same as before as options" (horizontal and 9:16
   letterboxed exports both kept).
 - **F40.4 DECIDED** The radio module: "Keep facing forward" (plan 5: at the board's rear, the long antenna facing forward,
   28.2 mm from the wheel's axle against 12.4 mm on the old board; no 180° turn, which would put it about 3 mm from the
-  battery). Supersedes the old 180° turn (F9.13's aim is met by the move).
+  battery). Supersedes the old 180° turn (F9.13's aim is met by the move). **Re-derived from the built plan-5 board
+  (KEY_PARTS, b09, 09:15): 11.9 → 27.6 mm to the axle, 2.3×** (the antenna's place is its keep-out's centre).
+
+## F41. The strength rule for the shell slides (2026-11-06 08:58)
+- **F41.1 DECIDED** Asked: the shell slides judged every break against carbon PP's tensile strength (120 MPa, F12.12),
+  though most parts break by bending and the same datasheet gives 207 MPa in bending (JIS K7171), which quietly favoured
+  triangles and arches (the model auditor's finding). His answer: **"Two strengths"**: 120 MPa for stretching, 207 MPa for
+  bending, as the datasheet gives; a slide whose point doesn't survive leads with stiffness instead. Consequences shown to
+  him: sized triangles against a solid web 1.91× → 1.36×; one-size triangles lose (1.42× → 0.86×); the arch against a flat
+  plate 3.8× → 2.0×, and it buckles at 41 N first. **IN PROGRESS (b05, b06, b07; checked by M).**
+
+## F42. The battery's place and the board's weight (2026-11-06 09:40)
+- **F42.1 DECIDED** The battery: H1 found that the 2.23 mm move back (2026-11-05) came from a drawing of a 20 mm-wide battery
+  in the board's notch; the real 35 mm LP402535JU sits behind the board's rear lobes, so the notch never limited it.
+  Balance points: 2.23 mm back 1.6 mm behind centre; the old place 1.0 mm behind. His answer: **"Forward and up"**: about
+  5.9 mm forward and 1.5 mm up, over the board's rear edge, so the mouse balances at its centre (the weight about 0.4 mm
+  higher). **TODO (H2):** 3D, KEY_PARTS, the 2D twins, the balance figures; then the slides that draw the battery.
+- **F42.2 DECIDED** The board's weight: the budget's 5.6 g with everything on it (F12.1) against the plan-5 board built part
+  by part with typical masses: 6.66 g (the 1.0 mm four-layer laminate 3.9 g, the two switches 1.0 g), 7.92 g with the
+  wheel's encoder and bracket, which the budget doesn't list. His answer: **"Keep 5.6 g as target"**: the film stays at
+  29.31 g and calls the board's figure a target; the board gets built to it (thinner laminate, fewer layers, a lighter
+  encoder). **TODO:** slides that print 5.6 g say "target"; the hardware brief carries it.
+- Decided by the integrator from H1's report (no question needed): variant B's edge switch on the top side (one soldering
+  pass, as the film's "one board, one side, one reflow" claims); the GT01's walls stay 0.70 mm (measured off Gateron's
+  render); the bottom plate's lattice waits until the bottom cover is revisited (it is out of the film).
+
+## F43. The shape, the cutouts, the lattice study and the simplified mouse (2026-11-06 09:31, with a marked-up screenshot)
+His markup of b02_cutouts' top view: refs/photos/brock-2026-11-06b/0931-cutouts-markup.jpg (a red ring round the wheel
+opening and the slot above and below it; red curves at the two ends of the straight rear cutout).
+- **F43.1** "i did not approve such a wacky scroll wheel wheel cutout design": the wheel opening and its long tapered slot
+  (top view) are rejected. **TODO (S1):** options shown before the build.
+- **F43.2** "the filets on the rear cutouts do not look natural or have good flow at all, they all are way to big, i’ve drawn
+  in something closer to what i want but i want to to take what i drew and vastly improve it": the corners where the straight
+  rear cutout meets the sides: much smaller, natural, flowing (curvature-continuous) turns, starting from his red curves.
+  **TODO (S1):** options shown before the build.
+- **F43.3** "i need you to make the shape you’re using center humped like the starlight x, right the hump is way too far
+  back/rear humped" / "this is in reference to the side profile not the top down": the side profile's hump moves to the
+  centre, like the Finalmouse Starlight X. **TODO (S1):** 3D shell first, the 2D drawings derived from it (F0.2, F38).
+- **F43.4** "run a simulation to determine the perfect lattice and lattice beam dimension and filet size for the mouse and
+  explain how that conclusion was arrived at in the presentation". **TODO (L1):** the study, and a shell-chapter slide that
+  shows how the answer was reached.
+- **F43.5** "i feel like the simplified mouse design you’re using in some places is a little too simple, i still need to be
+  able to see things like the lattice and the creases above the scroll wheel the sora v2 has": the simplified mouse keeps
+  the lattice and the creases above the wheel (from the scan). **TODO (S1).**
+- **F43.6** (09:38) "the bottom rim (the lower part after the hard cease) of the shape shouldn’t have the lattice, it’ll make it
+  too complicated to manufacture": the lattice stops at the hard crease; the rim below it is plain wall. **TODO (S1, L1,
+  the 3D shell and the lattice study's design space).**
 
 ## Open with Brock
 

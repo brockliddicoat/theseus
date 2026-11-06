@@ -40,6 +40,8 @@ Object.assign(SRC, {
   b10PulsarCable: { t: 'Pulsar USB-C Paracord Cable: a "Head Bent", L-shaped USB-C connector that "prevents cable drag against the desk"; 1.8 m', u: 'https://www.pulsar.gg/products/usb-c-cable' },
   b10MdtTmr: { t: 'MDT, TMR1228D (press release, 2026-07-13): always-on dual-axis magnetic switch, "as little as 1.5μA per axis", DC to 1 kHz, "Continuous (always-on) magnetic field detection without duty-cycling", for quadrature encoder systems', u: 'https://en.prnasia.com/releases/apac/mdt-introduces-tmr1228d-always-on-high-sensitivity-dual-axis-magnetic-switch-ic-with-microamp-level-power-consumption-540448.shtml' },
   b10Plan5: { t: 'Theseus board, placement plan 5 (approved by Brock, 2026-11-05): the PMIC in the left-middle spot beside the sensor (z 19.45), the radio module at the rear centre (z 4.80), J2 battery and J3 side lead at z 8.50, battery front z −4.82', u: '', n: 'handoff/plan-images/board-plan-5.jpg; 3d/pcb/plans/plan5.py' },
+  b10G703: { t: 'Logitech G703 LIGHTSPEED spec sheet (2017): "up to 32 hours non-stop gaming at 1ms report rate with lights off", "24 hours non-stop gaming at 1ms report rate with RGB color cycling on"', u: 'https://logitech.com/assets/65259/2/g703-lightspeed-wireless-gaming-mouse.pdf' },
+  b10Aqa: { t: 'AQA A-level Physics required practical, "Investigating EMF and internal resistance": a variable load, an ammeter and a voltmeter; V = ε − I r (Save My Exams revision notes)', u: 'https://www.savemyexams.com/a-level/physics/aqa/17/revision-notes/5-electricity/5-4-electromotive-force-and-internal-resistance/5-4-2-required-practical-investigating-emf-and-internal-resistance/' },
   b10Brock: { t: 'Brock Liddicoat, "In Pursuit of an Objectively Better Mouse": #19 angling the charging cable ("prone to sucking the cable in"; Lamzu and Pulsar do it), #20 a Goldilocks cable ("the tension in the bent cable is stronger than the weight of the mouse"), #51 wires instead of ribbon cables ("so easy to rip"), #69 braids not too tight ("wires are heavy"), #70 paracord, #98 a conformal urethane coat, #99 no RGB LED; "0.1 mm LOD steps is a must"; "very few companies advertise the use of the lithium polymer battery"', u: '', n: 'research/brock-doc-in-pursuit.txt' }
 });
 
@@ -722,7 +724,306 @@ function b10_aim(t, t0, rect, pr, stop, tc, o = {}) {
   if (o.label) text(o.label, x + 18, y + h - 18, { role: 'label', size: 19, color: C.mute, alpha: a, maxW: w - 36 });
 }
 
+
+/* ---------------------------------------------------------------- the lights: an optical gate, a step counter ---------- */
+/** an optical scroll encoder's gate, schematic, in stage px: an IR LED (left) shines through the slotted rim of the code
+   wheel (the middle band; its slots run down as the wheel turns) into a photodiode (right). dust (0..1): specks fall into
+   the gate and settle on the rim and the LED's window; a speck in the beam's path blocks it. ph: the wheel's turn in
+   steps. Returns { lit (the diode sees the beam now) } */
+function b10_optGate(x, y, w, h, ph, dust, o = {}) {
+  const a = o.a == null ? 1 : o.a, cx = x + w / 2, cy = y + h / 2, pitch = 34, slot = 15;
+  G.save(); G.globalAlpha *= a;
+  /* the LED and the photodiode in their black blocks */
+  rr(x + 8, cy - 34, 64, 68, 6, '#1E1F23', 'rgba(255,255,255,0.18)', 1.5); rr(x + w - 72, cy - 34, 64, 68, 6, '#1E1F23', 'rgba(255,255,255,0.18)', 1.5);
+  circle(x + 58, cy, 9, { fill: '#5A4A6A' }); rr(x + w - 66, cy - 12, 12, 24, 2, '#2E3A4A', null, 1);
+  /* the rim: slots running down */
+  const off = ((ph * pitch) % pitch + pitch) % pitch;
+  rr(cx - 18, y + 4, 36, h - 8, 4, '#3A3B40', null, 1);
+  let open = false;
+  G.save(); rrPath(cx - 18, y + 4, 36, h - 8, 4); G.clip();
+  for (let sy = y - pitch + off; sy < y + h + pitch; sy += pitch) { G.fillStyle = '#0B0C0D'; G.fillRect(cx - 18, sy, 36, slot); if (cy > sy + 2 && cy < sy + slot - 2) open = true; }
+  G.restore();
+  /* dust: specks falling in, then settling on the rim and the LED's window (seeded, so every frame agrees) */
+  const r = rng(11), n = 46; let blocked = false;
+  for (let i = 0; i < n; i++) {
+    const k0 = r(), k = clamp((dust - k0 * 0.85) / 0.15); if (k <= 0) { r(); r(); continue; }
+    const sx = lerp(x + 60, x + w - 60, r()), sy0 = y - 10, sy1 = lerp(cy - 30, cy + 30, r()), py = lerp(sy0, sy1, E.in3(k));
+    const px = k >= 1 ? lerp(sx, cx + (sx - cx) * 0.25, 0.6) : sx;
+    circle(px, py, 2.6, { fill: 'rgba(196,186,170,0.85)' });
+    if (k >= 1 && Math.abs(py - cy) < 6 && px > x + 66 && px < x + w - 70) blocked = true;
+  }
+  const lit = open && !blocked;
+  /* the beam: through an open slot to the diode, cut short by a speck */
+  if (open) { const xe = lit ? x + w - 66 : cx + (blocked ? -6 : 0); G.fillStyle = 'rgba(255,110,90,0.55)'; G.fillRect(x + 66, cy - 4, xe - x - 66, 8); glow(x + 58, cy, 22, '#FF6E5A', 0.5); }
+  if (lit) glow(x + w - 60, cy, 26, '#FF6E5A', 0.45);
+  G.restore();
+  return { lit };
+}
+/** a row of step marks: n steps turned so far, each counted or missed (missed(i) → true), in stage px from (x, y), gap px
+   apart; counted marks in col, missed ones as red gaps. Returns the number counted */
+function b10_steps(x, y, n, total, gap, missed, col, o = {}) {
+  let c = 0;
+  for (let i = 0; i < total; i++) {
+    const xx = x + i * gap;
+    if (i >= n) { line(xx, y - 10, xx, y + 10, { color: inkA(0.14), w: 3 }); continue; }
+    if (missed(i)) { line(xx, y - 10, xx, y + 10, { color: C.red, w: 1.5, dash: [3, 3] }); continue; }
+    line(xx, y - 10, xx, y + 10, { color: col, w: 4 }); c++;
+  }
+  return c;
+}
+
+
+/* ---------------------------------------------------------------- the coat: two pads under a drop of sweat ---------- */
+/** two powered pads seen from above, in mm for part(): the cathode (−) left, the anode (+) right, gap mm apart, on black
+   mask. o = { drop: { r, k (0..1: fallen and spread), bead (0..1: beaded on a coat) }, ions (0..1), tree (0..1: grown to
+   the first bridge at 1), coat (0..1), short (0..1: the flash), seed }. Returns { cath, anode, gapC, drop } in stage px */
+function b10_padsMM(o = {}) {
+  const gap = 0.5, pw = 1.1, ph = 1.25, out = {};
+  G.fillStyle = '#1C1D21'; G.fillRect(-1.9, -1.15, 3.8, 2.3);
+  for (const sg of [-1, 1]) solid(() => pathRR(sg < 0 ? -gap / 2 - pw : gap / 2, -ph / 2, pw, ph, 0.06), MT.tin, [sg < 0 ? -gap / 2 - pw : gap / 2, -ph / 2, pw, ph], { lw: 0.8 });
+  G.fillStyle = 'rgba(17,17,17,0.55)'; setFont({ size: 0.42, weight: 800 }); G.textAlign = 'center'; G.fillText('−', -gap / 2 - pw / 2, 0.15); G.fillText('+', gap / 2 + pw / 2, 0.15);
+  /* the metal tree: tin from the anode, carried over as ions and laid down at the cathode, growing back toward the anode */
+  const tr = o.tree || 0;
+  if (tr > 0) { const T = b10_tree(o.seed || 7); G.lineCap = 'round';
+    for (const [x0, y0, x1, y1, b, w] of T.segs) { if (b > tr) continue; const k = clamp((tr - b) / 0.04);
+      const X0 = -gap / 2 + x0 * gap, Y0 = -ph / 2 + y0 * ph, X1 = -gap / 2 + lerp(x0, x1, k) * gap, Y1 = -ph / 2 + lerp(y0, y1, k) * ph;
+      G.beginPath(); G.moveTo(X0, Y0); G.lineTo(X1, Y1); G.strokeStyle = '#A9AFB7'; G.lineWidth = 0.012 + 0.02 * w; G.stroke(); } }
+  /* the ions crossing the gap, from + to − */
+  const io = o.ions || 0;
+  if (io > 0) { const r = rng(3); for (let i = 0; i < 26; i++) { const ph0 = r(), y = (r() - 0.5) * ph * 0.9, f = ((ph0 + (o.t || 0) * 0.35) % 1);
+      G.beginPath(); G.arc(gap / 2 - f * gap, y, 0.022, 0, TAU); G.fillStyle = rgba('#7AA7D6', 0.85 * io); G.fill(); } }
+  /* the coat: a clear film over everything */
+  if (o.coat) { G.fillStyle = rgba(C.hero, 0.16 * o.coat); G.fillRect(-1.9, -1.15, 3.8, 2.3); G.strokeStyle = rgba(C.hero, 0.5 * o.coat); G.lineWidth = lw(1.5); G.strokeRect(-1.88, -1.13, 3.76, 2.26); }
+  /* the drop: spread wide on bare metal, beaded high on the coat */
+  if (o.drop && o.drop.k > 0) { const k = o.drop.k, bead = o.drop.bead || 0, R = (o.drop.r || 1.05) * lerp(1, 0.72, bead) * (0.4 + 0.6 * k);
+    const g = G.createRadialGradient(-R * 0.3, -R * 0.35, R * 0.05, 0, 0, R); g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(0.5, 'rgba(160,200,235,0.28)'); g.addColorStop(1, 'rgba(110,160,210,0.42)');
+    G.beginPath(); G.arc(0, 0, R, 0, TAU); G.fillStyle = g; G.fill(); G.strokeStyle = rgba('#5A8FC4', 0.6 + 0.3 * bead); G.lineWidth = lw(1.5 + 1.5 * bead); G.stroke();
+    out.drop = SP(R * 0.7, -R * 0.7); }
+  if (o.short > 0) { G.beginPath(); G.arc(0, 0, 0.32, 0, TAU); G.fillStyle = rgba('#FFE08A', 0.6 * o.short); G.fill(); }
+  out.cath = SP(-gap / 2 - pw / 2, ph / 2); out.anode = SP(gap / 2 + pw / 2, ph / 2); out.gapC = SP(0, 0);
+  return out;
+}
+/** the classroom version (ACS, "Tin Crystals"): a beaker of tin chloride solution, two paper clips on a 9 V battery's leads;
+   tin grows from the − clip as a tree. In stage px: (x, y) the beaker's bottom centre, w its width. k: growth 0..1 */
+function b10_beaker(x, y, w, k, o = {}) {
+  const h = w * 0.95, a = o.a == null ? 1 : o.a; G.save(); G.globalAlpha *= a;
+  G.fillStyle = 'rgba(150,190,225,0.22)'; G.fillRect(x - w / 2 + 4, y - h * 0.7, w - 8, h * 0.7 - 4);
+  G.strokeStyle = inkA(0.6); G.lineWidth = 2.5; G.beginPath(); G.moveTo(x - w / 2, y - h); G.lineTo(x - w / 2, y - 6); G.quadraticCurveTo(x - w / 2, y, x - w / 2 + 6, y); G.lineTo(x + w / 2 - 6, y); G.quadraticCurveTo(x + w / 2, y, x + w / 2, y - 6); G.lineTo(x + w / 2, y - h); G.stroke();
+  for (const [sg, col] of [[-1, '#26272B'], [1, '#C8463D']]) { const cx = x + sg * w * 0.24; line(cx, y - h - 40, cx, y - h * 0.15, { color: '#9AA0A8', w: 4 }); line(cx, y - h - 40, x + sg * 30, y - h - 70, { color: col, w: 3 }); }
+  rr(x - 34, y - h - 104, 68, 44, 5, '#2B2C31', null, 1); text('9 V', x, y - h - 74, { role: 'label', size: 19, color: '#F3F3F5', align: 'center' });
+  if (k > 0) { const T = b10_tree(19, 4), cx = x - w * 0.24, gx = w * 0.42, gy = h * 0.5; G.lineCap = 'round';
+    for (const [x0, y0, x1, y1, b, ww] of T.segs) { if (b > k) continue; G.beginPath(); G.moveTo(cx + x0 * gx, y - h * 0.62 + y0 * gy); G.lineTo(cx + x1 * gx, y - h * 0.62 + y1 * gy); G.strokeStyle = '#8E939B'; G.lineWidth = 1 + 2 * ww; G.stroke(); } }
+  G.restore();
+}
+
 /* ============================================================================================ the slides */
+
+/* ---------------------------------------------------------------- 1. b10_pmic: one chip runs the power ----------------
+   Opens on the battery whose hours b09_life just showed. The demonstration: one battery, one session, two readings. The
+   true charge falls; a voltage guess (as the G Pro X Superlight 2 reads it: no fuel gauge, TechPowerUp) dips in every fight,
+   jumps up after a restart, reads low in the cold and still shows charge when the battery is empty; the voltmeter beside it
+   is the school internal-resistance practical (V = E − Ir): the needle dips with each burst of load. Theseus's nPM1300
+   gauge counts the charge in and out and stays within 3 % (Nordic's benchmark: a voltage table errs by up to 20 %). Then
+   where the chip sits (plan 5, KEY_PARTS: the left-middle spot, 17.9 mm from the module) and the parts it replaces. */
+S({
+  id: 'b10_pmic', ch: 'elec', theme: 'paper', title: 'One chip runs the power', settle: 11, ideas: ['pmic'],
+  src: ['b10Nordic24', 'b10TpuGpx2', 'b10Npm', 'b10Valid', 'b10Plan5', 'b10Aqa'],
+  replaces: ['elc_pmic'],
+  answers: [
+    ['elc_pmic (not rated, no note)', 'Rebuilt as a demonstration: one battery through one session, the true charge, a voltage guess and Theseus\'s gauge drawn against each other, a voltmeter dipping with load beside them'],
+    ['(F30.1) the PMIC far from the MCU', 'The locator shows plan 5\'s board from KEY_PARTS: the PMIC in the left-middle spot and its distance to the module, 17.9 mm'],
+    ['(F30.3) sensor and MCU flipped, the PMIC in the empty left-middle spot', 'The same locator: the sensor centre, the module at the rear, the PMIC left-middle'],
+    ['(F0.5) the nPM1300 named and described as validated', 'Named on the slide; it replaces a charger, regulators, a gauge with its sense resistor, a reset chip and a watchdog (validation report: 4 to 6 parts), said as "up to six"']
+  ],
+  draw: t => {
+    header(t, 'One chip runs the power');
+    captions(t, [[0.6, 'Most mice guess the charge from the battery\'s voltage, and that voltage moves with load, cold and every restart.'],
+      [5.8, 'Theseus\'s nPM1300 counts charge in and out: it reads within 3 %, and does six parts\' work.']]);
+    const u = clamp((t - 0.3) / 5.0), S0 = b10_session(u);
+    /* the session chart: % left against hours of play (the session starts at 46 %: 21 h at 8 khz) */
+    const cx = 170, cy = 300, cw = 980, ch = 400, X = v => cx + v * cw, Y = p => cy + ch - p / 0.6 * ch;
+    for (const p of [0, 0.2, 0.4, 0.6]) { line(cx, Y(p), cx + cw, Y(p), { color: p ? C.hair : C.faint, w: p ? 1.2 : 1.5 }); text(Math.round(p * 100) + ' %', cx - 14, Y(p) + 7, { role: 'tick', color: C.mute, align: 'right' }); }
+    const hrs = 0.46 * B10.h8; for (let h = 0; h <= hrs; h += 5) text(h + ' h', X(h / hrs), Y(0) + 30, { role: 'tick', color: C.mute, align: 'center' });
+    text('Hours of play at 8 khz', cx + cw, Y(0) + 62, { role: 'label', size: 19, color: C.mute, align: 'right' });
+    const N = 240, pts = k => { const out = []; for (let i = 0; i <= N; i++) { const v = i / N; if (v > u) break; const q = b10_session(v); out.push([X(v), Y(k(q))]); } return out; };
+    /* the load: the fights, as bars under the axis */
+    for (let i = 0; i < 200; i++) { const v = i / 200; if (v > u) break; const q = b10_session(v); if (q.load > 0.05) line(X(v), Y(0) - 2, X(v), Y(0) - 2 - 16 * q.load, { color: C.faint, w: 3 }); }
+    poly(pts(q => q.s), { color: C.ink, w: 2.5, dash: [8, 7] });
+    poly(pts(q => q.v), { color: C.second, w: 4 });
+    poly(pts(q => q.g), { color: C.hero, w: 4, alpha: ep(t, 0.3, 0.5) });
+    /* the playhead: the three readings now */
+    const yS = Y(S0.s), yV = Y(S0.v), yG = Y(S0.g);
+    circle(X(u), yV, 7, { fill: C.second }); circle(X(u), yG, 7, { fill: C.hero });
+    /* the guess's faults, named where they happen */
+    const tagAt = v => { const q = b10_session(v); return [X(v), Y(q.v)]; };
+    if (u > 0.15) callout(t, 0.3 + 0.15 * 5 + 0.1, tagAt(0.15), 'Jumps up after a restart', { to: [X(0.15) + 60, Y(0.58)], side: 'r', color: C.secondText, tcolor: C.secondText });
+    if (u > 0.6) callout(t, 0.3 + 0.6 * 5 + 0.1, tagAt(0.6), 'Reads low in the cold', { to: [X(0.6) - 20, Y(0.07)], side: 'l', color: C.secondText, tcolor: C.secondText });
+    if (u >= 1) faultTag(t, 5.4, [X(1), Y(b10_session(1).v)], 'Empty at ' + Math.round(b10_session(1).v * 100) + ' %', { to: [X(1) - 40, Y(0.42)], side: 'l', sub: 'The mouse dies mid-match' });
+    /* the key */
+    { const ky = 268; line(cx, ky - 6, cx + 30, ky - 6, { color: C.ink, w: 2.5, dash: [8, 7] }); text('Charge left', cx + 40, ky, { role: 'label', size: 19, color: C.mute });
+      line(cx + 210, ky - 6, cx + 240, ky - 6, { color: C.second, w: 4 }); const wg = text('Voltage guess (G Pro X Superlight 2)', cx + 250, ky, { role: 'label', size: 19, color: C.secondText }).w;
+      line(cx + 290 + wg, ky - 6, cx + 320 + wg, ky - 6, { color: C.hero, w: 4 }); text('Theseus\'s gauge', cx + 330 + wg, ky, { role: 'label', size: 19, color: C.heroText }); }
+    /* the battery and its voltmeter: the internal-resistance practical (V = E − Ir) */
+    { const px = 1220, py = 270, pw = 620, ph = 300;
+      demoWindow(px, py, pw, ph, 1, { plain: true });
+      text('The voltage under load', px + 24, py + 36, { role: 'label', size: 21, color: C.mute });
+      text('The A-level practical', px + pw - 24, py + 36, { role: 'label', size: 19, color: C.faint, align: 'right' });
+      const bx = px + 40, by = py + 76, bw2 = 140, bh = 166;
+      rr(bx + bw2 / 2 - 22, by - 12, 44, 14, 3, C.faint, null, 1); rr(bx, by, bw2, bh, 10, null, C.ink2, 3);
+      rr(bx + 8, by + 8 + (bh - 16) * (1 - S0.s / 0.6), bw2 - 16, (bh - 16) * S0.s / 0.6, 6, C.ink2, null, 1);
+      text(Math.round(S0.s * 100) + ' %', bx + bw2 / 2, by + bh + 32, { role: 'num', size: 26, color: C.ink, align: 'center' });
+      /* the dial: E falls with the charge; each burst of current pulls it down by I·r */
+      const dx = px + 400, dy = py + 230, R = 150, Vn = 3.3 + 0.9 * clamp(S0.s / 0.6 + 0.1) - 0.22 * S0.load, ang = v => Math.PI * (1.15 + 0.7 * (v - 3.2) / 1.0);
+      G.save(); G.strokeStyle = C.ink2; G.lineWidth = 2.5; G.beginPath(); G.arc(dx, dy, R, ang(3.2), ang(4.2)); G.stroke(); G.restore();
+      for (let v = 3.2; v <= 4.21; v += 0.1) { const a = ang(v), r0 = R - (Math.round(v * 10) % 5 ? 10 : 20); line(dx + Math.cos(a) * r0, dy + Math.sin(a) * r0, dx + Math.cos(a) * R, dy + Math.sin(a) * R, { color: C.ink2, w: 2 }); }
+      for (const v of [3.2, 3.7, 4.2]) { const a = ang(v); text(v.toFixed(1) + ' V', dx + Math.cos(a) * (R + 30), dy + Math.sin(a) * (R + 30) + 7, { role: 'tick', color: C.mute, align: 'center' }); }
+      const a = ang(Vn); line(dx, dy, dx + Math.cos(a) * (R - 14), dy + Math.sin(a) * (R - 14), { color: S0.load > 0.2 ? C.secondText : C.ink, w: 4 }); circle(dx, dy, 8, { fill: C.ink });
+      rich([{ s: 'V = E − I·r', role: 'num', size: 24, color: C.ink }, { s: 'dips with each burst of load', role: 'small', size: 20, weight: 600, color: C.mute, gap: 12, sentence: false }], px + 230, py + ph - 22, {});
+    }
+    /* where the chip sits on plan 5's board, and the parts it replaces */
+    { const px = 1220, py = 600, pw = 620, ph = 300, k6 = ep(t, 6.4, 7.4, E.io3);
+      demoWindow(px, py, pw, ph, 1, { plain: true });
+      text('One chip for up to six parts', px + 24, py + 36, { role: 'label', size: 21, color: C.mute });
+      const m = part(px + 100, py + 170, 1.85, () => { mouseSimple('top', { show: ['board'] }); const pm = KEY_PARTS.pmic, mo = KEY_PARTS.module;
+        G.fillStyle = rgba(C.hero, 0.9); G.fillRect(pm.c[0] - pm.w / 2, pm.c[1] - pm.h / 2, pm.w, pm.h);
+        G.strokeStyle = C.comp; G.lineWidth = lw(1.5); G.strokeRect(mo.c[0] - mo.w / 2, mo.c[1] - mo.h / 2, mo.w, mo.h);
+        return { pm: SP(pm.c[0], pm.c[1]), mo: SP(mo.c[0], mo.c[1]) }; });
+      if (m.pm) { line(m.pm[0], m.pm[1], m.mo[0], m.mo[1], { color: C.heroText, w: 1.5, dash: [4, 4] }); const d = Math.hypot(KEY_PARTS.pmic.c[0] - KEY_PARTS.module.c[0], KEY_PARTS.pmic.c[1] - KEY_PARTS.module.c[1]); callout(t, -1, m.pm, 'PMIC', { to: [px + 190, py + 100], side: 'r', color: C.hero, tcolor: C.heroText }); text(d.toFixed(1) + ' mm to the module', px + 202, py + 136, { role: 'small', size: 20, weight: 600, color: C.ink2 }); }
+      const parts = ['Charger', 'Regulator', 'Regulator', 'Fuel gauge', 'Sense resistor', 'Reset, watchdog'], ox = px + 300, oy = py + 160;
+      parts.forEach((n2, i) => { const c0 = [ox + (i % 2) * 153, oy + Math.floor(i / 2) * 44], c1 = [ox + 76, oy + 44], c = [lerp(c0[0], c1[0], k6), lerp(c0[1], c1[1], k6)];
+        rr(c[0], c[1], 145, 36, 5, TH ? '#FFFFFF' : '#1E1F23', inkA(0.35), 1.5, 1 - k6); text(n2, c[0] + 10, c[1] + 25, { role: 'small', size: 19, weight: 600, color: C.ink2, alpha: 1 - k6 }); });
+      if (k6 > 0.5) { const ka = ep(t, 7.0, 7.4); part(ox + 150, oy + 60, 8, () => chipMM({ w: 5, hi: true, label: 'nPM1300' }), { alpha: ka });
+        text('nPM1300, 5 × 5 mm', ox + 150, oy + 122, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: ka }); }
+    }
+    /* the payoff */
+    verdict(t, 6.2, 80, 880, { from: 20, to: 3, unit: '%', label: 'Battery reading error, worst case', better: 'lower', who: ['Guess', 'Theseus'], net: false, size: 96, maxW: 900 });
+    source(t, 'Errors: Nordic (Kjosavik 2024): a voltage table errs by up to 20 %, the nPM1300\'s gauge stays within about 3 %. G Pro X Superlight 2: no fuel gauge; its reading "would suddenly sit at 60%" after a restart (TechPowerUp). Session drawn to show these behaviours; chip count: Theseus validation report.', { t0: 2.4 });
+  }
+});
+
+/* ---------------------------------------------------------------- 2. b10_charge: fast charging, safely ----------------
+   In from b10_pmic's empty battery. The demonstration: two batteries plugged in at 20 % on the same clock: the Viper V4
+   Pro's at 0.169 A (TechPowerUp: 0.55C of its 306 mAh), Theseus's at its battery's rated 1C (Jauch: 370 mA). The current
+   arrows are sized by amps, the fills rise, and the CC/CV curves (Battery University: constant current, then constant
+   voltage) are drawn under them. Ten minutes: +9.2 % → 3.7 h against +16.7 % → 7.7 h at 8 khz. Then the four guards that
+   make 1C safe act in turn, each a cause and its effect: cold, a bad charger, a short, storage. */
+S({
+  id: 'b10_charge', ch: 'elec', theme: 'night', title: 'Fast charging, safely', settle: 11, ideas: ['pmic', 'battery'],
+  src: ['b10TpuV3', 'elcLp4025', 'b10Npm', 'b10Bu409', 'b10Bu410'],
+  replaces: ['elc_charge', 'elc_safe'],
+  answers: [
+    ['elc_charge (not rated, no note)', 'Rebuilt as a demonstration: two batteries on one clock, current arrows sized by amps, fills rising, the CC/CV curve under each; ten minutes buy 3.7 h on the V4 Pro, 7.7 h on Theseus at 8 khz'],
+    ['elc_safe (not rated, no note)', 'The four guards act in turn, each cause with its effect: cold (waits until 10 °C), a bad charger (stopped at the input, 22 V rated), a short (the battery\'s own board opens), storage (ship mode, 370 nA)'],
+    ['(F0.5) honest wording: the PMIC is not the limit, the battery is', 'Said: Theseus charges at its battery\'s rated 1C; the nPM1300 could go to 800 mA. Its charger is linear too, so the guards, not less heat, make 1C safe']
+  ],
+  draw: t => {
+    header(t, 'Fast charging, safely');
+    captions(t, [[0.6, 'The Viper V4 Pro charges at 0.17 A, half its battery\'s capacity an hour. Theseus charges at its battery\'s rated 1C.'],
+      [5.8, 'Four guards make 1C safe: cold, a bad charger, a short and storage are each caught in time.']]);
+    const mins = 10 * ep(t, 0.8, 4.8, E.lin), V = B10.v4, A = b10_ccv(V.c, 0.2), Bc = b10_ccv(1.0, 0.2);
+    const sA = A.at(mins), sB = Bc.at(mins);
+    /* the two batteries, filling */
+    const bat = (x, s, name, sub, col, colT, amps, tag) => {
+      const y = 410, w = 120, h = 200;
+      rr(x + w / 2 - 20, y - 12, 40, 14, 3, C.faint, null, 1); rr(x, y, w, h, 12, null, C.ink2, 3);
+      const fh = (h - 16) * s; rr(x + 8, y + h - 8 - fh, w - 16, fh, 7, col, null, 1);
+      line(x + 8, y + h - 8 - (h - 16) * 0.2, x + w - 8, y + h - 8 - (h - 16) * 0.2, { color: C.bg, w: 2, dash: [4, 4] });
+      text(Math.floor(s * 1000) / 10 + ' %', x + w / 2, y + h + 40, { role: 'num', size: 30, color: C.ink, align: 'center' });
+      /* the current: an arrow into the + end, as thick as the amps */
+      const ka = mins > 0 ? 1 : 0.35, aw = 8 + amps * 60;
+      arrow(x + w / 2, y - 92, x + w / 2, y - 16, { color: colT, w: aw, hs: aw * 1.4, alpha: ka });
+      text(amps.toFixed(2) + ' A', x + w / 2 + aw / 2 + 16, y - 46, { role: 'num', size: 26, color: colT });
+      ltag(x - 10, 286, name, null, { size: 22, color: colT });
+      text(sub, x - 10, 314, { role: 'small', size: 20, weight: 600, color: C.mute });
+    };
+    bat(170, sA, 'Viper V4 Pro', '306 mAh at 0.55C', C.second, C.secondText, V.A, 'rival');
+    bat(600, sB, 'Theseus', '370 mAh at 1C', C.hero, C.heroText, B10.cell.mAh / 1000, 'ths');
+    /* the clock */
+    { const mm = Math.floor(mins), ss = Math.floor((mins - mm) * 60); rich([{ s: mm + ':' + String(ss).padStart(2, '0'), role: 'num', size: 54, color: C.ink }, { s: 'min', role: 'label', size: 20, color: C.mute, gap: 8, caps: false }], 445, 520, { align: 'center' }); text('Plugged in at 20 %', 445, 558, { role: 'label', size: 19, color: C.mute, align: 'center' }); }
+    /* the CC/CV curves under them: charge against minutes, the first ten lit */
+    { const cx = 120, cy = 700, cw = 760, chh = 160, X = m => cx + m / 120 * cw, Y = s => cy + chh - s * chh;
+      for (const p of [0.2, 0.6, 1.0]) { line(cx, Y(p), cx + cw, Y(p), { color: C.hair, w: 1.2 }); text(Math.round(p * 100) + ' %', cx - 12, Y(p) + 7, { role: 'tick', color: C.mute, align: 'right' }); }
+      for (const m of [0, 30, 60, 90, 120]) text(m + ' min', X(m), cy + chh + 28, { role: 'tick', color: C.mute, align: 'center' });
+      const crv = (R, col) => { poly(R.pts.filter(p => p[0] <= 120).map(p => [X(p[0]), Y(p[1])]), { color: col, w: 2, alpha: 0.35 }); poly(R.pts.filter(p => p[0] <= mins).map(p => [X(p[0]), Y(p[1])]), { color: col, w: 4 }); };
+      crv(A, C.second); crv(Bc, C.hero);
+      line(X(10), cy - 6, X(10), cy + chh, { color: C.ink2, w: 1.5, dash: [5, 5] }); text('10 min', X(10) + 8, cy + 14, { role: 'label', size: 19, color: C.ink2 });
+      text('Constant current, then constant voltage', cx + cw, cy - 18, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ep(t, 2.0, 2.4) });
+    }
+    /* the four guards: each cause and its effect, in turn */
+    { const px = 980, py = 280, pw = 860, ph = 412;
+      demoWindow(px, py, pw, ph, 1, { plain: true });
+      text('Four guards', px + 24, py + 36, { role: 'label', size: 21, color: C.mute });
+      const G4 = [['Cold battery, 5 °C', 'Waits until it reaches 10 °C', 'The PMIC reads the battery\'s NTC'], ['A bad charger\'s 20 V spike', 'Stopped at the input', 'Rated to 22 V'], ['A short circuit', 'The battery\'s own board opens', 'Its protection chip and switches'], ['Stored, switched off', 'Ship mode: 370 nA', 'Under 1 % a year']];
+      G4.forEach(([cause, effect, why], i) => { const t0 = 6.2 + i * 0.8, k = ep(t, t0, t0 + 0.4), kk = ep(t, t0 + 0.3, t0 + 0.7), y = py + 96 + i * 88;
+        circle(px + 40, y - 7, 9, { fill: kk > 0.5 ? C.hero : C.faint, alpha: 0.3 + 0.7 * k });
+        text(cause, px + 64, y, { role: 'small', size: 23, weight: 650, color: C.ink, alpha: 0.35 + 0.65 * k });
+        arrow(px + 430, y - 7, px + 470, y - 7, { color: C.faint, w: 2, hs: 8, alpha: kk });
+        text(effect, px + 484, y, { role: 'small', size: 23, weight: 650, color: C.heroText, alpha: kk });
+        text(why, px + 484, y + 30, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: kk }); });
+    }
+    /* the payoff */
+    const hA = (A.at(10) - 0.2) * B10.cell.whV4 / B10.w8, hB = (Bc.at(10) - 0.2) * B10.cell.wh / B10.w8;
+    verdict(t, 5.2, 980, 846, { from: Math.round(hA * 10) / 10, to: Math.floor(hB * 10) / 10, unit: 'h', dec: 1, label: 'Play from a 10-minute charge, at 8 khz', better: 'higher', who: ['Viper V4 Pro', 'Theseus'], size: 110, maxW: 800 });
+    source(t, 'V4 Pro: 0.169 A on 306 mAh (TechPowerUp). Theseus: Jauch LP402535JU, maximum charge 1.0C (370 mA); the nPM1300 charges up to 800 mA, 22 V input tolerance, NTC and JEITA, ship mode 370 nA. CC/CV curves from the deck\'s battery model; hours at the V4 Pro\'s measured 8 khz draw. Cold charging plates lithium (Battery University BU-410).', { t0: 2.4 });
+  }
+});
+
+/* ---------------------------------------------------------------- 3. b10_battery: the battery, per gram ----------------
+   Brock (F27 cells 4/10): "lithium ion numbers are way off", "look at smaller batteries", "a gram or two heavier ... same
+   capacity"; F21.8 "battery", never "cell". The demonstration is the classroom balance: a mouse-sized Li-ion battery (the
+   AAA-size 10440: 350 mAh, 9 g, akkuteile) on one pan, Theseus's Li-po pouch (LP402535JU: 370 mAh, 8 g, Jauch) on the
+   other. Released, the beam swings and settles toward the Li-ion: a gram heavier for 20 mAh less. Cut open: the Li-ion's
+   steel can is about 2.2 g of dead weight, the pouch's foil about 0.4 g. Payoff: energy for the weight, 144 → 171 Wh/kg,
+   and in the same 8 g, 175 h → 208 h at 1 khz (derived). */
+S({
+  id: 'b10_battery', ch: 'elec', theme: 'paper', title: 'The battery, per gram', settle: 10, ideas: ['battery'],
+  src: ['elc10440', 'b10Keep10440', 'elcLp4025', 'b10Brock'],
+  replaces: ['cells'],
+  answers: [
+    ['"lithium ion numbers are way off"', 'The Li-ion is now a mouse-sized one, the AAA-size 10440, from two sellers\' datasheets: 350 mAh at 9 g (akkuteile) and about 10 g (Keeppower); not the 18650'],
+    ['"look at smaller batteries"', 'The 10440 is the smallest common Li-ion that holds a mouse\'s charge; it sits on the balance against the 370 mAh pouch'],
+    ['"a gram or two heavier ... same capacity"', 'On the balance the Li-ion is a gram heavier for 20 mAh less (scaled to 370 mAh: 9.5 to 10.6 g, so 1.5 to 2.6 g heavier); cut open, its steel can is about 2.2 g against the pouch\'s 0.4 g of foil'],
+    ['(F21.8) "battery", never "cell"', 'Every word on the slide says battery; the example is named: Jauch LP402535JU']
+  ],
+  draw: t => {
+    header(t, 'The battery, per gram');
+    captions(t, [[0.6, 'A Li-ion battery the size of a AAA holds 350 mAh in a steel can and weighs 9 g. Theseus\'s Li-po pouch holds 370 mAh in 8 g.'],
+      [5.0, 'The can is about 2.2 g of steel, the pouch\'s foil 0.4 g: the same 8 g of pouch runs 33 h longer.']]);
+    const cell = B10.cell, cy = B10.cyl[0], V = 3.7;
+    const whkgI = cy.mAh / 1000 * V / cy.g * 1000, whkgP = cell.wh / cell.g * 1000, hI = whkgI * cell.g / 1000 / B10.w1, hP = cell.wh / B10.w1;
+    locator(t, -0.4, 94, 290, 46, 'top', msBox('top', 'battery'), { hi: ['battery'] });
+    /* the balance: locked level while the batteries are set down, then released */
+    const tr = 0.9, w = 2 * Math.PI * 0.9, z = 0.22, th0 = -0.11, u = Math.max(0, t - tr);
+    const theta = t < tr ? 0 : th0 * (1 - Math.exp(-z * w * u) * (Math.cos(w * Math.sqrt(1 - z * z) * u) + z / Math.sqrt(1 - z * z) * Math.sin(w * Math.sqrt(1 - z * z) * u)));
+    const B = b10_balance(640, 470, 330, theta, {});
+    const s = 4.8, drop = 70 * (1 - ep(t, 0.0, 0.7, E.out3));
+    if (B.left) {
+      const L0 = B.left, R0 = B.right;
+      part(L0[0], L0[1] - 5.1 * s - drop, s, () => b10_li10440MM({ label: true }));
+      part(R0[0] - 8.5 * s / 2, R0[1] - drop, s, () => b10_pouchMM({ plug: 'back' }));
+      ltag(L0[0] - 110, L0[1] + 60, '10440 Li-ion', null, { size: 21, color: C.secondText });
+      text('350 mAh · 9 g', L0[0] - 110, L0[1] + 90, { role: 'small', size: 22, weight: 650, color: C.ink2 });
+      heroTag(R0[0] - 60, R0[1] + 60, 'Li-po pouch', null, { size: 21 });
+      text('370 mAh · 8 g', R0[0] - 60, R0[1] + 90, { role: 'small', size: 22, weight: 650, color: C.ink2 });
+      /* the reading, under the pointer once the beam has settled */
+      const kr = ep(t, 3.0, 3.4);
+      if (kr > 0.003) rich([{ s: '1 g', role: 'num', size: 30, color: C.secondText }, { s: 'heavier, for 20 mAh less', role: 'small', size: 22, weight: 650, color: C.ink2, gap: 10, sentence: false }], 640, 866, { align: 'center', alpha: kr });
+    }
+    /* cut open: what the extra weight is */
+    { const px = 1240, py = 270, pw = 600, ph = 420, kc = ep(t, 3.6, 4.6), kf = ep(t, 4.4, 4.9);
+      demoWindow(px, py, pw, ph, ep(t, 3.4, 3.9));
+      text('Cut open', px + 24, py + 36, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 3.5, 3.9) });
+      const o1 = part(px + pw / 2, py + 130, 9, () => b10_li10440MM({ cut: kc, hiCan: kc, label: true }), { alpha: ep(t, 3.4, 3.9) });
+      const o2 = part(px + pw / 2 - 90, py + 340, 7.4, () => b10_pouchMM({ hiFoil: 0, plug: false }), { alpha: ep(t, 3.6, 4.1) });
+      if (o1.can) callout(t, 4.4, o1.can, 'Steel can: ' + B10.can.toFixed(1) + ' g', { to: [px + 330, py + 226], side: 'l', color: C.red, tcolor: C.red, alpha: kc });
+      if (o2.top) callout(t, 4.9, o2.top, 'Foil: ' + B10.foil.toFixed(1) + ' g', { to: [px + pw - 150, py + 300], side: 'r', color: C.hero, tcolor: C.heroText, alpha: kf });
+    }
+    /* the payoff */
+    verdict(t, 5.6, 1240, 830, { from: Math.round(whkgI / 10) * 10, to: Math.floor(whkgP / 10) * 10, unit: 'Wh/kg', label: 'Energy for the weight, about', better: 'higher', who: ['10440 Li-ion', 'Li-po pouch'], net: '+' + Math.floor((hP - hI) / 10) * 10 + ' h at 1 khz, same 8 g', size: 110, maxW: 600 });
+    scaleNote(80, 926, 'is 27 % of Theseus\'s 29.3 g, set in the tail to balance it', { lead: cell.g + ' g of battery', t, t0: 6.6, size: 22 });
+    source(t, 'Li-ion: akkuteile 10440, 350 mAh, 9 ± 1 g (Keeppower\'s: about 10 g). Li-po: Jauch LP402535JU, 370 mAh, 8 g. Energy at 3.7 V; hours at a Viper V4 Pro\'s draw at 1 khz. Can (0.18 mm steel) and foil (0.11 mm laminate) weights derived from their sizes.', { t0: 2.4 });
+  }
+});
 
 /* ---------------------------------------------------------------- 4. b10_board: one board, one side, one reflow ----------
    Brock (F27, elc_oneside, 7/10): "good but i wish it was even better visualized". The demonstration: one reflow oven, two
@@ -744,7 +1045,7 @@ S({
   draw: t => {
     header(t, 'One board, one side, one reflow');
     captions(t, [[0.6, 'Parts on both faces need two oven passes. In the second, the first face hangs in melted solder.'],
-      [4.4, 'Theseus puts every part on one face: one board, one pass, and nothing ever hangs.']]);
+      [4.4, 'Theseus puts every part on one face: one pass, every joint melted once, and nothing ever hangs.']]);
     const u = Math.max(0, t - 0.3), fb = b10_fb(u), Lp = 4200, s = 16;
     /* the map: the oven's heat along its length, the boards' thermocouple riding it; where the board sits in the mouse */
     b10_profileChart(t, 300, 290, 1000, 84, fb, {});
@@ -784,6 +1085,225 @@ S({
   }
 });
 
+/* ---------------------------------------------------------------- 5. b10_sealed: a coat that keeps water out ----------
+   Brock (F27 elecsheet1 7/10): "show joe this protects against water for very little weight, something few might do". The
+   demonstration: a drop of sweat (salt water: Na⁺ and Cl⁻, 10 to 90 mmol/L) lands across two pads at battery voltage.
+   Bare, tin goes into the water at the + pad and comes out at the − pad as a growing metal tree (electrochemical
+   migration) until it bridges them: DTU shorted a part under a salty drop at 5 V in 14 to 62 s. Wipe to Theseus: the same
+   drop on a 50 µm coat beads up, nothing flows, a minute later it is still dry. Classroom: tin crystals from a 9 V battery
+   and two paper clips (ACS). Cost: about 0.2 g of coat, from plan 5's board. */
+S({
+  id: 'b10_sealed', ch: 'elec', theme: 'paper', title: 'A coat that keeps water out', settle: 11, ideas: [98],
+  src: ['b10Sweat', 'b10Dtu12', 'b10Dfr', 'b10Medgyes13', 'b10Humiseal', 'b10Hyperx', 'b10AcsTin', 'b10Plan5'],
+  replaces: ['elecsheet1'],
+  answers: [
+    ['"show joe this protects against water"', 'A drop of sweat across two powered pads: bare, a tin tree grows across and shorts them (DTU: 14 to 62 s at 5 V); wiped to Theseus\'s coated board, the same drop beads on the film and nothing flows'],
+    ['"for very little weight"', 'About 0.2 g of coat at 50 µm over both faces of plan 5\'s board (0.1 to 0.3 g for 25 to 75 µm, derived), under 1 % of the mouse'],
+    ['"something few might do"', 'Said: few mice protect the board; HyperX\'s Pulsefire Haste Wireless (IP55, "to withstand sweat") is named as the exception'],
+    ['(elecsheet1) the ON/OFF switch panel', 'Not on this slide: the switch\'s place is the bottom cover (F29.3) and ship mode is on b10_charge']
+  ],
+  draw: t => {
+    header(t, 'A coat that keeps water out');
+    captions(t, [[0.6, 'Sweat is salt water. Across two powered pads it grows a tin tree from one to the other: on a bare board, a short in seconds.'],
+      [6.0, 'Theseus\'s board is coated: the same drop beads on the film, nothing flows, and a minute later it is still dry.']]);
+    const P = KEY_PARTS.board.pts; let A2 = 0; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; A2 += a[0] * b[1] - b[0] * a[1]; }
+    const area = Math.abs(A2) / 2 / 100, coatG = um => 2 * area * 1.1 * um / 1e4 * 1.05;   /* cm², both faces + 10 % for the parts' flanks, urethane 1.05 g/cm³ */
+    locator(t, -0.4, 94, 290, 46, 'top', msBox('top', 'board'), { hi: ['board'] });
+    const box = [200, 280, 900, 560], s = 166, cx = box[0] + box[2] / 2, cy = box[1] + box[3] / 2 + 46;
+    const fall = ep(t, 0.0, 0.5, E.in3), grow = clamp((t - 1.0) / 3.2), clockA = 14 * grow, sh = env(t, 4.2, 4.25, 4.6, 5.0);
+    const tB = Math.max(0, t - 6.0), clockB = Math.min(60, tB * 24);
+    demoWindow(box[0], box[1], box[2], box[3], 1, { plain: true });
+    let R = null;
+    clipped(box[0], box[1], box[2], box[3], () => wipeTo(t, 5.0, 0.9, box,
+      k => { R = part(cx, cy, s, () => b10_padsMM({ drop: { r: 1.05, k: fall }, ions: ep(t, 0.8, 1.2) * (1 - ep(t, 4.2, 4.6)), tree: grow, short: sh, t, seed: 7 })); },
+      k => { part(cx, cy, s, () => b10_padsMM({ drop: { r: 1.05, k: 1, bead: 1 }, coat: 1, t })); }, { rival: 'Bare board', right: 'Theseus' }));
+    /* the clock and the state of the pair */
+    { const theseus = t >= 5.9, clk = theseus ? clockB : clockA, shorted = !theseus && grow >= 1;
+      rich([{ s: Math.floor(clk) + ' s', role: 'num', size: 48, color: shorted ? C.red : C.ink }, { s: theseus ? 'coated' : 'bare', role: 'label', size: 20, color: theseus ? C.heroText : C.secondText, gap: 12 }], box[0] + 28, box[1] + 64, {});
+      text(shorted ? 'Shorted' : theseus ? 'No current' : 'Tin crossing the gap', box[0] + 28, box[1] + 100, { role: 'label', size: 21, color: shorted ? C.red : theseus ? C.heroText : C.mute });
+      text('5 V across a 0.5 mm gap', box[0] + box[2] - 24, box[1] + 40, { role: 'label', size: 19, color: C.mute, align: 'right' });
+      if (theseus) text('Coat drawn as a tint: it is 50 µm thick', box[0] + box[2] - 24, box[1] + box[3] - 22, { role: 'label', size: 19, color: C.faint, align: 'right' }); }
+    if (R && R.gapC && t < 5.0) { faultTag(t, 4.25, R.gapC, 'Shorted at 14 s', { to: [R.gapC[0] + 150, box[1] + box[3] - 70], side: 'r', sub: 'DTU: 14 to 62 s at 5 V, by the salt', maxW: 300 }); }
+    /* the classroom version */
+    { const px = 1160, py = 280, pw = 680, ph = 372, r = demoPanel(t, 0.2, [px, py, pw, ph], { src: 'ACS 2023' });
+      b10_beaker(r[0] + 130, r[1] + r[3] - 6, 140, clamp((t - 1.2) / 3.0), {});
+      text('Tin chloride solution, a 9 V battery and two paper clips: tin grows from the − clip.', r[0] + 300, r[1] + 40, { role: 'small', size: 21, weight: 600, color: C.ink2, maxW: r[2] - 300, lh: 1.3 }); }
+    /* the payoff: the time to a short, and what the coat costs */
+    { const k1 = ep(t, 8.6, 9.0), k2 = ep(t, 8.9, 9.3);
+      text('A sweat drop on powered pads', 1160, 704, { role: 'label', size: 22, color: C.mute, alpha: k1 });
+      rich([{ s: '14 s', role: 'num', size: 60, color: C.secondText }, { s: 'to a short, bare', role: 'small', size: 24, weight: 650, color: C.ink2, gap: 14, sentence: false }], 1160, 776, { alpha: k1 });
+      rich([{ s: 'None', role: 'd1', size: 60, color: C.heroText, grad: C.heroGrad }, { s: 'in a minute, coated', role: 'small', size: 24, weight: 650, color: C.ink2, gap: 14, sentence: false }], 1160, 850, { alpha: k2 });
+      scaleNote(1160, 914, 'of coat (50 µm, both faces): ' + (coatG(50) / THESEUS.mass * 100).toFixed(1) + ' % of the mouse', { lead: '+' + coatG(50).toFixed(1) + ' g', t, t0: 9.3, size: 22 }); }
+    text('Few mice protect the board: HyperX rates its Pulsefire Haste Wireless IP55 against sweat.', 200, 880, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: ep(t, 9.6, 10.0), maxW: 900 });
+    source(t, 'Sweat: Na⁺ and Cl⁻ 10 to 90 mmol/L (GSSI). Shorts: DTU 2012, a NaCl drop on an 0805 part at 5 V; DfR: dendrites in seconds. Coat: 25 to 75 µm (HumiSeal); weight from plan 5\'s board, ' + area.toFixed(1) + ' cm² a face: ' + coatG(25).toFixed(2) + ' to ' + coatG(75).toFixed(2) + ' g. Pads drawn 166× life size; growth time-lapsed.', { t0: 2.4 });
+  }
+});
+
+/* ---------------------------------------------------------------- 6. b10_wires: braided, not ribbon -------------------
+   Brock rated the old elc_tear 8/10 and elc_flex 7/10 (no notes): their demonstration is kept, on one stage, with the
+   kit's verdict, and with one number corrected (08:45 rule: no model carried forward unchecked): the old slide said a
+   nicked ribbon tears at 0.07 N, Kapton's propagating tear, and headlined 200×; but the tear must also break each copper
+   trace it reaches, about 0.26 N for a 0.1 mm × 12 µm trace (220 MPa, derived), so the honest gap is about 50×. */
+S({
+  id: 'b10_wires', ch: 'elec', theme: 'night', title: 'Braided, not ribbon', settle: 12, ideas: [51, 69],
+  src: ['elcKapton', 'elcCu', 'elcAwg', 'elcShengyi', 'elcAlexander', 'b10HwbCougar', 'b10Brock'],
+  replaces: ['elc_tear', 'elc_flex'],
+  answers: [
+    ['elc_tear (8/10, rated, no note)', 'Kept: the nicked ribbon and the braid with a cut strand on one stage, pulled by the pointer; the ribbon tears across, the braid holds. Corrected: the tear force now counts the copper traces the tear must break (about 0.26 N each, derived), not only the film\'s 0.07 N, so the verdict says about 50×, not the old 200×'],
+    ['elc_flex (7/10, rated, no note)', 'Kept as its numbers under the demonstration: a ribbon\'s copper takes the whole fold on one line (copper-clad film rated for 50 to 80 folds at 0.38 mm), finer strands last longer (Alexander 1953: 351 bends for 7 strands, 2,908 for 105)'],
+    ['(F2.38) the simulation and its statistic on the slide', 'The pull is read out live beside the pointer, and the verdict gives the ratio'],
+    ['(F3.6) "Won\'t tear like ribbon" and "Flex life" here, "Less radio noise" on b10_twist', 'As asked']
+  ],
+  draw: t => {
+    header(t, 'Braided, not ribbon');
+    captions(t, [[0.6, 'Most mice reach the side buttons with a ribbon: copper printed on film. Nick its edge, and a pull piles up at the nick until it tears across.'], [6.6, 'Theseus braids three wires on a JST plug: pulled, they share the load; cut one, and two still carry it.']]);
+    const X = 80, Y = 280, Wd = 1200, Ht = 440, ka = 1;
+    demoWindow(X, Y, Wd, Ht, ka, { plain: true });
+    const yA = Y + 132, yB = Y + 340, bx = X + 30, bw = 140, xc0 = bx + bw, xEnd = X + 1040, tabW = 56, wR = 90;
+    elc_slab(bx, Y + 30, bw, Ht - 60, 1, { routes: [yA - 60, yB - 50] });
+    text('One board', bx + bw / 2, Y + Ht - 52, { role: 'label', size: 21, color: '#E8E8EB', align: 'center' });
+    text('Pulls: illustration', X + Wd - 32, Y + 50, { role: 'label', size: 20, color: C.faint, align: 'right', alpha: ep(t, 3.0, 3.4) });
+    const xn = xc0 + 120, tabX = xEnd + tabW / 2, cutX = xc0 + 540, sleeveX = xEnd + 30;
+    const L2 = ep(t, 8.7, 10.1, E.io3), layPx = 190 * (1 + 0.06 * L2), Ab = 8 * (1 - 0.18 * L2);
+    const sY = elc_strandY(cutX, xc0 + 8, yB, Ab, layPx, 1);
+    const keys = [[1.9, [xn + 70, yA - 96]], [2.4, [xn, yA - wR / 2 - 2]], [2.7, [xn, yA - wR / 2 - 2]], [3.3, [tabX, yA + 4]], [3.5, [tabX, yA + 4]], [4.7, [tabX + 26, yA - 18]], [6.0, [tabX + 34, yA - 20]], [6.4, [tabX + 84, yA - 6]],
+      [7.0, [cutX + 60, yB - 84]], [7.4, [cutX, sY]], [7.7, [cutX, sY]], [8.5, [sleeveX, yB + 2]], [8.7, [sleeveX, yB + 2]], [10.1, [sleeveX + 26, yB - 18]], [12.5, [sleeveX + 26, yB - 18]]];
+    const P = t > 1.6 ? kf(t, keys, E.cam) : keys[0][1], Pr = kf(Math.min(t, 6.4), keys, E.cam);
+    /* the ribbon: nicked, pulled, torn across (the film tears at 0.07 N; each trace it meets takes about 0.26 N) */
+    const kA = 1, L1 = ep(t, 3.5, 4.7, E.io3), torn = t >= 6.0;
+    const kRows = t < 2.5 ? 0 : t < 4.7 ? 4 : Math.round(lerp(4, 24, E.in3(prog(t, 4.7, 6.0))));
+    const aNick = 0.5 * kRows / 4, Kt = kRows ? 1 + 2 * Math.sqrt(aNick / 0.02) : 1;
+    const xr1 = lerp(xc0 + 6, xEnd, kA), liftA = t < 3.5 || torn ? 0 : P[1] - (yA + 4), tabCol = '#8E7442';
+    elc_conn(xc0 + 12, yA, 'zif', 1);
+    if (!torn) {
+      elc_ribbon(xc0 + 6, xr1, yA, wR, { k: kRows, xn, load: L1, Kt, dy: liftA, alpha: ka });
+      rr(xEnd, yA - wR / 2 + liftA, tabW, wR, 8, tabCol, null, 1, ka);
+      if (kRows && L1 > 0.05) warm(xn, yA - wR / 2 + kRows * wR / 24, 34 + 30 * L1, heatCol(1), 0.5 * L1);
+    } else {
+      elc_ribbon(xc0 + 6, xn, yA, wR, { k: 24, xn, load: 0, alpha: ka });
+      const ox = Pr[0] - tabX, oy = Pr[1] - (yA + 4), rot = 0.03 * ep(t, 6.0, 6.6);
+      G.save(); G.translate(xn + ox, yA + oy); G.rotate(rot); G.translate(-xn, -yA);
+      elc_ribbon(xn + 5, xEnd, yA, wR, { k: 0, xn: -1e4, load: 0, alpha: ka }); rr(xEnd, yA - wR / 2, tabW, wR, 8, tabCol, null, 1, ka);
+      G.restore();
+    }
+    text('Ribbon cable (FPC)', xc0 + 24, yA - wR / 2 - 24, { role: 'label', size: 22, color: C.ink });
+    text('Polyimide film, three copper traces', xc0 + 24 + tw('Ribbon cable (FPC)', { role: 'label', size: 22 }) + 22, yA - wR / 2 - 24, { role: 'small', size: 25, color: C.mute });
+    if (kRows && t < 6.0) callout(t, 2.8, [xn, yA - wR / 2 + 4 * wR / 24], 'Kt ≈ 11 at the nick\'s tip', { to: [xn + 170, yA + wR / 2 + 30], side: 'r', color: C.bad, sub: 'a 0.5 mm nick, its tip 0.02 mm round', maxW: 600 });
+    const onTrace = [5, 12, 19].some(j => Math.abs(kRows - j - 0.5) < 1.2) && t > 4.7, FA = t < 4.7 ? 0.07 * L1 : onTrace ? 0.26 : 0.07;
+    if (t > 3.5 && t < 6.4) text(fmtN(FA, 2) + ' N', P[0] + 28, P[1] + 46, { font: 'mono', size: 24, weight: 700, color: onTrace ? C.bad : C.ink, alpha: ep(t, 3.5, 3.8) });
+    /* the braid: one strand cut, pulled, and the other two hold */
+    const kB = 1, xb1 = lerp(xc0 + 8, xEnd, kB), cut = t >= 7.6, gap = cut ? 6 + 30 * E.out3(prog(t, 7.6, 8.0)) : 0;
+    const FB = 2.0 * L2, per = cut ? FB / 2 : FB / 3, hk = per / ELB.wireN, heat = [hk, cut ? 0 : hk, hk];
+    elc_conn(xc0 + 12, yB, 'jst', 1);
+    glowField(t, (xc0 + xEnd) / 2, yB, 420, { a: 0.55 });
+    const liftB = t < 8.7 ? 0 : P[1] - (yB + 2);
+    G.save(); if (liftB) { const sk = liftB / (xEnd - xc0); G.transform(1, sk, 0, 1, 0, -sk * xc0); }
+    elc_braid(xc0 + 8, xb1, yB, Ab, layPx, 13, { heat, cut: cut ? { i: 1, x: cutX, gap } : null, alpha: ka, sweep: t > 10.4 ? lerp(xc0 - 200, xEnd + 200, ((t - 10.4) % 3.2) / 3.2) : null });
+    elc_sleeve(xEnd - 4, yB, 64, 34, ka);
+    G.restore();
+    const hw = heroTag(xc0 + 24, yB - 50, 'Theseus', 'braided', {});
+    text('Three 32 AWG wires on a JST plug', xc0 + 24 + hw + 18, yB - 50, { role: 'small', size: 25, color: C.mute });
+    if (cut) callout(t, 7.8, [cutX, sY], 'One strand cut', { to: [cutX + 150, yB + 58], side: 'r', color: C.bad });
+    if (t > 8.7) text(fmtN(FB, 2) + ' N', P[0] + 28, P[1] + 46, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: ep(t, 8.7, 9.0) });
+    const down = (t > 3.5 && t < 6.4) || t > 8.7;
+    if (t > 1.6) cursorAt(t, keys, [2.5, 3.5, 7.6, 8.7], { grab: down, ease: E.cam });
+    /* the payoff, beside the drawing */
+    const rx = X + Wd + 40, FB2 = 2 * ELB.wireN;
+    verdict(t, 10.2, rx, 520, { from: 0.3, to: Math.floor(FB2), unit: 'N', dec: 1, label: 'Pull to tear it, once damaged', better: 'higher', who: ['Ribbon', 'Theseus'], size: 96, maxW: 520 });
+    text('Nicked ribbon: 0.07 N through the film, about 0.26 N at each trace. Braid, one strand cut: two strands of ' + fmtN(ELB.wireN, 1) + ' N each.', rx, 668, { role: 'small', size: 21, weight: 600, color: C.mute, maxW: RM - rx, lh: 1.3, alpha: ep(t, 10.8, 11.2) });
+    /* the words under it, and the bend (the old flex slide's numbers) */
+    const by = Y + Ht + 28;
+    glossBox(t, 2.0, X, by, 520, 'FPC', 'Copper traces sealed in polyimide film: most mice\'s side-button lead.', { size: 21 });
+    sourceBox(t, 3.2, X + 560, by, 640, 'Folded hard', 'A ribbon takes the fold on one line: rated for 50 to 80 folds at 0.38 mm (Shengyi). Finer strands last longer (Alexander 1953).', { kind: 'datasheet', size: 21 });
+    noteBox(t, 6.8, X + 1240, by, RM - X - 1240, { kind: 'estimate', label: 'Estimate', value: 'Brock', size: 21, body: 'Ribbons are the most common failure in assembly and repair (#51).' });
+    source(t, 'Kapton HN: propagating tear 0.07 N. A trace: 0.1 mm × 12 µm × 220 MPa ≈ 0.26 N (typical sizes, derived). A wire: 220 MPa × 0.032 mm² ≈ 7 N (32 AWG), derived.', { t0: 3 });
+  }
+});
+
+/* ---------------------------------------------------------------- 7. b10_twist: twisted pairs, a quiet radio -----------
+   The old elc_twist and elc_lay (not rated) merged: their demonstration kept (the pointer drags a pulsing coil along two
+   60 mm leads: side by side, one loop and the current adds up; twisted, the loop flips every half lay and the halves
+   cancel), with the lay's trade beside it (tighter cancels more and adds copper, Brock's caveat #69) and the kit's verdict.
+   Checked before reuse (08:45): the model is an ideal twist (a perfect helix, a coil's field falling as a dipole's), so
+   its −36 dB is said to be derived; Klipec's measurement (a 2-inch lay five to six times better than steel conduit) and
+   NASA's caveat (twisting adds little when a return wire is already beside it, at 2 to 200 MHz) are kept in view. */
+S({
+  id: 'b10_twist', ch: 'elec', theme: 'paper', title: 'Twisted pairs, a quiet radio', settle: 11, ideas: [69],
+  src: ['elcKlipec', 'elcNasaTem', 'elcCu', 'elcAwg', 'antDetune', 'b10Harvard', 'b10Brock'],
+  replaces: ['elc_twist', 'elc_lay'],
+  answers: [
+    ['elc_twist (not rated, no note)', 'Kept as the demonstration: the pointer drags a pulsing coil along the two leads; the side-by-side pair\'s one loop lights and its current runs round, the twisted pair\'s lobes flip sign and cancel'],
+    ['elc_lay (not rated, no note)', 'Beside it, the lay\'s trade: noise and copper against lay, the 6 mm sweet spot marked (−36 dB for 3 mg over both leads, against 41 mg at a tight 1.5 mm)'],
+    ['(Brock #69) braided too tight, the weight adds up', 'Shown on the lay chart: the copper curve, and why 6 mm and not tighter'],
+    ['(F3.6) "Less radio noise" here', 'As asked']
+  ],
+  draw: t => {
+    header(t, 'Twisted pairs, a quiet radio');
+    captions(t, [[0.6, 'Two wires side by side make one long loop: a changing field beside it, from a regulator\'s coil, drives current round all of it.'], [5.8, 'Twist them, and the loop flips every half turn: each half picks up the opposite of the last, and they cancel.']]);
+    const A = C.hero, X = 80, Y = 280, Wd = 1180, Ht = 460, ka = 1;
+    demoWindow(X, Y, Wd, Ht, 1, { plain: true });
+    text('A 60 mm lead, a coil 5 mm beside it', X + 24, Y + 36, { role: 'label', size: 21, color: C.mute });
+    const S0 = 15, xL = X + 120, xR = xL + ELB.leadL * S0, ys = Y + 250, yP = ys - ELB.h * S0 - 6, yT = ys + ELB.h * S0 + 6, sep = 16;
+    /* the source: the pointer drags it along the lead */
+    const keys = [[2.0, [xL + 300, ys + 110]], [2.6, [xL + 470, ys + 6]], [2.8, [xL + 470, ys + 6]], [4.0, [xL + 200, ys + 6]], [5.2, [xL + 760, ys + 6]], [5.9, [xL + 470, ys + 6]], [6.4, [xL + 470, ys + 6]], [7.2, [xL + 980, ys + 150]], [11.5, [xL + 980, ys + 150]]];
+    const P = kf(t, keys, E.cam), xsPx = t < 2.8 ? xL + 470 : t > 6.4 ? xL + 470 : P[0], xs = (xsPx - xL) / S0;
+    const ks = ep(t, 2.0, 2.5), osc = Math.sin(t * 4.2), vis = 0.45 + 0.55 * Math.abs(osc);
+    for (let i = 0; i < 7; i++) { const ph = ((t * 0.5 + i / 7) % 1), r = 14 + ph * 240; circle(xsPx, ys, r, { color: A, w: 2, alpha: ks * 0.4 * Math.pow(1 - ph, 1.6) }); }
+    G.save(); G.globalAlpha = ks; const gC = G.createRadialGradient(xsPx - 5, ys - 6, 2, xsPx, ys, 24); gC.addColorStop(0, '#FFFFFF'); gC.addColorStop(1, A); G.fillStyle = gC; G.beginPath(); G.arc(xsPx, ys, 20, 0, TAU); G.fill(); G.restore();
+    for (let i = 0; i < 3; i++) circle(xsPx, ys, 8 + i * 4, { color: '#0D0E0F', w: 1.6, alpha: ks * 0.55 });
+    text('Noise source', xsPx + 34, ys + 8, { role: 'label', size: 21, color: A, alpha: ks });
+    const B = x => Math.pow(1 + Math.pow((x - xs) / ELB.h, 2), -1.5);
+    const wireA = TH ? '#55565C' : '#D6D4CE', wireB = TH ? '#8E8B84' : '#8E8B84';
+    /* the side-by-side pair: one loop; all of it pushes current the same way */
+    const kP = 1, xPe = lerp(xL, xR, kP);
+    for (let x = xL; x < xPe; x += 4) { const b = B((x - xL) / S0); if (b < 0.015) continue; G.globalAlpha = ka * ks * 0.6 * b * vis; G.fillStyle = A; G.fillRect(x, yP - sep + 3, 4.4, sep * 2 - 6); }
+    G.globalAlpha = 1;
+    line(xL, yP - sep, xPe, yP - sep, { color: wireA, w: 5, cap: 'round', alpha: ka }); line(xL, yP + sep, xPe, yP + sep, { color: wireB, w: 5, cap: 'round', alpha: ka });
+    if (kP > 0.98 && ks > 0) {
+      for (let x = xL + 30; x < xR; x += 60) { const b = B((x - xL) / S0); if (b > 0.12) text('+', x, yP + 9, { font: 'mono', size: 24, weight: 700, color: '#FFFFFF', align: 'center', alpha: ka * clamp(b * 2) * ks }); }
+      G.save(); G.setLineDash([12, 14]); G.lineDashOffset = -t * 150; G.strokeStyle = C.bad; G.globalAlpha = ks * (0.5 + 0.5 * vis); G.lineWidth = 3.5;
+      G.beginPath(); G.moveTo(xL, yP - sep - 9); G.lineTo(xR + 9, yP - sep - 9); G.lineTo(xR + 9, yP + sep + 9); G.lineTo(xL, yP + sep + 9); G.stroke(); G.restore();
+    }
+    text('Side by side: one loop, the current adds up', xL, yP - sep - 34, { role: 'label', size: 22, color: C.ink, alpha: ep(t, 1.2, 1.6) });
+    /* the twisted pair: lobes that flip sign every half lay */
+    const lay = ELB.lay, lp = lay * S0, kT = 1, xTe = lerp(xL, xR, kT);
+    for (let x = xL; x < xTe; x += 3) {
+      const u = (x - xL) / S0, b = B(u), wdt = Math.abs(Math.cos(TAU * u / lay)) * sep; if (b < 0.015) continue;
+      G.globalAlpha = ka * ks * 0.6 * b * vis; G.fillStyle = Math.floor(2 * u / lay + 0.5) % 2 ? C.bad : A; G.fillRect(x, yT - wdt, 3.4, wdt * 2);
+    }
+    G.globalAlpha = 1;
+    const strand = (ph0, col) => { const pts = []; for (let x = xL; x <= xTe; x += 3) pts.push([x, yT + sep * Math.cos(TAU * (x - xL) / lp + ph0)]); poly(pts, { color: col, w: 5, alpha: ka }); };
+    strand(Math.PI, wireB); strand(0, wireA);
+    if (kT > 0.98 && ks > 0) for (let hI = 0; hI < 2 * ELB.leadL / lay; hI++) {
+      const u0 = hI * lay / 2, b = B(u0); if (b < 0.12) continue;
+      text(hI % 2 ? '−' : '+', xL + u0 * S0, yT + 9, { font: 'mono', size: 24, weight: 700, color: '#FFFFFF', align: 'center', alpha: ka * clamp(b * 2) * ks });
+    }
+    text('Twisted, ' + lay + ' mm lay: each half cancels the next', xL, yT + sep + 50, { role: 'label', size: 22, color: C.ink, alpha: ep(t, 1.5, 1.9) });
+    if (t > 1.7) cursorAt(t, keys, [2.8], { grab: t > 2.8 && t < 6.4, ease: E.cam });
+    /* the lay's trade: noise and copper against lay, the sweet spot */
+    { const px = 1300, py = 280, pw = 540, ph = 380, x0 = px + 100, x1 = px + pw - 50, y0 = py + 80, y1 = py + ph - 70, Lmin = 1.5, Lmax = 24;
+      demoWindow(px, py, pw, ph, 1, { plain: true });
+      text('How tight to twist', px + 24, py + 36, { role: 'label', size: 21, color: C.mute });
+      const LX = p => x0 + (x1 - x0) * Math.log(p / Lmin) / Math.log(Lmax / Lmin), RY = d => y0 + (y1 - y0) * clamp(-d / 60), TY = mg => y1 - (y1 - y0) * clamp(mg / 45);
+      for (const d of [0, -20, -40, -60]) { line(x0, RY(d), x1, RY(d), { color: C.hair, w: 1.2 }); text(d + ' dB', x0 - 10, RY(d) + 7, { role: 'tick', color: C.mute, align: 'right' }); }
+      for (const p of [1.5, 3, 6, 12, 24]) text(fmtN(p, p < 2 ? 1 : 0) + ' mm', LX(p), y1 + 30, { role: 'tick', color: C.mute, align: 'center' });
+      text('Lay', x1, y1 + 58, { role: 'label', size: 19, color: C.mute, align: 'right' });
+      const Rp = [], Tp = []; for (let x = x0; x <= x1; x += 4) { const p = Lmin * Math.pow(Lmax / Lmin, (x - x0) / (x1 - x0)); Rp.push([x, RY(Math.max(-60, elc_rejDB(p)))]); Tp.push([x, TY(ELB.cuMg * elc_takeup(p))]); }
+      poly(Rp, { color: C.ink, w: 3 }); poly(Tp, { color: C.second, w: 3, dash: [9, 6] });
+      text('Noise', x1 - 6, RY(-32) - 10, { role: 'label', size: 19, color: C.ink, align: 'right' });
+      text('Copper added', LX(1.9) + 8, TY(ELB.cuMg * elc_takeup(1.9)) + 26, { role: 'label', size: 19, color: C.secondText });
+      const k6 = ep(t, 7.0, 7.4), x6 = LX(ELB.lay);
+      line(x6, y0, x6, y1, { color: C.heroText, w: 2, dash: [5, 5], alpha: k6 }); circle(x6, RY(elc_rejDB(ELB.lay)), 9, { fill: C.hero, alpha: k6 }); circle(x6, TY(ELB.cuMg * elc_takeup(ELB.lay)), 7, { fill: C.second, alpha: k6 });
+      text('Theseus: 6 mm', x6 + 10, y0 + 18, { role: 'label', size: 19, color: C.heroText, alpha: k6 }); }
+    sourceBox(t, 3.6, 1300, 690, 540, 'Klipec, IEEE 1967', 'Measured: a pair twisted to a 2-inch lay picked up five to six times less than wires in steel conduit.', { kind: 'study', size: 21 });
+    /* the payoff */
+    const r0 = elc_reject(ELB.lay), mg6 = ELB.cuMg * elc_takeup(ELB.lay);
+    verdict(t, 7.6, 80, 866, { from: 100, to: Math.ceil(r0 * 100), unit: '%', label: 'Noise picked up, against side by side (a coil 5 mm away)', better: 'lower', who: ['Side by side', 'Twisted'], net: false, size: 96, maxW: 1100 });
+    scaleNote(560, 866, 'of copper over both leads, against ' + fmtN(ELB.cuMg * elc_takeup(1.5), 0) + ' mg at a tight 1.5 mm lay', { lead: '+' + fmtN(mg6, 0) + ' mg', t, t0: 8.4, size: 22 });
+    source(t, 'Model (derived, an ideal twist): two 60 mm leads of three 32 AWG wires; the coil\'s field falls as a dipole\'s; pickup is the field\'s part at the lay. Copper: wire = √(1 + (2πr/lay)²), r 0.23 mm, 9.0 g/cm³. NASA: twisting adds little where a return wire already runs beside.', { t0: 2.4 });
+  }
+});
+
 /* ---------------------------------------------------------------- 8. b10_cable: an angled plug, a paracord cable ---------
    Brock (F27, cable 3/10): "extremely lazy visualizations, paracord needs better assets"; the brief: the paracord drawn
    properly, the angled plug on the shell, the drag it removes. The demonstration, the mouse in profile with the camera
@@ -804,7 +1324,7 @@ S({
   draw: t => {
     header(t, 'An angled plug, a paracord cable');
     captions(t, [[0.6, 'A straight plug brings the cable down to the pad at the chin. Flick forward, and the chin rides onto it: the sensor lifts off and stops tracking.'],
-      [3.8, 'Theseus\'s plug turns up, and its paracord cable arcs over the pad: the same flick, and nothing reaches the chin.']]);
+      [3.8, 'Theseus\'s plug turns up, so its paracord arcs over the pad: the same flick, and nothing at the chin.']]);
     const C0 = B10_CAB, Lv = b10_cabLive(), s = 6.4, mx = 470, py = 668, dc = C0.dc;
     const box = [80, 270, 1220, 450];
     /* the flicks: A (straight plug) 0.9 s, rewound from 2.4 s; B (Theseus) 4.1 s. Δ = how far the mouse has gone over the pad */
@@ -862,36 +1382,195 @@ S({
       text('Sensor lift', gx + 24, gy + 36, { role: 'label', size: 21, color: C.mute });
       rich([{ s: (Math.floor(lift * 10) / 10).toFixed(1), role: 'num', size: 54, color: over ? C.red : C.ink }, { s: 'mm', role: 'label', size: 22, color: C.mute, gap: 8, caps: false }], gx + 24, gy + 112, {});
       text(over ? 'Tracking stops' : 'Tracking', gx + 24, gy + 152, { role: 'label', size: 21, color: over ? C.red : (t < 3.4 ? C.ink2 : C.heroText) });
-      const k = 62, base = gy + gh - 30, x0 = gx + 300, x1 = gx + gw - 24;
+      const k = 40, base = gy + gh - 26, x0 = gx + 300, x1 = gx + gw - 24;
       G.fillStyle = TH ? '#E4E4E7' : '#1A1B1E'; G.fillRect(x0 - 10, base, x1 - x0 + 20, 16);
       line(x0 - 10, base, x1 + 10, base, { color: C.faint, w: 1.5 });
       line(x0 - 10, base - C0.lod * k, x1 + 10, base - C0.lod * k, { color: C.red, w: 1.5, dash: [7, 6], alpha: 0.8 });
       text('Lift-off, 1 mm', x1, base - C0.lod * k - 10, { role: 'label', size: 19, color: C.red, align: 'right' });
       const bx = x0 + 30, bw2 = 120, by = base - lift * k;
-      rr(bx, by - 46, bw2, 46, 4, TH ? '#FFFFFF' : '#2A2B2F', inkA(0.6), 1.5);
-      rr(bx + bw2 / 2 - 20, by - 8, 40, 8, 2, over ? C.red : C.hero, null, 1);
-      text('Lens', bx + bw2 / 2, by - 18, { role: 'label', size: 19, color: C.mute, align: 'center' });
-      text('×10', x1, gy + 36, { role: 'label', size: 19, color: C.faint, align: 'right' });
+      rr(bx, by - 38, bw2, 38, 4, TH ? '#FFFFFF' : '#2A2B2F', inkA(0.6), 1.5);
+      rr(bx + bw2 / 2 - 20, by - 7, 40, 7, 2, over ? C.red : C.hero, null, 1);
+      text('Lens', bx + bw2 / 2, by - 15, { role: 'label', size: 19, color: C.mute, align: 'center' });
+      text('×6', x1, gy + 36, { role: 'label', size: 19, color: C.faint, align: 'right' });
+      if (lift > 1.5) text('Nearly three credit cards', gx + 24, gy + 180, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: ep(lift, 1.5, 2.0) });
     }
     /* the shot: the cursor rides the flick, and freezes where the sensor stopped tracking */
     { const rect = [672, 748, 520, 196];
-      if (t < 3.0) b10_aim(t, -1, rect, b10_flick(t, 0.9, 0.55, D1) / D1, stopA, 1.55, { label: 'The cursor stops where tracking stopped' });
-      else b10_aim(t, 3.0, rect, dB / D1, null, 4.75, { label: 'The cursor follows the whole flick' });
+      if (t < 3.0) b10_aim(t, -1, rect, b10_flick(t, 0.9, 0.55, D1) / D1, stopA, 1.55, { label: 'The cursor freezes mid-flick' });
+      else b10_aim(t, 3.0, rect, dB / D1, null, 4.75, { label: 'The cursor follows the flick' });
     }
     /* the payoff */
     verdict(t, 5.4, 1240, 885, { from: Math.floor(L1 * 10) / 10, to: 0, unit: 'mm', dec: 1, label: 'Sensor lift, same flick', better: 'lower', who: ['Straight plug', 'Theseus'], size: 130, maxW: 600 });
     /* the cable, close up: the woven sheath, and the cable cut across */
-    { const px = 1340, py2 = 270, pw = 500, ph = 450, kc = ep(t, 5.9, 6.3);
-      demoWindow(px, py2, pw, ph, 1, { plain: true });
-      text('The cable, close up', px + 24, py2 + 36, { role: 'label', size: 21, color: C.mute });
+    { const px = 1340, py2 = 270, pw = 500, ph = 450, kc = ep(t, 5.9, 6.3), kin = ep(t, 3.8, 4.3);
+      if (kin > 0.003) {
+      demoWindow(px, py2, pw, ph, kin);
+      text('Theseus\'s cable, close up', px + 24, py2 + 36, { role: 'label', size: 21, color: C.heroText, alpha: kin });
+      G.save(); G.globalAlpha *= kin;
       clipped(px, py2, pw, ph, () => b10_paracord(b10_bez([px - 20, py2 + 210], [px + 170, py2 + 230], [px + 260, py2 + 90], [px + pw + 20, py2 + 100], 60), 46, { tracer: C.hero, slide: Math.max(0, t - 5.9) * 30 }));
-      const o = part(px + 150, py2 + 340, 52, () => cableMM({}));
-      text('Cut across', px + 150, py2 + ph - 18, { role: 'label', size: 19, color: C.faint, align: 'center' });
-      if (o.sheath) {
-        callout(t, 6.1, o.sheath, 'Woven nylon sheath', { to: [px + 270, py2 + 300], side: 'r', color: C.heroText, tcolor: C.ink, alpha: kc, maxW: 200 });
-        callout(t, 6.4, o.core, 'Four fine-stranded conductors', { to: [px + 270, py2 + 380], side: 'r', color: C.heroText, tcolor: C.ink, alpha: kc, maxW: 200 });
+      const o = part(px + pw - 110, py2 + 330, 52, () => cableMM({}));
+      text('Cut across', px + pw - 110, py2 + ph - 22, { role: 'label', size: 19, color: C.faint, align: 'center' });
+      G.restore();
+      if (o.sheath && kin > 0.5) {
+        callout(t, 6.1, o.sheath, 'Woven nylon sheath', { to: [px + pw - 230, py2 + 262], side: 'l', color: C.heroText, tcolor: C.ink, alpha: kc, maxW: 220 });
+        callout(t, 6.4, o.core, 'Four conductors', { to: [px + pw - 230, py2 + 372], side: 'l', color: C.heroText, tcolor: C.ink, alpha: kc, maxW: 220 });
+      }
       }
     }
     source(t, 'Lift from the shell model: its outline, port (5.25 mm up), skates and lens; a 3 mm stock cable for illustration (diameters unmeasured). Lift-off 1 mm: the PAW3395\'s lower setting. Pulsar\'s bent plug "prevents cable drag against the desk"; TechPowerUp on the Viper V3 Pro\'s cable: its "extraordinary stiffness prevents playing while charging".', { t0: 2.4 });
+  }
+});
+
+/* ---------------------------------------------------------------- 9. b10_lights: nothing lights up but the sensor -------
+   Brock (F27 srf_encoder 2/10; sealed: "still drawing the encoder poorly", "a magnetic encoder that doesn't get affected by
+   dust and have a transparent top housing to see when it's broken like switches"; elc_sheet2: "add the no rgb light to the
+   slide about having no optical components", "put it next to the web software"). The demonstration, on a dark stage: the
+   mouse from above in x-ray as the Viper V4 Pro builds it ("all in on optical", Razer): two optical switches and an
+   optical wheel, each LED pulsing whether or not anything is pressed, each with its share of the battery (Omron's pulse,
+   Avago's timing with 5 mA assumed). They go out one by one: mechanical switches draw nothing until pressed, the magnetic
+   wheel's TMR sensor 3 µA; only the sensor's light is left. Then the dust test: both wheels turn the same steps while dust
+   falls in; the optical gate's beam is cut by a speck and steps go missing; the magnet's field passes the dust and every
+   step counts, its clear top showing the spring and magnet. */
+S({
+  id: 'b10_lights', ch: 'elec', theme: 'night', title: 'Nothing lights up but the sensor', settle: 12, ideas: ['encoder', 78, 84, 99],
+  src: ['srf_razerAllOptical', 'b03_d2fp', 'srf_avagoWheel', 'b10MdtTmr', 'b10G703', 'srf_mpsMag', 'pulsarEnc', 'srf_fmSupport'],
+  replaces: ['srf_encoder'],
+  answers: [
+    ['srf_encoder (2/10, rated, no note)', 'Rebuilt as a demonstration: the mouse from above in x-ray with the Viper V4 Pro\'s three pulsing LEDs (two optical switches, an optical wheel), each with its share of the battery; they go out one by one for Theseus, leaving only the sensor; then a dust test with both wheels turning the same steps'],
+    ['(sealed) "still drawing the encoder poorly"', 'The shared magnetic encoder drawing (the clear top over the rotor, detent star, leaf spring and magnet, its field turning), large, in the dust test'],
+    ['(sealed) "a magnetic encoder that doesn\'t get affected by dust"', 'Dust falls into both gates: a speck cuts the optical beam and steps go missing; the magnet\'s field passes the dust and every step is counted'],
+    ['(sealed) "transparent top housing to see when it\'s broken like switches"', 'Called out on the encoder: "Clear top: the spring and magnet in sight"'],
+    ['(elc_sheet2) "add the no rgb light to the slide about having no optical components"', 'The RGB light is here with its cost: Logitech rates the G703 for 32 h with the lights off, 24 h with RGB cycling (spec sheet); Theseus has none'],
+    ['(elc_sheet2) "put it next to the web software"', 'Placed just before b10_software'],
+    ['(F31.1) Razer staff: the switches and wheel cost "almost half" the battery', 'Not repeated as a fact: the slide derives its own share (about a quarter at 1 khz) from Omron\'s and Avago\'s pulses, with the wheel\'s 5 mA said to be assumed']
+  ],
+  draw: t => {
+    header(t, 'Nothing lights up but the sensor');
+    captions(t, [[0.6, 'The Viper V4 Pro\'s optical switches and wheel pulse their LEDs hundreds of times a second, pressed or not: about a quarter of its battery.'],
+      [4.4, 'Mechanical switches and a magnetic wheel draw nothing until used: only Theseus\'s sensor lights up.']]);
+    const L = B10.lights, off = [ep(t, 2.6, 2.9), ep(t, 2.9, 3.2), ep(t, 3.3, 3.6)];   /* left switch, right switch, wheel */
+    /* the mouse from above, in x-ray, its lights pulsing */
+    const m = mouseFit([80, 300, 420, 560], 'top', { show: ['sensor', 'board'], fill: '#151619' });
+    const at = n => m.at(n), pulse = (ph, f) => 0.55 + 0.45 * Math.max(0, Math.sin(t * f + ph));
+    const lights = [{ p: at('trigL'), k: 1 - off[0], ph: 0 }, { p: at('trigR'), k: 1 - off[1], ph: 1.3 }, { p: at('wheel'), k: 1 - off[2], ph: 2.1 }];
+    lights.forEach(l => { if (l.k > 0.003) { glow(l.p[0], l.p[1], 46, C.second, 0.55 * l.k * pulse(l.ph, 9)); circle(l.p[0], l.p[1], 5, { fill: C.second, alpha: l.k }); } });
+    /* the sensor's light: both mice have it */
+    { const p = at('sensor'); glow(p[0], p[1], 40, '#FF5A4E', 0.5); circle(p[0], p[1], 4, { fill: '#FF7A6E' }); }
+    /* each light named, with its share of the battery (against the V4 Pro's whole draw at 1 khz) */
+    const lx = 560, row = (y, p, name, val, k, thsName, thsVal) => {
+      const a = k, b = 1 - k;
+      line(p[0] + 12, p[1], lx - 16, y - 8, { color: a > 0.5 ? C.second : C.hero, w: 1.5, alpha: 0.7 });
+      if (a > 0.003) { text(name, lx, y, { role: 'label', size: 21, color: C.mute, alpha: a }); text(val, lx, y + 34, { role: 'num', size: 30, color: C.secondText, alpha: a }); }
+      if (b > 0.003) { text(thsName, lx, y, { role: 'label', size: 21, color: C.heroText, alpha: b }); text(thsVal, lx, y + 34, { role: 'num', size: 30, color: C.ink, alpha: b }); }
+    };
+    /* the rival's shares rounded down, Theseus's up: neither rounding favours Theseus */
+    const pc = v => (Math.floor(v * 1000) / 10).toFixed(1) + ' %', pcU = v => (Math.ceil(v * 1000) / 10).toFixed(1) + ' %';
+    row(392, at('wheel'), 'Optical wheel', pc(L.wh / L.avg), lights[2].k, 'Magnetic wheel', pcU(L.tmr / L.avg));
+    /* a mechanical switch draws only its pull-up's trickle: b03's 3 µA a switch (B03.mechUA), so the three slides agree */
+    const mUA = typeof B03 !== 'undefined' && B03.mechUA ? B03.mechUA : 3, mSh = mUA / 1000 / L.avg;
+    row(492, at('trigR'), 'Optical switch', pc(L.sw / 2 / L.avg), lights[1].k, 'Mechanical switch', pcU(mSh));
+    row(592, at('trigL'), 'Optical switch', pc(L.sw / 2 / L.avg), lights[0].k, 'Mechanical switch', pcU(mSh));
+    { const p = at('sensor'); line(p[0] + 12, p[1], lx - 16, 684, { color: C.faint, w: 1.5, alpha: 0.7 }); text('Sensor', lx, 692, { role: 'label', size: 21, color: C.mute }); text('Both have it', lx, 724, { role: 'small', size: 22, weight: 600, color: C.ink2 }); }
+    text(t < 3.6 ? 'Viper V4 Pro' : 'Theseus', 290, 900, { role: 'label', size: 22, color: t < 3.6 ? C.secondText : C.heroText, align: 'center' });
+    text('No RGB either: Logitech rates its G703 for 32 h with the lights off, 24 h with RGB cycling.', lx, 790, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 360, lh: 1.3, alpha: ep(t, 4.0, 4.4) });
+    /* the payoff */
+    const thsMA = 2 * mUA / 1000 + L.tmr, more = L.avg / (L.avg - L.sw - L.wh + thsMA) - 1;
+    verdict(t, 4.9, 980, 846, { from: Math.floor(L.share * 1000) / 10, to: Math.ceil(thsMA / L.avg * 1000) / 10, unit: '%', dec: 1, label: 'Battery to the switches and wheel (wheel current assumed)', better: 'lower', who: ['Viper V4 Pro', 'Theseus'], net: '+' + Math.floor(more * 100) + ' % hours, same battery', size: 96, maxW: 700 });
+    /* the dust test: both wheels turn the same steps while dust falls in */
+    { const px = 980, py = 290, pw = 860, ph = 420, hw = (pw - 24) / 2, kd = ep(t, 6.4, 8.6, E.lin), turn = Math.max(0, t - 6.0) * 4, total = 16, n = Math.min(total, Math.floor(turn));
+      demoWindow(px, py, pw, ph, 1, { plain: true });
+      text('Dust in the wheel', px + 24, py + 36, { role: 'label', size: 21, color: C.mute });
+      text('Optical, as the V4 Pro', px + 24, py + 76, { role: 'label', size: 20, color: C.secondText });
+      text('Magnetic, Theseus', px + hw + 48, py + 76, { role: 'label', size: 20, color: C.heroText });
+      /* which steps the optical gate missed: the beam cut by settled dust at that step (seeded) */
+      const r2 = rng(5), miss = []; for (let i = 0; i < total; i++) { const at_t = 6.0 + (i + 0.5) / 4, d = clamp((at_t - 6.4) / 2.2); miss.push(r2() < 0.75 * d * d + 0.1 * d); }
+      const gy = py + 112, gx = px + 40, gw = hw - 60;
+      b10_optGate(gx, gy, gw, 196, turn, kd);
+      text('IR LED', gx + 40, gy + 52, { role: 'label', size: 19, color: C.faint, align: 'center' });
+      text('Slots', gx + gw / 2, gy - 6, { role: 'label', size: 19, color: C.faint, align: 'center' });
+      text('Light sensor', gx + gw - 40, gy + 52, { role: 'label', size: 19, color: C.faint, align: 'center' });
+      const enc = part(px + hw + 110, py + 172, 12, () => encoderMM({ th: turn * TAU / 24, field: 1, dust: kd }));
+      if (t >= 6.0) {
+        const cO = b10_steps(px + 40, py + 342, n, total, 22, i => miss[i], C.second);
+        const cM = b10_steps(px + hw + 48, py + 342, n, total, 22, () => false, C.hero);
+        text('Counted ' + cO + ' of ' + n, px + 40, py + 390, { role: 'label', size: 21, color: cO < n ? C.red : C.mute });
+        text('Counted ' + cM + ' of ' + n, px + hw + 48, py + 390, { role: 'label', size: 21, color: C.heroText });
+      }
+      if (enc.cover) callout(t, 9.2, enc.cover, 'Clear top', { to: [px + pw - 150, py + 130], side: 'r', color: C.heroText, tcolor: C.ink, sub: 'Spring and magnet in sight', maxW: 140 });
+    }
+    source(t, 'Shares of a Viper V4 Pro\'s draw at 1 khz (1.70 mA: 306 mAh over 180 h), derived: Omron\'s switch LED 5 mA for 30 µs a millisecond; Avago\'s wheel LED 40 µs every 2 ms at 5 mA (assumed); MDT\'s TMR 1.5 µA an axis; a mechanical switch\'s pull-up 3 µA (as Clicks). Dust test: how each gate works (MPS); the counts are an illustration.', { t0: 2.4 });
+  }
+});
+
+/* ---------------------------------------------------------------- 10. b10_software: set it once, in the browser -------
+   Brock (F27 software 6/10, no note; gld_soft 7/10: "place near web software", "better sell the importance of liftoff
+   distance being 0.1mm configurable"). The demonstration: the mouse in profile at the end of a swipe, lifted to reset while
+   the hand still moves; below the lift-off height the sensor keeps counting, so the cursor drifts. With a coarse step (the
+   PAW3395 offers 1 or 2 mm) the drift is the length of the lift at 2 mm; set in 0.1 mm steps just above the pad (0.8 mm),
+   it is 2.5× less (illustration: 0.15 m/s sideways, 0.1 m/s up). The setting is made in a browser tab (WebHID: Chrome and
+   Edge), nothing installed, and saved on the mouse. Ends on the hand lifting the mouse: b07_shcard's hands follow. */
+S({
+  id: 'b10_software', ch: 'elec', theme: 'paper', title: 'Set it once, in the browser', settle: 11, ideas: [23, 65, 66, 87, 'lod'],
+  src: ['webhid', 'gld_paw3395', 'b10Brock'],
+  replaces: ['software', 'gld_soft'],
+  answers: [
+    ['software (6/10, rated, no note)', 'Kept and sharpened: a browser tab, nothing installed, the settings saved on the mouse, the limits stated (Chrome and Edge, WebHID)'],
+    ['(gld_soft) "place near web software"', 'Merged: its lift-off, X and Y and saved-on-the-mouse are in this slide, which follows b10_lights'],
+    ['(gld_soft) "better sell the importance of liftoff distance being 0.1mm configurable"', 'Demonstrated: the mouse lifts to reset mid-swipe; below the lift-off the sensor keeps counting and the cursor drifts. The pointer drags the lift-off from 2.0 to 0.8 mm in 0.1 mm steps, and the same lift drifts 2.5× less (illustration, speeds said)'],
+    ['(G10) simple', 'One demonstration and one tab']
+  ],
+  draw: t => {
+    header(t, 'Set it once, in the browser');
+    captions(t, [[0.6, 'Lift to reset, and the sensor counts until it clears its lift-off height: set high, the cursor drifts on every lift.'], [5.4, 'Theseus sets lift-off in 0.1 mm steps in a browser tab: nothing to install, and it is saved on the mouse.']]);
+    /* the lift-off the pointer sets: 2.0 mm, dragged to 0.8 in 0.1 mm steps */
+    const lod = Math.round(lerp(2.0, 0.8, ep(t, 3.2, 4.6, E.io3)) * 10) / 10;
+    /* the lift, twice: the first at 2.0 mm (0.9 to 2.6 s), the second at 0.8 mm (5.2 to 6.9 s) */
+    const cyc = t < 4.0 ? clamp((t - 0.9) / 1.7) : clamp((t - 5.2) / 1.7), hNow = 4.5 * E.io3(clamp((cyc - 0.15) / 0.7)), D = b10_drift(lod);
+    /* the sensor, close up, at the end of a swipe: the hand lifts the mouse to reset while still moving it sideways */
+    const px = 80, py = 280, pw = 980, ph = 470, s = 24, pad = py + ph - 80, zl = b10_cabLive().zl, y0 = KEY_PARTS.lens.y0;
+    const sw = 7 * E.out3(cyc), mx = px + pw / 2 - zl * s - 3.5 * s + sw * s;
+    demoWindow(px, py, pw, ph, 1, { plain: true });
+    clipped(px, py, pw, ph, () => {
+      G.fillStyle = TH ? '#E4E4E7' : '#1A1B1E'; G.fillRect(px, pad, pw, py + ph - pad);
+      line(px, pad, px + pw, pad, { color: C.faint, w: 1.5 });
+      const lodY = pad - (y0 + lod) * s;
+      line(px, pad - y0 * s, px + pw, pad - y0 * s, { color: C.faint, w: 1, dash: [3, 6] });
+      line(px, lodY, px + pw, lodY, { color: C.red, w: 2, dash: [8, 6], alpha: 0.85 });
+      part(mx, pad - hNow * s, s, () => mouseSimple('right', { show: ['sensor'], fill: TH ? '#E6E6E9' : '#232428', lw: 3 }));
+      /* the lens's path through the lift: red while it is still under the lift-off (still counting) */
+      const pts = []; for (let k = 0; k <= 60; k++) { const c = k / 60 * cyc, h = 4.5 * E.io3(clamp((c - 0.15) / 0.7)); pts.push([px + pw / 2 - 3.5 * s + 7 * E.out3(c) * s, pad - (y0 + h) * s, h]); }
+      const below = pts.filter(q => q[2] <= lod), above = pts.filter(q => q[2] >= lod);
+      if (below.length > 1) poly(below.map(q => [q[0], q[1]]), { color: C.red, w: 5 });
+      if (above.length > 1) poly(above.map(q => [q[0], q[1]]), { color: C.faint, w: 2, dash: [4, 5] });
+      text('Lift-off ' + lod.toFixed(1) + ' mm', px + 24, lodY - 10, { role: 'label', size: 20, color: C.red });
+      if (below.length > 1) { const q = below[0]; text('Still tracking', q[0] - 12, q[1] + 30, { role: 'label', size: 19, color: C.red, align: 'left' }); }
+      text('Lens at rest, ' + y0.toFixed(1) + ' mm over the pad', px + pw - 24, pad - y0 * s + 26, { role: 'label', size: 19, color: C.mute, align: 'right' });
+    });
+    locator(t, -0.4, px + 30, py + 150, 70, 'right', msBox('right', 'sensor'), { hi: ['sensor'] });
+    text('Counted while lifting', px + 24, py + 40, { role: 'label', size: 20, color: C.red });
+    rich([{ s: D.mm.toFixed(1), role: 'num', size: 48, color: lod > 1 ? C.secondText : C.heroText }, { s: 'mm of cursor drift a lift', role: 'small', size: 22, weight: 650, color: C.ink2, gap: 10, sentence: false }], px + 24, py + 100, {});
+    /* the browser tab: nothing installed; the lift-off slider in 0.1 mm steps; saved on the mouse */
+    { const bx = 1100, by = 280, bw = 740, bh = 470;
+      rr(bx, by, bw, bh, 10, TH ? '#FFFFFF' : '#151619', inkA(0.18), 1.5);
+      rr(bx, by, bw, 46, 10, inkA(0.05), null, 1); for (let i = 0; i < 3; i++) circle(bx + 24 + i * 20, by + 23, 6, { fill: inkA(0.22) });
+      rr(bx + 100, by + 9, 360, 28, 6, inkA(0.06), null, 1); text('Theseus · settings', bx + 116, by + 30, { role: 'label', size: 19, color: C.mute });
+      const sx0 = bx + 48, sx1 = bx + bw - 48, sy = by + 150, X = v => lerp(sx0, sx1, (v - 0.5) / 1.5);
+      text('Lift-off', sx0, sy - 44, { role: 'label', size: 22, color: C.ink });
+      text(lod.toFixed(1) + ' mm', sx1, sy - 44, { role: 'num', size: 26, color: lod > 1 ? C.ink : C.heroText, align: 'right' });
+      line(sx0, sy, sx1, sy, { color: C.hair, w: 6 }); line(sx0, sy, X(lod), sy, { color: C.hero, w: 6 });
+      for (let v = 0.5; v <= 2.001; v += 0.1) line(X(v), sy + 12, X(v), sy + (Math.abs(v * 10 % 5) < 0.01 ? 26 : 20), { color: C.faint, w: 1.5 });
+      for (const v of [0.5, 1.0, 1.5, 2.0]) text(v.toFixed(1), X(v), sy + 50, { role: 'tick', color: C.mute, align: 'center' });
+      circle(X(lod), sy, 13, { fill: C.hero }); circle(X(lod), sy, 13, { color: '#FFFFFF', w: 2 });
+      text('0.1 mm steps. The PAW3395 offers 1 or 2 mm.', sx0, sy + 92, { role: 'small', size: 20, weight: 600, color: C.mute });
+      const rows = [['DPI', '800'], ['X and Y', 'set apart'], ['Polling', '8 khz']];
+      rows.forEach(([l, v], i) => { const yy = by + 300 + i * 46; text(l, sx0, yy, { role: 'label', size: 20, color: C.ink2 }); text(v, sx1, yy, { role: 'small', size: 21, weight: 650, color: C.ink, align: 'right' }); line(sx0, yy + 16, sx1, yy + 16, { color: C.hair, w: 1 }); });
+      const ks = ep(t, 4.8, 5.2); rr(bx + bw - 300, by + bh - 64, 252, 42, 21, C.heroSoft, C.hero, 1.5, ks); text('Saved on the mouse', bx + bw - 174, by + bh - 36, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: ks });
+      if (t > 2.8 && t < 5.0) { const kx = X(lod), ky = sy; cursorPtr(kx + 4, ky + 6, { a: ep(t, 2.8, 3.1) * (1 - ep(t, 4.7, 5.0)), grab: t > 3.2 && t < 4.6 }); }
+    }
+    /* the payoff */
+    const D2 = b10_drift(2.0), D8 = b10_drift(0.8);
+    verdict(t, 7.2, 80, 880, { from: D2.mm, to: D8.mm, unit: 'mm', dec: 1, label: 'Cursor drift each lift to reset, at 2 and 0.8 mm lift-off', better: 'lower', who: ['2 mm step', 'Theseus'], net: false, size: 96, maxW: 980 });
+    scaleNote(1100, 862, 'to install: it runs in Chrome or Edge (WebHID)', { lead: 'Nothing', t, t0: 7.6, size: 22 });
+    source(t, 'Drift: the hand still moving 0.15 m/s sideways while lifting at 0.1 m/s, so the sensor counts for lift-off ÷ 0.1 m/s: an illustration. PAW3395: lift cut-off 1 or 2 mm (PixArt). WebHID: Chrome and Edge 89+.', { t0: 2.4 });
   }
 });
