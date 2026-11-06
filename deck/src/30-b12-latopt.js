@@ -87,7 +87,7 @@ S({
     const T = B12_T, base = B12.base, win = B12.win, gain = 1 - win.worst / base.worst;
     captions(t, [[0.3, 'A light mouse spends its weight on a plain wall. At Theseus\'s 9.35 g, a hard press bends one ' + b12_mm(base.worst) + ' mm.'],
       [T.p0, 'So every lattice was tried at that weight: five patterns, many cell and rib sizes, each pressed, palmed and squeezed on the real shell.'],
-      [T.win, 'On a closed skin every pattern stiffens about the same. The woven one wins on the rest: ' + b12_dn(gain * 100) + ' % less flex than a plain wall at 9.35 g, its peak stress the lowest of the five, no knots to sink.']]);
+      [T.win, 'On a closed skin every pattern stiffens about the same. Two lead, each ' + b12_dn(gain * 100) + ' % less flex than a plain wall at 9.35 g: woven kagome, two ribs crossing at each node, and true triangles, six ribs meeting in a knot.']]);
     const ph = b12_phase(t), kWin = ep(t, T.win, T.win + 0.6);
     /* ---------------- left: the test, on the mouse from above ---------------- */
     const bx = [LM, 280, 640, 480], a0 = tileA(t, -2, 0);
@@ -98,12 +98,20 @@ S({
     /* the pattern on the mouse: each in its window, then the winner's in blue */
     for (let i = 0; i < B12_ORDER.length; i++) {
       const k = B12_ORDER[i], aIn = ep(t, T.p0 + i * T.per, T.p0 + i * T.per + 0.25), aOut = i === B12_ORDER.length - 1 ? 0 : ep(t, T.p0 + (i + 1) * T.per, T.p0 + (i + 1) * T.per + 0.25);
-      const al = k === 'tri' ? aIn : aIn * (1 - aOut);
-      if (al > 0.003) b12_latTop(k, m.P, { alpha: al * 0.95, color: k === 'tri' ? mix(C.comp, C.hero, kWin) : C.comp, w: 1.4 });
+      const al = k === 'tri' ? aIn * (1 - kWin) : aIn * (1 - aOut);
+      if (al > 0.003) b12_latTop(k, m.P, { alpha: al * 0.95, color: C.comp, w: 1.4 });
+    }
+    /* the two candidates (Brock, F61.1: "show both options in presentation"): the mouse split down its middle, woven kagome on
+       its left half, true triangles on its right, both in Theseus's colour (V3) */
+    const xMid = m.P(0, cz)[0];
+    if (kWin > 0.003) for (const [k, side] of [['tri', -1], ['kagome', 1]]) {
+      G.save(); G.beginPath(); if (side < 0) G.rect(0, 0, xMid, H); else G.rect(xMid, 0, W - xMid, H); G.clip();
+      b12_latTop(k, m.P, { alpha: kWin * 0.95, color: C.hero, w: 1.5 }); G.restore();
     }
     /* which pattern the mouse shows, under it */
-    { const nm = kWin > 0.5 ? 'Woven (kagome), the winner' : ph.k ? B12_NAME[ph.k] : 'A plain wall', yN = bx[1] + bx[3] - 26;
-      text(nm, bx[0] + 16 + 150, yN, { role: 'small', size: 20, weight: 700, color: kWin > 0.5 ? C.heroText : C.ink2, align: 'center' }); }
+    { const yN = bx[1] + bx[3] - 26;
+      if (kWin > 0.5) { text('Kagome', xMid - 10, yN, { role: 'small', size: 20, weight: 750, color: C.heroText, align: 'right' }); text('Triangles', xMid + 10, yN, { role: 'small', size: 20, weight: 750, color: C.heroText }); }
+      else text(ph.k ? B12_NAME[ph.k] : 'A plain wall', bx[0] + 16 + 150, yN, { role: 'small', size: 20, weight: 700, color: C.ink2, align: 'center' }); }
     /* the press: a finger from above on the crown, 10 N; and the 25 places round it */
     const pc = m.P(cx0, cz), d = pressCurve(t, 0.3, { hold: 99 });
     const kg = ep(t, 1.0, 1.4);
@@ -120,7 +128,7 @@ S({
     rows.forEach(([t0, a, b], i) => { const k = ep(t, t0, t0 + 0.4); text(a, lx, ly + i * 62, { role: 'small', size: 22, weight: 700, color: C.ink, alpha: k, maxW: lw2 }); text(b, lx, ly + i * 62 + 26, { role: 'small', size: 19, weight: 560, color: C.mute, alpha: k, maxW: lw2, sentence: false }); });
     /* the readout: how far the top dips under the worst hard press, the plain wall's first, then the winner's */
     { const yR = bx[1] + bx[3] - 116, kd = ep(t, 0.6, 1.0), now = lerp(base.worst, win.worst, ep(t, T.win, T.win + 1.2, E.io3)), isW = kWin > 0.5;
-      text(isW ? 'Theseus\'s lattice' : 'A plain wall, 9.35 g', lx, yR, { role: 'label', size: 19, color: isW ? C.heroText : C.mute, alpha: kd, maxW: lw2 });
+      text(isW ? 'Either candidate' : 'A plain wall, 9.35 g', lx, yR, { role: 'label', size: 19, color: isW ? C.heroText : C.mute, alpha: kd, maxW: lw2 });
       text(fmtN(now, 0) + ' µm', lx, yR + 50, { font: 'disp', size: 44, weight: 800, color: isW ? C.heroText : C.ink, grad: isW ? C.heroGrad : null, alpha: kd, tnum: true });
       text('dip at the worst press', lx, yR + 80, { role: 'small', size: 19, weight: 560, color: C.mute, alpha: kd, sentence: false, maxW: lw2 }); }
     /* ---------------- right: the map, every design a point ---------------- */
@@ -153,11 +161,12 @@ S({
       text('Plain wall, same weight', pb[0] + 14, pb[1] + 30, { role: 'small', size: 20, weight: 650, color: C.ink2, alpha: ka });
       text('Plain wall, no rails', pn[0] + 4, pn[1] - 18, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: ka, align: 'right' }); }
     /* the winner */
-    { const pw = [M.X(win.worst), M.Y(win.ub)];
+    { const pw = [M.X(win.worst), M.Y(win.ub)], tp = B12.pts.find(p => p[4] === B12.triLabel), pt = tp ? [M.X(tp[1]), M.Y(tp[2])] : null;
       circle(pw[0], pw[1], 15 + 6 * (1 - kWin), { color: C.hero, w: 2.5, alpha: kWin });
-      fixTag(t, T.win + 0.3, pw, 'Woven (kagome): ribs ' + fmtN(win.w, 2) + ' × ' + fmtN(win.hr, 2) + ' mm, ' + fmtN(win.H, 1) + ' mm apart in three directions, on a ' + fmtN(win.t, 2) + ' mm skin', { to: [M.X(150), M.Y(0.39)], side: 'r', maxW: 470 });
-      /* the honest tie: true triangles are as stiff, but six ribs meet at each node */
-      const tp = B12.pts.find(p => p[4] === B12.triLabel);
+      if (pt) circle(pt[0], pt[1], 15 + 6 * (1 - kWin), { color: C.hero, w: 2.5, alpha: kWin });
+      /* the two candidates, named, with what each does (L2's sheets, F61.1): a tie on stiffness; the kagome's nodes are two ribs
+         crossing, the triangles' six ribs in a knot about twice the skin's thickness, where a sink could start (V3) */
+      fixTag(t, T.win + 0.3, pw, 'Two candidates, ribs ' + fmtN(win.w, 2) + ' × ' + fmtN(win.hr, 2) + ' mm on a ' + fmtN(win.t, 2) + ' mm skin. Kagome: two ribs cross at a node. True triangles: six meet in a knot, a sink risk', { to: [M.X(150), M.Y(0.39)], side: 'r', maxW: 500 });
       /* the honest tie: on a closed skin every pattern flexes within a few % of the others; they differ in how hard the ribs work */
       const hx = B12.pts.find(p => B12_K[p[0]] === 'hex' && /t0\.60/.test(p[4]));
       const spread = Math.max.apply(null, B12.pts.filter(p => /t0\.60/.test(p[4]) || p[4] === win.label).map(p => Math.abs(p[1] / win.worst - 1))) * 100;
@@ -242,7 +251,7 @@ S({
       [R.f0, 'The root\'s fillet is set by the mould: past a quarter skin its stress hardly falls while the joint thickens toward a sink, so ' + fmtN(win.rPick, 2) + ' mm.']]);
     /* ---------------- left top: the ruler again (b05_cubed's numbers) ---------------- */
     const R5 = typeof B05_C !== 'undefined' ? B05_C : null, rK = R5 ? R5.rulerK : 9.18, rg = R5 ? R5.ruler.g : 2.0;
-    const pr = demoPanel(t, -1, [LM, 280, 640, 230], { label: 'The ruler again', src: 'Ji, Manchester; UCSB' });
+    const pr = demoPanel(t, -1, [LM, 280, 640, 230], { label: 'Try it with a ruler', src: 'Ji, Manchester; UCSB' });   /* V3: the film's one ruler (F45.1) */
     { const k = ep(t, 0.5, 1.6, E.io3), th = k * Math.PI / 2, cx = pr[0] + 90, cy = pr[1] + 70;
       G.save(); G.translate(cx, cy); G.rotate(th); rr(-10 * 4, -3.3 * 4, 20 * 4, 6.6 * 4, 2, mix(C.hero, C.bg, 0.25), C.hero, 2, 1); G.restore();
       text(k < 0.5 ? 'Flat' : 'On edge', cx, cy + 66, { role: 'label', size: 19, color: k < 0.5 ? C.mute : C.heroText, align: 'center' });

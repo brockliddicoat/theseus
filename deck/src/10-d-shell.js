@@ -758,7 +758,10 @@ S({
     const kA = ep(t, 1.8, 3.2, E.io3), kB = ep(t, 6.0, 7.2, E.io3);
     /* tile A: the solid plane */
     const aA = tileA(t, 0.3, 0); demoWindow(tx, ya, tw0, th, aA);
-    text('A solid plane', tx + 32, ya + 52, { role: 'label', size: 21, color: C.mute, alpha: aA }); pill(tx + tw0 - 32 - pillW('derived'), ya + 52, 'derived', aA);
+    /* the weight of each part (Brock, F27: "show the weight of the 2 parts to tie into how a milled out part can be stronger a
+       solid part, point this out"): the triangles are a solid panel of the same depth with most of it milled away (V3) */
+    const panelG = SIM_MAT.ppcf.rho * H * SHL_HOT.L * SHL_HOT.b, cutP = Math.floor((1 - R.mass / panelG) * 100 + 1e-9), kMill = ep(t, 5.25, 5.95, E.io3);
+    text('A solid plane, ' + fmtN(R.mass, 2) + ' g', tx + 32, ya + 52, { role: 'label', size: 21, color: C.mute, alpha: aA }); pill(tx + tw0 - 32 - pillW('derived'), ya + 52, 'derived', aA);
     const oxA = tx + 40 + 390, oyA = ya + 254, PA = p => [oxA + p[0] * s, oyA - p[1] * s];
     const hot = PA([0, R.plate.d[R.plate.model.mid * 3 + 1] * sc * kA]), z = 1 + 0.85 * env(t, 3.5, 4.2, 4.7, 5.4, E.cam);
     clipped(tx + 2, ya + 96, tw0 - 380, th - 98, () => {
@@ -774,8 +777,13 @@ S({
     if (kh > 0) { const r0 = 24 + 5 * Math.sin(t * 6); circle(hot[0], hot[1] - 4, r0, { color: C.ink, w: 3, alpha: kh }); line(hot[0] + r0 + 4, hot[1] - 8, rx - 16, ya + 166, { color: C.ink, w: 2, alpha: kh }); }
     /* tile B: the same weight as triangles, each member as thick as its force needs */
     const aB0 = tileA(t, 0.3, 1); demoWindow(tx, yb, tw0, th, aB0);
-    text('The same weight as triangles', tx + 32, yb + 52, { role: 'label', size: 21, color: C.mute, alpha: aB0 }); pill(tx + tw0 - 32 - pillW('derived'), yb + 52, 'derived', aB0);
+    rich([{ s: 'The same ' + fmtN(R.mass, 2) + ' g as triangles', role: 'label', size: 21, color: C.mute }, { s: 'milled from a ' + fmtN(panelG, 2) + ' g panel', role: 'label', size: 21, color: C.heroText, gap: 14 }], tx + 32, yb + 52, { alpha: aB0 }); pill(tx + tw0 - 32 - pillW('derived'), yb + 52, 'derived', aB0);
     const oxB = tx + 40 + 390, oyB = yb + 254, PB = p => [oxB + p[0] * s, oyB - p[1] * s], aB = ep(t, 0.9, 1.4);
+    /* the panel the triangles are milled from: solid until 5.3 s, then its holes cleared (the members stay) */
+    { const p0 = PB([-SHL_HOT.L / 2, H]), p1 = PB([SHL_HOT.L / 2, 0]), ka = aB * (1 - kMill);
+      if (ka > 0.003) rect(p0[0], p0[1], p1[0] - p0[0], p1[1] - p0[1], { fill: inkA(TH ? 0.21 : 0.27), alpha: ka });
+      if (aB > 0.003) { G.save(); G.globalAlpha = aB * lerp(0.5, 0.35, kMill); G.setLineDash([6, 5]); G.strokeStyle = C.mute; G.lineWidth = 1.4; G.strokeRect(p0[0], p0[1], p1[0] - p0[0], p1[1] - p0[1]); G.restore(); }
+      const km = env(t, 5.3, 5.7, 7.0, 7.5); if (km > 0.003) text(cutP + ' % milled away', (p0[0] + p1[0]) / 2, p0[1] - 16, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: km }); }
     feDraw(shlSigG(R.sized, smax, kB), PB, { scale: sc, load: kB, smax, w: s * 0.92, alpha: aB, ghost: kB > 0.02, seg: 8, fillet: 5 });
     feFlow(R.sized, PB, t, { scale: sc, load: kB, alpha: aB });
     feSupport(PB([-30, 0]), 'pin', { alpha: aB }); feSupport(PB([30, 0]), 'roll', { alpha: aB });
@@ -797,7 +805,10 @@ S({
     const cx2 = tx + tw0 + 40, cw2 = RM - cx2, kd = ep(t, 7.4, 8.2, E.io3);
     shellHL(t, 7.4, cx2, ya + 150, '−' + Math.round(cut * 100), '% peak', { size: 140, count: false });
     shellBA(t, cx2, ya + 290, { label: SHELL_PEAK_LAB, before: fmtN(R.plate.peak, 1), after: fmtN(R.sized.peak, 1), unit: 'MPa', size: 60, k: kd, a: ep(t, 7.4, 7.8), net: 'Same weight, sized to the force' });
-    glossBox(t, 2.4, cx2, yb + 40, cw2, 'Stress hotspot', 'A spot where stress piles up far above the rest of the part. A crack starts there, while the material round it barely works.', { size: 24 });
+    /* the word first; once the triangles have landed, the point the weights make (V3) */
+    const kG2 = ep(t, 7.9, 8.2);
+    glossBox(t, 2.4, cx2, yb + 40, cw2, 'Stress hotspot', 'A spot where stress piles up far above the rest of the part. A crack starts there, while the material round it barely works.', { size: 24, alpha: 1 - kG2 });
+    if (kG2 > 0.003) glossBox(t, 8.0, cx2, yb + 40, cw2, 'Milled out, and stronger', 'Cut ' + cutP + ' % of a ' + fmtN(panelG, 2) + ' g panel away: the ' + fmtN(R.mass, 2) + ' g of triangles left peaks at about half the stress of a solid plane of the same weight.', { size: 24, label: 'The point' });
   }
 });
 
@@ -890,15 +901,28 @@ S({
       const nx = LM + 1250;
       rich([{ s: String(Math.round(r.work * 100)), font: 'disp', size: 60, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, tnum: true, count: [3.6 + i * 0.3, 1.0] }, { s: '%', font: 'disp', size: 36, weight: 800, color: hero ? C.heroText : C.ink, grad: hero ? C.heroGrad : null, gap: 4 }], nx, y + 86, { t, alpha: kk });
       text('of its weight works', nx + 136, y + 52, { role: 'label', size: 19, color: C.mute, alpha: kk });
-      text('≈ ' + fmtN(r.work * SHL_FE.g.body, 1) + ' g of the 15.2 g stress study', nx + 136, y + 86, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: kk });
+      /* the grams that work, of the part's own weight (the same for all three: shlHotspot's) (V3: was the old 15.2 g study's body,
+         no longer in the film) */
+      text('≈ ' + fmtN(r.work * R.mass, 2) + ' g of its ' + fmtN(R.mass, 2) + ' g', nx + 136, y + 86, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: kk });
     });
     /* how much, then the weight it saves, then the words. The blue headline is the biggest figure here, and the plane's 1.9×
        is a smaller, quiet one that fits its tile (review item 17) */
     const yb = 760, hb = 200;
     statTile(t, 5.4, [LM, yb, 640, hb], { value: fmtN(k5, 1), unit: '×', label: 'the share of its weight at work', ev: 'derived', hero: true, align: 'left' });
     statTile(t, 5.8, [LM + 680, yb, 440, hb], { head: 'A solid plane, to match it', value: fmtN(R.match, 1), unit: '×', label: 'the weight', quiet: true, align: 'left', size: 60 });
-    glossBox(t, 6.2, LM + 1160, yb, RM - LM - 1160, 'Weight that works', 'The share of a part stressed to at least half its own peak. The rest only rides along.', { size: 24 });
-    source(t, 'Shares from the 2D frames above; grams on the stress study\'s body (the Sora scan\'s surface at the study\'s wall), 15.2 g. The shell\'s target is the weight budget.', { t0: 3.6, y: 994 });
+    /* the choices this rule drives (Brock, F27: "tie this into how we designed the structure more ... this example is part of the
+       reasoning for a lot of design choices"): the upgrades that follow, each a way to put the weight where the force is (V3) */
+    { const x0 = LM + 1160, w0 = RM - x0, a0 = tileA(t, 6.2, 0);
+      demoWindow(x0, yb, w0, hb, a0);
+      text('The choices it drives', x0 + 28, yb + 40, { role: 'label', size: 19, color: C.heroText, alpha: a0 });
+      const items = [['tri', 'Triangles', 'Upgrade 2'], ['arch', 'Arches', 'Upgrade 3'], ['fillet', 'Fillets', 'Upgrade 4'], ['tie', 'The board', 'Move 3, a tie']], cw = (w0 - 40) / items.length;
+      items.forEach(([ic, nm, sub], j) => {
+        const cx = x0 + 20 + cw * (j + 0.5), kj = ep(t, 6.5 + j * 0.18, 6.9 + j * 0.18);
+        if (typeof film_upIcon === 'function') film_upIcon(ic, cx, yb + 94, 22, C.heroText, kj);
+        text(nm, cx, yb + 150, { role: 'small', size: 20, weight: 750, color: C.ink, align: 'center', alpha: kj, maxW: cw - 10, sentence: false });
+        text(sub, cx, yb + 176, { role: 'small', size: 19, weight: 600, color: C.mute, align: 'center', alpha: kj, sentence: false });
+      }); }
+    source(t, 'Shares from the 2D frames above, each part ' + fmtN(R.mass, 2) + ' g (the strip of the slide before). Weight that works: the share stressed to at least half the part\'s own peak; the rest only rides along.', { t0: 3.6, y: 994 });
   }
 });
 
@@ -1238,12 +1262,15 @@ function filR(t) {
   const u = (t - 10.5) % 12;
   return u < 3 ? lerp(0.75, 1.2, E.io3(u / 3)) : u < 4 ? 1.2 : u < 7 ? lerp(1.2, 0.05, E.io3((u - 4) / 3)) : u < 8 ? 0.05 : u < 11 ? lerp(0.05, 0.75, E.io3((u - 8) / 3)) : 0.75;
 }
+/** Theseus's fillets, from the lattice study (B12, 30-b12-latopt.js): 60 % of the rib at a node, the mould's 0.24 mm at the
+   root (F57, L1) (V3: the slide said 0.6 to 0.75 mm, the study shell's) */
+function shlThsFil() { const w = typeof B12 !== 'undefined' && B12 ? B12.win : null; return { rib: fmtN(w ? w.w : 0.36, 2), node: fmtN(0.6 * (w ? w.w : 0.36), 2), root: fmtN(w ? w.rPick : 0.24, 2) }; }
 S({
   id: 'filletsize', ch: 'shell', theme: 'night', title: 'Fillet size, solved at equal mass', settle: 10, ideas: [75, 'fillet'],
   src: ['filletFE', 'shlEnvalior', 'beall106', 'protoWall', 'doutre23', 'shlLattice'],
   draw: t => {
     header(t, 'Fillet size, solved at equal mass');
-    captions(t, [[0.6, 'Held at the same weight, a fillet trades corner stress against strut width, so the curve has a bottom.'], [4.0, 'Most of the gain comes in the first 0.6 mm. Past 1.05 mm the struts drop under the 0.89 mm floor and the peak climbs again.'], [7.4, 'So I take the small end of the bottom: 0.6 to 0.75 mm, nearly all the gain, with the widest struts.']]);
+    captions(t, [[0.6, 'Held at the same weight, a fillet trades corner stress against strut width, so the curve has a bottom.'], [4.0, 'Most of the gain comes in the first 0.6 mm. Past 1.05 mm the struts get too thin and the peak climbs again.'], [7.4, 'So the pick is the small end of the bottom, about 60 % of the strut: nearly all the gain, the widest struts. On Theseus\'s ribs, a ' + shlThsFil().node + ' mm fillet at every node.']]);
     const r = filR(t), f = filAt(r);
     /* left: the stress field at the radius on screen, and its readout */
     { const x = LM, y = 280, w = 1000, h = 640, a0 = tileA(t, 0.3, 0);
@@ -1290,7 +1317,7 @@ S({
       text('Radius, {mm}', x + w - 32, y + h - 26, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: ep(t, 1.0, 1.4) });
       void kz;
     }
-    sourceBox(t, 5.6, LM + 1040, 680, RM - LM - 1040, 'Envalior', 'Inside radius 25 to 60% of the wall, the upper end for parts that carry load. Mine: 0.6 mm on the 1.0 mm top ribs, 0.75 mm on the 1.2 mm low ribs, 60% of each.', { size: 24 });
+    sourceBox(t, 5.6, LM + 1040, 680, RM - LM - 1040, 'Envalior', 'Inside radius 25 to 60 % of the wall, the upper end for parts that carry load. Mine: 60 % of the rib, ' + shlThsFil().node + ' mm where the shell\'s ' + shlThsFil().rib + ' mm ribs cross; ' + shlThsFil().root + ' mm at their roots on the skin.', { size: 24 });
   }
 });
 

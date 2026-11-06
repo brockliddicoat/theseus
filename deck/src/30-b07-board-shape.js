@@ -71,7 +71,13 @@ const B07_ROWS = [-31.65, -20.43, -10.64, -0.77, 9.17, 19.25, 29.76, 41.16];
 /* the weight budget (shcBudget in 10-d3-board.js and the intro's ntr_budget; restated so this file stands alone) */
 /* the 29.31 g budget. F44.2 (Brock): the two side switches (full-size SPDT, about 0.5 g each) come out of the shell's
    allowance, 10.35 → 9.35 g; the total stays 29.31 g. F42.2: the board's 5.6 g is a target */
-const B07_BUD = { shell: 9.35, sideSw: 1.0, btn: 3.328, board: 5.6, batt: 8.0, wheel: 1.02, screws: 0.418, ins: 0.516, wires: 0.08 };
+const B07_BUD = { shell: 9.35, sideSw: 1.0, btn: 3.328, wheel: 1.02, screws: 0.418, ins: 0.516, wires: 0.08,
+  /* V3: the board and the battery read from the deck's own figures (THESEUS.pcb; the budget's battery pack), so a change there
+     reaches this slide (main, 17:10: the battery is being changed) */
+  get board() { return typeof THESEUS !== 'undefined' && THESEUS.pcb ? THESEUS.pcb : 5.6; },
+  get batt() { const B = typeof ntr_budget === 'function' ? ntr_budget() : null; return B && B.cell && B.cell.g ? B.cell.g : 8.0; } };
+/** a weight as said on the slide: whole grams when it is whole, else one decimal */
+const b07_gTxt = g => (Math.abs(g - Math.round(g)) < 0.05 ? fmtN(Math.round(g), 0) : fmtN(g, 1));
 /* where each part sits: z forward of the middle, y above the pad (mm). H2's balance model (3d/pcb/tools/balance.py; review
    b07 "HARDWARE", 10:14), number for number: the rest of the shell at the body's volume centroid; the two side switches
    (0.5 g each, F44.2: out of the shell's allowance) where shell.js puts them; the four boss posts over the board's holes, an
@@ -1690,7 +1696,7 @@ S(b07_live({
     const parts = b07_balParts(), F = b07_balFrame(), P0 = B07_POS, BAL = b07_balance();
     header(t, 'Balance at the centre');
     captions(t, [[0.2, 'Weigh the mouse at both ends as its parts go in. Each part pulls the balance point toward itself.'],
-      [3.4, 'The battery is the heaviest part, 8 g. Set low in the tail, where the mouse balances, it brings the balance back to the centre.'],
+      [3.4, 'The battery is the heaviest part, ' + b07_gTxt(B07_BUD.batt) + ' g. Set low in the tail, where the mouse balances, it brings the balance back to the centre.'],
       [4.5, 'Some want the battery higher, up in the hump. A palm resting high on the hump pushes up there, and the weight would line up with it.'],
       [7.2, 'Theseus is held on its flat low sides, 12 mm up. A low battery puts the balance on that grip, so a flick doesn\'t rock it.']]);
     /* the parts land one by one; the battery last */
@@ -1724,7 +1730,7 @@ S(b07_live({
       circle(q[0], q[1], r, { fill: p.batt ? C.hero : C.comp, alpha: a * 0.9 });
       const [lx, ly0, al] = lab[p.name], ly = p.batt && up > 0.5 ? -1 : ly0, la = kp[i] * (p.batt ? 1 : kLab);
       const tx = q[0] + lx * (r + 8), ty = ly === 2 ? P(0, 0)[1] + 30 : q[1] + ly * (r + 10) + (ly === 0 ? 7 : 0);
-      if (la > 0.003) text(p.batt ? 'Battery 8 g' : p.name, tx, ty, { role: 'label', size: 19, color: p.batt ? C.heroText : C.ink2, align: al, alpha: la * (ly === 2 ? kScale : 1) });
+      if (la > 0.003) text(p.batt ? 'Battery ' + b07_gTxt(p.g) + ' g' : p.name, tx, ty, { role: 'label', size: 19, color: p.batt ? C.heroText : C.ink2, align: al, alpha: la * (ly === 2 ? kScale : 1) });
     });
     /* the balance point, and the trail it leaves as parts go in */
     const qc = P(-zc, -yc);
@@ -1797,7 +1803,7 @@ S(b07_live({
     /* one decimal at most: the parts' heights are known to about a millimetre (model audit M-b07-5), so the low battery is
        "at the grip", not a percentage cut; with F44.2's side switches it sits 0.6 mm above, so "within a millimetre" */
     verdict(t, 8.8, rx, 884, { from: +b07_lvTxt(BAL.lvHigh, false), to: +b07_lvTxt(BAL.lvLow, true), unit: 'mm', dec: 1, label: 'Balance above the grip', better: 'lower', who: ['Battery in the hump', 'Theseus'], size: 96, net: 'At the grip', netWord: 'within a millimetre', maxW: rw });
-    source(t, 'Derived, H2\'s balance model: the 29.31 g budget at the 3D centroids (board at its 5.6 g target; side switches and four boss posts, estimated, inside the shell\'s 9.35 g); battery set where the mouse balances. Twist = m·a·lever. Rock not to scale.', { t0: 2.0, maxW: rx - LM - 60 });
+    source(t, 'Derived, H2\'s balance model: the ' + fmtN(THESEUS.mass, 2) + ' g budget at the 3D centroids (the board at ' + fmtN(B07_BUD.board, 2) + ' g; side switches and four boss posts, estimated, inside the shell\'s 9.35 g); battery set where the mouse balances. Twist = m·a·lever. Rock not to scale.', { t0: 2.0, maxW: rx - LM - 60 });
   }
 }));
 

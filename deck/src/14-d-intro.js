@@ -316,8 +316,14 @@ S({
 function ntr_boxSils(t, it, yb, k, aa) {
   const B = it.box, c45 = k * 0.5 * Math.SQRT1_2, fw = B.L * k, fh = B.H * k, yt = yb - fh, col = it.hero ? C.hero : inkA(0.8), oc = { fill: it.hero ? C.heroSoft : inkA(0.08), w: it.hero ? 2.4 : 2 };
   const Lo = it.hero ? THESEUS.dims[0] : B01_X2F.L, Wo = it.hero ? THESEUS.dims[1] : B01_X2F.W;
+  /* the X2F, a pure fingertip mouse: half a Theseus from the side and the end (Brock, 17:04: "a separate silhouette of a half
+     theseus to use for pure fingertip mice"; film_halfPts in 25-film.js), at its own box; the lid keeps the outline traced
+     from Pulsar's photo (his earlier ask, F27: "find an outline of the x2f to add to the box"): beside the half Theseus it
+     reads the same (?x2fhalf=1 draws the half Theseus there too) */
+  const half = !it.hero && typeof film_halfPts === 'function' ? film_halfPts([B.L, B.W, B.H]) : null;
+  const trace = !it.hero && (!half || !(typeof FILM_Q !== 'undefined' && FILM_Q.get('x2fhalf') === '1'));
   /* the lid: from above, the nose at the left */
-  const top = ntr_topPts(it.hero ? 'ths' : 'x2f').map(([l, w]) => { const d = (w / Wo + 0.5) * B.W; return [it.x + l * B.L / Lo * k + d * c45, yt - d * c45]; });
+  const top = (half && !trace ? half.top.map(([l, w]) => [l, w * Wo / B.W]) : ntr_topPts(it.hero ? 'ths' : 'x2f')).map(([l, w]) => { const d = (w / Wo + 0.5) * B.W; return [it.x + l * B.L / Lo * k + d * c45, yt - d * c45]; });
   /* the front face: from the side, nose left; the end face (the tail's, sheared back at 45°): from the end */
   let side, end;
   if (it.hero) {
@@ -325,10 +331,9 @@ function ntr_boxSils(t, it, yb, k, aa) {
     side = MS_SIDE.map(([z, h]) => [it.x + (z1 - z) / (z1 - z0) * fw, yb - h / hT * fh]);
     end = MS_FRONT.map(([x, h]) => { const d = (x / Wo + 0.5) * B.W; return [it.x + fw + d * c45, yb - h / hT * fh - d * c45]; });
   } else {
-    /* the kit's generic side, a whole X2 length at the X2F's height, cut where the X2F stops */
-    const Vs = rvView('left', { dims: [120, B.W, B.H] }), cut = -60 + B01_X2F.cut;
-    side = ntr_clipX(Vs.outPts, cut).map(([x, y]) => [it.x + (x + 60) * k, yb + y * k]);
-    end = rvView('front', { dims: [B.L, B.W, B.H] }).outPts.map(([x, y]) => { const d = x + B.W / 2; return [it.x + fw + d * c45, yb + y * k - d * c45]; });
+    /* half a Theseus from the side (cut where the X2F stops, its tallest point at the X2F's height) and from the end */
+    side = half.side.map(([l, h]) => [it.x + l * k, yb - h * k]);
+    end = half.end.map(([x, h]) => { const d = x + B.W / 2; return [it.x + fw + d * c45, yb - h * k - d * c45]; });
   }
   ntr_outline(top, ep(t, it.t0 + 0.55, it.t0 + 1.35) * aa, col, oc);
   ntr_outline(side, ep(t, it.t0 + 0.75, it.t0 + 1.55) * aa, col, oc);
@@ -369,8 +374,8 @@ S({
         a, edge: it.hero ? C.hero : inkA(0.62), lw: it.hero ? 2 : 1.6,
         /* the mouse on every face it shows (Brock, 16:25: "show all the silhouettes, not just the silhouettes from one direction"):
            from above on the lid, from the side on the front face (nose left), from the end on the right face. Theseus's are the
-           simplified mouse's own (its top, MS_SIDE, MS_FRONT); the X2F's top is its traced cut, its side and end the kit's
-           generic rival in its box, the side cut at its 87.5 mm (V2) */
+           simplified mouse's own (its top, MS_SIDE, MS_FRONT); the X2F's are half a Theseus, cut at its 87.5 mm, in its own
+           box, the lid traced from Pulsar's photo (V3; Brock, 17:04) */
         face: aa => ntr_boxSils(t, it, y, k, aa) 
       });
       /* under each box: the name, the weight and the box in one quiet line (the weights are the same: they do not lead), then the
@@ -395,7 +400,7 @@ S({
       { t0: 6.3, a: 'Buckingham 2014', b: 'The best known of the weight illusions, and over a century of studies keep finding it.' },
       { t0: 6.8, a: 'Pwnage', b: '"Two mouses with the same weight can feel totally different."' }
     ]);
-    source(t, 'Weights: the X2F\'s weighed by Brock (Pulsar lists 29 g ± 2), Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is 119.3 × 62.4 × 39.9 mm. Silhouettes: Theseus\'s own; the X2F\'s top traced from Pulsar, its side and end the generic mouse in its box.', { t0: 5.0, x: 720, maxW: RM - 720 });
+    source(t, 'Weights: the X2F\'s weighed by Brock (Pulsar lists 29 g ± 2), Theseus\'s my target. Boxes: the makers\' L × W × H (EloShapes); Theseus\'s is 119.3 × 62.4 × 39.9 mm. Silhouettes: Theseus\'s own; the X2F\'s top traced from Pulsar, its side and end half a Theseus cut at its 87.5 mm, in its own box.', { t0: 5.0, x: 720, maxW: RM - 720 });
   }
 });
 

@@ -34,7 +34,7 @@ const FILM = {
       builds: 'Move 1’s shape, kept full: the volume to make light, and flat low sides to hold.',
       unlocks: 'Weight saved at the same stiffness, for every move after it.' },
     { n: 3, ch: 'shell', name: 'The weight you carry', title: 'Use the weight you already carry',
-      builds: 'Move 2’s light, stiff shell: the skin the board can tie.',
+      builds: 'Move 2’s light, stiff shell: its ribs end on the board the mouse already carries.',
       unlocks: 'Stiffer again, for no added weight.' },
     { n: 4, ch: 'click', name: 'Clicks', title: 'Clicks the stiff shell makes possible',
       builds: 'The stiff top of moves 2 and 3: a top that doesn’t flex lets the click be direct.',
@@ -66,10 +66,14 @@ const FILM = {
   order: [
     [0, ['b01_cover', 'weightgap', 'ntr_sizewt', 'ntr_density', 'ntr_densrank', 'b01_battery', 'loadouts', 'targets', 'rule']],   /* V2: the giants' loadouts in b01_compromise's place */
     [1, ['mv1', 'b07_size', 'shp_newton', 'grooves', 'emg', 'b07_sides']],
-    [2, ['mv2', 'materials', 'shlSpecific', 'thinwall', 'shlScatter', 'shlPick', 'shlNoPick', 'shlHotspot', 'shlMargin', 'shlWork', 'shlShell3d',
-      'lattice', 'shlDeterminate', 'shlThin', 'shbArches', 'shbPress', 'shbThrust', 'shbBend', 'shbFibres', 'fillet', 'filletsize', 'shbFlow',
-      'shbWidth', 'shbMill', 'shbMillDirect', 'shbTol']],
-    [3, ['mv3', 'shlPcbRib', 'shcCarry', 'shcArms', 'shlStructs', 'grind', 'mass', 'tolerance', 'shlsheet1', 'shlsheet2']],
+    /* V3: move 2 as five upgrades, each built on the one before (FILM.steps): the problem (the giants' light-or-stiff), the
+       material, the lattice, arches, fillets, the mould, then the shell they make (shellup). v23's peaks kept with his fixes
+       (shlHotspot, shlWork, filletsize); where the revamp rebuilt a slide with his notes answered, its rebuild */
+    [2, ['mv2', 'b05_fallacy', 'b05_material', 'b05_wall', 'shlHotspot', 'shlWork', 'b06_lattice', 'b06_light', 'b12_latopt',
+      'b06_arches', 'b06_arch', 'filletsize', 'b06_mold', 'b12_ribs', 'shellup']],
+    /* V3: move 3, the board the mouse already carries, tying move 2's ribs; then what that tie spares (parts, tolerances) and
+       where it meets the shell (a pad); the battery placed */
+    [3, ['mv3', 'b07_board', 'b07_arms', 'b07_tolerance', 'b07_poron', 'b07_balance']],
     [4, ['mv4', 'arc', 'clk_wedge', 'clk_switch', 'clk_switch2', 'cutouts', 'tensioner', 'clk_tenmat', 'anchors', 'clk_pomtune', 'clk_front',
       'clk_hotswap', 'clk_spdt', 'latency', 'clk_debounce', 'clk_wait', 'clk_methods', 'sidebuttons']],
     [5, ['mv5', 'gld_under', 'dots', 'gld_camera', 'gld_corr', 'gld_blur', 'focus', 'gld_sag', 'gld_module', 'sensor', 'gld_reports', 'gld_soft', 'gld_sheet']],
@@ -93,8 +97,39 @@ const FILM = {
     shp_newton: { s: 'The curve the finger rests on: the outline move 2\u2019s shell must hold', to: [2] },
     grooves: { s: 'The grip is in the shape: the skin move 7 coats keeps it', to: [7] },
     emg: { s: 'Measured on players before any weight is cut' },
-    b07_sides: { s: 'What the shape asks of the shell: flat low sides that hold. Move 2 builds it', to: [2] }
+    b07_sides: { s: 'What the shape asks of the shell: flat low sides that hold. Move 2 builds it', to: [2] },
+    /* V3: move 2, each upgrade said as what it builds on */
+    b05_fallacy: { s: 'The giants\u2019 trade, light or stiff. Heavier isn\u2019t stiffer: where the weight goes is' },
+    b05_material: { s: 'Upgrade 1: the material every later upgrade is made of' },
+    b05_wall: { s: 'A light resin buys a thicker wall for the weight: the skin the ribs will stand on' },
+    shlHotspot: { s: 'Upgrade 2 builds on the skin: cut it into triangles and the force spreads' },
+    shlWork: { s: 'The rule each later upgrade follows: put the weight where the force is', to: [3] },
+    b06_lattice: { s: 'Which pattern: triangles stretch where hexagons bend, at the same weight' },
+    b06_light: { s: 'The lighter the shell, the more triangles win: it compounds the material' },
+    b12_latopt: { s: 'On the whole shell: two candidates, kagome and true triangles, a tie' },
+    b06_arches: { s: 'Upgrade 3 builds on the lattice: its ribs run whole, as arches over the dome' },
+    b06_arch: { s: 'An arch holds because its feet are held: move 3 ties them to the board', to: [3] },
+    filletsize: { s: 'Upgrade 4: every node where the arches cross is a corner. Round it' },
+    b06_mold: { s: 'Upgrade 5 builds on the fillets: one cutter fits every corner' },
+    b12_ribs: { s: 'The mould sets the last size: ribs as deep as it fills, cut steel-safe first' },
+    shellup: { s: 'The weight move 2 saves: move 3 ties the shell, move 6 spends it on battery', to: [3, 6] },
+    /* V3: move 3 */
+    b07_board: { s: 'Builds on move 2: the ribs\u2019 feet, tied by the board the mouse already carries' },
+    b07_arms: { s: 'Tie every rib, not a few arms: the same board, nothing added' },
+    b07_tolerance: { s: 'No added part, no added tolerance: one body where the giants stack four' },
+    b07_poron: { s: 'Where the shell meets the board, a pad: the tie never creaks' },
+    b07_balance: { s: 'The heaviest part, placed: the battery move 6 sizes sits low, at the grip', to: [6] }
   },
+  /* V3: move 2's five upgrades, each built on the one before: the label row names the upgrade a slide belongs to and a
+     meter beside it fills, one segment an upgrade (filmChrome). of: slide id -> upgrade (0: the problem, before the first;
+     names.length + 1: the shell they make, every segment full) */
+  steps: {
+    2: { names: ['the material', 'the lattice', 'arches', 'fillets', 'the mould'],
+      of: { b05_fallacy: 0, b05_material: 1, b05_wall: 1, shlHotspot: 2, shlWork: 2, b06_lattice: 2, b06_light: 2, b12_latopt: 2,
+        b06_arches: 3, b06_arch: 3, filletsize: 4, b06_mold: 5, b12_ribs: 5, shellup: 6 } }
+  },
+  /* V3: a slide drawn for another chapter, played in this move (its chapter's accent and icon, no chapter flight inside a move) */
+  chOf: { b07_balance: 'shell' },
 
   /* V1's scoreboard (FILM.score) became the loadout (V2): LO below, its categories, the flagships and the moves that fill
      each of Theseus's bars (LO.cats[].earn) */
@@ -107,7 +142,7 @@ function filmApply() {
   const out = [], missing = [];
   for (const [n, ids] of FILM.order) for (const id of ids) {
     const s = byId.get(id); if (!s) { missing.push(id); continue; }
-    s.move = n; out.push(s);
+    s.move = n; if (FILM.chOf && FILM.chOf[id]) s.ch = FILM.chOf[id]; out.push(s);
   }
   if (missing.length) console.error('film: no slide', missing.join(', '));
   FILM.dropped = DECK.slides.filter(s => !out.includes(s)).map(s => s.id);
@@ -208,6 +243,23 @@ const FILM_DOCK = { x0: 1250, x1: 1690, y: 1040, r: 4.2, h1: 6, h9: 24 };
 const FILM_FULL = { x0: 170, x1: 1750, y: 850, r: 17, h1: 60, h9: 285 };
 const FILM_RULE = { x0: 170, x1: 1750, y: 900, r: 15, h1: 34, h9: 170 };   /* the rule slide's plan: move 1's card picks the board up from there */
 
+/* ---------- a move's upgrades (V3; FILM.steps): the upgrade a slide belongs to, and the label row's words for it ---------- */
+function filmStep(s) {
+  const m = filmMove(s), S0 = m && FILM.steps && FILM.steps[m.n]; if (!S0 || !(s.id in S0.of)) return null;
+  const i = S0.of[s.id], N = S0.names.length;
+  const label = i === 0 ? 'Move ' + m.n + ': the problem' : i > N ? 'Move ' + m.n + ': ' + (['', 'one', 'two', 'three', 'four', 'five', 'six'][N] || N) + ' upgrades, one shell' : 'Move ' + m.n + ', upgrade ' + i + ' of ' + N + ': ' + S0.names[i - 1];
+  return { i, N, label, names: S0.names };
+}
+/** the meter beside the label: one segment an upgrade, those landed ink, this slide's blue, those ahead a track */
+function filmStepMeter(t, s) {
+  const up = filmStep(s); if (!up) return;
+  const a = ep(t, 0.45, 0.8); if (a <= 0.003) return;
+  const x0 = LM + 36 + tw(up.label, { role: 'label', size: 22 }) + 26, y = LAY.labelY - 10, w = 30, h = 6, gap = 5;
+  for (let j = 1; j <= up.N; j++) {
+    const x = x0 + (j - 1) * (w + gap), col = j < up.i || up.i > up.N ? C.ink2 : j === up.i ? C.hero : C.track;
+    rr(x, y, w, h, 2, col, null, 0, a);
+  }
+}
 /* ---------- the chrome, when the film is on: the rule, THESEUS / MOVE n, the slide's link to the chain, the docked board,
    n / N. Drawn settled (it is the stage's) ---------- */
 function filmChrome(t, s) {
@@ -233,6 +285,8 @@ function filmChrome(t, s) {
   text(`${pad2(i + 1)} / ${pad2(N)}`, RM, y, { role: 'foot', weight: 600, color: C.mute, align: 'right' });
   /* Theseus's loadout, docked top right on the label row (V2): its bars as the moves so far have filled them */
   if (lo_dockOn(s)) lo_dock(s.move);
+  /* the move's upgrades, beside the label (V3) */
+  filmStepMeter(t, s);
 }
 
 /* ============================== THE LOADOUT (V2, 2026-11-06): the film's persistent visual ==============================
@@ -387,21 +441,90 @@ function lo_thsFill(x, y, L, h, r, f, o) {
 /** the factor printed past a capped bar ("2.4×"), and its width */
 const lo_capTxt = f => fmtN(f, 1) + '×';
 
-/* ---------- the silhouettes: the kit's generic rival for every flagship at its own length and width (Brock, 16:25: "use
-   the generic outline that we know is good"), the X2F its own traced cut, Theseus the simplified mouse. Nose left ---------- */
+/* ============================== the silhouettes (V3; Brock, 17:04) ==============================
+   "these use the wrong generic mouse silhouette, they should be using the same one as theseus" / "we need a separate
+   silhouette of a half theseus to use for pure fingertip mice as well". Every rival is Theseus's own simplified mouse
+   (mouseSimple), scaled to the rival's length and width (and height, seen from the side or the end), in a rival's grey;
+   only Theseus is blue. A pure fingertip mouse is half a Theseus: the same outline with the back cut off where the mouse
+   stops (the X2F at its 87.5 mm), the cut's corners rounded, its width scaled to the mouse's. Drawn inside part(), in mm,
+   in mouseSimple's own frame (top: x across, nose at -y). */
+/** the rival's grey: fill and outline (rvCols, the kit's) */
+const film_rvCol = () => (typeof rvCols === 'function' ? rvCols('grey') : { out: C.comp, body: C.panel });
+/** scale the frame by (sx, sy) about (px, py), keeping XF readable (lw() reads the x scale: rivals are within 10 % of 1) */
+function film_xs(px, py, sx, sy) { xmove(px, py); G.scale(sx, sy); const m = XF.m; m[0] *= sx; m[1] *= sx; m[2] *= sy; m[3] *= sy; xmove(-px, -py); }
+/** a full-size rival from above (or 'bottom'): Theseus's mouse at dims [L, W] mm, centred where Theseus's box centre is.
+   o: mouseSimple's (lw, alpha, show), plus col ('grey' default; a colour for the one named rival). Returns { nose, sx, sy } */
+function film_rival(view, dims, o = {}) {
+  const V = msView(view), cx = V.box[0] + V.box[2] / 2, cy = V.box[1] + V.box[3] / 2, sx = dims[1] / V.box[2], sy = dims[0] / V.box[3];
+  const rc = film_rvCol(), out = o.col && o.col !== 'grey' ? o.col : rc.out;
+  xsave(); film_xs(cx, cy, sx, sy);
+  mouseSimple(view, Object.assign({ fill: rc.body, line: out }, o, { col: undefined }));
+  xrest();
+  return { nose: cy + (V.box[1] - cy) * sy, sx, sy, cx, cy };
+}
+/** the half Theseus's outline from above, in mouseSimple's top frame: the outline kept from the nose to cut mm, the cut
+   straight across with its corners rounded r mm. Cached by cut */
+function film_halfTop(cut, r = 4) {
+  film_halfTop.c = film_halfTop.c || {}; const key = cut + ':' + r; if (film_halfTop.c[key]) return film_halfTop.c[key];
+  const V = msView('top'), yc = V.box[1] + cut, P = V.outPts, kept = [];
+  for (let i = 0; i < P.length; i++) {
+    const a = P[i], b = P[(i + 1) % P.length], ina = a[1] <= yc, inb = b[1] <= yc;
+    if (ina) kept.push(a);
+    if (ina !== inb) { const u = (yc - a[1]) / (b[1] - a[1]); kept.push([a[0] + (b[0] - a[0]) * u, yc]); }
+  }
+  /* the two corners on the cut: replaced by quarter-round arcs (a quadratic through the corner) */
+  const pts = [], n = kept.length, onCut = q => Math.abs(q[1] - yc) < 1e-6;
+  for (let i = 0; i < n; i++) {
+    const q = kept[i], p0 = kept[(i - 1 + n) % n], p1 = kept[(i + 1) % n];
+    if (onCut(q) && (onCut(p0) !== onCut(p1))) {
+      const side = onCut(p0) ? p1 : p0, along = (u, to) => { const d = Math.hypot(to[0] - q[0], to[1] - q[1]) || 1; return [q[0] + (to[0] - q[0]) * Math.min(1, u / d), q[1] + (to[1] - q[1]) * Math.min(1, u / d)]; };
+      const A = along(r, onCut(p0) ? p0 : side), B = along(r, onCut(p0) ? side : p1);
+      for (let k = 0; k <= 8; k++) { const u = k / 8, w0 = (1 - u) * (1 - u), w1 = 2 * u * (1 - u), w2 = u * u; pts.push([w0 * A[0] + w1 * q[0] + w2 * B[0], w0 * A[1] + w1 * q[1] + w2 * B[1]]); }
+    } else pts.push(q);
+  }
+  let w = 0; for (const q of pts) w = Math.max(w, Math.abs(q[0]));
+  const path = new Path2D(); pts.forEach((q, i) => (i ? path.lineTo(q[0], q[1]) : path.moveTo(q[0], q[1]))); path.closePath();
+  return (film_halfTop.c[key] = { pts, path, W: 2 * w, y0: V.box[1], y1: yc });
+}
+/** half a Theseus from above, for a pure fingertip mouse: dims [L, W] mm (the cut is at L), centred on (0, 0) of the
+   frame. o: lw, alpha, col */
+function film_half(dims, o = {}) {
+  const H = film_halfTop(dims[0]), sx = dims[1] / H.W, cy = (H.y0 + H.y1) / 2, rc = film_rvCol(), out = o.col && o.col !== 'grey' ? o.col : rc.out;
+  xsave(); xmove(0, -cy); film_xs(0, cy, sx, 1);
+  G.save(); G.clip(H.path);
+  mouseSimple('top', Object.assign({ fill: rc.body }, o, { col: undefined, line: 'rgba(0,0,0,0)' }));
+  G.restore();
+  G.save(); G.globalAlpha = PA * (o.alpha == null ? 1 : o.alpha); G.lineJoin = 'round'; G.strokeStyle = out; G.lineWidth = lw(o.lw || 2); G.stroke(H.path); G.restore();
+  xrest();
+}
+/** the half Theseus as points, for the box views (ntr_sizewt): top [l from the nose, w across], side [l, h], end [x, h];
+   each scaled to the mouse's box dims [L, W, H] (the side's tallest point at H, the end at W × H) */
+function film_halfPts(dims) {
+  const [L, W, H] = dims, T = film_halfTop(L), sx = W / T.W;
+  const top = T.pts.map(([x, y]) => [y - T.y0, x * sx]);
+  /* the side: MS_SIDE (z, h; the nose at the largest z), cut L mm from the nose */
+  const zs = MS_SIDE.map(q => q[0]), z1 = Math.max(...zs), zc = z1 - L, sp = [];
+  for (let i = 0; i < MS_SIDE.length; i++) {
+    const a = MS_SIDE[i], b = MS_SIDE[(i + 1) % MS_SIDE.length], ina = a[0] >= zc, inb = b[0] >= zc;
+    if (ina) sp.push(a);
+    if (ina !== inb) { const u = (zc - a[0]) / (b[0] - a[0]); sp.push([zc, a[1] + (b[1] - a[1]) * u]); }
+  }
+  const hMax = Math.max(...sp.map(q => q[1])), side = sp.map(([z, h]) => [z1 - z, h * H / hMax]);
+  const fw = Math.max(...MS_FRONT.map(q => Math.abs(q[0]))) * 2, fh = Math.max(...MS_FRONT.map(q => q[1])), end = MS_FRONT.map(([x, h]) => [x * W / fw, h * H / fh]);
+  return { top, side, end };
+}
+
+/* ---------- the loadout's silhouettes: Theseus's own for every flagship at its own length and width, half a Theseus for
+   the fingertip X2F (Brock, 17:04), Theseus blue. Nose left ---------- */
 function lo_sil(M, cx, cy, s, a) {
   if (a <= 0.003) return;
   if (!M) { part(cx, cy, s, () => mouseSimple('top', { lw: 1.6, col: 'hero', hi: ['shell'], lit: 0.5 }), { rot: -Math.PI / 2, alpha: a }); return; }
-  if (M.x2f && typeof b01_outline === 'function') {
-    const cut = b01_outline(B01_X2_HALF, B01_X2F.cut, B01_X2F.r), rc = b01_rvCol();
-    part(cx, cy, s, () => { G.save(); G.translate(0, -B01_X2F.cut / 2); G.globalAlpha = PA; G.fillStyle = rc.body; G.fill(cut.path); G.strokeStyle = rc.out; G.lineWidth = lw(1.6); G.stroke(cut.path); G.restore(); }, { rot: -Math.PI / 2, alpha: a });
-    return;
-  }
-  const m = typeof b01_get === 'function' ? b01_get(M.id) : null, dims = m && m.L ? [m.L, m.W, m.H] : RV_DIMS;
+  const m = typeof b01_get === 'function' ? b01_get(M.id) : null, dims = m && m.L ? [m.L, m.W, m.H] : [THESEUS.dims[0], THESEUS.dims[1], THESEUS.dims[2]];
+  if (M.x2f) { part(cx, cy, s, () => film_half(dims, { lw: 1.6 }), { rot: -Math.PI / 2, alpha: a }); return; }
   part(cx, cy, s, () => {
-    mouseRival('top', { dims, lw: 1.6 });
+    const R = film_rival('top', dims, { lw: 1.6 });
     /* the XA25's cable, out of its nose: it is wired */
-    if (M.wired) { G.save(); G.globalAlpha = PA; G.strokeStyle = C.red; G.lineWidth = lw(2.2); G.lineCap = 'round'; G.beginPath(); G.moveTo(0, -dims[0] / 2); G.bezierCurveTo(0, -dims[0] / 2 - 8, 4, -dims[0] / 2 - 10, 3, -dims[0] / 2 - 18); G.stroke(); G.restore(); }
+    if (M.wired) { const y = R.nose; G.save(); G.globalAlpha = PA; G.strokeStyle = C.red; G.lineWidth = lw(2.2); G.lineCap = 'round'; G.beginPath(); G.moveTo(0, y); G.bezierCurveTo(0, y - 8, 4, y - 10, 3, y - 18); G.stroke(); G.restore(); }
   }, { rot: -Math.PI / 2, alpha: a });
 }
 
@@ -583,6 +706,7 @@ function filmLedger() {
   const B = ntr_budget(); if (!B || !B.ok) return null;
   return { B, lines: [
     { move: 2, name: 'Shell and skates', was: B.xa.shell, now: B.shell, why: 'the goal: lighter than the lightest flagship’s, at full size' },
+    { move: 3, name: 'The board as a tie', was: 0, now: 0, tie: true, why: 'stiffer again for no added weight: the board is carried anyway' },
     { move: 6, name: 'Battery, ' + B.cell.mAh + ' mAh', was: 0, now: B.cell.g, why: 'bought with the weight moves 2 and 3 save' }
   ] };
 }
@@ -596,6 +720,7 @@ function filmLedger() {
 function filmCardStat(n) {
   if (n === 1 && typeof ntr_thsBox === 'function') { const b = ntr_thsBox(); return 'The box it keeps: ' + fmtN(b.L, 1) + ' \u00D7 ' + fmtN(b.W, 1) + ' \u00D7 ' + fmtN(b.H, 1) + ' mm, ' + fmtN(b.v, 1) + ' cm\u00B3, a full-size mouse every later move must fill.'; }
   if (n === 4 && !LO.click) { const ft = typeof b01_pressTgt === 'function' ? b01_pressTgt() : 4.2; return 'Clicks fill no bar: on Finalmouse\u2019s rig, its press to PC (under ' + fmtN(ft, 1) + ' ms, derived) beats every mechanical switch timed there, not the magnetic Starlight X (2.0 ms).'; }
+  if (n === 3 && typeof THESEUS !== 'undefined') return 'The tie adds 0 g: the board, ' + fmtN(THESEUS.pcb, 2) + ' g, is in the mouse anyway, and move 2\u2019s ribs end on its edge.';
   const L = filmLedger(), ln = L && L.lines.find(l => l.move === n);
   if (ln && ln.was) return 'The shell\u2019s goal: ' + fmtN(ln.was - ln.now, 2) + ' g under the XA25\u2019s ' + fmtN(ln.was, 2) + ' g on XBAB\u2019s scale, the lightest flagship weighed part by part. Derived.';
   return null;
@@ -679,11 +804,110 @@ S({ id: 'rule', ch: 'intro', theme: 'night', title: 'The underdog’s rule', set
   }
 });
 
+/* ============================== five upgrades, one shell (V3: move 2's last slide) ==============================
+   Brock (15:12, 15:15): "show the steps to level something up to where it becomes the best"; "the concepts should visible
+   and statically show how they build upon one another and combine". Move 2's five upgrades as a ladder, bottom up, each
+   rung what it builds on and the figure its own slide proved (read from those slides' data, nothing typed here); then the
+   shell they make, weighed against the lightest flagship's (the ledger, ntr_budget), and what that weight unlocks. */
+function film_upRungs() {
+  if (film_upRungs.v) return film_upRungs.v;
+  const out = [];
+  const M = typeof B05_M !== 'undefined' ? B05_M : null;
+  out.push({ name: 'The material', on: 'Carbon-filled PP, against the resin most mice use', icon: 'strip',
+    fig: M ? '−' + b05_dn((1 - M.gMatch / M.gA) * 100) + ' %' : '', figL: 'weight, same stiffness' });
+  const B = typeof B12 !== 'undefined' && B12 ? B12 : null, gain = B ? 1 - B.win.worst / B.base.worst : 0;
+  out.push({ name: 'The lattice', on: 'Built on the skin: ribs in triangles, not hexagons', icon: 'tri',
+    fig: B ? '−' + b12_dn(gain * 100) + ' %' : '', figL: 'flex, same weight' });
+  let kA = null; try { const rF = shbArch('flat'), rA = shbArch('para'); kA = b06_flex(rF) / b06_flex(rA); } catch (e) { kA = null; }
+  out.push({ name: 'Arches', on: 'Built on the lattice: its ribs run whole, feet held', icon: 'arch',
+    fig: kA ? fmtN(kA, 0) + '×' : '', figL: 'stiffer than a flat strip' });
+  const R = FILLET.rs, P = FILLET.scfM, iP = R.indexOf(0.75) >= 0 ? R.indexOf(0.75) : P.indexOf(Math.min(...P));
+  out.push({ name: 'Fillets', on: 'Built on the arches: every node they cross, rounded', icon: 'fillet',
+    fig: fmtN(P[0], 1) + '× → ' + fmtN(P[iP], 1) + '×', figL: 'peak at a node, same weight' });
+  let loose = null; try { const rP = 0.6, Bs = b06_tolBand(R[0]), Bf = b06_tolBand(rP); loose = Math.min(rP - Bf.lo, Bf.hi - rP) / Bs.up; } catch (e) { loose = null; }
+  out.push({ name: 'The mould', on: 'Built on the fillets: one cutter fits every corner', icon: 'mould',
+    fig: loose ? b06_dn(loose, 0) + '×' : '', figL: 'looser corner tolerance' });
+  return (film_upRungs.v = out);
+}
+/** a rung's picture, in a box (cx, cy, s: half its size), drawn in col */
+function film_upIcon(kind, cx, cy, s, col, a) {
+  if (a <= 0.003) return;
+  G.save(); G.globalAlpha = a; G.strokeStyle = col; G.fillStyle = col; G.lineWidth = 2.6; G.lineCap = 'round'; G.lineJoin = 'round';
+  const L = (pts, close) => { G.beginPath(); pts.forEach((q, i) => (i ? G.lineTo(cx + q[0] * s, cy + q[1] * s) : G.moveTo(cx + q[0] * s, cy + q[1] * s))); if (close) G.closePath(); G.stroke(); };
+  if (kind === 'strip') {          /* a strip on two supports, sagging a little */
+    G.beginPath(); G.moveTo(cx - s * 0.9, cy - s * 0.12); G.quadraticCurveTo(cx, cy + s * 0.18, cx + s * 0.9, cy - s * 0.12); G.lineTo(cx + s * 0.9, cy + s * 0.04); G.quadraticCurveTo(cx, cy + s * 0.34, cx - s * 0.9, cy + s * 0.04); G.closePath(); G.fill();
+    L([[-0.9, 0.2], [-0.78, 0.42], [-1.02, 0.42]], true); L([[0.9, 0.2], [0.78, 0.42], [1.02, 0.42]], true);
+  } else if (kind === 'tri') {     /* a strip of triangles */
+    L([[-0.95, 0.4], [0.95, 0.4]]); L([[-0.95, -0.4], [0.95, -0.4]]);
+    L([[-0.95, 0.4], [-0.57, -0.4], [-0.19, 0.4], [0.19, -0.4], [0.57, 0.4], [0.95, -0.4]]);
+  } else if (kind === 'arch') {    /* an arch, its feet held */
+    G.beginPath(); G.moveTo(cx - s * 0.85, cy + s * 0.45); G.quadraticCurveTo(cx, cy - s * 1.15, cx + s * 0.85, cy + s * 0.45); G.stroke();
+    G.fillRect(cx - s * 1.05, cy + s * 0.45, s * 0.42, s * 0.16); G.fillRect(cx + s * 0.63, cy + s * 0.45, s * 0.42, s * 0.16);
+  } else if (kind === 'fillet') {  /* three ribs crossing, the corners between them rounded */
+    for (let k = 0; k < 3; k++) { const th = k * Math.PI / 3; L([[-Math.cos(th) * 0.95, -Math.sin(th) * 0.95], [Math.cos(th) * 0.95, Math.sin(th) * 0.95]]); }
+    G.beginPath(); G.arc(cx, cy, s * 0.26, 0, TAU); G.fill();
+  } else if (kind === 'tie') {     /* an arch whose feet stand on the board, which holds them together */
+    G.beginPath(); G.moveTo(cx - s * 0.8, cy + s * 0.3); G.quadraticCurveTo(cx, cy - s * 1.2, cx + s * 0.8, cy + s * 0.3); G.stroke();
+    G.fillRect(cx - s * 1.0, cy + s * 0.32, s * 2.0, s * 0.2); L([[-0.8, 0.3], [-0.8, 0.32]]); L([[0.8, 0.3], [0.8, 0.32]]);
+  } else if (kind === 'mould') {   /* the mould's two halves, a rib's slot in one, the cutter over it */
+    G.strokeRect(cx - s * 0.95, cy - s * 0.1, s * 1.9, s * 0.62); L([[-0.12, -0.1], [-0.12, 0.3], [0.12, 0.3], [0.12, -0.1]]);
+    G.beginPath(); G.arc(cx, cy - s * 0.55, s * 0.22, 0, TAU); G.stroke(); L([[0, -0.77], [0, -1.0]]);
+  }
+  G.restore();
+}
+const FILM_UP_T = { r0: 0.6, per: 1.0, res: 5.7, unl: 7.4 };
+S({ id: 'shellup', ch: 'shell', theme: 'night', title: 'Five upgrades, one shell', settle: 9.6,
+  src: ['exXbabWeight', 'b12Study', 'filletFE', 'shbModel', 'shlPyrofil'],
+  draw: t => {
+    header(t, 'Five upgrades, one shell');
+    const T = FILM_UP_T, rungs = film_upRungs(), N = rungs.length, Bd = typeof ntr_budget === 'function' ? ntr_budget() : null;
+    captions(t, [[0.3, 'The giants buy stiffness with weight. Theseus stacks five upgrades instead, each built on the one before it.'],
+      [T.res - 0.2, 'Together they make a full-size shell lighter than the lightest flagship’s, and stiffer than a plain wall of its weight.']]);
+    /* the ladder, bottom up: the first upgrade at the foot. Frame one shows every rung, waiting; each lands in turn */
+    const x = LM, w = 1060, rh = 104, gap = 20, yTop = 290, yOf = i => yTop + (N - 1 - i) * (rh + gap);
+    rungs.forEach((r, i) => {
+      const y = yOf(i), t0 = T.r0 + i * T.per, k = ep(t, t0, t0 + 0.45, E.snap), kf = ep(t, t0 + 0.25, t0 + 0.7), lit = k > 0.5;
+      rr(x, y, w, rh, 6, lit ? rgba(C.hero, TH ? 0.08 : 0.13) : C.panel, null, 0, 1);
+      if (k > 0.003) { G.save(); G.globalAlpha = k; G.strokeStyle = rgba(C.hero, 0.7); G.lineWidth = 1.6; rrPath(x + 0.8, y + 0.8, w - 1.6, rh - 1.6, 6); G.stroke(); G.restore(); }
+      /* its number and picture */
+      text(String(i + 1), x + 34, y + rh / 2 + 12, { font: 'disp', size: 34, weight: 800, color: lit ? C.heroText : C.faint, align: 'center' });
+      film_upIcon(r.icon, x + 112, y + rh / 2, 26, lit ? C.heroText : C.faint, 1);
+      text(r.name, x + 170, y + 44, { role: 'h3', size: 30, weight: 750, color: lit ? C.ink : C.mute, sentence: false });
+      text(r.on, x + 170, y + 80, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: lit ? 1 : 0.6, maxW: 560, sentence: false });
+      /* the figure its own slide proved */
+      if (r.fig) { text(r.fig, x + w - 28, y + 54, { font: 'disp', size: 42, weight: 800, color: C.heroText, grad: C.heroGrad, align: 'right', alpha: kf, tnum: true });
+        text(r.figL, x + w - 28, y + 84, { role: 'small', size: 19, weight: 600, color: C.ink2, align: 'right', alpha: kf, maxW: 300, sentence: false }); }
+      /* built on the rung below: an arrow up from it as this one lands */
+      if (i > 0) { const kb = ep(t, t0 - 0.1, t0 + 0.4, E.io3), ya = yOf(i - 1) - 3, yb = y + rh + 3; if (kb > 0.003) arrow(x + 34, ya, x + 34, lerp(ya, yb, kb), { color: C.hero, w: 2.5, hs: 9, p: 1, alpha: 1 }); }
+    });
+    /* the shell they make: weighed against the lightest flagship's, part by part (the ledger) */
+    const rx = 1220, rw = RM - rx, kR = ep(t, T.res, T.res + 0.4);
+    if (Bd && Bd.ok) {
+      text('The shell they make', rx, 330, { role: 'label', size: 20, color: C.heroText, alpha: kR });
+      verdict(t, T.res + 0.1, rx, 470, { from: Bd.xa.shell, to: Bd.shell, unit: 'g', dec: 2, label: 'Shell and skates', better: 'lower', who: ['XA25', 'Theseus'], rivalCol: 'grey', net: '−' + fmtN(Bd.cut, 2) + ' g', netWord: 'at full size', size: 92, maxW: rw });
+      const ks = ep(t, T.res + 1.4, T.res + 1.8), d = THESEUS.dims;
+      text('Against the XA25, the lightest flagship weighed part by part (XBAB). Theseus’s box: ' + fmtN(d[0], 1) + ' × ' + fmtN(d[1], 1) + ' × ' + fmtN(d[2], 1) + ' mm.', rx, 588, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: ks, maxW: rw, lh: 1.3 });
+    }
+    /* what it unlocks: the moves it feeds, on the board's own terms */
+    const ku = ep(t, T.unl, T.unl + 0.4);
+    text('Unlocks', rx, 700, { role: 'label', size: 20, color: C.mute, alpha: ku });
+    [[3, 'The ribs’ feet, tied to the board the mouse already carries'], [6, 'The weight saved, spent on battery']].forEach(([n, s0], j) => {
+      const y = 748 + j * 74, kj = ep(t, T.unl + 0.2 + j * 0.35, T.unl + 0.6 + j * 0.35);
+      circle(rx + 16, y - 8, 15, { color: C.heroText, w: 2, alpha: kj });
+      text(String(n), rx + 16, y - 1, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: kj });
+      text('Move ' + n + ': ' + FILM.moves[n].name, rx + 48, y - 1, { role: 'small', size: 22, weight: 750, color: C.ink, alpha: kj, sentence: false });
+      text(s0, rx + 48, y + 27, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kj, maxW: rw - 48, sentence: false });
+    });
+    source(t, 'Each figure is its own slide’s: the strip (Pyrofil’s datasheet), the 3D shell study at 9.35 g, the 2D arch frames, the fillet study at equal mass, its tolerance band. Weights: XBAB’s part-by-part XA25; Theseus’s budget, derived.', { t0: 1.0, maxW: 1060 });
+  }
+});
+
 /* ---------- switch the film on ---------- */
 if (FILM.on) {
   filmApply();
   chapterInfo = function (s) {
-    const m = filmMove(s), list = DECK.slides.filter(x => x.move === s.move && !x.card);
+    const m = filmMove(s), list = DECK.slides.filter(x => x.move === s.move && !x.card), up = filmStep(s);
+    if (up) return { name: up.label, n: 0, of: 0, num: m.n };
     return { name: m ? 'Move ' + m.n + ': ' + m.name : '', n: list.indexOf(s) + 1, of: list.length, num: m ? m.n : 0 };
   };
   slideChrome = filmChrome;

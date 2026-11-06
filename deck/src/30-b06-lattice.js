@@ -573,8 +573,8 @@ function b06_archShape(u) {
   for (let i = 0; i <= n; i++) { const x = -A.span / 2 + A.span * i / n; nodes.push([x, u * A.rise * (1 - Math.pow(2 * x / A.span, 2))]); }
   const h = lerp(rf.model.els[0].h, ra.model.els[0].h, u);
   for (let i = 0; i < n; i++) els.push(Object.assign({}, ra.model.els[i], { i, j: i + 1, h }));
-  const z = new Array(n).fill(0);
-  return { model: { nodes, els }, d: new Float64Array(3 * (n + 1)), sig: z.slice(), N: z.slice(), M1: z.slice(), M2: z.slice(), smax: 1 };
+  const z = new Array(n).fill(0), L = els.map(el => Math.hypot(nodes[el.j][0] - nodes[el.i][0], nodes[el.j][1] - nodes[el.i][1]));   /* V3: feElPts reads r.L (it threw while the strip curved, 3.6 to 4.0 s) */
+  return { model: { nodes, els }, d: new Float64Array(3 * (n + 1)), L, sig: z.slice(), N: z.slice(), M1: z.slice(), M2: z.slice(), smax: 1 };
 }
 /**
  * Draw a solved strip (flat or arch) at the press F (N), flex true to scale. o = { feet: 'pinroll' | 'rolls' (both feet
