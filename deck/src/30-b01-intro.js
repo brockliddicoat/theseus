@@ -274,7 +274,7 @@ S({
     const cols = [
       { lab: 'Weight', n: THS.mass, u: 'g', tgt: true, sub: 'every unit weighed' },
       { lab: 'Motion latency, wireless', n: '0.14', u: 'ms', tgt: true, sub: 'by PIAKNOW\'S measure' },
-      { lab: 'Compromises', n: '0', u: '', sub: 'Eight that most mice make', down: 8 },
+      { lab: 'Compromises', n: 'Zero', u: '', sub: 'Of the eight most mice make', zero: true },   /* Brock (17:05, 17:18): all text, redesigned as a tile of its own */
       { lab: 'Density', n: rho, u: 'g/cm³', tgt: true, sub: 'weight per cm³ of its box' }
     ];
     const cw = (RM - LM) / 4;
@@ -284,11 +284,9 @@ S({
       const x = LM + i * cw, t0 = 2.0 + i * 0.2, a = ep(t, t0, t0 + 0.4);
       if (i) line(x - 24, 770, x - 24, 770 + 190 * ep(t, t0 - 0.1, t0 + 0.5, E.cam), { color: inkA(0.14), w: 1.5 });
       text(c.lab, x, 786, { role: 'label', size: 21, color: C.mute, alpha: a, t, t0, cps: 60 });
-      if (c.down) {
-        /* Brock (17:05): "remove the compromise red cross outs from the title card and make the tile all text, the cross outs
-           look bad": no marks and no strikes; the figure itself steps down from eight to none, as text, and lands in blue */
-        const v = Math.max(0, Math.round(c.down * (1 - ep(t, t0 + 0.1, t0 + 0.1 + c.down * 0.15)))), done = v === 0;
-        text(String(v), x - 6, 916, { role: 'd1', size: nS, color: done ? C.heroText : C.ink, grad: done ? C.heroGrad : null, tnum: true, alpha: a });
+      if (c.zero) {
+        /* the figure is the word itself, set as large as the other three figures and in Theseus's blue: Zero */
+        text(c.n, x - 6, 916, { role: 'd1', size: nS, color: C.heroText, grad: C.heroGrad, alpha: a });
       } else rich([{ s: c.n, role: 'd1', size: nS, color: C.ink, tnum: true, count: [t0, 1.0] }, c.u ? { s: c.u, font: 'mono', size: 38, weight: 600, color: C.mute, gap: 10, caps: false } : null], x - 6, 916, { t, alpha: a });
       const ks = ep(t, t0 + 0.4, t0 + 0.8);
       /* knock: the stage grid's + row at y 960 is knocked out from under the words (FILM F10) */
@@ -944,15 +942,17 @@ S({
       heroMark(m.X(gT), m.Y(hNow), 12, kT);
       text('Theseus, 29.3 g, ' + fmtN(hNow, 0) + ' h', m.X(gT), m.Y(hNow) - 24, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: kT });
     }
-    /* the mouse on the right, its battery drawn to scale by capacity. Along the frontier it is a rival (the kit's rival
-       mouse, grey: FILM F9), sized from the Viper V4 Pro's 127.1 × 63.9 mm at the start to the HTX Mini 8K's 109 × 60 mm at
-       the end; Theseus (the simplified mouse) takes its place as it lands, and the battery moves to where Theseus keeps it */
+    /* the mouse on the right, its battery drawn to scale by capacity. Along the frontier it is a rival (Theseus's own
+       silhouette in a rival's grey, Brock 17:04: film_rival), sized from the Viper V4 Pro's 127.1 × 63.9 mm at the start to the
+       HTX Mini 8K's 109 × 60 mm at the end; Theseus (the simplified mouse) takes its place as it lands, its battery where the
+       rival's was, scaled with it, moving to where Theseus keeps it */
     const rival = D.hi.mAh + (D.lo.mAh - D.hi.mAh) * (D.hi.g - g) / (D.hi.g - D.lo.g), cap = lerp(rival, 370, E.out3(prog(t, T.ths + 0.1, T.ths + 0.9)));
     const V = msView('top'), sc = 3.5, mcx = 1385, mcy = 575, ox = mcx - (V.box[0] + V.box[2] / 2) * sc, oy = mcy - (V.box[1] + V.box[3] / 2) * sc;
-    const dR = b01_dimsLerp(b01_dims(D.hi.id), b01_dims(D.lo.id), kd), cR = rvAt('top', 'battery', { dims: dR }), cT = b01_battC();
+    const dR = b01_dimsLerp(b01_dims(D.hi.id), b01_dims(D.lo.id), kd), cT = b01_battC();
+    const cR = (() => { const vb = V.box, cx = vb[0] + vb[2] / 2, cy = vb[1] + vb[3] / 2; return [cx + (cT[0] - cx) * dR[1] / vb[2], cy + (cT[1] - cy) * dR[0] / vb[3]]; })();
     const bAt = [lerp(cR[0], cT[0], kT), lerp(cR[1], cT[1], kT)];
     part(ox, oy, sc, () => {
-      if (kT < 1) mouseRival('top', { dims: dR, lw: 2.2, alpha: 1 - kT });
+      if (kT < 1) film_rival('top', dR, { lw: 2.2, alpha: 1 - kT });
       if (kT > 0) mouseSimple('top', { lw: 2.2, hi: ['shell'], col: 'hero', lit: kT * 0.75, alpha: kT });
       const [bx, by, bw, bh] = b01_battRect(cap, bAt), heroB = kT > 0.5;
       G.save(); G.globalAlpha = PA; rrPath(bx, by, bw, bh, 1.6); G.fillStyle = heroB ? 'rgba(10,132,255,0.22)' : inkA(TH ? 0.12 : 0.2); G.fill(); G.lineWidth = lw(2.2); G.strokeStyle = heroB ? C.hero : C.ink; G.stroke();
