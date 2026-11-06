@@ -902,6 +902,18 @@ S({ id: 'shellup', ch: 'shell', theme: 'night', title: 'Five upgrades, one shell
   }
 });
 
+/* ---------- testing pairs (Brock, ~17:42: "show them side by side just for treating and i'll pick soon") ----------
+   For five of his 7-rated v23 slides, v23's original (A) plays just before its rebuild (B), each footer saying which is
+   which, until he picks. To end the test, empty FILM_AB (or drop the losers from it). */
+const FILM_AB = [['lattice', 'b06_lattice'], ['shlThin', 'b06_light'], ['shbArches', 'b06_arches'], ['tolerance', 'b07_tolerance'], ['grind', 'b07_poron']];
+(function () {
+  for (const [a, b] of FILM_AB) for (const row of FILM.order) { const ids = row[1], k = ids.indexOf(b); if (k >= 0 && !ids.includes(a)) ids.splice(k, 0, a); }
+  for (const [a, b] of FILM_AB) {
+    FILM.link[a] = { s: 'Testing, A: v23’s version, as you rated it. B, the rebuild with your note done, plays next' };
+    FILM.link[b] = { s: 'Testing, B: the rebuild, your note done. A, v23’s version, played just before', to: (FILM.link[b] || {}).to };
+  }
+})();
+
 /* ---------- switch the film on ---------- */
 if (FILM.on) {
   filmApply();
@@ -921,3 +933,4 @@ if (FILM.on) {
     rateSync();
   };
 }
+
