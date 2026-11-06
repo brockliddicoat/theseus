@@ -2,25 +2,52 @@
 
 Every piece of feedback Brock has given on the Theseus deck, in his words, with where it stands. It is kept for people
 and for models: read it before working on the deck, and update it whenever feedback arrives or an item moves. Nothing is
-deleted. An item that a later message changes is marked OVERRIDDEN and points to what replaced it.
+deleted. An item that a later message changes is marked (OVERRULED, SUPERSEDED or DEFERRED) where it stands, with what
+holds now. Since 2026-11-06 (F50.1) every message he sends is logged here, verbatim, and each entry about slides links
+frames of those slides as they were when he wrote (feedback/frames/<entry>/), plus his screenshots and the sheets he
+answered on (feedback/attachments/<entry>/).
 
 **For a model picking this up:** STANDING items are rules for all future work. DECIDED items are Brock's answers and are
-now rules too. Never follow an OVERRIDDEN item except where its replacement says so. Quote the item IDs in commits and
-briefs. IDs are stable; new feedback gets the next section number.
+now rules too. Never follow an OVERRULED, SUPERSEDED or OVERRIDDEN item except where its replacement says so; a DEFERRED
+item waits for what its marker names. Quote the item IDs in commits and briefs. IDs are stable; new feedback gets the
+next section number. To see what he was looking at when he wrote, open the entry's frames.
 
 Status words:
 - **DONE**: in the deck and checked.
 - **IN PROGRESS**: being built, with who is on it.
 - **TODO**: not started.
-- **OVERRIDDEN**: a later note replaced it; see the pointer.
 - **DECIDED**: an answer to a question, now a rule.
 - **STANDING**: a rule for all work, always in force.
+- **NOTED**: a message with nothing to build (kept because every message is kept).
+- **OVERRULED by Fxx**: he reversed it in a later message. (**OVERRIDDEN**, the older word, means the same.)
+- **SUPERSEDED by Fxx**: replaced by a newer, more specific decision, or by research (named) that showed it wrong.
+- **DEFERRED by Fxx**: put off until what the marker names; not in force now.
+- **CONFIRMED by Fxx**: a later message said it again.
+
+## How to log a message (F50.1)
+1. **Every message, the same hour.** The integrator appends each message to the day's inbox (work/feedback-inbox.md) with
+   the live version at the time; it goes here as the next section (F51, F52, ...) headed with its subject and time
+   (Chicago), or as the next item of an open section when it only adds to it (each item keeps its own time).
+2. **His words, verbatim:** typos, lowercase and his punctuation kept; " / " between parts of one message; an answer to a
+   question as question → "the option's label" exactly as picked (with "(Recommended)" when it was). After it, marked
+   "Reading:", what it means for the deck; then a status word. Never reword his words in an existing entry.
+3. **What he was looking at.** A live version's number is its Unix publish time (`date -d @1793981126` → 10:05). Take
+   the build that was live (work/int/film/, or the commit rebuilt in a worktree: `git worktree add --detach /tmp/wt
+   <commit>; cd /tmp/wt; python3 deck/tools/build.py main`) and run `feedback/snap.sh <entry> <build.html> <slide:t>...`
+   with WHEN, LIVE, COMMIT and NOTE set (the script's header explains them). Frame one, mid and settle for the slide he
+   talks about, the moment he names, settle for the others; only the slides he refers to. Link the folder from the entry
+   ("Frames: feedback/frames/<entry>/").
+4. **What he sent or answered on:** his screenshots, and the option sheets or pictures he answered, copied unchanged into
+   feedback/attachments/<entry>/ with a README (what it is, where from, his answer). Link it.
+5. **What it overrules:** find the earlier items it reverses or replaces and mark each where it stands (OVERRULED,
+   SUPERSEDED, DEFERRED by the new entry), with one line on what holds now. Then update "Last updated".
 
 Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Surface, elc = Electronics, own =
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 11:08 (Chicago).
+Last updated: 2026-11-06 11:38 (Chicago): FA logged the missing messages, linked frames and attachments for F39 to F49,
+and marked overruled items (F50.1).
 
 ## F34, F35. Brock's own steering given to Codex on 2026-11-05 (carried over; Codex's work itself is set aside, F38.4)
 On 2026-11-05, out of Claude usage, Brock had Codex continue from this branch. On 2026-11-06 he called its output "very
@@ -39,9 +66,10 @@ feedback on the deck, so they are kept here (numbered as on Codex's branch, code
   every chapter accent is ink (01-core.js).
 - (F36 and F37 on Codex's branch are about Codex's own preview site and an Astra experiment: not carried.)
 
-## F38. The revamp, picked back up (2026-11-06 06:33 to 07:20)
-- **F38.1** "pick back up with the revamp that was planned for yesterday before i ran out of usage / make sure you don't
-  lose too much content, you should still have well over 100 slides, every animation should be vastly improved and more
+## F38. The revamp, picked back up (2026-11-06 06:33 to 07:33)
+- **F38.1** (06:33) "https://claude.ai/share/4ce6f186-6380-4611-a871-d79aeee98304 / pick back up with the revamp that
+  was planned for yesterday before i ran out of usage / make sure you don't lose too much content, you should still have
+  well over 100 slides, every animation should be vastly improved and more
   intuitive, make sure to recover all the context we had in the conversation in that link as to the revamp and everything
   else, rely heavily on my feedback document, double check that all archived feedback has actually been addressed / set
   the bar for this new presentation 10x higher than it was before". **IN PROGRESS:** the context recovered from the shared
@@ -53,10 +81,11 @@ feedback on the deck, so they are kept here (numbered as on Codex's branch, code
   handoff/revamp2/common.md (M1 to M10: a demonstration, not a graphic; causal motion; the rival's fault then the fix under
   the same input; establish then push in; human scale; a hook in the first second and a payoff by about 8 s).
 - **F38.4 DECIDED** "mostly ignore codex, the output was very poor and a step backwards on almost all fronts". The revamp
-  works from Claude's last commit (7d8f926); Codex's branch stays on GitHub untouched.
-- **F38.5 DECIDED** Palette: "Neutral + blue" (F35.1 over F11.2).
+  works from Claude's last commit (7d8f926); Codex's branch stays on GitHub untouched. One exception since: F45.1 (Codex's
+  ruler demonstration, its message carried once).
+- **F38.5 DECIDED** Palette: "Neutral + blue (Recommended)" (F35.1 over F11.2).
 - **F38.6 STANDING** Usage: "this is an ultra account, it doesn't have 5 hour limits. i don't want you to worry about usage
-  at all, i want you to be as thorough as possible, unless you're worried being inefficient with usage may result in a worse
+  at all, i want you to be as thorough as possible, unless you're worried being inefficient with usage my result in a worse
   execution, again the bar for this presentation and how understandable and impactful it is is 10x higher than quality
   than the last one. i'd like you to check in often and post live updates you aren't drifting from what i want and you stay
   aligned". (F10.1's pacing is retired for this account; check-ins and live-link updates are standing.)
@@ -72,9 +101,19 @@ feedback on the deck, so they are kept here (numbered as on Codex's branch, code
   wasn't really up to par and i dint want people to think the indicative of the end product".
 - **F38.9** The reference photos: he re-sent all of them (19 images: tensioners, G-Wolves board and arm, Viper V3 / V4 Pro
   undersides, lattice bases, the Sora V2 board, top and side, the long-antenna Raytac module, the Razer FP-3 sensor, ARYE's
-  sensor-position drawing, Apple's M1 bento). Kept in refs/photos/brock-2026-11-06/ (INDEX.md).
+  sensor-position drawing, Apple's M1 bento). Kept in refs/photos/brock-2026-11-06/ (INDEX.md). Asked about the photos
+  (~06:50): "I'll attach them now"; then (~07:00): "here are all the old pictures that ships be relevant, this should be
+  everything the other chat had".
+- **F38.10** (~06:45) "do you have any other questions you could ask me that you think would improve your execution?"
+  Reading: answered with four questions (~06:50): the photos (F38.9), the pace (F38.6), the audience (F38.7), the 3D
+  (F38.8).
+- **F38.11 STANDING** (07:33) "you have permission to access my computer or any website in any way you’d like that helps
+  you create the best product possible, when you constantly ask me for permission to access a website instead of just
+  doing it automatically it slows down our progress". Reading: look things up and open any site that helps without asking
+  him first.
 
-## F39. Keep evaluating; no flawed model reused; greys (2026-11-06 08:18)
+## F39. Keep evaluating; no flawed model reused; greys; more searching (2026-11-06 08:18 to 08:53)
+Frames: feedback/frames/F39/ (the live film at 08:18, v1793972706-6cdc: the warm paper he meant, F39.3).
 - **F39.1 STANDING** "continually evaluate slides even after they are done to look for errors or things that could be made
   better so the watcher can learn better, understand at a glance better, or so that the slides are more convincing and flow
   better/inter connect better between eachother or in the most persuasive order". **IN PLACE:** a standing critic reviews
@@ -87,53 +126,68 @@ feedback on the deck, so they are kept here (numbered as on Codex's branch, code
 - **F39.3 DONE** "some of the backgrounds i'm seeing still feel yellowish to me instead of gray, make sure that is resolved".
   Paper #F7F6F2 → #F5F5F7, both grey ramps neutral, the page CSS too, and a canvas guard that draws any warm-tinted grey as a
   true grey (01-core.js warmGuard). Measured: the paper ground was (247, 246, 242), now (245, 245, 247).
+- **F39.4 NOTED** (08:36) "i’m sending another message so you js web search more". Reading: the web searches (200 a turn,
+  shared by every agent) had run out at 08:30; a new message from him starts a new turn and a new allowance.
+- **F39.5 NOTED** (08:53) "i’m sending another message so you can keeping search". Reading: the same, a second allowance.
 
-## F40. Answers on the player and the radio (2026-11-06 ~09:00)
+## F40. Answers on the player and the radio (2026-11-06 ~08:30, logged at 09:00)
+Frames: feedback/frames/F40/ (b09_radio in the live film, v1793975367-421d).
 - **F40.1 DECIDED** Autoplay hold after a slide settles: "Longer, 2–6 s". **IN PROGRESS (F0c; F0b could not be resumed).**
 - **F40.2 DECIDED** Chapter openings: "advanced motion transitions" (not a pass through black). **IN PROGRESS (F0c):** a
   camera flight across the simplified mouse from the last chapter's part to the next, landing in the chapter card.
 - **F40.3 DECIDED** Vertical clips: "allow for both letterboxed and the same as before as options" (horizontal and 9:16
   letterboxed exports both kept).
-- **F40.4 DECIDED** The radio module: "Keep facing forward" (plan 5: at the board's rear, the long antenna facing forward,
+- **F40.4 DECIDED** The radio module: "Keep facing forward (Recommended)" (plan 5: at the board's rear, the long antenna facing forward,
   28.2 mm from the wheel's axle against 12.4 mm on the old board; no 180° turn, which would put it about 3 mm from the
   battery). Supersedes the old 180° turn (F9.13's aim is met by the move). **Re-derived from the built plan-5 board
   (KEY_PARTS, b09, 09:15): 11.9 → 27.6 mm to the axle, 2.3×** (the antenna's place is its keep-out's centre).
 
 ## F41. The strength rule for the shell slides (2026-11-06 08:58)
+Frames: feedback/frames/F41/ (b05_nopick and b06_light as live, both judged at 120 MPa).
 - **F41.1 DECIDED** Asked: the shell slides judged every break against carbon PP's tensile strength (120 MPa, F12.12),
   though most parts break by bending and the same datasheet gives 207 MPa in bending (JIS K7171), which quietly favoured
-  triangles and arches (the model auditor's finding). His answer: **"Two strengths"**: 120 MPa for stretching, 207 MPa for
+  triangles and arches (the model auditor's finding). His answer: **"Two strengths (Recommended)"**: 120 MPa for stretching, 207 MPa for
   bending, as the datasheet gives; a slide whose point doesn't survive leads with stiffness instead. Consequences shown to
   him: sized triangles against a solid web 1.91× → 1.36×; one-size triangles lose (1.42× → 0.86×); the arch against a flat
   plate 3.8× → 2.0×, and it buckles at 41 N first. **IN PROGRESS (b05, b06, b07; checked by M).**
 
 ## F42. The battery's place and the board's weight (2026-11-06 09:40)
+Frames: feedback/frames/F42/ (the budget with the board at 5.6 g, and the battery on `mass`, as live).
 - **F42.1 DECIDED** The battery: H1 found that the 2.23 mm move back (2026-11-05) came from a drawing of a 20 mm-wide battery
   in the board's notch; the real 35 mm LP402535JU sits behind the board's rear lobes, so the notch never limited it.
   Balance points: 2.23 mm back 1.6 mm behind centre; the old place 1.0 mm behind. His answer: **"Forward and up"**: about
   5.9 mm forward and 1.5 mm up, over the board's rear edge, so the mouse balances at its centre (the weight about 0.4 mm
   higher). **TODO (H2):** 3D, KEY_PARTS, the 2D twins, the balance figures; then the slides that draw the battery.
+  **"About 5.9 mm forward and 1.5 mm up" SUPERSEDED by the corrected balance model** (H2, work/h2/PROGRESS.md; the
+  integrator's call, F48's note): H1's model put the screws and inserts at the optional plate's holes and left out the
+  wheel's encoder and support, the side switches and the shell's posts; with them, the mouse balances at its centre with
+  the battery 2.03 mm behind H1's place, at the same height (no rise). His aim, the balance at the centre, holds.
 - **F42.2 DECIDED** The board's weight: the budget's 5.6 g with everything on it (F12.1) against the plan-5 board built part
   by part with typical masses: 6.66 g (the 1.0 mm four-layer laminate 3.9 g, the two switches 1.0 g), 7.92 g with the
   wheel's encoder and bracket, which the budget doesn't list. His answer: **"Keep 5.6 g as target"**: the film stays at
   29.31 g and calls the board's figure a target; the board gets built to it (thinner laminate, fewer layers, a lighter
-  encoder). **TODO:** slides that print 5.6 g say "target"; the hardware brief carries it.
+  encoder). **TODO:** slides that print 5.6 g say "target"; the hardware brief carries it. The path to it: F47.4 (0.6 mm,
+  two layers, 5.63 g).
 - Decided by the integrator from H1's report (no question needed): variant B's edge switch on the top side (one soldering
   pass, as the film's "one board, one side, one reflow" claims); the GT01's walls stay 0.70 mm (measured off Gateron's
   render); the bottom plate's lattice waits until the bottom cover is revisited (it is out of the film).
 
 ## F43. The shape, the cutouts, the lattice study and the simplified mouse (2026-11-06 09:31, with a marked-up screenshot)
 His markup of b02_cutouts' top view: refs/photos/brock-2026-11-06b/0931-cutouts-markup.jpg (a red ring round the wheel
-opening and the slot above and below it; red curves at the two ends of the straight rear cutout).
+opening and the slot above and below it; red curves at the two ends of the straight rear cutout). Copied to
+feedback/attachments/F43/. Frames: feedback/frames/F43/ (the live film at 09:31: b02_cutouts as he marked it, the side
+profile on b01_lighter, the simplified mouse on b11_repair).
 - **F43.1** "i did not approve such a wacky scroll wheel wheel cutout design": the wheel opening and its long tapered slot
-  (top view) are rejected. **TODO (S1):** options shown before the build.
-- **F43.2** "the filets on the rear cutouts do not look natural or have good flow at all, they all are way to big, i’ve drawn
+  (top view) are rejected. **TODO (S1):** options shown before the build. **Decided: F46.1** (O1, an even 1.0 mm gap).
+- **F43.2** "the filets on the rear cutouts do not look natural or have good glow at all, they all are way to big, i’ve drawn
   in something closer to what i want but i want to to take what i drew and vastly improve it": the corners where the straight
   rear cutout meets the sides: much smaller, natural, flowing (curvature-continuous) turns, starting from his red curves.
-  **TODO (S1):** options shown before the build.
-- **F43.3** "i need you to make the shape you’re using center humped like the starlight x, right the hump is way too far
+  **TODO (S1):** options shown before the build. **Decided: F46.2** (K3, flowing).
+- **F43.3** "i need you to make the shape you’re using center jumped like the starlight x, right the hump is way too far
   back/rear humped" / "this is in reference to the side profile not the top down": the side profile's hump moves to the
   centre, like the Finalmouse Starlight X. **TODO (S1):** 3D shell first, the 2D drawings derived from it (F0.2, F38).
+  **DEFERRED by F46.3 / F47.1:** every option shown was rejected; the side profile stays as the scan has it (no hump move,
+  no stretch, in 3D or 2D) until a better model can make the change; 39.9 mm is only the stated height.
 - **F43.4** "run a simulation to determine the perfect lattice and lattice beam dimension and filet size for the mouse and
   explain how that conclusion was arrived at in the presentation". **TODO (L1):** the study, and a shell-chapter slide that
   shows how the answer was reached.
@@ -145,32 +199,38 @@ opening and the slot above and below it; red curves at the two ends of the strai
   the 3D shell and the lattice study's design space).**
 
 ## F44. Side rail, the budget, POM pads, wheels (2026-11-06 ~10:05, answers)
+Frames: feedback/frames/F44/ (b03_side, b01_budget, b02_pom and b08_wheel in the 09:52 publish, v1793980369-8a53).
 - **F44.1 STANDING** Asked in words which side-rail design to use (an off-centre press tilts the post; POM on POM, μ ≈ 0.2:
   ×1.2 at the tip with a 14 mm guide, ×1.85 at 5 mm, ×4.3 at 3 mm, jams at 2 mm; or two posts). His answer: **"show all 3,
   it’s hard to visualize these things with text, that is the point of this presentation"**. So: (1) the film shows all three
   rail designs as a demonstration (b03_side or beside it): the press, the tilt, the friction, the force at the tip; (2) design
-  questions to Brock come with pictures (an options sheet or the slide itself), not text alone.
+  questions to Brock come with pictures (an options sheet or the slide itself), not text alone. **The ×1.2 / ×1.85 / ×4.3
+  figures (μ ≈ 0.2) SUPERSEDED by POM's measured friction** (dry on itself 0.35 to 0.40, DuPont; Q3): at the tip, for a
+  55 gf switch, a 14 mm guide takes 74 to 78 gf and a 5 mm guide 195 to 306 gf dry (b03_rail, which shows all four
+  designs); he chose the tied posts, 56 to 59 gf (F48.1). The rule (show them all; ask with pictures) holds.
 - **F44.2 DECIDED** The two side switches (full-size SPDT, about 0.5 g each) missing from the 29.31 g budget: **"From the
   shell"**: the total stays 29.31 g; the shell's allowance drops from 10.35 g to about 9.35 g. **TODO:** the budget gets the
   line (b01), the shell chapters' and the lattice study's shell weight follow it.
 - **F44.3 DECIDED** POM pads (#28): **"Fit each trigger"**: each trigger fitted at assembly from a tray of pads in 0.05 mm
   steps (b02_pom as built).
 - **F44.4** The wheel test group (two sellers' figures and two "to weigh" slots): **"research more"**: find more stock
-  wheels' weights, each sourced. **TODO (research).**
+  wheels' weights, each sourced. **TODO (research).** Answered: F47.5 ("Show the two found").
 
 ## F45. The ruler, and beam sizes chosen for the mould (2026-11-06 09:50)
+Frames: feedback/frames/F45/ (Codex's ruler demonstration, `rv_thin_wall`, rendered from its branch's built page).
 - **F45.1** "the codex version had a good demo with a ruler to show that structure of material matters more than weight of
   materials (they had a better way of saying this tho)". Codex's slide (origin/codex/theseus-revamp-2026-11-05,
   deck/revamp/40-structure.js, rv_thin_wall): title "Shape buys more than thinning."; "Try bending a ruler flat. Release it.
   Turn it on its edge. Press again. The weight did not change."; "On edge. Same weight."; the same grams before and after, and
   how many times stiffer. **TODO:** the film carries this demonstration and this message (structure beats weight), once.
-- **F45.2** "this could be tied into the how the dimensions of the beams in lattice/interwoven arches are chosen, also. also
+- **F45.2** "this could be tied tied into the how the dimensions of the beams in lattice/interwoven arches are chosen, also. also
   keep manufacturability in mind when you choose dimensions": the lattice study (F43.4) explains its rib and arch-beam
   proportions with the ruler (ribs are rulers on edge: as deep as the mould can fill), and every chosen dimension respects
   moulding limits (rib-to-wall ratio against sink, minimum rib width, draft, fillet minimums), cited. **TODO (L1, b05, b06).**
 
 ## F46. Shape answers on S1's options sheets (2026-11-06 ~10:30)
-Sheets: /home/claude/work/s1/s1_options_A.png and s1_options_B.png (sent to him).
+Sheets: /home/claude/work/s1/s1_options_A.png and s1_options_B.png (sent to him), copied to feedback/attachments/F46/.
+Frames: feedback/frames/F46/ (b02_cutouts as live then, v1793981126-8865).
 - **F46.1 DECIDED** The wheel opening: **"O1 even 1.0 mm"** (9.0 × 19.3 mm, r 1.6, the Sora's look with an even 1.0 mm gap).
   The "wacky" tapers he circled were a drawing artifact (b02_trigBase smoothed the 3D opening's corners).
 - **F46.2 DECIDED** The rear cutout's corners: **"K3 flowing"** (curvature-continuous, smallest radius 1.8 mm, bends early
@@ -181,6 +241,8 @@ Sheets: /home/claude/work/s1/s1_options_A.png and s1_options_B.png (sent to him)
 - **F46.4 DECIDED** The height: **"39.9 mm"** (his F12.11 number). **Clarified by F47.1: only the stated number.**
 
 ## F47. The profile stays, the rim, the rib feet, the board, the wheels (2026-11-06 ~10:40)
+Attachments: feedback/attachments/F47/ (P4's rib-foot sheet; S1's sheet B, which F47.1 and F47.2 answer, is in
+attachments/F46/). Frames: feedback/frames/F47/ (b07_board and b10_board as live; b08_wheel is in F44's).
 - **F47.1 DECIDED** "don’t change the side profile at all, just say it’s 39.9 and we’ll use that model until we can dk something
   better later": no stretch, no hump move, in the 3D or the 2D; 39.9 mm is the stated height only.
 - **F47.2** "also you did the bottom rim very wrong, it’s supposed to slope down in a straight line from the back, you cut off
@@ -197,6 +259,8 @@ Sheets: /home/claude/work/s1/s1_options_A.png and s1_options_B.png (sent to him)
   views, the small locator without the lattice), F43.5.
 
 ## F48. The side rail and the antenna (2026-11-06 ~10:50, answered on pictures)
+Attachments: feedback/attachments/F48/ (the two pictures he answered on: P2's b03_rail frame, P1's antenna sheet). Frames:
+feedback/frames/F48/ (b09_radio as live; b03_side, unchanged, is in F44's).
 - **F48.1 DECIDED** The side rail (b03_rail's four designs, real POM friction 0.35 to 0.40 dry): **"Tied posts (wire)"**: two
   posts linked by a stabiliser wire, 56 to 59 gf at the tip for a 55 gf switch; nothing tilts. **TODO (P2):** b03_side's rail
   redrawn as the tied pair, its verdict the tied design's spread, "friction aside" gone; b03_rail keeps the four, the tied one
@@ -209,6 +273,8 @@ Sheets: /home/claude/work/s1/s1_options_A.png and s1_options_B.png (sent to him)
 
 ## F49. The fingers, and the trigger cutouts seen from the side (2026-11-06 10:06; delivered ~11:00)
 Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/claude/work/int/film/main-all.html).
+Frames: feedback/frames/F49/ (fingers on b02_front, b02_rails, b06_arch, b08_grip; the trigger cutouts seen from the side
+on b01_lighter and b07_balance; the 09:52 publish showed the same).
 - **F49.1** "the fingers look really bad right now": every fingertip drawn on the slides (the kit's finger and the builders'
   own fingers). **TODO (FG):** a redesign, shown to him as an options sheet first, then rolled out across the film.
 - **F49.2** "and the trigger cutouts in the side profile also don’t look correct at all, they should be smooth and naturally
@@ -227,6 +293,8 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
 - **F50.2** (11:06) "the last 2 messages i sent were hanging for like 20 minutes so i hit send now, its information that you
   needed but it shouldn’t interrupt your work, read them and then proceed". (His stop at ~11:00 was only to push F49 and
   F50 through; the 0.6 mm board work, H3, carries on.)
+- **F50.3** (~11:15) "continue" (as the integrator logged it in INTEGRATOR.md; not yet in the inbox). Reading: after the
+  server restart at ~11:00 stopped every agent, carry on; the agents were relaunched at 11:15.
 
 ## Open with Brock
 
@@ -255,15 +323,17 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
     transitions, chapter colours).
   - Uppercase display type, with mixed sizes and colours side by side.
   - Bigger type for phones.
-  - XBAB light grey #F7F6F2, not tan.
-  - Tags and colours have since been replaced: F7.3, F7.4, F11.2.
+  - XBAB light grey #F7F6F2, not tan. **#F7F6F2 SUPERSEDED by F39.3:** the paper is #F5F5F7, a neutral grey (#F7F6F2
+    read as yellowish); "grey, not tan" holds.
+  - Tags and colours have since been replaced: F7.3, F7.4, F11.2; the colours again by F35.1 / F38.5 (neutral + blue,
+    chapters in ink), which overrule F11.2.
 - **F0.4 STANDING** Content:
   - Every idea gets an animated visualization.
   - Anything already in shipping mice gets a "how Theseus goes a step further" beat.
   - As many competitor comparisons as possible: bars, XY plots with sweet spots, Pareto frontiers.
 - **F0.5 STANDING** The corrections in research/validation-report-2026-11-03.md:
   - sensor naming;
-  - Raytac AN54LM-20A;
+  - Raytac AN54LM-20A (**SUPERSEDED by F21.4:** the AN54LM-P20A, long antenna);
   - nPM1300;
   - the Kim et al. CHI 2020 wording;
   - no SLX battery-hour rating;
@@ -282,7 +352,7 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
   tolerances be correct when assembled the first time, show chances of getting tolerances right and chances of it
   feeling different after unscrewing it (it should be like a 90% chance for abs plastic, and slightly lower for carbon
   filled plastic, which be the other material you're comparing to)"
-  - Decided: F3.3, F6.1.
+  - Decided: F3.3, F6.1. **Carbon-filled's 85 % SUPERSEDED by F21.3 / F21.5:** 70 % (ABS 90 %, brass 0 %).
 - **F2.02 DONE** (`focus`: +26 pts sharper in the worst case, 0.2 against 0.4 mm) "the sensors window to focus is actually only 0.2mm optimally but you should talk about how
   most manufacturers only optimize for 0.4mm which can lead to issues"
 - **F2.03 DONE** (`gld_camera`: just a camera; `gld_blur`: computed defocus, the phone camera analogy) "you effect show how the sensor works, and how it is just a camera, and show how the lens
@@ -295,20 +365,24 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
   each slide, they shouldn't be in the same place every time, you also need nedd to mix and match the asset placement
   between slides so it doesn't feel repetitive, considered rounded boxes with padding and golden ratios"
   - Shared helpers: glossBox, sourceBox, golden(), bento().
-  - The boxes are now barely rounded, per F9.19.
+  - **The rounding SUPERSEDED by F9.19:** the boxes are now barely rounded (radius 6).
 - **F2.06 DONE** (`anchors`, now "Dual rail main clicks"; `clk_pomtune`) "the dual rail main clicks needs to be better explained and visualized (right now you're
   calling it something with anchors) also explain how the pom pad thickness allows for easy factory tolerance
   modification and perfection"
 - **F2.07 DONE as changed by F9.16** (`sidebuttons`) "the side button on rails slide (which should just be called dual rail
   side buttons should show the mini microswitch being used as as support by 2 additional arms as well to keep the
   button from bending in too far"
-  - Now full-size SPDT switches with a glove (F9.16).
+  - Now full-size SPDT switches with a glove (F9.16). **The glove SUPERSEDED by F48.1:** two posts in POM-padded guides,
+    tied by a stabiliser wire (b03_side).
 - **F2.08 DONE** (3D: TTC-style optical encoder, ISO screws, a knurled insert; 2D: `srf_encoder`, and `ownscrew`, `own_insert` and `own_life` drawn from the 3D model's exact head, recess, thread and insert) "the encoder and screws need a massive revamp to look proper"
-  - Encoder form: F9.21.
+  - Encoder form: F9.21. **The optical encoder SUPERSEDED by F27** (magnetic, Hall effect: "Yes, switch everywhere"), and
+    the steel screws by F25.4 (titanium).
 - **F2.09 DONE** (`shlThin`, `shlShell3d`, `shlLattice3d`, and the meter strip through the chapter) "id like you to elaborate more and do more animations on how triangles are more helpful on a
   lower weight mouse. throughout all the strength increases from industry standards i'd like to see a bar of flex or
   strength to weight dropping"
-  - This is the shell meter (10-d-0-meter.js); its baseline is F6.4.
+  - This is the shell meter (10-d-0-meter.js); its baseline is F6.4. **The meter OVERRULED by F27** (`shlShell3d`: "cut
+    the strength graphs that last multiple slides, they were a bad idea"): no strip across slides; each slide makes its
+    own comparison.
 - **F2.10 DONE** (`shlHotspot`, `shlMargin`, `shlWork`: 18 / 25 / 90 % of the grams work) "i'd also like you to better show of my concept of a lightweight mouse being able to be
   stronger than heavier one by more optimally spreading force and using force among the material it has, demonstrate
   how solid or flat planes have a propensity to build up hotspots and have once breakage point that wastes the rest of
@@ -328,13 +402,18 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
 - **F2.16 DONE** (`shbArches`: arches drawn as continuous lines, triangles where they cross; `shbDome`: geodesic domes, the HI-SEAS Mars missions) "talk about how triangles from continuous lines (and therefore arches in dome shape like a
   mouse, show nasa mars base triangle domes) right now the presentation shows triangulated arches/ triangles forming
   arches, when it should show interwoven arches forming triangles)"
+  - **The Mars base domes OVERRULED by F22.1** ("we can get rid of the mars base dome slide as well"); the interwoven
+    arches stand.
 - **F2.17 DONE** (`shbFibres`: Krenchel's curve, Choi 2024 1.7×, Hexcel 33×) "show how these continuous lines particularly increase strength for materials filled with
   fibers, because fiber alignments is extremely important (bring up specific research on how high the potential
   strength increases are)"
 - **F2.18 DONE** (`shbFlow`: a melt-flow simulation, sharp against filleted; `shbGates`: gating, rib width, fillets) "show a fluid simulation of how a filleted lattice helps sign fibers (if there is anything
   else that can be down to the lattice to better align it show it)"
+  - **`shbGates` (the gating) OVERRULED by F27** ("not sure if needed", 1/10): out of the film.
 - **F2.19 DONE** (`sealed`: "The encoder: the number one failure point") "talk about how no dust getting in the encoder is particularly important given the fact
   that the encoder is the number one failure point in a mouse"
+  - **SUPERSEDED by F27** (`sealed`: "remove, ... i want to use a magnetic encoder that doesn’t get affected by dust"):
+    the encoder is magnetic and the sealing slide is out.
 - **F2.20 DONE** (`shbSides`: the flat low sides take the peak; a thicker band and the thumb rest) "show how the left and right sides of the mouse near the bottom being flatter and less
   arched, and how that means extra design intent has to be spent to make the lattice thicker in those wasted, as well as
   possibly specifically where the thumb rests"
@@ -347,6 +426,8 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
   pros yellowed)"
 - **F2.24 DONE** (`shbPress`: arch against flat plate, 21× stiffer, the plate cracks at 12 N, the arch holds to 45 N; `shbThrust`; `shbBend`) "i need an elaborate and in depth force simulation, bending simulation and and text
   explanation of why/how arches are so strong, as well as a comparison to flat planes"
+  - **The break numbers SUPERSEDED by F41.1:** judged at 207 MPa in bending, the plate cracks at 20.5 N and the arch
+    buckles at 41 N first (2.0×, b06_arch); the 21× stiffness stands.
 - **F2.25 DONE** (`shbMill`: one cutter pass at 0.6 mm fillets; `shbTol`: 19× looser tolerance) "talk and visually about how the filets making milling the mold easier and reduce the
   tightest tolerance"
 - **F2.26 DONE** (`shlPcbRib`: 1.8× stronger than magnesium at the same weight; `shcCarry`: 19 % of the weight already carried; `shcArms`: 18× lower peak than small arms, which snap) "i feel like the pcb being used as a reinforcement isn't demonstrated enough. i want to talk
@@ -361,9 +442,11 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
   darker font"
   - Done: `ntr_stats`, "Theseus, by the numbers", a bento whose tiles count up, with the next best smaller, darker and
     in yellow, with its source. Shared helper: statTile with `next` (now with `next.ev` / `next.by` / `next.src`).
+  - **The stats slide SUPERSEDED by F27** (`ntr_stats`, 4/10: "all of this information is important but would fit better
+    in other slides"): its figures went to the cover (density, as he suggested) and b01_budget.
 - **F2.29 DONE** (shared code, 3D, and `elc_oneside`: one board, one side, one reflow, 5.6 g) "we don't have a front and back pcb," / "it'll be a
   single ~5.6g pcb."
-  - Shared constant: THS.pcb.
+  - Shared constant: THS.pcb. Since F42.2 the 5.6 g is a target, met by the 0.6 mm board (F47.4).
 - **F2.30 DONE** "the price for the mouse is $189"
   - Shared constant: THS.price.
 - **F2.31 OVERRIDDEN by F7.10** "the main accent color could be red first, before yellow"
@@ -408,7 +491,8 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
 - **F3.1 OVERRIDDEN by F7.10** Accent: "Red is Theseus, yellow 2nd".
 - **F3.2 OVERRIDDEN by F7.3** Tags: "I'll send the picture" (the lower-third, F4).
 - **F3.3 DECIDED, changed by F6.1** Inserts: "Yes, and research inserts".
-  - 90 % for ABS, a bit lower for carbon-filled, both screwed straight in, as his estimate.
+  - 90 % for ABS, a bit lower for carbon-filled, both screwed straight in, as his estimate. (Carbon-filled: 70 %,
+    **SUPERSEDED by F21.5**.)
   - Brass insert figures come from published tests.
 - **F3.4 DONE** Top-left mark: "Small mouse outline".
 - **F3.5 OVERRIDDEN by F9.16** Side buttons: "two arms that act as an end stop and reduce flex".
@@ -430,10 +514,12 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
 ## F6. Answers to the second questions (2026-11-04, ~04:40)
 
 - **F6.1 DECIDED** Inserts: his 90 % is the chance the joint **feels different after it is unscrewed and screwed back**,
-  for ABS. Carbon-filled is "a bit lower": 85 %, his estimate.
+  for ABS. Carbon-filled is "a bit lower": 85 %, his estimate. **85 % SUPERSEDED by F21.3 / F21.5:** "i would think
+  carbon filled would be lower than 85%": 70 %.
 - **F6.2 OVERRIDDEN by F12.11** Density: use the Ninjutso Sora V2's L × W × H for Theseus, labelled a placeholder.
 - **F6.3 DECIDED** FR4 arms: "All G Wolves mice, I even had the arms on an HTS Ultra break during shipping once".
-- **F6.4 DECIDED** The shell meter's baseline: a plain thin wall (no ribbing) at the same mass.
+- **F6.4 DECIDED** The shell meter's baseline: a plain thin wall (no ribbing) at the same mass. The meter itself is cut
+  (**OVERRULED by F27**, see F2.09); a plain wall at the same weight is still the shell slides' baseline (b05_nopick).
 
 ## F7. 2026-11-04 04:52: the Apple direction (with four keynote slides)
 
@@ -446,6 +532,8 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
 - **F7.4 DONE, refined by F8.1 and F11.2** "i don't like the new colors you've chosen, the old ones were better, if you're
   gonna go in any new direction, go in the apple direction, but don't stray too far from the primary color scheme colors
   we chose originally"
+  - **The colours SUPERSEDED by F35.1 / F38.5:** neutral + blue (black, grey and white; blue for Theseus, yellow for
+    comparisons, red for faults); the Apple direction stands.
 - **F7.5 DONE in shared code, IN PROGRESS per slide** "i'm attaching some references to apple keynote i really like that do
   spacing well, we can't do slides like there's every slide, we need to combine our old style and what they have if
   anything so we can show a little bit more data than them and give ample screen space to the simulations"
@@ -456,6 +544,8 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
 - **F7.8 DONE** "research how apple does the graphic design of its keynotes"
   - Notes: research/apple-keynote-design.md.
 - **F7.9 STANDING** "remember the colors need to be vibrate like the old ones and we need LOTS of premium motion design"
+  - **The vibrant colours OVERRULED by F34.6 / F35.1 / F38.5** ("Other vibrant colors made it less professional"; neutral
+    + blue); the premium motion stands (F38.3).
 - **F7.10 DECIDED (F11.1)** "i also think blue should be the main theseus color after some thought red makes it seem like
   it's bad, and we can't do green because razer is green"
 - **F7.11 STANDING** "don't forget to do every task from my original 40+ pieces of feedback, this is just me steering you
@@ -501,6 +591,9 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
 - **F9.12 DECIDED (F11.1)** "maybe you should let me choose between red, blue or yellow for the primary Theseus color"
 - **F9.13 DONE** (3D, and `antenna`: the pointer turns the module 180°, 1.8× further from the wheel) "the raytac module needs to be flipped so it's further from the scroll wheels metal, and
   id lowk you to use the long antenna design i've attached"
+  - **The 180° flip SUPERSEDED by F40.4:** on plan 5 the module sits at the board's rear, the antenna facing forward,
+    27.6 mm from the wheel's axle (11.9 mm on the old board); the aim, further from the wheel's metal, holds, and so does
+    the long antenna.
 - **F9.14 DONE** (3D, and 2D on `gld_camera` and `gld_module`) "the sensor and snap on lens are both not as accurate as id like, you need to squeak out
   a lot more accuracy using the images i've attached"
 - **F9.15 DONE in 3D (standard SPDT internals in the rotating housing); the 2D redraw is F14.3 (fixA)** "the internals on the gt01 switch are not right and it bothers me, before the old switch
@@ -512,6 +605,10 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
   amount of practice to get the tolerancing right in the dual rail mechanism, and means we don't have to tolerance 2
   separate dual rail mechanism, advertise this and how no company has spdt side buttons yet"
   - F11.4: state it.
+  - **The glove SUPERSEDED by F48.1:** two posts in POM-padded guides, tied by a stabiliser wire; the full-size SPDT
+    switches, held by the shell, stand. **"no company has spdt side buttons yet" SUPERSEDED by research**
+    (BROADCAST-0945): the Gamesense MVP's side buttons are full-size Kailh GM 4.0s (TechPowerUp), so b03_side doesn't
+    claim it.
 - **F9.17 DONE** (`sidebuttons`: "29.31 g with four full-size switches") "using full size microswitches on the side buttons should be explained as a testament of how
   we have good weights without compromising ANYTHING to achieve that weight"
 - **F9.18 DONE** "fix the background grid spacing so it doesn't align improperly with the apple grid tile spacing"
@@ -524,6 +621,8 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
 - **F9.21 DONE** (the shared 2D drawing `encoderMM` in TTC's form, `sealed`, 3D, and `srf_encoder`: the face plate cut away, the light gate magnified) "the encoder you are using is wrong, optical encoders look no different than normal mouse
   encoders, i've attached picture of what the interior looks of an modern mouse optical encoder is like, usually they're
   a little taller than that though"
+  - **Theseus's optical encoder SUPERSEDED by F27:** the scroll encoder is magnetic (Hall effect), "Yes, switch
+    everywhere"; his note on how optical encoders look still holds for the rivals' drawings.
 - **F9.22 STANDING** "again this is just me giving you more guidance, do not abandon any of my old guidance unless i've
   intentionally overwritten it"
 - **F9.23 DONE** (Shells A, B and C, and the heat scale) "you need to better explain how lower peak force hotspots are
@@ -555,6 +654,8 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
   NOT sacrifice thoroughness or projected agent intelligence or strength, if you have to make compromises, compromise on
   speed"
   - Two or three builders run at a time, on the same model.
+  - **OVERRULED by F38.6:** an ultra account, no 5-hour limits ("i don't want you to worry about usage at all");
+    thoroughness first.
 - **F10.2 DONE, STANDING** (the live link, republished at each integration; v14 at 20:5x) "i'd also like you go back to giving me a live link that you update so i can see the progress
   updates often as soon as you make them"
   - The link: https://claude.ai/artifact/HH8yRD9aYxCvvgcT1jUkyv, republished as work lands.
@@ -563,17 +664,21 @@ Live link at the time: v1793981126-8865 (104 new slides; build saved as /home/cl
   should be readable for both humans and llms, i want this so you don't forget about anything i've told you in any of my
   messages"
   - On branch claude/review-notes-rework. Pushing it needs the repo enabled for the session (see "Open with Brock").
+  - Extended by F50.1: every message logged verbatim, with frames of the slides as they were, overruled items marked.
 - **F10.4 STANDING** "if you have any questions to improve your execution you should ask them as well"
 
 ## F11. Answers to the third questions (2026-11-04 07:35)
 
 - **F11.1 DECIDED** Theseus's colour: **blue**. The next best is yellow and problems are red.
-- **F11.2 DECIDED** Chapter colours: **the old set**.
+- **F11.2 DECIDED, OVERRULED by F35.1 / F38.5** Chapter colours: **the old set**. Now: every chapter in ink (black, grey
+  and white); blue for Theseus, yellow for comparisons, red for faults.
   - Shell purple, surface pink, electronics cyan, shape olive, ownership slate.
   - Clicks (blue, now Theseus's) and glide (green, out) are neutral.
 - **F11.3 DECIDED** The seam: "it forks which it shouldn't, it has a center strip, which it shouldn't".
   - One split runs from the nose to the rear seam, with the wheel sitting in it, as on the Sora.
-- **F11.4 DECIDED** "No company has SPDT side buttons yet": "I've checked, state it".
+- **F11.4 DECIDED** "No company has SPDT side buttons yet": "I've checked, state it". **SUPERSEDED by research**
+  (BROADCAST-0945): TechPowerUp shows the Gamesense MVP's side buttons on full-size Kailh GM 4.0 switches, so the film
+  doesn't say it (b03_side).
 
 ## F12. 2026-11-04 09:28 (answers, new notes, six reference photos of mouse bases)
 
@@ -606,16 +711,20 @@ New notes:
     the shell, on the outside it should look solid. also the bottom should be solid with no holes (even before mylar)
     for a similar size of skates as the viper v4 pro uses".
   - The references: ARYE FCC-1 FE, Xlite, Pulsar X2H, WLmouse Beast Mini, WLmouse Beast X V2, and two honeycomb bases.
+  - **DEFERRED by F27** (`pltSim`: "none are what i wanted we will worry about the bottom cover later"): the plate is out
+    of the film until the bottom cover is revisited (so are F14.1's and F18.1's plate skates, F20 and F21.2).
 - **F12.11 DECIDED** "also the dimensions of theseus will be 119.3 x 62.4 x 39.9". Asked whether to resize the 3D shell:
   "Use the numbers only".
   - The scanned shape stays.
   - Density and specs use 119.3 × 62.4 × 39.9 mm, which is 297.0 cm³ and 0.099 g/cm³.
   - **DONE** in the shared constants (`THESEUS.dims`, `THS.dims`) and the intro's density slides.
+  - **CONFIRMED by F47.1** (2026-11-06): "just say it’s 39.9 and we’ll use that model"; the scanned profile stays.
 
 Answers to the Shell A questions:
-- **F12.12 DECIDED** "tensile strength": the shell counts as broken at 120 MPa.
+- **F12.12 DECIDED** "tensile strength": the shell counts as broken at 120 MPa. **SUPERSEDED by F41.1:** two strengths,
+  120 MPa stretched and 207 MPa bent (JIS K7171), as the datasheet gives.
 - **F12.13 DECIDED** "cite the finalmouse support staff" for "the encoder is the number one failure point". **DONE**
-  (`sealed`).
+  (`sealed`). **SUPERSEDED by F27:** `sealed` is out and the encoder magnetic; the claim isn't in the film.
 
 ## F13. Answers to the Shell B questions (2026-11-04 ~10:20)
 
@@ -624,6 +733,8 @@ Answers to the Shell A questions:
   - The strip appears on those slides at the triangle lattice's value. The arch is already inside that number, because
     it's the same dome.
   - **DONE.**
+  - **OVERRULED by F27** (`shlShell3d`: "cut the strength graphs that last multiple slides, they were a bad idea"): no
+    strength strip.
 - **F13.2 DECIDED** How the mold is made: "Not decided yet". **DONE:** `shbMill` (EDM) and a new `shbMillDirect`
   (a milled core) both carry the fillet's advantage.
 - **F13.3 DECIDED** Where the gate goes: "decide where you think is optimal". **DONE:** `shbGates` puts one gate inside under the
@@ -639,6 +750,8 @@ Answers to the Shell A questions:
     mirrored, plus a ring round the sensor.
   - Asked where the dots sit with the plate off: "2 each corner, 1 or 2 on the sensor 9 or 10 total". They sit on a
     ledge on the shell rim.
+  - **The pills (plate on) SUPERSEDED by F20.4** (two half-moons after the Viper V4 Pro's rear skate), and the plate
+    **DEFERRED by F27**; the dots with the plate off stand.
 - **F14.2 DONE** (pills at z ±44.8, mirrored) "the front and the back skate pills should be a direct mirror, one shouldn't be more towards the
   center than the other"
 - **F14.3 DONE** (2D redrawn; 3D tongue now a flat strip, side holes full circles) "your gt01 bottom housing design was wrong, which is confusing because you used it on the
@@ -694,6 +807,7 @@ Answers to the Shell A questions:
 ## F17. Answers to the 3D builder's questions (2026-11-04 ~11:00)
 
 - **F17.1 DONE** The Raytac part: "AN54LM-20A, long antenna". The name is kept, and the long meander antenna is drawn.
+  **The name SUPERSEDED by F21.4:** AN54LM-P20A.
 - **F17.2 NEXT ITERATION** The side seam meets the side seams about 30.5 mm above the base: "I'll check and say". See F21.16: it bothers him; fix it after this iteration.
 - **F17.3 DONE** (3D, and the shot on `sidebuttons`) A 3D shot of the full-size SPDT side switches in their
   glove: "Yes, model it".
@@ -702,18 +816,22 @@ Answers to the Shell A questions:
 ## F18. Answers to the Intro, Clicks and Glide builders' questions (2026-11-04 ~13:05)
 
 - **F18.1 DECIDED** The pills with the plate on: "One wide front, one wide back". Two pills, mirrored about the sensor,
-  each spanning most of the width, plus the ring. **DONE.**
+  each spanning most of the width, plus the ring. **DONE.** **SUPERSEDED by F20.4** (half-moons), then **DEFERRED by
+  F27** with the plate.
 - **F18.2 DECIDED** Where the dots by the sensor sit with the plate off: "research and decide". **DONE:** left and right of the
   lens at ±11.5 mm (a third less worst sag under a palm press; front and back would clash with the lens clip). **TO CHECK
   (K4):** Glide's dots by the sensor at ±11.5 mm.
 - **F18.3 DECIDED** Theseus's sensor: "Unannounced next part". Call it PixArt's next flagship, with no part name. **DONE.**
+  **OVERRULED by F21.6:** the PAW3970, with the Viper V4 Pro's specs.
 - **F18.4 DECIDED** The price row on `flagships`: "Keep price charted". **DONE:** one chart, price on each row, Theseus's
   $189 ending on the ULX's launch price.
 - **F18.5 DECIDED** The click-latency target against the XA25's measured 72 µs: "Tighten it". **DONE:** 70 µs, moving or still, at NC
   release.
 - **F18.6 DECIDED** The tensioner's stress colours: "scant to peak and also it's been bothering me that the bridge
   tensioner doesn't properly connect the 2 pieces". **DONE:** the heat runs to the hotter part's peak, and
-  the plate, bridge and trigger are drawn as one continuous band with filleted roots.
+  the plate, bridge and trigger are drawn as one continuous band with filleted roots. **The filleted roots OVERRULED by
+  F27** (`tensioner`: "the rounding where the bridges meets the trigger looks bad, ie needs to connect without filets"): no
+  fillets there since v22.
 - **F18.7 DONE** The Viper V4 Pro's skate sizes: "Estimate from photos". Measured off his own photo (F20.4) instead: the rear half-moon is about 53 × 24 mm, labelled an estimate from his photo (`gld_under`).
 - **F18.8 DECIDED** Measured sag or sink figures: "No, keep the models". The labelled illustrations stay.
 
@@ -725,6 +843,8 @@ Answers to the Shell A questions:
   squared scale stays: calm triangles, the red peak on the plane.
 
 ## F20. Answers to the plate builder's questions (2026-11-04 ~15:20)
+**DEFERRED by F27** (all of F20): the plate is out of the film ("none are what i wanted we will worry about the bottom
+cover later"; `pltOptions`: "none are good options"); it comes back with the bottom cover.
 
 - **F20.1 DECIDED** The plate's skates: "Inboard, plate only". They sit on the plate alone, about ±36 mm from the centre,
   and come off with it. **DONE.**
@@ -745,7 +865,8 @@ Answers to the Shell A questions:
   leaves; the Shell chapter's 15.2 g body is labelled a stress study, not the final shell. **DONE (fixK, fixI)**:
   the labels, and the budget recounted with the deck's own magnesium wheel and brass inserts.
 - **F21.2 OPEN** The plate's back skate: "i'll have to see all 3 options". Being rendered side by side: (A) v3 as now,
-  (B) the back skate weighted harder, (C) thinner ribs (0.30 mm lattice, 0.40 mm struts).
+  (B) the back skate weighted harder, (C) thinner ribs (0.30 mm lattice, 0.40 mm struts). **DEFERRED by F27**
+  (`pltOptions`: "none are good options and we don’t need to worry abt this into later into development").
 - **F21.3 DECIDED** The inserts: "i would think carbon filled would be lower than 85%, brass at zero as derived from my
   experiences feels fine, we should simulate it later though". Brass stays 0 % (derived from his experience); the
   carbon-filled figure goes lower (his number asked). **TODO later:** simulate re-threading in carbon-filled and ABS.
@@ -769,7 +890,9 @@ Answers to the Shell A questions:
 - **F21.11 DECIDED** The power chip: "it's fine where it is right now, we will move it later next time i give you pcb
   redesign ideas". The board: "it will probably be thinner, but keep it as 1mm for now and we will change it after the
   next redesign ... it would be inefficient to recalculate something everytime we build". **STANDING:** don't re-solve
-  for small spec changes between redesigns.
+  for small spec changes between redesigns. **The power chip's place SUPERSEDED by F30.1 / F30.3** (as far from the MCU
+  as possible, in the left middle); **the 1 mm board SUPERSEDED by F47.4** (0.6 mm, two layers, 5.63 g). The standing
+  rule holds: re-derive at a redesign.
 - **F21.12 DECIDED** First-assembly fit: "keep it in words, and then we'll simulate it for the next iteration". Thread
   wear: "Keep both". Newtonian profiles: "Fine for now". **TODO next iteration:** simulate the first fit and the re-screw.
 - **F21.13 DECIDED** The size slide: he asked where "a flat mouse is better" came from; shown his doc's line 627 ("for a
@@ -795,7 +918,8 @@ Answers to the Shell A questions:
 - **F22.2 DONE** Frame sync: "Match SensorLock, 42 µs". `framesync`: 205 → 42 µs frame to USB against Razer's FrameSync,
   SensorLock's 42 µs stated plainly.
 - **F22.3 DONE** Screws and wires in the budget: "Derive Theseus's own" from the 3D model: 4 × M2 × 4 steel, 0.75 g; the
-  side-button lead, 0.08 g. With the 0.9 g wheel the shell and skates get **10.02 g** (2.14 g under the XA25's).
+  side-button lead, 0.08 g. With the 0.9 g wheel the shell and skates get **10.02 g** (2.14 g under the XA25's). **The
+  steel screws SUPERSEDED by F25.4** (titanium, 0.42 g for four: 10.35 g), and that by F44.2 (about 9.35 g).
 
 ## F23. The phone, and editing text (2026-11-05 00:28)
 - **F23.1 DONE** "on my iphone 16 pro max, all the tools hang off screen and there's no way to input ratings, the tools
@@ -819,11 +943,12 @@ Answers to the Shell A questions:
 
 ## F25. Answers on the new wheel and the screws (2026-11-05 ~01:45)
 - **F25.1 DONE** (a coarse diamond knurl, 72 teeth at 1.0 mm pitch, 30° each way, flat tops; IS 3403) The wheel's tread: "research what you think is best, if assumed, coarse and diamond are my favorites".
-  **DONE (whl).**
+  **DONE (whl).** **OVERRULED by F30.8** ("i liked the scroll wheel version with lines better"): straight lines, as in F22.1.
 - **F25.2 DONE** The wheel's form: "thinners arms". Arms 0.95 → 0.55 mm, the weight held at 0.900 g.
 - **F25.3 DECIDED** The side-button lead: "Keep 3 wires". **DONE** (no change).
 - **F25.4 DONE** The screws: "Titanium" (instead of steel): grade 5, 0.42 g for four; shell and skates 10.35 g. **DONE (whl):** the budget, the 3D screws and the
-  Ownership slides (no more magnetic pickup).
+  Ownership slides (no more magnetic pickup). **The shell's 10.35 g SUPERSEDED by F44.2:** the two side switches come
+  out of the shell, about 9.35 g; the total stays 29.31 g.
 - **F25.5 DONE** (head hardness 220 → 349 HV against class 4.8, sourced; thread stripping stays in the brass, said so) "mentioned the improved strength of the titanium screws compared to steel leading to less stripping,
   find research to back". **DONE (whl):** sourced, against the steel the screws would really be (stainless A2 or
   class 4.8 / 8.8; class 12.9 alloy steel is stronger than grade 5 titanium), and clear about which stripping the evidence
@@ -843,11 +968,14 @@ Answers to the Shell A questions:
 - **F26.5** "the pcb needs more rounding on all of its edges to look more premium (this my mean extending the front
   slightly to give it a buffer so the microswitches don't stick out over where there's no pcb), and the tiny notches on
   the left and right sides should be shaved off so the pcb can better be used as a support better, the back width of the
-  pcb should be back width as the front". **IN PROGRESS (K2).**
+  pcb should be back width as the front". **IN PROGRESS (K2).** **The front's extension SUPERSEDED by F30.5 / F30.11:**
+  only as far as the GT01's angled overhang.
 - **F26.6** "give the triangles on the back of PCB design the proper fliletting". **IN PROGRESS (K2).**
 - **F26.7** "the 2 back holes need slightly more padding on the pcb, but the holes can't change location at all".
   **IN PROGRESS (K2).**
 - **F26.8** "the power switch should be moved to the middle of the notch so it's easier to access". **IN PROGRESS (K2).**
+  **DEFERRED by F29.3:** placed with the bottom cover (centred in the board's window for now); both board variants were
+  built, the window (A) and the edge switch (B) (F30.17, F30.19), B's on the top side (F42's note).
 - **F26.9** "remove the qr code off the sensor and engrave the sensor with PAW3970 and then whatever letters are on the
   actual sensor to make it look like a real sku (we don't know what the real sku will be past the PAW3970 yet, so
   derive)". **IN PROGRESS (K2).**
@@ -887,15 +1015,15 @@ old score as archived (F26.13).
   - `weightgap` (intro, slide 8) **10/10**: "no comment"
   - `ntr_density` (intro, slide 9) **9/10**: "only use the outline or the shape/silhouete instead of something so detailed, good understandable demonstration, but you need to sell why low density is important a little better, the x2f having the wrong idea should come first, show the problem first, then sell the solution so the solution doesn’t feel useless"
   - `ntr_sizewt` (intro, slide 10) **9/10**: "find an outline of the x2f to add to the box, and same thing as last slide, the theseus should only be the shape outline"
-  - `ntr_densrank` (intro, slide 11) **9/10**: "it bother me the the x2f is lighter and lacks decimal points, this probably isn’t the most exact weight available for the x2f crazylight (reports online say it’s at least 29.5g), i also don’t like how the theseus has an extra decimal point. you also need to use eloshapes to take g wolves mice into account for there weights and density, yes this will make the theseus look worse, but its more honest"
+  - `ntr_densrank` (intro, slide 11) **9/10**: "it bother me the the x2f is lighter and lacks decimal points, this probably isn’t the most exact weight available for the x2f crazylight (reports online say it’s at least 29.5g), i also don’t like how the theseus has an extra decimal point. you also need to use eloshapes to take g wolves mice into account for there weights and density, yes this will make the theseus look worse, but its more honest" (The X2F's "at least 29.5g": **SUPERSEDED by research** (BROADCAST-0945; Q1 searched English and Japanese reviews): no measured weight is published; the film uses Pulsar's claim, 29 g ± 2.)
   - `pricefront` (intro, slide 12) **7/10**: "the bottom pareto lineinstantly going straight bothers me a lot i should continue on the trajectory it was at for a little but bit, there should never be a kink in a pareto line, i think the viper mini signature edition and zaunkoenig mice need to be on this table as well, and the x3 superstrike"
   - `market` (intro, slide 13) **8/10**: "we need to man’s a bigger argument here how most mice compromise battery life for weight, research harder to find missing weights or derive"
   - `budget` (intro, slide 14) **6/10**: "it’s a lot of work to keep updating this one"
   - `map` (intro, slide 15) **2/10**: "poor execution and not super needed"
   - `clicks` (click, slide 16) **7/10**: "switch plunger on the gt01s is still turned vertical, bottom part looks fine but the part that actually sticks out above the housing looks like it needs to be turned 90 degrees"
-  - `arc` (click, slide 17) **7/10**: "tensioner doesn’t look accurate, i dont like the use of the metrics “pts” or “points” anywhere. this is a really important slide the concept is good but it needs to be demonstrated and sold better, i think direct drive means the peak theoretical reaction time should be 20% faster because 20% more of the force goes where you actually intend it."
+  - `arc` (click, slide 17) **7/10**: "tensioner doesn’t look accurate, i dont like the use of the metrics “pts” or “points” anywhere. this is a really important slide the concept is good but it needs to be demonstrated and sold better, i think direct drive means the peak theoretical reaction time should be 20% faster because 20% more of the force goes where you actually intend it." (The 20 %: **SUPERSEDED by F31.2**, "Keep "6% sooner"", with why it isn't 20 %.)
   - `clk_wedge` (click, slide 18) **4/10**: "important concept, very poor execution, could be closer to the less parts is better demonstration, show after youve shown the problem with having more parts"
-  - `clk_switch` (click, slide 19) **5/10**: "bottom housing doesn’t look very accurate at all, i’ll attach a new reference when you ask, show the effect on battery life, razer says their optical encoder and switched account for almost half the battery life in the viper v4 pro (find quote), also i’d like to switch to using a halling effect/ magnetic encoder so we can say we should have double the battery luce efficiency as razer"
+  - `clk_switch` (click, slide 19) **5/10**: "bottom housing doesn’t look very accurate at all, i’ll attach a new reference when you ask, show the effect on battery life, razer says their optical encoder and switched account for almost half the battery life in the viper v4 pro (find quote), also i’d like to switch to using a halling effect/ magnetic encoder so we can say we should have double the battery luce efficiency as razer" ("Double": **SUPERSEDED by research** (BROADCAST-0945): the film claims what it derives, +15 % hours from the mechanical switches and +23 % with the magnetic wheel; Razer staff's "almost half" only as their remark, F31.1.)
   - `clk_switch2` (click, slide 20) **2/10**: "largely irrelevant, we don’t even know if we’re going with the gt01 switch or just their style for the bottom housing, if you want to keep this you’d have to group it in with better binning practices, a lot of companies lie about their binning practices for switches, whereas we could commit to proveable bins (potentially using galling effect tech)"
   - `cutouts` (click, slide 21) **3/10**: "everything here is among the most important concepts, but probably has the worst graphic design in the entire deck, it’s super unintuitive to understand because you can hardly tell which part of the mouse you’re looking at it’s so abstract, also the benefit to the player isn’t really sold"
   - `tensioner` (click, slide 22) **8/10**: "reference the starlight x’s stufd clicks from using such a stiff composite materiak with no bridge, market top as “as seen in starlight x” or something like that, and bottom as proposed solution. also the rounding where the bridges meets the trigger looks bad, ie needs to connect without filets"
@@ -928,7 +1056,7 @@ old score as archived (F26.13).
   - `shlSpecific` (shell, slide 50) **4/10**: "doesn’t shot how higher specific strength is better, just feels like a graphic which is quite convoluted. i like the graphic but the explanation for it needs to be so much better."
   - `thinwall` (shell, slide 51) **3/10**: "confusing and lazy graphic, hard to understand at a glance and with longer analysis, super important concept though."
   - `shlScatter` (shell, slide 52) **7/10**: "don’t use points, a little more intuitive, but still quite lazy."
-  - `shlPick` (shell, slide 53) **7/10**: "gpx 2 has worse build quality than the ulx even though it was heavier, this demonstrates the fallacy, i dont like that it says the gpx 2 has good build quality, also i think the line might be unintuitive at a glance, i think the axes need to be formatted and labeled differently, also you expect the right to mean weaker and lighter at a glance be because it has the least area under the curve, not the other way around, maybe y should measure strength not flex, i feel as if that would be more intuitive to understand."
+  - `shlPick` (shell, slide 53) **7/10**: "gpx 2 has worse build quality than the ulx even though it was heavier, this demonstrates the fallacy, i dont like that it says the gpx 2 has good build quality, also i think the line might be unintuitive at a glance, i think the axes need to be formatted and labeled differently, also you expect the right to mean weaker and lighter at a glance be because it has the least area under the curve, not the other way around, maybe y should measure strength not flex, i feel as if that would be more intuitive to understand." (The ULX example: **SUPERSEDED by research** (BROADCAST-0945): the ULX Competition's build is disputed, RTINGS's unit creaked and Periview's had solid sides, so b05_fallacy weighs the GPX 2, 59.4 g, which creaks, against the Sora V2, 40.9 g, "feels solid".)
   - `shlNoPick` (shell, slide 54) **3/10**: "the what if uoh didn’t have to pick shouldn’t be the only thing on the screen for a start animation, it should just be the header, i’ve pointed this out before and im concerned you didn’t change it, it makes me worry you’re missing my other feedback. i have all the same comparisons here as the last slide, this graph feels even more intuitive at a glance, i feel like our method should have a separate line. this is a really important concept, but i genuinely have no idea what it’s show graphically."
   - `shlHotspot` (shell, slide 55) **8/10**: "show the weight of the 2 parts to tie into how a milled out part can be stronger a solid part, point this out"
   - `shlMargin` (shell, slide 56) **2/10**: "really hard to understand, probably important"
@@ -1083,7 +1211,7 @@ old score as archived (F26.13).
   into filets, the main big corner filets need to be half as strong as they are right, and the space in front of the switch
   should only be the extra amount the gt01 hands out ovee because of its angle". **IN PROGRESS (K2):** the plan revised
   (chamfers back, the big corner fillets halved, the front only as far as the GT01's angled overhang), shown again, then
-  built.
+  built. **The halved corner fillets SUPERSEDED by F30.14 / F30.21:** one radius everywhere, then a little bigger.
 - **F30.12** "also the spacing between the scroll wheel hole and sensor, sensor and mcu and mcu and edge of the board all
   needs to be equal right now it looks like there are some thin parts that could easily break". **IN PROGRESS (K2):** the
   three gaps along the centre line equal, no thin webs (shown in mm on the revised plan).
@@ -1091,33 +1219,40 @@ old score as archived (F26.13).
 ## F31. Answers on the click work (2026-11-05 ~06:30, on K1's questions)
 - **F31.1** Razer's "almost half the battery" (clk_switch): asked where he saw it, "Razer staff online". No public source:
   it goes on the slide as a claim, attributed to Razer staff online via Brock, beside the derived 18 % → +21 % for the
-  two switches. **TODO (K3).**
+  two switches. **TODO (K3).** **The 18 % → +21 % SUPERSEDED by research** (BROADCAST-0945): the switches' share is
+  13.6 % (from Logitech's own hours; Omron's pulse gives up to 17.6 %), so +15 % hours from the mechanical switches and
+  +23 % with the magnetic wheel (b03_switch, b10, b01). The attributed remark stands.
 - **F31.2 DECIDED** Direct Drive's speed: "Keep \"6% sooner\"" (with why it isn't 20 %). **DONE (v22).**
 - **F31.3 DECIDED** The pads: "POM everywhere" (idea #28). **DONE (v22)**; the side buttons' answer drops "say if you want
   PTFE" (K3).
 - **F31.4** The side-button guide as a fixed part over the full-size switch: "i'd have to see". It's on `sidebuttons` in
-  v22 (2D and 3D); his rating or note there decides it.
+  v22 (2D and 3D); his rating or note there decides it. **SUPERSEDED by F44.1 / F48.1:** shown every design with
+  pictures (b03_rail), he chose two posts tied by a wire.
 - **F30.13** On board-plan-2.png: build it? "Changes first" (his changes to come). Rear outer corners: "[No preference]"
-  (fillets r 0.75 as drawn). SH1/SH2: **"Drop SH1 and SH2"** (sides stay 19.03). USB-C front legs: **"Keep as today"**.
+  (fillets r 0.75 as drawn). SH1/SH2: **"Drop SH1 and SH2"** (sides stay 19.03). USB-C front legs: **"Keep as today"**. **The USB-C answer OVERRULED by F30.14** ("i think i answered your
+  question wrong before"), then F30.21 and F30.25 (it hangs 1.60 mm out of a trapezoid front).
 - **F30.14** His changes to plan 2: "every filet on the board should be the same radius, the changers don't have filets, you
   filet them the chamfers without turning them into filets" (one radius everywhere, the tab's corners too; each chamfer
   stays straight, with that fillet where it meets the next edge). And, overriding F30.13's USB-C answer: "i think i
   answered your question wrong before and the usb port should be moved back so it doesn't stick out oddly like it does
-  now". **IN PROGRESS (K2):** plan 3, shown before the build.
+  now". **IN PROGRESS (K2):** plan 3, shown before the build. **"moved back so it doesn't stick out" SUPERSEDED by
+  F30.21** ("the usb c connector probably stuck out for a reason, put it needs to hang out a little bit").
 - **F30.15** "i'm also not sure how i feel about the new board back, i really liked the old designs artwork, you should try
   the match/adapt the old designs back artwork as best you can". **IN PROGRESS (K2):** today's underside artwork adapted
   to the new outline (its dark triangles, gold clusters, wordmark, labels, QR), triangles filleted, shown in plan 3.
 - **F30.16** "drop the other 2 small holes and add your own cutouts wherever you see fit" (LH1 and LH2 go; cutouts of
-  K2's choosing, each with its reason and weight, every web 1 mm or more). **IN PROGRESS (K2), plan 3.**
+  K2's choosing, each with its reason and weight, every web 1 mm or more). **IN PROGRESS (K2), plan 3.** **The
+  cutouts OVERRULED by F30.19** ("The two rear cut-outs: Drop them").
 - **F30.17** "i also want a variant of the pcb where the switch hangs off the edge instead if in a hole". **IN PROGRESS
   (K2):** plan 3 shows variant B (the power switch at the board's edge, no window) beside A (the window).
 - **F30.18** "also on the gt01 switch the walls aren't straight for some reason and they aren't a consistent thickness for
   the bottom housing, you messed up the design". **IN PROGRESS (K1, resumed):** straight walls of one thickness, 3D and
-  2D; the board's switches follow.
+  2D; the board's switches follow. The thickness, 0.45 mm, **SUPERSEDED by F30.24** ("don't look thick"): 0.70 mm
+  (H1, measured off Gateron's render; F42's note).
 - **F30.19** On board-plan-3.png: USB-C fit "[No preference]" (flush now; the 4.6 mm / 1.36 mm gap to the shell's opening is
   for the shell round). Power switch: "i want to see bout versions" (A and B both built). The two rear cut-outs: "Drop
   them". Build it? "Yes, more changes" (to come). The GT01's walls (F30.18): **DONE (K1)**, straight, one 0.45 mm wall
-  (Omron D2F-class construction; Gateron publishes no dimensions).
+  (Omron D2F-class construction; Gateron publishes no dimensions). (Then 0.70 mm: F30.24.)
 - **F30.20 DECIDED** `elc_sheet2` (F27): the no-RGB point goes on the encoder slide, his choice of "The encoder slide":
   `srf_encoder` becomes "nothing lights up but the sensor" (the magnetic encoder, the mechanical switches, no RGB LED,
   with their battery figures), next to the web software; `elc_sheet2` out of the film. **IN PROGRESS (K2).**
@@ -1134,7 +1269,8 @@ old score as archived (F26.13).
 - **F30.23** "make sure that scroll wheel hole is symmetrical as well, the whole footprint of the board should be
   symmetrical". **IN PROGRESS (K2), plan 5.**
 - **F30.24** "and the gt01s walls don't look thick on the bottom housing" (after F30.18's 0.45 mm walls). **TODO (after the
-  08:20 usage reset):** thicker bottom-housing walls, measured off Gateron's render.
+  08:20 usage reset):** thicker bottom-housing walls, measured off Gateron's render. Done 2026-11-06 by H1: 0.70 mm
+  (F42's note, BROADCAST-0930).
 
 ## F32. A full revamp (2026-11-05 07:06 to 07:10)
 - **F32.1** "i havent really seen any big changes from the feedback i gave with the ratings and notes tool, whats up with
