@@ -285,12 +285,10 @@ S({
       if (i) line(x - 24, 770, x - 24, 770 + 190 * ep(t, t0 - 0.1, t0 + 0.5, E.cam), { color: inkA(0.14), w: 1.5 });
       text(c.lab, x, 786, { role: 'label', size: 21, color: C.mute, alpha: a, t, t0, cps: 60 });
       if (c.down) {
-        /* the film's eight compromises (its ledger: the next slide's six flagships fold into them), each mark struck in turn and
-           the count stepping down with each strike, to none; the close counts the same eight down again (R2-b01-3) */
-        const kjs = Array.from({ length: c.down }, (_, j) => ep(t, t0 + 0.1 + j * 0.15, t0 + 0.3 + j * 0.15)), v = c.down - kjs.filter(k => k >= 0.5).length, done = v === 0;
+        /* Brock (17:05): "remove the compromise red cross outs from the title card and make the tile all text, the cross outs
+           look bad": no marks and no strikes; the figure itself steps down from eight to none, as text, and lands in blue */
+        const v = Math.max(0, Math.round(c.down * (1 - ep(t, t0 + 0.1, t0 + 0.1 + c.down * 0.15)))), done = v === 0;
         text(String(v), x - 6, 916, { role: 'd1', size: nS, color: done ? C.heroText : C.ink, grad: done ? C.heroGrad : null, tnum: true, alpha: a });
-        const xs = x + tw('0', { role: 'd1', size: nS, tnum: true }) + 26;
-        kjs.forEach((kj, j) => { const sx = xs + j * 26; line(sx, 860, sx, 900, { color: C.mute, w: 3, alpha: a * 0.8 }); if (kj > 0) line(sx - 8, 896, sx - 8 + 16 * kj, 864, { color: C.red, w: 3, alpha: a }); });
       } else rich([{ s: c.n, role: 'd1', size: nS, color: C.ink, tnum: true, count: [t0, 1.0] }, c.u ? { s: c.u, font: 'mono', size: 38, weight: 600, color: C.mute, gap: 10, caps: false } : null], x - 6, 916, { t, alpha: a });
       const ks = ep(t, t0 + 0.4, t0 + 0.8);
       /* knock: the stage grid's + row at y 960 is knocked out from under the words (FILM F10) */
