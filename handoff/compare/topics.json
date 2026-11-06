@@ -1,0 +1,1333 @@
+[
+ {
+  "astra": [
+   "a_cover"
+  ],
+  "old": [
+   "cover",
+   "thesis",
+   "targets",
+   "targets2",
+   "ntr_stats"
+  ],
+  "today": [
+   "b01_cover",
+   "b01_compromise",
+   "b01_targets",
+   "b01_budget"
+  ],
+  "sol": [
+   "rv_cover",
+   "rv_weight_truth"
+  ],
+  "id": "t01",
+  "v23": [
+   "cover",
+   "thesis",
+   "targets",
+   "targets2",
+   "ntr_stats"
+  ],
+  "title": "Theseus: in pursuit of an objectively better mouse",
+  "ch": "intro"
+ },
+ {
+  "astra": [
+   "a_weight"
+  ],
+  "old": [
+   "thesis",
+   "targets2",
+   "weightgap"
+  ],
+  "today": [
+   "b01_compromise",
+   "b01_listed",
+   "b01_targets"
+  ],
+  "sol": [
+   "rv_weight_truth"
+  ],
+  "id": "t02",
+  "v23": [
+   "thesis",
+   "targets2",
+   "weightgap"
+  ],
+  "title": "Optimization over opinion",
+  "ch": "intro"
+ },
+ {
+  "astra": [
+   "a_market"
+  ],
+  "old": [
+   "targets2",
+   "ntr_stats",
+   "market"
+  ],
+  "today": [
+   "b01_battery",
+   "b01_targets",
+   "b01_budget"
+  ],
+  "sol": [
+   "rv_cover",
+   "rv_tradeoffs",
+   "rv_weight_truth"
+  ],
+  "id": "t03",
+  "v23": [
+   "targets2",
+   "ntr_stats",
+   "market"
+  ],
+  "title": "Targets, part two: everything else",
+  "ch": "intro"
+ },
+ {
+  "astra": [
+   "a_budget"
+  ],
+  "old": [
+   "targets2",
+   "budget",
+   "cells"
+  ],
+  "today": [
+   "b01_targets",
+   "b01_budget",
+   "b10_battery"
+  ],
+  "sol": [
+   "rv_weight_truth",
+   "rv_power",
+   "rv_radio",
+   "rv_firmware"
+  ],
+  "id": "t04",
+  "v23": [
+   "targets2",
+   "budget",
+   "cells"
+  ],
+  "title": "Targets, part two: everything else",
+  "ch": "intro"
+ },
+ {
+  "astra": [
+   "a_price"
+  ],
+  "old": [
+   "flagships",
+   "pricefront"
+  ],
+  "today": [
+   "b01_compromise",
+   "b01_price"
+  ],
+  "sol": [
+   "rv_tradeoffs"
+  ],
+  "id": "t05",
+  "v23": [
+   "flagships",
+   "pricefront"
+  ],
+  "title": "Theseus against the flagships",
+  "ch": "intro"
+ },
+ {
+  "astra": [
+   "a_inertia"
+  ],
+  "old": [
+   "zerograms",
+   "mass"
+  ],
+  "today": [
+   "b01_lighter",
+   "b07_balance"
+  ],
+  "sol": [
+   "rv_inertia",
+   "rv_balance"
+  ],
+  "id": "t06",
+  "v23": [
+   "zerograms",
+   "mass"
+  ],
+  "title": "The optimal weight is zero grams",
+  "ch": "intro"
+ },
+ {
+  "astra": [
+   "a_density"
+  ],
+  "old": [
+   "ntr_density",
+   "ntr_sizewt"
+  ],
+  "today": [
+   "b01_density",
+   "b01_illusion"
+  ],
+  "sol": [
+   "rv_density"
+  ],
+  "id": "t07",
+  "v23": [
+   "ntr_density",
+   "ntr_sizewt"
+  ],
+  "title": "Density, not weight",
+  "ch": "intro"
+ },
+ {
+  "astra": [
+   "a_rank"
+  ],
+  "old": [
+   "ntr_densrank"
+  ],
+  "today": [
+   "b01_rank"
+  ],
+  "sol": [
+   "rv_density_rank"
+  ],
+  "id": "t08",
+  "v23": [
+   "ntr_densrank"
+  ],
+  "title": "Ranked by density",
+  "ch": "intro"
+ },
+ {
+  "astra": [
+   "a_direct"
+  ],
+  "old": [
+   "clicks",
+   "arc",
+   "clk_wedge"
+  ],
+  "today": [
+   "b02_card",
+   "b02_direct",
+   "b02_wedge"
+  ],
+  "sol": [
+   "rv_direct_drive"
+  ],
+  "id": "t09",
+  "v23": [
+   "clicks",
+   "arc",
+   "clk_wedge"
+  ],
+  "title": "Clicks",
+  "ch": "click"
+ },
+ {
+  "astra": [
+   "a_tolerance"
+  ],
+  "old": [
+   "clk_wedge",
+   "clk_switch2",
+   "tolerance"
+  ],
+  "today": [
+   "b03_binning",
+   "b07_tolerance",
+   "b02_wedge"
+  ],
+  "sol": [
+   "rv_direct_drive",
+   "rv_binning",
+   "rv_tolerance"
+  ],
+  "id": "t10",
+  "v23": [
+   "clk_wedge",
+   "clk_switch2",
+   "tolerance"
+  ],
+  "title": "A switch wedge, one flat board",
+  "ch": "click"
+ },
+ {
+  "astra": [
+   "a_power"
+  ],
+  "old": [
+   "clk_switch",
+   "srf_encoder",
+   "eleccard",
+   "power",
+   "elc_sheet2"
+  ],
+  "today": [
+   "b03_switch",
+   "b09_card",
+   "b09_life",
+   "b10_lights"
+  ],
+  "sol": [
+   "rv_board",
+   "rv_no_lights"
+  ],
+  "id": "t11",
+  "v23": [
+   "clk_switch",
+   "srf_encoder",
+   "eleccard",
+   "power",
+   "elc_sheet2"
+  ],
+  "title": "A mechanical switch: Gateron GT01",
+  "ch": "click"
+ },
+ {
+  "astra": [
+   "a_binning"
+  ],
+  "old": [
+   "clk_switch2"
+  ],
+  "today": [
+   "b03_binning"
+  ],
+  "sol": [
+   "rv_binning"
+  ],
+  "id": "t12",
+  "v23": [
+   "clk_switch2"
+  ],
+  "title": "Operating force and rated life",
+  "ch": "click"
+ },
+ {
+  "astra": [
+   "a_seams"
+  ],
+  "old": [
+   "cutouts",
+   "shlsheet1"
+  ],
+  "today": [
+   "b02_cutouts",
+   "b02_seams"
+  ],
+  "sol": [
+   "rv_rear_cutouts",
+   "rv_shoulder_seams"
+  ],
+  "id": "t13",
+  "v23": [
+   "cutouts",
+   "shlsheet1"
+  ],
+  "title": "Straight rear cutouts",
+  "ch": "click"
+ },
+ {
+  "astra": [
+   "a_bridge"
+  ],
+  "old": [
+   "tensioner",
+   "clk_tenmat"
+  ],
+  "today": [
+   "b02_tensioner",
+   "b02_stiff"
+  ],
+  "sol": [
+   "rv_tensioner"
+  ],
+  "id": "t14",
+  "v23": [
+   "tensioner",
+   "clk_tenmat"
+  ],
+  "title": "Bridge tensioner: where it bends, how easily",
+  "ch": "click"
+ },
+ {
+  "astra": [
+   "a_rails"
+  ],
+  "old": [
+   "anchors",
+   "clk_pomtune",
+   "sidebuttons"
+  ],
+  "today": [
+   "b02_rails",
+   "b02_pom",
+   "b03_side"
+  ],
+  "sol": [
+   "rv_dual_rail",
+   "rv_sidebuttons"
+  ],
+  "id": "t15",
+  "v23": [
+   "anchors",
+   "clk_pomtune",
+   "sidebuttons"
+  ],
+  "title": "Dual rail main clicks",
+  "ch": "click"
+ },
+ {
+  "astra": [
+   "a_front"
+  ],
+  "old": [
+   "clk_front"
+  ],
+  "today": [
+   "b02_front"
+  ],
+  "sol": [
+   "rv_front_contact",
+   "rv_shoulder_seams"
+  ],
+  "id": "t16",
+  "v23": [
+   "clk_front"
+  ],
+  "title": "Flat front cutouts, flush walls",
+  "ch": "click"
+ },
+ {
+  "astra": [
+   "a_hotswap"
+  ],
+  "old": [
+   "clk_hotswap",
+   "repair",
+   "ownsheet1"
+  ],
+  "today": [
+   "b03_hotswap",
+   "b03_rail",
+   "b11_repair",
+   "b11_box"
+  ],
+  "sol": [
+   "rv_hotswap",
+   "rv_wiring",
+   "rv_repair",
+   "rv_close"
+  ],
+  "id": "t17",
+  "v23": [
+   "clk_hotswap",
+   "repair",
+   "ownsheet1"
+  ],
+  "title": "Hot-swap switches on claw sockets",
+  "ch": "click"
+ },
+ {
+  "astra": [
+   "a_spdt"
+  ],
+  "old": [
+   "clk_spdt",
+   "latency",
+   "clk_debounce",
+   "clk_wait",
+   "clk_methods"
+  ],
+  "today": [
+   "b03_spdt",
+   "b03_timing",
+   "b03_debounce"
+  ],
+  "sol": [
+   "rv_spdt"
+  ],
+  "id": "t18",
+  "v23": [
+   "clk_spdt",
+   "latency",
+   "clk_debounce",
+   "clk_wait",
+   "clk_methods"
+  ],
+  "title": "SPDT",
+  "ch": "click"
+ },
+ {
+  "astra": [],
+  "old": [
+   "glide"
+  ],
+  "today": [
+   "b04_card"
+  ],
+  "sol": [
+   "rv_sensor_camera"
+  ],
+  "id": "t19",
+  "v23": [
+   "glide"
+  ],
+  "title": "Glide and tracking",
+  "ch": "glide"
+ },
+ {
+  "astra": [
+   "a_support"
+  ],
+  "old": [
+   "gld_under",
+   "dots",
+   "gld_sag",
+   "gld_module"
+  ],
+  "today": [
+   "b04_sag",
+   "b04_skates",
+   "b04_module"
+  ],
+  "sol": [
+   "rv_sensor_camera",
+   "rv_sensor_support"
+  ],
+  "id": "t20",
+  "v23": [
+   "gld_under",
+   "dots",
+   "gld_sag",
+   "gld_module"
+  ],
+  "title": "Skate sets: ten dots, or half-moons and a ring",
+  "ch": "glide"
+ },
+ {
+  "astra": [
+   "a_focus"
+  ],
+  "old": [
+   "gld_camera",
+   "gld_corr",
+   "gld_blur",
+   "focus",
+   "sensor"
+  ],
+  "today": [
+   "b04_camera",
+   "b04_focus",
+   "b04_sensor"
+  ],
+  "sol": [
+   "rv_sensor_camera",
+   "rv_sensor_choice"
+  ],
+  "id": "t21",
+  "v23": [
+   "gld_camera",
+   "gld_corr",
+   "gld_blur",
+   "focus",
+   "sensor"
+  ],
+  "title": "Optical sensor: just a camera",
+  "ch": "glide"
+ },
+ {
+  "astra": [
+   "a_timing"
+  ],
+  "old": [
+   "gld_reports",
+   "motion",
+   "elc_rate",
+   "framesync",
+   "secondshot",
+   "frontier"
+  ],
+  "today": [
+   "b04_reports",
+   "b09_latency",
+   "b09_penalty",
+   "b09_sync",
+   "b09_second",
+   "b09_life"
+  ],
+  "sol": [
+   "rv_sensor_choice"
+  ],
+  "id": "t22",
+  "v23": [
+   "gld_reports",
+   "motion",
+   "elc_rate",
+   "framesync",
+   "secondshot",
+   "frontier"
+  ],
+  "title": "Full 16-bit reports, no smoothing",
+  "ch": "glide"
+ },
+ {
+  "astra": [
+   "a_software"
+  ],
+  "old": [
+   "gld_soft",
+   "gld_sheet",
+   "software",
+   "elc_sheet2"
+  ],
+  "today": [
+   "b04_skates",
+   "b10_software"
+  ],
+  "sol": [
+   "rv_sensor_support",
+   "rv_web",
+   "rv_no_lights"
+  ],
+  "id": "t23",
+  "v23": [
+   "gld_soft",
+   "gld_sheet",
+   "software",
+   "elc_sheet2"
+  ],
+  "title": "Set in the mouse: lift-off, position, X and Y",
+  "ch": "glide"
+ },
+ {
+  "astra": [],
+  "old": [
+   "shellcard"
+  ],
+  "today": [
+   "b05_card"
+  ],
+  "sol": [],
+  "id": "t24",
+  "v23": [
+   "shellcard"
+  ],
+  "title": "Shell and structure",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_ruler"
+  ],
+  "old": [
+   "materials",
+   "thinwall",
+   "shlHotspot",
+   "shlMargin"
+  ],
+  "today": [
+   "b05_material",
+   "b05_wall",
+   "b05_hotspot",
+   "b05_margin"
+  ],
+  "sol": [
+   "rv_thin_wall",
+   "rv_hotspots"
+  ],
+  "id": "t25",
+  "v23": [
+   "materials",
+   "thinwall",
+   "shlHotspot",
+   "shlMargin"
+  ],
+  "title": "Carbon-filled polypropylene",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_material"
+  ],
+  "old": [
+   "shlSpecific",
+   "shlScatter",
+   "shlPick",
+   "shlNoPick",
+   "shlWork"
+  ],
+  "today": [
+   "b05_specific",
+   "b05_cubed",
+   "b05_fallacy",
+   "b05_nopick",
+   "b05_work"
+  ],
+  "sol": [
+   "rv_thin_wall",
+   "rv_specific",
+   "rv_hotspots",
+   "rv_light_structure"
+  ],
+  "id": "t26",
+  "v23": [
+   "shlSpecific",
+   "shlScatter",
+   "shlPick",
+   "shlNoPick",
+   "shlWork"
+  ],
+  "title": "Specific strength and specific stiffness",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_loadpaths"
+  ],
+  "old": [
+   "thinwall",
+   "shlNoPick",
+   "shlHotspot",
+   "shlMargin",
+   "shlWork"
+  ],
+  "today": [
+   "b05_wall",
+   "b05_nopick",
+   "b05_hotspot",
+   "b05_margin",
+   "b05_work"
+  ],
+  "sol": [
+   "rv_thin_wall",
+   "rv_hotspots",
+   "rv_light_structure"
+  ],
+  "id": "t27",
+  "v23": [
+   "thinwall",
+   "shlNoPick",
+   "shlHotspot",
+   "shlMargin",
+   "shlWork"
+  ],
+  "title": "Minimum wall thickness",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_lattice"
+  ],
+  "old": [
+   "shlShell3d",
+   "lattice",
+   "shlDeterminate",
+   "shlThin"
+  ],
+  "today": [
+   "b05_nopick",
+   "b06_lattice",
+   "b06_light"
+  ],
+  "sol": [
+   "rv_triangles",
+   "rv_light_structure"
+  ],
+  "id": "t28",
+  "v23": [
+   "shlShell3d",
+   "lattice",
+   "shlDeterminate",
+   "shlThin"
+  ],
+  "title": "The triangle lattice, same weight",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_arches"
+  ],
+  "old": [
+   "shbArches",
+   "shbPress",
+   "shbThrust",
+   "shbBend"
+  ],
+  "today": [
+   "b06_arch",
+   "b06_thrust",
+   "b06_arches"
+  ],
+  "sol": [
+   "rv_arches"
+  ],
+  "id": "t29",
+  "v23": [
+   "shbArches",
+   "shbPress",
+   "shbThrust",
+   "shbBend"
+  ],
+  "title": "Interwoven arches form triangles",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_fillets"
+  ],
+  "old": [
+   "shbFibres",
+   "fillet",
+   "filletsize",
+   "shbWidth",
+   "shbMill",
+   "shbMillDirect",
+   "shbTol"
+  ],
+  "today": [
+   "b06_fibres",
+   "b06_fillet",
+   "b06_filletsize",
+   "b12_latopt",
+   "b12_ribs",
+   "b06_mold"
+  ],
+  "sol": [
+   "rv_fibres_fillets"
+  ],
+  "id": "t30",
+  "v23": [
+   "shbFibres",
+   "fillet",
+   "filletsize",
+   "shbWidth",
+   "shbMill",
+   "shbMillDirect",
+   "shbTol"
+  ],
+  "title": "Fibre alignment",
+  "ch": "shell"
+ },
+ {
+  "astra": [],
+  "old": [
+   "shbFlow"
+  ],
+  "today": [
+   "b06_fibres"
+  ],
+  "sol": [],
+  "id": "t31",
+  "v23": [
+   "shbFlow"
+  ],
+  "title": "Fibre orientation through a node",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_shape"
+  ],
+  "old": [
+   "shbSides",
+   "mass",
+   "shapecard",
+   "shp_newton",
+   "grooves",
+   "size",
+   "emg"
+  ],
+  "today": [
+   "b02_grooves",
+   "b02_flush",
+   "b07_shcard",
+   "b07_size",
+   "b07_newton",
+   "b07_sides",
+   "b07_emg",
+   "b07_balance"
+  ],
+  "sol": [
+   "rv_shape",
+   "rv_fit",
+   "rv_balance"
+  ],
+  "id": "t32",
+  "v23": [
+   "shbSides",
+   "mass",
+   "shapecard",
+   "shp_newton",
+   "grooves",
+   "size",
+   "emg"
+  ],
+  "title": "Flat low sides need a thicker lattice",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_pcb"
+  ],
+  "old": [
+   "shlPcbRib",
+   "shcCarry",
+   "shcArms",
+   "shlStructs",
+   "grind"
+  ],
+  "today": [
+   "b07_board",
+   "b07_arms",
+   "b07_poron"
+  ],
+  "sol": [
+   "rv_whole_pcb",
+   "rv_contact"
+  ],
+  "id": "t33",
+  "v23": [
+   "shlPcbRib",
+   "shcCarry",
+   "shcArms",
+   "shlStructs",
+   "grind"
+  ],
+  "title": "FR4 vs magnesium alloy",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_balance"
+  ],
+  "old": [
+   "mass"
+  ],
+  "today": [
+   "b07_balance"
+  ],
+  "sol": [
+   "rv_balance"
+  ],
+  "id": "t34",
+  "v23": [
+   "mass"
+  ],
+  "title": "Keep the mass low, near the fingers",
+  "ch": "shell"
+ },
+ {
+  "astra": [],
+  "old": [
+   "shlsheet2"
+  ],
+  "today": [
+   "b07_sheet"
+  ],
+  "sol": [],
+  "id": "t35",
+  "v23": [
+   "shlsheet2"
+  ],
+  "title": "Optional base, graded walls, joined struts",
+  "ch": "shell"
+ },
+ {
+  "astra": [
+   "a_cure"
+  ],
+  "old": [
+   "surfacecard",
+   "coating"
+  ],
+  "today": [
+   "b08_card",
+   "b08_coating"
+  ],
+  "sol": [
+   "rv_coating"
+  ],
+  "id": "t36",
+  "v23": [
+   "surfacecard",
+   "coating"
+  ],
+  "title": "Surface and details",
+  "ch": "surface"
+ },
+ {
+  "astra": [
+   "a_surface"
+  ],
+  "old": [
+   "surfacecard",
+   "coating",
+   "srf_texture",
+   "srf_weight",
+   "srf_uv",
+   "srf_twotone"
+  ],
+  "today": [
+   "b08_card",
+   "b08_coating",
+   "b08_film",
+   "b08_uv",
+   "b08_twotone"
+  ],
+  "sol": [
+   "rv_coating"
+  ],
+  "id": "t37",
+  "v23": [
+   "surfacecard",
+   "coating",
+   "srf_texture",
+   "srf_weight",
+   "srf_uv",
+   "srf_twotone"
+  ],
+  "title": "Surface and details",
+  "ch": "surface"
+ },
+ {
+  "astra": [
+   "a_finish_tests"
+  ],
+  "old": [
+   "srf_uv"
+  ],
+  "today": [
+   "b08_uv"
+  ],
+  "sol": [
+   "rv_coating"
+  ],
+  "id": "t38",
+  "v23": [
+   "srf_uv"
+  ],
+  "title": "UV and chemical resistance",
+  "ch": "surface"
+ },
+ {
+  "astra": [
+   "a_grip"
+  ],
+  "old": [
+   "grip",
+   "srf_gripmap",
+   "srf_tape"
+  ],
+  "today": [
+   "b08_grip",
+   "b08_gripmap",
+   "b08_tape"
+  ],
+  "sol": [
+   "rv_grip"
+  ],
+  "id": "t39",
+  "v23": [
+   "grip",
+   "srf_gripmap",
+   "srf_tape"
+  ],
+  "title": "Directional grip",
+  "ch": "surface"
+ },
+ {
+  "astra": [
+   "a_wheel"
+  ],
+  "old": [
+   "wheel",
+   "srf_encoder"
+  ],
+  "today": [
+   "b08_wheel",
+   "b10_lights"
+  ],
+  "sol": [
+   "rv_no_lights",
+   "rv_wheel",
+   "rv_inserts"
+  ],
+  "id": "t40",
+  "v23": [
+   "wheel",
+   "srf_encoder"
+  ],
+  "title": "Six-arm magnesium wheel",
+  "ch": "surface"
+ },
+ {
+  "astra": [],
+  "old": [
+   "onechip"
+  ],
+  "today": [
+   "b09_chip"
+  ],
+  "sol": [],
+  "id": "t41",
+  "v23": [
+   "onechip"
+  ],
+  "title": "Single-chip 8 khz polling",
+  "ch": "elec"
+ },
+ {
+  "astra": [
+   "a_board"
+  ],
+  "old": [
+   "elc_module",
+   "antenna",
+   "elc_oneside",
+   "elecsheet1",
+   "ownboard"
+  ],
+  "today": [
+   "b09_radio",
+   "b10_board",
+   "b10_sealed",
+   "b11_board"
+  ],
+  "sol": [
+   "rv_board"
+  ],
+  "id": "t42",
+  "v23": [
+   "elc_module",
+   "antenna",
+   "elc_oneside",
+   "elecsheet1",
+   "ownboard"
+  ],
+  "title": "The Raytac radio module",
+  "ch": "elec"
+ },
+ {
+  "astra": [
+   "a_battery"
+  ],
+  "old": [
+   "power",
+   "elc_charge",
+   "elc_safe",
+   "cells",
+   "frontier"
+  ],
+  "today": [
+   "b09_life",
+   "b10_charge",
+   "b10_battery"
+  ],
+  "sol": [
+   "rv_power"
+  ],
+  "id": "t43",
+  "v23": [
+   "power",
+   "elc_charge",
+   "elc_safe",
+   "cells",
+   "frontier"
+  ],
+  "title": "Battery life against polling rate",
+  "ch": "elec"
+ },
+ {
+  "astra": [],
+  "old": [
+   "elc_pmic"
+  ],
+  "today": [
+   "b10_pmic"
+  ],
+  "sol": [],
+  "id": "t44",
+  "v23": [
+   "elc_pmic"
+  ],
+  "title": "PMIC: one chip runs the power",
+  "ch": "elec"
+ },
+ {
+  "astra": [
+   "a_reflow"
+  ],
+  "old": [
+   "elc_oneside",
+   "elecsheet1"
+  ],
+  "today": [
+   "b10_board",
+   "b10_sealed"
+  ],
+  "sol": [
+   "rv_board"
+  ],
+  "id": "t45",
+  "v23": [
+   "elc_oneside",
+   "elecsheet1"
+  ],
+  "title": "One board, one side, one reflow",
+  "ch": "elec"
+ },
+ {
+  "astra": [
+   "a_wiring"
+  ],
+  "old": [
+   "elc_tear",
+   "elc_twist",
+   "elc_lay",
+   "elc_flex",
+   "cable"
+  ],
+  "today": [
+   "b10_wires",
+   "b10_twist",
+   "b10_cable"
+  ],
+  "sol": [
+   "rv_cable",
+   "rv_wiring"
+  ],
+  "id": "t46",
+  "v23": [
+   "elc_tear",
+   "elc_twist",
+   "elc_lay",
+   "elc_flex",
+   "cable"
+  ],
+  "title": "Braided wires, not ribbon cables",
+  "ch": "elec"
+ },
+ {
+  "astra": [],
+  "old": [
+   "owncard"
+  ],
+  "today": [
+   "b11_card"
+  ],
+  "sol": [],
+  "id": "t47",
+  "v23": [
+   "owncard"
+  ],
+  "title": "Ownership",
+  "ch": "own"
+ },
+ {
+  "astra": [
+   "a_repair"
+  ],
+  "old": [
+   "repair",
+   "ownscrew",
+   "own_insert",
+   "own_life",
+   "ownbatt",
+   "ownboard",
+   "ownsheet1"
+  ],
+  "today": [
+   "b11_repair",
+   "b11_screws",
+   "b11_inserts",
+   "b11_wear",
+   "b11_battplug",
+   "b11_board",
+   "b11_box"
+  ],
+  "sol": [
+   "rv_wiring",
+   "rv_screws",
+   "rv_repair"
+  ],
+  "id": "t48",
+  "v23": [
+   "repair",
+   "ownscrew",
+   "own_insert",
+   "own_life",
+   "ownbatt",
+   "ownboard",
+   "ownsheet1"
+  ],
+  "title": "Repairability: made to be opened",
+  "ch": "own"
+ },
+ {
+  "astra": [
+   "a_close"
+  ],
+  "old": [
+   "repair",
+   "ownsheet1",
+   "close"
+  ],
+  "today": [
+   "b11_repair",
+   "b11_box",
+   "b01_close"
+  ],
+  "sol": [
+   "rv_wiring",
+   "rv_repair"
+  ],
+  "id": "t49",
+  "v23": [
+   "repair",
+   "ownsheet1",
+   "close"
+  ],
+  "title": "Repairability: made to be opened",
+  "ch": "own"
+ },
+ {
+  "astra": [],
+  "old": [
+   "box"
+  ],
+  "today": [
+   "b11_box"
+  ],
+  "sol": [],
+  "id": "t50",
+  "v23": [
+   "box"
+  ],
+  "title": "A trifold box, with the driver",
+  "ch": "own"
+ },
+ {
+  "astra": [],
+  "old": [
+   "ownsheet2"
+  ],
+  "today": [
+   "b11_box"
+  ],
+  "sol": [],
+  "id": "t51",
+  "v23": [
+   "ownsheet2"
+  ],
+  "title": "GMK colourways, 9-ending serials, a paper cover",
+  "ch": "own"
+ }
+]

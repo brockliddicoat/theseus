@@ -1,0 +1,3160 @@
+{
+ "v23": [
+  {
+   "id": "cover",
+   "ch": "intro",
+   "title": "Theseus: in pursuit of an objectively better mouse",
+   "settle": 8,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "thesis",
+   "ch": "intro",
+   "title": "Optimization over opinion",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "targets",
+   "ch": "intro",
+   "title": "Targets, part one: speed",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "targets2",
+   "ch": "intro",
+   "title": "Targets, part two: everything else",
+   "settle": 9,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "flagships",
+   "ch": "intro",
+   "title": "Theseus against the flagships",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "ntr_stats",
+   "ch": "intro",
+   "title": "Theseus, by the numbers",
+   "settle": 9,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "zerograms",
+   "ch": "intro",
+   "title": "The optimal weight is zero grams",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "weightgap",
+   "ch": "intro",
+   "title": "Listed against weighed",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "ntr_density",
+   "ch": "intro",
+   "title": "Density, not weight",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "ntr_sizewt",
+   "ch": "intro",
+   "title": "The size\u2013weight illusion",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "ntr_densrank",
+   "ch": "intro",
+   "title": "Ranked by density",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "pricefront",
+   "ch": "intro",
+   "title": "Price against weight",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "market",
+   "ch": "intro",
+   "title": "Battery life against weight",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "budget",
+   "ch": "intro",
+   "title": "Weight budget: 29.31 g, 200 h",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "clicks",
+   "ch": "click",
+   "title": "Clicks",
+   "settle": 6,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "arc",
+   "ch": "click",
+   "title": "Direct Drive Actuation",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "clk_wedge",
+   "ch": "click",
+   "title": "A switch wedge, one flat board",
+   "settle": 8,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "clk_switch",
+   "ch": "click",
+   "title": "A mechanical switch: Gateron GT01",
+   "settle": 9,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "clk_switch2",
+   "ch": "click",
+   "title": "Operating force and rated life",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "cutouts",
+   "ch": "click",
+   "title": "Straight rear cutouts",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "tensioner",
+   "ch": "click",
+   "title": "Bridge tensioner: where it bends, how easily",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "clk_tenmat",
+   "ch": "click",
+   "title": "A stiff trigger with a light click",
+   "settle": 9,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "anchors",
+   "ch": "click",
+   "title": "Dual rail main clicks",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "clk_pomtune",
+   "ch": "click",
+   "title": "POM pad thickness sets the tolerance",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "clk_front",
+   "ch": "click",
+   "title": "Flat front cutouts, flush walls",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "clk_hotswap",
+   "ch": "click",
+   "title": "Hot-swap switches on claw sockets",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "clk_spdt",
+   "ch": "click",
+   "title": "SPDT",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "latency",
+   "ch": "click",
+   "title": "Counted at first contact",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "clk_debounce",
+   "ch": "click",
+   "title": "Debounce costs milliseconds",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "clk_wait",
+   "ch": "click",
+   "title": "Clicks that never wait for motion",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "clk_methods",
+   "ch": "click",
+   "title": "Every click number has a method",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "sidebuttons",
+   "ch": "click",
+   "title": "Dual rail side buttons",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "glide",
+   "ch": "glide",
+   "title": "Glide and tracking",
+   "settle": 5,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "gld_under",
+   "ch": "glide",
+   "title": "Skate sets: ten dots, or half-moons and a ring",
+   "settle": 9,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "dots",
+   "ch": "glide",
+   "title": "Dot skates: more area, less sink",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "gld_camera",
+   "ch": "glide",
+   "title": "Optical sensor: just a camera",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "gld_corr",
+   "ch": "glide",
+   "title": "Frame correlation: how a sensor sees motion",
+   "settle": 11.6,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "gld_blur",
+   "ch": "glide",
+   "title": "Defocus: like a phone camera",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "focus",
+   "ch": "glide",
+   "title": "Focus window: 0.2 mm, not 0.4",
+   "settle": 12,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "gld_sag",
+   "ch": "glide",
+   "title": "Sensor dots: no sag at the lens",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "gld_module",
+   "ch": "glide",
+   "title": "Snap-on lens: one dot wide",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "sensor",
+   "ch": "glide",
+   "title": "Next-gen sensor: PixArt PAW3970",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "gld_reports",
+   "ch": "glide",
+   "title": "Full 16-bit reports, no smoothing",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "gld_soft",
+   "ch": "glide",
+   "title": "Set in the mouse: lift-off, position, X and Y",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "gld_sheet",
+   "ch": "glide",
+   "title": "Three details under the mouse",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shellcard",
+   "ch": "shell",
+   "title": "Shell and structure",
+   "settle": 6,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "materials",
+   "ch": "shell",
+   "title": "Carbon-filled polypropylene",
+   "settle": 9,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shlSpecific",
+   "ch": "shell",
+   "title": "Specific strength and specific stiffness",
+   "settle": 9.5,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "thinwall",
+   "ch": "shell",
+   "title": "Minimum wall thickness",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shlScatter",
+   "ch": "shell",
+   "title": "Wall tolerance, cubed",
+   "settle": 9.4,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shlPick",
+   "ch": "shell",
+   "title": "The strength\u2013weight fallacy",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shlNoPick",
+   "ch": "shell",
+   "title": "What if you didn't have to pick",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shlHotspot",
+   "ch": "shell",
+   "title": "Stress hotspots",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shlMargin",
+   "ch": "shell",
+   "title": "Peak stress decides the break",
+   "settle": 9.6,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shlWork",
+   "ch": "shell",
+   "title": "Putting that weight to work",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shlShell3d",
+   "ch": "shell",
+   "title": "The triangle lattice, same weight",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "lattice",
+   "ch": "shell",
+   "title": "Triangle vs hexagon lattices",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shlDeterminate",
+   "ch": "shell",
+   "title": "Statically determinate triangles",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shlThin",
+   "ch": "shell",
+   "title": "Triangles on a light mouse",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shbArches",
+   "ch": "shell",
+   "title": "Interwoven arches form triangles",
+   "settle": 11,
+   "replaces": "arches",
+   "theme": "paper"
+  },
+  {
+   "id": "shbPress",
+   "ch": "shell",
+   "title": "Arch action vs a flat plate",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shbThrust",
+   "ch": "shell",
+   "title": "The thrust line",
+   "settle": 10.6,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shbBend",
+   "ch": "shell",
+   "title": "Arch thrust cancels bending",
+   "settle": 10.2,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shbFibres",
+   "ch": "shell",
+   "title": "Fibre alignment",
+   "settle": 10.4,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "fillet",
+   "ch": "shell",
+   "title": "Fillets at every node",
+   "settle": 9.5,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "filletsize",
+   "ch": "shell",
+   "title": "Fillet size, solved at equal mass",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shbFlow",
+   "ch": "shell",
+   "title": "Fibre orientation through a node",
+   "settle": 10.4,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shbWidth",
+   "ch": "shell",
+   "title": "One rib width, a fillet at every node",
+   "settle": 9.4,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shbMill",
+   "ch": "shell",
+   "title": "Fillets make the mold easier to cut",
+   "settle": 10.4,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shbMillDirect",
+   "ch": "shell",
+   "title": "A milled core: no knife edges of steel",
+   "settle": 9.6,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shbTol",
+   "ch": "shell",
+   "title": "A fillet loosens the tightest tolerance",
+   "settle": 10.4,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shbSides",
+   "ch": "shell",
+   "title": "Flat low sides need a thicker lattice",
+   "settle": 10.4,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shlPcbRib",
+   "ch": "shell",
+   "title": "FR4 vs magnesium alloy",
+   "settle": 9.5,
+   "replaces": "shlPcbRib",
+   "theme": "night"
+  },
+  {
+   "id": "shcCarry",
+   "ch": "shell",
+   "title": "Use the weight you already carry",
+   "settle": 9.5,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shcArms",
+   "ch": "shell",
+   "title": "Small FR4 arms vs the whole board",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shlStructs",
+   "ch": "shell",
+   "title": "A published deflection test",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "tolerance",
+   "ch": "shell",
+   "title": "Tolerance stack-up",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "mass",
+   "ch": "shell",
+   "title": "Keep the mass low, near the fingers",
+   "settle": 9.5,
+   "replaces": "mass",
+   "theme": "paper"
+  },
+  {
+   "id": "grind",
+   "ch": "shell",
+   "title": "Poron pads, not grease",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shlsheet1",
+   "ch": "shell",
+   "title": "PPS triggers, film sticker, closed wheel well",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "shlsheet2",
+   "ch": "shell",
+   "title": "Optional base, graded walls, joined struts",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "surfacecard",
+   "ch": "surface",
+   "title": "Surface and details",
+   "settle": 5,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "coating",
+   "ch": "surface",
+   "title": "Baked ceramic coating",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "srf_texture",
+   "ch": "surface",
+   "title": "Ceramic film over carbon fibre",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "srf_weight",
+   "ch": "surface",
+   "title": "Film thin: no added weight",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "srf_uv",
+   "ch": "surface",
+   "title": "UV and chemical resistance",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "grip",
+   "ch": "surface",
+   "title": "Directional grip",
+   "settle": 11.5,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "srf_gripmap",
+   "ch": "surface",
+   "title": "A grip map for the hand",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "srf_tape",
+   "ch": "surface",
+   "title": "Solid state: no adhesive",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "srf_twotone",
+   "ch": "surface",
+   "title": "Two-tone in one coat",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "wheel",
+   "ch": "surface",
+   "title": "Six-arm magnesium wheel",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "srf_encoder",
+   "ch": "surface",
+   "title": "Optical encoder",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "eleccard",
+   "ch": "elec",
+   "title": "Electronics",
+   "settle": 5,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "onechip",
+   "ch": "elec",
+   "title": "Single-chip 8 khz polling",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "elc_module",
+   "ch": "elec",
+   "title": "The Raytac radio module",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "antenna",
+   "ch": "elec",
+   "title": "Antenna turned away from the wheel",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "motion",
+   "ch": "elec",
+   "title": "Motion latency, ranked",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "elc_rate",
+   "ch": "elec",
+   "title": "The wireless penalty",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "framesync",
+   "ch": "elec",
+   "title": "Frame sync: no jitter",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "secondshot",
+   "ch": "elec",
+   "title": "Second Shot: a spare for each report",
+   "settle": 9,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "power",
+   "ch": "elec",
+   "title": "Battery life against polling rate",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "elc_pmic",
+   "ch": "elec",
+   "title": "PMIC: one chip runs the power",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "elc_charge",
+   "ch": "elec",
+   "title": "Fast charging at the battery's 1C",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "elc_safe",
+   "ch": "elec",
+   "title": "A safer battery: four guards",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "cells",
+   "ch": "elec",
+   "title": "The pouch battery, per gram",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "frontier",
+   "ch": "elec",
+   "title": "Past the Pareto frontier",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "elc_oneside",
+   "ch": "elec",
+   "title": "One board, one side, one reflow",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "elecsheet1",
+   "ch": "elec",
+   "title": "Conformal coat, readable switch",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "elc_tear",
+   "ch": "elec",
+   "title": "Braided wires, not ribbon cables",
+   "settle": 12,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "elc_twist",
+   "ch": "elec",
+   "title": "Twisted pairs cancel radio noise",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "elc_lay",
+   "ch": "elec",
+   "title": "Braid lay: noise against weight",
+   "settle": 12,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "elc_flex",
+   "ch": "elec",
+   "title": "Flex life: fine strands, no crease",
+   "settle": 12,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "cable",
+   "ch": "elec",
+   "title": "Angled plug, paracord cable",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "software",
+   "ch": "elec",
+   "title": "Web software, nothing to install",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "elc_sheet2",
+   "ch": "elec",
+   "title": "No RGB LED, optional haptics",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shapecard",
+   "ch": "shape",
+   "title": "Shape",
+   "settle": 6,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "shp_newton",
+   "ch": "shape",
+   "title": "Newtonian shape analysis",
+   "settle": 9,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "grooves",
+   "ch": "shape",
+   "title": "Comfort grooves",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "size",
+   "ch": "shape",
+   "title": "Sized against real hands",
+   "settle": 9,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "emg",
+   "ch": "shape",
+   "title": "EMG on every shape revision",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "owncard",
+   "ch": "own",
+   "title": "Ownership",
+   "settle": 6,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "repair",
+   "ch": "own",
+   "title": "Repairability: made to be opened",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "ownscrew",
+   "ch": "own",
+   "title": "M2 combination drive screws",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "own_insert",
+   "ch": "own",
+   "title": "Brass heat-set inserts",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "own_life",
+   "ch": "own",
+   "title": "Thread wear: brass, not plastic",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "ownbatt",
+   "ch": "own",
+   "title": "Side-entry battery plug",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "ownboard",
+   "ch": "own",
+   "title": "Screws from below, art on the board",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "box",
+   "ch": "own",
+   "title": "A trifold box, with the driver",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "ownsheet1",
+   "ch": "own",
+   "title": "Wire leads, twisted pairs, skate files",
+   "settle": 10,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "ownsheet2",
+   "ch": "own",
+   "title": "GMK colourways, 9-ending serials, a paper cover",
+   "settle": 10,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "close",
+   "ch": "end",
+   "title": "Close",
+   "settle": 9,
+   "replaces": [],
+   "theme": "night"
+  }
+ ],
+ "today": [
+  {
+   "id": "b01_cover",
+   "ch": "intro",
+   "title": "Theseus: in pursuit of an objectively better mouse",
+   "settle": 7.5,
+   "replaces": [
+    "cover"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b01_compromise",
+   "ch": "intro",
+   "title": "Every flagship compromises",
+   "settle": 10.5,
+   "replaces": [
+    "flagships",
+    "thesis"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b01_lighter",
+   "ch": "intro",
+   "title": "Why lighter wins",
+   "settle": 10.5,
+   "replaces": [
+    "zerograms"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b01_battery",
+   "ch": "intro",
+   "title": "Battery life, traded for weight",
+   "settle": 11,
+   "replaces": [
+    "market"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b01_listed",
+   "ch": "intro",
+   "title": "Listed against weighed",
+   "settle": 10,
+   "replaces": [
+    "weightgap"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b01_density",
+   "ch": "intro",
+   "title": "Density, not weight",
+   "settle": 11,
+   "replaces": [
+    "ntr_density"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b01_illusion",
+   "ch": "intro",
+   "title": "Same weight, more mouse, feels lighter",
+   "settle": 10,
+   "replaces": [
+    "ntr_sizewt"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b01_rank",
+   "ch": "intro",
+   "title": "Ranked by density, not weight",
+   "settle": 11,
+   "replaces": [
+    "ntr_densrank"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b01_price",
+   "ch": "intro",
+   "title": "Price against weight",
+   "settle": 10,
+   "replaces": [
+    "pricefront"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b01_targets",
+   "ch": "intro",
+   "title": "Targets",
+   "settle": 10,
+   "replaces": [
+    "targets",
+    "targets2"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b01_budget",
+   "ch": "intro",
+   "title": "The weight budget",
+   "settle": 11,
+   "replaces": [
+    "budget",
+    "ntr_stats"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b02_card",
+   "ch": "click",
+   "title": "Clicks that land the same, every time",
+   "settle": 5.5,
+   "replaces": [
+    "clicks"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b02_cutouts",
+   "ch": "click",
+   "title": "Straight rear cutouts",
+   "settle": 10.5,
+   "replaces": [
+    "cutouts"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b02_seams",
+   "ch": "click",
+   "title": "One split, between your fingers",
+   "settle": 10,
+   "replaces": [
+    "shlsheet1"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b02_front",
+   "ch": "click",
+   "title": "A flat front, no wobble",
+   "settle": 10.5,
+   "replaces": [
+    "clk_front"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b02_grooves",
+   "ch": "click",
+   "title": "Grooves that hold your finger",
+   "settle": 10.5,
+   "replaces": [
+    "grooves"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b02_flush",
+   "ch": "click",
+   "title": "Ceiling-facing cutouts, flush walls",
+   "settle": 11,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "b02_direct",
+   "ch": "click",
+   "title": "Direct Drive Actuation",
+   "settle": 11,
+   "replaces": [
+    "arc"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b02_tensioner",
+   "ch": "click",
+   "title": "The bridge tensioner",
+   "settle": 11,
+   "replaces": [
+    "tensioner"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b02_stiff",
+   "ch": "click",
+   "title": "A stiff button, a light click",
+   "settle": 10,
+   "replaces": [
+    "clk_tenmat"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b02_rails",
+   "ch": "click",
+   "title": "Dual rail main clicks",
+   "settle": 11,
+   "replaces": [
+    "anchors"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b02_pom",
+   "ch": "click",
+   "title": "POM pads set the fit",
+   "settle": 10.5,
+   "replaces": [
+    "clk_pomtune"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b03_switch",
+   "ch": "click",
+   "title": "A mechanical switch, for the battery",
+   "settle": 12,
+   "replaces": [
+    "clk_switch"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b03_binning",
+   "ch": "click",
+   "title": "Provable switch binning",
+   "settle": 11,
+   "replaces": [
+    "clk_switch2"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b03_spdt",
+   "ch": "click",
+   "title": "Single pole, double throw",
+   "settle": 10.5,
+   "replaces": [
+    "clk_spdt"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b03_timing",
+   "ch": "click",
+   "title": "Negative latency",
+   "settle": 12,
+   "replaces": [
+    "latency",
+    "clk_wait",
+    "clk_methods"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b03_debounce",
+   "ch": "click",
+   "title": "Debounce: low, and yours to set",
+   "settle": 11,
+   "replaces": [
+    "clk_debounce"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b03_hotswap",
+   "ch": "click",
+   "title": "Hot-swap switches, no solder",
+   "settle": 11,
+   "replaces": [
+    "clk_hotswap"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b03_rail",
+   "ch": "click",
+   "title": "Four ways to guide a side rail",
+   "settle": 11.5,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "b03_side",
+   "ch": "click",
+   "title": "Dual rail side buttons",
+   "settle": 11,
+   "replaces": [
+    "sidebuttons"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b04_card",
+   "ch": "glide",
+   "title": "Glide and tracking",
+   "settle": 5.5,
+   "replaces": [
+    "glide"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b04_camera",
+   "ch": "glide",
+   "title": "Your sensor is a camera",
+   "settle": 12,
+   "replaces": [
+    "gld_camera",
+    "gld_corr",
+    "gld_blur"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b04_focus",
+   "ch": "glide",
+   "title": "A focus window of 0.2 mm, not 0.4",
+   "settle": 10.5,
+   "replaces": [
+    "focus"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b04_sag",
+   "ch": "glide",
+   "title": "Dots at the lens keep it in focus",
+   "settle": 10.5,
+   "replaces": [
+    "gld_sag",
+    "dots"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b04_skates",
+   "ch": "glide",
+   "title": "Skates where they count",
+   "settle": 11,
+   "replaces": [
+    "gld_under",
+    "gld_sheet"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b04_module",
+   "ch": "glide",
+   "title": "Snap-on lens: one dot wide",
+   "settle": 10,
+   "replaces": [
+    "gld_module"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b04_sensor",
+   "ch": "glide",
+   "title": "The PAW3970: the plan",
+   "settle": 10,
+   "replaces": [
+    "sensor"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b04_reports",
+   "ch": "glide",
+   "title": "Every frame as it comes",
+   "settle": 11.5,
+   "replaces": [
+    "gld_reports"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b05_card",
+   "ch": "shell",
+   "title": "Shell and structure",
+   "settle": 6,
+   "replaces": [
+    "shellcard"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b05_material",
+   "ch": "shell",
+   "title": "Carbon-filled polypropylene",
+   "settle": 10.5,
+   "replaces": [
+    "materials"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b05_specific",
+   "ch": "shell",
+   "title": "Specific strength and specific stiffness",
+   "settle": 12,
+   "replaces": [
+    "shlSpecific"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b05_wall",
+   "ch": "shell",
+   "title": "How thin a wall can go",
+   "settle": 11,
+   "replaces": [
+    "thinwall"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b05_cubed",
+   "ch": "shell",
+   "title": "Wall tolerance, cubed",
+   "settle": 12,
+   "replaces": [
+    "shlScatter"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b05_fallacy",
+   "ch": "shell",
+   "title": "The strength\u2013weight fallacy",
+   "settle": 11,
+   "replaces": [
+    "shlPick"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b05_nopick",
+   "ch": "shell",
+   "title": "You don't have to pick",
+   "settle": 10,
+   "replaces": [
+    "shlNoPick",
+    "shlShell3d"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b05_hotspot",
+   "ch": "shell",
+   "title": "Stress hotspots",
+   "settle": 10.5,
+   "replaces": [
+    "shlHotspot"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b05_margin",
+   "ch": "shell",
+   "title": "The peak decides the break",
+   "settle": 12,
+   "replaces": [
+    "shlMargin"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b05_work",
+   "ch": "shell",
+   "title": "Putting that weight to work",
+   "settle": 12,
+   "replaces": [
+    "shlWork"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b06_lattice",
+   "ch": "shell",
+   "title": "Triangles, not hexagons",
+   "settle": 11.5,
+   "replaces": [
+    "lattice",
+    "shlDeterminate"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b06_light",
+   "ch": "shell",
+   "title": "Triangles win more on a light mouse",
+   "settle": 12,
+   "replaces": [
+    "shlThin"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b06_arch",
+   "ch": "shell",
+   "title": "Why an arch holds",
+   "settle": 11,
+   "replaces": [
+    "shbPress",
+    "shbBend"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b06_thrust",
+   "ch": "shell",
+   "title": "The thrust line",
+   "settle": 11,
+   "replaces": [
+    "shbThrust"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b06_arches",
+   "ch": "shell",
+   "title": "Interwoven arches form triangles",
+   "settle": 11,
+   "replaces": [
+    "shbArches"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b06_fibres",
+   "ch": "shell",
+   "title": "Fibres along the load",
+   "settle": 12,
+   "replaces": [
+    "shbFibres",
+    "shbFlow"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b06_fillet",
+   "ch": "shell",
+   "title": "Why corners get fillets",
+   "settle": 11.5,
+   "replaces": [
+    "fillet"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b06_filletsize",
+   "ch": "shell",
+   "title": "Fillet size, solved at equal mass",
+   "settle": 11,
+   "replaces": [
+    "filletsize"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b12_latopt",
+   "ch": "shell",
+   "title": "Every lattice, solved on the whole shell",
+   "settle": 12,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "b12_ribs",
+   "ch": "shell",
+   "title": "Ribs as deep as the mould can fill",
+   "settle": 12.5,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "b06_mold",
+   "ch": "shell",
+   "title": "What a fillet buys the mold",
+   "settle": 12,
+   "replaces": [
+    "shbWidth",
+    "shbMill",
+    "shbMillDirect",
+    "shbTol"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b07_board",
+   "ch": "shell",
+   "title": "The board you already carry",
+   "settle": 11,
+   "replaces": [
+    "shlPcbRib",
+    "shcCarry",
+    "shlStructs"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b07_arms",
+   "ch": "shell",
+   "title": "Small arms snap, the whole board holds",
+   "settle": 11,
+   "replaces": [
+    "shcArms"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b07_tolerance",
+   "ch": "shell",
+   "title": "Tolerance stack-up",
+   "settle": 12.5,
+   "replaces": [
+    "tolerance"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b02_wedge",
+   "ch": "shell",
+   "title": "One flat board, no extra parts",
+   "settle": 10.5,
+   "replaces": [
+    "clk_wedge"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b07_poron",
+   "ch": "shell",
+   "title": "Poron pads, not grease",
+   "settle": 11,
+   "replaces": [
+    "grind"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b07_sheet",
+   "ch": "shell",
+   "title": "The rest of the shell",
+   "settle": 13,
+   "replaces": [
+    "shlsheet2"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b08_card",
+   "ch": "surface",
+   "title": "Grip that holds, and stays",
+   "settle": 5.5,
+   "replaces": [
+    "surfacecard"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b08_coating",
+   "ch": "surface",
+   "title": "A baked ceramic coat",
+   "settle": 11.5,
+   "replaces": [
+    "coating"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b08_film",
+   "ch": "surface",
+   "title": "A fifth of a sheet of paper",
+   "settle": 11,
+   "replaces": [
+    "srf_texture",
+    "srf_weight"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b08_uv",
+   "ch": "surface",
+   "title": "No yellowing",
+   "settle": 11.5,
+   "replaces": [
+    "srf_uv"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b08_grip",
+   "ch": "surface",
+   "title": "Directional grip",
+   "settle": 10.5,
+   "replaces": [
+    "grip"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b08_gripmap",
+   "ch": "surface",
+   "title": "A grip map for the hand",
+   "settle": 11,
+   "replaces": [
+    "srf_gripmap"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b08_tape",
+   "ch": "surface",
+   "title": "The best thickness is no thickness",
+   "settle": 11.5,
+   "replaces": [
+    "srf_tape"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b08_twotone",
+   "ch": "surface",
+   "title": "Two tones in one coat",
+   "settle": 11,
+   "replaces": [
+    "srf_twotone"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b08_wheel",
+   "ch": "surface",
+   "title": "A 0.9 g magnesium wheel",
+   "settle": 11.5,
+   "replaces": [
+    "wheel"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b09_card",
+   "ch": "elec",
+   "title": "Wireless with no penalty",
+   "settle": 5.5,
+   "replaces": [
+    "eleccard"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b09_chip",
+   "ch": "elec",
+   "title": "One chip, 8 khz",
+   "settle": 10.5,
+   "replaces": [
+    "onechip"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b09_radio",
+   "ch": "elec",
+   "title": "The radio, four times further from metal",
+   "settle": 11,
+   "replaces": [
+    "elc_module",
+    "antenna"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b09_latency",
+   "ch": "elec",
+   "title": "Motion latency, ranked",
+   "settle": 9.5,
+   "replaces": [
+    "motion"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b09_penalty",
+   "ch": "elec",
+   "title": "No wireless penalty",
+   "settle": 10,
+   "replaces": [
+    "elc_rate"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b09_sync",
+   "ch": "elec",
+   "title": "Frame sync: 202 \u2192 42 \u00b5s",
+   "settle": 9.5,
+   "replaces": [
+    "framesync"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b09_second",
+   "ch": "elec",
+   "title": "Second Shot",
+   "settle": 10.5,
+   "replaces": [
+    "secondshot"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b09_life",
+   "ch": "elec",
+   "title": "Battery life at every polling rate",
+   "settle": 10,
+   "replaces": [
+    "power",
+    "frontier"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b10_pmic",
+   "ch": "elec",
+   "title": "A battery reading you can trust",
+   "settle": 11,
+   "replaces": [
+    "elc_pmic"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b10_charge",
+   "ch": "elec",
+   "title": "Fast charging, safely",
+   "settle": 11,
+   "replaces": [
+    "elc_charge",
+    "elc_safe"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b10_battery",
+   "ch": "elec",
+   "title": "The battery, per gram",
+   "settle": 10,
+   "replaces": [
+    "cells"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b10_board",
+   "ch": "elec",
+   "title": "One board, one side, one reflow",
+   "settle": 10.5,
+   "replaces": [
+    "elc_oneside"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b10_sealed",
+   "ch": "elec",
+   "title": "A coat that keeps water out",
+   "settle": 11,
+   "replaces": [
+    "elecsheet1"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b10_wires",
+   "ch": "elec",
+   "title": "Braided, not ribbon",
+   "settle": 12,
+   "replaces": [
+    "elc_tear",
+    "elc_flex"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b10_twist",
+   "ch": "elec",
+   "title": "Twisted pairs, a quiet radio",
+   "settle": 11,
+   "replaces": [
+    "elc_twist",
+    "elc_lay"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b10_cable",
+   "ch": "elec",
+   "title": "An angled plug, a paracord cable",
+   "settle": 11,
+   "replaces": [
+    "cable"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b10_lights",
+   "ch": "elec",
+   "title": "Nothing lights up but the sensor",
+   "settle": 12,
+   "replaces": [
+    "srf_encoder"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b10_software",
+   "ch": "elec",
+   "title": "Set it once, in the browser",
+   "settle": 11,
+   "replaces": [
+    "software",
+    "gld_soft"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b07_shcard",
+   "ch": "shape",
+   "title": "Shape",
+   "settle": 5.5,
+   "replaces": [
+    "shapecard"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b07_size",
+   "ch": "shape",
+   "title": "Sized against real hands",
+   "settle": 10,
+   "replaces": [
+    "size"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b07_newton",
+   "ch": "shape",
+   "title": "Newtonian shape analysis",
+   "settle": 11,
+   "replaces": [
+    "shp_newton"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b07_sides",
+   "ch": "shape",
+   "title": "Flat low sides, held the same on both",
+   "settle": 11,
+   "replaces": [
+    "shbSides"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b07_emg",
+   "ch": "shape",
+   "title": "EMG on every shape revision",
+   "settle": 11,
+   "replaces": [
+    "emg"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b07_balance",
+   "ch": "shape",
+   "title": "Balance at the centre",
+   "settle": 12,
+   "replaces": [
+    "mass"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b11_card",
+   "ch": "own",
+   "title": "Made to last, and to open",
+   "settle": 5.5,
+   "replaces": [
+    "owncard"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b11_repair",
+   "ch": "own",
+   "title": "Made to be opened",
+   "settle": 12,
+   "replaces": [
+    "repair"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b11_screws",
+   "ch": "own",
+   "title": "Titanium screws: harder heads, lighter",
+   "settle": 12,
+   "replaces": [
+    "ownscrew"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b11_inserts",
+   "ch": "own",
+   "title": "Brass inserts: the same fit every time",
+   "settle": 11,
+   "replaces": [
+    "own_insert"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b11_wear",
+   "ch": "own",
+   "title": "Thread wear: brass keeps its hold",
+   "settle": 11,
+   "replaces": [
+    "own_life"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b11_battplug",
+   "ch": "own",
+   "title": "A battery you can unplug",
+   "settle": 11,
+   "replaces": [
+    "ownbatt"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b11_board",
+   "ch": "own",
+   "title": "Screws from below, art on the board",
+   "settle": 11,
+   "replaces": [
+    "ownboard"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "b11_box",
+   "ch": "own",
+   "title": "In the box: the driver, and a manual that stands up",
+   "settle": 11,
+   "replaces": [
+    "box",
+    "ownsheet1",
+    "ownsheet2"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "b01_close",
+   "ch": "end",
+   "title": "Close",
+   "settle": 9,
+   "replaces": [
+    "close"
+   ],
+   "theme": "night"
+  }
+ ],
+ "sol": [
+  {
+   "id": "rv_cover",
+   "ch": "intro",
+   "title": "Zero compromises.",
+   "settle": 16,
+   "replaces": [
+    "cover",
+    "ntr_stats",
+    "targets"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_tradeoffs",
+   "ch": "intro",
+   "title": "Flagships still ask you to choose.",
+   "settle": 18,
+   "replaces": [
+    "flagships",
+    "pricefront",
+    "market"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_density",
+   "ch": "intro",
+   "title": "Less mouse isn't the only way.",
+   "settle": 17,
+   "replaces": [
+    "ntr_density",
+    "ntr_sizewt"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_density_rank",
+   "ch": "intro",
+   "title": "Keep the rivals that beat the story.",
+   "settle": 17,
+   "replaces": [
+    "ntr_densrank"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_inertia",
+   "ch": "intro",
+   "title": "The part you have to stop.",
+   "settle": 16,
+   "replaces": [
+    "zerograms"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_weight_truth",
+   "ch": "intro",
+   "title": "A weight you can actually buy.",
+   "settle": 18,
+   "replaces": [
+    "weightgap",
+    "thesis",
+    "targets2",
+    "budget"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_direct_drive",
+   "ch": "click",
+   "title": "Direct Drive Actuation",
+   "settle": 21,
+   "replaces": [
+    "clicks",
+    "arc",
+    "clk_wedge"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_rear_cutouts",
+   "ch": "click",
+   "title": "Straight rear trigger cutouts",
+   "settle": 21,
+   "replaces": [
+    "cutouts"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_front_contact",
+   "ch": "click",
+   "title": "A flat front stop. A steady click.",
+   "settle": 21,
+   "replaces": [
+    "clk_front"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_shoulder_seams",
+   "ch": "click",
+   "title": "Keep seams out of your grip",
+   "settle": 20,
+   "replaces": [
+    "clk_front",
+    "shlsheet1"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_tensioner",
+   "ch": "click",
+   "title": "Bridge click tensioning",
+   "settle": 21,
+   "replaces": [
+    "tensioner",
+    "clk_tenmat"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_dual_rail",
+   "ch": "click",
+   "title": "Dual rail main clicks",
+   "settle": 22,
+   "replaces": [
+    "anchors",
+    "clk_pomtune"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_spdt",
+   "ch": "click",
+   "title": "Single pole, double throw",
+   "settle": 20,
+   "replaces": [
+    "clk_spdt",
+    "latency",
+    "clk_debounce",
+    "clk_wait",
+    "clk_methods"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_binning",
+   "ch": "click",
+   "title": "Provable switch binning",
+   "settle": 20,
+   "replaces": [
+    "clk_switch2"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_hotswap",
+   "ch": "click",
+   "title": "A switch should be replaceable",
+   "settle": 20,
+   "replaces": [
+    "clk_hotswap"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_sidebuttons",
+   "ch": "click",
+   "title": "Main-switch feel. On the side.",
+   "settle": 21,
+   "replaces": [
+    "sidebuttons"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_sensor_camera",
+   "ch": "glide",
+   "title": "Your sensor is a camera",
+   "settle": 22,
+   "replaces": [
+    "glide",
+    "gld_camera",
+    "gld_corr",
+    "gld_blur",
+    "gld_module",
+    "gld_position"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_sensor_support",
+   "ch": "glide",
+   "title": "Support the lens, not just the corners",
+   "settle": 22,
+   "replaces": [
+    "gld_under",
+    "dots",
+    "gld_sag",
+    "gld_sheet"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_sensor_choice",
+   "ch": "glide",
+   "title": "The sensor is only the start",
+   "settle": 21,
+   "replaces": [
+    "sensor",
+    "gld_reports"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_thin_wall",
+   "ch": "shell",
+   "title": "Shape buys more than thinning.",
+   "settle": 18,
+   "replaces": [
+    "materials",
+    "thinwall",
+    "shlScatter"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_specific",
+   "ch": "shell",
+   "title": "Choose the material for the job.",
+   "settle": 18,
+   "replaces": [
+    "shlSpecific"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_hotspots",
+   "ch": "shell",
+   "title": "Putting that weight to work",
+   "settle": 22,
+   "replaces": [
+    "shlHotspot",
+    "shlMargin",
+    "shlWork"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_triangles",
+   "ch": "shell",
+   "title": "A triangle cannot fold like a hexagon.",
+   "settle": 21,
+   "replaces": [
+    "lattice",
+    "shlDeterminate"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_light_structure",
+   "ch": "shell",
+   "title": "The lighter it gets, the more shape matters.",
+   "settle": 21,
+   "replaces": [
+    "shlThin",
+    "shlPick",
+    "shlNoPick",
+    "shlShell3d",
+    "shlLattice3d"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_arches",
+   "ch": "shell",
+   "title": "Turn a hanging chain upside down.",
+   "settle": 22,
+   "replaces": [
+    "shbArches",
+    "shbPress",
+    "shbThrust",
+    "shbBend"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_fibres_fillets",
+   "ch": "shell",
+   "title": "Give the fibres a clean path.",
+   "settle": 23,
+   "replaces": [
+    "shbFibres",
+    "fillet",
+    "filletsize",
+    "shbWidth",
+    "shbMill",
+    "shbMillDirect",
+    "shbTol"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_whole_pcb",
+   "ch": "shell",
+   "title": "Use the structure you already carry.",
+   "settle": 23,
+   "replaces": [
+    "shlPcbRib",
+    "shcCarry",
+    "shcArms",
+    "shlStructs"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_tolerance",
+   "ch": "shell",
+   "title": "Tolerance stack-up",
+   "settle": 21,
+   "replaces": [
+    "tolerance"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_contact",
+   "ch": "shell",
+   "title": "Stop the creak at the contact",
+   "settle": 20,
+   "replaces": [
+    "grind"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_shape",
+   "ch": "shape",
+   "title": "Newtonian shape analysis",
+   "settle": 20,
+   "replaces": [
+    "shbSides"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_fit",
+   "ch": "shape",
+   "title": "Fit comes before a weight record",
+   "settle": 20,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "rv_balance",
+   "ch": "shape",
+   "title": "Balance the mass around the grip",
+   "settle": 21,
+   "replaces": [
+    "mass"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_board",
+   "ch": "elec",
+   "title": "One board. No assembly maze.",
+   "settle": 18,
+   "replaces": [
+    "eleccard",
+    "elc_oneside",
+    "elecsheet1"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_power",
+   "ch": "elec",
+   "title": "Keep the battery. Lose the baggage.",
+   "settle": 18,
+   "replaces": [
+    "cells"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_radio",
+   "ch": "elec",
+   "title": "Give the antenna room to work.",
+   "settle": 17,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "rv_firmware",
+   "ch": "elec",
+   "title": "A fresh position, not an old packet.",
+   "settle": 18,
+   "replaces": [],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_web",
+   "ch": "elec",
+   "title": "Set the mouse. Close the tab.",
+   "settle": 17,
+   "replaces": [
+    "gld_soft",
+    "software"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_no_lights",
+   "ch": "elec",
+   "title": "Spend power on the input.",
+   "settle": 18,
+   "replaces": [
+    "srf_encoder",
+    "elc_sheet2",
+    "clk_switch"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_cable",
+   "ch": "elec",
+   "title": "Charging should not change the glide.",
+   "settle": 17,
+   "replaces": [
+    "cable"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_wiring",
+   "ch": "elec",
+   "title": "Three wires. Three reasons.",
+   "settle": 18,
+   "replaces": [
+    "elc_tear",
+    "elc_flex",
+    "ownsheet1"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_coating",
+   "ch": "surface",
+   "title": "Thin film. Tough surface.",
+   "settle": 23,
+   "replaces": [
+    "surfacecard",
+    "coating",
+    "srf_texture",
+    "srf_weight",
+    "srf_uv",
+    "srf_twotone"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_grip",
+   "ch": "surface",
+   "title": "Grip without the grip tape.",
+   "settle": 22,
+   "replaces": [
+    "grip",
+    "srf_gripmap",
+    "srf_tape"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_wheel",
+   "ch": "surface",
+   "title": "Less wheel. Same control.",
+   "settle": 22,
+   "replaces": [
+    "wheel"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_inserts",
+   "ch": "own",
+   "title": "Open it. Keep the same fit.",
+   "settle": 21,
+   "replaces": [],
+   "theme": "night"
+  },
+  {
+   "id": "rv_screws",
+   "ch": "own",
+   "title": "A head worth reopening.",
+   "settle": 21,
+   "replaces": [
+    "ownscrew"
+   ],
+   "theme": "paper"
+  },
+  {
+   "id": "rv_repair",
+   "ch": "own",
+   "title": "Replace the part. Not the mouse.",
+   "settle": 24,
+   "replaces": [
+    "repair",
+    "clk_hotswap",
+    "ownsheet1"
+   ],
+   "theme": "night"
+  },
+  {
+   "id": "rv_close",
+   "ch": "end",
+   "title": "Zero compromises.",
+   "settle": 18,
+   "replaces": [],
+   "theme": "paper"
+  }
+ ],
+ "astra": [
+  {
+   "id": "a_cover",
+   "ch": null,
+   "title": "ZERO COMPROMISES.",
+   "settle": 15,
+   "replaces": [
+    "cover",
+    "targets",
+    "targets2",
+    "ntr_stats",
+    "thesis"
+   ]
+  },
+  {
+   "id": "a_inertia",
+   "ch": null,
+   "title": "LESS MASS. LESS FORCE TO REVERSE.",
+   "settle": 19,
+   "replaces": [
+    "zerograms",
+    "mass"
+   ]
+  },
+  {
+   "id": "a_density",
+   "ch": null,
+   "title": "DON\u2019T SHRINK THE SHAPE TO SAVE WEIGHT.",
+   "settle": 19,
+   "replaces": [
+    "ntr_density",
+    "ntr_sizewt"
+   ]
+  },
+  {
+   "id": "a_rank",
+   "ch": null,
+   "title": "KEEP THE RIVALS THAT MAKE IT HARD.",
+   "settle": 17,
+   "replaces": [
+    "ntr_densrank"
+   ]
+  },
+  {
+   "id": "a_weight",
+   "ch": null,
+   "title": "THE NUMBER ON THE BOX ISN\u2019T THE MOUSE.",
+   "settle": 18,
+   "replaces": [
+    "weightgap",
+    "thesis",
+    "targets2"
+   ]
+  },
+  {
+   "id": "a_market",
+   "ch": null,
+   "title": "A LIGHT MOUSE SHOULDN\u2019T NEED A SMALL BATTERY.",
+   "settle": 18,
+   "replaces": [
+    "market",
+    "targets2",
+    "ntr_stats"
+   ]
+  },
+  {
+   "id": "a_price",
+   "ch": null,
+   "title": "THE PACKAGE IS THE ARGUMENT.",
+   "settle": 18,
+   "replaces": [
+    "pricefront",
+    "flagships"
+   ]
+  },
+  {
+   "id": "a_budget",
+   "ch": null,
+   "title": "MAKE ROOM FOR THE BATTERY.",
+   "settle": 20,
+   "replaces": [
+    "budget",
+    "targets2",
+    "cells"
+   ]
+  },
+  {
+   "id": "a_direct",
+   "ch": null,
+   "title": "DIRECT DRIVE ACTUATION",
+   "settle": 18,
+   "replaces": [
+    "clicks",
+    "arc",
+    "clk_wedge"
+   ]
+  },
+  {
+   "id": "a_rails",
+   "ch": null,
+   "title": "DUAL RAILS. ONE INTENDED MOTION.",
+   "settle": 19,
+   "replaces": [
+    "anchors",
+    "sidebuttons",
+    "clk_pomtune"
+   ]
+  },
+  {
+   "id": "a_bridge",
+   "ch": null,
+   "title": "STIFF SHELL. DELIBERATE CLICK FLEX.",
+   "settle": 18,
+   "replaces": [
+    "tensioner",
+    "clk_tenmat"
+   ]
+  },
+  {
+   "id": "a_front",
+   "ch": null,
+   "title": "A STRAIGHT STOP FEELS CONSISTENT",
+   "settle": 18,
+   "replaces": [
+    "clk_front"
+   ]
+  },
+  {
+   "id": "a_seams",
+   "ch": null,
+   "title": "KEEP SEAMS OUT OF THE FINGER PATH",
+   "settle": 19,
+   "replaces": [
+    "cutouts",
+    "shlsheet1"
+   ]
+  },
+  {
+   "id": "a_spdt",
+   "ch": null,
+   "title": "SINGLE POLE, DOUBLE THROW",
+   "settle": 24,
+   "replaces": [
+    "clk_spdt",
+    "latency",
+    "clk_debounce",
+    "clk_wait",
+    "clk_methods"
+   ]
+  },
+  {
+   "id": "a_hotswap",
+   "ch": null,
+   "title": "CHANGE THE SWITCH, KEEP THE MOUSE",
+   "settle": 21,
+   "replaces": [
+    "clk_hotswap",
+    "ownsheet1",
+    "repair"
+   ]
+  },
+  {
+   "id": "a_binning",
+   "ch": null,
+   "title": "A BIN SHOULD COME WITH A MEASUREMENT.",
+   "settle": 22,
+   "replaces": [
+    "clk_switch2"
+   ]
+  },
+  {
+   "id": "a_focus",
+   "ch": null,
+   "title": "THE SENSOR IS A CAMERA",
+   "settle": 20,
+   "replaces": [
+    "gld_camera",
+    "gld_corr",
+    "gld_blur",
+    "focus",
+    "sensor"
+   ]
+  },
+  {
+   "id": "a_support",
+   "ch": null,
+   "title": "SUPPORT THE LENS WHERE IT SITS",
+   "settle": 22,
+   "replaces": [
+    "dots",
+    "gld_sag",
+    "gld_under",
+    "gld_module"
+   ]
+  },
+  {
+   "id": "a_ruler",
+   "ch": null,
+   "title": "PUT THE SAME WEIGHT TO WORK",
+   "settle": 19,
+   "replaces": [
+    "materials",
+    "thinwall",
+    "shlHotspot",
+    "shlMargin"
+   ]
+  },
+  {
+   "id": "a_material",
+   "ch": null,
+   "title": "THE STRENGTH\u2013WEIGHT FALLACY",
+   "settle": 32,
+   "replaces": [
+    "shlSpecific",
+    "shlScatter",
+    "shlPick",
+    "shlNoPick",
+    "shlWork"
+   ]
+  },
+  {
+   "id": "a_lattice",
+   "ch": null,
+   "title": "TRIANGLES MAKE RACKING COST ENERGY",
+   "settle": 19,
+   "replaces": [
+    "lattice",
+    "shlDeterminate",
+    "shlThin",
+    "shlShell3d"
+   ]
+  },
+  {
+   "id": "a_arches",
+   "ch": null,
+   "title": "CONTINUOUS ARCHES, SHARED LOAD PATHS",
+   "settle": 24,
+   "replaces": [
+    "shbArches",
+    "shbPress",
+    "shbThrust",
+    "shbBend"
+   ]
+  },
+  {
+   "id": "a_fillets",
+   "ch": null,
+   "title": "ROUND THE JUNCTION, KEEP THE LOAD MOVING",
+   "settle": 36,
+   "replaces": [
+    "fillet",
+    "filletsize",
+    "shbFibres",
+    "shbWidth",
+    "shbMill",
+    "shbMillDirect",
+    "shbTol"
+   ]
+  },
+  {
+   "id": "a_pcb",
+   "ch": null,
+   "title": "USE THE WHOLE BOARD AS STRUCTURE",
+   "settle": 20,
+   "replaces": [
+    "shlPcbRib",
+    "shcCarry",
+    "shcArms",
+    "shlStructs",
+    "grind"
+   ]
+  },
+  {
+   "id": "a_loadpaths",
+   "ch": null,
+   "title": "PUTTING THAT WEIGHT TO WORK",
+   "settle": 21,
+   "replaces": [
+    "shlHotspot",
+    "shlMargin",
+    "shlWork",
+    "shlNoPick",
+    "thinwall"
+   ]
+  },
+  {
+   "id": "a_tolerance",
+   "ch": null,
+   "title": "ONE BAD GAP CHANGES THE WHOLE CLICK.",
+   "settle": 22,
+   "replaces": [
+    "tolerance",
+    "clk_wedge",
+    "clk_switch2"
+   ]
+  },
+  {
+   "id": "a_cure",
+   "ch": null,
+   "title": "THE CURE IS PART OF THE FINISH.",
+   "settle": 20,
+   "replaces": [
+    "coating",
+    "surfacecard"
+   ]
+  },
+  {
+   "id": "a_surface",
+   "ch": null,
+   "title": "A THIN FINISH. A DURABLE SURFACE.",
+   "settle": 22,
+   "replaces": [
+    "surfacecard",
+    "coating",
+    "srf_texture",
+    "srf_weight",
+    "srf_uv",
+    "srf_twotone"
+   ]
+  },
+  {
+   "id": "a_finish_tests",
+   "ch": null,
+   "title": "CHOOSE A FINISH WITH TEST DATA.",
+   "settle": 20,
+   "replaces": [
+    "srf_uv"
+   ]
+  },
+  {
+   "id": "a_grip",
+   "ch": null,
+   "title": "GRIP IN THE DIRECTION YOU NEED.",
+   "settle": 22,
+   "replaces": [
+    "grip",
+    "srf_gripmap",
+    "srf_tape"
+   ]
+  },
+  {
+   "id": "a_wheel",
+   "ch": null,
+   "title": "THE WHEEL KEEPS READING.",
+   "settle": 21,
+   "replaces": [
+    "wheel",
+    "sealed",
+    "srf_encoder"
+   ]
+  },
+  {
+   "id": "a_power",
+   "ch": null,
+   "title": "POWER THE INPUT. SKIP THE LIGHTS.",
+   "settle": 20,
+   "replaces": [
+    "clk_switch",
+    "srf_encoder",
+    "elc_sheet2",
+    "power",
+    "elc_reg",
+    "eleccard"
+   ]
+  },
+  {
+   "id": "a_software",
+   "ch": null,
+   "title": "SET IT ONCE. KEEP PLAYING.",
+   "settle": 21,
+   "replaces": [
+    "software",
+    "gld_soft",
+    "gld_sheet",
+    "elc_sheet2"
+   ]
+  },
+  {
+   "id": "a_timing",
+   "ch": null,
+   "title": "SEND A FRESHER POSITION.",
+   "settle": 21,
+   "replaces": [
+    "motion",
+    "framesync",
+    "secondshot",
+    "elc_rate",
+    "frontier",
+    "gld_reports"
+   ]
+  },
+  {
+   "id": "a_board",
+   "ch": null,
+   "title": "ONE BOARD. EVERY PART HAS A PLACE.",
+   "settle": 22,
+   "replaces": [
+    "elc_oneside",
+    "elecsheet1",
+    "elc_module",
+    "antenna",
+    "ownboard"
+   ]
+  },
+  {
+   "id": "a_reflow",
+   "ch": null,
+   "title": "BUILD ONCE. PROTECT THE CONTACTS.",
+   "settle": 21,
+   "replaces": [
+    "elc_oneside",
+    "elecsheet1"
+   ]
+  },
+  {
+   "id": "a_battery",
+   "ch": null,
+   "title": "SAVE WEIGHT AROUND THE BATTERY.",
+   "settle": 20,
+   "replaces": [
+    "cells",
+    "power",
+    "elc_charge",
+    "elc_safe",
+    "elc_gauge",
+    "frontier"
+   ]
+  },
+  {
+   "id": "a_wiring",
+   "ch": null,
+   "title": "FLEX THE CABLE. KEEP THE MOUSE STILL.",
+   "settle": 21,
+   "replaces": [
+    "elc_tear",
+    "elc_twist",
+    "elc_lay",
+    "elc_flex",
+    "cable"
+   ]
+  },
+  {
+   "id": "a_shape",
+   "ch": null,
+   "title": "NEWTONIAN SHAPE ANALYSIS",
+   "settle": 22,
+   "replaces": [
+    "shapecard",
+    "shp_newton",
+    "grooves",
+    "size",
+    "emg",
+    "shbSides",
+    "mass"
+   ]
+  },
+  {
+   "id": "a_balance",
+   "ch": null,
+   "title": "BALANCE AROUND THE GRIP.",
+   "settle": 20,
+   "replaces": [
+    "mass"
+   ]
+  },
+  {
+   "id": "a_repair",
+   "ch": null,
+   "title": "OPEN IT. KEEP THE FIT.",
+   "settle": 23,
+   "replaces": [
+    "repair",
+    "ownscrew",
+    "own_insert",
+    "own_life",
+    "ownbatt",
+    "ownboard",
+    "ownsheet1"
+   ]
+  },
+  {
+   "id": "a_close",
+   "ch": null,
+   "title": "ZERO COMPROMISES IS THE DESIGN RULE.",
+   "settle": 16,
+   "replaces": [
+    "close",
+    "repair",
+    "ownsheet1"
+   ]
+  }
+ ]
+}

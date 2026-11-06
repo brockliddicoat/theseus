@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theseus: four versions, compared</title>
+<style>
+  :root { --bg:#F5F5F7; --card:#FFFFFF; --ink:#1D1D1F; --ink2:#3A3A3C; --mute:#6E6E73; --faint:#AEAEB2; --hair:#E5E5EA;
+          --blue:#0A6CFF; --blueSoft:#E8F0FF; --ok:#1F9D55; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif; }
+  button, select, textarea { font:inherit; color:inherit; }
+  .wrap { max-width:1180px; margin:0 auto; padding:14px 14px 40px; }
+  header { display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+  h1 { font-size:19px; margin:0; letter-spacing:-0.01em; }
+  .sub { color:var(--mute); font-size:13px; }
+  .pill { border:1px solid var(--hair); background:var(--card); border-radius:999px; padding:6px 12px; cursor:pointer; }
+  .pill.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .nav { display:flex; gap:8px; align-items:center; margin:6px 0 10px; }
+  .nav select { flex:1; min-width:0; padding:8px 10px; border:1px solid var(--hair); border-radius:10px; background:var(--card); }
+  .nav button { width:44px; height:38px; border:1px solid var(--hair); background:var(--card); border-radius:10px; cursor:pointer; font-size:18px; }
+  .topic { margin:4px 0 10px; }
+  .topic .t { font-size:20px; font-weight:700; letter-spacing:-0.01em; }
+  .topic .m { color:var(--mute); font-size:13px; margin-top:2px; }
+  .tabs { display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-bottom:8px; }
+  .tab { border:1px solid var(--hair); background:var(--card); border-radius:12px; padding:8px 6px; cursor:pointer; text-align:center; position:relative; }
+  .tab .n { font-weight:700; font-size:14px; }
+  .tab .s { color:var(--mute); font-size:11px; }
+  .tab .badge { position:absolute; top:-7px; right:-5px; background:var(--ink); color:#fff; border-radius:999px; font-size:11px; padding:1px 7px; }
+  .tab .badge.best { background:var(--blue); }
+  .tab.on { border-color:var(--blue); box-shadow:0 0 0 2px var(--blue) inset; }
+  .tab.empty { opacity:0.45; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+  .chip { border:1px solid var(--hair); background:var(--card); border-radius:999px; padding:5px 10px; font-size:13px; cursor:pointer; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .chip.on { background:var(--blueSoft); border-color:var(--blue); color:#0A3F99; }
+  .player { position:relative; background:#0B0B0C; border-radius:12px; overflow:hidden; aspect-ratio:16/9; width:100%; }
+  .player iframe { position:absolute; inset:0; width:100%; height:100%; border:0; background:#0B0B0C; }
+  .player .msg { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#C7C7CC; font-size:14px; text-align:center; padding:20px; pointer-events:none; }
+  .player.full { position:fixed; inset:0; z-index:50; border-radius:0; aspect-ratio:auto; height:100%; }
+  .closefs { display:none; position:fixed; top:10px; right:10px; z-index:60; background:rgba(255,255,255,0.92); border:0; border-radius:999px; padding:8px 14px; font-weight:600; cursor:pointer; }
+  .player.full ~ .closefs { display:block; }
+  .tools { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 12px; align-items:center; }
+  .tools .hint { color:var(--mute); font-size:12px; }
+  .panel { background:var(--card); border:1px solid var(--hair); border-radius:14px; padding:12px; margin-bottom:10px; }
+  .panel h3 { margin:0 0 8px; font-size:14px; }
+  .score { display:grid; grid-template-columns:repeat(10, 1fr); gap:4px; margin-bottom:8px; }
+  .score button { height:38px; border:1px solid var(--hair); background:#fff; border-radius:8px; cursor:pointer; font-weight:600; }
+  .score button.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px; }
+  .best { border:1px solid var(--hair); background:#fff; border-radius:999px; padding:6px 12px; cursor:pointer; }
+  .best.on { background:var(--blue); color:#fff; border-color:var(--blue); }
+  textarea { width:100%; min-height:64px; border:1px solid var(--hair); border-radius:10px; padding:8px 10px; resize:vertical; background:#fff; }
+  .saved { color:var(--mute); font-size:12px; min-height:16px; }
+  .banner { background:#FFF; border:1px solid var(--hair); border-left:4px solid var(--ink2); border-radius:10px; padding:8px 12px; margin-bottom:10px; font-size:13px; color:var(--ink2); }
+  table { border-collapse:collapse; width:100%; background:var(--card); border-radius:12px; overflow:hidden; font-size:13px; }
+  th, td { border-bottom:1px solid var(--hair); padding:7px 8px; text-align:left; vertical-align:top; }
+  th { background:#FAFAFC; font-weight:600; position:sticky; top:0; }
+  td.s { text-align:center; width:64px; cursor:pointer; }
+  td.s.b { color:var(--blue); font-weight:700; }
+  tr:hover td { background:#FAFAFC; }
+  .hidden { display:none !important; }
+  @media (min-width: 900px) {
+    .main { display:grid; grid-template-columns:minmax(0, 1fr) 340px; gap:14px; align-items:start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Theseus: four versions, topic by topic</h1>
+      <div class="sub" id="progress"></div>
+    </div>
+    <div class="row" style="margin:0">
+      <button class="pill" id="toSummary">All ratings</button>
+      <button class="pill" id="copyBtn">Copy ratings</button>
+    </div>
+  </header>
+  <div class="banner hidden" id="banner"></div>
+
+  <section id="viewer">
+    <div class="nav">
+      <button id="prev" aria-label="Previous topic">‹</button>
+      <select id="topicSel" aria-label="Topic"></select>
+      <button id="next" aria-label="Next topic">›</button>
+    </div>
+    <div class="topic"><div class="t" id="tTitle"></div><div class="m" id="tMeta"></div></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="main">
+      <div>
+        <div class="chips" id="chips"></div>
+        <div class="player" id="player"><div class="msg" id="pmsg">Loading…</div><iframe id="frame" title="Slide" allow="fullscreen"></iframe></div>
+        <button class="closefs" id="closefs">Close</button>
+        <div class="tools">
+          <button class="pill" id="replay">Replay</button>
+          <button class="pill" id="fs">Full screen</button>
+          <span class="hint">Each version plays its own film from this slide. Turn your phone sideways for full screen.</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel">
+          <h3 id="rateHead">Rate this version on this topic</h3>
+          <div class="score" id="score"></div>
+          <div class="row"><button class="best" id="bestBtn">★ Best of the four here</button><span class="saved" id="saved1"></span></div>
+          <textarea id="note" placeholder="What works or doesn't in this version's take (animation, argument, clarity)"></textarea>
+        </div>
+        <div class="panel">
+          <h3>This topic: what to keep, or how to combine</h3>
+          <textarea id="tnote" placeholder="e.g. v23's animation with today's numbers; Sol's opening beat"></textarea>
+          <div class="saved" id="saved2"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="summary" class="hidden">
+    <div class="row"><button class="pill" id="backBtn">‹ Back to the viewer</button><span class="sub">Tap a score to open that version on that topic.</span></div>
+    <table id="sumTable"></table>
+  </section>
+</div>
+
+<script>
+const TOPICS = __DATA__;
+const VERS = [
+  { k: 'v23', name: 'Opus v23', sub: '5 Nov' },
+  { k: 'today', name: 'Opus today', sub: '6 Nov' },
+  { k: 'sol', name: 'Sol', sub: 'Codex · GPT-6.1' },
+  { k: 'astra', name: 'Astra', sub: 'Codex · GPT-6' }
+];
+const CH = { intro: 'Intro', click: 'Clicks', glide: 'Glide', shell: 'Shell and structure', surface: 'Surface', elec: 'Electronics', shape: 'Shape', own: 'Ownership' };
+const $ = id => document.getElementById(id);
+let ti = 0, ver = 'v23', si = 0;
+let ratings = {}, tnotes = {}, db = null, useLocal = false;
+
+/* ---------- storage: the artifact's database when it is there, this browser otherwise ---------- */
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+const chains = {};
+function write(path, data) {
+  if (useLocal || !db) {
+    const [col, id] = path.split('/');
+    if (col === 'ratings') { ratings[id] = data; lsSet('cmp.ratings', ratings); } else { tnotes[id] = data; lsSet('cmp.tnotes', tnotes); }
+    return Promise.resolve();
+  }
+  const prev = chains[path] || Promise.resolve();
+  const p = prev.then(() => db.doc(path).set(data)).catch(e => { showBanner('Could not save (' + (e && e.code || 'error') + '). Your last change may not be stored; try again in a moment.'); });
+  chains[path] = p; return p;
+}
+function showBanner(t) { const b = $('banner'); b.textContent = t; b.classList.remove('hidden'); }
+async function initDb() {
+  let got = null;
+  try { if (window.claude && claude.use) got = await claude.use('db'); } catch (e) { got = null; }
+  if (!got) {
+    useLocal = true; ratings = lsGet('cmp.ratings', {}); tnotes = lsGet('cmp.tnotes', {});
+    showBanner('Ratings are being kept in this browser only. Use "Copy ratings" and paste them to Claude if they don\'t reach the shared store.');
+    render(); return;
+  }
+  db = got;
+  const timer = setTimeout(() => showBanner('Still connecting to the ratings store… what you rate is kept and will sync.'), 10000);
+  db.collection('ratings').onSnapshot(s => { clearTimeout(timer); const r = {}; s.docs.forEach(d => { r[d.id] = d.data(); }); ratings = r; renderRatings(); renderTabs(); progress(); if (!$('summary').classList.contains('hidden')) renderSummary(); },
+    e => { clearTimeout(timer); showBanner('The ratings store is unavailable (' + (e && e.code) + '); ratings are kept in this browser instead.'); useLocal = true; ratings = lsGet('cmp.ratings', {}); renderRatings(); });
+  db.collection('topicnotes').onSnapshot(s => { const r = {}; s.docs.forEach(d => { r[d.id] = d.data(); }); tnotes = r; renderTopicNote(); renderTabs(); if (!$('summary').classList.contains('hidden')) renderSummary(); }, () => { });
+}
+
+/* ---------- the deck in the frame ---------- */
+function slidesOf(t, k) { return (t.v[k] || []); }
+function srcFor(k, id) {
+  if (k === 'astra') return 'decks/astra.html?scene=' + encodeURIComponent(id) + '&t=0&cmp=1';
+  return 'decks/' + k + '.html?s=' + encodeURIComponent(id);
+}
+function loadFrame() {
+  const t = TOPICS[ti], list = slidesOf(t, ver), f = $('frame'), m = $('pmsg');
+  if (!list.length) { f.removeAttribute('src'); f.classList.add('hidden'); m.textContent = VERS.find(v => v.k === ver).name + ' has no slide for this topic.'; m.classList.remove('hidden'); return; }
+  const id = list[Math.min(si, list.length - 1)][0];
+  f.classList.remove('hidden'); m.textContent = 'Loading ' + VERS.find(v => v.k === ver).name + '…'; m.classList.remove('hidden');
+  f.onload = () => m.classList.add('hidden');
+  f.src = srcFor(ver, id) + '&r=' + Date.now();
+}
+
+/* ---------- render ---------- */
+const key = (tid, k) => tid + '-' + k;
+function progress() {
+  const done = TOPICS.filter(t => VERS.some(v => ratings[key(t.id, v.k)] && ratings[key(t.id, v.k)].score)).length;
+  const all = TOPICS.reduce((a, t) => a + VERS.filter(v => slidesOf(t, v.k).length && ratings[key(t.id, v.k)] && ratings[key(t.id, v.k)].score).length, 0);
+  $('progress').textContent = 'Topic ' + (ti + 1) + ' of ' + TOPICS.length + ' · ' + done + ' topics rated (' + all + ' scores)';
+  const sel = $('topicSel');
+  [...sel.options].forEach((o, i) => { const t = TOPICS[i], n = VERS.filter(v => ratings[key(t.id, v.k)] && ratings[key(t.id, v.k)].score).length; o.textContent = (n ? '✓ ' : '') + (i + 1) + '. ' + t.label; });
+}
+function renderTabs() {
+  const t = TOPICS[ti], best = (tnotes[t.id] || {}).best;
+  $('tabs').innerHTML = VERS.map(v => {
+    const r = ratings[key(t.id, v.k)], n = slidesOf(t, v.k).length;
+    const badge = v.k === best ? '<span class="badge best">★' + (r && r.score ? ' ' + r.score : '') + '</span>' : (r && r.score ? '<span class="badge">' + r.score + '</span>' : '');
+    return '<button class="tab' + (v.k === ver ? ' on' : '') + (n ? '' : ' empty') + '" data-k="' + v.k + '"><div class="n">' + v.name + '</div><div class="s">' + v.sub + (n > 1 ? ' · ' + n + ' slides' : '') + '</div>' + badge + '</button>';
+  }).join('');
+  [...$('tabs').children].forEach(b => b.onclick = () => { ver = b.dataset.k; si = 0; route(); });
+}
+function renderChips() {
+  const list = slidesOf(TOPICS[ti], ver);
+  $('chips').innerHTML = list.length > 1 ? list.map((s, i) => '<button class="chip' + (i === si ? ' on' : '') + '" data-i="' + i + '">' + (i + 1) + ' · ' + esc(s[1] || s[0]) + '</button>').join('') : (list.length ? '<span class="sub">' + esc(list[0][1] || list[0][0]) + '</span>' : '');
+  [...$('chips').querySelectorAll('.chip')].forEach(b => b.onclick = () => { si = +b.dataset.i; renderChips(); loadFrame(); });
+}
+function renderRatings() {
+  const t = TOPICS[ti], r = ratings[key(t.id, ver)] || {}, vname = VERS.find(v => v.k === ver).name;
+  $('rateHead').textContent = 'Rate ' + vname + ' on this topic';
+  $('score').innerHTML = Array.from({ length: 10 }, (_, i) => '<button data-v="' + (i + 1) + '" class="' + (r.score === i + 1 ? 'on' : '') + '">' + (i + 1) + '</button>').join('');
+  [...$('score').children].forEach(b => b.onclick = () => { const v = +b.dataset.v, cur = ratings[key(t.id, ver)] || {}; const data = { topic: t.id, ver, score: cur.score === v ? null : v, note: cur.note || '', ts: Date.now() }; ratings[key(t.id, ver)] = data; renderRatings(); renderTabs(); progress(); write('ratings/' + key(t.id, ver), data).then(() => flash('saved1')); });
+  if (document.activeElement !== $('note')) $('note').value = r.note || '';
+  const best = (tnotes[t.id] || {}).best === ver; $('bestBtn').classList.toggle('on', best); $('bestBtn').disabled = !slidesOf(t, ver).length;
+}
+function renderTopicNote() { const t = TOPICS[ti]; if (document.activeElement !== $('tnote')) $('tnote').value = (tnotes[t.id] || {}).note || ''; renderRatings(); }
+function flash(id) { const e = $(id); e.textContent = useLocal ? 'Kept in this browser' : 'Saved'; clearTimeout(e._t); e._t = setTimeout(() => e.textContent = '', 1600); }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function render() {
+  const t = TOPICS[ti];
+  $('topicSel').value = String(ti);
+  $('tTitle').textContent = t.label;
+  $('tMeta').textContent = (CH[t.ch] || t.ch) + (t.v23title && t.v23title !== t.label ? ' · v23: ' + t.v23title : '');
+  renderTabs(); renderChips(); renderRatings(); renderTopicNote(); progress(); loadFrame();
+}
+
+/* ---------- notes: saved a moment after typing stops ---------- */
+let nT = null, tT = null;
+$('note').addEventListener('input', () => { clearTimeout(nT); nT = setTimeout(saveNote, 900); });
+$('note').addEventListener('blur', () => { clearTimeout(nT); saveNote(); });
+function saveNote() { const t = TOPICS[ti], cur = ratings[key(t.id, ver)] || {}, v = $('note').value; if ((cur.note || '') === v) return; const data = { topic: t.id, ver, score: cur.score || null, note: v, ts: Date.now() }; ratings[key(t.id, ver)] = data; write('ratings/' + key(t.id, ver), data).then(() => flash('saved1')); }
+$('tnote').addEventListener('input', () => { clearTimeout(tT); tT = setTimeout(saveTNote, 900); });
+$('tnote').addEventListener('blur', () => { clearTimeout(tT); saveTNote(); });
+function saveTNote() { const t = TOPICS[ti], cur = tnotes[t.id] || {}, v = $('tnote').value; if ((cur.note || '') === v) return; const data = { topic: t.id, note: v, best: cur.best || null, ts: Date.now() }; tnotes[t.id] = data; write('topicnotes/' + t.id, data).then(() => flash('saved2')); }
+$('bestBtn').onclick = () => { const t = TOPICS[ti], cur = tnotes[t.id] || {}; const data = { topic: t.id, note: cur.note || '', best: cur.best === ver ? null : ver, ts: Date.now() }; tnotes[t.id] = data; renderRatings(); renderTabs(); write('topicnotes/' + t.id, data).then(() => flash('saved1')); };
+
+/* ---------- navigation: #t05-sol, #summary ---------- */
+function route() { location.hash = TOPICS[ti].id + '-' + ver; }
+function fromHash() {
+  const h = (location.hash || '').slice(1);
+  if (h === 'summary') { $('viewer').classList.add('hidden'); $('summary').classList.remove('hidden'); renderSummary(); return; }
+  $('summary').classList.add('hidden'); $('viewer').classList.remove('hidden');
+  const m = /^(t\d\d)-(v23|today|sol|astra)$/.exec(h);
+  if (m) { const i = TOPICS.findIndex(t => t.id === m[1]); if (i >= 0) { if (i !== ti || m[2] !== ver) si = 0; ti = i; ver = m[2]; } }
+  render();
+}
+window.addEventListener('hashchange', fromHash);
+$('topicSel').innerHTML = TOPICS.map((t, i) => '<option value="' + i + '">' + (i + 1) + '. ' + esc(t.label) + '</option>').join('');
+$('topicSel').onchange = e => { ti = +e.target.value; si = 0; route(); };
+$('prev').onclick = () => { if (ti > 0) { ti--; si = 0; route(); } };
+$('next').onclick = () => { if (ti < TOPICS.length - 1) { ti++; si = 0; route(); } };
+$('replay').onclick = loadFrame;
+$('fs').onclick = () => { const p = $('player'); p.classList.add('full'); try { const r = p.requestFullscreen && p.requestFullscreen(); if (r && r.catch) r.catch(() => { }); } catch (e) { } };
+$('closefs').onclick = () => { $('player').classList.remove('full'); try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) { } };
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) $('player').classList.remove('full'); });
+$('toSummary').onclick = () => { location.hash = 'summary'; };
+$('backBtn').onclick = () => route();
+
+/* ---------- summary ---------- */
+function renderSummary() {
+  const head = '<tr><th>#</th><th>Topic</th>' + VERS.map(v => '<th style="text-align:center">' + v.name + '</th>').join('') + '<th>Note</th></tr>';
+  const rows = TOPICS.map((t, i) => {
+    const best = (tnotes[t.id] || {}).best;
+    return '<tr><td>' + (i + 1) + '</td><td>' + esc(t.label) + '<div class="sub">' + (CH[t.ch] || t.ch) + '</div></td>' + VERS.map(v => {
+      const r = ratings[key(t.id, v.k)], n = slidesOf(t, v.k).length;
+      return '<td class="s' + (best === v.k ? ' b' : '') + '" data-t="' + i + '" data-k="' + v.k + '">' + (!n ? '<span class="sub">—</span>' : (r && r.score ? r.score : '·')) + (best === v.k ? ' ★' : '') + '</td>';
+    }).join('') + '<td>' + esc((tnotes[t.id] || {}).note || '') + '</td></tr>';
+  }).join('');
+  $('sumTable').innerHTML = head + rows;
+  [...$('sumTable').querySelectorAll('td.s')].forEach(c => c.onclick = () => { ti = +c.dataset.t; ver = c.dataset.k; si = 0; route(); });
+}
+$('copyBtn').onclick = () => {
+  const lines = TOPICS.map((t, i) => (i + 1) + '. ' + t.label + ' — ' + VERS.map(v => v.name + ' ' + ((ratings[key(t.id, v.k)] || {}).score || '-') + ((tnotes[t.id] || {}).best === v.k ? '★' : '') + (((ratings[key(t.id, v.k)] || {}).note) ? ' ("' + ratings[key(t.id, v.k)].note + '")' : '')).join(', ') + (((tnotes[t.id] || {}).note) ? ' | keep/combine: ' + tnotes[t.id].note : ''));
+  const text = lines.join('\n');
+  try { navigator.clipboard.writeText(text).then(() => { $('copyBtn').textContent = 'Copied'; setTimeout(() => $('copyBtn').textContent = 'Copy ratings', 1500); }, () => showBanner('Copy was blocked here.')); } catch (e) { showBanner('Copy was blocked here.'); }
+};
+
+fromHash();
+initDb();
+</script>
+</body>
+</html>

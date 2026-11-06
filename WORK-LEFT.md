@@ -14,6 +14,26 @@ State at the stop: the live film is 107 slides, every one rebuilt in the revamp 
 v1793996750-29cc (published 14:25, the 14:30 build, autoplay off; PUBLISHING.md). Completion was estimated at about 75–80 % (13:28): slides ~90 %, Brock's decisions ~90 %,
 shape ~50 %, board ~90 %, feedback audit ~25 %, final review and clips not started.
 
+## THE DIRECTION NOW (Brock, 14:41–14:53, F63): start from v23, not from the revamp
+
+He judged the revamp a regression: "100 slides of waffling with no coherence"; "the average animation quality is much
+better, but the peak animation quality is significantly reduced, there are no truly impressive animations anymore"; pacing
+"nauseating to follow". The next version: "create a version of v23 that you think is as coherent as possible and try to
+salvage/repurpose as much of the animations as possible, being honest within yourself as to which versions of the slides
+were better, (newer or older) and then combining in some cases". How:
+1. **His ratings first.** The comparison viewer (https://claude.ai/artifact/AEPJHpx9KNeqNdMRwQBNjn; handoff/compare/README.md)
+   shows Opus v23, Opus today, Sol and Astra side by side on 51 topics, live; read his scores, "best" picks and
+   keep/combine notes from its database before deciding anything.
+2. **v23 (commit e73fc8d) is the base**, with its 3D; the revamp's work is a parts bin: corrected numbers and sources, the
+   0.6 mm board and the lattice study, the fingers, the feedback log. Take a revamp, Sol or Astra slide only where it is
+   better, and combine where that's better.
+3. **Coherence first:** write the film's argument as one page before touching slides (what each chapter proves, in what
+   order, what the viewer should feel at each peak); cut slides that don't serve it.
+4. **A pilot:** one chapter end to end, shown to him in motion, before the rest.
+5. **Judge in motion, not in stills:** every review watches the film playing; pacing (section 0) is part of every slide.
+6. Lessons from the revamp (F63.2): don't replace what works; keep the peaks; don't apply the simplified mouse to hero
+   shots; don't let rigour cost punch; one owner of the argument, not a dozen.
+
 ## 0. FIRST: the animation pacing (Brock, 14:22, F62)
 
 "the animation pacing is very hard to follow and feels all over the place c largely a regression from the old video, the

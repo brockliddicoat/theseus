@@ -47,7 +47,7 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 14:35 (Chicago): F62 (the pacing, a regression; autoplay off, live as v1793996750-29cc). Before that, 14:23: F61 completed: the lattice pattern (~14:15, F61.1, on L2's two sheets, now in
+Last updated: 2026-11-06 15:06 (Chicago): F63 (the revamp judged a regression; the next version starts from v23; the comparison viewer). Before that, 14:35: F62 (the pacing, a regression; autoplay off, live as v1793996750-29cc). Before that, 14:23: F61 completed: the lattice pattern (~14:15, F61.1, on L2's two sheets, now in
 attachments/F61/; F57.1 and F43.4 point to it), the live link (13:58, F61.2; F38.6's live-link updates CONFIRMED) and
 the work left (13:59, F61.3, answered by WORK-LEFT.md); F59.1 given the integrator's lesson. (13:56: F60, with FG2's
 nail sheets; F58.1 points to it. 13:47: F59, with S2's nose sheet, the RTINGS photos left out; F51.1's front, F53.1 and
@@ -490,6 +490,34 @@ feedback/attachments/F58/ (the 13:28 preview sheets).
   (the integrator, 14:25):** autoplay off by default in the player (20-app.js; ?auto=1 turns it on); each slide plays once
   and waits; the viewer steps with the arrows, a click or a swipe. Live as v1793996750-29cc. Overrules F40.1's holds as
   the default (they apply only with ?auto=1).
+
+
+## F63. The revamp judged a regression; the way back (2026-11-06 14:41 to 14:53)
+Live then: v1793996750-29cc (the 14:30 build). Frames: the whole film is in feedback/attachments/F58/ (the 13:28 sheets).
+- **F63.1** (14:41) "i’m really disappointed in this new version, the animation pacing is very horrible and 100% regressed
+  and this new one really doesn’t feel like it’s making any good arguments or making anything look that impressive, it
+  kinda just feels like a watered down version of the old one that is very hard to follow at a glance and nauseating to
+  follow if you try to watch the full thing" / "i asked you to make it better and instead i feel like you wasted my whole
+  weeks usage on getting virtually nowhere, it feels way too different from what we had before, it’s not refined it’s
+  just watered down".
+- **F63.2** (14:53) "this version is prettier in some places, but it feels like it’s just 100 slides of waffling with no
+  coherence" / "the average animation quality is much better, but the peak animation quality is significantly reduced,
+  there are no truly impressive animations anymore" / "i dont understand how things got so incoherent, what is your
+  theory? how could i have instructed you better?" (answered in the session: no one owned the argument; every slide
+  replaced instead of refined, so v23's one-off peaks were lost to a shared kit style; 2D-only with the simplified mouse
+  even in hero shots; rigour drained the punch; pacing never judged in motion; better instructions: a keep list, a pilot
+  chapter first, coherence and impact over rigour, "I'll judge it by watching it").
+- **F63.3 DECIDED, THE NEXT DIRECTION** (14:53) "maybe you should pick and choose the feedback from and just try to create
+  a version of v23 that you think is as coherent as possible and try to salvage/repurpose as much of the animations as
+  possible, being honest within yourself as to which versions of the slides were better, (newer or older) and then
+  combining in some cases" / "maybe the simplified mouse request was where things went wrong, i’m not sure". Reading: the
+  next version starts from v23 (commit e73fc8d), not from the revamp; per topic it takes the stronger slide (v23, today,
+  Sol or Astra), combines where that's better, keeps the peak animations, and is built for coherence first. **TODO (the
+  next session; WORK-LEFT.md, the top).** Supersedes the revamp's "every slide new" plan (F38.1's "new story").
+- **F63.4 DONE** (14:53) "i’d also like a visualization where i can look at the different presentation between sol, astra
+  opus v23 and opus today and compare and rate equivalent slides to guide you better". **DONE (the integrator, 15:05):**
+  https://claude.ai/artifact/AEPJHpx9KNeqNdMRwQBNjn (51 topics, each version live in its own player, ratings saved to the
+  page's database); handoff/compare/README.md says how it was made and how to read his ratings.
 
 ## Open with Brock
 
