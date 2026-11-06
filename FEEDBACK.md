@@ -88,6 +88,16 @@ feedback on the deck, so they are kept here (numbered as on Codex's branch, code
   Paper #F7F6F2 → #F5F5F7, both grey ramps neutral, the page CSS too, and a canvas guard that draws any warm-tinted grey as a
   true grey (01-core.js warmGuard). Measured: the paper ground was (247, 246, 242), now (245, 245, 247).
 
+## F40. Answers on the player and the radio (2026-11-06 ~09:00)
+- **F40.1 DECIDED** Autoplay hold after a slide settles: "Longer, 2–6 s". **IN PROGRESS (F0b).**
+- **F40.2 DECIDED** Chapter openings: "advanced motion transitions" (not a pass through black). **IN PROGRESS (F0b):** a
+  camera flight across the simplified mouse from the last chapter's part to the next, landing in the chapter card.
+- **F40.3 DECIDED** Vertical clips: "allow for both letterboxed and the same as before as options" (horizontal and 9:16
+  letterboxed exports both kept).
+- **F40.4 DECIDED** The radio module: "Keep facing forward" (plan 5: at the board's rear, the long antenna facing forward,
+  28.2 mm from the wheel's axle against 12.4 mm on the old board; no 180° turn, which would put it about 3 mm from the
+  battery). Supersedes the old 180° turn (F9.13's aim is met by the move).
+
 ## Open with Brock
 
 - **Pushing:** this branch (claude/review-notes-rework) can't be pushed from the session. GitHub answers "not in this

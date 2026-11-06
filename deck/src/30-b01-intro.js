@@ -34,7 +34,7 @@ Object.assign(SRC, {
   b01M3k: { t: 'Zaunkoenig M3K: 24 g, "a wired 8,000 hertz connection", "The M3K costs €340 (~396 USD)"', u: 'https://www.zaunkoenig.co/m3k' },
   b01FmClick: { t: 'PC Gamer, Sept 2026, on Finalmouse\'s own click test: from the start of the press to the packet at the PC, mean of 50 presses: Starlight X 2.0 ms, Superstrike 3.0 ms, OP1 8K V2 5.7 ms, Viper V4 Pro 7.5 ms (a maker testing its own mouse and its rivals)', u: 'https://www.pcgamer.com/hardware/gaming-mice/finalmouse-claims-its-mouse-has-the-absolute-fastest-click-quicker-than-the-logitech-superstrike-and-razer-viper-v4-pro/' },
   b01OpenStax: { t: 'OpenStax, College Physics 2e, §4.3 Newton\'s second law, Fig. 4.6: "The same force exerted on systems of different masses produces different accelerations"; "acceleration is exactly inversely proportional to mass"', u: 'https://openstax.org/books/college-physics-2e/pages/4-3-newtons-second-law-of-motion-concept-of-a-system' },
-  b01Optical: { t: 'Derived, as the clicks chapter: an optical switch pulses its LED at 5 mA for 30 µs every 1 ms (Omron D2FP\'s test pulse), 0.15 mA a switch; a Viper V4 Pro draws 306 mAh over 180 h at 1 khz, 1.70 mA; two optical mains take 0.30 ÷ 1.70 = 18 % of it', u: 'https://www.fa.omron.co.jp/data_pdf/cat/d2fp_cdva-002_1_1.pdf', n: 'Razer staff have said online that the switches and the encoder take almost half (Brock, F31.1): no public source, so the slide uses the derived 18 %.' },
+  b01Optical: { t: 'Derived, as the clicks chapter: an optical switch pulses its LED at 5 mA for 30 µs every 1 ms (Omron D2FP\'s test pulse), 0.15 mA a switch; a Viper V4 Pro draws 306 mAh over 180 h at 1 khz, 1.70 mA; two optical mains take 0.30 ÷ 1.70 = 17.6 % of it', u: 'https://www.fa.omron.co.jp/data_pdf/cat/d2fp_cdva-002_1_1.pdf', n: 'Razer staff have said online that the switches and the encoder take almost half (Brock, F31.1): no public source, so the slide uses the derived 17.6 %.' },
   b01HandMass: { t: 'Body segment parameters (Dempster via Winter 2009; de Leva 1996): the hand is about 0.6 % of body mass, about 420 g at 70 kg (research/data/weight-science.json)', u: 'https://nbviewer.jupyter.org/github/demotu/BMC/blob/master/notebooks/BodySegmentParameters.ipynb' }
 });
 
@@ -145,6 +145,10 @@ function b01_frontCurve(P, ext = [0.06, 0.06], lim = null) {
   return out;
 }
 
+/** the share of a Viper V4 Pro's battery its two optical main switches draw: Omron D2FP's LED test pulse (5 mA for 30 µs every
+   1 ms, 0.15 mA a switch) over the mouse's 306 mAh in Razer's 180 h at 1 khz (1.70 mA): 17.6 %. The clicks chapter (b03) works it
+   the same way. Shown to 0.1 %: rounding a rival's fault up would be rounding a claim in our favour */
+const B01_OPT = (() => { const sw = 5 * 30 / 1000, mA = 306 / 180; return { sw, mA, share: 2 * sw / mA }; })();
 /* ================================ the trades: what each flagship gives up ================================
    The film's spine (F33.7): every flagship gives one thing up; Theseus gives up nothing. Each: the mouse, what it gives up
    (red), the figure, what it bought with it, the evidence, and Theseus's answer (the close reads `ans`). The icon names the
@@ -152,9 +156,9 @@ function b01_frontCurve(P, ext = [0.06, 0.06], lim = null) {
 const B01_TRADES = [
   { id: 'logitech-x3', brand: 'Logitech', name: 'Pro X3 Superstrike', price: '$199.99', small: 'Logitech, $199.99, haptic triggers', what: 'Weight', fig: '59.0 g', why: 'Haptic, inductive triggers', ev: 'claim', tag: 'Logitech 2026', src: ['b01X3', 'b01X3Psn'], icon: 'weight', ans: THS.massG },
   { id: 'gw-hts-ultra', brand: 'G-Wolves', name: 'HTS Ultra 8K', price: '$119', small: 'G-Wolves, $119, 31.0 g', what: 'Battery life', fig: '80 h', why: '31.0 g', ev: 'claim', tag: 'G-Wolves claim', src: ['b01TpuHtsU'], icon: 'battery', ans: THESEUS.hours + ' h' },
-  { id: 'razer-viper-v4-pro', brand: 'Razer', name: 'Viper V4 Pro', price: '$159.99', small: 'Razer, $159.99, optical switches', what: 'Battery, to its clicks', fig: '18 %', why: 'Optical switches', ev: 'derived', tag: 'Derived', src: ['b01Optical'], icon: 'optical', ans: '0 %' },
+  { id: 'razer-viper-v4-pro', brand: 'Razer', name: 'Viper V4 Pro', price: '$159.99', small: 'Razer, $159.99, optical switches', what: 'Battery, to its clicks', fig: fmtN(B01_OPT.share * 100, 1) + ' %', why: 'Optical switches', ev: 'derived', tag: 'Derived', src: ['b01Optical'], icon: 'optical', ans: '0 %' },
   { id: 'finalmouse-ulx', brand: 'Finalmouse', name: 'ULX', price: '$189', small: 'Finalmouse, $189, 38.0 g', what: 'Strength', fig: 'Flexes, creaks', why: '38.0 g', ev: 'measured', tag: 'RTINGS', src: ['b01RtUlx'], icon: 'flex', ans: 'Solid, arched' },
-  { id: 'pulsar-x2f-crazylight', brand: 'Pulsar', name: 'X2F CrazyLight', price: '$149.95', small: 'Pulsar, $149.95, 29.5 g', what: 'The shape', fig: 'Half a shell', why: '29.5 g', ev: 'claim', tag: 'Pulsar 2026', src: ['b01X2f', 'x2fCrazy'], icon: 'half', ans: 'A full 119.3 mm' },
+  { id: 'pulsar-x2f-crazylight', brand: 'Pulsar', name: 'X2F CrazyLight', price: '$149.95', small: 'Pulsar, $149.95, 29.5 g', what: 'The shape', fig: 'Cut to 87.5 mm', why: '29.5 g', ev: 'claim', tag: 'Pulsar 2026', src: ['b01X2f', 'x2fCrazy'], icon: 'half', ans: 'A full 119.3 mm' },
   { id: 'xbab-xa25', brand: 'XBAB', name: 'XA25', price: '$169', small: 'XBAB, $169, 24.9 g', what: 'Wireless', fig: 'Wired only', why: '24.9 g', ev: 'claim', tag: 'XBAB 2026', src: ['exXbabWeight'], icon: 'wire', ans: 'Dual 8khz wired and wireless' }
 ];
 
@@ -267,11 +271,11 @@ function b01_tradeIcon(t, t0, kind, box, o = {}) {
       if (!hero) {
         /* the rear piece, beyond the cut: sliding back and settling as a dashed red ghost of what was given up */
         G.save(); G.translate(0, kk * 9); G.globalAlpha = PA * lerp(1, 0.55, kk); G.beginPath(); G.rect(-40, B01_X2F.cut, 80, 40); G.clip();
-        if (kk < 0.02) { G.fillStyle = TH ? '#FFFFFF' : '#1A1B1E'; G.fill(full.path); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2); G.stroke(full.path); }
+        if (kk < 0.02) { G.fillStyle = C.panel; G.fill(full.path); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2); G.stroke(full.path); }
         else { G.setLineDash([lw(4), lw(3.5)]); G.strokeStyle = C.red; G.lineWidth = lw(1.8); G.stroke(full.path); }
         G.restore();
       }
-      G.save(); G.globalAlpha = PA; G.fillStyle = TH ? '#FFFFFF' : '#1A1B1E'; G.fill((hero ? full : cut).path); G.strokeStyle = hero ? C.hero : inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(hero ? 2.2 : 2); G.stroke((hero ? full : cut).path); G.restore();
+      G.save(); G.globalAlpha = PA; G.fillStyle = C.panel; G.fill((hero ? full : cut).path); G.strokeStyle = hero ? C.hero : inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(hero ? 2.2 : 2); G.stroke((hero ? full : cut).path); G.restore();
       if (!hero && kc > 0) { G.save(); G.globalAlpha = PA * lit; G.strokeStyle = C.red; G.lineWidth = lw(3); G.beginPath(); G.moveTo(-B01_X2F.W / 2 - 3, B01_X2F.cut); G.lineTo(-B01_X2F.W / 2 - 3 + (B01_X2F.W + 6) * kc, B01_X2F.cut); G.stroke(); G.restore(); }
     }, { alpha: a, rot: Math.PI / 2 });
   } else if (kind === 'wire') {
@@ -288,7 +292,7 @@ function b01_tradeIcon(t, t0, kind, box, o = {}) {
    A stage, one flagship at a time (integrator, 08:35): each one drawn big while its compromise happens to it for about a
    second, caused by something you can see (M1, M2): the Pro X3 Superstrike's 59.0 g tips a balance against a 29.3 g mouse;
    the HTS Ultra 8K's battery runs dry at 80 h while the clock runs on to 200; the Viper V4 Pro's optical switches fire their
-   beams and eat 18 % of its battery; a fingertip bows the ULX's shell, red where it bends; a cut takes the back half off the
+   beams and eat 17.6 % of its battery; a fingertip bows the ULX's shell, red where it bends; a cut takes the back half off the
    X2; a cable runs out of the XA25's nose. Each then shrinks into its row of the ledger on the right, keeping its red word
    and figure. Then Theseus lands, whole and blue, giving up nothing. Frame one is already mid-compromise (M6). */
 const B01_STAGE = { box: [80, 384, 1010, 410], beat: 1.05, t0: -0.45, list: { x: 1180, y: 330, rh: 80, icon: [118, 62] } };
@@ -364,7 +368,7 @@ function b01_bigOptical(t, s0, box, o = {}) {
     mouseSimple('top', { lw: 2, hi: { triggers: 'bad' }, lit: on * 0.8, show: ['battery'] });
     const [bx, by, bw] = MS_BATTERY, src = [bx + bw / 2, by];
     for (const p of sw) {
-      G.save(); G.globalAlpha = PA; G.fillStyle = TH ? '#FFFFFF' : '#1A1B1E'; G.strokeStyle = C.red; G.lineWidth = lw(2.2); rrPath(p[0] - 4, p[1] - 3.2, 8, 6.4, 0.8); G.fill(); G.stroke();
+      G.save(); G.globalAlpha = PA; G.fillStyle = C.panel; G.strokeStyle = C.red; G.lineWidth = lw(2.2); rrPath(p[0] - 4, p[1] - 3.2, 8, 6.4, 0.8); G.fill(); G.stroke();
       /* the beam across the switch: its LED firing (dashes running from emitter to receiver) */
       G.globalAlpha = PA * on; G.setLineDash([lw(5), lw(4)]); G.lineDashOffset = -(t - s0) * lw(60); G.lineWidth = lw(3); G.beginPath(); G.moveTo(p[0] - 3, p[1]); G.lineTo(p[0] + 3, p[1]); G.stroke();
       /* the current, from the battery to the switch */
@@ -375,11 +379,11 @@ function b01_bigOptical(t, s0, box, o = {}) {
   const sp = [mx - sw[1][1] * sm, my + sw[1][0] * sm];
   faultTag(t, s0 + 0.1, sp, 'Optical switches', { dx: 90, dy: 96, alpha: ta });
   /* right: its battery, the share its switches eat turning red and emptying */
-  const gx = x + 470, gy = y + 110, gw = 500, gh = 140, eatW = (gw - 20) * 0.18;
+  const gx = x + 470, gy = y + 110, gw = 500, gh = 140, eatW = (gw - 20) * B01_OPT.share;
   rr(gx, gy, gw, gh, 14, null, C.ink, 4); rr(gx + gw + 4, gy + gh / 2 - 24, 16, 48, 5, C.ink);
   rr(gx + 10, gy + 10, gw - 20 - eatW * eat, gh - 20, 8, inkA(TH ? 0.42 : 0.5));
   if (eat > 0.01) { G.save(); G.setLineDash([10, 8]); G.strokeStyle = C.red; G.lineWidth = 3; rrPath(gx + 10 + gw - 20 - eatW, gy + 10, eatW, gh - 20, 8); G.globalAlpha = eat; G.stroke(); G.restore(); }
-  text('18 %', gx + gw - 10 - eatW / 2, gy + gh + 46, { role: 'num', size: 30, weight: 800, color: C.red, align: 'center', alpha: ta * eat });
+  text(fmtN(B01_OPT.share * 100, 1) + ' %', gx + gw - 10 - eatW / 2, gy + gh + 46, { role: 'num', size: 30, weight: 800, color: C.red, align: 'center', alpha: ta * eat });
   text('to the switches', gx + gw - 10 - eatW / 2, gy + gh + 78, { role: 'label', size: 19, color: C.red, align: 'center', alpha: ta * eat });
 }
 function b01_bigFlex(t, s0, box, o = {}) {
@@ -413,10 +417,10 @@ function b01_bigHalf(t, s0, box, o = {}) {
   part(ox, oy, s, () => {
     /* the back half: solid until the cut has run, then sliding back, fading to a dashed red ghost */
     G.save(); G.translate(0, kk * 14); G.beginPath(); G.rect(-40, B01_X2F.cut, 80, 40); G.clip();
-    if (kk < 0.03) { G.globalAlpha = PA; G.fillStyle = TH ? '#FFFFFF' : '#1A1B1E'; G.fill(full.path); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2); G.stroke(full.path); }
+    if (kk < 0.03) { G.globalAlpha = PA; G.fillStyle = C.panel; G.fill(full.path); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2); G.stroke(full.path); }
     else { G.globalAlpha = PA * lerp(1, 0.6, kk); G.setLineDash([lw(6), lw(5)]); G.strokeStyle = C.red; G.lineWidth = lw(2.2); G.stroke(full.path); }
     G.restore();
-    G.save(); G.globalAlpha = PA; G.fillStyle = TH ? '#FFFFFF' : '#1A1B1E'; G.fill(cut.path); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2.2); G.stroke(cut.path); G.restore();
+    G.save(); G.globalAlpha = PA; G.fillStyle = C.panel; G.fill(cut.path); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2.2); G.stroke(cut.path); G.restore();
     if (kc > 0) { G.save(); G.globalAlpha = PA; G.strokeStyle = C.red; G.lineWidth = lw(4); G.beginPath(); G.moveTo(-B01_X2F.W / 2 - 6, B01_X2F.cut); G.lineTo(-B01_X2F.W / 2 - 6 + (B01_X2F.W + 12) * kc, B01_X2F.cut); G.stroke(); G.restore(); }
   }, { rot: Math.PI / 2 });
   /* its length, against the whole mouse's */
@@ -455,7 +459,7 @@ function b01_ledgerList(t, o = {}) {
     text(tr.name, nx, y + 34, { role: 'h3', size: 26, weight: 750, color: C.ink, alpha: kf, sentence: false });
     text(tr.small, nx, y + 63, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kf, sentence: false, maxW: r - nx - 150 });
     const ans = o.answer ? ep(t, o.answer.t0 + i * o.answer.step, o.answer.t0 + i * o.answer.step + 0.45) : 0;
-    const figC = ans > 0 ? mix(TH ? '#D9343B' : '#E5484D', TH ? '#8A8983' : '#6E6D68', ans) : C.red;
+    const figC = ans > 0 ? mix(C.red, C.faint, ans) : C.red;
     text(tr.what, r, y + 30, { role: 'label', size: 19, color: figC, align: 'right', alpha: kf });
     const fw = text(tr.fig, r, y + 64, { role: 'num', size: 30, weight: 800, color: figC, align: 'right', alpha: kf }).w;
     if (ans > 0) {
@@ -480,8 +484,8 @@ S({
   replaces: ['flagships', 'thesis'],
   src: ['b01X3', 'b01X3Psn', 'b01X3Pcg', 'b01TpuHtsU', 'b01GwHtsU', 'b01Optical', 'clk_d2fp', 'ntrTpuV4', 'b01RtUlx', 'rtingsUlx', 'b01X2f', 'b01X2fWt', 'x2fCrazy', 'b01X2Trace', 'exXbabWeight', 'ntrStores', 'ntrRazerV4', 'nbcUlx', 'exRtings'],
   answers: [
-    ['flagships: "need to derive all empty data"', 'No blanks left: each flagship shows the one thing it trades, and every one has its figure, sourced (Logitech, TechPowerUp, RTINGS, Pulsar, XBAB) or derived and marked so (the Viper V4 Pro\'s 18 %, worked from Omron\'s optical pulse and its own battery). The other numbers sit in each row\'s small print, none blank'],
-    ['flagships: "it bothers me when one number has more decimal places than others"', 'One precision per kind: every weight to 0.1 g (59.0, 31.0, 38.0, 29.5, 24.9, and Theseus 29.3), hours whole, the share in whole percent'],
+    ['flagships: "need to derive all empty data"', 'No blanks left: each flagship shows the one thing it trades, and every one has its figure, sourced (Logitech, TechPowerUp, RTINGS, Pulsar, XBAB) or derived and marked so (the Viper V4 Pro\'s 17.6 %, worked from Omron\'s optical pulse and its own battery). The other numbers sit in each row\'s small print, none blank'],
+    ['flagships: "it bothers me when one number has more decimal places than others"', 'One precision per kind: every weight to 0.1 g (59.0, 31.0, 38.0, 29.5, 24.9, and Theseus 29.3), hours whole, the optical share to 0.1 % (17.6 %, not rounded up to 18)'],
     ['flagships: "superstrike x3 is more of a flagship than gpx2"', 'The GPX2 is gone; Logitech\'s flagship is the Pro X3 Superstrike (launched 2026-09-23): its 59.0 g tips a balance against a 29.3 g mouse'],
     ['thesis: "all of these numbers feel very random"', 'The eight specimen tiles are gone. Every number here belongs to a named flagship\'s trade, with its source in the foot line'],
     ['thesis: "the message is good but you can add it to the slide about other companies misadvertising weights"', 'Done: b01_listed (Listed against weighed) carries it ("the weight on the card is the scale\'s"); here it closes the slide in one line, "Optimization over opinion: measure every trade, then design it out"'],
@@ -489,8 +493,7 @@ S({
     ['F33.7 (zero compromises; highlight the compromises other flagships make)', 'The film\'s problem slide: six flagships, each shown big while its compromise happens to it (weight, battery, battery to optical clicks, strength, the shape, wireless), each landing in the ledger in red; Theseus lands whole and gives up nothing. The close answers the same six rows']
   ],
   draw: t => {
-    /* the header is up from frame one (M6): the title's rise is already done */
-    header(t + 1.0, 'Every flagship compromises');
+    header(t, 'Every flagship compromises');
     captions(t, [[0.3, 'Six flagships, six trades: each one gives something up to win something else.'],
       [6.1, 'Theseus gives up nothing. Optimization over opinion: measure every trade, then design it out.']]);
     const SB = B01_STAGE.box, n = B01_TRADES.length, Lt = B01_STAGE.list, tT = b01_beatT(n) + 0.05;
@@ -524,7 +527,7 @@ S({
       });
     }
     b01_ledgerList(t, { rowT: i => b01_beatT(i + 1) - 0.04, thsT: tT + 0.25 });
-    source(t, 'Weights to 0.1 g: TechPowerUp and RTINGS scales, makers\' figures, the X2F as reported (Pulsar: 29 g ± 2). 18 %: Omron\'s optical pulse over the V4 Pro\'s 306 mAh in 180 h.', { t0: 0.6 });
+    source(t, 'Weights to 0.1 g: TechPowerUp and RTINGS scales, makers\' figures, the X2F as reported (Pulsar: 29 g ± 2). 17.6 %: Omron\'s optical pulse over the V4 Pro\'s 306 mAh in 180 h.', { t0: 0.6 });
   }
 });
 
@@ -555,19 +558,19 @@ function b01_flickPush(m, tau) { const I = b01_flickInfo(m); return tau < 0 || t
 function b01_cart(x, yT, mult, o = {}) {
   const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
   const bw = 124, bh = 40, wr = 12, by = yT - wr * 2 - bh + 6, ln = o.line || inkA(TH ? 0.75 : 0.7);
-  rr(x, by, bw, bh, 6, o.fill || (TH ? '#FFFFFF' : '#1A1B1E'), ln, 2, a);
-  for (const wx of [x + 28, x + bw - 28]) { circle(wx, yT - wr, wr, { fill: TH ? '#FFFFFF' : '#1A1B1E', alpha: a }); circle(wx, yT - wr, wr, { color: ln, w: 2, alpha: a }); circle(wx, yT - wr, 3, { fill: ln, alpha: a }); }
+  rr(x, by, bw, bh, 6, o.fill || (C.panel), ln, 2, a);
+  for (const wx of [x + 28, x + bw - 28]) { circle(wx, yT - wr, wr, { fill: C.panel, alpha: a }); circle(wx, yT - wr, wr, { color: ln, w: 2, alpha: a }); circle(wx, yT - wr, 3, { fill: ln, alpha: a }); }
   if (mult === 2) rr(x + 22, by - 34, bw - 44, 34, 4, inkA(TH ? 0.16 : 0.22), ln, 2, a);
-  if (!o.ghost) text(mult === 2 ? '2× the mass' : '1×', x + bw / 2, mult === 2 ? by - 10 : by + 27, { role: 'label', size: 19, color: C.ink2, align: 'center', alpha: a });
+  if (!o.ghost) text(mult === 2 ? '2×' : '1×', x + bw / 2, mult === 2 ? by - 10 : by + 27, { role: 'label', size: 19, color: C.ink2, align: 'center', alpha: a });
 }
 /** the player's screen for one lane: a target, the crosshair moved by the mouse (p mm past the target), and the shot at
    fire time: HIT (a blue ring) or MISS (a red ×), in the kit's shotInset look, but driven by the flick's own physics */
 function b01_scope(t, x, y, w, h, p, shotT, o = {}) {
   const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
-  demoWindow(x, y, w, h, a, { fill: TH ? '#E9E8E3' : '#0B0C0D' });
-  const tx = x + w * 0.42, ty = y + h * 0.5, tr = 10, k = o.k || 7, cx = tx + p * k, ch = TH ? '#111111' : '#FFFFFF';
+  demoWindow(x, y, w, h, a, { fill: C.track });
+  const tx = x + w * 0.42, ty = y + h * 0.5, tr = 10, k = o.k || 7, cx = tx + p * k, ch = C.ink;
   clipped(x, y, w, h, () => {
-    circle(tx, ty, tr * 2.4, { color: inkA(0.18), w: 1.5, alpha: a }); circle(tx, ty, tr, { fill: TH ? '#111111' : '#F3F2EE', alpha: a });
+    circle(tx, ty, tr * 2.4, { color: inkA(0.18), w: 1.5, alpha: a }); circle(tx, ty, tr, { fill: C.ink, alpha: a });
     if (t >= shotT) {
       const kh = prog(t, shotT, shotT + 0.4), hit = Math.abs(o.pShot * k) < tr * 0.8, sx = tx + o.pShot * k;
       if (hit) { circle(tx, ty, tr * (1.4 + 1.6 * E.out3(kh)), { color: C.hero, w: 3 * (1 - kh) + 0.5, alpha: a * (1 - kh * 0.7) }); circle(sx, ty, tr * 0.42, { fill: C.hero, alpha: a }); }
@@ -588,64 +591,65 @@ S({
     ['zerograms: "needs more reasoning, argument feels weak here"', 'The argument is worked on screen from F = m · a: first the classroom demonstration (two carts given the same push back; the one with half the mass stops in half the time and half the distance and turns back first; OpenStax College Physics 2e §4.3), then the same physics on a flick, where the same 0.54 N finger push brings a 29.3 g Theseus back onto its target in 66 ms against 132 ms for the 59.0 g Pro X3 Superstrike'],
     ['zerograms: "it should be more about theoretical ease of control and target changing speed"', 'It is now only that: how fast each mouse stops, turns and settles on a new target under the same push (back on target 132 → 66 ms, the shot at 70 ms a miss and a hit), and ease of control said outright: half the mass needs half the push for the same move'],
     ['zerograms: "overall speed feels outlandish"', 'Gone: no claim about overall speed or time to cross the screen. The only numbers are the mouse\'s own stop and turn under one push, and the foot line says they are the mouse\'s share (the hand\'s own mass comes on top)'],
-    ['F9.26 (argue it from F = m · a, don\'t argue against it)', 'Argued from F = m · a and sold: "Half the push for the same flick", no hedge'],
+    ['F9.26 (argue it from F = m · a, don\'t argue against it)', 'Argued from F = m · a and sold: "Half the push for the same move", no hedge'],
     ['F33.5 (an important idea, vastly improved)', 'A classroom demonstration, a physics-driven flick on two named mice with the same input, the shot it decides, and the verdict, in place of three lanes of pucks'],
     ['F33.7 (a higher skill ceiling as a selling point)', 'The payoff line: the same hands, finer control, a higher skill ceiling']
   ],
   draw: t => {
-    header(t + 1.0, 'Why lighter wins');
+    header(t, 'Why lighter wins');
     captions(t, [[0.3, 'The classroom version: the same push on two carts. Half the mass stops and turns back in half the time.'],
       [2.9, 'Your flick is the same physics: the same finger push stops and turns 29.3 g twice as fast as 59.0 g.'],
       [6.3, 'Back on the target in half the time, with half the push for the same move. That raises the skill ceiling.']]);
-    /* ---- the classroom version: two carts rolling right at the same speed, the same push back on each ---- */
-    const PN = [80, 262, 720, 572], inner = demoPanel(t, 0.0, PN, { src: 'OpenStax 2e, §4.3' });
-    text('F = m · a', PN[0] + 28, PN[1] + 118, { role: 'h2', size: 44, color: C.ink, alpha: ep(t, 0.05, 0.35), caps: false });
-    text('The same F on half the m: twice the a', PN[0] + 28, PN[1] + 156, { role: 'small', size: 24, weight: 600, color: C.mute, alpha: ep(t, 0.15, 0.45) });
-    const tc = B01_LT.tc, v = 230, x0 = 236, aH = 115, tEnd = 2.3, tracks = [[PN[1] + 330, 2, aH], [PN[1] + 488, 1, aH * 2]];
-    tracks.forEach(([yT, mult, acc], j) => {
-      const ka = ep(t, 0.05 + j * 0.08, 0.35 + j * 0.08), tau = Math.min(t - tc, tEnd), X = u => x0 + v * u - (u > 0 ? 0.5 * acc * u * u : 0);
-      line(PN[0] + 24, yT, PN[0] + PN[2] - 24, yT, { color: inkA(0.45), w: 2, alpha: ka });
+    /* ---- the classroom version: two carts rolling right at the same speed, the same push back on each. On screen from
+       frame one (M6): the panel is drawn and the carts are already rolling ---- */
+    const PN = [80, 262, 720, 572], inner = demoPanel(t, -0.8, PN, { src: 'OpenStax 2e, §4.3' });
+    text('F = m · a', PN[0] + 28, PN[1] + 118, { role: 'h2', size: 44, color: C.ink, caps: false });
+    text('Two carts, one twice the mass, the same push on each', PN[0] + 28, PN[1] + 156, { role: 'small', size: 24, weight: 600, color: C.mute, maxW: PN[2] - 56 });
+    const tc = B01_LT.tc, v = 230, x0 = 236, aH = 115, tEnd = 2.3, tracks = [[PN[1] + 270, 2, aH], [PN[1] + 410, 1, aH * 2]];
+    tracks.forEach(([yT, mult, acc]) => {
+      const tau = Math.min(t - tc, tEnd), X = u => x0 + v * u - (u > 0 ? 0.5 * acc * u * u : 0);
+      line(PN[0] + 24, yT, PN[0] + PN[2] - 24, yT, { color: inkA(0.45), w: 2 });
       /* ghosts every 0.25 s since the push began: the cart's path stays on the settled frame */
-      for (let g = 0.25; g < tau - 0.05; g += 0.25) b01_cart(X(g), yT, mult, { a: ka * 0.14, ghost: true });
-      const xc = X(tau); b01_cart(xc, yT, mult, { a: ka });
+      for (let g = 0.25; g < tau - 0.05; g += 0.25) b01_cart(X(g), yT, mult, { a: 0.12, ghost: true, fill: 'rgba(0,0,0,0)' });
+      const xc = X(tau); b01_cart(xc, yT, mult, {});
       /* the same push back on both, its tip on the cart's front, while it acts */
       const kp = ep(t, tc - 0.05, tc + 0.2) * (1 - ep(t, tc + tEnd - 0.1, tc + tEnd + 0.15));
       if (kp > 0.01) forceArrow(xc + 124, yT - 38, Math.PI, 66, { k: kp, label: 'same push', color: C.ink, side: 'end' });
       /* where it stopped and turned, and when */
       const ts = v / acc, xs = X(ts) + 124, kst = ep(t, tc + ts, tc + ts + 0.25);
-      if (kst > 0) { line(xs, yT - 6, xs, yT + 16, { color: C.ink, w: 2.5, alpha: kst }); text(mult === 2 ? 'Turns at 2t' : 'Turns at t', xs, yT + 44, { role: 'label', size: 20, color: mult === 2 ? C.mute : C.ink, align: 'center', alpha: kst }); }
+      if (kst > 0) { line(xs, yT - 6, xs, yT + 16, { color: C.ink, w: 2.5, alpha: kst }); text(mult === 2 ? 'Turns at {2t}' : 'Turns at {t}', xs, yT + 44, { role: 'label', size: 20, color: mult === 2 ? C.mute : C.ink, align: 'center', alpha: kst }); }
     });
-    text('Half the mass stops in half the time and half the distance, and is first to turn back.', inner[0], PN[1] + PN[3] - 40, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: inner[2], alpha: ep(t, 2.0, 2.4), lh: 1.3 });
-    /* ---- your flick: the same finger push on a 59.0 g and a 29.3 g mouse, slowed 20× ---- */
-    const lanes = [{ m: B01_LT.mR, name: 'Pro X3 Superstrike, 59.0 g', col: C.secondText, y: 262 }, { m: THESEUS.mass / 1000, name: 'Theseus, 29.3 g', col: C.heroText, y: 552, hero: true }];
-    const tF = B01_LT.tF, SL = B01_LT.slow, xt = 1080, s = 2.7, V = msView('right'), shotT = tF + B01_LT.fire * SL;
-    const kl0 = ep(t, 2.5, 2.9);
-    text('Your flick, slowed 20×', 840, 290, { role: 'label', size: 21, color: C.mute, alpha: kl0 });
+    text('Half the mass stops in half the time and half the distance, and is first to turn back.', inner[0], PN[1] + PN[3] - 62, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: inner[2], alpha: ep(t, 2.0, 2.4), lh: 1.3 });
+    /* ---- your flick: the same finger push on a 59.0 g and a 29.3 g mouse, slowed 20×, its movement drawn 5× larger ---- */
+    const lanes = [{ m: B01_LT.mR, name: 'Pro X3 Superstrike, 59.0 g', col: C.secondText, y: 292 }, { m: THESEUS.mass / 1000, name: 'Theseus, 29.3 g', col: C.heroText, y: 500, hero: true }];
+    const tF = B01_LT.tF, SL = B01_LT.slow, xt = 1110, sD = 1.6, sM = 8, V = msView('right'), shotT = tF + B01_LT.fire * SL;
+    text('Your flick, slowed 20×: the same 0.54 N push on both, one click\'s force', 840, 300, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 1000 });
     lanes.forEach((L, j) => {
-      const yT = L.y + 236, ka = ep(t, 2.55 + j * 0.1, 2.9 + j * 0.1), I = b01_flickInfo(L.m), tau = (t - tF) / SL, p = b01_flickP(L.m, Math.max(tau, -0.02));
+      const yT = L.y + 168, ka = 1, I = b01_flickInfo(L.m), tau = (t - tF) / SL, p = b01_flickP(L.m, Math.max(tau, -0.02));
       if (ka <= 0.003) return;
-      text(L.name, 840, L.y + 76, { role: 'label', size: 22, color: L.col, alpha: ka });
-      line(840, yT, 1400, yT, { color: inkA(0.35), w: 2, alpha: ka });
-      line(xt, yT + 10, xt, L.y + 98, { color: inkA(0.5), w: 1.5, dash: [6, 6], alpha: ka });
-      text('Target', xt, L.y + 90, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: ka * (1 - ep(t, tF - 0.1, tF + 0.2)) });
-      /* ghosts of where it has been, every 10 ms of the real flick */
-      for (let g = 0; g < tau - 0.004; g += 0.01) { const pg = b01_flickP(L.m, g); part(xt + pg * s * 1 - 0 * s, yT - 1, s, () => mouseSimple('right', { lw: 1.4, lineA: 0.22, fill: 'rgba(0,0,0,0)' }), { alpha: ka }); }
-      const xm = xt + p * s;
-      part(xm, yT - 1, s, () => mouseSimple('right', { lw: 2, hi: L.hero ? ['shell'] : [], col: 'hero', lit: L.hero ? 0.6 : 0 }), { alpha: ka });
+      text(L.name, 840, L.y + 52, { role: 'label', size: 22, color: L.col, alpha: ka });
+      line(840, yT, 1410, yT, { color: inkA(0.35), w: 2, alpha: ka });
+      line(xt, yT + 10, xt, L.y + 74, { color: inkA(0.5), w: 1.5, dash: [6, 6], alpha: ka });
+      /* the sensor's path: a tick every 10 ms of the real flick, and a dashed ghost where it stopped */
+      for (let g = -0.02; g < tau - 0.004; g += 0.01) { const xg = xt + b01_flickP(L.m, g) * sM; line(xg, yT + 4, xg, yT + 14, { color: L.hero ? C.hero : C.ink2, w: 2, alpha: ka * 0.75 }); }
+      if (tau > I.ts) { const xs = xt + I.d * sM; part(xs, yT - 1, sD, () => mouseSimple('right', { lw: 1.4, lineA: 0.45, fill: 'rgba(0,0,0,0)' }), { alpha: ka * 0.8 });
+        text(fmtN(I.d, 1) + ' mm past', xs, yT + 40, { role: 'label', size: 19, color: L.hero ? C.heroText : C.mute, align: 'center', alpha: ka * ep(t, tF + I.ts * SL, tF + I.ts * SL + 0.3) }); }
+      const xm = xt + p * sM;
+      part(xm, yT - 1, sD, () => mouseSimple('right', { lw: 2, hi: L.hero ? ['shell'] : [], col: 'hero', lit: L.hero ? 0.6 : 0 }), { alpha: ka });
       /* the finger's push: back while it brakes and heads home, forward as it eases onto the target */
-      const dir = b01_flickPush(L.m, tau), kp = dir ? 1 : 0;
-      if (kp) { const nose = xm + V.box[0] * s * (dir < 0 ? -1 : 1) * -1, tip = dir < 0 ? xm + (V.box[0] + V.box[2]) * s : xm + V.box[0] * s; forceArrow(tip + (dir < 0 ? 4 : -4), yT - 52, dir < 0 ? Math.PI : 0, 72, { k: 1, N: B01_LT.F, label: j ? null : 'a click\'s force', color: L.hero ? C.hero : C.ink, side: 'end', dec: 2 }); }
+      const dir = b01_flickPush(L.m, tau);
+      if (dir) { const tip = dir < 0 ? xm + (V.box[0] + V.box[2]) * sD : xm + V.box[0] * sD; const fx = tip + (dir < 0 ? 4 : -4), fl = 56; forceArrow(fx, yT - 34, dir < 0 ? Math.PI : 0, fl, { k: 1, color: L.hero ? C.hero : C.ink }); text(fmtN(B01_LT.F, 2) + ' N', fx + (dir < 0 ? fl / 2 : -fl / 2), yT - 50, { role: 'num', size: 22, weight: 750, color: L.hero ? C.heroText : C.ink, align: 'center' }); }
       /* back on the target: when, in real milliseconds */
       const kb = ep(t, tF + I.total * SL, tF + I.total * SL + 0.3);
-      if (kb > 0) rich([{ s: fmtN(I.total * 1000, 0), role: 'num', size: 34, weight: 800, color: L.col }, { s: 'ms back on target', role: 'label', size: 19, color: C.mute, gap: 10 }], 1400, L.y + 76, { align: 'right', alpha: kb });
-      b01_scope(t, 1460, L.y + 108, 380, 150, p, shotT, { a: ka, pShot: b01_flickP(L.m, B01_LT.fire), label: j ? '' : 'Fired at 70 ms' });
+      b01_scope(t, 1460, L.y + 56, 380, 150, p, shotT, { a: ka, pShot: b01_flickP(L.m, B01_LT.fire), label: j ? '' : 'Fired at 70 ms', k: 7 });
+      if (kb > 0) rich([{ s: fmtN(I.total * 1000, 0) + ' ms', role: 'num', size: 30, weight: 800, color: L.col }, { s: 'back on target', role: 'label', size: 19, color: C.mute, gap: 10 }], 1840, L.y + 232, { align: 'right', alpha: kb });
     });
     /* ---- the payoff ---- */
     const Rr = b01_flickInfo(B01_LT.mR), Tt = b01_flickInfo(THESEUS.mass / 1000);
-    verdict(t, 6.3, 840, 942, { from: Math.round(Rr.total * 1000), to: Math.round(Tt.total * 1000), unit: 'ms', dec: 0, size: 96, label: 'Back on target after a turn', better: 'lower', who: ['Pro X3 Superstrike', 'Theseus'] });
+    verdict(t, 6.3, 840, 880, { from: Math.round(Rr.total * 1000), to: Math.round(Tt.total * 1000), unit: 'ms', dec: 0, size: 96, label: 'Back on target after a turn', better: 'lower', who: ['59.0 g', '29.3 g'] });
     const kp2 = ep(t, 7.4, 7.9);
-    text('Half the push for the same move.', LM, 892, { role: 'h3', size: 34, weight: 800, color: C.ink, alpha: kp2, sentence: false });
-    text('The same hands, finer control: a higher skill ceiling.', LM, 940, { role: 'small', size: 26, weight: 600, color: C.heroText, alpha: ep(t, 7.7, 8.2), sentence: false });
-    source(t, 'Derived: t = m v ÷ F to stop, then 2 √(d m ÷ F) back, at 0.5 m/s and 0.54 N (a GT01 click, Gateron). The mouse\'s own inertia; the hand\'s comes on top.', { t0: 3.0 });
+    text('Half the push for the same move.', LM, 884, { role: 'h3', size: 34, weight: 800, color: C.ink, alpha: kp2, sentence: false });
+    text('The same hands, finer control: a higher skill ceiling.', LM, 926, { role: 'small', size: 26, weight: 600, color: C.heroText, alpha: ep(t, 7.7, 8.2), sentence: false });
+    source(t, 'Derived: m v ÷ F to stop, 2 √(d m ÷ F) back, at 0.5 m/s and 0.54 N (a GT01 click, Gateron). Moves drawn 5× larger. The mouse\'s own inertia only.', { t0: 3.0, maxW: 720 });
   }
 });

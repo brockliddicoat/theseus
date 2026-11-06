@@ -269,3 +269,9 @@ on the right (the simplified mouse with it lit, neutral until the answer, then b
   has `kit_card_e` (a card with nine ideas) and `kit_zoom` (the outlines and the finger at push-in zoom).
 - 2026-11-06 08:22: KIT.md only: the slide skeleton in section 1 is generic now and paced to the current defaults (no code change).
 - 2026-11-06 08:40 (integrator): `mouseSimple` is drawn at the scan's own proportions, 119.2 × 62.5 × 38.1 mm (`MS_DIMS`), per Brock's F12.11 ("Use the numbers only"): the hump's top is at y = -38.1 in side and front views. Say Theseus's 119.3 × 62.4 × 39.9 in words (`THS.dims`). Use `msAt`/`msBox`/`MS_DIMS`, never literal heights.
+- 2026-11-06 08:42 (H1): `mouseSimple` reads the hardware's places from `KEY_PARTS` (03-parts.js, generated from the 3D assets by
+  deck/tools/geo2d/key_parts.py; `keyPlanMM` reads the same object): the board is plan 5's outline (mouse z -10.49 to 48.57,
+  was a rounded box to 49.6), the sensor and lens window at mouse z 16.57 (were 1.12), the lens's two dots at z 22.87 and 9.87,
+  the antenna keep-out forward of the module (z 5.07 to 9.37), the battery 2.23 mm further back (key y 12.45 to 37.45; side
+  view 5.46 to 9.46 mm up). `MS_BATTERY` and `MS_CORNER_DOTS` remain, derived from `KEY_PARTS`; read `KEY_PARTS` in new code.
+  No signature changed.

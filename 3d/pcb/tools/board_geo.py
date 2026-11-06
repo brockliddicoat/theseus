@@ -7,7 +7,7 @@ from shapely.ops import unary_union
 from shapely import affinity
 from geom import Mesh, polys, cap, walls, raised, slab, hershey_text, outline_text, qr_modules, matrix_polys
 from layout import build as build_layout, pad_poly, drill_poly, trace_poly, EDGE_BAND, CU_EDGE, POUR_CLR, ANT_KEEPOUT
-from board import SORA_HOLES, wheel_cut_poly, square_cut_poly, rrect
+from board import SORA_HOLES, wheel_cut_poly, square_cut_poly, rrect, BAY_TRIM
 from parts import GND
 
 # ---- stack-up (local y; laminate top at 0) -------------------------------------------------------------
@@ -62,12 +62,12 @@ def stitching_vias(L, pour_area, avoid):
                 out.append((p.x, p.y))
     # fence around the wheel bay (not along the antenna side) and the switch window
     for cut in (wheel_cut_poly(), square_cut_poly()):
-        ring = cut.buffer(CU_EDGE + 0.45, join_style=1).exterior
+        if cut.is_empty:
+            continue
+        ring = cut.buffer(CU_EDGE + (BAY_TRIM if cut.area > 100 else 0.28) + 0.42, join_style=1).exterior
         n = max(3, int(ring.length / 1.3))
         for i in range(n):
             p = ring.interpolate(i / n, normalized=True)
-            if p.y < 28.6 and abs(p.x) < 8.5 and cut.area > 100:
-                continue          # keep the antenna side of the wheel bay clear
             if ok_region.contains(p.buffer(0.24)):
                 out.append((p.x, p.y))
     # 2) field grid (hex) in open pour
@@ -121,7 +121,9 @@ def build_board(L, art_seed=7):
     pour = pour.difference(nongnd_pad.buffer(POUR_CLR)).difference(nongnd_tr.buffer(POUR_CLR)).difference(nongnd_via.buffer(POUR_CLR))
     # QFN exposed pad + module/sensor centre are handled by pads; no pour under the sensor aperture (already a hole)
     # stitching vias
-    gv = stitching_vias(L, pour, bodies.buffer(0.2).union(gnd_pad.buffer(0.15)))
+    l3_other = unary_union([trace_poly(t) for t in routes if t['layer'] == 'L3' and t['net'] != GND] +
+                           [g for p, g in smd_or_tht if (p.get('drill') or p.get('slot')) and p['net'] != GND])
+    gv = stitching_vias(L, pour, bodies.buffer(0.2).union(gnd_pad.buffer(0.15)).union(l3_other.buffer(0.12 + 0.225)))
     # QFN thermal vias + vias next to module GND castellations
     for c, fp in L['comps']:
         a = math.radians(c['rot'])
@@ -151,9 +153,11 @@ def build_board(L, art_seed=7):
     # trim (exposed ENIG band along the plated edge + square window + plated mounting holes)
     trim = outline.difference(outline.buffer(-EDGE_BAND, join_style=1))
     sq = square_cut_poly()
-    trim_sq = sq.buffer(0.28, join_style=1).difference(sq)
+    trim_sq = sq.buffer(0.28, join_style=1).difference(sq) if not sq.is_empty else Polygon()
+    bay = wheel_cut_poly()
+    trim_bay = bay.buffer(BAY_TRIM, join_style=1).difference(bay)          # the wheel bay's gold trim (F30.21, F30.25)
     mh_rings = unary_union([Point(h['x'], h['z']).buffer(h['d'] / 2 + 0.75, quad_segs=24).difference(Point(h['x'], h['z']).buffer(h['d'] / 2, quad_segs=24)) for h in plated_mh(L)])
-    trim_top = unary_union([trim, trim_sq, mh_rings])
+    trim_top = unary_union([trim, trim_sq, trim_bay, mh_rings])
     # tented vias: ring under mask with the drill dimple
     def tented(vs):
         return unary_union([via_ring(v).difference(Point(v['x'], v['z']).buffer(v.get('drill', 0.2) / 2 + 0.01, quad_segs=8)) for v in vs])

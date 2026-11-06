@@ -259,11 +259,14 @@ export function buildSkateSets(opts = {}) {
   const dotSet = new THREE.Group(); dotSet.name = 'dotSet';
   const dot = (x, z, parent) => { const g = new THREE.Group(); g.position.set(x, 0, z); g.add(meshOf(G.glide, glideMat, 'glide'), meshOf(G.tapeLower, M.adhesive, 'tapeLower'), meshOf(G.poron, M.poron, 'poron'), meshOf(G.tapeUpper, M.adhesive, 'tapeUpper')); parent.add(g); return g; };
   for (const [x, z] of dotsAt) dot(x, z, dotSet);
-  /* plate off: the clip-on lens with its two dots on pads at its ends (the stand-in base keeps the lens window open) */
-  const lensSet = new THREE.Group(); lensSet.name = 'lensSet';
+  /* plate off: the clip-on lens with its two dots on pads at its ends (the stand-in base keeps the lens window open).
+     opts.sensor [x, z]: the lens window's centre (the shell's meta.sensor; H1 2026-11-06: z 16.57 after the board's plan 5);
+     the pads reach from the dots up to the lens's face, opts.lensY (2.40 mm over the pad, PixArt's lens reference plane) */
+  const SZ = opts.sensor || [0, 0], LY = opts.lensY ?? 2.40;
+  const lensSet = new THREE.Group(); lensSet.name = 'lensSet'; lensSet.position.set(SZ[0], 0, SZ[1]);
   {
-    const lensMat = M.lensPC || M.pom, tP = 1.0;
-    const body = new THREE.Mesh(new THREE.BoxGeometry(5.2, tP, 12.6), lensMat); body.position.set(0, G.H + tP / 2, 0); lensSet.add(body);
+    const lensMat = M.lensPC || M.pom, tP = Math.max(0.4, LY - G.H);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(5.2, 1.0, 12.6), lensMat); body.position.set(0, LY + 0.5, 0); lensSet.add(body);
     for (const [dx, dz] of SKATE_SETS.lensDots) {
       const sx = Math.sign(dx) || 1, len = Math.abs(dx) - 2.2;
       if (len > 0.2) { const arm = new THREE.Mesh(new THREE.BoxGeometry(len, tP, 3.4), lensMat); arm.position.set(sx * (2.2 + len / 2), G.H + tP / 2, dz); lensSet.add(arm); }
@@ -274,12 +277,12 @@ export function buildSkateSets(opts = {}) {
   const plateSet = new THREE.Group(); plateSet.name = 'plateSet';
   const R = SKATE_SETS.ring, front = opts.skate || halfPts();
   for (const s of [1, -1]) { const p = flatSkate(s > 0 ? front : front.map(([x, z]) => [x, -z]).reverse(), [], M, glideMat); p.name = s > 0 ? 'skateFront' : 'skateBack'; plateSet.add(p); }
-  { const ring = flatSkate(stadium(R.hw + R.outer, R.hl + R.outer), [stadium(R.hw + R.inner, R.hl + R.inner).reverse()], M, glideMat); ring.name = 'lensRing'; plateSet.add(ring); }
+  { const ring = flatSkate(stadium(R.hw + R.outer, R.hl + R.outer), [stadium(R.hw + R.inner, R.hl + R.inner).reverse()], M, glideMat); ring.name = 'lensRing'; ring.position.set(SZ[0], 0, SZ[1]); plateSet.add(ring); }
   root.add(dotSet, lensSet, plateSet);
   let base = null;
   if (opts.showFootprint !== false) {
     const sh = new THREE.Shape(fp.map(([x, z]) => new THREE.Vector2(x, -z)));
-    sh.holes.push(new THREE.Path(stadium(R.hw, R.hl).map(([x, z]) => new THREE.Vector2(x, -z)).reverse()));
+    sh.holes.push(new THREE.Path(stadium(R.hw, R.hl).map(([x, z]) => new THREE.Vector2(x + SZ[0], -(z + SZ[1]))).reverse()));
     const bg = extrude(sh, { depth: 1.2, back: { r: 0.4, s: 4 }, front: { r: 0.3, s: 2 }, curveSegments: 48 });
     bg.rotateX(-Math.PI / 2); bg.translate(0, G.H + 0.002, 0);
     base = meshOf(bg, M.cfpp, 'baseStandIn'); root.add(base);

@@ -28,7 +28,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 from sdf import Raster2D, U_round
 
 ROOT = os.path.join(HERE, '..')
-META = json.load(open(os.path.join(ROOT, 'shell-theseus-1seam.json')))
+META = json.load(open(os.environ.get('SHELL_META') or os.path.join(ROOT, 'shell-theseus-1seam.json')))   # SHELL_META: build from a copy first
 OUT = os.environ.get('PLATE_OUT') or os.path.join(ROOT, 'plate-layout.json')
 PREVIEW = sys.argv[1] if len(sys.argv) > 1 else None
 
@@ -55,6 +55,9 @@ D = dict(
     n=int(os.environ.get('NSUB', 5)),            # subdivision frequency
     keepout=dict(pts=[[s * 16.0, z] for s in (1, -1) for z in (31.6, 36.7, 41.8)], r=1.6, top=2.30),  # GT01 sockets
 )
+for _k, _v in json.loads(os.environ.get('PLATE_DIMS') or '{}').items():   # PLATE_DIMS='{"skin":0.6,"wall":{"w":0.6,"h":2.3}}'
+    if isinstance(_v, dict): D[_k].update(_v)
+    else: D[_k] = _v
 px = 0.03
 xs = np.arange(-27, 27, px); zs = np.arange(-54, 54, px)
 XX, ZZ = np.meshgrid(xs, zs)
@@ -229,6 +232,10 @@ if WFROM:
     for k in ('skin',): D[k] = J['dims'][k]
     D['wall']['h'] = J['dims']['wall']['h']; D['fine']['h'] = J['dims']['fine']['h']; FE = J.get('fe')
     print('frame and widths from', WFROM, len(MEMB), 'members')
+KW = json.loads(os.environ.get('KIND_W') or '{}')   # no FE file: each member's width by its kind (e.g. the v3 FE's mean per kind)
+if KW and not WFROM:
+    WIDTH = {(i, j): (KW[kd], D['wall']['h'] if kd != 'fine' else D['fine']['h']) for (i, j, kd) in MEMB if kd in KW}
+    print('widths by kind', KW)
 # ------------------------------------------------------------------ rasters: ribs (fine + primary), primary only
 # plate v2 (F20.3): no rib wider than the skin. A member the FE sizes wider (the lens hub ring, the ties) is built as twin
 # walls, each half the width, TGAP apart; the lattice members that meet the ring run on across the gap to its inner wall.
@@ -348,6 +355,7 @@ out = dict(
                 front=r2(SKATE), area=round(A_sk, 1), centroid=round(zc_sk, 2), **SK),
 )
 if WFROM and FE: out['fe'] = FE
+if KW and not WFROM: out['frameNote'] = os.environ.get('FRAME_NOTE') or ('frame regenerated round the window at z %.2f; member widths by kind %s (not FE-solved)' % (O[1], json.dumps(KW)))
 tmp = OUT + '.tmp'; open(tmp, 'w').write(json.dumps(out, separators=(',', ':'))); os.replace(tmp, OUT)
 print('wrote', OUT, os.path.getsize(OUT) // 1024, 'KB')
 if PREVIEW:

@@ -67,6 +67,9 @@ B03.lifeGain = B03.lifeH / B03.v4h - 1;                             /* +20.3 %: 
 /** the side button on a hinge: the thumb's force to click at s mm from the hinge, gf (a lever: F × s = F_switch × a) */
 const b03_leverF = s => B03.gt01.f * B03.nubA / s;
 B03.leverSpread = b03_leverF(B03.spots[0]) / b03_leverF(B03.spots[2]);   /* 4.33× */
+/** the force to click as printed, N: the hinge's floored (a rival's fault is never rounded up: 1.618 → 1.61), the rail's the
+   switch's own 55 gf (0.539 → 0.54, as SCALE.click has it) */
+const b03_hingeN = s => +b03_floor(b03_leverF(s) * 9.80665e-3, 2), b03_railN = () => +kitNum(B03.gt01.f * 9.80665e-3, 2);
 /** a count kept honest: never rounded up (G5) */
 const b03_floor = (v, d = 0) => (Math.floor(v * Math.pow(10, d) + 1e-9) / Math.pow(10, d)).toFixed(d);
 
@@ -83,9 +86,9 @@ function b03_path(pts, r = 0) {
 }
 const B03C = {
   shell: () => TH ? '#4B4C53' : '#3A3B42', shellLite: () => TH ? '#6A6B72' : '#4D4E55', black: () => TH ? '#2B2C31' : '#26272C',
-  pom: () => TH ? '#FBFAF6' : '#E9E7E1', pcb: () => '#1C3A29', fr4: () => TH ? '#55613C' : '#424D2D', copper: '#C98A4E',
+  pom: () => TH ? '#FAFAFA' : '#E5E5EA', pcb: () => '#1C3A29', fr4: () => TH ? '#55613C' : '#424D2D', copper: '#C98A4E',
   gold: '#D9AA4C', goldDark: '#A9822F', tin: () => TH ? '#C9CDD2' : '#AEB3BA', wire: ['#C98A4E', '#9DA3AA', '#C9CDD2'],
-  rail: () => TH ? '#8E8D88' : '#5C5D64'   /* the shipping side-button moulding: a quiet grey (a rival is never coloured) */
+  rail: () => TH ? '#8E8E93' : '#5C5D64'   /* the shipping side-button moulding: a quiet grey (a rival is never coloured) */
 };
 
 /* ============================== b03_side: the side buttons, cut at button height and seen from above ==============================
@@ -216,7 +219,7 @@ function b03_opticalMM(o = {}) {
   /* the LED (left) and the receiver (right), each on its pedestal, facing across the plunger's path at beam height */
   const by = -3.05;
   solid(() => pathRR(1.1, by - 0.9, 1.3, 2.3 + 1.2, 0.15), MT.black, [1.1, by - 0.9, 1.3, 3.5], { fill: TH ? '#3A3B41' : '#34353B', ec: eB });
-  solid(() => { G.beginPath(); G.moveTo(2.4, by - 0.62); G.lineTo(2.75, by - 0.62); G.quadraticCurveTo(3.25, by, 2.75, by + 0.62); G.lineTo(2.4, by + 0.62); G.closePath(); }, MT.lens, [2.4, by - 0.62, 0.85, 1.24], { fill: TH ? '#E8D9D9' : '#7A5F5F', ec: eB });
+  solid(() => { G.beginPath(); G.moveTo(2.4, by - 0.62); G.lineTo(2.75, by - 0.62); G.quadraticCurveTo(3.25, by, 2.75, by + 0.62); G.lineTo(2.4, by + 0.62); G.closePath(); }, MT.lens, [2.4, by - 0.62, 0.85, 1.24], { fill: TH ? '#E5E5EA' : '#636366', ec: eB });
   solid(() => pathRR(9.3, by - 0.9, 1.3, 3.5, 0.15), MT.black, [9.3, by - 0.9, 1.3, 3.5], { fill: TH ? '#3A3B41' : '#34353B', ec: eB });
   solid(() => pathRR(8.85, by - 0.5, 0.45, 1.0, 0.08), MT.black, [8.85, by - 0.5, 0.45, 1.0], { fill: TH ? '#1D1E22' : '#121316', ec: eB });
   out.led = SP(2.9, by); out.rx = SP(9.0, by);
@@ -256,7 +259,7 @@ function b03_opticalMM(o = {}) {
    mm, y down, origin on the base's top at the hinge. Returns stage points. */
 function b03_knifeMM(o = {}) {
   const th = clamp((o.throw == null ? -1 : o.throw), -1, 1), ang = Math.PI / 2 * (1 - th) /* 0: in the right jaws, π: the left */, out = {};
-  const wood = TH ? '#DCD6C8' : '#47443E', woodE = edgeCol(MT.white), cu = '#C98A4E', cuD = '#A9703C', cuE = 'rgba(80,40,10,0.7)', hi = o.hi;
+  const wood = TH ? '#D1D1D6' : '#48484A' /* a slate base: neutral, not wood (true greys, 08:45) */, woodE = edgeCol(MT.white), cu = '#C98A4E', cuD = '#A9703C', cuE = 'rgba(80,40,10,0.7)', hi = o.hi;
   const J = 40, L = 50, pv = [0, -13], bw = 1.5;
   /* the base board and its three terminal screws (the common in the middle, a throw at each end) */
   solid(() => pathRR(-60, 0, 120, 9, 1.6), MT.white, [-60, 0, 120, 9], { fill: wood, ec: woodE });
@@ -323,14 +326,170 @@ function b03_clawMM(o = {}) {
 }
 
 /* ============================== provisional slides (the kit lands next; these show the parts while it does) ============================== */
-S({ id: 'b03_switch', ch: 'click', theme: 'paper', title: 'A mechanical switch, for the battery', settle: 11, replaces: ['clk_switch'],
-  draw: t => { header(t, 'A mechanical switch, for the battery'); const pr = ep(t, 1, 1.4) - ep(t, 2.2, 2.5);
-    demoWindow(LM, 280, 840, 600, 1, { plain: true }); part(LM + 140, 700, 42, () => b03_opticalMM({ press: pr, flash: 1 }));
-    demoWindow(LM + 920, 280, 840, 600, 1, { plain: true }); part(LM + 920 + 420, 640, 42, () => clk_gt01MM({ press: pr })); } });
+/* ============================== b03_switch: a mechanical switch, for the battery ==============================
+   Seen from the side-button side (the kit's 'left' view, nose left), cut through the left trigger's switch on the board.
+   The rival is an optical switch (Omron D2FP-class: an LED, a receiver, a shutter on the plunger), then in place the GT01
+   (clk_gt01MM, H1's drawing). Each is pressed by the trigger's post; the LED's current runs on a trace beside it. */
+/** the GT01's own frame (clk_gt01MM's S): zs along the switch toward the plunger end, ys up its axis → drawing mm, y down */
+const b03_gS = (zs, ys) => { const K = CLK_G1, z = zs * K.c + ys * K.s; return [-z, -(K.oy - zs * K.s + ys * K.c)]; };
+/** the trigger's post, cut (its moulding, hatched): a 2.4 mm bar whose flat end rests on the plunger. pts: its outline in
+   mm, the tip's two corners last (they are rounded) */
+function b03_postMM(pts) {
+  const xs = pts.map(q => q[0]), ys = pts.map(q => q[1]), bx = [Math.min(...xs), Math.min(...ys), Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)];
+  solid(() => b03_path(pts, [0, 0, 0.12, 0.12]), MT.shell, bx, { fill: B03C.shellLite(), ec: edgeCol(MT.shell), hatch: true });
+}
+/** where the switch sits in the kit's 'left' view (mm): the GT01's housing middle on the board's top (the 3D board: the
+   left trigger's switch 36.7 mm ahead of the sensor; the kit's board top at y = −5.05) */
+const B03_SW = { xG: -36.7, yB: -5.05 };
+/**
+ * The LED's current on a trace that scrolls right to left (stage px; the right edge is now): Omron's drive, 5 mA for 30 µs of
+ * every 1 ms, slowed down. o = { t0 (the trace starts), rate (ms of trace a second of slide), tOff (no new pulses: the LED
+ * is gone), presses: [[t0, t1, hero]], alpha }. Returns the LED's flash now (0..1), for the drawing.
+ */
+function b03_scope(t, x, y, w, h, o) {
+  const win = 5, pm = w / win, tau = Math.max(0, (t - o.t0) * o.rate), tauOff = (o.tOff - o.t0) * o.rate;
+  const last = Math.floor(tau - 0.5) + 0.5, flash = t >= o.t0 && last >= 0 && last <= tauOff ? clamp(1 - (tau - last) / 0.3) : 0;
+  const a = ep(t, o.t0 - 0.2, o.t0 + 0.2) * (o.alpha == null ? 1 : o.alpha); if (a <= 0.003) return flash;
+  const yb = y + h, yt = y + 14, X = q => x + w - (tau - q) * pm, from = Math.max(0, tau - win);
+  /* the scale: 5 mA, 0, and 1 ms (line() and text() set their own alpha) */
+  line(x, yt, x + w, yt, { color: C.hair, w: 1.2, dash: [5, 5], alpha: a });
+  text('5 mA', x, yt - 10, { role: 'label', size: 18, color: C.faint, caps: false, alpha: a });
+  text('0', x - 10, yb + 6, { role: 'label', size: 18, color: C.faint, align: 'right', caps: false, alpha: a });
+  for (const [x1, y1, x2, y2] of [[x + w - pm, yb + 26, x + w, yb + 26], [x + w - pm, yb + 20, x + w - pm, yb + 32], [x + w, yb + 20, x + w, yb + 32]]) line(x1, y1, x2, y2, { color: C.mute, w: 2, alpha: a });
+  text('1 ms', x + w - pm / 2, yb + 54, { role: 'label', size: 18, color: C.mute, align: 'center', caps: false, alpha: a });
+  /* each press, as a band the pulses run through */
+  for (const [p0, p1, hero] of o.presses || []) {
+    const s0 = Math.max(from, (p0 - o.t0) * o.rate), s1 = Math.min(tau, (p1 - o.t0) * o.rate); if (s1 <= s0) continue;
+    G.save(); G.globalAlpha = a * 0.8; G.fillStyle = hero ? C.heroSoft : C.track; G.fillRect(X(s0), yt - 4, X(s1) - X(s0), yb - yt + 4); G.restore();
+    if (X(s1) - X(s0) > 70) text('pressed', (X(s0) + X(s1)) / 2, yt + 26, { role: 'label', size: 17, color: hero ? C.heroText : C.mute, align: 'center', alpha: a });
+  }
+  /* the trace: flat, with a 30 µs pulse each millisecond until the LED is gone; ink, then Theseus's blue from tOff */
+  const path = () => {
+    G.beginPath(); G.moveTo(X(from), yb);
+    for (let q = Math.ceil(from - 0.5) + 0.5; q <= Math.min(tau, tauOff); q += 1) { if (q < from) continue; const q1 = Math.min(q + 0.03, tau); G.lineTo(X(q), yb); G.lineTo(X(q), yt); G.lineTo(X(q1), yt); G.lineTo(X(q1), yb); }
+    G.lineTo(X(tau), yb);
+  };
+  const xo = Math.min(x + w, Math.max(x, X(tauOff)));
+  G.save(); G.globalAlpha = a; G.lineJoin = 'miter'; G.lineWidth = 2.4;
+  G.save(); G.beginPath(); G.rect(x - 2, y - 2, xo - x + 2, h + 6); G.clip(); path(); G.strokeStyle = C.ink2; G.stroke(); G.restore();
+  if (tau > tauOff) { G.save(); G.beginPath(); G.rect(xo, y - 2, x + w - xo + 2, h + 6); G.clip(); path(); G.strokeStyle = C.hero; G.lineWidth = 3; G.stroke(); G.restore(); }
+  G.restore();
+  return flash;
+}
+const B03_SW_T = { scope: 1.3, p1: 2.3, bar: 3.3, wipe: 4.3, p2: 5.5, swap: 5.9, verdict: 6.7, makers: 8.8 };
+/** one press of the trigger: the post's depth 0..1 */
+const b03_swP = (t, t0) => pressCurve(t, t0, { down: 0.14, hold: 0.8, up: 0.2, bounce: 0.04 });
+S({
+  id: 'b03_switch', ch: 'click', theme: 'paper', title: 'A mechanical switch, for the battery', settle: 12, ideas: [78],
+  replaces: ['clk_switch'], src: ['b03_d2fp', 'clk_razerV4bat', 'clk_vortexV4', 'b03_razerStaff', 'b03_logiHybrid', 'b03_eloSwitches', 'clk_gt01', 'clk_gateronRender'],
+  answers: [
+    ['bottom housing doesn\'t look very accurate at all, i\'ll attach a new reference when you ask', 'Drawn with the shared clk_gt01MM, traced from the Gateron render you sent as the best reference (F28.1); H1 is making its walls one straight 0.70 mm wall, and that lands here as it lands'],
+    ['show the effect on battery life', 'The slide is that demonstration: the optical switch\'s LED flashing on a current trace whether pressed or not, against the GT01\'s contact with nothing to light, then a Viper V4 Pro\'s draw with its two switches\' share: 17.6 % → 0.4 %, so the same battery lasts 20 % longer'],
+    ['razer says their optical encoder and switched account for almost half the battery life in the viper v4 pro (find quote)', 'Searched again: no public quote (Razer\'s pages and blog, Razer Insider, reviews). On screen as Razer staff\'s claim via you (F31.1), beside Logitech\'s own support page saying its optical-only mode "can reduce battery life"'],
+    ['also i\'d like to switch to using a hall effect / magnetic encoder', 'The wheel is magnetic deck-wide; this slide hands on to Electronics: "nothing in Theseus lights up but the sensor"'],
+    ['so we can say we should have double the battery life efficiency as razer', '"Without them, up to 2×", on Razer staff\'s figure and attributed to it, beside the +20 % I can derive for the two switches alone (Omron\'s datasheet drive)']
+  ],
+  sfx: [[2.3 + 0.12, 'click'], [2.3 + 1.1, 'release'], [5.5 + 0.12, 'click'], [5.5 + 1.1, 'release']],
+  draw: t => {
+    const T = B03_SW_T, box = [80, 260, 1200, 700], RX = 1320, RW = 520, K = CLK_G1, Q = B03_SW;
+    header(t, 'A mechanical switch, for the battery');
+    captions(t, [[0.3, '19 of 35 flagships click with light: an optical switch is a light gate, and its LED never rests.'],
+      [T.wipe, 'Theseus\'s Gateron GT01 is mechanical: its contact is the signal, so there is nothing to light.'],
+      [T.verdict + 1.9, 'A fifth more battery life. The wheel is magnetic too: only the sensor lights up.']]);
+    /* the plunger under the post: the GT01's, and the optical switch's set to meet the same post */
+    const xPl = Q.xG + b03_gS(K.zN, K.cap)[0], xO = xPl - 5.6, focus = [xO - 2, -17, 26, 16];
+    const est = establish(t, 0, box, { view: 'left', hi: ['triggers'], col: 'ink', focus, locator: 'tr', fade: 0.35,
+      mouse: { lit: ep(t, 0.12, 0.55) * (1 - 0.75 * ep(t, 1.2, 1.8)), hide: t > 0.95 ? ['side', 'side1', 'side2'] : [] } });
+    const kd = est.kd, p1 = b03_swP(t, T.p1), p2 = b03_swP(t, T.p2);
+    /* the trace first: it sets the LED's flash. New pulses stop as the wipe passes the LED */
+    const ks = 1 - ep(t, T.verdict - 0.3, T.verdict + 0.1);
+    const flash = b03_scope(t, RX + 30, 330, RW - 30, 128, { t0: T.scope, rate: 2.5, tOff: T.wipe + 0.32, presses: [[T.p1, T.p1 + 1.16, false], [T.p2, T.p2 + 1.16, true]], alpha: ks });
+    if (ks > 0.003) {
+      const kt = ep(t, T.scope - 0.2, T.scope + 0.2) * ks, kr = kt * (1 - ep(t, T.wipe + 0.2, T.wipe + 0.6)), kth = kt * ep(t, T.wipe + 0.5, T.wipe + 0.9);
+      ltag(RX, 290, 'LED current', 'one switch', { a: kt, size: 20 });
+      text('slowed 400×', RX + RW, 290, { role: 'label', size: 18, color: C.faint, align: 'right', alpha: kt, caps: false });
+      text('5 mA for 30 µs of every 1 ms: 0.15 mA a switch, pressed or not', RX, 548, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: RW - 90, lh: 1.3, alpha: kr });
+      text('A contact: no light, nothing to power', RX, 548, { role: 'small', size: 23, weight: 700, color: C.heroText, maxW: RW - 90, alpha: kth });
+    }
+    /* the two drawings, in place under one camera: the optical switch, then the GT01, each under its post */
+    let opt = {}, gt = {};
+    const drawRival = () => est.draw(() => {
+      xsave(); xmove(xO, Q.yB - 0.2);
+      pcbSec(-14, 40, 0.2, 1.2, { holes: [1.3, 3.84, 6.38, 8.92, 11.46] });
+      opt = b03_opticalMM({ press: p1, flash, board: false });
+      const d = p1 * 0.5; opt.arrow = SP(5.6 + 2.3, -7.35 + d - 2.4);
+      xrest();
+      G.save(); G.clip(msView('left').out); xsave(); xmove(xO, Q.yB - 0.2);
+      b03_postMM([[5.6 - 1.2, -7.35 + d - 16], [5.6 + 1.2, -7.35 + d - 16], [5.6 + 1.2, -7.35 + d], [5.6 - 1.2, -7.35 + d]]);
+      xrest(); G.restore();
+    });
+    const drawOurs = () => est.draw(() => {
+      xsave(); xmove(Q.xG, Q.yB);
+      pcbSec(-20, 30, 0, 1.2, { holes: [-5.08, 0, 5.08] });
+      gt = clk_gt01MM({ press: p2, board: false });
+      const d = p2 * K.tr; gt.arrow = SP(...b03_gS(K.zN + 2.3, K.cap - d + 2.4));
+      xrest();
+      G.save(); G.clip(msView('left').out); xsave(); xmove(Q.xG, Q.yB);
+      b03_postMM([b03_gS(K.zN - 1.2, K.cap - d + 16), b03_gS(K.zN + 1.2, K.cap - d + 16), b03_gS(K.zN + 1.2, K.cap - d), b03_gS(K.zN - 1.2, K.cap - d)]);
+      xrest(); G.restore();
+    });
+    if (kd > 0.001) { G.save(); G.globalAlpha = kd; wipeTo(t, T.wipe, 0.9, box, drawRival, drawOurs, { rival: 'Most flagships', right: 'Theseus' }); G.restore(); }
+    /* the press: the trigger's post pushed down its own axis (straight down on the optical, along the GT01's 20°) */
+    if (kd > 0.5) {
+      const riv = t < T.wipe + 0.45, pr = riv ? p1 : p2, q = riv ? opt.arrow : gt.arrow;
+      if (q && pr > 0.01) forceArrow(q[0], q[1], riv ? Math.PI / 2 : Math.atan2(K.c, K.s), 70, { k: clamp(pr / 0.7), color: C.ink, w: 3 });
+    }
+    /* the panel's name and what it shows, top left */
+    if (kd > 0.02 && !(t > T.wipe && t < T.wipe + 0.9)) {
+      const riv = t < T.wipe, kn = (riv ? ep(t, 1.2, 1.6) : ep(t, T.wipe + 0.9, T.wipe + 1.3)) * kd, sx = box[0] + 32, sy = box[1] + 50;
+      const L1 = riv ? 'Most flagships' : 'Theseus', L2 = riv ? 'optical' : 'mechanical', tw0 = ltagW(L1, L2, { size: 22 });
+      G.save(); G.globalAlpha = kn * 0.94; rrPath(sx - 16, sy - 30, tw0 + 32, 46, TILE.r); G.fillStyle = C.panel; G.fill(); G.restore();
+      ltag(sx, sy, L1, L2, { a: kn, size: 22, color: riv ? C.mute : C.heroText, vcolor: riv ? C.secondText : C.heroText });
+    }
+    /* the parts, named in a column right of the drawing, as they matter */
+    if (kd > 0.5) {
+      const lx = est.P(xO + 19.2, 0)[0], ly = i => box[1] + 196 + i * 124, C2 = { side: 'r', prose: true, maxW: 262 };
+      if (t < T.wipe) {
+        if (opt.beam) callout(t, 1.6, opt.beam, 'LED and receiver: a light gate', Object.assign({ to: [lx, ly(0)], color: C.ink2, tcolor: C.ink }, C2));
+        if (opt.shutter && t > T.p1) callout(t, T.p1 + 0.15, opt.shutter, 'Pressed, a shutter cuts the beam', Object.assign({ to: [lx, ly(1)], color: C.ink2, tcolor: C.ink }, C2));
+        if (opt.led && t > T.p1 + 1.2) faultTag(t, T.p1 + 1.2, opt.led, 'Its LED flashes 1,000 times a second, pressed or not', Object.assign({ to: [lx, ly(2)] }, C2));
+      } else if (t > T.wipe + 0.9) {
+        if (gt.top) callout(t, T.wipe + 1.0, gt.top, 'Gateron GT01, cover clear', Object.assign({ to: [lx, ly(0)], color: C.ink2, tcolor: C.ink }, C2));
+        if (gt.leaf && t > T.p2) callout(t, T.p2 + 0.15, gt.leaf, 'Pressed, the leaf snaps from NC to NO', Object.assign({ to: [lx, ly(1)], color: C.ink2, tcolor: C.ink }, C2));
+        if (gt.contact && t > T.p2 + 0.6) fixTag(t, T.p2 + 0.6, gt.contact, 'Nothing to light: the contact is the signal', Object.assign({ to: [lx, ly(2)] }, C2));
+      }
+    }
+    /* a Viper V4 Pro's average draw at 1 khz, and the share its two optical switches take; then the same with mechanical ones */
+    const kb = ep(t, T.bar, T.bar + 0.5), kw = ep(t, T.swap, T.swap + 0.8, E.io3);
+    if (kb > 0.003) {
+      const by = 640, bh = 36, px = RW / B03.v4MA, rest = B03.v4MA - 2 * B03.optMA, sl = lerp(2 * B03.optMA, 2 * B03.mechUA / 1000, kw), xr = RX + rest * px;
+      rich([{ s: kw < 0.5 ? 'Viper V4 Pro at 1 khz' : 'The same, mechanical', role: 'label', size: 20, color: C.mute }, { s: kitNum(rest + sl, 2) + ' mA on average', role: 'small', size: 22, weight: 750, color: C.ink, caps: false, sentence: false, gap: 12 }], RX, 616, { alpha: kb });
+      G.save(); G.globalAlpha = kb;
+      rrPath(RX, by, rest * px * ep(t, T.bar, T.bar + 0.4, E.snap), bh, 3); G.fillStyle = C.track; G.fill();
+      const ksl = ep(t, T.bar + 0.3, T.bar + 0.6);
+      if (ksl > 0) { G.fillStyle = mix(C.red, C.hero, kw); G.globalAlpha = kb * ksl; G.fillRect(xr + 1.5, by, Math.max(2.5, sl * px - 1.5), bh); }
+      if (kw > 0.02) { G.globalAlpha = kb * kw; G.setLineDash([5, 4]); G.strokeStyle = C.faint; G.lineWidth = 1.5; G.strokeRect(xr + sl * px + 2, by + 1, RX + RW - xr - sl * px - 3, bh - 2); G.setLineDash([]); }
+      G.restore();
+      text('Everything else ' + kitNum(rest, 2) + ' mA', RX + 14, by + bh / 2 + 8, { role: 'small', size: 20, weight: 650, color: C.ink2, alpha: kb * ep(t, T.bar + 0.3, T.bar + 0.7) });
+      text('Two optical switches ' + kitNum(2 * B03.optMA, 2) + ' mA', RX + RW, by + bh + 34, { role: 'small', size: 22, weight: 700, color: C.red, align: 'right', alpha: kb * ksl * (1 - ep(t, T.swap, T.swap + 0.3)) });
+      text('Two mechanical ' + kitNum(2 * B03.mechUA / 1000, 3) + ' mA', xr + 4, by + bh + 34, { role: 'small', size: 22, weight: 700, color: C.heroText, align: 'right', alpha: kb * ep(t, T.swap + 0.5, T.swap + 0.9) });
+    }
+    /* the verdict: the share of the battery the two switches take; the net, the battery life it gives back */
+    verdict(t, T.verdict, RX, 440, { from: b03_floor(B03.optShare * 100, 1), to: (Math.ceil(B03.mechShare * 1000 - 1e-9) / 10).toFixed(1), unit: '%', dec: 1, label: 'Battery to switches', better: 'lower', who: ['Viper V4 Pro', 'Theseus'], net: '+' + b03_floor(B03.lifeGain * 100, 0) + ' %', netWord: 'battery life', size: 104, maxW: RW });
+    /* what the makers say: Logitech's own page, and Razer staff via Brock */
+    const km = ep(t, T.makers, T.makers + 0.4), km2 = ep(t, T.makers + 0.4, T.makers + 0.8);
+    if (km > 0.003) {
+      text('What the makers say', RX, 792, { role: 'label', size: 20, color: C.mute, alpha: km });
+      text('Logitech: running its switch\'s light full time "can reduce battery life"', RX, 830, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: RW, lh: 1.3, alpha: km });
+      text('Razer staff, via Brock: switches and wheel take "almost half", so up to 2× without them', RX, 900, { role: 'small', size: 23, weight: 600, color: C.ink2, maxW: RW, lh: 1.3, alpha: km2 });
+    }
+    text('Derived: two optical switches at Omron\'s datasheet drive (5 mA for 30 µs each 1 ms) on a Viper V4 Pro\'s 306 mAh over 180 h at 1 khz; a mechanical read, about 3 µA', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, T.verdict + 1.0, T.verdict + 1.4), maxW: RM - LM });
+  }
+});
 S({ id: 'b03_spdt', ch: 'click', theme: 'paper', title: 'Single pole, double throw', settle: 10, replaces: ['clk_spdt'],
-  draw: t => { header(t, 'Single pole, double throw'); demoWindow(LM, 280, 1760, 600, 1, { plain: true }); part(W / 2, 760, 9, () => b03_knifeMM({ throw: lerp(-1, 1, ep(t, 0.5, 2.0)), hi: t > 2.5 ? 'pole' : null })); } });
+  draw: t => { header(t, 'Single pole, double throw'); demoWindow(LM, 280, 1760, 600, 1, { plain: true }); clipped(LM, 280, 1760, 600, () => part(W / 2, 760, 9, () => b03_knifeMM({ throw: lerp(-1, 1, ep(t, 0.5, 2.0)), hi: t > 2.5 ? 'pole' : null }))); } });   /* provisional: being rebuilt */
 S({ id: 'b03_hotswap', ch: 'click', theme: 'night', title: 'Hot-swap switches, no solder', settle: 11, replaces: ['clk_hotswap'],
-  draw: t => { header(t, 'Hot-swap switches, no solder'); demoWindow(LM, 280, 1760, 680, 1, { plain: true }); part(W / 2, 520, 150, () => b03_clawMM({ insert: ep(t, 0.5, 2.5) })); } });
+  draw: t => { header(t, 'Hot-swap switches, no solder'); demoWindow(LM, 280, 1760, 680, 1, { plain: true }); clipped(LM, 280, 1760, 680, () => part(W / 2, 520, 150, () => b03_clawMM({ insert: ep(t, 0.5, 2.5) }))); } });   /* provisional: being rebuilt */
 /* ---- */
 /* ============================== b03_side: dual rail side buttons ============================== */
 /** the classroom version: a door seen from above, hinged at its left end. A push near the hinge takes far more force than one
@@ -341,11 +500,11 @@ function b03_doorMM(o = {}) {
   solid(() => { G.beginPath(); G.rect(L + 2, -3, 12, 6); }, MT.shell, [L + 2, -3, 12, 6], { fill: B03C.shellLite(), ec: edgeCol(MT.shell), hatch: true });
   G.save(); G.setLineDash([lw(5), lw(4)]); G.beginPath(); G.arc(0, 0, L, 0, 0.16); G.strokeStyle = inkA(0.25); G.lineWidth = lw(1.2); G.stroke(); G.restore();
   xsave(); xturn(sw);
-  solid(() => pathRR(0, -1.6, L, 3.2, 0.6), MT.white, [0, -1.6, L, 3.2], { fill: TH ? '#E4E1D8' : '#4A4741', ec: edgeCol(MT.white) });
+  solid(() => pathRR(0, -1.6, L, 3.2, 0.6), MT.white, [0, -1.6, L, 3.2], { fill: TH ? '#E5E5EA' : '#48484A', ec: edgeCol(MT.white) });
   solid(() => pathRR(L - 9, 1.4, 6, 2.2, 0.8), MT.steel, [L - 9, 1.4, 6, 2.2], { fill: TH ? '#9AA0A8' : '#7E848C', ec: edgeCol(MT.steel) });
   out.at = x => SP(x, -1.6); out.M = XF.m.slice();
   xrest();
-  G.beginPath(); G.arc(0, 0, 2.2, 0, TAU); G.fillStyle = TH ? '#8A8983' : '#6E6D68'; G.fill();
+  G.beginPath(); G.arc(0, 0, 2.2, 0, TAU); G.fillStyle = TH ? '#8E8E93' : '#6E6E73'; G.fill();
   out.hinge = SP(0, 0); out.L = L;
   return out;
 }
@@ -359,11 +518,11 @@ S({
   id: 'b03_side', ch: 'click', theme: 'paper', title: 'Dual rail side buttons', settle: 12, ideas: [80, 64],
   replaces: ['sidebuttons'], src: ['b03_tpuHyper', 'b03_brockDoc', 'b03_gateronRail', 'b03_gt01', 'b03_razerV4'],
   answers: [
-    ['left visualization feels lazy', 'The shipping button is drawn as it is built (one moulded part on a living hinge, its nub on a 2-pin mini switch on its own side board, a ribbon cable to the main board: Brock\'s photos, TechPowerUp\'s Hyperlight teardown) and demonstrated: a thumb presses it at three spots and the force to click runs from 1.62 N by the hinge to 0.37 N at the tip, where it bends on past the click'],
+    ['left visualization feels lazy', 'The shipping button is drawn as it is built (one moulded part on a living hinge, its nub on a 2-pin mini switch on its own side board, a ribbon cable to the main board: Brock\'s photos, TechPowerUp\'s Hyperlight teardown) and demonstrated: a thumb presses it at three spots and the force to click runs from 1.61 N by the hinge to 0.37 N at the tip, where it bends on past the click'],
     ['right visualization doesn\'t match the other dual rail plungers with ptfe', 'It uses the main buttons\' post (2.4 mm) between two pads, POM as everywhere (F31.3), labelled "the main buttons\' post, on POM pads"'],
     ['it\'s way overbuilt', 'Stripped to a guide over the switch\'s top (two walls, two pads), the one post, and a 1 mm pocket in the shell round the switch: no arms, no rails, no glove skirts'],
     ['important information though, it gets the point across okay', 'Every fact kept: 0 mice ship SPDT side buttons (F11.4), full-size switches at 29.31 g (F9.17), held by the shell with no side board (F12.4), the stop on the guide (#64)'],
-    ['it just feels lazy', 'Now a demonstration: established on the mouse, pushed in, the same three thumb presses on the hinge and on the rail, the classroom door (torque) beside it, and the verdict: a force spread of 1.25 N → 0.00 N'],
+    ['it just feels lazy', 'Now a demonstration: established on the mouse, pushed in, the same three thumb presses on the hinge and on the rail, the classroom door (torque) beside it, and the verdict: a force spread of 1.24 N → 0.00 N'],
     ['F31.4: "i\'d have to see" the guide over the full-size switch', 'Shown plainly, held by the shell, as the slide\'s second half: say if the pads should face across instead (a question in the report)']
   ],
   sfx: [[1.85 + 0.17, 'click'], [2.65 + 0.15, 'click'], [3.45 + 0.12, 'click'], [5.75 + 0.18, 'click'], [6.35 + 0.18, 'click'], [6.95 + 0.18, 'click']],
@@ -396,7 +555,7 @@ S({
       if (fp) {
         const ia = ep(t, pr.t0 - 0.35, pr.t0 - 0.05) * (1 - ep(t, pr.t0 + 0.8, pr.t0 + 1.0));
         clipped(box[0], box[1], box[2], box[3], () => finger(fp[0], fp[1], -Math.PI / 2, { s: est.s, press: pr.d, alpha: ia * 0.96, len: 40 }));
-        const N = (riv ? b03_leverF(spot.s) : B03.gt01.f) * 9.80665e-3;
+        const N = riv ? b03_hingeN(spot.s) : b03_railN();
         forceArrow(fp[0] - 4, fp[1], 0, 60 + 120 * N, { N, k: clamp(pr.d / 0.82) * ia, color: riv ? (N > 1 ? C.red : C.ink) : C.hero, side: 'end' });
       }
     }
@@ -407,7 +566,7 @@ S({
         const tR = T.rival[i] + 0.62, tO = T.ours[i] + 0.62, oursShown = t >= tO, rivalShown = t >= tR && t < T.wipe + 0.45;
         if (!rivalShown && !oursShown) return;
         const a = ka * (oursShown ? ep(t, tO, tO + 0.3) : ep(t, tR, tR + 0.3) * (1 - ep(t, T.wipe + 0.1, T.wipe + 0.45)));
-        const N = (oursShown ? B03.gt01.f : b03_leverF(sp.s)) * 9.80665e-3;
+        const N = oursShown ? b03_railN() : b03_hingeN(sp.s);
         circle(q[0] - 3, q[1], 4, { fill: oursShown ? C.hero : i === 0 ? C.red : C.ink2, alpha: a });
         rich([{ s: kitNum(N, 2) + ' N', role: 'num', size: 26, weight: 750, color: oursShown ? C.heroText : i === 0 ? C.red : C.ink, tnum: true }], xL - 12, q[1] + 9, { align: 'right', alpha: a });
       });
@@ -439,16 +598,16 @@ S({
       const dpr = t < T.wipe ? press(T.rival) : null, dsp = dpr ? B03_SPOTS[dpr.i] : null;
       const door = part(r[0] + 34, r[1] + 70, 4.6, () => b03_doorMM({ swing: dpr ? dpr.d : 0 }), { alpha: ep(t, 1.1, 1.5) });
       if (dsp && door.M) {
-        const pa = SPm(door.M, 80 * dsp.s / B03.btnL, -1.6), N = b03_leverF(dsp.s) * 9.80665e-3, ia = 1 - ep(t, dpr.t0 + 0.8, dpr.t0 + 1.0);
+        const pa = SPm(door.M, 80 * dsp.s / B03.btnL, -1.6), N = b03_hingeN(dsp.s), ia = 1 - ep(t, dpr.t0 + 0.8, dpr.t0 + 1.0);
         forceArrow(pa[0], pa[1], Math.PI / 2, 30 + 46 * N, { k: clamp(dpr.d / 0.82) * ia, color: N > 1 ? C.red : C.ink, w: 3, hs: 11 });
       }
       text('Push a door near its hinge and it takes far more force than at the handle. A hinged button is the same lever.', r[0], r[1] + 158, { role: 'small', size: 24, weight: 600, color: C.ink2, maxW: r[2], alpha: ep(t, 1.4, 1.8), lh: 1.3 });
       G.restore();
     }
     /* the verdict: how much more force the heaviest spot takes than the lightest */
-    const nR = sp => +kitNum(b03_leverF(sp) * 9.80665e-3, 2), spreadN = nR(B03.spots[0]) - nR(B03.spots[2]);   /* from the readings as printed (G5) */
+    const spreadN = b03_hingeN(B03.spots[0]) - b03_hingeN(B03.spots[2]);   /* from the readings as printed (G5): 1.61 − 0.37 */
     verdict(t, T.verdict, RX, 440, { from: spreadN.toFixed(2), to: '0.00', unit: 'N', dec: 2, label: 'Force spread', better: 'lower', who: ['On a hinge', 'Theseus'], net: false, size: 112, maxW: RW });
-    scaleNote(RX, 540, 'wherever your thumb lands', { lead: kitNum(B03.gt01.f * 9.80665e-3, 2) + ' N', t, t0: T.verdict + 1.7 });
+    scaleNote(RX, 540, 'wherever your thumb lands', { lead: kitNum(b03_railN(), 2) + ' N', t, t0: T.verdict + 1.7 });
     statTile(t, T.facts, [RX, 600, RW, 160], { value: '0', label: 'Other mice with SPDT side buttons', align: 'left' });
     statTile(t, T.facts + 0.3, [RX, 800, RW, 160], { value: THS.mass, unit: 'g', label: 'with four full-size SPDT switches', hero: true, align: 'left' });
     text('Lever model: a 14.5 mm button, its nub 9 mm from the hinge, the same 55 gf switch on both; the rail\'s pad friction not modelled', LM, 994, { role: 'foot', color: C.faint, alpha: ep(t, T.verdict + 1.9, T.verdict + 2.3), maxW: RM - LM });

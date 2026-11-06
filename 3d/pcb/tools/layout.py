@@ -5,7 +5,7 @@ import deps  # noqa: F401  (stand-ins for packages this machine lacks: shim/READ
 from shapely.geometry import Polygon, Point, LineString, box, MultiPolygon, GeometryCollection
 from shapely.ops import unary_union
 from shapely import affinity
-from board import theseus_outline, wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, P
+from board import theseus_outline, wheel_cut_poly, square_cut_poly, SORA_HOLES, rrect, P, BAY_TRIM
 import parts
 from parts import C, world_pads, FP, GND
 
@@ -14,7 +14,8 @@ EDGE_BAND = 0.35          # ENIG edge trim width on top/bottom (Viper V4 Pro sty
 CU_EDGE = 0.30            # copper (non-trim) to trim/edge clearance
 CLR = 0.12                # copper-copper clearance
 POUR_CLR = 0.20           # pour clearance to other nets
-ANT_KEEPOUT = box(-6.6, 23.75, 6.6, 27.45)   # antenna end of U1 to the wheel-bay edge, all layers, no copper
+ANT_KEEPOUT = box(-6.6, 7.95, 6.6, 12.25)    # plan 5: under U1's antenna end (forward, toward the sensor) and 0.8 mm past it,
+                                             # all layers, no copper (Raytac AN54LM-P20A: the long meander antenna)
 
 
 def pad_poly(p, grow=0.0):
@@ -54,7 +55,7 @@ def load():
 
 def build():
     outline = theseus_outline()
-    cuts = [wheel_cut_poly(), square_cut_poly()]
+    cuts = [c for c in (wheel_cut_poly(), square_cut_poly()) if not c.is_empty]
     npth = []
     for k, (x, z, d, kind) in SORA_HOLES.items():
         npth.append(dict(name=k, x=x, z=z, d=d, plated=k in ('MH3', 'MH4')))
@@ -95,9 +96,13 @@ def drc(L, verbose=True):
     errs = []
     edge = L['outline'].exterior
     keep_edge = L['outline'].buffer(-(EDGE_BAND + CU_EDGE))
-    hole_keep = unary_union([g.buffer(CU_EDGE) for g in L['cuts']] +
-                            [Point(h['x'], h['z']).buffer(h['d'] / 2 + CU_EDGE) for h in L['npth'] if not h['plated']])
+    hole_keep3 = unary_union([g.buffer(CU_EDGE) for g in L['cuts']] +
+                             [Point(h['x'], h['z']).buffer(h['d'] / 2 + CU_EDGE) for h in L['npth'] if not h['plated']])
+    # on the top layer the wheel bay and the switch window carry gold trim (0.35 / 0.28 mm): traces keep CLR off it
+    trims = [(wheel_cut_poly(), BAY_TRIM), (square_cut_poly(), 0.28)]
+    hole_keep1 = unary_union([hole_keep3] + [c.buffer(t + CLR) for c, t in trims if not c.is_empty])
     for layer in ('L1', 'L3'):
+        hole_keep = hole_keep1 if layer == 'L1' else hole_keep3
         items = layer_items(L, layer)
         for i, (n1, g1, k1, l1, _k1) in enumerate(items):
             if k1 == 'trace' or k1 == 'via':
@@ -116,6 +121,32 @@ def drc(L, verbose=True):
                 if g1.distance(g2) < CLR - 1e-6:
                     where = tuple(np.round(g1.buffer(CLR).intersection(g2).centroid.coords[0], 2)) if g1.buffer(CLR).intersects(g2) else ''
                     errs.append('%s clearance %s(%s) <-> %s(%s) at %s' % (layer, l1, k1, l2, k2, where))
+    # pads (plan 5): every pad inside the board by the gold trim plus 0.15, clear of the cut-outs and copper-free holes, and
+    # 0.15 from any other net's pad (two pads of one part on one net may touch)
+    pad_in = L['outline'].buffer(-(EDGE_BAND + 0.15))
+    cut_keep = unary_union([g.buffer(0.2) for g in L['cuts']] + [Point(h['x'], h['z']).buffer(h['d'] / 2 + 0.2) for h in L['npth'] if not h['plated']])
+    pp = [(p, pad_poly(p)) for p in L['pads']]
+    for p, g in pp:
+        if not g.within(pad_in if p['net'] != GND else L['outline'].buffer(-0.15)):    # GND pads may meet the (GND) edge plating
+            errs.append('pad %s.%s too close to the board edge' % (p['ref'], p['name']))
+        if not (p.get('drill') or p.get('slot')) and g.intersects(cut_keep):
+            errs.append('pad %s.%s too close to a cut-out or hole' % (p['ref'], p['name']))
+        if g.intersects(ANT_KEEPOUT) and p['ref'] != 'U1':
+            errs.append('pad %s.%s inside the antenna keep-out' % (p['ref'], p['name']))
+    for i in range(len(pp)):
+        for j in range(i + 1, len(pp)):
+            (p, g), (q, h) = pp[i], pp[j]
+            if p['net'] == q['net'] and p['net'] not in ('NC',):
+                continue
+            if g.distance(h) < 0.15 - 1e-6:
+                errs.append('pads %s.%s (%s) and %s.%s (%s) %.3f apart' % (p['ref'], p['name'], p['net'], q['ref'], q['name'], q['net'], g.distance(h)))
+    # vias clear of other nets' pads on L1 (already in layer_items) and of each other (any net) by 0.12
+    vs = L['vias']
+    for i in range(len(vs)):
+        for j in range(i + 1, len(vs)):
+            a, b = vs[i], vs[j]
+            if math.hypot(a['x'] - b['x'], a['z'] - b['z']) < a.get('d', 0.45) / 2 + b.get('d', 0.45) / 2 + 0.12 - 1e-6:
+                errs.append('vias %s (%.2f, %.2f) and %s (%.2f, %.2f) too close' % (a['net'], a['x'], a['z'], b['net'], b['x'], b['z']))
     # connectivity per net (L1+L3+vias/THT joined across layers), GND excluded (pour + plane)
     nets = {}
     for layer in ('L1', 'L3'):

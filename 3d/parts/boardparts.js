@@ -38,7 +38,7 @@ function quadXZ(w, d, y, cx = 0, cz = 0) {
 }
 
 // ============================================================================================ radio module
-export const RADIO_SPEC = { size: [9.9, 13.3, 2.0], antenna: 'meander PCB trace, ~3.4 mm end band (MDBT50Q-style)', silicon: 'nRF54LM20A', label: 'representative' };
+export const RADIO_SPEC = { size: [9.9, 13.3, 2.0], name: 'Raytac AN54LM-P20A', antenna: 'long meander PCB trace, ~3.4 mm end band (the MDBT50Q-style long antenna, F21.4)', silicon: 'nRF54LM20A', label: 'representative' };
 
 export function buildRadioModule(opts = {}) {
   const M = partMaterials(opts.materials);
@@ -178,7 +178,11 @@ export function buildSensorModule(opts = {}) {
 }
 
 // ============================================================================================ snap-on lens
-export const LENS_SPEC = { body: [5.2, 9.6, 2.2], pegs: 'Ø1.7 through the board, split snap heads', label: 'proposal' };
+// H1, 2026-11-06 (b04's catch): PixArt's Z, lens reference plane to the surface, is 2.4 mm (2.2 to 2.6, PAW3395 / PMW3360
+// datasheets). With the board's top 5.03 mm over the pad, the lens's lowest point (the imaging dome) sits 2.63 below the board's
+// top, 1.12 mm shallower than before (it was 1.28 mm over the pad, out of focus): the upper block to board top − 1.75, the
+// lower block to − 2.13, the collars to − 2.20, the imaging dome to − 2.63, the light dome to − 2.50; the optics unchanged
+export const LENS_SPEC = { body: [5.2, 9.6, 1.63], belowBoardTop: 2.63, referencePlaneOverPad: 2.40, pegs: 'Ø1.7 through the board, split snap heads', label: 'proposal' };
 
 export function buildSnapLens(opts = {}) {
   const M = partMaterials(opts.materials);
@@ -190,19 +194,19 @@ export function buildSnapLens(opts = {}) {
   const body = new THREE.Group(); body.name = 'lensBody';
   // the body: a rounded block under the board, with a shoulder step along its length
   const blk = (w, d, ya, yz, r, bev) => yFlip(extrude(roundedRectShape(w, d, r), { depth: yz - ya, front: bev ? { r: bev, s: 3 } : null, back: { r: 0.08, s: 2 }, curveSegments: 8 })).translate(0, ya, 0);
-  body.add(meshOf(blk(5.2, 9.6, yb - 1.25, yb - 0.004, 0.6, 0.12), mat, 'upper'));
-  body.add(meshOf(blk(4.4, 7.2, yb - 2.2, yb - 1.25, 0.5, 0.0).translate(0, 0, 0.3), mat, 'lower'));
+  body.add(meshOf(blk(5.2, 9.6, yb - 0.75, yb - 0.004, 0.6, 0.12), mat, 'upper'));
+  body.add(meshOf(blk(4.4, 7.2, yb - 1.13, yb - 0.75, 0.5, 0.0).translate(0, 0, 0.3), mat, 'lower'));
   // the boss that sits in the board's sensor aperture
   body.add(meshOf(lathe([[0, yb - 0.01], [1.12, yb - 0.01], [1.12, -0.18], [1.04, -0.1], [0, -0.1]], { segments: 48 }), mat, 'boss'));
   // the optics on the bottom face: the imaging dome and the smaller illumination dome, each on a short collar
-  body.add(meshOf(lathe((() => { const p = [[0, yb - 2.75], ...Array.from({ length: 12 }, (_, i) => { const a = (1 - (i + 1) / 12) * Math.PI / 2; return [1.25 * Math.cos(a), yb - 2.32 - 0.43 * Math.sin(a)]; }), [1.42, yb - 2.32], [1.42, yb - 2.196]]; return p; })(), { segments: 56 }).translate(0, 0, 1.1), mat, 'imagingLens'));
-  body.add(meshOf(lathe((() => { const p = [[0, yb - 2.62], ...Array.from({ length: 10 }, (_, i) => { const a = (1 - (i + 1) / 10) * Math.PI / 2; return [0.85 * Math.cos(a), yb - 2.32 - 0.3 * Math.sin(a)]; }), [1.0, yb - 2.32], [1.0, yb - 2.196]]; return p; })(), { segments: 48 }).translate(0, 0, -1.9), mat, 'lightLens'));
+  body.add(meshOf(lathe((() => { const p = [[0, yb - 1.63], ...Array.from({ length: 12 }, (_, i) => { const a = (1 - (i + 1) / 12) * Math.PI / 2; return [1.25 * Math.cos(a), yb - 1.20 - 0.43 * Math.sin(a)]; }), [1.42, yb - 1.20], [1.42, yb - 1.126]]; return p; })(), { segments: 56 }).translate(0, 0, 1.1), mat, 'imagingLens'));
+  body.add(meshOf(lathe((() => { const p = [[0, yb - 1.50], ...Array.from({ length: 10 }, (_, i) => { const a = (1 - (i + 1) / 10) * Math.PI / 2; return [0.85 * Math.cos(a), yb - 1.20 - 0.3 * Math.sin(a)]; }), [1.0, yb - 1.20], [1.0, yb - 1.126]]; return p; })(), { segments: 48 }).translate(0, 0, -1.9), mat, 'lightLens'));
   root.add(body);
   // the clips: an arm from each end of the body to a peg through the board, a split snap head above it
   const clips = new THREE.Group(); clips.name = 'clips';
   for (const s of [1, -1]) {
     const zc = s * 6.0;
-    const arm = yFlip(extrude(roundedRectShape(2.4, 1.9, 0.5), { depth: 0.9, front: { r: 0.12, s: 2 }, back: { r: 0.1, s: 2 }, curveSegments: 6 })).translate(0, yb - 1.0, zc - s * 0.25);
+    const arm = yFlip(extrude(roundedRectShape(2.4, 1.9, 0.5), { depth: 0.65, front: { r: 0.12, s: 2 }, back: { r: 0.1, s: 2 }, curveSegments: 6 })).translate(0, yb - 0.75, zc - s * 0.25);
     clips.add(meshOf(arm, mat, 'clipArm'));
     const peg = lathe([[0, yb - 0.1], [0.82, yb - 0.1], [0.82, 0.05], [1.02, 0.1], [0.98, 0.42], [0.62, 0.72], [0, 0.72]], { segments: 40, crease: 40 });
     peg.translate(0, 0, zc); clips.add(meshOf(peg, mat, 'peg'));

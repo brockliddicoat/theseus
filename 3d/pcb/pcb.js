@@ -241,7 +241,10 @@ export async function buildPcb(opts = {}) {
   board.add(root);
   group.add(board);
   if ((opts.placement || 'mouse') === 'mouse') board.position.set(0, opts.boardY ?? PCB_INFO.boardTopYInMouse, opts.boardZ ?? PCB_INFO.boardOffsetZInMouse);
-  else board.position.set(0, 0, -24.6);          // 'origin': board centred (local z 24.6 -> 0), top copper at y = 0
+  else {                                          // 'origin': board centred on its outline's z span, top copper at y = 0
+    const zs = (layout.outline || [[0, 0]]).map(p => p[1]);
+    board.position.set(0, 0, -(Math.min(...zs) + Math.max(...zs)) / 2);
+  }
   // keep the heat-front frame glued to the board (the deck may move/rotate the group at any time)
   for (const k of ['mask', 'mask_cu', 'mask_tr', 'enig', 'edge_gold', 'silk', 'solder']) {
     const m = M[k]; const prev = m.onBeforeRender;
@@ -442,16 +445,7 @@ export async function buildPcb(opts = {}) {
       sw.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
       node.add(sw); gt01[ref] = sw; owned.push(sw);
     }
-    // the parts GT01 has no locating peg any more (Brock: it read as a fourth pin): close the 1.0 mm peg hole that
-    // pcb.glb drilled beside each switch (+1.45, +2.54 from its centre), top and bottom, in the board's own masks
-    const core = root.getObjectByName('board_core'), host = core && core.parent;
-    for (const ref of ['SW1', 'SW2']) {
-      const c = host && gt01[ref] && (layout.components || []).find((k) => k.ref === ref); if (!c) continue;
-      for (const [y, m, up] of [[0.0235, M.mask, 1], [-1.0235, M.mask_b, -1]]) {
-        const g = new THREE.CircleGeometry(0.58, 24); g.rotateX(up > 0 ? -Math.PI / 2 : Math.PI / 2); g.translate(c.x + 1.45, y, c.z + 2.54);
-        const d = new THREE.Mesh(g, m); d.name = ref + '_pegHoleCap'; d.receiveShadow = true; host.add(d);
-      }
-    }
+    // (the GT01 has no locating peg (Brock: it read as a fourth pin); since plan 5 pcb.glb drills no peg hole for it)
   }
   const buildMM = opts.millmax;
   if (buildMM) {
@@ -479,7 +473,8 @@ export async function buildPcb(opts = {}) {
   }
 
   // ---------------------------------------------------------------- board parts from Brock's photos (3d/parts/boardparts.js)
-  // the radio module: black, the long meander antenna, turned so the antenna end sits away from the wheel's metal;
+  // the radio module (Raytac AN54LM-P20A): black, the long meander antenna at the part's +z end, which plan 5 points
+  // forward, toward the sensor (F30.3; no turn: the land pattern and the keep-out in pcb.glb are already there);
   // the sensor as a castellated module on the 2 × 8 pads; the clear snap-on lens through the aperture and clip holes
   const swap = (ref, factory) => {
     const node = parts[ref]; if (!factory || !node) return null;
@@ -489,14 +484,6 @@ export async function buildPcb(opts = {}) {
     node.add(m); owned.push(m); return m;
   };
   const radio = swap('U1', opts.radio);
-  if (radio) {
-    radio.rotation.y = Math.PI;                       // its antenna band (+z in the part) to the board's rear
-    const oldK = layout.antennaKeepout, zc = parts.U1.position.z;
-    const newK = [oldK[0], 2 * zc - oldK[3], oldK[2], 2 * zc - oldK[1]];
-    flipFootprint(root, M, zc, [-5.65, zc - 7.3, 5.65, zc + 7.3]);   // its land pattern turns with it (12 a side, 11 across the end)
-    moveKeepout(root, oldK, newK, M);
-    layout.antennaKeepout = newK;
-  }
   const sensor = swap('U3', opts.sensor);
   const lens = swap('LENS', opts.lens);
 
@@ -516,54 +503,5 @@ export async function buildPcb(opts = {}) {
   return group;
 }
 
-/** A part turned 180° in place takes its pads with it: the top ENIG pads inside rect [x0, z0, x1, z1] (board-local,
-    whole pads only) turn about (0, zc), so the module's castellations land on them again. Traces stay as routed: the
-    side pads come back within 0.2 mm of where they were, and the end row's traces go with the new keep-out. */
-function flipFootprint(root, M, zc, rect) {
-  root.traverse((o) => {
-    if (!o.isMesh || o.material !== M.enig || !/^top_pads/.test(o.name || '')) return;
-    const P = o.geometry.attributes.position, N = o.geometry.attributes.normal;
-    for (let i = 0; i < P.count; i++) {
-      const x = P.getX(i), z = P.getZ(i);
-      if (x > rect[0] && x < rect[2] && z > rect[1] && z < rect[3]) {
-        P.setX(i, -x); P.setZ(i, 2 * zc - z);
-        if (N) { N.setX(i, -N.getX(i)); N.setZ(i, -N.getZ(i)); }
-      }
-    }
-    P.needsUpdate = true; if (N) N.needsUpdate = true;
-    o.geometry.computeBoundingBox(); o.geometry.computeBoundingSphere();
-  });
-}
-
-/** The antenna keep-out moves with the antenna: copper on every layer (pours, traces, pads, vias, inner planes) inside
-    the new rectangle goes; the silk keep-out marking moves with it. Board-local (x, z) rectangles [x0, z0, x1, z1]. */
-function moveKeepout(root, oldK, newK, M) {
-  const inside = (x, z, k) => x > k[0] && x < k[2] && z > k[1] && z < k[3];
-  // the board's meshes carry the builder's materials by then (M[name], which have no names of their own): match those
-  const COPPER = new Set(['mask_cu', 'mask_tr', 'cu_l2', 'cu_l3', 'cu_via', 'cu_inner', 'mask_cub', 'enig'].map((k) => M[k]).filter(Boolean));
-  const dz = newK[1] - oldK[1];
-  root.traverse((o) => {
-    if (!o.isMesh || !o.geometry || !o.geometry.index) return;
-    const g = o.geometry, idx = g.index.array, P = g.attributes.position;
-    if (o.parent && /^(U|J|SW|L|C|R|D|TP|FID|WHEEL|ENC|WB|LENS|BAT|SIDE)/.test(o.parent.name || '')) return;   // components keep theirs
-    const cen = (t) => [(P.getX(idx[t]) + P.getX(idx[t + 1]) + P.getX(idx[t + 2])) / 3, (P.getZ(idx[t]) + P.getZ(idx[t + 1]) + P.getZ(idx[t + 2])) / 3];
-    if (COPPER.has(o.material)) {
-      const keep = [];
-      for (let t = 0; t < idx.length; t += 3) { const [x, z] = cen(t); if (!inside(x, z, newK)) keep.push(idx[t], idx[t + 1], idx[t + 2]); }
-      if (keep.length !== idx.length) { g.setIndex(keep); g.computeBoundingSphere(); }
-    } else if (o.material === M.silk && /top_silk/.test(o.name || o.parent?.name || '')) {
-      const ng = g.toNonIndexed(), Q = ng.attributes.position, out = [], nOut = [], N = ng.attributes.normal;
-      for (let v = 0; v < Q.count; v += 3) {
-        const x = (Q.getX(v) + Q.getX(v + 1) + Q.getX(v + 2)) / 3, z = (Q.getZ(v) + Q.getZ(v + 1) + Q.getZ(v + 2)) / 3;
-        if (inside(x, z, newK)) continue;                // whatever was printed where the antenna now is
-        const sh = inside(x, z, oldK) ? dz : 0;           // the keep-out marking moves with the antenna
-        for (let k = 0; k < 3; k++) { out.push(Q.getX(v + k), Q.getY(v + k), Q.getZ(v + k) + sh); if (N) nOut.push(N.getX(v + k), N.getY(v + k), N.getZ(v + k)); }
-      }
-      const r = new THREE.BufferGeometry(); r.setAttribute('position', new THREE.Float32BufferAttribute(out, 3));
-      if (N) r.setAttribute('normal', new THREE.Float32BufferAttribute(nOut, 3));
-      o.geometry = r; g.dispose(); ng.dispose();
-    }
-  });
-}
 
 function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return Math.abs(h); }

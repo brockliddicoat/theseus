@@ -18,7 +18,7 @@ Object.assign(SRC, {
   b11CamOut: { t: 'Stahlwille, The cam-out effect: the tapered flanks of a cross recess turn part of the torque into "an unwanted force along the axis of the screwdriver" that pushes the tool up and out; the recess is often stripped. Monroe Engineering: "When the screwdriver rises out of the recess, it will create friction that wears down the screw head."', u: 'https://stahlwille.com/en_us/news/cam-out-effect/43223940' },
   b11Vickers: { t: 'University of Utah, Materials Characterization Lab, Vickers hardness testing: a square pyramidal diamond pressed in at a set load; HV = 0.1891 F / d² (F in N, d the indent\'s diagonal in mm). At the same force the indent\'s area goes as 1 / HV', u: 'https://mcl.mse.utah.edu/vickers-hardness-testing/' },
   b11Archard: { t: 'Archard 1953, Contact and rubbing of flat surfaces, Journal of Applied Physics 24: 981-988: worn volume = K × load × sliding distance ÷ hardness (the wear law taught in tribology)', u: 'https://doi.org/10.1063/1.1721448' },
-  b11Cumbicus: { t: 'Cumbicus, Estrems, Arizmendi & Jiménez 2023, Int. J. Adv. Manuf. Technol. 126: 5163-5178 (open copy: University of Navarra): 5 mm thread-forming screws in 30 % glass-fibre PEI, assembled ten times; loss of tightening torque: PF-30 11.95 % by the 3rd assembly, 15.31 % by the 5th, 17.16 % by the 10th; DELTA PT 56.73 % by the 5th, 41.93 % by the 10th; the first disassembly negligible', u: 'https://dadun.unav.edu/handle/10171/67216' },
+  b11Cumbicus: { t: 'Cumbicus, Estrems, Arizmendi & Jiménez 2023, Int. J. Adv. Manuf. Technol. 126: 5163-5178 (open copy: University of Navarra): 5 mm thread-forming screws in 30 % glass-fibre PEI, assembled ten times; the tightening torque lost, measured as the loosening torque at each release (Sec. 4.3, 5): PF-30 11.95 % by the 3rd assembly, 15.31 % by the 5th, 17.16 % by the 10th; DELTA PT 56.73 % by the 5th, 41.93 % by the 10th; the first disassembly negligible', u: 'https://dadun.unav.edu/handle/10171/67216' },
   b11Unitar: { t: 'UNITAR and ITU, Global E-waste Monitor 2024: 62 million tonnes of e-waste in 2022, 22.3 % documented as collected and recycled', u: 'https://www.unitar.org/about/news-stories/press/global-e-waste-monitor-2024-electronic-waste-rising-five-times-faster-documented-e-waste-recycling' },
   b11PsX3: { t: 'ProSettings, Logitech G Pro X3 SUPERSTRIKE review (6 Oct 2026): in the box: the mouse, grip tape, a USB receiver, a USB-C to A adapter, documentation, a POWERPLAY puck; "Replacement mouse feet feel like a bare minimum"', u: 'https://prosettings.net/reviews/logitech-g-pro-x3-superstrike/' },
   b11Jnd: { t: 'Datacolor (Techkon), A simple review of CIE ΔE colour difference equations: "The barely noticeable difference (JND) of dE is usually 1"', u: 'https://techkon.datacolor.com/a-simple-review-of-cie-de-color-difference-equations/' },
@@ -31,7 +31,7 @@ const B11 = {
   gpw: { tools: ['heat', 'spudger', 'tweezers', 'driver', 'iron'], skates: 5, screws: 7, steps: 15, mins: '40 to 50' },
   ironC: 350,                         /* lead-free tip temperature, about (Hakko, 340 to 370 °C) */
   hv: { steel: 220, ti: 349 },        /* class 4.8 at most (ISO 898-1, ownIso898p); grade 5 (ASM, ownTi) */
-  /* Cumbicus 2023: share of the first tightening torque a joint still takes, by assembly */
+  /* Cumbicus 2023: the torque to undo the joint at each release, as a share of the torque that tightened it, by assembly */
   pf30: [[1, 100], [3, 88.05], [5, 84.69], [10, 82.84]],
   dpt: [[1, 100], [5, 43.27], [10, 58.07]],
   brass20: 98.63,                     /* 3D People 2022: pull strength after 20 loads at 80 % of the failure force */
@@ -41,8 +41,8 @@ const B11 = {
 /* ============================== shared drawing helpers ============================== */
 /** the deck's greys for drawn tools and props: a body, a darker part, an outline (mono, never a new colour, F34.6) */
 function b11_tone() {
-  return TH ? { body: '#E4E3DE', dark: '#3A3B40', mid: '#B9B8B2', steel: ['#F4F5F7', '#A9AFB7', '#DDE0E4'], edge: 'rgba(17,17,17,0.72)', hi: 'rgba(255,255,255,0.7)' }
-    : { body: '#2E2F34', dark: '#151619', mid: '#55554F', steel: ['#D9DCE0', '#7E858D', '#B9BEC4'], edge: 'rgba(236,235,231,0.55)', hi: 'rgba(255,255,255,0.18)' };
+  return TH ? { body: '#E3E3E3', dark: '#3A3B40', mid: '#B8B8B8', steel: ['#F4F5F7', '#A9AFB7', '#DDE0E4'], edge: 'rgba(17,17,17,0.72)', hi: 'rgba(255,255,255,0.7)' }
+    : { body: '#2E2F34', dark: '#151619', mid: '#545454', steel: ['#D9DCE0', '#7E858D', '#B9BEC4'], edge: 'rgba(235,235,235,0.55)', hi: 'rgba(255,255,255,0.18)' };
 }
 /** the heat colour of a hot tool or a heated part, 0..1 (functional colour: the deck's heat ramp, red at the top) */
 function b11_hot(k) { return heatCol(0.45 + 0.55 * clamp(k)); }
@@ -88,7 +88,7 @@ function b11_toolMM(kind, o = {}) {
   } else if (kind === 'driver' || kind === 'box') {
     /* a precision screwdriver: a swivel cap, a knurled handle, the ferrule, a shaft, the cross tip */
     G.beginPath(); pathRR(0, -4.6, 4, 9.2, 1.6); G.fillStyle = T.mid; G.fill(); outline();
-    G.beginPath(); pathRR(3.5, -4.4, 24, 8.8, 2.2); G.fillStyle = kind === 'box' ? (TH ? '#2B2C31' : '#D9D8D3') : T.body; G.fill(); outline();
+    G.beginPath(); pathRR(3.5, -4.4, 24, 8.8, 2.2); G.fillStyle = kind === 'box' ? (TH ? '#2B2C31' : '#D8D8D8') : T.body; G.fill(); outline();
     G.save(); G.beginPath(); pathRR(3.5, -4.4, 24, 8.8, 2.2); G.clip(); for (let x = 6; x < 27; x += 1.6) mmLine([[x, -4.4], [x, 4.4]], kind === 'box' ? (TH ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.25)') : ec, 0.7); G.restore();
     G.beginPath(); G.rect(27.5, -2.4, 3, 4.8); G.fillStyle = steel(); G.fill(); outline();
     G.beginPath(); G.moveTo(30.5, -1.1); G.lineTo(49, -1.1); G.lineTo(54, 0); G.lineTo(49, 1.1); G.lineTo(30.5, 1.1); G.closePath(); G.fillStyle = steel(); G.fill(); outline();
@@ -131,9 +131,9 @@ function b11_vickers(t, t0, x, y, w, h, o = {}) {
     const iy = blockY + dpth - lift * 70 - (1 - Math.min(1, k * 4)) * 0;
     const tipY = press < 1 ? blockY + dpth : iy;
     const dh = 34, dw = dh / slope;
-    G.save(); G.globalAlpha = a; G.beginPath(); G.moveTo(cx, tipY); G.lineTo(cx - Math.min(dw, 70), tipY - Math.min(dw, 70) * slope); G.lineTo(cx - 16, tipY - 62); G.lineTo(cx + 16, tipY - 62); G.lineTo(cx + Math.min(dw, 70), tipY - Math.min(dw, 70) * slope); G.closePath();
+    G.save(); G.globalAlpha = a * (1 - clamp(lift * 1.4)); G.beginPath(); G.moveTo(cx, tipY); G.lineTo(cx - Math.min(dw, 70), tipY - Math.min(dw, 70) * slope); G.lineTo(cx - 16, tipY - 62); G.lineTo(cx + 16, tipY - 62); G.lineTo(cx + Math.min(dw, 70), tipY - Math.min(dw, 70) * slope); G.closePath();
     const gd = G.createLinearGradient(cx - 40, 0, cx + 40, 0); gd.addColorStop(0, TH ? '#FFFFFF' : '#C9CDD2'); gd.addColorStop(0.5, TH ? '#E3E7EC' : '#8E959D'); gd.addColorStop(1, TH ? '#C9D0D8' : '#5E646B'); G.fillStyle = gd; G.fill(); G.strokeStyle = T.edge; G.lineWidth = 1.5; G.stroke();
-    G.fillStyle = T.dark; G.fillRect(cx - 16, tipY - 104, 32, 42); G.restore();
+    G.fillStyle = TH ? T.dark : T.mid; G.fillRect(cx - 16, tipY - 104, 32, 42); G.restore();
     /* the same force on both */
     const fk = a * clamp(press * 3) * (1 - clamp(lift * 3));
     if (fk > 0.01) arrow(cx, tipY - 170, cx, tipY - 112, { color: C.ink2, w: 3, hs: 14, alpha: fk });
@@ -178,7 +178,7 @@ function b11_headTopMM(o = {}) {
   b11_recessWear(o.dmg || 0, o.col);
   if (o.bitA > 0.003) {
     /* the Phillips #0 bit's wings, seen from above through the head: a dashed cross, turned by the twist */
-    xsave(); xturn(o.rot || 0); ga(o.bitA); G.setLineDash([lw(6), lw(5)]); G.strokeStyle = TH ? 'rgba(16,17,20,0.8)' : 'rgba(236,235,231,0.85)'; G.lineWidth = lw(1.8);
+    xsave(); xturn(o.rot || 0); ga(o.bitA); G.setLineDash([lw(6), lw(5)]); G.strokeStyle = TH ? 'rgba(16,17,20,0.8)' : 'rgba(235,235,235,0.85)'; G.lineWidth = lw(1.8);
     const q = 0.17, L = 0.9; G.beginPath(); G.moveTo(-L, -q); G.lineTo(-q, -q); G.lineTo(-q, -L); G.lineTo(q, -L); G.lineTo(q, -q); G.lineTo(L, -q); G.lineTo(L, q); G.lineTo(q, q); G.lineTo(q, L); G.lineTo(-q, L); G.lineTo(-q, q); G.lineTo(-L, q); G.closePath(); G.stroke(); G.setLineDash([]); ga(1); xrest();
   }
   return r;
@@ -222,8 +222,8 @@ const B11_PH = [0.17, -0.12, 0.23, -0.2, 0.09, 0.27, -0.25, 0.14, -0.07, 0.21, -
 function b11_flankN(n, k, o = {}) {
   const T = OWN_TH.tf, P = T.P, span = o.span || 1.25, x0 = -P * span, x1 = P * span, depth = T.rc - OWN_RP, bot = o.bot || 0.55, st = P / 240;
   const cut = (x, ph) => own_tooth((x - ph) / P, T.cw, T.rw) * depth;
-  const passes = []; for (let i = 0; i < Math.min(n, B11_PH.length); i++) passes.push([B11_PH[i] * P, 1]);
-  if (k > 0 && n < B11_PH.length) passes.push([B11_PH[n] * P, k]);
+  const phs = o.phs == null ? 1 : o.phs, passes = []; for (let i = 0; i < Math.min(n, B11_PH.length); i++) passes.push([B11_PH[i] * P * phs, 1]);
+  if (k > 0 && n < B11_PH.length) passes.push([B11_PH[n] * P * phs, k]);
   const wall = x => { let m = cut(x, 0); for (const [ph, kk] of passes) m = Math.max(m, cut(x, ph) * kk); return m; };
   const mat = o.mat || OWN_MAT.cf;
   const surf = f => { G.beginPath(); for (let x = x0; x <= x1 + 1e-6; x += st) { const y = f(x); x === x0 ? G.moveTo(x, y) : G.lineTo(x, y); } };
@@ -234,12 +234,12 @@ function b11_flankN(n, k, o = {}) {
     /* what the re-assemblies shaved off, in the problem colour; the first thread's surface dashed */
     surf(x => cut(x, 0)); for (let x = x1; x >= x0 - 1e-6; x -= st) G.lineTo(x, wall(x)); G.closePath();
     G.fillStyle = C.bad; ga(0.9); G.fill(); ga(1);
-    G.setLineDash([lw(6), lw(5)]); surf(x => cut(x, 0)); G.strokeStyle = TH ? 'rgba(16,17,20,0.6)' : 'rgba(236,235,231,0.6)'; G.lineWidth = lw(1.3); G.stroke(); G.setLineDash([]);
+    G.setLineDash([lw(6), lw(5)]); surf(x => cut(x, 0)); G.strokeStyle = TH ? 'rgba(16,17,20,0.6)' : 'rgba(235,235,235,0.6)'; G.lineWidth = lw(1.3); G.stroke(); G.setLineDash([]);
   }
   surf(wall); G.strokeStyle = edgeCol(mat); G.lineWidth = lw(1.6); G.stroke();
   /* the screw's tooth, coming in on this re-assembly's phase (it sits in what it cut) */
   if (k > 0 && k < 1 && n < B11_PH.length) {
-    const ph = B11_PH[n] * P, dz = (1 - k) * -1.6 * P;
+    const ph = B11_PH[n] * P * phs, dz = (1 - k) * -1.6 * P;
     G.save(); G.beginPath(); G.rect(x0, -1, x1 - x0, bot + 2); G.clip();
     G.beginPath(); for (let x = x0; x <= x1 + 1e-6; x += st) { const y = cut(x - dz, ph) * Math.min(1, k * 1.2); x === x0 ? G.moveTo(x, y) : G.lineTo(x, y); } G.lineTo(x1, -0.6); G.lineTo(x0, -0.6); G.closePath();
     G.fillStyle = own_finish('zinc', x0, x1); ga(0.85); G.fill(); ga(1); G.strokeStyle = OWN_EDGE; G.lineWidth = lw(1.1); G.stroke(); G.restore();
@@ -274,8 +274,9 @@ function b11_tape(t, t0, x, y, w, h, o = {}) {
   G.restore();
   if (sh > 0.01) arrow(tab + 6, ty - 3, tab + 26 + 50 * sh, ty - 3, { color: C.heroText, w: 3, hs: 12, alpha: a * sh });
   const k1 = ep(t, t0 + 1.2, t0 + 1.6) * (1 - ep(t, t0 + 2.0, t0 + 2.3) * 0.55), k2 = ep(t, t0 + 3.2, t0 + 3.6);
-  text('Along: it holds', x + w * 0.62, y + 40, { role: 'label', size: 20, color: C.heroText, alpha: a * k1 });
-  text('Lifted at an end: it peels', x + 10, y + 40, { role: 'label', size: 20, color: C.bad, alpha: a * k2 });
+  const ly = ty + h * 0.18 + 30;
+  text('Pulled along: it holds', x + w - 10, ly, { align: 'right', role: 'label', size: 20, color: C.heroText, alpha: a * k1 });
+  text('Lifted: it peels', x + 10, ly, { role: 'label', size: 20, color: C.bad, alpha: a * k2 });
 }
 
 /* ---------- the battery plug in section at the board's edge (#71, F26.4), mm, the board's top face at y = 0, the tail (the
@@ -284,7 +285,7 @@ function b11_tape(t, t0, x, y, w, h, o = {}) {
    the same pull on the lead levers plug and header about the far pad, and the near pad peels off the board.
    pull 0..1; o = { hole (the ground colour) }. Returns stage points ---------- */
 function b11_plugMM(kind, pull, o = {}) {
-  const T = b11_tone(), nyl = TH ? '#FFFFFF' : '#D9D8D3', ne = 'rgba(16,17,20,0.6)', out = {};
+  const T = b11_tone(), nyl = TH ? '#FFFFFF' : '#D8D8D8', ne = 'rgba(16,17,20,0.6)', out = {};
   pcbSec(-16, 9, 0, 1.0, { brk: [1, 1], mask: '#141518' });
   const pad = (x0, x1, lift, bad) => { G.fillStyle = '#C9A15C'; G.fillRect(x0, -0.05, x1 - x0, 0.05); solid(() => { G.beginPath(); G.moveTo(x0 - 0.15, 0); G.quadraticCurveTo(x0, -0.25 - lift, x0 + 0.25, -0.3 - lift); G.lineTo(x1 - 0.25, -0.3 - lift); G.quadraticCurveTo(x1, -0.25 - lift, x1 + 0.15, 0); G.closePath(); }, MT.tin, [x0, -0.4 - lift, x1 - x0, 0.4 + lift], { lw: 0.8 }); if (bad > 0.01) { ga(bad); G.fillStyle = C.bad; G.fillRect(x0 - 0.1, -0.12, x1 - x0 + 0.2, 0.16); ga(1); } };
   const wires = (x0, y0, dx, dy, len) => { OWN_WIRE.forEach((c, i) => { const oy = (i - 1) * 0.42; G.beginPath(); G.moveTo(x0, y0 + oy); G.bezierCurveTo(x0 + dx * len * 0.4, y0 + oy, x0 + dx * len * 0.7, y0 + oy + dy * len * 0.3, x0 + dx * len, y0 + oy + dy * len); G.strokeStyle = c; G.lineWidth = lw(5); G.lineCap = 'round'; G.stroke(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = lw(1); G.stroke(); }); };
@@ -292,13 +293,13 @@ function b11_plugMM(kind, pull, o = {}) {
     /* the header: shell with the plug opening toward the tail, a back wall, three contacts, legs soldered at the back */
     pad(0.15, 1.05, 0, 0);
     solid(() => { G.beginPath(); G.moveTo(-4.25, -3.0); G.lineTo(0, -3.0); G.lineTo(0, 0); G.lineTo(-4.25, 0); G.closePath(); }, { g: [nyl, nyl] }, [-4.25, -3, 4.25, 3], { ec: ne, lw: 1.1 });
-    G.fillStyle = TH ? '#E9E8E4' : '#B9B8B2'; G.fillRect(-4.25, -2.7, 3.55, 2.4);
+    G.fillStyle = TH ? '#E8E8E8' : '#B8B8B8'; G.fillRect(-4.25, -2.7, 3.55, 2.4);
     G.strokeStyle = '#C9A15C'; G.lineWidth = lw(2.2); G.beginPath(); G.moveTo(-3.6, -1.5); G.lineTo(-0.4, -1.5); G.stroke();
     G.strokeStyle = '#A9AFB7'; G.lineWidth = lw(2); G.beginPath(); G.moveTo(-0.2, -1.5); G.lineTo(0.35, -1.5); G.lineTo(0.5, -0.3); G.lineTo(0.9, -0.25); G.stroke();
     /* the plug, sliding out along the board as the lead is pulled */
     const px = -pull * 6.2;
     xsave(); xmove(px, 0);
-    solid(() => { G.beginPath(); G.moveTo(-4.95, -2.65); G.lineTo(-0.7, -2.65); G.lineTo(-0.7, -0.35); G.lineTo(-4.95, -0.35); G.closePath(); }, { g: [nyl, TH ? '#ECEBE7' : '#C6C5C0'] }, [-4.95, -2.65, 4.25, 2.3], { ec: ne, lw: 1.1 });
+    solid(() => { G.beginPath(); G.moveTo(-4.95, -2.65); G.lineTo(-0.7, -2.65); G.lineTo(-0.7, -0.35); G.lineTo(-4.95, -0.35); G.closePath(); }, { g: [nyl, TH ? '#EBEBEB' : '#C5C5C5'] }, [-4.95, -2.65, 4.25, 2.3], { ec: ne, lw: 1.1 });
     G.fillStyle = '#C9A15C'; G.fillRect(-3.4, -1.75, 2.6, 0.5);
     wires(-4.95, -1.5, -1, 0, 9);
     out.grab = SP(-9, -1.5);
@@ -310,8 +311,8 @@ function b11_plugMM(kind, pull, o = {}) {
     pad(-2.95, -2.05, Math.sin(th) * 5.2, clamp(pull * 2 - 0.4)); pad(2.05, 2.95, 0, 0);
     xsave(); xabout(piv[0], piv[1], -th);
     solid(() => { G.beginPath(); G.moveTo(-2.6, -4.25); G.lineTo(2.6, -4.25); G.lineTo(2.6, 0); G.lineTo(-2.6, 0); G.closePath(); }, { g: [nyl, nyl] }, [-2.6, -4.25, 5.2, 4.25], { ec: ne, lw: 1.1 });
-    G.fillStyle = TH ? '#E9E8E4' : '#B9B8B2'; G.fillRect(-2.1, -4.25, 4.2, 3.6);
-    solid(() => { G.beginPath(); G.moveTo(-2.0, -5.4); G.lineTo(2.0, -5.4); G.lineTo(2.0, -0.7); G.lineTo(-2.0, -0.7); G.closePath(); }, { g: [nyl, TH ? '#ECEBE7' : '#C6C5C0'] }, [-2, -5.4, 4, 4.7], { ec: ne, lw: 1.1 });
+    G.fillStyle = TH ? '#E8E8E8' : '#B8B8B8'; G.fillRect(-2.1, -4.25, 4.2, 3.6);
+    solid(() => { G.beginPath(); G.moveTo(-2.0, -5.4); G.lineTo(2.0, -5.4); G.lineTo(2.0, -0.7); G.lineTo(-2.0, -0.7); G.closePath(); }, { g: [nyl, TH ? '#EBEBEB' : '#C5C5C5'] }, [-2, -5.4, 4, 4.7], { ec: ne, lw: 1.1 });
     G.fillStyle = '#C9A15C'; G.fillRect(-0.25, -4.2, 0.5, 2.9);
     out.grab = SP(-8, -6.2);
     xrest();
@@ -352,7 +353,7 @@ function b11_battSecMM(kind, k, o = {}) {
     G.restore();
     for (const bx of [-7.5, 7.5]) {
       G.beginPath(); G.moveTo(bx - 1.1, 0); G.lineTo(bx - 1.1, th + 0.35); G.quadraticCurveTo(bx - 1.1, th + 0.75, bx - 0.6, th + 0.75); G.lineTo(bx + 0.6, th + 0.75); G.quadraticCurveTo(bx + 1.1, th + 0.75, bx + 1.1, th + 0.35); G.lineTo(bx + 1.1, 0);
-      G.strokeStyle = TH ? '#3A3B40' : '#C9C8C2'; G.lineWidth = lw(3.2); G.lineJoin = 'round'; G.stroke();
+      G.strokeStyle = TH ? '#3A3B40' : '#C8C8C8'; G.lineWidth = lw(3.2); G.lineJoin = 'round'; G.stroke();
     }
     out.slide = SP(-L / 2 + dx - 0.5, th / 2); out.band = SP(7.5 + 1.1, th + 0.5);
   }
@@ -422,20 +423,20 @@ function b11_theseusInside(o = {}) {
   for (const z of B11_SIDE.screwsZ) { const top = b11_topH(z) - 1.4; G.strokeRect(-z - 2.2, -top, 4.4, top - B11_SIDE.boardTop); }
   G.setLineDash([]);
   /* the leads: battery to its plug, side buttons to theirs; they hang slack as the board comes down */
-  const lead = (x0, y0, x1, y1, sag) => { G.beginPath(); G.moveTo(x0, y0); G.bezierCurveTo(x0 + (x1 - x0) * 0.3, y0 + sag, x0 + (x1 - x0) * 0.7, y1 + sag, x1, y1); G.strokeStyle = TH ? '#3A3B40' : '#9A9994'; G.lineWidth = lw(2.4); G.stroke(); };
+  const lead = (x0, y0, x1, y1, sag) => { G.beginPath(); G.moveTo(x0, y0); G.bezierCurveTo(x0 + (x1 - x0) * 0.3, y0 + sag, x0 + (x1 - x0) * 0.7, y1 + sag, x1, y1); G.strokeStyle = TH ? '#3A3B40' : '#999999'; G.lineWidth = lw(2.4); G.stroke(); };
   lead(-Bt.z1, -(Bt.h0 + Bt.h1) / 2, -(-1.5), -(B11_SIDE.boardTop + 1.2) + drop, 1 + drop * 0.25);
   lead(-10, -20.5, -0.8, -(B11_SIDE.boardTop + 1.0) + drop, 2 + drop * 0.3);
   /* the battery, in its bands, at board height in the tail */
   xsave(); xmove(o.batt || 0, 0);
   G.beginPath(); pathRR(-Bt.z1, -Bt.h1, Bt.z1 - Bt.z0, Bt.h1 - Bt.h0, 0.8); G.fillStyle = hi.battery ? mix(TH ? '#C9CDD3' : '#7E848C', hi.battery, 0.35) : (TH ? '#C9CDD3' : '#7E848C'); G.fill(); G.strokeStyle = hi.battery || T.edge; G.lineWidth = lw(hi.battery ? 2 : 1); G.stroke();
   xrest();
-  for (const f of [0.28, 0.72]) { const x = -Bt.z1 + (Bt.z1 - Bt.z0) * f; G.beginPath(); G.moveTo(x - 1, -Bt.h1 - 0.6); G.lineTo(x - 1, -Bt.h0 + 0.5); G.lineTo(x + 1, -Bt.h0 + 0.5); G.lineTo(x + 1, -Bt.h1 - 0.6); G.strokeStyle = TH ? '#3A3B40' : '#C9C8C2'; G.lineWidth = lw(2.2); G.stroke(); }
+  for (const f of [0.28, 0.72]) { const x = -Bt.z1 + (Bt.z1 - Bt.z0) * f; G.beginPath(); G.moveTo(x - 1, -Bt.h1 - 0.6); G.lineTo(x - 1, -Bt.h0 + 0.5); G.lineTo(x + 1, -Bt.h0 + 0.5); G.lineTo(x + 1, -Bt.h1 - 0.6); G.strokeStyle = TH ? '#3A3B40' : '#C8C8C8'; G.lineWidth = lw(2.2); G.stroke(); }
   /* the board and everything on it comes down together */
   xsave(); xmove(0, drop);
   G.beginPath(); G.rect(-B.z1, -B11_SIDE.boardTop, B.z1 - B.z0, B11_SIDE.boardTop - B11_SIDE.boardBot);
-  G.fillStyle = hi.board ? mix('#1C1D21', hi.board, 0.45) : '#1C1D21'; G.fill(); G.strokeStyle = hi.board || (TH ? 'rgba(17,17,17,0.8)' : 'rgba(236,235,231,0.5)'); G.lineWidth = lw(hi.board ? 2 : 1); G.stroke();
+  G.fillStyle = hi.board ? mix('#1C1D21', hi.board, 0.45) : '#1C1D21'; G.fill(); G.strokeStyle = hi.board || (TH ? 'rgba(17,17,17,0.8)' : 'rgba(235,235,235,0.5)'); G.lineWidth = lw(hi.board ? 2 : 1); G.stroke();
   /* the battery's plug at the board's back edge, facing the tail (F26.4) */
-  G.beginPath(); G.rect(-0.2 - 4.25, -B11_SIDE.boardTop - 3, 4.25, 3); G.fillStyle = TH ? '#FFFFFF' : '#D9D8D3'; G.fill(); G.strokeStyle = T.edge; G.lineWidth = lw(0.9); G.stroke();
+  G.beginPath(); G.rect(-0.2 - 4.25, -B11_SIDE.boardTop - 3, 4.25, 3); G.fillStyle = TH ? '#FFFFFF' : '#D8D8D8'; G.fill(); G.strokeStyle = T.edge; G.lineWidth = lw(0.9); G.stroke();
   /* the main switch under the left trigger, standing on its claw sockets: the GT01 drawn as the click chapter draws it */
   const swZ = 37.6;
   xsave(); xmove(-swZ, -B11_SIDE.boardTop - (o.swOut || 0)); b11_flipX();
@@ -486,14 +487,14 @@ function b11_rivalInside(o = {}) {
     const slack = Math.max(0, 9 - lift * 0.8) * (1 - u) + u * 6;
     G.beginPath(); G.moveTo(x0, y0 - (u > 0 ? u * 3 : 0)); G.bezierCurveTo(x0 + slack, y0 - 6, x1 + slack, y1 + 6, x1, y1);
     G.strokeStyle = strain > 0.05 ? mix('#C98A4E', C.red, strain) : '#C98A4E'; G.lineWidth = lw(4.2); G.lineCap = 'butt'; G.stroke();
-    G.fillStyle = TH ? '#FFFFFF' : '#D9D8D3'; G.fillRect(x0 - 1.6, y0 - 1.2, 3.2, 1.2); }
+    G.fillStyle = TH ? '#FFFFFF' : '#D8D8D8'; G.fillRect(x0 - 1.6, y0 - 1.2, 3.2, 1.2); }
   /* the skates under the base, over the screws; heated, then peeled */
   const off = clamp(o.skatesOff || 0);
   B11_SIDE.rivalSkates.forEach(([z0, z1], i) => {
     const ki = clamp(off * 3 - i * 0.9), x0 = -z1, w = z1 - z0;
     if (ki >= 1) return;
     xsave(); xabout(x0 + w, 0, ki * 0.9); xmove(0, ki * 4);
-    G.beginPath(); pathRR(x0, -0.2, w, 1.4, 0.5); G.fillStyle = o.heat > 0.02 ? mix(TH ? '#F1F0EC' : '#E7E6E1', b11_hot(o.heat), o.heat * 0.7) : (TH ? '#F1F0EC' : '#E7E6E1'); G.fill(); G.strokeStyle = T.edge; G.lineWidth = lw(1); G.stroke();
+    G.beginPath(); pathRR(x0, -0.2, w, 1.4, 0.5); G.fillStyle = o.heat > 0.02 ? mix(TH ? '#F0F0F0' : '#E6E6E6', b11_hot(o.heat), o.heat * 0.7) : (TH ? '#F0F0F0' : '#E6E6E6'); G.fill(); G.strokeStyle = T.edge; G.lineWidth = lw(1); G.stroke();
     xrest();
   });
   /* the screws, coming down out of the base as they are undone; three of them were under the skates */
@@ -535,7 +536,7 @@ function b11_toolList(t, x, y, items, o = {}) {
     part(p[0], p[1], sc, () => b11_toolMM(it.kind, { hot, t }), { alpha: aIn * (1 - 0.6 * ks), rot: ang });
     const kn = ep(t, it.t1 + 0.25, it.t1 + 0.55);
     if (kn > 0) {
-      const col = it.hero ? C.heroText : mix(C.ink, TH ? '#8A8983' : '#6E6D68', ks), r = text(it.name || B11_TOOL[it.kind].name, x + iw + 22, ry + 2, { role: 'small', size: 26, weight: 700, color: col, alpha: kn });
+      const col = it.hero ? C.heroText : mix(C.ink, TH ? '#898989' : '#6D6D6D', ks), r = text(it.name || B11_TOOL[it.kind].name, x + iw + 22, ry + 2, { role: 'small', size: 26, weight: 700, color: col, alpha: kn });
       if (it.note) text(it.note, x + iw + 22 + r.w + 14, ry + 2, { role: 'small', size: 23, weight: 600, color: it.noteBad && !ks ? C.red : C.mute, alpha: kn * (1 - 0.4 * ks) });
       if (ks > 0) line(x - 6, ry - 6, x - 6 + (iw + 34 + r.w + (it.note ? tw(it.note, { role: 'small', size: 23, weight: 600 }) + 14 : 0)) * ks, ry - 6, { color: C.mute, w: 2.5 });
     }
@@ -563,9 +564,9 @@ function b11_underMM(o = {}) {
     });
     return;
   }
-  G.save(); G.globalAlpha = PA; G.fillStyle = TH ? '#E2E1DC' : '#2C2D31'; G.fill(V.out); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2); G.stroke(V.out);
+  G.save(); G.globalAlpha = PA; G.fillStyle = TH ? '#E1E1E1' : '#2C2D31'; G.fill(V.out); G.strokeStyle = inkA(TH ? 0.78 : 0.7); G.lineWidth = lw(2); G.stroke(V.out);
   for (const l of V.lines || []) { G.strokeStyle = inkA(0.4); G.lineWidth = lw(1.2); G.stroke(l); }
-  G.beginPath(); pathRR(-3.4, 4, 6.8, 13, 2.4); G.fillStyle = TH ? '#E9E8E3' : '#2A2B2F'; G.fill(); G.strokeStyle = inkA(0.5); G.lineWidth = lw(1.2); G.stroke(); G.restore();
+  G.beginPath(); pathRR(-3.4, 4, 6.8, 13, 2.4); G.fillStyle = TH ? '#E8E8E8' : '#2A2B2F'; G.fill(); G.strokeStyle = inkA(0.5); G.lineWidth = lw(1.2); G.stroke(); G.restore();
   const off = clamp(o.skatesOff || 0), out = clamp(o.screwsOut || 0);
   B11_RIVAL_SCREWS.forEach(([x, y, hid]) => { const vis = hid ? off : 1; if (vis < 0.02) { ga(0.5); G.setLineDash([lw(3), lw(2.5)]); G.beginPath(); G.arc(x, y, 2, 0, TAU); G.strokeStyle = inkA(0.45); G.lineWidth = lw(1.1); G.stroke(); G.setLineDash([]); ga(1); } else b11_screwHead(x, y, 2, null, vis * (1 - 0.75 * out)); });
   /* the pads: heated, then lifted one after another */
@@ -739,6 +740,82 @@ S({
   }
 });
 
+/* ============================== b11_screws: titanium screws (replaces ownscrew) ============================== */
+/* Where (the four screw heads under the mouse), then the same twist and the same two slips on a class 4.8 steel head and on
+   Theseus's grade 5 titanium head: the bit rides up the cross's sloped walls (cam-out) and its edges dent the arms. The dents
+   are sized by hardness (at one force a dent's area goes as 1 / HV: 220 / 349 = 0.63): an illustration sized by the ratio.
+   Then the classroom test that ratio comes from (Vickers), the verdict, the weight, and three plain lines. */
+const B11S = { split: [1.45, 1.9], turn: [2.0, 4.0], slips: [[2.35, 2.75], [3.25, 3.65]], vick: 4.3, verdict: 7.4, mass: 8.1, lines: 8.6 };
+const B11_SCREWS_BOTTOM = [[10.10, 26.62], [-10.10, 26.62], [14.59, -5.13], [-14.59, -5.13]];
+S({
+  id: 'b11_screws', ch: 'own', theme: 'night', title: 'Titanium screws: harder heads, lighter', settle: 12, ideas: [9, 54],
+  replaces: ['ownscrew'], src: ['ownIso898p', 'ownTi', 'b11CamOut', 'b11Vickers', 'ownRecess', 'ownStrip', 'ownBrock'],
+  answers: [
+    ['Rated 7/10, no note', 'Kept the subject, rebuilt as a demonstration: the same twist and the same two slips on a class 4.8 steel head and a grade 5 titanium head, cut through and from above, after a push-in from the four screws under the mouse.'],
+    ['Brief: harder heads that resist cam-out (220 → 349 HV against class 4.8, sourced, F25.5)', 'Cam-out drawn (the bit rides up the sloped walls, an arrow names it); the steel cross rounds, the titanium dent is 0.63× the size (sized by 220 / 349, said to be an illustration); Vickers\' test as the classroom panel (1.26× as wide); verdict 220 → 349 HV. Sources: ISO 898-1 (class 4.8: 130 to 220 HV, so 220 is the steel\'s best case), ASM grade 5 (36 HRC = 349 HV), Stahlwille (cam-out).'],
+    ['Brief: lighter (F25.4: grade 5, 0.42 g for four)', 'Four screws: 0.75 g → 0.42 g, from the 3D model\'s 23.59 mm³ at 7.9 and 4.43 g/cm³.'],
+    ['Brief: no magnetic pickup', 'Said plainly as the one thing given up: "Not magnetic: a magnetised driver won\'t hold it".'],
+    ['Brief: thread stripping lives in the insert, said plainly (F25.5)', 'A plain line: "A thread strips in its softer half: the brass insert, never the screw." The hardness claim is kept to the recess, where the evidence is.'],
+    ['F2.08: the screws "need a massive revamp to look proper"', 'Every head is the 3D model\'s ISO M2 pan head and combination recess (own_headTopMM / own_headSecMM), in section and from above.'],
+    ['#9 combination drive', 'A plain line: "If a cross ever rounds, a flat blade still turns the slot" (the slot is drawn in every head).']
+  ],
+  draw: t => {
+    const Q = B11S;
+    header(t, 'Titanium screws: harder heads, lighter');
+    captions(t, [[0.3, 'Four screws hold the board, all from below. Twist one and the bit can slip: the cross\'s sloped walls push it up and out.'], [Q.slips[1][1] + 0.3, 'Each slip, the bit\'s edges dent the cross. A harder head takes a smaller dent: titanium keeps its edges for longer.']]);
+    const E0 = [LM, 290, 1060, 500];
+    /* where: the mouse from below, the four heads; push in to one; then a dip to the two heads side by side */
+    const kd = ep(t, 1.3, 1.55), kx = ep(t, 1.5, 1.85);
+    if (kd < 1) {
+      const X = B11_SCREWS_BOTTOM[0][0] * MS_K.x, Y = -B11_SCREWS_BOTTOM[0][1] * MS_K.y;
+      establish(t, 0, E0, { view: 'bottom', focus: [X - 4.2, Y - 4.2, 8.4, 8.4], hold: 0.3, dur: 0.95, fade: 0.35, locator: 'tl', locW: 70,
+        draw: () => B11_SCREWS_BOTTOM.forEach(([x, z]) => { xsave(); xmove(x * MS_K.x, -z * MS_K.y); own_headTopMM({}); xrest(); }) });
+      if (kd > 0.003) rect(E0[0] - 10, E0[1] - 10, E0[2] + 20, E0[3] + 20, { fill: C.bg, alpha: kd });
+    }
+    /* the two heads: the same twist, the same two slips */
+    const cols = [{ x: LM, w: 520, steel: true }, { x: LM + 540, w: 520, steel: false }];
+    const slipK = sl => ep(t, sl[0], (sl[0] + sl[1]) / 2, E.io3) * (1 - ep(t, (sl[0] + sl[1]) / 2, sl[1], E.io3));
+    const lift = Math.max(slipK(Q.slips[0]), slipK(Q.slips[1])) * 0.42;
+    const nSl = ep(t, Q.slips[0][0] + 0.1, Q.slips[0][1]) + ep(t, Q.slips[1][0] + 0.1, Q.slips[1][1]);
+    const turning = t > Q.turn[0] && t < Q.turn[1], rot = 0.22 * Math.sin(Math.max(0, t - Q.turn[0]) * 3.2) * ep(t, Q.turn[0], Q.turn[0] + 0.3);
+    const ka = ep(t, Q.turn[0] - 0.3, Q.turn[0]) * (1 - ep(t, Q.turn[1], Q.turn[1] + 0.3));
+    if (kx > 0.003) cols.forEach((c, i) => {
+      const a = kx, y = E0[1], sx = c.x + 150, sy = y + 300, ss = 56, tx = c.x + 380, ty = y + 210;
+      demoWindow(c.x, y, c.w, E0[3], a);
+      ltag(c.x + 22, y + 32, c.steel ? 'Most mice' : 'Theseus', c.steel ? 'Class 4.8 steel, 220 HV' : 'Grade 5 titanium, 349 HV', { size: 21, color: c.steel ? C.mute : C.heroText, vcolor: c.steel ? C.ink2 : C.heroText, a });
+      const dmg = nSl * 0.5 * (c.steel ? 1 : B11.hv.steel / B11.hv.ti);
+      /* cut through the head (B-B), the bit in its cross */
+      G.save(); G.beginPath(); G.rect(c.x + 2, y + 58, c.w - 4, 330); G.clip();
+      part(sx, sy, ss, () => b11_headSecMM({ lift, turn: turning ? t * 2 : 0, a: 1, dmg, col: C.bad, shank: 1.2, bg: C.panel }), { alpha: a });
+      G.restore();
+      text('Cut through', sx, y + 412, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: a });
+      /* from above: the cross, the bit's wings dashed, the dents in red */
+      part(tx, ty, 50, () => b11_headTopMM({ dmg, rot, bitA: 0.85 * ka, col: C.bad }), { alpha: a });
+      text('From above', tx, y + 412, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: a });
+      /* the hand on the driver, turning; cam-out pushes the bit up */
+      const bitY = sy - ss * (OWN_M2.k + lift), hy = y + 128 - ss * lift;
+      if (ka > 0.01) { cursorPtr(sx + 22, hy + 6, { a: a * ka, grab: true }); G.save(); G.globalAlpha = a * ka; G.strokeStyle = C.mute; G.lineWidth = 2.5; G.beginPath(); G.ellipse(sx, hy + 34, 46, 11, 0, 0.35, Math.PI - 0.35); G.stroke(); G.restore(); }
+      if (lift > 0.03) forceArrow(sx + 72, bitY - 30 - 90 * lift, -Math.PI / 2, 26 + 110 * lift, { k: 1, color: C.red, w: 4, hs: 13, alpha: a });
+      const kc = a * ep(t, Q.slips[0][0], Q.slips[0][0] + 0.25) * (1 - ep(t, Q.slips[1][1] + 0.4, Q.slips[1][1] + 0.7));
+      if (i === 0 && kc > 0.01) text('Cam-out', sx + 86, y + 118, { role: 'small', size: 22, weight: 750, color: C.red, alpha: kc });
+      /* what two slips leave */
+      const kr = ep(t, Q.slips[1][1], Q.slips[1][1] + 0.3);
+      text(c.steel ? 'Two slips: the cross rounds' : 'The same two slips: a dent 0.63× the size', c.x + 22, y + E0[3] - 26, { role: 'small', size: 22, weight: 700, color: c.steel ? C.red : C.heroText, alpha: a * kr, maxW: c.w - 40 });
+    });
+    /* right: the classroom test the ratio comes from, then the verdict and the weight */
+    const rx = 1220, rw = RM - rx;
+    const kv = ep(t, Q.vick, Q.vick + 0.4);
+    if (kv > 0.003) { demoWindow(rx - 20, 290, rw + 20, 340, kv); text('The hardness test: one diamond, one force', rx, 322, { role: 'label', size: 20, color: C.mute, alpha: kv }); }
+    b11_vickers(t, Q.vick, rx, 336, rw, 270);
+    verdict(t, Q.verdict, rx, 800, { from: B11.hv.steel, to: B11.hv.ti, unit: ' HV', label: 'Head hardness', better: 'higher', net: false, size: 104, maxW: rw });
+    rich([{ s: 'Four screws: ', role: 'small', size: 24, weight: 650, color: C.ink2 }, { s: '0.75 g', role: 'small', size: 24, weight: 650, color: C.mute }, { s: ' → ', role: 'small', size: 24, weight: 650, color: C.mute }, { s: '0.42 g', role: 'small', size: 24, weight: 800, color: C.heroText }], rx, 866, { alpha: ep(t, Q.mass, Q.mass + 0.4), align: 'left' });
+    /* three plain lines, under the heads */
+    const L3 = ['If a cross ever rounds, a flat blade still turns the slot.', 'A thread strips in its softer half: the brass insert, never the screw.', 'Not magnetic: a magnetised driver won\'t hold it.'];
+    L3.forEach((s2, i) => text(s2, LM + i * 360, 836, { role: 'small', size: 22, weight: 650, color: i === 2 ? C.mute : C.ink2, alpha: ep(t, Q.lines + i * 0.35, Q.lines + i * 0.35 + 0.4), maxW: 330, lh: 1.25 }));
+    source(t, 'Hardness: ISO 898-1, class 4.8 at 130 to 220 HV (220 is the steel\'s best case); grade 5 titanium, annealed, 36 HRC = 349 HV (ASM). Cam-out: a cross recess\'s sloped walls turn part of the torque into a push up and out (Stahlwille). The dents are drawn to scale with each other only: at one force a dent\'s area goes as 1 / HV (Vickers). Mass: 23.59 mm³ per screw (3D model) at 7.9 and 4.43 g/cm³.', { t0: 1.0, maxW: 1760 });
+  }
+});
+
 /* ============================== b11_inserts: brass inserts, the same fit every time (F2.01, F21.5, F21.12) ==============================
    Where: the board's front screw boss on the mouse (establish, M4). Then the view splits: most mice's joint, a
    thread-forming screw straight into the plastic boss, beside Theseus's, the same M2 in a brass heat-set insert. The same
@@ -767,7 +844,7 @@ S({
   id: 'b11_inserts', ch: 'own', theme: 'paper', title: 'Brass inserts: the same fit every time', settle: 11, ideas: [101, 9],
   replaces: ['own_insert'], src: ['ownBrock', 'ownCovestro', 'b11Brock'],
   answers: [
-    ['Brief: the second drive in plastic cuts a new thread; in brass it follows the same one', 'One pointer drives both joints in, backs them out and drives them in again 2° off (0.17 mm at the tip, about two hairs): the carbon-filled boss is left with a second, red thread beside the first; the screw in the brass insert runs down the same thread.'],
+    ['Brief: the second drive in plastic cuts a new thread; in brass it follows the same one', 'One pointer drives both joints in, backs them out and drives them in again 2° off (0.14 mm at the tip, about two hairs: 4.0 mm of thread × sin 2°): the carbon-filled boss is left with a second, red thread beside the first; the screw in the brass insert runs down the same thread.'],
     ['Brief and F21.5: 70 % → 0 % chance the joint feels different', 'The verdict counts 70 % down to 0 %; the bars under it give ABS 90 %, carbon-filled 70 %, brass 0 % (brass 0 % from Brock\'s experience, F21.3).'],
     ['F2.01: "how metal threaded inserts increase longevity"', 'Longevity is the next slide, b11_wear: brass keeps 98.6 % of its hold after 20 heavy loads, plastic 82.8 % and 43.3 % after re-assembly.'],
     ['F2.01: "increase chances of tolerances be correct when assembled the first time, show chances of getting tolerances right"; F21.12: first assembly in words', 'In words, no number until it is simulated (F21.12): "Right the first time, too: the thread is finished in brass before the screw ever meets it, so no hand can start it crooked."'],
@@ -804,7 +881,7 @@ S({
     if (step === 0 && kS > 0.5) text('Closed: the screw drives in', sx, sy, { role: 'small', size: 25, weight: 700, color: C.ink2, alpha: ep(t, Q.d1[0], Q.d1[0] + 0.3) * (1 - ep(t, Q.out[0] - 0.2, Q.out[0])) });
     if (step === 1) text('Opened: it backs out', sx, sy, { role: 'small', size: 25, weight: 700, color: C.ink2, alpha: ep(t, Q.out[0], Q.out[0] + 0.3) * (1 - ep(t, Q.d2[0] - 0.2, Q.d2[0])) });
     if (step === 2) text('Closed again, 2° off', sx, sy, { role: 'small', size: 25, weight: 700, color: C.red, alpha: ep(t, Q.d2[0], Q.d2[0] + 0.3) });
-    scaleNote(sx, sy + 36, '0.17 mm aside, about two hairs', { lead: 'At the tip:', t, t0: Q.d2[0] + 0.3, size: 23 });
+    scaleNote(sx, sy + 36, '0.14 mm aside, about two hairs', { lead: 'At the tip:', t, t0: Q.d2[0] + 0.3, size: 23 });
     /* what each joint is left with: a line at the foot of each panel, a mark on the thread */
     const k2 = ep(t, Q.d2[0] + 1.0, Q.d2[0] + 1.3), k3 = ep(t, Q.d2[0] + 1.2, Q.d2[0] + 1.5);
     if (L.recutPt && k2 > 0) { circle(L.recutPt[0], L.recutPt[1], 5, { fill: C.red, alpha: k2 }); circle(L.recutPt[0], L.recutPt[1], 12, { color: C.red, w: 1.6, alpha: 0.5 * k2 });
@@ -821,5 +898,167 @@ S({
     ], { max: 100, title: 'After one re-screw', better: 'Lower is better', rh: 74 });
     text('Right the first time, too: the thread is finished in brass before the screw ever meets it, so no hand can start it crooked.', cx, 880, { role: 'small', size: 25, weight: 650, color: C.ink2, maxW: RM - cx, lh: 1.3, t, t0: Q.verdict + 2.2, cps: 90 });
     source(t, 'Brock\'s estimates: a joint screwed straight into ABS feels different after one re-screw 90 % of the time, carbon-filled plastic 70 %; in brass a machine screw can only follow its thread. Covestro: a re-assembled plastic joint holds only if the screw finds its original thread, by hand.', { t0: 1.0, maxW: 1100 });
+  }
+});
+
+/* ============================== b11_wear: thread wear (replaces own_life) ============================== */
+/* Two joints, one row each, read left to right: where the joint is, what happens to its thread, the number. Plastic is
+   re-assembled ten times (each pass shaves the flank; the dial follows Cumbicus 2023's measured points); the brass insert is
+   pulled twenty times to 80 % of what breaks it, then measured (3D People 2022). Different tests: each is named on its row. */
+const B11W = { a0: 0.6, aDur: 0.4, p0: 4.95, pDur: 0.1, meas: 7.0, verdict: 7.45, bars: 8.1, human: 8.9 };
+function b11_pf30(i) {   /* torque to undo the joint, % of the torque that closed it, at assembly i (1..10), PF-30 */
+  const P = B11.pf30; if (i <= P[0][0]) return P[0][1];
+  for (let j = 1; j < P.length; j++) if (i <= P[j][0]) return lerp(P[j - 1][1], P[j][1], (i - P[j - 1][0]) / (P[j][0] - P[j - 1][0]));
+  return P[P.length - 1][1];
+}
+S({
+  id: 'b11_wear', ch: 'own', theme: 'night', title: 'Thread wear: brass keeps its hold', settle: 11, ideas: [101],
+  replaces: ['own_life'], src: ['b11Cumbicus', 'own3dp', 'ownPemM2'],
+  answers: [
+    ['Brief: brass keeps 98.6 % of its hold after 20 heavy loads; screws straight into plastic keep 82.8 % and 43.3 % after re-assembly: both tests, labelled (F21.12 "Keep both")', 'Two rows, each named with its own test: plastic re-assembled ten times (the dial follows Cumbicus 2023: 82.8 % for the better screw by the 10th), the brass insert pulled 20 times to 80 % of its failure force, then measured: 98.6 %. The bars repeat all three with their tests, and the other screw\'s 43.3 % (5th) and 58.1 % (10th) are both in the source.'],
+    ['F2.01: "how metal threaded inserts increase longevity"', 'Each plastic re-assembly visibly shaves the thread\'s flank (red slivers pile up, magnified) while the dial drops; the brass thread is never re-cut and the insert\'s grip survives the pulls. Verdict: hold kept 82.8 % → 98.6 %.'],
+    ['F2.08: the screws "need a massive revamp to look proper"', 'Both joints are the 3D model\'s M2 joints in section (as on b11_inserts); the magnified flank is the thread-forming profile, the brass side the ISO thread.'],
+    ['What moved from own_life', 'The insert\'s half-section with its dimensions and knurl callouts is out: the insert is drawn in every joint now, and its pull strength is what the brass row tests. New: the human scale (one M2 insert holds 255 N in ABS, a 26 kg suitcase, PEM) and the hand-off to the battery.']
+  ],
+  draw: t => {
+    const W = B11W;
+    header(t, 'Thread wear: brass keeps its hold');
+    captions(t, [[0.4, 'Each re-assembly into plastic comes back a little off the old thread and shaves its flank: the joint holds less every time.'], [W.p0 - 0.1, 'In brass the screw only follows its thread, and the insert\'s grip in the plastic outlasts 20 pulls to 80 % of what breaks it.']]);
+    const rows = [{ y: 284, kind: 'cf' }, { y: 606, kind: 'insert' }], rh = 300, x0 = LM, x1 = 1140;
+    /* which assembly / pull we are on */
+    const ai = clamp(Math.floor((t - W.a0) / W.aDur) + 1, 0, 10), ak = ai >= 1 ? ep(t, W.a0 + (ai - 1) * W.aDur, W.a0 + (ai - 1) * W.aDur + W.aDur * 0.75, E.io3) : 0;
+    const pEnd = W.p0 + 20 * W.pDur, pj = clamp(Math.floor((t - W.p0) / W.pDur) + 1, 0, 20), pk = pj >= 1 && t < pEnd ? Math.sin(Math.PI * clamp((t - W.p0 - (pj - 1) * W.pDur) / W.pDur)) : 0;
+    const act0 = 1 - 0.5 * ep(t, W.p0 - 0.3, W.p0), act1 = 0.5 + 0.5 * ep(t, W.p0 - 0.3, W.p0);
+    rows.forEach(R => {
+      const plast = R.kind === 'cf', A = plast ? act0 : act1, y = R.y, col = plast ? C.secondText : C.heroText;
+      demoWindow(x0, y, x1 - x0, rh, 1);
+      ltag(x0 + 24, y + 34, plast ? 'Straight in' : 'Theseus', plast ? 'Plastic, re-assembled 10 times' : 'Brass insert, pulled 20 times to 80 % of failure', { size: 21, color: plast ? C.mute : C.heroText, vcolor: col, a: A });
+      /* where: the joint at the board's boss, in section, as on the slide before */
+      G.save(); G.beginPath(); G.rect(x0 + 2, y + 52, 300, rh - 54); G.clip();
+      const J = part(x0 + 160, y + (plast ? 216 : 178), 30, () => own_jointMM({ kind: R.kind, tip: 4.0, pass: 1, reach1: 4.0, reach2: 0, tilt: 0, ph2: 0, recut: 0, bit: { a: 0 }, hole: C.panel, crop: 5.4 }), { rot: Math.PI, alpha: A }) || {};
+      G.restore();
+      /* the loupe: a ring on the thread, a line to the magnified flank */
+      const ring = plast ? J.recutPt || J.mouth : J.insert;
+      const mx = x0 + 330, mw = 470, my = y + 60, mh = 196;
+      if (ring) { circle(ring[0], ring[1], 15, { color: col, w: 2, alpha: A }); line(ring[0] + 15, ring[1], mx, my + mh / 2, { color: col, w: 1.5, alpha: 0.6 * A, dash: [5, 5] }); }
+      rr(mx, my, mw, mh, 6, C.bg, col, 1.5, A);
+      G.save(); G.beginPath(); G.rect(mx + 1, my + 1, mw - 2, mh - 2); G.clip();
+      if (plast) {
+        const n = ai >= 2 ? ai - 2 : 0, k = ai >= 2 ? ak : 0;
+        part(mx + mw / 2, my + mh * 0.5, 180, () => b11_flankN(k >= 1 ? n + 1 : n, k >= 1 ? 0 : k, { phs: 0.5 }), { alpha: A });
+      } else part(mx + mw / 2, my + mh * 0.5, 230, () => own_isoMM({ n: 4.6 }), { alpha: A });
+      G.restore();
+      text(plast ? 'Magnified: shaved slivers in red' : 'Magnified: titanium on brass, never re-cut', mx, my + mh + 26, { role: 'label', size: 20, color: C.mute, alpha: A });
+      /* the pull: the screw pulled down, out of the boss */
+      if (!plast && J.axisTop && pk > 0.01) forceArrow(J.axisTop[0], Math.min(y + rh - 8, J.axisTop[1] + 30 + 34 * pk), Math.PI / 2, 22 + 34 * pk, { k: 1, color: C.ink, w: 5, hs: 15, alpha: A });
+      /* the number: the count, a dial, what it reads */
+      const dx = x0 + 930, dy = y + 150;
+      if (plast) {
+        const v = ai < 1 ? 100 : ai < 2 ? 100 : lerp(b11_pf30(ai - 1), b11_pf30(ai), ak);
+        text(ai >= 1 ? 'Assembly ' + ai + ' of 10' : 'First assembly', dx, y + 34, { role: 'small', size: 22, weight: 700, color: ai >= 2 ? C.red : C.ink2, align: 'center', alpha: A });
+        b11_dial(dx, dy, 76, v, { col: C.second, lost: true, a: A });
+        text(v.toFixed(1) + ' %', dx, dy + 62, { role: 'num', size: 34, weight: 760, color: C.ink, align: 'center', alpha: A });
+        text('Torque to undo it, of what closed it', dx, dy + 110, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: A, maxW: 236, lh: 1.15 });
+      } else {
+        const kM = ep(t, W.meas, W.meas + 0.6, E.io3), v = lerp(100, B11.brass20, kM), done = t >= W.meas;
+        text(pj >= 1 ? 'Pull ' + pj + ' of 20' : 'Then: 20 heavy pulls', dx, y + 34, { role: 'small', size: 22, weight: 700, color: pj >= 1 ? C.heroText : C.ink2, align: 'center', alpha: A });
+        b11_dial(dx, dy, 76, v, { col: C.hero, lost: done, a: A * (done ? 1 : 0.45) });
+        text(done ? v.toFixed(1) + ' %' : 'after pull 20', dx, dy + 62, { role: done ? 'num' : 'small', size: done ? 34 : 20, weight: done ? 760 : 650, color: done ? C.heroText : C.mute, align: 'center', alpha: A });
+        text('Pull strength kept', dx, dy + 110, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: A, maxW: 236 });
+      }
+    });
+    /* right: the verdict, the three tests, the human scale */
+    const cx = 1220, cw = RM - cx;
+    verdict(t, W.verdict, cx, 450, { from: 82.8, to: 98.6, unit: '%', dec: 1, label: 'Hold kept after repeated use', better: 'higher', net: false, size: 124, maxW: cw });
+    own_bars(t, W.bars, cx, 570, cw, [
+      { label: 'Brass insert: 20 heavy pulls', v: B11.brass20, s: B11.brass20.toFixed(1) + ' %', kind: 'hero' },
+      { label: 'Screw in plastic: 10 re-assemblies', v: 82.84, s: '82.8 %', kind: 'second' },
+      { label: 'Another screw: 5 re-assemblies', v: 43.27, s: '43.3 %', kind: 'comp' }
+    ], { max: 100, title: 'Each test, as measured', better: 'Higher is better', rh: 70 });
+    scaleNote(cx, 846, 'holds 255 N in ABS, a 26 kg suitcase', { lead: 'One M2 insert', t, t0: W.human, size: 22 });
+    text('Open it as often as you need: first, the battery.', cx, 892, { role: 'small', size: 23, weight: 700, color: C.ink2, alpha: ep(t, W.human + 0.6, W.human + 1.0), maxW: cw });
+    source(t, 'Plastic: Cumbicus et al. 2023, 5 mm thread-forming screws in 30 % glass-fibre PEI, assembled ten times; the torque to undo each joint against the torque that closed it. PF-30: 88.1 % by the 3rd, 84.7 % by the 5th, 82.8 % by the 10th; DELTA PT: 43.3 % by the 5th, 58.1 % by the 10th. Brass: 3D People 2022, M2 to M5 inserts in four printed plastics, 20 loads to 80 % of the failure force, then pulled to failure: 1.37 % weaker on average. PEM: IUTF-M2 in ABS, 255 N.', { t0: 1.0, maxW: 1760 });
+  }
+});
+
+/* ============================== b11_battplug: a battery you can unplug (replaces ownbatt; F26.4) ============================== */
+/* A 2 × 2 job: the battery (glued and pried, or held in two bands) and its plug (a top-entry plug pulled by its wires
+   levers its header off its pads; Theseus's side-entry plug, turned to face the back, slides straight out along the
+   board). The tape panel is the classroom version of why the direction matters (3M: peel vs shear). */
+const B11B = { heat: [0.5, 1.4], pry: [1.3, 2.9], slide: [3.2, 4.3], tug: [4.6, 6.0], pull: [6.3, 7.1], tape: 4.4, verdict: 7.6, eu: 8.4 };
+/** a header seen from above (F26.4): the old one faced the left side wall, the new one faces the back; k turns it 90° */
+function b11_headerTop(x, y, s, k, a = 1) {
+  G.save(); G.globalAlpha = a; G.translate(x, y);
+  /* the board's rear corner and the tail, as a frame */
+  G.strokeStyle = inkA(0.35); G.lineWidth = 1.5; G.setLineDash([5, 4]); G.beginPath(); G.moveTo(-3.2 * s, -2.6 * s); G.lineTo(3.2 * s, -2.6 * s); G.stroke(); G.setLineDash([]);
+  text('Tail', 0, -2.95 * s, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: a });
+  G.rotate(-Math.PI / 2 * (1 - k));
+  /* the housing (4.25 × 3 mm), its open face (where the plug goes in) toward the tail when k = 1 */
+  G.fillStyle = TH ? '#FFFFFF' : '#D8D8D8'; G.strokeStyle = 'rgba(16,17,20,0.6)'; G.lineWidth = 1.2;
+  G.beginPath(); G.rect(-2.125 * s, -1.5 * s, 4.25 * s, 3 * s); G.fill(); G.stroke();
+  G.fillStyle = TH ? '#C8C8C8' : '#8A8A8A'; G.fillRect(-1.8 * s, -1.5 * s, 3.6 * s, 0.7 * s);
+  G.restore();
+}
+S({
+  id: 'b11_battplug', ch: 'own', theme: 'paper', title: 'A battery you can unplug', settle: 11, ideas: [71, 74],
+  replaces: ['ownbatt'], src: ['b11GpxBatt', 'b11Mo2', 'b11Fire', 'b113m', 'ownEuBatt', 'ownJstSh', 'b11Brock'],
+  answers: [
+    ['Brief: the side-entry battery plug, turned to face the back so it can be pulled out properly (F26.4): no tools, no heat', 'Plug row: Theseus\'s side-entry plug faces the back (a top view turns it 90° from the side wall) and a pull along the board slides it straight out; the rival\'s top-entry plug, pulled by its wires, levers its header and lifts a pad (red). Battery row: no heat, no prying: it slides out of two silicone bands.'],
+    ['F26.4: "it\'s hard to access it when it faces towards the left instead of the back"', 'Shown as the turn itself (old: facing the side wall, dashed; new: facing the tail) before the pull.'],
+    ['#71: the JST connector turned so customers can replace the battery themselves; line 614: silicone bands ("adhesive usually gets ruined")', 'The bands hold the pouch; the glued pouch beside it is heated and pried, and bends where a puncture can start a fire (iFixit).'],
+    ['What moved from ownbatt', 'The paper battery cover (#74) moves to b11_board, where the underside is shown; the EU removability rule stays here as one line.']
+  ],
+  draw: t => {
+    const Q = B11B;
+    header(t, 'A battery you can unplug');
+    captions(t, [[0.3, 'Most mice glue the battery in: heat it, pry it off, and try not to bend the pouch. The plug is pulled out by its wires.'], [Q.slide[0] - 0.1, 'Theseus holds its battery in two silicone bands, and its plug faces the back: pull it straight out, slide the battery free.']]);
+    const cw = 520, gx = [LM, LM + 540], ry = [286, 606], rh = [300, 280];
+    const cells = [[0, 0, 'Most mice', 'Glued to the shell'], [1, 0, 'Theseus', 'Held in two bands'], [0, 1, 'Most mice', 'Pulled up by its wires'], [1, 1, 'Theseus', 'A plug that faces the back']];
+    cells.forEach(([c, r, l, v]) => { demoWindow(gx[c], ry[r], cw, rh[r], 1); ltag(gx[c] + 22, ry[r] + 32, l, v, { size: 21, color: c ? C.heroText : C.mute, vcolor: c ? C.heroText : C.ink2 }); });
+    /* where: a small locator on Theseus's battery cell */
+    locator(t, 0, gx[1] + cw - 118, ry[0] + 22, 96, 'left', msBox('left', 'battery'), { hi: { battery: 'hero' } });
+    /* ---- the battery row ---- */
+    const heat = ep(t, Q.heat[0], Q.heat[1]) * (1 - ep(t, Q.pry[1], Q.pry[1] + 0.6)), pry = ep(t, Q.pry[0], Q.pry[1], E.io3), sl = ep(t, Q.slide[0], Q.slide[1], E.io3);
+    const bs = 12.5, bxL = gx[0] + cw / 2 + 40, bxR = gx[1] + cw / 2 + 50, by = ry[0] + 130;
+    let gl = {}, bd = {};
+    G.save(); G.beginPath(); G.rect(gx[0] + 2, ry[0] + 50, cw - 4, rh[0] - 52); G.clip();
+    gl = part(bxL, by, bs, () => b11_battSecMM('glue', pry, { heat })) || {};
+    G.restore();
+    G.save(); G.beginPath(); G.rect(gx[1] + 2, ry[0] + 50, cw - 4, rh[0] - 52); G.clip();
+    bd = part(bxR, by, bs, () => b11_battSecMM('bands', sl * 0.75)) || {};
+    G.restore();
+    /* the heat gun, then the spudger at the pouch's end */
+    if (t > Q.heat[0] - 0.2 && t < Q.pry[1] + 0.6) { const ka = ep(t, Q.heat[0] - 0.2, Q.heat[0]) * (1 - ep(t, Q.pry[0], Q.pry[0] + 0.3)); if (ka > 0.01) part(bxL - 120, by - 150, 2.1, () => b11_toolMM('heat', { hot: heat, t }), { alpha: ka, rot: 0.55 }); }
+    if (gl.pry && t > Q.pry[0] - 0.3) { const ka = ep(t, Q.pry[0] - 0.3, Q.pry[0]) * (1 - ep(t, Q.pry[1] + 0.8, Q.pry[1] + 1.1)), ang = -0.35 - 0.25 * pry, L = B11_TOOL.spudger.len * 2.2; if (ka > 0.01) part(gl.pry[0] - L * Math.cos(ang), gl.pry[1] - L * Math.sin(ang), 2.2, () => b11_toolMM('spudger', { t }), { alpha: ka, rot: ang }); }
+    const kb = ep(t, Q.pry[1] - 0.4, Q.pry[1]);
+    text('Heat, then pry: a bent pouch can catch fire', gx[0] + 22, ry[0] + rh[0] - 26, { role: 'small', size: 22, weight: 700, color: C.red, alpha: kb, maxW: cw - 40 });
+    /* Theseus: the pointer draws the battery out along its length */
+    if (bd.slide && t > Q.slide[0] - 0.4 && t < Q.slide[1] + 0.5) cursorPtr(bd.slide[0] + 8, bd.slide[1] + 10, { a: ep(t, Q.slide[0] - 0.4, Q.slide[0] - 0.1) * (1 - ep(t, Q.slide[1], Q.slide[1] + 0.4)), grab: t > Q.slide[0] });
+    text('No glue: it slides out of its bands', gx[1] + 22, ry[0] + rh[0] - 26, { role: 'small', size: 22, weight: 700, color: C.heroText, alpha: ep(t, Q.slide[1] - 0.3, Q.slide[1]), maxW: cw - 40 });
+    /* ---- the plug row ---- */
+    const tug = ep(t, Q.tug[0], Q.tug[1], E.io3), pl = ep(t, Q.pull[0], Q.pull[1], E.io3);
+    const ps = 17, pyL = ry[1] + 196, pyR = ry[1] + 196;
+    let pR = {}, pT = {};
+    G.save(); G.beginPath(); G.rect(gx[0] + 2, ry[1] + 50, cw - 4, rh[1] - 52); G.clip();
+    pR = part(gx[0] + 330, pyL, ps, () => b11_plugMM('top', tug)) || {};
+    G.restore();
+    G.save(); G.beginPath(); G.rect(gx[1] + 2, ry[1] + 50, cw - 4, rh[1] - 52); G.clip();
+    pT = part(gx[1] + 370, pyR, ps, () => b11_plugMM('side', pl)) || {};
+    G.restore();
+    if (pR.grab && t > Q.tug[0] - 0.4 && t < Q.tug[1] + 0.6) cursorPtr(pR.grab[0], pR.grab[1], { a: ep(t, Q.tug[0] - 0.4, Q.tug[0] - 0.1) * (1 - ep(t, Q.tug[1] + 0.2, Q.tug[1] + 0.6)), grab: t > Q.tug[0] });
+    if (pR.pad) faultTag(t, Q.tug[0] + 0.9, pR.pad, 'The pad peels up', { to: [pR.pad[0] - 24, pR.pad[1] + 44], side: 'l', maxW: 280 });
+    if (pT.grab && t > Q.pull[0] - 0.4 && t < Q.pull[1] + 0.6) cursorPtr(pT.grab[0], pT.grab[1], { a: ep(t, Q.pull[0] - 0.4, Q.pull[0] - 0.1) * (1 - ep(t, Q.pull[1] + 0.2, Q.pull[1] + 0.6)), grab: t > Q.pull[0] });
+    /* F26.4: the header turned 90°, from the side wall to the back, before the pull */
+    const kt = ep(t, Q.tug[1] - 0.2, Q.pull[0] - 0.1, E.io3);
+    b11_headerTop(gx[1] + 70, ry[1] + 104, 11, kt, ep(t, Q.tug[0], Q.tug[0] + 0.4));
+    text(kt < 0.5 ? 'Seen from above: it faced the side wall' : 'Turned 90°: it faces the back', gx[1] + 120, ry[1] + 110, { role: 'label', size: 20, color: kt < 0.5 ? C.mute : C.heroText, alpha: ep(t, Q.tug[0], Q.tug[0] + 0.4), maxW: 380 });
+    text('Pulled straight back, along the board', gx[1] + 22, ry[1] + rh[1] - 26, { role: 'small', size: 22, weight: 700, color: C.heroText, alpha: ep(t, Q.pull[1] - 0.3, Q.pull[1]), maxW: cw - 40 });
+    /* right: why the direction matters (tape), the verdict, the rule */
+    const rx = 1220, rw = RM - rx, kt2 = ep(t, Q.tape, Q.tape + 0.4);
+    if (kt2 > 0.003) { demoWindow(rx - 20, 286, rw + 20, 300, kt2); text('Why the direction matters: a strip of tape', rx, 318, { role: 'label', size: 20, color: C.mute, alpha: kt2 }); }
+    b11_tape(t, Q.tape, rx, 330, rw, 250);
+    verdict(t, Q.verdict, rx, 760, { from: 7, to: 1, label: 'Tools and supplies to change the battery', better: 'lower', net: false, size: 110, maxW: rw });
+    text('The one tool is the driver in the box. No heat, no solvent: what the EU asks of every portable battery from 18 February 2027.', rx, 820, { role: 'small', size: 22, weight: 650, color: C.ink2, maxW: rw, lh: 1.3, alpha: ep(t, Q.eu, Q.eu + 0.4) });
+    source(t, 'Most mice: iFixit\'s G Pro X Superlight battery guide (adhesive: heat it and pry; the plug pulled "straight up"; tools: spudger, Phillips driver, tweezers, angled tweezers, iOpener or hair dryer, isopropyl alcohol, double-sided tape); Glorious Model O 2 Wireless (glued, "this will rip"); a punctured battery can catch fire (iFixit). Peel and shear: 3M. EU Regulation 2023/1542 Art. 11.', { t0: 1.0, maxW: 1760 });
   }
 });

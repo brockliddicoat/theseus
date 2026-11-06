@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import fs from 'node:fs';
 import { extrude } from '../../parts/lib/geom.js';
 const HERE = new URL('.', import.meta.url);
-const L = JSON.parse(fs.readFileSync(new URL('../plate-layout.json', HERE)));
+const L = JSON.parse(fs.readFileSync(process.env.PLATE_LAYOUT || new URL('../plate-layout.json', HERE)));   // PLATE_LAYOUT / PLATE_WORK: scratch builds
 const M = L.mesh;
 const V2 = ([x, z]) => new THREE.Vector2(x, -z);                 // shape (x, -z), extruded along +e, then e -> +Y
 const shape = (outer, holes = []) => { const s = new THREE.Shape(outer.map(V2)); for (const h of holes) s.holes.push(new THREE.Path(h.map(V2))); return s; };
@@ -35,7 +35,7 @@ for (const g of parts) {
   const idx = g.index ? g.index.array : Array.from({ length: p.length / 3 }, (_, k) => k);
   for (const k of idx) I.push(base + k);
 }
-const out = new URL('../work/', HERE); fs.mkdirSync(out, { recursive: true });
+const out = process.env.PLATE_WORK ? new URL('file://' + process.env.PLATE_WORK.replace(/\/?$/, '/')) : new URL('../work/', HERE); fs.mkdirSync(out, { recursive: true });
 const buf = Buffer.concat([Buffer.from(new Float32Array(P).buffer), Buffer.from(new Float32Array(N).buffer), Buffer.from(new Float32Array(C).buffer), Buffer.from(new Uint32Array(I).buffer)]);
 fs.writeFileSync(new URL('plate-mesh.bin', out), buf);
 fs.writeFileSync(new URL('plate-mesh.json', out), JSON.stringify({ nv: P.length / 3, nt: I.length / 3 }));

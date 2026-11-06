@@ -416,9 +416,9 @@ function b07_coin(x, y, s, th, o = {}) {
   const w = 24.26 * s, x0 = x - w / 2, y0 = y - th, r = Math.min(th / 2, 4);
   G.save(); G.globalAlpha = a;
   const g = G.createLinearGradient(0, y0, 0, y);
-  if (o.bad) { g.addColorStop(0, mix('#E9E3E3', C.red, 0.35)); g.addColorStop(1, mix('#9C8F8F', C.red, 0.45)); }
-  else if (TH) { g.addColorStop(0, '#E4E4E1'); g.addColorStop(0.5, '#C9C9C5'); g.addColorStop(1, '#A9A9A5'); }
-  else { g.addColorStop(0, '#C7C8CC'); g.addColorStop(0.5, '#9EA0A6'); g.addColorStop(1, '#6E7076'); }
+  if (o.bad) { g.addColorStop(0, mix(C.track, C.red, 0.35)); g.addColorStop(1, mix(C.faint, C.red, 0.45)); }
+  else if (TH) { g.addColorStop(0, C.track); g.addColorStop(0.5, C.comp); g.addColorStop(1, C.faint); }
+  else { g.addColorStop(0, C.ink2); g.addColorStop(0.5, C.mute); g.addColorStop(1, C.faint); }
   rrPath(x0, y0, w, th, r); G.fillStyle = g; G.fill();
   /* the reeded edge, seen face-on: fine vertical ridges */
   G.save(); rrPath(x0, y0, w, th, r); G.clip(); G.strokeStyle = o.bad ? rgba(C.red, 0.35) : (TH ? 'rgba(0,0,0,0.16)' : 'rgba(0,0,0,0.28)'); G.lineWidth = 1;
@@ -434,6 +434,353 @@ function b07_bracket(x, y0, y1, col, a, label, o = {}) {
   G.beginPath(); G.moveTo(x - d * tk, y0); G.lineTo(x, y0); G.lineTo(x, y1); G.lineTo(x - d * tk, y1); G.stroke(); G.setLineDash([]); G.restore();
   if (label) text(label, x + d * 14, (y0 + y1) / 2 + 8, { role: 'label', size: o.size || 20, color: o.tcol || col, align: d > 0 ? 'left' : 'right', alpha: a });
 }
+
+/* ============================== 1. b07_board: The board you already carry ==============================
+   Problem first (M1): squeeze the shell at the grip and its feet slide inward (solved: the soft rim lets them come 0.68 mm
+   closer; the sides come in 0.64 mm, the crown rises 0.26). The usual fix adds a stiff part
+   (a carbon or magnesium shell, or a carbon rod glued across): one more part, more joints to hold to size. The board is
+   already there, spanning the feet, and FR4 is a woven composite like carbon fibre (woven glass in epoxy). Theseus anchors
+   its ribs on the board's edge, which holds the feet apart: the same squeeze moves the sides a third as far, nothing added. The cut is the real shell's,
+   across the board's rear rib row (model 2); the classroom panels are the two weaves side by side and the same weight of
+   FR4 and magnesium pulled apart. */
+const B07_BRD = { ex: 10, by: 5.0, bt: 1.0, rodY: 2.2, rodR: 1.0, z: -0.77 };
+/** a plain-weave swatch in [x, y, w, h]: strands passing over and under each other, set in resin. kind 'carbon' | 'glass' */
+function b07_weave(x, y, w, h, kind, a, o = {}) {
+  if (a <= 0.003) return;
+  const c = o.cell || 26, gp = c * 0.11, carbon = kind === 'carbon';
+  G.save(); G.globalAlpha = a; rrPath(x, y, w, h, 6); G.clip();
+  G.fillStyle = carbon ? MT.epoxy.g[1] : MT.fr4.g[1]; G.fillRect(x, y, w, h);
+  for (let i = 0; i * c < h; i++) for (let j = 0; j * c < w; j++) {
+    const x0 = x + j * c, y0 = y + i * c, across = (i + j) % 2 === 0;
+    const g = across ? G.createLinearGradient(0, y0 + gp, 0, y0 + c - gp) : G.createLinearGradient(x0 + gp, 0, x0 + c - gp, 0);
+    if (carbon) { g.addColorStop(0, '#202125'); g.addColorStop(0.5, '#6A6B71'); g.addColorStop(1, '#202125'); }
+    else { g.addColorStop(0, 'rgba(255,255,255,0.28)'); g.addColorStop(0.5, 'rgba(255,255,255,0.78)'); g.addColorStop(1, 'rgba(255,255,255,0.28)'); }
+    G.fillStyle = g;
+    if (across) rrPath(x0 + 1, y0 + gp, c - 2, c - 2 * gp, gp); else rrPath(x0 + gp, y0 + 1, c - 2 * gp, c - 2, gp);
+    G.fill();
+    /* the fibres along each strand */
+    G.strokeStyle = carbon ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.2)'; G.lineWidth = 1; G.beginPath();
+    for (let q = 1; q < 4; q++) {
+      if (across) { const yy = y0 + gp + (c - 2 * gp) * q / 4; G.moveTo(x0 + 2, yy); G.lineTo(x0 + c - 2, yy); }
+      else { const xx = x0 + gp + (c - 2 * gp) * q / 4; G.moveTo(xx, y0 + 2); G.lineTo(xx, y0 + c - 2); }
+    }
+    G.stroke();
+  }
+  G.restore();
+  rrPath(x + 0.5, y + 0.5, w - 1, h - 1, 6); G.save(); G.globalAlpha = a; G.strokeStyle = C.hair; G.lineWidth = 1; G.stroke(); G.restore();
+}
+/** the two weaves side by side: carbon cloth in epoxy, glass cloth in epoxy (FR4) */
+function b07_weavePanel(t, t0, r) {
+  if (t < t0) return;
+  const inner = demoPanel(t, t0, r, { label: 'Two woven composites', src: 'Wikipedia: FR-4' });
+  const sw = (inner[2] - 36) / 2, sh = inner[3] - 70, sy = inner[1] + 2;
+  [['carbon', 'Carbon fibre', 'Carbon cloth set in epoxy'], ['glass', 'FR4, the board', 'Glass cloth set in epoxy']].forEach(([k, name, sub], i) => {
+    const sx = inner[0] + i * (sw + 36), ka = ep(t, t0 + 0.25 + i * 0.4, t0 + 0.65 + i * 0.4);
+    b07_weave(sx, sy, sw, sh, k, ka);
+    text(name, sx, sy + sh + 30, { role: 'label', size: 21, color: i ? C.heroText : C.ink2, alpha: ka });
+    text(sub, sx, sy + sh + 58, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: ka });
+  });
+}
+const b07_k = v => String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+/** the same weight of FR4 and magnesium alloy, pulled until each breaks (B07_PULL) */
+function b07_pullPanel(t, t0, r) {
+  if (t < t0) return;
+  const inner = demoPanel(t, t0, r, { label: 'Same weight, pulled until it breaks' });
+  const rows = [['Magnesium alloy', B07_PULL.fM, C.comp, C.mute], ['FR4', B07_PULL.fF, C.hero, C.heroText]];
+  const bx = inner[0] + 214, bwMax = inner[2] - 214 - 196, a = ep(t, t0 + 0.2, t0 + 0.6);
+  rows.forEach(([name, F, col, tcol], i) => {
+    const yy = inner[1] + 16 + i * 48, kb = ep(t, t0 + 0.35 + i * 0.35, t0 + 1.05 + i * 0.35, E.out3), bw = Math.max(3, bwMax * F / B07_PULL.fF * kb);
+    text(name, inner[0], yy + 8, { role: 'label', size: 19, color: tcol, alpha: a });
+    rr(bx, yy - 9, bw, 24, 3, col, null, 0, a);
+    const v = Math.floor(F * kb / 50) * 50;
+    rich([{ s: b07_k(v), role: 'num', size: 26, weight: 750, color: i ? C.heroText : C.ink2, tnum: true }, { s: 'N', role: 'small', size: 20, weight: 650, color: C.mute, gap: 6 },
+      i && kb >= 1 ? { s: fmtN(Math.floor(B07_PULL.ratio * 10) / 10, 1) + '×', font: 'disp', size: 30, weight: 800, color: C.heroText, grad: C.heroGrad, gap: 16, caps: false } : null], bx + bw + 14, yy + 10, { alpha: a });
+  });
+  text('Strips of ' + fmtN(B07_PULL.g, 2) + ' g each, ' + B07_PULL.L + ' mm long (Gund; MatWeb)', inner[0], inner[1] + inner[3] + 6, { role: 'small', size: 21, weight: 560, color: C.faint, alpha: a });
+}
+/** the shell cut across at the board's rear rib row, as a front view sees it (mm, in establish's front frame: up is −y): the
+   wall as solved (r), squeezed by sq (0..1), drawn ex× real and shown symmetric (the solve pins one foot; half the spread is
+   given back to it, a rigid shift). o = { tied (0..1: the ribs reach the board's edge), rod (0..1: the rival's glued carbon
+   rod), glow (0..1: the board lit), a } */
+function b07_secScene(r, sq, o = {}) {
+  const M = r.model, a = o.a == null ? 1 : o.a, ex = B07_BRD.ex; if (a <= 0.003) return;
+  const sh = (r.d[0] + r.d[M.N * 3]) / 2, P = q => [q[0], -q[1]], Pd = q => [q[0] - sh * sq * ex, -q[1]];
+  const dn = i => [M.nodes[i][0] + (r.d[i * 3] - sh) * sq * ex, M.nodes[i][1] + r.d[i * 3 + 1] * sq * ex];
+  /* the pad under the feet */
+  G.save(); G.globalAlpha = PA * a; G.strokeStyle = C.hair; G.lineWidth = lw(2); G.beginPath(); G.moveTo(-36, 0); G.lineTo(36, 0); G.stroke(); G.restore();
+  /* the wall at rest, dashed, once it moves */
+  const kg = clamp(sq * 4);
+  if (kg > 0.01) { G.save(); G.globalAlpha = PA * a * 0.75 * kg; G.strokeStyle = C.faint; G.lineWidth = lw(1.5); G.setLineDash([lw(7), lw(6)]); G.beginPath(); M.nodes.forEach((n, i) => { const p = P(n); i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1]); }); G.stroke(); G.restore(); }
+  /* the board, edge on */
+  const bw = b07_boardHalfW(B07_BRD.z), by = B07_BRD.by, bt = B07_BRD.bt, gl = o.glow || 0;
+  G.save(); G.globalAlpha = PA * a;
+  if (gl > 0.01) { G.shadowColor = rgba(C.hero, 0.8 * gl); G.shadowBlur = 18 * gl; }
+  G.fillStyle = TH ? MT.mask.g[0] : C.comp2; G.fillRect(-bw, -(by + bt / 2), 2 * bw, bt); G.shadowBlur = 0;
+  G.strokeStyle = mix(MT.brass.g[1], C.hero, gl); G.lineWidth = lw(1.5 + gl); G.strokeRect(-bw, -(by + bt / 2), 2 * bw, bt);
+  G.restore();
+  /* the rival's fix: a carbon rod glued across the feet, a blob of glue at each end */
+  if (o.rod > 0.003) {
+    const ry = B07_BRD.rodY, rr0 = B07_BRD.rodR, xe = 23.0, dy = (1 - o.rod) * 6;
+    G.save(); G.globalAlpha = PA * a * clamp(o.rod * 1.5);
+    const g = G.createLinearGradient(0, -(ry + rr0) - dy, 0, -(ry - rr0) - dy); g.addColorStop(0, '#8A8B91'); g.addColorStop(0.4, '#3A3B40'); g.addColorStop(1, '#141518');
+    G.fillStyle = g; G.fillRect(-xe, -(ry + rr0) - dy, 2 * xe, 2 * rr0); G.strokeStyle = C.mute; G.lineWidth = lw(1); G.strokeRect(-xe, -(ry + rr0) - dy, 2 * xe, 2 * rr0);
+    const kj = ep(o.rod, 0.85, 1);
+    if (kj > 0.01) for (const sd of [-1, 1]) { G.globalAlpha = PA * a * kj * 0.85; G.fillStyle = rgba(C.red, 0.55); G.beginPath(); G.ellipse(sd * (xe - 0.4), -ry - dy, 1.5, 1.7, 0, 0, TAU); G.fill(); }
+    G.restore();
+  }
+  /* the wall */
+  feDraw(r, Pd, { load: sq, scale: ex, w: 1, heat: false, color: C.ink2, alpha: a * PA, hide: e => !!M.els[e].truss, seg: 6 });
+  /* Theseus: the ribs' feet tied to the board's edge */
+  if (o.tied > 0.003) {
+    G.save(); G.globalAlpha = PA * a; G.strokeStyle = C.hero; G.lineWidth = 1.5; G.lineCap = 'round';
+    for (const i of [0, M.N]) { const f = dn(i), e = [Math.sign(f[0]) * (bw - 0.4), by], q = [lerp(f[0], e[0], o.tied), lerp(f[1], e[1], o.tied)]; G.beginPath(); G.moveTo(f[0], -f[1]); G.lineTo(q[0], -q[1]); G.stroke(); }
+    G.restore();
+  }
+}
+/** the squeeze's agents on the section, in stage px: a fingertip end-on at each grip point and the force on it */
+function b07_secHands(est, r, sq, o = {}) {
+  const M = r.model, ex = B07_BRD.ex, sh = (r.d[0] + r.d[M.N * 3]) / 2, out = [];
+  M.grip.forEach((gi, j) => {
+    const sd = j === 0 ? 1 : -1, n = M.nodes[gi], x = n[0] + (r.d[gi * 3] - sh) * sq * ex + sd * 0.8, y = n[1] + r.d[gi * 3 + 1] * sq * ex, p = est.P(x, -y);
+    if (o.finger > 0.003) finger(p[0], p[1], sd > 0 ? Math.PI / 2 : -Math.PI / 2, { s: est.s, view: 'end', press: sq, alpha: o.finger });
+    const back = o.finger > 0.003 ? 12.5 * est.s + 8 : 6;
+    if (o.k > 0.003) forceArrow(p[0] + sd * back, p[1], sd > 0 ? Math.PI : 0, o.len || 110, o.label === false ? { k: o.k } : { N: 10, dec: 0, k: o.k, side: 'end' });
+    out.push(p);
+  });
+  return out;
+}
+S({
+  id: 'b07_board', ch: 'shell', theme: 'night', title: 'The board you already carry', settle: 11, ideas: [94],
+  replaces: ['shlPcbRib', 'shcCarry', 'shlStructs'],
+  src: ['b07Fe', 'b07Fr4Wiki', 'shlFr4', 'shlMg', 'b07Sabre', 'b07Harpe', 'shlPyrofil'],
+  answers: [
+    ['shlPcbRib: "unintuitive"', 'One demonstration on the real shell, cut across the board\'s rear rib row, problem first: squeeze it at the grip and its feet slide inward, the sides come in 0.64 mm; the usual added part; then the board, anchored to the ribs, holds the feet and the same squeeze moves the sides 0.21 mm.'],
+    ['"explain how fr4 is like carbon fiber because it\'s also a woven composite"', 'A panel sets the two weaves side by side, carbon cloth in epoxy and glass cloth in epoxy (Wikipedia, FR-4: "woven fiberglass cloth with an epoxy resin binder"), and the narration says it: carbon fibre\'s recipe, made with glass cloth.'],
+    ['"using the pcb is an alternative to having carbon fiber rods in your mouse"', 'The rival fix is drawn in place: a carbon rod glued across the feet (the paid route, carbon or magnesium shells, in the narration). It leaves, and the board does its job.'],
+    ['"that doesn\'t require extra parts with extra tolerancing"', 'The rod is tagged "+1 part" and "2 glued joints to hold to size" (the next slides take up tolerance); Theseus\'s result says "with no added part".'],
+    ['"you\'re just using what you already have"', 'The title, and the line "the board already spans the feet": the 5.6 g board is carried anyway.'],
+    ['shcCarry: "meg slide"', 'Read as "meh": the square-per-gram grid is gone. Its point, use the weight you already carry, is this slide\'s result (+0 g, no added part).'],
+    ['shlStructs: "viewer will have no idea what that spec means in big blue poor setup"', 'The published N/mm figure is left out. The measurement is set up on screen instead: 10 N on each side (the weight of a 1 kg bag of sugar) and how far the sides move, in mm (six sheets of copy paper), solved for this shell.'],
+    ['F2.26 (FR4 as strong as magnesium; the whole board)', 'The same weight of each pulled until it breaks: FR4 4,300 N, magnesium alloy 2,350 N, 1.8× (Gund; MatWeb, the higher magnesium figure, so the ratio is the cautious one).']
+  ],
+  draw: t => {
+    const R = b07_squeeze(), ex = B07_BRD.ex;
+    header(t, 'The board you already carry');
+    captions(t, [[0.6, 'Ribs stiffen the walls, but squeeze the shell at the grip and its feet slide inward: the sides come in.'],
+      [3.3, 'The usual fix adds something stiff: a carbon or magnesium shell, or a carbon rod glued across. One more part, two more joints to hold to size.'],
+      [5.3, 'But the board already spans the feet, and FR4 is woven glass in epoxy: carbon fibre\'s recipe, made with glass cloth.'],
+      [7.3, 'Theseus anchors its ribs on the board\'s edge, so the board holds the feet. The same squeeze moves the sides a third as far, with nothing added.']]);
+    /* the stage: centred while the problem plays, then it slides left for the two panels */
+    const kx = ep(t, 5.0, 5.7, E.cam), box = [lerp(LM + 220, LM, kx), lerp(286, 300, kx), lerp(1320, 980, kx), lerp(640, 600, kx)];
+    const est = establish(t, 0, box, { view: 'front', hi: ['sides'], col: 'ink', focus: msBox('front'), locator: false, fade: 0.14, hold: 0.3, dur: 0.9, mouse: { alpha: 1 - 0.94 * ep(t, 0.8, 1.35) } });
+    locator(t, 0.6, LM + 14, 300, 74, 'top', [-36, B07_BRD.z * -1 - 2, 72, 4]);
+    const kd = est.kd;
+    /* the squeeze: on at 1.6, held, off at 3.1; again at 7.0 for the comparison */
+    const sq1 = ep(t, 1.6, 2.4, E.io3) * (1 - ep(t, 3.1, 3.6, E.io3)), sq2 = ep(t, 7.0, 7.6, E.io3), sq = Math.max(sq1, sq2);
+    const kRod = ep(t, 3.6, 4.2, E.out3) * (1 - ep(t, 5.0, 5.4)), glow = ep(t, 5.2, 5.7) * (1 - ep(t, 7.2, 7.6) * 0.6);
+    const fing = 0;   /* end-on fingertips read as ear muffs at this size: the arrows carry the squeeze */
+    const scene = (r, tied) => { est.draw(() => b07_secScene(r, sq, { a: kd, rod: kRod, glow, tied })); b07_secHands(est, r, sq, { finger: fing, k: t < 5 ? ep(t, 1.6, 2.05, E.snap) * (1 - ep(t, 3.1, 3.5)) : ep(t, 7.0, 7.45, E.snap), len: t < 5 ? 110 : 76, label: t < 5 }); };
+    let hands = null;
+    if (t < 7.7) { scene(R.s0, 0); hands = true; }
+    else wipeTo(t, 7.7, 1.0, box, () => scene(R.s0, 0), () => scene(R.s1, 1), { rival: 'The shell alone', right: 'Theseus', ly: box[1] - 4 });
+    /* the board, named while the problem plays */
+    { const kb = ep(t, 1.0, 1.4) * (1 - ep(t, 5.1, 5.4)); if (kb > 0.003) { const pb = est.P(b07_boardHalfW(B07_BRD.z) - 1, -(B07_BRD.by + 2.2)); text('The board', pb[0], pb[1], { role: 'label', size: 20, color: C.mute, align: 'right', alpha: kb }); } }
+    /* the feet spreading, named; the rod's cost, named */
+    const M0 = R.s0.model, footP = r => { const M = r.model, sh = (r.d[0] + r.d[M.N * 3]) / 2, i = 0; return est.P(M.nodes[i][0] + (r.d[i * 3] - sh) * sq * ex, -(M.nodes[i][1] + r.d[i * 3 + 1] * sq * ex)); };
+    if (t >= 2.5 && t < 3.6) { const p = footP(R.s0); faultTag(t, 2.5, p, 'Feet slide in ' + fmtN(Math.floor(Math.abs(R.feet0) * 100) / 100, 2) + ' mm', { to: [p[0] + 70, p[1] - 120], side: 'r', alpha: 1 - ep(t, 3.2, 3.6) }); }
+    if (kRod > 0.01) {
+      const pm = est.P(0, -B07_BRD.rodY), pj = est.P(-23, -B07_BRD.rodY);
+      if (t >= 4.2) faultTag(t, 4.2, [pm[0] + 60, pm[1] - 8], '+1 part: a carbon rod', { to: [pm[0] + 120, pm[1] - 250], side: 'r', alpha: kRod });
+      if (t >= 4.5) faultTag(t, 4.5, [pj[0] + 6, pj[1] - 4], '2 glued joints to hold to size', { to: [pj[0] + 70, pj[1] - 170], side: 'r', alpha: kRod });
+    }
+    if (t >= 5.6 && t < 7.7) { const pb = est.P(-4, -(B07_BRD.by + 0.5)); fixTag(t, 5.6, pb, 'FR4: woven glass in epoxy', { to: [pb[0] + 30, pb[1] - 150], side: 'r', alpha: 1 - ep(t, 7.2, 7.6) }); }
+    if (t >= 8.9) { const r = R.s1, M = r.model, f = est.P(M.nodes[M.N][0], -M.nodes[M.N][1]), bw = b07_boardHalfW(B07_BRD.z), e = est.P(bw, -B07_BRD.by), p = [(f[0] + e[0]) / 2, (f[1] + e[1]) / 2]; fixTag(t, 8.9, p, 'Ribs anchored on the board\'s edge', { to: [p[0] - 40, p[1] - 150], side: 'l' }); }
+    /* phase 1, top right: how far the sides bow in, live, with its human scale */
+    const kr = ep(t, 1.6, 1.9) * (1 - ep(t, 4.8, 5.1));
+    if (kr > 0.003) {
+      const v = R.flex0 * ep(t, 1.6, 2.4, E.io3);
+      text('How far the sides come in', RM, 330, { role: 'label', size: 21, color: C.mute, align: 'right', alpha: kr });
+      rich([{ s: fmtN(v, 2), font: 'disp', size: 84, weight: 800, color: C.ink, tnum: true }, { s: 'mm', font: 'disp', size: 32, weight: 700, color: C.mute, gap: 10, caps: false }], RM, 418, { align: 'right', alpha: kr });
+      if (t > 2.5) { const s6 = 'about six sheets of copy paper'; scaleNote(RM - 34 - tw(s6, { role: 'small', size: 23, weight: 600 }), 466, s6, { t, t0: 2.5, size: 23 }); }
+    }
+    if (t > 2.1) scaleNote(LM, 950, 'on each side: the weight of a 1 kg bag of sugar', { lead: '10 N', t, t0: 2.1, size: 23 });
+    /* phase 2, the right column: the two weaves, the same-weight pull, and the result */
+    const rx = LM + 1100, rw = RM - rx;
+    b07_weavePanel(t, 5.3, [rx, 286, rw, 280]);
+    b07_pullPanel(t, 6.3, [rx, 586, rw, 196]);
+    verdict(t, 8.4, rx, 900, { from: +fmtN(R.flex0, 2), to: +fmtN(R.flex1, 2), unit: 'mm', dec: 2, label: 'How far the sides come in', better: 'lower', size: 96, netWord: 'with no added part', maxW: rw });
+    source(t, 'Solved here: the 3D shell cut at the board\'s rear rib row (CF-PP), its feet tied by the rim, or by rim and board; 10 N a side, drawn ' + ex + '× real. Peak wall stress +9 % (17.3 of 120 MPa).', { t0: 2.2 });
+  }
+});
+
+/* ============================== 2. b07_arms: Small arms snap, the whole board holds ==============================
+   Brock (shcArms, 6/10): "these aren't what the arms or pcb would look like, important idea tho"; F2.26, F6.3 (the arms on
+   his HTS Ultra broke in shipping), F28.3 (his two G-Wolves photos). The plan frame (model 1) under one squeeze, 10 N on
+   each side over the board: six small arms where G-Wolves puts them against every rib tied to the board's own edge, the
+   FR4 coloured by its stress on one scale. The arm, edge on: a fixed-guided FR4 tab 6.5 mm long and 1.0 mm thick (its
+   length estimated from the photo): σ = 3·E·h·δ / L², so 0.36 mm at its tip takes its root to 483 MPa (Gund, crosswise
+   flexural). Only the squeeze is modelled on both; the drop is shown on the arm alone. */
+const B07_ARM = { L: 6.5, h: 1.0, E: 19000, sf: 483 };
+B07_ARM.perMM = 3 * B07_ARM.E * B07_ARM.h / (B07_ARM.L * B07_ARM.L);
+B07_ARM.snap = B07_ARM.sf / B07_ARM.perMM;
+/** the board's outline in the top view's frame (key plan: x as given, y = −z) */
+function b07_boardPathKey() { const B = b07_boardOut(); G.beginPath(); B.forEach((p, i) => i ? G.lineTo(p[0], -p[1]) : G.moveTo(p[0], -p[1])); G.closePath(); }
+/** the board as a plate, in mm in the current transform: mask, a gold edge, a few traces */
+function b07_boardPlate(a, o = {}) {
+  if (a <= 0.003) return;
+  G.save(); G.globalAlpha = PA * a;
+  b07_boardPathKey(); G.fillStyle = MT.mask.g[0]; G.fill();
+  G.save(); b07_boardPathKey(); G.clip(); G.strokeStyle = 'rgba(255,255,255,0.07)'; G.lineWidth = lw(1.2);
+  G.beginPath(); for (const [x0, y0, x1, y1] of [[-14, -40, -14, -2], [-14, -2, -6, 6], [9, -44, 9, -12], [9, -12, 15, -6], [-4, -30, 6, -30], [-8, -18, 8, -18]]) { G.moveTo(x0, y0); G.lineTo(x1, y1); } G.stroke();
+  G.restore();
+  b07_boardPathKey(); G.strokeStyle = o.edge || MT.brass.g[1]; G.lineWidth = lw(o.ew || 1.6); G.stroke();
+  G.restore();
+}
+/** one rival arm drawn over its solved beam, as on G-Wolves boards: a square root at the board, silkscreen corner marks at
+   the tip, a locating hole in the middle one. (x0, y0) its root, (x1, y1) its tip, in mm; w its width */
+function b07_armDetail(x0, y0, x1, y1, w, a, o = {}) {
+  if (a <= 0.003) return;
+  const dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, nx = -uy * w / 2, ny = ux * w / 2;
+  G.save(); G.globalAlpha = PA * a; G.strokeStyle = C.second; G.lineWidth = lw(1.6); G.lineJoin = 'miter';
+  G.beginPath(); G.moveTo(x0 + nx, y0 + ny); G.lineTo(x1 + nx, y1 + ny); G.lineTo(x1 - nx, y1 - ny); G.lineTo(x0 - nx, y0 - ny); G.stroke();
+  /* silkscreen corner marks near the tip */
+  G.strokeStyle = 'rgba(255,255,255,0.7)'; G.lineWidth = lw(1.1); const tx = x1 - ux * 1.2, ty = y1 - uy * 1.2, m = 0.7;
+  for (const sd of [1, -1]) { const cxp = tx + sd * nx * 0.62, cyp = ty + sd * ny * 0.62; G.beginPath(); G.moveTo(cxp - ux * m, cyp - uy * m); G.lineTo(cxp, cyp); G.lineTo(cxp - sd * nx / (w / 2) * m, cyp - sd * ny / (w / 2) * m); G.stroke(); }
+  if (o.hole) { G.beginPath(); G.arc(x1 - ux * 2.4, y1 - uy * 2.4, 0.6, 0, TAU); G.fillStyle = C.bg; G.fill(); G.strokeStyle = MT.brass.g[1]; G.lineWidth = lw(1); G.stroke(); }
+  G.restore();
+}
+/** the close-up from Brock's photo: the board's long edge, three narrow tabs reaching under the shell's rim */
+function b07_gwTile(t, t0, r) {
+  const [x, y, w, h] = r, a = ep(t, t0, t0 + 0.5); if (a <= 0.003) return;
+  demoWindow(x, y, w, h, a);
+  text('G-Wolves, drawn from Brock\'s photo', x + 28, y + 42, { role: 'label', size: 21, color: C.secondText, alpha: a });
+  text('Narrow FR4 tabs, square at the root, under the rim', x + 28, y + 72, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: a, maxW: w - 56 });
+  const by = y + h - 44, ry = y + 106, rimH = 30, mask = MT.mask.g[0], rim = TH ? MT.shell.g[0] : C.comp2;
+  G.save(); G.globalAlpha = a;
+  /* the shell's rim: a black band with its row of small round holes, the lattice beyond it */
+  rrPath(x + 20, ry, w - 40, rimH, 4); G.fillStyle = rim; G.fill();
+  G.fillStyle = C.panel; for (let k = x + 44; k < x + w - 40; k += 22) { G.beginPath(); G.arc(k, ry + rimH / 2, 3.2, 0, TAU); G.fill(); }
+  /* the board along the bottom: mask, a few traces and pads */
+  rrPath(x + 20, by - 52, w - 40, 60, 3); G.fillStyle = mask; G.fill();
+  G.strokeStyle = 'rgba(255,255,255,0.08)'; G.lineWidth = 1.4; G.beginPath(); for (let k = 0; k < 5; k++) { G.moveTo(x + 40 + k * 120, by - 10); G.lineTo(x + 90 + k * 120, by - 40); G.lineTo(x + 150 + k * 120, by - 40); } G.stroke();
+  G.fillStyle = MT.brass.g[1]; for (let k = 0; k < 9; k++) G.fillRect(x + 60 + k * 66, by - 22, 7, 5);
+  G.strokeStyle = MT.brass.g[1]; G.lineWidth = 1.6; G.beginPath(); G.moveTo(x + 20, by - 52); G.lineTo(x + w - 20, by - 52); G.stroke();
+  G.restore();
+  /* three tabs: narrow, square at the root, reaching under the rim; the middle one with its hole */
+  const tabs = [x + w * 0.22, x + w * 0.5, x + w * 0.78], tw2 = 34;
+  tabs.forEach((cx2, i) => {
+    const ka = a * stagger(t, t0 + 0.3, i, 0.12, 0.4), x0 = cx2 - tw2 / 2, top = ry + rimH * 0.45, bot = by - 52;
+    if (ka <= 0.003) return;
+    G.save(); G.globalAlpha = ka; G.fillStyle = mask; G.fillRect(x0, top, tw2, bot - top + 1);
+    G.strokeStyle = C.second; G.lineWidth = 2; G.beginPath(); G.moveTo(x0, bot); G.lineTo(x0, top); G.lineTo(x0 + tw2, top); G.lineTo(x0 + tw2, bot); G.stroke();
+    G.strokeStyle = 'rgba(255,255,255,0.75)'; G.lineWidth = 1.5; G.beginPath(); G.moveTo(x0 + 5, top + 14); G.lineTo(x0 + 5, top + 9); G.lineTo(x0 + 10, top + 9); G.moveTo(x0 + tw2 - 5, top + 14); G.lineTo(x0 + tw2 - 5, top + 9); G.lineTo(x0 + tw2 - 10, top + 9); G.stroke();
+    if (i === 1) { G.beginPath(); G.arc(cx2, top + 30, 6, 0, TAU); G.fillStyle = C.panel; G.fill(); G.strokeStyle = MT.brass.g[1]; G.lineWidth = 1.5; G.stroke(); }
+    G.restore();
+  });
+  /* the rim passes over the tabs' tips */
+  G.save(); G.globalAlpha = a * 0.92; rrPath(x + 20, ry, w - 40, rimH * 0.45, 3); G.fillStyle = rim; G.fill(); G.restore();
+  /* the square roots, marked where the tabs leave the board */
+  const kr2 = ep(t, t0 + 0.9, t0 + 1.3) * a;
+  if (kr2 > 0.003) tabs.forEach(cx2 => { for (const sd of [-1, 1]) { const qx = cx2 + sd * tw2 / 2, qy = by - 52; circle(qx, qy, 5, { fill: C.red, alpha: kr2 }); circle(qx, qy, 10, { color: C.red, w: 1.5, alpha: kr2 * 0.45 }); } });
+}
+/** one arm edge on, in a jolt: the board holds its root, the shell's rim its tip; d = the tip's movement (mm) */
+function b07_armEdge(t, r, d, crack, a) {
+  const [x, y, w, h] = r; if (a <= 0.003) return;
+  demoWindow(x, y, w, h, a);
+  text('One arm, edge on, in a jolt', x + 28, y + 40, { role: 'label', size: 21, color: C.mute, alpha: a });
+  const s = 22, ex = 9, L = B07_ARM.L * s, th = B07_ARM.h * s, x0 = x + 120, yc = y + 74, dd = d * s * ex, sig = d * B07_ARM.perMM;
+  const ys = u => yc + dd * (3 * u * u - 2 * u * u * u);
+  G.save(); G.globalAlpha = a;
+  /* the board (it holds the root) and the rim (it holds the tip and moves) */
+  rrPath(x0 - 70, yc - 26, 70, 52, 4); G.fillStyle = MT.mask.g[0]; G.fill();
+  const broke = crack >= 1;
+  rrPath(x0 + L - 2, ys(1) - 22, 64, 44, 4); G.fillStyle = TH ? MT.shell.g[0] : C.comp2; G.fill(); G.strokeStyle = inkA(0.25); G.lineWidth = 1.2; G.stroke();
+  /* the arm: its centre line bent as a fixed-guided beam, coloured by the root's stress */
+  const k = clamp(sig / B07_ARM.sf), col = heatCol(k);
+  G.lineCap = 'butt'; G.strokeStyle = col; G.lineWidth = th; G.beginPath();
+  const u0 = broke ? 0.04 : 0; for (let i = 0; i <= 30; i++) { const u = u0 + (1 - u0) * i / 30, px = x0 + L * u; i ? G.lineTo(px, ys(u) + (broke ? 6 : 0)) : G.moveTo(px, ys(u) + (broke ? 6 : 0)); } G.stroke();
+  if (broke) { G.strokeStyle = heatCol(1); G.lineWidth = th; G.beginPath(); G.moveTo(x0, yc); G.lineTo(x0 + L * 0.03, yc); G.stroke(); }
+  G.restore();
+  if (crack > 0) { const pts = []; for (let j = 0; j <= 6; j++) pts.push([x0 + L * 0.035 + (j % 2 ? 3 : -2), yc - th / 2 + th * j / 6 * crack]); poly(pts, { color: C.red, w: 3, alpha: a }); }
+  /* the counters: the tip's movement and the root's stress */
+  const rx = x + w - 28;
+  rich([{ s: fmtN(d, 2), font: 'disp', size: 40, weight: 800, color: C.ink, tnum: true }, { s: 'mm at the tip', role: 'label', size: 19, color: C.mute, gap: 10 }], rx, y + 92, { align: 'right', alpha: a });
+  rich([{ s: fmtN(Math.min(sig, B07_ARM.sf), 0), font: 'disp', size: 40, weight: 800, color: k >= 1 ? C.red : C.ink, tnum: true }, { s: 'MPa at the root', role: 'label', size: 19, color: k >= 1 ? C.red : C.mute, gap: 10 }], rx, y + 146, { align: 'right', alpha: a });
+  text('Bend drawn 9× real', x + w - 28, y + 40, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: a });
+}
+S({
+  id: 'b07_arms', ch: 'shell', theme: 'paper', title: 'Small arms snap, the whole board holds', settle: 11, ideas: [94],
+  replaces: ['shcArms'],
+  src: ['b07Fe', 'shcTpuHati', 'shcTpuHatiR', 'b07GwPhoto', 'shlFr4', 'shcFr4Flex'],
+  answers: [
+    ['"these aren\'t what the arms or pcb would look like"', 'Drawn from his two photos: narrow FR4 tabs on the board\'s long edge, square at the root, silkscreen corner marks at the tips and a locating hole in one, reaching under the shell\'s rim (a close-up tile), placed along the board where G-Wolves puts them (52, 68 and 84 % back from its front) in the top view.'],
+    ['"important idea tho"', 'Kept and led with the failure he lived: a jolt snaps the hottest arm at its root, and the edge-on arm shows how little it takes (0.36 mm at the tip of a 6.5 mm tab, 483 MPa at the root).'],
+    ['F2.26 (small FR4 arms easy to snap; THE WHOLE PCB)', 'Theseus ties every rib along the board\'s own edge: no tab, and the same squeeze reaches its FR4 at a fifth of the peak (4.7 → 1.0 MPa, derived).'],
+    ['F6.3, F28.3 (his HTS Ultra\'s arms broke in shipping; his photos)', 'Said in the narration; the photos are the drawing\'s reference (drawn, not shown, F34.1).'],
+    ['F33.5', 'One of his important ideas: a full demonstration with the problem first.']
+  ],
+  draw: t => {
+    const R = b07_plan(), Ca = R.arms, Cw = R.whole;
+    header(t, 'Small arms snap, the whole board holds');
+    captions(t, [[0.6, 'G-Wolves had the right idea: use the board to stiffen the shell. But it reaches the shell through a few small FR4 arms.'],
+      [3.0, 'Every squeeze funnels through their roots, and a jolt in shipping snapped the arms on my HTS Ultra.'],
+      [5.2, 'Theseus ties every rib to the board\'s own edge. No tab to snap, and the same squeeze reaches its FR4 at a fifth of the peak.']]);
+    /* ---------- the main view: the whole mouse from above, then onto the board ---------- */
+    const jolt = t > 2.9 ? Math.exp(-(t - 2.9) * 7) * Math.sin((t - 2.9) * 38) * 9 : 0;
+    const box = [LM, 286, 1000, 650];
+    const est = establish(t, 0.1, [box[0], box[1] + jolt, box[2], box[3]], { view: 'top', hi: ['board'], col: 'ink', focus: [-36, -54, 72, 72], dur: 1.1, locator: 'tl', fade: 0.55 });
+    const kd = est.kd, P = q => [q[0], -q[1]];
+    const squeeze = ep(t, 1.95, 2.5, E.snap), wipeK = ep(t, 4.7, 5.6, E.cam);
+    const exag = 150, smax = Ca.fr4;
+    const drawCase = (c, hero) => est.draw(() => {
+      /* inside the camera the canvas is in mm (the key plan's frame): P maps the model's [x, z] to it */
+      const r = c.r, M = r.model, only = part => e => M.els[e].part !== part, px = 1 / Math.max(1e-6, est.s);
+      b07_boardPlate(kd);
+      if (kd <= 0.01) return;
+      /* the rim (CF-PP), neutral, at its true width; the board's FR4 by heat (thin lines over the plate); the ties: the
+         rival's arms (FR4, by heat, their true width), Theseus's ribs (blue) */
+      feDraw(r, P, { load: squeeze, scale: exag, smax, alpha: kd, hide: only('ring'), heat: false, color: C.comp, w: 1 });
+      void px;   /* the board's FR4 stays under a quarter of the arms' peak in both cases: the plate alone says it */
+      const snapped = !hero && t >= 3.35 && c.hot, hotE = snapped ? c.hot.e : -1;
+      if (!hero) feDraw(r, P, { load: squeeze, scale: exag, smax, alpha: kd, hide: e => M.els[e].part !== 'arm' || e === hotE, w: 1 });
+      if (snapped) {
+        /* the snapped arm: free of the board at its root, hanging from the rim, still red where it broke */
+        const b = P(M.nodes[c.hot.board]), g = P(M.nodes[c.hot.ring]), dx = g[0] - b[0], dy = g[1] - b[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, fall = ep(t, 3.35, 3.8, E.out3);
+        const ang = 0.18 * fall * (b[1] < 0 ? -1 : 1), gap = 0.9 * fall, w2 = B07_PLAN.armW / 2;
+        G.save(); G.globalAlpha = PA * kd; G.translate(g[0], g[1]); G.rotate(ang); G.translate(-g[0], -g[1]);
+        G.beginPath(); G.moveTo(b[0] + ux * gap - uy * w2, b[1] + uy * gap + ux * w2); G.lineTo(g[0] - uy * w2, g[1] + ux * w2); G.lineTo(g[0] + uy * w2, g[1] - ux * w2); G.lineTo(b[0] + ux * gap + uy * w2, b[1] + uy * gap - ux * w2); G.closePath();
+        G.fillStyle = heatCol(1); G.fill(); G.restore();
+      }
+      else feDraw(r, P, { load: squeeze, scale: exag, smax, alpha: kd, hide: only('rib'), heat: false, color: C.hero, w: 1.3, seg: 1 });
+      if (!hero) M.links.forEach((l, i) => b07_armDetail(...P(M.nodes[l.board]), ...P(M.nodes[l.ring]), B07_PLAN.armW, kd * 0.9, { hole: i % 3 === 1 }));
+    });
+    wipeTo(t, 4.7, 0.9, box, () => drawCase(Ca, false), () => drawCase(Cw, true), { rival: 'G-Wolves arms', right: 'Theseus, every rib' });
+    /* the squeeze: two fingers on the sides over the board, 10 N each */
+    { const ka = ep(t, 1.7, 2.0) * kd, z = B07_PLAN.sqZ, hw = msHalfW ? msHalfW(-z) : 30.5;
+      if (ka > 0.003) {
+        const pl = est.P(-hw - 0.4, -z), pr = est.P(hw + 0.4, -z), push = squeeze * 6;
+        finger(pl[0] + push, pl[1], 0, { s: est.s, view: 'top', press: squeeze, alpha: ka, len: 20 });
+        finger(pr[0] - push, pr[1], Math.PI, { s: est.s, view: 'top', press: squeeze, alpha: ka, len: 20 });
+        forceArrow(pl[0] - 46 + push, pl[1] - 92, 0, 90, { N: 10, k: squeeze, alpha: ka, side: 'end', dec: 0 });
+        forceArrow(pr[0] + 46 - push, pr[1] - 92, Math.PI, 90, { N: 10, k: squeeze, alpha: ka, side: 'end', dec: 0 });
+      } }
+    /* the hot arm: its root cracks in the jolt */
+    if (t < 4.75 && Ca.hot) {
+      const M = Ca.r.model, l = Ca.hot, b = M.nodes[l.board], g = M.nodes[l.ring], pb = est.P(...P(b)), pg = est.P(...P(g)), ux = (pg[0] - pb[0]), uy = (pg[1] - pb[1]), Lp = Math.hypot(ux, uy) || 1, nx = -uy / Lp, ny = ux / Lp;
+      const kc = ep(t, 3.05, 3.35, E.out3), root = [pb[0] + ux / Lp * 4, pb[1] + uy / Lp * 4], half = B07_PLAN.armW / 2 * est.s + 4;
+      if (kc > 0) poly([[root[0] - nx * half, root[1] - ny * half], [root[0] + 3, root[1] + 2], [root[0] - 2, root[1] - 1], [root[0] + nx * half * (2 * kc - 1), root[1] + ny * half * (2 * kc - 1)]], { color: C.red, w: 3.6, alpha: kd });
+      if (kc > 0) { circle(root[0], root[1], 16 + 10 * kc, { color: C.red, w: 2, alpha: kd * 0.6 * (1 - ep(t, 3.6, 4.4)) }); }
+    }
+    /* ---------- the right column: the photo's tabs, the arm in a jolt, the verdict ---------- */
+    const rx = LM + 1040, rw = RM - rx;
+    b07_gwTile(t, 0.4, [rx, 286, rw, 252]);
+    const dJ = B07_ARM.snap * ep(t, 2.9, 3.3, E.in3), crackJ = ep(t, 3.3, 3.5);
+    b07_armEdge(t, [rx, 560, rw, 196], dJ, crackJ, ep(t, 2.6, 3.0));
+    if (t > 3.6) scaleNote(rx, 790, 'about three sheets of copy paper', { lead: fmtN(B07_ARM.snap, 2) + ' mm', t, t0: 3.6, size: 23 });
+    verdict(t, 6.0, rx, 914, { from: +fmtN(Ca.fr4, 1), to: +fmtN(Cw.fr4, 1), unit: 'MPa', dec: 1, label: 'Peak experienced stress in the board', better: 'lower', size: 88, maxW: rw });
+    source(t, '2D frames solved here: CF-PP rim (13.5 GPa), plan-5 board in 1.0 mm FR4 (19 GPa), 10 N a side; arms 3.8 × 6.5 mm FR4 (length from the photo), ribs CF-PP. Squeeze ' + exag + '× real.', { t0: 2.2 });
+  }
+});
 
 /* ============================== 3. b07_tolerance: Tolerance stack-up ==============================
    Brock (tolerance, 7/10): "needs to be explained with some sort of law for more validity, don't show the theseus teardown,
@@ -477,13 +824,14 @@ S({
       [3.0, 'One sloppy part owns most of the spread. The others can be perfect, and the seam still misses.'],
       [5.4, 'Four shell parts: 1 mouse in ' + oneIn(outF('four')) + ' misses a seam\'s allowance. Rim, hump and sides in one body: 1 in ' + oneIn(outF('two')) + '.']]);
     /* ---------------- the classroom version: coins in a gauge (left), the law and where the stack lands (right) ---------------- */
-    const pan = [LM, 292, 600, 668], inner = demoPanel(t, 0.1, pan, { src: 'Scholz 1995' });
+    /* frame one already shows the subject: the gauge in its panel with two coins in it; the other two drop in */
+    const pan = [LM, 292, 600, 668], inner = demoPanel(t, -1, pan, { src: 'Scholz 1995' });
     const cx = pan[0] + 268, base = pan[1] + 360, cs = 14.6, thPx = 30, step = 11;
-    const nom = base - 4 * thPx, kg = ep(t, 0.2, 0.6);
-    rect(cx - 196, base, 392, 6, { fill: TH ? '#BDBCB6' : '#3A3B40', alpha: kg });
+    const nom = base - 4 * thPx, kg = 1;
+    rect(cx - 196, base, 392, 6, { fill: TH ? C.comp : C.comp2, alpha: kg });
     line(cx - 190, nom, cx + 182, nom, { color: C.faint, w: 1.5, dash: [6, 5], alpha: kg });
     text('Nominal', cx + 236, nom + 7, { role: 'label', size: 19, color: C.faint, alpha: kg });
-    const tDrop = [0.0, 0.45, 0.8, 1.15], tTr0 = 1.75, tTrD = 0.11, tBad = 2.95, tTr1 = 3.25, nTr = V.trials;
+    const tDrop = [-1, -1, 0.35, 0.75], tTr0 = 1.75, tTrD = 0.11, tBad = 2.95, tTr1 = 3.25, nTr = V.trials;
     let errs = [0, 0, 0, 0];
     const bad = t >= tBad + 0.25;
     if (t >= tTr0 && t < tBad) errs = b07_coinErr(Math.min(nTr - 1, Math.floor((t - tTr0) / tTrD)), false);
@@ -496,11 +844,11 @@ S({
       tops.push(y - th); ths.push(th); y -= th;
     }
     const top = y, kt = ep(t, tTr0, tTr0 + 0.2), kb = ep(t, tTr1, tTr1 + 0.8);
-    if (kt > 0.003) line(cx - 182, top, cx + 182, top, { color: TH ? C.ink2 : '#E6E6E1', w: 2.5, alpha: kt });
+    if (kt > 0.003) line(cx - 182, top, cx + 182, top, { color: C.ink2, w: 2.5, alpha: kt });
     /* the law on the stack: the worst case (dashed) and the likely spread (solid), as brackets at the stack's top */
     const kw = ep(t, 1.1, 1.5), kr = ep(t, 1.5, 1.9), wcPx = 4 * step, rsPx = 2 * step, rsBad = Math.sqrt(3 + V.badK * V.badK) * step;
     b07_bracket(cx + 202, nom - wcPx, nom + wcPx, C.mute, kw, null, { dir: 1, dash: [5, 4] });
-    b07_bracket(cx + 222, nom - lerp(rsPx, rsBad, kb), nom + lerp(rsPx, rsBad, kb), bad ? C.red : (TH ? C.ink : '#F3F2EE'), kr, null, { dir: 1, w: 2.5 });
+    b07_bracket(cx + 222, nom - lerp(rsPx, rsBad, kb), nom + lerp(rsPx, rsBad, kb), bad ? C.red : C.ink, kr, null, { dir: 1, w: 2.5 });
     if (t >= 3.6) { const p = [cx - 178, tops[2] + ths[2] * 0.5]; faultTag(t, 3.6, p, 'One sloppy part: ' + Math.round(TOL.bad.share[3] * 100) + ' % of the spread', { to: [cx - 70, pan[1] + 112], elbow: cx - 204, side: 'r', prose: true, maxW: 300 }); }
     /* the formulas: big on the stage while the coins play, then they settle into the panel as the build line comes in */
     const kf = ep(t, 4.5, 5.25, E.cam), fs = lerp(50, 30, kf), fBig = [LM + 700, 380], fSmall = [inner[0], base + 92];
@@ -525,7 +873,7 @@ S({
       for (const v of [-0.3, 0, 0.3]) text((v > 0 ? '+' : v < 0 ? '−' : '') + fmtN(Math.abs(v), 1), px0 + 46, Yv(v) + 7, { role: 'tick', size: 19, color: C.faint, align: 'right', alpha: kpl });
       text('{mm}', px0, Yv(0.42) + 4, { role: 'tick', size: 19, color: C.faint, alpha: kpl });
       const n0 = t < tBad ? Math.min(nTr, Math.floor((t - tTr0) / tTrD) + 1) : nTr, n1 = t >= tTr1 ? Math.min(nTr, Math.floor((t - tTr1) / tTrD) + 1) : 0;
-      for (let j = 0; j < n0; j++) circle(Xv(j), Yv(b07_coinErr(j, false).reduce((a2, b2) => a2 + b2, 0) * T), 7, { fill: TH ? C.ink2 : '#D9D8D3', alpha: kpl });
+      for (let j = 0; j < n0; j++) circle(Xv(j), Yv(b07_coinErr(j, false).reduce((a2, b2) => a2 + b2, 0) * T), 7, { fill: C.ink2, alpha: kpl });
       for (let j = 0; j < n1; j++) circle(Xv(nTr + j), Yv(b07_coinErr(100 + j, true).reduce((a2, b2) => a2 + b2, 0) * T), 7, { fill: C.red, alpha: kpl });
       if (n1) text('With the sloppy part', Xv(nTr), Yv(-0.42) + 24, { role: 'label', size: 19, color: C.red, alpha: kpl * ep(t, tTr1, tTr1 + 0.3) });
     }
@@ -548,7 +896,7 @@ S({
         const n2 = b.slabs.length, sh = 9, sg = 4, yy = sy0 + (4 - n2) * (sh + sg) + j * (sh + sg), la = bi === 0 ? spring(t, 4.7 + j * 0.1, { f: 2.6, z: 0.7 }) : spring(t, b.t0 - 0.3 + j * 0.08, { f: 3, z: 0.6 });
         const from = bi === 0 ? [cx - 182, tops[3 - j] + 2] : [sx, yy - 30], px = lerp(from[0], sx, la), py = lerp(from[1], yy, la), wd = bi === 0 ? lerp(364, 86, la) : 86;
         if (la <= 0.003) return;
-        rr(px, py, wd, sh, 3, k2 === 'h' ? C.hero : k2 === 'b' ? C.red : (TH ? '#AEADA7' : '#8E9096'), null, 0, Math.min(a, clamp(la * 3)));
+        rr(px, py, wd, sh, 3, k2 === 'h' ? C.hero : k2 === 'b' ? C.red : (TH ? C.comp : C.mute), null, 0, Math.min(a, clamp(la * 3)));
       });
       const X = v => ox + 24 + (pw - 48) * (v - lo) / (hi - lo);
       G.save(); G.globalAlpha = a * 0.9; G.fillStyle = inkA(TH ? 0.06 : 0.08); G.fillRect(X(-Sx), baseY - maxH - 4, X(Sx) - X(-Sx), maxH + 4); G.restore();
@@ -568,7 +916,7 @@ S({
         for (let q = 0; q < 24; q++) {
           const i = Math.min(g.length - 1, shown + q * 61), k = Math.floor((g[i] - lo) / bw); if (k < 0 || k >= bins) continue;
           const ph = 1 - q / 24, yy = lerp(R0[1] + 100, baseY - maxH * cnt[k] / cmax - 7, E.in3(ph)), o2 = Math.abs(g[i]) > Sx;
-          b07_glyph(X(lo + (k + 0.5) * bw), yy, 0.12, o2 ? C.red : (b.hero ? C.hero : (TH ? '#77767F' : '#C9C8C2')), a * clamp(ph * 3) * 0.95);
+          b07_glyph(X(lo + (k + 0.5) * bw), yy, 0.12, o2 ? C.red : (b.hero ? C.hero : (TH ? C.mute : C.ink2)), a * clamp(ph * 3) * 0.95);
         }
       }
       const outNow = shown ? outN / shown : 0;
@@ -582,174 +930,5 @@ S({
     verdict(t, 8.7, R0[0], 872, { from: v0, to: v1, unit: '%', dec: 1, label: 'Seams outside the allowance', better: 'lower', who: ['Four parts', 'Theseus'], size: 96, maxW: 760 });
     text('And an error in one body is fixed once, in the steel.', RM, 840, { role: 'small', size: 24, weight: 600, color: C.ink2, align: 'right', maxW: 360, alpha: ep(t, 10.2, 10.7) });
     source(t, 'Parts ±T at 3σ, normal, independent (Scholz 1995). 24,000 mice a build, one seed. The allowance is an example. Starlight X: three parts, down from four (Back2Gaming).', { t0: 5.4 });
-  }
-});
-
-/* ============================== 2. b07_arms: Small arms snap, the whole board holds ==============================
-   Brock (shcArms, 6/10): "these aren't what the arms or pcb would look like, important idea tho"; F2.26, F6.3 (the arms on
-   his HTS Ultra broke in shipping), F28.3 (his two G-Wolves photos). The plan frame (model 1) under one squeeze, 10 N on
-   each side over the board: six small arms where G-Wolves puts them against every rib tied to the board's own edge, the
-   FR4 coloured by its stress on one scale. The arm, edge on: a fixed-guided FR4 tab 6.5 mm long and 1.0 mm thick (its
-   length estimated from the photo): σ = 3·E·h·δ / L², so 0.36 mm at its tip takes its root to 483 MPa (Gund, crosswise
-   flexural). Only the squeeze is modelled on both; the drop is shown on the arm alone. */
-const B07_ARM = { L: 6.5, h: 1.0, E: 19000, sf: 483 };
-B07_ARM.perMM = 3 * B07_ARM.E * B07_ARM.h / (B07_ARM.L * B07_ARM.L);
-B07_ARM.snap = B07_ARM.sf / B07_ARM.perMM;
-/** the board's outline in the top view's frame (key plan: x as given, y = −z) */
-function b07_boardPathKey() { const B = b07_boardOut(); G.beginPath(); B.forEach((p, i) => i ? G.lineTo(p[0], -p[1]) : G.moveTo(p[0], -p[1])); G.closePath(); }
-/** the board as a plate, in mm in the current transform: mask, a gold edge, a few traces */
-function b07_boardPlate(a, o = {}) {
-  if (a <= 0.003) return;
-  G.save(); G.globalAlpha = PA * a;
-  b07_boardPathKey(); G.fillStyle = TH ? '#2A2B30' : '#16171A'; G.fill();
-  G.save(); b07_boardPathKey(); G.clip(); G.strokeStyle = 'rgba(255,255,255,0.07)'; G.lineWidth = lw(1.2);
-  G.beginPath(); for (const [x0, y0, x1, y1] of [[-14, -40, -14, -2], [-14, -2, -6, 6], [9, -44, 9, -12], [9, -12, 15, -6], [-4, -30, 6, -30], [-8, -18, 8, -18]]) { G.moveTo(x0, y0); G.lineTo(x1, y1); } G.stroke();
-  G.restore();
-  b07_boardPathKey(); G.strokeStyle = o.edge || '#C9A55A'; G.lineWidth = lw(o.ew || 1.6); G.stroke();
-  G.restore();
-}
-/** one rival arm drawn over its solved beam, as on G-Wolves boards: a square root at the board, silkscreen corner marks at
-   the tip, a locating hole in the middle one. (x0, y0) its root, (x1, y1) its tip, in mm; w its width */
-function b07_armDetail(x0, y0, x1, y1, w, a, o = {}) {
-  if (a <= 0.003) return;
-  const dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, nx = -uy * w / 2, ny = ux * w / 2;
-  G.save(); G.globalAlpha = PA * a; G.strokeStyle = C.second; G.lineWidth = lw(1.6); G.lineJoin = 'miter';
-  G.beginPath(); G.moveTo(x0 + nx, y0 + ny); G.lineTo(x1 + nx, y1 + ny); G.lineTo(x1 - nx, y1 - ny); G.lineTo(x0 - nx, y0 - ny); G.stroke();
-  /* silkscreen corner marks near the tip */
-  G.strokeStyle = 'rgba(255,255,255,0.7)'; G.lineWidth = lw(1.1); const tx = x1 - ux * 1.2, ty = y1 - uy * 1.2, m = 0.7;
-  for (const sd of [1, -1]) { const cxp = tx + sd * nx * 0.62, cyp = ty + sd * ny * 0.62; G.beginPath(); G.moveTo(cxp - ux * m, cyp - uy * m); G.lineTo(cxp, cyp); G.lineTo(cxp - sd * nx / (w / 2) * m, cyp - sd * ny / (w / 2) * m); G.stroke(); }
-  if (o.hole) { G.beginPath(); G.arc(x1 - ux * 2.4, y1 - uy * 2.4, 0.6, 0, TAU); G.fillStyle = TH ? '#F7F6F2' : '#0D0E0F'; G.fill(); G.strokeStyle = '#C9A55A'; G.lineWidth = lw(1); G.stroke(); }
-  G.restore();
-}
-/** the close-up from Brock's photo: the board's long edge, three narrow tabs reaching under the shell's rim */
-function b07_gwTile(t, t0, r) {
-  const [x, y, w, h] = r, a = ep(t, t0, t0 + 0.5); if (a <= 0.003) return;
-  demoWindow(x, y, w, h, a);
-  text('G-Wolves, drawn from Brock\'s photo', x + 28, y + 42, { role: 'label', size: 21, color: C.secondText, alpha: a });
-  text('Narrow FR4 tabs, square at the root, under the rim', x + 28, y + 72, { role: 'small', size: 22, weight: 600, color: C.mute, alpha: a, maxW: w - 56 });
-  const by = y + h - 44, ry = y + 106, rimH = 30, mask = TH ? '#2A2B30' : '#1B1C20';
-  G.save(); G.globalAlpha = a;
-  /* the shell's rim: a black band with its row of small round holes, the lattice beyond it */
-  rrPath(x + 20, ry, w - 40, rimH, 4); G.fillStyle = TH ? '#3A3B40' : '#0A0A0B'; G.fill();
-  G.fillStyle = TH ? '#F7F6F2' : '#141517'; for (let k = x + 44; k < x + w - 40; k += 22) { G.beginPath(); G.arc(k, ry + rimH / 2, 3.2, 0, TAU); G.fill(); }
-  /* the board along the bottom: mask, a few traces and pads */
-  rrPath(x + 20, by - 52, w - 40, 60, 3); G.fillStyle = mask; G.fill();
-  G.strokeStyle = 'rgba(255,255,255,0.08)'; G.lineWidth = 1.4; G.beginPath(); for (let k = 0; k < 5; k++) { G.moveTo(x + 40 + k * 120, by - 10); G.lineTo(x + 90 + k * 120, by - 40); G.lineTo(x + 150 + k * 120, by - 40); } G.stroke();
-  G.fillStyle = '#C9A55A'; for (let k = 0; k < 9; k++) G.fillRect(x + 60 + k * 66, by - 22, 7, 5);
-  G.strokeStyle = '#C9A55A'; G.lineWidth = 1.6; G.beginPath(); G.moveTo(x + 20, by - 52); G.lineTo(x + w - 20, by - 52); G.stroke();
-  G.restore();
-  /* three tabs: narrow, square at the root, reaching under the rim; the middle one with its hole */
-  const tabs = [x + w * 0.22, x + w * 0.5, x + w * 0.78], tw2 = 34;
-  tabs.forEach((cx2, i) => {
-    const ka = a * stagger(t, t0 + 0.3, i, 0.12, 0.4), x0 = cx2 - tw2 / 2, top = ry + rimH * 0.45, bot = by - 52;
-    if (ka <= 0.003) return;
-    G.save(); G.globalAlpha = ka; G.fillStyle = mask; G.fillRect(x0, top, tw2, bot - top + 1);
-    G.strokeStyle = C.second; G.lineWidth = 2; G.beginPath(); G.moveTo(x0, bot); G.lineTo(x0, top); G.lineTo(x0 + tw2, top); G.lineTo(x0 + tw2, bot); G.stroke();
-    G.strokeStyle = 'rgba(255,255,255,0.75)'; G.lineWidth = 1.5; G.beginPath(); G.moveTo(x0 + 5, top + 14); G.lineTo(x0 + 5, top + 9); G.lineTo(x0 + 10, top + 9); G.moveTo(x0 + tw2 - 5, top + 14); G.lineTo(x0 + tw2 - 5, top + 9); G.lineTo(x0 + tw2 - 10, top + 9); G.stroke();
-    if (i === 1) { G.beginPath(); G.arc(cx2, top + 30, 6, 0, TAU); G.fillStyle = TH ? '#F7F6F2' : '#0D0E0F'; G.fill(); G.strokeStyle = '#C9A55A'; G.lineWidth = 1.5; G.stroke(); }
-    G.restore();
-  });
-  /* the rim passes over the tabs' tips */
-  G.save(); G.globalAlpha = a * 0.92; rrPath(x + 20, ry, w - 40, rimH * 0.45, 3); G.fillStyle = TH ? '#3A3B40' : '#0A0A0B'; G.fill(); G.restore();
-  /* the square roots, marked where the tabs leave the board */
-  const kr2 = ep(t, t0 + 0.9, t0 + 1.3) * a;
-  if (kr2 > 0.003) tabs.forEach(cx2 => { for (const sd of [-1, 1]) { const qx = cx2 + sd * tw2 / 2, qy = by - 52; circle(qx, qy, 5, { fill: C.red, alpha: kr2 }); circle(qx, qy, 10, { color: C.red, w: 1.5, alpha: kr2 * 0.45 }); } });
-}
-/** one arm edge on, in a jolt: the board holds its root, the shell's rim its tip; d = the tip's movement (mm) */
-function b07_armEdge(t, r, d, crack, a) {
-  const [x, y, w, h] = r; if (a <= 0.003) return;
-  demoWindow(x, y, w, h, a);
-  text('One arm, edge on, in a jolt', x + 28, y + 40, { role: 'label', size: 21, color: C.mute, alpha: a });
-  const s = 22, ex = 9, L = B07_ARM.L * s, th = B07_ARM.h * s, x0 = x + 120, yc = y + 74, dd = d * s * ex, sig = d * B07_ARM.perMM;
-  const ys = u => yc + dd * (3 * u * u - 2 * u * u * u);
-  G.save(); G.globalAlpha = a;
-  /* the board (it holds the root) and the rim (it holds the tip and moves) */
-  rrPath(x0 - 70, yc - 26, 70, 52, 4); G.fillStyle = TH ? '#2A2B30' : '#1B1C20'; G.fill();
-  const broke = crack >= 1;
-  rrPath(x0 + L - 2, ys(1) - 22, 64, 44, 4); G.fillStyle = TH ? '#3A3B40' : '#0A0A0B'; G.fill(); G.strokeStyle = inkA(0.25); G.lineWidth = 1.2; G.stroke();
-  /* the arm: its centre line bent as a fixed-guided beam, coloured by the root's stress */
-  const k = clamp(sig / B07_ARM.sf), col = heatCol(k);
-  G.lineCap = 'butt'; G.strokeStyle = col; G.lineWidth = th; G.beginPath();
-  const u0 = broke ? 0.04 : 0; for (let i = 0; i <= 30; i++) { const u = u0 + (1 - u0) * i / 30, px = x0 + L * u; i ? G.lineTo(px, ys(u) + (broke ? 6 : 0)) : G.moveTo(px, ys(u) + (broke ? 6 : 0)); } G.stroke();
-  if (broke) { G.strokeStyle = heatCol(1); G.lineWidth = th; G.beginPath(); G.moveTo(x0, yc); G.lineTo(x0 + L * 0.03, yc); G.stroke(); }
-  G.restore();
-  if (crack > 0) { const pts = []; for (let j = 0; j <= 6; j++) pts.push([x0 + L * 0.035 + (j % 2 ? 3 : -2), yc - th / 2 + th * j / 6 * crack]); poly(pts, { color: C.red, w: 3, alpha: a }); }
-  /* the counters: the tip's movement and the root's stress */
-  const rx = x + w - 28;
-  rich([{ s: fmtN(d, 2), font: 'disp', size: 40, weight: 800, color: C.ink, tnum: true }, { s: 'mm at the tip', role: 'label', size: 19, color: C.mute, gap: 10 }], rx, y + 92, { align: 'right', alpha: a });
-  rich([{ s: fmtN(Math.min(sig, B07_ARM.sf), 0), font: 'disp', size: 40, weight: 800, color: k >= 1 ? C.red : C.ink, tnum: true }, { s: 'MPa at the root', role: 'label', size: 19, color: k >= 1 ? C.red : C.mute, gap: 10 }], rx, y + 146, { align: 'right', alpha: a });
-  text('Bend drawn 9× real', x + w - 28, y + 40, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: a });
-}
-S({
-  id: 'b07_arms', ch: 'shell', theme: 'paper', title: 'Small arms snap, the whole board holds', settle: 11, ideas: [94, 91],
-  replaces: ['shcArms'],
-  src: ['b07Fe', 'shcTpuHati', 'shcTpuHatiR', 'b07GwPhoto', 'shlFr4', 'shcFr4Flex'],
-  answers: [
-    ['"these aren\'t what the arms or pcb would look like"', 'Drawn from his two photos: narrow FR4 tabs on the board\'s long edge, square at the root, silkscreen corner marks at the tips and a locating hole in one, reaching under the shell\'s rim (a close-up tile), placed along the board where G-Wolves puts them (52, 68 and 84 % back from its front) in the top view.'],
-    ['"important idea tho"', 'Kept and led with the failure he lived: a jolt snaps the hottest arm at its root, and the edge-on arm shows how little it takes (0.36 mm at the tip of a 6.5 mm tab, 483 MPa at the root).'],
-    ['F2.26 (small FR4 arms easy to snap; THE WHOLE PCB)', 'Theseus ties every rib along the board\'s own edge: no tab, and the same squeeze reaches its FR4 at a fifth of the peak (4.7 → 1.0 MPa, derived).'],
-    ['F6.3, F28.3 (his HTS Ultra\'s arms broke in shipping; his photos)', 'Said in the narration; the photos are the drawing\'s reference (drawn, not shown, F34.1).'],
-    ['F33.5', 'One of his important ideas: a full demonstration with the problem first.']
-  ],
-  draw: t => {
-    const R = b07_plan(), Ca = R.arms, Cw = R.whole;
-    header(t, 'Small arms snap, the whole board holds');
-    captions(t, [[0.6, 'G-Wolves had the right idea: use the board to stiffen the shell. But it reaches the shell through a few small FR4 arms.'],
-      [3.0, 'Every squeeze funnels through their roots, and a jolt in shipping snapped the arms on my HTS Ultra.'],
-      [5.2, 'Theseus ties every rib to the board\'s own edge. No tab to snap, and the same squeeze reaches its FR4 at a fifth of the peak.']]);
-    /* ---------- the main view: the whole mouse from above, then onto the board ---------- */
-    const jolt = t > 2.9 ? Math.exp(-(t - 2.9) * 7) * Math.sin((t - 2.9) * 38) * 9 : 0;
-    const box = [LM, 286, 1000, 650];
-    const est = establish(t, 0.1, [box[0], box[1] + jolt, box[2], box[3]], { view: 'top', hi: ['board'], col: 'ink', focus: [-36, -54, 72, 72], dur: 1.1, locator: 'tl', fade: 0.55 });
-    const kd = est.kd, P = q => [q[0], -q[1]];
-    const squeeze = ep(t, 1.95, 2.5, E.snap), wipeK = ep(t, 4.7, 5.6, E.cam);
-    const exag = 150, smax = Ca.fr4;
-    const drawCase = (c, hero) => est.draw(() => {
-      /* inside the camera the canvas is in mm (the key plan's frame): P maps the model's [x, z] to it */
-      const r = c.r, M = r.model, only = part => e => M.els[e].part !== part, px = 1 / Math.max(1e-6, est.s);
-      b07_boardPlate(kd);
-      if (kd <= 0.01) return;
-      /* the rim (CF-PP), neutral, at its true width; the board's FR4 by heat (thin lines over the plate); the ties: the
-         rival's arms (FR4, by heat, their true width), Theseus's ribs (blue) */
-      feDraw(r, P, { load: squeeze, scale: exag, smax, alpha: kd, hide: only('ring'), heat: false, color: TH ? '#A5A49E' : '#5E5D58', w: 1 });
-      void px;   /* the board's FR4 stays under a quarter of the arms' peak in both cases: the plate alone says it */
-      const snapped = !hero && t >= 3.35 && c.hot, hotE = snapped ? c.hot.e : -1;
-      if (!hero) feDraw(r, P, { load: squeeze, scale: exag, smax, alpha: kd, hide: e => M.els[e].part !== 'arm' || e === hotE, w: 1 });
-      if (snapped) {
-        /* the snapped arm: free of the board at its root, hanging from the rim, still red where it broke */
-        const b = P(M.nodes[c.hot.board]), g = P(M.nodes[c.hot.ring]), dx = g[0] - b[0], dy = g[1] - b[1], L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, fall = ep(t, 3.35, 3.8, E.out3);
-        const ang = 0.18 * fall * (b[1] < 0 ? -1 : 1), gap = 0.9 * fall, w2 = B07_PLAN.armW / 2;
-        G.save(); G.globalAlpha = PA * kd; G.translate(g[0], g[1]); G.rotate(ang); G.translate(-g[0], -g[1]);
-        G.beginPath(); G.moveTo(b[0] + ux * gap - uy * w2, b[1] + uy * gap + ux * w2); G.lineTo(g[0] - uy * w2, g[1] + ux * w2); G.lineTo(g[0] + uy * w2, g[1] - ux * w2); G.lineTo(b[0] + ux * gap + uy * w2, b[1] + uy * gap - ux * w2); G.closePath();
-        G.fillStyle = heatCol(1); G.fill(); G.restore();
-      }
-      else feDraw(r, P, { load: squeeze, scale: exag, smax, alpha: kd, hide: only('rib'), heat: false, color: C.hero, w: 1.3, seg: 1 });
-      if (!hero) M.links.forEach((l, i) => b07_armDetail(...P(M.nodes[l.board]), ...P(M.nodes[l.ring]), B07_PLAN.armW, kd * 0.9, { hole: i % 3 === 1 }));
-    });
-    wipeTo(t, 4.7, 0.9, box, () => drawCase(Ca, false), () => drawCase(Cw, true), { rival: 'G-Wolves arms', right: 'Theseus, every rib' });
-    /* the squeeze: two fingers on the sides over the board, 10 N each */
-    { const ka = ep(t, 1.7, 2.0) * kd, z = B07_PLAN.sqZ, hw = msHalfW ? msHalfW(-z) : 30.5;
-      if (ka > 0.003) {
-        const pl = est.P(-hw - 0.4, -z), pr = est.P(hw + 0.4, -z), push = squeeze * 6;
-        finger(pl[0] + push, pl[1], 0, { s: est.s, view: 'top', press: squeeze, alpha: ka, len: 20 });
-        finger(pr[0] - push, pr[1], Math.PI, { s: est.s, view: 'top', press: squeeze, alpha: ka, len: 20 });
-        forceArrow(pl[0] - 46 + push, pl[1] - 92, 0, 90, { N: 10, k: squeeze, alpha: ka, side: 'end', dec: 0 });
-        forceArrow(pr[0] + 46 - push, pr[1] - 92, Math.PI, 90, { N: 10, k: squeeze, alpha: ka, side: 'end', dec: 0 });
-      } }
-    /* the hot arm: its root cracks in the jolt */
-    if (t < 4.75 && Ca.hot) {
-      const M = Ca.r.model, l = Ca.hot, b = M.nodes[l.board], g = M.nodes[l.ring], pb = est.P(...P(b)), pg = est.P(...P(g)), ux = (pg[0] - pb[0]), uy = (pg[1] - pb[1]), Lp = Math.hypot(ux, uy) || 1, nx = -uy / Lp, ny = ux / Lp;
-      const kc = ep(t, 3.05, 3.35, E.out3), root = [pb[0] + ux / Lp * 4, pb[1] + uy / Lp * 4], half = B07_PLAN.armW / 2 * est.s + 4;
-      if (kc > 0) poly([[root[0] - nx * half, root[1] - ny * half], [root[0] + 3, root[1] + 2], [root[0] - 2, root[1] - 1], [root[0] + nx * half * (2 * kc - 1), root[1] + ny * half * (2 * kc - 1)]], { color: C.red, w: 3.6, alpha: kd });
-      if (kc > 0) { circle(root[0], root[1], 16 + 10 * kc, { color: C.red, w: 2, alpha: kd * 0.6 * (1 - ep(t, 3.6, 4.4)) }); }
-    }
-    /* ---------- the right column: the photo's tabs, the arm in a jolt, the verdict ---------- */
-    const rx = LM + 1040, rw = RM - rx;
-    b07_gwTile(t, 0.4, [rx, 286, rw, 252]);
-    const dJ = B07_ARM.snap * ep(t, 2.9, 3.3, E.in3), crackJ = ep(t, 3.3, 3.5);
-    b07_armEdge(t, [rx, 560, rw, 196], dJ, crackJ, ep(t, 2.6, 3.0));
-    if (t > 3.6) scaleNote(rx, 790, 'about three sheets of copy paper', { lead: fmtN(B07_ARM.snap, 2) + ' mm', t, t0: 3.6, size: 23 });
-    verdict(t, 6.0, rx, 914, { from: +fmtN(Ca.fr4, 1), to: +fmtN(Cw.fr4, 1), unit: 'MPa', dec: 1, label: 'Peak experienced stress in the board', better: 'lower', size: 88, maxW: rw });
-    source(t, '2D frames solved here: CF-PP rim (13.5 GPa), plan-5 board in 1.0 mm FR4 (19 GPa), 10 N a side; arms 3.8 × 6.5 mm FR4 (length from the photo), ribs CF-PP. Squeeze ' + exag + '× real.', { t0: 2.2 });
   }
 });

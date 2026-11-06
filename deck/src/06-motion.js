@@ -152,27 +152,17 @@ const MS_FRONT_WHEEL = [2.57, 20.72, 29.73];                            /* the w
 const MS_SIDE_WHEEL_C = [34.84, 17.83, 11.9];                           /* the wheel from the side: centre z, y, radius */
 const MS_K = { x: MS_DIMS.W / 62.38, y: MS_DIMS.L / 118.99 };          /* SORA_HALF (62.38 × 118.99) to Theseus's numbers */
 const MS_SKIRT = 9.3;                                                   /* the base chamfer's top edge, mm above the pad */
-const MS_CORNER_DOTS = [[-13.7, -47.3], [-20.0, -42.4], [-17.2, 43.2], [-10.8, 47.9], [19.9, -42.5], [13.5, -47.4], [11.1, 47.8], [17.4, 42.9]];   /* key plan (x = -X, y = -Z), as keyPlanMM */
-const MS_BATTERY = [-17.09, 10.22, 35, 25];                             /* key plan: as keyPlanMM (LP402535JU in the tail); keep in step with it */
-/** the things that move when the hardware moves (H1: the sensor goes forward), read from the 3D's flat twins when they are
-   built in, else the key plan's numbers. Scene coordinates: X (the user's left), Y (up), Z (nose) */
+/* the hardware's places come from KEY_PARTS (03-parts.js, generated from the 3D assets by deck/tools/geo2d/key_parts.py),
+   the one source keyPlanMM also reads (H1, 2026-11-06). These two names stay for the slides that read them */
+const MS_CORNER_DOTS = KEY_PARTS.skates.pts;                            /* key plan (x = -X, y = -Z) */
+const MS_BATTERY = [KEY_PARTS.battery.x, KEY_PARTS.battery.y, KEY_PARTS.battery.w, KEY_PARTS.battery.h];   /* key plan: x, y, across, along */
+/** the things that move when the hardware moves (H1: the sensor went forward), from KEY_PARTS (03-parts.js), in scene
+   coordinates: X (the user's left), Y (up), Z (nose). lens: [X0, Y0, Z0, X1, Y1, Z1]; board: [X0, Z0, X1, Z1] */
 function msLive() {
   if (msLive.v) return msLive.v;
-  const v = { lens: [-2.6, 1.0, -5.98, 2.6, 2.1, 8.22], lensDots: [[0, 7.42], [0, -5.58]], board: [-19.32, -7.9, 19.32, 49.62], corner: MS_CORNER_DOTS.map(([x, y]) => [-x, -y]) };
-  try {
-    const S = typeof GEO2D !== 'undefined' && GEO2D.shell;
-    if (S && S.meshes) {
-      let best = null;
-      for (const m of S.meshes) if (/^body\/lens\/Mesh$/.test(m.path) && m.bbox) { const a = (m.bbox[1][0] - m.bbox[0][0]) * (m.bbox[1][2] - m.bbox[0][2]); if (!best || a > best.a) best = { a, b: m.bbox }; }
-      if (best) v.lens = [best.b[0][0], best.b[0][1], best.b[0][2], best.b[1][0], best.b[1][1], best.b[1][2]];
-      const dots = S.meshes.filter(m => /lensDots\/DotSkate\/glide$/.test(m.path) && m.bbox).map(m => [(m.bbox[0][0] + m.bbox[1][0]) / 2, (m.bbox[0][2] + m.bbox[1][2]) / 2]);
-      if (dots.length) v.lensDots = dots;
-    }
-    const K = typeof GEO2D !== 'undefined' && GEO2D.skates;
-    if (K && K.meshes) { const d = K.meshes.filter(m => /^dotSet\/.*glide$/.test(m.path) && m.bbox).map(m => [(m.bbox[0][0] + m.bbox[1][0]) / 2, (m.bbox[0][2] + m.bbox[1][2]) / 2]); if (d.length >= 4) v.corner = d; }
-    const B = typeof GEO2D !== 'undefined' && GEO2D.pcb;
-    if (B && B.meshes) { const m = B.meshes.find(mm => /board_core/.test(mm.path) && mm.bbox); if (m) v.board = [m.bbox[0][0], m.bbox[0][2], m.bbox[1][0], m.bbox[1][2]]; }
-  } catch (e) { /* the key plan's numbers stand */ }
+  const K = KEY_PARTS, ln = K.lens, bx = K.board.box, ns = ([x, y]) => [-x, -y];
+  const v = { lens: [-ln.c[0] - ln.hw, ln.y0, -ln.c[1] - ln.hl, -ln.c[0] + ln.hw, ln.y0 + 1.1, -ln.c[1] + ln.hl],
+    lensDots: K.lensDots.pts.map(ns), board: [-bx[2], -bx[3], -bx[0], -bx[1]], corner: K.skates.pts.map(ns) };
   return (msLive.v = v);
 }
 /** a closed outline moved inward by d mm along its normals (the base plate's edge seen from below) */
@@ -248,9 +238,9 @@ function msView(view) {
     for (const [X, Z] of L.lensDots) dots.addPath(msCirc(sg * -X, -Z * MS_K.y, 3.25));
     add('skates', view === 'top' ? { dash: [dots] } : { solid: dots });
     /* hidden: the board (the 3D board's footprint) and the battery (keyPlanMM's place) */
-    const bd = L.board; add('board', { dash: [msRR(sg === 1 ? -bd[2] : bd[0], -bd[3] * MS_K.y, bd[2] - bd[0], (bd[3] - bd[1]) * MS_K.y, 3)] });
+    const bd = L.board; add('board', { dash: [msPath(KEY_PARTS.board.pts.map(([x, y]) => [sg * x * MS_K.x, y * MS_K.y]))] });   /* plan 5's outline */
     add('battery', { dash: [msRR(sg * MS_BATTERY[0] - (sg < 0 ? MS_BATTERY[2] : 0), MS_BATTERY[1], MS_BATTERY[2], MS_BATTERY[3], 2)] });
-    add('antenna', { dash: [msRR(-6.6, -14.57, 13.2, 3.7, 0.5)] });
+    const an = KEY_PARTS.antenna; add('antenna', { dash: [msRR(sg === 1 ? an.x : -(an.x + an.w), an.y * MS_K.y, an.w, an.h * MS_K.y, 0.5)] });
     /* regions for the shape and grip chapters */
     const hump = new Path2D(); hump.ellipse(0, 20, 16, 22, 0, 0, TAU);
     add('hump', { fill: hump, clip: true });
@@ -280,12 +270,12 @@ function msView(view) {
     const z0 = Math.min(...xa) + 0.4, z1 = Math.max(...xa) - 0.4; skirt.moveTo(sg * z0, -MS_SKIRT); skirt.lineTo(sg * z1, -MS_SKIRT);
     V.lines = [seam, skirt]; V.lineParts = ['triggers', 'skirt'];
     const lens = L.lens, lz = (lens[2] + lens[5]) / 2;
-    add('sensor', { dash: [msRR(sg * lens[2] - (sg < 0 ? lens[5] - lens[2] : 0), -5.2, lens[5] - lens[2], 4.4, 0.8)] });
+    add('sensor', { dash: [msRR(sg * lens[2] - (sg < 0 ? lens[5] - lens[2] : 0), -5.2, lens[5] - lens[2], 5.2 - lens[1], 0.8)] });
     const sk = new Path2D(), zs = L.corner.map(c => c[1]).concat(L.lensDots.map(c => c[1]));
     for (const z of zs) sk.addPath(msRR(sg * z - 3.25, -0.74, 6.5, 0.74, 0.3));
     add('skates', { solid: sk });
     const bd = L.board; add('board', { dash: [msRR(Math.min(sg * bd[1], sg * bd[3]), -5.05, Math.abs(bd[3] - bd[1]), 1.05, 0.3)] });
-    add('battery', { dash: [msRR(Math.min(sg * -MS_BATTERY[1], sg * -(MS_BATTERY[1] + MS_BATTERY[3])), -9.05, MS_BATTERY[3], 4.0, 0.6)] });
+    const bt = KEY_PARTS.battery; add('battery', { dash: [msRR(Math.min(sg * -MS_BATTERY[1], sg * -(MS_BATTERY[1] + MS_BATTERY[3])), -(bt.yMid + bt.t / 2), MS_BATTERY[3], bt.t, 0.6)] });
     add('hump', { fill: msRR(sg * -45, -42, 70, 16, 0), clip: true });
     add('sides', { fill: msRR(-70, -31, 140, 31 - MS_SKIRT, 0), clip: true });
     add('nose', { fill: msRR(sg > 0 ? 40 : -70, -42, 30, 44, 0), clip: true });

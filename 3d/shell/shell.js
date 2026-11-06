@@ -301,22 +301,26 @@ export async function buildShell(opts = {}) {
   // bottom plate + lens + screws, skates on the rim pads (#10, #11, #52)
   const plate = new THREE.Group(); plate.name = 'plate'; plate.add(mesh('plate')); root.add(plate); parts.plate = plate;
   const lens = new THREE.Group(); lens.name = 'lens';
+  const LENS_Y0 = 2.40;
   {
     /* the snap-on lens seen through the plate's window: 5.2 x 14.2 (Glide chapter, gld_lensBot), its optical axis 1.1 mm
-       ahead of the window's centre and the LED's 1.9 behind it */
+       ahead of the window's centre and the LED's 1.9 behind it. H1 (2026-11-06): at the plan-5 sensor (meta.sensor, z 16.57)
+       and at the board's lens height: its lowest face LENS_Y0 = 2.40 mm over the pad, PixArt's lens reference plane (2.4,
+       2.2 to 2.6), as 3d/parts/boardparts.js's buildSnapLens (imaging dome at the board's top − 2.63, the top at y 5.03) */
     const st = (hw, hl, n = 18) => { const sh = new THREE.Shape(); for (let i = 0; i <= n; i++) { const a = Math.PI * i / n; const x = hw * Math.cos(a), z = (hl - hw) + hw * Math.sin(a); i ? sh.lineTo(x, -z) : sh.moveTo(x, -z); } for (let i = 0; i <= n; i++) { const a = Math.PI + Math.PI * i / n; sh.lineTo(hw * Math.cos(a), -(-(hl - hw) + hw * Math.sin(a))); } return sh; };
     const lg = gExtrude(st(2.6, 7.1), { depth: 1.1, back: { r: 0.25, s: 3 }, front: { r: 0.15, s: 2 }, curveSegments: 1 }); lg.rotateX(-Math.PI / 2); owned.add(lg);
-    const l = new THREE.Mesh(lg, M.lens); l.position.set(meta.sensor[0], 1.0, meta.sensor[1]); lens.add(l);
-    for (const [dz, r] of [[1.1, 1.05], [-1.9, 0.75]]) { const ag = new THREE.CylinderGeometry(r, r, 0.2, 32); owned.add(ag); const a = new THREE.Mesh(ag, M.lensDark); a.position.set(meta.sensor[0], 2.12, meta.sensor[1] + dz); lens.add(a); }
+    const l = new THREE.Mesh(lg, M.lens); l.position.set(meta.sensor[0], LENS_Y0, meta.sensor[1]); lens.add(l);
+    for (const [dz, r] of [[1.1, 1.05], [-1.9, 0.75]]) { const ag = new THREE.CylinderGeometry(r, r, 0.2, 32); owned.add(ag); const a = new THREE.Mesh(ag, M.lensDark); a.position.set(meta.sensor[0], LENS_Y0 + 1.12, meta.sensor[1] + dz); lens.add(a); }
     body.add(lens); parts.lens = lens;
   }
   /* plate off (F20.2, "part of the clip on lens like what g wolves does"): the clip-on lens carries the two dots by the sensor,
      on pads at its own two ends, under its clip pegs and clear of both optics, so the lens stays one dot wide (#37). The pads'
      faces sit on the base plane, so the dots glide with the corner dots. (SKATE_SETS.lensDots; a dot off the lens's axis
-     would get an arm from its side.) */
+     would get an arm from its side.) H1: the pads reach from the base plane up to the lens's face, LENS_Y0 − yBase = 1.75 mm
+     (the lens rose 1.40 to its focus height) */
   const lensDots = new THREE.Group(); lensDots.name = 'lensDots'; lens.add(lensDots);
   {
-    const LD = (PARTS && PARTS.SKATE_SETS && PARTS.SKATE_SETS.lensDots) || [[0, 6.3], [0, -6.7]], yb = meta.yBase, tP = 1.0;
+    const LD = (PARTS && PARTS.SKATE_SETS && PARTS.SKATE_SETS.lensDots) || [[0, 6.3], [0, -6.7]], yb = meta.yBase, tP = LENS_Y0 - yb;
     for (const [dx, dz] of LD) {
       const sx = Math.sign(dx) || 1, x0 = 2.2, len = Math.abs(dx) - x0;
       if (len > 0.2) { const armG = new THREE.BoxGeometry(len, tP, 3.4); owned.add(armG); const arm = new THREE.Mesh(armG, M.lens); arm.position.set(meta.sensor[0] + sx * (x0 + len / 2), yb + tP / 2, meta.sensor[1] + dz); lensDots.add(arm); }

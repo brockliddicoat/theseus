@@ -6,8 +6,8 @@ import json, os, sys
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import glbio, one_seam
-GLB = os.path.join(HERE, '..', 'shell-theseus-1seam.glb')
-W = os.path.join(HERE, '..', 'work')
+GLB = os.environ.get('SHELL_GLB') or os.path.join(HERE, '..', 'shell-theseus-1seam.glb')   # SHELL_GLB, PLATE_WORK, PLATE_LAYOUT: scratch builds
+W = os.environ.get('PLATE_WORK') or os.path.join(HERE, '..', 'work')
 h = json.load(open(os.path.join(W, 'plate-mesh.json'))); nv, nt = h['nv'], h['nt']
 raw = np.fromfile(os.path.join(W, 'plate-mesh.bin'), dtype=np.uint8)
 o = 0
@@ -26,9 +26,10 @@ vol = np.einsum('ij,ij->i', P2[T2[:, 0]], np.cross(P2[T2[:, 1]], P2[T2[:, 2]])).
 print('plate: %d vertices, %d triangles; volume %.0f mm3 (%.2f g at 1.01 g/cm3, overlapping layers counted twice); GLB %d KB' % (len(P2), len(T2), vol, vol * 1.01e-3, size // 1024))
 meta_p = GLB.replace('.glb', '.json'); meta = json.load(open(meta_p))
 meta['triangles']['plate'] = int(len(T2))
-L = json.load(open(os.path.join(HERE, '..', 'plate-layout.json')))
+L = json.load(open(os.environ.get('PLATE_LAYOUT') or os.path.join(HERE, '..', 'plate-layout.json')))
 meta['plate'] = dict(note='Optional bottom plate (F12.10, F20): solid 0.6 mm skin outside, triangle lattice inside, twin walls on the lens ring and ties; the front half-moon skate in skate (the back one is its mirror z -> -z); plate-layout.json, plate_mesh.mjs',
                      window=L['window'], ring=L['ring'], yTop=L['mesh']['yTop'], skin=L['dims']['skin'], mass=L['mass'],
                      skate=L['skates']['front'], skateArea=L['skates']['area'], feMass=L.get('fe', {}).get('mass'))
+if L.get('frameNote'): meta['plate']['frameNote'] = L['frameNote']
 tmp = meta_p + '.tmp'; open(tmp, 'w').write(json.dumps(meta, separators=(',', ':'))); os.replace(tmp, meta_p)
 print('meta: plate block written')

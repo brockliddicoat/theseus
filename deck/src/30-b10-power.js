@@ -200,7 +200,7 @@ function b10_li10440MM(o = {}) {
   if (o.label !== false) {
     G.save(); body(); G.clip();
     G.fillStyle = 'rgba(255,255,255,0.08)'; G.fillRect(-hl, -R * 0.36, L, R * 0.72);
-    G.save(); G.scale(mmpx(), mmpx()); const k = 1 / mmpx(); setFont({ font: 'sans', size: 1.9 * k, weight: 760 }); G.fillStyle = 'rgba(243,242,238,0.72)'; G.textAlign = 'center';
+    G.save(); G.scale(mmpx(), mmpx()); const k = 1 / mmpx(); setFont({ font: 'sans', size: 1.9 * k, weight: 760 }); G.fillStyle = 'rgba(243,243,245,0.72)'; G.textAlign = 'center';
     G.fillText('Li-ion 10440  3.7 V  350 mAh', 0, 0.75 * k); G.restore();
     G.restore();
   }
@@ -213,11 +213,11 @@ function b10_li10440MM(o = {}) {
     G.save(); G.beginPath(); G.rect(x0, -R, x1 - x0, 2 * R); G.clip();
     G.fillStyle = mix('#C9CDD3', '#E5484D', 0.85 * hc); G.fillRect(x0, -R, x1 - x0, 2 * R);
     /* the jelly roll: anode, separator, cathode, separator, wound round the core: seen side on, a stack of stripes */
-    const cols = ['#B87333', '#E9E6DE', '#3A3B40', '#E9E6DE'];
+    const cols = ['#B87333', '#E6E6E8', '#3A3B40', '#E6E6E8'];
     for (let y = -R + wall, i = 0; y < R - wall; y += 0.32, i++) { G.fillStyle = cols[i % 4]; G.fillRect(x0, y, x1 - x0, 0.33); }
     G.fillStyle = 'rgba(0,0,0,0.35)'; G.fillRect(x0, -0.5, x1 - x0, 1.0);            /* the hollow core */
     G.restore();
-    G.strokeStyle = mix(TH ? '#111111' : '#F3F2EE', '#E5484D', hc); G.lineWidth = lw(1.4); G.strokeRect(x0, -R, x1 - x0, 2 * R);
+    G.strokeStyle = mix(TH ? '#111111' : '#F3F3F5', '#E5484D', hc); G.lineWidth = lw(1.4); G.strokeRect(x0, -R, x1 - x0, 2 * R);
     out.can = SP((x0 + x1) / 2, -R + wall / 2); out.roll = SP((x0 + x1) / 2, 0.9);
   }
   out.button = SP(hl + 0.9, 0); out.top = SP(0, -R); out.end = SP(-hl, 0);
@@ -243,7 +243,7 @@ function b10_pouchMM(o = {}) {
   quad(P(-hx, 0, T), P(hx, 0, T), P(hx, Wz, T), P(-hx, Wz, T), gT, ink);
   /* the sealed edges, a fold line inset along the long sides, and the label */
   G.save(); G.globalAlpha *= 0.55; quad(P(-hx + 0.8, 0.8, T), P(hx - 0.8, 0.8, T), P(hx - 0.8, Wz - 0.8, T), P(-hx + 0.8, Wz - 0.8, T), null, ink, 0.8); G.restore();
-  quad(P(-hx + 5, 3.5, T), P(hx - 7, 3.5, T), P(hx - 7, Wz - 3.5, T), P(-hx + 5, Wz - 3.5, T), TH ? '#F4F3EF' : '#E9E8E4', 'rgba(0,0,0,0.25)', 0.8);
+  quad(P(-hx + 5, 3.5, T), P(hx - 7, 3.5, T), P(hx - 7, Wz - 3.5, T), P(-hx + 5, Wz - 3.5, T), TH ? '#F4F4F6' : '#E8E8EB', 'rgba(0,0,0,0.25)', 0.8);
   /* the label's printing as three quiet rules (the words go in a callout: oblique type reads badly at this size) */
   for (const [z, l] of [[Wz * 0.62, 0.62], [Wz * 0.5, 0.45], [Wz * 0.38, 0.55]]) { G.beginPath(); G.moveTo(...P(-hx + 7, z, T)); G.lineTo(...P(-hx + 7 + (Lx - 16) * l, z, T)); G.strokeStyle = 'rgba(20,20,22,0.35)'; G.lineWidth = lw(1.4); G.stroke(); }
   /* the protection board at the left end under amber tape, and its three wires to the plug */
@@ -253,7 +253,7 @@ function b10_pouchMM(o = {}) {
   out.pcm = SP(...P((px0 + px1) / 2, Wz / 2, ty));
   if (o.plug !== false) {
     /* three wires (VBAT red, NTC white, GND black) curl back over the pouch's top to the JST plug resting on it */
-    const cols = ['#C8463D', '#F0EFEA', '#26272B'], ends = [], back = o.plug === 'back';
+    const cols = ['#C8463D', '#EFEFF1', '#26272B'], ends = [], back = o.plug === 'back';
     cols.forEach((c, i) => {
       const z = Wz / 2 - 2 + i * 2, a = P(px0, z, ty - 0.2);
       const b = back ? P(px0 - 5, z + 1, T + 0.6) : P(px0 - 9, z + 3, ty - 0.2), cpt = back ? P(-hx + 9 + i * 0.4, Wz * 0.78 - i * 1.6, T + 0.4) : P(px0 - 16, z * 0.4 + 6, ty - 0.2);
@@ -266,7 +266,7 @@ function b10_pouchMM(o = {}) {
   }
   /* the cut: the foil peels from the front corner, the stacked layers under it */
   if (cut > 0.003) {
-    const xc = lerp(hx, hx - 14, E.out3(cut)), y0 = 0, y1 = T, cols = ['#B87333', '#E9E6DE', '#3A3B40', '#E9E6DE'];
+    const xc = lerp(hx, hx - 14, E.out3(cut)), y0 = 0, y1 = T, cols = ['#B87333', '#E6E6E8', '#3A3B40', '#E6E6E8'];
     G.save(); G.beginPath(); const a = P(xc, 0, 0), b = P(hx, 0, 0), c = P(hx, 0, T), d = P(xc, 0, T); G.moveTo(...a); G.lineTo(...b); G.lineTo(...c); G.lineTo(...d); G.closePath(); G.clip();
     for (let y = y0, i = 0; y < y1; y += 0.3, i++) { const p0 = P(xc, 0, y), p1 = P(hx, 0, y); G.fillStyle = cols[i % 4]; G.fillRect(p0[0], p0[1] - lw(1.1) * 0 - 0.3, p1[0] - p0[0], 0.31); }
     G.restore();
@@ -284,7 +284,7 @@ function b10_pouchMM(o = {}) {
    reading to set on the scale: text) }. Returns { left: [x, y] of the left pan's top centre, right, pivot } */
 function b10_balance(x, y, L, theta, o = {}) {
   const a = o.a == null ? 1 : o.a; if (a <= 0.003) return {};
-  const ink = TH ? '#2E2E2C' : '#CFCEC9', metal = TH ? ['#E6E5E0', '#B9B8B2'] : ['#5C5D60', '#3A3B3F'], cs = Math.cos(theta), sn = Math.sin(theta);
+  const ink = TH ? '#2E2E30' : '#CECED2', metal = TH ? ['#E5E5E8', '#B8B8BC'] : ['#5C5D60', '#3A3B3F'], cs = Math.cos(theta), sn = Math.sin(theta);
   const end = s => [x + s * L * cs, y + s * L * sn];
   G.save(); G.globalAlpha *= a;
   /* foot and pillar */
@@ -303,11 +303,11 @@ function b10_balance(x, y, L, theta, o = {}) {
   G.save(); G.translate(x, y); G.rotate(theta);
   const gb = G.createLinearGradient(0, -10, 0, 10); gb.addColorStop(0, metal[0]); gb.addColorStop(1, metal[1]);
   G.beginPath(); G.moveTo(-L, -3); G.quadraticCurveTo(0, -16, L, -3); G.lineTo(L, 4); G.quadraticCurveTo(0, 10, -L, 4); G.closePath(); G.fillStyle = gb; G.fill(); G.strokeStyle = rgba(ink, 0.7); G.lineWidth = 1.5; G.stroke();
-  G.beginPath(); G.moveTo(-3, 6); G.lineTo(0, sr - 4); G.lineTo(3, 6); G.closePath(); G.fillStyle = TH ? '#111' : '#F3F2EE'; G.fill();
+  G.beginPath(); G.moveTo(-3, 6); G.lineTo(0, sr - 4); G.lineTo(3, 6); G.closePath(); G.fillStyle = TH ? '#111' : '#F3F3F5'; G.fill();
   for (const s of [-1, 1]) { G.beginPath(); G.arc(s * L, 0, 6, 0, TAU); G.fillStyle = metal[0]; G.fill(); G.stroke(); }
   G.restore();
   /* the knife edge */
-  G.beginPath(); G.moveTo(x - 10, y + 10); G.lineTo(x, y - 4); G.lineTo(x + 10, y + 10); G.closePath(); G.fillStyle = TH ? '#111' : '#F3F2EE'; G.fill();
+  G.beginPath(); G.moveTo(x - 10, y + 10); G.lineTo(x, y - 4); G.lineTo(x + 10, y + 10); G.closePath(); G.fillStyle = TH ? '#111' : '#F3F3F5'; G.fill();
   /* the pans: cords from the beam's ends, the dish below, hanging plumb */
   const pans = {};
   for (const s of [-1, 1]) {
@@ -369,9 +369,9 @@ function b10_ovenWin(t, box, fb, Lp, o = {}) {
   /* the tunnel's walls between its mouth and its exit */
   const xa = Math.max(x, FX(0)), xb = Math.min(x + w, FX(1));
   if (xb > xa) {
-    G.fillStyle = TH ? '#DCDBD5' : '#141518'; G.fillRect(xa, y, xb - xa, h);
-    G.fillStyle = TH ? '#C9C8C2' : '#1D1E22'; G.fillRect(xa, y, xb - xa, 12); G.fillRect(xa, y + h - 12, xb - xa, 12);
-    for (const ex of [FX(0), FX(1)]) if (ex > x - 20 && ex < x + w + 20) { G.fillStyle = TH ? '#B9B8B2' : '#2A2B30'; G.fillRect(ex - 9, y, 18, h); }
+    G.fillStyle = TH ? '#DCDCE0' : '#141518'; G.fillRect(xa, y, xb - xa, h);
+    G.fillStyle = TH ? '#C8C8CC' : '#1D1E22'; G.fillRect(xa, y, xb - xa, 12); G.fillRect(xa, y + h - 12, xb - xa, 12);
+    for (const ex of [FX(0), FX(1)]) if (ex > x - 20 && ex < x + w + 20) { G.fillStyle = TH ? '#B8B8BC' : '#2A2B30'; G.fillRect(ex - 9, y, 18, h); }
   }
   /* heater rods in rows, glowing with their zone's heat; fans in the cooling zone */
   const step = 118 / Lp;
@@ -381,16 +381,16 @@ function b10_ovenWin(t, box, fb, Lp, o = {}) {
     for (const ry of rows) {
       if (cool) { circle(px, ry, 15, { color: inkA(0.3), w: 1.5 }); for (let j = 0; j < 3; j++) { const an = j * TAU / 3 + 0.4; line(px, ry, px + Math.cos(an) * 13, ry + Math.sin(an) * 13, { color: inkA(0.3), w: 2 }); } continue; }
       glow(px, ry, 30 + 24 * k, k > 0.85 ? '#FF6A3D' : '#FF9F43', 0.1 + 0.42 * k);
-      rr(px - 32, ry - 5, 64, 10, 5, mix(TH ? '#A9A8A2' : '#3A3B40', k > 0.85 ? '#FF6A3D' : '#FFAA55', k), null, 1, 1);
+      rr(px - 32, ry - 5, 64, 10, 5, mix(TH ? '#A8A8AC' : '#3A3B40', k > 0.85 ? '#FF6A3D' : '#FFAA55', k), null, 1, 1);
     }
   }
   /* trays under each lane: what a falling part lands on */
-  if (xb > xa) for (const ty of trays) { G.fillStyle = TH ? 'rgba(17,17,17,0.08)' : 'rgba(243,242,238,0.06)'; G.fillRect(xa, ty, xb - xa, 5); line(xa, ty, xb, ty, { color: inkA(0.3), w: 1.5 }); }
+  if (xb > xa) for (const ty of trays) { G.fillStyle = TH ? 'rgba(17,17,17,0.08)' : 'rgba(243,243,245,0.06)'; G.fillRect(xa, ty, xb - xa, 5); line(xa, ty, xb, ty, { color: inkA(0.3), w: 1.5 }); }
   /* the edge rails that carry the boards: their chain links scroll with the oven */
   const off = ((-fb * Lp) % 24 + 24) % 24;
   for (const ry of rails) {
-    line(x, ry, x + w, ry, { color: TH ? '#8A8983' : '#5E5D58', w: 3 });
-    for (let px = x - 24 + off; px < x + w + 24; px += 24) circle(px, ry + 3, 3, { fill: TH ? '#8A8983' : '#5E5D58' });
+    line(x, ry, x + w, ry, { color: TH ? '#8A8A8F' : '#5C5C60', w: 3 });
+    for (let px = x - 24 + off; px < x + w + 24; px += 24) circle(px, ry + 3, 3, { fill: TH ? '#8A8A8F' : '#5C5C60' });
   }
   G.restore();
   return out;
@@ -414,7 +414,7 @@ function b10_profileChart(t, x, y, w, h, fb, o = {}) {
   text('Solder melts above 217 °C', X(0) + 42, y - 18, { role: 'label', size: 19, color: C.ink2 });
   /* the zones, under the axis, with quiet ticks at their borders */
   for (const f of [0.22, 0.48, 0.72]) line(X(f), Y(20) - 6, X(f), Y(20) + 6, { color: C.faint, w: 1.5 });
-  [[0.11, 'Preheat'], [0.35, 'Soak'], [0.6, 'Reflow'], [0.86, 'Cool']].forEach(([f, l]) => text(l, X(f), Y(20) + 26, { role: 'label', size: 17, color: C.mute, align: 'center' }));
+  [[0.11, 'Preheat'], [0.35, 'Soak'], [0.6, 'Reflow'], [0.86, 'Cool']].forEach(([f, l]) => text(l, X(f), Y(20) + 27, { role: 'label', size: 19, color: C.mute, align: 'center' }));
   if (fb >= 0 && fb <= 1) {
     const T = b10_profile(fb), px = X(fb), py = Y(T);
     line(px, py, px, Y(20), { color: '#FF8A3D', w: 1.5, dash: [4, 4], alpha: 0.7 });
@@ -535,7 +535,7 @@ function b10_neckZoom(rect, ride, sz, o = {}) {
   const [x, y, w, h] = rect, a = o.a == null ? 1 : o.a; if (a <= 0.003 || !ride) return;
   const p = ride.parts[ride.di], fx = p.x + 0.1 * p.w, fy = 0.5 + 0.12 + Math.min(1.6, ride.sag * clamp(p.ratio / 30, 0.05, 1.6)) * 0.5 + 0.25;
   G.save(); G.globalAlpha *= a; rrPath(x, y, w, h, 6); G.clip();
-  G.fillStyle = TH ? '#DCDBD5' : '#141518'; G.fillRect(x, y, w, h);
+  G.fillStyle = TH ? '#DCDCE0' : '#141518'; G.fillRect(x, y, w, h);
   part(x + w / 2 - fx * sz, y + h / 2 - fy * sz, sz, () => b10_boardSideMM(ride.L, ride.parts, ride.st));
   G.restore();
   rr(x, y, w, h, 6, null, inkA(0.3), 1.5, a);
@@ -569,6 +569,159 @@ function b10_pendant(x, y, r, k, fall, o = {}) {
   G.restore();
 }
 
+/* ---------------------------------------------------------------- the cable: paracord, plugs, the chin -------------- */
+/** a cable along pts (stage px), d px across, its sheath a 2/2 braid: m carriers each way (16 in all) cross at `angle` to
+   the cable's axis; each diamond cell shows the yarn on top (over two, under two), with its fibres, the edge where it dives
+   under in shadow, round shading over all and an optional tracer yarn. The weave is computed on the unrolled sleeve and
+   wrapped round the visible half (v = sin φ), so it foreshortens at the edges like a real cylinder.
+   o = { a, angle (0.56 rad), m (8), cols ([S yarns, Z yarns]), tracer (a colour for one S carrier), slide (px the weave has
+   moved along the cable) }. Returns { at(u, v) (u px along, v across −1 top … 1 bottom), len, end, dir } */
+function b10_paracord(pts, d, o = {}) {
+  const S = [], step = 2;
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], L = Math.hypot(x1 - x0, y1 - y0), n = Math.max(1, Math.ceil(L / step));
+    for (let k = i === 1 ? 0 : 1; k <= n; k++) S.push([x0 + (x1 - x0) * k / n, y0 + (y1 - y0) * k / n]);
+  }
+  const N = S.length; if (N < 2) return { at: () => (pts[0] || [0, 0]), len: 0, end: pts[0] || [0, 0], dir: [1, 0] };
+  const len = [0]; for (let i = 1; i < N; i++) len.push(len[i - 1] + Math.hypot(S[i][0] - S[i - 1][0], S[i][1] - S[i - 1][1]));
+  const T = S.map((p, i) => { const q = S[Math.min(N - 1, i + 1)], r = S[Math.max(0, i - 1)], dx = q[0] - r[0], dy = q[1] - r[1], l = Math.hypot(dx, dy) || 1; return [dx / l, dy / l]; });
+  const total = len[N - 1], R = d / 2;
+  const at = (u, v) => {
+    u = clamp(u, 0, total); let lo = 0, hi = N - 1;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (len[mid] < u) lo = mid; else hi = mid; }
+    const k = len[hi] > len[lo] ? (u - len[lo]) / (len[hi] - len[lo]) : 0, x = lerp(S[lo][0], S[hi][0], k), y = lerp(S[lo][1], S[hi][1], k), t = T[lo];
+    return [x - t[1] * v * R, y + t[0] * v * R];
+  };
+  const out = { at, len: total, end: S[N - 1], dir: T[N - 1] };
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return out;
+  const m = o.m || 8, tn = Math.tan(o.angle || 0.56), P = 2 * Math.PI * R / m, sl = o.slide || 0, cols = o.cols || ['#2A2E36', '#3A404B'];
+  const edge = () => { G.beginPath(); for (let i = 0; i < N; i += 2) { const q = at(len[i], -1); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); } for (let i = N - 1; i >= 0; i -= 2) { const q = at(len[i], 1); G.lineTo(q[0], q[1]); } G.closePath(); };
+  G.save(); G.globalAlpha *= a;
+  edge(); G.fillStyle = cols[0]; G.fill();
+  G.save(); edge(); G.clip();
+  /* the cells: S yarns run c − u·tan = i·P, Z yarns c + u·tan = j·P, in the unrolled sleeve (u along, c round) */
+  const V = c => Math.sin(clamp(c / R, -Math.PI / 2, Math.PI / 2)), Pt = (A, B) => { const c = (A + B) / 2, u = (B - A) / (2 * tn) - sl; return at(u, V(c)); };
+  const cMax = Math.PI * R / 2, i0 = Math.floor((-cMax - (total + sl) * tn) / P) - 1, i1 = Math.ceil((cMax - sl * tn) / P) + 1;
+  G.lineJoin = 'round';
+  for (let i = i0; i <= i1; i++) {
+    const j0 = Math.floor((-2 * cMax - (i + 1) * P) / P) - 1, j1 = Math.ceil((2 * cMax - i * P) / P) + 1;
+    for (let j = j0; j <= j1; j++) {
+      const cc = (i + j + 1) * P / 2; if (Math.abs(cc) > cMax + P) continue;
+      const uc = (j - i) * P / (2 * tn) - sl; if (uc < -P / tn || uc > total + P / tn) continue;
+      const sTop = (((i - j) % 4) + 4) % 4 < 2, im = ((i % m) + m) % m, jm = ((j % m) + m) % m;
+      const col = sTop ? (o.tracer && im === 0 ? o.tracer : cols[(im >> 1) % 2 ? 1 : 0]) : cols[(jm >> 1) % 2 ? 0 : 1];
+      const p00 = Pt(i * P, j * P), p10 = Pt((i + 1) * P, j * P), p11 = Pt((i + 1) * P, (j + 1) * P), p01 = Pt(i * P, (j + 1) * P);
+      G.beginPath(); G.moveTo(p00[0], p00[1]); G.lineTo(p10[0], p10[1]); G.lineTo(p11[0], p11[1]); G.lineTo(p01[0], p01[1]); G.closePath();
+      G.fillStyle = col; G.fill();
+      /* the fibres of the yarn on top, along its own direction; the end where it dives under, in shadow */
+      const [qa, qb, qc, qd] = sTop ? [p00, p01, p10, p11] : [p00, p10, p01, p11];
+      G.strokeStyle = 'rgba(255,255,255,0.13)'; G.lineWidth = Math.max(0.6, P * 0.05); G.beginPath();
+      for (const f of [0.3, 0.55, 0.8]) { G.moveTo(lerp(qa[0], qc[0], f), lerp(qa[1], qc[1], f)); G.lineTo(lerp(qb[0], qd[0], f), lerp(qb[1], qd[1], f)); }
+      G.stroke();
+      G.strokeStyle = 'rgba(0,0,0,0.42)'; G.lineWidth = Math.max(0.8, P * 0.12); G.beginPath(); G.moveTo(qb[0], qb[1]); G.lineTo(qd[0], qd[1]); G.stroke();
+      G.strokeStyle = 'rgba(0,0,0,0.22)'; G.lineWidth = 0.8; G.beginPath(); G.moveTo(p00[0], p00[1]); G.lineTo(p10[0], p10[1]); G.lineTo(p11[0], p11[1]); G.lineTo(p01[0], p01[1]); G.closePath(); G.stroke();
+    }
+  }
+  /* round shading: dark toward both edges, a soft highlight a third of the way down from the top */
+  const band = (v0, w0, col) => { G.beginPath(); for (let i = 0; i < N; i += 2) { const q = at(len[i], v0); i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]); } G.strokeStyle = col; G.lineWidth = w0; G.lineCap = 'butt'; G.stroke(); };
+  band(0.86, d * 0.3, 'rgba(0,0,0,0.42)'); band(-0.88, d * 0.26, 'rgba(0,0,0,0.3)'); band(-0.4, d * 0.14, 'rgba(255,255,255,0.14)');
+  G.restore();
+  edge(); G.strokeStyle = 'rgba(0,0,0,0.6)'; G.lineWidth = 1; G.stroke();
+  G.restore();
+  return out;
+}
+
+/** sample a cubic Bézier into n + 1 points */
+function b10_bez(p0, p1, p2, p3, n = 40) { const out = []; for (let i = 0; i <= n; i++) { const t = i / n, u = 1 - t; out.push([u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0], u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1]]); } return out; }
+/** a USB-C plug from the side, in stage px: its metal end in the port at (x, y) (the port's centre), s px per mm, dir = +1
+   the plug runs right. angled: the body turns up at once (an L plug, as Pulsar's "Head Bent"); else it runs straight out
+   (overmold 15 × 6.5 mm, then a 6 mm strain relief). cr: the cable's radius, mm. o = { a, rot (radians, turns the plug
+   about the port with the mouse) }. Returns { out: where the cable leaves (stage px), dir: its heading (unit) } */
+function b10_plug(x, y, s, dir, angled, o = {}) {
+  const a = o.a == null ? 1 : o.a, cr = o.cr || 1.5, rot = o.rot || 0, cs = Math.cos(rot), sn = Math.sin(rot);
+  const W = (px, py) => [x + px * cs - py * sn, y + px * sn + py * cs];
+  const mold = TH ? ['#3D4047', '#1F2126'] : ['#4A4D55', '#25272C'];
+  let out, d0;
+  if (!angled) { out = [dir * 21 * s, 0]; d0 = [dir, 0]; } else { out = [dir * 3.5 * s, -21 * s]; d0 = [0, -1]; }
+  if (a > 0.003) {
+    G.save(); G.globalAlpha *= a; G.translate(x, y); G.rotate(rot);
+    const gr = (x0, y0, x1, y1) => { const g = G.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, mold[0]); g.addColorStop(1, mold[1]); return g; };
+    G.fillStyle = '#C4C8CE'; G.fillRect(dir > 0 ? -0.8 * s : 0, -1.25 * s, 0.8 * s, 2.5 * s);
+    if (!angled) {
+      rrPath(dir > 0 ? 0 : -15 * s, -3.25 * s, 15 * s, 6.5 * s, 1.4 * s); G.fillStyle = gr(0, -3.25 * s, 0, 3.25 * s); G.fill(); G.strokeStyle = 'rgba(0,0,0,0.5)'; G.lineWidth = 1; G.stroke();
+      G.beginPath(); G.moveTo(dir * 15 * s, -2.4 * s); G.lineTo(dir * 21 * s, -cr * s); G.lineTo(dir * 21 * s, cr * s); G.lineTo(dir * 15 * s, 2.4 * s); G.closePath(); G.fillStyle = gr(0, -2.4 * s, 0, 2.4 * s); G.fill();
+      G.strokeStyle = 'rgba(255,255,255,0.12)'; G.lineWidth = 1; G.beginPath(); G.moveTo(dir * 1.2 * s, -2.2 * s); G.lineTo(dir * 13.8 * s, -2.2 * s); G.stroke();
+    } else {
+      const x0 = dir > 0 ? 0 : -7 * s;
+      rrPath(x0, -16 * s, 7 * s, 19.25 * s, 1.4 * s); G.fillStyle = gr(x0, 0, x0 + 7 * s, 0); G.fill(); G.strokeStyle = 'rgba(0,0,0,0.5)'; G.lineWidth = 1; G.stroke();
+      const cx = dir * 3.5 * s;
+      G.beginPath(); G.moveTo(cx - 2.4 * s, -16 * s); G.lineTo(cx - cr * s, -21 * s); G.lineTo(cx + cr * s, -21 * s); G.lineTo(cx + 2.4 * s, -16 * s); G.closePath(); G.fillStyle = gr(cx - 2.4 * s, 0, cx + 2.4 * s, 0); G.fill();
+      G.strokeStyle = 'rgba(255,255,255,0.12)'; G.lineWidth = 1; G.beginPath(); G.moveTo(x0 + 1.2 * s, -14.6 * s); G.lineTo(x0 + 1.2 * s, 1.8 * s); G.stroke();
+    }
+    G.restore();
+  }
+  return { out: W(out[0], out[1]), dir: [d0[0] * cs - d0[1] * sn, d0[0] * sn + d0[1] * cs] };
+}
+
+/* the side view's geometry, mm: z forward from the mouse's centre, h up from the pad. The port is where the front of the
+   outline crosses the port's centre height (5.25 mm: GEO2D.shell's usbC, y 3.62 to 6.88); the chin is the outline's
+   bottom front; the skates (msLive: the plate-off dots) carry the mouse; the lens is the shell's lens window. */
+const B10_CAB = (() => {
+  const hP = 5.25; let zp = 56.7;
+  for (let i = 1; i < MS_SIDE.length; i++) { const [z0, h0] = MS_SIDE[i - 1], [z1, h1] = MS_SIDE[i]; if (z0 > 40 && z1 > 40 && (h0 - hP) * (h1 - hP) <= 0 && h0 !== h1) { zp = z0 + (hP - h0) / (h1 - h0) * (z1 - z0); break; } }
+  const chin = MS_SIDE.filter(p => p[0] > 50 && p[1] < 8.5 && p[1] > 0.7).sort((p, q) => p[0] - q[0]);
+  return { zp, hP, chin, dc: 3.0, lod: 1.0 };
+})();
+/** the live numbers: skates, pivot, lens (read when first asked, so H1's rebuilt shell is used) */
+function b10_cabLive() {
+  if (b10_cabLive.v) return b10_cabLive.v;
+  const L = msLive(), zs = L.corner.map(c => c[1]), zf = Math.max(...zs), zr = Math.min(...zs) - 3.25, zl = (L.lens[2] + L.lens[5]) / 2;
+  return (b10_cabLive.v = { zf, zr, zl });
+}
+/** how high the underside sits above the pad at z when the mouse lies flat (skates 0, base plate 0.74, the chin rising,
+   the plug's underside if one is fitted: straight 2.0 mm under its overmold, its relief tapering to the cable) */
+function b10_under(z, angled) {
+  const { zf } = b10_cabLive(), C = B10_CAB, ch = C.chin;
+  if (Math.abs(z - zf) <= 3.25) return 0;
+  if (z <= ch[0][0]) return 0.74;
+  if (z <= C.zp) { for (let i = 1; i < ch.length; i++) if (z <= ch[i][0]) return lerp(ch[i - 1][1], ch[i][1], (z - ch[i - 1][0]) / (ch[i][0] - ch[i - 1][0])); return C.hP; }
+  if (angled) return z <= C.zp + 7 ? C.hP - 3.25 : 99;
+  if (z <= C.zp + 15) return C.hP - 3.25;
+  if (z <= C.zp + 21) return lerp(C.hP - 2.4, C.hP - 1.5, (z - C.zp - 15) / 6);
+  return 99;
+}
+/** the pitch (radians, nose up, about the rear skates' back edge) that lets the underside clear a cable of dc mm lying on
+   the pad from z0 forward */
+function b10_pitch(z0, dc, angled) {
+  const { zr } = b10_cabLive(); let th = 0;
+  for (let z = Math.max(z0, zr + 5); z <= B10_CAB.zp + 22; z += 0.25) { const need = dc - b10_under(z, angled); if (need > 0) th = Math.max(th, Math.atan(need / (z - zr))); }
+  return th;
+}
+/** the flick: how far (mm) the mouse has moved over the pad by time t, from t0 over dur s, quick then easing */
+function b10_flick(t, t0, dur, D) { return D * E.out3(clamp((t - t0) / dur)); }
+/** a quiet aim inset: the cursor rides the flick (pr 0..1) toward the target, but freezes where the sensor stopped
+   tracking (stop: the progress at that moment, or null); the click lands at tc. o = { label } */
+function b10_aim(t, t0, rect, pr, stop, tc, o = {}) {
+  const [x, y, w, h] = rect, a = ep(t, t0, t0 + 0.4); if (a <= 0.003) return;
+  demoWindow(x, y, w, h, a, { fill: TH ? '#E9E9EC' : '#0B0C0D', plain: true });
+  const sx = x + w * 0.16, sy = y + h * 0.62, tx = x + w * 0.78, ty = y + h * 0.4, tr = 13;
+  const f = stop == null ? pr : Math.min(pr, stop), cx = lerp(sx, tx, f), cy = lerp(sy, ty, f), clicked = t >= tc, hit = stop == null || stop >= 0.97;
+  clipped(x, y, w, h, () => {
+    G.save(); G.globalAlpha = a;
+    circle(tx, ty, tr * 2.4, { color: inkA(0.18), w: 1.5 }); circle(tx, ty, tr, { fill: TH ? '#111111' : '#F3F3F5' });
+    line(sx, sy, cx, cy, { color: inkA(0.22), w: 2, dash: [5, 6] });
+    if (clicked) { const kh = prog(t, tc, tc + 0.35);
+      if (hit) { circle(tx, ty, tr * (1.4 + 1.6 * E.out3(kh)), { color: C.hero, w: 3 * (1 - kh) + 0.5, alpha: 1 - kh }); circle(cx, cy, tr * 0.42, { fill: C.hero }); }
+      else { const r = tr * 0.6; line(cx - r, cy - r, cx + r, cy + r, { color: C.red, w: 3.5 }); line(cx - r, cy + r, cx + r, cy - r, { color: C.red, w: 3.5 }); } }
+    const g = tr * 0.9, l2 = tr * 1.5, ch = TH ? '#111111' : '#FFFFFF';
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) line(cx + dx * g, cy + dy * g, cx + dx * (g + l2), cy + dy * (g + l2), { color: ch, w: 2.5 });
+    circle(cx, cy, 1.8, { fill: ch });
+    G.restore();
+  });
+  if (clicked) text(hit ? 'Hit' : 'Miss', x + w - 18, y + 36, { role: 'label', size: 22, color: hit ? C.heroText : C.red, align: 'right', alpha: a * ep(t, tc, tc + 0.25) });
+  if (o.label) text(o.label, x + 18, y + h - 18, { role: 'label', size: 19, color: C.mute, alpha: a, maxW: w - 36 });
+}
+
 /* ============================================================================================ the slides */
 
 /* ---------------------------------------------------------------- 4. b10_board: one board, one side, one reflow ----------
@@ -585,43 +738,44 @@ S({
   replaces: ['elc_oneside'],
   answers: [
     ['"good but i wish it was even better visualized"', 'Rebuilt as a demonstration: two boards ride one reflow oven at the same moment, the camera riding with them and the oven\'s heat charted above with a dot for the boards. The two-faced board is on its second pass, its first face hanging upside down; as that solder melts again the parts sink on liquid joints and the Type-C is tagged over the 30 g/in² rule. Theseus\'s board, every part on top, rides the same heat once with nothing underneath. A classroom panel says why it matters: a drop hangs from a dropper until its weight beats surface tension and falls, beside the Type-C\'s joint zoomed ×4, hanging the same way'],
-    ['(F2.29) "we don\'t have a front and back pcb" / "it\'ll be a single ~5.6g pcb"', 'Theseus\'s lane reads "One 5.6 g board, every part on one face"; the verdict is oven passes 2 → 1'],
-    ['(F0.5) the single-sided reflow wording', 'As validated: one pass for a one-sided board; a two-sided board\'s second pass hangs its first face upside down while it melts again. Not claimed: weaker re-melted joints (Wirth et al. saw no change in shear strength), or that the Type-C falls (Liu\'s parts held at about 40 g/in²; the slide says only that it is over the 30 g/in² rule, the drop shown is water)']
+    ['(F2.29) "we don\'t have a front and back pcb" / "it\'ll be a single ~5.6g pcb"', 'Theseus\'s lane reads "One 5.6 g board, every part on top" and a tag under its board says "Nothing underneath"; the verdict is oven passes 2 → 1'],
+    ['(F0.5) the single-sided reflow wording', 'As validated: one pass for a one-sided board; a two-sided board\'s second pass hangs its first face upside down while it melts again. Not claimed: weaker re-melted joints (Wirth et al. saw no change in shear strength), or that the Type-C falls (Liu\'s parts held at about 40 g/in²; the slide says only that it is over the 30 g/in² rule; the drop that falls is water)']
   ],
   draw: t => {
     header(t, 'One board, one side, one reflow');
-    captions(t, [[0.6, 'Parts on both faces means two oven passes. In the second, the first face hangs upside down in melted solder.'],
+    captions(t, [[0.6, 'Parts on both faces need two oven passes. In the second, the first face hangs in melted solder.'],
       [4.4, 'Theseus puts every part on one face: one board, one pass, and nothing ever hangs.']]);
     const u = Math.max(0, t - 0.3), fb = b10_fb(u), Lp = 4200, s = 16;
     /* the map: the oven's heat along its length, the boards' thermocouple riding it; where the board sits in the mouse */
-    b10_profileChart(t, 300, 290, 1000, 84, fb, { a: ep(t, 0.1, 0.5) });
-    locator(t, 0.4, 94, 290, 46, 'top', msBox('top', 'board'), { hi: ['board'] });
+    b10_profileChart(t, 300, 290, 1000, 84, fb, {});
+    locator(t, -0.4, 94, 290, 46, 'top', msBox('top', 'board'), { hi: ['board'] });
     /* one oven, two lanes, the camera riding with the boards */
     const box = [300, 420, 1000, 482], rows = [450, 696, 884], rails = [530, 792];
-    const W = b10_ovenWin(t, box, fb, Lp, { a: ep(t, 0, 0.4), rows, rails });
+    const W = b10_ovenWin(t, box, fb, Lp, { rows, rails });
     let R1 = null, R2 = null;
     clipped(box[0], box[1], box[2], box[3], () => {
-      R1 = b10_boardRide(t, u, W, rails[0], s, 'rival', fb, { a: ep(t, 0.1, 0.5) });
-      R2 = b10_boardRide(t, u, W, rails[1], s, 'ths', fb, { a: ep(t, 0.2, 0.6) });
+      R1 = b10_boardRide(t, u, W, rails[0], s, 'rival', fb, {});
+      R2 = b10_boardRide(t, u, W, rails[1], s, 'ths', fb, {});
     });
     /* the lanes, named in the margin beside them */
-    const l1 = ep(t, 0.2, 0.6), l2 = ep(t, 0.3, 0.7);
+    const l1 = 1, l2 = 1;
     text('Two faces', 80, 512, { role: 'label', size: 22, color: C.secondText, alpha: l1 });
     text('Pass 2 of 2', 80, 546, { role: 'label', size: 24, color: C.ink, alpha: l1 });
     text('As in the Cougar Revenger Pro 4K', 80, 578, { role: 'small', size: 19, weight: 600, color: C.mute, maxW: 200, lh: 1.25, alpha: l1 });
     text('Theseus', 80, 768, { role: 'label', size: 22, color: C.heroText, alpha: l2 });
     text('Pass 1 of 1', 80, 802, { role: 'label', size: 24, color: C.ink, alpha: l2 });
-    text('One 5.6 g board, every part on one face', 80, 834, { role: 'small', size: 19, weight: 600, color: C.mute, maxW: 200, lh: 1.25, alpha: l2 });
+    text('One ' + THESEUS.pcb + ' g board,', 80, 834, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2 });
+    text('every part on top', 80, 858, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: l2 });
     /* the fault, named while it happens: the receptacle hangs in liquid solder, over the rule */
-    if (R1) faultTag(t, B10_OV.uMelt + 0.55, [R1.partPt[0] - R1.part.w * s * 0.3, R1.partPt[1] + R1.part.h * s * 0.5], 'Hangs in melted solder', { to: [R1.partPt[0] - 110, 636], side: 'l', sub: 'Over the 30 g/in² rule', maxW: 330 });
+    if (R1) faultTag(t, 0.3 + B10_OV.uMelt + 0.4, [R1.partPt[0] - R1.part.w * s * 0.3, R1.partPt[1] + R1.part.h * s * 0.5], 'Melted again, upside down', { to: [R1.partPt[0] - 110, 632], side: 'l', sub: 'About 40 g per in² of pad; the rule is 30', maxW: 460 });
     if (R2) fixTag(t, 4.7, [R2.under[0] - 120, R2.under[1]], 'Nothing underneath', { to: [R2.under[0] - 60, 842], side: 'r' });
     /* the classroom version: a drop on a dropper, and the Type-C's joint beside it, hanging the same way */
-    const r = demoPanel(t, 2.0, [1340, 262, 500, 400], {});
-    { const kd = ep(t, 2.2, 2.6), uB = 4.0, grow = clamp((t - 2.6) / (uB - 2.6)), fall = t > uB ? 0.5 * 900 * Math.pow(t - uB, 2) : 0;
+    const r = demoPanel(t, 0.2, [1340, 262, 500, 400], {});
+    { const kd = ep(t, 0.4, 0.8), uB = 4.0, grow = clamp((t - 2.6) / (uB - 2.6)), fall = t > uB ? 0.5 * 900 * Math.pow(t - uB, 2) : 0;
       clipped(r[0], r[1], 160, 196, () => b10_pendant(r[0] + 78, r[1] + 92, 13, 0.15 + 0.85 * grow, Math.min(fall, 400), { a: kd }));
-      text('A water drop', r[0] + 78, r[1] + 224, { role: 'label', size: 18, color: C.mute, align: 'center', alpha: kd });
+      text('A water drop', r[0] + 78, r[1] + 224, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kd });
       if (R1) b10_neckZoom([r[0] + 170, r[1], 274, 196], R1, 70, { a: kd });
-      text('The Type-C\'s joint, ×4', r[0] + 307, r[1] + 224, { role: 'label', size: 18, color: C.mute, align: 'center', alpha: kd });
+      text('The Type-C\'s joint, ×4', r[0] + 307, r[1] + 224, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kd });
       text('Each hangs until its weight beats the pull round its rim: 2πrγ = mg.', r[0], r[1] + 262, { role: 'small', size: 21, weight: 600, color: C.ink2, maxW: r[2], lh: 1.3, alpha: ep(t, 4.1, 4.5) });
     }
     /* the payoff */
@@ -630,29 +784,114 @@ S({
   }
 });
 
-/* ============================================================================================ test bench (development only)
-   Registered only with ?b10test=1 in the URL: never in the film. */
-const B10_TEST = (() => { try { return /[?&]b10test=1/.test(location.search); } catch (e) { return false; } })();
-if (B10_TEST) {
-  S({ id: 'b10_t1', ch: 'elec', theme: 'paper', title: 'b10 test: batteries, balance, packages', settle: 6, draw: t => {
-    header(t, 'b10 test: batteries, balance, packages');
-    const th = 0.06 * Math.sin(t * 1.3) * Math.exp(-t * 0.2) + 0.035 * ep(t, 0.5, 2);
-    const P = b10_balance(700, 470, 320, th, {});
-    if (P.left) { part(P.left[0], P.left[1] - 5.1 * 7, 7, () => b10_li10440MM({ cut: ep(t, 1, 3), hiCan: ep(t, 3, 4) })); part(P.right[0], P.right[1], 7, () => b10_pouchMM({ cut: ep(t, 1, 3), hiFoil: 0 })); }
-    part(1400, 420, 16, () => b10_li10440MM({ cut: 1, hiCan: 1 }));
-    part(1460, 760, 9, () => b10_pouchMM({ cut: 1 }));
-    ['sot5', 'sot6', 'dfn', 'ind', 'cap', 'res'].forEach((k, i) => part(1150 + i * 110, 930, 22, () => b10_pkgMM(k)));
-    part(1150 + 6 * 110 + 60, 930, 16, () => b10_pkgMM('qfn', { w: 5, label: 'nPM1300' }));
-  } });
-  S({ id: 'b10_t3', ch: 'elec', theme: 'paper', title: 'b10 test: sweat, paracord, plug, meter', settle: 6, draw: t => {
-    header(t, 'b10 test: sweat, paracord, plug, meter');
-    b10_pads(420, 560, 300, { drop: { r: 1.05, k: ep(t, 0.2, 0.8) }, tree: ep(t, 1, 4, E.lin), ions: ep(t, 0.8, 1.2), t, short: env(t, 4, 4.1, 4.4, 5), seed: 7 });
-    b10_pads(1100, 560, 300, { drop: { r: 1.05, k: ep(t, 0.2, 0.8), bead: 1 }, coat: 1, t });
-    b10_padsSection(420, 920, 300, { drop: 1, coat: 0 });
-    b10_padsSection(1100, 920, 300, { drop: 1, coat: 1 });
-    const path = elc_bez([1500, 330], [1700, 330], [1600, 600], [1820, 640], 60);
-    b10_paracord(path, 34, { tracer: C.hero, slide: t * 10 });
-    b10_plug(1560, 880, 7, 1, false, {}); b10_plug(1560, 980, 7, 1, true, {});
-    b10_galvo(1700, 900, 60, Math.sin(t * 3), { label: 'Induced' });
-  } });
-}
+/* ---------------------------------------------------------------- 8. b10_cable: an angled plug, a paracord cable ---------
+   Brock (F27, cable 3/10): "extremely lazy visualizations, paracord needs better assets"; the brief: the paracord drawn
+   properly, the angled plug on the shell, the drag it removes. The demonstration, the mouse in profile with the camera
+   riding it (the pad slides under): a straight plug brings the cable down to the pad at the chin, where its slack lies; a
+   flick forward runs the chin onto it, the mouse pitches about its rear skates, and the sensor rises past its 1 mm
+   lift-off: the cursor freezes mid-flick and the shot misses. Rewind, wipe to Theseus: the plug turns up, the paracord
+   arcs over the pad and comes down far ahead; the same flick, nothing reaches the chin, the shot lands. Beside it the
+   cable close up: the woven sheath (16 carriers, over two and under two, a tracer yarn) and the cable cut across. */
+S({
+  id: 'b10_cable', ch: 'elec', theme: 'paper', title: 'An angled plug, a paracord cable', settle: 11, ideas: [19, 20, 70],
+  src: ['b10PulsarCable', 'b10TpuV3', 'gld_paw3395', 'b10Brock', 'elcXa25'],
+  replaces: ['cable'],
+  answers: [
+    ['"extremely lazy visualizations"', 'Rebuilt as a demonstration on the mouse in profile, the camera riding it: with a straight plug the cable comes down to the pad at the chin; a flick runs the chin onto its slack, the mouse pitches about its rear skates and the sensor rises past its 1 mm lift-off, so the cursor freezes mid-flick and the shot misses. Rewound and wiped to Theseus: the plug turns up, the cable arcs over the pad, the same flick passes clean and the shot lands. The lift is computed from the shell\'s own outline, skates and lens'],
+    ['"paracord needs better assets"', 'The paracord is drawn as a woven sheath: 16 carriers crossing over two and under two, each yarn with its fibres and the edge where it dives under in shadow, foreshortened round the cylinder, with a blue tracer yarn; and the cable cut across (sheath, filler, four stranded conductors)'],
+    ['(brief) the angled plug on the shell, the drag it removes', 'The L plug sits in the nose\'s port and lifts the cable straight up, so none of it lies on the pad at the chin (Pulsar sells the same idea: it "prevents cable drag against the desk")']
+  ],
+  draw: t => {
+    header(t, 'An angled plug, a paracord cable');
+    captions(t, [[0.6, 'A straight plug brings the cable down to the pad at the chin. Flick forward, and the chin rides onto it: the sensor lifts off and stops tracking.'],
+      [3.8, 'Theseus\'s plug turns up, and its paracord cable arcs over the pad: the same flick, and nothing reaches the chin.']]);
+    const C0 = B10_CAB, Lv = b10_cabLive(), s = 6.4, mx = 470, py = 668, dc = C0.dc;
+    const box = [80, 270, 1220, 450];
+    /* the flicks: A (straight plug) 0.9 s, rewound from 2.4 s; B (Theseus) 4.1 s. Δ = how far the mouse has gone over the pad */
+    const zh0 = C0.zp + 21 + 4, D1 = zh0 - (Lv.zf - 4);
+    const dA = b10_flick(t, 0.9, 0.55, D1) * (1 - ep(t, 2.4, 3.0, E.io3)), dB = b10_flick(t, 4.1, 0.55, D1), D = t < 3.4 ? dA : dB;
+    const liftAt = (dd, angled) => angled ? 0 : (Lv.zl - Lv.zr) * Math.sin(b10_pitch(zh0 - dd, dc, false));
+    /* where tracking stops in flick A: the first Δ at which the lens has risen past the lift-off */
+    const stopA = (() => { for (let k = 0; k <= 200; k++) if (liftAt(D1 * k / 200, false) >= C0.lod) return k / 200; return null; })();
+    const L1 = liftAt(D1, false);
+    const scene = mode => {
+      const ths = mode === 'ths', th = ths ? 0 : b10_pitch(zh0 - D, dc, false), sn = Math.sin(th), cs = Math.cos(th);
+      /* mouse frame (z, h) → stage, the mouse pitched about the rear skates' back edge; pad points don't pitch */
+      const M = (z, h) => { const zz = Lv.zr + (z - Lv.zr) * cs - h * sn, hh = (z - Lv.zr) * sn + h * cs; return [mx + zz * s, py - hh * s]; };
+      const Pd = (z, h) => [mx + z * s, py - h * s];
+      /* the pad, its weave marks sliding back as the mouse moves */
+      G.fillStyle = TH ? '#E4E4E7' : '#1A1B1E'; G.fillRect(box[0], py, box[2], box[1] + box[3] - py);
+      line(box[0], py, box[0] + box[2], py, { color: C.faint, w: 1.5 });
+      for (let z = -120; z < 160; z += 10) { const x = mx + (z - (D % 10)) * s; if (x > box[0] && x < box[0] + box[2]) line(x, py + 3, x, py + 9, { color: inkA(0.18), w: 1.5 }); }
+      /* the slack: the cable lying on the pad from its far end back to where it doubles over */
+      const zEdge = (box[0] + box[2] - mx) / s + 10, zSl = ths ? C0.zp + 64 - D : zh0 - D;
+      b10_paracord([Pd(zSl, dc / 2), Pd(zEdge, dc / 2)], dc * s, { cols: TH ? ['#3A3F48', '#4A505B'] : ['#4A505B', '#5A616D'], slide: -D * s });
+      /* the mouse */
+      part(mx, py, s, () => { xabout(Lv.zr, 0, -th); mouseSimple('right', { show: ['sensor', 'skates'], hi: ths ? null : (th > 0.004 ? { sensor: 'bad' } : null) }); });
+      /* the plug in the port, the cable from it */
+      const port = M(C0.zp, C0.hP), cr = ths ? 1.0 : dc / 2;
+      const pl = b10_plug(port[0], port[1], s, 1, ths, { rot: -th, cr });
+      let path;
+      if (!ths) {
+        const T = Math.max(zh0 + 6 - D, (pl.out[0] - mx) / s + 5), E0 = pl.out, Tp = Pd(T, dc / 2), dx = Tp[0] - E0[0];
+        path = b10_bez(E0, [E0[0] + dx * 0.5, E0[1]], [Tp[0] - dx * 0.5, Tp[1]], Tp, 30).concat([Pd(zEdge, dc / 2)]);
+        b10_paracord(path, dc * s, { cols: ['#2A2E36', '#3A404B'], slide: 0 });
+      } else {
+        const E0 = pl.out, Tz = C0.zp + 72 - D, Tp = Pd(Tz, 1.0);
+        path = b10_bez(E0, [E0[0], E0[1] - 16 * s], [mx + (C0.zp + 30 - D * 0.35) * s, py - (37 + D * 0.12) * s], Tp, 40).concat([Pd(zEdge, 1.0)]);
+        b10_paracord(path, 2.0 * s, { cols: ['#2A2E36', '#3A404B'], tracer: C.hero, slide: 0 });
+      }
+      /* the gap under the lens, marked when it opens */
+      const lens = M(Lv.zl, 0), gap = py - lens[1];
+      if (!ths && gap > 2) { const col = gap / s >= C0.lod ? C.red : C.mute; line(lens[0], py, lens[0], lens[1], { color: col, w: 2.5 }); line(lens[0] - 7, lens[1], lens[0] + 7, lens[1], { color: col, w: 2.5 }); line(lens[0] - 7, py, lens[0] + 7, py, { color: col, w: 2.5 }); }
+      /* the name of what is drawn */
+      if (ths) heroTag(104, 310, 'Theseus', 'Angled plug, paracord', { size: 22 });
+      else ltag(104, 310, 'Most mice', 'Straight plug', { size: 22, color: C.mute, vcolor: C.secondText });
+      return { th, chin: M(C0.chin[0][0] + 1.5, 1.2), lens };
+    };
+    demoWindow(box[0], box[1], box[2], box[3], 1, { plain: true });
+    let R = null;
+    clipped(box[0], box[1], box[2], box[3], () => { wipeTo(t, 3.0, 0.8, box, k => { R = scene('rival'); }, k => { R = scene('ths'); }, { rival: 'Most mice', right: 'Theseus', labels: false }); });
+    /* the flick, named while it happens */
+    { const kf = Math.max(env(t, 0.75, 0.9, 1.45, 1.75), env(t, 3.95, 4.1, 4.65, 4.95));
+      if (kf > 0.003) { arrow(mx - 80, 372, mx + 80, 372, { color: C.ink2, w: 3, hs: 12, alpha: kf }); text('Flick', mx, 356, { role: 'label', size: 21, color: C.ink2, align: 'center', alpha: kf }); } }
+    if (R && t < 2.6) faultTag(t, 1.35, R.chin, 'Chin on the cable', { to: [R.chin[0] + 150, 470], side: 'r', sub: 'The mouse tips back on its rear skates', maxW: 300, alpha: 1 - ep(t, 2.3, 2.6) });
+    /* the sensor's height over the pad, magnified, against its lift-off */
+    { const gx = 80, gy = 748, gw = 560, gh = 196, lift = t < 3.4 ? liftAt(dA, false) : 0, over = lift >= C0.lod;
+      demoWindow(gx, gy, gw, gh, 1, { plain: true });
+      text('Sensor lift', gx + 24, gy + 36, { role: 'label', size: 21, color: C.mute });
+      rich([{ s: (Math.floor(lift * 10) / 10).toFixed(1), role: 'num', size: 54, color: over ? C.red : C.ink }, { s: 'mm', role: 'label', size: 22, color: C.mute, gap: 8, caps: false }], gx + 24, gy + 112, {});
+      text(over ? 'Tracking stops' : 'Tracking', gx + 24, gy + 152, { role: 'label', size: 21, color: over ? C.red : (t < 3.4 ? C.ink2 : C.heroText) });
+      const k = 62, base = gy + gh - 30, x0 = gx + 300, x1 = gx + gw - 24;
+      G.fillStyle = TH ? '#E4E4E7' : '#1A1B1E'; G.fillRect(x0 - 10, base, x1 - x0 + 20, 16);
+      line(x0 - 10, base, x1 + 10, base, { color: C.faint, w: 1.5 });
+      line(x0 - 10, base - C0.lod * k, x1 + 10, base - C0.lod * k, { color: C.red, w: 1.5, dash: [7, 6], alpha: 0.8 });
+      text('Lift-off, 1 mm', x1, base - C0.lod * k - 10, { role: 'label', size: 19, color: C.red, align: 'right' });
+      const bx = x0 + 30, bw2 = 120, by = base - lift * k;
+      rr(bx, by - 46, bw2, 46, 4, TH ? '#FFFFFF' : '#2A2B2F', inkA(0.6), 1.5);
+      rr(bx + bw2 / 2 - 20, by - 8, 40, 8, 2, over ? C.red : C.hero, null, 1);
+      text('Lens', bx + bw2 / 2, by - 18, { role: 'label', size: 19, color: C.mute, align: 'center' });
+      text('×10', x1, gy + 36, { role: 'label', size: 19, color: C.faint, align: 'right' });
+    }
+    /* the shot: the cursor rides the flick, and freezes where the sensor stopped tracking */
+    { const rect = [672, 748, 520, 196];
+      if (t < 3.0) b10_aim(t, -1, rect, b10_flick(t, 0.9, 0.55, D1) / D1, stopA, 1.55, { label: 'The cursor stops where tracking stopped' });
+      else b10_aim(t, 3.0, rect, dB / D1, null, 4.75, { label: 'The cursor follows the whole flick' });
+    }
+    /* the payoff */
+    verdict(t, 5.4, 1240, 885, { from: Math.floor(L1 * 10) / 10, to: 0, unit: 'mm', dec: 1, label: 'Sensor lift, same flick', better: 'lower', who: ['Straight plug', 'Theseus'], size: 130, maxW: 600 });
+    /* the cable, close up: the woven sheath, and the cable cut across */
+    { const px = 1340, py2 = 270, pw = 500, ph = 450, kc = ep(t, 5.9, 6.3);
+      demoWindow(px, py2, pw, ph, 1, { plain: true });
+      text('The cable, close up', px + 24, py2 + 36, { role: 'label', size: 21, color: C.mute });
+      clipped(px, py2, pw, ph, () => b10_paracord(b10_bez([px - 20, py2 + 210], [px + 170, py2 + 230], [px + 260, py2 + 90], [px + pw + 20, py2 + 100], 60), 46, { tracer: C.hero, slide: Math.max(0, t - 5.9) * 30 }));
+      const o = part(px + 150, py2 + 340, 52, () => cableMM({}));
+      text('Cut across', px + 150, py2 + ph - 18, { role: 'label', size: 19, color: C.faint, align: 'center' });
+      if (o.sheath) {
+        callout(t, 6.1, o.sheath, 'Woven nylon sheath', { to: [px + 270, py2 + 300], side: 'r', color: C.heroText, tcolor: C.ink, alpha: kc, maxW: 200 });
+        callout(t, 6.4, o.core, 'Four fine-stranded conductors', { to: [px + 270, py2 + 380], side: 'r', color: C.heroText, tcolor: C.ink, alpha: kc, maxW: 200 });
+      }
+    }
+    source(t, 'Lift from the shell model: its outline, port (5.25 mm up), skates and lens; a 3 mm stock cable for illustration (diameters unmeasured). Lift-off 1 mm: the PAW3395\'s lower setting. Pulsar\'s bent plug "prevents cable drag against the desk"; TechPowerUp on the Viper V3 Pro\'s cable: its "extraordinary stiffness prevents playing while charging".', { t0: 2.4 });
+  }
+});

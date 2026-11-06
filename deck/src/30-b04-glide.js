@@ -266,9 +266,9 @@ function b04_match(A, B, n, S) {
    which put the dome 1.28 mm over the pad). */
 const B04S = { ref: -2.63, axis: 1.1, led: -1.9, slots: [6.0, -6.0], board: [-1.0, 0], top: 5.03, up: -1.75, lo: -2.13, col: -2.20 };
 const B04M = {
-  board: () => (TH ? '#202126' : '#232429'), copper: '#9C7A3E', mod: () => (TH ? '#0E0F11' : '#0B0C0E'), gold: '#C9A15C', goldD: '#9C7A3E', solder: '#C9CCD1',
+  board: () => (TH ? '#202126' : '#232429'), copper: '#8C8C92', mod: () => (TH ? '#0E0F11' : '#0B0C0E'), gold: '#B4B7BD', goldD: '#8C8C92', solder: '#D2D4D9',
   clear: () => (TH ? 'rgba(214,226,232,0.70)' : 'rgba(214,226,232,0.22)'), clearE: () => (TH ? '#6F8187' : '#AFC1C8'),
-  yarn: () => (TH ? '#3C3E43' : '#4A4C52'), yarnE: () => (TH ? '#1E1F22' : '#6A6D74'), foam: () => (TH ? '#8E8D88' : '#2E3034'), foamE: () => (TH ? '#6F6E69' : '#3F4247'), base: () => (TH ? '#2A2B2E' : '#17181B')
+  yarn: () => (TH ? '#3C3E43' : '#4A4C52'), yarnE: () => (TH ? '#1E1F22' : '#6A6D74'), foam: () => (TH ? '#8C8C90' : '#2D2E31'), foamE: () => (TH ? '#6E6E72' : '#3E3F43'), base: () => (TH ? '#2A2B2E' : '#17181B')
 };
 /** a filled or stroked path at an alpha (the deck's primitives reset G.globalAlpha, so drawings pass theirs to each call) */
 function b04_shape(path, fill, stroke, lw, a = 1) {
@@ -323,9 +323,9 @@ function b04_moduleSec(X, Y, s, a) {
     line(X(zc - 0.12), Y(0.62), X(zc - 0.12), Y(0.1), { color: 'rgba(255,255,255,0.5)', w: 1.2, alpha: a });
   }
   b04_shape(() => rrPath(X(B04S.axis - 0.8), Y(0.05), 1.6 * s, 0.38 * s, 2), '#2A2B30', null, 0, a);                          /* the die */
-  b04_shape(() => G.rect(X(B04S.axis - 0.5), Y(-0.29), 1.0 * s, 0.06 * s), '#8E8C86', null, 0, a);                            /* its pixel array */
+  b04_shape(() => G.rect(X(B04S.axis - 0.5), Y(-0.29), 1.0 * s, 0.06 * s), '#8C8C90', null, 0, a);                            /* its pixel array */
   b04_shape(() => rrPath(X(B04S.led - 0.38), Y(0.05), 0.76 * s, 0.3 * s, 2), '#3A3B40', null, 0, a);                           /* the LED */
-  b04_shape(() => G.ellipse(X(B04S.led), Y(-0.25), 0.3 * s, 0.08 * s, 0, 0, TAU), '#D9D7D0', null, 0, a);
+  b04_shape(() => G.ellipse(X(B04S.led), Y(-0.25), 0.3 * s, 0.08 * s, 0, 0, TAU), '#D8D8DC', null, 0, a);
 }
 /** the snap-on lens in section: the two blocks, the boss, the domes, and a clip at each end through the board */
 function b04_lensSec(X, Y, s, a) {
@@ -387,7 +387,12 @@ function b04_sweepAt(k) { const S = B04SAG.sweep; k = clamp(k); for (let i = 1; 
    until they line up, and the shift is the count. Then the pointer drags the lens 0.4 mm too far and 0.4 mm too close: the
    picture blurs (a phone held too close does the same) and the same move reads a different count (the picture's scale
    is 2.4 / Z). Theme paper. */
-const B04C = { vel: 0.17, t0: 1.9, u0: 1.30, v0: 2.05, cap: 0.45, cpi: 1600 };
+/* vel: the pad's speed under the lens (mm/s), set so one picture to the next is exactly 5 counts at 1,600 CPI in focus
+   (5 × 25.4 / 1,600 = 0.079 mm a picture, every 0.45 s: slowed for the eye) */
+const B04C = { vel: 5 * 25.4 / 1600 / 0.45, t0: 1.9, u0: 1.30, v0: 2.05, cap: 0.45, cpi: 1600 };
+/** the shift (px) an exact match finds between two pictures at lens height z: the pad's move, imaged at 2.4 / z, in
+   30 µm pixels. The readouts use this; the drawn search uses the frames' own match, which lands within a tenth of a pixel */
+const b04_shiftAt = z => B04C.vel * B04C.cap * (B04O.v0 / z) / B04O.pix;
 /** where the pad is under the lens at slide time t (mm): it slides as the mouse moves, from B04C.t0 */
 const b04_padU = t => B04C.u0 + B04C.vel * Math.max(0, t - B04C.t0);
 /** the lens height over the slide: dragged too far, too close, and back by the pointer */
@@ -414,12 +419,12 @@ S({
     header(t, 'Your sensor is a camera');
     captions(t, [[0.5, 'An optical sensor is a camera. An LED lights the pad, a lens images one millimetre of it, and the chip takes thousands of pictures a second.'],
       [3.7, 'Nothing in it measures motion. It slides each picture over the last until they line up: that shift is how far you moved.'],
-      [6.3, 'Drag the lens too far or too close and the picture blurs, as a phone does held too close to a page. The count changes with it.'],
+      [6.3, 'Drag the lens too far or too close and the picture blurs, as a phone\'s camera does at the wrong distance. The count changes with it.'],
       [10.2, 'Every count rests on a sharp picture, taken from the right height.']]);
     const lz = b04_lensZ(), z = b04_camZ(t), dz = z - B04.Z, u = b04_padU(t), top = B04S.top;
     /* ---- left: the whole mouse, then the sensor in section (the camera pushes in once) ---- */
     const box = [LM, 280, 920, 660], sx = lz;
-    demoWindow(box[0], box[1], box[2], box[3], tileA(t, 0.0, 0), { plain: true });
+    demoWindow(box[0], box[1], box[2], box[3], 1, { plain: true });                      /* frame one already shows the mouse */
     const est = establish(t, 0.05, box, { view: 'right', hi: [], col: 'ink', focus: [sx - 8.2, -9.2, 16.4, 10.6], hold: 0.5, dur: 1.15, locator: 'tl', fade: 0.22, mouse: { hide: ['skates'], show: ['board'], lineA: 1 } });
     const s = est.s, Pd = est.P, kd = est.kd, padY = Pd(0, 0)[1], o = Pd(sx, -(top + dz)), P = b04_section(o[0], o[1], s, { pad: false, alpha: 0 });
     clipped(box[0], box[1], box[2], box[3], () => {
@@ -444,14 +449,14 @@ S({
         rect(sp[0] - hwS, sp[1] - 2.5, hwS * 2, 5, { fill: C.ink, alpha: ep(t, 2.0, 2.3) * kd });
       }
       /* what slides the pad: the mouse moving over it (the pad goes the other way under the lens) */
-      { const km = ep(t, 1.9, 2.3) * kd, ax0 = box[0] + box[2] / 2 - 40, ay = box[1] + 44; if (km > 0.003) { arrow(ax0, ay, ax0 + 80, ay, { color: C.ink, w: 2.5, hs: 12, alpha: km }); text('Mouse moving', ax0 + 96, ay + 8, { role: 'label', size: 20, color: C.mute, alpha: km }); } }
+      { const km = ep(t, 1.9, 2.3) * kd, ax0 = box[0] + box[2] / 2 - 40, ay = box[1] + 44; if (km > 0.003) { arrow(ax0, ay, ax0 + 80, ay, { color: C.ink, w: 2.5, hs: 12, alpha: km }); text('Mouse moving', ax0 + 96, ay + 8, { role: 'label', size: 22, color: C.mute, alpha: km }); } }
       /* the height, read out beside the lens */
       if (kd > 0.003) {
         const zx = Pd(sx - 4.7, 0)[0], ka = ep(t, 2.5, 2.9) * kd, inF = Math.abs(dz) <= 0.1 + 1e-6, col = inF ? C.ink : C.red, yRef = P.il[1];
         line(zx, yRef, zx, padY, { color: col, w: 2, alpha: ka }); for (const yy of [yRef, padY]) line(zx - 9, yy, zx + 9, yy, { color: col, w: 2, alpha: ka });
         line(zx + 9, yRef, P.il[0] - 1.5 * s, yRef, { color: inkA(0.3), w: 1.2, dash: [4, 4], alpha: ka });
         rich([{ s: fmtN(z, 1), role: 'd1', size: 50, weight: 800, color: col, tnum: true }, { s: 'mm', font: 'sans', size: 22, weight: 700, color: C.mute, gap: 6 }], zx - 18, (yRef + padY) / 2 + 26, { align: 'right', alpha: ka });
-        text(inF ? 'Lens to pad' : dz > 0 ? 'Too far' : 'Too close', zx - 18, (yRef + padY) / 2 - 26, { role: 'label', size: 20, color: inF ? C.mute : C.red, align: 'right', alpha: ka });
+        text(inF ? 'Lens to pad' : dz > 0 ? 'Too far' : 'Too close', zx - 18, (yRef + padY) / 2 - 26, { role: 'label', size: 22, color: inF ? C.mute : C.red, align: 'right', alpha: ka });
       }
       /* the pointer drags the lens up and down by the board */
       if (t > 5.9) {
@@ -464,7 +469,7 @@ S({
         callout(t, 2.0, [P.led[0], P.led[1] - 2], 'LED, 850 nm', { to: [box[0] + 250, box[1] + 128], side: 'l', color: C.ink2, tcolor: C.ink });
         callout(t, 2.2, [P.die[0] + 0.3 * s, P.die[1] - 4], 'Image chip', { to: [box[0] + box[2] - 230, box[1] + 128], side: 'r', color: C.ink2, tcolor: C.ink });
         callout(t, 2.5, [P.il[0] + 1.25 * s, P.il[1] - 0.15 * s], 'Lens, 1:1', { to: [box[0] + box[2] - 190, P.il[1] - 0.6 * s], side: 'r', color: C.ink2, tcolor: C.ink });
-        text('Cloth over foam', box[0] + box[2] - 32, padY + 1.55 * s + 8, { role: 'label', size: 20, color: TH ? '#F3F2EE' : C.ink2, align: 'right', alpha: ep(t, 2.7, 3.1) });
+        text('Cloth over foam', box[0] + box[2] - 32, padY + 1.55 * s + 8, { role: 'label', size: 22, color: TH ? '#FFFFFF' : C.ink2, align: 'right', alpha: ep(t, 2.7, 3.1) });
       }
     });
     /* ---- right, top: what the chip sees: one millimetre of cloth, then the same as 36 × 36 pixels ---- */
@@ -480,7 +485,7 @@ S({
       if (t > B04C.t0 + 0.4) { const ph = ((t - B04C.t0) % B04C.cap) / B04C.cap; if (ph < 0.35) { const yy = vyy + vsz * E.out3(ph / 0.35); line(vx, yy, vx + vsz, yy, { color: 'rgba(255,255,255,0.6)', w: 2, alpha: kv }); } }
       /* beside it: what it is, then (once the lens is dragged) the detail it keeps and a phone doing the same */
       const tx = vx + vsz + 40, kt1 = ep(t, 2.6, 3.0), kt2 = ep(t, 3.1, 3.5), kb = ep(t, 6.2, 6.7), kb2 = 1 - kb;
-      text('One millimetre of cloth', tx, vyy + 22, { role: 'label', size: 20, color: C.mute, alpha: kt1 });
+      text('About 1 mm of cloth', tx, vyy + 22, { role: 'label', size: 22, color: C.mute, alpha: kt1 });
       text(kpx < 0.5 ? 'As the lens sees it' : '36 × 36 pixels', tx, vyy + 56, { role: 'small', size: 25, weight: 600, color: C.ink2, alpha: kt1, maxW: 230 });
       if (kb2 > 0.003) {
         rich([{ s: '12,000', role: 'd1', size: 72, weight: 800, color: C.ink, tnum: true, count: [3.2, 1.0] }], tx - 4, vyy + 160, { t, alpha: kt2 * kb2 });
@@ -489,15 +494,16 @@ S({
       }
       if (kb > 0.003) {
         const det = Math.round(b04_sharp(F) / sharp0 * 100), inF = Math.abs(dz) <= 0.1 + 1e-6;
-        text('Detail kept', tx, vyy + 108, { role: 'label', size: 20, color: C.mute, alpha: kb });
-        rich([{ s: String(Math.min(100, det)), role: 'd1', size: 64, weight: 800, color: inF ? C.ink : C.red, tnum: true }, { s: '%', font: 'disp', size: 34, weight: 800, color: inF ? C.ink : C.red, gap: 4 }], tx - 3, vyy + 178, { alpha: kb });
+        text('Detail kept', tx, vyy + 100, { role: 'label', size: 22, color: C.mute, alpha: kb });
+        rich([{ s: String(Math.min(100, det)), role: 'd1', size: 64, weight: 800, color: inF ? C.ink : C.red, tnum: true }, { s: '%', font: 'disp', size: 34, weight: 800, color: inF ? C.ink : C.red, gap: 4 }], tx - 3, vyy + 166, { alpha: kb });
         /* the phone: its camera too close to a page, its screen the same cloth, blurred as much */
         const phx = RM - 40 - 96, phy = vyy - 8, phw = 96, phh = 168;
         b04_phone(phx, phy, phw, phh, op.rmm / fieldMM * (phw - 12) * 1.6, kb, u);
-        text(inF ? 'A phone, in focus' : 'A phone, too close', RM - 32, phy + phh + 28, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kb });
+        text('A phone', phx + phw / 2, phy + phh + 28, { role: 'label', size: 22, color: C.mute, align: 'center', alpha: kb });
+        text(inF ? 'in focus' : dz > 0 ? 'too far' : 'too close', phx + phw / 2, phy + phh + 54, { role: 'label', size: 22, color: inF ? C.mute : C.red, align: 'center', alpha: kb });
         /* once the lens is back, what the two wrong heights cost stays on screen (F16.1) */
         const km = ep(t, 10.2, 10.7);
-        if (km > 0.003) { const dAt = zz => { const tt = zz > B04.Z ? 7.55 : 9.15, ci = 1 + Math.floor((tt - B04C.t0) / B04C.cap), uu = B04C.u0 + B04C.vel * B04C.cap * (ci - 1); return Math.round(b04_sharp(b04_frame(uu, B04C.v0, zz, ci)) / b04_sharp(b04_frame(uu, B04C.v0, B04.Z, ci)) * 100); }; text('At 2.8 mm ' + dAt(2.8) + '%', tx, vyy + 214, { role: 'small', size: 24, weight: 700, color: C.red, alpha: km * kb }); text('At 2.0 mm ' + dAt(2.0) + '%', tx + 190, vyy + 214, { role: 'small', size: 24, weight: 700, color: C.red, alpha: km * kb }); }
+        if (km > 0.003) { const dAt = zz => { const tt = zz > B04.Z ? 7.55 : 9.15, ci = 1 + Math.floor((tt - B04C.t0) / B04C.cap), uu = B04C.u0 + B04C.vel * B04C.cap * (ci - 1); return Math.round(b04_sharp(b04_frame(uu, B04C.v0, zz, ci)) / b04_sharp(b04_frame(uu, B04C.v0, B04.Z, ci)) * 100); }; text('At 2.8 mm ' + dAt(2.8) + '%', tx, vyy + 202, { role: 'small', size: 24, weight: 700, color: C.red, alpha: km * kb }); text('At 2.0 mm ' + dAt(2.0) + '%', tx, vyy + 230, { role: 'small', size: 24, weight: 700, color: C.red, alpha: km * kb }); }
       }
     }
     /* ---- right, bottom: two pictures in a row, slid over each other until they line up; the shift is the count ---- */
@@ -506,13 +512,12 @@ S({
     if (kc > 0.003) {
       const capN = Math.min(8, Math.max(1, Math.floor(Math.max(0, t - B04C.t0) / B04C.cap))), uA = B04C.u0 + B04C.vel * B04C.cap * (capN - 1), uB = uA + B04C.vel * B04C.cap;
       const A = b04_frame(uA, B04C.v0, zq, 101), B = b04_frame(uB, B04C.v0 + 0.004, zq, 102), m = b04_match(A, B, B04O.n, 5);
-      const m0 = b04_match(b04_frame(uA, B04C.v0, B04.Z, 101), b04_frame(uB, B04C.v0 + 0.004, B04.Z, 102), B04O.n, 5);
       const fs = 168, fy = cy + 80, ax = rx + 32, bx = ax + fs + 24, n = B04O.n, sc = fs / n;
       cardHead(t, 3.7, rx, cy, rw, 'Two pictures in a row', []);
       b04_blit(b04_frameCv(A), ax, fy, fs, fs, 0, kc, { px: true, r: 3 });
       b04_blit(b04_frameCv(B), bx, fy, fs, fs, 0, kc, { px: true, r: 3 });
-      text('Picture n', ax, fy + fs + 30, { role: 'label', size: 19, color: C.mute, alpha: kc });
-      text('n + 1', bx, fy + fs + 30, { role: 'label', size: 19, color: C.mute, alpha: kc });
+      text('Picture n', ax, fy + fs + 30, { role: 'label', size: 22, color: C.mute, alpha: kc });
+      text('n + 1', bx, fy + fs + 30, { role: 'label', size: 22, color: C.mute, alpha: kc });
       /* the search: n + 1's ghost slides over n, trying shifts, and settles where they match best */
       const ks = ep(t, 4.3, 5.4, E.cam), best = m.sub, path = [[0, 0], [-4, 3], [3, -2], [-1, 4], best];
       const seg = ks * (path.length - 1), i0 = Math.min(path.length - 2, Math.floor(seg)), f0 = seg - i0, cur = ks >= 1 ? best : [lerp(path[i0][0], path[i0 + 1][0], E.io3(f0)), lerp(path[i0][1], path[i0 + 1][1], E.io3(f0))];
@@ -523,12 +528,12 @@ S({
         G.restore();
         const D = 2 * m.S + 1, ci = clamp(Math.round(cur[0]) + m.S, 0, D - 1), cj = clamp(Math.round(cur[1]) + m.S, 0, D - 1), dv = ks >= 1 ? m.min : m.map[cj * D + ci], good = ks >= 1;
         const mx = bx + fs + 36, mw = rx + rw - 32 - mx;
-        text('Difference', mx, fy + 14, { role: 'label', size: 19, color: C.mute, alpha: kgh });
+        text('Difference', mx, fy + 14, { role: 'label', size: 22, color: C.mute, alpha: kgh });
         rr(mx, fy + 30, mw, 12, 6, C.track, null, 0, kgh);
         rr(mx, fy + 30, Math.max(12, mw * clamp(dv / (m.avg * 1.6))), 12, 6, good ? C.ink : C.comp, null, 0, kgh);
         /* the count: the chip turns pixels into counts at its own fixed scale, so a lens at the wrong height miscounts */
-        const kfd = ep(t, 5.3, 5.6) * kc, cpx = 25.4 / B04C.cpi / B04O.pix, cnt = Math.abs(best[0]) / cpx, cnt0 = Math.abs(m0.sub[0]) / cpx, off = Math.abs(dz) > 0.1;
-        rich([{ s: 'Shift', role: 'label', size: 20, color: C.mute }, { s: fmtN(Math.abs(best[0]), 1) + ' px', font: 'disp', size: 36, weight: 800, color: C.ink, gap: 12, tnum: true }], mx, fy + 92, { alpha: kfd });
+        const kfd = ep(t, 5.3, 5.6) * kc, cpx = 25.4 / B04C.cpi / B04O.pix, shN = b04_shiftAt(zq), cnt = shN / cpx, cnt0 = b04_shiftAt(B04.Z) / cpx, off = Math.abs(dz) > 0.1;
+        rich([{ s: 'Shift', role: 'label', size: 22, color: C.mute }, { s: fmtN(shN, 1) + ' px', font: 'disp', size: 36, weight: 800, color: C.ink, gap: 12, tnum: true }], mx, fy + 92, { alpha: kfd });
         if (!off || kfd < 1) rich([{ s: fmtN(cnt, 1), font: 'disp', size: 52, weight: 800, color: C.ink, tnum: true }, { s: 'counts', role: 'small', size: 24, weight: 600, color: C.mute, gap: 10 }], mx, fy + 156, { alpha: kfd * (off ? 0 : 1) });
         if (off) {
           /* the same move, counted short or long: the true count struck beside it (F16.1) */
@@ -537,13 +542,13 @@ S({
           line(mx - 2, fy + 145, mx + tw(fmtN(cnt0, 1), { font: 'disp', size: 30, weight: 800 }) + 2, fy + 145, { color: C.faint, w: 2.5, alpha: kfd });
           text((net > 0 ? '+' : '−') + Math.abs(net) + '% for the same move', mx, fy + 192, { role: 'small', size: 24, weight: 700, color: C.red, alpha: kfd });
         } else {
-          const km = ep(t, 10.2, 10.7), pc = zz => { const mm = b04_match(b04_frame(uA, B04C.v0, zz, 101), b04_frame(uB, B04C.v0 + 0.004, zz, 102), B04O.n, 5); const v = Math.round((Math.abs(mm.sub[0]) / Math.abs(m0.sub[0]) - 1) * 100); return (v > 0 ? '+' : '−') + Math.abs(v) + '%'; };
+          const km = ep(t, 10.2, 10.7), pc = zz => { const v = Math.round((b04_shiftAt(zz) / b04_shiftAt(B04.Z) - 1) * 100); return (v > 0 ? '+' : '−') + Math.abs(v) + '%'; };
           if (km > 0.003) { text('At 2.8 mm ' + pc(2.8), mx, fy + 184, { role: 'small', size: 24, weight: 700, color: C.red, alpha: km * kfd }); text('At 2.0 mm ' + pc(2.0), mx, fy + 214, { role: 'small', size: 24, weight: 700, color: C.red, alpha: km * kfd }); }
-          else text('At 1,600 CPI', mx, fy + 192, { role: 'label', size: 19, color: C.faint, alpha: kfd });
+          else text('At 1,600 CPI', mx, fy + 192, { role: 'label', size: 22, color: C.faint, alpha: kfd });
         }
       }
     }
-    source(t, 'PixArt PMW3360 datasheet: up to 12,000 frames a second, a 1:1 lens 2.4 mm over the pad. Agilent ADNS-2610: "sequential surface images (frames)". Blur and scale: a thin lens at 1:1, its blur one pixel at the datasheets\' ±0.2 mm depth of field; the chip counts at a fixed scale (derived). Slowed for the eye.', { t0: 2.0, maxW: 1700 });
+    source(t, 'PixArt PMW3360: up to 12,000 frames a second, 36 × 36 pixels, a 1:1 lens 2.4 mm over the pad; PAW3395: an 850 nm LED. ADNS-2610: "sequential surface images (frames)". Derived, a thin lens at 1:1: blur one pixel at the datasheets\' ±0.2 mm depth of field; detail kept, the fine contrast left; counts at the chip\'s fixed scale. Slowed for the eye.', { t0: 2.0, maxW: RM - LM });
   }
 });
 
@@ -555,27 +560,3 @@ function b04_phone(x, y, w, h, r, a, u) {
   b04_blit(cv, x + 6, y + 6, sw, sh, r, a, { r: 11 });
   rr(x + w / 2 - 14, y + 11, 28, 7, 3.5, '#0B0B0D', null, 0, a);
 }
-
-/* ---------- a temporary preview (removed before handing in) ---------- */
-S({
-  id: 'b04_zz_preview', ch: 'glide', theme: 'paper', title: 'b04 preview: cloth and frames', settle: 6,
-  draw: t => {
-    header(t, 'b04 preview: cloth and frames');
-    const s = 420, x = LM, y = 280;
-    demoWindow(x, y, 640, 640, 1);
-    b04_clothDraw(x + 20, y + 20, 600, 600, s, 0.4, 0.3);
-    const zs = [2.4, 2.6, 2.8, 3.0], fs = 200;
-    zs.forEach((z, i) => {
-      const F = b04_frame(1.0, 1.0, z, 3), fx = 760 + i * (fs + 30), fy = 300;
-      b04_blit(b04_frameCv(F), fx, fy, fs, fs, 0, 1, { px: true });
-      const ft = { n: fmtN(b04_sharp(F) / b04_sharp(b04_frame(1.0, 1.0, 2.4, 3)) * 100, 0) + '%' };
-      text(fmtN(z, 1) + ' mm  ' + ft.n + ' features  blur ' + fmtN(b04_optics(z).cpx, 2) + ' px', fx, fy + fs + 30, { role: 'small', size: 22, color: C.ink });
-    });
-    const A = b04_frame(1.0, 1.0, 2.4, 3), B = b04_frame(1.0 + 0.075, 1.0 + 0.03, 2.4, 4), m = b04_match(A, B, 36, 5);
-    text('match best ' + m.best.join(',') + ' sub ' + m.sub.map(v => fmtN(v, 2)).join(',') + ' contrast ' + fmtN(m.contrast, 2), 760, 600, { role: 'small', size: 24, color: C.ink });
-    const A2 = b04_frame(1.0, 1.0, 2.9, 3), B2 = b04_frame(1.0 + 0.075, 1.0 + 0.03, 2.9, 4), m2 = b04_match(A2, B2, 36, 5);
-    text('at 2.9: best ' + m2.best.join(',') + ' sub ' + m2.sub.map(v => fmtN(v, 2)).join(',') + ' contrast ' + fmtN(m2.contrast, 2), 760, 640, { role: 'small', size: 24, color: C.ink });
-    const P = b04_section(1300, 820, 52, { off: -0.11 * t });
-    callout(t, 0.5, P.il, 'Imaging lens', { to: [1700, 700], side: 'r' }); callout(t, 0.5, P.led, 'LED', { to: [900, 700], side: 'l' });
-  }
-});

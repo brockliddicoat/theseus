@@ -94,7 +94,8 @@ def board_meshes(L, B, SB, silk_top):
                 tgt = m_edge_gold
             else:
                 is_tht = any(rp.buffer(0.02).contains(Point(q['x'], q['z'])) for q in L['pads'] if q.get('drill') or q.get('slot'))
-                is_sq = rp.buffer(0.05).contains(sq.centroid) and rp.area < 30
+                is_sq = (not sq.is_empty) and rp.buffer(0.05).contains(sq.centroid) and rp.area < 30
+                is_sq = is_sq or (rp.area > 100 and rp.buffer(0.05).contains(wheel_cut_poly().centroid))   # the bay is plated too (F30.21)
                 is_mh = any(rp.buffer(0.05).contains(q) for q in mh_plated)
                 tgt = m_edge_gold if (is_tht or is_sq or is_mh) else m_fr4
             from geom import ring_walls

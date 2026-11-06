@@ -115,6 +115,24 @@ def fp_encoder():
     return dict(pads=P, body=(3.8, 10.0))
 
 
+def fp_encoder_mag():
+    # the magnetic (Hall) scroll encoder in a normal encoder outline (3d/parts/scrollwheel.js): 4 pins in a row along z at
+    # 1.25 mm pitch from its sensor board at the housing's far end (VDD, A, B, GND), and the nickel-silver frame's two side
+    # tabs bent out into SMD feet. Origin at the housing's centre; local +x toward the wheel [PR]
+    P = [pad(n, -1.95, z, 1.05, 1.05, shape='circle', drill=0.7) for n, z in (('GND', -1.875), ('B', -0.625), ('A', 0.625), ('VDD', 1.875))]
+    P += [pad('F1', 0.85, -5.9, 1.0, 1.2, r=0.1), pad('F2', 0.85, 5.9, 1.0, 1.2, r=0.1)]
+    return dict(pads=P, body=(4.6, 11.0))
+
+
+def fp_edge_slide():
+    # variant B (F30.17): a right-angle SMD slide switch at the board's edge (C&K PCM12-class: 6.7 x 2.6 x 1.4 mm body,
+    # its actuator 1.5 mm past the edge), on the top side so the board stays one reflow (#92). Local +x toward the edge;
+    # two terminals and two hold-down tabs on the inboard side [REP]
+    P = [pad(1, -0.75, -1.5, 0.7, 1.0, r=0.08), pad(2, -0.75, 1.5, 0.7, 1.0, r=0.08),
+         pad('MP1', -0.2, -3.05, 1.1, 0.8, r=0.08), pad('MP2', -0.2, 3.05, 1.1, 0.8, r=0.08)]
+    return dict(pads=P, body=(2.6, 6.7))
+
+
 def fp_bracket():
     # wheel axle bracket (black POM), 4 SMD hold-down tabs [MEAS position, REP shape]
     return dict(pads=[pad('T%d' % (i + 1), sx * 2.1, sz * 3.45, 1.2, 1.0, r=0.1)
@@ -131,7 +149,7 @@ def fp_gt01():
     # 3 x Mill-Max 3305 receptacles: mounting hole 1.575 mm [DS]. Key-peg hole for the GT01 wedge base:
     # parts API keyPeg at local (+1.45, +2.54) in the WORLD frame = (-1.45, +2.54) in this pre-mirror layout frame.
     P = [pad(n, 0, z, 2.3, 2.3, shape='circle', drill=1.575) for n, z in (('COM', 5.08), ('NO', 0.0), ('NC', -5.08))]
-    return dict(pads=P, body=(5.8, 12.8), npth=[(-1.45, 2.54, 1.0)])
+    return dict(pads=P, body=(5.8, 12.8))       # three pins only (F12.7): the old key-peg hole is gone
 
 
 def fp_sod523():
@@ -153,7 +171,7 @@ def fp_fid():
 
 FP = {'0402': lambda: fp_chip('0402'), '0603': lambda: fp_chip('0603'), '0805': lambda: fp_chip('0805'),
       'L2016': fp_ind2016, 'QFN32': fp_qfn32, 'MODULE': fp_module, 'SENSOR': fp_sensor, 'USBC': fp_usbc,
-      'SOT666': fp_sot666, 'JSTSH3': fp_jst_sh3, 'SLIDE': fp_slide, 'SLIDEB': fp_slide_bridge, 'ENC': fp_encoder, 'BRACKET': fp_bracket,
+      'SOT666': fp_sot666, 'JSTSH3': fp_jst_sh3, 'SLIDE': fp_slide, 'SLIDEB': fp_slide_bridge, 'SLIDEE': fp_edge_slide, 'ENC': fp_encoder, 'ENCM': fp_encoder_mag, 'BRACKET': fp_bracket,
       'TACT': fp_tact, 'SOD523': fp_sod523, 'GT01': fp_gt01, 'TP': fp_tp, 'TPTHT': fp_tp_tht, 'FID': fp_fid}
 
 
@@ -166,8 +184,15 @@ def add(ref, fp, x, z, rot=0, value='', label='', layer='passives', nets=None, *
     C.append(dict(ref=ref, fp=fp, x=x, z=z, rot=rot, value=value, label=label, layer=layer, nets=nets or {}, **kw))
 
 
-# --- connectors / mechanics (positions traced from the Sora V2 photo unless noted)
-add('J1', 'USBC', 0.0, 50.43, 0, 'USB-C 16P', '[REP] standard top-mount receptacle; position [MEAS]', 'connectors',
+# ===================================================================== plan 5 placement (Brock, 2026-11-05; F30)
+# The sensor as far forward as it goes, the MCU module behind it, equal 1.60 mm gaps down the centre line (wheel bay ->
+# sensor -> MCU -> rear notch, F30.3, F30.12); the PMIC in the left-middle spot, far from the MCU (F30.1, F30.3); the
+# power switch on the x +10 axis in the sensor's row; the battery connector opening to the back (F26.4); the side-button
+# connector on the left; parts centred on shared axes (F30.6). Layout frame: x = the user's right, z = toward the nose.
+import os as _os
+VARIANT = (_os.environ.get('PCB_VARIANT') or 'A').strip().upper()
+ZS, ZM = 19.45, 4.80          # the sensor's and the module's centres (the equal gaps: 27.45 - 1.60 - 6.40; -4.0 + 1.60 + 7.20)
+add('J1', 'USBC', 0.0, 49.38, 0, 'USB-C 16P', '[REP] standard top-mount receptacle; 1.05 mm back from plan 4, it hangs 1.60 mm past the front (F30.25)', 'connectors',
     {'GND_L': GND, 'GND_R': GND, 'VBUS_L': 'VBUS', 'VBUS_R': 'VBUS', 'CC1': 'CC1', 'CC2': 'CC2',
      'DN_B7': 'USB_DN', 'DN_A7': 'USB_DN', 'DP_A6': 'USB_DP', 'DP_B6': 'USB_DP', 'SBU1': 'NC_SBU1', 'SBU2': 'NC_SBU2',
      'S1': GND, 'S2': GND, 'S3': GND, 'S4': GND})
@@ -175,84 +200,88 @@ add('SW1', 'GT01', -16.0, 39.6, 0, 'Gateron GT01', '[REP] GT01 (no public datash
     {'COM': GND, 'NC': 'SW1_NC', 'NO': 'SW1_NO'})
 add('SW2', 'GT01', 16.0, 39.6, 0, 'Gateron GT01', '[REP] GT01 (no public datasheet), in 3x Mill-Max 3305', 'switches',
     {'COM': GND, 'NC': 'SW2_NC', 'NO': 'SW2_NO'})
-add('ENC1', 'ENC', -9.45, 37.75, 0, 'Encoder', '[REP] TTC-style mechanical encoder, Sora V2 position [MEAS]', 'mechanics',
-    {'A': 'ENC_A', 'B': 'ENC_B', 'C': GND, 'F1': GND, 'F2': GND})
-add('WB1', 'BRACKET', 10.1, 37.75, 0, 'Wheel bracket', '[MEAS] position, [REP] shape', 'mechanics',
+add('ENC1', 'ENCM', -9.2, 37.75, 0, 'Encoder', '[PR] magnetic (Hall) scroll encoder, clear top housing (3d/parts/scrollwheel.js)', 'mechanics',
+    {'A': 'ENC_A', 'B': 'ENC_B', 'VDD': 'VDD_1V8', 'GND': GND, 'F1': GND, 'F2': GND})
+add('WB1', 'BRACKET', 10.4, 37.75, 0, 'Wheel bracket', '[REP] POM wheel support with four hold-down tabs, over the middle click', 'mechanics',
     {'T1': GND, 'T2': GND, 'T3': GND, 'T4': GND})
-add('SW4', 'TACT', 10.4, 37.75, 0, 'Middle click', '[REP] SMD tact under the bracket', 'mechanics',
-    {'1': GND, '2': 'MID'})
-add('U1', 'MODULE', 0.0, 20.6, 0, 'AN54LM-20A', '[DS] Raytac AN54LM-20A, nRF54LM20A, chip antenna, 9.9x13.3x2.0', 'module', {})
-add('U2', 'QFN32', 9.6, 11.2, 0, 'nPM1300', '[DS] Nordic nPM1300 QFN32 5x5 (pin map representative)', 'pmic', {})
-add('U3', 'SENSOR', 0.0, 4.0, 0, 'FS-class sensor', '[PR] next-gen PixArt FrameSync-class sensor (proposal), generic package', 'sensor', {})
-add('U4', 'SOT666', -9.6, 44.0, 0, 'USB ESD', '[REP] USBLC6-2P6-class flow-through ESD on D+/D-', 'passives',
+add('SW4', 'TACT', 10.4, 37.75, 0, 'Middle click', '[REP] SMD tact under the bracket', 'mechanics', {'1': GND, '2': 'MID'})
+add('U1', 'MODULE', 0.0, ZM, 0, 'AN54LM-P20A', '[DS] Raytac AN54LM-P20A (nRF54LM20A, long meander PCB antenna), black; the antenna end forward, toward the sensor: no metal there, 28 mm from the wheel', 'module', {})
+add('U2', 'QFN32', -10.2, ZS, 0, 'nPM1300', '[DS] Nordic nPM1300 QFN32 5x5 (pin map representative), the left-middle spot far from the MCU (F30.1)', 'pmic', {})
+add('U3', 'SENSOR', 0.0, ZS, 0, 'PAW3970', '[PR] PixArt PAW3970 (the Viper V4 Pro\'s sensor, F21.6) in a castellated module, as far forward as it goes (F30.3)', 'sensor', {})
+add('U4', 'SOT666', -8.9, 46.35, 180, 'USB ESD', '[REP] USBLC6-2P6-class flow-through ESD on D+/D-', 'passives',
     {'1': 'USB_DP', '6': 'USB_DP', '3': 'USB_DN', '4': 'USB_DN', '2': GND, '5': 'NC'})
-add('D1', 'SOD523', 8.45, 45.0, 45, 'VBUS TVS', '[REP] 5 V TVS at the Sora V2 diamond position [MEAS]', 'passives',
-    {'1': GND, '2': 'VBUS'})
-add('J2', 'JSTSH3', 8.6, -0.9, 180, 'BAT', '[REP] JST SH 3-pin side-entry, opening toward the back: the battery plug pulls out toward the tail (F26.4)', 'connectors',
+add('D1', 'SOD523', 6.0, 46.3, 90, 'VBUS TVS', '[REP] 5 V TVS beside the receptacle', 'passives', {'1': GND, '2': 'VBUS'})
+add('J2', 'JSTSH3', 14.5, 7.9, 180, 'BAT', '[REP] JST SH 3-pin side-entry, opening toward the back: the battery plug pulls out toward the tail (F26.4)', 'connectors',
     {'1': 'VBAT', '2': 'NTC', '3': GND, 'MP1': GND, 'MP2': GND})
-add('J3', 'JSTSH3', -12.0, 3.4, 90, 'SIDE', '[REP] JST SH 3-pin side-entry for the side-button wires (#51)', 'connectors',
+add('J3', 'JSTSH3', -14.5, 7.9, 90, 'SIDE', '[REP] JST SH 3-pin side-entry for the side-button wires (#51), opening to the left wall', 'connectors',
     {'1': 'SB5', '2': 'SB4', '3': GND, 'MP1': GND, 'MP2': GND})
-add('SW3', 'SLIDEB', 10.725, 20.095, 0, 'POWER', '[REP] micro slide switch centred over the power-switch window, actuator down through it (F26.8) -> nPM1300 SHPHLD (ship mode)', 'connectors',
-    {'1': 'SW_PWR', '2': GND})
+if VARIANT == 'B':
+    add('SW3', 'SLIDEE', 15.42 - 1.3, ZS, 0, 'POWER', '[REP] variant B (F30.17): a right-angle slide switch at the right waist edge, its actuator 1.5 mm past the edge, in the sensor\'s row -> nPM1300 SHPHLD', 'connectors',
+        {'1': 'SW_PWR', '2': GND, 'MP1': GND, 'MP2': GND})
+else:
+    add('SW3', 'SLIDEB', 10.0, ZS, 0, 'POWER', '[REP] micro slide switch bridging its window on the x +10 axis, actuator down through it -> nPM1300 SHPHLD (ship mode)', 'connectors',
+        {'1': 'SW_PWR', '2': GND})
 
-# --- PMIC external parts (nPM1300 reference topology: 2 buck inductors, in/out caps, pull-ups) [DS topology]
-add('L1', 'L2016', 14.35, 12.9, 90, '2.2uH', 'buck 1 inductor, Isat > 350 mA', 'pmic', {'1': 'SW_B1', '2': 'VDD_1V8'})
-add('L2', 'L2016', 14.35, 8.5, 90, '2.2uH', 'buck 2 inductor, Isat > 350 mA', 'pmic', {'1': 'VDD_SNS', '2': 'SW_B2'})
-add('C32', '0402', 15.95, 14.15, 90, '10uF', 'VOUT1 (1.8 V)', 'pmic', {'1': 'VDD_1V8', '2': GND})
-add('C33', '0402', 15.95, 7.25, 90, '10uF', 'VOUT2 (sensor rail)', 'pmic', {'1': GND, '2': 'VDD_SNS'})
-add('C30', '0402', 9.85, 15.1, 0, '1uF', 'VBUS in', 'pmic', {'1': 'VBUS', '2': GND})
-add('C31', '0402', 11.15, 15.15, 90, '1uF', 'VBUSOUT', 'pmic', {'1': 'VBUSOUT', '2': GND})
-add('C35', '0603', 10.6, 7.3, 0, '10uF', 'VSYS / buck input (PVDD)', 'pmic', {'1': 'VSYS', '2': GND})
-add('C36', '0603', 7.6, 6.9, 0, '10uF', 'VBAT', 'pmic', {'1': GND, '2': 'VBAT'})
-add('R1', '0402', 7.15, 15.5, 90, '4.7k', 'TWI SDA pull-up', 'pmic', {'1': 'SDA', '2': 'VDD_1V8'})
-add('R2', '0402', 5.2, 12.2, 90, '4.7k', 'TWI SCL pull-up', 'pmic', {'1': 'VDD_1V8', '2': 'SCL'})
-add('R3', '0402', 6.05, 46.75, 90, '5.1k', 'USB-C CC1 sink pull-down (Rd)', 'passives', {'1': GND, '2': 'CC1'})
-add('R4', '0402', 5.3, 47.5, 90, '5.1k', 'USB-C CC2 sink pull-down (Rd)', 'passives', {'1': GND, '2': 'CC2'})
+# --- PMIC external parts round U2 (nPM1300 reference topology: 2 buck inductors, in/out caps, pull-ups) [DS topology]
+add('L1', 'L2016', -12.0, 24.45, 90, '2.2uH', 'buck 1 inductor (1.8 V), Isat > 350 mA', 'pmic', {'1': 'SW_B1', '2': 'VDD_1V8'})
+add('L2', 'L2016', -8.75, 24.45, 90, '2.2uH', 'buck 2 inductor (sensor core), Isat > 350 mA', 'pmic', {'1': 'SW_B2', '2': 'VDD_SNS'})
+add('C32', '0402', -12.0, 26.55, 0, '10uF', 'VOUT1 (1.8 V)', 'pmic', {'1': GND, '2': 'VDD_1V8'})
+add('C33', '0402', -8.75, 26.55, 0, '10uF', 'VOUT2 (sensor core)', 'pmic', {'1': GND, '2': 'VDD_SNS'})
+add('C35', '0603', -8.45, 14.7, 90, '10uF', 'VSYS / buck input (PVDD)', 'pmic', {'1': GND, '2': 'VSYS'})
+add('C30', '0402', -11.75, 14.9, 90, '1uF', 'VBUS in', 'pmic', {'1': GND, '2': 'VBUS'})
+add('C31', '0402', -10.95, 14.9, 90, '1uF', 'VBUSOUT', 'pmic', {'1': GND, '2': 'VBUSOUT'})
+add('C36', '0603', -9.7, 14.7, 90, '10uF', 'VBAT', 'pmic', {'1': GND, '2': 'VBAT'})
+add('R1', '0402', -7.75, 9.65, 90, '4.7k', 'TWI SDA pull-up', 'pmic', {'1': 'SDA', '2': 'VDD_1V8'})
+add('R2', '0402', -15.35, 15.8, 90, '4.7k', 'TWI SCL pull-up', 'pmic', {'1': 'VDD_1V8', '2': 'SCL'})
+add('R3', '0402', 5.55, 49.3, 90, '5.1k', 'USB-C CC1 sink pull-down (Rd)', 'passives', {'1': 'CC1', '2': GND})
+add('R4', '0402', 7.95, 48.7, 90, '5.1k', 'USB-C CC2 sink pull-down (Rd)', 'passives', {'1': 'CC2', '2': GND})
 
 # --- USB input
-add('C1', '0402', 10.25, 44.75, 0, '2.2uF', 'VBUS bulk at connector', 'passives', {'1': 'VBUS', '2': GND})
-add('C2', '0402', 11.85, 44.75, 0, '100nF', 'VBUS HF', 'passives', {'1': 'VBUS', '2': GND})
+add('C1', '0402', 7.3, 46.3, 90, '2.2uF', 'VBUS bulk at the receptacle', 'passives', {'1': GND, '2': 'VBUS'})
+add('C2', '0402', 8.4, 46.3, 90, '100nF', 'VBUS HF', 'passives', {'1': GND, '2': 'VBUS'})
 
 # --- module + sensor decoupling
-add('C10', '0402', 2.0, 12.9, 0, '4.7uF', 'module VDD', 'passives', {'1': GND, '2': 'VDD_1V8'})
-add('C11', '0402', 2.0, 11.9, 0, '100nF', 'module VDD HF', 'passives', {'1': GND, '2': 'VDD_1V8'})
-add('C20', '0402', 5.85, 7.6, 90, '1uF', 'sensor VDDIO', 'passives', {'1': GND, '2': 'VDD_1V8'})
-add('C21', '0402', 5.85, 5.3, 90, '1uF', 'sensor VDD', 'passives', {'1': GND, '2': 'VDD_SNS'})
-add('C22', '0402', 5.85, 3.1, 90, '100nF', 'sensor VDD HF', 'passives', {'1': GND, '2': 'VDD_SNS'})
+add('C10', '0402', -2.0, -2.95, 0, '4.7uF', 'module VDD', 'passives', {'1': 'VDD_1V8', '2': GND})
+add('C11', '0402', -3.9, -2.95, 0, '100nF', 'module VDD HF', 'passives', {'1': GND, '2': 'VDD_1V8'})
+add('C20', '0402', -6.1, 20.1, 90, '1uF', 'sensor VDDIO', 'passives', {'1': GND, '2': 'VDD_1V8'})
+add('C21', '0402', -5.55, 25.5, 90, '1uF', 'sensor VDD', 'passives', {'1': 'VDD_SNS', '2': GND})
+add('C22', '0402', -6.6, 26.7, 90, '100nF', 'sensor VDD HF', 'passives', {'1': 'VDD_SNS', '2': GND})
 
-# --- test points (gold), rail test pads (the Sora's 4 edge pads), SWD pads, fiducials
-for i, z in enumerate((14.25, 12.25, 10.25, 8.25)):
-    add('TP%d' % (10 + i), 'TPTHT', 17.52, z, 0, ['1V8', 'GND', 'GND', 'SNS'][i], '[MEAS] Sora V2 edge pads (2.0 mm pitch) reused as rail test pads',
-        'board', {'1': ['VDD_1V8', GND, GND, 'VDD_SNS'][i]})
-add('TP1', 'TP', 12.45, 43.35, 0, 'VBUS', 'test pad', 'board', {'1': 'VBUS'})
-add('TP2', 'TP', 12.45, 42.25, 0, 'GND', 'test pad', 'board', {'1': GND})
-add('TP3', 'TP', 11.4, 5.9, 0, 'VSYS', 'test pad', 'board', {'1': 'VSYS'})
-add('TP4', 'TP', 9.3, 5.6, 0, 'VBAT', 'test pad', 'board', {'1': 'VBAT'})
-add('TP5', 'TP', 12.5, 7.6, 0, 'SNS', 'test pad', 'board', {'1': 'VDD_SNS'})
-add('TP6', 'TP', -12.2, 42.6, 0, 'D-', 'test pad', 'board', {'1': 'USB_DN'})
-add('TP7', 'TP', -11.45, 45.0, 0, 'D+', 'test pad', 'board', {'1': 'USB_DP'})
-add('TP8', 'TP', 3.2, 10.15, 0, 'SWDIO', 'SWD pad', 'board', {'1': 'SWDIO'})
-add('TP9', 'TP', 4.3, 10.15, 0, 'SWCLK', 'SWD pad', 'board', {'1': 'SWCLK'})
-add('FID1', 'FID', -14.4, 31.6, 0, '', 'fiducial', 'board', {})
-add('FID2', 'FID', 16.9, -0.3, 0, '', 'fiducial', 'board', {})
-add('FID3', 'FID', -17.55, 14.3, 0, '', 'fiducial', 'board', {})
+# --- test points (gold): the rail test pads in a row under the switch (plan 5), small pads, SWD, fiducials
+for i, (x, n, net) in enumerate(((11.2, '1V8', 'VDD_1V8'), (13.2, 'GND', GND), (15.2, 'GND', GND), (17.2, 'SNS', 'VDD_SNS'))):
+    add('TP%d' % (10 + i), 'TPTHT', x, 13.0, 0, n, 'rail test pad (2.0 mm pitch, as the Sora V2\'s edge pads)', 'board', {'1': net})
+add('TP1', 'TP', 9.6, 46.4, 0, 'VBUS', 'test pad', 'board', {'1': 'VBUS'})
+add('TP2', 'TP', 10.8, 46.4, 0, 'GND', 'test pad', 'board', {'1': GND})
+add('TP3', 'TP', -6.85, 15.48, 0, 'VSYS', 'test pad', 'board', {'1': 'VSYS'})
+add('TP4', 'TP', -10.95, 13.2, 0, 'VBAT', 'test pad', 'board', {'1': 'VBAT'})
+add('TP5', 'TP', -7.8, 27.5, 0, 'SNS', 'test pad', 'board', {'1': 'VDD_SNS'})
+add('TP6', 'TP', -11.75, 46.65, 0, 'D-', 'test pad', 'board', {'1': 'USB_DN'})
+add('TP7', 'TP', -11.75, 45.55, 0, 'D+', 'test pad', 'board', {'1': 'USB_DP'})
+add('TP8', 'TP', 6.5, -1.75, 0, 'SWDIO', 'SWD pad', 'board', {'1': 'SWDIO'})
+add('TP9', 'TP', 7.7, -1.75, 0, 'SWCLK', 'SWD pad', 'board', {'1': 'SWCLK'})
+add('FID1', 'FID', -17.4, 46.6, 0, '', 'fiducial', 'board', {})
+add('FID2', 'FID', 17.6, 1.6, 0, '', 'fiducial', 'board', {})
+add('FID3', 'FID', -17.6, 13.0, 0, '', 'fiducial', 'board', {})
 
-# module pin map (castellations) [REP]
+# module pin map (castellations) [REP]: the left side takes what comes down the left (the side buttons, the PMIC's TWI,
+# the left switch, the encoder, USB), the right side the sensor's SPI and the right switch and the middle click
 U1_PINS = {
-    'L1': GND, 'L2': 'ENC_B', 'L3': 'ENC_A', 'L4': GND, 'L5': 'USB_DN', 'L6': 'USB_DP', 'L7': 'SW1_NO', 'L8': 'SW1_NC',
-    'L9': 'SB4', 'L10': 'SB5', 'L11': GND, 'L12': GND,
-    'R1': GND, 'R2': GND, 'R3': 'MID', 'R4': 'SW2_NO', 'R5': 'SW2_NC', 'R6': GND, 'R7': 'VBUS', 'R8': 'SDA',
-    'R9': 'PMIC_INT', 'R10': 'SCL', 'R11': GND, 'R12': GND,
-    'B1': GND, 'B2': 'SNS_RST', 'B3': 'SNS_MISO', 'B4': 'SNS_MOSI', 'B5': 'SNS_SCK', 'B6': 'SNS_CS', 'B7': 'SNS_MOTION',
-    'B8': GND, 'B9': 'VDD_1V8', 'B10': 'SWDIO', 'B11': 'SWCLK',
+    'L1': 'SDA', 'L2': 'PMIC_INT', 'L3': 'SCL', 'L4': 'SB4', 'L5': 'SB5', 'L6': 'ENC_B', 'L7': 'ENC_A',
+    'L8': 'USB_DP', 'L9': 'USB_DN', 'L10': 'SW1_NO', 'L11': 'SW1_NC', 'L12': GND,
+    'R1': 'SNS_RST', 'R2': 'SNS_MISO', 'R3': 'SNS_MOSI', 'R4': 'SNS_SCK', 'R5': 'SNS_CS', 'R6': 'SNS_MOTION',
+    'R7': 'MID', 'R8': 'SW2_NO', 'R9': 'SW2_NC', 'R10': GND, 'R11': GND, 'R12': GND,
+    'B1': GND, 'B2': 'NC', 'B3': 'VDD_1V8', 'B4': GND, 'B5': 'VBUSOUT', 'B6': GND, 'B7': 'NC', 'B8': 'NC',
+    'B9': 'SWDIO', 'B10': 'SWCLK', 'B11': GND,
 }
-# nPM1300 QFN32 pin map [REP: function set per datasheet, pin order chosen for this layout]
-U2_PINS = {1: 'SDA', 2: 'PMIC_INT', 3: 'SCL', 4: 'VDD_1V8', 5: 'NC', 6: 'NC', 7: 'NC', 8: GND,
-           9: 'NTC', 10: 'VBAT', 11: 'VBAT', 12: 'VSYS', 13: 'VSYS', 14: 'VSYS', 15: 'VSYS', 16: GND,
-           17: 'VDD_SNS', 18: 'SW_B2', 19: GND, 20: GND, 21: GND, 22: 'SW_B1', 23: 'NC', 24: 'VDD_1V8',
-           25: 'SW_PWR', 26: 'VBUSOUT', 27: 'NC', 28: 'VBUS', 29: 'VBUS', 30: 'NC', 31: 'NC', 32: 'NC', 33: GND}
-U3_PINS = {1: 'SNS_MOTION', 2: 'SNS_CS', 3: 'SNS_SCK', 4: 'SNS_MOSI', 5: 'SNS_MISO', 6: 'SNS_RST', 7: GND, 8: GND,
-           9: 'VDD_1V8', 10: GND, 11: 'VDD_SNS', 12: GND, 13: 'NC', 14: 'NC', 15: GND, 16: GND}
+# nPM1300 QFN32 pin map [REP: the function set per the datasheet, the order chosen for this layout]: the bucks toward their
+# inductors above it, the charger and system rails below, the TWI and the ship-mode input on the left
+U2_PINS = {1: 'SCL', 2: 'PMIC_INT', 3: 'SDA', 4: 'NC', 5: 'NC', 6: 'NC', 7: 'NC', 8: GND,
+           9: 'VBUS', 10: 'VBUS', 11: 'VBUSOUT', 12: GND, 13: 'VBAT', 14: 'VBAT', 15: 'VSYS', 16: 'VSYS',
+           17: GND, 18: 'SW_PWR', 19: 'NTC', 20: 'NC', 21: 'NC', 22: 'NC', 23: GND, 24: 'VDD_SNS',
+           25: 'VDD_SNS', 26: 'SW_B2', 27: 'VSYS', 28: GND, 29: GND, 30: 'VSYS', 31: 'SW_B1', 32: 'VDD_1V8', 33: GND}
+# PAW3970 module lands [REP]: power on the left column (toward the PMIC), the SPI on the right (toward the module's right side)
+U3_PINS = {1: 'VDD_SNS', 2: GND, 3: 'VDD_1V8', 4: GND, 5: 'NC', 6: 'NC', 7: GND, 8: GND,
+           9: GND, 10: GND, 11: 'SNS_MOTION', 12: 'SNS_CS', 13: 'SNS_SCK', 14: 'SNS_MOSI', 15: 'SNS_MISO', 16: 'SNS_RST'}
 for c in C:
     if c['ref'] == 'U1': c['nets'] = U1_PINS
     if c['ref'] == 'U2': c['nets'] = {str(k): v for k, v in U2_PINS.items()}

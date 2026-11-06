@@ -153,11 +153,11 @@ function b09_race(t, rows, g) {
    leaving behind it along the polyline pts (stage px). o = { a, col (cable), s (scale) } */
 function b09_plug(x, y, ang, pts, o = {}) {
   const a = o.a == null ? 1 : o.a, s = o.s || 1; if (a <= 0.003) return;
-  if (pts && pts.length > 1) poly(pts, { color: o.col || (TH ? '#3A3B40' : '#9C9B95'), w: 7 * s, alpha: a, cap: 'round', join: 'round' });
+  if (pts && pts.length > 1) poly(pts, { color: o.col || (TH ? '#3A3A3D' : '#9A9A9E'), w: 7 * s, alpha: a, cap: 'round', join: 'round' });
   G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(ang); G.scale(s, s);
   /* the overmould (dark), the metal shell of the plug ahead of it */
-  rrPath(-58, -13, 40, 26, 6); G.fillStyle = TH ? '#2B2C30' : '#4A4B50'; G.fill();
-  rrPath(-20, -8, 20, 16, 4); G.fillStyle = '#B9BEC5'; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = 1; G.stroke();
+  rrPath(-58, -13, 40, 26, 6); G.fillStyle = TH ? '#2C2C2E' : '#4A4A4D'; G.fill();
+  rrPath(-20, -8, 20, 16, 4); G.fillStyle = '#BDBDC1'; G.fill(); G.strokeStyle = 'rgba(0,0,0,0.25)'; G.lineWidth = 1; G.stroke();
   G.restore();
 }
 
@@ -170,7 +170,7 @@ function b09_readout(t, x, y, o) {
   const k = ep(t, o.t1, o.t1 + 0.9, E.out3), ch = t >= o.t1, dec = 2, st = { font: 'disp', size: 46, weight: 800, tnum: true };
   text(o.label || 'Motion latency', x, y - 58, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: a });
   const v = ch ? lerp(o.from, o.to, k) : o.from, sv = v.toFixed(dec) + ' ms';
-  const r = text(sv, x, y, Object.assign({ color: ch ? mix(TH ? '#111111' : '#F3F2EE', o.col, k) : C.ink, align: 'right', alpha: a }, st));
+  const r = text(sv, x, y, Object.assign({ color: ch ? mix(C.ink, o.col, k) : C.ink, align: 'right', alpha: a }, st));
   if (ch) {
     const ko = ep(t, o.t1 + 0.2, o.t1 + 0.7), so = o.from.toFixed(dec), wo = tw(so, { font: 'disp', size: 28, weight: 800 }), xo = x - r.w - 22 - wo;
     text(so, xo, y - 4, { font: 'disp', size: 28, weight: 800, color: C.faint, alpha: a * ko });
@@ -204,7 +204,7 @@ function b09_chipRow(t, r) {
   const per8 = slow / 8, perC = slow / r.khzCable, tOn = -T - 0.2;   /* already sending at t = 0: the lane is full from the first frame */
   const radio = b09_stream(t, tOn, per8, x0, x1, v, { tOff: r.tPlug });
   const cable = b09_stream(t, r.tPlug + 0.1, perC, x0, x1, v);
-  const pc = r.hero ? C.hero : (TH ? '#8E8D88' : '#9C9B95');
+  const pc = r.hero ? C.hero : C.faint;
   radio.forEach(q => { if (!q.land) b09_pkt(q.x, yc, { col: pc, a: a * (1 - kp), w: 14, h: 26 }); });
   cable.forEach(q => { if (!q.land) b09_pkt(q.x, yc, { col: pc, a, w: 14, h: 26 }); });
   /* the plug, carried in by the pointer and pushed home with a little spring; the cable trails back to the PC */
@@ -214,7 +214,7 @@ function b09_chipRow(t, r) {
   if (t > tIn - 0.4) {
     const sag = (1 - kp) * 70, mid = [(pp[0] + xPC) / 2, (pp[1] + yc) / 2 + sag], cab = [];
     for (let i = 0; i <= 24; i++) { const u = i / 24, q = 1 - u; cab.push([q * q * pp[0] + 2 * q * u * mid[0] + u * u * xPC, q * q * pp[1] + 2 * q * u * mid[1] + u * u * yc]); }
-    b09_plug(pp[0], pp[1], Math.PI, cab, { a: a * ep(t, tIn - 0.4, tIn), col: r.hero ? rgba(C.hero, 0.9) : (TH ? '#4A4B50' : '#8E8D88'), s: 1.15 });
+    b09_plug(pp[0], pp[1], Math.PI, cab, { a: a * ep(t, tIn - 0.4, tIn), col: r.hero ? rgba(C.hero, 0.9) : (TH ? '#4A4A4D' : '#8E8E92'), s: 1.15 });
     const grab = t >= tIn && t < r.tPlug + 0.2, hold = [pp[0] + 40, pp[1] + 9];
     const pk = t < tIn ? kf(t, [[tIn - 0.4, [start[0] + 160, start[1] + 60]], [tIn, hold]]) : t < r.tPlug + 0.2 ? hold : kf(t, [[r.tPlug + 0.2, hold], [r.tPlug + 0.8, [hold[0] + 150, hold[1] + 110]]]);
     cursorPtr(pk[0], pk[1], { a: a * ep(t, tIn - 0.4, tIn - 0.2) * (1 - ep(t, r.tPlug + 0.6, r.tPlug + 0.8)), grab, press: t > r.tPlug - 0.05 && t < r.tPlug + 0.35 ? prog(t, r.tPlug - 0.05, r.tPlug + 0.35) : 0 });
@@ -306,8 +306,8 @@ function b09_sensor(x, y, s, a = 1, o = {}) {
   if (a <= 0.003) return;
   const w = 9.0 * s, h = 12.8 * s;
   if (o.lift > 0.003) rr(x - w / 2 + 10 * o.lift, y - h / 2 + 14 * o.lift, w, h, 0.6 * s, `rgba(0,0,0,${0.3 * o.lift})`, null, 1, a);
-  rr(x - w / 2, y - h / 2, w, h, 0.6 * s, '#1A1B1F', 'rgba(255,255,255,0.16)', 1.2, a);
-  circle(x, y, 1.9 * s, { fill: '#0C0D0F', alpha: a }); circle(x, y, 1.9 * s, { color: 'rgba(255,255,255,0.28)', w: 1.2, alpha: a });
+  rr(x - w / 2, y - h / 2, w, h, 0.6 * s, '#1A1A1D', 'rgba(255,255,255,0.16)', 1.2, a);
+  circle(x, y, 1.9 * s, { fill: '#0C0C0E', alpha: a }); circle(x, y, 1.9 * s, { color: 'rgba(255,255,255,0.28)', w: 1.2, alpha: a });
   circle(x - 0.5 * s, y - 0.6 * s, 0.55 * s, { fill: 'rgba(255,255,255,0.18)', alpha: a });
 }
 /** radio leaving an antenna at A (stage px): rings every per s from t0, out to R px, each ring stopped where it meets the
@@ -356,11 +356,11 @@ function b09_foil(t, t0, r) {
   /* the phones: one bare and ringing once the call reaches it, one in a crinkled foil wrap (in a bag, as the demo says) */
   const reach = t0 + 0.3 + (ph[0][0] - pw / 2 - mast[0]) / v, kr = ep(t, reach, reach + 0.2), ring = t > reach ? Math.sin((t - reach) * 34) * 2.4 * kr : 0;
   rr(ph[0][0] - pw / 2 + ring, ph[0][1] - phh / 2, pw, phh, 10, C.panel, C.ink2, 2.4, a);
-  rr(ph[0][0] - pw / 2 + 6 + ring, ph[0][1] - phh / 2 + 10, pw - 12, phh - 20, 5, TH ? '#E9E8E3' : '#1C1D20', null, 1, a);
+  rr(ph[0][0] - pw / 2 + 6 + ring, ph[0][1] - phh / 2 + 10, pw - 12, phh - 20, 5, TH ? '#E8E8EB' : '#1C1C1F', null, 1, a);
   if (t > reach) for (const sg of [-1, 1]) for (const k of [0, 1]) circle(ph[0][0] + sg * (pw / 2 + 8), ph[0][1] - phh * 0.28, 10 + k * 10, { color: C.ink2, w: 2.2, alpha: a * 0.75 * kr, a0: sg > 0 ? -0.6 : Math.PI - 0.6, a1: sg > 0 ? 0.6 : Math.PI + 0.6 });
   const fx = ph[1][0], fy = ph[1][1], fw = pw + 22, fh = phh + 24, foil = [];
   for (let i = 0; i < 22; i++) { const u = i / 22 * TAU, rx = fw / 2 * (1 + 0.05 * Math.sin(i * 2.7)), ry = fh / 2 * (1 + 0.04 * Math.cos(i * 3.1)); foil.push([fx + Math.cos(u) * rx, fy + Math.sin(u) * ry]); }
-  poly(foil, { close: true, fill: TH ? '#C9CBCF' : '#8E9298', color: TH ? '#9A9DA3' : '#B9BDC3', w: 1.5, alpha: a });
+  poly(foil, { close: true, fill: TH ? '#C9C9CD' : '#8E8E93', color: TH ? '#9A9A9F' : '#B9B9BD', w: 1.5, alpha: a });
   for (let i = 0; i < 6; i++) line(fx - fw * 0.32 + i * 8, fy - fh * 0.36 + i * 16, fx + fw * 0.26 - i * 4, fy - fh * 0.22 + i * 17, { color: 'rgba(255,255,255,0.38)', w: 1.3, alpha: a });
   text('Rings', ph[0][0], y + h - 6, { role: 'label', size: 20, color: C.ink2, align: 'center', alpha: a });
   text('In foil: silent', ph[1][0], y + h - 6, { role: 'label', size: 20, color: C.red, align: 'center', alpha: a });
@@ -489,7 +489,7 @@ function b09_penRow(t, r, g) {
   if (r.sub) text(r.sub, LM, yc + 32, { role: 'label', size: 19, color: r.hero ? C.heroText : r.ref ? C.secondText : C.faint, alpha: a, maxW: 250 });
   /* the plug: seated in the bar's start until tPull, then drawn out and away; radio arcs take its place */
   const kOut = ep(t, r.tPull, r.tPull + 0.45, E.cam), pxp = x0 - 6 - kOut * 46, pyp = yc + kOut * 22;
-  b09_plug(pxp, pyp, 0, [[pxp - 56, pyp], [pxp - 90, pyp + 6], [pxp - 120, pyp + 24]], { a: a * (1 - ep(t, r.tPull + 0.35, r.tPull + 0.7)), s: 0.9, col: TH ? '#55565C' : '#7E7D78' });
+  b09_plug(pxp, pyp, 0, [[pxp - 56, pyp], [pxp - 90, pyp + 6], [pxp - 120, pyp + 24]], { a: a * (1 - ep(t, r.tPull + 0.35, r.tPull + 0.7)), s: 0.9, col: TH ? '#55555A' : '#7E7E83' });
   if (t > r.tPull + 0.3) { const kw = ep(t, r.tPull + 0.3, r.tPull + 0.65); for (let i = 0; i < 3; i++) circle(x0 - 34, yc, 8 + i * 9, { color: r.hero ? C.hero : C.mute, w: 2.4, alpha: a * kw * (0.9 - i * 0.2), a0: -0.75, a1: 0.75 }); circle(x0 - 34, yc, 4, { fill: r.hero ? C.hero : C.mute, alpha: a * kw }); }
   /* the bar: wired, then the extra the radio adds once unplugged */
   const col = r.hero ? C.hero : r.ref ? C.ref : C.comp, k = ep(t, r.tPull + 0.25, r.tPull + 1.05, E.out3), v = lerp(r.wd, r.wl, k), xe = X(v);
@@ -622,11 +622,11 @@ function b09_secondRow(t, r) {
   ltag(LM, yc - 86, r.hero ? 'Theseus' : r.name, r.hero ? 'Second Shot' : 'One copy of each report', { a, size: 22, color: r.hero ? C.heroText : C.ink, vcolor: r.hero ? C.heroText : C.mute });
   const x0 = nose + 70, x1 = 1000, yA = yc - 26, yB = yc + 30, v = 420, per = 0.32, T = (x1 - x0) / v, bx = x0 + (x1 - x0) * 0.5, bw = 84;
   /* the reports, already flowing at the first frame; the burst destroys what crosses it while it lasts */
-  const got = b09_channels(t, { x0, x1, yA, yB, tOn: -T - 0.4, per, v, spare: r.spare, tBurst: r.tBurst, burstX: bx, burstW: bw, dur: 0.16, a, col: r.hero ? C.hero : (TH ? '#8E8D88' : '#9C9B95') });
+  const got = b09_channels(t, { x0, x1, yA, yB, tOn: -T - 0.4, per, v, spare: r.spare, tBurst: r.tBurst, burstX: bx, burstW: bw, dur: 0.16, a, col: r.hero ? C.hero : C.mute });
   /* the moment that matters: the report the burst took would have reached the PC here */
   const tE = (() => { for (let n = 0; n < 200; n++) { const e = -T - 0.4 + n * per, tIn = e + (bx - x0) / v, tOut = e + (bx + bw - x0) / v; if (tOut >= r.tBurst && tIn <= r.tBurst + 0.16) return e; } return r.tBurst; })();
   const tLand = tE + T;
-  shotInset(t, tLand - 1.15, 1040, yc - 104, 300, 208, { miss: !r.spare, at: 1.15, drift: 46, dir: -0.4, label: r.spare ? 'The spare lands: aim holds' : 'A report lost: a hitch' });
+  shotInset(t, tLand - 1.15, 1040, yc - 104, 300, 208, { miss: !r.spare, at: 1.15, drift: 46, dir: -0.4, label: r.spare ? 'The spare lands' : 'A report lost: a hitch' });
   return { tLand };
 }
 S({
@@ -645,5 +645,77 @@ S({
     verdict(t, 6.4, vx, 600, { from: '0.67', to: '0.007', unit: '%', label: 'Reports lost', better: 'lower', who: ['One copy', 'Second Shot'], size: 96, net: '99% rescued', rivalCol: 'grey', maxW: RM - vx });
     text('Measured on the Kunai, a pre-production mouse, with a wireless headset in use nearby; beside a headset\'s base station, 92%.', vx, 770, { role: 'small', size: 22, weight: 600, color: C.ink2, alpha: ep(t, 7.6, 8.0), maxW: RM - vx, lh: 1.3 });
     source(t, 'Kunai tester guide, firmware 96.79 (pre-production, supplied by Brock): 99 to 100% of lost reports rescued at 4 khz; 15 of 220,017 stayed lost at the weakest signal tried. No maker publishes packet loss yet; Theseus will.', { t0: 3 });
+  }
+});
+
+/* ============================== 8. b09_life: battery life at every polling rate (the zero-compromise case) ============================== */
+/** a point that slides along a smooth curve through pts (data points in the order the knob visits them), at knob position u
+   (0 at pts[0] … n−1 at the last). X, Y map data to stage px. Returns { p: [x, y], path: stage points drawn so far } */
+function b09_along(pts, u, X, Y) {
+  const S = pts.map(q => [X(q[0]), Y(q[1])]), asc = S[0][0] <= S[S.length - 1][0], srt = asc ? S : S.slice().reverse();
+  const C = monoCurve(srt, 3), seq = asc ? C : C.slice().reverse();
+  const idx = S.map(q => { let b = 0, bd = 1e9; seq.forEach((c, i) => { const d = Math.hypot(c[0] - q[0], c[1] - q[1]); if (d < bd) { bd = d; b = i; } }); return b; });
+  const i0 = Math.min(S.length - 2, Math.max(0, Math.floor(u))), f = clamp(u - i0), k = Math.round(lerp(idx[i0], idx[i0 + 1], f));
+  return { p: seq[Math.min(seq.length - 1, k)], path: seq.slice(0, k + 1), all: seq };
+}
+S({
+  id: 'b09_life', ch: 'elec', theme: 'paper', title: 'Battery life at every polling rate', settle: 11, ideas: ['battery', 'latency'],
+  src: ['razerBatt', 'nbcV4', 'b09TweakV4', 'elcTpuV4', 'exPiaknow', 'kunai', 'elcLp4025', 'ntrJauch'], replaces: ['power', 'frontier'],
+  answers: [['power: not rated, no note', 'Now a demonstration: the pointer clicks the polling rate up 1 → 2 → 4 → 8 khz and every mouse slides along its own trade-off. The Viper V3 Pro falls from 95 to 17 h, the Viper V4 Pro from 180 to 45 h (its 2 and 4 khz hours derived, drawn hollow), Theseus from its 200 h target to 50 h, faster and longer than both at every rate. Verdict: 45 → 50 h at 8 khz, +11 %, and 19.6 g lighter'],
+    ['frontier: not rated, no note', 'The frontier is the best rival\'s curve: the Viper V4 Pro, the fastest wireless mouse measured. Theseus\'s curve lies past it at every rate, toward the corner marked "Faster and longer", drawn smooth (F2.34). The old weight scatters are not carried (G10: one idea, simply); weight is in the labels and the verdict, 49 g against 29.31 g']],
+  draw: t => {
+    header(t, 'Battery life at every polling rate');
+    captions(t, [[0.6, 'Battery hours fall as the polling rate rises: at 8 khz the Vipers keep a quarter of them or less.'],
+      [4.6, 'At every polling rate Theseus targets more hours than either Viper, and less latency.']]);
+    /* the plane: motion latency across (faster to the left), battery life up (longer up); 240 h of headroom over the 200 h line */
+    const px0 = 230, px1 = 1180, py0 = 350, py1 = 840, hMax = 240, X = ms => px0 + ms / 2.4 * (px1 - px0), Y = h => py1 - h / hMax * (py1 - py0);
+    [0, 50, 100, 150, 200].forEach(h => { line(px0, Y(h), px1, Y(h), { color: C.hair, w: 1.2 }); text(h + (h === 200 ? ' h' : ''), px0 - 14, Y(h) + 7, { role: 'tick', size: 20, color: C.mute, align: 'right' }); });
+    [0, 0.5, 1.0, 1.5, 2.0].forEach(v => { line(X(v), py0, X(v), py1, { color: C.hair, w: 1.2, alpha: 0.6 }); text(v.toFixed(1) + (v === 2.0 ? ' ms' : ''), X(v), py1 + 30, { role: 'tick', size: 20, color: C.mute, align: 'center' }); });
+    text('Battery life (higher is better)', LM, py0 - 34, { role: 'label', size: 20, color: C.mute });
+    text('← Motion latency (lower is better)', px0, py1 + 66, { role: 'label', size: 20, color: C.mute });
+    /* the key: Razer's own figures filled, derived ones hollow */
+    { const kx2 = px1 - 350, ky2 = py1 + 66;
+      circle(kx2, ky2 - 7, 6, { fill: C.comp }); text('Razer\'s figure', kx2 + 14, ky2, { role: 'label', size: 19, color: C.mute });
+      circle(kx2 + 216, ky2 - 7, 6, { fill: C.panel }); circle(kx2 + 216, ky2 - 7, 6, { color: C.comp, w: 2.5 }); text('Derived', kx2 + 230, ky2, { role: 'label', size: 19, color: C.mute }); }
+    /* the corner both ways better, faster and longer: its words come with the payoff, once every marker has gone down */
+    G.save(); const gr = G.createRadialGradient(X(0), Y(hMax), 0, X(0), Y(hMax), 520); gr.addColorStop(0, C.heroSoft); gr.addColorStop(1, 'rgba(0,0,0,0)'); G.fillStyle = gr; G.globalAlpha = ep(t, 0.3, 1.0); G.fillRect(px0, py0, px1 - px0, py1 - py0); G.restore();
+    text('↖ Faster and longer', px0 + 14, py0 + 34, { role: 'label', size: 21, color: C.heroText, alpha: ep(t, 4.8, 5.2) });
+    /* the knob: the polling rate, a segmented control clicked up by the pointer. The selection snaps to the click; every
+       mouse then slides along its own trade-off */
+    const clicks = [1.3, 2.4, 3.5];
+    const uS = clicks.reduce((acc, tc) => acc + ep(t, tc, tc + 0.2, E.out3), 0), u = clicks.reduce((acc, tc) => acc + ep(t, tc + 0.06, tc + 0.86, E.cam), 0);
+    const kx = 760, ky = 286, rates = ['1 khz', '2 khz', '4 khz', '8 khz'], bw2 = 96, gp = 6;
+    text('Polling rate', kx - 22, ky + 8, { role: 'label', size: 20, color: C.mute, align: 'right' });
+    rr(kx - 4, ky - 26, 4 * bw2 + 3 * gp + 8, 48, 6, C.track, null, 0, 1);
+    rr(kx + uS * (bw2 + gp), ky - 22, bw2, 40, 6, C.ink, null, 0, 1);
+    rates.forEach((r, i) => text(r, kx + i * (bw2 + gp) + bw2 / 2, ky + 6, { role: 'label', size: 20, color: mix(C.ink2, C.bg, clamp(1 - Math.abs(uS - i))), align: 'center' }));
+    const tgt = i => [kx + i * (bw2 + gp) + bw2 / 2, ky + 8];
+    cursorAt(t, [[0.5, [kx - 60, ky + 120]], [1.1, tgt(1)], [2.2, tgt(2)], [3.3, tgt(3)], [4.4, [tgt(3)[0] + 80, ky + 140]]], clicks, { a: ep(t, 0.5, 0.7) * (1 - ep(t, 4.2, 4.5)) });
+    const L = B09L, mice = [
+      { m: L.v3, col: C.comp, name: 'Viper V3 Pro*', g: '54 g', nameR: true },
+      { m: L.v4, col: C.ref, name: 'Viper V4 Pro', g: '49 g', ref: true, tag: 'Fastest wireless measured' },
+      { m: L.ths, col: C.hero, name: 'Theseus', g: THS.massG, hero: true }
+    ];
+    mice.forEach(({ m, col, name, g, hero, ref, nameR, tag }) => {
+      const pts = m.ms.map((ms, i) => [ms, m.h[i]]), A = b09_along(pts, u, X, Y);
+      /* the whole trade-off, faint; the part travelled, solid; the marker where the knob is */
+      poly(A.all, { color: col, w: hero ? 3 : 2, alpha: 0.25 });
+      if (A.path.length > 1) poly(A.path, { color: col, w: hero ? 5 : 3.5 });
+      if (!hero) pts.forEach((q, i) => { if (i > Math.round(u) + 0.01) return; const p = [X(q[0]), Y(q[1])]; if ((m.hEv || [])[i] === 'derived') { circle(p[0], p[1], 6, { fill: C.panel }); circle(p[0], p[1], 6, { color: col, w: 2.5 }); } else circle(p[0], p[1], 6, { fill: col }); });
+      if (hero) heroMark(A.p[0], A.p[1], 13, 1); else circle(A.p[0], A.p[1], 10, { fill: col });
+      /* its name and weight by its 1 khz end (the V3 Pro's to the left, clear of the right column) */
+      const p1 = [X(pts[0][0]), Y(pts[0][1])], nc = hero ? C.heroText : ref ? C.secondText : C.ink2;
+      rich([{ s: name, role: 'small', size: 24, weight: hero ? 800 : 700, color: nc }, { s: g, role: 'label', size: 19, color: C.mute, gap: 10 }], nameR ? p1[0] + 4 : p1[0] + 18, nameR ? p1[1] - 26 : hero ? p1[1] + 8 : p1[1] - 14, { align: nameR ? 'right' : 'left' });
+      if (tag) text(tag, p1[0] + 18, p1[1] - 46, { role: 'label', size: 19, color: C.secondText });
+      /* its hours now, beside the marker: Theseus's up and to the left, the rivals' down and to the right */
+      const i0 = Math.min(2, Math.floor(u)), hNow = Math.round(lerp(m.h[i0], m.h[i0 + 1], clamp(u - i0)));
+      text(hNow + ' h', A.p[0] + (hero ? -18 : 18), A.p[1] + (hero ? -22 : 30), { role: 'num', size: 25, weight: 800, color: hero ? C.heroText : ref ? C.secondText : C.ink2, align: hero ? 'right' : 'left' });
+    });
+    /* the headline at 8 khz, against the best; the weight it comes at; what the player gets */
+    const vx = 1280, lighter = Math.floor((L.v4.g - THESEUS.mass) * 10 + 1e-9) / 10;
+    verdict(t, 5.4, vx, 600, { from: 45, to: 50, unit: 'h', label: 'Battery at 8 khz', better: 'higher', who: ['Viper V4 Pro', 'Theseus'], size: 140, netWord: 'and ' + fmtN(lighter, 1) + ' g lighter', maxW: RM - vx });
+    text('Faster at every rate too: 0.14 ms at 8 khz, against 0.34.', vx, 776, { role: 'small', size: 24, weight: 650, color: C.ink, alpha: ep(t, 7.0, 7.4), maxW: RM - vx, lh: 1.3 });
+    text('Leave 8 khz on: six hours a day, charged once a week.', vx, 866, { role: 'small', size: 24, weight: 650, color: C.ink2, alpha: ep(t, 7.6, 8.0), maxW: RM - vx, lh: 1.3 });
+    source(t, 'Hours: Razer (V3 Pro at every rate; V4 Pro at 1 and 8 khz); V4 Pro 2 and 4 khz derived from a fixed draw plus a cost per report. Theseus: that curve at its 200 h target at 1 khz (the 370 mAh example battery), derived. Latency: piaknow 2026-09-15 (* Motion Sync forced on at 1 to 4 khz); Theseus, Kunai\'s model.', { t0: 3 });
   }
 });

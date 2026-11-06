@@ -85,25 +85,64 @@ def filleted(corners):
     return Polygon(pts)
 
 
-# The Theseus board (Brock, 2026-11-05 01:43, F26.5 and F26.7). Changed from the Sora V2 trace:
-# - the wings come forward 2.77 mm (front edge z 46.23 -> 49.0) so the GT01s (top-front corner 8.24 mm ahead of the
-#   middle pin, 3d/parts/gt01.js) sit over board everywhere;
-# - the back is as wide as the front: both at x = +/-19.4 (they were 19.03 at the wings, 18.52 at the back), the small
-#   notches (the "ears" at z 12.4 to 15.4) are gone and the sides run straight;
-# - every corner is rounded: wing corners r 2.0 / 1.2, waist r 1.6, the USB-C tab r 0.6 / 0.8, the rear corners r 4.7;
-# - the two rear mounting holes (MH3, MH4, unmoved) get 1.2 mm of board round their gold rings (was 0.53 below them).
-THESEUS_RIGHT = [  # (x, z, fillet r) on the user's right, front to back (layout frame); mirrored for the left
-    (5.31, 52.5, 0.6), (5.31, 49.76, 0.4), (6.07, 49.0, 0.6),   # USB-C tab (its 45 deg chamfer kept: CC1 runs along it)
-    (19.4, 49.0, 2.0), (19.4, 32.4, 1.2),          # switch wing
-    (15.41, 29.6, 1.6), (15.41, 17.42, 1.6),       # waist (the side-button space)
-    (19.4, 15.3, 1.6), (19.4, -5.7, 4.7),          # the back: straight side, wide rounded corner round MH3/MH4
-]
+# ===================================================================== the Theseus board: plan 5 (Brock, 2026-11-05)
+# Plan 5 (3d/pcb/plans/plan5.py, board-plan-5.jpg, Brock's OK on 2026-11-05 07:1x) with his last changes (F30.25): the
+# rear notch as long as the side notches, the wheel bay chamfered and filleted like the outline, then built. In short:
+# - one mirrored outline (the whole footprint symmetric, F30.23): one half drawn, the other its mirror image;
+# - one notch depth D = 3.61 mm (the waist notches': 19.03 - 15.42) for the side notches, the rear notch and the front
+#   trapezoid (F30.22); one chamfer angle, 35.24 deg from the x axis (atan 0.70656, the front waist chamfer's line,
+#   F30.22), every chamfer straight; every corner filleted so the fillet starts 1.0 mm from its corner (equal tangent
+#   length: the same apparent size everywhere, F30.21): r 1.0 at a right angle, 1.93 and 3.15 at the chamfers;
+# - the front: one trapezoid D above the wing line (z 47.84 = the GT01 pin 39.60 + its 8.24 overhang, F30.11), its flat
+#   edge at z 51.45, no tab (F30.21);
+# - the rear notch as long as the side notches (F30.25): its flat 13.09 mm (x +-6.545), the rear lobes D deep to z -7.61;
+# - the wheel bay centred on x 0 (+-7.20, F30.23), its front at z 44.13 (the USB-C receptacle moved back 1.05 mm, F30.25),
+#   each corner chamfered at the one angle (3.61 across, 2.55 along: the waist's chamfer) and filleted the same way, with
+#   a 0.35 mm gold trim (F30.21, F30.25);
+# - the mounting holes in mirror pairs (F30.25), SH1, SH2, LH1, LH2 dropped, no new cut-outs (F30.13, F30.16, F30.19);
+# - the power switch: variant A in a 3.83 x 4.29 window on the x +10.0 axis (the default, the deck's board), variant B
+#   at the right waist edge (PCB_VARIANT=B), no window (F30.17, F30.19).
+import os
+VARIANT = (os.environ.get('PCB_VARIANT') or 'A').strip().upper()
+T_FIL = 1.0                                   # every fillet starts this far from its corner
+W, WX = 19.03, 15.42                          # the sides, the waist (side-notch bottom)
+D = round(W - WX, 2)                          # 3.61: the one notch depth
+TA = 0.70656                                  # tan of the one chamfer angle (35.24 deg from the x axis)
+SW_PIN_Z, GT_CORNER = 39.60, 8.24             # the GT01's middle pin and how far its top-front corner overhangs it
+ZF = round(SW_PIN_Z + GT_CORNER, 2)           # 47.84: the wing line
+ZT = round(ZF + D, 2)                         # 51.45: the front trapezoid's flat edge
+XT = 5.85                                     # its half width
+WAIST = (30.52, 17.43)                        # the side notches' flat, z
+ZN = -4.0                                     # the rear notch's flat
+ZB = round(ZN - D, 2)                         # -7.61: the rear lobes' back edge
+XN = round((WAIST[0] - WAIST[1]) / 2, 4)      # 6.545: the rear notch as long as the side notches (F30.25)
+XB = round(XN + D / TA, 4)                    # 11.6543
+ZA, ZBW = round(WAIST[0] + D * TA, 4), round(WAIST[1] - D * TA, 4)   # where the waist chamfers meet the sides
+
+
+def tangent_r(p, a, b, t=T_FIL):
+    """the radius whose fillet at corner p (neighbours a, b) starts t from p: equal tangent length, equal apparent size"""
+    import numpy as np
+    u = np.subtract(a, p, dtype=float); v = np.subtract(b, p, dtype=float)
+    u /= np.linalg.norm(u); v /= np.linalg.norm(v)
+    return t * math.tan(math.acos(max(-1.0, min(1.0, float(u @ v)))) / 2)
+
+
+def equal_fillets(pts, t=T_FIL, closed=True):
+    """[(x, z)] -> [(x, z, r)] with every corner filleted at tangent length t"""
+    n = len(pts)
+    return [(x, z, tangent_r((x, z), pts[i - 1], pts[(i + 1) % n], t)) for i, (x, z) in enumerate(pts)]
+
+
+PLAN5_RIGHT = [  # the user's right half (layout x >= 0), front to back; the left half is its mirror image
+    (XT, ZT), (XT + D / TA, ZF), (W, ZF), (W, ZA), (WX, WAIST[0]), (WX, WAIST[1]), (W, ZBW), (W, ZB), (XB, ZB), (XN, ZN)]
 
 
 def theseus_outline():
-    R = THESEUS_RIGHT
-    L = [(-x, z, r) for x, z, r in reversed(R)]
-    return filleted(R + L)
+    pts = [(0.0, ZT)] + PLAN5_RIGHT + [(0.0, ZN)]
+    full = pts[1:-1] + [(-x, z) for x, z in reversed(pts[1:-1])]       # mirrored: x -> -x, the order reversed
+    corners = equal_fillets(full)
+    return filleted(corners)
 
 
 def rrect(cx, cz, w, h, r):
@@ -111,33 +150,48 @@ def rrect(cx, cz, w, h, r):
     return b.buffer(r, quad_segs=8) if r > 0 else box(cx - w / 2, cz - h / 2, cx + w / 2, cz + h / 2)
 
 
-# --- holes and cutouts (from Hough circles / edge measurements on the de-rotated photo) ---
-SORA_HOLES = {
+# --- holes and cut-outs (plan 5) ---
+SORA_HOLES = {      # (the name is the Sora V2 trace's; these are the plan-5 holes, in mirror pairs: F30.25)
     # name: (x, z, diameter, kind)
-    'MH1': (-10.20, 29.56, 2.90, 'npth'),   # front-left mounting hole (white dashed silk ring in the photo)
-    'MH2': (10.00, 29.43, 2.90, 'npth'),    # front-right
-    'MH3': (-14.69, -2.25, 2.90, 'npth'),   # rear-left
-    'MH4': (14.49, -2.25, 2.90, 'npth'),    # rear-right
-    'LH1': (-10.59, -1.72, 2.20, 'npth'),   # locating holes (shell pins)
-    'LH2': (10.40, -1.85, 2.20, 'npth'),
-    'SH1': (-18.12, -2.25, 1.30, 'npth'),   # small holes at the rear corners
-    'SH2': (17.92, -2.25, 1.30, 'npth'),
+    'MH1': (-10.10, 29.50, 2.90, 'npth'),   # front pair: copper-free, dashed silk rings (as on the Sora V2)
+    'MH2': (10.10, 29.50, 2.90, 'npth'),
+    'MH3': (-14.59, -2.25, 2.90, 'npth'),   # rear pair: plated, gold rings (layout.py marks them plated)
+    'MH4': (14.59, -2.25, 2.90, 'npth'),
 }
-# wheel bay: x 370..588 px, y 408..686 px (front edge set 0.5 mm further back than the visible corners,
-# where it is hidden under the wheel, so the USB-C signal pads have room)
-WHEEL_CUT = dict(x0=-7.05, x1=7.35, z0=27.45, z1=44.95, r=1.2)
-# square window (x 610..668, y 765..830 px) -> Theseus uses it as the power-switch window
-SQUARE_CUT = dict(x0=8.81, x1=12.64, z0=17.95, z1=22.24, r=0.6)
+SORA_HOLES_TODAY = {'MH1': (-10.20, 29.56), 'MH2': (10.00, 29.43), 'MH3': (-14.69, -2.25), 'MH4': (14.49, -2.25)}
+BAY = dict(x0=-7.20, x1=7.20, z0=27.45, z1=44.13)     # centred on x 0 (F30.23); front 44.13 (J1 back 1.05 mm, F30.25)
+BAY_CH = (D, round(D * TA, 4))                        # each corner chamfer: 3.61 across, 2.55 along (the waist's)
+BAY_TRIM = 0.35                                       # gold trim round the bay: the board edge's ENIG band (F30.21)
+WHEEL_CUT = dict(x0=BAY['x0'], x1=BAY['x1'], z0=BAY['z0'], z1=BAY['z1'], r=T_FIL)
+WIN = dict(c=(10.0, 19.45), w=3.83, h=4.29)          # variant A's power-switch window, on the x +10 axis, the sensor's row
+SQUARE_CUT = dict(x0=WIN['c'][0] - WIN['w'] / 2, x1=WIN['c'][0] + WIN['w'] / 2, z0=WIN['c'][1] - WIN['h'] / 2,
+                  z1=WIN['c'][1] + WIN['h'] / 2, r=T_FIL)
+
+
+def bay_points():
+    x0, x1, z0, z1 = BAY['x0'], BAY['x1'], BAY['z0'], BAY['z1']; cx, cz = BAY_CH
+    return [(x0 + cx, z1), (x1 - cx, z1), (x1, z1 - cz), (x1, z0 + cz), (x1 - cx, z0), (x0 + cx, z0), (x0, z0 + cz), (x0, z1 - cz)]
 
 
 def wheel_cut_poly():
-    c = WHEEL_CUT
-    return rrect((c['x0'] + c['x1']) / 2, (c['z0'] + c['z1']) / 2, c['x1'] - c['x0'], c['z1'] - c['z0'], c['r'])
+    """the wheel bay: a rectangle with its corners chamfered at the one angle, every corner filleted at tangent 1.0"""
+    return filleted(equal_fillets(bay_points()))
 
 
 def square_cut_poly():
+    """variant A's power-switch window (r 1.0, a right angle: tangent 1.0); variant B has none (an empty polygon)"""
+    if VARIANT == 'B':
+        return Polygon()
     c = SQUARE_CUT
     return rrect((c['x0'] + c['x1']) / 2, (c['z0'] + c['z1']) / 2, c['x1'] - c['x0'], c['z1'] - c['z0'], c['r'])
+
+
+# The battery (the deck's example, Jauch LP402535JU: 35 across x 25 along x 4.0 mm, 8 g) in the tail behind the board,
+# 0.43 mm above the board's top (its middle 7.46 mm over the pad). Layout frame (x right, z nose; mouse z = z - 2.88).
+# H1 job 3 (the 2026-11-05 decision): 2.23 mm back from the key plan's old place (front at layout z -7.34, which plan 5's
+# rear lobes, back edge at -7.61, overlapped by 0.27 mm in plan): its front now 1.96 mm behind the lobes. x as before
+# (0.41 mm to the user's right of the centre line).
+BATTERY = dict(part='LP402535JU', x0=-17.09, x1=17.91, z0=-7.34 - 2.23 - 25.0, z1=-7.34 - 2.23, t=4.0, yMid=7.46, g=8.0)
 
 
 # Sora V2 component boxes as seen in the photo (for the layout comparison image). (x0, z0, x1, z1) mm

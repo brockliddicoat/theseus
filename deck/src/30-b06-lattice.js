@@ -127,7 +127,7 @@ function b06_strip(kind, t) {
     for (let i = 0; i < n; i++) add(i, i + 1);
     for (let j = 0; j < n - 1; j++) add(T(j), T(j + 1));
     for (let j = 0; j < n; j++) { add(j, T(j)); add(T(j), j + 1); }
-    return { nodes, els, kind, bl: 0, br: n, mid: T(Math.floor(n / 2)), H: Hh, span: n * a };
+    return b06_zones({ nodes, els, kind, bl: 0, br: n, mid: T(Math.floor(n / 2)), H: Hh, span: n * a });
   }
   const R = a / Math.sqrt(3), map = new Map(), seen = new Set(), th = t * b06_triLen() / b06_hexLen();
   const nid = p => { const k = Math.round(p[0] * 1000) + ',' + Math.round(p[1] * 1000); if (!map.has(k)) { map.set(k, nodes.length); nodes.push(p); } return map.get(k); };
@@ -138,15 +138,43 @@ function b06_strip(kind, t) {
   /* supports under the two end walls' lower corners (the span the same 62.5 mm), the press on the middle cell's top */
   let bl = 0, br = 0, mid = 0;
   nodes.forEach((p, i) => { if (p[0] < 1e-6 && p[1] < R) bl = i; if (p[0] > n * a - 1e-6 && p[1] < R) br = i; if (Math.abs(p[0] - n * a / 2) < 1e-6 && p[1] > 1.5 * R) mid = i; });
-  return { nodes, els, kind, bl, br, mid, H: 2 * R, span: n * a, th };
+  return b06_zones({ nodes, els, kind, bl, br, mid, H: 2 * R, span: n * a, th });
 }
-const b06_lenOf = m => m.els.reduce((s, el) => s + Math.hypot(m.nodes[el.j][0] - m.nodes[el.i][0], m.nodes[el.j][1] - m.nodes[el.i][1]), 0);
+/** rigid joint zones (checked 08:4x: node-to-node beams overstate the bending of short, wide walls). Each rib is split into
+   a rigid end at each joint (E x 1000, the same section, so the same weight) and its flexible middle. The rigid length per
+   end is (h/2 + r/2) / tan(phi/2): the solid core of the joint plus half the 0.6 mm fillet's taper, phi the joint's
+   smallest corner (60° in the triangles, 120° in the hexagons). Original node numbers are kept; el.flex points each rigid
+   end at its rib's flexible middle (its stress is read there, at the joint's edge). */
+function b06_zones(m, r = 0.6) {
+  const N0 = m.nodes, ang = (i, j) => Math.atan2(N0[j][1] - N0[i][1], N0[j][0] - N0[i][0]);
+  const phiMin = i => {
+    const as = m.els.filter(e => e.i === i || e.j === i).map(e => ang(i, e.i === i ? e.j : e.i)).sort((p, q) => p - q);
+    if (as.length < 2) return Math.PI;
+    let mn = 9; for (let k = 0; k < as.length; k++) { const d = (k + 1 < as.length ? as[k + 1] : as[0] + TAU) - as[k]; if (d < mn) mn = d; }
+    return mn;
+  };
+  const nodes = N0.map(p => p.slice()), els = [];
+  for (const el of m.els) {
+    const p = N0[el.i], q = N0[el.j], L = Math.hypot(q[0] - p[0], q[1] - p[1]), ux = (q[0] - p[0]) / L, uy = (q[1] - p[1]) / L;
+    const zi = (el.h / 2 + r / 2) / Math.tan(phiMin(el.i) / 2), zj = (el.h / 2 + r / 2) / Math.tan(phiMin(el.j) / 2);
+    const a = nodes.length; nodes.push([p[0] + ux * zi, p[1] + uy * zi]); const b = nodes.length; nodes.push([q[0] - ux * zj, q[1] - uy * zj]);
+    const k = els.length;
+    els.push(Object.assign({}, el, { j: a, E: el.E * 1000, rigid: true, flex: k + 1 }));
+    els.push(Object.assign({}, el, { i: a, j: b, rib: true }));
+    els.push(Object.assign({}, el, { i: b, E: el.E * 1000, rigid: true, flex: k + 1 }));
+  }
+  return Object.assign(m, { nodes, els, zones: true });
+}
+const b06_lenOf = m => m.els.reduce((s, el) => s + Math.hypot(m.nodes[el.j][0] - m.nodes[el.i][0], m.nodes[el.j][1] - m.nodes[el.i][1]), 0);   /* node to node: the zones keep it */
 function b06_triLen() { return b06_once('triLen', () => b06_lenOf(b06_strip('tri', 1))); }
 function b06_hexLen() { return b06_once('hexLen', () => { const a = B06_BR.a, R = a / Math.sqrt(3); return 26 * R; }); }
 /** the strip solved under 10 N at the middle (cached per rib width, to the micron) */
 function b06_bridge(kind, t) {
   const tk = Math.round(t * 1000) / 1000;
-  return simSolve('b06br:' + kind + ':' + tk, () => { const m = b06_strip(kind, tk); m.fix = { [m.bl]: 'xy', [m.br]: 'y' }; m.loads = { [m.mid]: [0, -B06_BR.P, 0] }; return m; });
+  const r = simSolve('b06br:' + kind + ':' + tk, () => { const m = b06_strip(kind, tk); m.fix = { [m.bl]: 'xy', [m.br]: 'y' }; m.loads = { [m.mid]: [0, -B06_BR.P, 0] }; return m; });
+  /* a rigid end reads its rib's stress at the joint's edge, not the node's centre */
+  if (!r.b06z) { r.b06z = true; r.model.els.forEach((el, e) => { if (el.rigid) r.sig[e] = r.sig[el.flex]; }); r.smax = Math.max(...r.sig); }
+  return r;
 }
 const b06_flex = r => -r.d[r.model.mid * 3 + 1];
 const b06_grams = r => r.mass.reduce((s, v) => s + v, 0);
@@ -154,7 +182,7 @@ const b06_grams = r => r.mass.reduce((s, v) => s + v, 0);
 const B06_FT = 120;
 const b06_maxPress = r => B06_BR.P * B06_FT / r.smax;
 /** the hottest joint: the node at the more loaded end of the most stressed rib */
-function b06_hotNode(r) { const e = r.sig.indexOf(r.smax), el = r.model.els[e]; return Math.abs(r.M1[e]) >= Math.abs(r.M2[e]) ? { node: el.i, other: el.j, e } : { node: el.j, other: el.i, e }; }
+function b06_hotNode(r) { const els = r.model.els; let e = 0; els.forEach((el, q) => { if (!el.rigid && r.sig[q] > (els[e].rigid ? -1 : r.sig[e])) e = q; }); const el = els[e]; return Math.abs(r.M1[e]) >= Math.abs(r.M2[e]) ? { node: el.i, other: el.j, e } : { node: el.j, other: el.i, e }; }
 /** the weight sweep of b06_light: rib width 1.0 → 0.5 mm (the triangles'), both kinds, sampled for the chart */
 function b06_sweep() {
   return b06_once('sweep', () => { const out = []; for (let i = 0; i <= 40; i++) { const t = 1.0 - 0.5 * i / 40, T = b06_bridge('tri', t), X = b06_bridge('hex', t); out.push({ t, g: b06_grams(T), mT: b06_maxPress(T), mH: b06_maxPress(X), fT: b06_flex(T), fH: b06_flex(X) }); } return out; });
@@ -425,7 +453,7 @@ function b06_note(p, at, s, a, col) {
 function b06_wallMid(r, x0, pick, k, right) {
   const m = r.model, mid = m.nodes[m.mid];
   /* the rib nearest the press, left of it, picked by rank (0 nearest) */
-  const cand = m.els.map((el, e) => { const a = m.nodes[el.i], b = m.nodes[el.j], c = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; return { e, c, d: Math.hypot(c[0] - mid[0] + (right ? -6 : 6), c[1] - mid[1]) }; }).filter(q => right ? q.c[0] > mid[0] + 1 : q.c[0] < mid[0] - 1).sort((p, q) => p.d - q.d);
+  const cand = m.els.map((el, e) => { const a = m.nodes[el.i], b = m.nodes[el.j], c = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; return { e, c, rigid: el.rigid, d: Math.hypot(c[0] - mid[0] + (right ? -6 : 6), c[1] - mid[1]) }; }).filter(q => !q.rigid && (right ? q.c[0] > mid[0] + 1 : q.c[0] < mid[0] - 1)).sort((p, q) => p.d - q.d);
   const e = cand[Math.min(pick, cand.length - 1)].e, pts = feElPts(r, e, B06_E * k, 8), q = pts[4], yS = m.nodes[m.bl][1];
   return [x0 + q[0] * B06_S, B06_YS - (q[1] - yS) * B06_S];
 }

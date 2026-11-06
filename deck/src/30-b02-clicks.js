@@ -16,6 +16,7 @@ Object.assign(SRC, {
   b02_radwin: { t: 'Radwin & Jeng 1997, Human Factors 39(1): 130–140, "Activation force and travel effects on overexertion in repetitive key tapping": "Peak force during keying has been measured to be as much as 2.5 to 4.6 times the required activation force"', u: 'https://ergo.wisc.edu/wp-content/uploads/sites/901/2020/04/Radwin-and-Jeng-1997.pdf' },
   b02_johnson: { t: 'Johnson, Hagberg, Wigaeus Hjelm & Rempel 2000, Scand J Work Environ Health 26(5): 398–405: mean force on the mouse button 0.35 N, on the sides 0.43 N, over mouse use', u: 'https://www.sjweh.fi/article/560' },
   b02_dias: { t: 'Dias, Dudte, Mahadevan & Santangelo 2012, "Geometric Mechanics of Curved Crease Origami", Physical Review Letters: a closed curved crease "is frustrated by geometry, forcing it to buckle"', u: 'https://arxiv.org/abs/1206.0461' },
+  b02_nickel: { t: 'US Mint coin specifications: the 5-cent nickel weighs 5.000 g (the table the motion kit\'s SCALE cites for the penny and the quarter; not re-fetched this run)', u: '' },
   b02_albers: { t: 'Erik Demaine, History of Curved Origami Sculpture: Josef Albers\' preliminary course at the Bauhaus, 1927–28: paper folded along concentric circles "will automatically twist into a saddle curve"', u: 'https://erikdemaine.org/curved/history/' }
 });
 
@@ -32,6 +33,11 @@ const B02 = {
   ex: 14                            /* motion drawn this many times its size in the 3D views */
 };
 const b02_smileZ = x => { const a = Math.abs(x), [p, q, r] = B02.smile; return p * a * a + q * a + r; };
+/* true greys only (Brock, 08:18): the ramp's tokens for parts, and the kit's own body fill where an overlay has to cover
+   mouseSimple's lines exactly (keep in step with mouseSimple's bodyF) */
+const b02_bodyF = () => (TH ? '#FFFFFF' : '#1A1B1E');
+const b02_partF = () => (TH ? C.track : C.hair);      /* a part a step off the body: a trigger */
+const b02_shellF = () => (TH ? C.hair : C.comp2);     /* a step further: the shell under it */
 
 /** the 3D twin's outline of a part seen from above, in world mm [[x, z], ...], decoded once (GEO2D rings, axis '1'). */
 const B02_RING = new Map();
@@ -186,7 +192,7 @@ function b02_plate(o) {
   /* the surface: flat, one step off the ground, a touch lighter toward the rear (the light is behind the camera's left) */
   b02_pathOf(q);
   const ys = q.map(p => p[1]), g = G.createLinearGradient(0, Math.min(...ys), 0, Math.max(...ys));
-  const f0 = o.fill || (TH ? '#E9E8E3' : '#25262A'), f1 = o.fill2 || (TH ? '#DCDBD5' : '#1C1D20');
+  const f0 = o.fill || (TH ? C.track : C.hair), f1 = o.fill2 || (TH ? C.hair : C.track);
   g.addColorStop(0, f0); g.addColorStop(1, f1); G.fillStyle = g; G.fill();
   /* the lines across: constant z every 5 mm, so a tilt or a twist shows as the lines tipping */
   if (o.iso > 0) {
@@ -216,7 +222,7 @@ function b02_rearShell(o) {
   const q = b02_lift(poly2, cam, null, 0);
   G.save(); G.globalAlpha = al;
   b02_pathOf(q); const ys = q.map(p => p[1]), g = G.createLinearGradient(0, Math.min(...ys), 0, Math.max(...ys));
-  g.addColorStop(0, TH ? 'rgba(220,219,213,0)' : 'rgba(28,29,32,0)'); g.addColorStop(0.55, TH ? '#E2E1DB' : '#202125'); g.addColorStop(1, TH ? '#E6E5DF' : '#232428');
+  g.addColorStop(0, rgba(TH ? C.hair : C.track, 0)); g.addColorStop(0.55, TH ? C.hair : C.track); g.addColorStop(1, TH ? C.track : C.hair);
   G.fillStyle = g; G.fill();
   b02_pathOf(b02_lift(edge, cam, null, 0), false); G.strokeStyle = o.edge || inkA(TH ? 0.5 : 0.45); G.lineWidth = 1.8; G.stroke();
   G.restore();
@@ -238,7 +244,7 @@ function b02_trigTopMM(o = {}) {
      along its 20° axis, so the post's foot moves 0.35 / cos 20° there; everything else scales with its lever */
   const dS = b02_arm(H, -B02.sw.x, B02.sw.z), per = 0.35 / Math.cos(B02.arc) / dS;
   /* the trigger: a flat panel, the travel shading over it, its contours, the outline */
-  path(); G.fillStyle = o.fill || (TH ? '#ECEBE6' : '#232428'); G.fill();
+  path(); G.fillStyle = o.fill || b02_partF(); G.fill();
   if (o.field > 0 && press > 0) {
     G.save(); path(); G.clip();
     /* the shading runs perpendicular to the bend line: unmoved at the line, deepest at the far front */
@@ -293,62 +299,96 @@ function b02_trigTopMM(o = {}) {
 }
 
 /* ============================== the front of the trigger, head-on (b02_front) ==============================
-   Seen from the nose (the kit's front view: the user's left trigger on the right). u runs from the centre split out to the
-   trigger's outer end, mm; y up. The trigger's front lip lands on a ledge in the shell's nose (#46). Heavy comfort grooves
-   run to the edge on most mice, so the lip and its ledge are curves; two molded curves never match (Protolabs: ±0.076 mm a
-   face), so the lip lands on one spot first and rolls on it: a rocker. With the grooves run out before the front (#47) the
-   lip and the ledge are flat and parallel to the ground (#46): the whole lip lands at once. */
-const B02_FR = { W: 20, uc: 10, d: 0.9, mis: 0.1, gap: 0.7, face: 2.6, ex: 4, lip: 22 };
-/** the groove's valley across the lip, 0..1: a cos² centred on the button (u 12), 0 at the centre split and the outer end */
-const b02_c = u => { const x = (u - B02_FR.uc) / B02_FR.uc; return Math.abs(x) >= 1 ? 0 : Math.pow(Math.cos(x * Math.PI / 2), 2); };
-const b02_cd = u => { const x = (u - B02_FR.uc) / B02_FR.uc; return Math.abs(x) >= 1 ? 0 : -Math.PI / (2 * B02_FR.uc) * Math.sin(x * Math.PI); };
-/** where a press at u makes the lip land: the contact rolls from the valley's bottom toward the press, at most a quarter of
-   the valley out (where the curves' slopes differ most); k 0 (flat) lands along the whole lip */
-const b02_contact = (u, k) => B02_FR.uc + clamp((u - B02_FR.uc) * 0.75, -B02_FR.uc / 2, B02_FR.uc / 2) * (k > 0.5 ? 1 : 0);
-/** the roll the lip makes, landed at contact cu, true radians (the slope difference of the two curves there) */
-const b02_rollAt = (cu, k) => { const F = B02_FR; return Math.atan(-(F.d - F.mis) * k * b02_cd(cu)) - Math.atan(-F.d * k * b02_cd(cu)); };
-/** the front, head-on, in mm with heights drawn ex times (B02_FR.ex), y up in the model and down on the canvas.
-   o = { k (1 grooves to the edge .. 0 a flat front), drop (0..1: the lip comes down its gap onto the ledge), cu (the contact,
-   when landed), lit (the lip's colour), hit (0..1: contact marks), hitCol, mirror (the other trigger, dimmed, not pressed) } */
+   Seen from the nose, in the kit's front frame (mouseSimple 'front': mm, x toward the user's left, y up from the pad, drawn
+   y down), so the left trigger is on the viewer's right and u = x. Its front lip lands on a ledge in the shell's nose (#46:
+   "the trigger cutouts which the triggers rest on and that are only visible when looking at the front/chin of the mouse
+   head-on"). The outline is the kit's (MS_FRONT_TRIG: flat underneath to 17.06 mm, then curving up the side). Heavy comfort
+   grooves that run to the front edge dip the lip and its ledge together; two molded curves never match (Protolabs: tools
+   ±0.076 mm), here the lip's dip is 0.1 mm deeper than the ledge's, so the lip touches at one spot and can roll on it, like a
+   rocker. Run the grooves out before the front (#47) and the lip and the ledge are flat and parallel to the ground: the
+   whole lip lands at once. The groove, the gap and the mismatch are drawn ex times; the roll follows from them. */
+const B02_FR = { uc: 12, hw: 10, d: 0.9, mis: 0.1, gap: 0.7, face: 3.2, ex: 5, flat: 17.06 };
+/** the groove's valley across the lip, 0..1: a cos² centred on the button (uc), hw either side; and its slope per mm */
+const b02_c = u => { const F = B02_FR, x = (Math.abs(u) - F.uc) / F.hw; return Math.abs(x) >= 1 ? 0 : Math.pow(Math.cos(x * Math.PI / 2), 2); };
+const b02_cd = u => { const F = B02_FR, x = (Math.abs(u) - F.uc) / F.hw; return Math.abs(x) >= 1 ? 0 : -Math.PI / (2 * F.hw) * Math.sin(x * Math.PI) * Math.sign(u || 1); };
+/** the trigger's underside and its top seen from the front (the kit's outline, x ≥ 0), as functions of u */
+const B02_FO = (() => {
+  const P = MS_FRONT_TRIG, bot = P.filter(([x, y]) => x > 16.5 && y < 24.5).sort((a, b) => a[0] - b[0]);
+  const top = P.filter(([x, y]) => x >= -0.01 && y >= 24.46).sort((a, b) => b[0] - a[0]);
+  const at = (pts, u) => { if (u <= pts[0][0]) return pts[0][1]; for (let i = 1; i < pts.length; i++) if (u <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + (y1 - y0) * (u - x0) / (x1 - x0); } return pts[pts.length - 1][1]; };
+  return { bot, top: top.concat([[0, 37.375]]), base: u => (Math.abs(u) <= 17.06 ? 10.84 : at(bot, Math.abs(u))), uMax: bot[bot.length - 1][0] };
+})();
+/** the lip (at rest) and the ledge, in drawn model mm (y up): k 1 grooves to the front .. 0 a flat front */
+function b02_frontY(k, ex) {
+  const F = B02_FR, base = B02_FO.base;
+  const clr = u => 1.4 * ex / 5 * smooth(clamp((Math.abs(u) - lerp(F.flat, 23, k)) / 4));           /* the shell falls away past the ledge */
+  return {
+    lip: u => base(u) + (-F.d * b02_c(u) + F.mis) * k * ex,
+    ledge: u => base(u) - F.gap * ex - (F.d - F.mis) * k * ex * b02_c(u) - clr(u),
+    dlip: u => -F.d * k * ex * b02_cd(u), dledge: u => -(F.d - F.mis) * k * ex * b02_cd(u)
+  };
+}
+/** the pose of the pressed lip: dropped by drop (0..1) of its gap and, once landed, rolled onto the ledge at contact cu
+   (the lip turns about its own point at cu until it is tangent to the ledge there, then sits on it). Returns { th (radians,
+   counter-clockwise in the model), map(u, y) → [u, y] (model, y up) } */
+function b02_frontPose(k, ex, drop, cu) {
+  const Y = b02_frontY(k, ex), c0 = [cu, Y.lip(cu)];
+  const th = k > 0.001 ? Math.atan(Y.dledge(cu)) - Math.atan(Y.dlip(cu)) : 0, D = (Y.lip(cu) - Y.ledge(cu)) * clamp(drop);
+  const cs = Math.cos(th), sn = Math.sin(th);
+  return { th, map: (u, y) => { const dx = u - c0[0], dy = y - c0[1]; return [c0[0] + dx * cs - dy * sn, c0[1] + dx * sn + dy * cs - D]; } };
+}
+/** where the lip rolls to under a press at u: under the press, within the reach of the roll (the valley's two inflections) */
+const b02_frontReach = u => clamp(u, B02_FR.uc - B02_FR.hw / 2, B02_FR.uc + B02_FR.hw / 2);
+/** the front of the mouse's triggers, head-on, drawn over mouseSimple('front') in its frame (inside establish's draw).
+   o = { k, drop (0..1), cu (the contact the lip has rolled to; uc before it rolls), hit (0..1), hitCol, wear: [[u, a], ...]
+   (marks left where the lip has landed), lit (0..1: the pressed trigger outlined in ink), ex (heights drawn ×, B02_FR.ex) }. Returns stage points: top(u) (the front
+   edge's top, where a finger presses), contact, corner, and th (radians, drawn) */
 function b02_frontMM(o = {}) {
-  const F = B02_FR, k = o.k == null ? 1 : o.k, ex = F.ex, out = {};
-  const Lg = u => -(F.d - F.mis) * k * ex * b02_c(Math.abs(u));               /* the ledge's top */
-  const L = u => (-F.d * b02_c(Math.min(u, F.W)) + F.mis) * k * ex;                           /* the lip's underside, landed at the valley */
-  const dLg = u => -(F.d - F.mis) * k * ex * b02_cd(u), dL = u => -F.d * k * ex * b02_cd(u);
-  const lift = (1 - clamp(o.drop || 0)) * F.gap * ex;
-  /* landed and rolled onto the ledge at cu: turn the lip about its point at cu until it is tangent to the ledge there */
-  const cu = o.cu == null ? F.uc : o.cu, landed = clamp(o.drop || 0);
-  const th = k > 0.01 ? (Math.atan(dLg(cu)) - Math.atan(dL(cu))) * landed : 0, ty = (Lg(cu) - L(cu)) * landed;
-  const T = (u, y) => { const dx = u - cu, dy = y - L(cu), c = Math.cos(th), sn = Math.sin(th); return [cu + dx * c - dy * sn, -(L(cu) + dx * sn + dy * c + ty + lift)]; };
-  const shell = o.noseFill || (TH ? '#D9D8D2' : '#2B2C31'), trig = o.fill || (TH ? '#EFEEE9' : '#3B3C42'), edge = inkA(TH ? 0.55 : 0.5);
-  /* the nose under both triggers, its ledge the lips land on */
-  const U0 = o.mirror ? -F.lip - 2 : -1.6, U1 = F.lip + 2;
-  const lg = []; for (let u = U0; u <= U1 + 1e-9; u += 0.2) lg.push([u, -Lg(Math.min(Math.abs(u), F.W))]);
-  G.beginPath(); lg.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.lineTo(U1, 7); G.lineTo(U0, 7); G.closePath(); G.fillStyle = shell; G.fill();
-  G.beginPath(); lg.forEach((p, i) => i ? G.lineTo(p[0], p[1]) : G.moveTo(p[0], p[1])); G.strokeStyle = edge; G.lineWidth = lw(1.6); G.stroke();
-  out.ledge = u => SP(u, -Lg(u));
-  /* a lip: its underside, then its top (the face's height above it), rounded at the outer end */
-  const lipPts = (mir) => {
-    const pts = [], s = mir ? -1 : 1;
-    for (let u = 0.3; u <= F.lip + 1e-9; u += 0.2) pts.push(mir ? [-u, -(L(u) + lift)] : T(u, L(u)));
-    for (let u = F.lip; u >= 0.3 - 1e-9; u -= 0.2) { const r = u > F.lip - 1.2 ? (F.lip - u) / 1.2 : 1, y = L(u) + F.face * Math.sqrt(Math.max(0, 1 - (1 - r) * (1 - r))); pts.push(mir ? [-u, -(y + lift)] : T(u, y)); }
-    return pts;
+  const F = B02_FR, k = o.k == null ? 1 : o.k, ex = o.ex == null ? F.ex : o.ex, Y = b02_frontY(k, ex), drop = clamp(o.drop || 0), cu = o.cu == null ? F.uc : o.cu;
+  const pose = b02_frontPose(k, ex, drop, cu), M = XF.m.slice(), SPc = (x, y) => SPm(M, x, -y), out = { th: pose.th };
+  const body = b02_bodyF(), trig = b02_partF(), edge = inkA(TH ? 0.55 : 0.5), U = B02_FO.uMax, n = 0.25;
+  const poly = (pts, fill, stroke, w) => { G.beginPath(); pts.forEach(([u, y], i) => i ? G.lineTo(u, -y) : G.moveTo(u, -y)); G.closePath(); if (fill) { G.fillStyle = fill; G.fill(); } if (stroke) { G.strokeStyle = stroke; G.lineWidth = lw(w || 1.6); G.lineJoin = 'round'; G.stroke(); } };
+  const run = (pts, col, w, cap) => { G.beginPath(); pts.forEach(([u, y], i) => i ? G.lineTo(u, -y) : G.moveTo(u, -y)); G.strokeStyle = col; G.lineWidth = lw(w); G.lineCap = cap || 'round'; G.lineJoin = 'round'; G.stroke(); };
+  G.save(); G.clip(msView('front').out);
+  /* cover the kit's triggers, its split and its wheel down past the ledge: this drawing replaces them */
+  { const ring = []; for (let u = -U; u <= U + 1e-9; u += n) ring.push([u, Y.ledge(u) - 2.5]);
+    const tp = B02_FO.top.map(([x, y]) => [x, y + 0.6]); for (const p of tp) ring.push(p); for (let i = tp.length - 1; i >= 0; i--) ring.push([-tp[i][0], tp[i][1]]);
+    poly(ring, body); }
+  /* the slot under the lips: what shows between a lip and its ledge */
+  { const sl = []; for (let u = -U; u <= U + 1e-9; u += n) sl.push([u, Y.ledge(u)]); for (let u = U; u >= -U - 1e-9; u -= n) sl.push([u, Y.lip(u) + 1.2]); poly(sl, inkA(TH ? 0.13 : 0.2)); }
+  /* the ledge: the shell's edge the lips land on */
+  { const lg = []; for (let u = -U; u <= U + 1e-9; u += n) lg.push([u, Y.ledge(u)]); run(lg, edge, 1.6); }
+  /* wear: where the lip has landed before */
+  for (const [wu, wa] of (o.wear || [])) if (wa > 0.01) { G.save(); G.globalAlpha *= wa; const y0 = Y.ledge(wu); run([[wu - 1.1, y0], [wu + 1.1, y0]], C.red, 4.2, 'butt'); G.restore(); }
+  /* a trigger: its underside (the lip), up the side and over the top, mapped by its pose */
+  const shape = (side, map) => {
+    const pts = [];
+    for (let u = 0.3; u <= U + 1e-9; u += n) pts.push(map(u, Y.lip(u)));
+    for (const [x, y] of B02_FO.top) if (x >= 0.3) pts.push(map(x, y)); pts.push(map(0.3, 37.375));
+    return pts.map(([u, y]) => [u * side, y]);
   };
-  const drawLip = (pts, a, lit) => {
-    G.save(); G.globalAlpha *= a; b02_pathOf(pts); G.fillStyle = trig; G.fill(); G.strokeStyle = edge; G.lineWidth = lw(1.6); G.lineJoin = 'round'; G.stroke();
-    if (lit) { const n = Math.floor(pts.length / 2); b02_pathOf(pts.slice(0, n), false); G.strokeStyle = lit; G.lineWidth = lw(3); G.lineCap = 'round'; G.stroke(); }
-    G.restore();
-  };
-  if (o.mirror) drawLip(lipPts(true), 0.5, null);
-  drawLip(lipPts(false), 1, o.lit);
-  out.top = u => SP(...T(u, L(u) + F.face)); out.lip = u => SP(...T(u, L(u))); out.topM = u => -T(u, L(u) + F.face)[1];
-  out.roll = th / ex;   /* the true roll, radians */
-  if (o.hit > 0) {
+  const frontTop = (side, map) => { const pts = []; for (let u = 0.3; u <= F.flat + 6 + 1e-9; u += n) { const y0 = Y.lip(u) + F.face; if (y0 > B02_FO.base(u) + F.face + 0.01 && u > F.flat) break; pts.push(map(u, Y.lip(u) + F.face)); } return pts.map(([u, y]) => [u * side, y]); };
+  const still = (u, y) => [u, y];
+  /* the user's right trigger (viewer's left), still; then the pressed one */
+  poly(shape(-1, still), trig, edge, 1.6); run(frontTop(-1, still), inkA(TH ? 0.32 : 0.3), 1.3);
+  poly(shape(1, pose.map), trig, edge, 1.6); run(frontTop(1, pose.map), inkA(TH ? 0.32 : 0.3), 1.3);
+  if (o.lit > 0.003) { G.save(); G.globalAlpha *= o.lit; poly(shape(1, pose.map), rgba(C.ink, TH ? 0.06 : 0.1), C.ink, 2.4); G.restore(); }
+  /* the centre split, and the wheel in it, over both */
+  { const V = msView('front'), w = V.parts.wheel && V.parts.wheel.solid; line(0, -Y.ledge(0), 0, -37.4, { color: edge, w: lw(1.3) });
+    if (w) { G.fillStyle = TH ? C.track : C.hair; G.fill(w); G.strokeStyle = inkA(TH ? 0.5 : 0.45); G.lineWidth = lw(1.2); G.stroke(w); } }
+  G.restore();
+  /* where it lands: one red spot on the grooved front; the whole flat on Theseus */
+  if (o.hit > 0.003) {
     xsave(); ga(o.hit);
-    if (k > 0.5) { const p = T(cu, L(cu)); G.beginPath(); G.arc(p[0], p[1], 0.5, 0, TAU); G.fillStyle = o.hitCol || C.red; G.fill(); G.beginPath(); G.arc(p[0], p[1], 1.0, 0, TAU); G.strokeStyle = o.hitCol || C.red; G.lineWidth = lw(1.5); G.stroke(); out.hitAt = SP(p[0], p[1]); }
-    else { const pts = []; for (let u = 0.6; u <= F.lip - 0.6; u += 0.2) pts.push(T(u, L(u))); b02_pathOf(pts, false); G.strokeStyle = o.hitCol || C.hero; G.lineWidth = lw(3.6); G.lineCap = 'round'; G.stroke(); out.hitAt = SP(...T(F.uc, L(F.uc))); }
+    if (k > 0.5) { const yy = Y.ledge(cu); G.beginPath(); G.arc(cu, -yy, 0.55, 0, TAU); G.fillStyle = o.hitCol || C.red; G.fill(); G.beginPath(); G.arc(cu, -yy, 1.15, 0, TAU); G.strokeStyle = o.hitCol || C.red; G.lineWidth = lw(2); G.stroke(); }
+    else { const pts = []; for (let u = 0.6; u <= F.flat - 0.4 + 1e-9; u += n) pts.push([u, Y.ledge(u)]); run(pts, o.hitCol || C.hero, 4.4); }
     xrest();
   }
+  out.top = u => { const [x, y] = pose.map(u, Y.lip(u) + F.face); return SPc(x, y); };
+  out.lipAt = u => { const [x, y] = pose.map(u, Y.lip(u)); return SPc(x, y); };
+  out.ledgeAt = u => SPc(u, Y.ledge(u));
+  out.corner = (() => { const [x, y] = pose.map(29.12, 24.46); return SPc(x, y); })();
+  out.P = (x, y) => SPc(x, y);
   return out;
 }
 
@@ -362,7 +402,7 @@ function b02_frontMM(o = {}) {
    of the pad to colour: a pinch) }. Returns { contact: [u0, u1] (where the pad touches), top: [u, y], pad: [u, y] } (model mm) */
 function b02_fingerEndMM(o = {}) {
   const w = o.w || 16, hh = o.h || 13, a = w / 2, cx = o.cx || 0, base = o.base || 0, sink = o.sink || 0, surf = o.surf || (() => base - 9);
-  const skin = TH ? '#C4C3BD' : '#5F5E59', edge = TH ? 'rgba(40,40,38,0.6)' : 'rgba(230,230,225,0.45)', nail = TH ? '#DCDBD6' : '#7A7973';
+  const skin = C.comp, edge = inkA(TH ? 0.6 : 0.45), nail = TH ? C.hair : C.faint;
   /* the pad's resting underside: a flattened ellipse 16 mm wide, its lowest point at base; pushed down by sink */
   const rest = u => { const x = (u - cx) / a; return Math.abs(x) >= 1 ? base + hh * 0.42 : base + hh * 0.42 * (1 - Math.sqrt(1 - x * x)) * 1.0; };
   const bot = [], cont = [];
@@ -381,6 +421,23 @@ function b02_fingerEndMM(o = {}) {
   return { contact: cont.length ? [Math.min(...cont), Math.max(...cont)] : null, top: [cx, topY], pad: [cx, Math.max(rest(cx) - sink, surf(cx))] };
 }
 
+/** a finger seen from the front (the nose): the kit's end-on fingertip, and behind it the finger's back rising toward the
+   knuckle (in a claw or relaxed grip it climbs steeply, so from the front it stands above the tip as a column that fades).
+   (x, y) the pad's contact, stage px; s px per mm; ang tilts it with the button; press flattens the pad */
+function b02_fingerFront(x, y, ang, o = {}) {
+  const a = o.alpha == null ? 1 : o.alpha; if (a <= 0.003) return;
+  const s = o.s || 3.2, skin = TH ? '#C3C3C3' : '#5E5E5E', edge = TH ? 'rgba(40,40,40,0.6)' : 'rgba(230,230,230,0.45)';   /* the kit's finger greys, neutral */
+  G.save(); G.globalAlpha = a; G.translate(x, y); G.rotate(ang); G.scale(s, s);
+  const y0 = -7, y1 = -(o.rise || 30), g = G.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, rgba(skin, 1)); g.addColorStop(0.55, rgba(skin, 0.85)); g.addColorStop(1, rgba(skin, 0));
+  const ge = G.createLinearGradient(0, y0, 0, y1); ge.addColorStop(0, edge); ge.addColorStop(1, 'rgba(128,128,128,0)');
+  G.beginPath(); G.moveTo(-7.6, y0); G.bezierCurveTo(-7.5, y0 - 8, -7.1, y1 + 6, -6.9, y1); G.lineTo(6.9, y1); G.bezierCurveTo(7.1, y1 + 6, 7.5, y0 - 8, 7.6, y0); G.closePath();
+  G.fillStyle = g; G.fill();
+  G.beginPath(); G.moveTo(-7.6, y0); G.bezierCurveTo(-7.5, y0 - 8, -7.1, y1 + 6, -6.9, y1); G.moveTo(7.6, y0); G.bezierCurveTo(7.5, y0 - 8, 7.1, y1 + 6, 6.9, y1);
+  G.strokeStyle = ge; G.lineWidth = 1.3 / s; G.stroke();
+  G.restore();
+  finger(x, y, ang, { s, press: o.press || 0, view: 'end', alpha: a });
+}
+
 /* ============================== flush walls (#48) and which way a cutout faces: one trigger edge, head-on ==============================
    The trigger's outer edge beside the shoulder at the wall's length, seen from the nose (the user's left trigger on the
    right), mm, y up (drawn y down). u is the distance out from the centre split. Three set-ups, morphable:
@@ -395,7 +452,7 @@ const B02_FL = { tr: 0.42, gap: 0.35, uE: 24.0, skin: 1.3, wallW: 3.4 };
 function b02_flushMM(o = {}) {
   const F = B02_FL, face = o.face || 'ceiling', ex = o.ex || 6, tr = (o.tr || F.tr), d = clamp(o.press || 0) * tr, out = {};
   const top = u => 21.6 - 0.0113 * u * u;                                       /* the crown across, at the wall's length */
-  const shell = TH ? '#D9D8D2' : '#2B2C31', trig = TH ? '#EFEEE9' : '#3B3C42', edge = inkA(TH ? 0.55 : 0.5);
+  const shell = b02_shellF(), trig = b02_partF(), edge = inkA(TH ? 0.55 : 0.5);
   const fill = (pts, col) => { b02_pathOf(pts.map(([u, y]) => [u, -y])); G.fillStyle = col; G.fill(); G.strokeStyle = edge; G.lineWidth = lw(1.6); G.lineJoin = 'round'; G.stroke(); };
   const dy = -d * ex;
   if (face === 'wall') {
@@ -463,7 +520,7 @@ const B02_CT = { press: { down: 0.16, hold: 0.55, up: 0.22 }, p1: 1.65, p2: 2.7,
 /** the overlay on the kit's top view, in its camera (mm): both triggers with the rear cutout blended k (1 smile .. 0
    straight), the body's outline restroked over them, the lit rear edge, then the left trigger's own drawing */
 function b02_cutOverlay(k, o = {}) {
-  const V = msView('top'), bodyF = TH ? '#FFFFFF' : '#1A1B1E', ink = TH ? '17,17,17' : '243,242,238';
+  const V = msView('top'), bodyF = b02_bodyF(), ink = TH ? '17,17,17' : '243,243,245';
   G.save(); G.clip(V.out);
   /* cover the kit's straight rear line where the smile leaves it, then lay both triggers over the body */
   G.fillStyle = bodyF; G.fillRect(-34, -14 * b02_K().y, 68, 12.4);
@@ -488,18 +545,18 @@ function b02_fold(cx, cy, s, slant, f, o = {}) {
   const flap0 = [[-W2, creaseZ(-W2)], [W2, creaseZ(W2)], [W2, L1], [-W2, L1]];
   let K = ax; if (b02_rot([0, 0, cz + 5], A, K, 0.2)[1] < 0) K = K.map(v => -v);
   const ang = 2.8 * clamp(f), flap = flap0.map(([x, z]) => cam.P(b02_rot([x, 0, z], A, K, ang)));
-  const paperC = TH ? '#FFFFFF' : '#26272B', backC = TH ? '#E3E2DC' : '#34353A', ed = inkA(TH ? 0.5 : 0.45);
+  const paperC = TH ? C.panel : C.hair, backC = TH ? C.hair : C.comp2, ed = inkA(TH ? 0.5 : 0.45);
   G.save(); G.globalAlpha *= (o.alpha == null ? 1 : o.alpha); G.lineJoin = 'round';
   b02_pathOf(base); G.fillStyle = paperC; G.fill(); G.strokeStyle = ed; G.lineWidth = 1.5; G.stroke();
   /* the crease */
   const c0 = cam.P([-W2, 0, creaseZ(-W2)]), c1 = cam.P([W2, 0, creaseZ(W2)]);
-  line(c0[0], c0[1], c1[0], c1[1], { color: o.col || C.ink, w: 2.5, dash: [6, 4] });
+  line(c0[0], c0[1], c1[0], c1[1], { color: o.col || C.ink, w: 2.5, dash: [6, 4], alpha: G.globalAlpha });
   /* where the flap started, faint; where its far corner goes */
   b02_pathOf(flap0.map(([x, z]) => cam.P([x, 0, z]))); G.setLineDash([4, 4]); G.strokeStyle = inkA(0.3); G.lineWidth = 1.2; G.stroke(); G.setLineDash([]);
   const facing = ang > Math.PI / 2;
   b02_pathOf(flap); G.fillStyle = facing ? backC : paperC; G.fill(); G.strokeStyle = ed; G.lineWidth = 1.5; G.stroke();
   const tip = cam.P(b02_rot([0, 0, L1], A, K, ang));
-  circle(tip[0], tip[1], 5, { fill: o.col || C.ink });
+  circle(tip[0], tip[1], 5, { fill: o.col || C.ink, alpha: G.globalAlpha });
   G.restore();
   return { tip, crease: [c0, c1] };
 }
@@ -516,12 +573,12 @@ function b02_gfTag(x, y, a, val, o = {}) {
 S({
   id: 'b02_cutouts', ch: 'click', theme: 'paper', title: 'Straight rear cutouts', settle: 10.5, ideas: [17, 18],
   replaces: ['cutouts'],
-  src: ['b02_scan', 'clk_gt01', 'clk_brock', 'b02_tpuV3'],
+  src: ['b02_scan', 'clk_gt01', 'clk_brock', 'b02_tpuV3', 'b02_nickel'],
   answers: [
     ['everything here is among the most important concepts', 'It leads the chapter right after the card, with the most care: the whole mouse, one push-in, the same two presses on the smile and on the straight cutout, and the numbers that come out of the hinge'],
     ['but probably has the worst graphic design in the entire deck', 'Rebuilt from nothing: the abstract grey blocks are gone; the trigger is the trigger, traced from the 3D model, and it is pressed by a finger'],
     ['it\'s super unintuitive to understand because you can hardly tell which part of the mouse you\'re looking at it\'s so abstract', 'It opens on the whole simplified mouse from above with the rear cutout lit, pushes in to the left trigger in one move and keeps a locator in the corner; the spring, the switch and the bend line are drawn through the shell where they really sit'],
-    ['also the benefit to the player isn\'t really sold', 'Sold twice and shown: the click weighs the same wherever your finger lands across the button (47 or 52 gf on the smile, 49 gf either way straight), and none of the press goes sideways into the switch (8.0 % → 0 %, the headline)'],
+    ['also the benefit to the player isn\'t really sold', 'Sold as what the finger feels and shown at two presses: the click weighs the same wherever your finger lands across the button (47.0 or 52.3 gf on the smile, 48.8 gf either way straight; the headline is the outer side\'s extra 5.3 gf, a US nickel, going to 0), and none of the travel at the switch goes sideways (8.0 % → 0.0 %, in the loupe). The old slide\'s "33.4 % sideways" (sin of the lean: the share of the motion that is a roll) is not carried forward'],
     ['(F33.5) important ideas executed wrong get vastly improved, with more importance', 'It is this chapter\'s lead slide and its checkpoint'],
     ['(#18) the tensioner aligned with the switch', 'Each spring is drawn centred on its switch\'s line, and the caption says so; the Sora\'s own spring position is not public, so no before number is claimed for it']
   ],
@@ -530,9 +587,9 @@ S({
     const Q = B02_CT, H1 = b02_hinge(1);
     header(t, 'Straight rear cutouts');
     captions(t, [[0.5, 'The spring under each trigger bends along the rear cutout. Most mice curve that cutout into a smile, as on the Sora V2.'],
-      [Q.p1 - 0.1, 'So the trigger turns about a line 13° off square: part of every press swings the switch sideways, and the outer edge clicks heavier.'],
+      [Q.p1 - 0.1, 'So the trigger turns about a line 13° off square: the outer side clicks heavier than the inner, and some of the travel at the switch goes sideways.'],
       [Q.mo[0], 'Cut it straight, with each spring centred on its own switch, and the trigger turns square to the press. Razer did the same from the Viper V2 Pro to the V3 Pro.'],
-      [Q.v + 0.4, 'Nothing goes sideways, and the click weighs the same wherever your finger lands across the button.']]);
+      [Q.v + 0.4, 'The click weighs the same wherever your finger lands, and nothing at the switch goes sideways.']]);
     const km = 1 - ep(t, Q.mo[0], Q.mo[0] + Q.mo[1], E.io3), lean = H1.lean * km, rival = km > 0.5;
     const prs = [Q.p1, Q.p2, Q.p3, Q.p4].map(p => pressCurve(t, p, Q.press)), dNow = Math.max(...prs);
     const pts = [[-B02.sw.x + Q.dx, Q.zP], [-B02.sw.x - Q.dx, Q.zP]];
@@ -576,6 +633,12 @@ S({
         if (kB[j] > 0) b02_gfTag(x, y, kB[j], gf[j][1].toFixed(1), { before: gf[j][0].toFixed(1), col: C.heroText, align: right ? 'left' : 'right' });
         else b02_gfTag(x, y, kA[j] * (1 - ep(t, Q.mo[0], Q.mo[0] + 0.4) * 0), gf[j][0].toFixed(1), { col: C.ink, align: right ? 'left' : 'right' });
         if (kA[j] > 0) text(right ? 'Inner side' : 'Outer side', x, y + 32, { role: 'label', size: 21, color: C.mute, align: right ? 'left' : 'right', alpha: Math.max(kA[j], kB[j]) });
+        /* the outer side's extra weight, in a coin, where the finger feels it; then the same as the inner side */
+        if (!right && kA[1] > 0) {
+          const dg = gf[1][0] - gf[0][0], kx = ep(t, Q.p2 + 0.5, Q.p2 + 0.8) * (1 - ep(t, Q.mo[0], Q.mo[0] + 0.3)), ks = ep(t, Q.p4 + 0.4, Q.p4 + 0.7);
+          if (kx > 0) text('+' + dg.toFixed(1) + ' gf: a US nickel', x, y + 62, { role: 'small', size: 22, weight: 650, color: C.red, align: 'right', alpha: kx });
+          if (ks > 0) text('Same as the inner side', x, y + 62, { role: 'small', size: 22, weight: 650, color: C.heroText, align: 'right', alpha: ks });
+        }
       });
     }
     /* the classroom version, top right: fold a page on a square crease and on a slanted one */
@@ -596,14 +659,15 @@ S({
     const share = b02_sideShare(lean) * 100;
     if (kl > 0) {
       text(share.toFixed(1) + '%', lx, ly + lr + 50, { role: 'num', size: 34, weight: 800, color: share > 0.05 ? C.red : C.heroText, align: 'center', alpha: kl });
-      text('of its travel, sideways', lx, ly + lr + 80, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: kl });
+      text('of the travel there, sideways', lx, ly + lr + 80, { role: 'label', size: 21, color: C.mute, align: 'center', alpha: kl });
     }
     /* what the player gets, in words, beside the headline */
-    { const g0 = b02_clickGf2(0, -B02.sw.x + Q.dx, Q.zP);
-      noteBox(t, Q.v + 1.3, 1480, 650, 360, { label: 'What you feel', value: null, head: 'The same click, either side', body: `${g0.toFixed(1)} gf, a little under an egg's weight, wherever your finger lands across it. None of the press goes sideways.` }); }
-    /* the verdict: what the switch gets, then what the finger gets */
-    verdict(t, Q.v, 980, 890, { from: (b02_sideShare(H1.lean) * 100).toFixed(1), to: '0.0', unit: '%', label: 'Sideways push', better: 'lower', who: ['Sora V2', 'Theseus'], size: 112, maxW: 480 });
-    source(t, 'Derived. The Sora V2\'s rear cutout from Brock\'s scan (the 3D model); a 10 mm spring on the switch\'s line, 16 mm out (board plan 5); the same GT01 (55 gf) and bridge (7.7 gf) on both; presses 10 mm ahead of the switch, ' + B02_CT.dx + ' mm either side of its line.', { t0: 1.6, maxW: 1360 });
+    const gIn = b02_clickGf2(1, ...pts[0]), gOut = b02_clickGf2(1, ...pts[1]), dG = gOut - gIn;
+    { const g0 = b02_clickGf2(0, ...pts[0]);
+      noteBox(t, Q.v + 1.3, 1480, 650, 360, { label: 'What you feel', value: null, head: 'The same click, either side', body: `${g0.toFixed(1)} gf, a little under an egg's weight, wherever your finger lands across it. Nothing at the switch goes sideways.` }); }
+    /* the verdict: what the finger feels (the click's weight across the button); the switch's share is in the loupe */
+    verdict(t, Q.v, 980, 880, { from: dG.toFixed(1), to: '0.0', unit: 'gf', label: 'Extra weight at the outer side', better: 'lower', who: ['Sora V2', 'Theseus'], size: 112, maxW: 490 });
+    source(t, 'Derived: each trigger turns about the chord of its rear cutout over a 10 mm spring on the switch\'s line; the Sora V2\'s (Brock\'s scan) leans 13.2°. Click weight = (GT01 55 gf × switch lever + bridge 7.7 gf × 40 mm) ÷ finger lever; presses 10 mm ahead of the switch, ' + B02_CT.dx + ' mm either side.', { t0: 1.6, maxW: 1380 });
   }
 });
 
@@ -612,27 +676,104 @@ S({
    when there is heavy front comfort grooves, and how that can cause wobble side to side, because the front will never reach
    the bottom in the same spot at the same, and where it reaches the bottom first will depend on where you press it, create
    wobble which makes the parts feel cheap and wear out faster". Not a section: the front of the mouse, head-on. */
-const B02_FT = { press: { down: 0.18, hold: 0.62, up: 0.24 }, p1: 1.75, p2: 2.95, mo: [4.05, 0.9], p3: 5.15, p4: 6.2, v: 6.7, u: [4.5, 15.5] };
+const B02_FT = { press: { down: 0.18, hold: 0.62, up: 0.24 }, p1: 1.7, p2: 3.05, mo: [4.2, 0.9], p3: 5.35, p4: 6.55, v: 7.0, u: [8.0, 16.5] };
 /** the classroom version: a rocker (a half-round bottom) and a flat block on a floor, pressed on one side, then the other.
    The rocker rolls onto a new spot each time (rolling without slipping: its centre moves R·φ); the block stays put */
 function b02_rockers(t, r, roll, pressAt, a) {
   const [x, y, w, h] = r, fy = y + h - 30, s = Math.min(w / 260, h / 150), R = 34 * s, c1 = x + w * 0.28, c2 = x + w * 0.74;
   G.save(); G.globalAlpha *= a;
-  line(x + 10, fy, x + w - 10, fy, { color: inkA(0.45), w: 2 });
-  const body = TH ? '#FFFFFF' : '#2A2B30', ed = inkA(TH ? 0.6 : 0.55);
+  line(x + 10, fy, x + w - 10, fy, { color: inkA(0.45), w: 2, alpha: a });
+  const body = TH ? C.panel : C.hair, ed = inkA(TH ? 0.6 : 0.55);
   /* the rocker */
-  { const cx = c1 - R * roll, cy = fy - R; G.save(); G.translate(cx, cy); G.rotate(roll);
+  { const cx = c1 + R * roll, cy = fy - R; G.save(); G.translate(cx, cy); G.rotate(roll);
     G.beginPath(); G.moveTo(-R, 0); G.arc(0, 0, R, Math.PI, 0, true); G.lineTo(R, -R * 1.1); G.lineTo(-R, -R * 1.1); G.closePath(); G.fillStyle = body; G.fill(); G.strokeStyle = ed; G.lineWidth = 2; G.stroke(); G.restore();
-    circle(cx, fy, 5, { fill: C.red }); }
+    circle(cx, fy, 5, { fill: C.red, alpha: a }); }
   /* the flat block */
-  { const bw = R * 2, bh = R * 2.1; rr(c2 - bw / 2, fy - bh, bw, bh, 4, body, ed, 2); line(c2 - bw / 2 + 3, fy, c2 + bw / 2 - 3, fy, { color: C.hero, w: 4 }); }
+  { const bw = R * 2, bh = R * 2.1; rr(c2 - bw / 2, fy - bh, bw, bh, 4, body, ed, 2, a); line(c2 - bw / 2 + 3, fy, c2 + bw / 2 - 3, fy, { color: C.hero, w: 4, alpha: a }); }
   /* the press, on one side or the other, the same on both */
-  if (pressAt) { const [side, k] = pressAt; for (const [cx, top] of [[c1, fy - R * 2.1], [c2, fy - R * 2.1]]) { const px = cx + side * R * 0.7; arrow(px, top - 48, px, top - 6, { color: C.ink, w: 3, hs: 11, alpha: k }); } }
+  if (pressAt) { const [side, k] = pressAt; for (const [cx, top] of [[c1, fy - R * 2.1], [c2, fy - R * 2.1]]) { const px = cx + side * R * 0.7; arrow(px, top - 48, px, top - 6, { color: C.ink, w: 3, hs: 11, alpha: k * a }); } }
   G.restore();
   return { c1, c2, fy, R };
 }
-/* DEV PREVIEW (remove before handing in) */
-S({ id: 'b02_dev', ch: 'click', theme: 'paper', title: 'dev', settle: 4, draw: t => {
+S({
+  id: 'b02_front', ch: 'click', theme: 'paper', title: 'A flat front, no wobble', settle: 10.5, ideas: [46, 47],
+  replaces: ['clk_front'],
+  src: ['clk_brock', 'clk_protolabs'],
+  answers: [
+    ['this slide has second worst execution in the deck', 'Rebuilt as three slides (this one, b02_grooves, b02_flush), each a demonstration on the simplified mouse; this one shows the front edge itself, head-on, pressed by a finger'],
+    ['it fails to intuitively communicate what is going on. if they were not my ideas i\'d be very lost', 'One idea per slide, one view: the whole mouse from the front, one push-in to the left trigger\'s front edge (locator kept), the same two presses on a grooved front and on Theseus\'s flat one, and a rocker beside it'],
+    ['the left needs to compare to what happens when you don\'t have a straight front, like when there is heavy front comfort grooves', 'The rival is a front with heavy comfort grooves running to the edge: its lip and the ledge under it dip together, 0.1 mm out of step (inside two ±0.076 mm molds); then the grooves run out and the front is flat'],
+    ['and how that can cause wobble side to side, because the front will never reach the bottom in the same spot at the same, and where it reaches the bottom first will depend on where you press it', 'Shown: pressed on the inner side the lip lands and rolls in, on the outer side it rolls out; the red landing spot moves 8.5 mm with the finger and the button tips 0.9° each way'],
+    ['create wobble which makes the parts feel cheap and wear out faster', 'The rock is measured where you feel it (the outer corner moves 0.5 mm between the two presses, the headline), each landing leaves a red mark on one spot, and the note says it: feels loose, wears where it lands. On the flat front the whole edge lands, blue'],
+    ['these are all very important concepts and probably should be spread out over multiple slides, but still dense in information, not too many slides', 'Three slides: the flat front (here), the grooves that lock the finger in (b02_grooves), flush walls and ceiling-facing cutouts (b02_flush)'],
+    ['i don\'t think cross sections are the best way to communicate the comfort grooves that get shallower near the front', 'On b02_grooves (no sections: the button\'s surface in 3/4)'],
+    ['also it needs to be explained that these help lock your fingers in across another plane of motion and increase surface area contact since the front has more surface area too', 'On b02_grooves'],
+    ['for the right visualization, it genuinely took me so long to realize that you weren\'t demonstrating an alternative to the the left demonstration', 'On b02_flush, its own slide with its own rival'],
+    ['you need to show how some mice do that concept wrong to create larger gaps than there should be and how we do it right', 'On b02_flush'],
+    ['this is also an amazing opportunity to demonstrate why the cutouts are ceiling or wall facing', 'On b02_flush']
+  ],
+  sfx: [[pressCross(B02_FT.p1, B02_FT.press, 0.7), 'click'], [pressCross(B02_FT.p2, B02_FT.press, 0.7), 'click'], [pressCross(B02_FT.p3, B02_FT.press, 0.7), 'click'], [pressCross(B02_FT.p4, B02_FT.press, 0.7), 'click']],
+  draw: t => {
+    const Q = B02_FT, F = B02_FR, D = Q.press;
+    header(t, 'A flat front, no wobble');
+    captions(t, [[0.5, 'Heavy comfort grooves that run to the front edge curve the trigger\'s front, and the ledge in the shell it lands on.'],
+      [Q.p1 - 0.1, 'Two molded curves never match exactly. The front lands on one spot and rocks on it, and which spot depends on where you press.'],
+      [Q.mo[0], 'Theseus\'s grooves run out before the front, so the front and its ledge are flat and parallel to the ground.'],
+      [Q.v + 0.4, 'The whole front lands at once, the same way wherever you press: no wobble, and no one spot taking every hit.']]);
+    const k = 1 - ep(t, Q.mo[0], Q.mo[0] + Q.mo[1], E.io3), rival = k > 0.5;
+    /* the four presses: inner, outer on the grooved front; inner, outer on the flat one */
+    const P = [Q.p1, Q.p2, Q.p3, Q.p4], Uf = [Q.u[0], Q.u[1], Q.u[0], Q.u[1]];
+    let drop = 0, act = -1; P.forEach((p, i) => { const d = pressCurve(t, p, D); if (d > drop + 1e-9) { drop = d; act = i; } });
+    const roll = act < 0 ? 0 : ep(t, P[act] + D.down, P[act] + D.down + 0.3) * (1 - ep(t, P[act] + D.down + D.hold, P[act] + D.down + D.hold + D.up * 0.55));
+    const cu = act < 0 ? F.uc : lerp(F.uc, b02_frontReach(Uf[act]), roll), hit = act < 0 ? 0 : clamp((drop - 0.95) / 0.05);
+    const wA = 1 - ep(t, Q.mo[0], Q.mo[0] + 0.45);
+    const wear = [[b02_frontReach(Q.u[0]), ep(t, Q.p1 + 0.5, Q.p1 + 0.75) * wA], [b02_frontReach(Q.u[1]), ep(t, Q.p2 + 0.5, Q.p2 + 0.75) * wA]];
+    const box = [80, 270, 1000, 610], exK = lerp(1, F.ex, ep(t, 0.95, 1.55));
+    let A = null;
+    const est = establish(t, 0, box, { view: 'front', hi: ['trigL'], col: 'ink', focus: [-4, -26, 36, 24], hold: 0.4, dur: 1.0, locator: 'tl',
+      mouse: { hide: ['triggers', 'seam', 'wheel'] },
+      draw: () => { A = b02_frontMM({ k, drop, cu, hit, wear, ex: exK, lit: ep(t, 0.12, 0.55) * (1 - ep(t, 1.3, 1.8)) }); } });
+    /* the finger, end-on: on the front edge's top, sliding between the presses, riding the trigger down and tipping with it */
+    if (A) {
+      const uF = kf(t, [[0.9, Q.u[0]], [Q.p1 + 1.05, Q.u[0]], [Q.p2 - 0.05, Q.u[1]], [Q.mo[0] + 0.15, Q.u[1]], [Q.p3 - 0.35, Q.u[0]], [Q.p3 + 1.05, Q.u[0]], [Q.p4 - 0.05, Q.u[1]]], E.cam);
+      const fa = ep(t, 0.9, 1.25), dy = (1 - ep(t, 0.9, 1.45, E.out3)) * -140, p = A.top(uF);
+      b02_fingerFront(p[0], p[1] + dy, -A.th, { s: est.s, press: drop, alpha: fa });
+    }
+    /* on the grooved front: the landing spot, named; and how far the corner rocks between the two presses */
+    const tr = F.ex, uE = 26, yE = ex => b02_frontY(1, ex).lip(uE), poseT = u => b02_frontPose(1, 1, 1, b02_frontReach(u)), cA = poseT(Q.u[0]).map(uE, yE(1)), cB = poseT(Q.u[1]).map(uE, yE(1));
+    const rock = Math.abs(cA[1] - cB[1]), deg = Math.abs(poseT(Q.u[0]).th) * 180 / Math.PI;
+    if (A) {
+      faultTag(t, Q.p1 + 0.45, A.ledgeAt(b02_frontReach(Q.u[0])), 'Lands on one spot', { to: [A.ledgeAt(b02_frontReach(Q.u[0]))[0] - 70, A.ledgeAt(0)[1] + 90], side: 'l', alpha: wA });
+      const pd = u => { const q = b02_frontPose(1, tr, 1, b02_frontReach(u)).map(uE, yE(tr)); return est.P(q[0], -q[1]); };
+      const yA = pd(Q.u[0]), yB = pd(Q.u[1]), kr = ep(t, Q.p2 + 0.55, Q.p2 + 0.85) * wA, x0 = Math.max(yA[0], yB[0]) + 34;
+      if (kr > 0) {
+        arrow(x0, (yA[1] + yB[1]) / 2, x0, Math.min(yA[1], yB[1]) - 2, { color: C.red, w: 2.5, hs: 10, alpha: kr });
+        arrow(x0, (yA[1] + yB[1]) / 2, x0, Math.max(yA[1], yB[1]) + 2, { color: C.red, w: 2.5, hs: 10, alpha: kr });
+        text('Rocks ' + rock.toFixed(2) + ' mm', x0 + 18, (yA[1] + yB[1]) / 2 - 4, { role: 'num', size: 30, weight: 800, color: C.red, alpha: kr });
+        text(deg.toFixed(1) + '° each way', x0 + 18, (yA[1] + yB[1]) / 2 + 26, { role: 'label', size: 20, color: C.mute, alpha: kr });
+      }
+      /* on Theseus: the whole front lands, the same line both times */
+      const kf1 = ep(t, Q.p3 + 0.2, Q.p3 + 0.45);
+      if (kf1 > 0) fixTag(t, Q.p3 + 0.2, A.ledgeAt(F.flat * 0.55), 'Lands along the whole front', { to: [A.ledgeAt(F.flat * 0.55)[0] - 60, A.ledgeAt(0)[1] + 90], side: 'l' });
+      scaleNote(box[0], box[1] + box[3] + 34, 'Heights and gaps drawn ' + F.ex + '×', { t, t0: 1.6, size: 21 });
+    }
+    /* the classroom version: a rocker and a flat block, pressed with the finger, side by side */
+    { const r = demoPanel(t, 0.15, [1120, 280, 720, 280], { label: 'The classroom version' }), ka = ep(t, 0.3, 0.6);
+      const side = act < 0 ? 0 : (Uf[act] < F.uc ? -1 : 1), rk = act < 0 ? 0 : roll * side * 0.3;
+      const g = b02_rockers(t, [r[0], r[1] - 6, r[2], r[3] - 40], rk, act < 0 ? null : [side, ep(drop, 0.2, 0.9)], ka);
+      text('Round bottom', g.c1, g.fy + 34, { role: 'label', size: 21, color: C.red, align: 'center', alpha: ka });
+      text('Rocks to where you press', g.c1, g.fy + 62, { role: 'small', size: 22, weight: 600, color: C.mute, align: 'center', alpha: ka });
+      text('Flat bottom', g.c2, g.fy + 34, { role: 'label', size: 21, color: C.ink2, align: 'center', alpha: ka });
+      text('Lands the same way', g.c2, g.fy + 62, { role: 'small', size: 22, weight: 600, color: C.mute, align: 'center', alpha: ka }); }
+    noteBox(t, Q.v + 1.3, 1120, 590, 720, { label: 'What you feel', head: 'A solid landing, every press', body: 'The front lands the same way wherever your finger sits: no wobble, and no one spot hammered by every click. A flat ledge is also easy to recut to tune the travel.' });
+    verdict(t, Q.v, 1120, 905, { from: rock.toFixed(2), to: '0.00', unit: 'mm', label: 'Rock at the outer corner', better: 'lower', who: ['Grooves to the front', 'Theseus'], rivalCol: 'grey', size: 112, maxW: 700 });
+    source(t, 'Derived: a 0.9 mm groove across the front, the lip\'s dip 0.1 mm deeper than the ledge\'s (molds hold ±0.076 mm: Protolabs); the lip rolls onto the ledge under the press. Theseus: both flat. Presses ' + Q.u[0] + ' and ' + Q.u[1] + ' mm out from the split.', { t0: 1.6, maxW: 1000 });
+  }
+});
+
+/* the lab: helpers on one page for checking; registers only with ?b02lab=1, so the film and the critic never see it */
+const B02LAB = (() => { try { return /[?&]b02lab=1\b/.test(location.search); } catch (e) { return false; } })();
+if (B02LAB) S({ id: 'b02_dev', ch: 'click', theme: 'paper', title: 'dev', settle: 4, draw: t => {
   header(t, 'b02 flush preview');
   [['wall', 0, 160], ['ceiling', 0, 760], ['ceiling', 1, 1360]].forEach(([face, wall, x0]) => {
     const pr = ep(t, 1, 2);

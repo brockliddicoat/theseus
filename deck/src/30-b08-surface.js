@@ -34,8 +34,6 @@ const B08 = {
   film: { um: 19, mil: 0.75, gm2: 36.914 * 0.75, cm2: 133, softUm: 51, softRho: 1.0, oldG: 0.49 },
   /* fingertip friction on laser grooves, Zhang 2017 at 1 N: across, along, diagonal */
   mu: { across: 0.53, along: 0.42, diag: 0.41, load: 1.0 },
-  /* Derler 2012, skin on glass, wet: smooth 0.61, roughened 1.43 */
-  wet: { smooth: 0.61, rough: 1.43 },
   /* tapes, thinnest first is the chase */
   tapes: [{ who: 'Lizard Skins DSP', mm: 0.5 }, { who: 'Pulsar SuperGrip', mm: 0.5 }, { who: 'TalonGames PU-0', mm: 0.3 }, { who: 'Keychron', mm: 0.3 }],
   /* pencil grades, softest first (ASTM D3363 / ISO 15184 scale) */
@@ -45,7 +43,13 @@ const B08 = {
 B08.film.g = B08.film.gm2 * B08.film.cm2 / 1e4;                          /* 0.368 g */
 B08.film.softG = B08.film.softUm * B08.film.softRho * B08.film.cm2 / 1e4;  /* 0.678 g */
 B08.mu.gain = B08.mu.across / B08.mu.along - 1;                            /* +0.262 */
-B08.lift = (() => { const mg = 0.02931 * 9.81; return { smooth: mg / (2 * B08.wet.smooth), rough: mg / (2 * B08.wet.rough), mg }; })();
+/* the lift: a pinch of thumb against ring finger holds the mouse up when 2 μ N ≥ m g. A pinch is about 0.3 N a side, so
+   Zhang 2017's grip at 0.2 and 0.4 N applies: across the ridges 0.51 and 0.50, along them 0.41 and 0.47 (means 0.505, 0.44).
+   Least squeeze a side: one direction everywhere (the sides' ridges run up and down: the lift slides along them) 0.327 N;
+   the map (the sides' ridges run front to back: the lift crosses them) 0.285 N, −13 %. At the same 0.30 N squeeze the grip
+   is 0.264 N along (below the 0.288 N weight: it slips) and 0.303 N across (above it: it holds). */
+B08.lift = (() => { const mg = THESEUS.mass / 1000 * 9.81, across = (0.51 + 0.50) / 2, along = (0.41 + 0.47) / 2, sq = 0.30;
+  return { mg, across, along, one: mg / (2 * along), map: mg / (2 * across), sq, gripOne: 2 * along * sq, gripMap: 2 * across * sq }; })();
 
 /* ============================== shared helpers (b08_) ============================== */
 /** dev slides (a lab for the helpers) register only with ?b08lab=1, so no other build ever sees them */
@@ -79,7 +83,7 @@ function b08_spring(x1, y1, x2, y2, o = {}) {
    behind a sliding patch, toward -dir), dir (radians), ink } */
 function b08_print(x, y, r, o = {}) {
   const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
-  const ink = o.ink || (TH ? '#2E2E2C' : '#F3F2EE'), sh = o.shear || [0, 0], ry = r * 0.78;
+  const ink = o.ink || (TH ? C.ink2 : C.ink), sh = o.shear || [0, 0], ry = r * 0.78;
   G.save(); G.globalAlpha = a; G.translate(x, y);
   /* the shear: the far side of the patch held by friction, the near side carried by the finger */
   G.transform(1, 0, sh[0] / (2 * ry), 1 + sh[1] / (2 * ry), 0, 0);
@@ -230,7 +234,7 @@ function b08_drawStreams(lines, M, o = {}) {
         const step = Math.min(seg - s0, left);
         if (inDash) {
           const ka = s0 / seg, kb = (s0 + step) / seg, qa = P(lerp(p0[0], p1[0], ka), lerp(p0[1], p1[1], ka)), qb = P(lerp(p0[0], p1[0], kb), lerp(p0[1], p1[1], kb));
-          G.globalAlpha = a0 * clamp(on * 1.15) * rv; G.lineWidth = Math.max(0.8, w0 * (0.55 + 0.45 * on) * (1 + 0.75 * dot));
+          G.globalAlpha = a0 * clamp(on * 1.15 + 0.35 * dot) * rv; G.lineWidth = Math.max(0.8, w0 * (0.55 + 0.45 * on) * (1 + 0.75 * dot));
           G.beginPath(); G.moveTo(qa[0], qa[1]); G.lineTo(qb[0] + (step < 1e-3 ? 0.01 : 0), qb[1]); G.stroke();
         }
         s0 += step; left -= step;
@@ -274,13 +278,13 @@ if (B08LAB) S({
     header(t, 'B08 lab: grip map streams');
     /* top view, key plan mm, 6 px/mm */
     const s = 6.2, cx = 520, cy = 620, M = [s, 0, 0, s, cx, cy];
-    part(cx, cy, s, () => { keyPath(); G.fillStyle = '#26272B'; G.fill(); G.strokeStyle = 'rgba(243,242,238,0.5)'; G.lineWidth = lw(1.5); G.stroke(); });
+    part(cx, cy, s, () => { keyPath(); G.fillStyle = '#26272B'; G.fill(); G.strokeStyle = rgba(C.ink, 0.5); G.lineWidth = lw(1.5); G.stroke(); });
     const domT = { x0: -31, y0: -59, x1: 31, y1: 59, inside: b08_insideTop };
     const LT = b08_streams('lab:top', domT, b08_fieldTop, { seeds: [[13, -34], [-13, -34]] });
     b08_drawStreams(LT, M, { w: 2.0 });
     /* side view from the twin */
     const V = srf_shellView('left', 1380, 660, 7.0); if (!V) return;
-    srf_vFill(V, V.path(/^body\/body$/), '#26272B', 'rgba(243,242,238,0.5)', 1.6, 1);
+    srf_vFill(V, V.path(/^body\/body$/), '#26272B', rgba(C.ink, 0.5), 1.6, 1);
     const sideP = V.path(/^body\/body$/), cv = document.createElement('canvas').getContext('2d');
     const domS = { x0: -60, y0: 0, x1: 60, y1: 40, inside: (u, v) => cv.isPointInPath(sideP, u, v) && cv.isPointInPath(sideP, u + 1.4, v) && cv.isPointInPath(sideP, u - 1.4, v) && cv.isPointInPath(sideP, u, v + 1.4) && cv.isPointInPath(sideP, u, v - 1.4) };
     const LS = b08_streams('lab:side', domS, b08_fieldSide, { seeds: [[-8, 11], [10, 20]] });
@@ -334,13 +338,13 @@ function b08_amphora(cx, by, H, o = {}) {
       const p0 = [cx + sd * R(0.9, sd) * 0.92, Y(0.9)], p1 = [cx + sd * H * 0.255, Y(0.94)], p2 = [cx + sd * H * 0.282, Y(0.8)], p3 = [cx + sd * R(0.72, sd) * 0.96, Y(0.72)];
       G.save(); G.globalAlpha = ha; G.lineCap = 'round';
       G.beginPath(); G.moveTo(p0[0], p0[1]); G.bezierCurveTo(p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]);
-      G.strokeStyle = mix('#8C8A83', '#1C1D21', f); G.lineWidth = H * 0.034; G.stroke();
-      G.strokeStyle = mix('#C2BFB8', '#4A4C53', f); G.lineWidth = H * 0.012; G.stroke();
+      G.strokeStyle = mix('#8A8A8A', '#1C1D21', f); G.lineWidth = H * 0.034; G.stroke();
+      G.strokeStyle = mix('#BFBFBF', '#4A4C53', f); G.lineWidth = H * 0.012; G.stroke();
       G.restore();
     }
   }
   /* the body: clay (pale, matte) to fired gloss (dark), turned by the light across its width */
-  const c0 = mix(mix('#BEBBB4', '#6E6B65', sl * 0.7), '#2A2B30', f), cS = mix(mix('#8A8781', '#4F4C47', sl * 0.7), '#121316', f), cH = mix(mix('#D4D1CA', '#85827C', sl * 0.7), '#5A5C64', f);
+  const c0 = mix(mix('#BBBBBB', '#6B6B6B', sl * 0.7), '#2A2B30', f), cS = mix(mix('#878787', '#4C4C4C', sl * 0.7), '#121316', f), cH = mix(mix('#D1D1D1', '#828282', sl * 0.7), '#5A5C64', f);
   const g = G.createLinearGradient(cx - Rm, 0, cx + Rm, 0);
   g.addColorStop(0, cS); g.addColorStop(0.18, c0); g.addColorStop(0.34, cH); g.addColorStop(0.62, c0); g.addColorStop(1, cS);
   body(); G.fillStyle = g; G.fill();
@@ -349,11 +353,11 @@ function b08_amphora(cx, by, H, o = {}) {
   const gv = G.createLinearGradient(0, Y(1), 0, by); gv.addColorStop(0, 'rgba(255,255,255,0.05)'); gv.addColorStop(0.3, 'rgba(255,255,255,0.08)'); gv.addColorStop(0.5, 'rgba(0,0,0,0)'); gv.addColorStop(1, 'rgba(0,0,0,0.28)');
   G.fillStyle = gv; G.fillRect(cx - Rm * 1.6, Y(1) - 4, Rm * 3.2, by - Y(1) + 8);
   /* throwing rings: the potter's fingers left shallow rings as the wheel turned */
-  if (sl < 0.6) { G.strokeStyle = f > 0.5 ? 'rgba(255,255,255,0.05)' : 'rgba(40,38,34,0.12)'; G.lineWidth = Math.max(1, H * 0.004);
+  if (sl < 0.6) { G.strokeStyle = f > 0.5 ? 'rgba(255,255,255,0.05)' : 'rgba(38,38,38,0.12)'; G.lineWidth = Math.max(1, H * 0.004);
     for (let u = 0.12; u < 0.76; u += 0.034) { const r0 = R(u, 1), yy = Y(u); G.beginPath(); G.ellipse(cx, yy, r0, r0 * 0.07, 0, 0, Math.PI); G.stroke(); } }
   /* a meander band round the belly, foreshortened as it wraps the curve (the labyrinth: Theseus's) */
   if (o.key !== false && sl < 0.7) {
-    const u0 = 0.49, u1 = 0.56, kc = mix('#8E8B85', '#B8B6B0', f), n = 9, ka = (1 - sl / 0.7);
+    const u0 = 0.49, u1 = 0.56, kc = mix('#8B8B8B', '#B6B6B6', f), n = 9, ka = (1 - sl / 0.7);
     G.strokeStyle = kc; G.globalAlpha = a * ka * (f > 0.5 ? 0.85 : 0.6); G.lineWidth = Math.max(1.2, H * 0.006); G.lineJoin = 'miter';
     const at = (ph, u) => { const r0 = R(u, 1), x = cx + r0 * Math.sin(ph), yy = Y(u) + r0 * 0.07 * Math.cos(ph); return [x, yy]; };
     for (const u of [u0 - 0.012, u1 + 0.012]) { G.beginPath(); for (let ph = -1.5; ph <= 1.5; ph += 0.05) { const q = at(ph, u); ph === -1.5 ? G.moveTo(q[0], q[1]) : G.lineTo(q[0], q[1]); } G.stroke(); }
@@ -377,8 +381,8 @@ function b08_amphora(cx, by, H, o = {}) {
     G.restore();
   }
   /* unfired: dust specks; slaking: wet mud streaks running down */
-  if (f < 0.98 && sl < 0.9) { const r = rng(17); G.fillStyle = `rgba(70,68,62,${0.22 * (1 - f)})`; for (let i = 0; i < 160; i++) { const u = r(), s2 = r() * 2 - 1; G.fillRect(cx + s2 * R(u, 1) * 0.95, Y(u), 1.6, 1.6); } }
-  if (sl > 0) { const r = rng(23); G.strokeStyle = `rgba(60,57,52,${0.5 * sl})`; G.lineWidth = 2; for (let i = 0; i < 14; i++) { const s2 = r() * 1.8 - 0.9, u = 0.3 + r() * 0.6, L = H * (0.1 + r() * 0.3) * sl; const x0 = cx + s2 * R(u, 1); G.beginPath(); G.moveTo(x0, Y(u)); G.lineTo(x0 + s2 * 3, Y(u) + L); G.stroke(); } }
+  if (f < 0.98 && sl < 0.9) { const r = rng(17); G.fillStyle = `rgba(68,68,68,${0.22 * (1 - f)})`; for (let i = 0; i < 160; i++) { const u = r(), s2 = r() * 2 - 1; G.fillRect(cx + s2 * R(u, 1) * 0.95, Y(u), 1.6, 1.6); } }
+  if (sl > 0) { const r = rng(23); G.strokeStyle = `rgba(57,57,57,${0.5 * sl})`; G.lineWidth = 2; for (let i = 0; i < 14; i++) { const s2 = r() * 1.8 - 0.9, u = 0.3 + r() * 0.6, L = H * (0.1 + r() * 0.3) * sl; const x0 = cx + s2 * R(u, 1); G.beginPath(); G.moveTo(x0, Y(u)); G.lineTo(x0 + s2 * 3, Y(u) + L); G.stroke(); } }
   /* red heat: at a bisque firing's 995 °C the ware itself glows orange (incandescence), most where the flames reach */
   if (o.glow > 0.01) { const gg = G.createLinearGradient(0, by, 0, Y(1)); gg.addColorStop(0, rgba('#FF8A3D', 0.85 * o.glow)); gg.addColorStop(0.6, rgba('#E8622C', 0.55 * o.glow)); gg.addColorStop(1, rgba('#B8402A', 0.35 * o.glow)); G.fillStyle = gg; G.fillRect(cx - Rm * 1.6, Y(1) - 2, Rm * 3.2, by - Y(1) + 4); }
   /* the kiln's light from below, warm (heat colour), on the side facing the flames */
@@ -390,16 +394,16 @@ function b08_amphora(cx, by, H, o = {}) {
     for (let i = 0; i < 9; i++) {
       const s2 = r() * 1.4 - 0.7, sp = 0.5 + r() * 0.4, ph = clamp((o.wetT == null ? 1 : o.wetT) * sp * 1.6 - r() * 0.3), u1 = 0.92, u2 = lerp(0.92, 0.05, ph);
       if (ph <= 0) continue;
-      G.globalAlpha = a * o.wet * 0.32; G.strokeStyle = 'rgba(205,220,236,0.8)'; G.lineWidth = 1.4;
+      G.globalAlpha = a * o.wet * 0.32; G.strokeStyle = 'rgba(222,222,224,0.8)'; G.lineWidth = 1.4;
       G.beginPath(); for (let u = u1; u >= u2; u -= 0.02) { const xx = cx + s2 * R(u, 1), yy = Y(u); u === u1 ? G.moveTo(xx, yy) : G.lineTo(xx, yy); } G.stroke();
-      const q = [cx + s2 * R(u2, 1), Y(u2)]; G.globalAlpha = a * o.wet * 0.9; G.fillStyle = 'rgba(225,236,248,0.9)'; G.beginPath(); G.ellipse(q[0], q[1] + 2, 2.6, 3.8, 0, 0, TAU); G.fill();
+      const q = [cx + s2 * R(u2, 1), Y(u2)]; G.globalAlpha = a * o.wet * 0.9; G.fillStyle = 'rgba(238,238,240,0.9)'; G.beginPath(); G.ellipse(q[0], q[1] + 2, 2.6, 3.8, 0, 0, TAU); G.fill();
     }
     G.globalAlpha = a;
   }
   G.restore();
   /* the mouth: a dark ellipse with its rim */
-  if (sl < 0.4) { const rt = R(1, 1), yt = Y(1); G.beginPath(); G.ellipse(cx, yt, rt, rt * 0.22, 0, 0, TAU); G.fillStyle = mix('#5E5C57', '#0B0C0E', f); G.fill(); G.strokeStyle = mix('#D2CFC8', '#6A6C73', f); G.lineWidth = Math.max(1.2, H * 0.006); G.stroke(); }
-  body(); G.strokeStyle = TH ? 'rgba(17,17,17,0.55)' : 'rgba(243,242,238,0.32)'; G.lineWidth = 1.4; G.stroke();
+  if (sl < 0.4) { const rt = R(1, 1), yt = Y(1); G.beginPath(); G.ellipse(cx, yt, rt, rt * 0.22, 0, 0, TAU); G.fillStyle = mix('#5C5C5C', '#0B0C0E', f); G.fill(); G.strokeStyle = mix('#CFCFCF', '#6A6C73', f); G.lineWidth = Math.max(1.2, H * 0.006); G.stroke(); }
+  body(); G.strokeStyle = rgba(C.ink, TH ? 0.55 : 0.32); G.lineWidth = 1.4; G.stroke();
   G.restore();
 }
 /**
@@ -438,7 +442,7 @@ function b08_kiln(x, y, w, h, o = {}) {
   const cx = x + w / 2, gy = y + h, wall = w * 0.075, fbH = h * 0.24, floorY = gy - fbH, floorT = h * 0.035, domeTop = y + h * 0.06, flueW = w * 0.12;
   const out = { floorY: floorY - floorT, cx, chamberTop: domeTop + wall, holes: [], mouth: [x + wall * 0.5, gy - fbH * 0.45] };
   if (a <= 0.003) return out;
-  const brick = TH ? '#9A9790' : '#4A4945', brickD = TH ? '#7C7A73' : '#3A3936', mortar = TH ? 'rgba(17,17,17,0.18)' : 'rgba(0,0,0,0.35)', inner = TH ? '#2C2C2E' : '#141416';
+  const brick = TH ? '#979797' : '#494949', brickD = TH ? '#7A7A7A' : '#393939', mortar = TH ? 'rgba(17,17,17,0.18)' : 'rgba(0,0,0,0.35)', inner = TH ? '#2C2C2E' : '#141416';
   G.save(); G.globalAlpha = a;
   /* the outer shape: a dome on a base, as one silhouette */
   const outer = () => { G.beginPath(); G.moveTo(x, gy); G.lineTo(x, floorY - h * 0.06); G.bezierCurveTo(x, y + h * 0.18, cx - w * 0.3, domeTop - 2, cx - flueW / 2, domeTop); G.lineTo(cx + flueW / 2, domeTop); G.bezierCurveTo(cx + w * 0.3, domeTop - 2, x + w, y + h * 0.18, x + w, floorY - h * 0.06); G.lineTo(x + w, gy); G.closePath(); };
@@ -463,7 +467,7 @@ function b08_kiln(x, y, w, h, o = {}) {
   /* the firebox: logs and their flames; the stoke-hole on the left */
   G.fillStyle = inner; G.fillRect(x, gy - fbH * 0.62, wall + 2, fbH * 0.5);
   const logs = [[0.3, 0.12], [0.5, 0.1], [0.68, 0.13], [0.42, 0.22], [0.6, 0.21]];
-  for (const [lx, ly] of logs) { const px = xi + wi * lx, py = gy - fbH * ly - 6; G.save(); G.translate(px, py); G.rotate(0.08); rrPath(-wi * 0.1, -7, wi * 0.2, 14, 7); G.fillStyle = '#26221F'; G.fill(); if (fire > 0.05) { G.strokeStyle = rgba(C.heatL, 0.7 * fire); G.lineWidth = 2; G.stroke(); } G.restore(); }
+  for (const [lx, ly] of logs) { const px = xi + wi * lx, py = gy - fbH * ly - 6; G.save(); G.translate(px, py); G.rotate(0.08); rrPath(-wi * 0.1, -7, wi * 0.2, 14, 7); G.fillStyle = '#232323'; G.fill(); if (fire > 0.05) { G.strokeStyle = rgba(C.heatL, 0.7 * fire); G.lineWidth = 2; G.stroke(); } G.restore(); }
   if (fire > 0.003) {
     G.save(); G.beginPath(); G.rect(xi, floorY, wi, fbH - 2); G.clip();
     b08_flames(cx, gy - fbH * 0.08, wi * 0.86, fbH * 0.95, { k: fire, t, n: 9, seed: 5 });
@@ -472,9 +476,9 @@ function b08_kiln(x, y, w, h, o = {}) {
     for (const hx of out.holes) b08_flames(hx, floorY - floorT, fw * 0.07, h * 0.16, { k: fire * heat, t: t + hx * 0.01, n: 2, seed: Math.round(hx) });
   }
   /* the flue: hot air shimmering up (the draught that pulls the fire) */
-  if (heat > 0.05) { for (let i = 0; i < 4; i++) { const ph = ((t * 0.55 + i / 4) % 1), yy = domeTop - ph * h * 0.12; G.save(); G.globalAlpha = a * heat * (1 - ph) * 0.45; G.strokeStyle = TH ? 'rgba(80,78,72,0.6)' : 'rgba(220,220,215,0.55)'; G.lineWidth = 2; G.beginPath(); for (let s = 0; s <= 1; s += 0.1) G.lineTo(cx - flueW * 0.25 + i * flueW * 0.17 + 3 * Math.sin(s * 7 + t * 4 + i), yy - s * 22); G.stroke(); G.restore(); } }
-  outer(); G.strokeStyle = TH ? 'rgba(17,17,17,0.5)' : 'rgba(243,242,238,0.32)'; G.lineWidth = 1.5; G.stroke();
-  inner0(); G.strokeStyle = TH ? 'rgba(17,17,17,0.35)' : 'rgba(243,242,238,0.22)'; G.lineWidth = 1.2; G.stroke();
+  if (heat > 0.05) { for (let i = 0; i < 4; i++) { const ph = ((t * 0.55 + i / 4) % 1), yy = domeTop - ph * h * 0.12; G.save(); G.globalAlpha = a * heat * (1 - ph) * 0.45; G.strokeStyle = TH ? 'rgba(78,78,78,0.6)' : 'rgba(219,219,219,0.55)'; G.lineWidth = 2; G.beginPath(); for (let s = 0; s <= 1; s += 0.1) G.lineTo(cx - flueW * 0.25 + i * flueW * 0.17 + 3 * Math.sin(s * 7 + t * 4 + i), yy - s * 22); G.stroke(); G.restore(); } }
+  outer(); G.strokeStyle = rgba(C.ink, TH ? 0.5 : 0.32); G.lineWidth = 1.5; G.stroke();
+  inner0(); G.strokeStyle = rgba(C.ink, TH ? 0.35 : 0.22); G.lineWidth = 1.2; G.stroke();
   G.restore();
   return out;
 }
@@ -520,22 +524,22 @@ function b08_pencilTest(x, y, w, h, o = {}) {
     }
   }
   G.restore();
-  rrPath(x, y, w, h, 6); G.strokeStyle = TH ? 'rgba(17,17,17,0.2)' : 'rgba(243,242,238,0.16)'; G.lineWidth = 1.2; G.stroke();
+  rrPath(x, y, w, h, 6); G.strokeStyle = rgba(C.ink, TH ? 0.2 : 0.16); G.lineWidth = 1.2; G.stroke();
   /* the pencil at 45°, its lead squared flat on the panel; the carriage over it carries the 750 g */
   const ang = -Math.PI / 4 * 3, ux = Math.cos(ang), uy = Math.sin(ang), Lp = Math.min(h * 2.2, 330), wp = 18;   /* up and to the left of the tip */
   G.save(); G.translate(tx, sy); G.rotate(ang);
   /* lead, cone of bare wood, then the hexagonal barrel in two greys (no colour), the grade printed on it */
   G.fillStyle = '#3B3D42'; G.fillRect(0, -2.6, 12, 5.2);
-  G.beginPath(); G.moveTo(12, -3); G.lineTo(34, -wp / 2); G.lineTo(34, wp / 2); G.lineTo(12, 3); G.closePath(); G.fillStyle = '#C9C6BE'; G.fill();
+  G.beginPath(); G.moveTo(12, -3); G.lineTo(34, -wp / 2); G.lineTo(34, wp / 2); G.lineTo(12, 3); G.closePath(); G.fillStyle = '#C6C6C6'; G.fill();
   G.fillStyle = '#7C7E84'; G.fillRect(34, -wp / 2, Lp - 34, wp); G.fillStyle = '#9A9CA2'; G.fillRect(34, -wp / 2, Lp - 34, wp * 0.32); G.fillStyle = '#5C5E64'; G.fillRect(34, wp * 0.22, Lp - 34, wp * 0.28);
   G.restore();
   /* the carriage: a block clamped round the barrel, two wheels on the panel, the load on top */
   const cx = tx + ux * Lp * 0.55, cy = sy + uy * Lp * 0.55, bw = 150, bh = 74;
   G.save(); G.translate(cx, cy);
-  rrPath(-bw / 2, -bh / 2, bw, bh, 8); G.fillStyle = TH ? '#D8D7D2' : '#3C3E44'; G.fill(); G.strokeStyle = TH ? 'rgba(17,17,17,0.4)' : 'rgba(243,242,238,0.3)'; G.lineWidth = 1.4; G.stroke();
-  text('750 g', 0, 9, { role: 'label', size: 22, color: TH ? C.ink : '#F3F2EE', align: 'center' });
+  rrPath(-bw / 2, -bh / 2, bw, bh, 8); G.fillStyle = TH ? '#D7D7D7' : '#3C3E44'; G.fill(); G.strokeStyle = rgba(C.ink, TH ? 0.4 : 0.3); G.lineWidth = 1.4; G.stroke();
+  text('750 g', 0, 9, { role: 'label', size: 22, color: C.ink, align: 'center' });
   G.restore();
-  for (const dx of [-1, 1]) { const wx = cx + dx * bw * 0.36, wy = sy - 12; line(wx, cy + bh / 2, wx, wy, { color: TH ? '#8A8983' : '#6E6D68', w: 3 }); circle(wx, wy + 1, 11, { fill: TH ? '#B9B8B2' : '#55554F' }); circle(wx, wy + 1, 3.4, { fill: TH ? '#66655F' : '#96958F' }); }
+  for (const dx of [-1, 1]) { const wx = cx + dx * bw * 0.36, wy = sy - 12; line(wx, cy + bh / 2, wx, wy, { color: TH ? '#898989' : '#6D6D6D', w: 3 }); circle(wx, wy + 1, 11, { fill: TH ? '#B8B8B8' : '#545454' }); circle(wx, wy + 1, 3.4, { fill: TH ? '#656565' : '#959595' }); }
   /* the grade, on the barrel near the carriage */
   if (o.grade) { const gx = tx + ux * Lp * 0.9, gy = sy + uy * Lp * 0.9; text(o.grade, gx, gy - 24, { role: 'label', size: 22, color: C.ink, align: 'center' }); }
   G.restore();
@@ -572,12 +576,12 @@ function b08_section(B, o = {}) {
   const mean0 = ys + kb * mean * s;
   const F = i => Math.min(P(i), mean0 - kc * film * s + 0.22 * kc * (P(i) - mean0));             /* the film's top: levels over the peaks */
   G.save(); rrPath(x, y, w, h, o.r == null ? 6 : o.r); G.clip();
-  G.fillStyle = TH ? '#E9E8E3' : '#111214'; G.fillRect(x, y, w, h);
+  G.fillStyle = TH ? '#E8E8E8' : '#111214'; G.fillRect(x, y, w, h);
   /* what the blast took: the skin between the moulded line and the new surface, ghosted, with grit lifting off it */
   if (kb > 0.003) {
     G.beginPath(); G.moveTo(x, ys); G.lineTo(x + w, ys); for (let i = N; i >= 0; i--) G.lineTo(x + i * step, P(i)); G.closePath();
-    G.save(); G.fillStyle = TH ? 'rgba(17,17,17,0.06)' : 'rgba(243,242,238,0.06)'; G.fill(); G.clip();
-    G.strokeStyle = TH ? 'rgba(17,17,17,0.16)' : 'rgba(243,242,238,0.14)'; G.lineWidth = 1; G.beginPath(); for (let xx = x - h; xx < x + w; xx += 9) { G.moveTo(xx, y + h); G.lineTo(xx + h, y); } G.stroke();
+    G.save(); G.fillStyle = rgba(C.ink, TH ? 0.06 : 0.06); G.fill(); G.clip();
+    G.strokeStyle = rgba(C.ink, TH ? 0.16 : 0.14); G.lineWidth = 1; G.beginPath(); for (let xx = x - h; xx < x + w; xx += 9) { G.moveTo(xx, y + h); G.lineTo(xx + h, y); } G.stroke();
     G.restore();
   }
   /* the shell: PP with its fibres */
@@ -606,7 +610,7 @@ function b08_softSection(B, o = {}) {
   const [x, y, w, h] = B, s = o.s || 3, ys = y + (o.top == null ? 0.3 : o.top) * h, k = clamp(o.k || 0), um = o.um || 51;
   const fib = srf_fibres(o.seed || 11, w / s, (y + h - ys) / s + 20);
   G.save(); rrPath(x, y, w, h, 6); G.clip();
-  G.fillStyle = TH ? '#E9E8E3' : '#111214'; G.fillRect(x, y, w, h);
+  G.fillStyle = TH ? '#E8E8E8' : '#111214'; G.fillRect(x, y, w, h);
   G.fillStyle = '#2A2B30'; G.fillRect(x, ys, w, y + h - ys);
   G.save(); G.beginPath(); G.rect(x, ys, w, y + h - ys); G.clip();
   for (const f of fib) { const cx = x + f.x * s, cy = ys + f.d * s, L = f.L * s, d = 7 * s; G.save(); G.translate(cx, cy); G.rotate(f.ang); rrPath(-L / 2, -d / 2, L, d, Math.min(d / 2, L / 2)); G.fillStyle = '#4E5057'; G.fill(); G.restore(); }
@@ -642,15 +646,15 @@ function b08_tapeSection(B, o = {}) {
   const age = clamp(o.age || 0), ex = o.edge || x + w * 0.62, coat = 0.019 * s, tapeH = mm * s, lift = E.io3(clamp((age - 0.35) / 0.65)), ooze = 26 * E.out3(age);
   const out = { edge: ex, glueY: base - coat - glue };
   G.save(); rrPath(x, y, w, h, 6); G.clip();
-  G.fillStyle = TH ? '#E9E8E3' : '#111214'; G.fillRect(x, y, w, h);
+  G.fillStyle = TH ? '#E8E8E8' : '#111214'; G.fillRect(x, y, w, h);
   /* the shell, the coat on it (a line at this scale), and the etch in the coat */
   G.fillStyle = '#2A2B30'; G.fillRect(x, base, w, y + h - base);
   G.fillStyle = '#5C5E66'; G.fillRect(x, base - coat, w, coat);
-  if (o.etch > 0.01) { G.save(); G.globalAlpha = o.etch; G.fillStyle = TH ? '#E9E8E3' : '#111214'; const p = Math.max(3, 0.045 * s), dw = 0.02 * s, dd = 0.01 * s; for (let xx = x; xx < x + w; xx += p) G.fillRect(xx, base - coat, dw, dd); G.restore(); }
+  if (o.etch > 0.01) { G.save(); G.globalAlpha = o.etch; G.fillStyle = TH ? '#E8E8E8' : '#111214'; const p = Math.max(3, 0.045 * s), dw = 0.02 * s, dd = 0.01 * s; for (let xx = x; xx < x + w; xx += p) G.fillRect(xx, base - coat, dw, dd); G.restore(); }
   /* the glue: under the tape, then creeping out past the edge as a bead */
   const tTop = (xx) => { const d = xx - (ex - 150); return base - coat - glue - tapeH - (xx > ex - 150 && lift > 0 ? Math.max(0, d) * 0.16 * lift : 0); };
   if (mm > 0.001) {
-    G.fillStyle = 'rgba(206,203,192,0.92)'; G.fillRect(x, base - coat - glue, ex - x, glue);
+    G.fillStyle = 'rgba(203,203,203,0.92)'; G.fillRect(x, base - coat - glue, ex - x, glue);
     if (ooze > 0.5) { G.beginPath(); G.moveTo(ex - 2, base - coat - glue); G.quadraticCurveTo(ex + ooze * 0.9, base - coat - glue * 0.9, ex + ooze, base - coat); G.lineTo(ex - 2, base - coat); G.closePath(); G.fill(); }
     /* the tape: a sheet with a pebbled top that wears smoother; its last stretch peels up off the glue */
     const bump = Math.min(tapeH * 0.12, 9) * (1 - 0.6 * age), per = Math.max(10, tapeH * 0.22);
@@ -658,7 +662,7 @@ function b08_tapeSection(B, o = {}) {
     for (let xx = x; xx <= ex; xx += 2) { const yt = tTop(xx) + bump * (0.5 + 0.5 * Math.cos((xx - x) / per * TAU)); G.lineTo(xx, yt); }
     G.lineTo(ex, base - coat - glue - (lift > 0 ? 150 * 0.16 * lift : 0)); G.lineTo(ex - 150, base - coat - glue); G.closePath();
     G.fillStyle = mix('#4A4B51', '#2E2E31', 0.25 * age); G.fill();
-    if (lift > 0.02) { G.strokeStyle = 'rgba(206,203,192,0.85)'; G.lineWidth = 2; for (let i = 0; i < 6; i++) { const xx = ex - 140 + i * 24, yy = tTop(xx) + tapeH; G.beginPath(); G.moveTo(xx, base - coat - glue); G.lineTo(xx + 3, yy); G.stroke(); } }
+    if (lift > 0.02) { G.strokeStyle = 'rgba(203,203,203,0.85)'; G.lineWidth = 2; for (let i = 0; i < 6; i++) { const xx = ex - 140 + i * 24, yy = tTop(xx) + tapeH; G.beginPath(); G.moveTo(xx, base - coat - glue); G.lineTo(xx + 3, yy); G.stroke(); } }
     /* gunk: lint and skin caught on the bead and in the texture, a fault, in red */
     const r = rng(41), nG = Math.round(40 * clamp((age - 0.15) / 0.85));
     for (let i = 0; i < nG; i++) { const u = r(), v = r(), sz = 2 + r() * 4, inBead = i % 3 !== 0;
@@ -682,7 +686,7 @@ function b08_padSection(x0, x1, o = {}) {
   const rid = i => { const xx = x0 + i * 3; return amp * (0.5 - 0.5 * Math.cos((xx - x0) / sp * TAU)); };
   G.save(); G.globalAlpha = a;
   G.beginPath(); G.moveTo(x0, yb[0] - rid(0)); for (let i = 1; i <= N; i++) G.lineTo(x0 + i * 3, yb[i] - rid(i)); G.lineTo(x1, yb[N] - s * 3); G.lineTo(x0, yb[0] - s * 3); G.closePath();
-  G.fillStyle = TH ? '#C9C8C2' : '#5F5E59'; G.fill(); G.strokeStyle = TH ? 'rgba(40,40,38,0.6)' : 'rgba(230,230,225,0.45)'; G.lineWidth = 1.5; G.stroke();
+  G.fillStyle = TH ? '#C8C8C8' : '#5E5E5E'; G.fill(); G.strokeStyle = TH ? 'rgba(40,40,40,0.6)' : 'rgba(229,229,229,0.45)'; G.lineWidth = 1.5; G.stroke();
   G.restore();
 }
 if (B08LAB) S({
@@ -783,10 +787,10 @@ S({
            grip's force and the print follows */
         const L = 2.6 * s, stretch = hold ? lerp(0.3, 1, k) * L : lerp(0.3, 0.8, Math.min(1, k * 3)) * L, ptr = [edge[0] + ux * stretch, edge[1] + uy * stretch];
         const ka = ep(t, m.t, m.t + 0.12) * (1 - ep(t, m.t + 0.66, m.t + 0.78));
-        b08_spring(edge[0], edge[1], ptr[0], ptr[1], { a: ka, n: 6, amp: 9, col: '#F3F2EE', w: 2.6 });
+        b08_spring(edge[0], edge[1], ptr[0], ptr[1], { a: ka, n: 6, amp: 9, col: C.ink, w: 2.6 });
         cursorPtr(ptr[0], ptr[1], { a: ka, grab: true, fill: '#FFFFFF', edge: '#111111' });
         const kf = ka * ep(t, m.t + 0.05, m.t + 0.3);
-        if (kf > 0.5) { const vert = Math.abs(uy) > 0.7, lp = vert ? [edge[0] + 30, edge[1] + uy * stretch * 0.45 + 8] : [edge[0] + ux * stretch * 0.5, edge[1] + uy * stretch * 0.5 - 30]; text(fmtN(B08G.pull, 2) + ' N pull', lp[0], lp[1], Object.assign({ role: 'label', size: 22, color: '#F3F2EE', align: vert ? 'left' : 'center', alpha: kf }, halo)); }
+        if (kf > 0.5) { const vert = Math.abs(uy) > 0.7, lp = vert ? [edge[0] + 30, edge[1] + uy * stretch * 0.45 + 8] : [edge[0] + ux * stretch * 0.5, edge[1] + uy * stretch * 0.5 - 30]; text(fmtN(B08G.pull, 2) + ' N pull', lp[0], lp[1], Object.assign({ role: 'label', size: 22, color: C.ink, align: vert ? 'left' : 'center', alpha: kf }, halo)); }
         /* the grip that answers it, opposite: yellow on tape (unnumbered: no paper measures it), blue on the etch */
         const mu = onEtch ? (m.name === 'Back' ? B08.mu.across : m.name === 'Sideways' ? B08.mu.along : B08.mu.diag) : 0.56;
         const gl = mu * B08G.pxN * kf, tip = [pc[0] - ux * gl, pc[1] - uy * gl];
@@ -797,13 +801,13 @@ S({
       const kr = ep(t, 7.45, 8.05);
       if (kr > 0.003 && !m) {
         const rr0 = B08G.pull * B08G.pxN;
-        circle(pc[0], pc[1], rr0, { color: '#F3F2EE', w: 2, dash: [7, 6], alpha: kr * 0.8 });
+        circle(pc[0], pc[1], rr0, { color: C.ink, w: 2, dash: [7, 6], alpha: kr * 0.8 });
         for (const [ang2, mu2] of [[-Math.PI / 2, B08.mu.across], [Math.PI / 2, B08.mu.across], [0, B08.mu.along], [Math.PI, B08.mu.along], [Math.PI / 4, B08.mu.diag], [-Math.PI / 4, B08.mu.diag], [Math.PI * 0.75, B08.mu.diag], [-Math.PI * 0.75, B08.mu.diag]]) {
           const L2 = mu2 * B08G.pxN * E.out3(kr); arrow(pc[0], pc[1], pc[0] + Math.cos(ang2) * L2, pc[1] + Math.sin(ang2) * L2, { color: mu2 > B08G.pull ? C.hero : rgba(C.hero, 0.55), w: mu2 > B08G.pull ? 6 : 4, hs: 18, alpha: kr });
         }
         text('0.53 N: holds', pc[0] + 16, pc[1] - B08.mu.across * B08G.pxN - 6, Object.assign({ role: 'label', size: 22, color: C.heroText, alpha: kr }, halo));
         text('0.42 N: slides', pc[0] + B08.mu.along * B08G.pxN + 18, pc[1] + 8, Object.assign({ role: 'label', size: 22, color: C.heroText, alpha: kr }, halo));
-        text('The 0.47 N pull', pc[0] - rr0 * 0.72 - 12, pc[1] + rr0 * 0.72 + 30, Object.assign({ role: 'label', size: 20, color: '#F3F2EE', align: 'right', alpha: kr }, halo));
+        text('The 0.47 N pull', pc[0] - rr0 * 0.72 - 12, pc[1] + rr0 * 0.72 + 30, Object.assign({ role: 'label', size: 20, color: C.ink, align: 'right', alpha: kr }, halo));
       }
     }
     /* the right column: the same three pulls on both surfaces, as they happen; then the headline */
@@ -834,10 +838,12 @@ S({
    different textures better"; F2.14 (grip in the right places and directions); F21.9 (he wants to see the map before
    deciding it, so it is labelled a proposal). The pattern is generated, not drawn: ridge lines are streamlines of a
    direction field over the shell (b08_streams), so the ridges turn smoothly from the buttons' side-to-side (the fingertips
-   pull the mouse back) to the sides' front-to-back (the lift), break into dashes and then dots where the thumb rests (it
-   pushes, lifts and pulls), and open up and fade to smooth under the palm. The rival is the one smooth finish most mice
-   ship: sweat floats the skin on it (Derler 2012: skin on glass, wet, μ 0.61 smooth against 1.43 roughened), so a sweaty
-   lift needs 0.24 N of squeeze per side where the etch needs 0.10 N (derived: m g / 2μ for 29.31 g). */
+   pull the mouse back) to the sides' front-to-back (the lift), and where a zone ends they break into dashes, then dots, then
+   smooth (the palm). The rival is the naive etch: the button's ridges run one way over the whole grip, so down the sides
+   they run up and down and a lift slides along them. Zhang 2017's grip across against along at a pinch's load gives the
+   least squeeze to lift: 0.33 N a side against 0.28 N (B08.lift, derived). Sweat is left out: the old slide's wet-skin
+   numbers (Derler) could not be re-checked, and dry, the textures in Zhang 2017 grip less than smooth would (PROGRESS.md,
+   "Models and conventions checked"). */
 const B08M = {
   box: [LM, 272, 1160, 688],
   top: { x: 270, y: 616, s: 5.2 },               /* where the top view settles: its centre (stage px) and scale */
@@ -855,58 +861,48 @@ function b08_fieldTopMap(x, y) {
   const front = y < -8 ? 0.42 * (1 - smooth(clamp((y + 18) / 10))) : 0;
   const on = clamp(Math.max(tip * 1.3, band, front));
   const sep = lerp(1.55, 1.05, clamp(tip * 1.2)) + 0.35 * (1 - Math.max(tip, e));
-  return { ang, sep, on, dot: 0 };
+  return { ang, sep, on, dot: smooth(clamp((0.8 - on) / 0.6)) };
 }
+/** the rival: the same zones etched, the ridges all one way (side to side, as on the button) */
+function b08_fieldTopUni(x, y) { const f = b08_fieldTopMap(x, y); return { ang: 0, sep: 1.35, on: f.on, dot: f.dot }; }
+function b08_uniTop() { return b08_streams('b08:uniTop', { x0: -31, y0: -59.5, x1: 31, y1: 59.5, inside: b08_insideTop }, b08_fieldTopUni, { seeds: [[13, -35], [-13, -35], [27, 0], [-27, 0]] }); }
 /** the top view's map in key-plan mm, cached */
 function b08_mapTop() { return b08_streams('b08:mapTop2', { x0: -31, y0: -59.5, x1: 31, y1: 59.5, inside: b08_insideTop }, b08_fieldTopMap, { seeds: [[13, -35], [-13, -35], [27, 0], [-27, 0]] }); }
 /** the side view's map in its (u = z forward, v = height) mm; inside the shell's side outline (the kit's), above the skirt,
    clear of the side buttons */
-function b08_mapSide() {
-  if (B08_SL.has('b08:mapSide2')) return B08_SL.get('b08:mapSide2');
+function b08_mapSide(uni) {
+  const key = uni ? 'b08:uniSide' : 'b08:mapSide3';
+  if (B08_SL.has(key)) return B08_SL.get(key);
   const V = msView('left'), cx = document.createElement('canvas').getContext('2d'), btn = MS_SIDE_BTN.map(b => msPath(b.map(([z, y]) => [-z, -y])));
   const ins = (u, v) => cx.isPointInPath(V.out, -u, -v);
   const inside = (u, v) => v > MS_SKIRT + 0.6 && ins(u, v) && ins(u + 1.2, v) && ins(u - 1.2, v) && ins(u, v + 1.2) && !btn.some(p => cx.isPointInPath(p, -u, -v) || cx.isPointInPath(p, -u, -v - 1.0) || cx.isPointInPath(p, -u, -v + 1.0));
-  return b08_streams('b08:mapSide2', { x0: -60, y0: 0, x1: 60, y1: 41, inside }, b08_fieldSideMap, { seeds: [[4, 13.4], [24, 14], [-20, 16]] });
+  return b08_streams(key, { x0: -60, y0: 0, x1: 60, y1: 41, inside }, uni ? b08_fieldSideUni : b08_fieldSideMap, { seeds: [[4, 13.4], [24, 14], [-20, 16]] });
 }
-/** the side view's field: dots where the thumb rests (below the side buttons, at the middle), stretching into dashes and then
-   the front-to-back ridges of the lift; fading out at the nose and the tail */
+/** the side view's field: front-to-back ridges where the thumb and the ring finger pinch (across the lift), following the
+   shell; toward the nose, the tail and the top they break into dashes, then dots, then smooth */
 function b08_fieldSideMap(u, v) {
-  const d = Math.hypot((u - 4) / 15, (v - 13.4) / 5.0), dot = 1 - smooth(clamp((d - 0.5) / 0.85));
   const ang = 0.05 * Math.sin(u / 16) - 0.12 * smooth(clamp((v - 26) / 10)) * Math.sign(u - 6);
-  const sep = lerp(1.5, 1.85, dot);
-  const on = (1 - smooth(clamp((Math.abs(u - 2) - 34) / 14))) * (1 - smooth(clamp((v - 29) / 6)));
-  return { ang, sep, on, dot };
+  const on = (1 - smooth(clamp((Math.abs(u - 2) - 30) / 16))) * (1 - smooth(clamp((v - 27) / 7)));
+  return { ang, sep: 1.5, on, dot: smooth(clamp((0.85 - on) / 0.6)) };
 }
-/** sweat beads on a contact zone, in stage px: n beads round (x, y) in an ellipse rx × ry; k (0..1) how wet; drain (0..1:
-   the etch takes them into its grooves) */
-function b08_sweat(x, y, rx, ry, k, o = {}) {
-  if (k <= 0.003) return;
-  const r = rng(o.seed || 5), n = o.n || 14, dr = clamp(o.drain || 0);
-  G.save();
-  for (let i = 0; i < n; i++) {
-    const a = r() * TAU, rr = Math.sqrt(r()), px = x + Math.cos(a) * rx * rr, py = y + Math.sin(a) * ry * rr, sz = (2.2 + r() * 3.2) * (1 - dr * 0.85), ki = clamp(k * 1.6 - r() * 0.6);
-    if (ki <= 0.01 || sz < 0.4) continue;
-    G.globalAlpha = ki * (1 - dr * 0.6); G.fillStyle = 'rgba(168,196,224,0.55)'; G.beginPath(); G.ellipse(px, py, sz, sz * 0.85, 0, 0, TAU); G.fill();
-    G.fillStyle = 'rgba(255,255,255,0.7)'; G.beginPath(); G.arc(px - sz * 0.3, py - sz * 0.3, sz * 0.32, 0, TAU); G.fill();
-  }
-  G.restore();
-}
+/** the rival's side: the same zone, the ridges running up and down (the side-to-side lines wrapped down the wall) */
+function b08_fieldSideUni(u, v) { const f = b08_fieldSideMap(u, v); return { ang: Math.PI / 2, sep: 1.5, on: f.on, dot: f.dot }; }
 S({
   id: 'b08_gripmap', ch: 'surface', theme: 'night', title: 'A grip map for the hand', settle: 11, ideas: [60],
   replaces: ['srf_gripmap'],
-  src: ['srf_derler', 'b08_zhang17', 'srf_f110', 'srf_doc'],
+  src: ['b08_zhang17', 'srf_doc'],
   answers: [
-    ['"grip designs need massive optimizations to look cool"', 'The map is generated, not drawn: every ridge is a streamline of one direction field over the shell, evenly spaced, so the pattern flows over the buttons and wraps the shoulders like a single designed surface'],
-    ['"and blend between there different textures better"', 'No borders between textures: the ridges turn continuously from side to side (the buttons) to front to back (the sides), break into dashes and then dots where the thumb rests, and open up and fade to smooth under the palm'],
-    ['F2.14 "grip in exactly the right places in exactly the right directions"', 'Each zone is etched across the slip it must stop: pull on the buttons, lift on the sides, every way under the thumb, none under the palm; each named on the map'],
+    ['"grip designs need massive optimizations to look cool"', 'The map is generated, not drawn: every ridge is a streamline of one direction field over the shell, evenly spaced, so the pattern flows over the buttons and wraps the shoulders like one designed surface'],
+    ['"and blend between there different textures better"', 'No borders between textures: the ridges turn continuously from side to side (the buttons) to front to back (the sides), and where a zone ends they break into dashes, then dots, then smooth; a strip beside the map shows the blend on its own'],
+    ['F2.14 "grip in exactly the right places in exactly the right directions"', 'Each zone is etched across the slip it must stop: the pull on the buttons, the lift on the sides, smooth under the palm; each named on the map'],
     ['F21.9 (he wants to see the map before deciding it)', 'Labelled as the proposed map, to be tuned on hands; the question is in the report'],
-    ['(problem first, G1)', 'The rival is the one smooth finish most mice ship: a sweaty lift slips out of the fingers; the same lift holds once the map is etched']
+    ['(problem first, G1)', 'The rival is the naive etch, the button\'s ridges run one way over the whole grip: down the sides they run up and down, and at the same 0.30 N squeeze the lift slips; the laser turns them across the lift and the same squeeze holds (least squeeze 0.33 → 0.28 N a side, derived from Zhang 2017)']
   ],
   draw: t => {
     header(t, 'A grip map for the hand');
-    captions(t, [[0.5, 'Most mice have one finish everywhere. When your hand sweats, the skin floats on it and the mouse slips.'],
-      [3.0, 'A laser etches each zone for its job: ridges across your pull and your lift, dots under the thumb, nothing under the palm.']]);
-    const M0 = B08M, box = M0.box, hand = { a: 1 };
+    captions(t, [[0.5, 'Etch the button\'s ridges one way over the whole grip, and down the sides they run up and down: a lift slides along them.'],
+      [3.0, 'A laser turns each zone\'s ridges across its job: across the pull on the buttons, across the lift on the sides, smooth under the palm.']]);
+    const M0 = B08M, box = M0.box, LF = B08.lift, pxN = 250;
     /* the camera: it opens where the last slide ended (pushed in on the left button's ridges, b08_grip's establish shot in its
        1080 px box) and pulls back until the whole top view sits at M0.top */
     const gBox = [LM, 272, 1080, 688], A = camFit(B08G.focus, gBox, 0.06), sT = M0.top.s, ox = box[0] + box[2] / 2, oy = box[1] + box[3] / 2;
@@ -915,20 +911,21 @@ S({
     const c = cam(t, [[M0.pull[0] + 0.15, A2.cx, A2.cy, A2.s], [M0.pull[1], Bc.cx, Bc.cy, Bc.s]]);
     const kz = 1 - c.k;                                               /* 1 while pushed in */
     const PT = (mx, my) => [ox + (mx - c.cx) * c.s, oy + (my - c.cy) * c.s];
-    /* the laser: a line sweeping left to right over the map area; the etch appears behind it */
+    /* the laser: a line sweeping left to right over the map area; the map replaces the one-way ridges behind it */
     const kl = ep(t, M0.laser[0], M0.laser[0] + M0.laser[1], E.lin), lx = lerp(box[0] - 10, box[0] + box[2] + 10, kl), lasering = kl > 0 && kl < 1;
     const reveal = px => t >= M0.laser[0] + M0.laser[1] ? 1 : clamp((lx - px) / 60);
-    /* the side view lifts with the hand: the rival's lift slips back, the etched lift holds */
+    /* the side view lifts with the hand: the one-way lift slips back, the mapped lift holds */
     const liftAt = (t0, holds) => { const up = ep(t, t0, t0 + 0.45, E.io3), down = ep(t, t0 + 0.95, t0 + 1.35, E.io3), hand2 = 10 * (up - down);
       const slip = holds ? 0 : 10 * up * E.in3(clamp((t - t0 - 0.15) / 0.5)) * (1 - down); return { hand: hand2, mouse: Math.max(0, hand2 - slip) }; };
     const L0 = liftAt(M0.lift0, false), L1 = liftAt(M0.lift1, true), lift = t < M0.lift1 - 0.2 ? L0 : L1;   /* mm */
-    /* the top view, in the camera; then its map, in key-plan mm (× MS_K), revealed by the laser. Before the laser only the
-       left button's patch from the last slide is etched; it fades as the camera pulls back */
-    withCam(c, box, () => mouseSimple('top', { lw: 2, fill: '#1A1B1E' }));
-    const MT0 = [c.s * MS_K.x, 0, 0, c.s * MS_K.y, PT(0, 0)[0], PT(0, 0)[1]];
+    /* the top view, in the camera; the one-way ridges spread from the button over the whole grip as the camera pulls back,
+       and the laser writes the map over them */
+    withCam(c, box, () => mouseSimple('top', { lw: 2, fill: C.panel }));
+    const MT0 = [c.s * MS_K.x, 0, 0, c.s * MS_K.y, PT(0, 0)[0], PT(0, 0)[1]], wT = lerp(1.6, 2.8, kz);
     clipped(box[0], box[1], box[2], box[3], () => {
-      const tp = B08G.tape, pre = (x, y) => (x * MS_K.x > tp[0] && x * MS_K.x < tp[0] + tp[2] && y * MS_K.y > tp[1] && y * MS_K.y < tp[1] + tp[3] ? 1 : 0) * (1 - ep(t, M0.pull[1] - 0.2, M0.pull[1] + 0.5));
-      b08_drawStreams(b08_mapTop(), MT0, { w: lerp(1.6, 2.8, kz), reveal: (x, y) => Math.max(pre(x, y), reveal(PT(x * MS_K.x, y * MS_K.y)[0])) });
+      const tp = B08G.tape, inPatch = (x, y) => x * MS_K.x > tp[0] && x * MS_K.x < tp[0] + tp[2] && y * MS_K.y > tp[1] && y * MS_K.y < tp[1] + tp[3], grow = ep(t, 0.55, 1.35);
+      b08_drawStreams(b08_uniTop(), MT0, { w: wT, col: C.mute, reveal: (x, y) => (inPatch(x, y) ? 1 : grow) * (1 - reveal(PT(x * MS_K.x, y * MS_K.y)[0])) });
+      b08_drawStreams(b08_mapTop(), MT0, { w: wT, reveal: (x, y) => reveal(PT(x * MS_K.x, y * MS_K.y)[0]) });
     });
     /* the ridges macro exactly as the last slide framed it, dissolving as the camera pulls back */
     if (kz > 0.01) {
@@ -938,43 +935,41 @@ S({
       srf_macro(t, rf, gBox[0], gBox[1], gBox[2], gBox[3], { light: { az: 2.35, el: 0.5 }, alpha: smooth(clamp((kz - 0.3) / 0.7)), vignette: true, r: 0 });
       G.restore();
     }
-    /* sweat on the fingertips' zones (top) and the thumb's (side); the etch drains it into its grooves */
-    const wet = ep(t, 1.0, 1.6), drn = q => clamp(ep(t, M0.laser[0], M0.laser[0] + M0.laser[1] + 0.6) * 1.0 + 0) * clamp((lx - q[0]) / 60 + (kl >= 1 ? 1 : 0));
-    if (c.k > 0.6) for (const [mx, my, sd] of [[-13, -35, 3], [13, -35, 4]]) { const q = PT(mx * MS_K.x, my * MS_K.y); b08_sweat(q[0], q[1], 30, 22, wet * clamp((c.k - 0.6) / 0.4), { seed: sd, drain: drn(q) }); }
     /* the side view: the thumb's side, the hand lifting it */
     const ks = ep(t, 0.9, 1.5), S0 = M0.side, sS = S0.s, by = S0.y - lift.mouse * sS;
     if (ks > 0.003) {
-      part(S0.x, by, sS, () => mouseSimple('left', { lw: 2, fill: '#1A1B1E' }), { alpha: ks });
-      b08_drawStreams(b08_mapSide(), [-sS, 0, 0, -sS, S0.x, by], { w: 1.7, alpha: ks, reveal: (u, v) => reveal(S0.x - u * sS) });
-      /* the thumb's contact on the side; the hand rises 10 mm; on the smooth coat the mouse comes part way, then slips back */
-      const th = [S0.x - 4 * sS, S0.y - 13.4 * sS - lift.hand * sS];
+      part(S0.x, by, sS, () => mouseSimple('left', { lw: 2, fill: C.panel }), { alpha: ks });
+      const MSd = [-sS, 0, 0, -sS, S0.x, by];
+      b08_drawStreams(b08_mapSide(true), MSd, { w: 1.7, col: C.mute, alpha: ks, reveal: (u, v) => 1 - reveal(S0.x - u * sS) });
+      b08_drawStreams(b08_mapSide(), MSd, { w: 1.7, alpha: ks, reveal: (u, v) => reveal(S0.x - u * sS) });
+      /* the thumb's contact on the side; the hand rises 10 mm; along the one-way ridges the mouse comes part way, then slips */
+      const th = [S0.x - 4 * sS, S0.y - 13.4 * sS - lift.hand * sS], rT = 4.6 * sS;
       const slipping = t > M0.lift0 + 0.2 && t < M0.lift0 + 1.0;
-      b08_print(th[0], th[1], 4.6 * sS, { a: ks * 0.95, rot: 0, slide: slipping ? clamp((t - M0.lift0 - 0.2) / 0.3) : 0, dir: -Math.PI / 2 });
-      b08_sweat(th[0], th[1], 24, 16, wet * ks, { seed: 9, drain: drn(th) });
-      const kL0 = env(t, M0.lift0 - 0.05, M0.lift0 + 0.15, M0.lift0 + 1.1, M0.lift0 + 1.35), kL1 = env(t, M0.lift1 - 0.05, M0.lift1 + 0.15, M0.lift1 + 1.1, M0.lift1 + 1.35), kL = Math.max(kL0, kL1);
-      if (kL > 0.003) {
-        arrow(th[0], th[1] - 4.6 * sS * 0.82, th[0], th[1] - 4.6 * sS * 0.82 - 74, { color: '#F3F2EE', w: 4, hs: 16, alpha: kL });
-        text('The hand lifts', th[0] + 16, th[1] - 4.6 * sS * 0.82 - 50, { role: 'label', size: 20, color: C.mute, alpha: kL });
-        /* the mouse's weight, 0.29 N, pulling it down: on the smooth coat it wins */
-        const wp = [S0.x + 22 * sS, by - 2], wl = kL0 > 0.003 ? 70 : 70;
-        arrow(wp[0], wp[1] - 40, wp[0], wp[1] - 40 + wl, { color: kL0 > kL1 ? C.red : C.mute, w: 3.5, hs: 14, alpha: kL });
-        text('0.29 N', wp[0] + 14, wp[1] - 40 + wl * 0.6, { role: 'label', size: 20, color: kL0 > kL1 ? C.red : C.mute, alpha: kL });
+      b08_print(th[0], th[1], rT, { a: ks * 0.95, rot: 0, slide: slipping ? clamp((t - M0.lift0 - 0.2) / 0.3) : 0, dir: -Math.PI / 2 });
+      if (t > 1.4) callout(t, 1.4, th, 'The same 0.30 N squeeze', { to: [th[0] - 60, S0.y + 84], side: 'l', color: C.mute, tcolor: C.mute });
+      const kL0 = env(t, M0.lift0 - 0.05, M0.lift0 + 0.15, M0.lift0 + 1.1, M0.lift0 + 1.35), kL1 = env(t, M0.lift1 - 0.05, M0.lift1 + 0.15, M0.lift1 + 1.1, M0.lift1 + 1.35);
+      if (kL0 + kL1 > 0.003) {
+        /* grip up at the thumb against the weight down: the longer arrow wins */
+        const one = kL0 > kL1, kL = Math.max(kL0, kL1), g = one ? LF.gripOne : LF.gripMap, gc = one ? C.mute : C.heroText;
+        arrow(th[0], th[1] - rT * 0.85, th[0], th[1] - rT * 0.85 - g * pxN, { color: one ? C.mute : C.hero, w: 4, hs: 16, alpha: kL });
+        text(fmtN(g, 2) + ' N grip', th[0] + 16, th[1] - rT * 0.85 - g * pxN + 18, { role: 'label', size: 20, color: gc, alpha: kL });
+        const wp = [S0.x + 22 * sS, by + 6], wl = LF.mg * pxN;
+        arrow(wp[0], wp[1], wp[0], wp[1] + wl, { color: one ? C.red : C.mute, w: 3.5, hs: 14, alpha: kL });
+        text(fmtN(LF.mg, 2) + ' N weight', wp[0] + 14, wp[1] + wl * 0.7, { role: 'label', size: 20, color: one ? C.red : C.mute, alpha: kL });
       }
-      const r0 = env(t, M0.lift0 + 0.55, M0.lift0 + 0.7, M0.lift0 + 1.6, M0.lift0 + 1.9), r1 = ep(t, M0.lift1 + 0.5, M0.lift1 + 0.65);
-      /* what wins: the weight (it slips) or the grip (it holds), named at the mouse's foot */
-      const wq = [S0.x + 22 * sS, by + 2];
-      if (r0 > 0.003) faultTag(t, M0.lift0 + 0.55, wq, 'Slips out of a sweaty grip', { to: [wq[0] + 40, S0.y + 76], side: 'r', alpha: r0 });
-      if (r1 > 0.003) fixTag(t, M0.lift1 + 0.5, wq, 'Holds, sweaty', { to: [wq[0] + 40, S0.y + 76], side: 'r' });
+      const r0 = env(t, M0.lift0 + 0.55, M0.lift0 + 0.7, M0.lift0 + 1.6, M0.lift0 + 1.9);
+      const tq = [th[0] - 80, S0.y - 242];
+      if (r0 > 0.003) faultTag(t, M0.lift0 + 0.55, th, 'Slips: lift runs along the ridges', { to: tq, side: 'l', alpha: r0 });
+      if (t > M0.lift1 + 0.5) fixTag(t, M0.lift1 + 0.5, th, 'Holds', { to: tq, side: 'l' });
     }
     /* the laser line */
     if (lasering) { line(lx, box[1] + 6, lx, box[1] + box[3] - 6, { color: C.hero, w: 2.5 }); G.save(); G.globalAlpha = 0.18; G.fillStyle = C.hero; G.fillRect(lx - 16, box[1] + 6, 16, box[3] - 12); G.restore(); }
     /* each zone's job, named on the map */
     if (t > 7.0) {
-      const q1 = PT(-13 * MS_K.x, -40 * MS_K.y), q2 = PT(0, 34 * MS_K.y), q4 = [S0.x + 26 * sS, S0.y - 20 * sS];
-      fixTag(t, 7.0, q1, 'Pull', { to: [q1[0] + 230, q1[1] - 44], side: 'r' });
-      callout(t, 7.15, q2, 'Glide: smooth', { to: [q2[0] + 200, q2[1] + 56], side: 'r', color: C.mute, tcolor: C.mute });
-      fixTag(t, 7.3, [S0.x - 9 * sS, S0.y - 11.5 * sS], 'Thumb: dots', { to: [S0.x - 30, S0.y + 128], side: 'l' });
-      fixTag(t, 7.45, q4, 'Lift', { to: [q4[0] + 40, q4[1] - 130], side: 'r' });
+      const q1 = PT(-13 * MS_K.x, -40 * MS_K.y), q2 = PT(0, 34 * MS_K.y), q4 = [S0.x + 30 * sS, S0.y - 18 * sS];
+      fixTag(t, 7.0, q1, 'Pull: ridges across', { to: [q1[0] + 230, q1[1] - 44], side: 'r' });
+      callout(t, 7.15, q2, 'Palm: smooth', { to: [q2[0] + 200, q2[1] + 56], side: 'r', color: C.mute, tcolor: C.mute });
+      fixTag(t, 7.3, q4, 'Lift: ridges across', { to: [q4[0] - 10, S0.y - 288], side: 'l' });
     }
     text('Proposed map, to be tuned on hands. Ridges drawn far coarser than life.', box[0], box[1] + box[3] + 2, { role: 'label', size: 19, color: C.faint, alpha: ep(t, 8.2, 8.6) });
     /* the right column: one pattern with no borders (it blends), then the payoff */
@@ -982,14 +977,14 @@ S({
     if (kb > 0.003) {
       text('One pattern, no borders', rx, 330, { role: 'label', size: 21, color: C.mute, alpha: kb });
       const sx = rx, sy = 356, sw = RM - rx, sh = 96, U = 46, Vh = 8.5, sc0 = sw / U;
-      demoWindow(sx, sy, sw, sh, kb, { fill: '#1A1B1E' });
+      demoWindow(sx, sy, sw, sh, kb, { fill: C.panel });
       const LB = b08_streams('b08:blend2', { x0: 0, y0: 0, x1: U, y1: Vh, inside: (u, v) => u > 0.6 && u < U - 0.6 && v > 0.7 && v < Vh - 0.7 },
         (u, v) => ({ ang: 0, sep: 1.2, on: 1 - smooth(clamp((u - 35) / 8)), dot: smooth(clamp((u - 7) / 22)) }), { seeds: [[3, 4.25]] });
       clipped(sx, sy, sw * clamp((t - 3.6) / 1.2), sh, () => b08_drawStreams(LB, [sc0, 0, 0, sc0, sx, sy], { w: 1.8, alpha: kb }));
       [['Ridges', 0.08], ['Dashes', 0.38], ['Dots', 0.62], ['Smooth', 0.9]].forEach(([nm, f], i) => text(nm, sx + sw * f, sy + sh + 30, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: stagger(t, 4.0, i, 0.15, 0.4) }));
     }
-    verdict(t, 6.6, rx, 690, { from: B08.lift.smooth, to: B08.lift.rough, dec: 2, unit: 'N', label: 'Squeeze to lift, sweaty fingers', better: 'lower', who: ['Smooth coat', 'Etched'], rivalCol: 'grey', size: 128, maxW: RM - rx });
-    scaleNote(rx, 880, 'per side, to lift the 29.31 g mouse', { t, t0: 8.3 });
-    { const a = ep(t, 8.5, 8.9), w0 = pillW('study', { by: 'Derler 2012' }); pill(rx, 926, 'study', a, { by: 'Derler 2012' }); pill(rx + w0 + 20, 926, 'derived', a); text('Skin on glass, wet: sweat floats it on smooth, drains into rough', rx, 962, { role: 'small', size: 22, weight: 600, color: C.faint, alpha: a, maxW: RM - rx }); }
+    verdict(t, 6.6, rx, 690, { from: LF.one, to: LF.map, dec: 2, unit: 'N', label: 'Least squeeze to lift, per side', better: 'lower', who: ['One direction', 'The map'], rivalCol: 'grey', size: 128, maxW: RM - rx });
+    scaleNote(rx, 880, "about half an egg's weight", { lead: '0.3 N', t, t0: 8.3 });
+    { const a = ep(t, 8.5, 8.9), w0 = pillW('study', { by: 'Zhang 2017' }); pill(rx, 926, 'study', a, { by: 'Zhang 2017' }); pill(rx + w0 + 20, 926, 'derived', a); text('Grip per newton of squeeze, fingertip at 0.2 to 0.4 N: 0.51 across the ridges, 0.44 along', rx, 962, { role: 'small', size: 22, weight: 600, color: C.faint, alpha: a, maxW: RM - rx }); }
   }
 });
