@@ -16,6 +16,11 @@ shape ~50 %, board ~90 %, feedback audit ~25 %, final review and clips not start
 
 ## THE DIRECTION NOW (Brock, 14:41–14:53, F63): start from v23, not from the revamp
 
+**In progress (15:25):** branch `claude/v23-refine-2026-11-06`; the plan is handoff/v23refine/PLAN.md (the underdog that
+compounds: moves 0–9, a build board, a scoreboard against the giants, a weight ledger); Brock's old per-slide scores are
+beside it. A builder is making the foundation (a film manifest, the persistent visuals) and the pilot (moves 0 and 1).
+The comparison viewer below was "super broken" on his phone (15:12): don't rely on it; his direction replaced the need.
+
 He judged the revamp a regression: "100 slides of waffling with no coherence"; "the average animation quality is much
 better, but the peak animation quality is significantly reduced, there are no truly impressive animations anymore"; pacing
 "nauseating to follow". The next version: "create a version of v23 that you think is as coherent as possible and try to
