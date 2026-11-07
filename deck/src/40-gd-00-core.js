@@ -20,10 +20,23 @@ Object.assign(SRC, {
   gdKuo: { t: 'P.-H. Kuo and A. D. Deshpande, "Muscle-tendon units provide limited contributions to the passive stiffness of the index finger metacarpophalangeal joint", J. Biomech. 45(15) (2012) 2531-2538: the capsule-ligament complex gives most of the passive stiffness', u: 'https://doi.org/10.1016/j.jbiomech.2012.07.034' },
   gdJohnson: { t: 'P. W. Johnson, M. Hagberg, E. Wigaeus Hjelm and D. Rempel, "Measuring and characterizing force exposure during computer mouse use", Scand J Work Environ Health 26(5) (2000) 398-405: regular work, mean force on the sides 0.43 N (SD 0.13), on the button 0.35 N (SD 0.06), sides 0.92 N in simulated use (n = 16; the abstract swaps sides and button, the table and text are used)', u: 'https://www.sjweh.fi/article/560' },
   gdSerhat: { t: 'G. Serhat, Y. Vardar and K. J. Kuchenbecker, "Contact evolution of dry and hydrated fingertips at initial touch", PLoS ONE 17(7) (2022) e0269722, Table 1: gross contact area A = 98.6 F^0.50 mm^2 (F in N); "around 1 cm^2" at 1 N in the literature', u: 'https://doi.org/10.1371/journal.pone.0269722' },
-  gdTpu: { t: 'TechPowerUp, Finalmouse UltralightX review, shape: width front 5.88 cm, grip 5.66 cm, rear 6.16 cm; "the sides do curve in, but essentially are straight at the middle"; "Neither the front nor back flare out much"; "The main buttons feature rather deep comfort grooves"', u: 'https://techpowerup.com/review/finalmouse-ultralightx/3.html' },
-  gdBrock: { t: 'Brock Liddicoat, In Pursuit of an Objectively Better Mouse, brainstorm: "Newtonian shape analysis is good, because you can take the derivative of the line at the edge and see if it points off the mouse or not"; "Rate of change can be too extreme just as it can be too low"; comfort grooves: "sloped surfaces on either side, which cancels out to your fingers feeling hugged"; and 2026-11-07: "there shouldn\'t be more than one local minima per finger"', u: '', n: 'His reasoning: no tag.' },
+  gdTpu: { t: 'TechPowerUp, Finalmouse UltralightX review, shape: width front 5.88 cm, grip 5.66 cm, rear 6.16 cm; "the sides do curve in, but essentially are straight at the middle". The review adds that the ends barely flare, and that the main buttons have fairly deep comfort grooves', u: 'https://techpowerup.com/review/finalmouse-ultralightx/3.html' },
+  gdBrock: { t: 'Brock Liddicoat, In Pursuit of an Objectively Better Mouse, brainstorm: Newtonian shape analysis takes the derivative of the edge to see whether it points off the mouse; a rate of change can be too extreme as well as too low; a comfort groove slopes on both sides, so the forces cancel and the finger feels hugged. And 2026-11-07: "there shouldn\'t be more than one local minima per figure" (figure: finger)', u: '', n: 'His reasoning: no tag.' },
   gdModel: { t: 'This study: the Sora V2 base fitted with arcs from 3d/shell/shell-sora.glb (plan 8 arcs, RMS 0.12 mm; section 7 arcs, 0.06 to 0.12 mm); fingertip targets from the hand model; the dips, the loss and the descent in deck/tools/gd/ (trials.py, Adam on central differences)', u: '', n: 'derived' }
 });
+
+/* ---------- captions set on one line, or two balanced lines (no orphan): the narrowest width that still takes two ---------- */
+const GD_CAPW = new Map();
+function gdCapW(str, max = 1560) {
+  const key = str + '|' + max; if (GD_CAPW.has(key)) return GD_CAPW.get(key);
+  const st = { role: 'lead' }, s_ = sentence(str); let w = max;
+  if (wrap(s_, st, max).length === 2) { let lo = 300, hi = max; while (hi - lo > 4) { const m = (lo + hi) / 2; if (wrap(s_, st, m).length <= 2) hi = m; else lo = m; } w = Math.ceil(hi) + 2; }
+  GD_CAPW.set(key, w); return w;
+}
+function gdCaptions(t, steps, o = {}) {
+  let cur = -1; for (let i = 0; i < steps.length; i++) if (t >= steps[i][0]) cur = i;
+  captions(t, steps, Object.assign({}, o, { maxW: cur < 0 ? (o.maxW || 1560) : gdCapW(String(steps[cur][1]), o.maxW || 1560) }));
+}
 
 /* ---------- the trials, and which one the result slides show (?trial=1..4) ---------- */
 const GD_NAME = {
@@ -87,16 +100,77 @@ function gdTip(x, y, r, a = 1, o = {}) {
   G.beginPath(); G.arc(x, y, r, 0, TAU); G.fillStyle = g; G.fill();
   G.strokeStyle = o.edge || (TH ? 'rgba(28,28,28,0.55)' : 'rgba(242,242,242,0.45)'); G.lineWidth = 1.5; G.stroke(); G.restore();
 }
-/** a finger in side view as a chain of rounded segments (joints from the hand model, mm), grey */
-function gdFinger(pts, map, wmm, a = 1, o = {}) {
+/* ---------- the hand in side view: the cascade as true kinematics, capsule phalanges, grey, no nails ----------
+   A finger is its three bones (GD.hand.bones: Buryanov & Kotiuk, scaled to the ANSUR II mean hand) flexed by its resting
+   angles (GD.hand.cascade: Lee & Jung 2014), from its knuckle; k scales the angles (0: straight, 1: at rest), g tilts the
+   metacarpals (rad, + = wrist back). The knuckles sit behind the middle's by the model's estimate (read from the data). */
+const GD_FINGERS = ['little', 'ring', 'middle', 'index'];        /* far to near, seen from the thumb's side */
+const GD_KB = (() => { const L = GD.hand.grips.lifted, o = {}; for (const f of GD_FINGERS) o[f] = L.zK - L.joints[f][0][0]; return o; })();
+function gdHandPose(zK, yK, g, k = 1) {
+  const out = {};
+  for (const f of GD_FINGERS) {
+    const B = GD.hand.bones[f], A = GD.hand.cascade[f]; let p = [zK - GD_KB[f] * Math.cos(g), yK - GD_KB[f] * Math.sin(g)], c = 0; const P = [p];
+    for (let i = 0; i < 3; i++) { c += A[i] * k * Math.PI / 180; const d = g - c; p = [p[0] + B[i] * Math.cos(d), p[1] + B[i] * Math.sin(d)]; P.push(p); }
+    out[f] = P;
+  }
+  return out;
+}
+/** a capsule from a to b (screen px) of radius r; the end at b is flush with b when flush is set */
+function gdCapsule(a, b, r, fill, edge, flush) {
+  const ang = Math.atan2(b[1] - a[1], b[0] - a[0]), L = Math.hypot(b[0] - a[0], b[1] - a[1]), e = flush ? Math.max(0, L - r) / (L || 1) : 1;
+  const bx = a[0] + (b[0] - a[0]) * e, by = a[1] + (b[1] - a[1]) * e;
+  G.beginPath(); G.arc(a[0], a[1], r, ang + Math.PI / 2, ang + 3 * Math.PI / 2); G.arc(bx, by, r, ang - Math.PI / 2, ang + Math.PI / 2); G.closePath();
+  G.fillStyle = fill; G.fill(); G.strokeStyle = edge; G.lineWidth = 1.6; G.stroke();
+}
+/* tones by depth: the near finger strongest, the far ones receding into the ground (true greys) */
+const GD_TONE = { index: [0.0, '#8E8E8E', '#D0D0D0'], middle: [0.3, '#727272', '#ABABAB'], ring: [0.55, '#585858', '#878787'], little: [0.72, '#464646', '#6C6C6C'], palm: [0.42, '#636363', '#9A9A9A'] };
+function gdTone(f) { const [d, fl, ed] = GD_TONE[f]; return TH ? [mix('#8A8A8A', '#E4E4E4', d), mix('#3C3C3C', '#B4B4B4', d)] : [fl, ed]; }
+/** the phalanx radii (mm): drawn, not measured (an estimate of the finger's depth in side view) */
+const GD_PR = { index: [8.4, 7.4, 6.4], middle: [8.8, 7.8, 6.6], ring: [8.2, 7.2, 6.2], little: [7.0, 6.2, 5.6] };
+function gdFingerDraw(P, f, map) {
+  const [fill, edge] = gdTone(f), S_ = P.map(q => [map.X(q[0]), map.Y(q[1])]);
+  for (let i = 0; i < 3; i++) gdCapsule(S_[i], S_[i + 1], GD_PR[f][i] * map.s, fill, edge, i === 2);
+  /* the joints' creases, quiet: a short line across each joint */
+  for (let i = 1; i < 3; i++) { const a = S_[i - 1], b = S_[i], c = S_[i + 1], d1 = Math.atan2(b[1] - a[1], b[0] - a[0]), d2 = Math.atan2(c[1] - b[1], c[0] - b[0]), m = (d1 + d2) / 2 + Math.PI / 2, r = GD_PR[f][i] * map.s * 0.55;
+    line(b[0] - Math.cos(m) * r, b[1] - Math.sin(m) * r, b[0] + Math.cos(m) * r, b[1] + Math.sin(m) * r, { color: edge, w: 1.2, alpha: 0.7 }); }
+}
+/** the palm in side view: the back of the hand nearly straight from the wrist to the knuckles, the underside the model's
+   palm skin (20 mm under the knuckle line, an estimate) swelling into the heel behind the mouse; a short forearm fading out.
+   Drawn, not measured, except that skin line. */
+const GD_PALM = [[10, -2], [7, 7], [0, 10.5], [-40, 11.5], [-82, 10], [-104, 9], [-104, -14], [-90, -23], [-66, -21], [-30, -20], [-6, -20], [6, -15]];
+function gdPalmDraw(zK, yK, g, map) {
+  const [fill, edge] = gdTone('palm'), skin = GD.hand.palm_skin, ca = Math.cos(g), sa = Math.sin(g);
+  const P = (u, n) => [map.X(zK + u * ca - n * sa), map.Y(yK + u * sa + n * ca)];
+  /* the forearm: a band from the wrist back, fading */
+  const w0 = P(-100, 0), w1 = P(-190, 0), gr = G.createLinearGradient(w0[0], w0[1], w1[0], w1[1]);
+  gr.addColorStop(0, fill); gr.addColorStop(1, TH ? 'rgba(138,138,138,0)' : 'rgba(99,99,99,0)');
+  const fa = [P(-96, 9.5), P(-190, 12), P(-190, -16), P(-96, -14)];
+  G.beginPath(); fa.forEach((q, i) => (i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]))); G.closePath(); G.fillStyle = gr; G.fill();
+  /* the palm: a closed Catmull-Rom curve through GD_PALM */
+  const K = GD_PALM.map(q => P(q[0], q[1])), n = K.length, pts = [];
+  for (let i = 0; i < n; i++) { const p0 = K[(i - 1 + n) % n], p1 = K[i], p2 = K[(i + 1) % n], p3 = K[(i + 2) % n];
+    for (let j = 0; j < 8; j++) { const u = j / 8, u2 = u * u, u3 = u2 * u; pts.push([0, 1].map(c => 0.5 * (2 * p1[c] + (-p0[c] + p2[c]) * u + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * u2 + (-p0[c] + 3 * p1[c] - 3 * p2[c] + p3[c]) * u3))); } }
+  G.beginPath(); pts.forEach((q, i) => (i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]))); G.closePath(); G.fillStyle = fill; G.fill(); G.strokeStyle = edge; G.lineWidth = 1.6; G.stroke();
+  return { skinAt: z => yK - skin / ca + (z - zK) * Math.tan(g) };   /* the skin line's height at z (mm) */
+}
+/** the joint angles on a finger: the bone axis, a dashed extension of the bone before, an arc, and the value (counting in
+   with k) in a column to the right of the finger, each with a leader to its arc */
+function gdAngles(P, f, g, k, map, a, o = {}) {
   if (a <= 0.003) return;
-  G.save(); G.globalAlpha = a; G.lineCap = 'round'; G.lineJoin = 'round';
-  const P = pts.map(q => [map.X(q[0]), map.Y(q[1])]);
-  G.beginPath(); P.forEach((q, i) => (i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1])));
-  G.strokeStyle = TH ? '#5A5A5A' : '#8C8C8C'; G.lineWidth = wmm * map.s + 3; G.stroke();
-  G.strokeStyle = TH ? '#C4C4C4' : '#6A6A6A'; G.lineWidth = wmm * map.s; G.stroke();
-  for (let i = 0; i < P.length - 1; i++) circle(P[i][0], P[i][1], Math.max(3, wmm * map.s * 0.16), { fill: TH ? '#7A7A7A' : '#B0B0B0' });
-  G.restore();
+  const S_ = P.map(q => [map.X(q[0]), map.Y(q[1])]), col = TH ? C.ink : '#F2F2F2', A = GD.hand.cascade[f], nm = ['MCP', 'PIP', 'DIP'];
+  poly(S_, { color: col, w: 1.6, alpha: a * 0.9 });
+  const lx = o.x || Math.max(...S_.map(q => q[0])) + 90, LY = []; S_.slice(0, 3).forEach((q, i) => LY.push(i ? Math.max(q[1], LY[i - 1] + 48) : q[1]));
+  let dir = -g;                                       /* screen angle of the bone before (y down): the metacarpal first */
+  for (let i = 0; i < 3; i++) {
+    const [x, y] = S_[i], nd = Math.atan2(S_[i + 1][1] - y, S_[i + 1][0] - x), R = (i === 2 ? 15 : 18) * map.s, ex = 28 * map.s;
+    line(x, y, x + Math.cos(dir) * ex, y + Math.sin(dir) * ex, { color: col, w: 1.3, dash: [5, 5], alpha: a * 0.75 });
+    G.save(); G.globalAlpha = a; G.strokeStyle = C.heroText; G.lineWidth = 2.6; G.beginPath(); G.arc(x, y, R, dir, nd, false); G.stroke(); G.restore();
+    circle(x, y, 4.5, { fill: col, alpha: a });
+    const mid = (dir + nd) / 2, ax = x + Math.cos(mid) * R, ay = y + Math.sin(mid) * R, ly = o.ys ? o.ys[i] : LY[i];
+    poly([[ax, ay], [lx - 14, ly]], { color: C.heroText, w: 1.2, alpha: a * 0.6 });
+    rich([{ s: nm[i], role: 'label', size: 19, color: C.mute }, { s: Math.round(A[i] * k) + '°', role: 'num', size: 26, color: col, gap: 9 }], lx, ly + 9, { alpha: a });
+    dir = nd;
+  }
 }
 
 /* ---------- the magnified strip: how far a side moves from the Sora, beside a true-scale top view ----------
