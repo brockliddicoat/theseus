@@ -56,7 +56,7 @@ S({ id: 'everybar', ch: 'end', theme: 'night', title: 'Theseus fills every bar',
     const Z = V7_Z, T = V7_ZT, LT = lo_table(), cols = ['density', 'battery', 'motion'].map(lo_cat), L = Math.floor((Z.cw - 52) / LO.max);
     captions(t, [[0.3, 'Move 0’s loadouts again, on the three bars that score. Each giant fills one or two and gives the others up: red is what it gives up.'],
       [T.ths - 0.2, 'Theseus, nine moves later: density, battery and motion latency past the line together, and nothing given up for any of them.'],
-      [T.fin, 'No move traded for another: each was built on the ones before it and handed its gain to the next. Zero compromises.']]);
+      [T.fin, 'No move traded for another: each built on the ones before and handed its gain on. Zero compromises.']]);
     const cx = i => Z.x0 + i * Z.cw, lastY = Z.yT + 30, a0 = ep(t, -1, 0);
     /* the column heads, and one line through every row of each */
     cols.forEach((c, i) => {
