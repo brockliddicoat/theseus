@@ -1694,6 +1694,11 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   finger presses), not against level: "The button's slope (Recommended)".
 
 
+- **F65.8 DECIDED** (~17:10, on the shape study live in 1794087621-8d3a) The side arcs are set for the average hand's slide
+  (21 mm thumb, 24.9 mm pinky: R about 351 and 413 mm, close to the Sora's own 381), not the smallest hand's (R about 190):
+  **"Average hand (Recommended)"**. No change. The finding to keep: felt over the slide, the rule asks for almost exactly the
+  Sora's own waist, slid under each finger.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
@@ -1703,3 +1708,10 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   geometry (3d/parts/gt01.js) and path traces it. The bar: clear polycarbonate with real refraction and thickness, bevelled
   edges catching highlights, gold spring and contacts, black plunger and base, tin pins, soft studio lighting on a dark
   gradient, no noise. No maker logos or wordmarks.
+- **F66.1 (state ~17:15)** The server restarted at about 15:40 and stopped R1 and R2 after about 68 minutes each. First pass
+  (feedback/attachments/F66/1715-first-pass-4up.png: the reference, R1, R2's hero and inside view): both are below the
+  reference. R1 has the best composition, but its cover reads blue-grey and milky. R2 has the clearest plastic and the best
+  internals, but its gold is pale and its hero is composed edge-on. Both are short on edge highlights and micro-detail
+  (the plunger's collar ring, moulded marks, tin pins). R2 resumed; R1 couldn't be (its transcript was too large), so R3
+  continues R1's line from its script.
+
