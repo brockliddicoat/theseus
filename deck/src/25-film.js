@@ -36,12 +36,17 @@ const FILM = {
     { n: 3, ch: 'shell', name: 'The weight you carry', title: 'Use the weight you already carry',
       builds: 'Move 2’s light, stiff shell: its ribs end on the board the mouse already carries.',
       unlocks: 'Stiffer again, for no added weight.' },
+    /* V5: move 4 in six upgrades, each built on the one before; it fills no bar (the click bar is off, Brock 17:00), so its
+       card says what it gains (stat, read from the slides' own figures: 30-b13-moves45.js) */
     { n: 4, ch: 'click', name: 'Clicks', title: 'Clicks the stiff shell makes possible',
-      builds: 'The stiff top of moves 2 and 3: a top that doesn’t flex lets the click be direct.',
-      unlocks: 'The same click wherever you press, the latency to match, and no optical switches drawing power.' },
+      builds: 'The stiff top and flat board of moves 2 and 3: a top that doesn’t flex lets the press drive the switch head on.',
+      unlocks: 'The same click wherever you press, counted the moment it starts, from switches that draw nothing until pressed.',
+      stat: () => (typeof v5_cardStat === 'function' ? v5_cardStat(4) : null) },
+    /* V5: move 5 in five upgrades; it earns the motion bar's first step (LO.cats: motion, earn [5, 6]) */
     { n: 5, ch: 'glide', name: 'Glide and tracking', title: 'Glide and tracking',
-      builds: 'A shell that doesn’t flex (moves 2 and 3) keeps the lens at its height.',
-      unlocks: 'Aim that goes where you put it.' },
+      builds: 'A shell that doesn’t flex (moves 2 and 3) keeps the lens at its height, on the board it is clipped to.',
+      unlocks: 'Aim that goes where you put it: the lens held in focus, every frame sent as it comes.',
+      stat: () => (typeof v5_cardStat === 'function' ? v5_cardStat(5) : null) },
     /* V4 (Brock, 17:08: "the battery should only need to be 300mah ... with the same size battery as it using much newer and
        optimized firmware and no opticals"; 17:10: the freed weight to a lighter mouse): the chain is move 4's switches ->
        the Viper V4 Pro's size of battery lasting longer -> 1.6 g off the mouse -> the best density of any mouse */
@@ -65,6 +70,9 @@ const FILM = {
      buy battery any more */
   edges: [[0, 1, 'Density, not size'], [1, 2, 'The volume'], [2, 3, 'A stiff skin'], [2, 4, 'Stiffness'], [3, 4, 'Stiffness'],
     [2, 5, 'No flex'], [3, 5, 'No flex'], [2, 6, 'Density'], [3, 6, 'Density'], [4, 6, 'No opticals'], [2, 7, 'The skin'], [3, 8, 'Its screws'],
+    /* V5: what move 5 hands on: every frame as it comes (the motion bar's first step; move 6 sends them at 8 khz). Move 4's
+       hand-on to 6 is V4's 'No opticals' above (V5's 'Battery' said the same: merged, main 18:5x) */
+    [5, 6, 'Every frame'],
     [1, 9], [2, 9], [3, 9], [4, 9], [5, 9], [6, 9], [7, 9], [8, 9]],
   /* the film. Moves 0 and 1 are the pilot (V1); moves 2 to 9 are v23's slides in the plan's order until each is piloted
      (v23's chapter cards give way to the move cards; elc_sheet2 and ownsheet1 out, Brock F27: "remove this slide",
@@ -80,9 +88,15 @@ const FILM = {
     /* V3: move 3, the board the mouse already carries, tying move 2's ribs; then what that tie spares (parts, tolerances) and
        where it meets the shell (a pad); the battery placed */
     [3, ['mv3', 'b07_board', 'b07_arms', 'b07_tolerance', 'b07_poron', 'b07_balance']],
-    [4, ['mv4', 'arc', 'clk_wedge', 'clk_switch', 'clk_switch2', 'cutouts', 'tensioner', 'clk_tenmat', 'anchors', 'clk_pomtune', 'clk_front',
-      'clk_hotswap', 'clk_spdt', 'latency', 'clk_debounce', 'clk_wait', 'clk_methods', 'sidebuttons']],
-    [5, ['mv5', 'gld_under', 'dots', 'gld_camera', 'gld_corr', 'gld_blur', 'focus', 'gld_sag', 'gld_module', 'sensor', 'gld_reports', 'gld_soft', 'gld_sheet']],
+    /* V5: move 4 as six upgrades, each built on the one before (FILM.steps): the press driven head on (direct drive, on move 3's
+       flat board), the bridge (where the stiff top bends), straight cutouts (square to the press), dual rails (one plane), a
+       flat front (no wobble), the switch (counted at first contact); then all six on the side buttons, and the ladder
+       (clickup). Where the revamp rebuilt a slide with his notes answered, its rebuild; v23's tensioner drawing kept in it */
+    [4, ['mv4', 'b02_direct', 'b02_wedge', 'b02_tensioner', 'b02_stiff', 'b02_cutouts', 'b02_seams', 'b02_rails', 'b02_front', 'b02_flush',
+      'b03_switch', 'b03_spdt', 'b03_timing', 'b03_debounce', 'b03_side', 'clickup']],
+    /* V5: move 5 as five upgrades on one need, a lens held in focus: the problem (a camera), the window, dots at the lens, the
+       snap-on lens (v23's gld_module, an 8, kept), the sensor and its frames (the motion bar's step), lift-off, set in the web software (Brock: "place near web software") */
+    [5, ['mv5', 'b04_camera', 'b04_focus', 'b04_sag', 'b04_skates', 'gld_module', 'b04_sensor', 'b04_reports', 'b10_software']],
     [6, ['mv6', 'power', 'cells', 'frontier', 'elc_pmic', 'elc_charge', 'elc_safe', 'onechip', 'elc_module', 'antenna', 'motion', 'elc_rate',
       'framesync', 'secondshot', 'elc_oneside', 'elecsheet1', 'elc_tear', 'elc_twist', 'elc_lay', 'elc_flex', 'cable', 'software', 'srf_encoder']],
     [7, ['mv7', 'coating', 'srf_texture', 'srf_weight', 'srf_uv', 'grip', 'srf_gripmap', 'srf_tape', 'srf_twotone', 'wheel']],
@@ -124,7 +138,32 @@ const FILM = {
     b07_arms: { s: 'Tie every rib, not a few arms: the same board, nothing added' },
     b07_tolerance: { s: 'No added part, no added tolerance: one body where the giants stack four' },
     b07_poron: { s: 'Where the shell meets the board, a pad: the tie never creaks' },
-    b07_balance: { s: 'The heaviest part, placed: the battery move 6 sizes sits low, at the grip', to: [6] }
+    b07_balance: { s: 'The heaviest part, placed: the battery move 6 sizes sits low, at the grip', to: [6] },
+    /* V5: move 4, each upgrade said as what it builds on */
+    b02_direct: { s: 'Upgrade 1: a top that doesn’t flex (moves 2, 3) sends the press down the axis' },
+    b02_wedge: { s: 'The angle without a second board: move 3’s board stays one flat piece' },
+    b02_tensioner: { s: 'Upgrade 2: a stiff top still has to bend somewhere. The bridge says where' },
+    b02_stiff: { s: 'Move 2’s resin keeps the body stiff; the bridge keeps the click light' },
+    b02_cutouts: { s: 'Upgrade 3: the bridge cut square to the press, so the click weighs the same' },
+    b02_seams: { s: 'The same cut, placed between your fingers: nothing under a fingertip to catch' },
+    b02_rails: { s: 'Upgrade 4: square cuts stop the twist at the bridge, two posts at the switch' },
+    b02_front: { s: 'Upgrade 5, on the rails: a front that lands flat wherever the finger is' },
+    b02_flush: { s: 'Flat at the front, flush at the sides: no step under the finger at the click' },
+    b03_switch: { s: 'Upgrade 6: the same press every time, into a switch that draws nothing idle', to: [6] },
+    b03_spdt: { s: 'Two throws: the switch says when the press starts, not only when it ends' },
+    b03_timing: { s: 'Counted as the pole leaves: the press the five upgrades deliver, read first' },
+    b03_debounce: { s: 'No wait needed to count it, and the window yours to set' },
+    b03_side: { s: 'All six again, on the side buttons: tied posts on full-size switches' },
+    clickup: { s: 'What move 4 hands on: the switches’ saving goes to move 6’s battery', to: [6] },
+    /* V5: move 5 */
+    b04_camera: { s: 'The problem: a sensor is a camera, and a camera needs its lens at one height' },
+    b04_focus: { s: 'Upgrade 1: a shell that doesn’t flex (moves 2, 3) holds the lens mid-window' },
+    b04_sag: { s: 'Upgrade 2: two dots at the lens hold that height, for a fraction of the skate' },
+    b04_skates: { s: 'The rest of the skates, placed where they count: no screw under one' },
+    gld_module: { s: 'Upgrade 3 builds on the dots: a lens one dot wide carries its own two' },
+    b04_sensor: { s: 'Upgrade 4: the sensor behind the held lens, planned after Razer’s exclusivity' },
+    b04_reports: { s: 'Every frame as it comes: the motion bar’s first step. Move 6 sends them', to: [6] },
+    b10_software: { s: 'Upgrade 5: the lens at a known height, so lift-off in 0.1 mm steps means it', to: [6] }
   },
   /* V3: move 2's five upgrades, each built on the one before: the label row names the upgrade a slide belongs to and a
      meter beside it fills, one segment an upgrade (filmChrome). of: slide id -> upgrade (0: the problem, before the first;
@@ -132,10 +171,16 @@ const FILM = {
   steps: {
     2: { names: ['the material', 'the lattice', 'arches', 'fillets', 'the mould'],
       of: { b05_fallacy: 0, b05_material: 1, b05_wall: 1, shlHotspot: 2, shlWork: 2, b06_lattice: 2, b06_light: 2, b12_latopt: 2,
-        b06_arches: 3, b06_arch: 3, filletsize: 4, b06_mold: 5, b12_ribs: 5, shellup: 6 } }
+        b06_arches: 3, b06_arch: 3, filletsize: 4, b06_mold: 5, b12_ribs: 5, shellup: 6 } },
+    /* V5 */
+    4: { names: ['direct drive', 'the bridge', 'straight cutouts', 'dual rails', 'a flat front', 'the switch'], done: 'six upgrades, one click',
+      of: { b02_direct: 1, b02_wedge: 1, b02_tensioner: 2, b02_stiff: 2, b02_cutouts: 3, b02_seams: 3, b02_rails: 4, b02_front: 5, b02_flush: 5,
+        b03_switch: 6, b03_spdt: 6, b03_timing: 6, b03_debounce: 6, b03_side: 7, clickup: 7 } },
+    5: { names: ['the focus window', 'dots at the lens', 'a snap-on lens', 'the sensor', 'lift-off'],
+      of: { b04_camera: 0, b04_focus: 1, b04_sag: 2, b04_skates: 2, gld_module: 3, b04_sensor: 4, b04_reports: 4, b10_software: 5 } }
   },
   /* V3: a slide drawn for another chapter, played in this move (its chapter's accent and icon, no chapter flight inside a move) */
-  chOf: { b07_balance: 'shell' },
+  chOf: { b07_balance: 'shell', b02_wedge: 'click', b10_software: 'glide' },
 
   /* V1's scoreboard (FILM.score) became the loadout (V2): LO below, its categories, the flagships and the moves that fill
      each of Theseus's bars (LO.cats[].earn) */
@@ -253,7 +298,7 @@ const FILM_RULE = { x0: 170, x1: 1750, y: 900, r: 15, h1: 34, h9: 170 };   /* th
 function filmStep(s) {
   const m = filmMove(s), S0 = m && FILM.steps && FILM.steps[m.n]; if (!S0 || !(s.id in S0.of)) return null;
   const i = S0.of[s.id], N = S0.names.length;
-  const label = i === 0 ? 'Move ' + m.n + ': the problem' : i > N ? 'Move ' + m.n + ': ' + (['', 'one', 'two', 'three', 'four', 'five', 'six'][N] || N) + ' upgrades, one shell' : 'Move ' + m.n + ', upgrade ' + i + ' of ' + N + ': ' + S0.names[i - 1];
+  const label = i === 0 ? 'Move ' + m.n + ': the problem' : i > N ? 'Move ' + m.n + ': ' + (S0.done || (['', 'one', 'two', 'three', 'four', 'five', 'six'][N] || N) + ' upgrades, one shell') : 'Move ' + m.n + ', upgrade ' + i + ' of ' + N + ': ' + S0.names[i - 1];
   return { i, N, label, names: S0.names };
 }
 /** the meter beside the label: one segment an upgrade, those landed ink, this slide's blue, those ahead a track */
@@ -729,6 +774,7 @@ function filmLedger() {
    fills no bar) */
 function filmCardStat(n) {
   if (n === 1 && typeof ntr_thsBox === 'function') { const b = ntr_thsBox(); return 'The box it keeps: ' + fmtN(b.L, 1) + ' \u00D7 ' + fmtN(b.W, 1) + ' \u00D7 ' + fmtN(b.H, 1) + ' mm, ' + fmtN(b.v, 1) + ' cm\u00B3, a full-size mouse every later move must fill.'; }
+  if (FILM.moves[n].stat) { const s0 = FILM.moves[n].stat(); if (s0) return s0; }   /* V5: moves 4 and 5 say what they gain */
   if (n === 4 && !LO.click) { const ft = typeof b01_pressTgt === 'function' ? b01_pressTgt() : 4.2; return 'Clicks fill no bar: on Finalmouse\u2019s rig, its press to PC (under ' + fmtN(ft, 1) + ' ms, derived) beats every mechanical switch timed there, not the magnetic Starlight X (2.0 ms).'; }
   if (n === 3 && typeof THESEUS !== 'undefined') return 'The tie adds 0 g: the board, ' + fmtN(THESEUS.pcb, 2) + ' g, is in the mouse anyway, and move 2\u2019s ribs end on its edge.';
   const L = filmLedger(), ln = L && L.lines.find(l => l.move === n);
