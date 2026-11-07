@@ -383,7 +383,7 @@ def make_materials():
         'gold': mat_metal('Au plated', (1.0, 0.765, 0.32), 0.12, 0.025, 7.0, bump=0.006),
         'goldc': mat_metal('Au contact', (1.0, 0.79, 0.40), 0.08, 0.02, 9.0),
         'pom': mat_plastic('POM black', (0.022, 0.022, 0.024), 0.13, 0.03, bump=0.015, bscale=120.0, spec=0.5),
-        'pa': mat_plastic('PA black', (0.034, 0.034, 0.037), 0.36, 0.06, bump=0.16, bscale=110.0, spec=0.35),
+        'pa': mat_plastic('PA black', (0.032, 0.032, 0.035), 0.4, 0.05, bump=0.05, bscale=110.0, spec=0.3),
         'tin': mat_metal('Sn plated', (0.90, 0.905, 0.91), 0.2, 0.04, 5.0, bump=0.01),
     }
 
@@ -787,7 +787,7 @@ def setup_lights(tgt, cam_dir, scale=1.0, k=1.0, cam_loc=None, key_k=1.0, rim_k=
     area('rimTop', tgt, at(178, 58), 150 * s, 220 * s, 10 * s, 2.0e5 * P * R, (1.0, 1.0, 1.0), through=False)
     area('stripF', tgt, at(-8, 58), 160 * s, 220 * s, 9 * s, 1.3e5 * P * R, (1.0, 1.0, 1.0), through=False)
     area('kick', tgt, at(20, -26), 150 * s, 200 * s, 12 * s, 1.6e5 * P * R, (1.0, 1.0, 1.0), through=False)
-    area('pinkick', tgt, at(-72, -22), 150 * s, 26 * s, 60 * s, 0.9e5 * P, (1.0, 1.0, 1.0), through=False)   # the pins' flat faces mirror this
+    area('pinkick', tgt, at(-72, -22), 150 * s, 26 * s, 60 * s, 0.2e5 * P, (1.0, 1.0, 1.0), through=False)   # the pins' flat faces mirror this (so does the wedge's side: keep it low)
     area('bounce', tgt, at(175, -28), 150 * s, 220 * s, 70 * s, 0.3e5 * P, (1.0, 1.0, 1.0), through=False)
 
 
