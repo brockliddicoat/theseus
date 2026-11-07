@@ -1,0 +1,5 @@
+# derived: node render/export_gt01.mjs && python3 -I render/refine_geo.py rebuild these
+build/
+# render logs and quick tests
+out/*.log
+out/t_*.png
