@@ -1680,4 +1680,11 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
 - **F65.4 DECIDED** (~13:35, on the first cut, published 13:30 as its own artifact) Front flare: at rest the loss doesn't want it
   (left free it pulls the front in about 0.5 mm; flare helps lifting, which isn't modelled). **"Let the numbers decide
   (Recommended)"**: no added flare; the slides show the UltralightX's 1.1 mm beside it and say lifting isn't modelled yet.
+- **F65.5 STANDING (shape study), IN PROGRESS (G2)** (13:33, on the first cut) "you should be able to configure arcs that span
+  the hole sides, not tiny ones like that" / "snd they look way too extreme and nothing like normal mice". The arcs are the
+  shape: whole-side arcs (the rear round the hump, one long waist arc, the front corner) and wide groove arcs across each
+  button, each with depth, length and angle; no notches. Every main view true scale; at most one small ×2 inset. Main's
+  diagnosis: the strength estimate (R 29 / R 47, the pocket's pull matched to the finger's passive stiffness) left out skin
+  friction, which holds a finger on a near-flat surface; at R 47 a whole side would be ~10 mm deep. Re-derived with friction
+  and the fingertip's threshold for feeling slope, within the range normal mice use (the Sora's waist R 376 mm).
 
