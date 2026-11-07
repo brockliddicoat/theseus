@@ -20,7 +20,11 @@ for k in ${SCENES:-shell shell-sora pcb gt01 wheel claw screw skates battery}; d
     pcb) LINES='--lines=(WHEEL|U1|U3|LENS|SW[12])/' ;;
     *) LINES='' ;;
   esac
-  python3 tools/geo2d/silhouettes.py dev/geo2d-raw-$R/$k.json geo2d/$k.json $LINES
+  # the board's outline tolerance, pinned (H5): the default is its scene's radius / 700, and the battery lead, which follows
+  # the battery, sets that radius, so a battery move re-quantised every outline of the board. 0.0642422 = 44.97 / 700, the
+  # radius the committed twin was made at (H2's lead); with it a battery move changes only the lead's outlines
+  TOL=''; [ "$k" = pcb ] && TOL=0.0642422
+  python3 tools/geo2d/silhouettes.py dev/geo2d-raw-$R/$k.json geo2d/$k.json $TOL $LINES
 done
 case " ${SCENES:-pcb} " in *" pcb "*) python3 tools/geo2d/extras.py ../3d/pcb/pcb-layout.json geo2d/pcb.json ;; esac
 case " ${SCENES:-wheel} " in *" wheel "*) python3 tools/geo2d/extras.py --pin-wheel geo2d/wheel.json ;; esac

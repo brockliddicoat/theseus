@@ -885,11 +885,11 @@ function b01_btData() {
   const at = g => { for (let i = 1; i < curve.length; i++) if (curve[i][0] >= g) { const [x0, y0] = curve[i - 1], [x1, y1] = curve[i]; return y0 + (y1 - y0) * (g - x0) / Math.max(1e-9, x1 - x0); } return curve[curve.length - 1][1]; };
   return (b01_btData.v = { listed, none, F, curve, at, hi: F[F.length - 1].p, lo: F[0].p });
 }
-/** a battery drawn to scale by capacity in the top view's mm: the key plan's footprint (KEY_PARTS: 35 × 25 mm at 4 mm,
-   left as H2 placed it; EEMB's pack is 37.0 × 25.5 × 4.3) stands for Theseus's own pack (b01_thsBatt, 300 mAh); c mAh at
+/** a battery drawn to scale by capacity in the top view's mm: the key plan's footprint (KEY_PARTS: EEMB's pack, 37.0 ×
+   25.5 mm at 4.3 mm, where H5 placed it to balance the mouse) stands for Theseus's own pack (b01_thsBatt, 300 mAh); c mAh at
    the same thickness keeps its shape and scales its area by c / that), centred where the key plan puts it */
 function b01_battRect(c, at) { const B = KEY_PARTS.battery, k = Math.sqrt(c / b01_thsBatt().mAh), [cx, cy] = at || b01_battC(), w = B.w * k * MS_K.x, h = B.h * k * MS_K.y; return [cx - w / 2, cy - h / 2, w, h]; }
-/** where Theseus keeps its battery in the top view (mm): the key plan's place (KEY_PARTS, so H2's move reaches it) */
+/** where Theseus keeps its battery in the top view (mm): the key plan's place (KEY_PARTS, so a move of it reaches here) */
 function b01_battC() { const B = KEY_PARTS.battery; return [(B.x + B.w / 2) * MS_K.x, (B.y + B.h / 2) * MS_K.y]; }
 S({
   id: 'b01_battery', ch: 'intro', theme: 'paper', title: 'Battery life, traded for weight', settle: 11, ideas: ['battery', 'weight'],

@@ -780,7 +780,8 @@ def add_wires(glb):
         # J2 faces the back (F26.4): the plug's tail 4.6 mm behind it (layout z 3.3); the lead runs back, inboard of MH4 and
         # of the shell's boss post over it (#54: the screws come from below, the post stands on the board's top, Ø5.3 as
         # 3d/parts/fasteners.js's boss; the bundle's axis >= 3.5 mm from the hole's centre), then on to the battery's tab end
-        # at its front face (board.py BATTERY, H2: z1 -11.60, its middle 2.43 mm over the board's top), so it follows BATTERY
+        # at its front face (board.py BATTERY: its front z1 and its middle's height), so it follows BATTERY (H5: 7.09 mm longer
+        # since the battery moved back to balance EEMB's lighter pack)
         'BATLEAD': dict(path=[(14.5, 1.45, 3.3), (14.2, 1.5, 2.2), (12.4, 1.8, 0.7), (10.7, 2.1, -1.6), (10.45, 2.3, -4.6),
                               (10.3, BATTERY['yMid'] - 5.03, BATTERY['z1'] + 2.17), (10.2, BATTERY['yMid'] - 5.03, BATTERY['z1'] + 0.17)],
                         mats=['wire_red', 'wire_white', 'wire_black']),

@@ -157,6 +157,13 @@ const MS_SKIRT = 9.3;                                                   /* the b
    the one source keyPlanMM also reads (H1, 2026-11-06). These two names stay for the slides that read them */
 const MS_CORNER_DOTS = KEY_PARTS.skates.pts;                            /* key plan (x = -X, y = -Z) */
 const MS_BATTERY = [KEY_PARTS.battery.x, KEY_PARTS.battery.y, KEY_PARTS.battery.w, KEY_PARTS.battery.h];   /* key plan: x, y, across, along */
+/** the 'battery' focus box (msBox), centred on the battery wherever KEY_PARTS puts it, the size it always had: 48 × 38 mm
+   from above, 34 × 18 from the side (H5: they were typed for the 8 g pack's place, and the battery moved 7.3 mm back) */
+function msBattBox(view) {
+  const cy = MS_BATTERY[1] + MS_BATTERY[3] / 2;                         /* its centre, key plan y (= -mouse z) */
+  if (view === 'top' || view === 'bottom') return [-24, cy - 19, 48, 38];
+  const sg = view === 'right' ? 1 : -1; return [Math.min(sg * -(cy - 17), sg * -(cy + 17)), -16, 34, 18];
+}
 /** the things that move when the hardware moves (H1: the sensor went forward), from KEY_PARTS (03-parts.js), in scene
    coordinates: X (the user's left), Y (up), Z (nose). lens: [X0, Y0, Z0, X1, Y1, Z1]; board: [X0, Z0, X1, Z1] */
 function msLive() {
@@ -258,7 +265,7 @@ function msView(view) {
     V.boxes = { triggers: [-34, nose - 4, 68, seam - nose + 14], trigL: [-34, nose - 4, 44, seam - nose + 14], trigR: [-10, nose - 4, 44, seam - nose + 14],
       rear: [-34, seam - 24, 68, 44], seam: [-20, nose - 4, 40, 40], wheel: [-18, -60, 36, 44], side: [sideX > 0 ? -4 : -40, -34, 44, 56], side1: [sideX > 0 ? -4 : -40, -34, 44, 38], side2: [sideX > 0 ? -4 : -40, -16, 44, 38],
       sensor: [-18, lcy - 18, 36, 36], skates: V.box, hump: [-34, -10, 68, 64], sides: V.box, nose: [-34, nose - 4, 68, 34], tail: [-34, tail - 34, 68, 38],
-      board: [-26, -bd[3] * MS_K.y - 6, 52, (bd[3] - bd[1]) * MS_K.y + 12], battery: [-24, 4, 48, 38], antenna: [-18, -28, 36, 30] };
+      board: [-26, -bd[3] * MS_K.y - 6, 52, (bd[3] - bd[1]) * MS_K.y + 12], battery: msBattBox('top'), antenna: [-18, -28, 36, 30] };
   } else if (view === 'left' || view === 'right') {
     const sg = view === 'right' ? 1 : -1, F = ([z, y]) => [sg * z, -y], P = MS_SIDE.map(F);
     V.outPts = P; V.out = msPath(P); V.len = len(P);
@@ -298,7 +305,7 @@ function msView(view) {
       side: [sg * 7 - 27, -36, 54, 30], side1: [sg * 16.2 - 20, -33, 40, 26], side2: [sg * -2.3 - 20, -35, 40, 26],
       sensor: [sg * lz - 20, -18, 40, 22], skates: [V.box[0], -14, V.box[2], 18], hump: [sg * -15 - 36, -46, 72, 30], sides: V.box,
       nose: [sg > 0 ? 30 : -66, -32, 36, 36], tail: [sg > 0 ? -66 : 30, -32, 36, 36],
-      board: [Math.min(sg * -12, sg * 54), -16, 66, 18], battery: [Math.min(sg * -6, sg * -40), -16, 34, 18] };
+      board: [Math.min(sg * -12, sg * 54), -16, 66, 18], battery: msBattBox(view) };
   } else if (view === 'front') {
     const F = ([x, y]) => [x, -y], P = MS_FRONT.map(F);
     V.outPts = P; V.out = msPath(P); V.len = len(P); V.box = [-MS_DIMS.W / 2, -MS_DIMS.H, MS_DIMS.W, MS_DIMS.H];
