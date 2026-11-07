@@ -98,9 +98,12 @@ const FILM = {
        snap-on lens (v23's gld_module, an 8, kept), the sensor and its frames (the motion bar's step), lift-off, set in the web software (Brock: "place near web software") */
     [5, ['mv5', 'b04_camera', 'b04_focus', 'b04_sag', 'b04_skates', 'gld_module', 'b04_sensor', 'b04_reports', 'b10_software']],
     [6, ['mv6', 'power', 'cells', 'frontier', 'elc_pmic', 'elc_charge', 'elc_safe', 'onechip', 'elc_module', 'antenna', 'motion', 'elc_rate',
-      'framesync', 'secondshot', 'elc_oneside', 'elecsheet1', 'elc_tear', 'elc_twist', 'elc_lay', 'elc_flex', 'cable', 'software', 'srf_encoder']],
+      'framesync', 'secondshot', 'elc_oneside', 'elecsheet1', 'elc_tear', 'elc_twist', 'elc_lay', 'elc_flex', 'cable', 'srf_encoder']],
     [7, ['mv7', 'coating', 'srf_texture', 'srf_weight', 'srf_uv', 'grip', 'srf_gripmap', 'srf_tape', 'srf_twotone', 'wheel']],
-    [8, ['mv8', 'repair', 'ownscrew', 'own_insert', 'own_life', 'ownbatt', 'ownboard', 'box', 'ownsheet2']],
+    /* main (18:5x): row 6's 'software' left the film: b10_software (lift-off, the web software) ends move 5 (V5). The
+       hot-swap switches (b03_hotswap, the revamp's rebuild of clk_hotswap) moved here from move 4, where they built on
+       nothing the stiff shell gives: switches you can pull and replace belong to a mouse built to be opened (V5's question 2) */
+    [8, ['mv8', 'repair', 'ownscrew', 'own_insert', 'own_life', 'ownbatt', 'b03_hotswap', 'ownboard', 'box', 'ownsheet2']],
     [9, ['mv9', 'close']]
   ],
   /* each slide's place in the chain, said in the footer beside the board: what it builds on, or what it pushes toward.
