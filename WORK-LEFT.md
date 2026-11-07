@@ -60,8 +60,11 @@ autoplay was definitely a bad idea as well". Autoplay is now OFF by default (the
 Live: **v1794012733-b9cd** (110 slides; PUBLISHING.md). Moves 0–5 are refined (V1, V2, V3, V5); move 6's story is V4's (the
 300 mAh battery) but its slides are still v23's; moves 7–9 are v23's with move cards. Notes: handoff/v23refine/
 (PLAN.md, V1–V5-PROGRESS.md).
-- **Running:** H5 (work/h5, branch h5-balance): the battery about 7 mm back so the mouse balances at its centre again
-  (F64.15), with EEMB's box; board.py, KEY_PARTS, the 3D, b07_balance. Merge it, then publish.
+- **Done:** H5 (merged 183c77b, live 1794014491-96a5): the battery 7.34 mm back, balanced at the centre (F64.15). Left by H5:
+  the 3D battery part (3d/parts/battery.js and its twin) is still a 20 x 30 x 5 mm stand-in pouch; b09_radio's push-in would
+  cut off the battery's front edge; some b10 source lines still name Jauch's pack; KIT.md section 4 doesn't log the new
+  shared pieces (KEY_PARTS.balance, msBattBox, the pinned twin tolerance). **H4 merge risk:** H4's half-done copy has
+  board.py, components.py and balance.py as they were before H5: merge H4 file by file, never the folder whole.
 - **Waiting on Brock:** his picks for the five testing pairs (F64.13: lattice/b06_lattice, shlThin/b06_light,
   shbArches/b06_arches, tolerance/b07_tolerance, grind/b07_poron; FILM_AB in 25-film.js, A plays first).
 - **Done since:** move 6 (V6, merged 6dfee1b, live 1794014119-6690): four upgrades and the recap where three bars cross the

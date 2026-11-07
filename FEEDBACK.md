@@ -573,11 +573,14 @@ handoff/v23refine/ notes). The raw messages, verbatim, are in handoff/worklog/fe
   bars filled to the line and no further, "Target, no tradeoffs". Live as v1794010568-85c4 (294c539). With it, the grid's +
   knock-out under foot text now works on every screen; it had only ever run at 1920 px and 1x, so on his phone the +
   marks showed through captions.
-- **F64.15 DECIDED, IN PROGRESS (H5)** (~18:27, on the 300 mAh battery live in v1794011041-ce3f) The lighter battery moves the
+- **F64.15 DONE (H5, live 1794014491-96a5)** (~18:27, on the 300 mAh battery live in v1794011041-ce3f) The lighter battery moves the
   balance point 1.6 mm toward the front (front 14.4 g, rear 13.3 g; b07_balance says so in red). Asked: move the battery
   about 7 mm back to re-centre it, after checking it fits in the tail? **"Move it back (Recommended)"**. H5 re-runs the
   balance with EEMB's box (37 × 25.5 × 4.3 mm), checks the fit in the tail, and updates board.py, KEY_PARTS, the 3D and
-  b07_balance (F21.15, F30.10, F42.1 hold: the balance at the centre).
+  b07_balance (F21.15, F30.10, F42.1 hold: the balance at the centre). **Result:** the battery's centre 7.34 mm back (mouse z
+  -34.32, the same 7.46 mm up; 7.3 not 6.7 because the slide's copy of the model still had the old 1.0 mm board); the scales
+  13.9 g front, 13.8 g rear; 1.55 mm to the shell at the tightest point (EEMB's 37.0 x 25.5 x 4.3 mm as a sharp box);
+  b07_balance back in blue. Picture: feedback/attachments/F64/1922-battery-moved-back-clearance.png.
 
 ## Open with Brock
 
