@@ -27,3 +27,11 @@
   1794007132-88b0 (cover tile as text, 6722755), 1794006399-a29e, 1794005831-7601 (V2's loadout bars), 1794002308-7273 (the
   v23 refinement's pilot, V1). Before them 1793996750-29cc, 2026-11-06 14:25, the 14:30 revamp
   build, 107 slides, autoplay off by default (?auto=1 on); before it 1793991510-57ae at 12:58, the 12:53 revamp build; history 1793981126-8865 at 10:05, 1793716369-34d8 v1 new design system). Not reachable from the account above: update it from a session on that account, with the same files.
+
+## The shape study (F65): its own artifact
+
+- Slug e8894dcd-b4b0-44e8-b253-b5365ce80134, https://claude.ai/artifact/ViSqwtNRxRXQehj2mYPDBZ, title "THESEUS — Shape, by
+  gradient descent", hand-built from the deck's engine (build target 'gd': `python3 tools/build.py gd` -> deck/dist/gd.html;
+  slides deck/src/40-gd-*.js; data deck/tools/gd/, research/gd/). Not the Slides type: Brock asked for the film's own assets
+  and art style. Republish with publish_files + slug + base_version.
+- Versions: 1794079831-ee94 (2026-11-07 13:30, the first cut: G1's 9 slides, branch g1-shape-gd at 44cfc16).
