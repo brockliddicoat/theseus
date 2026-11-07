@@ -272,7 +272,9 @@ S({
       { s: 'mouse', role: 'h2', size: 60, color: C.heroText, grad: C.heroGrad, gap: 18, rise: [1.55, 0.8] }
     ], LM, 640, { t });
     /* four figures, display numbers next to their units */
-    const rho = b01_rhoTxt(THESEUS.mass / (THESEUS.dims[0] * THESEUS.dims[1] * THESEUS.dims[2] / 1000), true);
+    /* density to the nearest 0.001, as every other slide prints it (ntr_rf): rounded up here it read 0.095 against 0.094 everywhere
+       else, and the against-Theseus pair (Theseus up, rivals down) would tie it with the XA25's 0.0956 at three decimals (main, 02:3x) */
+    const rho = (Math.round(THESEUS.mass / (THESEUS.dims[0] * THESEUS.dims[1] * THESEUS.dims[2] / 1000) * 1000) / 1000).toFixed(3);
     /* no figure may read as a measurement it isn't (integrator, 10:2x): no Theseus exists to weigh or time yet, so the
        weight (the budget's target, F21.1), the motion latency (Kunai's timing model's target, as b01_targets and b09_latency
        say) and the density (the target weight over its box) each say "Target" first, in a brighter voice than the rest of
