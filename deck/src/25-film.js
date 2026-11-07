@@ -56,15 +56,20 @@ const FILM = {
       builds: 'Move 4’s switches draw nothing until pressed, so a battery the Viper V4 Pro’s size lasts longer; move 5’s frames, each sent as it comes, go out at 8 khz.',
       unlocks: 'Three bars past the line at once: more hours than the Viper, a motion target ahead of every wireless mouse measured, and a battery 1.6 g lighter that takes moves 2 and 3’s shell past every mouse’s density.',
       stat: () => (typeof v6_cardStat === 'function' ? v6_cardStat() : null) },
+    /* V7: moves 7 and 8 fill no bar (density's steps are moves 2, 3 and 6), so their cards say what they gain, as move 4's
+       does; move 7's says what it keeps (30-b15-moves789.js) */
     { n: 7, ch: 'surface', name: 'The finish', title: 'A finish that weighs nothing',
-      builds: 'Move 2’s shell: a film-thin coat on it, no tape.',
-      unlocks: 'Grip that holds, for no weight.' },
+      builds: 'Move 2’s shell, its skin coated film-thin, and move 1’s shape: where each finger pulls, lifts or rests.',
+      unlocks: 'Grip that holds where you pull and lets go where you adjust, for no weight: no tape, no glue, no rubber.',
+      stat: () => (typeof v7_cardStat === 'function' ? v7_cardStat(7) : null) },
     { n: 8, ch: 'own', name: 'Built to open', title: 'Built to be opened',
-      builds: 'The inserts and screws that hold move 3’s structure.',
-      unlocks: 'A mouse you can open and repair.' },
+      builds: 'The screws and inserts that tie move 3’s board to the shell, and the switches move 4 chose.',
+      unlocks: 'A mouse you open with one driver: switches, battery and leads out by hand, and a joint that feels the same after every re-screw.',
+      stat: () => (typeof v7_cardStat === 'function' ? v7_cardStat(8) : null) },
     { n: 9, ch: 'end', name: 'Zero compromises', title: 'Zero compromises',
-      builds: 'Every move, at once.',
-      unlocks: 'Every axis at or past the best flagship, at the same time.' }
+      builds: 'Every move at once: the volume of move 1, the shell of 2 and 3, the click of 4, the lens of 5, the hours of 6, the finish of 7, the screws of 8.',
+      unlocks: 'Every bar at or past the best flagship at the same time, and nothing given up for any of them.',
+      stat: () => (typeof v7_cardStat === 'function' ? v7_cardStat(9) : null) }
   ],
   /* the build board's links: [from, to, what flows]. From the plan: 1 fixes the volume (density, from 0); 2 frees grams at the
      same stiffness; 3 builds on 2; 4 and 5 on 2 and 3; 7 on 2; 8 on 3; the close on every move. Move 6 (V4, Brock 17:08): its
@@ -76,6 +81,9 @@ const FILM = {
     /* V5: what move 5 hands on: every frame as it comes (the motion bar's first step; move 6 sends them at 8 khz). Move 4's
        hand-on to 6 is V4's 'No opticals' above (V5's 'Battery' said the same: merged, main 18:5x) */
     [5, 6, 'Every frame'],
+    /* V7: the grip map puts each texture where move 1's shape puts each finger; move 8's sockets hold move 4's switches, so a
+       worn one is swapped and the tuned click kept */
+    [1, 7, 'Where fingers pull'], [4, 8, 'Its switches'],
     [1, 9], [2, 9], [3, 9], [4, 9], [5, 9], [6, 9], [7, 9], [8, 9]],
   /* the film. Moves 0 and 1 are the pilot (V1); moves 2 to 9 are v23's slides in the plan's order until each is piloted
      (v23's chapter cards give way to the move cards; elc_sheet2 and ownsheet1 out, Brock F27: "remove this slide",
@@ -111,12 +119,21 @@ const FILM = {
        the coat that keeps water out (b10_sealed, the rebuild of elecsheet1, his 7: "protects against water for very little
        weight") with the finish; the braided leads (b10_wires, the rebuild of elc_tear 8 and elc_flex 7, the honest ~45x) with
        a mouse built to be opened. elc_oneside (7) is out until Brock asks for it back (V6's question 1) */
-    [7, ['mv7', 'coating', 'b10_sealed', 'srf_texture', 'srf_weight', 'srf_uv', 'grip', 'srf_gripmap', 'srf_tape', 'srf_twotone', 'wheel']],
-    /* main (18:5x): row 6's 'software' left the film: b10_software (lift-off, the web software) ends move 5 (V5). The
-       hot-swap switches (b03_hotswap, the revamp's rebuild of clk_hotswap) moved here from move 4, where they built on
-       nothing the stiff shell gives: switches you can pull and replace belong to a mouse built to be opened (V5's question 2) */
-    [8, ['mv8', 'repair', 'ownscrew', 'own_insert', 'own_life', 'ownbatt', 'b03_hotswap', 'ownboard', 'b10_wires', 'box', 'ownsheet2']],
-    [9, ['mv9', 'close']]
+    /* V7: move 7 as five upgrades on move 2's skin (FILM.steps): a baked coat (the kiln, his "flames and more realistic pots",
+       and it doesn't yellow), film thin (the shell's, and the board's against sweat), grip etched into it, a grip map, then
+       nothing added: no tape on the shell, no rubber on the wheel. Where the revamp rebuilt a slide with his note done, its
+       rebuild (coating, srf_texture + srf_weight, grip, srf_gripmap, srf_tape, wheel); srf_uv (7, no note) kept. Cut:
+       srf_twotone (6, "not a universal part of the design": art, not grip or weight) */
+    [7, ['mv7', 'b08_coating', 'srf_uv', 'b08_film', 'b10_sealed', 'b08_grip', 'b08_gripmap', 'b08_tape', 'b08_wheel']],
+    /* V7: move 8 opens on the giants' problem (built to be closed once: b11_repair), then four upgrades on move 3's screws
+       (FILM.steps): titanium screws, brass inserts that hold, parts that unplug (move 4's switches in sockets, the battery,
+       braided leads), the driver in the box (the revamp's box: no grip tape in it, F52.2); v23's repair (8) last, what
+       comes out and the tool. Cut: ownboard (art on the board; its screws from below are b11_repair's), ownsheet2 (colourways,
+       serials, a paper cover: nothing here opens) */
+    [8, ['mv8', 'b11_repair', 'ownscrew', 'own_insert', 'own_life', 'b03_hotswap', 'ownbatt', 'b10_wires', 'b11_box', 'repair']],
+    /* V7: the payoff before the close: the giants' loadouts again, Theseus past the line on every bar at once, the board
+       complete (everybar); then v23's close */
+    [9, ['mv9', 'everybar', 'close']]
   ],
   /* each slide's place in the chain, said in the footer beside the board: what it builds on, or what it pushes toward.
      The pilot's; successors add theirs as they pilot each move */
@@ -185,7 +202,28 @@ const FILM = {
     b09_chip: { s: 'Upgrade 3: move 5’s frames out at 8 khz, by radio or cable, one chip' },
     b09_sync: { s: 'Upgrade 4: each frame taken as the poll asks, so none goes out stale' },
     b09_latency: { s: 'The motion bar’s second step: move 5’s frames at 8 khz, first of all' },
-    powerup: { s: 'What move 6 hands on: three bars past the line, for move 9', to: [9] }
+    powerup: { s: 'What move 6 hands on: three bars past the line, for move 9', to: [9] },
+    /* V7: move 7, each upgrade said as what it builds on */
+    b08_coating: { s: 'Upgrade 1, on move 2’s skin: a ceramic coat, baked hard enough to etch' },
+    srf_uv: { s: 'The same bake keeps its colour: no yellowing where your fingers rest' },
+    b08_film: { s: 'Upgrade 2: back to the moulded height, so the finish adds about nothing' },
+    b10_sealed: { s: 'The same idea inside: a film on the board keeps sweat off the metal' },
+    b08_grip: { s: 'Upgrade 3, cut into the coat: grip where you pull, slide where you adjust' },
+    b08_gripmap: { s: 'Upgrade 4: each zone etched for its job, where move 1’s shape puts it' },
+    b08_tape: { s: 'Upgrade 5: the grip is in the coat, so no tape: no glue, no edge, no weight' },
+    b08_wheel: { s: 'Nothing added on the wheel either: grip cut into the metal, no rubber tyre', to: [9] },
+    /* V7: move 8 */
+    b11_repair: { s: 'The problem: most mice are built to close once. Move 3’s screws open it' },
+    ownscrew: { s: 'Upgrade 1, the screws that tie move 3’s board: harder heads, lighter' },
+    own_insert: { s: 'Upgrade 2: brass inserts, so the screw finds the same thread every time' },
+    own_life: { s: 'And keeps finding it: the hold the tie needs, re-screw after re-screw' },
+    b03_hotswap: { s: 'Upgrade 3, parts that unplug: move 4’s switches sit in sockets' },
+    ownbatt: { s: 'The battery move 6 sized, held in bands, on a plug that pulls out flat' },
+    b10_wires: { s: 'Braided leads, not ribbons: they survive every opening' },
+    b11_box: { s: 'Upgrade 4: the one driver it takes ships in the box' },
+    repair: { s: 'What move 8 hands on: a mouse you keep, every part out by hand or driver', to: [9] },
+    /* V7: move 9 */
+    everybar: { s: 'Move 0’s bar, met: every move feeding the next, every bar at once' }
   },
   /* V3: move 2's five upgrades, each built on the one before: the label row names the upgrade a slide belongs to and a
      meter beside it fills, one segment an upgrade (filmChrome). of: slide id -> upgrade (0: the problem, before the first;
@@ -202,10 +240,15 @@ const FILM = {
       of: { b04_camera: 0, b04_focus: 1, b04_sag: 2, b04_skates: 2, gld_module: 3, b04_sensor: 4, b04_reports: 4, b10_software: 5 } },
     /* V6 */
     6: { names: ['nothing lit', 'the same battery', 'one chip, 8 khz', 'frame sync'], done: 'three bars past the line',
-      of: { b10_lights: 1, power: 2, b09_chip: 3, b09_sync: 4, b09_latency: 4, powerup: 5 } }
+      of: { b10_lights: 1, power: 2, b09_chip: 3, b09_sync: 4, b09_latency: 4, powerup: 5 } },
+    /* V7 */
+    7: { names: ['a baked coat', 'film thin', 'grip etched in', 'a grip map', 'nothing added'],
+      of: { b08_coating: 1, srf_uv: 1, b08_film: 2, b10_sealed: 2, b08_grip: 3, b08_gripmap: 4, b08_tape: 5, b08_wheel: 5 } },
+    8: { names: ['titanium screws', 'brass inserts', 'parts that unplug', 'the driver in the box'], done: 'four upgrades, one driver',
+      of: { b11_repair: 0, ownscrew: 1, own_insert: 2, own_life: 2, b03_hotswap: 3, ownbatt: 3, b10_wires: 3, b11_box: 4, repair: 5 } }
   },
   /* V3: a slide drawn for another chapter, played in this move (its chapter's accent and icon, no chapter flight inside a move) */
-  chOf: { b07_balance: 'shell', b02_wedge: 'click', b10_software: 'glide' },
+  chOf: { b07_balance: 'shell', b02_wedge: 'click', b10_software: 'glide', /* V7 */ b10_sealed: 'surface', b03_hotswap: 'own', b10_wires: 'own' },
 
   /* V1's scoreboard (FILM.score) became the loadout (V2): LO below, its categories, the flagships and the moves that fill
      each of Theseus's bars (LO.cats[].earn) */
