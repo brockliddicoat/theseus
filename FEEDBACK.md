@@ -1673,4 +1673,8 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   four and shows them side by side with their numbers. Also told him: the optimum strengths (grooves R about 29 mm, pockets R
   about 47 mm, derived); a 30 mm pocket at R 47 comes out about 2.5 mm deep, the ULX's; phase 1's descent barely moved (under
   1 mm) because it penalised any move off the Sora, so phase 2 starts from the modified base he described.
+- **F65.3 STANDING (shape study)** (12:55) "there shouldn’t be more than one local minima per figure" ("figure": finger). Each
+  finger gets exactly one local minimum (the ring finger none): every pocket and groove one smooth valley, no raised rims or
+  ripples making a second dip in that finger's region. Phase 1's notch (rounded edges at half the radius, bulging past the base)
+  read bump-dip-bump in the ×10 inset of the right side. Counted per finger in every trial, and shown as a rule on a slide.
 
