@@ -71,6 +71,11 @@ the centre of mass 1.69 mm ahead of the middle; the battery's centre goes to mou
 it against the shell: nearest 1.55 mm (the tail corner on the user's right, low), roof 4.02, rim below 2.85, sides 1.97,
 bands 2.84; contact would start with the centre at about z −36.8. `balance.py` also writes `pcb-balance.json` (committed),
 which `deck/tools/geo2d/key_parts.py` puts in KEY_PARTS.balance, so b07_balance's model is this one, place for place.
+The board's waterproof coat (Brock ~19:40, "Add it: 27.95 g"): `balance.py` counts it as a part at the board's centroid (the
+outline's area centroid, mid-thickness), its weight by the deck's formula (`ntr_coat`: both faces of the outline plus 10 %
+for the parts' flanks, 50 µm of urethane at 1.05 g/cm³, rounded up: 0.24 g; the constants read from `NTR_COAT` in
+deck/src/14-b-intro-ex.js). The budget is 27.95 g, the shell's allowance still 10.35 g. With the battery where it is, the centre of
+mass is at z +0.16 mm, 12.84 mm up: inside the 1 mm the film claims, so the battery stays (z 0 would want it 0.70 mm further back).
 The 2D drawings (deck `boardMM`, `keyPlanMM`, the kit's mouse) come from these tools: deck/tools/geo2d/board2d.py and
 key_parts.py. The text below is the v1 board's description (2026-11-04), kept for its method and honesty labels.
 

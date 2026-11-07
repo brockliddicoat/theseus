@@ -9,8 +9,9 @@
    in the browser and could not be read from this session; the G-Wolves figures are G-Wolves's own (the maker's figures
    EloShapes lists), and TechPowerUp's scale where it weighed one. Theseus's own numbers come from THESEUS / THS (05-data.js),
    so a change there reaches every slide here.
-   Precision (G5): one precision per comparison. Weights to 0.1 g wherever mice are compared (Theseus 27.7); Theseus's own
-   spec keeps 27.71 g where it stands alone (the cover, the budget). Both from THESEUS (05-data.js), never typed.
+   Precision (G5): one precision per comparison. Weights to 0.1 g wherever mice are compared (Theseus's rounded up, thsG1);
+   Theseus's own spec keeps two decimals where it stands alone (the cover, the budget). Both from THESEUS (05-data.js),
+   never typed.
    ============================================================================================ */
 Object.assign(SRC, {
   b01X3: { t: 'Notebookcheck, 2026-09-23: Logitech G Pro X3 Superstrike launches: 59 g (61 g in Europe), up to 135 h, $199.99, haptic inductive triggers (HITS), shipping by October 6', u: 'https://www.notebookcheck.net/Logitech-G-Pro-X3-Superstrike-haptic-gaming-mouse-launches-with-boosted-battery-life.1404956.0.html' },
