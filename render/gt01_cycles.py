@@ -6,6 +6,16 @@ moulded wedge, tilted 20 deg, terminals at 5.08 mm pitch; snap-action spring wit
 plunger (cap 1.5 x 2.1, rounded top, 0.80 proud), clear PC cover with ribs and bosses, black PA base and wedge.
 No maker logos or wordmarks.
 
+R3 pass (took over R1's line): water-clear PC (no blue tint, a whisper of neutral absorption), frost only on the end
+skirts and the debossed generic marks (>PC< material code, a date wheel); the cavity is cut before the ribs (R1 cut it
+after, which deleted them), a round collar ring and guide tube round the plunger, end-wall ribs, ceiling steps, a
+parting step and inside ejector marks; micro-bevels 0.03-0.1 mm on every part; chamfered tin pin tips; brighter gold
+(roughness 0.12, no hammered bump); a deeper bow in the snap spring's tongue. Light rig: the key and a top softbox sit
+on each switch's top-face mirror direction (mirror_dir), so they land as broad highlights on the flat tops; thin
+flagged rim strips; neutral world and backdrop.
+    nice python3 gt01_cycles.py --shot hero --res 1400 --spp 64 --noise 0.02 --out out/gt01_hero_1400_r3.png
+    nice python3 gt01_cycles.py --shot close --res 1400 --spp 40 --noise 0.025 --key 0.15 --key_flag --out out/gt01_close_1400_r3.png
+
 Units: 1 BU = 1 mm (scene unit scale 0.001, so camera f-stops are physical).
 Frames: switch frame S = X across (+-2.9), Y along (+Y = plunger end, the low end), Z up (0 = the switch's base plane).
         root frame = X across, Y along, Z up, origin on the board plane under the middle (NO) pin.
@@ -35,6 +45,8 @@ Z_NOTAB = Z_BLADE - GAP - 0.12 - 0.14
 H_MIN = -0.52
 CAP_L, CAP_W, CAP_R, CAP_PROUD = 1.5, 2.1, 0.75, 0.80
 WALL = 0.70                  # wedge wall / pocket inset
+RO_COL, RI_COL = 2.05, 1.48  # R3: the plunger's round collar ring on the cover (outer radius, counterbored seat radius)
+PANEL_Y = -3.0               # R3: the top's recessed panel (carries the generic moulded marks), along
 TILT = 20.0 * D2R
 sT, cT = math.sin(TILT), math.cos(TILT)
 LIFT = (L / 2) * sT + H_MIN
@@ -202,6 +214,31 @@ def dome(r, h, rim=0.02, n=48, flip=False, shank=0.0):
     return lathe(prof, n)
 
 
+def bm_merge(dst, src):
+    """append bmesh src into dst (src is freed)"""
+    me = bpy.data.meshes.new('tmp'); src.to_mesh(me); src.free(); dst.from_mesh(me); bpy.data.meshes.remove(me)
+    return dst
+
+
+def text_bm(body, size, depth, ang=0.0, loc=(0.0, 0.0, 0.0), spacing=1.0):
+    """a closed mesh of `body` in Blender's built-in font, lying in XY (reading along +X before turning by `ang` about Z),
+    spanning z 0..depth, centred on loc"""
+    cu = bpy.data.curves.new('txt', 'FONT'); cu.body = body; cu.size = size
+    cu.align_x = 'CENTER'; cu.align_y = 'CENTER'; cu.extrude = depth / 2; cu.resolution_u = 6
+    cu.space_character = spacing
+    ob = bpy.data.objects.new('txt', cu); SCN.collection.objects.link(ob)
+    dg = bpy.context.evaluated_depsgraph_get(); dg.update()
+    me = bpy.data.meshes.new_from_object(ob.evaluated_get(dg))
+    bpy.data.objects.remove(ob, do_unlink=True); bpy.data.curves.remove(cu)
+    bm = bmesh.new(); bm.from_mesh(me); bpy.data.meshes.remove(me)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+    bmesh.ops.translate(bm, vec=Vector((0, 0, depth / 2)), verts=bm.verts)
+    bmesh.ops.rotate(bm, cent=Vector((0, 0, 0)), matrix=Matrix.Rotation(ang, 3, 'Z'), verts=bm.verts)
+    bmesh.ops.translate(bm, vec=Vector(loc), verts=bm.verts)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return bm
+
+
 SCN = None
 CUTTERS = []
 
@@ -217,10 +254,11 @@ def mk(name, bm, mats=None, smooth=True):
     return ob
 
 
-def boolean(ob, cutter_bm, op='DIFFERENCE', name='cut'):
+def boolean(ob, cutter_bm, op='DIFFERENCE', name='cut', self_isect=False):
     cut = mk(ob.name + '.' + name, cutter_bm)
     cut.hide_render = True; cut.display_type = 'WIRE'
     md = ob.modifiers.new(name, 'BOOLEAN'); md.operation = op; md.solver = 'EXACT'; md.object = cut
+    if self_isect: md.use_self = True
     CUTTERS.append(cut)
     return md
 
@@ -288,9 +326,10 @@ def _bump(N, Lk, bsdf, scale, strength, dist=0.004, detail=3.0):
     return bp
 
 
-def mat_pc(name, rough=0.012, rough_var=0.012, frost=False, shadow_pass=0.9, absorb=0.045, tint=(0.93, 0.965, 1.0)):
-    """clear polycarbonate: IOR 1.585, full transmission, absorption volume, transparent shadow rays (so the parts inside
-    are lit directly, as a studio renderer does; caustics stay off)"""
+def mat_pc(name, rough=0.003, rough_var=0.004, frost=False, shadow_pass=1.0, absorb=0.12, tint=(0.992, 0.992, 0.982)):
+    """water-clear polycarbonate: IOR 1.585, full transmission, a whisper of neutral-warm absorption (only reads down the
+    12.8 mm length, never as a tint), transparent shadow rays (so the parts inside are lit directly, as a studio renderer
+    does; caustics stay off). R3: the v3 blue tint (0.93, 0.965, 1.0) and its 0.045 density are gone."""
     m, N, Lk, b, out = _mat(name)
     b.inputs['Base Color'].default_value = (1, 1, 1, 1)
     b.inputs['IOR'].default_value = 1.585
@@ -298,9 +337,9 @@ def mat_pc(name, rough=0.012, rough_var=0.012, frost=False, shadow_pass=0.9, abs
     nz = _noise(N, Lk, 0.9 if not frost else 25.0, 3.0, 0.6)
     Lk.new(_range(N, Lk, nz.outputs['Fac'], rough, rough + rough_var), b.inputs['Roughness'])
     if frost:
-        _bump(N, Lk, b, 140.0, 0.08, 0.002)
+        _bump(N, Lk, b, 160.0, 0.05, 0.002)
     lp = N.new('ShaderNodeLightPath'); tr = N.new('ShaderNodeBsdfTransparent'); mix = N.new('ShaderNodeMixShader')
-    tr.inputs['Color'].default_value = (0.97, 0.985, 1.0, 1)
+    tr.inputs['Color'].default_value = (1.0, 1.0, 1.0, 1)
     mul = N.new('ShaderNodeMath'); mul.operation = 'MULTIPLY'; mul.inputs[1].default_value = shadow_pass
     Lk.new(lp.outputs['Is Shadow Ray'], mul.inputs[0]); Lk.new(mul.outputs[0], mix.inputs[0])
     Lk.new(b.outputs['BSDF'], mix.inputs[1]); Lk.new(tr.outputs['BSDF'], mix.inputs[2])
@@ -339,13 +378,13 @@ def mat_plastic(name, color, rough, rough_var=0.06, bump=0.15, bscale=90.0, spec
 
 def make_materials():
     return {
-        'pc': mat_pc('PC clear', 0.006, 0.012, shadow_pass=1.0),
-        'frost': mat_pc('PC frosted', 0.24, 0.06, frost=True, shadow_pass=0.85),
-        'gold': mat_metal('Au plated', (1.0, 0.77, 0.34), 0.15, 0.07, 7.0, bump=0.04),
-        'goldc': mat_metal('Au contact', (1.0, 0.80, 0.42), 0.09, 0.03, 9.0),
-        'pom': mat_plastic('POM black', (0.028, 0.028, 0.03), 0.36, 0.05, bump=0.06, bscale=120.0, spec=0.55),
-        'pa': mat_plastic('PA black', (0.026, 0.026, 0.028), 0.46, 0.08, bump=0.22, bscale=110.0, spec=0.12),
-        'tin': mat_metal('Sn plated', (0.82, 0.83, 0.84), 0.28, 0.08, 5.0, bump=0.05),
+        'pc': mat_pc('PC clear'),
+        'frost': mat_pc('PC frosted', 0.20, 0.05, frost=True, shadow_pass=0.92),
+        'gold': mat_metal('Au plated', (1.0, 0.765, 0.32), 0.12, 0.025, 7.0, bump=0.006),
+        'goldc': mat_metal('Au contact', (1.0, 0.79, 0.40), 0.08, 0.02, 9.0),
+        'pom': mat_plastic('POM black', (0.022, 0.022, 0.024), 0.13, 0.03, bump=0.015, bscale=120.0, spec=0.5),
+        'pa': mat_plastic('PA black', (0.034, 0.034, 0.037), 0.36, 0.06, bump=0.16, bscale=110.0, spec=0.35),
+        'tin': mat_metal('Sn plated', (0.90, 0.905, 0.91), 0.2, 0.04, 5.0, bump=0.01),
     }
 
 
@@ -362,44 +401,69 @@ def build_switch(M):
     prof = [(-L / 2, 0.0), (-zi, 0.0), (-zi, YSH), (zi, YSH), (zi, ysF), (L / 2, ysF_o), (L / 2, H), (-L / 2, H)]
     bm = prism(prof, -W / 2, W / 2, 'YZX')
     cover = mk('cover', bm, [M['pc'], M['frost']])
-    # raised collar round the plunger hole (on top)
-    boolean(cover, prism(rrect(3.05, 2.6, 0.95, 0.0, ZP, 10), H - 0.05, H + 0.11), 'UNION', 'collar')
-    # the plunger guide hanging from the ceiling, round the flange
-    boolean(cover, prism(rrect(3.3, 3.9, 0.55, 0.0, ZP, 8), 5.12, CEIL + 0.05), 'UNION', 'guide')
-    # inner ribs on the side walls (moulded stiffeners), with a chamfered foot
+    # cavity first (open at the bottom, onto the base): R1 cut it after the ribs and guide, which deleted them
+    boolean(cover, box(-W / 2 + CW, W / 2 - CW, -zi, zi, 1.2, CEIL), 'DIFFERENCE', 'cavity')
+    # the plunger's round collar: a raised ring on top, continuing inside as a guide tube hanging from the ceiling
+    boolean(cover, prism(circle(0.0, ZP, RO_COL, 128), H - 0.05, H + 0.28), 'UNION', 'collar')
+    boolean(cover, prism(circle(0.0, ZP, RO_COL, 128), 4.95, CEIL + 0.05), 'UNION', 'guide')
+    # inner ribs on the side walls (moulded stiffeners), and two on each end wall
     rib = bmesh.new()
-    for yy in (-2.6, 4.25):
+    for yy in (-4.2, -2.6, -0.4, 4.25):
         for s in (-1, 1):
             x0, x1 = (W / 2 - CW - 0.26, W / 2 - CW + 0.05) if s > 0 else (-W / 2 + CW - 0.05, -W / 2 + CW + 0.26)
             prism(rrect(x1 - x0, 0.42, 0.0, (x0 + x1) / 2, yy), 3.3, CEIL + 0.05, 'XYZ', rib)
+    for s in (-1, 1):
+        for xx in (-1.62, 1.62):
+            ya, yb_ = (zi - 0.32, zi + 0.05) if s > 0 else (-zi - 0.05, -zi + 0.32)
+            box(xx - 0.17, xx + 0.17, ya, yb_, 3.2, CEIL + 0.05, 0.0, rib)
     boolean(cover, rib, 'UNION', 'ribs')
-    # ceiling cross-ribs either side of the guide
+    # ceiling: a cross-rib, and a thicker step at each end (internal steps read as fine refraction lines through the top)
     crib = bmesh.new()
-    for yy in (-1.35,):
-        box(-W / 2 + CW - 0.05, W / 2 - CW + 0.05, yy - 0.2, yy + 0.2, 5.62, CEIL + 0.05, 0.0, crib)
+    box(-W / 2 + CW - 0.05, W / 2 - CW + 0.05, -1.55, -1.15, 5.62, CEIL + 0.05, 0.0, crib)
+    box(-W / 2 + CW - 0.05, W / 2 - CW + 0.05, 4.35, zi + 0.05, 5.55, CEIL + 0.05, 0.0, crib)
+    box(-W / 2 + CW - 0.05, W / 2 - CW + 0.05, -zi - 0.05, -4.75, 5.42, CEIL + 0.05, 0.0, crib)
     boolean(cover, crib, 'UNION', 'crib')
-    # cavity (open at the bottom, onto the base)
-    boolean(cover, box(-W / 2 + CW, W / 2 - CW, -zi, zi, 1.2, CEIL), 'DIFFERENCE', 'cavity')
-    # rebuild the guide's bore and plunger hole
+    # the guide's bore (round the plunger's flange), the plunger hole, and the collar's counterbored seat
     boolean(cover, prism(rrect(2.5, 3.1, 0.4, 0.0, ZP, 8), 4.9, CEIL), 'DIFFERENCE', 'bore')
     boolean(cover, prism(rrect(2.3, 1.75, 0.45, 0.0, ZP, 10), 4.9, H + 0.5), 'DIFFERENCE', 'hole')
-    # shallow recessed panel on top (lightly frosted floor)
-    boolean(cover, prism(rrect(4.3, 5.9, 0.4, 0.0, -2.62, 8), H - 0.07, H + 0.5), 'DIFFERENCE', 'panel')
+    boolean(cover, prism(circle(0.0, ZP, RI_COL, 128), H + 0.13, H + 0.6), 'DIFFERENCE', 'seat')
+    # shallow recessed panel on top (it carries the moulded marks)
+    boolean(cover, prism(rrect(4.3, 4.6, 0.4, 0.0, PANEL_Y, 8), H - 0.06, H + 0.5), 'DIFFERENCE', 'panel')
     # snap-fit windows in both end skirts (the base's latch bumps show through them)
     win = bmesh.new()
     box(-1.0, 1.0, -L / 2 - 0.3, -zi + 0.05, 0.92, 1.58, 0.08, win)
     box(-1.0, 1.0, zi - 0.05, L / 2 + 0.3, 1.12, 1.74, 0.08, win)
     boolean(cover, win, 'DIFFERENCE', 'windows')
-    # ejector-pin marks on the ceiling (inside) and a gate vestige pad on the back skirt
-    ej = bmesh.new()
-    for yy in (-4.55, 4.9):
-        prism(circle(0.0, yy, 0.42, 40), CEIL - 0.1, CEIL + 0.025, 'XYZ', ej)
-    boolean(cover, ej, 'DIFFERENCE', 'ejector')
     bevel(cover, 0.1, 3, 20.0)
     bake(cover)
-    # frosted: the recess floor, and the skirts' outer faces (textured below the parting line)
+    # after the bevel, sharp small details: generic moulded marks debossed in the panel (a material code and a date
+    # wheel: no maker logos or wordmarks), ejector-pin marks inside, and the parting step round the outside
+    zf = H - 0.06 - 0.035
+    mk_bm = text_bm('>PC<', 0.72, 0.5, math.pi / 2, (0.0, PANEL_Y + 0.75, zf))
+    ann = lathe([(0.40, zf), (0.50, zf), (0.50, zf + 0.5), (0.40, zf + 0.5), (0.40, zf)], 96)
+    bmesh.ops.translate(ann, vec=Vector((0.0, PANEL_Y - 1.2, 0.0)), verts=ann.verts)
+    bm_merge(mk_bm, ann)
+    arrow = [(-0.035, -0.26), (0.035, -0.26), (0.035, 0.10), (0.11, 0.10), (0.0, 0.30), (-0.11, 0.10), (-0.035, 0.10)]
+    prism([(x, y + PANEL_Y - 1.2) for x, y in arrow], zf, zf + 0.5, 'XYZ', mk_bm)
+    for k in range(12):                                                    # the wheel's twelve month dots
+        a = 2 * math.pi * k / 12
+        prism(circle(0.62 * math.cos(a), PANEL_Y - 1.2 + 0.62 * math.sin(a), 0.035, 12), zf, zf + 0.5, 'XYZ', mk_bm)
+    bmesh.ops.remove_doubles(mk_bm, verts=mk_bm.verts, dist=1e-5)
+    boolean(cover, mk_bm, 'DIFFERENCE', 'marks')
+    ej = bmesh.new()
+    for yy, zc in ((5.1, 5.55), (-5.3, 5.42), (-3.3, CEIL)):
+        prism(circle(0.0, yy, 0.38, 40), zc - 0.1, zc + 0.02, 'XYZ', ej)
+    boolean(cover, ej, 'DIFFERENCE', 'ejector')
+    ps = bmesh.new()
+    for s in (-1, 1):
+        box(s * (W / 2 - 0.022) - (0.6 if s < 0 else 0.0), s * (W / 2 - 0.022) + (0.6 if s > 0 else 0.0), -L / 2 - 1, L / 2 + 1, -3.0, 3.1, 0.0, ps)
+        box(-W / 2 - 1, W / 2 + 1, s * (L / 2 - 0.022) - (0.6 if s < 0 else 0.0), s * (L / 2 - 0.022) + (0.6 if s > 0 else 0.0), -3.0, YSH, 0.0, ps)
+    boolean(cover, ps, 'DIFFERENCE', 'parting', self_isect=True)
+    bake(cover)
+    # frosted: the skirts' outer faces below the parting step, and the debossed marks (the panel floor stays clear)
     def frosted(c, n):
-        if c.z < YSH - 0.15 and abs(n.y) > 0.95 and abs(c.y) > L / 2 - 0.02: return True
+        if c.z < YSH - 0.15 and abs(n.y) > 0.95 and abs(c.y) > L / 2 - 0.06: return True
+        if H - 0.12 < c.z < H - 0.064 and abs(c.x) < 1.0 and PANEL_Y - 2.0 < c.y < PANEL_Y + 1.7: return True
         return False
     assign_faces(cover, 1, frosted)
     parts.append((cover, 'S'))
@@ -425,7 +489,7 @@ def build_switch(M):
     for yy in (-3.0, 2.6):
         prism(circle(0.0, yy, 0.5, 40), -0.5, 0.03, 'XYZ', ejw)
     boolean(wedge, ejw, 'DIFFERENCE', 'ejector')
-    bevel(wedge, 0.09, 3, 20.0)
+    bevel(wedge, 0.1, 3, 20.0)
     bake(wedge)
     parts.append((wedge, 'R'))
 
@@ -437,13 +501,13 @@ def build_switch(M):
     for s in (-1, 1):                                                       # plunger / blade guide rails
         box(s * 2.1 - 0.21, s * 2.1 + 0.21, -3.5, 3.9, YSH - 0.02, 2.62, 0.1, base_bm)
     base = mk('baseTop', base_bm, [M['pa']])
-    bevel(base, 0.05, 2, 20.0); bake(base)
+    bevel(base, 0.06, 3, 20.0); bake(base)
     parts.append((base, 'S'))
     lat = bmesh.new()
     prism([(-zi + 0.02, 0.97), (-L / 2 + 0.08, 0.97), (-L / 2 + 0.08, 1.22), (-zi + 0.02, 1.53)], -0.95, 0.95, 'YZX', lat)
     prism([(zi - 0.02, 1.17), (L / 2 - 0.08, 1.17), (L / 2 - 0.08, 1.42), (zi - 0.02, 1.69)], -0.95, 0.95, 'YZX', lat)
     latch = mk('latches', lat, [M['pa']])
-    bevel(latch, 0.04, 2, 20.0); bake(latch)
+    bevel(latch, 0.05, 2, 20.0); bake(latch)
     parts.append((latch, 'S'))
 
     # ---------------------------------------------------------------- terminals inside (gold-plated brass, switch frame)
@@ -458,7 +522,7 @@ def build_switch(M):
     prism([(PITCH - 0.15, FUL_Z - 0.13), (PITCH - 0.15, FUL_Z + 0.13), (FUL_Y, FUL_Z + 0.13), (FUL_Y + 0.12, FUL_Z), (FUL_Y, FUL_Z - 0.13)],
           -0.45, 0.45, 'YZX', tb)
     term = mk('terminals', tb, [M['gold']])
-    bevel(term, 0.025, 2, 30.0); bake(term)
+    bevel(term, 0.05, 2, 30.0); bake(term)
     parts.append((term, 'S'))
 
     # ---------------------------------------------------------------- the moving spring (gold-plated BeCu, 0.08 mm)
@@ -467,15 +531,15 @@ def build_switch(M):
     wz0, wz1 = Z_TIP + 0.9, FUL_Y - 0.25
     boolean(blade, prism(rrect(1.16, wz1 - wz0, 0.22, 0.0, (wz0 + wz1) / 2, 8), Z_BLADE - 0.2, Z_BLADE + 0.3), 'DIFFERENCE', 'window')
     # two embossed stiffening ribs along the frame's rails (a pressed sheet-metal detail)
-    bevel(blade, 0.02, 2, 30.0); bake(blade)
+    bevel(blade, 0.03, 2, 30.0); bake(blade)
     parts.append((blade, 'S'))
     # the tongue: cut from the window, bowed, its end seated in the fulcrum's notch
     P0 = Vector((0, wz0 - 0.05, Z_BLADE + T_BLADE / 2)); P2 = Vector((0, FUL_Y + 0.06, FUL_Z))
     d = (P2 - P0).normalized(); nrm = Vector((0, -d.z, d.y))
-    P1 = (P0 + P2) / 2 + nrm * -0.12
-    path = [P0 * (1 - t) ** 2 + P1 * 2 * (1 - t) * t + P2 * t * t for t in (i / 36 for i in range(37))]
+    P1 = (P0 + P2) / 2 + nrm * -0.22          # R3: a deeper bow, so the snap spring's curve reads
+    path = [P0 * (1 - t) ** 2 + P1 * 2 * (1 - t) * t + P2 * t * t for t in (i / 64 for i in range(65))]
     tongue = mk('tongue', sweep_rect(path, 0.96, T_BLADE), [M['gold']])
-    bevel(tongue, 0.018, 2, 30.0); bake(tongue)
+    bevel(tongue, 0.03, 2, 30.0); bake(tongue)
     parts.append((tongue, 'S'))
 
     # ---------------------------------------------------------------- contacts (gold alloy rivets) and the anchor rivet
@@ -500,19 +564,20 @@ def build_switch(M):
     plunger = mk('plunger', prism(capp, -CAP_W / 2, CAP_W / 2, 'YZX'), [M['pom']])
     boolean(plunger, prism(rrect(2.3, 2.9, 0.3, 0.0, ZP, 8), 5.55, 5.98), 'UNION', 'flange')
     boolean(plunger, prism(rrect(1.3, 1.1, 0.3, 0.0, ZP, 8), Z_BLADE + T_BLADE + 0.002, 5.6), 'UNION', 'nose')
-    bevel(plunger, 0.07, 3, 20.0); bake(plunger)
+    bevel(plunger, 0.09, 4, 20.0); bake(plunger)
     parts.append((plunger, 'S'))
 
     # ---------------------------------------------------------------- pins (tin-plated, root frame)
     pb = bmesh.new()
     ys_, yb = -0.95, -3.3
-    pin = [(-0.45, 0.35), (-0.45, ys_ + 0.12), (-0.3, ys_ - 0.03), (-0.3, yb + 0.32), (-0.1, yb), (0.1, yb), (0.3, yb + 0.32),
+    # R3: straight blades with 45-degree chamfered tips (0.16 mm each corner)
+    pin = [(-0.45, 0.35), (-0.45, ys_ + 0.12), (-0.3, ys_ - 0.03), (-0.3, yb + 0.16), (-0.14, yb), (0.14, yb), (0.3, yb + 0.16),
            (0.3, ys_ - 0.03), (0.45, ys_ + 0.12), (0.45, 0.35)]
-    pin = fillet(pin, [0, 0.05, 0.08, 0.1, 0.04, 0.04, 0.1, 0.08, 0.05, 0], 4)
+    pin = fillet(pin, [0, 0.05, 0.08, 0.03, 0.025, 0.025, 0.03, 0.08, 0.05, 0], 4)
     for zz in (PITCH, 0.0, -PITCH):
         prism([(u + zz, v) for u, v in pin], -0.2, 0.2, 'YZX', pb)
     pins = mk('pins', pb, [M['tin']])
-    bevel(pins, 0.045, 2, 35.0); bake(pins)
+    bevel(pins, 0.06, 3, 30.0); bake(pins)
     parts.append((pins, 'R'))
 
     for c in CUTTERS:
@@ -557,7 +622,7 @@ def make_world(env=0.012):
     Lk.new(ab.outputs[0], band.inputs['Value'])
     tot = N.new('ShaderNodeMath'); tot.operation = 'ADD'; Lk.new(up.outputs['Result'], tot.inputs[0]); Lk.new(band.outputs['Result'], tot.inputs[1])
     bg = N.new('ShaderNodeBackground'); Lk.new(tot.outputs[0], bg.inputs['Strength'])
-    bg.inputs['Color'].default_value = (0.97, 0.985, 1.0, 1)
+    bg.inputs['Color'].default_value = (1.0, 1.0, 1.0, 1)
     Lk.new(bg.outputs[0], out.inputs['Surface'])
     try: w.cycles.sampling_method = 'NONE'
     except Exception: pass
@@ -592,7 +657,7 @@ def make_backdrop(cam, tgt, behind=260.0, center=(0.5, 0.56), c_in=0.16, c_mid=0
     Lk.new(r, t2.inputs['Value'])
     lum = mn('ADD', mn('ADD', mn('MULTIPLY', t1.outputs['Result'], vb=c_in - c_mid), mn('MULTIPLY', t2.outputs['Result'], vb=c_mid - c_out)), vb=c_out)
     comb = N.new('ShaderNodeCombineXYZ')
-    Lk.new(mn('MULTIPLY', lum, vb=0.996), comb.inputs[0]); Lk.new(lum, comb.inputs[1]); Lk.new(mn('MULTIPLY', lum, vb=1.01), comb.inputs[2])
+    Lk.new(lum, comb.inputs[0]); Lk.new(lum, comb.inputs[1]); Lk.new(lum, comb.inputs[2])     # R3: neutral grey, as the reference
     em = N.new('ShaderNodeEmission'); Lk.new(comb.outputs[0], em.inputs['Color']); em.inputs['Strength'].default_value = 1.0
     Lk.new(em.outputs[0], out.inputs['Surface'])
     try: m.cycles.emission_sampling = 'NONE'
@@ -665,11 +730,11 @@ def shot_hero(parts, args):
     cdir = Vector(sph(-24, 23))
     c, right, up = cam_basis(cdir)
     A = frame_m((0, 0, 1), right * 0.78 + c * 0.62, Vector((1.2, -1.0, 0.0)))
-    place_switch(parts, 'swA', A, True)
+    place_switch(parts, 'swA', A, True); SW['A'] = A
     bz = (c * 0.86 + up * 0.32 - right * 0.22)
     by = (up * 0.78 + right * 0.55)
     B = frame_m(bz, by, Vector((1.2, -1.0, 0.0)) - c * 13.0 - right * 5.4 + up * 9.6)
-    place_switch(parts, 'swB', B, False)
+    place_switch(parts, 'swB', B, False); SW['B'] = B
     tgt = Vector((1.2, -1.0, 0.0)) - c * 5.0 - right * 2.6 + up * 4.4
     return tgt, cdir, 98.0, Vector((1.2, -1.0, 0.0)) + c * 2.0
 
@@ -679,27 +744,51 @@ def shot_close(parts, args):
     cdir = Vector(sph(-14, 14))
     c, right, up = cam_basis(cdir)
     A = frame_m((0, 0, 1), right * 0.92 + c * 0.38, Vector((0.0, 0.0, 0.0)))
-    place_switch(parts, 'swA', A, True)
+    place_switch(parts, 'swA', A, True); SW['A'] = A
     tgt = Vector((0.0, 0.0, 2.2))
     return tgt, cdir, 60.0, Vector((0.0, 0.0, 3.6)) + c * 1.6
 
 
 SHOTS = {'hero': shot_hero, 'close': shot_close}
+FRONT_THROUGH = True
+KEY_FLAG = False                     # R3: hide key/top from transmission (the close shot, where the key sits low behind)
+SW = {}                              # R3: the shot's switch placements (root frame -> world), for the light rig
 
 
-def setup_lights(tgt, cam_dir, scale=1.0, k=1.0):
-    """key / overhead / rim strips / back-top rim / fill / low kicker / under-bounce, placed relative to the camera"""
+def mirror_dir(M, cam_loc, ys=-1.0):
+    """R3: (point, direction) of the camera's mirror image in a switch's flat top face: a softbox placed along the
+    direction from the point reflects in that face (and in the gold blade below it, which lies parallel)"""
+    MS = M @ BODY_M
+    n = (MS.to_3x3() @ Vector((0, 0, 1))).normalized()
+    p = MS @ Vector((0.0, ys, H))
+    v = (Vector(cam_loc) - p).normalized()
+    return p, (2 * n.dot(v) * n - v).normalized()
+
+
+def setup_lights(tgt, cam_dir, scale=1.0, k=1.0, cam_loc=None, key_k=1.0, rim_k=1.0, front_k=1.0):
+    """R3 rig. Key: a big softbox on the front switch's top-face mirror direction (broad clean highlight on the cover's
+    flat top and its gold blade); top: another on the back switch's; front: soft key from the camera's left; rim strips:
+    thin, bright, flagged from the covers' transmission (reflections and edge lines only); kicker and under-bounce."""
     caz = math.degrees(math.atan2(cam_dir.x, -cam_dir.y))
     def at(daz, el): return sph(caz + daz, el)
     s = scale; P = k * s * s
-    area('key', tgt, at(-55, 42), 170 * s, 140 * s, 110 * s, 4.6e5 * P, (1.0, 0.985, 0.965))
-    area('top', tgt, at(40, 70), 170 * s, 110 * s, 45 * s, 0.55e5 * P, (1.0, 1.0, 1.0), through=False)
-    area('rimL', tgt, at(-140, 22), 140 * s, 18 * s, 190 * s, 1.9e5 * P, (0.95, 0.975, 1.0), through=False)
-    area('rimR', tgt, at(122, 13), 140 * s, 18 * s, 190 * s, 1.6e5 * P, (1.0, 0.99, 0.97), through=False)
-    area('rimTop', tgt, at(180, 50), 150 * s, 200 * s, 16 * s, 1.7e5 * P, (1.0, 1.0, 1.0), through=False)
-    area('fill', tgt, at(65, 8), 190 * s, 170 * s, 170 * s, 1.0e5 * P, (0.97, 0.98, 1.0))
-    area('kick', tgt, at(25, -30), 150 * s, 160 * s, 40 * s, 1.4e5 * P, (1.0, 1.0, 1.0))
-    area('bounce', tgt, at(175, -28), 150 * s, 220 * s, 70 * s, 0.6e5 * P, (1.0, 1.0, 1.0), through=False)
+    pA, rA = mirror_dir(SW['A'], cam_loc)
+    area('key', pA, rA, 170 * s, 100 * s, 64 * s, 2.6e5 * P * key_k, (1.0, 0.99, 0.975), through=not KEY_FLAG)
+    if 'B' in SW:
+        pB, rB = mirror_dir(SW['B'], cam_loc)
+        area('top', pB, rB, 170 * s, 100 * s, 70 * s, 2.2e5 * P * key_k, (1.0, 1.0, 1.0))
+    else:
+        area('top', tgt, at(-150, 78), 170 * s, 110 * s, 60 * s, 1.6e5 * P * key_k, (1.0, 1.0, 1.0), through=not KEY_FLAG)
+    area('front', tgt, at(-52, 40), 170 * s, 140 * s, 110 * s, 1.9e5 * P * front_k, (1.0, 0.99, 0.98), through=FRONT_THROUGH)
+    area('fill', tgt, at(65, 8), 190 * s, 170 * s, 170 * s, 0.5e5 * P * front_k, (1.0, 1.0, 1.0))
+    R = rim_k
+    area('rimL', tgt, at(-128, 18), 150 * s, 10 * s, 220 * s, 2.4e5 * P * R, (1.0, 1.0, 1.0), through=False)
+    area('rimR', tgt, at(118, 12), 150 * s, 10 * s, 220 * s, 2.4e5 * P * R, (1.0, 1.0, 1.0), through=False)
+    area('rimTop', tgt, at(178, 58), 150 * s, 220 * s, 10 * s, 2.0e5 * P * R, (1.0, 1.0, 1.0), through=False)
+    area('stripF', tgt, at(-8, 58), 160 * s, 220 * s, 9 * s, 1.3e5 * P * R, (1.0, 1.0, 1.0), through=False)
+    area('kick', tgt, at(20, -26), 150 * s, 200 * s, 12 * s, 1.6e5 * P * R, (1.0, 1.0, 1.0), through=False)
+    area('pinkick', tgt, at(-72, -22), 150 * s, 26 * s, 60 * s, 0.9e5 * P, (1.0, 1.0, 1.0), through=False)   # the pins' flat faces mirror this
+    area('bounce', tgt, at(175, -28), 150 * s, 220 * s, 70 * s, 0.3e5 * P, (1.0, 1.0, 1.0), through=False)
 
 
 def setup_render(args):
@@ -718,8 +807,8 @@ def setup_render(args):
     cy.max_bounces = 32; cy.diffuse_bounces = 3; cy.glossy_bounces = 10; cy.transmission_bounces = 20
     cy.volume_bounces = 0; cy.transparent_max_bounces = 24
     cy.caustics_reflective = False; cy.caustics_refractive = False
-    cy.blur_glossy = 0.6
-    cy.sample_clamp_direct = 0.0; cy.sample_clamp_indirect = 6.0
+    cy.blur_glossy = 0.25
+    cy.sample_clamp_direct = 0.0; cy.sample_clamp_indirect = 12.0
     cy.use_light_tree = True
     cy.seed = 7
     sc.render.film_transparent = False
@@ -755,10 +844,15 @@ def main():
     ap.add_argument('--bgx', type=float, default=0.5)
     ap.add_argument('--bgy', type=float, default=0.56)
     ap.add_argument('--bgin', type=float, default=0.16)
-    ap.add_argument('--bgmid', type=float, default=0.05)
-    ap.add_argument('--bgout', type=float, default=0.012)
-    ap.add_argument('--light', type=float, default=1.0)
+    ap.add_argument('--bgmid', type=float, default=0.058)
+    ap.add_argument('--bgout', type=float, default=0.014)
+    ap.add_argument('--light', type=float, default=1.25)
     ap.add_argument('--only', default='')
+    ap.add_argument('--key', type=float, default=0.3)
+    ap.add_argument('--rim', type=float, default=0.8)
+    ap.add_argument('--front', type=float, default=0.85)
+    ap.add_argument('--front_flag', action='store_true')
+    ap.add_argument('--key_flag', action='store_true')
     args = ap.parse_args([a for a in sys.argv[1:]])
     t0 = time.time()
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -775,7 +869,8 @@ def main():
     if args.fstop > 0:
         cam_d.dof.use_dof = True; cam_d.dof.aperture_fstop = args.fstop; cam_d.dof.aperture_blades = 7; cam_d.dof.aperture_rotation = 10 * D2R
         cam_d.dof.focus_distance = (Vector(focus) - cam.location).length if focus is not None else dist
-    setup_lights(tgt, cdir, k=args.light)
+    global FRONT_THROUGH, KEY_FLAG; FRONT_THROUGH = not args.front_flag; KEY_FLAG = args.key_flag
+    setup_lights(tgt, cdir, k=args.light, cam_loc=cam.location, key_k=args.key, rim_k=args.rim, front_k=args.front)
     make_backdrop(cam, tgt, center=(args.bgx, args.bgy), c_in=args.bgin, c_mid=args.bgmid, c_out=args.bgout)
     if args.only:
         keep = set(args.only.split(','))
