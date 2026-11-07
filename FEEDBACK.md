@@ -1647,3 +1647,23 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   tearing at a nick (stress at a notch), the Comet airliner's square windows (why corners get fillets), a square of straws
   that sags against a triangle that holds (triangulation), a hanging chain flipped upright (the thrust line, as in Gaudí's
   hanging models), wood splitting along its grain (fibre direction), stacked coins (tolerance stack-up).
+
+## F65. Shape by gradient descent: a new mini presentation (2026-11-07 12:19)
+
+- **F65.1 IN PROGRESS (G1, work/g1, branch g1-shape-gd)** Verbatim: "make some slides applying gradient descent to making an
+  objectively better mouse shape" / "new mini presentation, same assets and art style" / "the concept i am thinking bout is
+  having 4 local minima on a mouse shape" / "one for the thumb on the left side, one for the pinky on the right side (the
+  standard pockets made by a mouse a wide hump width and lots of front flare , like the ulx" / "ring finger would still sit
+  on the shoulder, no local minima, part is just calculating some derivatives with newtonian shape analysis" / "try to
+  estimate optimal gradient strength given resting position on the hand at rest in zero gravity" / "this is not some new
+  concept that should output a wildly novel shape, it is a concept to optimize the curvature on existing shape concepts, i’m
+  looking to make shape science more objective" / "start with the sora v2 shape we have and then modify it to have more of an
+  arched middle on the sides and better comfort grooves to showcase the  concept, then" / "the goal is to model a dynamic
+  shape made of arcs that you can customize the depth, length and angle of which we can then use the data from the shape
+  research on resting position and gradient descent to modify to create the best shape possible" / "remember it still needs
+  to look like a traditional gaming mouse and the concept should not be that out there" / "you need to make the animations
+  easy to understand and as possible, with excellent motion design and lots do detail and layers".
+  Main's reading (to confirm with him on the first preview): the four minima are the thumb pocket (left side), the index and
+  middle fingers' comfort grooves (main buttons) and the pinky pocket (right side); the ring finger rests on the right
+  shoulder, its slope from derivatives; the rest pose is NASA's zero-g neutral posture on the ANSUR II mean male hand
+  (193.3 mm), a relaxed claw; a separate deck (build target 'gd'), published as its own artifact.
