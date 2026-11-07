@@ -28,18 +28,16 @@ function v7_short(r) {
 }
 function v7_cardStat(n) {
   try {
+    /* two lines at most: the board's arcs into the move run under them */
     if (n === 7) {
-      const m = v7_margin(), F = B08.film, g = Math.floor(B08.mu.gain * 100 + 1e-9);
-      return 'No bar to fill: the finish has to keep density past the line move 6 set. Theseus’s lead over the XA25 there is ' + v7_dn(m, 2) + ' g (derived); soft-touch on this shell weighs ' + fmtN(F.softG, 2) + ' g or more: all of it. Cerakote’s ' + F.um + ' µm film adds about nothing once the blast takes its share, and its etch grips ' + g + ' % more where you pull, with no tape at all.';
+      const m = v7_margin();
+      return 'No bar to fill: it guards density. Soft-touch here weighs ' + fmtN(B08.film.softG, 2) + ' g or more, all of Theseus’s ' + v7_dn(m, 2) + ' g lead over the XA25 (derived).';
     }
     if (n === 8) {
       const tools = B11.gpw.tools.filter(k => k !== 'heat').length;
-      return 'No bar to fill. What it gains: ' + tools + ' tools to 1 to swap a worn switch (iFixit’s list for the G Pro Wireless); a joint that feels different after a re-screw ' + OWN_FEEL.insert + ' % of the time, not ' + OWN_FEEL.cf + ' % (Brock’s estimate); ' + v7_dn(B11.brass20, 1) + ' % of the hold after 20 heavy loads (3D People); ' + kitNum(B03.cycles, 0) + ' swaps a socket (Mill-Max).';
+      return 'No bar to fill. It gains: 1 tool, not ' + tools + ', to swap a worn switch (iFixit’s list), and ' + kitNum(B03.cycles, 0) + ' swaps a socket.';
     }
-    if (n === 9) {
-      const T = lo_table(), all = T.rows.every(r => v7_short(r).n >= 1);
-      return 'Density, battery and motion latency past the line together, the volume kept full' + (all ? ': every giant leaves at least one bar short of it.' : '.');
-    }
+    /* move 9: none; its loadout, every bar past the line, and the arcs into it say it */
   } catch (e) { return null; }
   return null;
 }
