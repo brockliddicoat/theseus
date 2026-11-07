@@ -2,7 +2,7 @@ import sys, pathlib, re, json
 root = pathlib.Path(__file__).resolve().parent.parent
 src = root / 'src'
 data_dir = root.parent / 'research' / 'data'
-# usage: python3 tools/build.py [main|rec|parts|comps] [--dev] [--only=12-xx-name.js] [--out=name]
+# usage: python3 tools/build.py [main|rec|parts|comps|kit|gd] [--dev] [--only=12-xx-name.js] [--out=name]
 #   main = 10-slides-main.js + every src/12-*.js idea sheet (sorted by name) + 14-exemplars.js + 13-sort.js
 #   --only keeps 12-00-ideas.js (the framework) and the one named sheet file, for an isolated preview
 #   --out writes dev|dist/main-<name>.html instead of main.html
@@ -34,10 +34,10 @@ def r3d_tag():
     if not v.exists(): return ''
     return ("\n<script>window.R3D_MODURL = new URL('assets/', location.href).href; window.R3D_DEV = true;</script>\n<script>\n"
             + v.read_text() + "\n</script>")
-def build(name, title, slides, dev=False, flat=True, r3d=True):
+def build(name, title, slides, dev=False, flat=True, r3d=True, extra=''):
     head = read_src('00-head.html').replace('%%TITLE%%', title)
     parts = ['01-core.js', '03-parts.js', '04-ui.js', '07-charts.js', '07-sim.js', '08-r3d.js', '08-v2d.js', '05-data.js', '06-audio.js'] + [p for p in ('05-f27.js', '06-motion.js') if (src / p).exists()] + slides + ['20-app.js']
-    js = rdata() + (geo2d() if flat else 'const GEO2D = {};\n') + '\n'.join(read_src(p) for p in parts)
+    js = rdata() + extra + (geo2d() if flat else 'const GEO2D = {};\n') + '\n'.join(read_src(p) for p in parts)
     i = head.index('<div id="app">')
     head_part, body_part = head[:i], head[i:]
     if 'name="viewport"' not in head_part:
@@ -74,3 +74,9 @@ if 'comps' in which: build('components.html', 'Component test', ['19-components-
 if 'kit' in which: build(('kit-' + opt['out'] + '.html') if 'out' in opt else 'kit.html', 'Motion kit', ['19-kit-test.js'], dev, r3d=False)   # --out=x: dist/kit-x.html
 if 'three' in which: build('three.html', '3D test', ['18-three-test.js'], dev)
 if 'rec' in which: build('rec.html', 'THESEUS — Recommendations', ['11-slides-rec.js'], dev, flat=False)
+# the shape study (G1, 2026-11-07): "Shape, by gradient descent", its own page (dist/gd.html) on the same core and kit. Its
+# data (tools/gd/out/gd-deck.json, research/gd/shape-gd.json) is embedded here only, as GD and GDSRC: never in main.html
+def gd_data():
+    g = root / 'tools' / 'gd' / 'out' / 'gd-deck.json'; s = root.parent / 'research' / 'gd' / 'shape-gd.json'
+    return 'const GD = ' + g.read_text() + ';\nconst GDSRC = ' + s.read_text() + ';\n'
+if 'gd' in which: build('gd.html', 'Shape, by gradient descent', sorted(p.name for p in src.glob('40-gd-*.js')), dev, flat=False, r3d=False, extra=gd_data())
