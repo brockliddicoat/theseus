@@ -520,7 +520,7 @@ Live then: v1793996750-29cc (the 14:30 build). Frames: the whole film is in feed
   page's database); handoff/compare/README.md says how it was made and how to read his ratings.
 
 
-## F64. The underdog that compounds; the loadout bars (2026-11-06 15:06 to ~18:12)
+## F64. The underdog that compounds; the loadout bars (2026-11-06 15:06 to ~18:27)
 Live then: the revamp (v1793996750-29cc) until 15:58, then the v23 refinement's pilot (v1794002308-7273), then the pilot
 with the loadout bars (v1794005831-7601). Pictures he answered on: /home/claude/work/v2/out/ (archived in
 handoff/v23refine/ notes). The raw messages, verbatim, are in handoff/worklog/feedback-inbox.md (15:06 onward).
@@ -573,6 +573,11 @@ handoff/v23refine/ notes). The raw messages, verbatim, are in handoff/worklog/fe
   bars filled to the line and no further, "Target, no tradeoffs". Live as v1794010568-85c4 (294c539). With it, the grid's +
   knock-out under foot text now works on every screen; it had only ever run at 1920 px and 1x, so on his phone the +
   marks showed through captions.
+- **F64.15 DECIDED, IN PROGRESS (H5)** (~18:27, on the 300 mAh battery live in v1794011041-ce3f) The lighter battery moves the
+  balance point 1.6 mm toward the front (front 14.4 g, rear 13.3 g; b07_balance says so in red). Asked: move the battery
+  about 7 mm back to re-centre it, after checking it fits in the tail? **"Move it back (Recommended)"**. H5 re-runs the
+  balance with EEMB's box (37 × 25.5 × 4.3 mm), checks the fit in the tail, and updates board.py, KEY_PARTS, the 3D and
+  b07_balance (F21.15, F30.10, F42.1 hold: the balance at the centre).
 
 ## Open with Brock
 

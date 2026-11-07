@@ -55,6 +55,30 @@ autoplay was definitely a bad idea as well". Autoplay is now OFF by default (the
    it out with a shared timing helper in the kit so every slide keeps the same beat.
 4. The chapter flights and transitions (F0c) belong in the same review: keep what reads, cut what distracts.
 
+## Evening, 2026-11-06 ~18:55: the v23 refinement, where it stands
+
+Live: **v1794012733-b9cd** (110 slides; PUBLISHING.md). Moves 0–5 are refined (V1, V2, V3, V5); move 6's story is V4's (the
+300 mAh battery) but its slides are still v23's; moves 7–9 are v23's with move cards. Notes: handoff/v23refine/
+(PLAN.md, V1–V5-PROGRESS.md).
+- **Running:** H5 (work/h5, branch h5-balance): the battery about 7 mm back so the mouse balances at its centre again
+  (F64.15), with EEMB's box; board.py, KEY_PARTS, the 3D, b07_balance. Merge it, then publish.
+- **Waiting on Brock:** his picks for the five testing pairs (F64.13: lattice/b06_lattice, shlThin/b06_light,
+  shbArches/b06_arches, tolerance/b07_tolerance, grind/b07_poron; FILM_AB in 25-film.js, A plays first).
+- **Next builders, one move at a time:** move 6 (power: its slides to V4's story, "More hours from the same battery"), then
+  7 and 8 (the finish; built to be opened, now with b03_hotswap), then the close (move 9: every bar at once).
+- **Left by V4** (handoff/v23refine/V4-PROGRESS.md):
+  - The 8 khz claim (43 h against the Viper's 40 h) assumes the switches' share of the draw is the same at 8 khz as at 1 khz
+    (the deck's B09/B10 method); if the Viper's optical switches draw a fixed current, Theseus gets 38.6 h, and the 8 khz win
+    rests on firmware, which nothing on screen counts. Say it on the power slide, or find the optical switches' real current.
+  - elc_safe draws an "NTC lead" as the battery's third wire; neither Jauch's nor EEMB's pack lists one.
+  - Slides outside the film still tell the 370 mAh story in their captions: shlGrams ("frees weight for the battery"), b10's
+    370 mAh / 8 g / 10 °C, B09L's 8 khz figure on Razer's 45 h.
+  - 200 h needs EEMB's typical 320 mAh (207.6 h); the film counts the 300 mAh minimum: 194 h.
+- **Left by V5** (V5-PROGRESS.md): the grounds still alternate light and dark through move 4 (the film-wide background question,
+  section 1 item 2); mv6's "Builds on" names move 4 only, while the board also links 5 → 6 ("Every frame").
+- **Fixed this evening:** the grid's + knock-out under foot text only ever ran at 1920 px and 1x, so on a phone or a laptop
+  the + marks showed through captions (01-core.js, 294c539).
+
 ## 1. Waiting on Brock
 
 1. **Lattice pattern (F57.1, F61.1): "show both options in presentation".** Shown L2's phone-sized comparison (the shell's
