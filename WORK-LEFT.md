@@ -72,7 +72,7 @@ Live: **v1794012733-b9cd** (110 slides; PUBLISHING.md). Moves 0–5 are refined 
   rate). Row 6 went from 22 slides to 7; b10_sealed went to move 7, b10_wires to move 8; elc_oneside (7) is out until Brock asks.
 - **Done:** V7 (merged 82a5639, live 1794015382-5983): moves 7, 8 and the close (everybar: the giants' bars short, Theseus's
   three crossing the line together, 0, no tradeoffs, the board lit). Every move has now been through the refinement.
-- **Left by V7** (V7-PROGRESS.md): b10_sealed's board coat (+0.24 g) isn't in ntr_budget (asked Brock, ~19:40); repair and
+- **Left by V7** (V7-PROGRESS.md): b10_sealed's board coat (+0.24 g) isn't in ntr_budget: Brock (~02:00): "Add it: 27.95 g", done (75df7d5); repair and
   b03_hotswap both print 1,000 swaps three slides apart; own_life types its 98.6 % (v23's); move 7 has no ladder recap (its
   card carries the compounding fact); the two new edges (1->7, 4->8) also show dashed on mv1's and mv4's cards and the rule's
   plan. "Every bar" means the film's bars only (the click bar is off; the Starlight X leads on Finalmouse's rig).

@@ -520,7 +520,7 @@ Live then: v1793996750-29cc (the 14:30 build). Frames: the whole film is in feed
   page's database); handoff/compare/README.md says how it was made and how to read his ratings.
 
 
-## F64. The underdog that compounds; the loadout bars (2026-11-06 15:06 to ~19:40)
+## F64. The underdog that compounds; the loadout bars (2026-11-06 15:06 to 2026-11-07 ~02:00)
 Live then: the revamp (v1793996750-29cc) until 15:58, then the v23 refinement's pilot (v1794002308-7273), then the pilot
 with the loadout bars (v1794005831-7601). Pictures he answered on: /home/claude/work/v2/out/ (archived in
 handoff/v23refine/ notes). The raw messages, verbatim, are in handoff/worklog/feedback-inbox.md (15:06 onward).
@@ -581,10 +581,13 @@ handoff/v23refine/ notes). The raw messages, verbatim, are in handoff/worklog/fe
   -34.32, the same 7.46 mm up; 7.3 not 6.7 because the slide's copy of the model still had the old 1.0 mm board); the scales
   13.9 g front, 13.8 g rear; 1.55 mm to the shell at the tightest point (EEMB's 37.0 x 25.5 x 4.3 mm as a sharp box);
   b07_balance back in blue. Picture: feedback/attachments/F64/1922-battery-moved-back-clearance.png.
-- **F64.16 DECIDED, IN PROGRESS (H5)** (~19:40, on the close, live in v1794015382-5983) The board's waterproof coat (b10_sealed,
+- **F64.16 DONE (H5, live 1794039339-1c54)** (asked ~19:37, answered ~02:00 on 2026-11-07, on the close, live in v1794015382-5983) The board's waterproof coat (b10_sealed,
   which he rated 7 as elecsheet1: "protects against water for very little weight"; 50 µm urethane, both faces: 0.24 g, rounded
   up) wasn't in the weight budget. **"Add it: 27.95 g (Recommended)"**: the total goes up and the shell's allowance stays at
   10.35 g; density 0.0941 is still past the XA25's 0.0956.
+  **Result:** 27.95 g; the coat 0.230 g by b10_sealed's formula, 0.24 g rounded up; density 0.094 on every slide (the cover
+  had rounded it up to 0.095); the balance 0.16 mm ahead of the middle, front 14.1 g, rear 13.8 g, "within 1 mm" holds; move
+  7's card: soft-touch weighs 0.68 g or more, more than the 0.44 g lead over the XA25.
 
 ## Open with Brock
 
