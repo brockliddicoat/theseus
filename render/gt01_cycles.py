@@ -1,0 +1,795 @@
+#!/usr/bin/env python3
+"""GT01 micro switch, product render: Blender 5.2 / Cycles, modelled procedurally from scratch (R1).
+
+Dimensions follow theseus/3d/parts/gt01.js: a D2F-class SPDT micro switch (12.8 x 5.8 x 6.5 mm) on the GT01's
+moulded wedge, tilted 20 deg, terminals at 5.08 mm pitch; snap-action spring with tongue and fulcrum, contacts,
+plunger (cap 1.5 x 2.1, rounded top, 0.80 proud), clear PC cover with ribs and bosses, black PA base and wedge.
+No maker logos or wordmarks.
+
+Units: 1 BU = 1 mm (scene unit scale 0.001, so camera f-stops are physical).
+Frames: switch frame S = X across (+-2.9), Y along (+Y = plunger end, the low end), Z up (0 = the switch's base plane).
+        root frame = X across, Y along, Z up, origin on the board plane under the middle (NO) pin.
+
+    nice python3 gt01_cycles.py --shot hero --res 600 --spp 64 --out out/draft.png
+"""
+import argparse, math, os, sys, time
+import bpy, bmesh
+from mathutils import Vector, Matrix, Euler, Quaternion
+
+D2R = math.pi / 180.0
+
+# ------------------------------------------------------------------------------------------------ dimensions (mm)
+L, W, H = 12.8, 5.8, 6.5
+YSH = 2.5                    # base / cover joint (the shoulder), switch frame
+CW = 0.55                    # cover wall
+CEIL = 6.0                   # cavity ceiling (top plate 0.5)
+ZP = 2.0                     # plunger axis, along the switch
+PITCH = 5.08                 # COM +5.08, NO 0, NC -5.08 (D2F)
+Z_TIP = -4.0                 # the moving contact, along
+Z_ANCHOR, T_BLADE = 4.45, 0.08
+Z_BLADE = Z_ANCHOR + 0.006
+FUL_Y, FUL_Z = 4.0, 3.2      # the tongue's fulcrum (V notch), along / up
+GAP = 0.30
+Z_NCARM = Z_BLADE + T_BLADE + 0.12 + 0.14
+Z_NOTAB = Z_BLADE - GAP - 0.12 - 0.14
+H_MIN = -0.52
+CAP_L, CAP_W, CAP_R, CAP_PROUD = 1.5, 2.1, 0.75, 0.80
+WALL = 0.70                  # wedge wall / pocket inset
+TILT = 20.0 * D2R
+sT, cT = math.sin(TILT), math.cos(TILT)
+LIFT = (L / 2) * sT + H_MIN
+
+
+def S2W(ys, zs):
+    """switch frame (up, along) -> root frame (up, along)"""
+    return (ys * cT - zs * sT + LIFT, ys * sT + zs * cT)
+
+
+BODY_M = Matrix.Translation((0, 0, LIFT)) @ Matrix.Rotation(-TILT, 4, 'X')   # switch frame -> root frame
+
+# ------------------------------------------------------------------------------------------------ 2D outlines
+
+
+def ccw(pts):
+    a = 0.0
+    for i in range(len(pts)):
+        x0, y0 = pts[i]; x1, y1 = pts[(i + 1) % len(pts)]
+        a += x0 * y1 - x1 * y0
+    return list(pts) if a > 0 else list(pts)[::-1]
+
+
+def rrect(w, d, r, cx=0.0, cy=0.0, seg=8):
+    r = max(0.0, min(r, w / 2 - 0.01, d / 2 - 0.01))
+    if r < 1e-4:
+        return [(cx - w / 2, cy - d / 2), (cx + w / 2, cy - d / 2), (cx + w / 2, cy + d / 2), (cx - w / 2, cy + d / 2)]
+    pts = []
+    for (ox, oy, a0) in ((cx + w / 2 - r, cy - d / 2 + r, -90), (cx + w / 2 - r, cy + d / 2 - r, 0),
+                         (cx - w / 2 + r, cy + d / 2 - r, 90), (cx - w / 2 + r, cy - d / 2 + r, 180)):
+        for i in range(seg + 1):
+            a = (a0 + 90.0 * i / seg) * D2R
+            pts.append((ox + r * math.cos(a), oy + r * math.sin(a)))
+    return pts
+
+
+def circle(cx, cy, r, n=64):
+    return [(cx + r * math.cos(2 * math.pi * i / n), cy + r * math.sin(2 * math.pi * i / n)) for i in range(n)]
+
+
+def stadium(cx, cy, length, width, ang, n=24):
+    r = width / 2; hl = length / 2 - r
+    pts = [(hl + r * math.cos(-math.pi / 2 + math.pi * i / n), r * math.sin(-math.pi / 2 + math.pi * i / n)) for i in range(n + 1)]
+    pts += [(-hl + r * math.cos(math.pi / 2 + math.pi * i / n), r * math.sin(math.pi / 2 + math.pi * i / n)) for i in range(n + 1)]
+    c, s = math.cos(ang), math.sin(ang)
+    return [(cx + x * c - y * s, cy + x * s + y * c) for x, y in pts]
+
+
+def fillet(pts, radii, seg=10):
+    """polygon with true circular fillets of radius radii[i] at vertex i (0 = sharp)"""
+    out, n = [], len(pts)
+    for i in range(n):
+        B = Vector(pts[i]); r = radii[i]
+        if r <= 0:
+            out.append((B.x, B.y)); continue
+        A = Vector(pts[i - 1]); C = Vector(pts[(i + 1) % n])
+        u = A - B; lu = u.length; u.normalize()
+        v = C - B; lv = v.length; v.normalize()
+        ang = math.acos(max(-1.0, min(1.0, u.dot(v))))
+        if ang < 1e-3 or ang > math.pi - 1e-3:
+            out.append((B.x, B.y)); continue
+        t = min(r / math.tan(ang / 2), lu * 0.49, lv * 0.49)
+        rr = t * math.tan(ang / 2)
+        P0, P1 = B + u * t, B + v * t
+        Cc = B + (u + v).normalized() * (rr / math.sin(ang / 2))
+        a0 = math.atan2(P0.y - Cc.y, P0.x - Cc.x); a1 = math.atan2(P1.y - Cc.y, P1.x - Cc.x)
+        da = a1 - a0
+        while da > math.pi: da -= 2 * math.pi
+        while da < -math.pi: da += 2 * math.pi
+        for k in range(seg + 1):
+            a = a0 + da * k / seg
+            out.append((Cc.x + rr * math.cos(a), Cc.y + rr * math.sin(a)))
+    return out
+
+
+# ------------------------------------------------------------------------------------------------ meshes
+AX = {'X': 0, 'Y': 1, 'Z': 2}
+
+
+def prism(outline, w0, w1, axes='XYZ', bm=None, taper=0.0):
+    """Extrude a 2D outline (u, v) along w from w0 to w1; axes maps (u, v, w) to (X, Y, Z).
+    taper > 0 shrinks the w1 cap inward by that much (moulding draft)."""
+    bm = bm or bmesh.new()
+    pts = ccw(outline)
+    if taper:
+        cx = sum(p[0] for p in pts) / len(pts); cy = sum(p[1] for p in pts) / len(pts)
+    def P(u, v, w):
+        c = [0.0, 0.0, 0.0]; c[AX[axes[0]]] = u; c[AX[axes[1]]] = v; c[AX[axes[2]]] = w
+        return c
+    vb = [bm.verts.new(P(u, v, w0)) for u, v in pts]
+    if taper:
+        top = []
+        for u, v in pts:
+            du, dv = u - cx, v - cy; ln = math.hypot(du, dv) or 1.0
+            top.append((u - du / ln * taper, v - dv / ln * taper))
+    else:
+        top = pts
+    vt = [bm.verts.new(P(u, v, w1)) for u, v in top]
+    n = len(pts)
+    faces = [bm.faces.new(vb[::-1]), bm.faces.new(vt)]
+    for i in range(n):
+        j = (i + 1) % n
+        faces.append(bm.faces.new((vb[i], vb[j], vt[j], vt[i])))
+    bmesh.ops.recalc_face_normals(bm, faces=faces)
+    return bm
+
+
+def box(x0, x1, y0, y1, z0, z1, r=0.0, bm=None, seg=6):
+    return prism(rrect(x1 - x0, y1 - y0, r, (x0 + x1) / 2, (y0 + y1) / 2, seg), z0, z1, 'XYZ', bm)
+
+
+def lathe(profile, n=48, bm=None):
+    """revolve (r, z) profile about Z; r == 0 points become poles"""
+    bm = bm or bmesh.new()
+    rings = []
+    for (r, z) in profile:
+        if r < 1e-7:
+            rings.append([bm.verts.new((0, 0, z))])
+        else:
+            rings.append([bm.verts.new((r * math.cos(2 * math.pi * k / n), r * math.sin(2 * math.pi * k / n), z)) for k in range(n)])
+    faces = []
+    for i in range(len(rings) - 1):
+        A, B = rings[i], rings[i + 1]
+        if len(A) == 1 and len(B) == 1: continue
+        for k in range(n):
+            k2 = (k + 1) % n
+            if len(A) == 1: faces.append(bm.faces.new((A[0], B[k], B[k2])))
+            elif len(B) == 1: faces.append(bm.faces.new((A[k], A[k2], B[0])))
+            else: faces.append(bm.faces.new((A[k], A[k2], B[k2], B[k])))
+    bmesh.ops.recalc_face_normals(bm, faces=faces)
+    return bm
+
+
+def sweep_rect(path, w, t, up=Vector((1, 0, 0)), bm=None):
+    """rectangular strip w (along `up`) x t swept along a polyline"""
+    bm = bm or bmesh.new()
+    rings, n = [], len(path)
+    for i, p in enumerate(path):
+        tan = (path[min(i + 1, n - 1)] - path[max(i - 1, 0)]).normalized()
+        side = (up - tan * up.dot(tan)).normalized()
+        nrm = tan.cross(side).normalized()
+        rings.append([bm.verts.new(p + side * a + nrm * b) for a, b in ((-w / 2, -t / 2), (w / 2, -t / 2), (w / 2, t / 2), (-w / 2, t / 2))])
+    faces = []
+    for i in range(n - 1):
+        a, b = rings[i], rings[i + 1]
+        for k in range(4):
+            k2 = (k + 1) % 4
+            faces.append(bm.faces.new((a[k], a[k2], b[k2], b[k])))
+    faces.append(bm.faces.new(rings[0][::-1])); faces.append(bm.faces.new(rings[-1]))
+    bmesh.ops.recalc_face_normals(bm, faces=faces)
+    return bm
+
+
+def dome(r, h, rim=0.02, n=48, flip=False, shank=0.0):
+    prof = [(0.0, -shank), (r * 0.82, -shank)] if shank else [(0.0, 0.0)]
+    prof += [(r, 0.0), (r, rim)]
+    for i in range(1, 13):
+        a = i / 12 * math.pi / 2
+        prof.append((r * math.cos(a), rim + (h - rim) * math.sin(a)))
+    prof[-1] = (0.0, h)
+    if shank:
+        prof.insert(2, (r * 0.82, 0.0))
+    if flip:
+        prof = [(rr, -z) for rr, z in prof][::-1]
+    return lathe(prof, n)
+
+
+SCN = None
+CUTTERS = []
+
+
+def mk(name, bm, mats=None, smooth=True):
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me); bm.free()
+    if smooth: me.shade_smooth()
+    ob = bpy.data.objects.new(name, me)
+    SCN.collection.objects.link(ob)
+    for m in (mats or []):
+        me.materials.append(m)
+    return ob
+
+
+def boolean(ob, cutter_bm, op='DIFFERENCE', name='cut'):
+    cut = mk(ob.name + '.' + name, cutter_bm)
+    cut.hide_render = True; cut.display_type = 'WIRE'
+    md = ob.modifiers.new(name, 'BOOLEAN'); md.operation = op; md.solver = 'EXACT'; md.object = cut
+    CUTTERS.append(cut)
+    return md
+
+
+def bevel(ob, width, segs=3, angle=20.0, harden=True, profile=0.5):
+    md = ob.modifiers.new('bevel', 'BEVEL')
+    md.width = width; md.segments = segs; md.limit_method = 'ANGLE'; md.angle_limit = angle * D2R
+    md.harden_normals = harden; md.use_clamp_overlap = True; md.profile = profile
+    md.miter_outer = 'MITER_ARC'
+    return md
+
+
+def bake(ob):
+    """apply the modifier stack into a fresh mesh (keeps hardened custom normals)"""
+    dg = bpy.context.evaluated_depsgraph_get(); dg.update()
+    ev = ob.evaluated_get(dg)
+    me = bpy.data.meshes.new_from_object(ev, preserve_all_data_layers=True, depsgraph=dg)
+    mats = [s.material for s in ob.material_slots]
+    ob.modifiers.clear()
+    old = ob.data; ob.data = me
+    if len(me.materials) == 0:
+        for m in mats: me.materials.append(m)
+    if old.users == 0: bpy.data.meshes.remove(old)
+    return ob
+
+
+def assign_faces(ob, mat_index, pred):
+    me = ob.data
+    for p in me.polygons:
+        if pred(Vector(p.center), Vector(p.normal)):
+            p.material_index = mat_index
+
+
+# ------------------------------------------------------------------------------------------------ materials
+
+def _mat(name):
+    m = bpy.data.materials.new(name)
+    try: m.use_nodes = True
+    except Exception: pass
+    nt = m.node_tree
+    return m, nt.nodes, nt.links, nt.nodes.get('Principled BSDF'), nt.nodes.get('Material Output')
+
+
+def _noise(N, Lk, scale, detail=2.0, rough=0.5, coord='Object'):
+    tc = N.new('ShaderNodeTexCoord'); nz = N.new('ShaderNodeTexNoise')
+    nz.inputs['Scale'].default_value = scale; nz.inputs['Detail'].default_value = detail
+    nz.inputs['Roughness'].default_value = rough
+    Lk.new(tc.outputs[coord], nz.inputs['Vector'])
+    return nz
+
+
+def _range(N, Lk, src, a, b, lo=0.3, hi=0.7):
+    mr = N.new('ShaderNodeMapRange')
+    mr.inputs['From Min'].default_value = lo; mr.inputs['From Max'].default_value = hi
+    mr.inputs['To Min'].default_value = a; mr.inputs['To Max'].default_value = b
+    Lk.new(src, mr.inputs['Value'])
+    return mr.outputs['Result']
+
+
+def _bump(N, Lk, bsdf, scale, strength, dist=0.004, detail=3.0):
+    nz = _noise(N, Lk, scale, detail, 0.6)
+    bp = N.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = strength; bp.inputs['Distance'].default_value = dist
+    Lk.new(nz.outputs['Fac'], bp.inputs['Height'])
+    Lk.new(bp.outputs['Normal'], bsdf.inputs['Normal'])
+    return bp
+
+
+def mat_pc(name, rough=0.012, rough_var=0.012, frost=False, shadow_pass=0.9, absorb=0.045, tint=(0.93, 0.965, 1.0)):
+    """clear polycarbonate: IOR 1.585, full transmission, absorption volume, transparent shadow rays (so the parts inside
+    are lit directly, as a studio renderer does; caustics stay off)"""
+    m, N, Lk, b, out = _mat(name)
+    b.inputs['Base Color'].default_value = (1, 1, 1, 1)
+    b.inputs['IOR'].default_value = 1.585
+    b.inputs['Transmission Weight'].default_value = 1.0
+    nz = _noise(N, Lk, 0.9 if not frost else 25.0, 3.0, 0.6)
+    Lk.new(_range(N, Lk, nz.outputs['Fac'], rough, rough + rough_var), b.inputs['Roughness'])
+    if frost:
+        _bump(N, Lk, b, 140.0, 0.08, 0.002)
+    lp = N.new('ShaderNodeLightPath'); tr = N.new('ShaderNodeBsdfTransparent'); mix = N.new('ShaderNodeMixShader')
+    tr.inputs['Color'].default_value = (0.97, 0.985, 1.0, 1)
+    mul = N.new('ShaderNodeMath'); mul.operation = 'MULTIPLY'; mul.inputs[1].default_value = shadow_pass
+    Lk.new(lp.outputs['Is Shadow Ray'], mul.inputs[0]); Lk.new(mul.outputs[0], mix.inputs[0])
+    Lk.new(b.outputs['BSDF'], mix.inputs[1]); Lk.new(tr.outputs['BSDF'], mix.inputs[2])
+    Lk.new(mix.outputs['Shader'], out.inputs['Surface'])
+    va = N.new('ShaderNodeVolumeAbsorption')
+    va.inputs['Color'].default_value = (*tint, 1); va.inputs['Density'].default_value = absorb
+    Lk.new(va.outputs['Volume'], out.inputs['Volume'])
+    return m
+
+
+def mat_metal(name, color, rough, rough_var=0.05, nscale=6.0, aniso=0.0, bump=0.0, bscale=200.0):
+    m, N, Lk, b, out = _mat(name)
+    b.inputs['Base Color'].default_value = (*color, 1)
+    b.inputs['Metallic'].default_value = 1.0
+    nz = _noise(N, Lk, nscale, 4.0, 0.55)
+    Lk.new(_range(N, Lk, nz.outputs['Fac'], rough - rough_var / 2, rough + rough_var / 2), b.inputs['Roughness'])
+    if aniso:
+        b.inputs['Anisotropic'].default_value = aniso
+    if bump:
+        _bump(N, Lk, b, bscale, bump, 0.002)
+    return m
+
+
+def mat_plastic(name, color, rough, rough_var=0.06, bump=0.15, bscale=90.0, spec=0.5, coat=0.0):
+    m, N, Lk, b, out = _mat(name)
+    b.inputs['Base Color'].default_value = (*color, 1)
+    b.inputs['Specular IOR Level'].default_value = spec
+    nz = _noise(N, Lk, 2.5, 3.0, 0.55)
+    Lk.new(_range(N, Lk, nz.outputs['Fac'], rough - rough_var / 2, rough + rough_var / 2), b.inputs['Roughness'])
+    if bump:
+        _bump(N, Lk, b, bscale, bump, 0.003)
+    if coat:
+        b.inputs['Coat Weight'].default_value = coat; b.inputs['Coat Roughness'].default_value = 0.25
+    return m
+
+
+def make_materials():
+    return {
+        'pc': mat_pc('PC clear', 0.006, 0.012, shadow_pass=1.0),
+        'frost': mat_pc('PC frosted', 0.24, 0.06, frost=True, shadow_pass=0.85),
+        'gold': mat_metal('Au plated', (1.0, 0.77, 0.34), 0.15, 0.07, 7.0, bump=0.04),
+        'goldc': mat_metal('Au contact', (1.0, 0.80, 0.42), 0.09, 0.03, 9.0),
+        'pom': mat_plastic('POM black', (0.028, 0.028, 0.03), 0.36, 0.05, bump=0.06, bscale=120.0, spec=0.55),
+        'pa': mat_plastic('PA black', (0.026, 0.026, 0.028), 0.46, 0.08, bump=0.22, bscale=110.0, spec=0.12),
+        'tin': mat_metal('Sn plated', (0.82, 0.83, 0.84), 0.28, 0.08, 5.0, bump=0.05),
+    }
+
+
+# ------------------------------------------------------------------------------------------------ the switch
+
+def build_switch(M):
+    """model one GT01 at identity, bake every modifier; returns [(object, frame)] with frame 'S' (switch) or 'R' (root)"""
+    parts = []
+
+    # ---------------------------------------------------------------- cover (clear PC, switch frame)
+    ysF = ((L / 2 - CW) * sT - LIFT) / cT                    # where the front end wall's inner face meets the board
+    ysF_o = ((L / 2) * sT - LIFT) / cT                       # ... and its outer face
+    zi = L / 2 - CW
+    prof = [(-L / 2, 0.0), (-zi, 0.0), (-zi, YSH), (zi, YSH), (zi, ysF), (L / 2, ysF_o), (L / 2, H), (-L / 2, H)]
+    bm = prism(prof, -W / 2, W / 2, 'YZX')
+    cover = mk('cover', bm, [M['pc'], M['frost']])
+    # raised collar round the plunger hole (on top)
+    boolean(cover, prism(rrect(3.05, 2.6, 0.95, 0.0, ZP, 10), H - 0.05, H + 0.11), 'UNION', 'collar')
+    # the plunger guide hanging from the ceiling, round the flange
+    boolean(cover, prism(rrect(3.3, 3.9, 0.55, 0.0, ZP, 8), 5.12, CEIL + 0.05), 'UNION', 'guide')
+    # inner ribs on the side walls (moulded stiffeners), with a chamfered foot
+    rib = bmesh.new()
+    for yy in (-2.6, 4.25):
+        for s in (-1, 1):
+            x0, x1 = (W / 2 - CW - 0.26, W / 2 - CW + 0.05) if s > 0 else (-W / 2 + CW - 0.05, -W / 2 + CW + 0.26)
+            prism(rrect(x1 - x0, 0.42, 0.0, (x0 + x1) / 2, yy), 3.3, CEIL + 0.05, 'XYZ', rib)
+    boolean(cover, rib, 'UNION', 'ribs')
+    # ceiling cross-ribs either side of the guide
+    crib = bmesh.new()
+    for yy in (-1.35,):
+        box(-W / 2 + CW - 0.05, W / 2 - CW + 0.05, yy - 0.2, yy + 0.2, 5.62, CEIL + 0.05, 0.0, crib)
+    boolean(cover, crib, 'UNION', 'crib')
+    # cavity (open at the bottom, onto the base)
+    boolean(cover, box(-W / 2 + CW, W / 2 - CW, -zi, zi, 1.2, CEIL), 'DIFFERENCE', 'cavity')
+    # rebuild the guide's bore and plunger hole
+    boolean(cover, prism(rrect(2.5, 3.1, 0.4, 0.0, ZP, 8), 4.9, CEIL), 'DIFFERENCE', 'bore')
+    boolean(cover, prism(rrect(2.3, 1.75, 0.45, 0.0, ZP, 10), 4.9, H + 0.5), 'DIFFERENCE', 'hole')
+    # shallow recessed panel on top (lightly frosted floor)
+    boolean(cover, prism(rrect(4.3, 5.9, 0.4, 0.0, -2.62, 8), H - 0.07, H + 0.5), 'DIFFERENCE', 'panel')
+    # snap-fit windows in both end skirts (the base's latch bumps show through them)
+    win = bmesh.new()
+    box(-1.0, 1.0, -L / 2 - 0.3, -zi + 0.05, 0.92, 1.58, 0.08, win)
+    box(-1.0, 1.0, zi - 0.05, L / 2 + 0.3, 1.12, 1.74, 0.08, win)
+    boolean(cover, win, 'DIFFERENCE', 'windows')
+    # ejector-pin marks on the ceiling (inside) and a gate vestige pad on the back skirt
+    ej = bmesh.new()
+    for yy in (-4.55, 4.9):
+        prism(circle(0.0, yy, 0.42, 40), CEIL - 0.1, CEIL + 0.025, 'XYZ', ej)
+    boolean(cover, ej, 'DIFFERENCE', 'ejector')
+    bevel(cover, 0.1, 3, 20.0)
+    bake(cover)
+    # frosted: the recess floor, and the skirts' outer faces (textured below the parting line)
+    def frosted(c, n):
+        if c.z < YSH - 0.15 and abs(n.y) > 0.95 and abs(c.y) > L / 2 - 0.02: return True
+        return False
+    assign_faces(cover, 1, frosted)
+    parts.append((cover, 'S'))
+
+    # ---------------------------------------------------------------- wedge: the GT01's special bottom housing (black PA, root frame)
+    Cf, Fb = S2W(0, L / 2), S2W(0, -L / 2)
+    C2, F2 = S2W(YSH - 0.004, zi), S2W(YSH - 0.004, -zi)
+    Fi = S2W(0, -zi)
+    fr = S2W(ysF, zi)
+    wprof = [(Fb[1], 0.0), (fr[1], 0.0), (C2[1], C2[0]), (F2[1], F2[0]), (Fi[1], Fi[0]), (Fb[1], Fb[0])]
+    wedge = mk('wedge', prism(wprof, -W / 2, W / 2, 'YZX'), [M['pa']])
+    zb = Fb[1] + WALL
+    pockets = [circle(-2.86, 3.81, 0.76, 64), circle(3.44, 1.49, 0.79, 64), stadium(0.15, 2.30, 2.11, 1.10, -TILT, 20),
+               fillet([(0.07, WALL), (zb, 3.03), (zb, WALL)], [0.35, 0.25, 0.25], 12)]
+    pk = bmesh.new()
+    for s in (-1, 1):
+        for p in pockets:
+            if s > 0: prism(p, W / 2 - 0.85, W / 2 + 0.5, 'YZX', pk)
+            else: prism(p, -W / 2 - 0.5, -W / 2 + 0.85, 'YZX', pk)
+    boolean(wedge, pk, 'DIFFERENCE', 'pockets')
+    # ejector-pin marks and a cavity-number boss on the underside
+    ejw = bmesh.new()
+    for yy in (-3.0, 2.6):
+        prism(circle(0.0, yy, 0.5, 40), -0.5, 0.03, 'XYZ', ejw)
+    boolean(wedge, ejw, 'DIFFERENCE', 'ejector')
+    bevel(wedge, 0.09, 3, 20.0)
+    bake(wedge)
+    parts.append((wedge, 'R'))
+
+    # the base's top details inside the cover (switch frame, black PA): terminal pedestals, latch bumps
+    base_bm = bmesh.new()
+    box(-1.4, 1.4, 4.70, zi - 0.02, YSH - 0.02, 3.0, 0.16, base_bm)          # COM pedestal
+    box(-1.4, 1.4, -zi + 0.02, -5.245, YSH - 0.02, 4.62, 0.12, base_bm)      # NC pedestal
+    box(-0.85, 0.85, -4.575, -3.325, YSH - 0.02, 3.64, 0.14, base_bm)       # NO pedestal
+    for s in (-1, 1):                                                       # plunger / blade guide rails
+        box(s * 2.1 - 0.21, s * 2.1 + 0.21, -3.5, 3.9, YSH - 0.02, 2.62, 0.1, base_bm)
+    base = mk('baseTop', base_bm, [M['pa']])
+    bevel(base, 0.05, 2, 20.0); bake(base)
+    parts.append((base, 'S'))
+    lat = bmesh.new()
+    prism([(-zi + 0.02, 0.97), (-L / 2 + 0.08, 0.97), (-L / 2 + 0.08, 1.22), (-zi + 0.02, 1.53)], -0.95, 0.95, 'YZX', lat)
+    prism([(zi - 0.02, 1.17), (L / 2 - 0.08, 1.17), (L / 2 - 0.08, 1.42), (zi - 0.02, 1.69)], -0.95, 0.95, 'YZX', lat)
+    latch = mk('latches', lat, [M['pa']])
+    bevel(latch, 0.04, 2, 20.0); bake(latch)
+    parts.append((latch, 'S'))
+
+    # ---------------------------------------------------------------- terminals inside (gold-plated brass, switch frame)
+    tb = bmesh.new()
+    box(-1.1, 1.1, PITCH - 0.15, PITCH + 0.15, YSH - 0.3, Z_ANCHOR, 0.0, tb)                  # COM post
+    box(-1.1, 1.1, PITCH - 0.34 - 0.49, PITCH - 0.34 + 0.49, Z_ANCHOR - 0.25, Z_ANCHOR, 0.08, tb)   # COM anchor tab
+    box(-1.0, 1.0, -PITCH - 0.15, -PITCH + 0.15, YSH - 0.3, Z_NCARM + 0.25, 0.0, tb)         # NC post
+    box(-0.7, 0.7, -PITCH - 0.15, Z_TIP + 0.6, Z_NCARM, Z_NCARM + 0.25, 0.1, tb)             # NC arm over the tip
+    box(-0.7, 0.7, Z_TIP - 0.65, Z_TIP + 0.65, Z_NOTAB - 0.25, Z_NOTAB, 0.1, tb)             # NO tab under the tip
+    box(-0.7, 0.7, Z_TIP + 0.35, Z_TIP + 0.65, YSH - 0.3, Z_NOTAB - 0.2, 0.0, tb)            # NO riser
+    # the fulcrum: a narrow tab with a V notch at its tip, where the tongue seats
+    prism([(PITCH - 0.15, FUL_Z - 0.13), (PITCH - 0.15, FUL_Z + 0.13), (FUL_Y, FUL_Z + 0.13), (FUL_Y + 0.12, FUL_Z), (FUL_Y, FUL_Z - 0.13)],
+          -0.45, 0.45, 'YZX', tb)
+    term = mk('terminals', tb, [M['gold']])
+    bevel(term, 0.025, 2, 30.0); bake(term)
+    parts.append((term, 'S'))
+
+    # ---------------------------------------------------------------- the moving spring (gold-plated BeCu, 0.08 mm)
+    zA0, zA1 = Z_TIP - 0.55, PITCH + 0.12
+    blade = mk('spring', prism(rrect(2.2, zA1 - zA0, 0.5, 0.0, (zA0 + zA1) / 2, 10), Z_BLADE, Z_BLADE + T_BLADE), [M['gold']])
+    wz0, wz1 = Z_TIP + 0.9, FUL_Y - 0.25
+    boolean(blade, prism(rrect(1.16, wz1 - wz0, 0.22, 0.0, (wz0 + wz1) / 2, 8), Z_BLADE - 0.2, Z_BLADE + 0.3), 'DIFFERENCE', 'window')
+    # two embossed stiffening ribs along the frame's rails (a pressed sheet-metal detail)
+    bevel(blade, 0.02, 2, 30.0); bake(blade)
+    parts.append((blade, 'S'))
+    # the tongue: cut from the window, bowed, its end seated in the fulcrum's notch
+    P0 = Vector((0, wz0 - 0.05, Z_BLADE + T_BLADE / 2)); P2 = Vector((0, FUL_Y + 0.06, FUL_Z))
+    d = (P2 - P0).normalized(); nrm = Vector((0, -d.z, d.y))
+    P1 = (P0 + P2) / 2 + nrm * -0.12
+    path = [P0 * (1 - t) ** 2 + P1 * 2 * (1 - t) * t + P2 * t * t for t in (i / 36 for i in range(37))]
+    tongue = mk('tongue', sweep_rect(path, 0.96, T_BLADE), [M['gold']])
+    bevel(tongue, 0.018, 2, 30.0); bake(tongue)
+    parts.append((tongue, 'S'))
+
+    # ---------------------------------------------------------------- contacts (gold alloy rivets) and the anchor rivet
+    cb = bmesh.new()
+    def add_dome(bmsrc, loc):
+        bmsrc.verts.ensure_lookup_table()
+        bmesh.ops.translate(bmsrc, vec=Vector(loc), verts=bmsrc.verts)
+        me = bpy.data.meshes.new('tmp'); bmsrc.to_mesh(me); bmsrc.free(); cb.from_mesh(me); bpy.data.meshes.remove(me)
+    add_dome(dome(0.42, 0.14, flip=True), (0, Z_TIP, Z_NCARM))       # NC, under the arm
+    add_dome(dome(0.42, 0.14), (0, Z_TIP, Z_NOTAB))                 # NO, on the tab
+    add_dome(dome(0.42, 0.12), (0, Z_TIP, Z_BLADE + T_BLADE))       # moving contact, top
+    add_dome(dome(0.42, 0.12, flip=True), (0, Z_TIP, Z_BLADE))      # moving contact, bottom
+    add_dome(dome(0.30, 0.07), (0, PITCH - 0.42, Z_BLADE + T_BLADE))  # anchor rivet
+    contacts = mk('contacts', cb, [M['goldc']])
+    parts.append((contacts, 'S'))
+
+    # ---------------------------------------------------------------- plunger (black POM): cap with a rounded top, flange, nose
+    ya = H + CAP_PROUD - CAP_R
+    capp = [(ZP - CAP_L / 2, 5.95), (ZP + CAP_L / 2, 5.95), (ZP + CAP_L / 2, ya)]
+    capp += [(ZP + CAP_R * math.cos(math.pi * i / 32), ya + CAP_R * math.sin(math.pi * i / 32)) for i in range(1, 32)]
+    capp += [(ZP - CAP_L / 2, ya)]
+    plunger = mk('plunger', prism(capp, -CAP_W / 2, CAP_W / 2, 'YZX'), [M['pom']])
+    boolean(plunger, prism(rrect(2.3, 2.9, 0.3, 0.0, ZP, 8), 5.55, 5.98), 'UNION', 'flange')
+    boolean(plunger, prism(rrect(1.3, 1.1, 0.3, 0.0, ZP, 8), Z_BLADE + T_BLADE + 0.002, 5.6), 'UNION', 'nose')
+    bevel(plunger, 0.07, 3, 20.0); bake(plunger)
+    parts.append((plunger, 'S'))
+
+    # ---------------------------------------------------------------- pins (tin-plated, root frame)
+    pb = bmesh.new()
+    ys_, yb = -0.95, -3.3
+    pin = [(-0.45, 0.35), (-0.45, ys_ + 0.12), (-0.3, ys_ - 0.03), (-0.3, yb + 0.32), (-0.1, yb), (0.1, yb), (0.3, yb + 0.32),
+           (0.3, ys_ - 0.03), (0.45, ys_ + 0.12), (0.45, 0.35)]
+    pin = fillet(pin, [0, 0.05, 0.08, 0.1, 0.04, 0.04, 0.1, 0.08, 0.05, 0], 4)
+    for zz in (PITCH, 0.0, -PITCH):
+        prism([(u + zz, v) for u, v in pin], -0.2, 0.2, 'YZX', pb)
+    pins = mk('pins', pb, [M['tin']])
+    bevel(pins, 0.045, 2, 35.0); bake(pins)
+    parts.append((pins, 'R'))
+
+    for c in CUTTERS:
+        bpy.data.objects.remove(c, do_unlink=True)
+    CUTTERS.clear()
+    return parts
+
+
+def place_switch(parts, name, M_world, first):
+    """an instance of the switch at M_world (root frame -> world); the first call uses the objects, later ones link-copy"""
+    obs = []
+    for ob, frame in parts:
+        o = ob if first else ob.copy()
+        if not first:
+            SCN.collection.objects.link(o)
+        o.name = f'{name}.{ob.name.split(".")[0]}'
+        o.matrix_world = M_world @ (BODY_M if frame == 'S' else Matrix.Identity(4))
+        obs.append(o)
+    return obs
+
+
+# ------------------------------------------------------------------------------------------------ world, lights, camera
+
+def make_world(env=0.012):
+    """dim studio for reflections and bounces: brighter overhead, darker below"""
+    w = bpy.data.worlds.new('studio')
+    try: w.use_nodes = True
+    except Exception: pass
+    N, Lk = w.node_tree.nodes, w.node_tree.links
+    for n in list(N): N.remove(n)
+    out = N.new('ShaderNodeOutputWorld')
+    gtc = N.new('ShaderNodeTexCoord'); gsep = N.new('ShaderNodeSeparateXYZ'); Lk.new(gtc.outputs['Generated'], gsep.inputs[0])
+    up = N.new('ShaderNodeMapRange'); up.interpolation_type = 'SMOOTHSTEP'
+    up.inputs['From Min'].default_value = -0.4; up.inputs['From Max'].default_value = 1.0
+    up.inputs['To Min'].default_value = env * 0.2; up.inputs['To Max'].default_value = env * 3.0
+    Lk.new(gsep.outputs['Z'], up.inputs['Value'])
+    # a soft bright band round the horizon (the studio's walls / bounce flats): gives metals and black plastic a gradient
+    ab = N.new('ShaderNodeMath'); ab.operation = 'ABSOLUTE'; Lk.new(gsep.outputs['Z'], ab.inputs[0])
+    band = N.new('ShaderNodeMapRange'); band.interpolation_type = 'SMOOTHSTEP'
+    band.inputs['From Min'].default_value = 0.0; band.inputs['From Max'].default_value = 0.42
+    band.inputs['To Min'].default_value = env * 3.2; band.inputs['To Max'].default_value = 0.0
+    Lk.new(ab.outputs[0], band.inputs['Value'])
+    tot = N.new('ShaderNodeMath'); tot.operation = 'ADD'; Lk.new(up.outputs['Result'], tot.inputs[0]); Lk.new(band.outputs['Result'], tot.inputs[1])
+    bg = N.new('ShaderNodeBackground'); Lk.new(tot.outputs[0], bg.inputs['Strength'])
+    bg.inputs['Color'].default_value = (0.97, 0.985, 1.0, 1)
+    Lk.new(bg.outputs[0], out.inputs['Surface'])
+    try: w.cycles.sampling_method = 'NONE'
+    except Exception: pass
+    SCN.world = w
+    return w
+
+
+def make_backdrop(cam, tgt, behind=260.0, center=(0.5, 0.56), c_in=0.16, c_mid=0.05, c_out=0.012, squash=0.92):
+    """a large emissive card square to the camera, far behind the subject: a dark-grey radial gradient in screen space
+    (Window coordinates, so its view through the clear covers refracts correctly); seen by camera, glossy and
+    transmission rays, invisible to shadow rays, not a light source"""
+    m, N, Lk, b, out = _mat('backdrop')
+    N.remove(b)
+    tc = N.new('ShaderNodeTexCoord'); sep = N.new('ShaderNodeSeparateXYZ'); Lk.new(tc.outputs['Window'], sep.inputs[0])
+    def mn(op, a=None, bb=None, va=None, vb=None):
+        n = N.new('ShaderNodeMath'); n.operation = op
+        if a is not None: Lk.new(a, n.inputs[0])
+        else: n.inputs[0].default_value = va
+        if bb is not None: Lk.new(bb, n.inputs[1])
+        elif vb is not None: n.inputs[1].default_value = vb
+        return n.outputs[0]
+    dx = mn('MULTIPLY', mn('SUBTRACT', sep.outputs['X'], vb=center[0]), vb=squash)
+    dy = mn('SUBTRACT', sep.outputs['Y'], vb=center[1])
+    r = mn('SQRT', mn('ADD', mn('MULTIPLY', dx, dx), mn('MULTIPLY', dy, dy)))
+    t1 = N.new('ShaderNodeMapRange'); t1.interpolation_type = 'SMOOTHERSTEP'
+    t1.inputs['From Min'].default_value = 0.0; t1.inputs['From Max'].default_value = 0.45
+    t1.inputs['To Min'].default_value = 1.0; t1.inputs['To Max'].default_value = 0.0
+    Lk.new(r, t1.inputs['Value'])
+    t2 = N.new('ShaderNodeMapRange'); t2.interpolation_type = 'SMOOTHSTEP'
+    t2.inputs['From Min'].default_value = 0.0; t2.inputs['From Max'].default_value = 0.9
+    t2.inputs['To Min'].default_value = 1.0; t2.inputs['To Max'].default_value = 0.0
+    Lk.new(r, t2.inputs['Value'])
+    lum = mn('ADD', mn('ADD', mn('MULTIPLY', t1.outputs['Result'], vb=c_in - c_mid), mn('MULTIPLY', t2.outputs['Result'], vb=c_mid - c_out)), vb=c_out)
+    comb = N.new('ShaderNodeCombineXYZ')
+    Lk.new(mn('MULTIPLY', lum, vb=0.996), comb.inputs[0]); Lk.new(lum, comb.inputs[1]); Lk.new(mn('MULTIPLY', lum, vb=1.01), comb.inputs[2])
+    em = N.new('ShaderNodeEmission'); Lk.new(comb.outputs[0], em.inputs['Color']); em.inputs['Strength'].default_value = 1.0
+    Lk.new(em.outputs[0], out.inputs['Surface'])
+    try: m.cycles.emission_sampling = 'NONE'
+    except Exception: pass
+    c = (cam.location - Vector(tgt)).normalized()
+    D = (cam.location - Vector(tgt)).length + behind
+    size = D * 0.36 * 3.0
+    bm = box(-size / 2, size / 2, -size / 2, size / 2, -0.5, 0.0)
+    card = mk('backdrop', bm, [m], smooth=False)
+    q = (-c).to_track_quat('Z', 'Y')     # card's +Z faces the camera
+    card.matrix_world = Matrix.Translation(Vector(tgt) - c * behind) @ q.to_matrix().to_4x4() @ Matrix.Rotation(math.pi, 4, 'X')
+    card.visible_shadow = False; card.visible_diffuse = False; card.visible_volume_scatter = False
+    return card
+
+
+def look_at(ob, loc, tgt, roll=0.0):
+    ob.location = loc
+    d = (Vector(tgt) - Vector(loc))
+    q = d.to_track_quat('-Z', 'Y')
+    ob.rotation_euler = (q @ Quaternion((0, 0, 1), roll * D2R)).to_euler()
+
+
+def area(name, tgt, direction, dist, sx, sy, power, color=(1, 1, 1), spread=180.0, roll=0.0, glossy_only=False, through=True):
+    li = bpy.data.lights.new(name, 'AREA')
+    li.shape = 'RECTANGLE'; li.size = sx; li.size_y = sy; li.energy = power; li.color = color
+    li.spread = spread * D2R
+    ob = bpy.data.objects.new(name, li); SCN.collection.objects.link(ob)
+    dirv = Vector(direction).normalized()
+    look_at(ob, Vector(tgt) + dirv * dist, tgt, roll)
+    ob.visible_camera = False
+    if not through:            # not seen through the clear covers (a flagged softbox): reflections and edge glints only
+        ob.visible_transmission = False
+    if glossy_only:
+        ob.visible_diffuse = False
+    return ob
+
+
+def sph(az, el):
+    """direction from azimuth (deg, about +Z, 0 = +Y... measured in the world) and elevation"""
+    a, e = az * D2R, el * D2R
+    return (math.cos(e) * math.sin(a), -math.cos(e) * math.cos(a), math.sin(e))
+
+
+# ------------------------------------------------------------------------------------------------ shots
+
+def M_of(loc, rot_deg, order='XYZ'):
+    return Matrix.Translation(loc) @ Euler([r * D2R for r in rot_deg], order).to_matrix().to_4x4()
+
+
+CENTER = Vector((0.0, 1.1, 3.6))    # the switch's visual centre in its root frame
+
+
+def frame_m(z_axis, y_hint, center_world):
+    """root-frame matrix whose +Z (switch up) is z_axis and +Y (toward the plunger end) follows y_hint, placed so the
+    switch's visual centre lands on center_world"""
+    z = Vector(z_axis).normalized(); y = Vector(y_hint); y = (y - z * y.dot(z)).normalized(); x = y.cross(z)
+    R = Matrix((x, y, z)).transposed().to_4x4()
+    t = Vector(center_world) - (R @ CENTER.to_4d()).to_3d()
+    return Matrix.Translation(t) @ R
+
+
+def cam_basis(cdir):
+    c = Vector(cdir).normalized(); right = c.cross(Vector((0, 0, -1))).normalized()   # screen right
+    up = right.cross(-c).normalized()
+    return c, right, up
+
+
+def shot_hero(parts, args):
+    """front switch in three-quarter view (plunger end toward the camera, right); a second one tilted behind it"""
+    cdir = Vector(sph(-24, 23))
+    c, right, up = cam_basis(cdir)
+    A = frame_m((0, 0, 1), right * 0.78 + c * 0.62, Vector((1.2, -1.0, 0.0)))
+    place_switch(parts, 'swA', A, True)
+    bz = (c * 0.86 + up * 0.32 - right * 0.22)
+    by = (up * 0.78 + right * 0.55)
+    B = frame_m(bz, by, Vector((1.2, -1.0, 0.0)) - c * 13.0 - right * 5.4 + up * 9.6)
+    place_switch(parts, 'swB', B, False)
+    tgt = Vector((1.2, -1.0, 0.0)) - c * 5.0 - right * 2.6 + up * 4.4
+    return tgt, cdir, 98.0, Vector((1.2, -1.0, 0.0)) + c * 2.0
+
+
+def shot_close(parts, args):
+    """one switch, side-on and low, the mechanism read through the clear side wall"""
+    cdir = Vector(sph(-14, 14))
+    c, right, up = cam_basis(cdir)
+    A = frame_m((0, 0, 1), right * 0.92 + c * 0.38, Vector((0.0, 0.0, 0.0)))
+    place_switch(parts, 'swA', A, True)
+    tgt = Vector((0.0, 0.0, 2.2))
+    return tgt, cdir, 60.0, Vector((0.0, 0.0, 3.6)) + c * 1.6
+
+
+SHOTS = {'hero': shot_hero, 'close': shot_close}
+
+
+def setup_lights(tgt, cam_dir, scale=1.0, k=1.0):
+    """key / overhead / rim strips / back-top rim / fill / low kicker / under-bounce, placed relative to the camera"""
+    caz = math.degrees(math.atan2(cam_dir.x, -cam_dir.y))
+    def at(daz, el): return sph(caz + daz, el)
+    s = scale; P = k * s * s
+    area('key', tgt, at(-55, 42), 170 * s, 140 * s, 110 * s, 4.6e5 * P, (1.0, 0.985, 0.965))
+    area('top', tgt, at(40, 70), 170 * s, 110 * s, 45 * s, 0.55e5 * P, (1.0, 1.0, 1.0), through=False)
+    area('rimL', tgt, at(-140, 22), 140 * s, 18 * s, 190 * s, 1.9e5 * P, (0.95, 0.975, 1.0), through=False)
+    area('rimR', tgt, at(122, 13), 140 * s, 18 * s, 190 * s, 1.6e5 * P, (1.0, 0.99, 0.97), through=False)
+    area('rimTop', tgt, at(180, 50), 150 * s, 200 * s, 16 * s, 1.7e5 * P, (1.0, 1.0, 1.0), through=False)
+    area('fill', tgt, at(65, 8), 190 * s, 170 * s, 170 * s, 1.0e5 * P, (0.97, 0.98, 1.0))
+    area('kick', tgt, at(25, -30), 150 * s, 160 * s, 40 * s, 1.4e5 * P, (1.0, 1.0, 1.0))
+    area('bounce', tgt, at(175, -28), 150 * s, 220 * s, 70 * s, 0.6e5 * P, (1.0, 1.0, 1.0), through=False)
+
+
+def setup_render(args):
+    sc = SCN
+    sc.render.engine = 'CYCLES'
+    cy = sc.cycles
+    cy.device = 'CPU'
+    sc.render.threads_mode = 'FIXED'; sc.render.threads = args.threads
+    sc.render.resolution_x = args.res; sc.render.resolution_y = args.res; sc.render.resolution_percentage = 100
+    cy.samples = args.spp
+    cy.use_adaptive_sampling = True; cy.adaptive_threshold = args.noise; cy.adaptive_min_samples = min(32, max(8, args.spp // 8))
+    cy.use_denoising = True; cy.denoiser = 'OPENIMAGEDENOISE'
+    cy.denoising_input_passes = 'RGB_ALBEDO_NORMAL'; cy.denoising_prefilter = 'ACCURATE'
+    try: cy.denoising_quality = 'HIGH'
+    except Exception: pass
+    cy.max_bounces = 32; cy.diffuse_bounces = 3; cy.glossy_bounces = 10; cy.transmission_bounces = 20
+    cy.volume_bounces = 0; cy.transparent_max_bounces = 24
+    cy.caustics_reflective = False; cy.caustics_refractive = False
+    cy.blur_glossy = 0.6
+    cy.sample_clamp_direct = 0.0; cy.sample_clamp_indirect = 6.0
+    cy.use_light_tree = True
+    cy.seed = 7
+    sc.render.film_transparent = False
+    try: sc.cycles.pixel_filter_type = 'BLACKMAN_HARRIS'
+    except Exception: pass
+    sc.cycles.filter_width = 1.3
+    sc.view_settings.view_transform = 'AgX'
+    sc.view_settings.look = args.look
+    sc.view_settings.exposure = args.exposure
+    sc.view_settings.gamma = 1.0
+    sc.render.image_settings.file_format = 'PNG'
+    sc.render.image_settings.color_mode = 'RGB'
+    sc.render.image_settings.color_depth = '16' if args.depth16 else '8'
+    sc.render.dither_intensity = 1.0
+    sc.unit_settings.system = 'METRIC'; sc.unit_settings.scale_length = 0.001; sc.unit_settings.length_unit = 'MILLIMETERS'
+
+
+def main():
+    global SCN
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--shot', default='hero', choices=list(SHOTS))
+    ap.add_argument('--res', type=int, default=600)
+    ap.add_argument('--spp', type=int, default=64)
+    ap.add_argument('--noise', type=float, default=0.03)
+    ap.add_argument('--threads', type=int, default=1)
+    ap.add_argument('--fstop', type=float, default=0.0)
+    ap.add_argument('--lens', type=float, default=100.0)
+    ap.add_argument('--exposure', type=float, default=0.0)
+    ap.add_argument('--look', default='AgX - Medium High Contrast')
+    ap.add_argument('--depth16', action='store_true')
+    ap.add_argument('--blend', default='')
+    ap.add_argument('--out', default='out/draft.png')
+    ap.add_argument('--bgx', type=float, default=0.5)
+    ap.add_argument('--bgy', type=float, default=0.56)
+    ap.add_argument('--bgin', type=float, default=0.16)
+    ap.add_argument('--bgmid', type=float, default=0.05)
+    ap.add_argument('--bgout', type=float, default=0.012)
+    ap.add_argument('--light', type=float, default=1.0)
+    ap.add_argument('--only', default='')
+    args = ap.parse_args([a for a in sys.argv[1:]])
+    t0 = time.time()
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    SCN = bpy.context.scene
+    setup_render(args)
+    M = make_materials()
+    parts = build_switch(M)
+    tgt, cdir, dist, focus = SHOTS[args.shot](parts, args)
+    make_world()
+    cam_d = bpy.data.cameras.new('cam'); cam_d.lens = args.lens; cam_d.sensor_width = 36.0; cam_d.sensor_fit = 'HORIZONTAL'
+    cam_d.clip_start = 1.0; cam_d.clip_end = 5000.0
+    cam = bpy.data.objects.new('cam', cam_d); SCN.collection.objects.link(cam); SCN.camera = cam
+    look_at(cam, tgt + cdir.normalized() * dist, tgt)
+    if args.fstop > 0:
+        cam_d.dof.use_dof = True; cam_d.dof.aperture_fstop = args.fstop; cam_d.dof.aperture_blades = 7; cam_d.dof.aperture_rotation = 10 * D2R
+        cam_d.dof.focus_distance = (Vector(focus) - cam.location).length if focus is not None else dist
+    setup_lights(tgt, cdir, k=args.light)
+    make_backdrop(cam, tgt, center=(args.bgx, args.bgy), c_in=args.bgin, c_mid=args.bgmid, c_out=args.bgout)
+    if args.only:
+        keep = set(args.only.split(','))
+        for o in list(SCN.objects):
+            if o.type == 'LIGHT' and o.name not in keep:
+                bpy.data.objects.remove(o, do_unlink=True)
+    t1 = time.time()
+    print(f'[r1] scene built in {t1 - t0:.1f}s; objects {len(SCN.objects)}; tris ~{sum(len(o.data.polygons) for o in SCN.objects if o.type == "MESH")} faces', flush=True)
+    if args.blend:
+        bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(args.blend))
+    SCN.render.filepath = os.path.abspath(args.out)
+    bpy.ops.render.render(write_still=True)
+    print(f'[r1] rendered {args.shot} {args.res}px {args.spp}spp in {time.time() - t1:.1f}s -> {args.out}', flush=True)
+
+
+if __name__ == '__main__':
+    main()
