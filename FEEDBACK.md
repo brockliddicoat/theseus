@@ -1687,4 +1687,9 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   diagnosis: the strength estimate (R 29 / R 47, the pocket's pull matched to the finger's passive stiffness) left out skin
   friction, which holds a finger on a near-flat surface; at R 47 a whole side would be ~10 mm deep. Re-derived with friction
   and the fingertip's threshold for feeling slope, within the range normal mice use (the Sora's waist R 376 mm).
+- **F65.6 DECIDED** (~14:20, on the rework, live 1794082358-a29b) The side arcs are "felt" over **the whole distance the thumb
+  slides as you grip**, not just where it lands (about 10 mm, which gave R 155, 1 mm deep over 36 mm): "Over the whole slide".
+  A gentler arc running along more of the side; applied to both side arcs (thumb and pinky).
+- **F65.7 DECIDED** (~14:20) A comfort groove's one low point is counted against the button's own slope (the direction the
+  finger presses), not against level: "The button's slope (Recommended)".
 
