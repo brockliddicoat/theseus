@@ -4,7 +4,9 @@
    middle comfort grooves), the ring finger on the shoulder with no minimum, the strength of each set by the hand at rest
    in zero gravity, the shape made of arcs, descended. One minimum per finger (Brock, 12:55). Rebuilt after Brock's 13:33
    ("arcs that span the whole sides, not tiny ones" / "nothing like normal mice"): each side is a few LONG arcs (GD.la,
-   deck/tools/gd/longarcs.py), each valley the gentlest arc a fingertip reliably feels where it lands, true scale throughout.
+   deck/tools/gd/longarcs.py), each valley the gentlest arc a fingertip reliably feels, true scale throughout. Felt on the
+   sides over the whole slide as you grip (F65.6, G3: GD.la.slide, from the hand model), on the buttons where the tip lands;
+   a groove's one low point counted against the button's own slope (F65.7).
    Data: GD (deck/tools/gd/out/gd-deck.json, computed by deck/tools/gd/*.py) and GDSRC (research/gd/shape-gd.json),
    embedded in this page only. Every outline is drawn from the fitted Sora V2 (3d/shell/shell-sora.glb), never by hand.
    ?trial=1..4 picks the trial the descent and before/after slides show (default: the lowest loss).
@@ -59,6 +61,8 @@ const laTr = k => LA.trials[k || LA_K];
 const GD_REC = LA.recommended;
 const laNo = k => LA.order.indexOf(k) + 1;
 const laBest = () => LA.order.reduce((b, k) => (LA.trials[k].loss < LA.trials[b].loss ? k : b), LA.order[0]);
+/** a loss as printed: three decimals under 0.1 (trial 4's 0.008 would read 0.01), else two */
+const gdLoss = v => fmtN(v, v < 0.1 ? 3 : 2);
 const LA_CH = new Map();
 /** a chain of arcs from p0 at heading th0: { pts, idx (arc per point), ends (each arc's end), hs (headings) } (cached by identity) */
 function laChain(p0, th0, arcs, ds = 0.5) {

@@ -1,5 +1,5 @@
 {
- "about": "Shape by gradient descent (G1, 2026-11-07, phases 1 and 2). Sources, with the exact figures and their use; derived results of deck/tools/gd. Embedded only in dist/gd.html (as GDSRC), never in main.html.",
+ "about": "Shape by gradient descent (G1, 2026-11-07, phases 1 and 2). Sources, with the exact figures and their use; derived results of deck/tools/gd. Embedded only in dist/gd.html (as GDSRC), never in main.html. G3 (F65.6): the side arcs felt over the whole slide as you grip; the long-arc trials rerun (deck/tools/gd/longarcs.py, out/longarcs.json).",
  "sources": {
   "sts57": {
    "title": "Mount, Whitmore & Stealey, Evaluation of Neutral Body Posture on Shuttle Mission STS-57 (SPACEHAB-1), NASA/TM-2003-104805 (2003)",
@@ -231,6 +231,65 @@
     "literature": "around 1 cm^2 at 1 N"
    },
    "used_for": "The fingertip contact length in each pocket's core: the equal-area circle at the press (9.1 mm at 0.43 N on the sides, 8.6 mm at 0.35 N on the buttons). Derived."
+  },
+  "gordon1982": {
+   "title": "I. E. Gordon and V. Morison, The haptic perception of curvature, Perception & Psychophysics 31(5) (1982) 446-450",
+   "url": "https://doi.org/10.3758/BF03204854",
+   "figures": {
+    "threshold": "0.09 mm base-to-peak over a 20 mm strip (SD 0.03); over 20, 30 and 40 mm a constant overall gradient of about 0.009 (height over half the length)"
+   },
+   "use": "G2: reliably felt = mean + 2 SD = gradient 0.015 = a turn of 4 x 0.015 rad = 3.44 deg (derived); G3: applied over the whole slide on the sides"
+  },
+  "pont1999": {
+   "title": "S. C. Pont, A. M. L. Kappers and J. J. Koenderink, Similar mechanisms underlie curvature comparison by static and dynamic touch, Perception & Psychophysics 61(5) (1999) 874-894",
+   "url": "https://doi.org/10.3758/BF03206903",
+   "figures": {
+    "dynamic": "3.3 to 5.3 deg of attitude difference, not changing with length",
+    "static": "1.6 to 2.8 deg (Experiment 1)"
+   },
+   "use": "dynamic touch judges the change of attitude along the path: why the turn counts over the slide"
+  },
+  "derler2012": {
+   "title": "S. Derler and L.-C. Gerhardt, Tribology of Skin, Tribology Letters 45 (2012) 1-27",
+   "url": "https://doc.rero.ch/record/315296/files/11249_2011_Article_9854.pdf",
+   "figures": {
+    "mu_dry": "over 0.2, typically about 0.5"
+   },
+   "use": "G2: a resting fingertip holds on slopes under atan(mu): the pocket only has to be felt"
+  },
+  "goodwin1991": {
+   "title": "A. W. Goodwin, K. T. John and A. H. Marceglia, Tactile discrimination of curvature by humans using only cutaneous information from the fingerpads, Exp Brain Res 86 (1991) 663-672",
+   "url": "https://doi.org/10.1007/BF00230540",
+   "figures": {
+    "static": "concave 5.4 /m (R 185 mm) told from flat at 75 % correct; convex 4.9 /m (R 204 mm)"
+   },
+   "use": "G2: a static cross-check"
+  },
+  "buchholz1992": {
+   "title": "B. Buchholz and T. J. Armstrong, A kinematic model of the human hand to evaluate its prehensile capabilities, J. Biomech. 25(2) (1992) 149-162",
+   "url": "https://deepblue.lib.umich.edu/handle/2027.42/30224",
+   "figures": {
+    "thumb_transverse_volar_grasp_deg": {
+     "MCP": 29.9,
+     "IP": 36.2
+    },
+    "note": "Table 1, measured, 6 hands x 6 cylinders"
+   },
+   "use": "G3 cross-check (slide_checks.py): the thumb's own closure from rest to a grasp moves its tip about 3 mm"
+  },
+  "freivalds_via_hand_model": {
+   "title": "Freivalds, phalanx lengths as a percent of hand length, as tabulated in \"A Functional Anatomy Based Kinematic Human Hand Model with Simple Size Adaptation\" (Table II)",
+   "url": "https://core.ac.uk/download/11151516.pdf",
+   "figures": {
+    "thumb_proximal_pct": 17.1,
+    "thumb_distal_pct": 12.1,
+    "index_pct": [
+     21.8,
+     14.1,
+     8.6
+    ]
+   },
+   "use": "G3 cross-check only (the thumb's phalanges for the mean hand: 33.1 and 23.4 mm)"
   }
  },
  "derived": {
@@ -437,6 +496,224 @@
     }
    }
   },
-  "superseded": "the phase-1 notch run (notch.py, descend.py): its rims made a second dip next to the Sora's own waist (Brock, 12:55: one minimum per finger)"
+  "superseded": "the phase-1 notch run (notch.py, descend.py): its rims made a second dip next to the Sora's own waist (Brock, 12:55: one minimum per finger)",
+  "slide_g3": {
+   "decision": "F65.6 (Brock ~14:20): the side arcs are felt over the whole distance the thumb slides as you grip (\"Over the whole slide\"), thumb and pinky",
+   "figure_mm": {
+    "thumb": 21.032815748477304,
+    "pinky": 24.921648653165455
+   },
+   "range_p5_p95_mm": {
+    "thumb": [
+     11.163936395950937,
+     34.22092805840255
+    ],
+    "pinky": [
+     14.724843918608986,
+     38.44573359375957
+    ]
+   },
+   "label": "derived (hand model)",
+   "basis": "As you take hold, the hand lands with the palm on the hump and the fingers relaxed (the heel placement: wrist back 15 deg, the relaxed cascade), then draws back and lifts into the zero-g grip with the fingertips on the buttons (the lifted placement, trial 4). The thumb (estimate: level with the index PIP) and the pinky (the little fingertip) stay on the sides, so each slides by the difference of its two placements. ANSUR II mean hand; 5th and 95th by scaling.",
+   "per_hand": {
+    "p5": {
+     "thumb": [
+      24.293325668132088,
+      35.457262064083025
+     ],
+     "pinky": [
+      6.070551593867258,
+      20.795395512476244
+     ],
+     "slide": {
+      "thumb": 11.163936395950937,
+      "pinky": 14.724843918608986
+     }
+    },
+    "p50": {
+     "thumb": [
+      23.767795603829803,
+      44.80061135230711
+     ],
+     "pinky": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "slide": {
+      "thumb": 21.032815748477304,
+      "pinky": 24.921648653165455
+     }
+    },
+    "p95": {
+     "thumb": [
+      23.22936909623176,
+      57.45029715463431
+     ],
+     "pinky": [
+      1.6091286691378883,
+      40.05486226289746
+     ],
+     "slide": {
+      "thumb": 34.22092805840255,
+      "pinky": 38.44573359375957
+     }
+    }
+   },
+   "felt_rule": "the waist arc turns at least 3.44 deg (Gordon & Morison 1982 mean + 2 SD) over the slide: kappa >= 0.060 rad / slide; R <= 351 mm thumb, 415 mm pinky",
+   "cover_rule": "the waist arc's chord at least the slide plus the contact patch (9.1 mm at 0.43 N, Serhat 2022): 30.1 mm thumb, 34.0 mm pinky",
+   "no_direct_source": "No published measurement of how far the thumb slides along a mouse side was found; searched mouse-use kinematics (thumb positions, data-glove angles) without a usable figure",
+   "cross_checks": {
+    "clamp_in_place_mm": "thumb 7.9 (6.4 to 9.6), pinky 2.9 (2.0 to 4.0): the hand already in trial 4 clamps down onto the hump with the tips held (slide_checks.py); a part of the motion",
+    "thumb_own_closure_mm": "about 3.0: the tip relative to its metacarpal from rest (Lee & Jung) to a cylinder grasp (Buchholz & Armstrong 1992), phalanges from Freivalds; the slide is the hand's travel, not the thumb's own joints"
+   },
+   "previous": "G2: felt over where the thumb lands, contact 9.1 + spread 1.1 = 10.1 mm: R 169 (trial 4 came out at R 155)",
+   "model_changes_g3": [
+    "the sides felt over the slide (kappa* = 0.060 / slide); the grooves keep the landing rule",
+    "cover: the waist chord at least the slide plus the contact patch (thumb 30.1, pinky 34.0 mm; mirrored: the longer)",
+    "start: the Sora waist slid so its narrowest point (11.1 mm ahead of its chord middle) sits at the rest; the middle-at-rest start ran the thumb waist past the nose corner",
+    "mirrored pockets: each finger counted against its own rest (G2 counted both against the mean, hiding 10 mm off each)",
+    "the front arc at least 1 mm long (a negative length looped the outline)",
+    "the top outline within 2.5 mm of the Sora (estimate); unbound, trial 4 wandered 4.4 mm at the rear for no gain",
+    "500 steps (200 left trial 4 still descending)"
+   ]
+  },
+  "trials_g3_over_the_slide": {
+   "heel_sym": {
+    "loss": 32.45744215720943,
+    "thumb": {
+     "R": 442.14742196133506,
+     "depth": 0.34133,
+     "length": 34.74017,
+     "z_bottom": 36.690947206565184,
+     "rest_z": 44.80061135230711,
+     "felt": false,
+     "n_minima": 1,
+     "below_hump": 1.8940172543149636
+    },
+    "pinky": {
+     "R": 442.14742196133506,
+     "depth": 0.34133,
+     "length": 34.74017,
+     "z_bottom": 36.690947206565184,
+     "rest_z": 28.788527711484562,
+     "felt": false,
+     "n_minima": 1,
+     "below_hump": 1.8940172543149636
+    },
+    "groove": {
+     "R": 223.87402239529862,
+     "u_bottom": 15.997856590515006,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "moves_mm": 1.3035742594166126,
+    "width_mm": 63.33595470544226
+   },
+   "heel_fwd": {
+    "loss": 5.12850274939792,
+    "thumb": {
+     "R": 296.83572065345305,
+     "depth": 0.33608,
+     "length": 28.24239,
+     "z_bottom": 42.03907321014919,
+     "rest_z": 44.80061135230711,
+     "felt": true,
+     "n_minima": 0,
+     "below_hump": 2.7070575764185776
+    },
+    "pinky": {
+     "R": 407.64855479177163,
+     "depth": 0.43648,
+     "length": 37.71845,
+     "z_bottom": 28.78881097888303,
+     "rest_z": 28.788527711484562,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.9766247958538692
+    },
+    "groove": {
+     "R": 223.8514084454312,
+     "u_bottom": 15.997903473333222,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "moves_mm": 2.5058445549960195,
+    "width_mm": 64.0522498275234
+   },
+   "lifted_sym": {
+    "loss": 49.52207899409637,
+    "thumb": {
+     "R": 349.8951633220253,
+     "depth": 0.57039,
+     "length": 39.94136,
+     "z_bottom": 13.813097820742492,
+     "rest_z": 23.767795603829803,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.7948982568602005
+    },
+    "pinky": {
+     "R": 349.8951633220253,
+     "depth": 0.57039,
+     "length": 39.94136,
+     "z_bottom": 13.813097820742492,
+     "rest_z": 3.866879058319107,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.7948982568602005
+    },
+    "groove": {
+     "R": 223.8514084454312,
+     "u_bottom": 15.997903473333222,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "moves_mm": 0.5662548600556507,
+    "width_mm": 62.9842240919439
+   },
+   "lifted_fwd": {
+    "loss": 0.008117075263040488,
+    "thumb": {
+     "R": 347.90779638707414,
+     "depth": 0.69953,
+     "length": 44.10236,
+     "z_bottom": 23.768469433499234,
+     "rest_z": 23.767795603829803,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.879238016405683
+    },
+    "pinky": {
+     "R": 412.79730482538037,
+     "depth": 0.53366,
+     "length": 41.96675,
+     "z_bottom": 3.8688889644796713,
+     "rest_z": 3.866879058319107,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.3582109678454302
+    },
+    "groove": {
+     "R": 223.99907830999084,
+     "u_bottom": 15.997432705088324,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "moves_mm": 2.394606924510387,
+    "width_mm": 63.02742293442812
+   }
+  }
  }
 }

@@ -17,10 +17,23 @@ Its job is to be felt. A fingertip feels a curve by how much the surface turns a
 Morison 1982, a constant overall gradient of 0.009 (SD about 0.003) at threshold over 20 to 40 mm, which is a turn of 4 x
 0.009 rad = 2.1 deg; Pont et al. 1999, 3.3 to 5.3 deg in dynamic touch. Reliably felt: the mean plus two SD, 4 x 0.015 rad
 = 3.4 deg (derived). The stretch is where the fingertip lands: its contact (Serhat 2022) plus the spread across 90 % of
-hands (ANSUR II). The gentlest arc that turns 3.4 deg across it: kappa* = 0.0593 / w. Normal mice bound it from the other
+hands (ANSUR II). The gentlest arc that turns 3.4 deg across it: kappa* = 0.060 / w. Normal mice bound it from the other
 side: the outline within real mice's widths (mice.json: 60.5 to 70 mm wide) and the waist no deeper than the UltralightX's
 2.5 mm a side (TechPowerUp).
-Run: python3 deck/tools/gd/longarcs.py -> out/longarcs.json"""
+OVER THE WHOLE SLIDE (G3, after Brock ~14:20, F65.6: "Over the whole slide"). The side arcs are felt over the whole distance
+the thumb (and the pinky) slides along the side as you grip, not only where it lands. As you take hold, the hand lands with
+the palm on the hump and the fingers relaxed (the heel placement), then draws back and lifts into the zero-g grip with the
+fingertips on the buttons (the lifted placement, trial 4's); the thumb and the pinky ride the sides throughout, so each slides
+by the difference between its two placements (hand model; derived): 21.0 mm the thumb, 24.9 mm the pinky for the ANSUR II mean
+hand (11 to 34 and 15 to 38 mm from the 5th to the 95th). The waist arc must turn 3.4 deg across that slide (dynamic touch
+judges the change of attitude along the path: Pont 1999), kappa* = 0.060 / slide, and be long enough to carry it: its chord at
+least the slide plus the contact patch (half a patch past each end). The grooves keep the landing rule (F65.6 names the sides).
+G3 also: each trial starts from the Sora's waists slid so that their narrowest point (not their chord's middle) sits at the
+rest (the chord leans, so the middle-at-rest start ran the thumb's waist past the nose corner and the descent crawled back);
+mirrored pockets count each finger against its own rest (G2 counted both against the mean, which hid that each sits 10 mm
+off); the front arc must run forward (a negative length looped the outline); the top outline stays within DEV_BOUND of the
+Sora's. Cross-checks on the slide: slide_checks.py.
+Run: python3 deck/tools/gd/longarcs.py run [trial keys] -> out/longarcs.json"""
 import json, os, sys
 import numpy as np
 from scipy.optimize import least_squares
@@ -36,6 +49,8 @@ MU_DRY = (0.2, 0.5)                   # skin friction, dry: over 0.2, typically 
 WIDTH_RANGE = (60.5, 70.0)            # mm, the widest point of 35 flagship mice (research/data/mice.json, EloShapes)
 ULX_POCKET = T.ULX_POCKET             # 2.5 mm a side (TechPowerUp widths; derived)
 SEC_BOUND = 2.0                       # mm, the section within this of the Sora's (estimate: a normal button top)
+DEV_BOUND = 2.5                       # mm, the top outline within this of the Sora's anywhere (G3; estimate: still the Sora, F65.1
+                                      # "should not be that out there"). Unbound, trial 4 wandered 4.4 mm at the rear at no gain.
 
 # ------------------------------------------------------------------ the Sora's chains, regrouped
 PA = [tuple(a) for a in FIT['plan']['arcs']]; P0, TH0 = FIT['plan']['p0'], FIT['plan']['th0']
@@ -139,23 +154,50 @@ def dev(ch, ref):
     d, _ = cKDTree(np.c_[ref['x'], ref['y']]).query(np.c_[ch['x'], ch['y']]); return float(d.max())
 
 # ------------------------------------------------------------------ the felt strength: the gentlest arc that turns TURN_REL across where the fingertip lands
-def zones(grip):
+def _bottom_off():
+    s0 = sora_plan_params(); C = A.chain(P0, TH0, plan_side(s0)['arcs'], ds=0.1); return side_measure(C, 10.0)['z_bottom'] - s0[2]
+BOTTOM_OFF = _bottom_off()                                         # mm, the Sora's narrowest point ahead of its waist chord's middle
+def placements(grip):
     p50 = T.place(grip, 1.0); anc = p50['z']['index'] if grip == 'lifted' else None
-    pl = {k: (p50 if k == 'p50' else T.place(grip, T.HANDS[k] / T.HANDS['p50'], anc)) for k in T.HANDS}
+    return {k: (p50 if k == 'p50' else T.place(grip, T.HANDS[k] / T.HANDS['p50'], anc)) for k in T.HANDS}
+PL_LIFT, PL_HEEL = placements('lifted'), placements('heel')
+def slides():
+    """the slide as you grip, per hand: from the landing (palm on the hump, fingers relaxed) to the grip (palm lifted, tips on
+    the buttons). Cross-checks (parts of the motion, not the whole slide) in slide_checks.py."""
+    out = {}
+    for hk in T.HANDS:
+        L, H_ = PL_LIFT[hk], PL_HEEL[hk]
+        out[hk] = {'thumb': [L['z']['thumb'], H_['z']['thumb']], 'pinky': [L['z']['little'], H_['z']['little']],
+                   'slide': {'thumb': abs(H_['z']['thumb'] - L['z']['thumb']), 'pinky': abs(H_['z']['little'] - L['z']['little'])}}
+    return out
+SL = slides()
+SLIDE = dict(SL['p50']['slide'])                                    # mm, the ANSUR II mean hand (derived)
+SLIDE_RANGE = {f: [min(SL[k]['slide'][f] for k in SL), max(SL[k]['slide'][f] for k in SL)] for f in ('thumb', 'pinky')}
+def zones(grip):
+    pl = PL_LIFT if grip == 'lifted' else PL_HEEL; p50 = pl['p50']
     sp = {f: [min(pl[k]['z'][f] for k in pl), max(pl[k]['z'][f] for k in pl)] for f in ('thumb', 'little', 'index', 'middle', 'ring')}
     dS, dB = T.contact_d(T.S.N_SIDE), T.contact_d(T.S.N_BTN); lat = 1.645 * T.BREADTH_SD / 3
-    w = {'thumb': dS + sp['thumb'][1] - sp['thumb'][0], 'pinky': dS + sp['little'][1] - sp['little'][0], 'groove': dB + 2 * lat}
-    return p50, sp, w, {'contact_side': dS, 'contact_btn': dB, 'lat': lat}
+    # the sides: felt over the whole slide (F65.6); the grooves: over where the fingertip lands, as before
+    w = {'thumb': SLIDE['thumb'], 'pinky': SLIDE['pinky'], 'groove': dB + 2 * lat}
+    land = {'thumb': dS + sp['thumb'][1] - sp['thumb'][0], 'pinky': dS + sp['little'][1] - sp['little'][0]}
+    return p50, sp, w, {'contact_side': dS, 'contact_btn': dB, 'lat': lat, 'land': land}
 
-def trial(grip, pockets, steps=200, log=True):
+def trial(grip, pockets, steps=500, log=True, lr=0.05, start_felt=False, devbound=None):
+    devbound = DEV_BOUND if devbound is None else devbound
     p50, sp, w, cd = zones(grip)
-    zT, zP = p50['z']['thumb'], p50['z']['little']
-    if pockets == 'sym': zT = zP = (zT + zP) / 2; wT = wP = max(w['thumb'], w['pinky']) + abs(p50['z']['thumb'] - p50['z']['little'])
-    else: wT, wP = w['thumb'], w['pinky']
+    zT0, zP0 = p50['z']['thumb'], p50['z']['little']; zT, zP = zT0, zP0; dS = cd['contact_side']
+    if pockets == 'sym':
+        # one mirrored waist, placed between the two rests: each finger's own slide is felt on it (the shorter sets it), it is
+        # long enough for the longer one, and each finger still counts against its OWN rest (G3: G2 counted both against the mean)
+        zT = zP = (zT0 + zP0) / 2; wT = wP = min(w['thumb'], w['pinky']); cT = cP = max(w['thumb'], w['pinky']) + dS
+    else: wT, wP = w['thumb'], w['pinky']; cT, cP = w['thumb'] + dS, w['pinky'] + dS
     kT, kP, kG = TURN_REL / wT, TURN_REL / wP, TURN_REL / w['groove']
     s0, g0 = sora_plan_params(), sora_sec_params()
     # the start: the Sora's own waists and groove, moved to rest where each finger rests (a designer's first move)
-    base = np.r_[s0[0], s0[1], zT, s0[3], s0[4], s0[0], s0[1], zP, s0[3], s0[4], 20.0, 0.25, 16.0, g0[3]]
+    # (G3) slid so that its narrowest point, not its chord's middle, sits at the rest: the Sora's bottom is BOTTOM_OFF ahead of
+    # its chord's middle (the chord leans 1.7 deg), so a middle at the rest put the thumb's waist past the nose corner
+    base = np.r_[s0[0], s0[1], zT - BOTTOM_OFF, s0[3], s0[4], s0[0], s0[1], zP - BOTTOM_OFF, s0[3], s0[4], 20.0, 0.25, 16.0, g0[3]]
+    if start_felt: base[1], base[6] = s0[0] ** 2 / (8 / kT), s0[0] ** 2 / (8 / kP)     # the Sora's waist at the felt radius
     scale = np.array([8.0, 0.4, 4.0, 1.0, 0.5, 8.0, 0.4, 4.0, 1.0, 0.5, 3.0, 0.08, 2.0, 1.0])
     tie = pockets == 'sym'
     def unpack(v):
@@ -168,20 +210,25 @@ def trial(grip, pockets, steps=200, log=True):
     def terms(v):
         p = unpack(v); L, R_, Sx, CL, CR, CS = build(p); t = {}
         ML, MR, MS = side_measure(CL, zT), side_measure(CR, zP), sec_measure(CS, 16.0, 28.5)
-        # each finger's one minimum at its rest, felt and no deeper than normal
-        t['level'] = ((ML['z_bottom'] - zT) / 2.0) ** 2 + ((MR['z_bottom'] - zP) / 2.0) ** 2 + ((MS['u_bottom'] - 16.0) / 1.0) ** 2
+        ML['rest_z'], MR['rest_z'] = zT0, zP0
+        # each finger's one minimum at its own rest, felt and no deeper than normal
+        t['level'] = ((ML['z_bottom'] - zT0) / 2.0) ** 2 + ((MR['z_bottom'] - zP0) / 2.0) ** 2 + ((MS['u_bottom'] - 16.0) / 1.0) ** 2
         kL, kR, kS = 1 / L['R'], 1 / R_['R'], 1 / Sx['R']
         t['felt'] = max(0.0, (kT - kL) / kT) ** 2 * 4 + max(0.0, (kP - kR) / kP) ** 2 * 4 + max(0.0, (kG - kS) / kG) ** 2 * 4
         t['gentle'] = ((kL - kT) / kT) ** 2 * 0.25 + ((kR - kP) / kP) ** 2 * 0.25 + ((kS - kG) / kG) ** 2 * 0.25
+        # the waist long enough to carry the whole slide: its chord at least the slide plus the contact patch
+        t['cover'] = max(0.0, (cT - p[0]) / 2.0) ** 2 + max(0.0, (cP - p[5]) / 2.0) ** 2
         t['one_min'] = (ML['n_minima'] - 1) ** 2 + (MR['n_minima'] - 1) ** 2 + (MS['n_minima'] - 1) ** 2 + MS['ring']['n_minima'] ** 2
         t['normal'] = max(0.0, ML['below_hump'] - ULX_POCKET) ** 2 * 4 + max(0.0, MR['below_hump'] - ULX_POCKET) ** 2 * 4
         wmax = ML['u_hump'] + MR['u_hump']
         t['normal'] += max(0.0, WIDTH_RANGE[0] - wmax) ** 2 + max(0.0, wmax - WIDTH_RANGE[1]) ** 2
         t['normal'] += max(0.0, dev(CS, SORA_SEC) - SEC_BOUND) ** 2 * 4
-        t['closure'] = (L['closure'] ** 2 + R_['closure'] ** 2 + Sx['closure'] ** 2) * 100 + sum(max(0.0, -q) ** 2 for q in (L['LF'], R_['LF']))
+        if devbound: t['normal'] += max(0.0, max(dev(CL, SORA_PLAN), dev(CR, SORA_PLAN)) - devbound) ** 2 * 4
+        # closed, and the front arc running forward (a negative length would loop the outline back on itself)
+        t['closure'] = (L['closure'] ** 2 + R_['closure'] ** 2 + Sx['closure'] ** 2) * 100 + sum(max(0.0, 1.0 - q) ** 2 for q in (L['LF'], R_['LF'])) * 100
         t['base'] = float(np.sum(v ** 2)) * 0.01
         return t, {'L': L, 'R': R_, 'S': Sx, 'ML': ML, 'MR': MR, 'MS': MS, 'CL': CL, 'CR': CR, 'CS': CS}
-    W = {'level': 1.0, 'felt': 1.0, 'gentle': 1.0, 'one_min': 2.0, 'normal': 1.0, 'closure': 1.0, 'base': 1.0}
+    W = {'level': 1.0, 'felt': 1.0, 'gentle': 1.0, 'cover': 1.0, 'one_min': 2.0, 'normal': 1.0, 'closure': 1.0, 'base': 1.0}
     def loss(v): t, _ = terms(v); return sum(W[k] * t[k] for k in W)
     v = np.zeros(len(base)); free = [i for i in range(len(v)) if not (tie and 5 <= i < 10)]
     m1 = np.zeros_like(v); m2 = np.zeros_like(v); hist, path = [], []
@@ -190,13 +237,17 @@ def trial(grip, pockets, steps=200, log=True):
         for i in free:
             e = np.zeros_like(v); e[i] = 2e-3; g[i] = (loss(v + e) - loss(v - e)) / 4e-3
         m1 = 0.9 * m1 + 0.1 * g; m2 = 0.999 * m2 + 0.001 * g * g
-        v = v - 0.05 * (m1 / (1 - 0.9 ** it)) / (np.sqrt(m2 / (1 - 0.999 ** it)) + 1e-8)
+        v = v - lr * (m1 / (1 - 0.9 ** it)) / (np.sqrt(m2 / (1 - 0.999 ** it)) + 1e-8)
         hist.append(float(f0)); path.append({'it': it, 'p': unpack(v).round(5).tolist(), 'loss': float(f0)})
         if log and it % 40 == 0: print('  %s/%s it %3d loss %.4f' % (grip, pockets, it, f0), flush=True)
+    # (G3) the descent stops at the lowest point it found: Adam can step past it and climb (trial 4 rose from 0.008 to 0.06)
+    if hist:
+        ib = int(np.argmin(hist)); v = (np.array(path[ib - 1]['p']) - base) / scale if ib > 0 else np.zeros(len(base))
+        hist, path = hist[:ib + 1], path[:ib]
     tF, iF = terms(v); t0, i0 = terms(np.zeros(len(base)))
     return {'grip': grip, 'pockets': pockets, 'v': v.tolist(), 'base': base.tolist(), 'scale': scale.tolist(), 'final': unpack(v).tolist(), 'start': unpack(np.zeros(len(base))).tolist(),
-            'loss': hist, 'path': path, 'terms0': t0, 'terms': tF, 'targets': {'thumb_z': zT, 'pinky_z': zP, 'groove_u': 16.0, 'ring_u': 28.5, 'station_z': 30.0},
-            'zones': {'thumb': wT, 'pinky': wP, 'groove': w['groove']}, 'spread': sp, 'contact': cd, 'k_felt': {'thumb': kT, 'pinky': kP, 'groove': kG},
+            'loss': hist, 'path': path, 'terms0': t0, 'terms': tF, 'targets': {'thumb_z': zT0, 'pinky_z': zP0, 'pocket_z': [zT, zP], 'groove_u': 16.0, 'ring_u': 28.5, 'station_z': 30.0},
+            'zones': {'thumb': wT, 'pinky': wP, 'groove': w['groove']}, 'cover': {'thumb': cT, 'pinky': cP}, 'spread': sp, 'contact': cd, 'k_felt': {'thumb': kT, 'pinky': kP, 'groove': kG},
             'placement': p50, '_loss': loss, '_terms': terms, '_unpack': unpack}
 
 def landscape(r, nd=61, nz=49):
@@ -211,38 +262,57 @@ def landscape(r, nd=61, nz=49):
             row.append(round(r['_loss'](w), 4))
         out.append(row)
     return {'d': ds.round(4).tolist(), 'zc': zs.round(3).tolist(), 'loss': out}
+def run_one(key, stored=None):
+    """one trial, packed as plain data (a worker: the closures stay in the process). stored: a trial already run (its loss
+    history and path, from the file): re-packed at its lowest point instead of descending again (the same result)"""
+    grip, pk = key.split('_')
+    if stored is None: r = trial(grip, pk, log=False)
+    else:
+        r = trial(grip, pk, steps=0, log=False); hist = stored['loss']; ib = int(np.argmin(hist)); path = stored['path'][:ib]
+        base, scale = np.array(r['base']), np.array(r['scale'])
+        v = (np.array(path[-1]['p']) - base) / scale if ib > 0 else np.zeros(len(base))
+        r.update(v=v.tolist(), loss=hist[:ib + 1], path=path, final=r['_unpack'](v).tolist(), terms=r['_terms'](v)[0])
+    t, i = r['_terms'](np.array(r['v'])); t0, i0 = r['_terms'](np.zeros(len(r['v'])))
+    def pack(ii):
+        return {'planL': [list(a) for a in ii['L']['arcs']], 'planR': [list(a) for a in ii['R']['arcs']], 'sec': [list(a) for a in ii['S']['arcs']],
+                'thumb': ii['ML'], 'pinky': ii['MR'], 'groove': ii['MS'], 'R': {'thumb': ii['L']['R'], 'pinky': ii['R']['R'], 'groove': ii['S']['R']},
+                'dev': {'plan': max(dev(ii['CL'], SORA_PLAN), dev(ii['CR'], SORA_PLAN)), 'sec': dev(ii['CS'], SORA_SEC)},
+                'width': ii['ML']['u_hump'] + ii['MR']['u_hump']}
+    out = {k: r[k] for k in ('grip', 'pockets', 'final', 'start', 'loss', 'targets', 'zones', 'cover', 'spread', 'contact', 'k_felt', 'terms0', 'terms')}
+    out['path'] = [{'it': q['it'], 'p': q['p'], 'loss': q['loss']} for q in r['path']]
+    out['end'] = pack(i); out['begin'] = pack(i0); out['placement'] = {k: r['placement'][k] for k in ('zK', 'yK', 'gamma_deg', 'palm_gap_mm', 'z')}
+    out['landscape'] = landscape(r)
+    return key, clean(out)
+def clean(o):
+    if isinstance(o, dict): return {k: clean(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)): return [clean(v) for v in o]
+    if isinstance(o, (np.floating,)): return float(o)
+    if isinstance(o, (np.integer,)): return int(o)
+    if isinstance(o, np.bool_): return bool(o)
+    return o
 def run():
     s0, g0 = sora_plan_params(), sora_sec_params()
     CL = A.chain(P0, TH0, plan_side(s0)['arcs'], ds=0.1); CS = A.chain(S0, STH0, sec_half(g0)['arcs'], ds=0.05)
-    res = {'about': 'longarcs.py: the long-arc model, the felt strength, the four trials', 'turn_rel_deg': TURN_REL / DEG, 'turn_mean_deg': TURN_MEAN / DEG,
+    res = {'about': 'longarcs.py: the long-arc model, the felt strength (the sides over the whole slide, F65.6), the four trials', 'turn_rel_deg': TURN_REL / DEG, 'turn_mean_deg': TURN_MEAN / DEG,
            'mu_dry': MU_DRY, 'width_range': WIDTH_RANGE, 'ulx_pocket': ULX_POCKET, 'sec_bound': SEC_BOUND,
+           'slide': {'p50': SLIDE, 'range': SLIDE_RANGE, 'per_hand': SL, 'contact_side': float(T.contact_d(T.S.N_SIDE)),
+                     'R_felt': {f: SLIDE[f] / TURN_REL for f in SLIDE}, 'basis': 'hand model: the heel placement (palm on the hump, fingers relaxed) to the lifted (zero-g, tips on the buttons); derived'},
            'sora': {'plan_params': s0.tolist(), 'sec_params': g0.tolist(), 'side': side_measure(CL, 10.0), 'sec': sec_measure(CS, 16.0, 28.5),
                     'R_waist': float(plan_side(s0)['R']), 'R_groove': float(sec_half(g0)['R'])}, 'trials': {}}
-    for grip in ('heel', 'lifted'):
-        for pk in ('sym', 'fwd'):
-            print('trial', grip, pk, flush=True); r = trial(grip, pk)
-            t, i = r['_terms'](np.array(r['v'])); t0, i0 = r['_terms'](np.zeros(len(r['v'])))
-            def pack(ii):
-                return {'planL': [list(a) for a in ii['L']['arcs']], 'planR': [list(a) for a in ii['R']['arcs']], 'sec': [list(a) for a in ii['S']['arcs']],
-                        'thumb': ii['ML'], 'pinky': ii['MR'], 'groove': ii['MS'], 'R': {'thumb': ii['L']['R'], 'pinky': ii['R']['R'], 'groove': ii['S']['R']},
-                        'dev': {'plan': max(dev(ii['CL'], SORA_PLAN), dev(ii['CR'], SORA_PLAN)), 'sec': dev(ii['CS'], SORA_SEC)},
-                        'width': ii['ML']['u_hump'] + ii['MR']['u_hump']}
-            out = {k: r[k] for k in ('grip', 'pockets', 'final', 'start', 'loss', 'targets', 'zones', 'spread', 'contact', 'k_felt', 'terms0', 'terms')}
-            out['path'] = [{'it': q['it'], 'p': q['p'], 'loss': q['loss']} for q in r['path']]
-            out['end'] = pack(i); out['begin'] = pack(i0); out['placement'] = {k: r['placement'][k] for k in ('zK', 'yK', 'gamma_deg', 'palm_gap_mm', 'z')}
-            print('  landscape', flush=True); out['landscape'] = landscape(r)
-            res['trials'][grip + '_' + pk] = out
-            e = out['end']; print('  loss %.3f -> %.3f | thumb z %.1f/%.1f R %.0f (felt <= %.0f) below-hump %.2f n=%d | pinky z %.1f/%.1f R %.0f (<= %.0f) n=%d | groove u %.1f R %.0f (<= %.0f) n=%d | ring %.1f deg/mm n=%d | dev %.2f/%.2f width %.1f' % (
-                out['loss'][0], out['loss'][-1], e['thumb']['z_bottom'], out['targets']['thumb_z'], e['R']['thumb'], 1 / r['k_felt']['thumb'], e['thumb']['below_hump'], e['thumb']['n_minima'],
-                e['pinky']['z_bottom'], out['targets']['pinky_z'], e['R']['pinky'], 1 / r['k_felt']['pinky'], e['pinky']['n_minima'], e['groove']['u_bottom'], e['R']['groove'], 1 / r['k_felt']['groove'], e['groove']['n_minima'],
+    keys = [g + '_' + pk for g in ('heel', 'lifted') for pk in ('sym', 'fwd')]
+    only = [k for k in sys.argv[2:] if k in keys]          # run heel_sym lifted_sym: redo those, keep the rest from the file
+    old = json.load(open(os.path.join(HERE, 'out', 'longarcs.json')))['trials'] if (only or 'repack' in sys.argv) else {}
+    if only: res['trials'] = {k: v for k, v in old.items() if k not in only}
+    jobs = [(k, old[k]) for k in keys] if 'repack' in sys.argv else [(k, None) for k in (only or keys)]
+    import multiprocessing as mp
+    with mp.Pool(min(4, os.cpu_count() or 1)) as pool:
+        for key, out in pool.starmap(run_one, jobs):
+            res['trials'][key] = out; e = out['end']
+            print('%-10s loss %.3f -> %.3f | thumb z %.1f/%.1f R %.0f (felt <= %.0f) c %.1f (>= %.1f) d %.2f below-hump %.2f n=%d | pinky z %.1f/%.1f R %.0f (<= %.0f) c %.1f (>= %.1f) d %.2f n=%d | groove u %.1f R %.0f (<= %.0f) n=%d | ring %.1f deg/mm n=%d | dev %.2f/%.2f width %.1f' % (
+                key, out['loss'][0], out['loss'][-1], e['thumb']['z_bottom'], out['targets']['thumb_z'], e['R']['thumb'], 1 / out['k_felt']['thumb'], out['final'][0], out['cover']['thumb'], out['final'][1], e['thumb']['below_hump'], e['thumb']['n_minima'],
+                e['pinky']['z_bottom'], out['targets']['pinky_z'], e['R']['pinky'], 1 / out['k_felt']['pinky'], out['final'][5], out['cover']['pinky'], out['final'][6], e['pinky']['n_minima'], e['groove']['u_bottom'], e['R']['groove'], 1 / out['k_felt']['groove'], e['groove']['n_minima'],
                 e['groove']['ring']['k_deg_per_mm'], e['groove']['ring']['n_minima'], e['dev']['plan'], e['dev']['sec'], e['width']), flush=True)
-    def clean(o):
-        if isinstance(o, dict): return {k: clean(v) for k, v in o.items()}
-        if isinstance(o, (list, tuple)): return [clean(v) for v in o]
-        if isinstance(o, (np.floating,)): return float(o)
-        if isinstance(o, (np.integer,)): return int(o)
-        if isinstance(o, np.bool_): return bool(o)
-        return o
+    res['trials'] = {k: res['trials'][k] for k in keys}
     json.dump(clean(res), open(os.path.join(HERE, 'out', 'longarcs.json'), 'w'))
     print('sora', res['sora']['side']['n_minima'], res['sora']['sec']['n_minima'], res['sora']['sec']['u_bottom'])
 

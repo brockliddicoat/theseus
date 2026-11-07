@@ -85,20 +85,23 @@ def frame(p):
     p = np.asarray(p, float); return {'planL': ra(LA.plan_side(p[0:5])['arcs']), 'planR': ra(LA.plan_side(p[5:10])['arcs']), 'sec': ra(LA.sec_half(p[10:14])['arcs'])}
 la = {'turn_rel_deg': LR['turn_rel_deg'], 'turn_mean_deg': LR['turn_mean_deg'], 'mu': LR['mu_dry'], 'width_range': LR['width_range'], 'ulx_pocket': LR['ulx_pocket'], 'sec_bound': LR['sec_bound'],
       'P0': LA.P0, 'TH0': LA.TH0, 'S0': LA.S0, 'STH0': LA.STH0, 'btn': list(LA.BTN), 'nose_z': float(LA.P3[1]),
-      'sora': dict(LR['sora'], planArcs=ra(LA.PA), secArcs=ra(LA.SA)), 'trials': {}, 'order': ['heel_sym', 'heel_fwd', 'lifted_sym', 'lifted_fwd'], 'recommended': 'lifted_fwd'}
+      'sora': dict(LR['sora'], planArcs=ra(LA.PA), secArcs=ra(LA.SA)), 'trials': {}, 'order': ['heel_sym', 'heel_fwd', 'lifted_sym', 'lifted_fwd'], 'recommended': 'lifted_fwd',
+      'slide': {k: LR['slide'][k] for k in ('p50', 'range', 'contact_side', 'R_felt')}}
 for k, r in LR['trials'].items():
-    path = r['path']; idx = sorted(set(list(range(0, len(path), 10)) + [len(path) - 1]))
+    path = r['path']; idx = sorted(set(list(range(0, len(path), max(1, len(path) // 24))) + [len(path) - 1]))   # about 25 frames
     fr = [dict(frame(r['start']), it=0, loss=round(r['loss'][0], 4), p=[round(v, 4) for v in r['start']])]
     for i in idx: fr.append(dict(frame(path[i]['p']), it=path[i]['it'], loss=round(path[i]['loss'], 4), p=[round(v, 4) for v in path[i]['p']]))
     e = r['end']
-    la['trials'][k] = {'final': r['final'], 'start': r['start'], 'loss': round(r['loss'][-1], 4), 'loss0': round(r['loss'][0], 4), 'curve': [round(v, 4) for v in r['loss'][::4]],
-                       'targets': r['targets'], 'zones': r['zones'], 'k_felt': r['k_felt'], 'spread': r['spread'], 'contact': r['contact'],
+    la['trials'][k] = {'grip': r['grip'], 'pockets': r['pockets'], 'final': r['final'], 'start': r['start'], 'loss': round(r['loss'][-1], 4), 'loss0': round(r['loss'][0], 4), 'curve': [round(v, 4) for v in r['loss'][::4]],
+                       'targets': r['targets'], 'zones': r['zones'], 'cover': r['cover'], 'k_felt': r['k_felt'], 'spread': r['spread'], 'contact': r['contact'],
                        'end': {kk: e[kk] for kk in ('thumb', 'pinky', 'groove', 'R', 'dev', 'width')}, 'endArcs': {'planL': ra(e['planL']), 'planR': ra(e['planR']), 'sec': ra(e['sec'])},
                        'begin': {kk: r['begin'][kk] for kk in ('thumb', 'pinky', 'groove', 'R', 'dev', 'width')},
                        'grooves_under_finger': bool(max(r['placement']['z']['index'], r['placement']['z']['middle']) <= 48.0), 'tips': r['placement']['z'],
                        'frames': fr, 'path': [[round(q['p'][1], 4), round(q['p'][2], 3)] for q in path], 'landscape': r['landscape'], 'terms': r['terms'], 'terms0': r['terms0']}
-# sweeps of the thumb's waist round trial 4's result, for the cursor on gd_arcs: depth, length, angle
-pF = np.array(LR['trials']['lifted_fwd']['final'])
+# the default: the lowest loss (trial 4 while it stays the lowest)
+la['recommended'] = min(LR['trials'], key=lambda k: LR['trials'][k]['loss'][-1])
+# sweeps of the thumb's waist round the default's result, for the cursor on gd_arcs: depth, length, angle
+pF = np.array(LR['trials'][la['recommended']]['final'])
 def sweep(i, vals):
     out_ = []
     for v in vals:
