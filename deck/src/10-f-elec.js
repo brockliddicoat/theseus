@@ -559,7 +559,7 @@ S({
 /* ============================== battery life against polling rate (battery, sync) ============================== */
 S({
   id: 'power', ch: 'elec', theme: 'night', title: 'Battery life against polling rate', settle: 10, ideas: ['battery', 'sync'],
-  src: ['razerBatt', 'nbcV4', 'exNbcV4', 'elcTpuV4', 'paw3395', 'elcEemb', 'ntrEemb', 'b01Optical'],
+  src: ['razerBatt', 'nbcV4', 'exNbcV4', 'elcTpuV4', 'paw3395', 'elcEemb', 'ntrEemb', 'b01Optical', 'v6Gpx2Rates'],
   draw: t => {
     const B = elc_cell();
     header(t, 'Battery life against polling rate');
@@ -589,8 +589,12 @@ S({
     const rx = 1120, rw = RM - rx;
     elc_hl(t, 4.2, rx, 430, String(THESEUS.hours), 'hours', { label: 'At 1 khz, the plan', sub: B.mAh + ' mAh, ' + fmtN(B.wh, 2) + ' Wh at the Viper V4 Pro\'s ' + fmtN(B.w1 * 1000, 1) + ' mW less its optical switches, ' + fmtN(B.w1 * B.keep * 1000, 1) + ' mW: ' + fmtN(Math.floor(B.h1), 0) + ' h. At 8 khz, ' + fmtN(Math.floor(B.h8), 0) + ' h.', subW: rw });
     elc_ba(t, 5.0, rx, 660, '180', String(THESEUS.hours), { label: 'The longest listed, then Theseus', unit: 'h', net: '+' + Math.floor(100 * (THESEUS.hours - 180) / 180 + 1e-9) + ' % over the Viper V4 Pro, on a battery its size', maxW: rw });
-    glossBox(t, 5.8, rx, 750, rw, 'Frame sync', 'The sensor\'s LED flashes once per frame. Synced to the polls, it takes a frame only when a report needs one, so it flashes less often.', { size: 24 });
-    source(t, 'Hours: Razer\'s claims, the V4 Pro at 8 khz TechPowerUp\'s. Theseus, derived: ' + B.maker + '\'s ' + B.mAh + ' mAh at the V4 Pro\'s draw less its optical switches (' + b01_optPct() + '), before any firmware gains.', { t0: 2 });
+    /* V6: the 8 khz hours' basis, said (V4's open point): the switches kept at their 1 khz share of the V4 Pro's draw, which
+       needs them to cost 1.05 mA at 8 khz; Logitech's own hours have that cost climbing with the rate, not fixed (V6_OPT,
+       30-b14-move6.js). Replaces a frame-sync note that belonged to b09_sync */
+    if (typeof V6_OPT !== 'undefined') { const O = V6_OPT, r = O.rows;
+      sourceBox(t, 5.8, rx, 750, rw, 'Optical switches cost more at 8 khz', 'Logitech’s own hours: two of them draw ' + v6_mA(r[0].mA) + ' mA at 1 khz, ' + v6_mA(r[1].mA) + ' at 2, ' + v6_mA(r[2].mA) + ' at 4. The ' + Math.floor(B.h8 + 1e-9) + ' h at 8 khz takes the V4 Pro’s at ' + v6_mA(O.need8) + ' mA, the same share as at 1 khz.', { kind: 'derived', size: 22 }); }
+    source(t, 'Hours: Razer\'s claims, the V4 Pro at 8 khz TechPowerUp\'s. Theseus, derived: ' + B.maker + '\'s ' + B.mAh + ' mAh at the V4 Pro\'s draw less its optical switches (' + b01_optPct() + ' at 1 khz, the same share at 8: Logitech\'s hours for the G Pro X Superlight 2 at 1, 2 and 4 khz), before any firmware gains.', { t0: 2 });
   }
 });
 
@@ -731,7 +735,10 @@ S({
   draw: t => {
     const B = elc_cell();
     header(t, 'A safer battery: four guards');
-    captions(t, [[0.6, 'The PMIC reads the battery\'s own temperature sensor. Its default charges from 0 to 60 °C; I set it to the battery\'s datasheet: ' + B.tLo + ' to ' + B.tHi + ' °C, and nothing outside.'], [5.6, 'It also stops charging if its own die runs hot, is protected to 22 V at the input, and draws 370 nA when the switch is off.']]);
+    /* V6: neither pack (EEMB's LP402535, Jauch's LP402535JU) lists a temperature sensor: both are two-wire packs (batteries.json).
+       The slide said the PMIC reads "the battery's own" sensor and drew an "NTC lead" as its third wire; now the sensor is a
+       thermistor on the board against the pack, said as a proposal */
+    captions(t, [[0.6, 'The PMIC reads the battery\'s warmth from a sensor on the board beside it: the pack has two wires and no sensor of its own. Its default charges from 0 to 60 °C; I set it to the battery\'s datasheet: ' + B.tLo + ' to ' + B.tHi + ' °C.'], [5.6, 'It also stops charging if its own die runs hot, is protected to 22 V at the input, and draws 370 nA when the switch is off.']]);
     /* the window, full width: current against the cell's temperature; a thermometer sweeps it */
     const x = LM, y = 280, w = RM - LM, h = 420, A = C.hero;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0));
@@ -758,7 +765,7 @@ S({
       rr(lx, y + h - 66, lw2, 44, 6, rgba(cur ? A : C.bad, 0.16), cur ? A : C.bad, 1.5, kt);
       text(lab, lx + 14, y + h - 36, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: kt });
     }
-    /* the strip: the headline, two quiet guards, and the cell's third wire in 3D */
+    /* the strip: the headline, two quiet guards, and the pack's two wires (no sensor of its own) */
     elc_hl(t, 4.4, LM, 860, '4', 'guards', { size: 120, label: 'Charging that watches itself', sub: 'Battery and die temperature, the input voltage and a watchdog.', subW: 540 });
     const ty = 740, th = 220, a1 = tileA(t, 5.0, 0), a2 = tileA(t, 5.0, 1);
     statTile(t, 5.0, [640, ty, 360, th], { value: '22', unit: 'V', label: 'Input protection', quiet: true, ev: 'datasheet' });
@@ -766,7 +773,7 @@ S({
     const bx = 1440, bw = RM - bx;
     demoWindow(bx, ty, bw, th, tileA(t, 5.2, 2));
     const PB = elc_v3('battery', t, bx + 150, ty + 2, bw - 152, th - 4, { view: 'threeQuarter', view2d: 'top', zoom: in2D(1.25, 1.4), yaw: 0.15 * Math.sin(t * 0.4), explode: 0.3 * ep(t, 5.4, 6.4) });
-    if (PB) callout(t, 6.0, PB([13.5, 1.2, 23.5]), 'NTC lead', { to: [bx + 176, ty + 92], side: 'l', color: A, sub: 'The battery\'s third wire', maxW: 128 });
+    if (PB) callout(t, 6.0, PB([13.5, 1.2, 23.5]), 'Two wires', { to: [bx + 176, ty + 92], side: 'l', color: A, sub: 'No sensor inside: one on the board, proposed', maxW: 128 });
     source(t, 'Nordic nPM1300 specification (defaults, all configurable). ' + B.maker + ' ' + B.part + ': charging from ' + B.tLo + ' to ' + B.tHi + ' °C. Ship mode: 370 nA × 8,766 h ≈ 3.2 mAh, under 1% of ' + B.mAh + ' mAh, derived.', { t0: 2 });
   }
 });

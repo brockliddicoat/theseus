@@ -1524,11 +1524,15 @@ S({
     ['(sealed) "transparent top housing to see when it\'s broken like switches"', 'Called out on the encoder: "Clear top: the spring and magnet in sight"'],
     ['(elc_sheet2) "add the no rgb light to the slide about having no optical components"', 'The RGB light is here with its cost: Logitech rates the G703 for 32 h with the lights off, 24 h with RGB cycling (spec sheet); Theseus has none'],
     ['(elc_sheet2) "put it next to the web software"', 'Placed just before b10_software'],
-    ['(F31.1) Razer staff: the switches and wheel cost "almost half" the battery', 'Not repeated as a fact: the slide derives its own share, about a fifth at 1 khz (' + B10.lightsShown().total.toFixed(1) + ' %, the printed parts\' sum): the switches from Logitech\'s own hours for the G Pro X Superlight 2 (0.116 mA a switch, the lower of the film\'s two derivations; Omron\'s pulse would say 0.15), the wheel from Avago\'s timing with its 5 mA said to be assumed. So the same battery lasts ' + Math.floor(B10.lights.gain * 100 + 1e-9) + ' % longer with Theseus\'s switches and wheel in their place (their own 9 µA counted), the film\'s figure (b03_switch shows the switches alone, +15 %)']
+    ['(F31.1) Razer staff: the switches and wheel cost "almost half" the battery', 'Not repeated as a fact: the slide derives its own share, about a fifth at 1 khz (' + B10.lightsShown().total.toFixed(1) + ' %, the printed parts\' sum): the switches from Logitech\'s own hours for the G Pro X Superlight 2 (0.116 mA a switch, the lower of the film\'s two derivations; Omron\'s pulse would say 0.15), the wheel from Avago\'s timing with its 5 mA said to be assumed. So the same battery lasts ' + Math.floor(B10.lights.gain * 100 + 1e-9) + ' % longer with Theseus\'s switches and wheel in their place (their own 9 µA counted), the film\'s figure (b03_switch shows the switches alone, +15 %)'],
+    ['(V6, move 6) one saving, one figure', 'The verdict counts the switches alone, as the film\'s hours do (13.6 to 0.4 %, +15 %, 194 h); the wheel\'s share keeps its row, named assumed and not counted']
   ],
   draw: t => {
     header(t, 'Nothing lights up but the sensor');
-    captions(t, [[0.6, 'The Viper V4 Pro\'s optical switches and wheel pulse their LEDs hundreds of times a second, pressed or not: about a fifth of its battery.'],
+    /* V6: the film counts the switches alone (ntr_hours, b03_switch, b01_battery: +15 %, 194 h); the wheel's share rests on an
+       assumed 5 mA, so it is shown and named as not counted (it was in the verdict: +23 %, a second figure for one saving) */
+    const swPct = (2 * B10.lightsShown().sw).toFixed(1) + ' %';
+    captions(t, [[0.6, 'The Viper V4 Pro\'s optical switches pulse their LEDs hundreds of times a second, pressed or not: ' + swPct + ' of its battery, and its optical wheel more.'],
       [4.4, 'Mechanical switches and a magnetic wheel draw nothing until used: only Theseus\'s sensor lights up.']]);
     const L = B10.lights, off = [ep(t, 2.6, 2.9), ep(t, 2.9, 3.2), ep(t, 3.3, 3.6)];   /* left switch, right switch, wheel */
     /* the Viper V4 Pro from above, in x-ray, drawn as the kit's neutral rival at its own size (EloShapes; FILM F9: a rival never
@@ -1552,7 +1556,7 @@ S({
     };
     /* the rival's shares rounded down, Theseus's up: neither rounding favours Theseus */
     const pc = v => (Math.floor(v * 1000) / 10).toFixed(1) + ' %', pcU = v => (Math.ceil(v * 1000) / 10).toFixed(1) + ' %';
-    row(392, at('wheel'), 'Optical wheel', B10.lightsShown().wh.toFixed(1) + ' %', lights[2].k, 'Magnetic wheel', pcU(L.tmr / L.avg));
+    row(392, at('wheel'), 'Optical wheel, assumed', B10.lightsShown().wh.toFixed(1) + ' %', lights[2].k, 'Magnetic wheel', pcU(L.tmr / L.avg));
     /* a mechanical switch draws only its pull-up's trickle: b03's 3 µA a switch (B03.mechUA), so the three slides agree */
     const mSh = L.mUA / 1000 / L.avg;
     row(492, at('trigR'), 'Optical switch', B10.lightsShown().sw.toFixed(1) + ' %', lights[1].k, 'Mechanical switch', pcU(mSh));
@@ -1561,7 +1565,8 @@ S({
     text(t < 3.6 ? 'Viper V4 Pro' : 'Theseus', 290, 900, { role: 'label', size: 22, color: t < 3.6 ? C.secondText : C.heroText, align: 'center' });
     text('No RGB either: Logitech rates its G703 for 32 h with the lights off, 24 h with RGB cycling.', lx, 790, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 360, lh: 1.3, alpha: ep(t, 4.0, 4.4) });
     /* the payoff */
-    verdict(t, 4.9, 980, 846, { from: B10.lightsShown().total, to: Math.ceil(L.thsMA / L.avg * 1000) / 10, unit: '%', dec: 1, label: 'Battery to the switches and wheel (wheel current assumed)', better: 'lower', who: ['Viper V4 Pro', 'Theseus'], net: '+' + Math.floor(L.gain * 100 + 1e-9) + ' % hours, same battery', size: 96, maxW: 700 });
+    { const mPct = Math.ceil(2 * mSh * 1000 - 1e-9) / 10, gain = typeof B03 !== 'undefined' ? b03_floor(B03.lifeGain * 100, 0) : String(Math.floor((L.avg / (L.avg - L.sw + 2 * L.mUA / 1000) - 1) * 100 + 1e-9));
+      verdict(t, 4.9, 980, 846, { from: 2 * B10.lightsShown().sw, to: mPct, unit: '%', dec: 1, label: 'Battery to the switches (the wheel, assumed, not counted)', better: 'lower', who: ['Viper V4 Pro', 'Theseus'], net: '+' + gain + ' % hours, same battery', size: 96, maxW: 700 }); }
     /* the dust test: both wheels turn the same steps while dust falls in */
     { const px = 980, py = 290, pw = 860, ph = 420, hw = (pw - 24) / 2, kd = ep(t, 6.4, 8.6, E.lin), turn = Math.max(0, t - 6.0) * 4, total = 16, n = Math.min(total, Math.floor(turn));
       demoWindow(px, py, pw, ph, 1, { plain: true });
@@ -1584,7 +1589,7 @@ S({
       }
       if (enc.cover) callout(t, 9.2, enc.cover, 'Clear top', { to: [px + pw - 150, py + 130], side: 'r', color: C.heroText, tcolor: C.ink, sub: 'Spring and magnet in sight', maxW: 140 });
     }
-    source(t, 'Shares of a Viper V4 Pro\'s 1.70 mA at 1 khz (306 mAh, 180 h), derived: an optical switch 0.116 mA, from Logitech\'s 96 h optical-only against 104 h hybrid (Superlight 2; Omron\'s pulse: 0.15 mA); its wheel LED 40 µs every 2 ms (Avago) at 5 mA, assumed; TMR 1.5 µA an axis (MDT); a mechanical switch 3 µA. Sensor LED: infrared (PixArt). Dust: illustrative (MPS).', { t0: 2.4 });
+    source(t, 'Shares of a Viper V4 Pro\'s 1.70 mA at 1 khz (306 mAh, 180 h), derived: an optical switch 0.116 mA, from Logitech\'s 96 h optical-only against 104 h hybrid (Superlight 2; Omron\'s pulse: 0.15 mA); its wheel LED 40 µs every 2 ms (Avago) at 5 mA, assumed, so not in Theseus\'s hours; TMR 1.5 µA an axis (MDT); a mechanical switch 3 µA. Sensor LED: infrared (PixArt). Dust: illustrative (MPS).', { t0: 2.4 });
   }
 });
 

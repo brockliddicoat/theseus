@@ -50,9 +50,12 @@ const FILM = {
     /* V4 (Brock, 17:08: "the battery should only need to be 300mah ... with the same size battery as it using much newer and
        optimized firmware and no opticals"; 17:10: the freed weight to a lighter mouse): the chain is move 4's switches ->
        the Viper V4 Pro's size of battery lasting longer -> 1.6 g off the mouse -> the best density of any mouse */
+    /* V6: what it builds on names move 5's frames too (the board's 5 -> 6 'Every frame'); its own figure (stat) leaves the
+       8 khz hours to the power slide, where their basis is said (30-b14-move6.js) */
     { n: 6, ch: 'elec', name: 'Power', title: 'More hours from the same battery',
-      builds: 'Move 4’s mechanical switches: with no optical switches drawing power, and newer firmware, a battery the Viper V4 Pro’s size lasts longer.',
-      unlocks: 'A smaller battery, 1.6 g off the whole mouse: with moves 2 and 3’s light shell, the best density of any mouse.' },
+      builds: 'Move 4’s switches draw nothing until pressed, so a battery the Viper V4 Pro’s size lasts longer; move 5’s frames, each sent as it comes, go out at 8 khz.',
+      unlocks: 'Three bars past the line at once: more hours than the Viper, motion first at 8 khz, and a battery 1.6 g lighter that takes moves 2 and 3’s shell past every mouse’s density.',
+      stat: () => (typeof v6_cardStat === 'function' ? v6_cardStat() : null) },
     { n: 7, ch: 'surface', name: 'The finish', title: 'A finish that weighs nothing',
       builds: 'Move 2’s shell: a film-thin coat on it, no tape.',
       unlocks: 'Grip that holds, for no weight.' },
@@ -97,8 +100,13 @@ const FILM = {
     /* V5: move 5 as five upgrades on one need, a lens held in focus: the problem (a camera), the window, dots at the lens, the
        snap-on lens (v23's gld_module, an 8, kept), the sensor and its frames (the motion bar's step), lift-off, set in the web software (Brock: "place near web software") */
     [5, ['mv5', 'b04_camera', 'b04_focus', 'b04_sag', 'b04_skates', 'gld_module', 'b04_sensor', 'b04_reports', 'b10_software']],
-    [6, ['mv6', 'power', 'cells', 'frontier', 'elc_pmic', 'elc_charge', 'elc_safe', 'onechip', 'elc_module', 'antenna', 'motion', 'elc_rate',
-      'framesync', 'secondshot', 'elc_oneside', 'elecsheet1', 'elc_tear', 'elc_twist', 'elc_lay', 'elc_flex', 'cable', 'srf_encoder']],
+    /* V6: move 6 as four upgrades that spend what moves 2 to 5 handed on (FILM.steps): nothing lit but the sensor (move 4's
+       switches, a magnetic wheel, no RGB: b10_lights, his elc_sheet2 note), the same battery for more hours (the battery bar),
+       one chip for 8 khz, frames synced to the poll (the motion bar's second step, ranked), then the three bars past the line
+       together (powerup). Cut: what adds no hours, density or 8 khz (the PMIC, charging and its guards, the radio module and
+       antenna, the wireless penalty, Second Shot, the pouch per gram, the frontier); the wires, the coat and the one-sided
+       board leave this move for moves 7 and 8 (V6-PROGRESS.md, merge notes) */
+    [6, ['mv6', 'b10_lights', 'power', 'b09_chip', 'b09_sync', 'b09_latency', 'powerup']],
     [7, ['mv7', 'coating', 'srf_texture', 'srf_weight', 'srf_uv', 'grip', 'srf_gripmap', 'srf_tape', 'srf_twotone', 'wheel']],
     /* main (18:5x): row 6's 'software' left the film: b10_software (lift-off, the web software) ends move 5 (V5). The
        hot-swap switches (b03_hotswap, the revamp's rebuild of clk_hotswap) moved here from move 4, where they built on
@@ -166,7 +174,14 @@ const FILM = {
     gld_module: { s: 'Upgrade 3 builds on the dots: a lens one dot wide carries its own two' },
     b04_sensor: { s: 'Upgrade 4: the sensor behind the held lens, planned after Razer’s exclusivity' },
     b04_reports: { s: 'Every frame as it comes: the motion bar’s first step. Move 6 sends them', to: [6] },
-    b10_software: { s: 'Upgrade 5: the lens at a known height, so lift-off in 0.1 mm steps means it', to: [6] }
+    b10_software: { s: 'Upgrade 5: the lens at a known height, so lift-off in 0.1 mm steps means it', to: [6] },
+    /* V6: move 6, each upgrade said as what it spends */
+    b10_lights: { s: 'Upgrade 1, on move 4’s switches: nothing draws power until used' },
+    power: { s: 'Upgrade 2 spends that saving: the Viper’s size of battery, more hours' },
+    b09_chip: { s: 'Upgrade 3: move 5’s frames out at 8 khz, by radio or cable, one chip' },
+    b09_sync: { s: 'Upgrade 4: each frame taken as the poll asks, so none goes out stale' },
+    b09_latency: { s: 'The motion bar’s second step: move 5’s frames at 8 khz, first of all' },
+    powerup: { s: 'What move 6 hands on: three bars past the line, for move 9', to: [9] }
   },
   /* V3: move 2's five upgrades, each built on the one before: the label row names the upgrade a slide belongs to and a
      meter beside it fills, one segment an upgrade (filmChrome). of: slide id -> upgrade (0: the problem, before the first;
@@ -180,7 +195,10 @@ const FILM = {
       of: { b02_direct: 1, b02_wedge: 1, b02_tensioner: 2, b02_stiff: 2, b02_cutouts: 3, b02_seams: 3, b02_rails: 4, b02_front: 5, b02_flush: 5,
         b03_switch: 6, b03_spdt: 6, b03_timing: 6, b03_debounce: 6, b03_side: 7, clickup: 7 } },
     5: { names: ['the focus window', 'dots at the lens', 'a snap-on lens', 'the sensor', 'lift-off'],
-      of: { b04_camera: 0, b04_focus: 1, b04_sag: 2, b04_skates: 2, gld_module: 3, b04_sensor: 4, b04_reports: 4, b10_software: 5 } }
+      of: { b04_camera: 0, b04_focus: 1, b04_sag: 2, b04_skates: 2, gld_module: 3, b04_sensor: 4, b04_reports: 4, b10_software: 5 } },
+    /* V6 */
+    6: { names: ['nothing lit', 'the same battery', 'one chip, 8 khz', 'frame sync'], done: 'three bars past the line',
+      of: { b10_lights: 1, power: 2, b09_chip: 3, b09_sync: 4, b09_latency: 4, powerup: 5 } }
   },
   /* V3: a slide drawn for another chapter, played in this move (its chapter's accent and icon, no chapter flight inside a move) */
   chOf: { b07_balance: 'shell', b02_wedge: 'click', b10_software: 'glide' },
