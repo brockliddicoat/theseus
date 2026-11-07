@@ -1693,3 +1693,13 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
 - **F65.7 DECIDED** (~14:20) A comfort groove's one low point is counted against the button's own slope (the direction the
   finger presses), not against level: "The button's slope (Recommended)".
 
+
+## F66. Renders at product-shot quality (2026-11-07 14:30)
+
+- **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
+  (feedback/attachments/F66/1430-reference-switch-render-as-he-sent.png): "these renders i’d switches also put anything you’ve
+  ever made to shame, launch some sub agents to try to meet or beat the model detail, material and lighting quality". Two
+  agents race on Theseus's GT01: R1 models it from scratch in Blender and renders in Cycles; R2 refines the deck's own GT01
+  geometry (3d/parts/gt01.js) and path traces it. The bar: clear polycarbonate with real refraction and thickness, bevelled
+  edges catching highlights, gold spring and contacts, black plunger and base, tin pins, soft studio lighting on a dark
+  gradient, no noise. No maker logos or wordmarks.
