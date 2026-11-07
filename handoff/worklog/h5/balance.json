@@ -1,0 +1,276 @@
+{
+ "model": "H2 (screws at the board holes, core centroid, encoder + support in the board); H3: the board as built (mass.py: 0.6 mm, 2.249 g bare, encoder 0.475 g, support 0.202 g)",
+ "board_com": [
+  0.39,
+  6.58,
+  24.11
+ ],
+ "board_parts_g_before_scaling": 5.684,
+ "posts": [
+  {
+   "hole": "MH1",
+   "g": 0.272,
+   "centre": [
+    10.1,
+    15.34,
+    26.62
+   ],
+   "length": 20.62,
+   "from_": "triggerL"
+  },
+  {
+   "hole": "MH2",
+   "g": 0.272,
+   "centre": [
+    -10.1,
+    15.34,
+    26.62
+   ],
+   "length": 20.62,
+   "from_": "triggerR"
+  },
+  {
+   "hole": "MH3",
+   "g": 0.387,
+   "centre": [
+    14.59,
+    19.69,
+    -5.13
+   ],
+   "length": 29.32,
+   "from_": "body"
+  },
+  {
+   "hole": "MH4",
+   "g": 0.387,
+   "centre": [
+    -14.59,
+    19.69,
+    -5.13
+   ],
+   "length": 29.32,
+   "from_": "body"
+  }
+ ],
+ "side_switches": [
+  [
+   22.4,
+   19.82,
+   15.0
+  ],
+  [
+   22.4,
+   22.65,
+   -3.55
+  ]
+ ],
+ "old key-plan place (2.23 fwd of H1's)": {
+  "com": [
+   0.676,
+   12.915,
+   2.678
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -22.72
+  ],
+  "total_g": 27.71
+ },
+ "H1's place (2.23 back)": {
+  "com": [
+   0.676,
+   12.915,
+   2.163
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -24.95
+  ],
+  "total_g": 27.71
+ },
+ "Brock's literal (5.90 fwd, 1.5 up)": {
+  "com": [
+   0.676,
+   13.261,
+   3.526
+  ],
+  "battery": [
+   -0.41,
+   8.96,
+   -19.05
+  ],
+  "total_g": 27.71
+ },
+ "H2's place for the 8 g pack": {
+  "com": [
+   0.676,
+   12.915,
+   1.694
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -26.98
+  ],
+  "total_g": 27.71
+ },
+ "board.py BATTERY now": {
+  "com": [
+   0.676,
+   12.915,
+   -0.001
+  ],
+  "battery": [
+   -0.41,
+   7.46,
+   -34.32
+  ],
+  "total_g": 27.71
+ },
+ "battery z for CoM z 0, without the posts (side switches in)": -30.532,
+ "battery z for CoM z 0, without the side switches and the posts": -28.011,
+ "battery z for CoM z 0": -34.316,
+ "forward of H1's place": -9.366,
+ "behind H2's place": 7.336,
+ "summary": {
+  "note": "3d/pcb/tools/balance.py (H2's corrected model; H3's board as built; H5: the masses read from THESEUS and the pack, the battery where the centre of mass lands at z 0): each mass (g) and its place (mouse X, Y, Z mm)",
+  "total_g": 27.71,
+  "budget_g": 27.71,
+  "pack": "LP402535",
+  "board_as_built": true,
+  "parts": {
+   "sideSw1": {
+    "g": 0.5,
+    "at": [
+     22.4,
+     19.82,
+     15.0
+    ]
+   },
+   "sideSw2": {
+    "g": 0.5,
+    "at": [
+     22.4,
+     22.65,
+     -3.55
+    ]
+   },
+   "post MH1": {
+    "g": 0.272,
+    "at": [
+     10.1,
+     15.34,
+     26.62
+    ]
+   },
+   "post MH2": {
+    "g": 0.272,
+    "at": [
+     -10.1,
+     15.34,
+     26.62
+    ]
+   },
+   "post MH3": {
+    "g": 0.387,
+    "at": [
+     14.59,
+     19.69,
+     -5.13
+    ]
+   },
+   "post MH4": {
+    "g": 0.387,
+    "at": [
+     -14.59,
+     19.69,
+     -5.13
+    ]
+   },
+   "shell": {
+    "g": 8.031,
+    "at": [
+     -0.4,
+     16.44,
+     -10.41
+    ]
+   },
+   "btn": {
+    "g": 3.328,
+    "at": [
+     -0.0,
+     22.05,
+     31.96
+    ]
+   },
+   "board": {
+    "g": 5.6,
+    "at": [
+     0.39,
+     6.58,
+     24.11
+    ]
+   },
+   "batt": {
+    "g": 6.4,
+    "at": [
+     -0.41,
+     7.46,
+     -34.32
+    ]
+   },
+   "wheel": {
+    "g": 1.02,
+    "at": [
+     0.0,
+     17.03,
+     34.87
+    ]
+   },
+   "screws": {
+    "g": 0.418,
+    "at": [
+     0.0,
+     4.0,
+     10.74
+    ]
+   },
+   "ins": {
+    "g": 0.516,
+    "at": [
+     0.0,
+     6.5,
+     10.74
+    ]
+   },
+   "wires": {
+    "g": 0.08,
+    "at": [
+     0.0,
+     8.0,
+     0.0
+    ]
+   }
+  },
+  "battery": {
+   "at": [
+    -0.41,
+    7.46,
+    -34.32
+   ],
+   "box": [
+    37.0,
+    25.5,
+    4.3
+   ]
+  },
+  "com": [
+   0.676,
+   12.915,
+   -0.001
+  ],
+  "z_for_zero": -34.316
+ }
+}

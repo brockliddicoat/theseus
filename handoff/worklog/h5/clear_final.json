@@ -1,0 +1,199 @@
+{
+ "box": [
+  -18.91,
+  5.31,
+  -47.07,
+  18.09,
+  9.61,
+  -21.57
+ ],
+ "shell": {
+  "n": 1740842,
+  "collide": 0,
+  "min": [
+   1.55,
+   [
+    -19.74,
+    4.4,
+    -48.0
+   ],
+   "body"
+  ],
+  "roof (above, over the footprint)": [
+   4.02,
+   [
+    -18.84,
+    13.63,
+    -47.06
+   ],
+   "body"
+  ],
+  "tail (behind the rear face)": [
+   1.55,
+   [
+    -19.74,
+    4.4,
+    -48.0
+   ],
+   "body"
+  ],
+  "sides (beside, within its length)": [
+   1.97,
+   [
+    -20.17,
+    3.79,
+    -47.05
+   ],
+   "body"
+  ],
+  "below (under the footprint)": [
+   2.85,
+   [
+    -18.87,
+    2.46,
+    -47.04
+   ],
+   "body"
+  ]
+ },
+ "bands": [
+  {
+   "at": 0.28,
+   "z": -28.71,
+   "gap": 6.1,
+   "where": [
+    -24.77,
+    1.78,
+    -31.13
+   ],
+   "mesh": "body",
+   "collide": 0
+  },
+  {
+   "at": 0.72,
+   "z": -39.93,
+   "gap": 2.84,
+   "where": [
+    15.48,
+    1.85,
+    -39.37
+   ],
+   "mesh": "body",
+   "collide": 0
+  }
+ ],
+ "board": {
+  "area": 0.0,
+  "front_behind_lobes": 11.08,
+  "boardRearLobes": -10.49
+ },
+ "parts": [
+  {
+   "ref": "BATLEAD",
+   "gap3d": 0.0,
+   "at": [
+    -10.62,
+    8.36,
+    -22.02
+   ],
+   "underPlan": true,
+   "vgap": -3.49,
+   "collide": 41,
+   "note": "the battery's own lead: ends at its front face by design"
+  }
+ ],
+ "posts": [
+  {
+   "hole": "MH3",
+   "X": 14.59,
+   "Z": -5.13,
+   "r": 2.65,
+   "kind": "stand-in \u00d85.3 (fasteners.js)",
+   "plan_gap": 13.79
+  },
+  {
+   "hole": "MH3",
+   "X": 14.59,
+   "Z": -5.13,
+   "r": 2.2,
+   "kind": "b11's drawing 4.4 wide",
+   "plan_gap": 14.24
+  },
+  {
+   "hole": "MH4",
+   "X": -14.59,
+   "Z": -5.13,
+   "r": 2.65,
+   "kind": "stand-in \u00d85.3 (fasteners.js)",
+   "plan_gap": 13.79
+  },
+  {
+   "hole": "MH4",
+   "X": -14.59,
+   "Z": -5.13,
+   "r": 2.2,
+   "kind": "b11's drawing 4.4 wide",
+   "plan_gap": 14.24
+  }
+ ],
+ "heads": {
+  "head_top": 4.43,
+  "vgap": 0.88,
+  "note": "heads under the board (#54); the battery is behind the board"
+ },
+ "skates": [
+  {
+   "at": [
+    17.2,
+    -43.18
+   ],
+   "plan_gap": -3.25,
+   "ledge_top": 1.85,
+   "vgap": 3.46
+  },
+  {
+   "at": [
+    10.82,
+    -47.93
+   ],
+   "plan_gap": -2.39,
+   "ledge_top": 1.85,
+   "vgap": 3.46
+  },
+  {
+   "at": [
+    -11.11,
+    -47.83
+   ],
+   "plan_gap": -2.49,
+   "ledge_top": 1.85,
+   "vgap": 3.46
+  },
+  {
+   "at": [
+    -17.4,
+    -42.91
+   ],
+   "plan_gap": -3.25,
+   "ledge_top": 1.85,
+   "vgap": 3.46
+  }
+ ],
+ "side_lead": {
+  "gap": 22.27,
+  "at": [
+   19.15,
+   22.65,
+   -3.55
+  ]
+ },
+ "antenna": {
+  "keepout": 26.64,
+  "antenna": 26.64
+ },
+ "way_out": {
+  "slide_to_posts": 13.79,
+  "drops_after": 13.29,
+  "note": "clear below once slid 13.3 mm forward"
+ }
+}

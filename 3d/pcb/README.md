@@ -34,8 +34,8 @@ changed, and how it was checked:
 - **Numbers:** 5.68 g with everything the 5.6 g target covers (table below): 0.08 g over the target, 0.05 g over the 5.63
   the path predicted, because the encoder and support as drawn weigh 0.475 g and 0.202 g against the 0.45 and 0.16
   estimated. Bending stiffness: 21.6 % of the 1.0 mm board's (t³); stretched in its own plane, 60 % (t).
-- **Not done here, said:** the USB pair is still 0.13 mm (see "Two layers: what it costs"); the battery's place is not
-  moved (balance.py, below: 0.47 mm back would put the centre of mass at z 0; the posts are still estimates).
+- **Not done here, said:** the USB pair is still 0.13 mm (see "Two layers: what it costs"); the battery's place was not
+  moved then (0.47 mm back would have put the centre of mass at z 0); H5 moved it for EEMB's lighter pack (below).
 
 
 **Board plan 5 (H1, 2026-11-06; Brock's approved plan, F30).** One mirrored outline (W 19.03, waist 15.42, one notch depth
@@ -61,6 +61,16 @@ target) puts the board's centre of mass at mouse (+0.39, 6.58, +24.11) and the m
 `BATTERY` has it (centre z −26.98): z 0 wants it 0.47 mm further back (−27.45). Not moved: the shell's posts are still
 estimates (S2 is placing the real ones), and 0.13 mm is inside their uncertainty. `balance.json` now goes to `work/`
 (`--out=` to change it).
+H5 (2026-11-06, F64.11: EEMB's 300 mAh LP402535, about 6.40 g, for Jauch's 8 g pack; Brock: "Move it back"): `BATTERY`
+reads its pack from `research/data/batteries.json` (37.0 across, the product page's length, the larger of EEMB's two; 25.5
+along; 4.3 thick: the maximums) and `balance.py` reads the budget from the deck (THESEUS: 27.71 g, the board 5.6 g; the shell
+what is left). Run `mass.py` first (the board as built), then `balance.py`: at the 8 g pack's place the lighter pack left
+the centre of mass 1.69 mm ahead of the middle; the battery's centre goes to mouse z −34.32 (layout `BATT_ZC` −31.44,
+7.34 mm further back, same height), and the centre of mass is at z 0.00, 12.91 mm up, 0.68 mm toward the side buttons.
+`tools/clear.py` (H2's clearance method as a tool, plus the bands, the skate dots, the side-button lead and the way out) checks
+it against the shell: nearest 1.55 mm (the tail corner on the user's right, low), roof 4.02, rim below 2.85, sides 1.97,
+bands 2.84; contact would start with the centre at about z −36.8. `balance.py` also writes `pcb-balance.json` (committed),
+which `deck/tools/geo2d/key_parts.py` puts in KEY_PARTS.balance, so b07_balance's model is this one, place for place.
 The 2D drawings (deck `boardMM`, `keyPlanMM`, the kit's mouse) come from these tools: deck/tools/geo2d/board2d.py and
 key_parts.py. The text below is the v1 board's description (2026-11-04), kept for its method and honesty labels.
 
