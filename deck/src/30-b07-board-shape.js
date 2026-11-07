@@ -1735,14 +1735,14 @@ S(b07_live({
     b07_scale({ draw, P }, F.zr, Math.max(0, rear), kScale);
     if (kScale > 0.003) { const pf = P(-F.zf, 12.5), pr = P(-F.zr, 12.5); text('Front skates', pf[0], pf[1] + 4, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kScale }); text('Rear skates', pr[0], pr[1] + 4, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kScale }); }
     /* the weights, each at its centroid, sized by its grams; in the second half only the battery keeps its label */
-    const lab = { Shell: [1, -1, 'left'], Buttons: [0, -1, 'center'], 'Side switches': [0, -1, 'center'], Board: [-1, 2, 'right'], Wheel: [-1, 0, 'right'], 'Screws, wires': [1, 2, 'left'], Battery: [0, 1, 'center'] };
+    const lab = { Shell: [1, -1, 'left'], Buttons: [0, -1, 'center'], 'Side switches': [0, -1, 'center'], Board: [-1, 2, 'right'], Wheel: [-1, 0, 'right'], 'Screws, wires': [1, 2, 'left'], Battery: [0, -1, 'center'] };   /* the battery's label above its block: below its dot it ran into the dot, beside it past the tail (main, 19:3x) */
     const kD = 1 - 0.7 * ep(t, 4.6, 5.0), kLab = 1 - ep(t, 4.6, 5.0);
     cur.forEach((p, i) => {
       if (kp[i] <= 0.003) return;
       const q = P(-p.z, -p.y - (1 - kl[i]) * 30), r = 6 + 7 * Math.sqrt(p.g), a = kp[i] * (p.batt ? 1 : kD);
       circle(q[0], q[1], r, { fill: p.batt ? C.hero : C.comp, alpha: a * 0.9 });
       const [lx, ly0, al] = lab[p.name], ly = p.batt && up > 0.5 ? -1 : ly0, la = kp[i] * (p.batt ? 1 : kLab);
-      const tx = q[0] + lx * (r + 8), ty = ly === 2 ? P(0, 0)[1] + 30 : q[1] + ly * (r + 10) + (ly === 0 ? 7 : 0);
+      const tx = q[0] + lx * (r + 8), ty = ly === 2 ? P(0, 0)[1] + 30 : p.batt && ly === -1 ? q[1] - (r + 34) : q[1] + ly * (r + 10) + (ly === 0 ? 7 : 0);   /* the battery's label clears the grip and lever lines drawn above its block later */
       if (la > 0.003) text(p.batt ? 'Battery ' + b07_gTxt(p.g) + ' g' : p.name, tx, ty, { role: 'label', size: 19, color: p.batt ? C.heroText : C.ink2, align: al, alpha: la * (ly === 2 ? kScale : 1) });
     });
     /* the balance point, and the trail it leaves as parts go in */
