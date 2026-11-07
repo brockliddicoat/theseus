@@ -520,7 +520,7 @@ Live then: v1793996750-29cc (the 14:30 build). Frames: the whole film is in feed
   page's database); handoff/compare/README.md says how it was made and how to read his ratings.
 
 
-## F64. The underdog that compounds; the loadout bars (2026-11-06 15:06 to ~17:00)
+## F64. The underdog that compounds; the loadout bars (2026-11-06 15:06 to ~18:12)
 Live then: the revamp (v1793996750-29cc) until 15:58, then the v23 refinement's pilot (v1794002308-7273), then the pilot
 with the loadout bars (v1794005831-7601). Pictures he answered on: /home/claude/work/v2/out/ (archived in
 handoff/v23refine/ notes). The raw messages, verbatim, are in handoff/worklog/feedback-inbox.md (15:06 onward).
@@ -549,6 +549,30 @@ handoff/v23refine/ notes). The raw messages, verbatim, are in handoff/worklog/fe
   missing rims) is an idea "to keep in the tank" (**DEFERRED**, WORK-LEFT.md).
 - **F64.8 DECIDED** (~17:00) Density: "Every mouse (as now)": Theseus's bar ends at 97 %, the wired XA25 holding the line,
   the tags saying why. Click bar: "Leave it out (Recommended)".
+- **F64.9 DONE (V3)** (17:04, on a screenshot of the loadout rows: feedback/attachments/F64/1704-loadout-silhouettes-as-he-sent.png)
+  "these use the wrong generic mouse silhouette, they should be using the same one as theseus" / "we need a separate
+  silhouette of a half theseus to use for pure fingertip mice as well". Rivals are drawn with Theseus's own silhouette
+  at their sizes (film_rival); the X2F is half a Theseus (film_half). Committed 88a2085.
+- **F64.10 SUPERSEDED by F64.14** (17:05) "remove the comprise red cross outs from the title card and make the tile all
+  text, the cross outs look bad".
+- **F64.11 DECIDED, IN PROGRESS (V4)** (17:08) "the battery should only need to be 300mah, there’s no reason that we
+  wouldn’t be able to beat the viper v4 pro battery with the same size battery as it using much newer and optimized
+  firmware and no opticals". ~17:10, on where the freed weight goes: "Lighter mouse, 27.7 g (Recommended)". EEMB's
+  LP402535 (300 mAh minimum, about 6.40 g) replaces Jauch's 370 mAh pack: mass 27.71 g, density past the XA25's.
+- **F64.12 STANDING** (17:18, on a phone screenshot of the cover: feedback/attachments/F64/1718-cover-tile-as-he-saw-it.png)
+  "the zero compromises tile needed to be revamped, you can’t just rip out part of it and leave it like that, it looks
+  weird now". When part of a design goes, rebuild the whole element; never leave it with a hole.
+- **F64.13 DECIDED** (~17:42) The ladder: "each slide and a recap with all the gains". The five slides he rated 7, v23's
+  against the rebuild: "show them side by side just for treating and i’ll pick soon" ("treating": testing). **IN PLACE:**
+  the testing pairs (FILM_AB, 25-film.js, 2c32873); waiting on his picks.
+- **F64.14 DONE** (18:03, on the cover in v1794008755-3f2b) "i’m not sure how i feel about spelling out zero for 0
+  compromises, i was hoping for something different and i don’t think the text about the 8 thing on the bottom makes
+  sense". ~18:12, of two options (feedback/attachments/F64/1810-compromises-tile-options-sent.png: A, 0 as text, "nothing
+  given up"; B, 0 with Theseus's three bars past the line, "every bar full"): "i liked the bars that were full but not
+  overflowing more, the small gray text should read “no tradeoffs”". The tile: 0 in Theseus's blue, beside his three score
+  bars filled to the line and no further, "Target, no tradeoffs". Live as v1794010568-85c4 (294c539). With it, the grid's +
+  knock-out under foot text now works on every screen; it had only ever run at 1920 px and 1x, so on his phone the +
+  marks showed through captions.
 
 ## Open with Brock
 
