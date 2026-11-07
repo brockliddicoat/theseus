@@ -4,14 +4,21 @@
    Brock, 2026-11-06 17:08: "the battery should only need to be 300mah" (beat the Viper V4 Pro's battery with one its
    size: newer firmware, no opticals); 17:10, the freed weight to "Lighter mouse, 27.7 g". So the pack is EEMB's LP402535
    (300 mAh minimum, about 6.40 g; pack: its part in RDATA.batteries.eemb_lipo) in place of Jauch's LP402535JU (370 mAh,
-   8 g in Endrich's rounded listing): mass 29.31 - (8 - 6.40) = 27.71 g, the shell's allowance unchanged. hours: the
+   8 g in Endrich's rounded listing): mass 29.31 - (8 - 6.40) = 27.71 g, the shell's allowance unchanged. Brock, ~19:40: the
+   board's waterproof coat counts in the weight ("Add it: 27.95 g (Recommended)"): ntr_coat (14-b-intro-ex.js: 50 µm of
+   urethane on both faces of the board plus 10 % for the parts' flanks, 1.05 g/cm³, rounded up to 0.01 g) = 0.24 g, so mass
+   29.31 - (8 - 6.40) + 0.24 = 27.95 g, the shell's allowance still unchanged (10.35 g). hours: the
    deck's derivation (ntr_hours, 14-b-intro-ex.js: the pack's energy over the Viper V4 Pro's draw at 1 khz, less its two
    optical switches, with Theseus's mechanical ones) gives 194.7 h, floored: 194 (200 needs EEMB's typical 320 mAh, 207.6 h;
-   never counted). 25-film.js checks the two agree at startup.
+   never counted). 25-film.js checks the hours, the mass (to 0.01 g) and the shell's allowance against their derivations at
+   startup.
    Print them through THS (strings) so a change here changes the deck.
    ============================================================================================ */
-const THESEUS = { mass: 27.71, price: 189, pcb: 5.6, hours: 194, dims: [119.3, 62.4, 39.9], pack: 'LP402535' };   /* dims: L x W x H, mm (Brock, F12.11) */
-const THS = { mass: '27.71', massG: '27.71 g', price: '$189', pcb: '5.6 g', hours: '194 h', dims: '119.3 × 62.4 × 39.9 mm' };
+const THESEUS = { mass: 27.95, price: 189, pcb: 5.6, hours: 194, dims: [119.3, 62.4, 39.9], pack: 'LP402535' };   /* dims: L x W x H, mm (Brock, F12.11) */
+const THS = { mass: '27.95', massG: '27.95 g', price: '$189', pcb: '5.6 g', hours: '194 h', dims: '119.3 × 62.4 × 39.9 mm' };
+/** Theseus's weight to one decimal, where mice are compared (G5): rounded up, against Theseus, never in its favour (27.95 g
+   reads 28.0; toFixed would say 27.9, its binary value being 27.9499…) */
+const thsG1 = () => (Math.ceil(THESEUS.mass * 10 - 1e-9) / 10).toFixed(1);
 
 /* ============================================================================================
    sources. Every number on screen points at one of these. n = what we took from it.

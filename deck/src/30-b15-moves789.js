@@ -5,8 +5,9 @@
    throughout the presentation"; the cover's tile (F64.14): 0 compromises, three bars to the line, "no tradeoffs".
    - v7_cardStat(n): the line under the loadout on the cards of moves 7, 8 and 9 (FILM.moves[n].stat). Moves 7 and 8 fill no
      bar (density's steps are moves 2, 3 and 6), so their cards say what they gain, as V5's move 4 card does; move 7's says
-     what it keeps: the finish decides whether move 6's density lead survives (soft-touch on this shell weighs as much as the
-     whole lead).
+     what it keeps: the finish decides whether move 6's density lead survives (soft-touch on this shell weighs more than the
+     whole lead: 0.68 g against about 0.44 g since the board's coat counts in the weight, Brock ~19:40; the words follow the
+     two figures).
    - everybar: move 9's payoff, before the close. The giants' loadouts again (move 0's 'No flagship fills every bar'), on the
      three score bars the cover's tile shows, each giant's shortfall in red and its count of bars short of the line; then
      Theseus's row runs to the line and past it on all three at once, its count 0 (the cover's "0 compromises", earned here
@@ -30,8 +31,11 @@ function v7_cardStat(n) {
   try {
     /* two lines at most: the board's arcs into the move run under them */
     if (n === 7) {
-      const m = v7_margin();
-      return 'No bar to fill: it guards density. Soft-touch here weighs ' + fmtN(B08.film.softG, 2) + ' g or more, all of Theseus’s ' + v7_dn(m, 2) + ' g lead over the XA25 (derived).';
+      /* soft-touch against the lead, both derived: more than all of it, all of it, or its share (the lead floored, soft-touch
+         as b08_film prints it) */
+      const m = v7_margin(), soft = +fmtN(B08.film.softG, 2), lead = +v7_dn(m, 2);
+      const vs = (soft > lead + 0.005 ? 'more than the ' : soft >= lead - 0.005 ? 'all of the ' : Math.floor(soft / lead * 100) + ' % of the ') + v7_dn(m, 2) + ' g lead over the XA25';   /* two lines at most */
+      return 'No bar to fill: it guards density. Soft-touch here weighs ' + fmtN(soft, 2) + ' g or more, ' + vs + ' (derived).';
     }
     if (n === 8) {
       const tools = B11.gpw.tools.filter(k => k !== 'heat').length;

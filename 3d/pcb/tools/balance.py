@@ -28,6 +28,8 @@ as ntr_budget does it (10.35 g: of it 1.0 the side switches (F44.2) and about 1.
               the head under the board (mouse y 4.0); the four brass inserts at the bottom of the bosses, over the holes
               (y 6.5: board top 5.03 + half of the 3.0 mm insert)
   wires ..... the side-button lead, (0, 8, 0)
+  coat ...... the board's waterproof coat (Brock ~19:40: it counts in the weight; ntr_coat, 0.24 g), at the board's centroid:
+              the outline's area centroid, the board's mid-thickness
   battery ... board.py BATTERY (layout box; its middle yMid over the pad)
 Mouse frame: +X the user's left, Z the nose, Y up from the pad; the middle of the footprint at z 0; mouse z = layout z - 2.88.
 
@@ -65,12 +67,23 @@ def theseus():
     return dict(mass=num('mass'), pcb=num('pcb'), pack=re.search(r"\bpack:\s*'([^']+)'", m).group(1))
 
 
+def coat_g():
+    """the board's waterproof coat (Brock ~19:40, "Add it"), the deck's one figure: ntr_coat's formula with its constants read
+    from NTR_COAT in deck/src/14-b-intro-ex.js: faces x one face of the board's outline x flanks x thickness x density,
+    rounded UP to 0.01 g (against Theseus)"""
+    s = open(os.path.join(R3, '..', 'deck', 'src', '14-b-intro-ex.js')).read()
+    m = re.search(r'const NTR_COAT = \{([^}]*)\}', s).group(1)
+    num = lambda k: float(re.search(r'\b%s:\s*([0-9.]+)' % k, m).group(1))
+    g = num('faces') * BD.theseus_outline().area / 100.0 * num('flanks') * num('um') / 1e4 * num('rho')
+    return math.ceil(g * 100 - 1e-9) / 100
+
+
 TH = theseus()
 assert TH['pack'] == BATTERY['part'], ('board.py BATTERY is %s, THESEUS.pack %s' % (BATTERY['part'], TH['pack']))
 # the budget's lines (g): the board THESEUS.pcb, the battery its pack's (board.py BATTERY, from batteries.json), the small
 # parts as the deck derives them (ntr_budget: the XA25's buttons, the 0.9 g wheel and its POM axle, four titanium screws,
-# four brass inserts, the side-button lead); the shell and skates what is left of THESEUS.mass
-BUD = dict(btn=3.328, board=TH['pcb'], batt=BATTERY['g'], wheel=1.02, screws=0.418, ins=0.516, wires=0.08)
+# four brass inserts, the side-button lead), the board's coat (ntr_coat); the shell and skates what is left of THESEUS.mass
+BUD = dict(btn=3.328, board=TH['pcb'], batt=BATTERY['g'], wheel=1.02, screws=0.418, ins=0.516, wires=0.08, coat=coat_g())
 BUD['shell'] = round(TH['mass'] - sum(BUD.values()), 3)
 # F44.2 (Brock, "From the shell"): the two full-size SPDT side switches, about 0.5 g each, come out of the shell's allowance
 # (10.35 -> 9.35 g); the total stays the budget's. They sit where the 3D shell puts them (shell.js: behind each side button)
@@ -194,6 +207,14 @@ def board_screws():
 _PO = {}
 
 
+def coat_place():
+    """the coat at the board's centroid: the outline's area centroid (it covers both faces of the outline), at the board's
+    mid-thickness (mouse X, Y, Z)"""
+    lay = json.load(open(os.path.join(R3, 'pcb', 'pcb-layout.json')))
+    c = BD.theseus_outline().centroid
+    return [-c.x, lay['boardTopY_in_mouse'] - T_BOARD / 2, c.y + DZ]
+
+
 def mouse(board_xyz, batt_xyz, h1=False, side=True, post=True):
     """every mass of the budget (THESEUS.mass) at its place. h1: H1's model (no side switches, no posts, the plate's screws)"""
     body, _ = centroid('body'); tl, _ = centroid('triggerL'); tr, _ = centroid('triggerR')
@@ -213,6 +234,7 @@ def mouse(board_xyz, batt_xyz, h1=False, side=True, post=True):
         'shell': (shell, body), 'btn': (BUD['btn'], (tl + tr) / 2), 'board': (BUD['board'], board_xyz),
         'batt': (BUD['batt'], batt_xyz), 'wheel': (BUD['wheel'], wc),
         'screws': (BUD['screws'], scr), 'ins': (BUD['ins'], ins), 'wires': (BUD['wires'], [0, 8.0, 0]),
+        'coat': (BUD['coat'], coat_place()),
     })
     return out
 

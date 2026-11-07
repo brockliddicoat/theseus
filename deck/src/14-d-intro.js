@@ -366,7 +366,7 @@ S({
     const k = 3.45, gy = 700;
     const items = [
       { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29.5, gs: fmtN(X2F ? X2F.g : 29.5, 1), ev: 'measured', by: 'Brock', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 720, t0: 1.1 },
-      { key: 'ths', name: 'Theseus', g: THESEUS.mass, gs: fmtN(THESEUS.mass, 1), ev: 'proposal', box: bx, rho: rhoT, x: 1200, t0: 2.7, hero: true }
+      { key: 'ths', name: 'Theseus', g: THESEUS.mass, gs: thsG1(), ev: 'proposal', box: bx, rho: rhoT, x: 1200, t0: 2.7, hero: true }
     ];
     /* the pointer brings each box in and sets it down */
     const lift = 210;
@@ -397,7 +397,7 @@ S({
     /* the ground */
     line(680, gy + 1, RM, gy + 1, { color: C.hair, w: 1.5, alpha: ep(t, 0.4, 0.9) });
     /* the headline over the two boxes: how much more mouse the same weight makes (F14.10) */
-    ntr_hl(t, 5.6, 720, 400, '+' + fmtN(more, 0) + '%', 'more mouse', { size: 136, count: false, sub: `${same ? 'The same weight' : 'Lighter'}, ${fmtN(THESEUS.mass, 1)} g against ${fmtN(X2F ? X2F.g : 29, 1)} g: Theseus's density is ${fmtN(100 * (1 - rhoT / (X2F ? X2F.rho : 0.1717)), 0)}% lower. Lower is better.`, maxW: RM - 720 });
+    ntr_hl(t, 5.6, 720, 400, '+' + fmtN(more, 0) + '%', 'more mouse', { size: 136, count: false, sub: `${same ? 'The same weight' : 'Lighter'}, ${thsG1()} g against ${fmtN(X2F ? X2F.g : 29, 1)} g: Theseus's density is ${fmtN(100 * (1 - rhoT / (X2F ? X2F.rho : 0.1717)), 0)}% lower. Lower is better.`, maxW: RM - 720 });
     /* the words, in the left column */
     ntr_stack(t, LM, 280, 560, [
       { t0: 5.8, gloss: true, a: 'Size–weight illusion', b: 'Of two things with the same mass, the smaller one feels heavier. Charpentier measured it in 1891.' },
@@ -449,7 +449,7 @@ S({
       const kl = ep(t, 0.5 + r.rw * 0.05, 0.9 + r.rw * 0.05), kr = ep(t, lineT(r) + 0.8, lineT(r) + 1.2);
       const strong = r.hero || r.ref || r.story;
       const st = { role: 'small', size: fs, weight: strong ? 700 : 560, color: r.hero ? C.heroText : r.ref ? C.secondText : strong ? C.ink : C.mute };
-      const ya = Y(r.rw) + (dense ? 7 : 8), yb = Y(r.rd) + (dense ? 7 : 8), gs = fmtN(r.g, 1) + ' g';   /* one precision for every weight (F27: the X2F's 29.0, Theseus's 29.3) */
+      const ya = Y(r.rw) + (dense ? 7 : 8), yb = Y(r.rd) + (dense ? 7 : 8), gs = (r.hero ? thsG1() : fmtN(r.g, 1)) + ' g';   /* one precision for every weight (F27: the X2F's 29.0, Theseus's 29.3) */
       text(pad2(r.rw + 1), LM, ya, { font: 'mono', size: 19, weight: 500, color: C.faint, alpha: kl });
       text(r.name, LM + 40, ya, Object.assign({ alpha: kl }, st));
       text(gs, xL - 14, ya, { font: 'mono', size: fv, weight: strong ? 700 : 500, color: strong ? C.ink : C.mute, align: 'right', alpha: kl });

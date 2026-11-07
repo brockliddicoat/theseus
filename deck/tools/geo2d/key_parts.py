@@ -88,7 +88,7 @@ battery = dict(x=r2(B['x0']), y=r2(-(B['z1'] + DZ)), w=r2(B['x1'] - B['x0']), h=
 bal = json.load(open(os.path.join(R3, 'pcb', 'pcb-balance.json')))
 Pb = bal['parts']; zy = lambda k: [r2(Pb[k]['at'][2]), r2(Pb[k]['at'][1])]
 balance = dict(body=zy('shell'), btn=zy('btn'), boardCom=zy('board'), wheel=zy('wheel'), screws=zy('screws'), inserts=zy('ins'),
-               wires=zy('wires'), sideSws=[zy(k) for k in sorted(Pb) if k.startswith('sideSw')],
+               wires=zy('wires'), coat=zy('coat'), sideSws=[zy(k) for k in sorted(Pb) if k.startswith('sideSw')],
                posts=[[round(Pb[k]['g'], 3)] + zy(k) for k in sorted(Pb) if k.startswith('post ')], batt=zy('batt'),
                com=[round(v, 2) + 0.0 for v in bal['com']], g=round(bal['total_g'], 2))
 KP = dict(board=board, sensor=sensor, lens=lens, window=window, lensDots=lensDots, skates=skates, battery=battery,

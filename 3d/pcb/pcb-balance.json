@@ -1,7 +1,7 @@
 {
  "note": "3d/pcb/tools/balance.py (H2's corrected model; H3's board as built; H5: the masses read from THESEUS and the pack, the battery where the centre of mass lands at z 0): each mass (g) and its place (mouse X, Y, Z mm)",
- "total_g": 27.71,
- "budget_g": 27.71,
+ "total_g": 27.95,
+ "budget_g": 27.95,
  "pack": "LP402535",
  "board_as_built": true,
  "parts": {
@@ -116,6 +116,14 @@
     8.0,
     0.0
    ]
+  },
+  "coat": {
+   "g": 0.24,
+   "at": [
+    -0.0,
+    4.73,
+    18.77
+   ]
   }
  },
  "battery": {
@@ -131,9 +139,9 @@
   ]
  },
  "com": [
-  0.676,
-  12.915,
-  -0.001
+  0.67,
+  12.844,
+  0.16
  ],
- "z_for_zero": -34.316
+ "z_for_zero": -35.019
 }

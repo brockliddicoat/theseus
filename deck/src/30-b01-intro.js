@@ -339,7 +339,9 @@ function b01_budget() {
     { key: 'wheel', name: 'Wheel and axle', g: B.wheel, note: 'Magnesium, 0.9 g, on a POM axle', ev: 'derived' },
     { key: 'inserts', name: 'Brass inserts', count: NTR_BUD.inserts, g: B.ins, note: fmtN(B.ins1, 2) + ' g each', ev: 'derived' },
     { key: 'screws', name: 'Titanium screws', count: NTR_BUD.screws, g: B.screws, note: 'M2 × 4, ' + fmtN(B.screw1, 2) + ' g each', ev: 'derived' },
-    { key: 'wires', name: 'Side-button lead', g: B.wires, note: '32 AWG, braided', ev: 'derived' }
+    { key: 'wires', name: 'Side-button lead', g: B.wires, note: '32 AWG, braided', ev: 'derived' },
+    /* Brock (~19:40): the board's waterproof coat counts in the weight (ntr_coat: b10_sealed's figure, rounded up) */
+    { key: 'coat', name: 'Board coat', g: B.coat, note: 'Urethane, ' + NTR_COAT.um + ' µm, both faces', ev: 'derived' }
   ];
   const used = parts.reduce((s, p) => s + p.g, 0);
   return { parts, used, shell: THESEUS.mass - used, xaShell: B.xa.shell, cut: B.xa.shell - (THESEUS.mass - used), hours: batt.h, batt, B };
@@ -475,7 +477,7 @@ function b01_bigWeight(t, s0, box, o = {}) {
   part(RP[0] - mcx * s, RP[1] - 2, s, () => mouseSimple('right', { lw: 1.8, hi: ['shell'], col: 'hero', lit: 0.8 }));
   part(LP[0], LP[1] - 2 - fall * 230, s, () => mouseRival('right', { dims: o.dims || RV_DIMS, lw: 2 }));
   text('59.0 g', LP[0], LP[1] + 46, { role: 'num', size: 30, weight: 800, color: C.red, align: 'center', alpha: ta });
-  text(fmtN(THESEUS.mass, 1) + ' g', RP[0], RP[1] + 46, { role: 'num', size: 30, weight: 800, color: C.heroText, align: 'center', alpha: ta });
+  text(thsG1() + ' g', RP[0], RP[1] + 46, { role: 'num', size: 30, weight: 800, color: C.heroText, align: 'center', alpha: ta });
   text('Theseus', RP[0], RP[1] + 76, { role: 'label', size: 20, color: C.heroText, align: 'center', alpha: ta });
 }
 function b01_bigBattery(t, s0, box, o = {}) {
@@ -623,7 +625,7 @@ function b01_ledgerList(t, o = {}) {
     b01_tradeIcon(t, tT, 'theseus', [x, y + 9, Lt.icon[0], Lt.icon[1]], { a: kT });
     const nx = x + Lt.icon[0] + 22;
     text('Theseus', nx, y + 36, { role: 'h3', size: 28, weight: 800, color: C.heroText, grad: C.heroGrad, alpha: kT, sentence: false });
-    text('Nitrite Labs, ' + THS.price + ', ' + fmtN(THESEUS.mass, 1) + ' g', nx, y + 64, { role: 'small', size: 20, weight: 650, color: C.heroText, alpha: kT, sentence: false });
+    text('Nitrite Labs, ' + THS.price + ', ' + thsG1() + ' g', nx, y + 64, { role: 'small', size: 20, weight: 650, color: C.heroText, alpha: kT, sentence: false });
     text('Gives up', r, y + 30, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: kT });
     text('Nothing', r, y + 66, { role: 'num', size: 32, weight: 800, color: C.heroText, grad: C.heroGrad, align: 'right', alpha: kT });
   }
@@ -718,7 +720,7 @@ S({
       text('Nothing', LM - 3, 903, { role: 'd1', size: 88, weight: 800, track: -0.02, color: C.heroText, grad: C.heroGrad, alpha: kG, rise: [tT + 0.12, 0.6], t });
       /* no figure reads as a measurement it isn't (integrator, the cover's rule): Theseus's answers are its targets */
       text('Theseus\'s targets', 560, 398, { role: 'label', size: 19, color: C.mute, alpha: ep(t, tT + 0.35, tT + 0.7) });
-      [['Weight', fmtN(THESEUS.mass, 1) + ' g'], ['Battery life at 1 khz', THESEUS.hours + ' h'], ['Spent on clicks', b01_mechPct()], ['Strength', 'Solid, arched'], ['The shape', 'Full, 119.3 mm'], ['Wireless', 'Dual 8khz wired and wireless']].forEach(([wd, v], j) => {
+      [['Weight', thsG1() + ' g'], ['Battery life at 1 khz', THESEUS.hours + ' h'], ['Spent on clicks', b01_mechPct()], ['Strength', 'Solid, arched'], ['The shape', 'Full, 119.3 mm'], ['Wireless', 'Dual 8khz wired and wireless']].forEach(([wd, v], j) => {
         const yy = 436 + j * 60, kj = ep(t, tT + 0.4 + j * 0.07, tT + 0.75 + j * 0.07);
         if (j) line(560, yy - 40, 1110, yy - 40, { color: C.hair, w: 1, alpha: kj });
         text(wd, 560, yy, { role: 'label', size: 20, color: C.mute, alpha: kj });
@@ -788,7 +790,7 @@ S({
   draw: t => {
     header(t, 'Why lighter wins');
     captions(t, [[0.3, 'The classroom version: the same push on two carts. Half the mass stops and turns back in half the time.'],
-      [2.9, 'The arm moves the hand; your fingers finish by pushing the mouse, and its part of that halves at ' + fmtN(THESEUS.mass, 1) + ' g.'],
+      [2.9, 'The arm moves the hand; your fingers finish by pushing the mouse, and its part of that halves at ' + thsG1() + ' g.'],
       [6.3, 'Whatever your fingers weigh, the mouse\'s share of each correction halves. A higher skill ceiling.']]);
     /* ---- the classroom version: two carts rolling right at the same speed, the same push back on each. On screen from
        frame one (M6): the panel is drawn and the carts are already rolling ---- */
@@ -814,7 +816,7 @@ S({
     /* ---- the mouse's own part of a correction: the same push on a 59.0 g and a 29.3 g mouse, slowed 20×, moves 5× larger.
        Every time here grows with all the mass that moves (k × (fingers + mouse)), so the mouse's part, k × mouse, is its own
        and halves whatever the fingers weigh (M-b01-1): the lanes and the verdict claim only that part ---- */
-    const lanes = [{ m: B01_LT.mR, name: 'Pro X3 Superstrike, 59.0 g', col: C.secondText, bar: C.second, y: 292 }, { m: THESEUS.mass / 1000, name: 'Theseus, ' + fmtN(THESEUS.mass, 1) + ' g', col: C.heroText, bar: C.hero, y: 500, hero: true }];
+    const lanes = [{ m: B01_LT.mR, name: 'Pro X3 Superstrike, 59.0 g', col: C.secondText, bar: C.second, y: 292 }, { m: THESEUS.mass / 1000, name: 'Theseus, ' + thsG1() + ' g', col: C.heroText, bar: C.hero, y: 500, hero: true }];
     const tF = B01_LT.tF, SL = B01_LT.slow, xt = 1110, sD = 1.6, sM = 8;
     /* each lane's mouse, side view, nose right, about its length's middle at x = 0 in both frames: Theseus the simplified mouse; the X3 the
        kit's rival at its own 125 × 63.5 × 40 mm, in the yellow of the one rival this slide names and beats (FILM F9, F35.1) */
@@ -896,11 +898,11 @@ S({
   replaces: ['market'],
   src: ['exRtings', 'b01TpuHtsU', 'b01GwHtsU', 'b01Gw', 'exNbcV4', 'razerBatt', 'ntrKeychron', 'ntrDaV4', 'ntrXiaomi', 'ntrGpx2', 'ntrGpx2c', 'logiSuperstrike', 'ntrZowie', 'b01X3', 'b01X2f', 'b01TpuUlx', 'b01SlxBatt', 'ntrEemb', 'b01Optical'],
   answers: [
-    ['market: "we need to make a bigger argument here how most mice compromise battery life for weight"', 'Demonstrated instead of plotted: the pointer drags a mouse lighter along the frontier of every mouse that lists hours, from the Viper V4 Pro (48.9 g, 180 h) to the HTX Mini 8K (26.9 g, 80 h), and its battery, drawn to scale inside it, shrinks from 306 to 250 mAh as the hours fall; the five lightest that list no hours appear with their batteries (210 to 300 mAh); then Theseus at ' + fmtN(THESEUS.mass, 1) + ' g carries ' + b01_thsBatt().mAh + ' mAh, the Viper\'s size (Brock, 17:08), and leaves the frontier: ' + Math.floor(b01_thsBatt().same) + ' h at the same draw, ' + THESEUS.hours + ' h without the Viper\'s optical switches'],
+    ['market: "we need to make a bigger argument here how most mice compromise battery life for weight"', 'Demonstrated instead of plotted: the pointer drags a mouse lighter along the frontier of every mouse that lists hours, from the Viper V4 Pro (48.9 g, 180 h) to the HTX Mini 8K (26.9 g, 80 h), and its battery, drawn to scale inside it, shrinks from 306 to 250 mAh as the hours fall; the five lightest that list no hours appear with their batteries (210 to 300 mAh); then Theseus at ' + thsG1() + ' g carries ' + b01_thsBatt().mAh + ' mAh, the Viper\'s size (Brock, 17:08), and leaves the frontier: ' + Math.floor(b01_thsBatt().same) + ' h at the same draw, ' + THESEUS.hours + ' h without the Viper\'s optical switches'],
     ['market: "research harder to find missing weights or derive"', 'Twelve mice with listed hours and weights (scale weights where weighed), five more found with weights and batteries but no hours. Derived, all on one basis: every known battery at the Viper V4 Pro\'s draw, drawn as rings that rise to their hours (X2F 118 h, the 250 mAh mice 141 h, the Beast X 169 h), and Theseus\'s ' + b01_thsBatt().mAh + ' mAh at the same draw, ' + Math.floor(b01_thsBatt().same) + ' h, then ' + THESEUS.hours + ' h without the optical switches; the legend says "Battery at the same draw" and the foot line says how (an estimate at the V4 Pro\'s draw, never a bound)'],
     ['F33.5 (an important idea, vastly improved)', 'One causal demonstration: weight down, battery smaller, hours down, then the answer off the curve, with the verdict on one basis, 141 → ' + Math.floor(b01_thsBatt().same) + ' h (under 32 g, the same draw), and what it means at 6 h a day'],
     ['R-b01-4 (hours need their polling rate)', 'Every hour figure on the slide is at 1 khz and the axis says so'],
-    ['F27 (one precision per column) and F2.32', 'Weights to 0.1 g, hours whole, capacities in whole mAh; Theseus ' + fmtN(THESEUS.mass, 1) + ' g like the rest'],
+    ['F27 (one precision per column) and F2.32', 'Weights to 0.1 g, hours whole, capacities in whole mAh; Theseus ' + thsG1() + ' g like the rest'],
     ['FILM F9 / kit (rivals drawn as Theseus)', 'Along the frontier the mouse on the right is the kit\'s rival mouse, sized from the Viper V4 Pro (127.1 × 63.9 mm) to the HTX Mini 8K (109 × 60 mm) as it is dragged; Theseus\'s simplified mouse takes its place only when Theseus lands, its battery moving to where Theseus keeps it']
   ],
   draw: t => {
@@ -968,7 +970,7 @@ S({
         text('No optical', m.X(gT) - 16, ym - 5, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: ka2 });
         text('switches, +' + pc + ' %', m.X(gT) - 16, ym + 18, { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: ka2 }); }
       heroMark(m.X(gT), m.Y(hNow), 12, kT);
-      text('Theseus, ' + fmtN(THESEUS.mass, 1) + ' g, ' + Math.floor(hNow + 1e-6) + ' h', m.X(gT), m.Y(hNow) - 24, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: kT });
+      text('Theseus, ' + thsG1() + ' g, ' + Math.floor(hNow + 1e-6) + ' h', m.X(gT), m.Y(hNow) - 24, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: kT });
     }
     /* the mouse on the right, its battery drawn to scale by capacity. Along the frontier it is a rival (Theseus's own
        silhouette in a rival's grey, Brock 17:04: film_rival), sized from the Viper V4 Pro's 127.1 × 63.9 mm at the start to the
@@ -994,7 +996,7 @@ S({
     text(who[0], RX, 360, { role: 'label', size: 20, color: kT > 0.5 ? C.heroText : C.mute });
     text(who[1], RX, 398, { role: 'h3', size: 30, weight: 750, color: ink, sentence: false });
     text('Weight', RX, 456, { role: 'label', size: 20, color: C.mute });
-    rich([{ s: fmtN(gNow, 1), role: 'd1', size: 56, weight: 800, color: ink, tnum: true }, { s: 'g', role: 'small', size: 26, weight: 700, color: C.mute, gap: 8, sentence: false }], RX, 516);
+    rich([{ s: Math.abs(gNow - gT) < 1e-9 ? thsG1() : fmtN(gNow, 1), role: 'd1', size: 56, weight: 800, color: ink, tnum: true }, { s: 'g', role: 'small', size: 26, weight: 700, color: C.mute, gap: 8, sentence: false }], RX, 516);   /* landed on Theseus: its weight rounded up (thsG1) */
     text('Battery life at 1 khz', RX, 576, { role: 'label', size: 20, color: C.mute });
     rich([{ s: kT > 0 ? String(Math.floor(hShow + 1e-6)) : fmtN(hShow, 0), role: 'd1', size: 56, weight: 800, color: ink, grad: kT > 0.5 ? C.heroGrad : null, tnum: true }, { s: 'h', role: 'small', size: 26, weight: 700, color: C.mute, gap: 8, sentence: false }], RX, 636);
     if (kT > 0.5) pill(RX, 670, 'derived', kT, { by: kR2 > 0.5 ? 'no opticals' : 'V4 Pro draw' });
@@ -1131,7 +1133,7 @@ S({
     if (kT > 0.003) {
       part(thc, ny - V.box[1] * s, s * lerp(0.94, 1, kTs), () => { G.save(); G.globalAlpha = PA; G.strokeStyle = C.hero; G.lineWidth = lw(2.6); G.stroke(V.out); G.restore(); }, { alpha: kT });
       text('Theseus', thc, nameY, { role: 'label', size: 22, color: C.heroText, align: 'center', alpha: kT });
-      text(fmtN(THESEUS.mass, 1) + ' g', thc, nameY + 36, { role: 'num', size: 30, weight: 800, color: C.heroText, align: 'center', alpha: kT });
+      text(thsG1() + ' g', thc, nameY + 36, { role: 'num', size: 30, weight: 800, color: C.heroText, align: 'center', alpha: kT });
     }
     /* ---- the boxes they fill: the footprint on the pad, the top face lifted by the height (cabinet projection) ---- */
     const kb = ep(t, T.box, T.box + 0.6, E.io3), kb2 = ep(t, T.box + 0.25, T.box + 0.85, E.io3), L2 = X2.L * s, W2 = X2.W * s, L3 = THESEUS.dims[0] * s, W3 = THESEUS.dims[1] * s;
@@ -1143,7 +1145,7 @@ S({
       text(fmtN(THESEUS.dims[2], 1) + ' mm high', thc + W3 / 2 + 0.354 * THESEUS.dims[2] * s + 10, ny - 0.354 * THESEUS.dims[2] * s + 22, { role: 'label', size: 20, color: C.heroText, alpha: ep(t, T.box + 0.85, T.box + 1.25) }); }
     /* ---- the arithmetic, worked: volume, then weight ÷ volume ---- */
     const RX = 1330, v2 = X2.L * X2.W * X2.H / 1000, v3 = THESEUS.dims[0] * THESEUS.dims[1] * THESEUS.dims[2] / 1000, r2 = 29.0 / v2, r3 = THESEUS.mass / v3;
-    [[0, 'X2F CrazyLight', X2.L, X2.W, X2.H, v2, '29.0', r2, false, C.ink], [1, 'Theseus', ...THESEUS.dims, v3, fmtN(THESEUS.mass, 1), r3, true, C.heroText]].forEach(([j, nm, l, w, hh, v, g, r, ths, col]) => {
+    [[0, 'X2F CrazyLight', X2.L, X2.W, X2.H, v2, '29.0', r2, false, C.ink], [1, 'Theseus', ...THESEUS.dims, v3, thsG1(), r3, true, C.heroText]].forEach(([j, nm, l, w, hh, v, g, r, ths, col]) => {
       const y = 360 + j * 200, k1 = ep(t, T.calc + j * 0.5, T.calc + j * 0.5 + 0.4), k2 = ep(t, T.calc + j * 0.5 + 0.5, T.calc + j * 0.5 + 0.9);
       text(nm, RX, y, { role: 'label', size: 22, color: col, alpha: k1 });
       text(fmtN(l, 1) + ' × ' + fmtN(w, 1) + ' × ' + fmtN(hh, 1) + ' mm = ' + fmtN(v, 1) + ' cm³', RX, y + 44, { role: 'small', size: 25, weight: 650, color: C.ink2, alpha: k1, sentence: false });
@@ -1218,7 +1220,7 @@ S({
       text('X2F CrazyLight', xa, wy, { role: 'label', size: 21, color: C.ink, align: 'center', alpha: km });
       text('29.0 g, 168.9 cm³', xa, wy + 32, { role: 'small', size: 24, weight: 700, color: C.ink, align: 'center', alpha: km, sentence: false });
       text('Theseus', xb, wy, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: km });
-      text(fmtN(THESEUS.mass, 1) + ' g, ' + fmtN(THESEUS.dims[0] * THESEUS.dims[1] * THESEUS.dims[2] / 1000, 1) + ' cm³', xb, wy + 32, { role: 'small', size: 24, weight: 700, color: C.heroText, align: 'center', alpha: km, sentence: false });
+      text(thsG1() + ' g, ' + fmtN(THESEUS.dims[0] * THESEUS.dims[1] * THESEUS.dims[2] / 1000, 1) + ' cm³', xb, wy + 32, { role: 'small', size: 24, weight: 700, color: C.heroText, align: 'center', alpha: km, sentence: false });
       text('=', (xa + xb) / 2, wy + 32, { role: 'h2', size: 40, color: C.mute, align: 'center', alpha: km });
     }
     /* ---- how heavy each should feel: the X2F the reference, Theseus about a tenth lighter (derived, with its range) ---- */
@@ -1352,10 +1354,10 @@ S({
       if (kT > 0.003 && ulx) {
         arrow(m.X(ulx.g) - 12, py, lerp(m.X(ulx.g) - 12, m.X(THESEUS.mass) + 16, ka), py, { color: C.hero, w: 3, hs: 12, p: 1, alpha: kT });
         heroMark(m.X(THESEUS.mass), py, 12, kT * ep(t, T.ths + 0.8, T.ths + 1.1));
-        text('Theseus, ' + fmtN(THESEUS.mass, 1) + ' g, ' + THS.price, m.X(THESEUS.mass), py - 22, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, T.ths + 0.9, T.ths + 1.2) });
+        text('Theseus, ' + thsG1() + ' g, ' + THS.price, m.X(THESEUS.mass), py - 22, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, T.ths + 0.9, T.ths + 1.2) });
       } }
     legend(t, -1, x0, y0 + h + 72, [{ kind: 'line', color: C.ink, label: 'Cheapest at each weight' }, { kind: 'dot', color: C.comp, label: 'Wireless' }, { kind: 'ring', color: C.comp, label: 'Wired' }, { kind: 'area', color: C.ink2, label: 'Flagships, $160 to $200' }], { size: 20 });
-    verdict(t, T.verdict, 1330, 760, { from: 38.0, to: +fmtN(THESEUS.mass, 1), unit: 'g', dec: 1, size: 96, label: 'Weight at $189: the UltralightX, then Theseus', better: 'lower', maxW: RM - 1330, who: ['UltralightX', 'Theseus'] });
+    verdict(t, T.verdict, 1330, 760, { from: 38.0, to: +thsG1(), unit: 'g', dec: 1, size: 96, label: 'Weight at $189: the UltralightX, then Theseus', better: 'lower', maxW: RM - 1330, who: ['UltralightX', 'Theseus'] });
     { const k = ep(t, T.verdict + 1.4, T.verdict + 1.9); text('G-Wolves sells lighter for less, and lists 80 h of battery, or none.', 1330, 470, { role: 'small', size: 24, weight: 650, color: C.ink2, alpha: ep(t, T.lab + 0.6, T.lab + 1.0), maxW: 500, sentence: false }); }
     source(t, 'Prices: makers\' US list prices; the Zaunkoenig mice sell in euros, plotted at the M3K\'s own rate (€340 ~ $396). Weights: scales where weighed, else makers\' (the X2F, Pulsar\'s 29 g ± 2). The UltralightX: TechPowerUp\'s 2023 medium, $189, 38 g. Theseus\'s $189 and 29.3 g are targets.', { t0: 0.8, maxW: 1160 });
   }
@@ -1397,7 +1399,7 @@ S({
   draw: t => {
     header(t, 'Targets');
     captions(t, [[0.3, 'For each figure, the best anyone has shown, against Theseus\'s target. Shorter is faster.'],
-      [5.4, 'The headline: the Starlight X weighs 41.7 g on RTINGS\'s scale; Theseus\'s target is ' + fmtN(THESEUS.mass, 1) + ' g.']]);
+      [5.4, 'The headline: the Starlight X weighs 41.7 g on RTINGS\'s scale; Theseus\'s target is ' + thsG1() + ' g.']]);
     const x0 = LM, tx = 520, tw0 = 640, y0 = 330, rh = 140;
     B01_TG.forEach((r, i) => {
       /* frame one shows every row's label and track (R2-b01-4); the row racing is full strength, the rest wait at half (M7) */
@@ -1425,7 +1427,7 @@ S({
     });
     legend(t, -1, tx, y0 - 44, [{ kind: 'dot', color: C.comp, label: 'Best shown' }, { kind: 'hero', label: 'Theseus\'s target' }], { size: 19 });
     /* the right column: the headline, then the quiet tiles */
-    verdict(t, 5.4, 1330, 470, { from: 41.7, to: +fmtN(THESEUS.mass, 1), unit: 'g', dec: 1, size: 110, label: 'Weight: the Starlight X on RTINGS\'s scale, then Theseus', better: 'lower', who: ['Starlight X', 'Theseus, target'], maxW: RM - 1330 });
+    verdict(t, 5.4, 1330, 470, { from: 41.7, to: +thsG1(), unit: 'g', dec: 1, size: 110, label: 'Weight: the Starlight X on RTINGS\'s scale, then Theseus', better: 'lower', who: ['Starlight X', 'Theseus, target'], maxW: RM - 1330 });
     [['Report rate', 'Dual 8khz', 'Wired and wireless'], ['Sensor', 'PAW3970', 'The Viper V4 Pro\'s'], ['Battery, 1 khz', THS.hours, 'Derived, its ' + b01_thsBatt().mAh + ' mAh']].forEach(([lab, v, sub], j) => {
       const y = 700 + j * 92, a = ep(t, 6.6 + j * 0.15, 7.0 + j * 0.15);
       line(1330, y - 40, RM, y - 40, { color: C.hair, w: 1, alpha: a });

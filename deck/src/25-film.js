@@ -479,7 +479,7 @@ function lo_vals(M) {
 }
 function lo_thsVals() {
   const sp = typeof NTR_BAR_SPEED !== 'undefined' ? NTR_BAR_SPEED : [], mo = sp.find(r => /Motion latency, wireless/.test(r.cat)) || {}, bx = ntr_thsBox();
-  return { weight: { v: THESEUS.mass }, size: { v: bx.v }, density: { v: THESEUS.mass / bx.v }, battery: { v: THESEUS.hours }, motion: { v: mo.tv != null ? mo.tv : 0.14 },
+  return { weight: { v: THESEUS.mass, up: true }, size: { v: bx.v }, density: { v: THESEUS.mass / bx.v }, battery: { v: THESEUS.hours }, motion: { v: mo.tv != null ? mo.tv : 0.14 },
     click: { v: typeof b01_pressTgt === 'function' ? b01_pressTgt() : 4.2, under: true } };
 }
 /** the table: each flagship's figures and fills, the best (the line) in each column, Theseus's figures and final fills */
@@ -499,7 +499,8 @@ function lo_table() {
   return (lo_table.v = { rows, ths, best });
 }
 /** a figure as shown: one precision per column; a blank's words */
-const lo_fmt = (c, x) => x.none ? x.none : (x.under ? 'Under ' : '') + fmtN(x.v, c.dec) + ' ' + c.unit;
+/* a figure as the loadouts print it; up: Theseus's own weight, rounded up (against Theseus: 27.95 g reads 28.0, not toFixed's 27.9) */
+const lo_fmt = (c, x) => x.none ? x.none : (x.under ? 'Under ' : '') + (x.up ? (Math.ceil(x.v * Math.pow(10, c.dec) - 1e-9) / Math.pow(10, c.dec)).toFixed(c.dec) : fmtN(x.v, c.dec)) + ' ' + c.unit;
 /** Theseus's bar for column c with move n landed and k of the way through move n's own step: { f, d (steps landed), N, F
    (its final fill), done }. A step a move, each its share toward the line; the last step takes the bar to its figure */
 function lo_thsAt(c, n, k = 1) {
@@ -1048,6 +1049,9 @@ const FILM_AB = [['lattice', 'b06_lattice'], ['shlThin', 'b06_light'], ['shbArch
     if (h !== THESEUS.hours) console.error('theseus: THESEUS.hours is ' + THESEUS.hours + ' h, the derivation gives ' + h + ' h (ntr_hours)');
     if (THS.hours !== THESEUS.hours + ' h' || THS.mass !== fmtN(THESEUS.mass, 2)) console.error('theseus: THS strings disagree with THESEUS');
     if (Math.abs(B.shell - oldShell) > 1e-6) console.error('theseus: the shell allowance moved (' + fmtN(oldShell, 2) + ' -> ' + fmtN(B.shell, 2) + ' g): the battery saving must come off the total');
+    /* the mass is its derivation (05-data.js): 29.31 g less the battery's saving, plus the board's coat (Brock ~19:40), to 0.01 g */
+    const want = oldMass - (ntr_oldPack().g - B.cell.g) + B.coat;
+    if (Math.abs(THESEUS.mass - want) > 0.005) console.error('theseus: THESEUS.mass is ' + fmtN(THESEUS.mass, 2) + ' g, the derivation gives ' + fmtN(want, 2) + ' g (29.31 - (' + fmtN(ntr_oldPack().g, 2) + ' - ' + fmtN(B.cell.g, 2) + ') + the coat ' + fmtN(B.coat, 2) + ')');
   } catch (e) { console.error('theseus: figure check failed: ' + e.message); }
 })();
 

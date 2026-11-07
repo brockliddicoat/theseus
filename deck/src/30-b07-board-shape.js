@@ -69,14 +69,17 @@ const B07_SEC0 = [[0.0,36.98],[-1.53,36.96],[-3.06,36.91],[-4.6,36.81],[-6.15,36
 /* the rib rows of the stress study (3d/lattice): z of each arch rib where it meets the rim; those over the board tie to it */
 const B07_ROWS = [-31.65, -20.43, -10.64, -0.77, 9.17, 19.25, 29.76, 41.16];
 /* the weight budget (shcBudget in 10-d3-board.js and the intro's ntr_budget; restated so this file stands alone) */
-/* the budget (THESEUS.mass: 29.31 g until 2026-11-06 17:10, 27.71 g with EEMB's 6.40 g battery in place of Jauch's 8 g).
+/* the budget (THESEUS.mass: 29.31 g until 2026-11-06 17:10, 27.71 g with EEMB's 6.40 g battery in place of Jauch's 8 g,
+   27.95 g with the board's waterproof coat, Brock ~19:40: ntr_coat, 0.24 g, onto the total).
    F44.2 (Brock): the two side switches (full-size SPDT, about 0.5 g each) come out of the shell's allowance, 10.35 → 9.35
-   g; the battery's saving comes off the total, not the shell. F42.2: the board's 5.6 g is a target */
+   g; the battery's saving and the coat change the total, not the shell. F42.2: the board's 5.6 g is a target */
 const B07_BUD = { shell: 9.35, sideSw: 1.0, btn: 3.328, wheel: 1.02, screws: 0.418, ins: 0.516, wires: 0.08,
   /* V3: the board and the battery read from the deck's own figures (THESEUS.pcb; the budget's battery pack), so a change there
      reaches this slide (main, 17:10: the battery is being changed) */
   get board() { return typeof THESEUS !== 'undefined' && THESEUS.pcb ? THESEUS.pcb : 5.6; },
-  get batt() { const B = typeof ntr_budget === 'function' ? ntr_budget() : null; return B && B.cell && B.cell.g ? B.cell.g : 8.0; } };
+  get batt() { const B = typeof ntr_budget === 'function' ? ntr_budget() : null; return B && B.cell && B.cell.g ? B.cell.g : 8.0; },
+  /* the board's coat: the deck's one figure (ntr_coat, 14-b-intro-ex.js), the budget's line */
+  get coat() { return typeof ntr_coat === 'function' ? ntr_coat() : 0.24; } };
 /** a weight as said on the slide: whole grams when it is whole, else one decimal */
 const b07_gTxt = g => (Math.abs(g - Math.round(g)) < 0.05 ? fmtN(Math.round(g), 0) : fmtN(g, 1));
 /* where each part sits: z forward of the middle, y above the pad (mm). H2's balance model (3d/pcb/tools/balance.py; review
@@ -98,6 +101,7 @@ const B07_POS = {
   screws: b07_zy(B07_KB && B07_KB.screws, { z: 10.74, y: 4.0 }), inserts: b07_zy(B07_KB && B07_KB.inserts, { z: 10.74, y: 6.5 }), wires: b07_zy(B07_KB && B07_KB.wires, { z: 0, y: 8.0 }),
   body: b07_zy(B07_KB && B07_KB.body, { z: -10.41, y: 16.44 }), bay: { z: 36.0, y: 13.21 }, btn: b07_zy(B07_KB && B07_KB.btn, { z: 31.97, y: 22.05 }), board: { z: 19.09, y: 5.0 },
   wheel: b07_zy(B07_KB && B07_KB.wheel, { z: 34.87, y: 17.03 }),
+  coat: b07_zy(B07_KB && B07_KB.coat, { z: 18.77, y: 4.73 }),   /* the board's coat, at the board's centroid (balance.py) */
   battHigh: { z: -14.0, y: 20.0 }, battOld: { z: -22.72, y: 7.46 }, battH1: { z: -24.95, y: 7.46 }, battH2: { z: -26.98, y: 7.46 },
   sensorOld: 1.12, sensorNew: 16.57, grip: 12.0
 };
@@ -105,7 +109,7 @@ const B07_POS = {
    the hardware when H2/H3 move a part */
 {
   const mm = v => (v < 0 ? '−' : '') + fmtN(Math.abs(v), 1), P = B07_POS;
-  SRC.b07Mass3d.t = 'This deck, mass model from the 3D assets, part for part as H2\'s balance model (3d/pcb/tools/balance.py; review b07, HARDWARE 10:14): the Theseus shell (3d/shell/shell-theseus-1seam.glb): its body centred at z ' + mm(P.body.z) + ' mm (behind the middle), ' + mm(P.body.y) + ' mm up; triggers at z ' + mm(P.btn.z) + ', ' + mm(P.btn.y) + ' mm up; wheel at z ' + mm(P.wheel.z) + ', ' + mm(P.wheel.y) + ' mm up; the board (plan 5, 3d/pcb/plans/outline_v5.json) at its 5.6 g target (F42.2), its centre of mass at z ' + mm(P.boardCom.z) + ', ' + mm(P.boardCom.y) + ' mm up; the two side switches, the four boss posts (estimated until the shell models them), the board\'s screws and inserts at their places; the battery (' + (typeof ntr_thsPack === 'function' ? ntr_thsPack().maker + ' ' + ntr_thsPack().part : 'EEMB LP402535') + ', ' + fmtN(B07_BUD.batt, 2) + ' g, ' + b07_battBox() + ') where the model balances the mouse (H5; KEY_PARTS, 03-parts.js): z ' + mm(b07_battZ()) + ', ' + mm(b07_battY()) + ' mm up; the weight budget\'s masses (' + THS.massG + '); the grip 12 mm up. Every place from 3d/pcb/tools/balance.py (KEY_PARTS.balance), the board as built (H3)';
+  SRC.b07Mass3d.t = 'This deck, mass model from the 3D assets, part for part as H2\'s balance model (3d/pcb/tools/balance.py; review b07, HARDWARE 10:14): the Theseus shell (3d/shell/shell-theseus-1seam.glb): its body centred at z ' + mm(P.body.z) + ' mm (behind the middle), ' + mm(P.body.y) + ' mm up; triggers at z ' + mm(P.btn.z) + ', ' + mm(P.btn.y) + ' mm up; wheel at z ' + mm(P.wheel.z) + ', ' + mm(P.wheel.y) + ' mm up; the board (plan 5, 3d/pcb/plans/outline_v5.json) at its 5.6 g target (F42.2), its centre of mass at z ' + mm(P.boardCom.z) + ', ' + mm(P.boardCom.y) + ' mm up; the two side switches, the four boss posts (estimated until the shell models them), the board\'s screws and inserts and its coat (' + fmtN(B07_BUD.coat, 2) + ' g) at their places; the battery (' + (typeof ntr_thsPack === 'function' ? ntr_thsPack().maker + ' ' + ntr_thsPack().part : 'EEMB LP402535') + ', ' + fmtN(B07_BUD.batt, 2) + ' g, ' + b07_battBox() + ') where the model balances the mouse (H5; KEY_PARTS, 03-parts.js): z ' + mm(b07_battZ()) + ', ' + mm(b07_battY()) + ' mm up; the weight budget\'s masses (' + THS.massG + '); the grip 12 mm up. Every place from 3d/pcb/tools/balance.py (KEY_PARTS.balance), the board as built (H3)';
 }
 /* hands and mice */
 const B07_HAND = { men: { mean: 193.3, sd: 9.9, p5: 177, p50: 193, p95: 210, breadth: 88.3 }, women: { mean: 181.1, sd: 10.1, p5: 165, p50: 180, p95: 199, breadth: 78.2 } };
@@ -311,7 +315,7 @@ function b07_tol() {
    (12,166 and 1,375 mm³). Returns the centre of mass's z (forward of the middle) and height for the battery at a place. */
 function b07_cg(batt) {
   const B = B07_BUD, P = B07_POS, postG = P.posts.reduce((a, q) => a + q.g, 0);
-  const parts = [[B.shell - postG, P.body], ...P.posts.map(q => [q.g, q]), ...P.sideSws.map(q => [B.sideSw / 2, q]), [B.btn, P.btn], [B.board, P.boardCom], [B.wheel, P.wheel], [B.screws, P.screws], [B.ins, P.inserts], [B.wires, P.wires], [B.batt, batt]];
+  const parts = [[B.shell - postG, P.body], ...P.posts.map(q => [q.g, q]), ...P.sideSws.map(q => [B.sideSw / 2, q]), [B.btn, P.btn], [B.board, P.boardCom], [B.wheel, P.wheel], [B.screws, P.screws], [B.ins, P.inserts], [B.wires, P.wires], [B.coat, P.coat], [B.batt, batt]];
   const m = parts.reduce((s, p) => s + p[0], 0);
   return { m, z: parts.reduce((s, p) => s + p[0] * p[1].z, 0) / m, y: parts.reduce((s, p) => s + p[0] * p[1].y, 0) / m, parts };
 }
@@ -1638,18 +1642,18 @@ function b07_balParts() {
   return b07_once('balParts', () => {
     /* H2's balance model (3d/pcb/tools/balance.py), so the film has one, grouped as they land: the shell (its body and its
        four boss posts, 9.35 g), the two side switches, the board at its 5.6 g target, the four screws and inserts with the
-       wires; each group at its own weighted centroid, so the balance point is exactly b07_cg's */
+       wires and the board's coat; each group at its own weighted centroid, so the balance point is exactly b07_cg's */
     const B = B07_BUD, P = B07_POS, grp = list => { const g = list.reduce((a, q) => a + q[0], 0); return { g, z: list.reduce((a, q) => a + q[0] * q[1].z, 0) / g, y: list.reduce((a, q) => a + q[0] * q[1].y, 0) / g }; };
     const postG = P.posts.reduce((a, q) => a + q.g, 0);
     const shell = grp([[B.shell - postG, P.body], ...P.posts.map(q => [q.g, q])]), sw = grp(P.sideSws.map(q => [B.sideSw / 2, q]));
-    const scw = grp([[B.screws, P.screws], [B.ins, P.inserts], [B.wires, P.wires]]);
+    const scw = grp([[B.screws, P.screws], [B.ins, P.inserts], [B.wires, P.wires], [B.coat, P.coat]]);   /* the small parts, the board's coat with them */
     return [
       { name: 'Shell', g: shell.g, z: shell.z, y: shell.y },
       { name: 'Buttons', g: B.btn, z: P.btn.z, y: P.btn.y },
       { name: 'Side switches', g: sw.g, z: sw.z, y: sw.y },
       { name: 'Board', g: B.board, z: P.boardCom.z, y: P.boardCom.y, target: true },
       { name: 'Wheel', g: B.wheel, z: P.wheel.z, y: P.wheel.y },
-      { name: 'Screws, wires', g: scw.g, z: scw.z, y: scw.y },
+      { name: 'Screws, wires, coat', g: scw.g, z: scw.z, y: scw.y },
       { name: 'Battery', g: B.batt, z: b07_battZ(), y: b07_battY(), batt: true }
     ];
   });
@@ -1735,7 +1739,7 @@ S(b07_live({
     b07_scale({ draw, P }, F.zr, Math.max(0, rear), kScale);
     if (kScale > 0.003) { const pf = P(-F.zf, 12.5), pr = P(-F.zr, 12.5); text('Front skates', pf[0], pf[1] + 4, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kScale }); text('Rear skates', pr[0], pr[1] + 4, { role: 'label', size: 19, color: C.mute, align: 'center', alpha: kScale }); }
     /* the weights, each at its centroid, sized by its grams; in the second half only the battery keeps its label */
-    const lab = { Shell: [1, -1, 'left'], Buttons: [0, -1, 'center'], 'Side switches': [0, -1, 'center'], Board: [-1, 2, 'right'], Wheel: [-1, 0, 'right'], 'Screws, wires': [1, 2, 'left'], Battery: [0, -1, 'center'] };   /* the battery's label above its block: below its dot it ran into the dot, beside it past the tail (main, 19:3x) */
+    const lab = { Shell: [1, -1, 'left'], Buttons: [0, -1, 'center'], 'Side switches': [0, -1, 'center'], Board: [-1, 2, 'right'], Wheel: [-1, 0, 'right'], 'Screws, wires, coat': [1, 2, 'left'], Battery: [0, -1, 'center'] };   /* the battery's label above its block: below its dot it ran into the dot, beside it past the tail (main, 19:3x) */
     const kD = 1 - 0.7 * ep(t, 4.6, 5.0), kLab = 1 - ep(t, 4.6, 5.0);
     cur.forEach((p, i) => {
       if (kp[i] <= 0.003) return;

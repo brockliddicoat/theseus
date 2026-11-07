@@ -74,8 +74,8 @@ const B10 = (() => {
     /* the V4 Pro charges at 0.169 A on 306 mAh (TechPowerUp): 0.55C. Theseus at its battery's rated 1C (Jauch) */
     v4: { mAh: 306, A: 0.169, c: 0.169 / 0.306, h1: 180, h8: 45 },
     cyl, can, foil, mass: THESEUS.mass,
-    /* the coat: urethane at 1.05 g/cm³ over both sides with the parts' flanks (≈35.6 cm²), 25 / 50 / 75 µm */
-    coat: [25, 50, 75].map(um => ({ um, g: 35.6 * um / 1e4 * 1.05 })),
+    /* the coat at 25 / 50 / 75 µm: the deck's one figure (ntr_coat, 14-b-intro-ex.js), as b10_sealed and the budget count it */
+    coat: [25, 50, 75].map(um => ({ um, g: typeof ntr_coat === 'function' ? ntr_coat(um) : null })),
     /* lights, against a Viper V4 Pro's average draw at 1 khz (306 mAh over 180 h). An optical switch: 0.116 mA, from
        Logitech's own hours for the G Pro X Superlight 2 (TechPowerUp: 96 h optical-only against 104 h hybrid at 1 khz, 290
        mAh), the lower of the film's two derivations and the one it claims (BROADCAST-0945; Omron's datasheet pulse, 5 mA for
@@ -1172,8 +1172,9 @@ S({
     header(t, 'A coat that keeps water out');
     captions(t, [[0.6, 'Sweat is salt water. Across two powered pads it grows a tin tree from one to the other: on a bare board, a short in seconds.'],
       [6.0, 'Theseus\'s board is coated: the same drop sits on the film, off the metal, and two minutes on there is still no short.']]);
-    const P = KEY_PARTS.board.pts; let A2 = 0; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; A2 += a[0] * b[1] - b[0] * a[1]; }
-    const area = Math.abs(A2) / 2 / 100, coatG = um => 2 * area * 1.1 * um / 1e4 * 1.05;   /* cm², both faces + 10 % for the parts' flanks, urethane 1.05 g/cm³ */
+    /* the coat's weight: the deck's one figure (ntr_coat, 14-b-intro-ex.js: both faces of the board's outline + 10 % for the
+       parts' flanks, urethane 1.05 g/cm³, rounded up), the one the weight budget counts (Brock ~19:40: "Add it") */
+    const area = ntr_coatArea(), coatG = um => ntr_coat(um);
     locator(t, -0.4, 94, 290, 46, 'top', msBox('top', 'board'), { hi: ['board'] });
     const box = [200, 280, 900, 560], s = 166, cx = box[0] + box[2] / 2, cy = box[1] + box[3] / 2 + 46;
     const fall = ep(t, 0.0, 0.5, E.in3), grow = clamp((t - 1.0) / 3.2), clockA = 14 * grow, sh = env(t, 4.2, 4.25, 4.6, 5.0);
@@ -1200,7 +1201,7 @@ S({
       rich([{ s: '14 to 62 s', role: 'num', size: 60, color: C.secondText }, { s: 'to a short, bare', role: 'small', size: 24, weight: 650, color: C.ink2, gap: 14, sentence: false }], 1160, 776, { alpha: k1 });
       rich([{ s: 'None', role: 'd1', size: 60, color: C.heroText, grad: C.heroGrad }, { s: 'in 2 minutes, coated', role: 'small', size: 24, weight: 650, color: C.ink2, gap: 14, sentence: false }], 1160, 850, { alpha: k2 });
       /* the coat's cost, rounded up (against Theseus); its share from the printed grams, said as "under 1 %" */
-      const gC = Math.ceil(coatG(50) * 100 - 1e-9) / 100;
+      const gC = ntr_coat();
       scaleNote(1160, 914, 'of coat (50 µm, both faces): ' + (gC / THESEUS.mass < 0.01 ? 'under 1 %' : Math.ceil(gC / THESEUS.mass * 100) + ' %') + ' of the mouse', { lead: '+' + gC.toFixed(2) + ' g', t, t0: 8.3, size: 22 }); }
     text('Few mice protect the board: HyperX rates its Pulsefire Haste Wireless IP55 against sweat.', 200, 880, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: ep(t, 8.6, 9.0), maxW: 900 });
     source(t, 'Sweat: Na⁺ and Cl⁻ 10 to 90 mmol/L (GSSI). Bare: DTU 2012, a NaCl drop on an 0805 part at 5 V, 62 s down to 14 s as the drop goes from 0.27 to 2.7 mmol/L (derived). Coated: Yoo 2024, a coated part under 17 and 51 mmol/L drops at 3 to 12 V: no failure in tests run until the drop dried (under 200 s). Coat: 25 to 75 µm (HumiSeal); weight from plan 5\'s board, ' + area.toFixed(1) + ' cm² a face: ' + coatG(25).toFixed(2) + ' to ' + coatG(75).toFixed(2) + ' g. Pads 166× life size; growth time-lapsed.', { t0: 2.4 });

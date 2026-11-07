@@ -686,14 +686,26 @@ const NTR_BUD = {
                                      insert (3d/parts/fasteners.js, as own_insert draws it): 15.23 mm³ of brass by its own mass
                                      estimate, at 8.47 g/cm³ (free-cutting brass, ntrBrassRho) */
 };
+/* the board's waterproof coat (b10_sealed; Brock ~19:40: "Add it: 27.95 g (Recommended)"): urethane 50 µm on both faces of
+   the board (KEY_PARTS.board's outline) plus 10 % for the parts' flanks, at 1.05 g/cm³ (HumiSeal's coats run 25 to 75 µm).
+   One figure for the budget, the balance (3d/pcb/tools/balance.py reads these constants) and b10_sealed */
+const NTR_COAT = { um: 50, faces: 2, flanks: 1.1, rho: 1.05 };
+/** one face of the board, cm² (the shoelace over KEY_PARTS.board's outline) */
+function ntr_coatArea() { const P = KEY_PARTS.board.pts; let A2 = 0; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length]; A2 += a[0] * b[1] - b[0] * a[1]; } return Math.abs(A2) / 2 / 100; }
+/** the coat's weight (g) at um µm (default 50): rounded UP to 0.01 g, against Theseus; exact: the unrounded figure */
+function ntr_coat(um = NTR_COAT.um, exact = false) {
+  const g = NTR_COAT.faces * ntr_coatArea() * NTR_COAT.flanks * um / 1e4 * NTR_COAT.rho;
+  return exact ? g : Math.ceil(g * 100 - 1e-9) / 100;
+}
 function ntr_budget() {
   const P = ntr_xa25() || [], by = re => (P.find(p => re.test(p.name)) || {}).g || 0;
   const xa = { shell: by(/^Shell/), btn: by(/^Button/), wheel: by(/^Scroll/), screws: by(/^Screws/), fpc: by(/^FPC/), boards: by(/^Front PCB/) + by(/^Main PCB/) + by(/^Side PCB/) };
   const cell = ntr_thsPack(), L = ntr_loads(), N = NTR_BUD, H = ntr_hours();
   const wheelMg = N.wheel, axle = N.axleMm3 * N.pom / 1000, wheel = wheelMg + axle, ins1 = N.insMm3 * N.brass / 1000, ins = N.inserts * ins1;
   const screw1 = N.screwMm3 * N.ti / 1000, screws = N.screws * screw1, wires = N.leadMm * N.wireMgMm / 1000;
-  const ref = xa.btn, shell = THESEUS.mass - cell.g - THESEUS.pcb - ref - wheel - ins - screws - wires;
-  return { xa, cell, L, ref, wheel, wheelMg, axle, ins, ins1, screws, screw1, wires, shell, cut: xa.shell - shell, hours: H.h1, H, ok: P.length > 0 };
+  /* the board's coat counts in the weight (Brock ~19:40): the total went up by it, the shell's allowance did not move */
+  const coat = ntr_coat(), ref = xa.btn, shell = THESEUS.mass - cell.g - THESEUS.pcb - ref - wheel - ins - screws - wires - coat;
+  return { xa, cell, L, ref, wheel, wheelMg, axle, ins, ins1, screws, screw1, wires, coat, shell, cut: xa.shell - shell, hours: H.h1, H, ok: P.length > 0 };
 }
 S({
   id: 'budget', ch: 'intro', theme: 'paper', title: 'Weight budget: ' + THS.massG + ', ' + THS.hours, settle: 11, ideas: ['weight', 'battery'],
@@ -711,7 +723,8 @@ S({
       { name: 'Wheel and axle', g: B.wheel, ev: 'derived', note: '0.9 g + POM axle' },
       { name: 'Screws', count: NTR_BUD.screws, g: B.screws, ev: 'derived', note: 'M2 × 4 titanium, ' + f2(B.screw1) + ' g each' },
       { name: 'Brass inserts', count: NTR_BUD.inserts, g: B.ins, ev: 'derived', note: f2(B.ins1) + ' g each' },
-      { name: 'Wires', g: B.wires, ev: 'derived', note: 'Side-button lead, 32 AWG' }
+      { name: 'Wires', g: B.wires, ev: 'derived', note: 'Side-button lead, 32 AWG' },
+      { name: 'Board coat', g: B.coat, ev: 'derived', note: 'Urethane, ' + NTR_COAT.um + ' µm, both faces' }
     ];
     breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 54, stagger: 0.09, wasLabel: 'XA25', foot: ['Dashed: the XA25\'s part, as XBAB weighed it (its three boards for the board)', ''] });
     /* the two things the plan rests on: the cell's hours, and the shell's grams */
