@@ -4,9 +4,12 @@ and up"). H1 job 3, corrected and extended by H2 (2026-11-06).
   python3 tools/balance.py                 # from 3d/pcb: the cases, the battery's place for CoM z 0, writes balance.json
   python3 tools/balance.py --h1            # H1's original model (for comparison: the numbers Brock's 5.9 mm came from)
 
-The masses are the deck's weight budget (29.31 g: shell 10.35, of it 1.0 the side switches (F44.2) and about 1.32 the four
-boss posts (estimate), buttons 3.328, board 5.6 target (F42.2), battery 8.0, wheel 1.02, screws 0.418, inserts 0.516,
-wires 0.08). Where each one sits comes from the 3D assets:
+The masses are the deck's weight budget, read where they are set (H5): the total and the board's line from THESEUS in
+deck/src/05-data.js (27.71 g since Brock's 17:10, F64.11; the board 5.6 g, F42.2), the battery from board.py BATTERY,
+which reads its pack's row in research/data/batteries.json (EEMB LP402535, about 6.40 g); buttons 3.328 (XBAB's XA25),
+wheel 1.02, screws 0.418, inserts 0.516, wires 0.08 (the deck's ntr_budget derivations, unchanged); the shell what is left,
+as ntr_budget does it (10.35 g: of it 1.0 the side switches (F44.2) and about 1.32 the four boss posts (estimate)). Until
+17:10 the total was 29.31 g with Jauch's 8.0 g pack. Where each one sits comes from the 3D assets:
   shell ..... the rest of the shell (10.35 - 1.0 - the posts) at the shell body's volume centroid (3d/shell/
               shell-theseus-1seam.glb, signed volumes)
   side sw ... two full-size SPDT switches, 0.5 g each (F44.2), at their body centres as shell.js places them behind the
@@ -36,9 +39,13 @@ What H2 changed in H1's model (F39.2, "no flawed model silently reused"), each w
      board's 5.6 g target, at their places
   4. (integrator, 10:1x) the side switches (F44.2) out of the shell's allowance, at their places: +0.55 mm
   5. (integrator, 10:1x) the boss posts, estimated, out of the shell's allowance: about +0.8 mm (re-run when S1 models them)
-  Not modelled: the battery's PCM end (its 8 g is placed at the box's centre); the bands and their anchors; the leads.
+  Not modelled: the battery's PCM end (its weight is placed at the box's centre); the bands and their anchors; the leads.
+H5 (2026-11-06): the masses read from the deck and the pack (above); the battery placed where this model puts the centre of
+mass at z 0 (board.py BATT_ZC); a summary the deck reads written to 3d/pcb/pcb-balance.json (key_parts.py puts it in
+KEY_PARTS.balance, so b07_balance's model is this one, place for place). Run mass.py first: without work/mass.json this
+model falls back to plan 5 as first built (1.0 mm, four layers), not the board as built.
 """
-import json, math, os, sys
+import json, math, os, re, sys
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); R3 = os.path.abspath(os.path.join(HERE, '..', '..'))
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(R3, 'shell', 'tools'))
@@ -49,9 +56,24 @@ from shapely.ops import unary_union
 import board as BD
 from board import BATTERY
 
-BUD = dict(shell=10.35, btn=3.328, board=5.6, batt=8.0, wheel=1.02, screws=0.418, ins=0.516, wires=0.08)
+
+def theseus():
+    """THESEUS in deck/src/05-data.js, the deck's one place for the budget's total, the board's line and the pack"""
+    s = open(os.path.join(R3, '..', 'deck', 'src', '05-data.js')).read()
+    m = re.search(r'const THESEUS = \{([^}]*)\}', s).group(1)
+    num = lambda k: float(re.search(r'\b%s:\s*([0-9.]+)' % k, m).group(1))
+    return dict(mass=num('mass'), pcb=num('pcb'), pack=re.search(r"\bpack:\s*'([^']+)'", m).group(1))
+
+
+TH = theseus()
+assert TH['pack'] == BATTERY['part'], ('board.py BATTERY is %s, THESEUS.pack %s' % (BATTERY['part'], TH['pack']))
+# the budget's lines (g): the board THESEUS.pcb, the battery its pack's (board.py BATTERY, from batteries.json), the small
+# parts as the deck derives them (ntr_budget: the XA25's buttons, the 0.9 g wheel and its POM axle, four titanium screws,
+# four brass inserts, the side-button lead); the shell and skates what is left of THESEUS.mass
+BUD = dict(btn=3.328, board=TH['pcb'], batt=BATTERY['g'], wheel=1.02, screws=0.418, ins=0.516, wires=0.08)
+BUD['shell'] = round(TH['mass'] - sum(BUD.values()), 3)
 # F44.2 (Brock, "From the shell"): the two full-size SPDT side switches, about 0.5 g each, come out of the shell's allowance
-# (10.35 -> 9.35 g); the total stays 29.31 g. They sit where the 3D shell puts them (shell.js: behind each side button)
+# (10.35 -> 9.35 g); the total stays the budget's. They sit where the 3D shell puts them (shell.js: behind each side button)
 SIDE_SW_G = 0.5
 # the four boss posts the board hangs from (#54), part of the shell's moulding: an ESTIMATE until the 3D shell models them
 # (S1): a CF-PP tube (1.06 g/cm3, assumed) Ø5.3 outside (3d/parts/fasteners.js's stand-in boss) and Ø3.5 inside (the
@@ -173,7 +195,7 @@ _PO = {}
 
 
 def mouse(board_xyz, batt_xyz, h1=False, side=True, post=True):
-    """every mass of the 29.31 g at its place. h1: H1's model (no side switches, no posts, the plate's screws)"""
+    """every mass of the budget (THESEUS.mass) at its place. h1: H1's model (no side switches, no posts, the plate's screws)"""
     body, _ = centroid('body'); tl, _ = centroid('triggerL'); tr, _ = centroid('triggerR')
     wc = meta['wheel']['center']
     out = {}
@@ -206,6 +228,20 @@ def z_for_zero(board_xyz, h1=False, side=True, post=True):
     return -rest / BUD['batt']
 
 
+def summary(bn, bp):
+    """what the deck reads (3d/pcb/pcb-balance.json -> key_parts.py -> KEY_PARTS.balance): each mass and its place, mouse
+    frame (X the user's left, Y up from the pad, Z forward of the footprint's middle), the battery's place, the centre of mass"""
+    parts = mouse(bn, bp)
+    c, M = com(parts)
+    r2 = lambda v: [round(float(q), 2) for q in v]
+    return dict(note='3d/pcb/tools/balance.py (H2\'s corrected model; H3\'s board as built; H5: the masses read from THESEUS and '
+                     'the pack, the battery where the centre of mass lands at z 0): each mass (g) and its place (mouse X, Y, Z mm)',
+                total_g=round(M, 3), budget_g=TH['mass'], pack=BATTERY['part'], board_as_built=os.path.exists(_MJ),
+                parts={k: dict(g=round(m, 3), at=r2(p)) for k, (m, p) in parts.items()},
+                battery=dict(at=r2(bp), box=[round(BATTERY['x1'] - BATTERY['x0'], 2), round(BATTERY['z1'] - BATTERY['z0'], 2), BATTERY['t']]),
+                com=[round(float(q), 3) for q in c], z_for_zero=round(z_for_zero(bn), 3))
+
+
 if __name__ == '__main__':
     h1 = '--h1' in sys.argv
     lay = json.load(open(os.path.join(R3, 'pcb', 'pcb-layout.json')))
@@ -216,6 +252,8 @@ if __name__ == '__main__':
              ('H1\'s place (2.23 back)', [H1_PLACE['x'], 7.46, H1_PLACE['z']]),
              ('Brock\'s literal (5.90 fwd, 1.5 up)', [H1_PLACE['x'], 8.96, H1_PLACE['z'] + 5.90]),
              ('board.py BATTERY now', battery_place())]
+    H2_PLACE = [H1_PLACE['x'], 7.46, -26.98]            # H2's place for the 8 g pack (front at layout z -11.60)
+    cases.insert(3, ('H2\'s place for the 8 g pack', H2_PLACE))
     out = dict(model='H1 (2026-11-06 08:57)' if h1 else 'H2 (screws at the board holes, core centroid, encoder + support in the board); H3: the board as built (mass.py: %.1f mm, %s g bare, encoder %.3f g, support %.3f g)' % (T_BOARD, round(sum(BARE.values()), 3), FPM['ENCM'], FPM['BRACKET']),
                board_com=[round(v, 2) for v in bn], board_parts_g_before_scaling=round(mn, 3))
     print('model:', out['model']); print('board CoM (mouse X, Y, Z): %+.2f %.2f %+.2f  (its parts %.2f g before scaling to %.2f g)' % (*bn, mn, BUD['board']))
@@ -235,8 +273,18 @@ if __name__ == '__main__':
             print('battery centre for CoM z 0 %-40s mouse z %+.3f (%+.3f mm from H1\'s place)' % (tag + ':', zt, zt - H1_PLACE['z']))
     zn = z_for_zero(bn, h1)
     out['battery z for CoM z 0'] = round(zn, 3); out['forward of H1\'s place'] = round(zn - H1_PLACE['z'], 3)
-    print('battery centre for a CoM at z 0: mouse z %+.3f (%.3f mm forward of H1\'s place; front edge at mouse z %+.2f = layout %+.2f;'
-          ' plan 5\'s rear lobes end at mouse z %+.2f)' % (zn, zn - H1_PLACE['z'], zn + 12.5, zn + 12.5 - DZ, BD.ZB + DZ))
+    half = (BATTERY['z1'] - BATTERY['z0']) / 2
+    out['behind H2\'s place'] = round(-26.98 - zn, 3)
+    print('battery centre for a CoM at z 0: mouse z %+.3f (%.3f mm forward of H1\'s place, %.3f behind H2\'s; front edge at mouse z %+.2f'
+          ' = layout %+.2f; plan 5\'s rear lobes end at mouse z %+.2f)' % (zn, zn - H1_PLACE['z'], -26.98 - zn, zn + half, zn + half - DZ, BD.ZB + DZ))
+    print('budget: %.3f g (THESEUS.mass %.2f): %s' % (sum(BUD.values()), TH['mass'], ', '.join('%s %.3f' % kv for kv in BUD.items())))
+    if not h1:
+        out['summary'] = summary(bn, battery_place())
+        # the committed summary the deck reads (as mass.py writes pcb-mass.json): only from a run on the board as built
+        if os.path.exists(_MJ):
+            json.dump(out['summary'], open(os.path.join(R3, 'pcb', 'pcb-balance.json'), 'w'), indent=1); print('wrote 3d/pcb/pcb-balance.json')
+        else:
+            print('NOT writing 3d/pcb/pcb-balance.json: run tools/mass.py first (work/mass.json: the board as built)')
     # (H3: written in the repo's scratch folder, 3d/pcb/work/, not in an agent's work folder; --out=<path> to choose)
     dst = next((a_[6:] for a_ in sys.argv if a_.startswith('--out=')), os.path.join(R3, 'pcb', 'work', 'balance%s.json' % ('_h1' if h1 else '')))
     json.dump(out, open(dst, 'w'), indent=1); print('wrote', dst)

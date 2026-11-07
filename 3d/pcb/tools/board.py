@@ -186,19 +186,44 @@ def square_cut_poly():
     return rrect((c['x0'] + c['x1']) / 2, (c['z0'] + c['z1']) / 2, c['x1'] - c['x0'], c['z1'] - c['z0'], c['r'])
 
 
-# The battery (the deck's example, Jauch LP402535JU: 35 across x 25 along x 4.0 mm, 8 g) in the tail behind the board,
-# 0.43 mm above the board's top level (its middle 7.46 mm over the pad). Layout frame (x right, z nose; mouse z = z - 2.88).
+# The battery in the tail behind the board, its middle 7.46 mm over the pad (0.43 mm above the board's top level when it
+# was 4.0 thick). Layout frame (x right, z nose; mouse z = z - 2.88).
 # History: the key plan's old place had its front at layout z -7.34; H1 (2026-11-06, the 2026-11-05 decision) moved it
 # 2.23 mm back (front -9.57). F42.1 (Brock, "Forward and up": the balance at the mouse's centre) asked for H1's model's
 # answer, about 5.9 mm forward and 1.5 mm up over the board's rear edge. H2 corrected that model (balance.py: the board's
 # screws at its holes, not at the optional plate's; the bare board at its core's centroid; the encoder and support inside
 # the board's 5.6 g target) and, at the integrator's request (10:1x), added the two side switches (F44.2, out of the shell's
-# allowance) and the four boss posts the board hangs from (#54, an ESTIMATE until the 3D shell has them). With all of that
-# the centre of mass lands at mouse z 0 with the battery 2.03 mm BEHIND H1's place: front edge at layout z -11.60, 3.99 mm
-# behind the rear lobes (-7.61), so it no longer passes over the board and the 1.5 mm rise (needed only to clear the board's
-# rear edge) is not taken: yMid stays 7.46 (the balance point 0.41 mm lower). Re-run balance.py when the shell gets its posts.
-# x as before (0.41 mm to the user's right of the centre line).
-BATTERY = dict(part='LP402535JU', x0=-17.09, x1=17.91, z0=-11.60 - 25.0, z1=-11.60, t=4.0, yMid=7.46, g=8.0)
+# allowance) and the four boss posts the board hangs from (#54, an ESTIMATE until the 3D shell has them): with Jauch's
+# 8 g LP402535JU the centre of mass landed at mouse z 0 with the battery's front at layout z -11.60 (2.03 mm behind H1's
+# place), at the same height (no rise).
+# H5 (2026-11-06, F64.11: Brock moved Theseus to EEMB's 300 mAh LP402535, about 6.40 g, at 17:08-17:10; then, asked whether
+# to move it back to re-centre the balance, "Move it back (Recommended)"): the pack is read from research/data/batteries.json
+# (its eemb_lipo row: mass and box, one place), 37.0 across x (the product page's length, the larger of EEMB's two: the
+# specification's maximum is 36, the page's 37.00 probably counts the tabs), 25.5 along z, 4.3 thick (the specification's
+# maximums). Its place: where balance.py (H2's corrected model, the board as built by H3, the deck's 27.71 g budget) puts the
+# centre of mass at mouse z 0, BATT_ZC below; clear of the shell's tail by H5's check (tools/clear.py). x as before (its
+# middle 0.41 mm to the user's right of the centre line); yMid as before (no rise, F42.1 as corrected).
+import json as _json
+_RD = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'research', 'data', 'batteries.json'))
+
+
+def pack(part):
+    """a battery's row from research/data/batteries.json: {part, maker, g, mAh, w (width), l (length), t (thickness)}"""
+    D = _json.load(open(_RD))
+    for k in ('eemb_lipo', 'jauch_lipo_family'):
+        for r in (D.get(k) or {}).get('rows', []):
+            if r.get('part') == part:
+                v = lambda x: x['value'] if isinstance(x, dict) else x
+                return dict(part=part, maker=r.get('maker'), g=v(r['mass']), mAh=v(r['capacity']), w=r.get('width_mm'),
+                            l=r.get('length_mm'), t=r.get('thickness_mm'))
+    raise KeyError('no battery %r in %s' % (part, _RD))
+
+
+PACK = pack('LP402535')                       # THESEUS.pack (deck/src/05-data.js): EEMB's, Brock 17:08-17:10
+BATT_XC, BATT_YMID = 0.41, 7.46               # its middle across (layout x) and over the pad (mouse y), as H2 left them
+BATT_ZC = -31.44                              # its middle along (layout z; mouse z = BATT_ZC - 2.88): H5, balance.py's z 0
+BATTERY = dict(part=PACK['part'], maker=PACK['maker'], x0=round(BATT_XC - PACK['l'] / 2, 3), x1=round(BATT_XC + PACK['l'] / 2, 3),
+               z0=round(BATT_ZC - PACK['w'] / 2, 3), z1=round(BATT_ZC + PACK['w'] / 2, 3), t=PACK['t'], yMid=BATT_YMID, g=PACK['g'])
 
 
 # Sora V2 component boxes as seen in the photo (for the layout comparison image). (x0, z0, x1, z1) mm
