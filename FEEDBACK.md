@@ -1667,3 +1667,10 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   middle fingers' comfort grooves (main buttons) and the pinky pocket (right side); the ring finger rests on the right
   shoulder, its slope from derivatives; the rest pose is NASA's zero-g neutral posture on the ANSUR II mean male hand
   (193.3 mm), a relaxed claw; a separate deck (build target 'gd'), published as its own artifact.
+- **F65.2 DECIDED** (~15:10, on G1's phase 1 preview, feedback/attachments/F65/1455-gd-phase1-preview.png) Grip, palm on the hump
+  (relaxed finger angles, the wrist tilted about 15°) or palm lifted (the exact zero-g pose): **"trial both"**. Pockets, symmetric
+  or the thumb's further forward (the relaxed thumb lands about 20 mm ahead of the pinky): **"trial both"**. The study runs all
+  four and shows them side by side with their numbers. Also told him: the optimum strengths (grooves R about 29 mm, pockets R
+  about 47 mm, derived); a 30 mm pocket at R 47 comes out about 2.5 mm deep, the ULX's; phase 1's descent barely moved (under
+  1 mm) because it penalised any move off the Sora, so phase 2 starts from the modified base he described.
+
