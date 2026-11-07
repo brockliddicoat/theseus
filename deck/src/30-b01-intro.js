@@ -274,7 +274,7 @@ S({
     const cols = [
       { lab: 'Weight', n: THS.mass, u: 'g', tgt: true, sub: 'every unit weighed' },
       { lab: 'Motion latency, wireless', n: '0.14', u: 'ms', tgt: true, sub: 'by PIAKNOW\'S measure' },
-      { lab: 'Compromises', n: 'Zero', u: '', sub: 'Of the eight most mice make', zero: true },   /* Brock (17:05, 17:18): all text, redesigned as a tile of its own */
+      { lab: 'Compromises', n: '0', u: '', tgt: true, sub: 'no tradeoffs', zero: true, bars: true },   /* Brock 18:1x, of the options: "i liked the bars that were full but not overflowing more, the small gray text should read “no tradeoffs”" */
       { lab: 'Density', n: rho, u: 'g/cm³', tgt: true, sub: 'weight per cm³ of its box' }
     ];
     const cw = (RM - LM) / 4;
@@ -285,8 +285,18 @@ S({
       if (i) line(x - 24, 770, x - 24, 770 + 190 * ep(t, t0 - 0.1, t0 + 0.5, E.cam), { color: inkA(0.14), w: 1.5 });
       text(c.lab, x, 786, { role: 'label', size: 21, color: C.mute, alpha: a, t, t0, cps: 60 });
       if (c.zero) {
-        /* the figure is the word itself, set as large as the other three figures and in Theseus's blue: Zero */
-        text(c.n, x - 6, 916, { role: 'd1', size: nS, color: C.heroText, grad: C.heroGrad, alpha: a });
+        /* the figure, set as large as the other three and in Theseus's blue: 0 */
+        text(c.n, x - 6, 916, { role: 'd1', size: nS, color: C.heroText, grad: C.heroGrad, alpha: a, tnum: true });
+        if (c.bars && typeof lo_bar === 'function') {
+          /* Theseus's loadout, small: its score bars (density, battery, motion latency; lo_cols, 25-film.js) each filled to the
+             line and no further. The target is full; past the line is for the film to earn */
+          const capH = nS * 0.71, bx = x - 6 + tw(c.n, { role: 'd1', size: nS, tnum: true }) + 34, bL = Math.min(160, x + cw - 70 - bx), bh = 9;
+          const sc = lo_cols(true).filter(q => !q.size);
+          sc.forEach((q, j) => {
+            const by = 916 - capH + 6 + j * (capH - 12 - bh) / Math.max(1, sc.length - 1), kf = ep(t, t0 + 0.35 + j * 0.14, t0 + 1.2 + j * 0.14, E.out3);
+            lo_bar(bx, by, bL, bh, { f: kf, ths: true, d: 1, N: 1, a, tick: true });
+          });
+        }
       } else rich([{ s: c.n, role: 'd1', size: nS, color: C.ink, tnum: true, count: [t0, 1.0] }, c.u ? { s: c.u, font: 'mono', size: 38, weight: 600, color: C.mute, gap: 10, caps: false } : null], x - 6, 916, { t, alpha: a });
       const ks = ep(t, t0 + 0.4, t0 + 0.8);
       /* knock: the stage grid's + row at y 960 is knocked out from under the words (FILM F10) */

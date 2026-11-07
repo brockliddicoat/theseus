@@ -380,8 +380,9 @@ function text(s, x, y, o = {}) {
     if (o.grad) { const gr = G.createLinearGradient(x0, ly - size * 0.8, x0 + Math.max(1, fullW), ly + size * 0.15); o.grad.forEach((c, j) => gr.addColorStop(o.grad.length > 1 ? j / (o.grad.length - 1) : 0, c)); G.fillStyle = gr; }
     /* the foot band: a source line (role 'foot') or a scale note (knock: true) knocks the paper's + row at y 960 out from
        under its words (FILM F10). Only these, which sit on the bare paper (text inside a card would leave a square), and
-       only in the stage's own coordinates (not under a camera), where the paper is */
-    if (n && ly > 935 && ly < 1000 && (o.knock === true || (o.role === 'foot' && o.knock !== false)) && typeof paperClear === 'function') { const m = G.getTransform(); if (m.a === 1 && m.d === 1 && m.b === 0 && m.c === 0 && m.e === 0 && m.f === 0) paperClear(x0 - 4, ly - size * 0.85, fullW + 8, size * 1.1, a); G.globalAlpha = a; G.fillStyle = o.color || C.ink; }
+       only in the stage's own coordinates (not under a camera), where the paper is: the frame's own transform, the stage's
+       scale times the screen's pixel ratio (it was tested as 1, so the knock-out only ever ran on a 1920 px screen at 1x) */
+    if (n && ly > 935 && ly < 1000 && (o.knock === true || (o.role === 'foot' && o.knock !== false)) && typeof paperClear === 'function') { const m = G.getTransform(), s0 = typeof APP !== 'undefined' && APP.scale ? APP.scale * (APP.dpr || 1) : 1; if (Math.abs(m.a - s0) < 1e-9 && Math.abs(m.d - s0) < 1e-9 && m.b === 0 && m.c === 0 && m.e === 0 && m.f === 0) paperClear(x0 - 4, ly - size * 0.85, fullW + 8, size * 1.1, a); G.globalAlpha = a; G.fillStyle = o.color || C.ink; }
     if (o.glow && n) { G.save(); G.shadowColor = o.glow; G.shadowBlur = o.glowR || size * 0.45; drawStr(vis, x0, ly, o); G.restore(); }
     if (o.rise) {
       const [r0, rd] = Array.isArray(o.rise) ? o.rise : [o.t0 || 0, 0.8], kk = E.rise(prog(o.t, r0 + i * 0.09, r0 + i * 0.09 + (rd || 0.8)));
