@@ -34,4 +34,6 @@
   gradient descent", hand-built from the deck's engine (build target 'gd': `python3 tools/build.py gd` -> deck/dist/gd.html;
   slides deck/src/40-gd-*.js; data deck/tools/gd/, research/gd/). Not the Slides type: Brock asked for the film's own assets
   and art style. Republish with publish_files + slug + base_version.
-- Versions: 1794079831-ee94 (2026-11-07 13:30, the first cut: G1's 9 slides, branch g1-shape-gd at 44cfc16).
+- Versions: 1794082358-a29b (2026-11-07 14:12: G2's rework after Brock's 13:33 note: long arcs, the strength re-derived with
+  friction and the fingertip's feel threshold, true scale; on this branch as 3bf8d2a); 1794079831-ee94 (13:30, the first cut:
+  G1's 9 slides, branch g1-shape-gd at 44cfc16).
