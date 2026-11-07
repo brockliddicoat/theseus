@@ -15708,7 +15708,7 @@ S({
 /* ============================== battery life against polling rate (battery, sync) ============================== */
 S({
   id: 'power', ch: 'elec', theme: 'night', title: 'Battery life against polling rate', settle: 10, ideas: ['battery', 'sync'],
-  src: ['razerBatt', 'nbcV4', 'exNbcV4', 'elcTpuV4', 'paw3395', 'elcEemb', 'ntrEemb', 'b01Optical'],
+  src: ['razerBatt', 'nbcV4', 'exNbcV4', 'elcTpuV4', 'paw3395', 'elcEemb', 'ntrEemb', 'b01Optical', 'v6Gpx2Rates'],
   draw: t => {
     const B = elc_cell();
     header(t, 'Battery life against polling rate');
@@ -15738,8 +15738,12 @@ S({
     const rx = 1120, rw = RM - rx;
     elc_hl(t, 4.2, rx, 430, String(THESEUS.hours), 'hours', { label: 'At 1 khz, the plan', sub: B.mAh + ' mAh, ' + fmtN(B.wh, 2) + ' Wh at the Viper V4 Pro\'s ' + fmtN(B.w1 * 1000, 1) + ' mW less its optical switches, ' + fmtN(B.w1 * B.keep * 1000, 1) + ' mW: ' + fmtN(Math.floor(B.h1), 0) + ' h. At 8 khz, ' + fmtN(Math.floor(B.h8), 0) + ' h.', subW: rw });
     elc_ba(t, 5.0, rx, 660, '180', String(THESEUS.hours), { label: 'The longest listed, then Theseus', unit: 'h', net: '+' + Math.floor(100 * (THESEUS.hours - 180) / 180 + 1e-9) + ' % over the Viper V4 Pro, on a battery its size', maxW: rw });
-    glossBox(t, 5.8, rx, 750, rw, 'Frame sync', 'The sensor\'s LED flashes once per frame. Synced to the polls, it takes a frame only when a report needs one, so it flashes less often.', { size: 24 });
-    source(t, 'Hours: Razer\'s claims, the V4 Pro at 8 khz TechPowerUp\'s. Theseus, derived: ' + B.maker + '\'s ' + B.mAh + ' mAh at the V4 Pro\'s draw less its optical switches (' + b01_optPct() + '), before any firmware gains.', { t0: 2 });
+    /* V6: the 8 khz hours' basis, said (V4's open point): the switches kept at their 1 khz share of the V4 Pro's draw, which
+       needs them to cost 1.05 mA at 8 khz; Logitech's own hours have that cost climbing with the rate, not fixed (V6_OPT,
+       30-b14-move6.js). Replaces a frame-sync note that belonged to b09_sync */
+    if (typeof V6_OPT !== 'undefined') { const O = V6_OPT, r = O.rows;
+      sourceBox(t, 5.8, rx, 724, rw, 'Optical switches cost more at 8 khz', 'Logitech’s own hours: two draw ' + v6_mA(r[0].mA) + ' mA at 1 khz, ' + v6_mA(r[1].mA) + ' at 2 khz, ' + v6_mA(r[2].mA) + ' at 4 khz. The ' + Math.floor(B.h8 + 1e-9) + ' h at 8 khz takes the V4 Pro’s at ' + (Math.ceil(O.need8 * 100 - 1e-9) / 100).toFixed(2) + ' mA, their 1 khz share.', { kind: 'derived', size: 22 }); }
+    source(t, 'Hours: Razer\'s claims, the V4 Pro at 8 khz TechPowerUp\'s. Theseus, derived: ' + B.maker + '\'s ' + B.mAh + ' mAh at the V4 Pro\'s draw less its optical switches (' + b01_optPct() + ', at 1 and 8 khz; Logitech\'s hours at 1, 2 and 4 khz), before any firmware gains.', { t0: 2 });
   }
 });
 
@@ -15880,7 +15884,10 @@ S({
   draw: t => {
     const B = elc_cell();
     header(t, 'A safer battery: four guards');
-    captions(t, [[0.6, 'The PMIC reads the battery\'s own temperature sensor. Its default charges from 0 to 60 °C; I set it to the battery\'s datasheet: ' + B.tLo + ' to ' + B.tHi + ' °C, and nothing outside.'], [5.6, 'It also stops charging if its own die runs hot, is protected to 22 V at the input, and draws 370 nA when the switch is off.']]);
+    /* V6: neither pack (EEMB's LP402535, Jauch's LP402535JU) lists a temperature sensor: both are two-wire packs (batteries.json).
+       The slide said the PMIC reads "the battery's own" sensor and drew an "NTC lead" as its third wire; now the sensor is a
+       thermistor on the board against the pack, said as a proposal */
+    captions(t, [[0.6, 'The PMIC reads the battery\'s warmth from a sensor on the board beside it: the pack has two wires and no sensor of its own. Its default charges from 0 to 60 °C; I set it to the battery\'s datasheet: ' + B.tLo + ' to ' + B.tHi + ' °C.'], [5.6, 'It also stops charging if its own die runs hot, is protected to 22 V at the input, and draws 370 nA when the switch is off.']]);
     /* the window, full width: current against the cell's temperature; a thermometer sweeps it */
     const x = LM, y = 280, w = RM - LM, h = 420, A = C.hero;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0));
@@ -15907,7 +15914,7 @@ S({
       rr(lx, y + h - 66, lw2, 44, 6, rgba(cur ? A : C.bad, 0.16), cur ? A : C.bad, 1.5, kt);
       text(lab, lx + 14, y + h - 36, { font: 'mono', size: 24, weight: 700, color: C.ink, alpha: kt });
     }
-    /* the strip: the headline, two quiet guards, and the cell's third wire in 3D */
+    /* the strip: the headline, two quiet guards, and the pack's two wires (no sensor of its own) */
     elc_hl(t, 4.4, LM, 860, '4', 'guards', { size: 120, label: 'Charging that watches itself', sub: 'Battery and die temperature, the input voltage and a watchdog.', subW: 540 });
     const ty = 740, th = 220, a1 = tileA(t, 5.0, 0), a2 = tileA(t, 5.0, 1);
     statTile(t, 5.0, [640, ty, 360, th], { value: '22', unit: 'V', label: 'Input protection', quiet: true, ev: 'datasheet' });
@@ -15915,7 +15922,7 @@ S({
     const bx = 1440, bw = RM - bx;
     demoWindow(bx, ty, bw, th, tileA(t, 5.2, 2));
     const PB = elc_v3('battery', t, bx + 150, ty + 2, bw - 152, th - 4, { view: 'threeQuarter', view2d: 'top', zoom: in2D(1.25, 1.4), yaw: 0.15 * Math.sin(t * 0.4), explode: 0.3 * ep(t, 5.4, 6.4) });
-    if (PB) callout(t, 6.0, PB([13.5, 1.2, 23.5]), 'NTC lead', { to: [bx + 176, ty + 92], side: 'l', color: A, sub: 'The battery\'s third wire', maxW: 128 });
+    if (PB) callout(t, 6.0, PB([13.5, 1.2, 23.5]), 'Two wires', { to: [bx + 176, ty + 92], side: 'l', color: A, sub: 'No sensor inside: one on the board, proposed', maxW: 128 });
     source(t, 'Nordic nPM1300 specification (defaults, all configurable). ' + B.maker + ' ' + B.part + ': charging from ' + B.tLo + ' to ' + B.tHi + ' °C. Ship mode: 370 nA × 8,766 h ≈ 3.2 mAh, under 1% of ' + B.mAh + ' mAh, derived.', { t0: 2 });
   }
 });
@@ -34588,11 +34595,15 @@ S({
     ['(sealed) "transparent top housing to see when it\'s broken like switches"', 'Called out on the encoder: "Clear top: the spring and magnet in sight"'],
     ['(elc_sheet2) "add the no rgb light to the slide about having no optical components"', 'The RGB light is here with its cost: Logitech rates the G703 for 32 h with the lights off, 24 h with RGB cycling (spec sheet); Theseus has none'],
     ['(elc_sheet2) "put it next to the web software"', 'Placed just before b10_software'],
-    ['(F31.1) Razer staff: the switches and wheel cost "almost half" the battery', 'Not repeated as a fact: the slide derives its own share, about a fifth at 1 khz (' + B10.lightsShown().total.toFixed(1) + ' %, the printed parts\' sum): the switches from Logitech\'s own hours for the G Pro X Superlight 2 (0.116 mA a switch, the lower of the film\'s two derivations; Omron\'s pulse would say 0.15), the wheel from Avago\'s timing with its 5 mA said to be assumed. So the same battery lasts ' + Math.floor(B10.lights.gain * 100 + 1e-9) + ' % longer with Theseus\'s switches and wheel in their place (their own 9 µA counted), the film\'s figure (b03_switch shows the switches alone, +15 %)']
+    ['(F31.1) Razer staff: the switches and wheel cost "almost half" the battery', 'Not repeated as a fact: the slide derives its own share, about a fifth at 1 khz (' + B10.lightsShown().total.toFixed(1) + ' %, the printed parts\' sum): the switches from Logitech\'s own hours for the G Pro X Superlight 2 (0.116 mA a switch, the lower of the film\'s two derivations; Omron\'s pulse would say 0.15), the wheel from Avago\'s timing with its 5 mA said to be assumed. So the same battery lasts ' + Math.floor(B10.lights.gain * 100 + 1e-9) + ' % longer with Theseus\'s switches and wheel in their place (their own 9 µA counted), the film\'s figure (b03_switch shows the switches alone, +15 %)'],
+    ['(V6, move 6) one saving, one figure', 'The verdict counts the switches alone, as the film\'s hours do (13.6 to 0.4 %, +15 %, 194 h); the wheel\'s share keeps its row, named assumed and not counted']
   ],
   draw: t => {
     header(t, 'Nothing lights up but the sensor');
-    captions(t, [[0.6, 'The Viper V4 Pro\'s optical switches and wheel pulse their LEDs hundreds of times a second, pressed or not: about a fifth of its battery.'],
+    /* V6: the film counts the switches alone (ntr_hours, b03_switch, b01_battery: +15 %, 194 h); the wheel's share rests on an
+       assumed 5 mA, so it is shown and named as not counted (it was in the verdict: +23 %, a second figure for one saving) */
+    const swPct = (2 * B10.lightsShown().sw).toFixed(1) + ' %';
+    captions(t, [[0.6, 'The Viper V4 Pro\'s optical switches pulse their LEDs hundreds of times a second, pressed or not: ' + swPct + ' of its battery, and its optical wheel more.'],
       [4.4, 'Mechanical switches and a magnetic wheel draw nothing until used: only Theseus\'s sensor lights up.']]);
     const L = B10.lights, off = [ep(t, 2.6, 2.9), ep(t, 2.9, 3.2), ep(t, 3.3, 3.6)];   /* left switch, right switch, wheel */
     /* the Viper V4 Pro from above, in x-ray, drawn as the kit's neutral rival at its own size (EloShapes; FILM F9: a rival never
@@ -34616,7 +34627,7 @@ S({
     };
     /* the rival's shares rounded down, Theseus's up: neither rounding favours Theseus */
     const pc = v => (Math.floor(v * 1000) / 10).toFixed(1) + ' %', pcU = v => (Math.ceil(v * 1000) / 10).toFixed(1) + ' %';
-    row(392, at('wheel'), 'Optical wheel', B10.lightsShown().wh.toFixed(1) + ' %', lights[2].k, 'Magnetic wheel', pcU(L.tmr / L.avg));
+    row(392, at('wheel'), 'Optical wheel, assumed', B10.lightsShown().wh.toFixed(1) + ' %', lights[2].k, 'Magnetic wheel', pcU(L.tmr / L.avg));
     /* a mechanical switch draws only its pull-up's trickle: b03's 3 µA a switch (B03.mechUA), so the three slides agree */
     const mSh = L.mUA / 1000 / L.avg;
     row(492, at('trigR'), 'Optical switch', B10.lightsShown().sw.toFixed(1) + ' %', lights[1].k, 'Mechanical switch', pcU(mSh));
@@ -34625,7 +34636,8 @@ S({
     text(t < 3.6 ? 'Viper V4 Pro' : 'Theseus', 290, 900, { role: 'label', size: 22, color: t < 3.6 ? C.secondText : C.heroText, align: 'center' });
     text('No RGB either: Logitech rates its G703 for 32 h with the lights off, 24 h with RGB cycling.', lx, 790, { role: 'small', size: 22, weight: 600, color: C.mute, maxW: 360, lh: 1.3, alpha: ep(t, 4.0, 4.4) });
     /* the payoff */
-    verdict(t, 4.9, 980, 846, { from: B10.lightsShown().total, to: Math.ceil(L.thsMA / L.avg * 1000) / 10, unit: '%', dec: 1, label: 'Battery to the switches and wheel (wheel current assumed)', better: 'lower', who: ['Viper V4 Pro', 'Theseus'], net: '+' + Math.floor(L.gain * 100 + 1e-9) + ' % hours, same battery', size: 96, maxW: 700 });
+    { const mPct = Math.ceil(2 * mSh * 1000 - 1e-9) / 10, gain = typeof B03 !== 'undefined' ? b03_floor(B03.lifeGain * 100, 0) : String(Math.floor((L.avg / (L.avg - L.sw + 2 * L.mUA / 1000) - 1) * 100 + 1e-9));
+      verdict(t, 4.9, 980, 846, { from: 2 * B10.lightsShown().sw, to: mPct, unit: '%', dec: 1, label: 'Battery to the switches (the wheel, assumed, not counted)', better: 'lower', who: ['Viper V4 Pro', 'Theseus'], net: '+' + gain + ' % hours, same battery', size: 96, maxW: 700 }); }
     /* the dust test: both wheels turn the same steps while dust falls in */
     { const px = 980, py = 290, pw = 860, ph = 420, hw = (pw - 24) / 2, kd = ep(t, 6.4, 8.6, E.lin), turn = Math.max(0, t - 6.0) * 4, total = 16, n = Math.min(total, Math.floor(turn));
       demoWindow(px, py, pw, ph, 1, { plain: true });
@@ -34648,7 +34660,7 @@ S({
       }
       if (enc.cover) callout(t, 9.2, enc.cover, 'Clear top', { to: [px + pw - 150, py + 130], side: 'r', color: C.heroText, tcolor: C.ink, sub: 'Spring and magnet in sight', maxW: 140 });
     }
-    source(t, 'Shares of a Viper V4 Pro\'s 1.70 mA at 1 khz (306 mAh, 180 h), derived: an optical switch 0.116 mA, from Logitech\'s 96 h optical-only against 104 h hybrid (Superlight 2; Omron\'s pulse: 0.15 mA); its wheel LED 40 µs every 2 ms (Avago) at 5 mA, assumed; TMR 1.5 µA an axis (MDT); a mechanical switch 3 µA. Sensor LED: infrared (PixArt). Dust: illustrative (MPS).', { t0: 2.4 });
+    source(t, 'Shares of a Viper V4 Pro\'s 1.70 mA at 1 khz (306 mAh, 180 h), derived: an optical switch 0.116 mA (Logitech\'s 96 h optical, 104 h hybrid, Superlight 2; Omron\'s pulse: 0.15); its wheel LED 40 µs every 2 ms (Avago) at 5 mA, assumed, not in Theseus\'s hours; TMR 1.5 µA an axis (MDT); a mechanical switch 3 µA. Sensor LED: infrared (PixArt). Dust: illustrative (MPS).', { t0: 2.4 });
   }
 });
 
@@ -36499,6 +36511,137 @@ S({ id: 'clickup', ch: 'click', theme: 'night', title: 'Six upgrades, one click'
 });
 
 /* ============================================================================================
+   V6 (2026-11-06): move 6 of the v23 refinement, "More hours from the same battery". Brock (15:12, 15:15): "show the steps
+   to level something up to where it becomes the best, it has to be a process"; "the concepts should visible and statically
+   show how they build upon one another and combine to supercharge and compound on eachother"; 15:57 (F64.4): "whenever
+   theseus does something that is better than best in class, those bars overfill"; 17:08 (F64.11): "the battery should only
+   need to be 300mah ... beat the viper v4 pro battery with the same size battery as it using much newer and optimized
+   firmware and no opticals".
+   - V6_OPT: what an optical switch costs at each polling rate, from Logitech's own hours for the G Pro X Superlight 2 in
+     optical and hybrid modes at 1, 2 and 4 khz (TechPowerUp, from G HUB's calculator). It is the basis of the 8 khz hours:
+     the deck (ntr_hours) takes the Viper V4 Pro's switches at the same share of its draw at 8 khz as at 1 khz (13.7 %), which
+     needs them to cost 1.05 mA there; Logitech's figures have the cost climbing with the rate (0.23, 0.52, 0.86 mA), not
+     fixed (a fixed 0.23 mA would leave Theseus 38.6 h at 8 khz, under the Viper's 40). Said on the power slide.
+   - v6_cardStat(): move 6's card line (FILM.moves[6].stat).
+   - powerup: move 6's last beat. Theseus's three bars that move 6 finishes (density, battery, motion latency) fill step by
+     step in the order of the moves that earned them (2, 3; 5; move 4's switches banked for the battery), then move 6
+     lands on all three at once: they reach the line together and overfill together. Figures read from LO's table (the dock's
+     own), nothing typed here.
+   Runs after 25-film.js's top level only inside draw functions (FILM, LO, lo_* are read at draw time).
+   ============================================================================================ */
+Object.assign(SRC, {
+  v6Gpx2Rates: { t: 'TechPowerUp, Logitech G Pro X Superlight 2 review, page 7 (from G HUB\'s battery calculator, 290 mAh): "if set to 1000 Hz, battery life will be 96 hours in optical switch mode and 104 hours in hybrid switch mode"; "Set to 2000 Hz, battery life will be 55 hours in optical switch mode and 61 hours in hybrid switch mode"; "at 4000 Hz, battery life will be 42 hours in optical switch mode and 48 hours in hybrid switch mode". The two switches\' optics cost 290/96 − 290/104 = 0.23 mA, 0.52 mA and 0.86 mA: derived', u: 'https://techpowerup.com/review/logitech-g-pro-x-superlight-2/7.html' }
+});
+/** what the two optical switches cost at each rate (Logitech's hours, 290 mAh), and the cost the deck's 8 khz hours assume
+   for the Viper V4 Pro's (its 1 khz share of its 8 khz draw: 306 mAh over TechPowerUp's 40 h) */
+const V6_OPT = (() => {
+  const mAh = 290, rows = [[1, 96, 104], [2, 55, 61], [4, 42, 48]].map(([khz, hO, hH]) => ({ khz, mA: mAh / hO - mAh / hH, share: (mAh / hO - mAh / hH) / (mAh / hO) }));
+  let share1 = 0.1367; try { share1 = ntr_swKeep().opt; } catch (e) { /* the same formula, before 14-b runs */ }
+  const v4mA8 = 306 / 40, need8 = share1 * v4mA8;
+  /* the fixed case: the Viper's switches at their 1 khz cost at 8 khz too (energy method, as ntr_hours) */
+  let fixed8 = null;
+  try { const H = ntr_hours(), L = H.L, S = H.S, wSw = L.w1 * S.opt, wMech = L.w1 * S.mech; fixed8 = H.cell.wh / (L.w8 - wSw + wMech); } catch (e) { fixed8 = null; }
+  return { rows, share1, v4mA8, need8, fixed8, climb: rows[2].mA / rows[0].mA };
+})();
+/** a current as the slide prints it: two decimals, never rounded our way (the switches' cost is a rival's: floored) */
+const v6_mA = v => (Math.floor(v * 100 + 1e-9) / 100).toFixed(2);
+
+/** move 6's card line: the battery against the pack it replaced (the ledger's), and the hours, derived */
+function v6_cardStat() {
+  try {
+    const L = filmLedger(), ln = L && L.lines.find(l => l.move === 6), H = ntr_hours(); if (!ln) return null;
+    const o = ln.old, c = L.B.cell;
+    return c.mAh + ' mAh, about ' + fmtN(c.g, 1) + ' g (' + c.maker + '), not a ' + o.mAh + ' mAh pack at ' + fmtN(o.g, 0) + ' g (' + o.maker + ', rounded): about ' + fmtN(o.g - c.g, 1) + ' g off, ' + THS.massG + ' in all. ' +
+      THESEUS.hours + ' h at 1 khz and ' + Math.floor(H.h8 + 1e-9) + ' at 8 khz, derived without the Viper V4 Pro’s optical switches, before any firmware gains.';
+  } catch (e) { return null; }
+}
+
+/* ============================== powerup: three bars past the line (move 6's last beat) ============================== */
+/* the timeline: the rows set (0.5); the steps moves 2, 3 and 5 earned land in their order, move 4's switches banked beside
+   the battery (1.1 to 3.3); move 6's chips (4.0); the three bars run to the line together (4.5 to 5.2) and over it together
+   (5.2 to 5.9), each overflow ringing once; the figures and the lines they passed (5.9 on); the close (7.4) */
+const V6_UP_T = { rows: 0.5, m: { 2: 1.1, 3: 1.8, 4: 2.5, 5: 3.2 }, six: 4.0, run: 4.5, line: 5.2, over: 5.9, figs: 5.9, close: 7.4 };
+/** the three bars move 6 finishes, in the loadout's order, with what move 6 adds to each */
+function v6_upRows() {
+  const T = lo_table(), H = (() => { try { return ntr_hours(); } catch (e) { return null; } })(), Ld = (() => { try { return filmLedger(); } catch (e) { return null; } })();
+  const ln6 = Ld && Ld.lines.find(l => l.move === 6), save = ln6 ? fmtN(ln6.old.g - Ld.B.cell.g, 1) : null;
+  const row = (key, o) => { const c = lo_cat(key), b = T.best[key], th = T.ths[key]; return Object.assign({ c, b, th, F: th.f, N: (c.earn || []).length || 1 }, o); };
+  return [
+    row('density', { what: 'A battery ' + (save ? save + ' g' : '') + ' lighter, on moves 2 and 3’s shell', how: 'Derived: the weight over its box', lineNote: 'wired' }),
+    row('battery', { what: 'The Viper’s battery size, with nothing lit but the sensor', how: 'Derived, before any firmware gains', bank: 4, bankS: 'No optical switches' }),
+    row('motion', { what: 'Move 5’s frames, sent at 8 khz, synced to each poll', how: 'Target: Kunai’s timing model' })
+  ];
+}
+/** a move's chip: a numbered node, as the build board draws them. lit: 0..1 (hollow to blue); a: alpha */
+function v6_chip(x, y, n, lit, a, r = 15) {
+  if (a <= 0.003) return;
+  G.save(); G.globalAlpha = a;
+  G.beginPath(); G.arc(x, y, r, 0, TAU); G.fillStyle = C.bg; G.fill();
+  if (lit > 0.003) { G.globalAlpha = a * lit; G.fillStyle = C.hero; G.fill(); G.globalAlpha = a; }
+  G.lineWidth = 2; G.strokeStyle = lit > 0.5 ? C.heroText : inkA(TH ? 0.45 : 0.5); G.stroke();
+  G.restore();
+  text(String(n), x, y + 7, { role: 'label', size: 19, weight: 800, color: lit > 0.5 ? (HUE === 'yellow' ? '#111111' : '#FFFFFF') : C.mute, align: 'center', alpha: a, track: 0 });
+}
+S({ id: 'powerup', ch: 'elec', theme: 'night', title: 'Three bars past the line', settle: 9.8, loSelf: true,
+  src: ['exPiaknow', 'kunai', 'exRtings', 'exXbabWeight', 'ntrEemb', 'ntrJauch', 'b01Optical', 'ntrTpuV4', 'v6Gpx2Rates'],
+  draw: t => {
+    header(t, 'Three bars past the line');
+    const T = V6_UP_T, R = v6_upRows();
+    captions(t, [[0.3, 'Before move 6, none of these bars had reached the best flagship’s line. Moves 2, 3 and 5 had filled them part of the way.'],
+      [T.six - 0.3, 'Move 6 spends what they handed on: move 4’s idle switches buy the hours, move 5’s frames go out at 8 khz, a lighter battery finishes the density.'],
+      [T.close, 'Three bars past the line at once: one move, built on four. The giants each fill one or two.']]);
+    /* the geometry: names at the left, the bars, the figures at the right; one line through all three rows */
+    const bx = 600, L = 600, bh = 26, y0 = 352, rh = 196, figX = bx + L * LO.max + 56, kRows = ep(t, T.rows - 0.4, T.rows + 0.2);
+    const xLine = bx + L, yTop = y0 - 36, yBot = y0 + 2 * rh + bh + 74;
+    /* the steps each bar had before move 6, landing in the order of the moves that earned them */
+    const before = r => (r.c.earn || []).filter(m => m < 6);
+    const dOf = r => before(r).reduce((s, m) => s + ep(t, T.m[m], T.m[m] + 0.55, E.snap), 0);
+    /* move 6, on all three at once: to the line together, then over it together */
+    const kRun = ep(t, T.run, T.line, E.io3), kOver = ep(t, T.line, T.over, E.out3), kSolid = ep(t, T.run, T.run + 0.25);
+    /* the line: one for all three rows, lit as the bars reach it together */
+    { const kL = ep(t, T.rows, T.rows + 0.5), kHit = env(t, T.line - 0.05, T.line + 0.1, T.line + 0.5, T.line + 1.4);
+      line(xLine, yTop, xLine, yBot, { color: C.ink2, w: 2, alpha: kL });
+      if (kHit > 0.003) { G.save(); G.shadowColor = rgba(C.hero, 0.9); G.shadowBlur = 18; line(xLine, yTop, xLine, yBot, { color: C.heroText, w: 3.5, alpha: kHit }); G.restore(); }
+      text('The line: the best flagship', xLine - 12, yTop - 16, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: kL });
+      text('Past it', xLine + 12, yTop - 16, { role: 'label', size: 20, color: C.heroText, alpha: ep(t, T.line, T.line + 0.4) }); }
+    R.forEach((r, i) => {
+      const y = y0 + i * rh, by = y + 22, N = r.N, F = r.F, dB = dOf(r), fB = dB / N;
+      /* the name, what it measures, and what move 6 adds */
+      text(r.c.name, LM, y + 12, { role: 'h3', size: 32, weight: 800, color: C.ink, alpha: kRows, sentence: false });
+      text(r.c.ms, LM, y + 44, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: kRows, sentence: false });
+      text('Move 6: ' + r.what, LM, y + 92, { role: 'small', size: 21, weight: 650, color: C.heroText, alpha: ep(t, T.six, T.six + 0.4), maxW: bx - LM - 40, lh: 1.3, sentence: false });
+      /* the bar: its steps before move 6 at half strength, then solid as move 6 runs it to the line and past */
+      if (kSolid < 1) lo_bar(bx, by, L, bh, { f: fB, ths: true, d: dB, N, a: kRows * (1 - kSolid), tick: false });
+      if (kSolid > 0) { const f = kOver > 0 ? lerp(1, F, kOver) : lerp(before(r).length / N, 1, kRun);
+        lo_bar(bx, by, L, bh, { f, ths: true, d: N, N, a: kRows * kSolid, tick: false, pulse: prog(t, T.line, T.line + 0.9) }); }
+      /* under each step, the move that earned it; the battery's step is move 6's, on move 4's switches (banked, no step) */
+      const X = v => bx + Math.min(v, LO.max) * L, cy = by + bh + 32;
+      (r.c.earn || []).forEach((m, j) => {
+        const six = m === 6, a1 = six ? Math.min(F, LO.max) : (j + 1) / N, cx = (X(j / N) + X(a1)) / 2;
+        const ka = six ? ep(t, T.six, T.six + 0.35, E.snap) : ep(t, T.m[m] - 0.1, T.m[m] + 0.3), lit = six ? ep(t, T.run, T.run + 0.4) : ep(t, T.m[m] + 0.2, T.m[m] + 0.5);
+        v6_chip(cx, cy, m, lit, ka * kRows);
+      });
+      if (r.bank) {
+        const kb = ep(t, T.m[r.bank] - 0.1, T.m[r.bank] + 0.3), cx = bx + 22;
+        v6_chip(cx, cy, r.bank, ep(t, T.m[r.bank] + 0.2, T.m[r.bank] + 0.5) * (1 - 0.5 * ep(t, T.run, T.run + 0.4)), kb * kRows);
+        text(r.bankS + ': banked for move 6', cx + 26, cy + 7, { role: 'small', size: 20, weight: 650, color: C.ink2, alpha: kb * (1 - ep(t, T.six - 0.2, T.six + 0.1)), sentence: false });
+        /* banked: an arrow from move 4's chip to move 6's as move 6 spends it */
+        const c6 = (X(0) + X(Math.min(F, LO.max))) / 2, ka = ep(t, T.six + 0.1, T.six + 0.6, E.io3);
+        if (ka > 0.003) arrow(cx + 20, cy, lerp(cx + 20, c6 - 22, ka), cy, { color: C.hero, w: 2.2, hs: 8, p: 1, alpha: ka });
+      }
+      /* the figures: Theseus's, then the line it passed */
+      const kf = ep(t, T.figs + i * 0.2, T.figs + 0.4 + i * 0.2), th = r.th, b = r.b;
+      if (kf > 0.003 && b) {
+        rich([{ s: fmtN(th.v, r.c.dec), font: 'disp', size: 58, weight: 800, color: C.heroText, grad: C.heroGrad, tnum: true }, { s: r.c.unit, font: 'disp', size: 26, weight: 700, color: C.heroText, gap: 8, caps: false }], figX, by + bh - 2, { alpha: kf });
+        text(r.how, figX, by + bh + 30, { role: 'small', size: 19, weight: 600, color: C.mute, alpha: kf, sentence: false });
+        rich([{ s: 'The line', role: 'label', size: 19, color: C.mute }, { s: b.who.brand + ' ' + b.who.name + ', ' + lo_fmt(r.c, b) + (r.lineNote ? ', ' + r.lineNote : ''), role: 'small', size: 20, weight: 650, color: C.secondText, gap: 10, sentence: false }], figX, by + bh + 62, { alpha: kf });
+      }
+    });
+    source(t, 'The line in each bar is the best of the giants’ slide: density as weighed over its box (the XA25 on XBAB’s scale), battery as rated at 1 khz, motion at 8 khz on PIAKNOW’S rig. Theseus: ' + THS.massG + ' over its box; ' + THS.hours + ' derived (EEMB’s 300 mAh at the Viper V4 Pro’s draw less its optical switches); 0.14 ms a target.', { t0: 1.2, maxW: RM - LM });
+  }
+});
+
+/* ============================================================================================
    THE FILM (V1, 2026-11-06: the v23 refinement). One manifest decides what plays and in what order, and the film's spine
    is drawn by the player's chrome from it.
    Brock (F63, 15:12, 15:15): "the whole side show needs to be grounded in interconnected themes"; "show the steps to level
@@ -36550,9 +36693,12 @@ const FILM = {
     /* V4 (Brock, 17:08: "the battery should only need to be 300mah ... with the same size battery as it using much newer and
        optimized firmware and no opticals"; 17:10: the freed weight to a lighter mouse): the chain is move 4's switches ->
        the Viper V4 Pro's size of battery lasting longer -> 1.6 g off the mouse -> the best density of any mouse */
+    /* V6: what it builds on names move 5's frames too (the board's 5 -> 6 'Every frame'); its own figure (stat) leaves the
+       8 khz hours to the power slide, where their basis is said (30-b14-move6.js) */
     { n: 6, ch: 'elec', name: 'Power', title: 'More hours from the same battery',
-      builds: 'Move 4’s mechanical switches: with no optical switches drawing power, and newer firmware, a battery the Viper V4 Pro’s size lasts longer.',
-      unlocks: 'A smaller battery, 1.6 g off the whole mouse: with moves 2 and 3’s light shell, the best density of any mouse.' },
+      builds: 'Move 4’s switches draw nothing until pressed, so a battery the Viper V4 Pro’s size lasts longer; move 5’s frames, each sent as it comes, go out at 8 khz.',
+      unlocks: 'Three bars past the line at once: more hours than the Viper, a motion target ahead of every wireless mouse measured, and a battery 1.6 g lighter that takes moves 2 and 3’s shell past every mouse’s density.',
+      stat: () => (typeof v6_cardStat === 'function' ? v6_cardStat() : null) },
     { n: 7, ch: 'surface', name: 'The finish', title: 'A finish that weighs nothing',
       builds: 'Move 2’s shell: a film-thin coat on it, no tape.',
       unlocks: 'Grip that holds, for no weight.' },
@@ -36597,13 +36743,22 @@ const FILM = {
     /* V5: move 5 as five upgrades on one need, a lens held in focus: the problem (a camera), the window, dots at the lens, the
        snap-on lens (v23's gld_module, an 8, kept), the sensor and its frames (the motion bar's step), lift-off, set in the web software (Brock: "place near web software") */
     [5, ['mv5', 'b04_camera', 'b04_focus', 'b04_sag', 'b04_skates', 'gld_module', 'b04_sensor', 'b04_reports', 'b10_software']],
-    [6, ['mv6', 'power', 'cells', 'frontier', 'elc_pmic', 'elc_charge', 'elc_safe', 'onechip', 'elc_module', 'antenna', 'motion', 'elc_rate',
-      'framesync', 'secondshot', 'elc_oneside', 'elecsheet1', 'elc_tear', 'elc_twist', 'elc_lay', 'elc_flex', 'cable', 'srf_encoder']],
-    [7, ['mv7', 'coating', 'srf_texture', 'srf_weight', 'srf_uv', 'grip', 'srf_gripmap', 'srf_tape', 'srf_twotone', 'wheel']],
+    /* V6: move 6 as four upgrades that spend what moves 2 to 5 handed on (FILM.steps): nothing lit but the sensor (move 4's
+       switches, a magnetic wheel, no RGB: b10_lights, his elc_sheet2 note), the same battery for more hours (the battery bar),
+       one chip for 8 khz, frames synced to the poll (the motion bar's second step, ranked), then the three bars past the line
+       together (powerup). Cut: what adds no hours, density or 8 khz (the PMIC, charging and its guards, the radio module and
+       antenna, the wireless penalty, Second Shot, the pouch per gram, the frontier); the wires, the coat and the one-sided
+       board leave this move for moves 7 and 8 (V6-PROGRESS.md, merge notes) */
+    [6, ['mv6', 'b10_lights', 'power', 'b09_chip', 'b09_sync', 'b09_latency', 'powerup']],
+    /* main (19:1x): two slides V6 took out of move 6 (they add no hours, density or 8 khz speed) get homes where they build:
+       the coat that keeps water out (b10_sealed, the rebuild of elecsheet1, his 7: "protects against water for very little
+       weight") with the finish; the braided leads (b10_wires, the rebuild of elc_tear 8 and elc_flex 7, the honest ~45x) with
+       a mouse built to be opened. elc_oneside (7) is out until Brock asks for it back (V6's question 1) */
+    [7, ['mv7', 'coating', 'b10_sealed', 'srf_texture', 'srf_weight', 'srf_uv', 'grip', 'srf_gripmap', 'srf_tape', 'srf_twotone', 'wheel']],
     /* main (18:5x): row 6's 'software' left the film: b10_software (lift-off, the web software) ends move 5 (V5). The
        hot-swap switches (b03_hotswap, the revamp's rebuild of clk_hotswap) moved here from move 4, where they built on
        nothing the stiff shell gives: switches you can pull and replace belong to a mouse built to be opened (V5's question 2) */
-    [8, ['mv8', 'repair', 'ownscrew', 'own_insert', 'own_life', 'ownbatt', 'b03_hotswap', 'ownboard', 'box', 'ownsheet2']],
+    [8, ['mv8', 'repair', 'ownscrew', 'own_insert', 'own_life', 'ownbatt', 'b03_hotswap', 'ownboard', 'b10_wires', 'box', 'ownsheet2']],
     [9, ['mv9', 'close']]
   ],
   /* each slide's place in the chain, said in the footer beside the board: what it builds on, or what it pushes toward.
@@ -36666,7 +36821,14 @@ const FILM = {
     gld_module: { s: 'Upgrade 3 builds on the dots: a lens one dot wide carries its own two' },
     b04_sensor: { s: 'Upgrade 4: the sensor behind the held lens, planned after Razer’s exclusivity' },
     b04_reports: { s: 'Every frame as it comes: the motion bar’s first step. Move 6 sends them', to: [6] },
-    b10_software: { s: 'Upgrade 5: the lens at a known height, so lift-off in 0.1 mm steps means it', to: [6] }
+    b10_software: { s: 'Upgrade 5: the lens at a known height, so lift-off in 0.1 mm steps means it', to: [6] },
+    /* V6: move 6, each upgrade said as what it spends */
+    b10_lights: { s: 'Upgrade 1, on move 4’s switches: nothing draws power until used' },
+    power: { s: 'Upgrade 2 spends that saving: the Viper’s size of battery, more hours' },
+    b09_chip: { s: 'Upgrade 3: move 5’s frames out at 8 khz, by radio or cable, one chip' },
+    b09_sync: { s: 'Upgrade 4: each frame taken as the poll asks, so none goes out stale' },
+    b09_latency: { s: 'The motion bar’s second step: move 5’s frames at 8 khz, first of all' },
+    powerup: { s: 'What move 6 hands on: three bars past the line, for move 9', to: [9] }
   },
   /* V3: move 2's five upgrades, each built on the one before: the label row names the upgrade a slide belongs to and a
      meter beside it fills, one segment an upgrade (filmChrome). of: slide id -> upgrade (0: the problem, before the first;
@@ -36680,7 +36842,10 @@ const FILM = {
       of: { b02_direct: 1, b02_wedge: 1, b02_tensioner: 2, b02_stiff: 2, b02_cutouts: 3, b02_seams: 3, b02_rails: 4, b02_front: 5, b02_flush: 5,
         b03_switch: 6, b03_spdt: 6, b03_timing: 6, b03_debounce: 6, b03_side: 7, clickup: 7 } },
     5: { names: ['the focus window', 'dots at the lens', 'a snap-on lens', 'the sensor', 'lift-off'],
-      of: { b04_camera: 0, b04_focus: 1, b04_sag: 2, b04_skates: 2, gld_module: 3, b04_sensor: 4, b04_reports: 4, b10_software: 5 } }
+      of: { b04_camera: 0, b04_focus: 1, b04_sag: 2, b04_skates: 2, gld_module: 3, b04_sensor: 4, b04_reports: 4, b10_software: 5 } },
+    /* V6 */
+    6: { names: ['nothing lit', 'the same battery', 'one chip, 8 khz', 'frame sync'], done: 'three bars past the line',
+      of: { b10_lights: 1, power: 2, b09_chip: 3, b09_sync: 4, b09_latency: 4, powerup: 5 } }
   },
   /* V3: a slide drawn for another chapter, played in this move (its chapter's accent and icon, no chapter flight inside a move) */
   chOf: { b07_balance: 'shell', b02_wedge: 'click', b10_software: 'glide' },

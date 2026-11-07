@@ -107,11 +107,15 @@ const FILM = {
        antenna, the wireless penalty, Second Shot, the pouch per gram, the frontier); the wires, the coat and the one-sided
        board leave this move for moves 7 and 8 (V6-PROGRESS.md, merge notes) */
     [6, ['mv6', 'b10_lights', 'power', 'b09_chip', 'b09_sync', 'b09_latency', 'powerup']],
-    [7, ['mv7', 'coating', 'srf_texture', 'srf_weight', 'srf_uv', 'grip', 'srf_gripmap', 'srf_tape', 'srf_twotone', 'wheel']],
+    /* main (19:1x): two slides V6 took out of move 6 (they add no hours, density or 8 khz speed) get homes where they build:
+       the coat that keeps water out (b10_sealed, the rebuild of elecsheet1, his 7: "protects against water for very little
+       weight") with the finish; the braided leads (b10_wires, the rebuild of elc_tear 8 and elc_flex 7, the honest ~45x) with
+       a mouse built to be opened. elc_oneside (7) is out until Brock asks for it back (V6's question 1) */
+    [7, ['mv7', 'coating', 'b10_sealed', 'srf_texture', 'srf_weight', 'srf_uv', 'grip', 'srf_gripmap', 'srf_tape', 'srf_twotone', 'wheel']],
     /* main (18:5x): row 6's 'software' left the film: b10_software (lift-off, the web software) ends move 5 (V5). The
        hot-swap switches (b03_hotswap, the revamp's rebuild of clk_hotswap) moved here from move 4, where they built on
        nothing the stiff shell gives: switches you can pull and replace belong to a mouse built to be opened (V5's question 2) */
-    [8, ['mv8', 'repair', 'ownscrew', 'own_insert', 'own_life', 'ownbatt', 'b03_hotswap', 'ownboard', 'box', 'ownsheet2']],
+    [8, ['mv8', 'repair', 'ownscrew', 'own_insert', 'own_life', 'ownbatt', 'b03_hotswap', 'ownboard', 'b10_wires', 'box', 'ownsheet2']],
     [9, ['mv9', 'close']]
   ],
   /* each slide's place in the chain, said in the footer beside the board: what it builds on, or what it pushes toward.
