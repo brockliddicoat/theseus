@@ -1802,6 +1802,103 @@
   ],
   "conflict": "CONFLICT: Farnell lists LP402535JU as 380 mAh; Endrich lists 370 mAh (probably typ vs min)."
  },
+ "eemb_lipo": {
+  "note": "Theseus's battery from 2026-11-06 17:10 (Brock, 17:08: \"the battery should only need to be 300mah\"): about the Razer Viper V4 Pro's 306 mAh (TechPowerUp). Its mass is EEMB's approximate 6.40 g; against Jauch's LP402535JU (370 mAh, 8 g in Endrich's rounded listing) the saving is about 1.6 g.",
+  "rows": [
+   {
+    "part": "LP402535",
+    "maker": "EEMB",
+    "capacity": {
+     "value": 300,
+     "unit": "mAh",
+     "source_url": "https://www.eemb.com/product-214",
+     "source_title": "EEMB, LP402535 lithium-polymer battery product page: 3.7 V nominal, 320 mAh typical, 300 mAh minimum, approximately 6.40 g, 25.5 x 37.00 x 4.30 mm, solder tab, UL1642 / UN38.3",
+     "label": "DS",
+     "note": "minimum capacity; 320 mAh typical. The lower figure is used, as for Jauch's 370 (not 380) mAh"
+    },
+    "capacity_typical": {
+     "value": 320,
+     "unit": "mAh",
+     "source_url": "https://www.eemb.com/product-214",
+     "source_title": "EEMB, LP402535 lithium-polymer battery product page: 3.7 V nominal, 320 mAh typical, 300 mAh minimum, approximately 6.40 g, 25.5 x 37.00 x 4.30 mm, solder tab, UL1642 / UN38.3",
+     "label": "DS"
+    },
+    "mass": {
+     "value": 6.4,
+     "unit": "g",
+     "source_url": "https://www.eemb.com/product-214",
+     "source_title": "EEMB, LP402535 lithium-polymer battery product page: 3.7 V nominal, 320 mAh typical, 300 mAh minimum, approximately 6.40 g, 25.5 x 37.00 x 4.30 mm, solder tab, UL1642 / UN38.3",
+     "label": "DS",
+     "note": "EEMB: \"approximate 6.40 g\""
+    },
+    "nominal_V": {
+     "value": 3.7,
+     "unit": "V",
+     "source_url": "https://www.eemb.com/product-214",
+     "source_title": "EEMB, LP402535 lithium-polymer battery product page: 3.7 V nominal, 320 mAh typical, 300 mAh minimum, approximately 6.40 g, 25.5 x 37.00 x 4.30 mm, solder tab, UL1642 / UN38.3",
+     "label": "DS"
+    },
+    "width_mm": 25.5,
+    "length_mm": 37.0,
+    "thickness_mm": 4.3,
+    "energy_Wh": {
+     "value": 1.11,
+     "unit": "Wh",
+     "source_url": "https://www.eemb.com/product-214",
+     "source_title": "EEMB, LP402535 lithium-polymer battery product page: 3.7 V nominal, 320 mAh typical, 300 mAh minimum, approximately 6.40 g, 25.5 x 37.00 x 4.30 mm, solder tab, UL1642 / UN38.3",
+     "label": "DV",
+     "formula": "3.7 V x 0.300 Ah (minimum capacity)"
+    },
+    "Wh_per_kg": {
+     "value": 173.4,
+     "unit": "Wh/kg",
+     "source_url": "https://www.eemb.com/product-214",
+     "source_title": "EEMB, LP402535 lithium-polymer battery product page: 3.7 V nominal, 320 mAh typical, 300 mAh minimum, approximately 6.40 g, 25.5 x 37.00 x 4.30 mm, solder tab, UL1642 / UN38.3",
+     "label": "DV",
+     "formula": "1.110 Wh / 0.0064 kg"
+    },
+    "max_charge": {
+     "value": 320,
+     "unit": "mA",
+     "source_url": "https://eemb.oss-accelerate.aliyuncs.com//uploads/20230315/7900a5b46fe77f926d269d99ff3a8dfa.pdf",
+     "source_title": "EEMB, LP402535 specification (No. ZJQM-RD-SPC-H2310, 2022-10-25): 320 mAh nominal, 300 mAh minimum at 0.2C5A; 3.7 V; charge to 4.200 V; maximum charge 320 mA (1.0C5A, CC/CV); maximum continuous discharge 640 mA (2.0C5A); cut-off 2.750 V; approx. 6.4 g; thickness <= 4.3 mm, width <= 25.5 mm, length <= 36 mm; charging 0 to 45 C, discharging -20 to +60 C; >= 500 cycles at 0.5C5A, >= 800 at 0.2C5A; <= 160 mOhm at 1 kHz",
+     "label": "DS",
+     "note": "1.0C of the 320 mAh nominal; the deck charges at 1C of the 300 mAh it counts (300 mA), inside the rating"
+    },
+    "charge_temp_C": {
+     "min": 0,
+     "max": 45,
+     "unit": "C",
+     "source_url": "https://eemb.oss-accelerate.aliyuncs.com//uploads/20230315/7900a5b46fe77f926d269d99ff3a8dfa.pdf",
+     "source_title": "EEMB, LP402535 specification (No. ZJQM-RD-SPC-H2310, 2022-10-25): 320 mAh nominal, 300 mAh minimum at 0.2C5A; 3.7 V; charge to 4.200 V; maximum charge 320 mA (1.0C5A, CC/CV); maximum continuous discharge 640 mA (2.0C5A); cut-off 2.750 V; approx. 6.4 g; thickness <= 4.3 mm, width <= 25.5 mm, length <= 36 mm; charging 0 to 45 C, discharging -20 to +60 C; >= 500 cycles at 0.5C5A, >= 800 at 0.2C5A; <= 160 mOhm at 1 kHz",
+     "label": "DS"
+    },
+    "cycles": {
+     "value": 500,
+     "unit": "cycles",
+     "source_url": "https://eemb.oss-accelerate.aliyuncs.com//uploads/20230315/7900a5b46fe77f926d269d99ff3a8dfa.pdf",
+     "source_title": "EEMB, LP402535 specification (No. ZJQM-RD-SPC-H2310, 2022-10-25): 320 mAh nominal, 300 mAh minimum at 0.2C5A; 3.7 V; charge to 4.200 V; maximum charge 320 mA (1.0C5A, CC/CV); maximum continuous discharge 640 mA (2.0C5A); cut-off 2.750 V; approx. 6.4 g; thickness <= 4.3 mm, width <= 25.5 mm, length <= 36 mm; charging 0 to 45 C, discharging -20 to +60 C; >= 500 cycles at 0.5C5A, >= 800 at 0.2C5A; <= 160 mOhm at 1 kHz",
+     "label": "DS",
+     "note": "at 0.5C5A; >= 800 at 0.2C5A"
+    },
+    "datasheet_dims_mm": {
+     "thickness": 4.3,
+     "width": 25.5,
+     "length": 36.0,
+     "source_url": "https://eemb.oss-accelerate.aliyuncs.com//uploads/20230315/7900a5b46fe77f926d269d99ff3a8dfa.pdf",
+     "source_title": "EEMB, LP402535 specification (No. ZJQM-RD-SPC-H2310, 2022-10-25): 320 mAh nominal, 300 mAh minimum at 0.2C5A; 3.7 V; charge to 4.200 V; maximum charge 320 mA (1.0C5A, CC/CV); maximum continuous discharge 640 mA (2.0C5A); cut-off 2.750 V; approx. 6.4 g; thickness <= 4.3 mm, width <= 25.5 mm, length <= 36 mm; charging 0 to 45 C, discharging -20 to +60 C; >= 500 cycles at 0.5C5A, >= 800 at 0.2C5A; <= 160 mOhm at 1 kHz",
+     "label": "DS",
+     "note": "maximums; the product page gives 37.00 mm long (probably with its tabs)"
+    },
+    "terminals": {
+     "value": "solder tabs",
+     "source_url": "https://www.eemb.com/product-214",
+     "label": "DS",
+     "note": "no NTC in the specification; Jauch's LP402535JU is a two-wire pack too"
+    }
+   }
+  ]
+ },
  "mouse_power_draw": [
   {
    "case": "Razer Viper V4 Pro cell energy",

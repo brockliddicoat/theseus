@@ -69,8 +69,9 @@ const B07_SEC0 = [[0.0,36.98],[-1.53,36.96],[-3.06,36.91],[-4.6,36.81],[-6.15,36
 /* the rib rows of the stress study (3d/lattice): z of each arch rib where it meets the rim; those over the board tie to it */
 const B07_ROWS = [-31.65, -20.43, -10.64, -0.77, 9.17, 19.25, 29.76, 41.16];
 /* the weight budget (shcBudget in 10-d3-board.js and the intro's ntr_budget; restated so this file stands alone) */
-/* the 29.31 g budget. F44.2 (Brock): the two side switches (full-size SPDT, about 0.5 g each) come out of the shell's
-   allowance, 10.35 → 9.35 g; the total stays 29.31 g. F42.2: the board's 5.6 g is a target */
+/* the budget (THESEUS.mass: 29.31 g until 2026-11-06 17:10, 27.71 g with EEMB's 6.40 g battery in place of Jauch's 8 g).
+   F44.2 (Brock): the two side switches (full-size SPDT, about 0.5 g each) come out of the shell's allowance, 10.35 → 9.35
+   g; the battery's saving comes off the total, not the shell. F42.2: the board's 5.6 g is a target */
 const B07_BUD = { shell: 9.35, sideSw: 1.0, btn: 3.328, wheel: 1.02, screws: 0.418, ins: 0.516, wires: 0.08,
   /* V3: the board and the battery read from the deck's own figures (THESEUS.pcb; the budget's battery pack), so a change there
      reaches this slide (main, 17:10: the battery is being changed) */
@@ -100,7 +101,7 @@ const B07_POS = {
    the hardware when H2/H3 move a part */
 {
   const mm = v => (v < 0 ? '−' : '') + fmtN(Math.abs(v), 1), P = B07_POS;
-  SRC.b07Mass3d.t = 'This deck, mass model from the 3D assets, part for part as H2\'s balance model (3d/pcb/tools/balance.py; review b07, HARDWARE 10:14): the Theseus shell (3d/shell/shell-theseus-1seam.glb): its body centred at z ' + mm(P.body.z) + ' mm (behind the middle), ' + mm(P.body.y) + ' mm up; triggers at z ' + mm(P.btn.z) + ', ' + mm(P.btn.y) + ' mm up; wheel at z ' + mm(P.wheel.z) + ', ' + mm(P.wheel.y) + ' mm up; the board (plan 5, 3d/pcb/plans/outline_v5.json) at its 5.6 g target (F42.2), its centre of mass at z ' + mm(P.boardCom.z) + ', ' + mm(P.boardCom.y) + ' mm up; the two side switches, the four boss posts (estimated until the shell models them), the board\'s screws and inserts at their places; the battery (LP402535JU, 8 g) where the mouse balances (KEY_PARTS, 03-parts.js): z ' + mm(b07_battZ()) + ', ' + mm(b07_battY()) + ' mm up; the weight budget\'s masses (29.31 g); the grip 12 mm up';
+  SRC.b07Mass3d.t = 'This deck, mass model from the 3D assets, part for part as H2\'s balance model (3d/pcb/tools/balance.py; review b07, HARDWARE 10:14): the Theseus shell (3d/shell/shell-theseus-1seam.glb): its body centred at z ' + mm(P.body.z) + ' mm (behind the middle), ' + mm(P.body.y) + ' mm up; triggers at z ' + mm(P.btn.z) + ', ' + mm(P.btn.y) + ' mm up; wheel at z ' + mm(P.wheel.z) + ', ' + mm(P.wheel.y) + ' mm up; the board (plan 5, 3d/pcb/plans/outline_v5.json) at its 5.6 g target (F42.2), its centre of mass at z ' + mm(P.boardCom.z) + ', ' + mm(P.boardCom.y) + ' mm up; the two side switches, the four boss posts (estimated until the shell models them), the board\'s screws and inserts at their places; the battery (' + (typeof ntr_thsPack === 'function' ? ntr_thsPack().maker + ' ' + ntr_thsPack().part : 'EEMB LP402535') + ', ' + fmtN(B07_BUD.batt, 2) + ' g) at the place H2 set for the 8 g pack it replaced (KEY_PARTS, 03-parts.js; its footprint still Jauch\'s 35 × 25 × 4.0 mm): z ' + mm(b07_battZ()) + ', ' + mm(b07_battY()) + ' mm up; the weight budget\'s masses (' + THS.massG + '); the grip 12 mm up';
 }
 /* hands and mice */
 const B07_HAND = { men: { mean: 193.3, sd: 9.9, p5: 177, p50: 193, p95: 210, breadth: 88.3 }, women: { mean: 181.1, sd: 10.1, p5: 165, p50: 180, p95: 199, breadth: 78.2 } };
@@ -302,7 +303,7 @@ function b07_tol() {
 }
 
 /* ============================== model 4: the centre of mass, from the 3D assets ==============================
-   Each part of the 29.31 g at its place (B07_POS), the shell split between the body and the wheel bay by their volumes
+   Each part of the budget (THESEUS.mass) at its place (B07_POS), the shell split between the body and the wheel bay by their volumes
    (12,166 and 1,375 mm³). Returns the centre of mass's z (forward of the middle) and height for the battery at a place. */
 function b07_cg(batt) {
   const B = B07_BUD, P = B07_POS, postG = P.posts.reduce((a, q) => a + q.g, 0);
@@ -1466,7 +1467,7 @@ S({
 /* ============================== 9. b07_size: Sized against real hands ==============================
    The Shape chapter's compromise is "shapes cut down for weight": Pulsar cut the X2F CrazyLight to 87.5 mm to reach 29 g (its own
    figure, ± 2 g; no scale weight is published: BROADCAST-0945, b01X2fWt).
-   Theseus keeps a full 119.3 mm at 29.31 g, the shortest of the full-size flagships. Hands from ANSUR II (US Army 2012,
+   Theseus keeps a full 119.3 mm at THS.massG, the shortest of the full-size flagships. Hands from ANSUR II (US Army 2012,
    the full public sample), lengths on one ruler; his rule for a flat mouse quoted word for word (F21.13). */
 const B07_X2F = { L: 87.5, g: 29 };
 S({
@@ -1477,12 +1478,12 @@ S({
   answers: [
     ['F21.13 (the flatter-mouse line, word for word)', 'Quoted exactly in its own card: "for a flatter mouse, its better to be too small than too big, because big hands will still be able to fingertip grip" (his doc, line 627), and called his rule, not a measured finding (Theseus is 39.9 mm tall).'],
     ['119.3 mm against the flagships and the average hand', 'One ruler: hand lengths from ANSUR II (women 5th 165, mean 181; men mean 193.3, 95th 210 mm; 193.3 is his 19.3 cm) and the flagships\' lengths (Viper V4 Pro 127.1, G Pro X Superlight 2 125.0, Starlight X 124.8, UltralightX 121.3, Theseus 119.3).'],
-    ['FILM F1 (the chapter\'s flagship, X2F CrazyLight: cut to 87.5 mm)', 'The slide answers the card\'s flagship: the X2F cut to 87.5 mm to reach 29 g (Pulsar\'s figure, ± 2 g); Theseus keeps a full 119.3 mm at 29.31 g. The cost of too short, sourced: Oude Hengel 2008, an 87 mm mouse raised big hands\' wrist-extensor load by up to 5.5 % MVC (office mice; no length-to-hand ratio rule exists, research gap 8).']
+    ['FILM F1 (the chapter\'s flagship, X2F CrazyLight: cut to 87.5 mm)', 'The slide answers the card\'s flagship: the X2F cut to 87.5 mm to reach 29 g (Pulsar\'s figure, ± 2 g); Theseus keeps a full 119.3 mm at ' + THS.massG + '. The cost of too short, sourced: Oude Hengel 2008, an 87 mm mouse raised big hands\' wrist-extensor load by up to 5.5 % MVC (office mice; no length-to-hand ratio rule exists, research gap 8).']
   ],
   draw: t => {
     header(t, 'Sized against real hands');
     captions(t, [[0.6, 'To reach 29 g, Pulsar cut the X2F CrazyLight to 87.5 mm. Under an average hand, that is less than half the hand\'s length.'],
-      [3.6, 'Theseus keeps a full 119.3 mm at 29.31 g: the shortest of the full-size flagships, sized to the rule below.']]);
+      [3.6, 'Theseus keeps a full 119.3 mm at ' + THS.massG + ': the shortest of the full-size flagships, sized to the rule below.']]);
     const mice = [['Pulsar X2F CrazyLight', B07_X2F.L, 'rival', 'Cut down for weight']].concat(B07_LEN.map(([id, nm, d]) => [nm, b07_len(id, d), 'comp'])).concat([['Theseus', 119.3, 'hero']]);
     mice.sort((a, b) => a[1] - b[1]);
     const hands = [['Women, 5th percentile', B07_HAND.women.p5], ['Women, average', B07_HAND.women.mean], ['Men, average', B07_HAND.men.mean], ['Men, 95th percentile', B07_HAND.men.p95]];
@@ -1686,8 +1687,9 @@ S(b07_live({
     return [
       ['mass: "in review"', 'Rebuilt: the balance point is shown moving as each part goes in, on two kitchen scales (the classroom way to find a centre of mass), then the battery\'s height argued both ways with the flick\'s twist drawn.'],
       ['"research why some people are pushing for higher battery placement"', `No maker or test gives a reason in print (research gap 4: none found). The physics gives one, shown and credited to no one: in a flick the hand pushes where it holds, so a palm resting high on the hump pushes higher up, and a higher battery lines the weight up with that push; some mice do carry it high (the G Pro X Superlight's is glued to its top shell, iFixit). Against it: Theseus is held on its flat low sides, 12 mm up, so a low battery puts the balance ${b07_lvTxt(BAL.lvLow, true)} mm above the grip, within a millimetre (the parts' heights are known to about that), against ${b07_lvTxt(BAL.lvHigh, false)} mm with the battery in the hump (the headline, both rounded against Theseus).`],
-      ['F30.10 (balance stays at the centre)', `The scales end level (${fmtN(front, 1)} and ${fmtN(m - front, 1)} g): the balance point at the middle of the length, within a millimetre (the parts' places are known to about that), not under the sensor.`],
-      ['F21.15, F42.1 (the battery balances the mouse; "forward and up")', `The battery lands last, the heaviest part at 8 g, set where the mouse balances: ${fmtN(-BAL.zb, 1)} mm behind the middle, at board height (KEY_PARTS). F42.1 asked for a balance at the centre; with the side switches and the four boss posts in the model (H2; the posts estimated), the centre needs the battery 2.0 mm further back than H1's place, at the same height, so the slide says "set where the mouse balances", not "forward and up". It pulls the balance from about ${b07_dn(BAL.rest.z)} mm ahead of the middle to the centre.`],
+      ['F30.10 (balance stays at the centre)', Math.abs(BAL.low.z) <= 1 ? `The scales end level (${fmtN(front, 1)} and ${fmtN(m - front, 1)} g): the balance point at the middle of the length, within a millimetre (the parts' places are known to about that), not under the sensor.`
+        : `Not level since the battery went to ${fmtN(B07_BUD.batt, 2)} g (Brock, 17:10) at the place H2 set for the 8 g pack: ${fmtN(front, 1)} and ${fmtN(m - front, 1)} g, the balance ${fmtN(BAL.low.z, 1)} mm ahead of the middle. Said in red on the slide; the battery's place is to be re-run (H4).`],
+      ['F21.15, F42.1 (the battery balances the mouse; "forward and up")', `The battery lands last, the heaviest part at ${fmtN(B07_BUD.batt, 2)} g, set where the mouse balanced with the 8 g pack it replaced: ${fmtN(-BAL.zb, 1)} mm behind the middle, at board height (KEY_PARTS). F42.1 asked for a balance at the centre; with the side switches and the four boss posts in the model (H2; the posts estimated), the centre needs the battery 2.0 mm further back than H1's place, at the same height, so the slide says "set where the mouse balances", not "forward and up". It pulls the balance from about ${b07_dn(BAL.rest.z)} mm ahead of the middle to the centre.`],
       ['F42.2 (the board\'s 5.6 g is a target)', 'The weights list says "Board (target) 5.60 g".'],
       ['F2.40 (a better argument, more intuitive)', 'The argument is the lever between the push and the weight, drawn on the mouse, with the mouse rocking (drawn exaggerated) when the battery is high and not when it is low.']
     ];
@@ -1696,7 +1698,10 @@ S(b07_live({
     const parts = b07_balParts(), F = b07_balFrame(), P0 = B07_POS, BAL = b07_balance();
     header(t, 'Balance at the centre');
     captions(t, [[0.2, 'Weigh the mouse at both ends as its parts go in. Each part pulls the balance point toward itself.'],
-      [3.4, 'The battery is the heaviest part, ' + b07_gTxt(B07_BUD.batt) + ' g. Set low in the tail, where the mouse balances, it brings the balance back to the centre.'],
+      /* V4: with the 6.40 g pack (Brock, 17:10) at the place H2 set for the 8 g one, the balance sits ahead of the middle
+         until the layout is re-run (H4); the words follow the model (b07_balOff), never the old place's claim */
+      [3.4, Math.abs(BAL.low.z) <= 1 ? 'The battery is the heaviest part inside, ' + b07_gTxt(B07_BUD.batt) + ' g. Set low in the tail, where the mouse balances, it brings the balance back to the centre.'
+        : 'The battery is the heaviest part inside, ' + b07_gTxt(B07_BUD.batt) + ' g. Set low in the tail, it pulls the balance from ' + b07_dn(BAL.rest.z) + ' mm ahead of the middle to ' + fmtN(Math.abs(BAL.low.z), 1) + ' mm.'],
       [4.5, 'Some want the battery higher, up in the hump. A palm resting high on the hump pushes up there, and the weight would line up with it.'],
       [7.2, 'Theseus is held on its flat low sides, 12 mm up. A low battery puts the balance on that grip, so a flick doesn\'t rock it.']]);
     /* the parts land one by one; the battery last */
@@ -1741,7 +1746,7 @@ S(b07_live({
         const q = P(-z1 / mm, -y1 / mm); circle(q[0], q[1], 4, { fill: C.faint, alpha: 0.8 * kLab });
       }
       b07_comMark(qc[0], qc[1], 14, kp[0]);
-      if (t >= 4.0 && t < 4.9) fixTag(t, 4.0, [qc[0] + 10, qc[1] - 10], 'At the centre, within a millimetre', { to: [qc[0] + 70, qc[1] - 150], side: 'r', alpha: 1 - ep(t, 4.6, 4.9) });
+      if (t >= 4.0 && t < 4.9) fixTag(t, 4.0, [qc[0] + 10, qc[1] - 10], Math.abs(BAL.low.z) <= 1 ? 'At the centre, within a millimetre' : fmtN(Math.abs(BAL.low.z), 1) + ' mm ahead of the centre', { to: [qc[0] + 70, qc[1] - 150], side: 'r', alpha: 1 - ep(t, 4.6, 4.9) });
     }
     /* phase 2: the grip line, the balance point's height, the lever between them */
     if (k2 > 0.003) {
@@ -1782,7 +1787,10 @@ S(b07_live({
       if (kt > 0.003) {
         line(rx, yT - 22, rx + rw, yT - 22, { color: C.hair, w: 1.5, alpha: kt });
         text('Balance point', rx, yT + 14, { role: 'small', size: 25, weight: 700, color: C.ink, alpha: kt });
-        text('at the middle, within 1 mm', rx + rw, yT + 14, { role: 'small', size: 25, weight: 700, color: C.heroText, align: 'right', alpha: kt });
+        if (Math.abs(BAL.low.z) <= 1) text('at the middle, within 1 mm', rx + rw, yT + 14, { role: 'small', size: 25, weight: 700, color: C.heroText, align: 'right', alpha: kt });
+        else { text(fmtN(Math.abs(BAL.low.z), 1) + ' mm ' + (BAL.low.z > 0 ? 'ahead of' : 'behind') + ' the middle', rx + rw, yT + 14, { role: 'small', size: 25, weight: 700, color: C.red, align: 'right', alpha: kt });
+          /* the lighter battery's place is the layout's to re-run (H4): said, in red, as the deck says a gap */
+          text('The ' + b07_gTxt(B07_BUD.batt) + ' g battery sits where the ' + b07_gTxt(typeof ntr_oldPack === 'function' ? ntr_oldPack().g : 8) + ' g one balanced: its place is to be re-run', rx, yT + 50, { role: 'small', size: 20, weight: 600, color: C.red, alpha: kt, maxW: rw }); }
       }
     }
     const k3 = ep(t, 5.0, 5.5);
@@ -1803,7 +1811,7 @@ S(b07_live({
     /* one decimal at most: the parts' heights are known to about a millimetre (model audit M-b07-5), so the low battery is
        "at the grip", not a percentage cut; with F44.2's side switches it sits 0.6 mm above, so "within a millimetre" */
     verdict(t, 8.8, rx, 884, { from: +b07_lvTxt(BAL.lvHigh, false), to: +b07_lvTxt(BAL.lvLow, true), unit: 'mm', dec: 1, label: 'Balance above the grip', better: 'lower', who: ['Battery in the hump', 'Theseus'], size: 96, net: 'At the grip', netWord: 'within a millimetre', maxW: rw });
-    source(t, 'Derived, H2\'s balance model: the ' + fmtN(THESEUS.mass, 2) + ' g budget at the 3D centroids (the board at ' + fmtN(B07_BUD.board, 2) + ' g; side switches and four boss posts, estimated, inside the shell\'s 9.35 g); battery set where the mouse balances. Twist = m·a·lever. Rock not to scale.', { t0: 2.0, maxW: rx - LM - 60 });
+    source(t, 'Derived, H2\'s balance model: the ' + fmtN(THESEUS.mass, 2) + ' g budget at the 3D centroids (the board at ' + fmtN(B07_BUD.board, 2) + ' g; side switches and four boss posts, estimated, inside the shell\'s 9.35 g); battery ' + (Math.abs(BAL.low.z) <= 1 ? 'set where the mouse balances' : 'at the place H2 set for the 8 g pack it replaced') + '. Twist = m·a·lever. Rock not to scale.', { t0: 2.0, maxW: rx - LM - 60 });
   }
 }));
 

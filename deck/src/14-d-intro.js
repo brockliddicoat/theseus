@@ -232,7 +232,7 @@ S({
       const r = cell(i % 3, Math.floor(i / 3)), t0 = 0.3 + order.indexOf(i) * 0.14;
       if (d.product) ntr_productTile(t, t0, r); else ntr_statTile(t, t0, r, d);
     });
-    source(t, 'Density: 29.31 g in Theseus\'s 119.3 × 62.4 × 39.9 mm box; next best: RTINGS\'s weight in its maker\'s box. Battery: derived, the example battery at the V4 Pro\'s draw.', { t0: 2.4 });
+    source(t, 'Density: ' + THS.massG + ' in Theseus\'s 119.3 × 62.4 × 39.9 mm box; next best: RTINGS\'s weight in its maker\'s box. Battery: derived, the example battery at the V4 Pro\'s draw.', { t0: 2.4 });
   }
 });
 
@@ -357,8 +357,12 @@ S({
     header(t, 'The size–weight illusion');
     const X2F = ntr_dens({ theseus: false }).find(r => r.id === 'pulsar-x2f-crazylight'), bx = ntr_thsBox(), rhoT = ntr_thsRho();
     const more = X2F ? 100 * (bx.v / X2F.v - 1) : 0;
-    captions(t, [[0.6, 'Two mice that weigh the same. The Pulsar X2F gets there by being less mouse: the front half of a shell.'],
-      [5.6, `Theseus puts the same weight into ${fmtN(more, 0)}% more mouse, and at the same weight the bigger one feels lighter in the hand.`]]);
+    /* V4 (Brock, 17:10: 27.7 g): the two no longer weigh the same, Theseus is the lighter, so the words say so; the illusion
+       (at the same weight the bigger feels lighter) only adds to it */
+    const same = X2F && Math.abs(X2F.g - THESEUS.mass) < 0.5;
+    captions(t, [[0.6, same ? 'Two mice that weigh the same. The Pulsar X2F gets there by being less mouse: the front half of a shell.' : 'Two light mice. The Pulsar X2F gets there by being less mouse: the front half of a shell.'],
+      [5.6, same ? `Theseus puts the same weight into ${fmtN(more, 0)}% more mouse, and at the same weight the bigger one feels lighter in the hand.`
+        : `Theseus puts less weight into ${fmtN(more, 0)}% more mouse, and even at the same weight the bigger one feels lighter in the hand.`]]);
     const k = 3.45, gy = 700;
     const items = [
       { key: 'x2f', name: 'Pulsar X2F CrazyLight', g: X2F ? X2F.g : 29.5, gs: fmtN(X2F ? X2F.g : 29.5, 1), ev: 'measured', by: 'Brock', box: X2F ? X2F.box : { L: 87.5, W: 61.1, H: 31.6, v: 168.9 }, rho: X2F ? X2F.rho : 0.1717, x: 720, t0: 1.1 },
@@ -393,7 +397,7 @@ S({
     /* the ground */
     line(680, gy + 1, RM, gy + 1, { color: C.hair, w: 1.5, alpha: ep(t, 0.4, 0.9) });
     /* the headline over the two boxes: how much more mouse the same weight makes (F14.10) */
-    ntr_hl(t, 5.6, 720, 400, '+' + fmtN(more, 0) + '%', 'more mouse', { size: 136, count: false, sub: `The same weight, ${fmtN(X2F ? X2F.g : 29, 1)} g and ${fmtN(THESEUS.mass, 1)} g: Theseus's density is ${fmtN(100 * (1 - rhoT / (X2F ? X2F.rho : 0.1717)), 0)}% lower. Lower is better.`, maxW: RM - 720 });
+    ntr_hl(t, 5.6, 720, 400, '+' + fmtN(more, 0) + '%', 'more mouse', { size: 136, count: false, sub: `${same ? 'The same weight' : 'Lighter'}, ${fmtN(THESEUS.mass, 1)} g against ${fmtN(X2F ? X2F.g : 29, 1)} g: Theseus's density is ${fmtN(100 * (1 - rhoT / (X2F ? X2F.rho : 0.1717)), 0)}% lower. Lower is better.`, maxW: RM - 720 });
     /* the words, in the left column */
     ntr_stack(t, LM, 280, 560, [
       { t0: 5.8, gloss: true, a: 'Size–weight illusion', b: 'Of two things with the same mass, the smaller one feels heavier. Charpentier measured it in 1891.' },
@@ -421,7 +425,7 @@ S({
     const ahead = th0 ? byD.slice(0, th0.rd).map(r => (r.wired ? 'the wired ' + r.name.replace(', wired', '') : 'the ' + r.name + (r.ev !== 'measured' ? ' on its maker\u2019s figure' : ''))) : [];
     const aheadS = ahead.length > 1 ? ahead.slice(0, -1).join(', ') + ' and ' + ahead[ahead.length - 1] : ahead[0] || '';
     captions(t, [[0.6, `The same ${R.length} mice, ranked twice: by weight on the left, by density on the right. One is wired, the XBAB XA25.`],
-      [5.8, (x2f ? `The X2F falls from ${ord(x2f.rw + 1)} to ${ord(x2f.rd + 1)}: it is light because it is short. ` : '') + (th0 && ahead.length ? `Theseus is ${ord(th0.rd + 1)}, behind ${aheadS}.` : da ? `The DeathAdder V4 Pro climbs from ${ord(da.rw + 1)} to ${ord(da.rd + 1)}.` : '')]]);
+      [5.8, (x2f ? `The X2F falls from ${ord(x2f.rw + 1)} to ${ord(x2f.rd + 1)}: it is light because it is short. ` : '') + (th0 && ahead.length ? `Theseus is ${ord(th0.rd + 1)}, behind ${aheadS}.` : th0 && th0.rd === 0 ? `Theseus is 1st: no mouse here is lighter for its size, wired or wireless.` : da ? `The DeathAdder V4 Pro climbs from ${ord(da.rw + 1)} to ${ord(da.rd + 1)}.` : '')]]);
     /* more rows since G-Wolves's line came in (V1): the list runs taller and its type is the deck's smallest */
     const n = R.length, dense = n > 30, y0 = dense ? 352 : 374, y1 = dense ? 948 : 926, p = (y1 - y0) / (n - 1), xL = 560, xR = 1352, Y = i => y0 + i * p, fs = dense ? 19 : 22, fv = dense ? 19 : 21;
     const a0 = ep(t, 0.3, 0.8), th = R.find(r => r.hero);

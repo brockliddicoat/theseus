@@ -10,6 +10,7 @@
    ============================================================================================ */
 Object.assign(SRC, {
   elcRaytac: { t: 'Raytac AN54LM-P20A product page: nRF54LM20A, PCB antenna (the long meander trace), 9.9 × 13.3 × 2.0 mm, 2.0 MB flash / 512 KB RAM, high-speed USB, 66 GPIO; "Intended Certifications: FCC, IC, CE, Telec (MIC), KC, SRRC, NCC, RCM, WPC"; coming soon, est. Q4 2026 (read 2026-11-04). Brock chose the AN54LM-P20A, long antenna (21:55)', u: 'https://www.raytac.com/product/ins.php?index_id=181' },
+  elcEemb: { t: 'EEMB LP402535 specification (ZJQM-RD-SPC-H2310, 2022-10-25): 320 mAh nominal, 300 mAh minimum at 0.2C; 3.7 V; 4.2 V charge; maximum charge 320 mA (1.0C, CC/CV); approx. 6.4 g; ≤ 4.3 × 25.5 × 36 mm; charging 0 to 45 °C; ≥ 500 cycles at 0.5C', u: 'https://eemb.oss-accelerate.aliyuncs.com//uploads/20230315/7900a5b46fe77f926d269d99ff3a8dfa.pdf', n: 'Theseus\'s battery from 2026-11-06 (Brock). The deck counts its minimum, 300 mAh, and charges it at 1C of that, 300 mA, inside the 320 mA rating.' },
   elcLp4025: { t: 'Jauch LP402535JU datasheet (matd 246497, 2020-05-07): 380 mAh typical, 370 mAh minimum at 0.2C; 3.7 V; standard charge 0.2C, maximum charge 1.0C; 4.2 V charge; 300 cycles to 80%; about 8 g; charging from +10 to +45 °C', u: 'https://jauch.com/downloadfile/66ced46b34a2d2b034c873f2a5b325e7b/matd_246497_20200507_380mah_-_lp402535ju_1s1p_2_wire_50mm.pdf' },
   elcRaytacBlog: { t: 'Raytac blog, 25 Mar 2026: the AN54LM series; Bluetooth 6.0 certified, regional certifications listed as targets', u: 'https://raytaccorp.blogspot.com/2026/03/raytac-abietec-announce-new-an54lm.html' },
   elcNpm: { t: 'Nordic nPM1300 product page: 32 to 800 mA charging, 3.5 to 4.45 V termination, 4.0 to 5.5 V input with 22 V overvoltage protection, 2 × 200 mA bucks, 2 LDOs / load switches, fuel gauge, watchdog, ship mode 370 nA, hibernate 500 nA, 5 × 5 mm QFN', u: 'https://www.nordicsemi.com/Products/nPM1300' },
@@ -132,14 +133,13 @@ function elc_ba(t, t0, x, y, before, after, o = {}) {
 }
 
 /* ---------- the plan's cell and the draw it runs at ----------
-   The cell is the Intro's (its weight budget): Jauch LP402535JU, 370 mAh minimum, 1C charge (elcLp4025). The draw is the
-   Viper V4 Pro's: its 1.184 Wh cell over Razer's 180 h at 1 khz, and over TechPowerUp's 40 h measured at 8 khz. */
+   The cell is the Intro's (its weight budget, THESEUS.pack): EEMB's LP402535, 300 mAh minimum, 1C charge, charging 0 to
+   45 °C (elcEemb; Brock, 17:08). The draw is the Viper V4 Pro's: its 1.184 Wh cell over Razer's 180 h at 1 khz, and over
+   TechPowerUp's 40 h measured at 8 khz, less its two optical switches (ntr_hours: one derivation for the deck). */
 function elc_cell() {
-  const f = ((RD.batteries || {}).jauch_lipo_family || {}).rows || [], r = f.find(x => x.part === 'LP402535JU');
-  const c = r ? { mAh: rv(r.capacity) || 370, g: rv(r.mass) || 8, wh: rv(r.energy_Wh) || 1.369 } : { mAh: 370, g: 8, wh: 1.369 };
-  const mp = (RD.batteries || {}).mouse_power_draw || [], e = mp.find(x => /cell energy/i.test(x.case || '')), whV4 = (e && rv(e.value)) || 1.184;
-  const w1 = whV4 / 180, w8 = whV4 / 40;
-  return Object.assign(c, { part: 'LP402535JU', whV4, w1, w8, h1: c.wh / w1, h8: c.wh / w8 });
+  const H = ntr_hours(), c = H.cell, r = (((RD.batteries || {}).eemb_lipo || {}).rows || []).find(x => x.part === c.part) || {}, tc = r.charge_temp_C || { min: 0, max: 45 };
+  return { part: c.part, maker: c.maker, mAh: c.mAh, g: c.g, wh: c.wh, whV4: H.L.wh, w1: H.L.w1, w8: H.L.w8, keep: H.S.keep, opt: H.S.opt,
+    h1: H.h1, h8: H.h8, same1: H.same1, same8: H.same8, tLo: tc.min, tHi: tc.max, cyc: r.cycles ? rv(r.cycles) : null };
 }
 
 /* ---------- the layout's numbers, board-local mm (3d/pcb/pcb-layout.json, and the scene's 2D twin) ----------
@@ -559,18 +559,18 @@ S({
 /* ============================== battery life against polling rate (battery, sync) ============================== */
 S({
   id: 'power', ch: 'elec', theme: 'night', title: 'Battery life against polling rate', settle: 10, ideas: ['battery', 'sync'],
-  src: ['razerBatt', 'nbcV4', 'exNbcV4', 'elcTpuV4', 'paw3395', 'elcLp4025', 'ntrJauch'],
+  src: ['razerBatt', 'nbcV4', 'exNbcV4', 'elcTpuV4', 'paw3395', 'elcEemb', 'ntrEemb', 'b01Optical'],
   draw: t => {
     const B = elc_cell();
     header(t, 'Battery life against polling rate');
-    captions(t, [[0.6, 'Every report costs current. Razer\'s Viper V3 Pro runs 95 hours at 1 khz and 17 at 8 khz; the V4 Pro, with Razer\'s FrameSync and new chips, claims 180 h, and runs about 40 at 8 khz.'], [5.4, 'Theseus plans ' + THS.hours + ' at 1 khz: a ' + B.mAh + ' mAh battery at the V4 Pro\'s draw, carried by the weight my shell design frees.']]);
+    captions(t, [[0.6, 'Every report costs current. Razer\'s Viper V3 Pro runs 95 hours at 1 khz and 17 at 8 khz; the V4 Pro, with Razer\'s FrameSync and new chips, claims 180 h, and runs about 40 at 8 khz.'], [5.4, 'Theseus plans ' + THS.hours + ' at 1 khz on a ' + B.mAh + ' mAh battery, the V4 Pro\'s size: its draw without the V4 Pro\'s two optical switches, before any firmware gains.']]);
     /* the bars: three mice at two rates, Theseus tallest at both */
     const x = LM, y = 280, w = 1000, h = 680;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0));
     cardHead(t, 0.4, x, y, w, 'Battery life in hours (higher is better)', ['claim', { ev: 'measured', by: 'TechPowerUp' }, 'derived']);
     const base = y + 560, sc = 2.05, bw = 112;
     /* one figure per mouse, deck-wide: the V4 Pro at 8 khz is TechPowerUp's 40 h, the draw Theseus's own 8 khz hours come from */
-    const mice = [['Viper V3 Pro', [95, 17], C.comp, 'No sync'], ['Viper V4 Pro', [180, 40], C.ref, 'Razer\'s FrameSync'], ['Theseus', [THESEUS.hours, Math.round(B.h8)], C.hero, 'The plan']];
+    const mice = [['Viper V3 Pro', [95, 17], C.comp, 'No sync'], ['Viper V4 Pro', [180, 40], C.ref, 'Razer\'s FrameSync'], ['Theseus', [THESEUS.hours, Math.floor(B.h8 + 1e-9)], C.hero, 'The plan']];
     line(x + 40, base, x + w - 40, base, { color: C.faint, w: 1.5, alpha: ep(t, 0.9, 1.3) });
     ['1 khz', '8 khz'].forEach((g, gi) => {
       const gx = x + 110 + gi * 450;
@@ -587,10 +587,10 @@ S({
     text('No hours published: Starlight X, ULX, Sora V2, Beast X, X2 CrazyLight', x + 560, y + 340, { role: 'small', size: 22, weight: 600, color: C.bad, alpha: ep(t, 4.0, 4.4), maxW: 400, lh: 1.3 });
     /* the right column: by how much, before → after, why */
     const rx = 1120, rw = RM - rx;
-    elc_hl(t, 4.2, rx, 430, String(THESEUS.hours), 'hours', { label: 'At 1 khz, the plan', sub: B.mAh + ' mAh, ' + fmtN(B.wh, 2) + ' Wh at the Viper V4 Pro\'s ' + fmtN(B.w1 * 1000, 1) + ' mW: ' + fmtN(B.h1, 0) + ' h. At 8 khz, ' + fmtN(B.h8, 0) + ' h.', subW: rw });
-    elc_ba(t, 5.0, rx, 660, '180', String(THESEUS.hours), { label: 'The longest listed, then Theseus', unit: 'h', net: '+' + fmtN(100 * (THESEUS.hours - 180) / 180, 0) + ' % over the Viper V4 Pro', maxW: rw });
+    elc_hl(t, 4.2, rx, 430, String(THESEUS.hours), 'hours', { label: 'At 1 khz, the plan', sub: B.mAh + ' mAh, ' + fmtN(B.wh, 2) + ' Wh at the Viper V4 Pro\'s ' + fmtN(B.w1 * 1000, 1) + ' mW less its optical switches, ' + fmtN(B.w1 * B.keep * 1000, 1) + ' mW: ' + fmtN(Math.floor(B.h1), 0) + ' h. At 8 khz, ' + fmtN(Math.floor(B.h8), 0) + ' h.', subW: rw });
+    elc_ba(t, 5.0, rx, 660, '180', String(THESEUS.hours), { label: 'The longest listed, then Theseus', unit: 'h', net: '+' + Math.floor(100 * (THESEUS.hours - 180) / 180 + 1e-9) + ' % over the Viper V4 Pro, on a battery its size', maxW: rw });
     glossBox(t, 5.8, rx, 750, rw, 'Frame sync', 'The sensor\'s LED flashes once per frame. Synced to the polls, it takes a frame only when a report needs one, so it flashes less often.', { size: 24 });
-    source(t, 'Hours: Razer support and Notebookcheck, claims; the V4 Pro at 8 khz, TechPowerUp, measured. Theseus: the example battery at the V4 Pro\'s draw, derived.', { t0: 2 });
+    source(t, 'Hours: Razer\'s claims, the V4 Pro at 8 khz TechPowerUp\'s. Theseus, derived: ' + B.maker + '\'s ' + B.mAh + ' mAh at the V4 Pro\'s draw less its optical switches (' + b01_optPct() + '), before any firmware gains.', { t0: 2 });
   }
 });
 
@@ -683,7 +683,7 @@ S({
   draw: t => {
     const B = elc_cell();
     header(t, 'Fast charging at the battery\'s 1C');
-    captions(t, [[0.6, 'The flagships charge at 0.13 to 0.28 A. The nPM1300 can push 0.8 A, so the charger is not the limit: the battery\'s datasheet is.'], [5.0, 'Theseus\'s battery is rated for 1C, ' + B.mAh + ' mA. Against the Viper V4 Pro\'s 0.55C, the charge to 80% takes a little over half as long.']]);
+    captions(t, [[0.6, 'The flagships charge at 0.13 to 0.28 A. The nPM1300 can push 0.8 A, so the charger is not the limit: the battery\'s datasheet is.'], [5.0, 'Theseus\'s battery is rated for 1C: ' + B.mAh + ' mA, for the ' + B.mAh + ' mAh it is counted at. Against the Viper V4 Pro\'s 0.55C, the charge to 80% takes a little over half as long.']]);
     if (!ELC_CHG.fast) { ELC_CHG.fast = elc_ccv(1.0); ELC_CHG.slow = elc_ccv(0.55); }
     const F = ELC_CHG.fast, Sl = ELC_CHG.slow;
     /* one charge, two rates: the model, big */
@@ -716,10 +716,10 @@ S({
     text('nPM1300: 0.8 A', X(0.8) - 10, cy0 + 236, { role: 'label', size: 19, color: C.mute, align: 'right', alpha: kc });
     /* the right column: by how much, before → after, the word */
     const rx = 1120, rw = RM - rx;
-    elc_hl(t, 4.0, rx, 430, fmtN(Sl.t80 / F.t80, 1) + '×', 'faster', { label: 'To 80%, at the battery\'s rated 1C', sub: 'Jauch rates the ' + B.part + ', the example battery, for a 1C charge. The Viper V4 Pro charges at 0.169 A, 0.55C of its 306 mAh.', subW: rw });
+    elc_hl(t, 4.0, rx, 430, fmtN(Sl.t80 / F.t80, 1) + '×', 'faster', { label: 'To 80%, at the battery\'s rated 1C', sub: B.maker + ' rates the ' + B.part + ' for a 1C charge (320 mA on its typical 320 mAh). The Viper V4 Pro charges at 0.169 A, 0.55C of its 306 mAh.', subW: rw });
     elc_ba(t, 4.8, rx, 660, fmtN(Sl.t80, 0), fmtN(F.t80, 0), { label: 'From 10 to 80%, minutes', unit: 'min', net: '−' + fmtN(Sl.t80 - F.t80, 0) + ' min; full in ' + fmtN(F.end[0], 0) + ' instead of ' + fmtN(Sl.end[0], 0), maxW: rw });
     glossBox(t, 5.6, rx, 760, rw, 'C-rate', 'Charge current divided by capacity. 1C on a ' + B.mAh + ' mAh battery is ' + B.mAh + ' mA.', { size: 24 });
-    source(t, 'Currents: TechPowerUp. 0.55C = 0.169 A ÷ 0.306 Ah. Jauch LP402535JU datasheet: 1C maximum charge. Curves: a CC/CV model, 4.2 V, stop at 10% current, rq 0.21 V/C.', { t0: 2 });
+    source(t, 'Currents: TechPowerUp. 0.55C = 0.169 A ÷ 0.306 Ah. EEMB LP402535 specification: 320 mA (1.0C) maximum charge. Curves: a CC/CV model, 4.2 V, stop at 10% current, rq 0.21 V/C.', { t0: 2 });
   }
 });
 
@@ -727,17 +727,17 @@ S({
 /* ============================== a safer battery: the cell's own window, the die, the input, ship mode ============================== */
 S({
   id: 'elc_safe', ch: 'elec', theme: 'paper', title: 'A safer battery: four guards', settle: 10, ideas: ['pmic', 'battery'], three: ['battery'],
-  src: ['elcNpmJeita', 'elcNpmChg', 'elcNpm', 'elcLp4025', 'elcBu802'],
+  src: ['elcNpmJeita', 'elcNpmChg', 'elcNpm', 'elcEemb', 'elcBu802'],
   draw: t => {
     const B = elc_cell();
     header(t, 'A safer battery: four guards');
-    captions(t, [[0.6, 'The PMIC reads the battery\'s own temperature sensor. Its default charges from 0 to 60 °C; I set it to the battery\'s datasheet: 10 to 45 °C, and nothing outside.'], [5.6, 'It also stops charging if its own die runs hot, is protected to 22 V at the input, and draws 370 nA when the switch is off.']]);
+    captions(t, [[0.6, 'The PMIC reads the battery\'s own temperature sensor. Its default charges from 0 to 60 °C; I set it to the battery\'s datasheet: ' + B.tLo + ' to ' + B.tHi + ' °C, and nothing outside.'], [5.6, 'It also stops charging if its own die runs hot, is protected to 22 V at the input, and draws 370 nA when the switch is off.']]);
     /* the window, full width: current against the cell's temperature; a thermometer sweeps it */
     const x = LM, y = 280, w = RM - LM, h = 420, A = C.hero;
     demoWindow(x, y, w, h, tileA(t, 0.2, 0));
     cardHead(t, 0.4, x, y, w, 'Charge current against the battery\'s temperature (none outside the battery\'s window)', ['datasheet']);
     const m = axes(t, { x: x + 150, y: y + 120, w: w - 230, h: 210, t0: 0.8, xr: [-10, 70], yr: [0, 110], xticks: [-10, 0, 10, 20, 30, 40, 50, 60, 70], yticks: [0, 50, 100], xfmt: v => v + ' °C', yfmt: v => v + '%' });
-    const kw = ep(t, 1.2, 2.4, E.cam), lo = lerp(0, 10, kw), hi = lerp(60, 45, kw);
+    const kw = ep(t, 1.2, 2.4, E.cam), lo = lerp(0, B.tLo, kw), hi = lerp(60, B.tHi, kw);
     /* the default window, dashed, and the cell's, filled: before → after */
     const kd = ep(t, 1.0, 1.4);
     G.save(); G.globalAlpha = kd * 0.9; G.setLineDash([7, 6]); G.strokeStyle = C.mute; G.lineWidth = 2; G.strokeRect(m.X(0), m.Y(100), m.X(60) - m.X(0), m.Y(0) - m.Y(100)); G.restore();
@@ -746,9 +746,10 @@ S({
     for (const [a0, b0] of [[-10, lo], [hi, 70]]) rect(m.X(a0), m.Y(100), m.X(b0) - m.X(a0), m.Y(0) - m.Y(100), { fill: rgba(C.bad, 0.12), alpha: kw });
     const curve = [[-10, 0], [lo, 0], [lo, 100], [hi, 100], [hi, 0], [70, 0]].map(([a0, b0]) => [m.X(a0), m.Y(b0)]);
     poly(curve, { color: A, w: 4, p: ep(t, 1.6, 3.0, E.io3) });
-    text('The battery\'s datasheet: 10 to 45 °C', (m.X(10) + m.X(45)) / 2, m.Y(100) + 40, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, 2.4, 2.8) });
-    const Tc = kf(((t - 3.2) % 9 + 9) % 9, [[0, 24], [1.6, 4], [2.6, 4], [4.0, 12], [4.8, 12], [6.2, 42], [7.0, 42], [7.8, 52], [8.4, 52], [9, 24]]);
-    const cur = Tc < 10 || Tc > 45 ? 0 : 100, kt = ep(t, 3.2, 3.6);
+    text('The battery\'s datasheet: ' + B.tLo + ' to ' + B.tHi + ' °C', (m.X(B.tLo) + m.X(B.tHi)) / 2, m.Y(100) + 40, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: ep(t, 2.4, 2.8) });
+    /* the sweep: too cold (below the battery's floor: EEMB's is 0 °C, so -5), warm, near the top, too hot */
+    const cold = Math.min(4, B.tLo - 5), Tc = kf(((t - 3.2) % 9 + 9) % 9, [[0, 24], [1.6, cold], [2.6, cold], [4.0, 12], [4.8, 12], [6.2, 42], [7.0, 42], [7.8, 52], [8.4, 52], [9, 24]]);
+    const cur = Tc < B.tLo || Tc > B.tHi ? 0 : 100, kt = ep(t, 3.2, 3.6);
     if (kt > 0) {
       const px = m.X(Tc);
       line(px, m.Y(110), px, m.Y(0), { color: C.ink, w: 1.5, dash: [4, 4], alpha: kt * 0.8 });
@@ -766,7 +767,7 @@ S({
     demoWindow(bx, ty, bw, th, tileA(t, 5.2, 2));
     const PB = elc_v3('battery', t, bx + 150, ty + 2, bw - 152, th - 4, { view: 'threeQuarter', view2d: 'top', zoom: in2D(1.25, 1.4), yaw: 0.15 * Math.sin(t * 0.4), explode: 0.3 * ep(t, 5.4, 6.4) });
     if (PB) callout(t, 6.0, PB([13.5, 1.2, 23.5]), 'NTC lead', { to: [bx + 176, ty + 92], side: 'l', color: A, sub: 'The battery\'s third wire', maxW: 128 });
-    source(t, 'Nordic nPM1300 specification (defaults, all configurable). Jauch LP402535JU: charging from +10 to +45 °C. Ship mode: 370 nA × 8,766 h ≈ 3.2 mAh, under 1% of ' + B.mAh + ' mAh, derived.', { t0: 2 });
+    source(t, 'Nordic nPM1300 specification (defaults, all configurable). ' + B.maker + ' ' + B.part + ': charging from ' + B.tLo + ' to ' + B.tHi + ' °C. Ship mode: 370 nA × 8,766 h ≈ 3.2 mAh, under 1% of ' + B.mAh + ' mAh, derived.', { t0: 2 });
   }
 });
 

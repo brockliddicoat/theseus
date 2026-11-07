@@ -2,7 +2,7 @@
    INTRO (chapter code ntr). The first impression, in this order:
      cover, thesis (how every number is labelled), targets, targets2, flagships, [ntr_stats: 14-d-intro.js],
      zerograms (F = m · a), weightgap (listed against weighed), [ntr_density, ntr_sizewt, ntr_densrank: 14-d-intro.js],
-     pricefront (price against weight), market (battery life against weight), budget (29.31 g, 200 h), map
+     pricefront (price against weight), market (battery life against weight), budget (THESEUS.mass, THESEUS.hours), map
    The close is in 10-i-close.js. Data comes from research/data (RDATA, read with rv / evOf / exMouse / exWeight from
    14-a-exdata.js). Theseus numbers are PROPOSAL (a target) or PROJECTED (a forecast, formula on screen).
    Validation report 2026-11-03 applied, then Brock (22:05): the sensor is the PixArt PAW3970, the Viper V4 Pro's (Razer's
@@ -18,6 +18,7 @@ Object.assign(SRC, {
   ntrTpuV4: { t: 'TechPowerUp, Razer Viper V4 Pro: 306 mAh at 3.87 V (1.184 Wh), about 40 h at 8 khz, 0.169 A charging, 79 µs click latency wired at 8 khz', u: 'https://www.techpowerup.com/review/razer-viper-v4-pro/', n: 'Values as recorded in the 2026-11-03 validation report; TechPowerUp refused this session.' },
   ntrXbabClick: { t: 'XBAB Tech on X, 2026-06-30: click latency on a Beagle USB 480 analyzer, XA25 72 µs against Endgame Gear OP1 8k v2 320 µs (NC release, mouse still, n = 500 each); a maker testing its own mouse and a rival', u: 'https://x.com/xbabtech/status/2071972219211985258' },
   ntrJauch: { t: 'Endrich (Jauch distributor), lithium-polymer packs, capacity and mass per part: LP402025JU 140 mAh 5 g, LP502030JH 250 mAh 7.5 g, LP422339JU 330 mAh 8 g, LP402535JU 370 mAh 8 g (rounded listing)', u: 'https://www.endrich.com/en/product-categories/accus-batteries/lithium-ion-cells/lithium-polymer-batteries?page=2', n: 'Farnell lists LP402535JU at 380 mAh; the lower figure is used.' },
+  ntrEemb: { t: 'EEMB, LP402535 lithium-polymer battery: 3.7 V, 320 mAh typical, 300 mAh minimum, approximately 6.40 g, 25.5 × 37.0 × 4.30 mm', u: 'https://www.eemb.com/product-214', n: 'Theseus\'s battery from 2026-11-06 (Brock: "the battery should only need to be 300mah"). The minimum capacity is used, as for Jauch; the mass is EEMB\'s approximate figure.' },
   ntrGpx2: { t: 'PC Gamer, Logitech G Pro X Superlight 2 review: 95 h, $159 (2023)', u: 'https://www.pcgamer.com/logitech-g-pro-x-superlight-2-gaming-mouse-review/' },
   ntrGpx2c: { t: 'Logitech, Pro X Superlight 2c: 51 g, up to 95 h', u: 'https://www.logitechg.com/en-us/shop/p/pro-x-superlight-2c' },
   ntrDaV4: { t: 'Razer, DeathAdder V4 Pro: 150 h (report rate not stated)', u: 'https://www.razer.com/gaming-mice/razer-deathadder-v4-pro' },
@@ -45,8 +46,29 @@ function ntr_loads() {
   const h1 = (ntr_fv('razer-viper-v4-pro', 'battery_claim_1k_h') || {}).v || 180, h8 = (ntr_fv('razer-viper-v4-pro', 'battery_measured_h') || {}).v || 40;
   return { wh, h1, h8, w1: wh / h1, w8: wh / h8 };
 }
-/** a Jauch pack from the distributor family: { part, mAh, g, wh } */
-function ntr_pack(part) { const f = ((RD.batteries || {}).jauch_lipo_family || {}).rows || [], r = f.find(x => x.part === part); return r ? { part, mAh: rv(r.capacity), g: rv(r.mass), wh: rv(r.energy_Wh) } : null; }
+/** a pack from RDATA: Jauch's distributor family, or EEMB's (Theseus's own since 2026-11-06): { part, maker, mAh, g, wh } */
+function ntr_pack(part) {
+  for (const [k, maker] of [['jauch_lipo_family', 'Jauch'], ['eemb_lipo', 'EEMB']]) {
+    const r = (((RD.batteries || {})[k] || {}).rows || []).find(x => x.part === part);
+    if (r) return { part, maker: r.maker || maker, mAh: rv(r.capacity), mAhTyp: r.capacity_typical ? rv(r.capacity_typical) : null, g: rv(r.mass), wh: rv(r.energy_Wh) };
+  }
+  return null;
+}
+/** Theseus's battery (THESEUS.pack): EEMB's LP402535, 300 mAh minimum, about 6.40 g (Brock, 17:08: "the battery should
+   only need to be 300mah", about the Viper V4 Pro's 306) */
+const ntr_thsPack = () => ntr_pack(THESEUS.pack) || { part: 'LP402535', maker: 'EEMB', mAh: 300, mAhTyp: 320, g: 6.4, wh: 1.11 };
+/** the pack it replaced, the one the 1.6 g saving is said against: Jauch's LP402535JU, 370 mAh, 8 g in Endrich's
+   rounded listing (EEMB's 6.40 g is approximate, so the saving is too: about 1.6 g) */
+const ntr_oldPack = () => ntr_pack('LP402535JU') || { part: 'LP402535JU', maker: 'Jauch', mAh: 370, g: 8, wh: 1.369 };
+/** the share of the Viper V4 Pro's draw Theseus keeps: less its two optical switches (b03's B03.optShare, from Logitech's
+   own hours: 13.7 %), with Theseus's two mechanical ones read by strobed pull-ups (B03.mechShare, 0.35 %), as the clicks
+   chapter works it, so the two can't drift. Firmware gains are not counted: no figure for them exists */
+function ntr_swKeep() {
+  let B = null; try { B = B03; } catch (e) { B = null; }   /* B03 is a const declared later (30-b03): before it runs, the same formula */
+  const v4MA = (B && B.v4MA) || 306 / 180;
+  const opt = B && B.optShare != null ? B.optShare : (290 / 96 - 290 / 104) / v4MA, mech = B && B.mechShare != null ? B.mechShare : 2 * 3 / 1000 / v4MA;
+  return { opt, mech, keep: 1 - opt + mech };
+}
 /** the XA25 as XBAB weighed it, part by part */
 function ntr_xa25() { const b = ((RD.weights || {}).breakdowns || []).find(x => /XA25/.test(x.mouse)); return b ? b.parts.map(p => ({ name: p.part, g: rv(p.mass) })) : null; }
 /** a 3D scene caches its framing (and so what zoom means) from whatever state its first render had. Give each new scene
@@ -118,7 +140,7 @@ S({
       view3D('shell', t, vx, vy, vw, vh, { view: 'threeQuarterRight', view2d: 'right', yaw: lerp(-0.5, 0.02, cam) + 0.05 * drift, pitch: 0.06 * (1 - cam), zoom: lerp(C0.zoom[0], C0.zoom[1], cam), explode: 0.72 * (1 - as), colorway: 'black' }, { alpha: ep(t, 0.35, 1.4) });
       rich([{ s: 'Fig. 00', role: 'label', size: 21, color: C.mute }, { s: 'Sora V2 shape, a placeholder', role: 'label', size: 21, color: C.faint, gap: 16 }], RM, 744, { align: 'right', alpha: ep(t, 4.8, 5.4) });
     }
-    /* the gram scale under the word, one tick a gram, with Theseus's 29.31 g in its colour */
+    /* the gram scale under the word, one tick a gram, with Theseus's weight (THS.mass) in its colour */
     const ry = yb + 44, kr = ep(t, 1.0, 1.9, E.cam), rx1 = x0 + 14 + (wordW - 14) * kr, gpx = 12, mx = x0 + 14 + THESEUS.mass * gpx;
     line(x0 + 14, ry, rx1, ry, { color: inkA(0.35), w: 1.5 });
     for (let i = 0; x0 + 14 + i * gpx <= rx1; i++) { const X = x0 + 14 + i * gpx, L = i % 10 === 0 ? 16 : i % 5 === 0 ? 10 : 6; line(X, ry, X, ry + L, { color: inkA(i % 10 === 0 ? 0.5 : 0.25), w: 1.2 }); }
@@ -164,7 +186,7 @@ S({
 function ntr_specimens() {
   const slx = id => ntr_fv('finalmouse-slx', id) || {}, me = slx('weight_measured_g').v, cl = slx('weight_claimed_g').v, gap = (ntr_fv('finalmouse-slx', 'weight_gap_pct') || {}).v;
   const ch = ((RD.batteries || {}).chemistries || []).find(c => c.id === 'li_polymer_pouch_mouse'), cell = ch ? rv(ch.mass) : null;
-  const p370 = ntr_pack('LP402535JU'), L = ntr_loads(), h370 = p370 ? p370.wh / L.w1 : null;
+  const H = ntr_hours(), p370 = H.cell, L = H.L, h370 = H.h1;
   return [
     { value: me != null ? fmtN(me, 1) : '–', unit: 'g', label: 'Starlight X, weighed', ev: 'measured', by: 'RTINGS' },
     { value: cell != null ? fmtN(cell, 1) : '–', unit: 'g', label: 'A 250 mAh battery, packed', ev: 'datasheet', by: 'Jauch' },
@@ -172,7 +194,7 @@ function ntr_specimens() {
     { value: gap != null ? '+' + fmtN(gap, 1) : '–', unit: '%', label: `(${fmtN(me || 0, 1)} − ${fmtN(cl || 0, 1)}) ÷ ${fmtN(cl || 0, 1)}`, ev: 'derived' },
     { value: THS.mass, unit: 'g', label: 'The weight I build to', head: 'My target', hero: true },
     { value: fmtN(THESEUS.pcb, 1), unit: 'g', label: 'Its one board', head: 'My estimate' },
-    { value: h370 != null ? fmtN(h370, 0) : '–', unit: 'h', label: p370 ? `${fmtN(p370.wh, 3)} Wh ÷ ${fmtN(L.w1 * 1000, 2)} mW` : '', head: 'My forecast, 1 khz' },
+    { value: h370 != null ? fmtN(Math.floor(h370), 0) : '–', unit: 'h', label: p370 ? `${fmtN(p370.wh, 3)} Wh ÷ ${fmtN(L.w1 * H.S.keep * 1000, 2)} mW` : '', head: 'My forecast, 1 khz' },
     { rule: true }
   ];
 }
@@ -218,11 +240,11 @@ const NTR_BAR_SPEED = [
   { cat: 'Report rate', sub: 'Wired and wireless', best: '8 khz', bv: 8, who: 'Wired and wireless', note: 'USB high speed, 125 µs', ev: 'datasheet', tgt: 'Dual 8khz', tv: 8, tq: 'wired and wireless', better: 'high' },   /* Brock, F27: "marker it as dual 8khz" (V1) */
   { cat: 'Lost reports rescued', sub: 'Same as Kunai Second Shot', best: '99 to 100%', bv: 99, who: 'Kunai Second Shot, 4 khz', note: 'Its developer, unreleased', ev: 'claim', tgt: '99%', tv: 99, tq: 'or more, at every rate', better: 'high' }
 ];
-/* Theseus doesn't exist yet, so its hours are derived, never measured (review item 10): the Jauch cell at the Viper V4 Pro's
-   draw, one derivation for the whole deck (ntr_hours). The 8 khz row is filled in at draw time from it */
+/* Theseus doesn't exist yet, so its hours are derived, never measured (review item 10): its battery at the Viper V4 Pro's
+   draw less the V4 Pro's optical switches, one derivation for the whole deck (ntr_hours). The 8 khz row reads it */
 const NTR_BAR_REST = [
-  { cat: 'Battery, 1 khz', best: '180 h', bv: 180, who: 'Razer Viper V4 Pro, 49 g', note: 'Razer; SLX: no rating', ev: 'claim', tgt: '200 h', tv: 200, tq: 'derived', better: 'high' },
-  { cat: 'Battery, 8 khz', best: '40 h', bv: 40, who: 'Razer Viper V4 Pro, TechPowerUp', note: 'TechPowerUp', ev: 'measured', tgt: '46 h', tv: 46, tq: 'derived', better: 'high' },
+  { cat: 'Battery, 1 khz', best: '180 h', bv: 180, who: 'Razer Viper V4 Pro, 49 g', note: 'Razer; SLX: no rating', ev: 'claim', tgt: THS.hours, tv: THESEUS.hours, tq: 'derived', better: 'high' },
+  { cat: 'Battery, 8 khz', best: '40 h', bv: 40, who: 'Razer Viper V4 Pro, TechPowerUp', note: 'TechPowerUp', ev: 'measured', get tgt() { return Math.floor(ntr_hours().h8 + 1e-9) + ' h'; }, get tv() { return Math.floor(ntr_hours().h8 + 1e-9); }, tq: 'derived', better: 'high' },
   { cat: 'Charge current', sub: 'If the battery is rated for it', best: '0.28 A', who: 'Pulsar X2H', note: 'TechPowerUp', ev: 'measured', tgt: '1C', tq: 'if the battery is rated for it' },
   { cat: 'Weight, full shell', best: '29 g', bv: 29, who: 'Finalmouse ULX, small', note: 'Listed, not weighed', ev: 'claim', tgt: THS.massG, tv: THESEUS.mass, tq: 'weighed, every unit', better: 'low' },
   /* Brock (22:05): Theseus uses the PixArt PAW3970, the Viper V4 Pro's sensor under Razer's name (Focus Pro 50K Gen-3), so it
@@ -237,9 +259,15 @@ const NTR_BAR_REST = [
   /* as the coating slide: Cerakote's baked F-Series, 9H on its test panels (srf_f130) */
   { cat: 'Coating hardness', sub: 'Baked F-Series, its test panels', best: '9H pencil', who: 'Cerakote F-130', note: 'ASTM D3363, on its panels', ev: 'datasheet', tgt: '9H', tq: 'baked F-Series' }
 ];
-/** Theseus's battery hours, derived (one derivation for the deck): the Jauch LP402535JU's energy over the Viper V4 Pro's
-   draw, its 1.184 Wh cell over Razer's 180 h at 1 khz and over TechPowerUp's 40 h at 8 khz. { h1, h8, wh, L } */
-function ntr_hours() { const cell = ntr_pack('LP402535JU') || { wh: 1.369 }, L = ntr_loads(); return { h1: cell.wh / L.w1, h8: cell.wh / L.w8, wh: cell.wh, L }; }
+/** Theseus's battery hours, derived (one derivation for the deck): its pack's energy (EEMB LP402535, 300 mAh at 3.7 V,
+   1.110 Wh) over the Viper V4 Pro's draw (its 1.184 Wh battery over Razer's 180 h at 1 khz, and over TechPowerUp's 40 h
+   at 8 khz) less the V4 Pro's optical switches, with Theseus's mechanical ones (ntr_swKeep): 194.7 h and 43.3 h, before
+   any firmware gains. The 8 khz figure takes the switches' share as at 1 khz. same1 / same8: at the V4 Pro's whole draw,
+   as every rival battery is put (b01_battery's rings). { h1, h8, same1, same8, wh, L, S, cell } */
+function ntr_hours() {
+  const cell = ntr_thsPack(), L = ntr_loads(), S = ntr_swKeep();
+  return { h1: cell.wh / (L.w1 * S.keep), h8: cell.wh / (L.w8 * S.keep), same1: cell.wh / L.w1, same8: cell.wh / L.w8, wh: cell.wh, L, S, cell };
+}
 /* at a glance (Brock, F14.10, F16.1): the helpers live with the clicks chapter (10-b-click.js); the intro calls them by these names */
 const ntr_hl = (...a) => clk_hl(...a), ntr_ba = (...a) => clk_ba(...a);
 /** the targets, rethought for a glance (F14.10): the rows where Theseus moves past the best figure anyone has shown get a headline and
@@ -292,13 +320,13 @@ S({
   src: ['exNbcV4', 'ntrTpuV4', 'ntrJauch', 'ntrB2g', 'tpuX2h', 'nbcUlx', 'ntrRtUlxPro', 'ntrV4Sensor', 'mkb3955', 'xbabSmooth', 'kunai', 'srf_f130'],
   draw: t => {
     header(t, 'Targets, part two: everything else');
-    const lw0 = ntr_lightest(), H = ntr_hours(), h8 = Math.round(H.h8);
+    const lw0 = ntr_lightest(), H = ntr_hours(), h8 = Math.floor(H.h8 + 1e-9);
     const rows = NTR_BAR_REST.map(r => r.cat === 'Weight, full shell' && lw0 ? Object.assign({}, r, { best: fmtN(lw0.g, 1) + ' g', bv: lw0.g, who: lw0.name.replace('Finalmouse ', '') + ', RTINGS' })
       : r.cat === 'Battery, 8 khz' ? Object.assign({}, r, { tgt: h8 + ' h', tv: h8 }) : r);
     const w = rows.find(r => r.cat === 'Weight, full shell');
     captions(t, [[0.6, 'The same rule for everything else: the best figure shown anywhere, and where Theseus sits against it.'], [5.0, 'Weighed against weighed: the ULX small lists 29 g, but no one has put it on a scale.']]);
     ntr_targets(t, rows, { head: ['−' + fmtN(100 * (w.bv - w.tv) / w.bv, 0) + '%', 'weight', 'Weighed, against the lightest wireless full shell anyone has weighed: ' + w.who.replace(', RTINGS', '') + ', ' + w.best + ' (RTINGS)'], restHead: 'Matches the best, or my method', first: 'Weight, full shell' });
-    source(t, 'Battery, derived: Jauch\'s ' + fmtN(H.wh, 3) + ' Wh battery at the Viper V4 Pro\'s draw, its ' + fmtN(H.L.wh, 3) + ' Wh over Razer\'s ' + H.L.h1 + ' h at 1 khz (' + fmtN(H.h1, 0) + ' h, planned as 200) and over TechPowerUp\'s ' + H.L.h8 + ' h at 8 khz.', { t0: 3.0 });
+    source(t, 'Battery, derived: ' + H.cell.maker + '\'s ' + H.cell.mAh + ' mAh (' + fmtN(H.wh, 3) + ' Wh) at the Viper V4 Pro\'s draw, its ' + fmtN(H.L.wh, 3) + ' Wh over Razer\'s ' + H.L.h1 + ' h at 1 khz and TechPowerUp\'s ' + H.L.h8 + ' h at 8 khz, less its optical switches (' + (typeof b01_optPct === 'function' ? b01_optPct() : '13.6 %') + '), before any firmware gains.', { t0: 3.0 });
   }
 });
 
@@ -433,7 +461,7 @@ S({
   draw: t => {
     header(t, 'The optimal weight is zero grams');
     captions(t, [[0.6, 'The same push, three masses. F = m · a: the lighter the mouse, the sooner it reaches the target and stops on it.'],
-      [5.4, 'Every bit of weight I take out is weight your hand never has to start, stop or turn. Theseus is 29.31 g, with the whole shell.']]);
+      [5.4, 'Every bit of weight I take out is weight your hand never has to start, stop or turn. Theseus is ' + THS.massG + ', with the whole shell.']]);
     const Z = NTR_ZG, x0 = 360, x1 = 920, ys = [420, 560, 700], a0 = ep(t, 0.4, 0.9);
     text('Mass', LM, 332, { role: 'label', size: 20, color: C.mute, alpha: a0 });
     text('The same push, the same distance', x0, 332, { role: 'label', size: 20, color: C.mute, alpha: a0 });
@@ -546,7 +574,7 @@ S({
   draw: t => {
     header(t, 'Price against weight');
     captions(t, [[0.6, 'Every wireless mouse with a US list price, against its weight. No full shell has shipped past the black line.'],
-      [5.4, 'Theseus goes past it: 29.31 g with the whole shell, for $189. That is what the ULX launched at, 8.7 g heavier.']]);
+      [5.4, 'Theseus goes past it: ' + THS.massG + ' with the whole shell, for ' + THS.price + '. That is what the ULX launched at, ' + fmtN(38.0 - THESEUS.mass, 1) + ' g heavier.']]);
     const P = exPricePoints(), x2f = P.find(p => p.id === 'pulsar-x2f-crazylight'), full = P.filter(p => p !== x2f);
     const named = ['pulsar-x2-crazylight-m', 'ninjutso-sora-v2', 'lamzu-maya', 'keychron-g3', 'finalmouse-slx', 'finalmouse-ulx', 'razer-viper-v4-pro', 'logitech-gpx2'];
     const nm = p => p.name.replace('Finalmouse Starlight X', 'Starlight X').replace('Finalmouse ULX', 'ULX');
@@ -598,7 +626,7 @@ S({
     const unr = mice.filter(m => rv(m.battery_claim_1k_h) == null && m.id !== 'mchose-l7-ultra').map(m => { const w = exWeight(m.id); return w && w.g <= 50 ? { id: m.id, name: NTR_SHORT[m.id] || exShort(m.name), g: w.g, ev: w.ev } : null; }).filter(Boolean).sort((a, b) => a.g - b.g);
     const light = rated.reduce((a, p) => (!a || p.x < a.x ? p : a), null);
     captions(t, [[0.6, `Every wireless mouse that lists hours at 1 khz, against its weight. The lightest is the ${light ? light.name + ', ' + ntr_g(light.x) + ' g' : '–'} as weighed.`],
-      [5.4, 'Nothing lighter comes with an hour rating. That corner is Theseus: 29.31 g and 200 h at 1 khz for $189, its hours derived from its battery at the V4 Pro\'s draw.']]);
+      [5.4, 'Nothing lighter comes with an hour rating. That corner is Theseus: ' + THS.massG + ' and ' + THS.hours + ' at 1 khz for ' + THS.price + ', its hours derived from its battery at the V4 Pro\'s draw, less its optical switches.']]);
     const x = 720, py = 330, w = 1100, ph = 480, xr = [25, 62], yr = [0, 220], X = g => x + w * (g - xr[0]) / (xr[1] - xr[0]);
     cardHead(t, 0.5, x - 120, py - 80, w + 120, 'Listed hours at 1 khz against weight, wireless', [{ ev: 'measured', by: 'RTINGS' }, { ev: 'claim', by: 'Maker' }]);
     /* the corner nobody has rated: left of the lightest rated mouse */
@@ -630,11 +658,11 @@ S({
     const dc = TH ? '#5F5E59' : '#B9B8B2';
     legend(t, 4.2, x - 100, 920, [{ kind: 'dot', color: dc, label: 'Weighed by RTINGS' }, { kind: 'ring', color: dc, label: 'Maker\'s weight' }, { kind: 'line', color: C.ink, label: 'Pareto frontier' }, { kind: 'ref', label: 'The longest listed' }, { kind: 'hero', label: 'Theseus' }]);
     const un = (sc.unnamed || []);
-    source(t, (un.length ? 'Unnamed: ' + un.join(', ') + '. ' : '') + '* Report rate not stated. † Finalmouse publishes no hour rating (Back2Gaming). Hours are the makers\' own figures; Theseus\'s are derived: Jauch\'s 370 mAh battery at the Viper V4 Pro\'s draw.', { t0: 4.4 });
+    source(t, (un.length ? 'Unnamed: ' + un.join(', ') + '. ' : '') + '* Report rate not stated. † Finalmouse publishes no hour rating (Back2Gaming). Hours are the makers\' own figures; Theseus\'s are derived: ' + ntr_thsPack().maker + '\'s ' + ntr_thsPack().mAh + ' mAh battery at the Viper V4 Pro\'s draw, less its optical switches.', { t0: 4.4 });
   }
 });
 
-/* ============================== 10. the weight budget: where 29.31 g goes, with a cell for 200 h ============================== */
+/* ============================== 10. the weight budget: where THESEUS.mass goes, with its battery (THS.hours) ============================== */
 /* Brock decided (2026-11-04): his shell design takes weight out elsewhere so the cell for 200 h fits; at 21:55, "Budget is the
    target": the shell gets whatever the budget leaves. The budget, part by part: the cell from Jauch's datasheet, the one board
    his figure, Theseus's own parts (the magnesium wheel at his 0.9 g on its POM axle; F22.3, "Derive Theseus's own": the four M2
@@ -661,23 +689,23 @@ const NTR_BUD = {
 function ntr_budget() {
   const P = ntr_xa25() || [], by = re => (P.find(p => re.test(p.name)) || {}).g || 0;
   const xa = { shell: by(/^Shell/), btn: by(/^Button/), wheel: by(/^Scroll/), screws: by(/^Screws/), fpc: by(/^FPC/), boards: by(/^Front PCB/) + by(/^Main PCB/) + by(/^Side PCB/) };
-  const cell = ntr_pack('LP402535JU') || { part: 'LP402535JU', mAh: 370, g: 8, wh: 1.369 }, L = ntr_loads(), N = NTR_BUD;
+  const cell = ntr_thsPack(), L = ntr_loads(), N = NTR_BUD, H = ntr_hours();
   const wheelMg = N.wheel, axle = N.axleMm3 * N.pom / 1000, wheel = wheelMg + axle, ins1 = N.insMm3 * N.brass / 1000, ins = N.inserts * ins1;
   const screw1 = N.screwMm3 * N.ti / 1000, screws = N.screws * screw1, wires = N.leadMm * N.wireMgMm / 1000;
   const ref = xa.btn, shell = THESEUS.mass - cell.g - THESEUS.pcb - ref - wheel - ins - screws - wires;
-  return { xa, cell, L, ref, wheel, wheelMg, axle, ins, ins1, screws, screw1, wires, shell, cut: xa.shell - shell, hours: cell.wh / L.w1, ok: P.length > 0 };
+  return { xa, cell, L, ref, wheel, wheelMg, axle, ins, ins1, screws, screw1, wires, shell, cut: xa.shell - shell, hours: H.h1, H, ok: P.length > 0 };
 }
 S({
-  id: 'budget', ch: 'intro', theme: 'paper', title: 'Weight budget: 29.31 g, 200 h', settle: 11, ideas: ['weight', 'battery'],
-  src: ['exXbabWeight', 'ntrJauch', 'exJauch', 'ntrTpuV4', 'exNbcV4', 'srf_pmm', 'srf_wheel3d', 'srf_az31b', 'ntrDelrinRho', 'ntrModel3d', 'ntrTiRho', 'ntrGoreWire', 'ntrBrassRho'],
+  id: 'budget', ch: 'intro', theme: 'paper', title: 'Weight budget: ' + THS.massG + ', ' + THS.hours, settle: 11, ideas: ['weight', 'battery'],
+  src: ['exXbabWeight', 'ntrEemb', 'ntrJauch', 'exJauch', 'ntrTpuV4', 'exNbcV4', 'srf_pmm', 'srf_wheel3d', 'srf_az31b', 'ntrDelrinRho', 'ntrModel3d', 'ntrTiRho', 'ntrGoreWire', 'ntrBrassRho'],
   draw: t => {
-    header(t, 'Weight budget: 29.31 g, 200 h');
+    header(t, 'Weight budget: ' + THS.massG + ', ' + THS.hours);
     const B = ntr_budget(), f2 = v => fmtN(v, 2);
-    captions(t, [[0.6, `Where 29.31 g goes: one board instead of three, a ${B.cell.mAh} mAh battery for ${fmtN(B.hours, 0)} h at 1 khz, a 0.9 g magnesium wheel, ${NTR_BUD.screws} titanium M2 screws in ${NTR_BUD.inserts} brass inserts, one braided lead, and the buttons as XBAB weighed them.`],
+    captions(t, [[0.6, `Where ${THS.massG} goes: one board instead of three, a ${B.cell.mAh} mAh battery for ${fmtN(Math.floor(B.hours), 0)} h at 1 khz, a 0.9 g magnesium wheel, ${NTR_BUD.screws} titanium M2 screws in ${NTR_BUD.inserts} brass inserts, one braided lead, and the buttons as XBAB weighed them.`],
       [5.6, `That leaves ${f2(B.shell)} g for the shell and skates, ${f2(B.cut)} g under the XA25's. My shell design takes that out, and the battery fits.`]]);
     const rows = [
       { name: 'Shell and skates', g: B.shell, was: B.xa.shell, ev: 'derived', hero: true },
-      { name: 'Battery, ' + B.cell.mAh + ' mAh', g: B.cell.g, ev: 'datasheet', note: 'Example part' },
+      { name: 'Battery, ' + B.cell.mAh + ' mAh', g: B.cell.g, ev: 'datasheet', note: B.cell.maker + ', about' },
       { name: 'One board', g: THESEUS.pcb, was: B.xa.boards, note: 'Radio, antenna, USB-C on it' },
       { name: 'Buttons', g: B.xa.btn, ev: 'claim', note: 'As in the XA25' },
       { name: 'Wheel and axle', g: B.wheel, ev: 'derived', note: '0.9 g + POM axle' },
@@ -688,7 +716,7 @@ S({
     breakdown(t, { x: LM, y: 280, w: 1040, t0: 0.4, name: 'Theseus', sub: 'Weight budget', total: THESEUS.mass, unit: 'g', totalLabel: 'Total', dec: 2, rows, rowH: 54, stagger: 0.09, wasLabel: 'XA25', foot: ['Dashed: the XA25\'s part, as XBAB weighed it (its three boards for the board)', ''] });
     /* the two things the plan rests on: the cell's hours, and the shell's grams */
     ntr_stack(t, 1200, 320, RM - 1200, [
-      { t0: 5.0, gloss: true, a: 'Hours = Wh ÷ draw', b: `${B.cell.mAh} mAh at 3.7 V holds ${fmtN(B.cell.wh, 3)} Wh. A Viper V4 Pro draws ${fmtN(B.L.w1 * 1000, 2)} mW at 1 khz (its ${fmtN(B.L.wh, 3)} Wh over Razer's ${B.L.h1} h), so the battery runs ${fmtN(B.hours, 0)} h.` },
+      { t0: 5.0, gloss: true, a: 'Hours = Wh ÷ draw', b: `${B.cell.mAh} mAh at 3.7 V holds ${fmtN(B.cell.wh, 3)} Wh. A Viper V4 Pro draws ${fmtN(B.L.w1 * 1000, 2)} mW at 1 khz (its ${fmtN(B.L.wh, 3)} Wh over Razer's ${B.L.h1} h), ${fmtN(B.L.w1 * B.H.S.keep * 1000, 2)} mW without its optical switches, so the battery runs ${fmtN(Math.floor(B.hours), 0)} h.` },
       { t0: 5.8, a: 'XBAB 2026', b: `The XA25, weighed part by part: 24.94 g in nine parts, shell and skates ${f2(B.xa.shell)} g. Its buttons stand in for mine; the screws and the lead are my own, from the 3D model.` }
     ]);
     { const ka = ep(t, 6.6, 7.2), y = 868;

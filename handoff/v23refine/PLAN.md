@@ -33,8 +33,11 @@ Each move names what it builds on and what it unlocks. Numbers come from the dec
    front and rear cutouts, the switch and hot-swap, latency. Builds on 2–3: a stiff top lets the click be direct.
 5. **Glide and tracking** (glide): skates and dots, the sensor module, focus, no sag at the lens (builds on 2–3: a shell
    that doesn't flex keeps the lens at its height).
-6. **Power, paid for in grams** (electronics): the grams freed in 2–3 buy battery (cells per gram, battery against polling,
-   past the Pareto frontier): 8 khz for 200 h; one board one side, braided wires, the radio.
+6. **More hours from the same battery** (electronics; Brock 17:08–17:10, V4): move 4's mechanical switches (no optical
+   switches drawing power) and newer firmware let a battery the Viper V4 Pro's size (EEMB's 300 mAh against its 306)
+   outlast it: 194 h at 1 khz and 43 h at 8 khz, derived before any firmware gains. The smaller battery takes about 1.6 g
+   off the whole mouse (27.71 g), which finishes the density moves 2–3 began: the best of any mouse, wired or not (board:
+   4 → 6 "No opticals", 2 and 3 → 6 "Density"). Then one board one side, braided wires, the radio.
 7. **A finish that weighs nothing** (surface): film-thin coating (no weight, builds on 2), the grip map, no tape.
 8. **Built to be opened** (ownership): the inserts and screws that hold the stiff structure also make it repairable.
 9. **Close:** the whole chain on one board, every axis at or past the best flagship at once: zero compromises.

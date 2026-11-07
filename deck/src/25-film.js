@@ -38,13 +38,16 @@ const FILM = {
       unlocks: 'Stiffer again, for no added weight.' },
     { n: 4, ch: 'click', name: 'Clicks', title: 'Clicks the stiff shell makes possible',
       builds: 'The stiff top of moves 2 and 3: a top that doesn’t flex lets the click be direct.',
-      unlocks: 'The same click wherever you press, and the latency to match.' },
+      unlocks: 'The same click wherever you press, the latency to match, and no optical switches drawing power.' },
     { n: 5, ch: 'glide', name: 'Glide and tracking', title: 'Glide and tracking',
       builds: 'A shell that doesn’t flex (moves 2 and 3) keeps the lens at its height.',
       unlocks: 'Aim that goes where you put it.' },
-    { n: 6, ch: 'elec', name: 'Power', title: 'Power, paid for in weight',
-      builds: 'The weight saved in moves 2 and 3 buys battery.',
-      unlocks: 'The battery the light flagships gave up, at their weight.' },
+    /* V4 (Brock, 17:08: "the battery should only need to be 300mah ... with the same size battery as it using much newer and
+       optimized firmware and no opticals"; 17:10: the freed weight to a lighter mouse): the chain is move 4's switches ->
+       the Viper V4 Pro's size of battery lasting longer -> 1.6 g off the mouse -> the best density of any mouse */
+    { n: 6, ch: 'elec', name: 'Power', title: 'More hours from the same battery',
+      builds: 'Move 4’s mechanical switches: with no optical switches drawing power, and newer firmware, a battery the Viper V4 Pro’s size lasts longer.',
+      unlocks: 'A smaller battery, 1.6 g off the whole mouse: with moves 2 and 3’s light shell, the best density of any mouse.' },
     { n: 7, ch: 'surface', name: 'The finish', title: 'A finish that weighs nothing',
       builds: 'Move 2’s shell: a film-thin coat on it, no tape.',
       unlocks: 'Grip that holds, for no weight.' },
@@ -56,9 +59,12 @@ const FILM = {
       unlocks: 'Every axis at or past the best flagship, at the same time.' }
   ],
   /* the build board's links: [from, to, what flows]. From the plan: 1 fixes the volume (density, from 0); 2 frees grams at the
-     same stiffness; 3 builds on 2; 4, 5 and 6 on 2 and 3; 7 on 2; 8 on 3; the close on every move */
+     same stiffness; 3 builds on 2; 4 and 5 on 2 and 3; 7 on 2; 8 on 3; the close on every move. Move 6 (V4, Brock 17:08): its
+     hours build on move 4 (no optical switches drawing power), and the 1.6 g its smaller battery saves finishes the density
+     moves 2 and 3 began (within 3 % of the best with the old battery; past it with this one). No weight flows into it to
+     buy battery any more */
   edges: [[0, 1, 'Density, not size'], [1, 2, 'The volume'], [2, 3, 'A stiff skin'], [2, 4, 'Stiffness'], [3, 4, 'Stiffness'],
-    [2, 5, 'No flex'], [3, 5, 'No flex'], [2, 6, 'Weight'], [3, 6, 'Weight'], [2, 7, 'The skin'], [3, 8, 'Its screws'],
+    [2, 5, 'No flex'], [3, 5, 'No flex'], [2, 6, 'Density'], [3, 6, 'Density'], [4, 6, 'No opticals'], [2, 7, 'The skin'], [3, 8, 'Its screws'],
     [1, 9], [2, 9], [3, 9], [4, 9], [5, 9], [6, 9], [7, 9], [8, 9]],
   /* the film. Moves 0 and 1 are the pilot (V1); moves 2 to 9 are v23's slides in the plan's order until each is piloted
      (v23's chapter cards give way to the move cards; elc_sheet2 and ownsheet1 out, Brock F27: "remove this slide",
@@ -89,8 +95,8 @@ const FILM = {
     weightgap: { s: 'Every weight from here on is the scale\u2019s, not the box\u2019s' },
     ntr_sizewt: { s: 'The giants\u2019 shortcut: light by being less mouse. Move 1 keeps the mouse', to: [1] },
     ntr_density: { s: 'The bar every move answers to: weight per cm\u00B3 of a full-size box' },
-    ntr_densrank: { s: 'Lighter for their size than Theseus: one is wired, one has no bottom rim', to: [9] },
-    b01_battery: { s: 'The trade move 6 refuses: the weight moves 2 and 3 save buys the battery back', to: [6] },
+    ntr_densrank: { s: 'Lighter for its size than any mouse, wired or not: moves 2, 3 and 6 earn it', to: [2, 3, 6] },
+    b01_battery: { s: 'The trade move 6 refuses: the Viper\u2019s battery size, no optical switches', to: [4, 6] },
     loadouts: { s: 'Each giant fills a bar or two by giving others up. Theseus must fill every bar at once', to: [9] },
     targets: { s: 'The bar on speed: moves 4 to 6 must clear every row', to: [4, 5, 6] },
     b07_size: { s: 'Move 1 keeps the volume full: the volume moves 2 to 8 must make light', to: [2] },
@@ -112,7 +118,7 @@ const FILM = {
     filletsize: { s: 'Upgrade 4: every node where the arches cross is a corner. Round it' },
     b06_mold: { s: 'Upgrade 5 builds on the fillets: one cutter fits every corner' },
     b12_ribs: { s: 'The mould sets the last size: ribs as deep as it fills, cut steel-safe first' },
-    shellup: { s: 'The weight move 2 saves: move 3 ties the shell, move 6 spends it on battery', to: [3, 6] },
+    shellup: { s: 'The weight move 2 saves: move 3 ties the shell; with move 6\u2019s lighter battery, the best density', to: [3, 6] },
     /* V3: move 3 */
     b07_board: { s: 'Builds on move 2: the ribs\u2019 feet, tied by the board the mouse already carries' },
     b07_arms: { s: 'Tie every rib, not a few arms: the same board, nothing added' },
@@ -317,7 +323,9 @@ const LO = {
   click: FILM_Q.get('click') === '1',
   cats: [
     { key: 'weight', name: 'Weight', mt: 'As weighed, g', metric: 'As weighed, g', ms: 'as weighed, g', better: 'lower', dec: 1, unit: 'g' },
-    { key: 'density', name: 'Density', mt: 'Weight ÷ size, g/cm³', metric: 'Weight ÷ size, g/cm³', ms: 'weight ÷ size, g/cm³', better: 'lower', dec: 3, unit: 'g/cm³', earn: [2, 3, 7, 8] },
+    /* V4: density's last step is move 6, its smaller battery taking it past the XA25's line (moves 7 and 8 add no weight
+       and take none off: they keep the bar where it is) */
+    { key: 'density', name: 'Density', mt: 'Weight ÷ size, g/cm³', metric: 'Weight ÷ size, g/cm³', ms: 'weight ÷ size, g/cm³', better: 'lower', dec: 3, unit: 'g/cm³', earn: [2, 3, 6] },
     { key: 'size', name: 'Size', mt: 'Its box, cm³, not a score', mt5: 'Its box, not a score', metric: 'Volume of its box, cm³ (not a score)', ms: 'its box, cm³', size: true, dec: 1, unit: 'cm³', earn: [1] },
     { key: 'battery', name: 'Battery', mt: 'Hours at 1 khz, as rated', mt5: 'Hours at 1 khz, rated', metric: 'Hours at 1 khz, the maker’s rating', ms: 'hours at 1 khz', better: 'higher', dec: 0, unit: 'h', earn: [6] },
     { key: 'motion', name: 'Motion latency', short: 'Motion', mt: 'Wireless, 8 khz, PIAKNOW’S rig', mt5: 'Wireless, at 8 khz', metric: 'Wireless at 8 khz, ms, PIAKNOW’S rig', ms: 'wireless, 8 khz, ms', better: 'lower', dec: 2, unit: 'ms', earn: [5, 6] },
@@ -694,20 +702,22 @@ function lo_giants(t) {
   source(t, 'Weights: RTINGS’s scale (Superstrike, Viper V4 Pro, Starlight X), TechPowerUp’s (HTS Ultra 8K, ± 1 g), Brock’s (XA25 25.37 g, X2F 29.5 g; listed 25 ± 1 and 29 ± 2); the HTS Plus Pro 8K only lists 28 g. Size: the makers’ L × W × H. Battery: makers’ hours at 1 khz; Finalmouse, Pulsar and the Plus Pro rate none. Motion: PIAKNOW’S rig. Holes: TechPowerUp; rims: Brock. Theseus: targets.', { t0: 1.0 });
 }
 S({ id: 'loadouts', ch: 'intro', theme: 'night', title: 'No flagship fills every bar', settle: 11, loSelf: true,
-  src: ['exRtings', 'b01TpuHtsU', 'b01GwHtsU', 'b01GwPlusPro', 'brockWeighed', 'xbabSite', 'b01X2f', 'exEloshapes', 'exNbcV4', 'logiSuperstrike', 'b01SlxBatt', 'exPiaknow', 'ntrJauch', 'kunai'].concat(LO.click ? ['b01FmClick'] : []),
+  src: ['exRtings', 'b01TpuHtsU', 'b01GwHtsU', 'b01GwPlusPro', 'brockWeighed', 'xbabSite', 'b01X2f', 'exEloshapes', 'exNbcV4', 'logiSuperstrike', 'b01SlxBatt', 'exPiaknow', 'ntrEemb', 'b01Optical', 'kunai'].concat(LO.click ? ['b01FmClick'] : []),
   draw: t => lo_giants(t) });
 
 /* ============================== the weight ledger ==============================
    Grams saved and grams spent, against the lightest flagship weighed part by part (the XA25, on XBAB's scale), from the
-   deck's own budget (ntr_budget, 14-b-intro-ex.js). Each move puts its line on it; the running total ends at 29.31 g with
-   a battery the XA25 doesn't carry. The pilot shows move 2's goal on its card; successors add their moves' lines. */
+   deck's own budget (ntr_budget, 14-b-intro-ex.js). Each move puts its line on it; the running total ends at THESEUS.mass
+   with a battery the XA25 doesn't carry. The pilot shows move 2's goal on its card; successors add their moves' lines.
+   Move 6 (V4): the battery, EEMB's 300 mAh at about 6.40 g where a 370 mAh pack weighs 8 g (Jauch, Endrich's rounded
+   listing): the saving is that difference, approximate both ways, and it comes off the total, not the shell */
 function filmLedger() {
   if (typeof ntr_budget !== 'function') return null;
   const B = ntr_budget(); if (!B || !B.ok) return null;
   return { B, lines: [
     { move: 2, name: 'Shell and skates', was: B.xa.shell, now: B.shell, why: 'the goal: lighter than the lightest flagship’s, at full size' },
     { move: 3, name: 'The board as a tie', was: 0, now: 0, tie: true, why: 'stiffer again for no added weight: the board is carried anyway' },
-    { move: 6, name: 'Battery, ' + B.cell.mAh + ' mAh', was: 0, now: B.cell.g, why: 'bought with the weight moves 2 and 3 save' }
+    { move: 6, name: 'Battery, ' + B.cell.mAh + ' mAh', was: ntr_oldPack().g, now: B.cell.g, battery: true, old: ntr_oldPack(), why: 'the Viper V4 Pro\u2019s size, not a bigger pack: ' + fmtN(ntr_oldPack().g - B.cell.g, 1) + ' g off the whole mouse' }
   ] };
 }
 
@@ -722,6 +732,9 @@ function filmCardStat(n) {
   if (n === 4 && !LO.click) { const ft = typeof b01_pressTgt === 'function' ? b01_pressTgt() : 4.2; return 'Clicks fill no bar: on Finalmouse\u2019s rig, its press to PC (under ' + fmtN(ft, 1) + ' ms, derived) beats every mechanical switch timed there, not the magnetic Starlight X (2.0 ms).'; }
   if (n === 3 && typeof THESEUS !== 'undefined') return 'The tie adds 0 g: the board, ' + fmtN(THESEUS.pcb, 2) + ' g, is in the mouse anyway, and move 2\u2019s ribs end on its edge.';
   const L = filmLedger(), ln = L && L.lines.find(l => l.move === n);
+  /* V4: the battery's saving, said plainly against what it is measured from (EEMB's approximate 6.4 g, Jauch's rounded 8 g) */
+  if (ln && ln.battery) { const H = ntr_hours(), o = ln.old, c = L.B.cell;
+    return c.mAh + ' mAh, about ' + fmtN(c.g, 1) + ' g (' + c.maker + '\u2019s figure), not a ' + o.mAh + ' mAh pack at ' + fmtN(o.g, 0) + ' g (' + o.maker + ', rounded to the gram): about ' + fmtN(o.g - c.g, 1) + ' g off, ' + THS.massG + ' in all. ' + THESEUS.hours + ' h at 1 khz and ' + Math.floor(H.h8 + 1e-9) + ' at 8 khz, derived, before any firmware gains.'; }
   if (ln && ln.was) return 'The shell\u2019s goal: ' + fmtN(ln.was - ln.now, 2) + ' g under the XA25\u2019s ' + fmtN(ln.was, 2) + ' g on XBAB\u2019s scale, the lightest flagship weighed part by part. Derived.';
   return null;
 }
@@ -768,14 +781,14 @@ function filmCard(t, n) {
 for (let n = 1; n < FILM.moves.length; n++) {
   const m = FILM.moves[n];
   S({ id: 'mv' + n, ch: m.ch, card: true, filmCard: true, flight: false, theme: 'night', title: 'Move ' + n + ': ' + m.title, settle: 5.6,
-    src: n === 1 ? ['ntrScan'] : n === 2 ? ['exXbabWeight'] : [],
+    src: n === 1 ? ['ntrScan'] : n === 2 ? ['exXbabWeight'] : n === 6 ? ['ntrEemb', 'ntrJauch', 'b01Optical', 'ntrTpuV4'] : [],
     draw: t => filmCard(t, n) });
 }
 
 /* ============================== the underdog's rule (move 0's last slide) ==============================
    The bar against the giants (each row held by a flagship that gives another up; Theseus's column open), the rule, and the
    plan: the whole board, faint, with move 0 done and its link to move 1 lit. */
-S({ id: 'rule', ch: 'intro', theme: 'night', title: 'The underdog’s rule', settle: 9.6, src: ['exPiaknow', 'exRtings', 'exEloshapes', 'exXbabWeight', 'exNbcV4', 'ntrJauch'],
+S({ id: 'rule', ch: 'intro', theme: 'night', title: 'The underdog’s rule', settle: 9.6, src: ['exPiaknow', 'exRtings', 'exEloshapes', 'exXbabWeight', 'exNbcV4', 'ntrEemb'],
   draw: t => {
     header(t, 'The underdog’s rule');
     captions(t, [[0.4, 'Each giant fills a bar or two by giving others up. Theseus has no factory and no budget to out-spend them.'],
@@ -891,7 +904,7 @@ S({ id: 'shellup', ch: 'shell', theme: 'night', title: 'Five upgrades, one shell
     /* what it unlocks: the moves it feeds, on the board's own terms */
     const ku = ep(t, T.unl, T.unl + 0.4);
     text('Unlocks', rx, 700, { role: 'label', size: 20, color: C.mute, alpha: ku });
-    [[3, 'The ribs’ feet, tied to the board the mouse already carries'], [6, 'The weight saved, spent on battery']].forEach(([n, s0], j) => {
+    [[3, 'The ribs’ feet, tied to the board the mouse already carries'], [6, 'With its lighter battery, the best density of any mouse']].forEach(([n, s0], j) => {
       const y = 748 + j * 74, kj = ep(t, T.unl + 0.2 + j * 0.35, T.unl + 0.6 + j * 0.35);
       circle(rx + 16, y - 8, 15, { color: C.heroText, w: 2, alpha: kj });
       text(String(n), rx + 16, y - 1, { role: 'label', size: 19, color: C.heroText, align: 'center', alpha: kj });
@@ -912,6 +925,16 @@ const FILM_AB = [['lattice', 'b06_lattice'], ['shlThin', 'b06_light'], ['shbArch
     FILM.link[a] = { s: 'Testing, A: v23’s version, as you rated it. B, the rebuild with your note done, plays next' };
     FILM.link[b] = { s: 'Testing, B: the rebuild, your note done. A, v23’s version, played just before', to: (FILM.link[b] || {}).to };
   }
+})();
+
+/* ---------- V4: Theseus's typed figures against the deck's own derivation (05-data.js says how); a drift is an error ---------- */
+(function () {
+  try {
+    const H = ntr_hours(), h = Math.floor(H.h1 + 1e-9), B = ntr_budget(), oldMass = 29.31, oldShell = oldMass - ntr_oldPack().g - THESEUS.pcb - B.ref - B.wheel - B.ins - B.screws - B.wires;
+    if (h !== THESEUS.hours) console.error('theseus: THESEUS.hours is ' + THESEUS.hours + ' h, the derivation gives ' + h + ' h (ntr_hours)');
+    if (THS.hours !== THESEUS.hours + ' h' || THS.mass !== fmtN(THESEUS.mass, 2)) console.error('theseus: THS strings disagree with THESEUS');
+    if (Math.abs(B.shell - oldShell) > 1e-6) console.error('theseus: the shell allowance moved (' + fmtN(oldShell, 2) + ' -> ' + fmtN(B.shell, 2) + ' g): the battery saving must come off the total');
+  } catch (e) { console.error('theseus: figure check failed: ' + e.message); }
 })();
 
 /* ---------- switch the film on ---------- */

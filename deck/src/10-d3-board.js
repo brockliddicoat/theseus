@@ -17,7 +17,7 @@ Object.assign(SRC, {
   shcTpuHatiR: { t: 'TechPowerUp, G-Wolves Hati-R 8K review, 31 Oct 2024: "The very thin main PCB is affixed to the bottom with four screws, and has been extended such that it supports structural rigidity of the shell"', u: 'https://www.techpowerup.com/review/g-wolves-hati-r-8k/4.html' },
   shcBrock: { t: 'Brock Liddicoat, review notes, 4 Nov 2026: one board of about 5.6 g, with the radio, PMIC, antenna and USB-C; many mice reinforce with small arms of FR4 that are "easy to break off or snap under force"; "All G Wolves mice, I even had the arms on an HTS Ultra break during shipping once"; in engineering, draw on all the resources you have', u: '', n: 'his own account and figures' },
   shcBoardFE: { t: 'This deck, 2D frames solved in the page (07-sim.js): the shell at board height seen from above (the Sora outline; its CF-PP rim and lower wall as one 4.0 × 3.6 mm beam, 13.5 GPa), the board in 1.0 mm FR4 (19 GPa) as a plate-equivalent truss 9 mm inside the rim, joined by four 4 mm FR4 arms at the screw-boss rows or by 16 CF-PP rib feet at the study\'s arch rows; a transverse arch (the wall and one arch rib per 9.8 mm, as an equivalent section) under its 7.5 N share of a 10 N crown press, its feet held by the plan frame; the arm alone, edge on, as a fixed-guided FR4 beam', n: 'derived, this model' },
-  shcMassModel: { t: 'This deck, mass model: Theseus\'s 29.31 g as its weight budget sets it (the battery, Jauch LP402535JU, 8 g and 4.0 mm thick; the board 5.6 g; the buttons as XBAB weighed them in the XA25; the screws and the side-button lead from the 3D model; the magnesium wheel on its POM axle and four brass inserts as the intro\'s budget derives them; shell and skates the rest), each part at its height above the pad: the shell and skates at the study shell\'s centre of mass (16.1 mm) and the buttons at theirs (23.3 mm), both integrated from the moulded geometry (3d/lattice); the board 4 to 5 mm up with its parts on top (5 mm); the battery at board height in the tail, behind the board (7.46 mm, the 3D layout) or up in the hump (20 mm); wheel 22 mm, screws and inserts 8 mm, wires 10 mm (estimates); the grip 12 mm up, as in the side-wall study (shbSides)', n: 'derived, this model' }
+  shcMassModel: { t: 'This deck, mass model: Theseus\'s ' + THS.massG + ' as its weight budget sets it (the battery, EEMB LP402535, about 6.40 g, drawn at the 4.0 mm footprint of the Jauch pack it replaced; the board 5.6 g; the buttons as XBAB weighed them in the XA25; the screws and the side-button lead from the 3D model; the magnesium wheel on its POM axle and four brass inserts as the intro\'s budget derives them; shell and skates the rest), each part at its height above the pad: the shell and skates at the study shell\'s centre of mass (16.1 mm) and the buttons at theirs (23.3 mm), both integrated from the moulded geometry (3d/lattice); the board 4 to 5 mm up with its parts on top (5 mm); the battery at board height in the tail, behind the board (7.46 mm, the 3D layout) or up in the hump (20 mm); wheel 22 mm, screws and inserts 8 mm, wires 10 mm (estimates); the grip 12 mm up, as in the side-wall study (shbSides)', n: 'derived, this model' }
 });
 
 /* ---------- small geometry, in the shell study's frame: x across (+ = the user's left), y up, z forward (mm) ---------- */
@@ -239,7 +239,7 @@ S({
 });
 
 /* ============================== 2. use the weight you already carry (#94) ==============================
-   Theseus's 29.31 g as one square per gram. The board's 5.6 g (Brock's figure) go from carried to structure; nothing is
+   Theseus's weight (THESEUS.mass) as one square per gram. The board's 5.6 g (Brock's figure) go from carried to structure; nothing is
    added. The board then has three jobs, tying this slide to the next (the tie) and to Glide (the sensor held at focus). */
 S({
   id: 'shcCarry', after: 'shlPcbRib', ch: 'shell', theme: 'paper', title: 'Use the weight you already carry', settle: 9.5, ideas: [94],
@@ -422,7 +422,7 @@ S({
 /* ============================== 4. keep the mass low, near the fingers (#95, #40) ==============================
    The fingers push the mouse at its sides, 12 mm up (the grip of the side-wall study, shbSides); in a flick its mass pushes
    back at its centre of mass. The height between the two is a lever: the twist is m · a · lever, so at any flick the twist
-   falls as the lever does. Theseus's 29.31 g, part by part at its height (shcMassModel); the pointer moves the 8 g battery from
+   falls as the lever does. Theseus's weight, part by part at its height (shcMassModel); the pointer moves the battery from
    the hump down to board height in the tail, behind the board, where the 3D layout puts it (z −35.2 to −10.2 mm, 35 mm across,
    its centre 7.46 mm up; the board ends at z −7.9), and the centre of mass drops onto the grip. Drawn on the study shell, cut
    across at z = −14 mm, through the battery and behind the board (so the board is not in the cut); a small plan shows where. */
@@ -440,8 +440,9 @@ function shcBudget() {
   }
   const RD0 = typeof RDATA !== 'undefined' ? RDATA : {}, b = ((RD0.weights || {}).breakdowns || []).find(x => /XA25/.test(x.mouse));
   const by = (re, d) => { const p = b && b.parts.find(q => re.test(q.part)); return p ? +shcV(p.mass) : d; };
-  const cr = (((RD0.batteries || {}).jauch_lipo_family || {}).rows || []).find(r => r.part === 'LP402535JU');
-  const cell = { part: 'LP402535JU', mAh: cr ? +shcV(cr.capacity) : 370, g: cr ? +shcV(cr.mass) : 8, t: 4.0 };
+  /* Theseus's pack (THESEUS.pack, EEMB's LP402535: 300 mAh, about 6.40 g; Brock, 17:08) */
+  const cr = (((RD0.batteries || {}).eemb_lipo || {}).rows || []).find(r => r.part === THESEUS.pack);
+  const cell = { part: THESEUS.pack, mAh: cr ? +shcV(cr.capacity) : 300, g: cr ? +shcV(cr.mass) : 6.4, t: 4.0 };
   /* the wheel 0.9 g + its 84.3 mm³ POM axle; 4 × 23.59 mm³ of titanium at 4.43; 109.1 mm of 32 AWG lead at 0.729 mg/mm (ntr_budget) */
   const btn = by(/^Button/, 3.328), wheel = 0.9 + 0.0843 * 1.42, ins = 0.516, screws = 4 * 0.02359 * 4.43, wires = 0.1091 * 0.729;
   return (SHC.bud = { cell, btn, wheel, screws, wires, ins, shell: THESEUS.mass - cell.g - THESEUS.pcb - btn - wheel - ins - screws - wires });
