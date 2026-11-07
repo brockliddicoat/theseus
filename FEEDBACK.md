@@ -1699,6 +1699,13 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   **"Average hand (Recommended)"**. No change. The finding to keep: felt over the slide, the rule asks for almost exactly the
   Sora's own waist, slid under each finger.
 
+- **F65.9 DECIDED, IN PROGRESS (G4)** (17:18, on a phone screenshot of the Trials slide, feedback/attachments/F65/
+  1718-trials-slide-as-he-saw-it.png) "trial 3 is by far my favorite the right 2 don’t look right at all". Trial 3 (palm
+  lifted, symmetric) becomes the result. Symmetry becomes a rule: a traditional mouse is mirror-symmetric, and the
+  thumb-forward shells (trials 2 and 4) read lopsided. Main's fix to the scoring, which ranked trial 3 worst (49.52) because one
+  mirrored valley can't sit at two rests 20 mm apart: a valley's bottom is scored against the path each finger slides as you
+  grip (F65.6), not its exact rest.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
