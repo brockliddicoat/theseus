@@ -593,8 +593,8 @@ S({
        needs them to cost 1.05 mA at 8 khz; Logitech's own hours have that cost climbing with the rate, not fixed (V6_OPT,
        30-b14-move6.js). Replaces a frame-sync note that belonged to b09_sync */
     if (typeof V6_OPT !== 'undefined') { const O = V6_OPT, r = O.rows;
-      sourceBox(t, 5.8, rx, 750, rw, 'Optical switches cost more at 8 khz', 'Logitech’s own hours: two of them draw ' + v6_mA(r[0].mA) + ' mA at 1 khz, ' + v6_mA(r[1].mA) + ' at 2, ' + v6_mA(r[2].mA) + ' at 4. The ' + Math.floor(B.h8 + 1e-9) + ' h at 8 khz takes the V4 Pro’s at ' + v6_mA(O.need8) + ' mA, the same share as at 1 khz.', { kind: 'derived', size: 22 }); }
-    source(t, 'Hours: Razer\'s claims, the V4 Pro at 8 khz TechPowerUp\'s. Theseus, derived: ' + B.maker + '\'s ' + B.mAh + ' mAh at the V4 Pro\'s draw less its optical switches (' + b01_optPct() + ' at 1 khz, the same share at 8: Logitech\'s hours for the G Pro X Superlight 2 at 1, 2 and 4 khz), before any firmware gains.', { t0: 2 });
+      sourceBox(t, 5.8, rx, 724, rw, 'Optical switches cost more at 8 khz', 'Logitech’s own hours: two draw ' + v6_mA(r[0].mA) + ' mA at 1 khz, ' + v6_mA(r[1].mA) + ' at 2 khz, ' + v6_mA(r[2].mA) + ' at 4 khz. The ' + Math.floor(B.h8 + 1e-9) + ' h at 8 khz takes the V4 Pro’s at ' + (Math.ceil(O.need8 * 100 - 1e-9) / 100).toFixed(2) + ' mA, their 1 khz share.', { kind: 'derived', size: 22 }); }
+    source(t, 'Hours: Razer\'s claims, the V4 Pro at 8 khz TechPowerUp\'s. Theseus, derived: ' + B.maker + '\'s ' + B.mAh + ' mAh at the V4 Pro\'s draw less its optical switches (' + b01_optPct() + ', at 1 and 8 khz; Logitech\'s hours at 1, 2 and 4 khz), before any firmware gains.', { t0: 2 });
   }
 });
 

@@ -76,8 +76,8 @@ S({ id: 'powerup', ch: 'elec', theme: 'night', title: 'Three bars past the line'
     header(t, 'Three bars past the line');
     const T = V6_UP_T, R = v6_upRows();
     captions(t, [[0.3, 'Before move 6, none of these bars had reached the best flagship’s line. Moves 2, 3 and 5 had filled them part of the way.'],
-      [T.six - 0.3, 'Move 6 spends what they handed on: move 4’s idle switches buy the hours, move 5’s frames go out at 8 khz, the lighter battery finishes the shell’s density.'],
-      [T.close, 'Three bars past the line at once, from one move built on four. Each giant fills one or two by giving others up.']]);
+      [T.six - 0.3, 'Move 6 spends what they handed on: move 4’s idle switches buy the hours, move 5’s frames go out at 8 khz, a lighter battery finishes the density.'],
+      [T.close, 'Three bars past the line at once: one move, built on four. The giants each fill one or two.']]);
     /* the geometry: names at the left, the bars, the figures at the right; one line through all three rows */
     const bx = 600, L = 600, bh = 26, y0 = 352, rh = 196, figX = bx + L * LO.max + 56, kRows = ep(t, T.rows - 0.4, T.rows + 0.2);
     const xLine = bx + L, yTop = y0 - 36, yBot = y0 + 2 * rh + bh + 74;

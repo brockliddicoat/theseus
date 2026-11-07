@@ -54,7 +54,7 @@ const FILM = {
        8 khz hours to the power slide, where their basis is said (30-b14-move6.js) */
     { n: 6, ch: 'elec', name: 'Power', title: 'More hours from the same battery',
       builds: 'Move 4’s switches draw nothing until pressed, so a battery the Viper V4 Pro’s size lasts longer; move 5’s frames, each sent as it comes, go out at 8 khz.',
-      unlocks: 'Three bars past the line at once: more hours than the Viper, motion first at 8 khz, and a battery 1.6 g lighter that takes moves 2 and 3’s shell past every mouse’s density.',
+      unlocks: 'Three bars past the line at once: more hours than the Viper, a motion target ahead of every wireless mouse measured, and a battery 1.6 g lighter that takes moves 2 and 3’s shell past every mouse’s density.',
       stat: () => (typeof v6_cardStat === 'function' ? v6_cardStat() : null) },
     { n: 7, ch: 'surface', name: 'The finish', title: 'A finish that weighs nothing',
       builds: 'Move 2’s shell: a film-thin coat on it, no tape.',

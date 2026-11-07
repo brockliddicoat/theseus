@@ -1589,7 +1589,7 @@ S({
       }
       if (enc.cover) callout(t, 9.2, enc.cover, 'Clear top', { to: [px + pw - 150, py + 130], side: 'r', color: C.heroText, tcolor: C.ink, sub: 'Spring and magnet in sight', maxW: 140 });
     }
-    source(t, 'Shares of a Viper V4 Pro\'s 1.70 mA at 1 khz (306 mAh, 180 h), derived: an optical switch 0.116 mA, from Logitech\'s 96 h optical-only against 104 h hybrid (Superlight 2; Omron\'s pulse: 0.15 mA); its wheel LED 40 µs every 2 ms (Avago) at 5 mA, assumed, so not in Theseus\'s hours; TMR 1.5 µA an axis (MDT); a mechanical switch 3 µA. Sensor LED: infrared (PixArt). Dust: illustrative (MPS).', { t0: 2.4 });
+    source(t, 'Shares of a Viper V4 Pro\'s 1.70 mA at 1 khz (306 mAh, 180 h), derived: an optical switch 0.116 mA (Logitech\'s 96 h optical, 104 h hybrid, Superlight 2; Omron\'s pulse: 0.15); its wheel LED 40 µs every 2 ms (Avago) at 5 mA, assumed, not in Theseus\'s hours; TMR 1.5 µA an axis (MDT); a mechanical switch 3 µA. Sensor LED: infrared (PixArt). Dust: illustrative (MPS).', { t0: 2.4 });
   }
 });
 
