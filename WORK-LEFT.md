@@ -64,8 +64,12 @@ Live: **v1794012733-b9cd** (110 slides; PUBLISHING.md). Moves 0–5 are refined 
   (F64.15), with EEMB's box; board.py, KEY_PARTS, the 3D, b07_balance. Merge it, then publish.
 - **Waiting on Brock:** his picks for the five testing pairs (F64.13: lattice/b06_lattice, shlThin/b06_light,
   shbArches/b06_arches, tolerance/b07_tolerance, grind/b07_poron; FILM_AB in 25-film.js, A plays first).
-- **Next builders, one move at a time:** move 6 (power: its slides to V4's story, "More hours from the same battery"), then
-  7 and 8 (the finish; built to be opened, now with b03_hotswap), then the close (move 9: every bar at once).
+- **Done since:** move 6 (V6, merged 6dfee1b, live 1794014119-6690): four upgrades and the recap where three bars cross the
+  line together (powerup); the 8 khz claim sourced (Logitech's own hours at 1, 2 and 4 khz: the switches' cost climbs with the
+  rate). Row 6 went from 22 slides to 7; b10_sealed went to move 7, b10_wires to move 8; elc_oneside (7) is out until Brock asks.
+- **Running:** V7 (work/v7, branch v7-moves789): moves 7, 8 and the close.
+- **Left by V6** (V6-PROGRESS.md): b09_latency prints "2.3× sooner" (the floor of the model's 0.142 ms) while the docked bars
+  print "2.4×" (from the rounded 0.14 ms); the shared code was left alone.
 - **Left by V4** (handoff/v23refine/V4-PROGRESS.md):
   - The 8 khz claim (43 h against the Viper's 40 h) assumes the switches' share of the draw is the same at 8 khz as at 1 khz
     (the deck's B09/B10 method); if the Viper's optical switches draw a fixed current, Theseus gets 38.6 h, and the 8 khz win
