@@ -1677,4 +1677,7 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   finger gets exactly one local minimum (the ring finger none): every pocket and groove one smooth valley, no raised rims or
   ripples making a second dip in that finger's region. Phase 1's notch (rounded edges at half the radius, bulging past the base)
   read bump-dip-bump in the ×10 inset of the right side. Counted per finger in every trial, and shown as a rule on a slide.
+- **F65.4 DECIDED** (~13:35, on the first cut, published 13:30 as its own artifact) Front flare: at rest the loss doesn't want it
+  (left free it pulls the front in about 0.5 mm; flare helps lifting, which isn't modelled). **"Let the numbers decide
+  (Recommended)"**: no added flare; the slides show the UltralightX's 1.1 mm beside it and say lifting isn't modelled yet.
 
