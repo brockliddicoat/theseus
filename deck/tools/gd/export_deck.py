@@ -77,5 +77,38 @@ r = R['trials']['lifted_fwd']; p = np.array(r['final_params']); tt, hh, ss, cc =
 out['dip'] = {'t': r2(tt[::8]), 'h': r2(hh[::8], 4), 'slope': r2(ss[::8], 4), 'curv': r2(cc[::8], 5), 'a': r['derived']['a_thumb'], 'b': float(p[2]), 'kc': float(p[1])}
 out['ulx'] = {'widths': T.ULX, 'pocket': T.ULX_POCKET, 'flare': T.ULX_FLARE}
 out['circle_check'] = {'L': 30.0, 'R': 47.0, 'depth': 47.0 - float(np.sqrt(47.0 ** 2 - 15.0 ** 2))}
+# ---- the long-arc model (G2, after Brock 13:33): longarcs.py's four trials, their frames, the landscapes, the sweeps
+import longarcs as LA
+LR = json.load(open(os.path.join(HERE, 'out', 'longarcs.json')))
+ra = lambda arcs: [[round(float(L), 4), round(float(ph), 6)] for L, ph in arcs]
+def frame(p):
+    p = np.asarray(p, float); return {'planL': ra(LA.plan_side(p[0:5])['arcs']), 'planR': ra(LA.plan_side(p[5:10])['arcs']), 'sec': ra(LA.sec_half(p[10:14])['arcs'])}
+la = {'turn_rel_deg': LR['turn_rel_deg'], 'turn_mean_deg': LR['turn_mean_deg'], 'mu': LR['mu_dry'], 'width_range': LR['width_range'], 'ulx_pocket': LR['ulx_pocket'], 'sec_bound': LR['sec_bound'],
+      'P0': LA.P0, 'TH0': LA.TH0, 'S0': LA.S0, 'STH0': LA.STH0, 'btn': list(LA.BTN), 'nose_z': float(LA.P3[1]),
+      'sora': dict(LR['sora'], planArcs=ra(LA.PA), secArcs=ra(LA.SA)), 'trials': {}, 'order': ['heel_sym', 'heel_fwd', 'lifted_sym', 'lifted_fwd'], 'recommended': 'lifted_fwd'}
+for k, r in LR['trials'].items():
+    path = r['path']; idx = sorted(set(list(range(0, len(path), 10)) + [len(path) - 1]))
+    fr = [dict(frame(r['start']), it=0, loss=round(r['loss'][0], 4), p=[round(v, 4) for v in r['start']])]
+    for i in idx: fr.append(dict(frame(path[i]['p']), it=path[i]['it'], loss=round(path[i]['loss'], 4), p=[round(v, 4) for v in path[i]['p']]))
+    e = r['end']
+    la['trials'][k] = {'final': r['final'], 'start': r['start'], 'loss': round(r['loss'][-1], 4), 'loss0': round(r['loss'][0], 4), 'curve': [round(v, 4) for v in r['loss'][::4]],
+                       'targets': r['targets'], 'zones': r['zones'], 'k_felt': r['k_felt'], 'spread': r['spread'], 'contact': r['contact'],
+                       'end': {kk: e[kk] for kk in ('thumb', 'pinky', 'groove', 'R', 'dev', 'width')}, 'endArcs': {'planL': ra(e['planL']), 'planR': ra(e['planR']), 'sec': ra(e['sec'])},
+                       'begin': {kk: r['begin'][kk] for kk in ('thumb', 'pinky', 'groove', 'R', 'dev', 'width')},
+                       'grooves_under_finger': bool(max(r['placement']['z']['index'], r['placement']['z']['middle']) <= 48.0), 'tips': r['placement']['z'],
+                       'frames': fr, 'path': [[round(q['p'][1], 4), round(q['p'][2], 3)] for q in path], 'landscape': r['landscape'], 'terms': r['terms'], 'terms0': r['terms0']}
+# sweeps of the thumb's waist round trial 4's result, for the cursor on gd_arcs: depth, length, angle
+pF = np.array(LR['trials']['lifted_fwd']['final'])
+def sweep(i, vals):
+    out_ = []
+    for v in vals:
+        q = pF[0:5].copy(); q[i] = v; L_ = LA.plan_side(q); out_.append({'v': round(float(v), 4), 'arcs': ra(L_['arcs']), 'ok': L_['closure'] < 1e-3})
+    return out_
+la['sweep'] = {'depth': sweep(1, np.linspace(0.15, 3.0, 20)), 'length': sweep(0, np.linspace(30, 62, 17)), 'angle': sweep(3, np.linspace(-1.5, 4.5, 13)),
+               'sec_depth': [{'v': round(float(v), 4), 'arcs': ra(LA.sec_half(np.r_[pF[10], v, pF[12], pF[13]])['arcs'])} for v in np.linspace(0.02, 0.5, 13)]}
+out['la'] = la
+# the page draws the long-arc model now: G1's notch trials, frames, maps, handles and dip stay in trials.json, out of the page
+for k_ in ('trials', 'descent', 'landscape', 'arcs', 'dip', 'circle_check'): out.pop(k_, None)
+out['sora'] = {'profile': out['sora']['profile']}
 json.dump(out, open(os.path.join(HERE, 'out', 'gd-deck.json'), 'w'), separators=(',', ':'))
 print('gd-deck.json', os.path.getsize(os.path.join(HERE, 'out', 'gd-deck.json')))

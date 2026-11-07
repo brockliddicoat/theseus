@@ -2,7 +2,9 @@
    40-gd: "Shape, by gradient descent", a mini presentation on the deck's core and motion kit (dist/gd.html, built by
    python3 tools/build.py gd). Brock, 2026-11-07: four local minima on a mouse shape (thumb left, pinky right, index and
    middle comfort grooves), the ring finger on the shoulder with no minimum, the strength of each set by the hand at rest
-   in zero gravity, the shape made of arcs, descended. One minimum per finger (Brock, 12:55).
+   in zero gravity, the shape made of arcs, descended. One minimum per finger (Brock, 12:55). Rebuilt after Brock's 13:33
+   ("arcs that span the whole sides, not tiny ones" / "nothing like normal mice"): each side is a few LONG arcs (GD.la,
+   deck/tools/gd/longarcs.py), each valley the gentlest arc a fingertip reliably feels where it lands, true scale throughout.
    Data: GD (deck/tools/gd/out/gd-deck.json, computed by deck/tools/gd/*.py) and GDSRC (research/gd/shape-gd.json),
    embedded in this page only. Every outline is drawn from the fitted Sora V2 (3d/shell/shell-sora.glb), never by hand.
    ?trial=1..4 picks the trial the descent and before/after slides show (default: the lowest loss).
@@ -22,7 +24,11 @@ Object.assign(SRC, {
   gdSerhat: { t: 'G. Serhat, Y. Vardar and K. J. Kuchenbecker, "Contact evolution of dry and hydrated fingertips at initial touch", PLoS ONE 17(7) (2022) e0269722, Table 1: gross contact area A = 98.6 F^0.50 mm^2 (F in N); "around 1 cm^2" at 1 N in the literature', u: 'https://doi.org/10.1371/journal.pone.0269722' },
   gdTpu: { t: 'TechPowerUp, Finalmouse UltralightX review, shape: width front 5.88 cm, grip 5.66 cm, rear 6.16 cm; "the sides do curve in, but essentially are straight at the middle". The review adds that the ends barely flare, and that the main buttons have fairly deep comfort grooves', u: 'https://techpowerup.com/review/finalmouse-ultralightx/3.html' },
   gdBrock: { t: 'Brock Liddicoat, In Pursuit of an Objectively Better Mouse, brainstorm: Newtonian shape analysis takes the derivative of the edge to see whether it points off the mouse; a rate of change can be too extreme as well as too low; a comfort groove slopes on both sides, so the forces cancel and the finger feels hugged. And 2026-11-07: "there shouldn\'t be more than one local minima per figure" (figure: finger)', u: '', n: 'His reasoning: no tag.' },
-  gdModel: { t: 'This study: the Sora V2 base fitted with arcs from 3d/shell/shell-sora.glb (plan 8 arcs, RMS 0.12 mm; section 7 arcs, 0.06 to 0.12 mm); fingertip targets from the hand model; the dips, the loss and the descent in deck/tools/gd/ (trials.py, Adam on central differences)', u: '', n: 'derived' }
+  gdDerler: { t: 'S. Derler and L.-C. Gerhardt, "Tribology of Skin: Review and Analysis of Experimental Results for the Friction Coefficient of Human Skin", Tribology Letters 45 (2012) 1-27: dry skin over 0.2, typically about 0.5; the index finger on nylon, phenolic, Plexiglas, polycarbonate and Teflon 0.09 to 0.61 (Dinc et al.), on two plastics 0.16 to 0.31 at 20 N (Lewis)', u: 'https://doc.rero.ch/record/315296/files/11249_2011_Article_9854.pdf' },
+  gdGordon: { t: 'I. E. Gordon and V. Morison, "The haptic perception of curvature", Perception & Psychophysics 31(5) (1982) 446-450: absolute threshold 0.09 mm base-to-peak over a 20 mm strip (SD 0.03); over 20, 30 and 40 mm the threshold is a constant overall gradient of about 0.009 (height over half the length)', u: 'https://doi.org/10.3758/BF03204854' },
+  gdPont: { t: 'S. C. Pont, A. M. L. Kappers and J. J. Koenderink, "Similar mechanisms underlie curvature comparison by static and dynamic touch", Perception & Psychophysics 61(5) (1999) 874-894: dynamic-touch thresholds 3.3 to 5.3 deg of attitude difference, not changing with length; static 1.6 to 2.8 deg (Experiment 1)', u: 'https://doi.org/10.3758/BF03206903' },
+  gdGoodwin: { t: 'A. W. Goodwin, K. T. John and A. H. Marceglia, "Tactile discrimination of curvature by humans using only cutaneous information from the fingerpads", Experimental Brain Research 86 (1991) 663-672: with the finger still, a concave 5.4 /m (R 185 mm) told from flat at 75 % correct; convex 4.9 /m (R 204 mm)', u: 'https://doi.org/10.1007/BF00230540' },
+  gdModel: { t: 'This study: the Sora V2 base fitted with arcs from 3d/shell/shell-sora.glb (plan 8 arcs, RMS 0.12 mm; section 7 arcs, 0.06 to 0.12 mm), regrouped into long arcs (nose, front, waist, hump, tail; crown, groove, shoulder); fingertip targets from the hand model; the felt strength, the loss and the descent in deck/tools/gd/longarcs.py (Adam on central differences)', u: '', n: 'derived' }
 });
 
 /* ---------- captions set on one line, or two balanced lines (no orphan): the narrowest width that still takes two ---------- */
@@ -38,15 +44,98 @@ function gdCaptions(t, steps, o = {}) {
   captions(t, steps, Object.assign({}, o, { maxW: cur < 0 ? (o.maxW || 1560) : gdCapW(String(steps[cur][1]), o.maxW || 1560) }));
 }
 
-/* ---------- the trials, and which one the result slides show (?trial=1..4) ---------- */
+/* ---------- the trials' names (?trial=1..4 picks the one the result slides show) ---------- */
 const GD_NAME = {
   heel_sym: ['Palm on the hump', 'Symmetric'], heel_fwd: ['Palm on the hump', 'Thumb pocket forward'],
   lifted_sym: ['Palm lifted, zero g', 'Symmetric'], lifted_fwd: ['Palm lifted, zero g', 'Thumb pocket forward']
 };
-const GD_K = (() => { let k = GD.recommended; try { const m = /[?&]trial=([1-4])\b/.exec(location.search); if (m) k = GD.order[+m[1] - 1]; } catch (e) { } return k; })();
-const gdTr = k => GD.trials[k || GD_K];
-const gdNo = k => GD.order.indexOf(k) + 1;
-const gdBest = () => GD.order.reduce((b, k) => (GD.trials[k].loss < GD.trials[b].loss ? k : b), GD.order[0]);
+
+/* ---------- the long-arc model (GD.la, deck/tools/gd/longarcs.py): each side is the Sora's chain regrouped into long arcs:
+   nose cap (0-2) | front (3) | waist (4, concave) | hump (5) | rear corner (6) | tail tip (7); the section: crown (0) | groove (1,
+   concave) | shoulder (2) | corner (3) | wall (4-6). A shape is its arc list [[L, turn], ...]; chains are G1 by construction. ---------- */
+const LA = GD.la;
+const LA_K = (() => { let k = LA.recommended; try { const m = /[?&]trial=([1-4])\b/.exec(location.search); if (m) k = LA.order[+m[1] - 1]; } catch (e) { } return k; })();
+const laTr = k => LA.trials[k || LA_K];
+const GD_REC = LA.recommended;
+const laNo = k => LA.order.indexOf(k) + 1;
+const laBest = () => LA.order.reduce((b, k) => (LA.trials[k].loss < LA.trials[b].loss ? k : b), LA.order[0]);
+const LA_CH = new Map();
+/** a chain of arcs from p0 at heading th0: { pts, idx (arc per point), ends (each arc's end), hs (headings) } (cached by identity) */
+function laChain(p0, th0, arcs, ds = 0.5) {
+  const c = LA_CH.get(arcs); if (c && c.ds === ds) return c;
+  let x = p0[0], y = p0[1], th = th0; const pts = [[x, y]], idx = [0], ends = [[x, y]], hs = [th];
+  arcs.forEach(([L, ph], i) => {
+    const n = Math.max(2, Math.ceil(L / ds)), k = ph / Math.max(L, 1e-9), st = (u, t0) => (Math.abs(k) < 1e-9 ? [x + Math.cos(t0) * u, y + Math.sin(t0) * u] : [x + (Math.sin(t0 + k * u) - Math.sin(t0)) / k, y - (Math.cos(t0 + k * u) - Math.cos(t0)) / k]);
+    for (let j = 1; j <= n; j++) { pts.push(st(L * j / n, th)); idx.push(i); }
+    [x, y] = st(L, th); th += ph; ends.push([x, y]); hs.push(th);
+  });
+  const out = { pts, idx, ends, hs, ds }; LA_CH.set(arcs, out); return out;
+}
+const laPlan = arcs => laChain(LA.P0, LA.TH0, arcs, 0.5);
+const laSec = arcs => laChain(LA.S0, LA.STH0, arcs, 0.2);
+function laMix(a, b, k) { return a.map((q, i) => [lerp(q[0], b[i][0], k), lerp(q[1], b[i][1], k)]); }
+/** the points of a chain on arcs i0..i1 */
+function laPart(ch, i0, i1 = i0) { const o = []; ch.pts.forEach((q, j) => { if (ch.idx[j] >= i0 && ch.idx[j] <= i1) o.push(q); }); if (i0 > 0) o.unshift(ch.ends[i0]); return o; }
+/** the side as u(z) from a plan chain (the side's run only) */
+function laSideU(ch) { const q = ch.pts.filter(p => p[0] > 17).slice().sort((a, b) => a[1] - b[1]); const zs = q.map(p => p[1]), us = q.map(p => p[0]); return z => gdInterp(z, zs, us); }
+/** the frame of a trial's descent at progress u (0..1): arc lists mixed between the recorded frames */
+function laFrame(Tr, u) {
+  const F = Tr.frames, n = F.length, fi = clamp(u) * (n - 1), i0 = Math.min(n - 2, Math.floor(fi)), k = fi - i0, A_ = F[i0], B_ = F[i0 + 1];
+  return { planL: laMix(A_.planL, B_.planL, k), planR: laMix(A_.planR, B_.planR, k), sec: laMix(A_.sec, B_.sec, k), loss: lerp(A_.loss, B_.loss, k), p: A_.p.map((v, i) => lerp(v, B_.p[i], k)), it: lerp(A_.it, B_.it, k) };
+}
+/** a waist arc's chord, middle and depth point, from its chain (arc 4): for handles */
+function laWaist(ch, wi = 4) {
+  const A_ = ch.ends[wi], B_ = ch.ends[wi + 1], M = [(A_[0] + B_[0]) / 2, (A_[1] + B_[1]) / 2], dx = B_[0] - A_[0], dy = B_[1] - A_[1], L = Math.hypot(dx, dy), n = [-dy / L, dx / L];
+  let best = null, bd = -1; ch.pts.forEach((q, j) => { if (ch.idx[j] !== wi) return; const d = Math.abs((q[0] - A_[0]) * n[0] + (q[1] - A_[1]) * n[1]); if (d > bd) { bd = d; best = q; } });
+  return { A: A_, B: B_, M, c: L, d: bd, deep: best, ang: Math.atan2(dx, -dy) };
+}
+
+/* the long arcs grouped as a designer names them, with the tones that tell them apart (handles at the joins) */
+const LA_PLAN_REG = [[0, 2, 'Nose'], [3, 3, 'Front'], [4, 4, 'Waist'], [5, 5, 'Hump'], [6, 7, 'Tail']];
+const LA_SEC_REG = [[0, 0, 'Crown'], [1, 1, 'Groove'], [2, 2, 'Shoulder'], [3, 3, 'Corner'], [4, 6, 'Side']];
+/** draw a chain region by region: o = { t, t0, dt (arrival per region), hl (region index in blue), w, alpha, handles, slot (open the wheel's slot) } */
+function laRegions(map, ch, sd, regs, o = {}) {
+  const a = o.alpha == null ? 1 : o.alpha; if (a <= 0.003) return;
+  regs.forEach(([i0, i1], r) => {
+    const k = o.t == null ? 1 : ep(o.t, o.t0 + r * (o.dt || 0.3), o.t0 + r * (o.dt || 0.3) + 0.5, E.io3); if (k <= 0) return;
+    let pts = laPart(ch, i0, i1); if (o.slot) pts = pts.filter(q => q[0] >= o.slot);
+    const col = o.color || (r === o.hl ? C.hero : o.tones ? o.tones[r % 2] : r % 2 ? C.ink : mix(C.ink, C.bg, 0.45));
+    poly(map.P(pts, sd), { color: col, w: r === o.hl ? (o.w || 3) + 1 : (o.w || 3), p: k, alpha: a });
+    if (k >= 1 && o.handles !== false && r < regs.length - 1) { const q = map.P([ch.ends[i1 + 1]], sd)[0]; circle(q[0], q[1], 5, { fill: C.panel, color: C.ink, w: 1.6, alpha: a }); }
+  });
+}
+/** the section's two halves, as the hand sees it (index left), the wheel's slot open */
+function laSecDraw(ms, ch, o = {}) { for (const sd of [-1, 1]) poly(ms.P(ch.pts.filter(q => q[0] >= 4.8), sd), o); }
+/** a side's own chord: the straight edge laid on u(z) that touches it on either side of z (the upper hull's segment over z),
+   from za to zb; returns { z0, z1, gap(z) } with the gap >= 0 between the two touch points */
+function laChordOf(f, z, za = -32, zb = LA.nose_z - 1) {
+  const H = []; for (let q = za; q <= zb + 1e-9; q += 0.25) { const p = [q, f(q)]; while (H.length >= 2 && (H[H.length - 1][0] - H[H.length - 2][0]) * (p[1] - H[H.length - 2][1]) - (H[H.length - 1][1] - H[H.length - 2][1]) * (p[0] - H[H.length - 2][0]) >= 0) H.pop(); H.push(p); }
+  let i = 0; while (i < H.length - 2 && H[i + 1][0] < z) i++;
+  const [z0, u0] = H[i], [z1, u1] = H[i + 1];
+  return { z0, z1, gap: q => (u0 + (u1 - u0) * (q - z0) / ((z1 - z0) || 1)) - f(q) };
+}
+/** an inset that plots a side against its own chord, depth x2 at most, so it shows its one valley; the Sora (yellow) against
+   its own chord the same way. box: [x, y, w, h]; o = { mag, ref, z (the finger's rest), zr: [z from, z to] (the inset's span) } */
+function laChordInset(t, a, box, U, o = {}) {
+  if (a <= 0.003) return null;
+  const [x, y, w, h] = box, mag = o.mag || 2, zr = o.zr || [-30, 44];
+  rr(x, y, w, h, 6, TH ? '#F3F3F5' : '#0B0C0D', null, 0, a);
+  const s = (h - 100) / (zr[1] - zr[0]), X0 = x + 34, Y = z => y + 58 + (zr[1] - z) * s, Xg = g => X0 + g * mag * s;
+  const draw = (f, col, wd, p) => { const c = laChordOf(f, o.z == null ? 10 : o.z); const zs = []; for (let q = c.z0; q <= c.z1 + 1e-9; q += 0.25) zs.push(q); poly(zs.map(q => [Xg(Math.max(0, c.gap(q))), Y(q)]), { color: col, w: wd, alpha: a, p }); return c; };
+  line(X0, Y(zr[1]), X0, Y(zr[0]), { color: C.mute, w: 1.5, dash: [5, 4], alpha: a });
+  const cr = o.ref ? draw(o.ref, C.second, 2, o.pRef == null ? 1 : o.pRef) : null;
+  const c = draw(U, C.hero, 3.2, o.p == null ? 1 : o.p);
+  text(o.title || 'Against its own chord, depth ×' + mag, x + 16, y + 30, { role: 'label', size: 18, color: C.ink2, alpha: a });
+  line(x + w - 24 - mag * s, y + h - 20, x + w - 24, y + h - 20, { color: C.mute, w: 2.5, alpha: a });
+  text('1 mm', x + w - 24 - mag * s / 2, y + h - 30, { role: 'tick', size: 17, color: C.mute, align: 'center', alpha: a });
+  return { X: Xg, Y, c, cr, s };
+}
+/** count the valleys of a gap profile (local maxima of the gap, ignoring wiggles under tol) */
+function laValleys(gap, z0, z1, tol = 0.004) {
+  const zs = [], g = []; for (let z = z0; z <= z1 + 1e-9; z += 0.1) { zs.push(z); g.push(gap(z)); }
+  let n = 0; for (let j = 1; j < g.length - 1; j++) if (g[j] >= g[j - 1] && g[j] > g[j + 1]) { const L = g.slice(0, j).reverse(), R = g.slice(j + 1); if (L.some(v => v < g[j] - tol) && R.some(v => v < g[j] - tol)) n++; }
+  return n;
+}
 
 /* ---------- small numeric helpers ---------- */
 function gdInterp(x, xs, ys) {
@@ -63,13 +152,7 @@ function gdRes(P, n = 160) {
   for (let j = 0; j < n; j++) { const s = L * j / (n - 1), x = gdInterp(s, d, P.map(q => q[0])), y = gdInterp(s, d, P.map(q => q[1])); v.push([x, y]); }
   GD_RS.set(key, { n, v }); return v;
 }
-function gdMix(A, B, k) { const a = gdRes(A), b = gdRes(B); return a.map((q, i) => [lerp(q[0], b[i][0], k), lerp(q[1], b[i][1], k)]); }
-/** a side of the top outline as u(z): only where the side runs front to back */
-function gdSide(P) {
-  const q = P.filter(p => p[0] > 17).slice().sort((a, b) => a[1] - b[1]);
-  const zs = q.map(p => p[1]), us = q.map(p => p[0]); return z => gdInterp(z, zs, us);
-}
-const GD_SORA_U = gdSide(GD.sora.plan);
+
 
 /* ---------- views, in mm, true scale ---------- */
 /** a top view as the hand sees it: nose up, the user's left (the thumb's side) on the image's left */
@@ -86,10 +169,6 @@ function gdSecFit(box, o = {}) {
   const s = Math.min(w / (2 * ur), h / (yr[1] - yr[0])), cx = x + w / 2, by = y + h - (h - (yr[1] - yr[0]) * s) / 2;
   return { s, cx, by, X: (u, sd) => cx + sd * u * s, Y: v => by - v * s, P: (pts, sd) => pts.map(q => [cx + sd * q[0] * s, by - q[1] * s]) };
 }
-function gdSection(m, sec) { return m.P(sec, -1).slice().reverse().concat(m.P(sec, 1)); }
-/** the section's two halves, with the wheel's slot (|x| < 4.8 mm at the buttons' station) left open */
-function gdSecHalves(m, sec, slot = 4.8) { const q = sec.filter(p => p[0] >= slot); return [m.P(q, -1), m.P(q, 1)]; }
-function gdSecDraw(m, sec, o) { for (const h of gdSecHalves(m, sec)) poly(h, o); }
 
 /* ---------- the fingertip: grey, technical (F9.24: never peach) ---------- */
 function gdTip(x, y, r, a = 1, o = {}) {
@@ -173,72 +252,3 @@ function gdAngles(P, f, g, k, map, a, o = {}) {
   }
 }
 
-/* ---------- the magnified strip: how far a side moves from the Sora, beside a true-scale top view ----------
-   The outline itself stays true scale (Brock: a traditional mouse); this strip shows the millimetres. The Sora's side is
-   the dashed yellow line; the blue line is the side's change, magnified (its factor written on it); 1 mm bar at the foot.
-   side -1: the thumb's side (image left), +1: the pinky's. o = { x, w, z0, z1, mag, p } */
-function gdStrip(t, a, m, side, P, o = {}) {
-  if (a <= 0.003) return null;
-  const w = o.w || 150, X0 = o.x, z0 = o.z0 == null ? -42 : o.z0, z1 = o.z1 == null ? 46 : o.z1, f = gdSide(P);
-  const mag = o.mag || Math.max(3, Math.floor(0.6 * w / (4.2 * m.s))), L1 = m.s * mag;
-  const y0 = m.Y(z1), y1 = m.Y(z0), zero = side < 0 ? X0 + w * 0.3 : X0 + w * 0.7;
-  rr(X0, y0 - 48, w, y1 - y0 + 104, 6, TH ? '#FFFFFF' : '#141517', null, 0, a);
-  line(zero, y0, zero, y1, { color: C.second, w: 2, dash: [6, 5], alpha: a });
-  const pts = []; for (let z = z0; z <= z1 + 1e-9; z += 0.5) pts.push([zero + side * (f(z) - GD_SORA_U(z)) * L1, m.Y(z)]);
-  poly(pts, { color: C.hero, w: 3, alpha: a, p: o.p == null ? 1 : o.p });
-  const by = y1 + 22;
-  line(zero, by, zero - side * L1, by, { color: C.mute, w: 2.5, alpha: a });
-  text('1 mm', zero - side * L1 / 2, by + 26, { role: 'tick', size: 19, color: C.mute, align: 'center', alpha: a });
-  text('×' + mag, X0 + w / 2, y0 - 18, { role: 'label', size: 20, color: C.mute, align: 'center', alpha: a });
-  return { zero, L1, mag, X: d => zero + side * d * L1 };
-}
-
-/* ---------- a curvature comb along a polyline in mm (normals scaled by curvature) ---------- */
-function gdComb(map, P, sd, o = {}) {
-  const a = o.alpha == null ? 1 : o.alpha; if (a <= 0.003) return;
-  const Q = gdRes(P, o.n || 140), k = o.k || 900, tips = [];
-  G.save(); G.globalAlpha = a * 0.75; G.strokeStyle = o.color || C.hero; G.lineWidth = 1.2; G.beginPath();
-  for (let i = 1; i < Q.length - 1; i++) {
-    const [x0, y0] = Q[i - 1], [x1, y1] = Q[i], [x2, y2] = Q[i + 1];
-    const ax = x1 - x0, ay = y1 - y0, bx = x2 - x1, by = y2 - y1, cr = ax * by - ay * bx, la = Math.hypot(ax, ay), lb = Math.hypot(bx, by), lc = Math.hypot(x2 - x0, y2 - y0);
-    const kap = 2 * cr / ((la * lb * lc) || 1);   /* signed curvature, 1/mm */
-    const nx = -(ay + by) / ((la + lb) || 1), ny = (ax + bx) / ((la + lb) || 1);
-    const px = map.cx + sd * x1 * map.s, py = (map.cy != null ? map.cy : map.by) - y1 * map.s;
-    const L = clamp(kap * k * (o.sign || 1), -60, 60), ex = px + sd * nx * L, ey = py - ny * L;
-    G.moveTo(px, py); G.lineTo(ex, ey); tips.push([ex, ey]);
-  }
-  G.stroke(); G.restore();
-  poly(tips, { color: o.color || C.hero, w: 1.5, alpha: a * 0.9 });
-}
-
-/* ---------- the dip, in JS (for the anatomy slide): curvature core kc over |t| <= a, easing over b ---------- */
-function gdDip(a, b, kc, n = 241) {
-  const E_ = a + b, ts = [], c = [];
-  for (let i = 0; i < n; i++) {
-    const t = E_ * i / (n - 1), x = clamp((t - a) / b), m = 0.5 + a / b, Hs = 1 - 3 * x * x + 2 * x * x * x, Bs = 30 * x * x * (1 - x) * (1 - x);
-    ts.push(t); c.push(t <= a ? kc : kc * (Hs - m * Bs));
-  }
-  const sl = [0], h = [0];
-  for (let i = 1; i < n; i++) { const dt = ts[i] - ts[i - 1]; sl.push(sl[i - 1] + (c[i] + c[i - 1]) / 2 * dt); h.push(h[i - 1] + (sl[i] + sl[i - 1]) / 2 * dt); }
-  const hE = h[n - 1]; for (let i = 0; i < n; i++) h[i] -= hE;
-  return { t: ts, c, slope: sl, h, depth: -h[0] };
-}
-
-/* ---------- the trial's tag: its name and number, quiet type ---------- */
-function gdTrialTag(t, t0, x, y, k, o = {}) {
-  const a = ep(t, t0, t0 + 0.4); if (a <= 0.003) return 0;
-  const nm = GD_NAME[k];
-  return rich([{ s: 'Trial ' + gdNo(k), role: 'label', size: o.size || 20, color: o.color || C.mute }, { s: nm[0] + ', ' + nm[1].toLowerCase(), role: 'small', size: (o.size || 20) + 3, weight: 650, color: C.ink2, gap: 12, sentence: false }], x, y, { alpha: a });
-}
-
-const GD_HEAT = new Map();
-function gdHeat(key, grid, x, y, w, h, a, toGrey) {
-  let cv = GD_HEAT.get(key);
-  if (!cv) {
-    const nk = grid.length, nz = grid[0].length; cv = document.createElement('canvas'); cv.width = nz; cv.height = nk;
-    const g2 = cv.getContext('2d'), im = g2.createImageData(nz, nk);
-    for (let r = 0; r < nk; r++) for (let c = 0; c < nz; c++) { const v = toGrey(grid[r][c]), i = ((nk - 1 - r) * nz + c) * 4; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
-    g2.putImageData(im, 0, 0); GD_HEAT.set(key, cv);
-  }
-  G.save(); G.globalAlpha = a; G.imageSmoothingEnabled = true; G.imageSmoothingQuality = 'high'; G.drawImage(cv, x, y, w, h); G.restore();
-}
