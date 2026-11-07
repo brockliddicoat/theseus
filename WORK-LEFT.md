@@ -70,7 +70,14 @@ Live: **v1794012733-b9cd** (110 slides; PUBLISHING.md). Moves 0–5 are refined 
 - **Done since:** move 6 (V6, merged 6dfee1b, live 1794014119-6690): four upgrades and the recap where three bars cross the
   line together (powerup); the 8 khz claim sourced (Logitech's own hours at 1, 2 and 4 khz: the switches' cost climbs with the
   rate). Row 6 went from 22 slides to 7; b10_sealed went to move 7, b10_wires to move 8; elc_oneside (7) is out until Brock asks.
-- **Running:** V7 (work/v7, branch v7-moves789): moves 7, 8 and the close.
+- **Done:** V7 (merged 82a5639, live 1794015382-5983): moves 7, 8 and the close (everybar: the giants' bars short, Theseus's
+  three crossing the line together, 0, no tradeoffs, the board lit). Every move has now been through the refinement.
+- **Left by V7** (V7-PROGRESS.md): b10_sealed's board coat (+0.24 g) isn't in ntr_budget (asked Brock, ~19:40); repair and
+  b03_hotswap both print 1,000 swaps three slides apart; own_life types its 98.6 % (v23's); move 7 has no ladder recap (its
+  card carries the compounding fact); the two new edges (1->7, 4->8) also show dashed on mv1's and mv4's cards and the rule's
+  plan. "Every bar" means the film's bars only (the click bar is off; the Starlight X leads on Finalmouse's rig).
+- **Next, film-wide:** watch the whole film in order for pacing (one idea per beat), the grounds alternating light and dark
+  (section 1 item 2), Brock's picks for the five testing pairs, then the clips.
 - **Left by V6** (V6-PROGRESS.md): b09_latency prints "2.3× sooner" (the floor of the model's 0.142 ms) while the docked bars
   print "2.4×" (from the rounded 0.14 ms); the shared code was left alone.
 - **Left by V4** (handoff/v23refine/V4-PROGRESS.md):

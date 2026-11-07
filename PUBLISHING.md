@@ -16,8 +16,9 @@
 
 ## Brock's main account
 - Main deck: slug 53c9f24b-6151-4df2-bb06-2f0f168fdc8b (https://claude.ai/artifact/BM6ym7q1adWFaNP6u5cTQv), published from
-  deck/dist/main.html as index.html. Republish with publish_files + slug + base_version (last: 1794014491-96a5, 2026-11-06 ~19:21 Chicago: the v23
-  refinement, 97 slides, H5's battery move merged (183c77b). Before it 1794014119-6690 (~19:15: V6's move 6 merged, 6dfee1b). Before it 1794012733-b9cd (~18:52, 110 slides: V5's moves 4 and 5
+  deck/dist/main.html as index.html. Republish with publish_files + slug + base_version (last: 1794015382-5983, 2026-11-06 ~19:36 Chicago: the v23
+  refinement complete, 95 slides, every move refined; V7's moves 7-9 merged (82a5639). Before it 1794014491-96a5 (~19:21,
+  H5's battery move, 183c77b). Before it 1794014119-6690 (~19:15: V6's move 6 merged, 6dfee1b). Before it 1794012733-b9cd (~18:52, 110 slides: V5's moves 4 and 5
   merged onto V4's 300 mAh battery pass, 69b4c83). Before it 1794011041-ce3f (~18:24,
   V4's battery pass, 78641fa, 116 slides) and 1794010568-85c4 (~18:15: the cover's Compromises tile as 0 with three full
   bars, "no tradeoffs"; built from 294c539 without V4's then-uncommitted pass). The v23 refinement's versions, newest first: 1794008755-3f2b (testing pairs,
