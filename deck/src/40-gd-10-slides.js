@@ -110,7 +110,8 @@ S({
     const aB = tileA(t, 0.2, 0); demoWindow(...box, aB);
     /* beats: the fingers relax (1.0 to 3.4); the palm lowers onto the hump (4.8 to 6.6); then lifts to the zero-g pose (8.6 to 10.2) */
     const relax = ep(t, 1.0, 3.4, E.io3), kM = ep(t, 4.4, 5.2), kH = ep(t, 4.8, 6.6, E.cam), kL = ep(t, 8.6, 10.2, E.cam);
-    const zK = lerp(lerp(lifted.zK - 6, heel.zK, kH), lifted.zK, kL), yK = lerp(lerp(lifted.yK + 16, heel.yK, kH), lifted.yK, kL);
+    /* floating: a little above the zero-g grip, low enough that the rendered forearm clears the box's label (G6) */
+    const zK = lerp(lerp(lifted.zK - 6, heel.zK, kH), lifted.zK, kL), yK = lerp(lerp(lifted.yK + 9, heel.yK, kH), lifted.yK, kL);
     const g = lerp(lerp(0, heel.gamma_deg, kH), 0, kL) * Math.PI / 180;
     G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
     /* the hand, rendered (G6): it relaxes (the relax frames), lowers onto the hump (to the 'heel' frame), then lifts (to 'lifted');
@@ -118,7 +119,7 @@ S({
        once it is there; the Sora's line is drawn between the layers; the index and the thumb stay in front */
     const P = gdHandPose(zK, yK, g, relax);
     const list = kL > 0 ? gdSeq(gdStepSeq('hl', 'heel', 'lifted'), kL) : kH > 0 ? gdSeq(gdStepSeq('fh', 'rest_100', 'heel'), kH) : gdSeq(gdRelaxSeq(), relax);
-    gdHandDraw(list, map, zK, yK, g, aB * ep(t, 0.4, 1.0), { clip: () => gdClipOutSora(map, box), clipK: kM, between: () => {
+    gdHandDraw(list, map, zK, yK, g, aB * ep(t, 0.4, 1.0), { clip: () => gdClipOutSora(map, box), clipIn: () => gdClipInSora(map), clipK: kM, between: () => {
       /* the Sora's side profile and the pad line arrive with the second beat */
       line(box[0] + 24, map.Y(0), box[0] + box[2] - 24, map.Y(0), { color: C.hair, w: 1.5, alpha: aB * kM });
       poly(GD.sora.profile.map(q => [map.X(q[0]), map.Y(q[1])]), { color: C.second, w: 3, alpha: aB, p: kM });

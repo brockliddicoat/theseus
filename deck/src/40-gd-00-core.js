@@ -259,7 +259,11 @@ function gdHandDraw(list, map, zK, yK, g, a, o = {}) {
   const put = (img, al) => { if (!img || al <= 0.003) return; G.save(); G.globalAlpha = al; G.translate(map.X(zK), map.Y(yK)); G.rotate(-g); G.scale(map.s / ppm, map.s / ppm); G.drawImage(img, W.z0 * ppm, -W.y1 * ppm); G.restore(); };
   for (const L of o.layers || ['far', 'near']) {
     const img = gdHandMixed(L, have);
-    if (L === 'far' && o.clip && (o.clipK || 0) > 0) { const k = clamp(o.clipK); if (k < 1) put(img, a * (1 - k)); G.save(); o.clip(); put(img, a * k); G.restore(); }
+    if (L === 'far' && o.clip && (o.clipK || 0) > 0) {
+      /* two disjoint regions, so nothing is drawn twice: outside the Sora at full strength, inside it fading out as the Sora fades in */
+      const k = clamp(o.clipK); G.save(); o.clip(); put(img, a); G.restore();
+      if (k < 1 && o.clipIn) { G.save(); o.clipIn(); put(img, a * (1 - k)); G.restore(); }
+    }
     else put(img, a);
     if (L === 'far' && o.between) o.between();
   }
@@ -269,6 +273,10 @@ function gdClipOutSora(map, box) {
   const P = GD.sora.profile; G.beginPath(); G.rect(box[0], box[1], box[2], box[3]);
   G.moveTo(map.X(P[0][0]), map.Y(-2)); P.forEach(q => G.lineTo(map.X(q[0]), map.Y(q[1]))); G.lineTo(map.X(P[P.length - 1][0]), map.Y(-2)); G.closePath();
   G.clip('evenodd');
+}
+/** the Sora's body under its side profile, as a clip (the far layer's part that fades as the Sora appears) */
+function gdClipInSora(map) {
+  const P = GD.sora.profile; G.beginPath(); G.moveTo(map.X(P[0][0]), map.Y(-2)); P.forEach(q => G.lineTo(map.X(q[0]), map.Y(q[1]))); G.lineTo(map.X(P[P.length - 1][0]), map.Y(-2)); G.closePath(); G.clip();
 }
 /** the forearm fades out at a box's left edge: a gradient of the panel's colour over the first w px */
 function gdFadeLeft(box, w, a = 1) {
