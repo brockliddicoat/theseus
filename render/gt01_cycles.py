@@ -16,6 +16,31 @@ flagged rim strips; neutral world and backdrop.
     nice python3 gt01_cycles.py --shot hero --res 1400 --spp 64 --noise 0.02 --out out/gt01_hero_1400_r3c.png
     nice python3 gt01_cycles.py --shot close --res 1400 --spp 40 --noise 0.025 --key 0.4 --key_flag --out out/gt01_close_1400_r3b.png   (rendered at --key 0.4 with the default then 0.7: same flags)
 
+R4 pass (Brock 07:25 and 07:44):
+  - Fillets that exist. Blender's bevel overlap clamp is global, so R3's single clamped passes came out at 0 mm on the
+    cover, 0.015 on the wedge, 0.018 on the plunger and 0.03 on the pins. Now: the cover's bare shell is rounded first
+    (R_SHELL 0.18, no clamp), the cuts come after with a 0.05 pass; the wedge's pockets are cut by lofted cutters that
+    carry a true 0.25 round lip and a 0.12 floor fillet (pocket_rings), then its outer edges take a 0.25, 6-segment bevel
+    (no clamp); the plunger's pieces are rounded before they are joined (0.09/0.08/0.06); the pins' corners are opened
+    to 0.09 so a 0.07 bevel needs no clamp. Weighted normals last, so flat faces stay flat after the booleans.
+  - The seam: the base sits INSET 0.04 inside the cover's sides and SEAM_GAP 0.016 under its skirt edge; both edges
+    round (0.18 / 0.25). R3's 0.03 parting step is gone (it was what clamped the cover to zero).
+  - TTC-style snap clip on each long side (TAB_*): a clear latch tab (0.45 thick) hangs from the side wall into a recess
+    in the base; its plunger-side end and its window are cut on the diagonal; a wedge lug (ramp up top, flat catch
+    under) on the base pokes through the window. Every edge rounded (tab 0.1, recess lip 0.12, lug 0.05). The oval
+    pocket moved 0.25 lower to clear it.
+  - No moulded text on the top (>PC< and the date wheel removed).
+  - Union operands (the tabs, the lug, the plunger's flange and nose) carry their parent's materials: without them the
+    union adds an empty slot, and those faces rendered as Cycles' default grey diffuse.
+  - Satin black PA (roughness 0.30, F0 4 %, the sandy bump gone) and a satin softbox set 22/16 deg off the base side's
+    computed mirror direction, light-linked to the base; the pin kicker (5 deg off that direction) now lights the pins only.
+  - The gold: the second switch's parts were all named 'swB.swA.00N' (place_switch), so no light link ever found them;
+    and key/top were seen through the PC, where light linking cannot act (Cycles checks it at the PC). Now: parts are
+    named by role; key/top are hidden from transmission and skip the gold; gold-only copies (keyG/topG/frontG) light it.
+    nice python3 gt01_cycles.py --shot hero --res 1400 --spp 64 --noise 0.02 --key 0.2 --gold_k 1.5 --out out/gt01_hero_1400_r4.png
+    nice python3 gt01_cycles.py --shot close --res 1400 --spp 40 --noise 0.025 --key 0.2 --gold_k 1.5 --key_flag --out out/gt01_close_1400_r4.png
+    nice python3 gt01_cycles.py --shot hero --res 4200 --spp 48 --noise 0.025 --key 0.2 --gold_k 1.5 --border 0.395,0.27,0.585,0.435 --out out/r4/crop3x_raw.png
+
 Units: 1 BU = 1 mm (scene unit scale 0.001, so camera f-stops are physical).
 Frames: switch frame S = X across (+-2.9), Y along (+Y = plunger end, the low end), Z up (0 = the switch's base plane).
         root frame = X across, Y along, Z up, origin on the board plane under the middle (NO) pin.
@@ -49,6 +74,18 @@ CAP_L, CAP_W, CAP_R, CAP_PROUD = 1.5, 2.1, 0.75, 0.80
 WALL = 0.70                  # wedge wall / pocket inset
 RO_COL, RI_COL = 2.1, 1.45    # R3: the plunger's round collar ring on the cover (outer radius, counterbored seat radius)
 MARK_Y = -3.0                # R3: where the generic moulded marks sit on the top, along (r3: no recessed panel)
+R_SHELL = 0.18               # R4: the cover's outer-shell fillet (every outside edge, the skirt edges, the seam edge)
+R_WEDGE = 0.25               # R4: the black base / wedge's outer edges and corners
+R_LIP = 0.25                 # R4: the round lip on every pocket in the wedge
+INSET, SEAM_GAP = 0.04, 0.016   # R4: the base's sides sit 0.04 inside the cover's; its top 0.016 under the skirt edge
+PA_ROUGH = 0.30              # R4: satin black PA
+# R4: TTC-style snap clip, one on each long side (switch frame, outline in (along, up)): a clear latch tab hangs from the
+# side wall into a recess in the black base, its plunger-side end and its window cut on the diagonal; a wedge lug on the
+# base (ramp on top, flat catch under) pokes through the window, whose lower bar hooks under it
+T_TAB, TAB_CLR = 0.45, 0.08  # the tab's thickness (a flexing arm, thinner than the 0.7 wall); its clearance in the recess
+TAB_OUT = [(-1.9, YSH + 0.3), (-1.9, YSH - 0.95), (0.85, YSH - 0.95), (0.85 + 0.6 / 0.95 * 1.25, YSH + 0.3)]
+TAB_EXT = [(-1.9, YSH + 0.6), (-1.9, YSH - 0.95), (0.85, YSH - 0.95), (0.85 + 0.6 / 0.95 * 1.55, YSH + 0.6)]
+TAB_WIN = [(-1.45, YSH - 0.72), (0.45, YSH - 0.72), (0.45 + 0.6 / 0.95 * 0.4, YSH - 0.32), (-1.45, YSH - 0.32)]
 TILT = 20.0 * D2R
 sT, cT = math.sin(TILT), math.cos(TILT)
 LIFT = (L / 2) * sT + H_MIN
@@ -154,6 +191,69 @@ def prism(outline, w0, w1, axes='XYZ', bm=None, taper=0.0):
         faces.append(bm.faces.new((vb[i], vb[j], vt[j], vt[i])))
     bmesh.ops.recalc_face_normals(bm, faces=faces)
     return bm
+
+
+def dedup(pts, eps=1e-6):
+    out = []
+    for p in pts:
+        if not out or abs(p[0] - out[-1][0]) > eps or abs(p[1] - out[-1][1]) > eps:
+            out.append(p)
+    if len(out) > 2 and abs(out[0][0] - out[-1][0]) < eps and abs(out[0][1] - out[-1][1]) < eps:
+        out.pop()
+    return out
+
+
+def offset_outline(pts, d):
+    """R4: a CCW convex outline offset outward by d (mitred along each vertex's bisector)"""
+    n, out = len(pts), []
+    for i in range(n):
+        x0, y0 = pts[i - 1]; x1, y1 = pts[i]; x2, y2 = pts[(i + 1) % n]
+        e1 = Vector((x1 - x0, y1 - y0)).normalized(); e2 = Vector((x2 - x1, y2 - y1)).normalized()
+        n1, n2 = Vector((e1.y, -e1.x)), Vector((e2.y, -e2.x))
+        m = n1 + n2
+        m = m.normalized() if m.length > 1e-9 else n1
+        k = d / max(0.3, m.dot(n1))
+        out.append((x1 + m.x * k, y1 + m.y * k))
+    return out
+
+
+def loft(outline, rings, axes='XYZ', bm=None):
+    """R4: a closed loft of a 2D outline through rings [(w, d)]: at height w the outline is offset outward by d"""
+    bm = bm or bmesh.new()
+    pts = ccw(dedup(outline))
+    def P(u, v, w):
+        c = [0.0, 0.0, 0.0]; c[AX[axes[0]]] = u; c[AX[axes[1]]] = v; c[AX[axes[2]]] = w
+        return c
+    loops = [[bm.verts.new(P(u, v, w)) for u, v in (offset_outline(pts, d) if abs(d) > 1e-9 else pts)] for w, d in rings]
+    n = len(pts)
+    faces = [bm.faces.new(loops[0][::-1]), bm.faces.new(loops[-1])]
+    for a, b in zip(loops[:-1], loops[1:]):
+        for i in range(n):
+            j = (i + 1) % n
+            faces.append(bm.faces.new((a[i], a[j], b[j], b[i])))
+    bmesh.ops.recalc_face_normals(bm, faces=faces)
+    return bm
+
+
+LIP_PHI = (0, 15, 30, 45, 58, 70, 79, 85, 88.5, 90)     # R4: lip arc stations (deg), denser where it meets the face
+
+
+def pocket_rings(xf, depth, s=1, lip=0.25, floor_r=0.12):
+    """R4: rings for a pocket cutter whose mouth carries a true round lip (radius `lip`, tangent to the face at xf and
+    to the wall) and whose floor meets the wall in a concave fillet (floor_r): the fillets are in the cut itself, so no
+    bevel has to find (or be clamped on) the pocket's edges. s = +1 for a face at +xf, -1 for its mirror at -xf."""
+    xb, eps = xf - depth, 0.0006
+    R = [(xb + floor_r * (1 - math.cos(a * D2R)), -floor_r * (1 - math.sin(a * D2R))) for a in (0, 15, 30, 45, 60, 75, 90)]
+    R += [(xf - lip + eps + lip * math.sin(a * D2R), lip * (1 - math.cos(a * D2R))) for a in LIP_PHI[1:]]
+    R += [(xf + eps + 0.002, lip + 0.05), (xf + 0.5, lip + 0.05)]    # flare on past the face (keeps the rim's normals flat)
+    return [(s * w, d) for w, d in R]
+
+
+def weighted_normals(ob):
+    """R4: face-area weighted custom normals (flat faces stay flat, fillets stay round), applied last: unlike the
+    bevel's harden option it does not care what booleans ran after the bevel"""
+    md = ob.modifiers.new('wn', 'WEIGHTED_NORMAL'); md.mode = 'FACE_AREA'; md.weight = 50; md.keep_sharp = True
+    return md
 
 
 def box(x0, x1, y0, y1, z0, z1, r=0.0, bm=None, seg=6):
@@ -265,10 +365,13 @@ def boolean(ob, cutter_bm, op='DIFFERENCE', name='cut', self_isect=False):
     return md
 
 
-def bevel(ob, width, segs=3, angle=20.0, harden=True, profile=0.5):
+def bevel(ob, width, segs=3, angle=20.0, harden=True, profile=0.5, clamp=True):
+    """R4: note the overlap clamp is global in Blender: one tight spot anywhere scales the whole object's bevel down
+    (R3's cover came out at 0 mm, the wedge at 0.015, the plunger at 0.018, the pins at 0.03). clamp=False for passes
+    run on geometry with no tight spots."""
     md = ob.modifiers.new('bevel', 'BEVEL')
     md.width = width; md.segments = segs; md.limit_method = 'ANGLE'; md.angle_limit = angle * D2R
-    md.harden_normals = harden; md.use_clamp_overlap = True; md.profile = profile
+    md.harden_normals = harden; md.use_clamp_overlap = clamp; md.profile = profile
     md.miter_outer = 'MITER_ARC'
     return md
 
@@ -385,7 +488,9 @@ def make_materials():
         'gold': mat_metal('Au plated', (1.0, 0.745, 0.29), 0.12, 0.025, 7.0, bump=0.006),   # r3: a touch more saturated
         'goldc': mat_metal('Au contact', (1.0, 0.79, 0.40), 0.08, 0.02, 9.0),
         'pom': mat_plastic('POM black', (0.022, 0.022, 0.024), 0.13, 0.03, bump=0.015, bscale=120.0, spec=0.5),
-        'pa': mat_plastic('PA black', (0.034, 0.034, 0.037), 0.4, 0.05, bump=0.04, bscale=110.0, spec=0.32),
+        # R4: satin, not matte: roughness 0.30 (was 0.4), full dielectric F0 (spec 0.5, was 0.32), the sandy bump
+        # nearly gone (0.006, was 0.04: it broke the sheen into a chalky grain), a touch darker
+        'pa': mat_plastic('PA black', (0.026, 0.026, 0.028), PA_ROUGH, 0.04, bump=0.006, bscale=140.0, spec=0.5),
         'tin': mat_metal('Sn plated', (0.90, 0.905, 0.91), 0.15, 0.02, 5.0, bump=0.0),
     }
 
@@ -402,7 +507,13 @@ def build_switch(M):
     zi = L / 2 - CW
     prof = [(-L / 2, 0.0), (-zi, 0.0), (-zi, YSH), (zi, YSH), (zi, ysF), (L / 2, ysF_o), (L / 2, H), (-L / 2, H)]
     bm = prism(prof, -W / 2, W / 2, 'YZX')
+    # R4: split the end faces below the seam (the frosted skirt band) without a step, then round the whole outer shell
+    # first (0.18, 6 segments, no clamp: the bare shell has no tight spots), so its edges, the skirt edges and the seam
+    # edge of the side walls get a real fillet; the cuts below come after, and a small second pass rounds their edges
+    bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=(0, 0, YSH - 0.3), plane_no=(0, 0, 1))
     cover = mk('cover', bm, [M['pc'], M['frost']])
+    bevel(cover, R_SHELL, 6, 30.0, harden=False, clamp=False)
+    bake(cover)
     # cavity first (open at the bottom, onto the base): R1 cut it after the ribs and guide, which deleted them
     boolean(cover, box(-W / 2 + CW, W / 2 - CW, -zi, zi, 1.2, CEIL), 'DIFFERENCE', 'cavity')
     # the plunger's round collar: a raised ring on top (0.35 proud), continuing inside as a guide tube from the ceiling
@@ -432,62 +543,82 @@ def build_switch(M):
     box(-1.0, 1.0, -L / 2 - 0.3, -zi + 0.05, 0.92, 1.58, 0.08, win)
     box(-1.0, 1.0, zi - 0.05, L / 2 + 0.3, 1.12, 1.74, 0.08, win)
     boolean(cover, win, 'DIFFERENCE', 'windows')
-    # the small details: generic moulded marks debossed 0.05 into the flat top (a material code and a date wheel, big
-    # enough to read; no logos or wordmarks), an ejector-pin mark inside, and the parting step round the outside
-    zf = H - 0.05
-    mk_bm = text_bm('>PC<', 1.05, 0.6, math.pi / 2, (0.0, MARK_Y + 1.15, zf))
-    wy = MARK_Y - 1.3
-    ann = lathe([(0.56, zf), (0.68, zf), (0.68, zf + 0.6), (0.56, zf + 0.6), (0.56, zf)], 128)
-    bmesh.ops.translate(ann, vec=Vector((0.0, wy, 0.0)), verts=ann.verts)
-    bm_merge(mk_bm, ann)
-    arrow = [(-0.05, -0.36), (0.05, -0.36), (0.05, 0.14), (0.15, 0.14), (0.0, 0.42), (-0.15, 0.14), (-0.05, 0.14)]
-    prism([(x, y + wy) for x, y in arrow], zf, zf + 0.6, 'XYZ', mk_bm)
-    for k in range(12):                                                    # the wheel's twelve month dots
-        a = 2 * math.pi * k / 12
-        prism(circle(0.84 * math.cos(a), wy + 0.84 * math.sin(a), 0.05, 16), zf, zf + 0.6, 'XYZ', mk_bm)
-    bmesh.ops.remove_doubles(mk_bm, verts=mk_bm.verts, dist=1e-5)
-    boolean(cover, mk_bm, 'DIFFERENCE', 'marks')
+    bake(cover)
+    # R4: the TTC-style latch tabs (see TAB_*): each modelled on its own, its diagonal window cut, every edge rounded
+    # (0.1, no clamp), then joined to the side wall, flush with its outer face
+    for s_ in (-1, 1):
+        x0, x1 = (W / 2 - T_TAB, W / 2) if s_ > 0 else (-W / 2, -W / 2 + T_TAB)
+        tb_ = mk('cover.tab', prism(fillet(TAB_OUT, [0, 0.18, 0.18, 0], 8), x0, x1, 'YZX'), [M['pc'], M['frost']])   # R4: with the cover's slots, or the union adds an empty one
+        boolean(tb_, prism(fillet(TAB_WIN, [0.08] * 4, 6), x0 - 0.2, x1 + 0.2, 'YZX'), 'DIFFERENCE', 'window')
+        bake(tb_); bevel(tb_, 0.1, 4, 30.0, harden=False, clamp=False); bake(tb_)
+        tb_.hide_render = True; CUTTERS.append(tb_)
+        md = cover.modifiers.new('tab', 'BOOLEAN'); md.operation = 'UNION'; md.solver = 'EXACT'; md.object = tb_
+    bake(cover)
+    bevel(cover, 0.05, 4, 30.0, harden=False, clamp=True)    # R4: the cuts' edges (the shell's 15-deg segments are below the limit)
+    bake(cover)
+    # R4: no moulded text on the top (Brock 07:44): R3's >PC< and date wheel are gone; the top is plain moulding round
+    # the collar ring. The one ejector-pin mark stays inside, on the ceiling step, where a core pin would push.
+    # R3's 0.03 parting step is gone too: it clamped every fillet on the cover to zero; the seam with the base is the parting
     ej = bmesh.new()
     prism(circle(0.0, 5.1, 0.38, 40), 5.4 - 0.1, 5.4 + 0.025, 'XYZ', ej)
     boolean(cover, ej, 'DIFFERENCE', 'ejector')
-    ps = bmesh.new()
-    for s_ in (-1, 1):
-        box(s_ * (W / 2 - 0.03) - (0.6 if s_ < 0 else 0.0), s_ * (W / 2 - 0.03) + (0.6 if s_ > 0 else 0.0), -L / 2 - 1, L / 2 + 1, -3.0, 3.1, 0.0, ps)
-        box(-W / 2 - 1, W / 2 + 1, s_ * (L / 2 - 0.03) - (0.6 if s_ < 0 else 0.0), s_ * (L / 2 - 0.03) + (0.6 if s_ > 0 else 0.0), -3.0, YSH, 0.0, ps)
-    boolean(cover, ps, 'DIFFERENCE', 'parting', self_isect=True)
-    bevel(cover, 0.12, 4, 20.0)       # one pass: the overlap clamp scales it down on the marks and the parting step
     bake(cover)
-    # frosted: the skirts' outer faces below the parting step, and the debossed marks' walls and floors
+    weighted_normals(cover); bake(cover)
+    # frosted: the end skirts' outer faces below the seam band
     def frosted(c, n):
-        if c.z < YSH - 0.15 and abs(n.y) > 0.95 and abs(c.y) > L / 2 - 0.08: return True
-        if H - 0.065 < c.z < H - 0.012 and abs(c.x) < 1.2 and MARK_Y - 2.3 < c.y < MARK_Y + 2.6: return True
-        return False
+        return c.z < YSH - 0.15 and abs(n.y) > 0.95 and abs(c.y) > L / 2 - 0.08
     assign_faces(cover, 1, frosted)
     parts.append((cover, 'S'))
 
     # ---------------------------------------------------------------- wedge: the GT01's special bottom housing (black PA, root frame)
     Cf, Fb = S2W(0, L / 2), S2W(0, -L / 2)
-    C2, F2 = S2W(YSH - 0.004, zi), S2W(YSH - 0.004, -zi)
+    # R4: the seam: the base's top sits SEAM_GAP under the cover's skirt edge and its sides INSET inside the cover's,
+    # both edges round (cover 0.18, base 0.25): a moulded parting, a soft V with a dark core and a lit lip either side
+    C2, F2 = S2W(YSH - SEAM_GAP, zi), S2W(YSH - SEAM_GAP, -zi)
     Fi = S2W(0, -zi)
     fr = S2W(ysF, zi)
     wprof = [(Fb[1], 0.0), (fr[1], 0.0), (C2[1], C2[0]), (F2[1], F2[0]), (Fi[1], Fi[0]), (Fb[1], Fb[0])]
-    wedge = mk('wedge', prism(wprof, -W / 2, W / 2, 'YZX'), [M['pa']])
+    WI = W / 2 - INSET
+    wedge = mk('wedge', prism(wprof, -WI, WI, 'YZX'), [M['pa']])
     zb = Fb[1] + WALL
-    pockets = [circle(-2.86, 3.81, 0.76, 64), circle(3.44, 1.49, 0.79, 64), stadium(0.15, 2.30, 2.11, 1.10, -TILT, 20),
-               fillet([(0.07, WALL), (zb, 3.03), (zb, WALL)], [0.35, 0.25, 0.25], 12)]
+    pockets = [circle(-2.86, 3.81, 0.76, 96), circle(3.44, 1.49, 0.79, 96), stadium(0.15, 2.05, 2.11, 1.10, -TILT, 28),   # R4: oval 0.25 lower, clear of the clip
+               fillet([(0.07, WALL), (zb, 3.03), (zb, WALL)], [0.35, 0.25, 0.25], 14)]
+    # R4: each pocket is cut by a lofted cutter carrying its own round lip (R_LIP) and floor fillet, so the rim is a true
+    # radius whatever the bevel below does (R3's bevel on these rims was clamped to 0.015 mm)
     pk = bmesh.new()
     for s in (-1, 1):
         for p in pockets:
-            if s > 0: prism(p, W / 2 - 0.85, W / 2 + 0.5, 'YZX', pk)
-            else: prism(p, -W / 2 - 0.5, -W / 2 + 0.85, 'YZX', pk)
+            loft(p, pocket_rings(WI, 0.85, s, R_LIP, 0.12), 'YZX', pk)
     boolean(wedge, pk, 'DIFFERENCE', 'pockets')
-    # ejector-pin marks and a cavity-number boss on the underside
+    bake(wedge)
+    # then the outer edges and corners: 0.25, 6 segments, no clamp (the lips' 15-deg steps are under the 30-deg limit)
+    bevel(wedge, R_WEDGE, 6, 30.0, harden=False, clamp=False)
+    bake(wedge)
+    # R4: the clip's seat: a recess round each latch tab (TAB_CLR clear of it, open through the top at the seam, its rim
+    # a 0.12 lip, its floor a 0.06 fillet), and in it the wedge lug the tab's window hooks under (ramp up top, flat
+    # catch below, rounded 0.05)
+    rbm = bmesh.new()
+    xr = W / 2 - T_TAB - TAB_CLR
+    for s_ in (-1, 1):
+        loft(offset_outline(ccw(dedup(fillet(TAB_EXT, [0, 0.18, 0.18, 0], 8))), TAB_CLR), pocket_rings(WI, WI - xr, s_, 0.12, 0.06), 'YZX', rbm)
+    bmesh.ops.transform(rbm, matrix=BODY_M, verts=rbm.verts)
+    boolean(wedge, rbm, 'DIFFERENCE', 'clip_recess')
+    lbm = bmesh.new()
+    for s_ in (-1, 1):
+        prof = [(W / 2 - 0.62, YSH - 0.68), (W / 2 - 0.10, YSH - 0.68), (W / 2 - 0.10, YSH - 0.55), (W / 2 - 0.40, YSH - 0.36), (W / 2 - 0.62, YSH - 0.36)]
+        prism([(s_ * x, z) for x, z in prof], -1.37, 0.37, 'XZY', lbm)
+    bmesh.ops.transform(lbm, matrix=BODY_M, verts=lbm.verts)
+    lug = mk('wedge.lug', lbm, [M['pa']]); bevel(lug, 0.05, 3, 30.0, harden=False, clamp=False); bake(lug)
+    lug.hide_render = True; CUTTERS.append(lug)
+    md = wedge.modifiers.new('lug', 'BOOLEAN'); md.operation = 'UNION'; md.solver = 'EXACT'; md.object = lug
+    bake(wedge)
+    # ejector-pin marks on the underside (cut after the bevel: they are 0.03 deep)
     ejw = bmesh.new()
     for yy in (-3.0, 2.6):
         prism(circle(0.0, yy, 0.5, 40), -0.5, 0.03, 'XYZ', ejw)
     boolean(wedge, ejw, 'DIFFERENCE', 'ejector')
-    bevel(wedge, 0.12, 4, 20.0)
     bake(wedge)
+    weighted_normals(wedge); bake(wedge)
     parts.append((wedge, 'R'))
 
     # the base's top details inside the cover (switch frame, black PA): terminal pedestals, latch bumps
@@ -557,13 +688,20 @@ def build_switch(M):
 
     # ---------------------------------------------------------------- plunger (black POM): cap with a rounded top, flange, nose
     ya = H + CAP_PROUD - CAP_R
-    capp = [(ZP - CAP_L / 2, CEIL - 0.05), (ZP + CAP_L / 2, CEIL - 0.05), (ZP + CAP_L / 2, ya)]
+    capp = [(ZP - CAP_L / 2, CEIL - 0.3), (ZP + CAP_L / 2, CEIL - 0.3), (ZP + CAP_L / 2, ya)]
     capp += [(ZP + CAP_R * math.cos(math.pi * i / 32), ya + CAP_R * math.sin(math.pi * i / 32)) for i in range(1, 32)]
     capp += [(ZP - CAP_L / 2, ya)]
+    # R4: each piece rounded on its own (no clamp), then joined: R3's single pass after the unions was clamped to 0.018
+    # by the 0.1 ledge between the cap and the flange
     plunger = mk('plunger', prism(capp, -CAP_W / 2, CAP_W / 2, 'YZX'), [M['pom']])
-    boolean(plunger, prism(rrect(2.3, 2.9, 0.3, 0.0, ZP, 8), CEIL - 0.45, CEIL - 0.02), 'UNION', 'flange')
-    boolean(plunger, prism(rrect(1.3, 1.1, 0.3, 0.0, ZP, 8), Z_BLADE + T_BLADE + 0.002, CEIL - 0.4), 'UNION', 'nose')
-    bevel(plunger, 0.1, 4, 20.0); bake(plunger)
+    bevel(plunger, 0.09, 5, 20.0, harden=False, clamp=False); bake(plunger)
+    for nm, bmp, wd in (('flange', prism(rrect(2.3, 2.9, 0.3, 0.0, ZP, 10), CEIL - 0.45, CEIL - 0.02), 0.08),
+                        ('nose', prism(rrect(1.3, 1.1, 0.3, 0.0, ZP, 10), Z_BLADE + T_BLADE + 0.002, CEIL - 0.2), 0.06)):
+        pc_ = mk('plunger.' + nm, bmp, [M['pom']]); bevel(pc_, wd, 4, 20.0, harden=False, clamp=False); bake(pc_)
+        pc_.hide_render = True; CUTTERS.append(pc_)
+        md = plunger.modifiers.new(nm, 'BOOLEAN'); md.operation = 'UNION'; md.solver = 'EXACT'; md.object = pc_
+    bake(plunger)
+    weighted_normals(plunger); bake(plunger)
     parts.append((plunger, 'S'))
 
     # ---------------------------------------------------------------- pins (tin-plated, root frame)
@@ -572,11 +710,13 @@ def build_switch(M):
     # R3: straight blades with 45-degree chamfered tips (0.16 mm each corner)
     pin = [(-0.55, 0.35), (-0.55, ys_ + 0.14), (-0.38, ys_ - 0.03), (-0.38, yb + 0.2), (-0.18, yb), (0.18, yb), (0.38, yb + 0.2),
            (0.38, ys_ - 0.03), (0.55, ys_ + 0.14), (0.55, 0.35)]
-    pin = fillet(pin, [0, 0.06, 0.1, 0.04, 0.03, 0.03, 0.04, 0.1, 0.06, 0], 5)
+    # R4: convex corners 0.09 (over the 0.07 bevel, so it needs no clamp: R3's clamped pass came out at 0.03)
+    pin = fillet(pin, [0, 0.09, 0.1, 0.09, 0.09, 0.09, 0.09, 0.1, 0.09, 0], 6)
     for zz in (PITCH, 0.0, -PITCH):
         prism([(u + zz, v) for u, v in pin], -T_SHEET / 2, T_SHEET / 2, 'YZX', pb)
     pins = mk('pins', pb, [M['tin']])
-    bevel(pins, 0.07, 3, 30.0); bake(pins)
+    bevel(pins, 0.07, 4, 30.0, harden=False, clamp=False); bake(pins)
+    weighted_normals(pins); bake(pins)
     parts.append((pins, 'R'))
 
     for c in CUTTERS:
@@ -589,10 +729,14 @@ def place_switch(parts, name, M_world, first):
     """an instance of the switch at M_world (root frame -> world); the first call uses the objects, later ones link-copy"""
     obs = []
     for ob, frame in parts:
+        # R4: name copies by role: R3 took ob.name.split('.')[0] after the first call had renamed the originals to
+        # 'swA.<role>', so the second switch's parts were all 'swB.swA.00N' and no role-based light link ever found
+        # them (its gold took the full key, top, front and rim strips: the champagne gold; its black parts no under fill)
+        role = ob.get('role') or ob.name.split('.')[0]
         o = ob if first else ob.copy()
         if not first:
             SCN.collection.objects.link(o)
-        o.name = f'{name}.{ob.name.split(".")[0]}'
+        o.name = f'{name}.{role}'; o['role'] = role
         o.matrix_world = M_world @ (BODY_M if frame == 'S' else Matrix.Identity(4))
         obs.append(o)
     return obs
@@ -752,6 +896,8 @@ SHOTS = {'hero': shot_hero, 'close': shot_close}
 FRONT_THROUGH = True
 KEY_FLAG = False                     # R3: hide key/top from transmission (the close shot, where the key sits low behind)
 SW = {}                              # R3: the shot's switch placements (root frame -> world), for the light rig
+SATIN = (1.0, 22.0, 16.0)            # R4: the satin softbox (power, az and el offsets from the base side's mirror direction)
+GOLD_K = 0.3                         # R4: the key/top softboxes' strength on the gold (gold-only copies)
 
 
 def mirror_dir(M, cam_loc, ys=-1.0):
@@ -774,13 +920,22 @@ def setup_lights(tgt, cam_dir, scale=1.0, k=1.0, cam_loc=None, key_k=1.0, rim_k=
     pA, rA = mirror_dir(SW['A'], cam_loc)
     # r3: a larger, mid-bright key (160 x 110) washed the covers: it is seen through the PC, and 2.75x the solid angle
     # meant far more refracted rays found it. Back to round 2's 100 x 64.
-    area('key', pA, rA, 170 * s, 100 * s, 64 * s, 0.78e5 * P * key_k, (1.0, 0.99, 0.975), through=not KEY_FLAG)
+    # R4: key and top are not seen through the PC: the gold behind a cover mirrors them via refraction paths, where light
+    # linking cannot reach (Cycles checks the link at the last surface, the PC); the gold gets them from keyG/topG instead
+    area('key', pA, rA, 170 * s, 100 * s, 64 * s, 0.78e5 * P * key_k, (1.0, 0.99, 0.975), through=False)
+    # R4 gold fix: the gold blades lie parallel to the tops, so they mirror the key and top softboxes square on, at ~1.3
+    # linear, and AgX bleaches that to champagne (it stayed pale at -1 EV and with the rim strips unlinked: those were
+    # not it). The key and top now skip the gold (main links them); these copies light only the gold, at GOLD_K
+    area('keyG', pA, rA, 170 * s, 100 * s, 64 * s, 0.78e5 * P * key_k * GOLD_K, (1.0, 0.99, 0.975), through=not KEY_FLAG)
     if 'B' in SW:
         pB, rB = mirror_dir(SW['B'], cam_loc)
-        area('top', pB, rB, 170 * s, 100 * s, 70 * s, 0.66e5 * P * key_k, (1.0, 1.0, 1.0))
+        area('top', pB, rB, 170 * s, 100 * s, 70 * s, 0.66e5 * P * key_k, (1.0, 1.0, 1.0), through=False)
+        area('topG', pB, rB, 170 * s, 100 * s, 70 * s, 0.66e5 * P * key_k * GOLD_K, (1.0, 1.0, 1.0))
     else:
         area('top', tgt, at(-150, 78), 170 * s, 110 * s, 60 * s, 0.48e5 * P * key_k, (1.0, 1.0, 1.0), through=not KEY_FLAG)
     area('front', tgt, at(-52, 40), 170 * s, 140 * s, 110 * s, 1.9e5 * P * front_k, (1.0, 0.99, 0.98), through=FRONT_THROUGH)
+    # R4: the back switch's tops (and their gold) mirror this one too (16 deg off; radiance 4.2 vs the top's 1.5): split
+    area('frontG', tgt, at(-52, 40), 170 * s, 140 * s, 110 * s, 1.9e5 * P * front_k * GOLD_K, (1.0, 0.99, 0.98), through=FRONT_THROUGH)
     area('fill', tgt, at(65, 8), 190 * s, 170 * s, 170 * s, 0.5e5 * P * front_k, (1.0, 1.0, 1.0))
     R = rim_k
     area('rimL', tgt, at(-128, 18), 150 * s, 10 * s, 220 * s, 2.4e5 * P * R, (1.0, 1.0, 1.0), through=False)
@@ -795,6 +950,17 @@ def setup_lights(tgt, cam_dir, scale=1.0, k=1.0, cam_loc=None, key_k=1.0, rim_k=
     area('under', tgt, at(5, -46), 170 * s, 260 * s, 150 * s, 0.55e5 * P * under_k, (1.0, 1.0, 1.0))
     area('rimBot', tgt, at(-168, -45), 150 * s, 230 * s, 10 * s, 1.2e5 * P * under_k, (1.0, 1.0, 1.0), through=False)
     area('rimBotR', tgt, at(128, -40), 150 * s, 230 * s, 10 * s, 0.9e5 * P * under_k, (1.0, 1.0, 1.0), through=False)
+    # R4: the satin sheen: a broad softbox just off the mirror direction of the front switch's base side face (computed,
+    # not guessed), so the face carries the soft edge of its reflection as a gradient and the fillets and the pockets'
+    # lips that turn toward it catch it; light-linked to the black base only (main)
+    M = SW['A']
+    n = (M.to_3x3() @ Vector((1, 0, 0))).normalized()
+    p = M @ Vector((W / 2, 0.0, 2.0))
+    v = (Vector(cam_loc) - p).normalized()
+    r = (2 * n.dot(v) * n - v).normalized()
+    az, el = math.degrees(math.atan2(r.x, -r.y)), math.degrees(math.asin(max(-1.0, min(1.0, r.z))))
+    print(f'[r4] base side mirror dir: az {az - caz:+.1f} el {el:+.1f} (from the camera azimuth)', flush=True)
+    area('satin', p, sph(az + SATIN[1], el + SATIN[2]), 150 * s, 120 * s, 80 * s, 0.5e5 * P * SATIN[0], (1.0, 1.0, 1.0), through=False)
 
 
 def setup_render(args):
@@ -860,7 +1026,13 @@ def main():
     ap.add_argument('--front', type=float, default=0.85)
     ap.add_argument('--front_flag', action='store_true')
     ap.add_argument('--key_flag', action='store_true')
+    ap.add_argument('--satin', type=float, default=1.0)       # R4: the black base's satin softbox (power multiplier)
+    ap.add_argument('--satin_az', type=float, default=22.0)   # ... its offset from the base side's mirror direction
+    ap.add_argument('--satin_el', type=float, default=16.0)
+    ap.add_argument('--gold_k', type=float, default=0.3)      # R4: the key/top's strength on the gold
+    ap.add_argument('--border', default='')                   # R4: x0,y0,x1,y1 (0-1, y up): render only that region
     args = ap.parse_args([a for a in sys.argv[1:]])
+    global SATIN, GOLD_K; SATIN = (args.satin, args.satin_az, args.satin_el); GOLD_K = args.gold_k
     t0 = time.time()
     bpy.ops.wm.read_factory_settings(use_empty=True)
     SCN = bpy.context.scene
@@ -888,6 +1060,37 @@ def main():
     for nm in ('under', 'rimBot', 'rimBotR'):
         if nm in SCN.objects:
             SCN.objects[nm].light_linking.receiver_collection = rc
+    # R4: the satin softbox lights the black base only (not the plunger: its POM is glossier and would wash out)
+    sc_ = bpy.data.collections.new('satin_receivers')
+    for o in SCN.objects:
+        if o.type == 'MESH' and o.name.split('.')[-1] in ('wedge', 'baseTop', 'latches'):
+            sc_.objects.link(o)
+    if 'satin' in SCN.objects:
+        SCN.objects['satin'].light_linking.receiver_collection = sc_
+    # R4 (R3's gold fix): the rim strips no longer reach the gold (they turned it pale champagne under the tops); they
+    # still light the covers, the black parts and the pins, whose new fillets need their edge lines
+    gold = ('terminals', 'spring', 'tongue', 'contacts')
+    rr = bpy.data.collections.new('rim_receivers')
+    for o in SCN.objects:
+        if o.type == 'MESH' and o.name != 'backdrop' and o.name.split('.')[-1] not in gold:
+            rr.objects.link(o)
+    for nm in ('rimL', 'rimR', 'rimTop', 'stripF', 'kick', 'key', 'top', 'front'):
+        if nm in SCN.objects:
+            SCN.objects[nm].light_linking.receiver_collection = rr
+    gc_ = bpy.data.collections.new('gold_receivers')
+    for o in SCN.objects:
+        if o.type == 'MESH' and o.name.split('.')[-1] in gold:
+            gc_.objects.link(o)
+    for nm in ('keyG', 'topG', 'frontG'):
+        if nm in SCN.objects:
+            SCN.objects[nm].light_linking.receiver_collection = gc_
+    # R4: the pin kicker sits within 5 deg of the base side's mirror direction: it washed the satin face grey; pins only
+    pk_ = bpy.data.collections.new('pin_receivers')
+    for o in SCN.objects:
+        if o.type == 'MESH' and o.name.split('.')[-1] == 'pins':
+            pk_.objects.link(o)
+    if 'pinkick' in SCN.objects:
+        SCN.objects['pinkick'].light_linking.receiver_collection = pk_
     if args.only:
         keep = set(args.only.split(','))
         for o in list(SCN.objects):
@@ -897,6 +1100,10 @@ def main():
     print(f'[r1] scene built in {t1 - t0:.1f}s; objects {len(SCN.objects)}; tris ~{sum(len(o.data.polygons) for o in SCN.objects if o.type == "MESH")} faces', flush=True)
     if args.blend:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(args.blend))
+    if args.border:
+        x0, y0, x1, y1 = (float(t) for t in args.border.split(','))
+        SCN.render.use_border = True; SCN.render.use_crop_to_border = True
+        SCN.render.border_min_x, SCN.render.border_min_y, SCN.render.border_max_x, SCN.render.border_max_y = x0, y0, x1, y1
     SCN.render.filepath = os.path.abspath(args.out)
     bpy.ops.render.render(write_still=True)
     print(f'[r1] rendered {args.shot} {args.res}px {args.spp}spp in {time.time() - t1:.1f}s -> {args.out}', flush=True)
