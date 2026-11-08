@@ -1706,6 +1706,12 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   mirrored valley can't sit at two rests 20 mm apart: a valley's bottom is scored against the path each finger slides as you
   grip (F65.6), not its exact rest.
 
+- **F65.10 STANDING (shape study), IN PROGRESS (G5)** (2026-11-08 07:21) After answering "both" to "keep trial 3's waist at
+  the rescored spot (z 24) or put it back where you liked it (z 14)": "actually no, the thumb never goes that far forward,
+  that’s unnatural". The model's thumb rests at z 24 at grip and lands at z 45 with the palm on the hump. Both come from G1's
+  unsourced placement, "the relaxed thumb tip level with the index's middle joint". G5 re-places the thumb with a natural,
+  defensible placement (his observation as a constraint), re-derives its slide, and reruns the trials.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
@@ -1726,4 +1732,8 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   darker parts on the bottom illuminated properly". Every part at a real micro switch's thickness (cover walls about 0.6 to
   0.8 mm, terminals about 0.5 mm sheet); a tiny fillet on every edge (sheet metal about 0.03 to 0.08 mm, plastic 0.05 to
   0.15 mm); the black base, wedge and pins lit to show their form while still reading black. Round 3 for both lines (R2, R3).
+- **F66.3 (state 2026-11-08 07:25)** Round 3 of both renders done overnight (R2 22906a0; R3 0bb6d7f): real part thicknesses,
+  fillets on every edge, the dark bottom lit (feedback/attachments/F66/0725-*.png). R3's close view, gold mechanism through the
+  side wall, is the strongest frame either line has made. Left: the gold under R3's hero tops reads pale champagne (R3's
+  guess: the rim strips seen through the PC; a 7-minute fix), and R2's internals are thickened rather than remodelled.
 
