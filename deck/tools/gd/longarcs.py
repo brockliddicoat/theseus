@@ -33,6 +33,18 @@ rest (the chord leans, so the middle-at-rest start ran the thumb's waist past th
 mirrored pockets count each finger against its own rest (G2 counted both against the mean, which hid that each sits 10 mm
 off); the front arc must run forward (a negative length looped the outline); the top outline stays within DEV_BOUND of the
 Sora's. Cross-checks on the slide: slide_checks.py.
+ON THE PATH (G4, after Brock 17:18: "trial 3 is by far my favorite"). A side valley is felt over the whole slide (F65.6), so its
+bottom is placed on that slide, not on one point of it: each finger's path runs from where it lands (palm on the hump) to where
+it grips (palm lifted), thumb z 44.8 -> 23.8, pinky 28.8 -> 3.9 for the mean hand. No cost on the path, the same square as before
+(2 mm = 1) off it. A mirrored valley serves both fingers where their paths overlap (z 23.8 to 28.8 for the mean hand; hands
+shorter than overlap_hand(), the 5th percentile's among them, have no overlap). G3 scored the bottom against one point, the
+grip's rest: one mirrored valley could not sit at two rests 20 mm apart, so trial 3 scored worst (49.5). The palm-on-hump grip's
+own failure is a term now (it was only written on the slides): its index and middle tips land past the grooves' front end
+(z 48; the middle past the nose). Two fixes keep the rules and the look: the felt rule is weighted to hold (at G3's weight
+the base pull left trial 3's waist 0.5 % gentler than felt), and a small pull keeps the outline on the Sora's where no rule
+asks it to move (moving a waist forward dragged the rear corner in by 2.4 mm through the closure). Everything else is G3's.
+Symmetry is a rule, not a term: a traditional mouse is mirror-symmetric, so the result is the lowest loss among the mirrored
+trials (export_deck.py); trials 2 and 4 stay as the test that shows why.
 Run: python3 deck/tools/gd/longarcs.py run [trial keys] -> out/longarcs.json"""
 import json, os, sys
 import numpy as np
@@ -152,6 +164,17 @@ def sec_measure(ch, u_rest, u_ring):
 def dev(ch, ref):
     from scipy.spatial import cKDTree
     d, _ = cKDTree(np.c_[ref['x'], ref['y']]).query(np.c_[ch['x'], ch['y']]); return float(d.max())
+_SORA_TREE = None
+def stay(ch):
+    """(G4) the side's mean square distance from the Sora's outline (mm^2): moves no rule asks for cost something, so the rear
+    and the hump stay the Sora's when a waist moves (the long arcs close onto the fixed tail through the hump and rear corner,
+    so a waist moved forward dragged the rear in by up to 2.4 mm at no gain; DEV_BOUND only caps that)"""
+    global _SORA_TREE
+    if _SORA_TREE is None:
+        from scipy.spatial import cKDTree
+        _SORA_TREE = cKDTree(np.c_[SORA_PLAN['x'], SORA_PLAN['y']])
+    d, _ = _SORA_TREE.query(np.c_[ch['x'], ch['y']]); return float(np.mean(d ** 2))
+STAY_W = 0.1          # per mm^2 of mean square distance, each side (G4; 0.1 and 0.3 gave the same shape on trial 3)
 
 # ------------------------------------------------------------------ the felt strength: the gentlest arc that turns TURN_REL across where the fingertip lands
 def _bottom_off():
@@ -173,6 +196,19 @@ def slides():
 SL = slides()
 SLIDE = dict(SL['p50']['slide'])                                    # mm, the ANSUR II mean hand (derived)
 SLIDE_RANGE = {f: [min(SL[k]['slide'][f] for k in SL), max(SL[k]['slide'][f] for k in SL)] for f in ('thumb', 'pinky')}
+# (G4) each side finger's path as you grip, [rear end, front end] in z: the mean hand's, and every hand's (for the overlap)
+PATH = {f: sorted(SL['p50'][f]) for f in ('thumb', 'pinky')}
+PATHS = {hk: {f: sorted(SL[hk][f]) for f in ('thumb', 'pinky')} for hk in SL}
+def off_path(z, P): return max(0.0, P[0] - z, z - P[1])           # mm off the path (0 on it)
+GROOVE_END = 48.0     # mm, the grooves' front end in this model: the last section measured across the buttons (sora_sections.py)
+def overlap_at(k):
+    """the two paths' overlap (mm; < 0: the gap between them) for a hand k times the mean's length (the hand model)"""
+    L, H_ = T.place('lifted', k, PL_LIFT['p50']['z']['index']), T.place('heel', k)
+    return min(H_['z']['thumb'], H_['z']['little']) - max(L['z']['thumb'], L['z']['little'])
+def overlap_hand():
+    """the shortest hand (mm) whose thumb and pinky paths still overlap: below it no mirrored valley lies on both"""
+    from scipy.optimize import brentq
+    k = brentq(overlap_at, T.HANDS['p5'] / T.HANDS['p50'] * 0.9, 1.0, xtol=1e-6); return float(k * T.HANDS['p50'])
 def zones(grip):
     pl = PL_LIFT if grip == 'lifted' else PL_HEEL; p50 = pl['p50']
     sp = {f: [min(pl[k]['z'][f] for k in pl), max(pl[k]['z'][f] for k in pl)] for f in ('thumb', 'little', 'index', 'middle', 'ring')}
@@ -186,9 +222,12 @@ def trial(grip, pockets, steps=500, log=True, lr=0.05, start_felt=False, devboun
     devbound = DEV_BOUND if devbound is None else devbound
     p50, sp, w, cd = zones(grip)
     zT0, zP0 = p50['z']['thumb'], p50['z']['little']; zT, zP = zT0, zP0; dS = cd['contact_side']
+    # (G4) the grip's own failure: the index and middle tips past the grooves' front end (palm on the hump: z 55 and 61, the
+    # middle past the nose). The same square as the sides (2 mm = 1). Fixed by the grip: the shape does not move the hand.
+    reach = sum((max(0.0, p50['z'][f] - GROOVE_END) / 2.0) ** 2 for f in ('index', 'middle'))
     if pockets == 'sym':
-        # one mirrored waist, placed between the two rests: each finger's own slide is felt on it (the shorter sets it), it is
-        # long enough for the longer one, and each finger still counts against its OWN rest (G3: G2 counted both against the mean)
+        # one mirrored waist, started between the two rests: each finger's own slide is felt on it (the shorter sets it), it is
+        # long enough for the longer one, and each finger counts against its OWN path (G4; G3 counted it against its own rest)
         zT = zP = (zT0 + zP0) / 2; wT = wP = min(w['thumb'], w['pinky']); cT = cP = max(w['thumb'], w['pinky']) + dS
     else: wT, wP = w['thumb'], w['pinky']; cT, cP = w['thumb'] + dS, w['pinky'] + dS
     kT, kP, kG = TURN_REL / wT, TURN_REL / wP, TURN_REL / w['groove']
@@ -211,8 +250,9 @@ def trial(grip, pockets, steps=500, log=True, lr=0.05, start_felt=False, devboun
         p = unpack(v); L, R_, Sx, CL, CR, CS = build(p); t = {}
         ML, MR, MS = side_measure(CL, zT), side_measure(CR, zP), sec_measure(CS, 16.0, 28.5)
         ML['rest_z'], MR['rest_z'] = zT0, zP0
-        # each finger's one minimum at its own rest, felt and no deeper than normal
-        t['level'] = ((ML['z_bottom'] - zT0) / 2.0) ** 2 + ((MR['z_bottom'] - zP0) / 2.0) ** 2 + ((MS['u_bottom'] - 16.0) / 1.0) ** 2
+        # each finger's one minimum on its own path as you grip (G4; G3: at its rest), felt and no deeper than normal
+        t['level'] = (off_path(ML['z_bottom'], PATH['thumb']) / 2.0) ** 2 + (off_path(MR['z_bottom'], PATH['pinky']) / 2.0) ** 2 + ((MS['u_bottom'] - 16.0) / 1.0) ** 2
+        t['reach'] = reach
         kL, kR, kS = 1 / L['R'], 1 / R_['R'], 1 / Sx['R']
         t['felt'] = max(0.0, (kT - kL) / kT) ** 2 * 4 + max(0.0, (kP - kR) / kP) ** 2 * 4 + max(0.0, (kG - kS) / kG) ** 2 * 4
         t['gentle'] = ((kL - kT) / kT) ** 2 * 0.25 + ((kR - kP) / kP) ** 2 * 0.25 + ((kS - kG) / kG) ** 2 * 0.25
@@ -227,8 +267,11 @@ def trial(grip, pockets, steps=500, log=True, lr=0.05, start_felt=False, devboun
         # closed, and the front arc running forward (a negative length would loop the outline back on itself)
         t['closure'] = (L['closure'] ** 2 + R_['closure'] ** 2 + Sx['closure'] ** 2) * 100 + sum(max(0.0, 1.0 - q) ** 2 for q in (L['LF'], R_['LF'])) * 100
         t['base'] = float(np.sum(v ** 2)) * 0.01
+        t['stay'] = (stay(CL) + stay(CR)) * STAY_W
         return t, {'L': L, 'R': R_, 'S': Sx, 'ML': ML, 'MR': MR, 'MS': MS, 'CL': CL, 'CR': CR, 'CS': CS}
-    W = {'level': 1.0, 'felt': 1.0, 'gentle': 1.0, 'cover': 1.0, 'one_min': 2.0, 'normal': 1.0, 'closure': 1.0, 'base': 1.0}
+    # (G4) the felt rule held as a rule: G3's weight (1) let the base pull leave a mirrored waist 0.5 % gentler than felt (R 352
+    # against 351, a 3.42 deg turn); at 25 the descent keeps it on the rule. The rule itself (turn >= 3.44 deg over the slide) is G3's.
+    W = {'level': 1.0, 'reach': 1.0, 'felt': 25.0, 'gentle': 1.0, 'cover': 1.0, 'one_min': 2.0, 'normal': 1.0, 'closure': 1.0, 'base': 1.0, 'stay': 1.0}
     def loss(v): t, _ = terms(v); return sum(W[k] * t[k] for k in W)
     v = np.zeros(len(base)); free = [i for i in range(len(v)) if not (tie and 5 <= i < 10)]
     m1 = np.zeros_like(v); m2 = np.zeros_like(v); hist, path = [], []
@@ -243,10 +286,12 @@ def trial(grip, pockets, steps=500, log=True, lr=0.05, start_felt=False, devboun
     # (G3) the descent stops at the lowest point it found: Adam can step past it and climb (trial 4 rose from 0.008 to 0.06)
     if hist:
         ib = int(np.argmin(hist)); v = (np.array(path[ib - 1]['p']) - base) / scale if ib > 0 else np.zeros(len(base))
+        if tie: v[5:10] = 0.0            # (G4) the mirrored side is tied, not free: its pull toward the start counted once, as in the descent
         hist, path = hist[:ib + 1], path[:ib]
     tF, iF = terms(v); t0, i0 = terms(np.zeros(len(base)))
     return {'grip': grip, 'pockets': pockets, 'v': v.tolist(), 'base': base.tolist(), 'scale': scale.tolist(), 'final': unpack(v).tolist(), 'start': unpack(np.zeros(len(base))).tolist(),
-            'loss': hist, 'path': path, 'terms0': t0, 'terms': tF, 'targets': {'thumb_z': zT0, 'pinky_z': zP0, 'pocket_z': [zT, zP], 'groove_u': 16.0, 'ring_u': 28.5, 'station_z': 30.0},
+            'loss': hist, 'path': path, 'terms0': t0, 'terms': tF, 'targets': {'thumb_z': zT0, 'pinky_z': zP0, 'pocket_z': [zT, zP], 'groove_u': 16.0, 'ring_u': 28.5, 'station_z': 30.0,
+                                                                                'thumb_path': PATH['thumb'], 'pinky_path': PATH['pinky'], 'groove_end': GROOVE_END, 'reach': reach},
             'zones': {'thumb': wT, 'pinky': wP, 'groove': w['groove']}, 'cover': {'thumb': cT, 'pinky': cP}, 'spread': sp, 'contact': cd, 'k_felt': {'thumb': kT, 'pinky': kP, 'groove': kG},
             'placement': p50, '_loss': loss, '_terms': terms, '_unpack': unpack}
 
@@ -271,6 +316,7 @@ def run_one(key, stored=None):
         r = trial(grip, pk, steps=0, log=False); hist = stored['loss']; ib = int(np.argmin(hist)); path = stored['path'][:ib]
         base, scale = np.array(r['base']), np.array(r['scale'])
         v = (np.array(path[-1]['p']) - base) / scale if ib > 0 else np.zeros(len(base))
+        if pk == 'sym': v[5:10] = 0.0
         r.update(v=v.tolist(), loss=hist[:ib + 1], path=path, final=r['_unpack'](v).tolist(), terms=r['_terms'](v)[0])
     t, i = r['_terms'](np.array(r['v'])); t0, i0 = r['_terms'](np.zeros(len(r['v'])))
     def pack(ii):
@@ -297,6 +343,9 @@ def run():
            'mu_dry': MU_DRY, 'width_range': WIDTH_RANGE, 'ulx_pocket': ULX_POCKET, 'sec_bound': SEC_BOUND,
            'slide': {'p50': SLIDE, 'range': SLIDE_RANGE, 'per_hand': SL, 'contact_side': float(T.contact_d(T.S.N_SIDE)),
                      'R_felt': {f: SLIDE[f] / TURN_REL for f in SLIDE}, 'basis': 'hand model: the heel placement (palm on the hump, fingers relaxed) to the lifted (zero-g, tips on the buttons); derived'},
+           'path': {'p50': PATH, 'per_hand': PATHS, 'overlap': {hk: min(PATHS[hk]['thumb'][1], PATHS[hk]['pinky'][1]) - max(PATHS[hk]['thumb'][0], PATHS[hk]['pinky'][0]) for hk in PATHS},
+                    'overlap_hand_mm': overlap_hand(), 'groove_end': GROOVE_END,
+                    'rule': 'G4: each side valley\'s bottom on its finger\'s path as you grip, from where it lands (palm on the hump) to where it grips (palm lifted); no cost on it, ((mm off) / 2)^2 off it'},
            'sora': {'plan_params': s0.tolist(), 'sec_params': g0.tolist(), 'side': side_measure(CL, 10.0), 'sec': sec_measure(CS, 16.0, 28.5),
                     'R_waist': float(plan_side(s0)['R']), 'R_groove': float(sec_half(g0)['R'])}, 'trials': {}}
     keys = [g + '_' + pk for g in ('heel', 'lifted') for pk in ('sym', 'fwd')]

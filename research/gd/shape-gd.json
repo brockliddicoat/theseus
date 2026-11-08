@@ -1,5 +1,5 @@
 {
- "about": "Shape by gradient descent (G1, 2026-11-07, phases 1 and 2). Sources, with the exact figures and their use; derived results of deck/tools/gd. Embedded only in dist/gd.html (as GDSRC), never in main.html. G3 (F65.6): the side arcs felt over the whole slide as you grip; the long-arc trials rerun (deck/tools/gd/longarcs.py, out/longarcs.json).",
+ "about": "Shape by gradient descent (G1, 2026-11-07, phases 1 and 2). Sources, with the exact figures and their use; derived results of deck/tools/gd. Embedded only in dist/gd.html (as GDSRC), never in main.html. G3 (F65.6): the side arcs felt over the whole slide as you grip; the long-arc trials rerun (deck/tools/gd/longarcs.py, out/longarcs.json). G4 (Brock 17:18): each side valley placed on its finger's slide as you grip; the palm-on-hump tips past the grooves scored; symmetry a rule; trial 3 the result.",
  "sources": {
   "sts57": {
    "title": "Mount, Whitmore & Stealey, Evaluation of Neutral Body Posture on Shuttle Mission STS-57 (SPACEHAB-1), NASA/TM-2003-104805 (2003)",
@@ -714,6 +714,312 @@
     "moves_mm": 2.394606924510387,
     "width_mm": 63.02742293442812
    }
+  },
+  "path_g4": {
+   "decision": "Brock 17:18 (on the Trials slide): \"trial 3 is by far my favorite the right 2 don't look right at all\". Trial 3 (palm lifted, mirrored) becomes the result; symmetry a rule (a traditional mouse is mirror-symmetric); the scoring that made trial 3 the worst is fixed",
+   "rule": "each side valley's bottom on its finger's path as you grip (F65.6: felt over the whole slide), from where it lands (palm on the hump) to where it grips (palm lifted); no cost on the path, ((mm off the path) / 2)^2 off it, each finger against its own path (a mirrored valley counts for both)",
+   "previous": "G3: the bottom scored against one point, the grip's rest, ((z - rest) / 2)^2: one mirrored valley could not sit at two rests 20 mm apart, so trial 3 scored 49.52, the worst of the four",
+   "paths_mm": {
+    "p5": {
+     "thumb": [
+      24.293325668132088,
+      35.457262064083025
+     ],
+     "pinky": [
+      6.070551593867258,
+      20.795395512476244
+     ]
+    },
+    "p50": {
+     "thumb": [
+      23.767795603829803,
+      44.80061135230711
+     ],
+     "pinky": [
+      3.866879058319107,
+      28.788527711484562
+     ]
+    },
+    "p95": {
+     "thumb": [
+      23.22936909623176,
+      57.45029715463431
+     ],
+     "pinky": [
+      1.6091286691378883,
+      40.05486226289746
+     ]
+    }
+   },
+   "mean_hand": {
+    "thumb": [
+     23.767795603829803,
+     44.80061135230711
+    ],
+    "pinky": [
+     3.866879058319107,
+     28.788527711484562
+    ]
+   },
+   "overlap_mm": {
+    "p5": -3.497930155655844,
+    "p50": 5.020732107654759,
+    "p95": 16.825493166665698
+   },
+   "overlap_hand_mm": 186.19725342562003,
+   "overlap_hand_percentile": 23.6548501216287,
+   "overlap_note": "The thumb's and the pinky's paths overlap from z 23.8 to 28.8 for the mean hand (5.0 mm); for the 95th percentile hand by 16.8 mm; for hands shorter than 186 mm (about the 24th percentile, ANSUR II men, normal) they do not overlap: the 5th percentile hand's are 3.5 mm apart, so no mirrored valley lies on both",
+   "reach": "the palm-on-the-hump grip's own failure, a term now (G3 only wrote it on the slides): the index and middle tips past the grooves' front end (z 48, the last section measured), ((mm past) / 2)^2 each; mean hand z 54.8 and 60.6 (the middle past the nose): 51.57",
+   "fixes": [
+    "the felt rule weighted to hold (25, G3 1): at G3's weight the pull toward the start left trial 3's mirrored waist at R 352, 0.5 % gentler than felt (a 3.42 deg turn over the slide)",
+    "stay: the outline's mean square distance from the Sora's, 0.1 per mm^2 a side: moving the mirrored waist forward dragged the rear corner in by 2.4 mm through the long arcs' closure, a move no rule asked for (DEV_BOUND only capped it at 2.5)",
+    "the mirrored side's pull toward the start counted once (G3 counted it twice when re-packing the lowest point; the reported loss was right, its terms were not)"
+   ],
+   "symmetry": "a rule, not a term: the result is the lowest loss among the mirrored trials (export_deck.py); trials 2 and 4 stay on the Trials slide, marked lopsided",
+   "unchanged": "the felt rule (each waist turns >= 3.44 deg over the slide, R <= slide / 0.060), the cover rule, the normal-mouse bounds, one minimum per finger, the grooves, the ring finger, true scale, the start (each waist's narrowest point at the grip's rest; mirrored, between the two), Adam, 500 steps, the lowest point kept"
+  },
+  "trials_g4_on_the_path": {
+   "heel_sym": {
+    "loss": 51.84771894443765,
+    "terms": {
+     "level": 0.002134829464616796,
+     "reach": 51.57320788608728,
+     "felt": 0.0,
+     "gentle": 0.14508955597509107,
+     "cover": 0.0,
+     "one_min": 0,
+     "normal": 0.0,
+     "closure": 2.5857598295696413e-23,
+     "base": 0.05136926684515146,
+     "stay": 0.07592028365628915
+    },
+    "symmetric": true,
+    "thumb": {
+     "R": 227.82290565070377,
+     "depth": 0.65214,
+     "length": 34.4511,
+     "z_bottom": 28.88083864358576,
+     "path": [
+      23.767795603829803,
+      44.80061135230711
+     ],
+     "off_path_mm": 0.0,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 2.463708305101253
+    },
+    "pinky": {
+     "R": 227.82290565070377,
+     "depth": 0.65214,
+     "length": 34.4511,
+     "z_bottom": 28.88083864358576,
+     "path": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "off_path_mm": 0.09231093210119923,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 2.463708305101253
+    },
+    "groove": {
+     "R": 223.7147667333513,
+     "u_bottom": 15.997878109741588,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "tips_z": {
+     "index": 54.81280921029948,
+     "middle": 60.64430552495501
+    },
+    "reach": 51.57320788608728,
+    "moves_mm": 1.5864575989931529,
+    "width_mm": 64.07603086752405
+   },
+   "heel_fwd": {
+    "loss": 73.47985769255169,
+    "terms": {
+     "level": 4.502418268742454e-06,
+     "reach": 51.57320788608728,
+     "felt": 0.0,
+     "gentle": 0.07066982944327635,
+     "cover": 0.9133231257574704,
+     "one_min": 1,
+     "normal": 18.178100482565323,
+     "closure": 6.773159732227607e-25,
+     "base": 0.4326177606917676,
+     "stay": 0.3120018509046125
+    },
+    "symmetric": false,
+    "thumb": {
+     "R": 228.86876168403973,
+     "depth": 0.43458,
+     "length": 28.19466,
+     "z_bottom": 42.03907321014919,
+     "path": [
+      23.767795603829803,
+      44.80061135230711
+     ],
+     "off_path_mm": 0.0,
+     "felt": true,
+     "n_minima": 0,
+     "below_hump": 4.405881198805005
+    },
+    "pinky": {
+     "R": 413.30105387422736,
+     "depth": 0.5986,
+     "length": 44.47227,
+     "z_bottom": 27.27130980330695,
+     "path": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "off_path_mm": 0.0,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.7868112443233635
+    },
+    "groove": {
+     "R": 223.7147667333513,
+     "u_bottom": 15.997878109741588,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "tips_z": {
+     "index": 54.81280921029948,
+     "middle": 60.64430552495501
+    },
+    "reach": 51.57320788608728,
+    "moves_mm": 3.455061242372931,
+    "width_mm": 65.37976848674892
+   },
+   "lifted_sym": {
+    "loss": 0.08253050323496733,
+    "terms": {
+     "level": 0.00023827604553687163,
+     "reach": 0.0,
+     "felt": 9.366098826471493e-06,
+     "gentle": 1.340193316421281e-06,
+     "cover": 0.0,
+     "one_min": 0,
+     "normal": 0.0,
+     "closure": 9.985716882649656e-24,
+     "base": 0.05992556652702337,
+     "stay": 0.022127827047493744
+    },
+    "symmetric": true,
+    "thumb": {
+     "R": 350.92663798312753,
+     "depth": 0.66662,
+     "length": 43.24003,
+     "z_bottom": 23.737225260092732,
+     "path": [
+      23.767795603829803,
+      44.80061135230711
+     ],
+     "off_path_mm": 0.03057034373707168,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.989473519700578
+    },
+    "pinky": {
+     "R": 350.92663798312753,
+     "depth": 0.66662,
+     "length": 43.24003,
+     "z_bottom": 23.737225260092732,
+     "path": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "off_path_mm": 0.0,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.989473519700578
+    },
+    "groove": {
+     "R": 223.668245473314,
+     "u_bottom": 15.997846034706363,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "tips_z": {
+     "index": 30.00000182650666,
+     "middle": 33.048942084909164
+    },
+    "reach": 0.0,
+    "moves_mm": 0.9608517764223662,
+    "width_mm": 63.38067558012267
+   },
+   "lifted_fwd": {
+    "loss": 0.023466591445996384,
+    "terms": {
+     "level": 4.542626231144642e-06,
+     "reach": 0.0,
+     "felt": 1.9179348292949654e-08,
+     "gentle": 1.1660096887075857e-05,
+     "cover": 0.0,
+     "one_min": 0,
+     "normal": 0.0,
+     "closure": 2.832177717738321e-16,
+     "base": 0.007617285310132216,
+     "stay": 0.015832770638077493
+    },
+    "symmetric": false,
+    "thumb": {
+     "R": 350.5712043609207,
+     "depth": 0.63746,
+     "length": 42.26317,
+     "z_bottom": 23.794705091863307,
+     "path": [
+      23.767795603829803,
+      44.80061135230711
+     ],
+     "off_path_mm": 0.0,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.8944731624146414
+    },
+    "pinky": {
+     "R": 415.2325906486368,
+     "depth": 0.59018,
+     "length": 44.26175,
+     "z_bottom": 5.537986505340841,
+     "path": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "off_path_mm": 0.0,
+     "felt": true,
+     "n_minima": 1,
+     "below_hump": 1.4557951459988416
+    },
+    "groove": {
+     "R": 222.53872283630247,
+     "u_bottom": 15.997868656238158,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "tips_z": {
+     "index": 30.00000182650666,
+     "middle": 33.048942084909164
+    },
+    "reach": 0.0,
+    "moves_mm": 0.8912758586378913,
+    "width_mm": 63.074650833005265
+   },
+   "result": "lifted_sym (trial 3): the lowest loss among the mirrored trials"
   }
  }
 }

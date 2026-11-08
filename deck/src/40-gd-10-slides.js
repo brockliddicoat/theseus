@@ -27,12 +27,13 @@ S({
       if (sd === 'u') text(nm, x, y - 30, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: a });
       else text(nm, x + (sd === 'l' ? -30 : 30), y + 8, { role: 'label', size: 21, color: C.heroText, align: sd === 'l' ? 'right' : 'left', alpha: a });
     });
-    const ka = ep(t, 5.4, 5.9), rx = m.X(e.groove.ring.u, 1), ry = m.Y(zg - 7);
+    /* the ring's marker on the shoulder at the station (G4: the mirrored pinky valley sits at z 24 now, where it was drawn) */
+    const ka = ep(t, 5.4, 5.9), rx = m.X(e.groove.ring.u, 1), ry = m.Y(zg + 2);
     circle(rx, ry, 9, { color: C.ink2, w: 2, alpha: ka }); text('Ring: no valley', rx + 30, ry + 8, { role: 'label', size: 20, color: C.mute, alpha: ka });
     text('Sora V2 as long arcs (yellow), the result (blue), true scale', box[0] + box[2] / 2, box[1] + box[3] + 24, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: ep(t, 1, 1.5) });
     const cell = bento(LM, 520, 920, 320, 3, 1);
     statTile(t, 5.6, cell(0, 0), { value: '4', label: 'Valleys, one per finger', quiet: true, count: false });
-    statTile(t, 5.75, cell(1, 0), { value: fmtN(e.R.thumb, 0), unit: 'mm', label: 'Thumb\'s waist, felt over its slide', quiet: true, count: false });
+    statTile(t, 5.75, cell(1, 0), { value: fmtN(e.R.thumb, 0), unit: 'mm', label: Tr.symmetric ? 'Mirrored waist, felt over the slide' : 'Thumb\'s waist, felt over its slide', quiet: true, count: false });
     statTile(t, 5.9, cell(2, 0), { value: fmtN(e.dev.plan, 1), unit: 'mm', label: 'The most the outline moves', hero: true, count: false });
     text('Brock Liddicoat, shape designer of the Finalmouse Starlight X', LM, 900, { role: 'small', size: 25, weight: 650, color: C.mute, alpha: ep(t, 1.2, 1.8) });
     source(t, 'Sora V2 base: 3d/shell/shell-sora.glb, from Brock\'s scan. Arcs, felt strength and descent: derived (deck/tools/gd/longarcs.py).', { t0: 1.5, maxW: 960 });
@@ -46,7 +47,7 @@ S({
   draw: t => {
     header(t, 'Shape is opinion. Make it a number.', { noIdeas: true });
     gdCaptions(t, [[0.6, 'A review describes a shape in words. The same shape, measured, is three widths: how far the sides come in, and how far the front flares.'],
-      [5.4, 'The study turns every rule into a term of one number, the loss. Lower is better, and gradient descent lowers it.']]);
+      [5.4, 'The study turns the rules of comfort into terms of one number, the loss. Lower is better, and gradient descent lowers it.']]);
     /* left: the words */
     const L0 = [LM, 300, 860, 300], aL = tileA(t, 0.3, 0);
     demoWindow(...L0, aL);
@@ -71,14 +72,16 @@ S({
     const R0 = [LM + 900, 300, RM - LM - 900, 640], aR = tileA(t, 5.4, 0), T_ = laTr();
     demoWindow(...R0, aR);
     text('One number to lower', R0[0] + 32, R0[1] + 52, { role: 'label', size: 21, color: C.mute, alpha: aR });
-    const terms = [['Under the finger', 'Each valley\'s bottom where the relaxed fingertip rests'], ['Felt, and no more', 'The gentlest arc felt over the whole slide as you grip'],
-      ['One minimum per finger', 'No second dip; none under the ring finger'], ['Still a normal mouse', 'As wide as real mice, no deeper than the UltralightX']];
+    /* G4: each side valley on its finger's slide as you grip, the grooves under the tips; symmetry a rule outside the number */
+    const terms = [['Under the finger', 'Side valleys on the fingers\' slides; grooves under the tips'], ['Felt, and no more', 'The gentlest arc felt over the whole slide as you grip'],
+      ['One minimum per finger', 'No second dip; none under the ring finger'], ['Still a normal mouse', 'As wide as real mice, no deeper than the ULX, close to the Sora']];
     terms.forEach(([h, b], i) => {
-      const y = R0[1] + 120 + i * 92, k = ep(t, 5.7 + i * 0.35, 6.2 + i * 0.35) * aR;
+      const y = R0[1] + 112 + i * 86, k = ep(t, 5.7 + i * 0.35, 6.2 + i * 0.35) * aR;
       text('+', R0[0] + 32, y + 4, { role: 'h3', size: 32, color: C.heroText, alpha: k });
       text(h, R0[0] + 72, y, { role: 'h3', size: 28, color: C.ink, alpha: k });
       text(b, R0[0] + 72, y + 34, { role: 'small', size: 23, weight: 600, color: C.mute, alpha: k, maxW: R0[2] - 110 });
     });
+    text('One rule stays outside the number: the shell is mirror-symmetric.', R0[0] + 72, R0[1] + 112 + 4 * 86 - 4, { role: 'small', size: 22, weight: 650, color: C.ink2, alpha: ep(t, 7.1, 7.5) * aR, maxW: R0[2] - 110 });
     const kc = ep(t, 7.3, 9.3, E.io3), Lv = lerp(T_.loss0, T_.loss, kc);
     text('Loss', R0[0] + 32, R0[1] + R0[3] - 110, { role: 'label', size: 21, color: C.mute, alpha: ep(t, 7.2, 7.6) });
     text(gdLoss(Lv), R0[0] + 32, R0[1] + R0[3] - 32, { role: 'd2', size: 96, color: C.hero, grad: C.heroGrad, alpha: ep(t, 7.2, 7.6) });
@@ -95,7 +98,7 @@ S({
     header(t, 'The hand at rest, in zero gravity', { noIdeas: true });
     gdCaptions(t, [[0.6, 'In orbit nothing pulls on the hand, so it settles where its tendons and ligaments balance: the wrist straight, each finger gently curled.'],
       [4.6, 'Tilt the wrist back 15° to rest the palm on the hump, and the relaxed fingertips reach past the front of a mouse this long.'],
-      [8.4, 'Lift the palm instead, as in orbit, and the fingertips land on the buttons with the palm 28 mm over the hump. That is trial 4\'s grip.']], { maxW: 1500 });
+      [8.4, 'Lift the palm instead, as in orbit, and the fingertips land on the buttons with the palm 28 mm over the hump: trial ' + laNo(GD_REC) + '\'s grip.']], { maxW: 1500 });
     const H_ = GD.hand, lifted = H_.grips.lifted, heel = H_.grips.heel;
     /* the side view: z right (the nose), y up, true scale */
     const box = [LM, 290, 1120, 660], s = Math.min((box[2] - 60) / 210, (box[3] - 110) / 105), ox = box[0] + 30 + 138 * s, oy = box[1] + box[3] - 40;
@@ -133,7 +136,7 @@ S({
       dim(t, 10.2, [map.X(top[0]), map.Y(top[1])], [map.X(top[0]), map.Y(ys)], fmtN(lifted.palm_gap_mm, 0) + ' mm', -96, { tcolor: C.ink });
     }
     /* which pose, top right of the drawing */
-    const tag = t < 8.6 ? (t < 4.8 ? ['Floating, nothing to hold', C.mute] : ['Palm on the hump, wrist back 15°', C.ink2]) : ['Palm lifted, wrist straight: trial 4\'s grip', C.heroText];
+    const tag = t < 8.6 ? (t < 4.8 ? ['Floating, nothing to hold', C.mute] : ['Palm on the hump, wrist back 15°', C.ink2]) : ['Palm lifted, wrist straight: trial ' + laNo(GD_REC) + '\'s grip', C.heroText];
     const kTag = t < 4.8 ? ep(t, 1.0, 1.4) : t < 8.6 ? ep(t, 5.0, 5.4) : ep(t, 10.4, 10.8);
     text(tag[0], box[0] + box[2] - 28, box[1] + 44, { role: 'label', size: 20, color: tag[1], align: 'right', alpha: aB * kTag });
     text('Side view, true scale', box[0] + 28, box[1] + 44, { role: 'label', size: 20, color: C.mute, alpha: aB });
@@ -416,10 +419,12 @@ S({
   src: ['gdModel'],
   draw: t => {
     header(t, 'Gradient descent', { noIdeas: true });
+    const K = LA_K, Tr = laTr(K), Ls = Tr.landscape, u = ep(t, 5.2, 10.2, E.io3), Fr = laFrame(Tr, u), p = Fr.p;
+    /* G4: the end, as the trial has it: mirrored, one valley on both fingers' slides; pocketed apart, each on its own */
+    const onP = laOnPath(Tr.end.thumb, Tr.targets.thumb_path) && laOnPath(Tr.end.pinky, Tr.targets.pinky_path);
     gdCaptions(t, [[0.6, 'The loss, mapped for the thumb\'s waist arc: how deep it is against where its middle sits. Each contour is one level.'],
       [5.0, 'Descent starts from the Sora\'s waist and steps downhill. Each dot is a step, and every arc\'s numbers move together.'],
-      [10.0, 'It stops where nothing improves: each minimum where its finger rests, each waist just deep enough to be felt over its whole slide.']]);
-    const K = LA_K, Tr = laTr(K), Ls = Tr.landscape, u = ep(t, 5.2, 10.2, E.io3), Fr = laFrame(Tr, u), p = Fr.p;
+      [10.0, 'It stops where nothing improves: ' + (onP ? (Tr.symmetric ? 'one mirrored valley on both fingers\' slides, just deep enough to be felt over the slide.' : 'each valley on its finger\'s slide, each waist just deep enough to be felt over it.') : 'each waist just deep enough to be felt over its whole slide.')]]);
     /* left: the landscape, built in layers: the field, its contours, the axes, then the path step by step */
     const L0 = [LM, 290, 700, 660], aL = tileA(t, 0.2, 0); demoWindow(...L0, aL);
     text('Thumb\'s waist: the loss over two of its numbers', L0[0] + 28, L0[1] + 44, { role: 'label', size: 19, color: C.mute, alpha: aL });
@@ -449,9 +454,12 @@ S({
     /* the lowest point on this slice, the start, the path step by step, the end */
     let best = [0, 0]; Ls.loss.forEach((r, i) => r.forEach((v, j) => { if (v < Ls.loss[best[0]][best[1]]) best = [i, j]; }));
     const ko = ep(t, 3.2, 3.6) * aL, bx = Xz(Ls.zc[best[1]]), by = Yd(Ls.d[best[0]]);
-    circle(bx, by, 14, { color: C.ink, w: 2.5, alpha: ko }); circle(bx, by, 3, { fill: C.ink, alpha: ko });
-    text('Lowest on this map', bx - 22, by - 20, { role: 'label', size: 18, color: C.ink, align: 'right', alpha: ko });
     const P = Tr.path, n = P.length, upto = Math.round(u * (n - 1)), s0 = [Tr.start[1], Tr.start[2]], ks = ep(t, 4.2, 4.6) * aL;
+    /* (G4) when the end lands on the map's lowest point, one label names both (the separate End label ran over the ring) */
+    const qE = P[n - 1], nearE = Math.hypot(Xz(qE[1]) - bx, Yd(qE[0]) - by) < 44, kE = nearE ? ep(t, 10.2, 10.6) : 0;
+    circle(bx, by, 14, { color: C.ink, w: 2.5, alpha: ko }); circle(bx, by, 3, { fill: C.ink, alpha: ko });
+    text('Lowest on this map', bx - 22, by - 20, { role: 'label', size: 18, color: C.ink, align: 'right', alpha: ko * (1 - kE) });
+    if (kE > 0) text('End: the lowest on this map', bx - 22, by - 20, { role: 'label', size: 18, color: C.heroText, align: 'right', alpha: ko * kE });
     /* start and end can sit close (the Sora's waist slid under the thumb is near the rule): start below left, end above right */
     circle(Xz(s0[1]), Yd(s0[0]), 9, { color: C.hero, w: 2.5, alpha: ks }); text('Start', Xz(s0[1]) - 14, Yd(s0[0]) + 30, { role: 'label', size: 18, color: C.heroText, align: 'right', alpha: ks });
     if (t > 5.2) {
@@ -459,7 +467,7 @@ S({
       let lx_ = Xz(s0[1]), ly_ = Yd(s0[0]);
       for (let i = 0; i <= upto; i++) { const x = Xz(P[i][1]), y = Yd(P[i][0]); if (Math.hypot(x - lx_, y - ly_) >= 9) { circle(x, y, 3.8, { fill: C.hero, alpha: aL }); lx_ = x; ly_ = y; } }
       const q = P[upto]; circle(Xz(q[1]), Yd(q[0]), 8, { fill: C.hero, alpha: aL });
-      if (u >= 1) text('End', Xz(q[1]) + 16, Yd(q[0]) - 14, { role: 'label', size: 18, color: C.heroText, alpha: aL * ep(t, 10.2, 10.6) });
+      if (u >= 1 && !nearE) text('End', Xz(q[1]) + 16, Yd(q[0]) - 14, { role: 'label', size: 18, color: C.heroText, alpha: aL * ep(t, 10.2, 10.6) });
     }
     /* middle: the top view, true scale, morphing with the descent; the thumb's side against its own chord, x2 */
     const box = [LM + 740, 290, 560, 660], aT = tileA(t, 0.3, 0); demoWindow(...box, aT);
@@ -490,43 +498,60 @@ S({
 });
 
 /* ============================== 8. the four trials ============================== */
+/* G4 (Brock 17:18, "trial 3 is by far my favorite the right 2 don't look right at all"): each side valley is placed on its
+   finger's slide as you grip (a bar beside each side, drawn from where the finger lands back to where it grips); the
+   palm-on-the-hump tips past the grooves are red; symmetry is a rule, so the lopsided trials carry a red note and trial 3,
+   the lowest mirrored loss, is the result */
 S({
-  id: 'gd_trials', ch: 'shape', theme: 'paper', title: 'Four trials', settle: 12,
+  id: 'gd_trials', ch: 'shape', theme: 'paper', title: 'Four trials', settle: 14.5,
   src: ['gdModel'],
   draw: t => {
     header(t, 'Four trials', { noIdeas: true });
-    const dRest = Math.abs(LA.trials.lifted_fwd.targets.thumb_z - LA.trials.lifted_fwd.targets.pinky_z);
-    gdCaptions(t, [[0.6, 'Two ways to hold it, palm on the hump or palm lifted; two ways to place the pockets, mirrored or each where its finger rests.'],
-      [5.0, 'Palm on the hump, the fingertips run past the grooves, and the thumb lands where the nose curves in, ahead of any waist.'],
-      [8.0, 'Mirrored, one valley has to sit between two rests ' + fmtN(dRest, 0) + ' mm apart, off both fingers. Only trial 4 puts every valley under its finger.']]);
-    const cell = bento(LM, 290, RM - LM, 640, 2, 2), best = laBest(), so = laPlan(LA.sora.planArcs);
+    const best = laBest(), rec = GD_REC, P50 = LA.path.p50;
+    gdCaptions(t, [[0.6, 'Two ways to hold it, palm on the hump or palm lifted; two ways to place the pockets, mirrored or each by its own finger.'],
+      [4.4, 'Palm on the hump, the index and middle tips run past the grooves, the middle off the nose. Trials 1 and 2 fail there.'],
+      [7.8, 'Each side valley belongs on its finger\'s slide as you grip. Mirrored, one valley serves both where the two slides overlap.'],
+      [11.2, (best !== rec ? 'Trial ' + laNo(best) + ' scores a hair lower, but its shell is lopsided, and a traditional mouse is mirror-symmetric. ' : 'Pocketed apart, the shell reads lopsided, and a traditional mouse is mirror-symmetric. ') + 'Trial ' + laNo(rec) + ' is the result.']]);
+    const cell = bento(LM, 290, RM - LM, 640, 2, 2), so = laPlan(LA.sora.planArcs);
+    const kTip = ep(t, 4.6, 5.0), kBar = ep(t, 8.0, 8.9, E.io3), kDot = ep(t, 8.6, 9.0), kRule = ep(t, 11.4, 11.9);
+    const pulse = t0 => 1 + 0.25 * Math.sin(Math.max(0, t - t0) * 5) * Math.exp(-Math.max(0, t - t0));
     LA.order.forEach((k, i) => {
-      const r = cell(i % 2, Math.floor(i / 2)), a = tileA(t, 0.3, i), Tk = LA.trials[k], e = Tk.end, hero = k === best; demoWindow(...r, a, { hero: false });
+      const r = cell(i % 2, Math.floor(i / 2)), a = tileA(t, 0.3, i), Tk = LA.trials[k], e = Tk.end, hero = k === rec, lop = !Tk.symmetric; demoWindow(...r, a, { hero: false });
       const m = gdTopFit([r[0] + 20, r[1] + 20, 230, r[3] - 40], { ur: 34 }), km = ep(t, 1.0 + i * 0.3, 2.4 + i * 0.3, E.cam);
       const cL = laPlan(laMix(LA.sora.planArcs, Tk.endArcs.planL, km)), cR = laPlan(laMix(LA.sora.planArcs, Tk.endArcs.planR, km));
       poly(gdOutline(m, so.pts, so.pts), { color: C.second, w: 1.5, alpha: a * 0.8 });
       poly(gdOutline(m, cL.pts, cR.pts), { color: C.hero, w: 2.5, alpha: a });
-      /* each side's minimum at its finger's rest (blue), or the rest with no valley (red), lit with the second caption */
-      /* the markers light with the caption that names the trial: the palm on the hump, then the mirrored pockets, then trial 4 */
-      const kf = Tk.grip === 'heel' ? ep(t, 5.2, 5.6) : Tk.pockets === 'sym' ? ep(t, 8.2, 8.6) : ep(t, 9.4, 9.8), pt = Tk.grip === 'heel' ? 5.2 : 8.2;
-      const ok = s_ => s_.n_minima === 1 && Math.abs(s_.z_bottom - s_.rest_z) < 3;
-      [[e.thumb, -1, Tk.targets.thumb_z], [e.pinky, 1, Tk.targets.pinky_z]].forEach(([s_, sd, zr]) => {
-        const good = ok(s_), z = good ? s_.z_bottom : zr, f = laSideU(sd < 0 ? cL : cR), x = m.X(f(z), sd), y = m.Y(z), pl = 1 + 0.25 * Math.sin(Math.max(0, t - pt) * 5) * Math.exp(-Math.max(0, t - pt));
-        circle(x, y, 6 * (good ? 1 : pl), { fill: good ? C.hero : C.red, alpha: a * Math.max(0.35, kf) });
+      /* the index and middle tips on the buttons: on the grooves (ink), or past their front end (red), with the second caption */
+      for (const [f, sd] of [['index', -1], ['middle', 1]]) {
+        const z = Tk.tips[f], bad = z > Tk.targets.groove_end;
+        circle(m.X(e.groove.u_bottom, sd), m.Y(z), (bad ? 5 * pulse(4.6) : 4.5), { fill: bad ? C.red : C.ink2, alpha: a * kTip });
+      }
+      /* each finger's slide as you grip: a bar beside its side, drawn from where it lands back to where it grips */
+      [[e.thumb, -1, Tk.targets.thumb_path, cL], [e.pinky, 1, Tk.targets.pinky_path, cR]].forEach(([s_, sd, P, ch]) => {
+        const xb = m.X(36, sd), y1 = m.Y(P[1]), y0 = m.Y(P[0]);
+        if (kBar > 0) line(xb, y1, xb, lerp(y1, y0, kBar), { color: C.mute, w: 4, cap: 'round', alpha: a * 0.6 });
+        /* the valley's bottom on its slide (blue), or off it (red; with no valley, the slide's middle) */
+        const good = laOnPath(s_, P), z = s_.n_minima === 1 ? s_.z_bottom : (P[0] + P[1]) / 2, f = laSideU(ch);
+        circle(m.X(f(z), sd), m.Y(z), 6 * (good ? 1 : pulse(8.6)), { fill: good ? C.hero : C.red, alpha: a * Math.max(0.3, kDot) });
       });
       const tx = r[0] + 280, tw2 = r[2] - 300;
-      text('Trial ' + (i + 1), tx, r[1] + 44, { role: 'label', size: 20, color: hero ? C.heroText : C.mute, alpha: a });
+      text('Trial ' + (i + 1), tx, r[1] + 44, { role: 'label', size: 20, color: hero ? mix(C.mute, C.heroText, kRule) : C.mute, alpha: a });
       text(GD_NAME[k][0] + ', ' + GD_NAME[k][1].toLowerCase(), tx, r[1] + 78, { role: 'h3', size: 27, color: C.ink, alpha: a, maxW: tw2 });
-      rich([{ s: 'Loss', role: 'label', size: 19, color: C.mute }, { s: gdLoss(Tk.loss), font: 'disp', size: 42, weight: 800, color: hero ? C.hero : C.ink, grad: hero ? C.heroGrad : null, gap: 12 }, hero ? { s: 'Lowest', role: 'label', size: 19, color: C.heroText, gap: 14 } : null], tx, r[1] + 132, { alpha: a * (hero ? 1 : 1) });
+      /* the loss; the result lights in blue with the last caption, the lopsided ones get their red note */
+      const lossRun = (col, grad, al) => [{ s: 'Loss', role: 'label', size: 19, color: C.mute, alpha: al }, { s: gdLoss(Tk.loss), font: 'disp', size: 42, weight: 800, color: col, grad, gap: 12, alpha: al }];
+      if (hero) { rich(lossRun(C.ink, null, 1 - kRule), tx, r[1] + 132, { alpha: a }); rich(lossRun(C.hero, C.heroGrad, kRule).concat([{ s: 'The result', role: 'label', size: 19, color: C.heroText, gap: 14 }]), tx, r[1] + 132, { alpha: a * kRule }); }
+      else rich(lossRun(C.ink, null, 1).concat(lop ? [{ s: 'Lopsided: not mirrored', role: 'label', size: 19, color: C.red, gap: 14, alpha: kRule }] : []), tx, r[1] + 132, { alpha: a });
       /* each side: its waist (radius, depth over its length, felt over the slide or not), or where its valley sits instead */
-      const side = (s_, R, Rf, c, d) => {
-        if (ok(s_)) return 'R ' + fmtN(R, 0) + ', ' + fmtN(d, 1) + ' mm deep over ' + fmtN(c, 0) + ' mm' + (R <= Rf + 0.5 ? ', felt' : ', too gentle');
-        if (s_.n_minima === 1) return 'Valley ' + fmtN(Math.abs(s_.z_bottom - s_.rest_z), 0) + ' mm ' + (s_.z_bottom < s_.rest_z ? 'behind' : 'ahead of') + ' its rest (z ' + fmtN(s_.rest_z, 0) + ')';
-        return 'No valley at its rest (z ' + fmtN(s_.rest_z, 0) + ')';
+      const span = P => 'z ' + fmtN(P[0], 0) + ' to ' + fmtN(P[1], 0);
+      const side = (s_, P, R, Rf, c, d) => {
+        if (laOnPath(s_, P)) return 'R ' + fmtN(R, 0) + ', ' + fmtN(d, 1) + ' mm deep over ' + fmtN(c, 0) + ' mm' + (R <= Rf + 0.5 ? ', felt' : ', too gentle');
+        if (s_.n_minima === 1) return 'Valley ' + fmtN(laOff(s_.z_bottom, P), 0) + ' mm ' + (s_.z_bottom < P[0] ? 'behind' : 'ahead of') + ' its slide (' + span(P) + ')';
+        return 'No valley on its slide (' + span(P) + ')';
       };
       const under = Tk.grooves_under_finger, F_ = Tk.final;
-      const lines = [['Thumb', side(e.thumb, e.R.thumb, 1 / Tk.k_felt.thumb, F_[0], F_[1]), !ok(e.thumb)], ['Pinky', side(e.pinky, e.R.pinky, 1 / Tk.k_felt.pinky, F_[5], F_[6]), !ok(e.pinky)],
-        ['Grooves', under ? 'x ±' + fmtN(e.groove.u_bottom, 0) + ', R ' + fmtN(e.R.groove, 0) + ', 1 valley each' : 'Not under the fingers (tips at z ' + fmtN(Tk.tips.index, 0) + ', ' + fmtN(Tk.tips.middle, 0) + ')', !under],
+      const lines = [['Thumb', side(e.thumb, Tk.targets.thumb_path, e.R.thumb, 1 / Tk.k_felt.thumb, F_[0], F_[1]), !laOnPath(e.thumb, Tk.targets.thumb_path)],
+        ['Pinky', side(e.pinky, Tk.targets.pinky_path, e.R.pinky, 1 / Tk.k_felt.pinky, F_[5], F_[6]), !laOnPath(e.pinky, Tk.targets.pinky_path)],
+        ['Grooves', under ? 'x ±' + fmtN(e.groove.u_bottom, 0) + ', R ' + fmtN(e.R.groove, 0) + ', 1 valley each' : 'Tips past them (z ' + fmtN(Tk.tips.index, 0) + ', ' + fmtN(Tk.tips.middle, 0) + ')', !under],
         ['Moves', fmtN(e.dev.plan, 1) + ' mm at most; ' + fmtN(e.width, 1) + ' mm wide', false]];
       lines.forEach(([l, v, bad], j) => {
         const y = r[1] + 176 + j * 31, kj = ep(t, 1.4 + i * 0.2 + j * 0.12, 1.8 + i * 0.2 + j * 0.12) * a;
@@ -534,13 +559,13 @@ S({
         text(v, tx + 116, y, { role: 'small', size: 21, weight: 650, color: bad ? C.red : C.ink2, alpha: kj, maxW: tw2 - 116, sentence: false });
       });
     });
-    source(t, 'Start: the Sora\'s arcs, each waist slid so its narrowest point sits at its finger\'s rest. Felt: each waist turns 3.4° over the whole slide as you grip (thumb ' + fmtN(LA.slide.p50.thumb, 0) + ', pinky ' + fmtN(LA.slide.p50.pinky, 0) + ' mm) and is that slide plus the contact patch long. Mirrored pockets count each finger against its own rest. Widths 60.5 to 70 mm (mice.json); within 2.5 mm of the Sora. Derived.', { t0: 2.0, maxW: 1760 });
+    source(t, 'Placed: each side valley\'s bottom on its finger\'s slide as you grip, from where it lands to where it grips (mean hand: thumb z ' + fmtN(P50.thumb[1], 0) + ' to ' + fmtN(P50.thumb[0], 0) + ', pinky ' + fmtN(P50.pinky[1], 0) + ' to ' + fmtN(P50.pinky[0], 0) + '); for hands under ' + fmtN(LA.path.overlap_hand_mm, 0) + ' mm the two slides do not overlap. Felt: each waist turns 3.4° over the slide. Grooves to z ' + fmtN(LA.path.groove_end, 0) + '. Widths 60.5 to 70 mm (mice.json); within 2.5 mm of the Sora. Derived.', { t0: 2.0, maxW: 1760 });
   }
 });
 
 /* ============================== 9. before and after ============================== */
 S({
-  id: 'gd_after', ch: 'shape', theme: 'night', title: 'Still a traditional mouse', settle: 11.5,
+  id: 'gd_after', ch: 'shape', theme: 'night', title: 'Still a traditional mouse', settle: 12.5,
   src: ['gdModel', 'gdGordon', 'gdTpu'],
   draw: t => {
     header(t, 'Still a traditional mouse', { noIdeas: true });
@@ -548,10 +573,13 @@ S({
     /* the waists against the Sora's own: depth (within 0.1 mm reads as the same) and length */
     const dS0 = LA.sora.plan_params[1], cS0 = LA.sora.plan_params[0], dd = [Tr.final[1], Tr.final[6]], cc = [Tr.final[0], Tr.final[5]];
     const sameL = cc.every(v => Math.abs(v - cS0) <= 3);
-    const depthW = dd.every(v => Math.abs(v - dS0) <= 0.1) ? (sameL ? 'about as deep and as long as the Sora\'s' : 'about as deep as the Sora\'s') : dd.every(v => v > dS0) ? 'a little deeper' : dd.every(v => v < dS0) ? 'a little shallower' : 'reshaped';
-    const restW = [e.thumb, e.pinky].every(s_ => Math.abs(s_.z_bottom - s_.rest_z) < 3) ? ', and sits where its finger rests.' : '.';
-    gdCaptions(t, [[0.6, 'At true scale it is still the Sora: the same nose, tail and side profile. Each waist is ' + depthW + restW],
-      [5.0, 'Every curve now has a reason: a valley under each finger, just deep enough to be felt, and nothing anywhere else.']]);
+    const depthW = dd.every(v => Math.abs(v - dS0) <= 0.1) ? (sameL ? 'about as deep and as long as the Sora\'s' : 'about as deep as the Sora\'s') : dd.every(v => v > dS0) ? 'a little deeper than the Sora\'s' : dd.every(v => v < dS0) ? 'a little shallower than the Sora\'s' : 'reshaped';
+    /* G4: each valley on its finger's slide as you grip; the result mirrored (a traditional mouse is mirror-symmetric) */
+    const sym = Tr.symmetric, onP = laOnPath(e.thumb, Tr.targets.thumb_path) && laOnPath(e.pinky, Tr.targets.pinky_path);
+    const restW = onP ? (sym ? ', on both fingers\' slides.' : ', on its finger\'s slide.') : '.';
+    gdCaptions(t, [[0.6, 'At true scale it is still the Sora: the same nose, tail and side profile. ' + (sym ? 'Its mirrored waist is ' : 'Each waist is ') + depthW + restW],
+      [5.0, 'Every curve now has a reason: a valley under each finger, just deep enough to be felt, and nothing anywhere else.'],
+      [8.4, sym ? 'And it stays mirror-symmetric, as a traditional mouse is: one waist, mirrored, serves the thumb and the pinky.' : 'Pocketed apart, it is no longer mirror-symmetric: it reads lopsided, not a traditional mouse.']]);
     const box = [LM, 290, 760, 660], aT = tileA(t, 0.2, 0); demoWindow(...box, aT);
     const m = gdTopFit([box[0] + 220, box[1] + 50, 320, box[3] - 100], { ur: 34 }), kb = ep(t, 1.2, 2.4, E.cam);
     poly(gdOutline(m, so.pts, so.pts), { color: C.second, w: 2.5, alpha: aT });
@@ -560,8 +588,8 @@ S({
     text('Trial ' + laNo(K) + ': ' + GD_NAME[K][0].toLowerCase() + ', ' + GD_NAME[K][1].toLowerCase(), box[0] + 24, box[1] + 40, { role: 'small', size: 21, weight: 650, color: C.ink2, alpha: aT, sentence: false });
     /* each side against its own chord, x2: one valley; the Sora's own, in yellow */
     const ki = ep(t, 2.8, 3.4) * aT, sU = laSideU(so);
-    const iL = laChordInset(t, ki, [box[0] + 24, box[1] + 70, 180, box[3] - 120], laSideU(cL), { ref: sU, z: Tr.targets.thumb_z, zr: [-32, 44], title: 'Thumb side, ×2', p: ep(t, 3.0, 4.0, E.lin) });
-    const iR = laChordInset(t, ki, [box[0] + box[2] - 204, box[1] + 70, 180, box[3] - 120], laSideU(cR), { ref: sU, z: Tr.targets.pinky_z, zr: [-32, 44], title: 'Pinky side, ×2', p: ep(t, 3.0, 4.0, E.lin) });
+    const iL = laChordInset(t, ki, [box[0] + 24, box[1] + 70, 180, box[3] - 120], laSideU(cL), { ref: sU, z: e.thumb.z_bottom, zr: [-32, 44], title: 'Thumb side, ×2', p: ep(t, 3.0, 4.0, E.lin) });
+    const iR = laChordInset(t, ki, [box[0] + box[2] - 204, box[1] + 70, 180, box[3] - 120], laSideU(cR), { ref: sU, z: e.pinky.z_bottom, zr: [-32, 44], title: 'Pinky side, ×2', p: ep(t, 3.0, 4.0, E.lin) });
     const kv = ep(t, 4.0, 4.4) * aT;
     for (const [I, s_] of [[iL, e.thumb], [iR, e.pinky]]) if (I && s_.n_minima === 1) { const x = I.X(Math.max(0, I.c.gap(s_.z_bottom))), y = I.Y(s_.z_bottom); circle(x, y, 6, { fill: C.hero, alpha: kv }); text('One valley', x + 12, y + 6, { role: 'label', size: 17, color: C.heroText, alpha: kv }); }
     /* the section, with the grooves */
@@ -581,17 +609,22 @@ S({
     const rx = LM + 1320, rw = RM - rx, aR = tileA(t, 5.0, 0); demoWindow(rx, 290, rw, 660, aR);
     text('Each curve, its reason', rx + 24, 290 + 40, { role: 'label', size: 19, color: C.mute, alpha: aR });
     const felt = (R, k, over) => 'R ' + fmtN(R, 0) + (R <= 1 / k + 0.5 ? ', felt ' + over : ', felt from R ' + fmtN(1 / k, 0));
-    const at = s_ => Math.abs(s_.z_bottom - s_.rest_z) < 3 ? ', where it rests' : ', ' + fmtN(Math.abs(s_.z_bottom - s_.rest_z), 0) + ' mm off its rest';
-    const why = [['Thumb waist', felt(e.R.thumb, Tr.k_felt.thumb, 'over its ' + fmtN(LA.slide.p50.thumb, 0) + ' mm slide') + '; bottom at z ' + fmtN(e.thumb.z_bottom, 0) + at(e.thumb)],
-      ['Pinky waist', felt(e.R.pinky, Tr.k_felt.pinky, 'over its ' + fmtN(LA.slide.p50.pinky, 0) + ' mm slide') + '; bottom at z ' + fmtN(e.pinky.z_bottom, 0) + at(e.pinky)],
-      ['Grooves', Tr.grooves_under_finger ? felt(e.R.groove, Tr.k_felt.groove, 'where the tip lands') + ', x ±' + fmtN(e.groove.u_bottom, 0) : 'not under the fingers'], ['Ring shoulder', fmtN(e.groove.ring.k_deg_per_mm, 1) + ' °/mm, no valley'],
-      ['Front flare', 'None added: the numbers chose none (the ULX has ' + fmtN(GD.ulx.flare, 1) + ' mm a side). The ' + fmtN(e.thumb.flare, 1) + ' mm front rise is the waist\'s own wall. Lifting is not modelled yet; there flare would have to earn its place.']];
+    const span = P => 'z ' + fmtN(P[0], 0) + ' to ' + fmtN(P[1], 0), PT = Tr.targets.thumb_path, PP = Tr.targets.pinky_path;
+    const at = (s_, P) => laOnPath(s_, P) ? ', on its slide (' + span(P) + ')' : ', ' + fmtN(laOff(s_.z_bottom, P), 0) + ' mm off its slide';
+    /* mirrored, the two waists are one arc: one row, on both slides; then the rule it keeps (or, pocketed apart, breaks) */
+    const sides = sym ? [['Side waists, mirrored', felt(e.R.thumb, Tr.k_felt.thumb, 'over the ' + fmtN(LA.slide.p50.thumb, 0) + ' mm thumb slide') + '; bottom at z ' + fmtN(e.thumb.z_bottom, 0) + (onP ? ', on both fingers\' slides' : '')]]
+      : [['Thumb waist', felt(e.R.thumb, Tr.k_felt.thumb, 'over its ' + fmtN(LA.slide.p50.thumb, 0) + ' mm slide') + '; bottom at z ' + fmtN(e.thumb.z_bottom, 0) + at(e.thumb, PT)],
+        ['Pinky waist', felt(e.R.pinky, Tr.k_felt.pinky, 'over its ' + fmtN(LA.slide.p50.pinky, 0) + ' mm slide') + '; bottom at z ' + fmtN(e.pinky.z_bottom, 0) + at(e.pinky, PP)]];
+    const why = sides.concat([['Grooves', Tr.grooves_under_finger ? felt(e.R.groove, Tr.k_felt.groove, 'where the tip lands') + ', x ±' + fmtN(e.groove.u_bottom, 0) : 'not under the fingers'], ['Ring shoulder', fmtN(e.groove.ring.k_deg_per_mm, 1) + ' °/mm, no valley'],
+      ['Front flare', 'None added: the numbers chose none (the ULX has ' + fmtN(GD.ulx.flare, 1) + ' mm a side). The ' + fmtN(e.thumb.flare, 1) + ' mm front rise is the waist\'s own wall. Lifting is not modelled yet; there flare would have to earn its place.']]);
+    const rule = sym ? ['Mirror-symmetric', 'One waist, mirrored, serves both fingers where their slides overlap', C.ink, C.heroText] : ['Lopsided', 'Not mirror-symmetric: each pocket by its own finger, not a traditional mouse', C.red, C.red];
     let yy = 290 + 92;
     why.forEach(([h, b], i) => {
       const k = ep(t, 5.2 + i * 0.25, 5.7 + i * 0.25) * aR;
       text(h, rx + 24, yy, { role: 'h3', size: 24, color: C.ink, alpha: k }); const r_ = text(b, rx + 24, yy + 30, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: k, maxW: rw - 48 });
       yy += 30 + r_.lines.length * 26 + 24;
     });
+    { const k = ep(t, 8.6, 9.1) * aR; text(rule[0], rx + 24, yy, { role: 'h3', size: 24, color: rule[2], alpha: k }); text(rule[1], rx + 24, yy + 30, { role: 'small', size: 20, weight: 600, color: rule[3], alpha: k, maxW: rw - 48 }); }
     source(t, 'Felt: the gentlest arc that turns 3.4° (Gordon & Morison 1982): on the sides over the whole slide as you grip (hand model), on the buttons over where the fingertip lands; derived. The insets plot each side against its own chord, depth ×2; the outline is true scale. ULX flare: TechPowerUp widths.', { t0: 2.0, maxW: 1760 });
   }
 });

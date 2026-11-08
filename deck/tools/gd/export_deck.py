@@ -63,7 +63,7 @@ for rec, r in R['trials'].items():
         grid.append(row)
     out['landscape'][rec] = {'z': r2(zs), 'k': r2(ks, 4), 'loss': grid, 'path': [[q['p'][0], q['p'][1]] for q in r['path']], 'z_target': zT, 'k_opt': kT}
 out['order'] = ['heel_sym', 'heel_fwd', 'lifted_sym', 'lifted_fwd']
-out['recommended'] = 'lifted_fwd'
+out['recommended'] = 'lifted_sym'   # (G4) the old notch trials' key, kept in step with la['recommended'] below
 # ---- the hand at rest: both grips' finger chains (side view), the Sora's profile; the cascade's angles; orbit data
 out['hand'] = {'cascade': H.CASCADE, 'thumb': H.THUMB, 'orbit_flex': H.ORBIT_FINGER_FLEX, 'bones': {k2: r2(v) for k2, v in H.BONES.items()}, 'chords': H.summary()['chords'],
                'grips': {g: {kk: R['trials'][g + '_sym']['placement']['p50'][kk] for kk in ('zK', 'yK', 'gamma_deg', 'palm_gap_mm', 'tip_misfit_mm', 'joints', 'z')} for g in ('heel', 'lifted')},
@@ -86,7 +86,7 @@ def frame(p):
 la = {'turn_rel_deg': LR['turn_rel_deg'], 'turn_mean_deg': LR['turn_mean_deg'], 'mu': LR['mu_dry'], 'width_range': LR['width_range'], 'ulx_pocket': LR['ulx_pocket'], 'sec_bound': LR['sec_bound'],
       'P0': LA.P0, 'TH0': LA.TH0, 'S0': LA.S0, 'STH0': LA.STH0, 'btn': list(LA.BTN), 'nose_z': float(LA.P3[1]),
       'sora': dict(LR['sora'], planArcs=ra(LA.PA), secArcs=ra(LA.SA)), 'trials': {}, 'order': ['heel_sym', 'heel_fwd', 'lifted_sym', 'lifted_fwd'], 'recommended': 'lifted_fwd',
-      'slide': {k: LR['slide'][k] for k in ('p50', 'range', 'contact_side', 'R_felt')}}
+      'slide': {k: LR['slide'][k] for k in ('p50', 'range', 'contact_side', 'R_felt')}, 'path': LR['path']}
 for k, r in LR['trials'].items():
     path = r['path']; idx = sorted(set(list(range(0, len(path), max(1, len(path) // 24))) + [len(path) - 1]))   # about 25 frames
     fr = [dict(frame(r['start']), it=0, loss=round(r['loss'][0], 4), p=[round(v, 4) for v in r['start']])]
@@ -96,10 +96,14 @@ for k, r in LR['trials'].items():
                        'targets': r['targets'], 'zones': r['zones'], 'cover': r['cover'], 'k_felt': r['k_felt'], 'spread': r['spread'], 'contact': r['contact'],
                        'end': {kk: e[kk] for kk in ('thumb', 'pinky', 'groove', 'R', 'dev', 'width')}, 'endArcs': {'planL': ra(e['planL']), 'planR': ra(e['planR']), 'sec': ra(e['sec'])},
                        'begin': {kk: r['begin'][kk] for kk in ('thumb', 'pinky', 'groove', 'R', 'dev', 'width')},
-                       'grooves_under_finger': bool(max(r['placement']['z']['index'], r['placement']['z']['middle']) <= 48.0), 'tips': r['placement']['z'],
+                       'grooves_under_finger': bool(max(r['placement']['z']['index'], r['placement']['z']['middle']) <= LA.GROOVE_END), 'tips': r['placement']['z'],
+                       'symmetric': r['pockets'] == 'sym',
                        'frames': fr, 'path': [[round(q['p'][1], 4), round(q['p'][2], 3)] for q in path], 'landscape': r['landscape'], 'terms': r['terms'], 'terms0': r['terms0']}
-# the default: the lowest loss (trial 4 while it stays the lowest)
-la['recommended'] = min(LR['trials'], key=lambda k: LR['trials'][k]['loss'][-1])
+# the default (G4, after Brock 17:18): symmetry is a rule, a traditional mouse is mirror-symmetric, so the result is the lowest
+# loss among the mirrored trials (trial 3); the lopsided ones (2 and 4) stay on the Trials slide as the test that shows why
+la['recommended'] = min((k for k in LR['trials'] if LR['trials'][k]['pockets'] == 'sym'), key=lambda k: LR['trials'][k]['loss'][-1])
+la['lowest'] = min(LR['trials'], key=lambda k: LR['trials'][k]['loss'][-1])
+print('recommended', la['recommended'], 'lowest overall', la['lowest'])
 # sweeps of the thumb's waist round the default's result, for the cursor on gd_arcs: depth, length, angle
 pF = np.array(LR['trials'][la['recommended']]['final'])
 def sweep(i, vals):
