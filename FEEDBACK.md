@@ -1741,4 +1741,8 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   are where the holes are needed" ("holes": fillets). The black base and wedge in satin (roughness about 0.25 to 0.35, a soft
   sheen that follows the form), not matte; fillets that read at hero scale (about 0.2 to 0.3 mm) round every hole and cut-out,
   and along the seam where the clear cover meets the black base.
+- **F66.5 DECIDED, IN PROGRESS (R4)** (07:44) "i’d like you to modify the top housing to have the angled clip on mechanism that
+  the ttc switch has" / "but i don’t like the texts you added on top". The clear cover clips onto the base the way TTC's micro
+  switch covers do, with angled snap clips in the side walls (researched, then modelled as a real snap-fit with fillets). The
+  ">PC<" and date-wheel marks come off the top, which stays clean apart from the plunger's collar and plain moulding.
 
