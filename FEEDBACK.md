@@ -1721,4 +1721,9 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   internals, but its gold is pale and its hero is composed edge-on. Both are short on edge highlights and micro-detail
   (the plunger's collar ring, moulded marks, tin pins). R2 resumed; R1 couldn't be (its transcript was too large), so R3
   continues R1's line from its script.
+- **F66.2 STANDING (renders)** (~18:20, on round 2 of both renders beside his reference) "geometry needs to be further improved;
+  some parts don’t feel thick enough, a lot of parts are lacking a very tiny filet to feel realistic, some renders don’t have the
+  darker parts on the bottom illuminated properly". Every part at a real micro switch's thickness (cover walls about 0.6 to
+  0.8 mm, terminals about 0.5 mm sheet); a tiny fillet on every edge (sheet metal about 0.03 to 0.08 mm, plastic 0.05 to
+  0.15 mm); the black base, wedge and pins lit to show their form while still reading black. Round 3 for both lines (R2, R3).
 
