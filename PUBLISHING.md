@@ -34,7 +34,8 @@
   gradient descent", hand-built from the deck's engine (build target 'gd': `python3 tools/build.py gd` -> deck/dist/gd.html;
   slides deck/src/40-gd-*.js; data deck/tools/gd/, research/gd/). Not the Slides type: Brock asked for the film's own assets
   and art style. Republish with publish_files + slug + base_version.
-- Versions: 1794098831-e906 (2026-11-07 18:47: G4, trial 3 the result, symmetry a rule, valleys scored on each finger's
+- Versions: 1794146456-6edb (2026-11-08 08:00: G5, the thumb modelled from its own base, F65.10; trials rerun, trial 3's
+  waist at z 4); 1794098831-e906 (2026-11-07 18:47: G4, trial 3 the result, symmetry a rule, valleys scored on each finger's
   slide (F65.9)); 1794087621-8d3a (2026-11-07 15:40: G3, the side arcs felt over the whole slide (F65.6), the groove line (F65.7);
   trial 4 still lowest; on this branch as G3's 5909b55 picked); 1794082358-a29b (2026-11-07 14:12: G2's rework after Brock's 13:33 note: long arcs, the strength re-derived with
   friction and the fingertip's feel threshold, true scale; on this branch as 3bf8d2a); 1794079831-ee94 (13:30, the first cut:
