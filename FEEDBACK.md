@@ -1736,4 +1736,9 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   fillets on every edge, the dark bottom lit (feedback/attachments/F66/0725-*.png). R3's close view, gold mechanism through the
   side wall, is the strongest frame either line has made. Left: the gold under R3's hero tops reads pale champagne (R3's
   guess: the rim strips seen through the PC; a 7-minute fix), and R2's internals are thickened rather than remodelled.
+- **F66.4 STANDING (renders), IN PROGRESS (R4)** (07:25, on R3's line, which he picked to push) "bottom material feels too matte
+  instead of satin and in particular is where is missing fillets" / "around the holes and where the top and bottom pieces meet
+  are where the holes are needed" ("holes": fillets). The black base and wedge in satin (roughness about 0.25 to 0.35, a soft
+  sheen that follows the form), not matte; fillets that read at hero scale (about 0.2 to 0.3 mm) round every hole and cut-out,
+  and along the seam where the clear cover meets the black base.
 
