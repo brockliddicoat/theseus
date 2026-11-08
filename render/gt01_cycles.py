@@ -13,8 +13,8 @@ parting step and inside ejector marks; micro-bevels 0.03-0.1 mm on every part; c
 (roughness 0.12, no hammered bump); a deeper bow in the snap spring's tongue. Light rig: the key and a top softbox sit
 on each switch's top-face mirror direction (mirror_dir), so they land as broad highlights on the flat tops; thin
 flagged rim strips; neutral world and backdrop.
-    nice python3 gt01_cycles.py --shot hero --res 1400 --spp 64 --noise 0.02 --out out/gt01_hero_1400_r3b.png
-    nice python3 gt01_cycles.py --shot close --res 1400 --spp 40 --noise 0.025 --key 0.4 --key_flag --out out/gt01_close_1400_r3b.png
+    nice python3 gt01_cycles.py --shot hero --res 1400 --spp 64 --noise 0.02 --out out/gt01_hero_1400_r3c.png
+    nice python3 gt01_cycles.py --shot close --res 1400 --spp 40 --noise 0.025 --key 0.4 --key_flag --out out/gt01_close_1400_r3b.png   (rendered at --key 0.4 with the default then 0.7: same flags)
 
 Units: 1 BU = 1 mm (scene unit scale 0.001, so camera f-stops are physical).
 Frames: switch frame S = X across (+-2.9), Y along (+Y = plunger end, the low end), Z up (0 = the switch's base plane).
@@ -854,7 +854,7 @@ def main():
     ap.add_argument('--bgout', type=float, default=0.014)
     ap.add_argument('--light', type=float, default=1.25)
     ap.add_argument('--only', default='')
-    ap.add_argument('--key', type=float, default=0.7)
+    ap.add_argument('--key', type=float, default=0.4)
     ap.add_argument('--under', type=float, default=1.0)
     ap.add_argument('--rim', type=float, default=0.8)
     ap.add_argument('--front', type=float, default=0.85)
