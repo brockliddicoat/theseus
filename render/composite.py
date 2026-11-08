@@ -68,7 +68,7 @@ if __name__ == '__main__':
         pair(os.path.join(OUT, 'inside_1400.png'), args.ref,
              ['R2: Cycles, the internals through the clear cover', 'Reference (Brock\'s product render)'],
              os.path.join(OUT, 'compare_inside.png'), S)
-    rounds = [('d2_hero.png', 'r1: first composition'), ('round1/hero_1400_r1.png', 'r1 final (main: one switch edge-on)'),
-              ('e1_hero.png', 'r2: pair recomposed'), ('e3_hero.png', 'r2: top highlight too wide'),
-              ('e5_hero.png', 'r2: highlights aimed per top'), ('hero_1400.png', 'r2 final')]
+    rounds = [('round1/hero_1400_r1.png', 'round 1 final'), ('round2/hero_1400_r2.png', 'round 2 final'),
+              ('hero_1400.png', 'round 3 final'), ('round2/inside_1400_r2.png', 'inside, round 2'),
+              ('inside_1400.png', 'inside, round 3'), ('macro_700.png', 'round 3 close crop: fillets')]
     sheet([os.path.join(OUT, p) for p, _ in rounds], [t for _, t in rounds], os.path.join(OUT, 'iterations.png'))

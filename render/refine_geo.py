@@ -25,8 +25,8 @@ SEG = 64
 m3.set_circular_segments(SEG)
 
 L, W, H = 12.8, 5.8, 6.5
-Y_SH, WALL, TOP = 2.5, 0.45, 0.5
-CEIL = H - TOP                    # 6.0, the cavity's ceiling
+Y_SH, WALL, TOP = 2.5, 0.6, 0.7       # round 3: real moulded walls (0.6) and top (0.7); the deck's web model uses 0.45 / 0.5
+CEIL = H - TOP                    # 5.8, the cavity's ceiling (the plunger's flange is lowered 0.2 in scene.py to sit under it)
 RC, RT = 0.55, 0.18               # plan corner radius, top-edge round
 ZP = 2.0                          # plunger axis
 YS_FRONT = 0.56                   # the front end wall's foot (gt01.js: ysF + 0.17)
@@ -95,9 +95,9 @@ def build():
     # ---- the plunger hole, turned 90 deg: 2.3 across x 1.75 along, r 0.45, a 0.1 chamfer, and a 0.05 spot-face round it
     hole = rrect(2.3, 1.75, 0.45, 0, -ZP)
     body = body - chamfer_cutter(hole, H - 0.05, TOP + 0.8, 0.1)
-    # a round moulded collar round the hole: a 0.05 spot-face inside a ring 0.08 proud of the top (r 1.32 to 1.72)
+    # a round moulded collar round the hole: a 0.05 spot-face inside a ring 0.14 proud of the top (r 1.32 to 1.78)
     body = body - slab(CrossSection.circle(1.32, SEG).translate([0, -ZP]), H - 0.05, H + 0.3)
-    body = body + slab(CrossSection.circle(1.72, SEG).translate([0, -ZP]) - CrossSection.circle(1.32, SEG).translate([0, -ZP]), H - 0.05, H + 0.08)
+    body = body + slab(CrossSection.circle(1.78, SEG).translate([0, -ZP]) - CrossSection.circle(1.32, SEG).translate([0, -ZP]), H - 0.05, H + 0.14)
     # ---- the label recess, zs -5.5 to 0.12 (shortened for the collar), 0.06 deep, with a bead inside its edge (no marking)
     rz0, rz1 = -5.5, 0.12
     rec = slab(rrect(3.5, rz1 - rz0, 0.35, 0, -(rz0 + rz1) / 2), H - 0.06, H + 0.3)
@@ -204,7 +204,31 @@ def export(body, frosted):
     lo, hi = vs.min(0), vs.max(0)
     print('bounds S:', np.round(lo, 3), np.round(hi, 3))
 
+def build_rivets(d_term=0.06):
+    """The contacts' clinched rivet backs, which the deck's model leaves out (switch frame S): a low dome on top of the NC arm over
+    its contact, under the NO tab under its contact, and under the COM anchor tab under the spring's anchor rivet. d_term is how far
+    scene.py inflates the terminal tabs (their faces move out by about that much), so the heads sit on the thickened tabs."""
+    Y_BLADE, T_BLADE, GAP = 4.456, 0.08, 0.30
+    Y_NCARM = Y_BLADE + T_BLADE + 0.12 + 0.14
+    Y_NOTAB = Y_BLADE - GAP - 0.12 - 0.14
+    Y_ANCHOR, ZC, Z_TIP = 4.45, 5.08, -4.0
+    def dome(r, h, up=True):
+        m = Manifold.sphere(r, 48).scale([1, 1, h / r]).trim_by_plane([0, 0, 1], 0.0)
+        return m if up else m.mirror([0, 0, 1])
+    heads = [dome(0.3, 0.12).translate([0, -Z_TIP, Y_NCARM + 0.25 + d_term - 0.02]),
+             dome(0.3, 0.12, False).translate([0, -Z_TIP, Y_NOTAB - 0.25 - d_term + 0.02]),
+             dome(0.24, 0.09, False).translate([0, -(ZC - 0.42), Y_ANCHOR - 0.25 - d_term + 0.02])]
+    allh = Manifold.batch_boolean(heads, m3.OpType.Add)
+    mesh = allh.to_mesh()
+    v = np.asarray(mesh.vert_properties, dtype=np.float64)[:, :3]
+    t = np.asarray(mesh.tri_verts, dtype=np.int64)
+    vs = np.stack([v[:, 0], v[:, 2], -v[:, 1]], axis=1)
+    np.savez(os.path.join(OUT, 'rivets.npz'), V=vs.astype(np.float32), T=t.astype(np.int32), F=np.zeros(len(t), dtype=np.int8))
+    print(f'rivet backs: {len(t)} tris')
+
+
 if __name__ == '__main__':
     import json
+    build_rivets()
     export(*build())
     build_wedge(json.load(open(os.path.join(OUT, 'gt01.json')))['spec'])
