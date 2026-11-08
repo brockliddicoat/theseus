@@ -1714,7 +1714,7 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
 
 - **F65.11 DECIDED** (~08:05, on G5's trial 3, live 1794146456-6edb) "green looks rightish": the thumb modelled from its own base
   (grips about z -4, lands about z 13) and trial 3's waist at z 4 stand.
-- **F65.12 STANDING, IN PROGRESS (G6)** (~08:05) "the hand in the presentation looks horrible super unrealistic and i’d also like
+- **F65.12 STANDING, DONE (G6, live 1794151207-5df0)** (~08:05) "the hand in the presentation looks horrible super unrealistic and i’d also like
   the breakdown of each joints angling at rest in zero gravity". The hand is rebuilt to look real: a grey clay hand rendered in 3D,
   anatomically proportioned and posed by the joint angles. A per-joint breakdown of the rest posture in zero gravity goes on the
   slide with its sources: wrist; thumb CMC, MCP and IP; each finger's MCP, PIP and DIP.
