@@ -2,7 +2,7 @@
 """Side-by-side composites of the renders against Brock's reference, at the same size, with small captions.
     python3 -I render/composite.py [--ref /home/claude/work/render/reference.png]
 Writes render/out/compare_hero.png (hero | reference), render/out/compare_inside.png (inside | reference) and
-render/out/iterations.png (the draft rounds, small).
+render/out/iterations.png (the rounds, small).
 """
 import argparse, os
 from PIL import Image, ImageDraw, ImageFont
@@ -41,7 +41,7 @@ def pair(left, right, labels, out, size):
     print(out, im.size, f'{os.path.getsize(out) / 1e6:.2f} MB')
 
 
-def sheet(paths, labels, out, cell=360):
+def sheet(paths, labels, out, cell=300):
     n = len(paths)
     pad, cap = 10, 30
     im = Image.new('RGB', (n * cell + (n + 1) * pad, cell + 2 * pad + cap), (18, 18, 19))
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         pair(os.path.join(OUT, 'inside_1400.png'), args.ref,
              ['R2: Cycles, the internals through the clear cover', 'Reference (Brock\'s product render)'],
              os.path.join(OUT, 'compare_inside.png'), S)
-    rounds = [('d1_hero.png', 'round 1: first light'), ('d2_hero.png', 'round 2: composition'),
-              ('d6_hero.png', 'round 3: reflection rig'), ('d8_hero.png', 'round 4: framing, gold'),
-              ('c1_front.png', 'detail crop, 1400 px')]
+    rounds = [('d2_hero.png', 'r1: first composition'), ('round1/hero_1400_r1.png', 'r1 final (main: one switch edge-on)'),
+              ('e1_hero.png', 'r2: pair recomposed'), ('e3_hero.png', 'r2: top highlight too wide'),
+              ('e5_hero.png', 'r2: highlights aimed per top'), ('hero_1400.png', 'r2 final')]
     sheet([os.path.join(OUT, p) for p, _ in rounds], [t for _, t in rounds], os.path.join(OUT, 'iterations.png'))

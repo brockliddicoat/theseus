@@ -3,3 +3,5 @@ build/
 # render logs and quick tests
 out/*.log
 out/t_*.png
+# drafts (the rounds are summarised in out/iterations.png)
+out/[cdeijq][0-9]*_*.png

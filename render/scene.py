@@ -32,7 +32,7 @@ ap.add_argument('--exposure', type=float, default=0.0)
 ap.add_argument('--clay', action='store_true')
 ap.add_argument('--look', default='AgX - Punchy')
 ap.add_argument('--light', type=float, default=1.0)
-ap.add_argument('--env', type=float, default=0.2)
+ap.add_argument('--env', type=float, default=0.25)
 ap.add_argument('--border', default='')        # x0,x1,y0,y1 (0-1) for crops while iterating
 ap.add_argument('--pose', default='')          # JSON overrides of the shot's poses while iterating: {"A": [loc, rot], "B": .., "cam": {..}}
 args = ap.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else sys.argv[1:])
@@ -193,16 +193,16 @@ def mat_pc(name, rough=0.012, absorb=0.035, tint=(0.93, 0.965, 1.0), shadow=0.86
 
 def materials(clay=False):
     M = {}
-    gold = (1.0, 0.72, 0.29)          # plated gold, a touch richer than the F0 table value (AgX lifts its highlights to cream)
-    M['gold'] = mat_basic('gold', clay, base=gold, metal=1.0, rough=0.22)
-    M['goldHard'] = mat_basic('goldHard', clay, base=(1.0, 0.79, 0.38), metal=1.0, rough=0.13)
-    M['tin'] = mat_basic('tin', clay, base=(0.80, 0.805, 0.81), metal=1.0, rough=0.21,
-                         bump={'scale': 1600.0, 'strength': 0.05, 'distance': 0.002})
-    M['lcp'] = mat_basic('lcpBlack', clay, base=(0.026, 0.026, 0.028), rough=0.42, spec=0.5,
-                         bump={'scale': 1100.0, 'strength': 0.08, 'distance': 0.002})
-    M['lcpPocket'] = mat_basic('lcpPocket', clay, base=(0.014, 0.014, 0.015), rough=0.62, spec=0.35,
-                               bump={'scale': 1100.0, 'strength': 0.1, 'distance': 0.002})
-    M['pom'] = mat_basic('pomBlack', clay, base=(0.02, 0.02, 0.021), rough=0.3, spec=0.55)
+    gold = (1.0, 0.77, 0.34)                         # plated gold (F0); its F82 edge tint kept golden, so grazing reflections stay gold
+    M['gold'] = mat_basic('gold', clay, base=gold, metal=1.0, rough=0.12, tint=(1.0, 0.86, 0.56))
+    M['goldHard'] = mat_basic('goldHard', clay, base=(1.0, 0.80, 0.40), metal=1.0, rough=0.1, tint=(1.0, 0.88, 0.6))
+    M['tin'] = mat_basic('tin', clay, base=(0.87, 0.875, 0.88), metal=1.0, rough=0.17,
+                         bump={'scale': 1600.0, 'strength': 0.04, 'distance': 0.002})
+    M['lcp'] = mat_basic('lcpBlack', clay, base=(0.028, 0.028, 0.03), rough=0.3, spec=0.62,
+                         bump={'scale': 1100.0, 'strength': 0.035, 'distance': 0.002})
+    M['lcpPocket'] = mat_basic('lcpPocket', clay, base=(0.016, 0.016, 0.017), rough=0.5, spec=0.45,
+                               bump={'scale': 1100.0, 'strength': 0.06, 'distance': 0.002})
+    M['pom'] = mat_basic('pomBlack', clay, base=(0.022, 0.022, 0.023), rough=0.34, spec=0.55)
     if clay:
         M['pc'] = mat_basic('pcClay', True)
         M['pcFrost'] = M['pc']
@@ -329,7 +329,7 @@ def world(sc, centre=(0.5, 0.56), c_in=0.15, c_out=0.028, env=0.2):
     return w
 
 
-def softbox(name, centre, target, size, strength, falloff=0.45, color=(1, 1, 1), camera=False):
+def softbox(name, centre, target, size, strength, falloff=0.45, color=(1, 1, 1), camera=False, reflect_only=False):
     """An emissive card aimed at the target: radiance `strength` at its centre, easing to (1 - falloff) at its rim, so its
     reflections have the soft-edged gradient of a real diffused softbox."""
     bpy.ops.mesh.primitive_plane_add(size=1.0)
@@ -360,7 +360,17 @@ def softbox(name, centre, target, size, strength, falloff=0.45, color=(1, 1, 1),
     nt.links.new(mxx.outputs[0], mr.inputs['Value'])
     em = nt.nodes.new('ShaderNodeEmission')
     em.inputs['Color'].default_value = tuple(color) + (1,)
-    nt.links.new(mr.outputs['Result'], em.inputs['Strength'])
+    if reflect_only:
+        # a reflector card for the covers' outer faces only: dark to any path that has passed through the clear plastic, so the
+        # gold spring under a top (parallel to it) keeps mirroring the studio, not this hot card (a standard art-direction cheat)
+        lp = nt.nodes.new('ShaderNodeLightPath')
+        lt = nt.nodes.new('ShaderNodeMath'); lt.operation = 'LESS_THAN'; lt.inputs[1].default_value = 0.5
+        nt.links.new(lp.outputs['Transmission Depth'], lt.inputs[0])
+        mu = nt.nodes.new('ShaderNodeMath'); mu.operation = 'MULTIPLY'
+        nt.links.new(mr.outputs['Result'], mu.inputs[0]); nt.links.new(lt.outputs[0], mu.inputs[1])
+        nt.links.new(mu.outputs[0], em.inputs['Strength'])
+    else:
+        nt.links.new(mr.outputs['Result'], em.inputs['Strength'])
     # emit from the front face only
     geo = nt.nodes.new('ShaderNodeNewGeometry')
     tr = nt.nodes.new('ShaderNodeBsdfTransparent')
@@ -476,17 +486,40 @@ def pose(name, default):
     return v
 
 
+def top_normal(rot_deg):
+    """The cover top's normal (Blender frame) for a switch placed with this rotation: the body is tilted 20 deg in its wedge."""
+    n = Vector((0.0, -math.sin(TILT), math.cos(TILT)))
+    return (Euler([a * D2R for a in rot_deg], 'XYZ').to_matrix() @ n).normalized()
+
+
+def mirror(v, n):
+    """Where a light must sit (direction from the part) to show in a face of normal n, seen from direction v."""
+    v, n = Vector(v).normalized(), Vector(n).normalized()
+    return (2 * n.dot(v) * n - v).normalized()
+
+
+def nudge(d, toward, deg):
+    """d turned by deg toward the direction `toward` (so a softbox's edge, not its middle, lies on the mirror direction)."""
+    d, t = Vector(d).normalized(), Vector(toward).normalized()
+    ax = d.cross(t)
+    if ax.length < 1e-6:
+        return d
+    from mathutils import Quaternion
+    return (Quaternion(ax.normalized(), deg * D2R) @ d).normalized()
+
+
 def shot_hero(sc, col):
-    # front switch: three-quarter from above, the plunger end toward the lower left, the clear side and the top to camera;
-    # back switch: up and to the left, turned the other way and tipped toward the camera, a little out of focus
-    A = pose('A', [(2.0, 0.0, 0.0), (-6, 0, -50)])
-    B = pose('B', [(-9.5, 8.8, 5.4), (50, 0, 35)])
-    C = pose('cam', {'t': (-3.6, 4.4, 2.7), 'd': (0.25, -1.0, 0.75), 'dist': 84.0, 'focus': (2.6, -2.4, 1.8), 'fstop': 0.07, 'roll': 0})
+    # a pair, close and overlapping, both three-quarter: the front one turned plunger-end left, the one behind turned the
+    # other way and tipped back toward the camera, up and to the left
+    A = pose('A', [(2.5, 0.0, 0.0), (-8, 0, -42)])
+    B = pose('B', [(-4.6, 7.2, 3.6), (24, 0, 38)])
+    C = pose('cam', {'t': (-1.0, 3.6, 2.6), 'd': (0.25, -1.0, 0.75), 'dist': 80.0, 'focus': (2.4, -1.6, 2.6), 'fstop': 0.08, 'roll': 0})
     place_instance(col, 'swA', *A, PIVOT)
     place_instance(col, 'swB', *B, PIVOT)
     tgt = Vector(C['t'])
     cam = camera(sc, tgt, C['d'], C['dist'], lens=100.0, fstop=args.fstop or C['fstop'], focus=C['focus'], roll=C['roll'])
-    lights_hero(tgt)
+    v = Vector(C['d']).normalized()
+    lights_hero(tgt, mirror(v, top_normal(A[1])), mirror(v, top_normal(B[1])))
     return cam
 
 
@@ -506,32 +539,34 @@ def shot_inside(sc, col):
 
 def rig(t, lights):
     """Softboxes placed by direction from the target: (name, direction, distance, (w, h), radiance, falloff)."""
-    for name, d, dist, size, strength, fall in lights:
+    G = pose('gain', {})
+    for name, d, dist, size, strength, fall, *opt in lights:
         d = Vector(d).normalized()
-        softbox(name, tuple(t + d * dist), tuple(t), size, strength * args.light, falloff=fall)
+        softbox(name, tuple(t + d * dist), tuple(t), size, strength * args.light * G.get(name, 1.0), falloff=fall,
+                reflect_only=bool(opt and opt[0]))
 
 
-def lights_hero(t):
+def lights_hero(t, rA, rB):
+    """rA, rB: where the two covers' tops mirror (from the camera). Each top gets a softbox whose edge lies on that direction,
+    so a broad, clean highlight runs over the back half of the top and fades out over the front half, the internals clear."""
     L = pose('lights', {})
+    up = Vector((0, 0, 1))
     rig(t, [
-        # key: a very large, moderate softbox front-left and high (dim enough that the gold mirrors it as gold, not white)
-        ('key', L.get('key', (-0.5, -0.32, 0.8)), 120, (200, 150), 3.2, 0.4),
-        # top: a big softbox high behind and left, where the front cover's top mirrors it: a bright gradient over the back of
-        # that top, fading out toward the plunger so the internals stay in view
-        ('top', L.get('top', (-0.62, 0.62, 0.48)), 130, (110, 70), 7.0, 0.85),
-        # topB: the back switch's top mirrors the front right, high: the same gradient on it
-        ('topB', L.get('topB', (0.72, -0.35, 0.6)), 140, (90, 70), 5.0, 0.85),
+        # key: a very large, moderate softbox front-left and high (the gold mirrors it as rich gold, not white)
+        ('key', L.get('key', (-0.5, -0.32, 0.8)), 120, (200, 150), 4.0, 0.4),
+        # the tops' highlights: hot boxes nudged so their lower edges sit on the mirror directions
+        ('topA', L.get('topA', tuple(nudge(rA, up, 10))), 120, (70, 26), 30.0, 0.8, True),
+        ('topB', L.get('topB', tuple(nudge(rB, up, 15))), 120, (70, 26), 24.0, 0.8, True),
         # floor card: low, front right, the side walls' soft sheen
-        ('floor', L.get('floor', (0.62, -0.3, -0.72)), 120, (140, 90), 1.6, 0.6),
-        # rims: tall strips behind each side: a bright line on every edge facing away
-        ('rimR', L.get('rimR', (0.85, 0.5, 0.3)), 110, (12, 140), 20.0, 0.15),
-        ('rimL', L.get('rimL', (-0.75, 0.62, 0.3)), 110, (12, 140), 16.0, 0.15),
-        # back: a low wide strip behind, shining through the clear covers onto the internals from behind
-        ('back', L.get('back', (0.15, 0.97, 0.15)), 120, (110, 18), 8.0, 0.2),
-        # top strip: a crisp line along the top edges
-        ('strip', L.get('strip', (0.08, 0.45, 0.9)), 125, (120, 10), 9.0, 0.2),
-        # kicker: low front-left strip for the lower edges and the pins
-        ('kick', L.get('kick', (-0.45, -0.7, -0.55)), 120, (12, 90), 5.0, 0.15),
+        ('floor', L.get('floor', (0.62, -0.3, -0.72)), 120, (140, 90), 0.9, 0.6),
+        # strips: a thin white line on every chamfer, from each quarter
+        ('rimR', L.get('rimR', (0.85, 0.5, 0.3)), 110, (10, 150), 48.0, 0.1),
+        ('rimL', L.get('rimL', (-0.75, 0.62, 0.3)), 110, (10, 150), 40.0, 0.1),
+        ('sideR', L.get('sideR', (0.95, -0.25, 0.2)), 115, (10, 150), 26.0, 0.1),
+        ('sideL', L.get('sideL', (-0.92, -0.2, 0.3)), 115, (10, 150), 22.0, 0.1),
+        ('strip', L.get('strip', (0.08, 0.45, 0.9)), 125, (130, 9), 30.0, 0.1),
+        ('back', L.get('back', (0.15, 0.97, 0.15)), 120, (120, 12), 16.0, 0.15),
+        ('kick', L.get('kick', (-0.45, -0.7, -0.55)), 120, (10, 100), 14.0, 0.1),
     ])
 
 
@@ -539,17 +574,19 @@ def lights_inside(t):
     L = pose('lights', {})
     rig(t, [
         # key: large, front and high: the top, the plunger, the front face
-        ('key', L.get('key', (0.15, -0.55, 0.82)), 120, (180, 140), 3.0, 0.4),
+        ('key', L.get('key', (0.15, -0.55, 0.82)), 120, (180, 140), 3.6, 0.4),
         # gold box: beyond the switch, high on the far side: the spring's top face mirrors it (seen through the near wall)
-        ('goldbox', L.get('goldbox', (-0.85, 0.3, 0.45)), 120, (70, 60), 4.5, 0.5),
-        # rims behind both ends and the top: the cover's far edges
-        ('rimL', L.get('rimL', (-0.6, 0.78, 0.2)), 110, (12, 140), 18.0, 0.15),
-        ('rimR', L.get('rimR', (-0.2, -0.95, 0.25)), 110, (12, 140), 10.0, 0.15),
-        ('strip', L.get('strip', (-0.3, 0.25, 0.92)), 125, (120, 10), 8.0, 0.2),
+        ('goldbox', L.get('goldbox', (-0.85, 0.3, 0.45)), 120, (70, 60), 5.0, 0.5),
+        # strips: thin white lines on the chamfers
+        ('rimL', L.get('rimL', (-0.6, 0.78, 0.2)), 110, (10, 150), 40.0, 0.1),
+        ('rimR', L.get('rimR', (-0.2, -0.95, 0.25)), 110, (10, 150), 22.0, 0.1),
+        ('sideF', L.get('sideF', (0.55, -0.8, 0.1)), 115, (10, 150), 18.0, 0.1),
+        ('strip', L.get('strip', (-0.3, 0.25, 0.92)), 125, (130, 9), 28.0, 0.1),
+        ('back', L.get('back', (-0.95, -0.1, 0.25)), 120, (12, 120), 16.0, 0.15),
         # fill: broad, dim, from the camera's side
-        ('fill', L.get('fill', (0.9, 0.1, 0.3)), 150, (120, 140), 0.7, 0.3),
+        ('fill', L.get('fill', (0.9, 0.1, 0.3)), 150, (120, 140), 0.9, 0.3),
         # kicker: low front strip for the wedge's lower edges and the pins
-        ('kick', L.get('kick', (0.35, -0.8, -0.45)), 120, (12, 90), 5.0, 0.15),
+        ('kick', L.get('kick', (0.35, -0.8, -0.45)), 120, (10, 100), 12.0, 0.1),
     ])
 
 

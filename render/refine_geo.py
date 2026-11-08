@@ -5,8 +5,8 @@ end walls carried down past the shoulder (the back one to the base plane, the fr
 turned 90 deg at zs 2.0 (2.3 across x 1.75 along, r 0.45, 0.1 chamfer), the latch windows in both end walls.
 
 Added for the close-up (detail the web model leaves out): a 0.18 mm round on the top edges, real internal ribs (vertical ribs
-on the side walls, two cross ribs under the ceiling, a guide frame round the plunger's flange), a spot-face round the plunger
-hole, the label recess (polished, with a border bead; no marking), the end walls' skirts below the shoulder frosted (EDM finish), four ejector-pin witnesses on the
+on the side walls, two cross ribs under the ceiling, a guide frame round the plunger's flange), a round collar ring round the
+plunger hole, a parting-line step, generic moulded marks (a date wheel, a cavity mark), the label recess (polished, with a border bead; no marking), the end walls' skirts below the shoulder frosted (EDM finish), four ejector-pin witnesses on the
 ceiling and a gate vestige on the back end wall.
 
 Output: render/build/cover.npz with V (switch frame S: x across, y up, z along, plunger toward +z), T (triangles) and
@@ -95,13 +95,31 @@ def build():
     # ---- the plunger hole, turned 90 deg: 2.3 across x 1.75 along, r 0.45, a 0.1 chamfer, and a 0.05 spot-face round it
     hole = rrect(2.3, 1.75, 0.45, 0, -ZP)
     body = body - chamfer_cutter(hole, H - 0.05, TOP + 0.8, 0.1)
-    body = body - slab(rrect(2.95, 2.4, 0.95, 0, -ZP), H - 0.05, H + 0.3)
-    # ---- the label recess, zs -5.5 to 0.7, 0.06 deep, with a bead inside its edge (no marking)
-    rz0, rz1 = -5.5, 0.7
+    # a round moulded collar round the hole: a 0.05 spot-face inside a ring 0.08 proud of the top (r 1.32 to 1.72)
+    body = body - slab(CrossSection.circle(1.32, SEG).translate([0, -ZP]), H - 0.05, H + 0.3)
+    body = body + slab(CrossSection.circle(1.72, SEG).translate([0, -ZP]) - CrossSection.circle(1.32, SEG).translate([0, -ZP]), H - 0.05, H + 0.08)
+    # ---- the label recess, zs -5.5 to 0.12 (shortened for the collar), 0.06 deep, with a bead inside its edge (no marking)
+    rz0, rz1 = -5.5, 0.12
     rec = slab(rrect(3.5, rz1 - rz0, 0.35, 0, -(rz0 + rz1) / 2), H - 0.06, H + 0.3)
     body = body - rec
     bead = rrect(3.2, rz1 - rz0 - 0.3, 0.22, 0, -(rz0 + rz1) / 2) - rrect(3.0, rz1 - rz0 - 0.5, 0.14, 0, -(rz0 + rz1) / 2)
     body = body + slab(bead, H - 0.07, H - 0.025)
+    # ---- generic moulded marks on the recess floor, 0.02 proud: a date wheel (ring, 12 ticks, an arrow) and a cavity mark (3 dots)
+    floor = H - 0.06
+    marks = []
+    wc = (0.75, -(-4.35))                                # (x, Y) of the date wheel: zs -4.35
+    marks.append(CrossSection.circle(0.56, SEG).translate(wc) - CrossSection.circle(0.49, SEG).translate(wc))
+    for k in range(12):
+        a = k * 30.0
+        t = rrect(0.05, 0.13, 0.0, 0, 0.4).rotate(a).translate(wc)
+        marks.append(t)
+    marks.append(CrossSection([[(-0.07, 0.0), (0.07, 0.0), (0.0, 0.3)]]).rotate(-60).translate(wc))
+    for k in range(3):
+        marks.append(CrossSection.circle(0.1, 32).translate([-0.95 + 0.32 * k, 4.35]))
+    for m in marks:
+        body = body + slab(m, floor - 0.01, floor + 0.02)
+    # ---- the parting line: the lower walls stand 0.015 proud below ys 5.55, a fine step all round
+    body = body + slab(rrect(W + 0.03, L + 0.03, RC + 0.015) - rrect(W - 0.3, L - 0.3, RC - 0.15), Y_SH, 5.55)
     # ---- latch windows in both end walls (the base's pedestals show through them)
     for s in (+1, -1):
         cut = rrect(2.6, 1.3, 0.2, 0, 3.1).extrude(1.2).translate([0, 0, -0.6]).rotate([90, 0, 0]).translate([0, -s * (L / 2 - WALL / 2), 0])
@@ -129,6 +147,8 @@ def build_wedge(spec):
     if cs.area() < 0:
         cs = CrossSection([prof[::-1]])
     solid = cs.extrude(W)                                 # (u, v, w) = (Z, Y, across)
+    # the parting line: one half of the mould 0.015 proud of the other, a fine step round the profile at mid-width
+    solid = solid + cs.offset(0.015, JoinType.Miter).extrude(W / 2)
     hb, hf, sl = p['holes']['back'], p['holes']['front'], p['holes']['slot']
     holes = [CrossSection.circle(hb[2], SEG).translate([hb[0], hb[1]]),
              CrossSection.circle(hf[2], SEG).translate([hf[0], hf[1]])]
@@ -151,6 +171,10 @@ def build_wedge(spec):
     cut = cut.as_original()
     pocket_id = cut.original_id()
     solid = solid - cut
+    # ejector-pin witnesses on both side faces: 0.02 mm deep circles between the pockets
+    for (u, v) in ((-0.95, 1.05), (1.75, 3.15), (4.55, 0.55)):
+        for w0, w1 in ((-0.1, 0.02), (W - 0.02, W + 0.1)):
+            solid = solid - CrossSection.circle(0.36, SEG).translate([u, v]).extrude(w1 - w0).translate([0, 0, w0])
     mesh = solid.to_mesh()
     v = np.asarray(mesh.vert_properties, dtype=np.float64)[:, :3]
     t = np.asarray(mesh.tri_verts, dtype=np.int64)
