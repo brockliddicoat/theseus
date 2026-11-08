@@ -27,7 +27,7 @@ S({
       if (sd === 'u') text(nm, x, y - 30, { role: 'label', size: 21, color: C.heroText, align: 'center', alpha: a });
       else text(nm, x + (sd === 'l' ? -30 : 30), y + 8, { role: 'label', size: 21, color: C.heroText, align: sd === 'l' ? 'right' : 'left', alpha: a });
     });
-    /* the ring's marker on the shoulder at the station (G4: the mirrored pinky valley sits at z 24 now, where it was drawn) */
+    /* the ring's marker on the shoulder at the station (G4 drew it clear of the pinky valley at z 24; G5: the valley sits at z 4) */
     const ka = ep(t, 5.4, 5.9), rx = m.X(e.groove.ring.u, 1), ry = m.Y(zg + 2);
     circle(rx, ry, 9, { color: C.ink2, w: 2, alpha: ka }); text('Ring: no valley', rx + 30, ry + 8, { role: 'label', size: 20, color: C.mute, alpha: ka });
     text('Sora V2 as long arcs (yellow), the result (blue), true scale', box[0] + box[2] / 2, box[1] + box[3] + 24, { role: 'label', size: 19, color: C.faint, align: 'center', alpha: ep(t, 1, 1.5) });
@@ -92,14 +92,18 @@ S({
 
 /* ============================== 3. the hand at rest, in zero gravity ============================== */
 S({
-  id: 'gd_rest', ch: 'shape', theme: 'night', title: 'The hand at rest, in zero gravity', settle: 12.5,
-  src: ['gdSts57', 'gdLeeJung', 'gdAnsur', 'gdBuryanov', 'gdModel'],
+  id: 'gd_rest', ch: 'shape', theme: 'night', title: 'The hand at rest, in zero gravity', settle: 14.5,
+  src: ['gdSts57', 'gdLeeJung', 'gdAnsur', 'gdBuryanov', 'gdVeeger', 'gdHaeri', 'gdFreivalds', 'gdBrockThumb', 'gdModel'],
   draw: t => {
     header(t, 'The hand at rest, in zero gravity', { noIdeas: true });
+    const H_ = GD.hand, lifted = H_.grips.lifted, heel = H_.grips.heel, TB = H_.thumbBase;
+    /* (G5, Brock 2026-11-08: "the thumb never goes that far forward") the thumb from its base: its tip on the side, how far it sits
+       ahead of the index knuckle, and where G1's pin to the index's DIP had put it */
+    const thTip = lifted.thumb.tip, thAhead = thTip[0] - lifted.joints.index[0][0], thOld = TB.g1_dip.lifted[0];
     gdCaptions(t, [[0.6, 'In orbit nothing pulls on the hand, so it settles where its tendons and ligaments balance: the wrist straight, each finger gently curled.'],
       [4.6, 'Tilt the wrist back 15° to rest the palm on the hump, and the relaxed fingertips reach past the front of a mouse this long.'],
-      [8.4, 'Lift the palm instead, as in orbit, and the fingertips land on the buttons with the palm 28 mm over the hump: trial ' + laNo(GD_REC) + '\'s grip.']], { maxW: 1500 });
-    const H_ = GD.hand, lifted = H_.grips.lifted, heel = H_.grips.heel;
+      [8.4, 'Lift the palm instead, as in orbit, and the fingertips land on the buttons with the palm 28 mm over the hump: trial ' + laNo(GD_REC) + '\'s grip.'],
+      [11.2, 'The thumb hangs from its own base and reaches the side ' + fmtN(thAhead, 0) + ' mm ahead of the index knuckle, at z ' + fmtN(thTip[0], 0) + ', not up by the fingertips.']], { maxW: 1500 });
     /* the side view: z right (the nose), y up, true scale */
     const box = [LM, 290, 1120, 660], s = Math.min((box[2] - 60) / 210, (box[3] - 110) / 105), ox = box[0] + 30 + 138 * s, oy = box[1] + box[3] - 40;
     const map = { s, X: z => ox + z * s, Y: y => oy - y * s };
@@ -127,6 +131,23 @@ S({
     /* palm lifted: the index and middle tips on the buttons, and the gap under the palm */
     const kT = ep(t, 10.0, 10.4);
     for (const f of ['index', 'middle']) { const q = P[f][3]; if (kT > 0) { circle(map.X(q[0]), map.Y(q[1]), 8, { fill: C.hero, alpha: kT }); circle(map.X(q[0]), map.Y(q[1]), 16, { color: C.hero, w: 2, alpha: 0.4 * kT }); } }
+    /* the thumb, nearest of all (it rides the near side): its base (CMC) in the palm, its relaxed span to the tip on the side, and
+       the spot G1's pin to the index's DIP gave it (red, fading in after) */
+    const kTh = ep(t, 11.4, 12.0) * aB, kOld = ep(t, 12.4, 12.8) * aB;
+    if (kTh > 0) {
+      const cmc = lifted.thumb.cmc, a = [map.X(cmc[0]), map.Y(cmc[1])], b = [map.X(thTip[0]), map.Y(thTip[1])];
+      poly([a, b], { color: C.heroText, w: 2.4, dash: [8, 7], alpha: kTh, p: ep(t, 11.4, 12.2, E.io3) });
+      circle(a[0], a[1], 7, { color: C.heroText, w: 2.4, alpha: kTh });
+      const kB = ep(t, 12.0, 12.4) * aB;
+      circle(b[0], b[1], 9, { fill: C.hero, alpha: kB }); circle(b[0], b[1], 18, { color: C.hero, w: 2, alpha: 0.45 * kB });
+      text('Thumb, from its base', b[0] - 26, b[1] + 50, { role: 'small', size: 20, weight: 650, color: C.heroText, align: 'right', alpha: kB });
+      text('Base: the CMC joint', a[0] - 16, a[1] - 20, { role: 'label', size: 18, color: C.heroText, align: 'right', alpha: kTh });
+    }
+    if (kOld > 0) {
+      const o = [map.X(thOld), map.Y(thTip[1])];
+      circle(o[0], o[1], 9, { color: C.red, w: 2.4, alpha: kOld });
+      text('Was z ' + fmtN(thOld, 0) + ', pinned to the index\'s DIP', box[0] + box[2] - 28, o[1] + 50, { role: 'small', size: 20, weight: 650, color: C.red, align: 'right', alpha: kOld });
+    }
     G.restore();
     if (kF > 0.5) faultTag(t, 6.9, [map.X(P.middle[3][0]), map.Y(P.middle[3][1])], 'Middle tip past the nose', { to: [map.X(P.middle[3][0]) - 50, map.Y(P.middle[3][1]) + 46], side: 'l', alpha: kF });
     if (t > 10.2) {
@@ -145,7 +166,7 @@ S({
     statTile(t, 1.4, [rx, 290, rw, 200], { value: fmtN(orb, 0) + '°', label: 'Finger flexion in orbit, 9 hands', quiet: true, count: false, align: 'left' });
     statTile(t, 2.2, [rx, 520, rw, 200], { value: '0°', label: 'Wrist bend in orbit, all crew but one', quiet: true, count: false, align: 'left' });
     statTile(t, 5.2, [rx, 750, rw, 200], { value: fmtN(H_.ansur.hand, 1), unit: 'mm', label: 'The hand, ANSUR II mean (men)', quiet: true, count: false, align: 'left' });
-    source(t, 'Joint angles: Lee & Jung 2014 (resting, forearm neutral). Orbit: NASA TM-2003-104805, Table 1. Bones: Buryanov & Kotiuk, scaled to ANSUR II. Placement derived; the palm\'s skin 20 mm under the knuckles and the fingers\' thickness are estimates.', { t0: 2.0, maxW: 1760 });
+    source(t, 'Joint angles: Lee & Jung 2014 (resting). Orbit: NASA TM-2003-104805. Bones: Buryanov & Kotiuk, scaled to ANSUR II. Thumb: its base ' + fmtN(TB.cmc_back_mm, 0) + ' mm behind the index knuckle (Veeger 1997), its bones Haeri 2022 and Freivalds, span ' + fmtN(TB.span, 0) + ' mm. Placement derived; the palm\'s skin, the base\'s depth and the pad\'s height are estimates.', { t0: 2.0, maxW: 1760 });
   }
 });
 
@@ -284,7 +305,8 @@ S({
     rr(lx(30), ly - 5, lx(Rf) - lx(30), 10, 5, C.heroSoft, null, 0, kb);
     [30, 50, 100, 200, 500, 1000].forEach(v => text(String(v), lx(v), ly + 36, { role: 'tick', size: 18, color: C.faint, align: 'center', alpha: kb }));
     /* [radius, name, colour, row (-1 above, 1 below), align] */
-    const mk = [[R1, 'First estimate', C.red, -1, 'center'], [Rland, 'Where it lands', C.mute, -1, 'right'], [Rf, 'Felt over the slide', C.hero, -1, 'center'],
+    /* (G5) the thumb's shorter slide brings its felt radius near the landing's: those two labels part, one each way from its dot */
+    const mk = [[R1, 'First estimate', C.red, -1, 'center'], [Rland, 'Where it lands', C.mute, -1, 'right'], [Rf, 'Felt over the slide', C.hero, -1, Rf / Rland < 1.6 ? 'left' : 'center'],
       [Tr.end.R.thumb, 'Trial ' + laNo(LA_K), C.hero, 1, 'right'], [LA.sora.R_waist, 'Sora V2', C.second, 1, 'left']];
     mk.forEach(([v, nm, col, up, al], i) => {
       const k = ep(t, 11.4 + i * 0.2, 11.8 + i * 0.2) * kb, x = lx(v), tx = al === 'right' ? x + 2 : al === 'left' ? x - 2 : x;
@@ -300,7 +322,7 @@ S({
       text(l, nx + 28, y, { role: 'small', size: 21, weight: 600, color: C.mute, alpha: k });
       text(v, nx + nw - 150, y, { role: 'num', size: 23, color: i === 3 ? C.heroText : C.ink, align: 'right', alpha: k }); text(sname, nx + nw - 28, y, { role: 'label', size: 17, color: C.faint, align: 'right', alpha: k, caps: false });
     });
-    source(t, 'First estimate: knuckle stiffness (Shi 2020) against the press (Johnson 2000). Friction: Derler & Gerhardt 2012. Slide: the hand model, palm on the hump to palm lifted, mean hand (' + fmtN(SL.range.thumb[0], 0) + ' to ' + fmtN(SL.range.thumb[1], 0) + ' mm, 5th to 95th). Felt: Gordon & Morison 1982, mean + 2 SD = 3.4°; Pont 1999. Derived.', { t0: 2.0, maxW: 1760 });
+    source(t, 'First estimate: knuckle stiffness (Shi 2020) against the press (Johnson 2000). Friction: Derler & Gerhardt 2012. Slide: the thumb rides with its base from palm on the hump to palm lifted, mean hand (' + fmtN(SL.range.thumb[0], 0) + ' to ' + fmtN(SL.range.thumb[1], 0) + ' mm, 5th to 95th). Felt: Gordon & Morison 1982, mean + 2 SD = 3.4°; Pont 1999. Derived.', { t0: 2.0, maxW: 1760 });
   }
 });
 

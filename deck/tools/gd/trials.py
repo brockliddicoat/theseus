@@ -58,11 +58,27 @@ def place(grip, k=1.0, anchor=None):
         sol = least_squares(lambda v: [np.mean(tipres(v)), palm_gap(v)], [-25.0, 65.0], bounds=([-60.0, 30.0], [0.0, 120.0])); v = sol.x
     P = {f: pts(f, v) for f in ('index', 'middle', 'ring', 'little')}
     tr = tipres(v)
+    # (G5) the thumb from its base, not pinned to the index's DIP (G1's estimate; Brock 2026-11-08: "the thumb never goes that far
+    # forward"): its CMC rides with the hand; in the zero-g grip its relaxed span reaches down to the side's contact band, which
+    # sets how far along the mouse it reaches from its base; it keeps that reach as the hand moves (it rides with its base and
+    # flexes to stay on the side), so as you grip it slides by its base's travel
+    cmc = H.thumb_cmc(P['index'][0], g, k)
+    reach = H.thumb_reach(cmc[1], k) if grip == 'lifted' else lifted_reach(k)
+    thumb = {'cmc': cmc.round(3).tolist(), 'reach': reach, 'span': H.thumb_span(k), 'tip': [float(cmc[0] + reach), H.CONTACT_Y]}
     return {'grip': grip, 'k': k, 'gamma_deg': float(np.degrees(g)), 'zK': float(v[0]), 'yK': float(v[1]), 'palm_gap_mm': palm_gap(v),
             'tip_misfit_mm': {'index': float(tr[0]), 'middle': float(tr[1])},
-            'joints': {f: P[f].round(3).tolist() for f in P},
+            'joints': {f: P[f].round(3).tolist() for f in P}, 'thumb': thumb,
             'z': {'index': float(P['index'][-1][0]), 'middle': float(P['middle'][-1][0]), 'ring': float(P['ring'][-1][0]), 'little': float(P['little'][-1][0]),
-                  'thumb': float(P['index'][2][0])}}   # estimate: the relaxed thumb tip level with the index's middle joint
+                  'thumb': thumb['tip'][0]}}
+_REACH = {}
+def lifted_reach(k):
+    """(G5) the thumb's reach along the mouse from its base, set in the zero-g grip (palm lifted) for a hand k times the mean's,
+    anchored as the trials anchor it (the mean hand's index tip)"""
+    key = round(float(k), 9)
+    if key not in _REACH:
+        anc = None if key == 1.0 else place('lifted', 1.0)['z']['index']
+        _REACH[key] = place('lifted', k, anc)['thumb']['reach']
+    return _REACH[key]
 
 # ------------------------------------------------------------------ the dip and the flare
 def dip_curv(t, a, b, kc):

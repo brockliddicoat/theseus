@@ -3,7 +3,7 @@ thumb 21.0 mm, the pinky 24.9 mm for the ANSUR II mean hand). Neither is the who
 
 1. CLAMP IN PLACE: the hand already in trial 4's grip clamps down, the wrist back 15 deg until the palm's skin meets the hump,
    the index tip held where it is and both tips on the buttons (the fingers' cascade scaled by one factor to fit). The thumb
-   (an estimate: level with the index's middle joint) and the pinky ride back with the hand.
+   (G5: from its base, the CMC, at its zero-g reach along the mouse; G1 pinned it to the index's DIP) and the pinky ride with the hand.
 2. THE THUMB'S OWN CLOSURE: its tip relative to its metacarpal from rest to a grasp. Phalanges 17.1 and 12.1 % of hand length
    (Freivalds, as tabulated in "A Functional Anatomy Based Kinematic Human Hand Model with Simple Size Adaptation", Table II);
    rest MCP 39, IP 10 deg (Lee & Jung 2014); a cylinder grasp MCP 29.9, IP 36.2 deg (Buchholz & Armstrong 1992, Table 1,
@@ -32,7 +32,8 @@ def clamp(k, z_index, gdeg=T.GRIP_HEEL_DEG):
         tr = [pts(f, v)[-1][1] - top_y(xs[f], pts(f, v)[-1][0]) for f in ('index', 'middle')]
         return [pts('index', v)[-1][0] - z_index, np.mean(tr), gap(v)]
     v = least_squares(res, [-20.0, 65.0, 1.3], bounds=([-80, 20, 0.5], [20, 140, 3.0])).x
-    return {'flex': float(v[2]), 'thumb': float(pts('index', v)[2][0]), 'little': float(pts('little', v)[-1][0])}
+    cmc = H.thumb_cmc(pts('index', v)[0], g, k)
+    return {'flex': float(v[2]), 'thumb': float(cmc[0] + T.lifted_reach(k)), 'little': float(pts('little', v)[-1][0])}
 
 def thumb_closure(hand=H.ANSUR['hand']):
     Lp, Ld = 0.171 * hand, 0.121 * hand

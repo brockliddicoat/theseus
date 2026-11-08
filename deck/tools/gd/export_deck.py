@@ -65,8 +65,12 @@ for rec, r in R['trials'].items():
 out['order'] = ['heel_sym', 'heel_fwd', 'lifted_sym', 'lifted_fwd']
 out['recommended'] = 'lifted_sym'   # (G4) the old notch trials' key, kept in step with la['recommended'] below
 # ---- the hand at rest: both grips' finger chains (side view), the Sora's profile; the cascade's angles; orbit data
+# (G5) the grips placed fresh from trials.place (G1's trials.json is a stale run), each with the thumb from its base
+PLC = {g: T.place(g, 1.0) for g in ('heel', 'lifted')}
 out['hand'] = {'cascade': H.CASCADE, 'thumb': H.THUMB, 'orbit_flex': H.ORBIT_FINGER_FLEX, 'bones': {k2: r2(v) for k2, v in H.BONES.items()}, 'chords': H.summary()['chords'],
-               'grips': {g: {kk: R['trials'][g + '_sym']['placement']['p50'][kk] for kk in ('zK', 'yK', 'gamma_deg', 'palm_gap_mm', 'tip_misfit_mm', 'joints', 'z')} for g in ('heel', 'lifted')},
+               'grips': {g: {kk: PLC[g][kk] for kk in ('zK', 'yK', 'gamma_deg', 'palm_gap_mm', 'tip_misfit_mm', 'joints', 'z', 'thumb')} for g in ('heel', 'lifted')},
+               'thumbBase': {'cmc_back_mm': H.THUMB_CMC_BACK * H.ANSUR['hand'], 'cmc_palmar_mm': H.THUMB_CMC_PALMAR, 'bones': list(H.THUMB_BONES), 'span': H.thumb_span(), 'contact_y': H.CONTACT_Y,
+                             'g1_dip': {g: PLC[g]['joints']['index'][2] for g in PLC}},
                'palm_skin': H.PALM_SKIN, 'ansur': H.ANSUR}
 # ---- the strength: J(rho), the drift and strain curves; the numbers
 rho = np.linspace(0, 4, 81)

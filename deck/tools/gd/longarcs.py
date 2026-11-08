@@ -45,6 +45,16 @@ the base pull left trial 3's waist 0.5 % gentler than felt), and a small pull ke
 asks it to move (moving a waist forward dragged the rear corner in by 2.4 mm through the closure). Everything else is G3's.
 Symmetry is a rule, not a term: a traditional mouse is mirror-symmetric, so the result is the lowest loss among the mirrored
 trials (export_deck.py); trials 2 and 4 stay as the test that shows why.
+THE THUMB FROM ITS BASE (G5, after Brock 2026-11-08 07:21: "actually no, the thumb never goes that far forward, that's
+unnatural", on trial 3's waist at z 24). G1 pinned the thumb's tip to the index's DIP joint (an estimate, no source), 49 mm
+ahead of the index knuckle: z 24 at the grip, z 45 with the palm on the hump. Now (hand.py, trials.place) the thumb starts at
+its CMC joint, 0.275 hand lengths behind the index knuckle (Veeger 1997 hand model) and 10 mm under the knuckle line (estimate);
+relaxed (Lee & Jung: MCP 39, IP 10 deg) its bones (metacarpal = the middle finger's proximal phalanx, Haeri 2022; phalanges,
+Freivalds) span 96 mm. In the zero-g grip that span reaches down to the side's contact band (y 15), which sets how far along the
+mouse it reaches from its base (74.7 mm): mean hand z -3.8, 21.5 mm ahead of the index knuckle. As you grip it rides with its
+base (it flexes to stay on the side rather than shooting forward), so it slides by its base's travel: lands at z 12.9 (palm on
+the hump), grips at z -3.8, 16.7 mm (7.2 to 29.5, 5th to 95th). The pinky's slide is G3's, unchanged (its tip is its own
+finger's, not an estimate). Everything else is G4's.
 Run: python3 deck/tools/gd/longarcs.py run [trial keys] -> out/longarcs.json"""
 import json, os, sys
 import numpy as np

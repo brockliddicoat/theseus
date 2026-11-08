@@ -1,5 +1,5 @@
 {
- "about": "Shape by gradient descent (G1, 2026-11-07, phases 1 and 2). Sources, with the exact figures and their use; derived results of deck/tools/gd. Embedded only in dist/gd.html (as GDSRC), never in main.html. G3 (F65.6): the side arcs felt over the whole slide as you grip; the long-arc trials rerun (deck/tools/gd/longarcs.py, out/longarcs.json). G4 (Brock 17:18): each side valley placed on its finger's slide as you grip; the palm-on-hump tips past the grooves scored; symmetry a rule; trial 3 the result.",
+ "about": "Shape by gradient descent (G1, 2026-11-07, phases 1 and 2). Sources, with the exact figures and their use; derived results of deck/tools/gd. Embedded only in dist/gd.html (as GDSRC), never in main.html. G3 (F65.6): the side arcs felt over the whole slide as you grip; the long-arc trials rerun (deck/tools/gd/longarcs.py, out/longarcs.json). G4 (Brock 17:18): each side valley placed on its finger's slide as you grip; the palm-on-hump tips past the grooves scored; symmetry a rule; trial 3 the result. G5 (2026-11-08): the thumb placed from its base (thumb_g5, trials_g5_thumb_from_base).",
  "sources": {
   "sts57": {
    "title": "Mount, Whitmore & Stealey, Evaluation of Neutral Body Posture on Shuttle Mission STS-57 (SPACEHAB-1), NASA/TM-2003-104805 (2003)",
@@ -55,7 +55,18 @@
      39,
      10
     ],
-    "wrist_neutral_deg": "10 (SD 18)"
+    "wrist_neutral_deg": "10 (SD 18)",
+    "thumb_pronation_cmc_mcp_ip": [
+     46,
+     35,
+     8
+    ],
+    "thumb_sd_neutral": [
+     12,
+     12,
+     6
+    ],
+    "angle_definition": "the angle between a segment's long axis and its projection on the frontal plane; the article does not say which segment CMC flexion is measured against"
    },
    "used_for": "The relaxed cascade, the rest pose's finger angles (the forearm-neutral condition, whose wrist is closest to the 0 deg in orbit)."
   },
@@ -290,6 +301,50 @@
     ]
    },
    "use": "G3 cross-check only (the thumb's phalanges for the mean hand: 33.1 and 23.4 mm)"
+  },
+  "veeger1997_via_goislard2018": {
+   "title": "B. Goislard de Monsabert, D. Edwards, D. Shah et al. (A. Kedgley), Importance of Consistent Datasets in Musculoskeletal Modelling: A Study of the Hand and Wrist, Annals of Biomedical Engineering 46 (2018) 71-85, ESM Table S3 (joint positions from Veeger et al. 1997)",
+   "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1007%2Fs10439-017-1936-z/MediaObjects/10439_2017_1936_MOESM1_ESM.pdf",
+   "figures": {
+    "hand_length_mm": 203,
+    "CMC1_fe_xyz": [
+     63.295,
+     -34.518,
+     -7.088
+    ],
+    "CMC1_aa_xyz": [
+     82.077,
+     -28.811,
+     -4.837
+    ],
+    "MCP2_fe_xyz": [
+     71.674,
+     -87.61,
+     -17.488
+    ],
+    "MCP2_aa_xyz": [
+     68.471,
+     -87.639,
+     -14.211
+    ],
+    "frame": "origin the ulnar styloid, y proximal (Wu 2005)",
+    "cmc1_behind_mcp2_mm": 55.9
+   },
+   "use": "G5: the thumb CMC 55.9 mm behind the index MCP along the forearm, 0.275 hand lengths (53.2 mm for the ANSUR II mean hand); one hand model, so an input with a range, not a population figure"
+  },
+  "haeri2022": {
+   "title": "S. M. J. Haeri, B. Ebrahimi, M. Faghih et al., Human thumb consists of three phalanges and lacks metacarpal? A morphometric study on the long bones of the hand, Surgical and Radiologic Anatomy 44 (2022) 1101-1109",
+   "url": "https://doi.org/10.1007/s00276-022-02986-9",
+   "figures": {
+    "sample": "AP X-rays of 80 right hands, ages 18 to 65",
+    "finding": "the thumb metacarpal length differs significantly from every long bone of the hand except the middle finger proximal phalanx (P = 1)"
+   },
+   "use": "G5: the thumb metacarpal taken as long as the middle finger proximal phalanx (Buryanov, scaled: 46.9 mm); read from the abstract"
+  },
+  "brock_2026_11_08_thumb": {
+   "title": "Brock Liddicoat (designer's observation), 2026-11-08 07:21, asked whether to keep trial 3's waist at its rescored spot (z 23.7) or put it back where he liked it (z 14)",
+   "quote": "actually no, the thumb never goes that far forward, that's unnatural",
+   "use": "G5: a constraint: the thumb sits well behind z 24; G1's pin of the thumb tip to the index's DIP replaced by the thumb from its base"
   }
  },
  "derived": {
@@ -1020,6 +1075,314 @@
     "width_mm": 63.074650833005265
    },
    "result": "lifted_sym (trial 3): the lowest loss among the mirrored trials"
+  },
+  "thumb_g5": {
+   "decision": "Brock 2026-11-08 07:21: \"actually no, the thumb never goes that far forward, that's unnatural\" (on trial 3's waist at z 23.7, where the G4 slides overlapped; he had liked z 14)",
+   "previous": "G1 (trials.place): the thumb tip level with the index's DIP joint (the code took joint [2], the DIP; the comment and G3 called it the middle joint / PIP); an estimate with no source. Mean hand: z 23.8 at the grip, 44.8 with the palm on the hump, 49 mm ahead of the index knuckle",
+   "rule": "the thumb from its base: its CMC rides with the hand, 0.275 hand lengths behind the index MCP along the metacarpal line (Veeger 1997 via Goislard de Monsabert 2018) and 10 mm under it (estimate: half way to the palm skin); relaxed (Lee & Jung: MCP 39, IP 10 deg) its bones span 96.0 mm (metacarpal 46.9 = the middle proximal phalanx, Haeri 2022 + Buryanov; phalanges 33.1 and 23.4, Freivalds); in the zero-g grip the span reaches down to the side's contact band (y 15, the middle of G1's 12 to 18) and that sets its reach along the mouse, 74.7 mm; it keeps that reach as the hand moves (it rides with its base and flexes to stay on the side, rather than shooting forward)",
+   "label": "derived (sourced inputs; the CMC depth and the contact height are estimates)",
+   "mean_hand": {
+    "grip_z": -3.7973568379229476,
+    "landing_z": 12.894090589673787,
+    "slide_mm": 16.691447427596735,
+    "ahead_of_index_mcp_mm": 21.494643162077054,
+    "cmc_lifted": [
+     -78.521,
+     75.276
+    ],
+    "cmc_heel": [
+     -61.83,
+     37.51
+    ]
+   },
+   "per_hand_p5_p50_p95": {
+    "p5": {
+     "grip_z": -1.6156138387502352,
+     "landing_z": 5.573039614645822,
+     "slide": 7.188653453396057,
+     "ahead_of_index_mcp": 19.014386161249764
+    },
+    "p50": {
+     "grip_z": -3.7973568379229476,
+     "landing_z": 12.894090589673787,
+     "slide": 16.691447427596735,
+     "ahead_of_index_mcp": 21.494643162077054
+    },
+    "p95": {
+     "grip_z": -6.048154911806847,
+     "landing_z": 23.45633575712381,
+     "slide": 29.504490668930657,
+     "ahead_of_index_mcp": 24.020845088193152
+    }
+   },
+   "sensitivity_grip_z_mean_hand": {
+    "cmc_palmar_0_contact_y_12": -16.5,
+    "cmc_palmar_0_contact_y_15": -13.1,
+    "cmc_palmar_0_contact_y_18": -10.0,
+    "cmc_palmar_10_contact_y_12": -6.3,
+    "cmc_palmar_10_contact_y_15": -3.8,
+    "cmc_palmar_10_contact_y_18": -1.5,
+    "cmc_palmar_20_contact_y_12": 1.3,
+    "cmc_palmar_20_contact_y_15": 3.3,
+    "cmc_palmar_20_contact_y_18": 5.0
+   },
+   "felt_R_max_mm": {
+    "thumb": 278.1907904599456,
+    "pinky": 415.3608108860909
+   },
+   "pinky": "unchanged (G3): its tip is its own finger's chain, not an estimate; z 28.8 -> 3.9, 24.9 mm (14.7 to 38.4)",
+   "paths_mm": {
+    "p5": {
+     "thumb": [
+      -1.6156138387502352,
+      5.573039614645822
+     ],
+     "pinky": [
+      6.070551593867258,
+      20.795395512476244
+     ]
+    },
+    "p50": {
+     "thumb": [
+      -3.7973568379229476,
+      12.894090589673787
+     ],
+     "pinky": [
+      3.866879058319107,
+      28.788527711484562
+     ]
+    },
+    "p95": {
+     "thumb": [
+      -6.048154911806847,
+      23.45633575712381
+     ],
+     "pinky": [
+      1.6091286691378883,
+      40.05486226289746
+     ]
+    }
+   },
+   "overlap_mm": {
+    "p5": -0.49751197922143575,
+    "p50": 9.02721153135468,
+    "p95": 21.84720708798592
+   },
+   "overlap_hand_mm": 178.28215284030338,
+   "cross_checks": {
+    "clamp_in_place_thumb_mm": "p5 14.1, p50 17.5, p95 21.1 (slide_checks.py with the new rule: the base moves back when the palm clamps down with the tips held)",
+    "thumb_own_closure_mm": 3.0,
+    "sora_v2_waist_z": 10.1,
+    "designer": "Brock: the thumb sits well behind z 24 (G5 grip z -3.8, landing z 12.9: both behind it)"
+   },
+   "no_direct_source": "searched for pressure-mapping / contact-location studies of the thumb on a computer mouse and claw-grip kinematics: no peer-reviewed figure found (only vendor blogs); the placement is derived from hand anthropometry"
+  },
+  "trials_g5_thumb_from_base": {
+   "heel_sym": {
+    "loss": 51.611176770697284,
+    "terms": {
+     "level": 4.502418268742454e-06,
+     "reach": 51.57320788608728,
+     "felt": 0.0,
+     "gentle": 0.004392563481188036,
+     "cover": 0.0,
+     "one_min": 0,
+     "normal": 0.0,
+     "closure": 4.596900754001814e-22,
+     "base": 0.01650467655003911,
+     "stay": 0.017066546820160004
+    },
+    "symmetric": true,
+    "thumb": {
+     "R": 254.35219793463838,
+     "depth": 0.80659,
+     "length": 40.48038,
+     "z_bottom": 12.339637857750587,
+     "path": [
+      -3.7973568379229476,
+      12.894090589673787
+     ],
+     "n_minima": 1,
+     "below_hump": 2.0094356140052874
+    },
+    "pinky": {
+     "R": 254.35219793463838,
+     "depth": 0.80659,
+     "length": 40.48038,
+     "z_bottom": 12.339637857750587,
+     "path": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "n_minima": 1,
+     "below_hump": 2.0094356140052874
+    },
+    "groove": {
+     "R": 223.7147667333513,
+     "u_bottom": 15.997878109741588,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "moves_mm": 0.6090175104998006,
+    "width_mm": 62.602261779029675
+   },
+   "heel_fwd": {
+    "loss": 51.59297290747845,
+    "terms": {
+     "level": 4.45502372422669e-06,
+     "reach": 51.57320788608728,
+     "felt": 0.0,
+     "gentle": 8.298632595433679e-07,
+     "cover": 0.0,
+     "one_min": 0,
+     "normal": 0.0,
+     "closure": 1.8880554902219036e-16,
+     "base": 0.008966960417321389,
+     "stay": 0.010792822804855474
+    },
+    "symmetric": false,
+    "thumb": {
+     "R": 278.1236053991677,
+     "depth": 0.7779,
+     "length": 41.57401,
+     "z_bottom": 10.384093848401756,
+     "path": [
+      -3.7973568379229476,
+      12.894090589673787
+     ],
+     "n_minima": 1,
+     "below_hump": 1.827772562708386
+    },
+    "pinky": {
+     "R": 414.96372026547715,
+     "depth": 0.59685,
+     "length": 44.49656,
+     "z_bottom": 27.32799045948051,
+     "path": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "n_minima": 1,
+     "below_hump": 1.7855409658890942
+    },
+    "groove": {
+     "R": 223.71428035189345,
+     "u_bottom": 15.997889307288062,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "moves_mm": 0.7332519889173916,
+    "width_mm": 62.79612659568555
+   },
+   "lifted_sym": {
+    "loss": 0.04167513776778335,
+    "terms": {
+     "level": 3.931064303771421e-05,
+     "reach": 0.0,
+     "felt": 0.0,
+     "gentle": 5.932867917296921e-07,
+     "cover": 0.0,
+     "one_min": 0,
+     "normal": 0.0,
+     "closure": 1.7272071820151393e-18,
+     "base": 0.030679400792606008,
+     "stay": 0.010955407588096147
+    },
+    "symmetric": true,
+    "thumb": {
+     "R": 278.15429770368115,
+     "depth": 0.77517,
+     "length": 41.50339,
+     "z_bottom": 3.855079359209558,
+     "path": [
+      -3.7973568379229476,
+      12.894090589673787
+     ],
+     "n_minima": 1,
+     "below_hump": 1.7148732110097562
+    },
+    "pinky": {
+     "R": 278.15429770368115,
+     "depth": 0.77517,
+     "length": 41.50339,
+     "z_bottom": 3.855079359209558,
+     "path": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "n_minima": 1,
+     "below_hump": 1.7148732110097562
+    },
+    "groove": {
+     "R": 223.7147667333513,
+     "u_bottom": 15.997878109741588,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "moves_mm": 0.5153932598146386,
+    "width_mm": 62.7905468711461
+   },
+   "lifted_fwd": {
+    "loss": 0.03629720707217405,
+    "terms": {
+     "level": 4.878198359807436e-06,
+     "reach": 0.0,
+     "felt": 1.192475269121763e-08,
+     "gentle": 3.4741232637229023e-07,
+     "cover": 0.0,
+     "one_min": 0,
+     "normal": 0.0,
+     "closure": 4.80818946701341e-15,
+     "base": 0.012634378364403119,
+     "stay": 0.023656171114053038
+    },
+    "symmetric": false,
+    "thumb": {
+     "R": 278.2059805782601,
+     "depth": 0.74508,
+     "length": 40.69478,
+     "z_bottom": -3.535158498356429,
+     "path": [
+      -3.7973568379229476,
+      12.894090589673787
+     ],
+     "n_minima": 1,
+     "below_hump": 1.5829858017224403
+    },
+    "pinky": {
+     "R": 415.2165904259169,
+     "depth": 0.60449,
+     "length": 44.79389,
+     "z_bottom": 4.857677403009239,
+     "path": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "n_minima": 1,
+     "below_hump": 1.4204822771374523
+    },
+    "groove": {
+     "R": 223.80507064295236,
+     "u_bottom": 15.997791335616304,
+     "n_minima": 1
+    },
+    "ring": {
+     "k_deg_per_mm": 11.729765183017912,
+     "n_minima": 0
+    },
+    "moves_mm": 0.981630368893589,
+    "width_mm": 62.80220427573042
+   },
+   "result": "lifted_sym (trial 3): still the lowest loss among the mirrored trials; its mirrored waist bottom z 3.9 (the rear end of the overlap of the two slides, z 3.9 to 12.9)"
   }
  }
 }
