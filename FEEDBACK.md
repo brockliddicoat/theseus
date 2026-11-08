@@ -1752,4 +1752,10 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   the ttc switch has" / "but i don’t like the texts you added on top". The clear cover clips onto the base the way TTC's micro
   switch covers do, with angled snap clips in the side walls (researched, then modelled as a real snap-fit with fillets). The
   ">PC<" and date-wheel marks come off the top, which stays clean apart from the plunger's collar and plain moulding.
+- **F66.6 (state 2026-11-08 08:30)** Round 4 done (R4, 75accd0 on r1-switch-render): the satin black base, round lips on every
+  hole, a rounded parting seam, TTC-style side clips (inferred from TTC Gold product photos; the hook itself not visible), the
+  text off the top, the gold reading gold (feedback/attachments/F66/0830-*.png). R4 found R3's fillets had never been built:
+  Blender's bevel clamp shrank them to almost nothing, and a naming bug kept the back switch from every light link. Left: the clip
+  reads modestly in the hero (clear over black); the back switch's base reads mid-grey; the hero's composition still differs from
+  the reference.
 
