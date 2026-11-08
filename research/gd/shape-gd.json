@@ -1,5 +1,5 @@
 {
- "about": "Shape by gradient descent (G1, 2026-11-07, phases 1 and 2). Sources, with the exact figures and their use; derived results of deck/tools/gd. Embedded only in dist/gd.html (as GDSRC), never in main.html. G3 (F65.6): the side arcs felt over the whole slide as you grip; the long-arc trials rerun (deck/tools/gd/longarcs.py, out/longarcs.json). G4 (Brock 17:18): each side valley placed on its finger's slide as you grip; the palm-on-hump tips past the grooves scored; symmetry a rule; trial 3 the result. G5 (2026-11-08): the thumb placed from its base (thumb_g5, trials_g5_thumb_from_base).",
+ "about": "Shape by gradient descent (G1, 2026-11-07, phases 1 and 2). Sources, with the exact figures and their use; derived results of deck/tools/gd. Embedded only in dist/gd.html (as GDSRC), never in main.html. G3 (F65.6): the side arcs felt over the whole slide as you grip; the long-arc trials rerun (deck/tools/gd/longarcs.py, out/longarcs.json). G4 (Brock 17:18): each side valley placed on its finger's slide as you grip; the palm-on-hump tips past the grooves scored; symmetry a rule; trial 3 the result. G5 (2026-11-08): the thumb placed from its base (thumb_g5, trials_g5_thumb_from_base). G6 (2026-11-08): the hand drawn as a realistic render posed by the model (hand_render_g6), and every joint's resting angle on its own slide with its source (joints_at_rest_g6).",
  "sources": {
   "sts57": {
    "title": "Mount, Whitmore & Stealey, Evaluation of Neutral Body Posture on Shuttle Mission STS-57 (SPACEHAB-1), NASA/TM-2003-104805 (2003)",
@@ -21,9 +21,14 @@
     "wrist_extension_deg": "0 for every crew member (one 3)",
     "wrist_ulnar_deg": "0 (two hands 9 and 3)",
     "msis_nbp": "MSIS NBP lists wrist 0 / 0, elbow 90, shoulder flexion 36",
-    "quote": "in a forward position with the fingers curled at the knuckles (crew 2, p. 8)"
+    "quote": "in a forward position with the fingers curled at the knuckles (crew 2, p. 8)",
+    "thumb": "none reported",
+    "finger_spread": "none reported",
+    "finger_flexion_joint": "not stated (one value per hand; the text: \"with the fingers curled at the knuckles\", crew 2)",
+    "msis_finger_flexion_deg": 0
    },
-   "used_for": "The rest pose in orbit: wrist straight; the fingers' flexion (mean 41 deg, 21 to 60) checked against the cascade's knuckle-to-tip angle (45 to 54 deg). Skylab is the MSIS's original source (cited by the TM); the TM itself says no one crew member showed the MSIS posture."
+   "used_for": "The rest pose in orbit: wrist straight; the fingers' flexion (mean 41 deg, 21 to 60) checked against the cascade's knuckle-to-tip angle (45 to 54 deg). Skylab is the MSIS's original source (cited by the TM); the TM itself says no one crew member showed the MSIS posture.",
+   "checked_g6": "2026-11-08: Table 1 read again for per-joint data: wrist extension and ulnar bend, finger flexion (one row), forearm pronation and supination; no MCP / PIP / DIP split, no thumb, no spread"
   },
   "leejung": {
    "title": "K.-S. Lee & M.-C. Jung, Flexion and Extension Angles of Resting Fingers and Wrist, Int. J. Occupational Safety and Ergonomics 20(1) (2014) 91-101, doi:10.1080/10803548.2014.11077038",
@@ -66,7 +71,9 @@
      12,
      6
     ],
-    "angle_definition": "the angle between a segment's long axis and its projection on the frontal plane; the article does not say which segment CMC flexion is measured against"
+    "angle_definition": "the angle between a segment's long axis and its projection on the frontal plane; the article does not say which segment CMC flexion is measured against",
+    "n_and_method": "40 participants, Vicon motion capture, on the ground",
+    "spread": "not measured (flexion and extension only)"
    },
    "used_for": "The relaxed cascade, the rest pose's finger angles (the forearm-neutral condition, whose wrist is closest to the 0 deg in orbit)."
   },
@@ -345,6 +352,14 @@
    "title": "Brock Liddicoat (designer's observation), 2026-11-08 07:21, asked whether to keep trial 3's waist at its rescored spot (z 23.7) or put it back where he liked it (z 14)",
    "quote": "actually no, the thumb never goes that far forward, that's unnatural",
    "use": "G5: a constraint: the thumb sits well behind z 24; G1's pin of the thumb tip to the index's DIP replaced by the thumb from its base"
+  },
+  "iss_body_measures": {
+   "title": "S. Rajulu, K. Young and H. Kim, Quantification of In-flight Physical Changes: Anthropometry and Neutral Body Posture (Body Measures), NASA (ISS), presentation, no year printed",
+   "url": "https://ntrs.nasa.gov/api/citations/20190001031/downloads/20190001031.pdf",
+   "figures": {
+    "hand": "qualitative only: in the relaxed phase hands at or below the NASA-STD-3000 posture (crouch), higher (stretch); no wrist, finger or thumb joint angles; analysis in progress"
+   },
+   "used_for": "Checked for per-joint hand angles in orbit (G6): none. The orbit data stay STS-57's."
   }
  },
  "derived": {
@@ -1383,6 +1398,73 @@
     "width_mm": 62.80220427573042
    },
    "result": "lifted_sym (trial 3): still the lowest loss among the mirrored trials; its mirrored waist bottom z 3.9 (the rear end of the overlap of the two slides, z 3.9 to 12.9)"
+  },
+  "joints_at_rest_g6": {
+   "rule": "every joint of the rest pose with its source: orbit where NASA measured it (STS-57: wrist bend 0, wrist side 0, each finger 41 deg mean as one number, its joint not stated), per joint from Lee & Jung on the ground (forearm neutral); the thumb CMC's reference segment not stated in the article; the spread between fingers unsourced (an estimate in the render)",
+   "table_deg": {
+    "wrist": {
+     "bend": 0,
+     "side": 0,
+     "source": "STS-57 (orbit); MSIS NBP also 0 / 0"
+    },
+    "thumb": {
+     "cmc": 45,
+     "mcp": 39,
+     "ip": 10,
+     "source": "Lee & Jung (ground)"
+    },
+    "index": {
+     "mcp": 29,
+     "pip": 29,
+     "dip": 10,
+     "source": "Lee & Jung (ground)"
+    },
+    "middle": {
+     "mcp": 32,
+     "pip": 30,
+     "dip": 11,
+     "source": "Lee & Jung (ground)"
+    },
+    "ring": {
+     "mcp": 25,
+     "pip": 34,
+     "dip": 9,
+     "source": "Lee & Jung (ground)"
+    },
+    "little": {
+     "mcp": 32,
+     "pip": 37,
+     "dip": 13,
+     "source": "Lee & Jung (ground)"
+    },
+    "whole_finger_orbit": {
+     "mean": 41.3,
+     "range": [
+      21,
+      60
+     ],
+     "hands": 9,
+     "source": "STS-57"
+    },
+    "cascade_knuckle_to_tip": {
+     "range": [
+      44.1,
+      53.9
+     ],
+     "source": "derived (hand.py chords)"
+    },
+    "spread": {
+     "value": null,
+     "source": "none; the render fans the fingers by an estimate (hand3d.X_MCP, X_TIP)"
+    }
+   }
+  },
+  "hand_render_g6": {
+   "what": "the hand on gd_rest and gd_joints: the ANSUR II mean hand sculpted as signed distances (tapered fingers, knuckles, pads, nails, creases, thenar and hypothenar eminences, the first web), posed joint by joint from hand.py (each finger's (z, y) joints exactly the model's chain; x fanned by an estimate), meshed by marching cubes (0.55 mm), rendered in Cycles (grey clay, soft studio light, orthographic side view from the thumb's side, mirrored so the nose is on the right, 7 px/mm); deck/tools/gd/hand3d.py, render_hand.py, pack_hand.py",
+   "frames": "13 relaxing (k 0 to 1), palm on the hump, palm lifted (trial 3), and two between each grip, each as a near layer (index, thumb) and a far layer (the whole hand) that the slide clips by the Sora's profile, so the far fingers pass behind the mouse",
+   "thumb_in_the_grips": "its pad on the side's contact band at G5's z (y 15; x the result's waist, 29.7 mm), facing the wall, solved from its CMC (hand3d.thumb_to): the flexion eases to fit (palm lifted: MCP about 20 deg, IP about 0; palm on the hump: about 56 and 20). The model (G5) stays: its span and reach are unchanged",
+   "estimates": "finger breadths (index 22.6 at the base to 13.2 at the tip), depth 0.9 of breadth, the knuckles' x (index 28, middle 8, ring -11.5, little -29.5 mm; 88 mm across the skin), the tips' x (index 16 and middle -16 as trials.place; ring -31, little -39), the CMC's x (29 mm), the pad's depth (7.4 mm), the free thumb's direction (its metacarpal 45 deg off the index's, reading Lee & Jung's CMC 45 against the index metacarpal; split evenly palmar and radial, 32.8 deg each)",
+   "model_contact_note": "the model lands each finger's bone end on the button (the index 4.9 mm above, the middle 4.9 below, their mean on it); with skin, the index pad rests about on the button and the middle pad lies behind the crown in side view, where the mouse hides it"
   }
  }
 }

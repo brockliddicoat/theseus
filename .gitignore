@@ -28,3 +28,6 @@ deck/dist/main-*.html
 # third-party reference photos Brock re-sent on 2026-11-06 (local only; INDEX.md is committed)
 refs/photos/brock-2026-11-06/*
 !refs/photos/brock-2026-11-06/INDEX.md
+
+# the hand renders (deck/tools/gd/render_hand.py): the full renders and masks are scratch; their webp layers are kept
+deck/tools/gd/out/hand/*.png

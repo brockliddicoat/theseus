@@ -17,8 +17,8 @@ const S = o => (DECK.slides.push(o), o);
 function chapterIdeaCount() { return 0; }
 
 Object.assign(SRC, {
-  gdSts57: { t: 'F. E. Mount, M. Whitmore and S. L. Stealey, "Evaluation of Neutral Body Posture on Shuttle Mission STS-57 (SPACEHAB-1)", NASA/TM-2003-104805 (2003), Table 1: wrist extension 0 deg in every crew member but one (3 deg); finger flexion 42, 60, 30, 21, 57, 55, 47, 25 and 35 deg (9 hands, mean 41); "in a forward position with the fingers curled at the knuckles"', u: 'https://ntrs.nasa.gov/api/citations/20040200967/downloads/20040200967.pdf' },
-  gdLeeJung: { t: 'K.-S. Lee and M.-C. Jung, "Flexion and Extension Angles of Resting Fingers and Wrist", JOSE 20(1) (2014) 91-101: resting fingers, forearm neutral (MCP / PIP / DIP): index 29 / 29 / 10, middle 32 / 30 / 11, ring 25 / 34 / 9, little 32 / 37 / 13 deg; thumb CMC 45, MCP 39, IP 10', u: 'https://yadda.icm.edu.pl/baztech/element/bwmeta1.element.baztech-785f4b91-56ad-477b-8b98-36d5dc7e344c/c/Lee.pdf' },
+  gdSts57: { t: 'F. E. Mount, M. Whitmore and S. L. Stealey, "Evaluation of Neutral Body Posture on Shuttle Mission STS-57 (SPACEHAB-1)", NASA/TM-2003-104805 (2003), Table 1: wrist extension 0 deg in every crew member but one (3 deg); wrist ulnar bend 0 deg (two hands 9 and 3 deg); finger flexion 42, 60, 30, 21, 57, 55, 47, 25 and 35 deg (9 hands, mean 41; which joint is not stated); no thumb or finger-spread data; "in a forward position with the fingers curled at the knuckles". The ISS Body Measures study (Rajulu, Young and Kim) reports no hand joint angles', u: 'https://ntrs.nasa.gov/api/citations/20040200967/downloads/20040200967.pdf' },
+  gdLeeJung: { t: 'K.-S. Lee and M.-C. Jung, "Flexion and Extension Angles of Resting Fingers and Wrist", JOSE 20(1) (2014) 91-101: resting fingers, forearm neutral (MCP / PIP / DIP): index 29 / 29 / 10, middle 32 / 30 / 11, ring 25 / 34 / 9, little 32 / 37 / 13 deg; thumb CMC 45, MCP 39, IP 10 (40 participants, Vicon; on the ground; the article does not say which segment the CMC angle is measured against); no spread', u: 'https://yadda.icm.edu.pl/baztech/element/bwmeta1.element.baztech-785f4b91-56ad-477b-8b98-36d5dc7e344c/c/Lee.pdf' },
   gdAnsur: { t: 'ANSUR II public data, men (n = 4,082): hand length mean 193.3 mm (SD 9.9; 5th percentile 177, 95th 210), palm length 116.5 mm, hand breadth 88.3 mm (SD 4.4)', u: 'https://tools.openlab.psu.edu/publicData/ANSUR_II_MALE_Public.csv' },
   gdBuryanov: { t: 'Buryanov and Kotiuk, "Proportions of Hand Segments" (Int. J. Morphol. 2010), as tabulated in "Design, Implementation and Control of an Underactuated Hand Exoskeleton" (arXiv 2003.11598): phalanges, index 39.78 / 22.38 / 15.82 mm, middle 44.63 / 26.33 / 17.40, ring 41.37 / 25.65 / 17.30, little 32.74 / 18.11 / 15.96; scaled here by 1.052 to the ANSUR II mean hand', u: 'https://arxiv.org/pdf/2003.11598' },
   gdShi: { t: 'X. Q. Shi, H. L. Heung, Z. Q. Tang, K. Y. Tong and Z. Li, "Verification of Finger Joint Stiffness Estimation Method With Soft Robotic Actuator", Frontiers in Bioengineering and Biotechnology 8 (2020) 592637: passive stiffness of four healthy index MCP joints 0.0377, 0.0328, 0.0466 and 0.0393 N m/rad (mean 0.039); literature 0.025 to 0.058 (Esteki and Mansour 1996), 0.016 to 0.21 (Kuo and Deshpande 2012)', u: 'https://www.frontiersin.org/articles/10.3389/fbioe.2020.592637/full' },
@@ -35,6 +35,7 @@ Object.assign(SRC, {
   gdHaeri: { t: 'S. M. J. Haeri et al., "Human thumb consists of three phalanges and lacks metacarpal? A morphometric study on the long bones of the hand", Surgical and Radiologic Anatomy 44 (2022) 1101-1109: X-rays of 80 right hands; the thumb metacarpal\'s length differs from no long bone but the middle finger\'s proximal phalanx (P = 1). Used: the thumb metacarpal as long as that phalanx (Buryanov, scaled: 46.9 mm)', u: 'https://doi.org/10.1007/s00276-022-02986-9' },
   gdFreivalds: { t: 'Freivalds, phalanx lengths as a percent of hand length (32 subjects), as tabulated in "A Functional Anatomy Based Kinematic Human Hand Model with Simple Size Adaptation", Table II: thumb proximal 17.1 %, distal 12.1 % (33.1 and 23.4 mm for the ANSUR II mean hand)', u: 'https://core.ac.uk/download/11151516.pdf' },
   gdBrockThumb: { t: 'Brock Liddicoat (designer\'s observation), 2026-11-08, on trial 3\'s waist moved to z 24: "actually no, the thumb never goes that far forward, that\'s unnatural". The study had put the thumb\'s tip level with the index\'s DIP joint (an estimate, no source); it now starts from the thumb\'s own base', u: '', n: 'His observation: a constraint, no tag.' },
+  gdHand: { t: 'This study (G6): the hand drawn as a grey clay render, the ANSUR II mean hand (88.3 mm across the knuckles) sculpted as signed distances and posed joint by joint from the model (Lee & Jung\'s angles on Buryanov & Kotiuk\'s bones; the thumb from its base, G5), Cycles, orthographic, true scale (deck/tools/gd/hand3d.py, render_hand.py). Finger widths, pads, nails, creases and the spread between fingers are estimates', u: '', n: 'derived' },
   gdModel: { t: 'This study: the Sora V2 base fitted with arcs from 3d/shell/shell-sora.glb (plan 8 arcs, RMS 0.12 mm; section 7 arcs, 0.06 to 0.12 mm), regrouped into long arcs (nose, front, waist, hump, tail; crown, groove, shoulder); fingertip targets from the hand model, the thumb from its base (G5); the felt strength, the loss and the descent in deck/tools/gd/longarcs.py (Adam on central differences)', u: '', n: 'derived' }
 });
 
@@ -193,10 +194,11 @@ function gdTip(x, y, r, a = 1, o = {}) {
   G.beginPath(); G.arc(x, y, r, 0, TAU); G.fillStyle = g; G.fill();
   G.strokeStyle = o.edge || (TH ? 'rgba(28,28,28,0.55)' : 'rgba(242,242,242,0.45)'); G.lineWidth = 1.5; G.stroke(); G.restore();
 }
-/* ---------- the hand in side view: the cascade as true kinematics, capsule phalanges, grey, no nails ----------
+/* ---------- the hand in side view: the joints as true kinematics ----------
    A finger is its three bones (GD.hand.bones: Buryanov & Kotiuk, scaled to the ANSUR II mean hand) flexed by its resting
    angles (GD.hand.cascade: Lee & Jung 2014), from its knuckle; k scales the angles (0: straight, 1: at rest), g tilts the
-   metacarpals (rad, + = wrist back). The knuckles sit behind the middle's by the model's estimate (read from the data). */
+   metacarpals (rad, + = wrist back). The knuckles sit behind the middle's by the model's estimate (read from the data).
+   gdHandPose gives the joints (for dots, arcs and labels); the hand itself is drawn from its renders (gdHandDraw). */
 const GD_FINGERS = ['little', 'ring', 'middle', 'index'];        /* far to near, seen from the thumb's side */
 const GD_KB = (() => { const L = GD.hand.grips.lifted, o = {}; for (const f of GD_FINGERS) o[f] = L.zK - L.joints[f][0][0]; return o; })();
 function gdHandPose(zK, yK, g, k = 1) {
@@ -208,43 +210,71 @@ function gdHandPose(zK, yK, g, k = 1) {
   }
   return out;
 }
-/** a capsule from a to b (screen px) of radius r; the end at b is flush with b when flush is set */
-function gdCapsule(a, b, r, fill, edge, flush) {
-  const ang = Math.atan2(b[1] - a[1], b[0] - a[0]), L = Math.hypot(b[0] - a[0], b[1] - a[1]), e = flush ? Math.max(0, L - r) / (L || 1) : 1;
-  const bx = a[0] + (b[0] - a[0]) * e, by = a[1] + (b[1] - a[1]) * e;
-  G.beginPath(); G.arc(a[0], a[1], r, ang + Math.PI / 2, ang + 3 * Math.PI / 2); G.arc(bx, by, r, ang - Math.PI / 2, ang + Math.PI / 2); G.closePath();
-  G.fillStyle = fill; G.fill(); G.strokeStyle = edge; G.lineWidth = 1.6; G.stroke();
+/** the palm's skin line under the knuckles (the model's GD.hand.palm_skin, an estimate) at z, for a hand at (zK, yK, g) */
+function gdSkinAt(zK, yK, g) { const ca = Math.cos(g); return z => yK - GD.hand.palm_skin / ca + (z - zK) * Math.tan(g); }
+
+/* ---------- the hand, rendered (G6, after Brock 2026-11-08 08:05: "the hand in the presentation looks horrible super
+   unrealistic"). GD_HANDIMG (40-gd-05-hand.js, from deck/tools/gd/render_hand.py and hand3d.py): a grey clay hand, the ANSUR II
+   mean hand sculpted as signed distances, posed joint by joint from the model above and rendered in Cycles, true scale, side view
+   from the thumb's side. Each frame sits in the hand's own frame (origin the middle MCP, z along the metacarpals, y dorsal) and
+   has two layers: near (the index and the thumb, in front of the mouse) and far (the palm and the other fingers, which pass
+   behind the Sora: the far layer is clipped by its profile). Frames in between are mixed (a linear crossfade, exact). ---------- */
+const GD_HCV = {};
+function gdImgOk(I) { return I && I.complete && I.naturalWidth > 0; }
+/** one layer of a mix of frames, list [[name, weight], ...]: an image, or an offscreen canvas holding the weighted sum */
+function gdHandMixed(layer, list) {
+  const L = list.filter(([nm, w]) => w > 0.004 && GD_HANDIMG[nm] && gdImgOk(GD_HANDIMG[nm][layer]));
+  if (!L.length) return null;
+  if (L.length === 1) return GD_HANDIMG[L[0][0]][layer];
+  const I0 = GD_HANDIMG[L[0][0]][layer]; let c = GD_HCV[layer]; if (!c) c = GD_HCV[layer] = document.createElement('canvas');
+  if (c.width !== I0.naturalWidth || c.height !== I0.naturalHeight) { c.width = I0.naturalWidth; c.height = I0.naturalHeight; }
+  const g = c.getContext('2d'), sum = L.reduce((a, q) => a + q[1], 0);
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.clearRect(0, 0, c.width, c.height);
+  L.forEach(([nm, w], i) => { g.globalCompositeOperation = i ? 'lighter' : 'source-over'; g.globalAlpha = w / sum; g.drawImage(GD_HANDIMG[nm][layer], 0, 0); });
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  return c;
 }
-/* tones by depth: the near finger strongest, the far ones receding into the ground (true greys) */
-const GD_TONE = { index: [0.0, '#8E8E8E', '#D0D0D0'], middle: [0.3, '#727272', '#ABABAB'], ring: [0.55, '#585858', '#878787'], little: [0.72, '#464646', '#6C6C6C'], palm: [0.42, '#636363', '#9A9A9A'] };
-function gdTone(f) { const [d, fl, ed] = GD_TONE[f]; return TH ? [mix('#8A8A8A', '#E4E4E4', d), mix('#3C3C3C', '#B4B4B4', d)] : [fl, ed]; }
-/** the phalanx radii (mm): drawn, not measured (an estimate of the finger's depth in side view) */
-const GD_PR = { index: [8.4, 7.4, 6.4], middle: [8.8, 7.8, 6.6], ring: [8.2, 7.2, 6.2], little: [7.0, 6.2, 5.6] };
-function gdFingerDraw(P, f, map) {
-  const [fill, edge] = gdTone(f), S_ = P.map(q => [map.X(q[0]), map.Y(q[1])]);
-  for (let i = 0; i < 3; i++) gdCapsule(S_[i], S_[i + 1], GD_PR[f][i] * map.s, fill, edge, i === 2);
-  /* the joints' creases, quiet: a short line across each joint */
-  for (let i = 1; i < 3; i++) { const a = S_[i - 1], b = S_[i], c = S_[i + 1], d1 = Math.atan2(b[1] - a[1], b[0] - a[0]), d2 = Math.atan2(c[1] - b[1], c[0] - b[0]), m = (d1 + d2) / 2 + Math.PI / 2, r = GD_PR[f][i] * map.s * 0.55;
-    line(b[0] - Math.cos(m) * r, b[1] - Math.sin(m) * r, b[0] + Math.cos(m) * r, b[1] + Math.sin(m) * r, { color: edge, w: 1.2, alpha: 0.7 }); }
+/** the two frames of a sequence [[name, u], ...] (u ascending) around u, with their weights */
+function gdSeq(seq, u) {
+  if (u <= seq[0][1]) return [[seq[0][0], 1]];
+  for (let i = 0; i < seq.length - 1; i++) if (u <= seq[i + 1][1]) { const f = (u - seq[i][1]) / ((seq[i + 1][1] - seq[i][1]) || 1); return [[seq[i][0], 1 - f], [seq[i + 1][0], f]]; }
+  return [[seq[seq.length - 1][0], 1]];
 }
-/** the palm in side view: the back of the hand nearly straight from the wrist to the knuckles, the underside the model's
-   palm skin (20 mm under the knuckle line, an estimate) swelling into the heel behind the mouse; a short forearm fading out.
-   Drawn, not measured, except that skin line. */
-const GD_PALM = [[10, -2], [7, 7], [0, 10.5], [-40, 11.5], [-82, 10], [-104, 9], [-104, -14], [-90, -23], [-66, -21], [-30, -20], [-6, -20], [6, -15]];
-function gdPalmDraw(zK, yK, g, map) {
-  const [fill, edge] = gdTone('palm'), skin = GD.hand.palm_skin, ca = Math.cos(g), sa = Math.sin(g);
-  const P = (u, n) => [map.X(zK + u * ca - n * sa), map.Y(yK + u * sa + n * ca)];
-  /* the forearm: a band from the wrist back, fading */
-  const w0 = P(-100, 0), w1 = P(-190, 0), gr = G.createLinearGradient(w0[0], w0[1], w1[0], w1[1]);
-  gr.addColorStop(0, fill); gr.addColorStop(1, TH ? 'rgba(138,138,138,0)' : 'rgba(99,99,99,0)');
-  const fa = [P(-96, 9.5), P(-190, 12), P(-190, -16), P(-96, -14)];
-  G.beginPath(); fa.forEach((q, i) => (i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]))); G.closePath(); G.fillStyle = gr; G.fill();
-  /* the palm: a closed Catmull-Rom curve through GD_PALM */
-  const K = GD_PALM.map(q => P(q[0], q[1])), n = K.length, pts = [];
-  for (let i = 0; i < n; i++) { const p0 = K[(i - 1 + n) % n], p1 = K[i], p2 = K[(i + 1) % n], p3 = K[(i + 2) % n];
-    for (let j = 0; j < 8; j++) { const u = j / 8, u2 = u * u, u3 = u2 * u; pts.push([0, 1].map(c => 0.5 * (2 * p1[c] + (-p0[c] + p2[c]) * u + (2 * p0[c] - 5 * p1[c] + 4 * p2[c] - p3[c]) * u2 + (-p0[c] + 3 * p1[c] - 3 * p2[c] + p3[c]) * u3))); } }
-  G.beginPath(); pts.forEach((q, i) => (i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]))); G.closePath(); G.fillStyle = fill; G.fill(); G.strokeStyle = edge; G.lineWidth = 1.6; G.stroke();
-  return { skinAt: z => yK - skin / ca + (z - zK) * Math.tan(g) };   /* the skin line's height at z (mm) */
+/** the relaxing hand's frames, by how far it has relaxed (k 0: straight, 1: at rest); GD_HANDIMG loads after this file */
+let GD_RELAX_ = null;
+function gdRelaxSeq() { return GD_RELAX_ || (GD_RELAX_ = Object.keys(GD_HANDIMG).filter(nm => GD_HANDIMG[nm].kind === 'rest').sort((a, b) => GD_HANDIMG[a].k - GD_HANDIMG[b].k).map(nm => [nm, GD_HANDIMG[nm].k])); }
+/** a step between two grips: [[from, 0], every frame of that kind by its t, [to, 1]] ('fh': floating to the hump, 'hl': the
+   hump to lifted) */
+const GD_STEP_ = {};
+function gdStepSeq(kind, from, to) {
+  return GD_STEP_[kind] || (GD_STEP_[kind] = [[from, 0]].concat(Object.keys(GD_HANDIMG).filter(nm => GD_HANDIMG[nm].kind === kind).sort((a, b) => GD_HANDIMG[a].k - GD_HANDIMG[b].k).map(nm => [nm, GD_HANDIMG[nm].k]), [[to, 1]]));
+}
+/** draw the hand from a mix of frames (list), its middle knuckle at (zK, yK) mm in a side-view map, the metacarpals tilted g
+   (rad, + = wrist back), alpha a. o.clip(): sets the far layer's clip (the Sora's body cut out); o.clipK (0 to 1) how much of
+   the far layer is clipped (it fades in with the mouse); o.between(): drawn between the layers (the Sora's line); o.layers */
+function gdHandDraw(list, map, zK, yK, g, a, o = {}) {
+  const have = list.filter(([nm, w]) => w > 0.004 && GD_HANDIMG[nm]);
+  if (a <= 0.003 || !have.length) { if (o.between) o.between(); return; }
+  const F = GD_HANDIMG[have[0][0]], ppm = F.ppm, W = F.win;
+  const put = (img, al) => { if (!img || al <= 0.003) return; G.save(); G.globalAlpha = al; G.translate(map.X(zK), map.Y(yK)); G.rotate(-g); G.scale(map.s / ppm, map.s / ppm); G.drawImage(img, W.z0 * ppm, -W.y1 * ppm); G.restore(); };
+  for (const L of o.layers || ['far', 'near']) {
+    const img = gdHandMixed(L, have);
+    if (L === 'far' && o.clip && (o.clipK || 0) > 0) { const k = clamp(o.clipK); if (k < 1) put(img, a * (1 - k)); G.save(); o.clip(); put(img, a * k); G.restore(); }
+    else put(img, a);
+    if (L === 'far' && o.between) o.between();
+  }
+}
+/** a clip that keeps the box but not the Sora's body under its side profile (GD.sora.profile, down to the pad line) */
+function gdClipOutSora(map, box) {
+  const P = GD.sora.profile; G.beginPath(); G.rect(box[0], box[1], box[2], box[3]);
+  G.moveTo(map.X(P[0][0]), map.Y(-2)); P.forEach(q => G.lineTo(map.X(q[0]), map.Y(q[1]))); G.lineTo(map.X(P[P.length - 1][0]), map.Y(-2)); G.closePath();
+  G.clip('evenodd');
+}
+/** the forearm fades out at a box's left edge: a gradient of the panel's colour over the first w px */
+function gdFadeLeft(box, w, a = 1) {
+  const gr = G.createLinearGradient(box[0], 0, box[0] + w, 0), c = C.panel;
+  gr.addColorStop(0, rgba(c, a)); gr.addColorStop(0.55, rgba(c, a * 0.6)); gr.addColorStop(1, rgba(c, 0));
+  G.save(); G.fillStyle = gr; G.fillRect(box[0], box[1], w, box[3]); G.restore();
 }
 /** the joint angles on a finger: the bone axis, a dashed extension of the bone before, an arc, and the value (counting in
    with k) in a column to the right of the finger, each with a leader to its arc */
@@ -262,6 +292,24 @@ function gdAngles(P, f, g, k, map, a, o = {}) {
     const mid = (dir + nd) / 2, ax = x + Math.cos(mid) * R, ay = y + Math.sin(mid) * R, ly = o.ys ? o.ys[i] : LY[i];
     poly([[ax, ay], [lx - 14, ly]], { color: C.heroText, w: 1.2, alpha: a * 0.6 });
     rich([{ s: nm[i], role: 'label', size: 19, color: C.mute }, { s: Math.round(A[i] * k) + '°', role: 'num', size: 26, color: col, gap: 9 }], lx, ly + 9, { alpha: a });
+    dir = nd;
+  }
+}
+
+/** (G6) a finger's joint angles drawn on the rendered hand: the bones as a line, a dashed extension of the bone before, an
+   arc, and the value (counting in with k) outside the bend, on the finger's back, so it follows the joint as the hand relaxes */
+function gdJointArcs(P, f, k, map, a, o = {}) {
+  if (a <= 0.003) return;
+  const S_ = P.map(q => [map.X(q[0]), map.Y(q[1])]), A = GD.hand.cascade[f], nm = ['MCP', 'PIP', 'DIP'], col = TH ? C.ink : '#F2F2F2';
+  poly(S_, { color: col, w: 1.6, alpha: a * 0.85 });
+  let dir = -(o.g || 0);
+  for (let i = 0; i < 3; i++) {
+    const [x, y] = S_[i], nd = Math.atan2(S_[i + 1][1] - y, S_[i + 1][0] - x), R = (i === 2 ? 11 : 13) * map.s, ex = (i === 2 ? 18 : 24) * map.s;
+    line(x, y, x + Math.cos(dir) * ex, y + Math.sin(dir) * ex, { color: col, w: 1.3, dash: [5, 5], alpha: a * 0.7 });
+    if (nd - dir > 0.01) { G.save(); G.globalAlpha = a; G.strokeStyle = C.heroText; G.lineWidth = 2.6; G.beginPath(); G.arc(x, y, R, dir, nd, false); G.stroke(); G.restore(); }
+    circle(x, y, 4.5, { fill: col, alpha: a });
+    const mid = (dir + nd) / 2 - Math.PI / 2, L = (o.off ? o.off[i] : 30) * map.s, lx = x + Math.cos(mid) * L, ly = y + Math.sin(mid) * L;
+    rich([{ s: nm[i], role: 'label', size: 19, color: C.mute }, { s: Math.round(A[i] * k) + '°', role: 'num', size: 26, color: col, gap: 8 }], lx, ly + 9, { alpha: a, align: 'center' });
     dir = nd;
   }
 }
