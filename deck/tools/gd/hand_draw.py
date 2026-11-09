@@ -118,7 +118,7 @@ def edge_runs(region_mask, label, depth, s, box, R_id, min_len=4.0, empty=False)
         if empty and len(segs) > 1 and segs[0][0] == 0 and segs[-1][-1] == len(c) - 1:   # a closed contour's run across its start
             segs = [np.r_[segs[-1], segs[0]]] + segs[1:-1]
         for seg in segs:
-            if len(seg) < len(c) - 2: seg = seg[8:-8]     # an open line stops short of where it turns into the skin: no tick or hook at its ends
+            if len(seg) < len(c) - 2: seg = seg[14:-14] if empty else seg[8:-8]   # an open line stops short of where it turns into the skin: no tick or hook
             pts = c[seg]
             if len(pts) < 3: continue
             pts = measure.approximate_polygon(smooth_line(pts), 0.3)
@@ -127,7 +127,31 @@ def edge_runs(region_mask, label, depth, s, box, R_id, min_len=4.0, empty=False)
     return runs
 
 
-def layer(V, F, P, shade, tri_part, include, B, box, s, own=None):
+NAIL = {   # (half width mm, cuticle and free edge as fractions of the last joint to the skin's front): estimates, typical nails
+    'thumb': (6.2, 0.30, 0.96), 'index': (4.9, 0.30, 0.95), 'middle': (5.1, 0.30, 0.95), 'ring': (4.8, 0.30, 0.95), 'little': (4.1, 0.32, 0.95)}
+
+
+def nail_fields(h, V, n):
+    """per vertex: the nail (> 0 inside: a rounded box on the back of the last bone, where the skin faces the back) and its free
+    edge (> 0 inside the last 1.3 mm toward the tip), from each digit's last bone as posed"""
+    nf = np.full(len(V), -1.0); fe = np.full(len(V), -1.0)
+    for d, (w, c0, c1) in NAIL.items():
+        pre = 'thumb' if d == 'thumb' else FING[d]
+        nm = pre + '-phalanx-distal'; i = h.ix[nm]
+        R = h.M[i, :3, :3] @ h.FR[i, :3, :3]; R = R / np.linalg.norm(R, axis=0); o = h.pos(nm)
+        sel = h.W[:, [h.ix[nm], h.ix[pre + '-tip']]].sum(1) > 0.35
+        Lc = (V - o) @ R; a = -Lc[:, 2]; b = Lc[:, 0]
+        Lf = a[sel].max()
+        a0, a1 = c0 * Lf, c1 * Lf; am, ha = (a0 + a1) / 2, (a1 - a0) / 2
+        up = n @ R[:, 1]
+        f = 1 - ((a - am) / ha) ** 4 - (b / w) ** 4
+        f = np.where(sel & (up > 0.25), f, -1.0)
+        nf = np.maximum(nf, f)
+        fe = np.maximum(fe, np.where(f > -0.2, np.minimum(f + 0.2, (a - (a1 - 1.3)) / 1.3), -1.0))
+    return nf, fe
+
+
+def layer(V, F, P, shade, tri_part, include, B, box, s, own=None, nails=None):
     """fields and paths for the triangles of the parts in `include`; own: the part whose region is the layer (None: all)"""
     r, u, t = B
     X, Y, Z = V @ r, V @ u, V @ t
@@ -157,7 +181,14 @@ def layer(V, F, P, shade, tri_part, include, B, box, s, own=None):
         # a digit on its own: its whole edge but where it runs on into the palm (the skin continues there: no line)
         lab2 = np.where(mask, PARTS.index(own), np.where(filled, 0, -1))
         edges = edge_runs(mask, lab2, depth, s, box, PARTS.index(own), empty=True)
-    return dict(sil=sil, sh=shad, edges=edges, mask=mask, label=label, depth=depth, Pw=Pw)
+    nl, fr = [], []
+    if nails is not None:
+        nf = interp(R, nails[0], H, W, -1.0); fe = interp(R, nails[1], H, W, -1.0)
+        keep = mask if own is not None else filled
+        nf = np.where(keep, nf, -1.0); fe = np.where(keep & (nf > 0), fe, -1.0)
+        nl = contours(ndimage.gaussian_filter(nf, 0.8), 0.0, s, box, tol=0.25)
+        fr = contours(ndimage.gaussian_filter(fe, 0.8), 0.0, s, box, tol=0.25)
+    return dict(sil=sil, sh=shad, edges=edges, mask=mask, label=label, depth=depth, Pw=Pw, nail=nl, free=fr)
 
 
 def q(pl, k=20):
@@ -198,13 +229,13 @@ def build(view='side', preview=True):
     W, H = int((X.max() - box[0] + 3) * s), int((box[1] - Y.min() + 3) * s)
     box = (box[0], box[1], W, H)
     allp = list(range(6))
-    comp = layer(V2, F, P, shade, tri_part, allp, B, box, s)
-    out = dict(view=view, s=s, box=[box[0], box[1], W / s, H / s], q=20,
-               sil=[q(p) for p in comp['sil']], sh=[q(p) for p in comp['sh']], edges=[q(p) for p in comp['edges']], parts={})
+    NF = nail_fields(h, V, n)
+    comp = layer(V2, F, P, shade, tri_part, allp, B, box, s, nails=NF)
+    pk = lambda L_: dict(sil=[q(p) for p in L_['sil']], sh=[q(p) for p in L_['sh']], edges=[q(p) for p in L_['edges']], nail=[q(p) for p in L_['nail']], free=[q(p) for p in L_['free']])
+    out = dict(view=view, s=s, box=[box[0], box[1], W / s, H / s], q=20, parts={}, **pk(comp))
     for k, nm in enumerate(PARTS):
         if nm == 'body': continue
-        L_ = layer(V2, F, P, shade, tri_part, [0, k], B, box, s, own=nm)
-        out['parts'][nm] = dict(sil=[q(p) for p in L_['sil']], sh=[q(p) for p in L_['sh']], edges=[q(p) for p in L_['edges']])
+        out['parts'][nm] = pk(layer(V2, F, P, shade, tri_part, [0, k], B, box, s, own=nm, nails=NF))
     # joints in 2D (mm), and each joint's flexion as drawn against its true value
     j2 = {k: [round(float(v @ r), 2), round(float(v @ u), 2)] for k, v in Jo.items()}
     out['joints'] = j2
@@ -238,6 +269,8 @@ def draw_preview(o, path, s=8, ss=3):
     m = Image.fromarray((np.array(sil) // 255 * np.array(shd)).astype(np.uint8))
     base.paste(shc, mask=m)
     d = ImageDraw.Draw(base)
+    for p in o.get('nail', []): d.polygon(P(p), fill=(0xB4, 0xB4, 0xB9), outline=(0x5A, 0x5A, 0x5E))
+    for p in o.get('free', []): d.polygon(P(p), fill=(0xC6, 0xC6, 0xCA))
     for p in o['sil']: d.line(P(p) + P(p)[:1], fill=(222, 222, 224), width=int(1.35 * ss * 1.2))
     for p in o['edges']: d.line(P(p), fill=(222, 222, 224), width=int(1.35 * ss * 1.2))
     base = base.resize((W // ss, H // ss), Image.LANCZOS)
@@ -249,7 +282,7 @@ if __name__ == '__main__':
     print('thumb view: drawn flexion', ot['drawn_flexion'])
     o, comp = build('side')
     print('drawn flexion', o['drawn_flexion'])
-    keep = ('s', 'box', 'q', 'sil', 'sh', 'edges', 'parts', 'joints', 'drawn_flexion')
+    keep = ('s', 'box', 'q', 'sil', 'sh', 'edges', 'nail', 'free', 'parts', 'joints', 'drawn_flexion')
     json.dump({'side': {k: o[k] for k in keep}, 'thumb': {k: ot[k] for k in keep}}, open(os.path.join(OUT, 'gd-hand.json'), 'w'), separators=(',', ':'))
     print('gd-hand.json', os.path.getsize(os.path.join(OUT, 'gd-hand.json')))
     print('paths', len(o['sil']), len(o['sh']), len(o['edges']), {k: (len(v['sil']), len(v['sh']), len(v['edges'])) for k, v in o['parts'].items()})

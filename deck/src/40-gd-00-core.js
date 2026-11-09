@@ -37,7 +37,7 @@ Object.assign(SRC, {
   gdBrockThumb: { t: 'Brock Liddicoat (designer\'s observation), 2026-11-08, on trial 3\'s waist moved to z 24: "actually no, the thumb never goes that far forward, that\'s unnatural". The study had put the thumb\'s tip level with the index\'s DIP joint (an estimate, no source); it now starts from the thumb\'s own base', u: '', n: 'His observation: a constraint, no tag.' },
   gdHand: { t: 'This study (G7): the hand drawn as the film draws a finger (06-motion.js, Brock\'s "A Line" with "A Soft" nails): the kit\'s own fingertip carried on through the middle and first bones and the knuckle into the back of the hand and the palm, bent exactly at the model\'s joints (Lee & Jung\'s angles on Buryanov & Kotiuk\'s bones, the ANSUR II mean hand; the thumb from its base, G5). The other fingers\' tips are the index\'s scaled by their last bone. Skin outlines beyond the kit\'s fingertip, finger thickness, the palm\'s outline and the spread between fingers are estimates', u: '', n: 'derived' },
   gdHandModel: { t: 'WebXR Input Profiles, generic hand model (npm @webxr-input-profiles/assets 1.0.20, dist/profiles/generic-hand/right.glb): 1,360 vertices on 25 joints. MIT License, Copyright (c) 2019 Amazon', u: 'https://github.com/immersive-web/webxr-input-profiles' },
-  gdHand3: { t: 'This study (G8): one whole hand traced from the WebXR generic hand model (deck/tools/gd/hand_pose.py, hand_draw.py): scaled to the ANSUR II mean hand (193.3 mm, wrist joint to the middle fingertip); each finger\'s first and middle bones stretched to Buryanov & Kotiuk\'s lengths (scaled), the thumb\'s to Freivalds\'; every finger joint set to Lee & Jung\'s resting flexion about the model\'s own joint axis, from the bone before it; the thumb\'s knuckle 39 and tip joint 10 the same way. Estimates: the model\'s own fingertips (the study ends its last bone where the tip touches, 16.6 mm for the index; the model\'s is 22.5 mm to the skin\'s front), the thumb\'s metacarpal turned 16 deg in toward the fingers (its base angle has no named reference), the finger spread and the skin\'s shape. Seen from the thumb\'s side the drawn bones are within 2.5 deg of the angles; the thumb\'s bends are shown from along its own bend, where they are true size', u: '', n: 'derived' },
+  gdHand3: { t: 'This study (G8): one whole hand traced from the WebXR generic hand model (deck/tools/gd/hand_pose.py, hand_draw.py): scaled to the ANSUR II mean hand (193.3 mm, wrist joint to the middle fingertip); each finger\'s first and middle bones stretched to Buryanov & Kotiuk\'s lengths (scaled), the thumb\'s to Freivalds\'; every finger joint set to Lee & Jung\'s resting flexion about the model\'s own joint axis, from the bone before it; the thumb\'s knuckle 39 and tip joint 10 the same way. Estimates: the model\'s own fingertips (its index\'s last joint 11.8 mm from the skin\'s front; the study\'s last bone, joint to where the tip touches, 16.6 mm), the nails (typical sizes), the thumb\'s metacarpal turned 16 deg in toward the fingers (its base angle has no named reference), the finger spread and the skin\'s shape. Seen from the thumb\'s side the drawn bones are within 2.5 deg of the angles; the thumb\'s bends are shown from along its own bend, where they are true size', u: '', n: 'derived' },
   gdModel: { t: 'This study: the Sora V2 base fitted with arcs from 3d/shell/shell-sora.glb (plan 8 arcs, RMS 0.12 mm; section 7 arcs, 0.06 to 0.12 mm), regrouped into long arcs (nose, front, waist, hump, tail; crown, groove, shoulder); fingertip targets from the hand model, the thumb from its base (G5); the felt strength, the loss and the descent in deck/tools/gd/longarcs.py (Adam on central differences)', u: '', n: 'derived' }
 });
 
@@ -461,7 +461,7 @@ function gdJointMarks(geo, A, kk, M, o = {}) {
   };
   const V = [null]; for (let i = 1; i <= n; i++) V.push(meet(i));
   /* the tip's vertex: on the last guide, level with the skin's front */
-  const tq = geo.tip, dl = dir(ph[n]), b3 = base(n), tt = (tq[0] - b3[0]) * dl[0] + (tq[1] - b3[1]) * dl[1], Vt = [b3[0] + dl[0] * (tt + 2), b3[1] + dl[1] * (tt + 2)];
+  const tq = geo.tip, dl = dir(ph[n]), b3 = base(n), tV = (V[n][0] - b3[0]) * dl[0] + (V[n][1] - b3[1]) * dl[1], tt = Math.max((tq[0] - b3[0]) * dl[0] + (tq[1] - b3[1]) * dl[1], tV + (o.minTip || 6)), Vt = [b3[0] + dl[0] * (tt + 2), b3[1] + dl[1] * (tt + 2)];
   /* the guides: from the reference's start, through every vertex, to the tip's vertex */
   const g0 = [V[1][0] - (o.refLen || 26), V[1][1]], path = [g0].concat(V.slice(1), [Vt]).map(P);
   const kG = clamp(Math.max(...kk) * 3); if (kG > 0) poly(path, { color: ink, w: 1.5, alpha: a * 0.55 * kG });
@@ -528,7 +528,7 @@ function ghView(v) {
   const D = GDHAND[v], q = D.q;
   const pts = a => { const o = []; for (let i = 0; i < a.length; i += 2) o.push([a[i] / q, -a[i + 1] / q]); return o; };
   const path = (L, close) => { const p = new Path2D(); for (const a of L) { const P = pts(a); P.forEach((c, i) => (i ? p.lineTo(c[0], c[1]) : p.moveTo(c[0], c[1]))); if (close) p.closePath(); } return p; };
-  const one = d => ({ sil: path(d.sil, true), sh: path(d.sh, true), edges: path(d.edges, false), silPts: d.sil.map(pts) });
+  const one = d => ({ sil: path(d.sil, true), sh: path(d.sh, true), edges: path(d.edges, false), nail: path(d.nail || [], true), free: path(d.free || [], true), silPts: d.sil.map(pts) });
   const out = Object.assign(one(D), { parts: {}, J: {}, box: D.box, v });
   for (const k in D.parts) out.parts[k] = one(D.parts[k]);
   for (const k in D.joints) out.J[k] = [D.joints[k][0], -D.joints[k][1]];
@@ -556,7 +556,13 @@ function ghCanvas(i, w, h) {
 /** fill, shadow, lines (in the layer's mm frame); outline: also stroke the silhouette (the whole hand: yes; a digit: its edges only) */
 function ghBody(X, d, P, px, outline) {
   X.fillStyle = P.lit; X.fill(d.sil);
-  X.save(); X.clip(d.sil); X.fillStyle = P.sh; X.fill(d.sh, 'evenodd'); X.restore();
+  X.save(); X.clip(d.sil); X.fillStyle = P.sh; X.fill(d.sh, 'evenodd');
+  /* the nails, as the film's ("A Soft"): the skin's greys a little lighter, the free edge paler, the skin's fold round them */
+  const NS = FNG_NAIL, k = P.k;
+  X.fillStyle = rgba('#FFFFFF', NS.tone[k]); X.fill(d.nail);
+  X.save(); X.clip(d.nail); X.fillStyle = rgba('#FFFFFF', NS.free[k]); X.fill(d.free); X.restore();
+  X.strokeStyle = P.line; X.globalAlpha *= NS.fold[k]; X.lineWidth = 1.0 * px; X.stroke(d.nail); X.globalAlpha /= NS.fold[k];
+  X.restore();
   X.lineJoin = 'round'; X.lineCap = 'round'; X.strokeStyle = P.edge; X.lineWidth = P.ew * px;
   X.stroke(d.edges); if (outline) X.stroke(d.sil);
 }
@@ -580,25 +586,29 @@ function ghPaint(v, x, y, s, o = {}) {
   const ramp = (gr, k0 = 1) => { for (let i = 0; i <= 8; i++) { const u = i / 8; gr.addColorStop(u, 'rgba(0,0,0,' + (k0 * (1 - u * u * (3 - 2 * u))).toFixed(3) + ')'); } return gr; };
   const lw = x1 - x0, lh = y1 - y0, fadeOut = X => { if (!o.fade) return; const [f0, f1] = o.fade; X.save(); X.globalCompositeOperation = 'destination-out';
     X.fillStyle = ramp(X.createLinearGradient(f0, 0, f1, 0)); X.fillRect(bx - 50, -by - 50, f1 - bx + 50, bh + 100); X.restore(); };
-  const kH = o.hl ? clamp(o.kH == null ? 1 : o.kH) : 0;
+  const lifts = (o.lifts || (o.hl ? [[o.hl, o.kH == null ? 1 : o.kH]] : [])).filter(q => q[1] > 0.003), kH = lifts.reduce((m, q) => Math.max(m, clamp(q[1])), 0);
   /* the whole hand */
   const L0 = ghCanvas(0, lw, lh); L0.setTransform(M.a, M.b, M.c, M.d, M.e - x0, M.f - y0);
   ghBody(L0, H, P, px, true); fadeOut(L0);
   G0.save(); G0.setTransform(1, 0, 0, 1, 0, 0); G0.globalAlpha = G0.globalAlpha * a * (1 - (o.dim == null ? 0.45 : o.dim) * kH);
   G0.drawImage(GH_L[0], 0, 0, lw, lh, x0, y0, lw, lh); G0.restore();
-  if (kH <= 0.003) return;
-  /* the lifted digit, whole, its base fading behind the knuckle into the palm */
-  const f = o.hl, d = H.parts[f], J = ghJoints(v, f), L1 = ghCanvas(1, lw, lh); L1.setTransform(M.a, M.b, M.c, M.d, M.e - x0, M.f - y0);
+  for (const [f, k] of lifts) ghLift(v, H, f, clamp(k), P, px, M, x0, y0, lw, lh, a, ramp, o);
+}
+/** one digit lifted out of the hand (ghPaint): whole, its base fading behind the knuckle into the palm, the nearer digits as faint
+   lines over it, set down at k */
+function ghLift(v, H, f, kH, P, px, M, x0, y0, lw, lh, a, ramp, o) {
+  const G0 = G, [bx, by, bw, bh] = H.box;
+  const d = H.parts[f], J = ghJoints(v, f), L1 = ghCanvas(1, lw, lh); L1.setTransform(M.a, M.b, M.c, M.d, M.e - x0, M.f - y0);
   ghBody(L1, d, P, px, false);
   { const k0 = f === 'thumb' ? J[1] : J[0], k1 = J[f === 'thumb' ? 2 : 1], ux = k1[0] - k0[0], uy = k1[1] - k0[1], ul = Math.hypot(ux, uy) || 1, e = [ux / ul, uy / ul];
     /* fully gone just past the knuckle (where the layer's own edge crosses the skin), whole 12 mm on: no edge across the finger */
-    const g0 = f === 'thumb' ? -6 : 5, g1 = f === 'thumb' ? 8 : 17;
+    const GR = { thumb: [-6, 8], index: [7, 19], middle: [9, 21], ring: [12, 24], little: [12, 24] }, [g0, g1] = GR[f];   /* the far fingers' knuckles sit under the palm's edge: start further out */
     L1.save(); L1.globalCompositeOperation = 'destination-out';
     L1.fillStyle = ramp(L1.createLinearGradient(k0[0] + e[0] * g0, k0[1] + e[1] * g0, k0[0] + e[0] * g1, k0[1] + e[1] * g1));
     L1.fillRect(bx - 50, -by - 50, bw + 100, bh + 100); L1.restore(); }
   /* the nearer digits: faint lines over it, so it reads as behind them */
   const near = GH_NEAR.slice(0, GH_NEAR.indexOf(f));
-  if (near.length) { L1.save(); L1.lineJoin = 'round'; L1.lineCap = 'round'; L1.strokeStyle = P.edge; L1.lineWidth = P.ew * px; L1.globalAlpha = o.ghost == null ? 0.5 : o.ghost;
+  if (near.length) { L1.save(); L1.lineJoin = 'round'; L1.lineCap = 'round'; L1.strokeStyle = P.edge; L1.lineWidth = P.ew * px; L1.globalAlpha = o.ghost == null ? 0.32 : o.ghost;
     for (const n of near) L1.stroke(H.parts[n].edges); L1.restore(); }
   G0.save(); G0.setTransform(1, 0, 0, 1, 0, 0); G0.globalAlpha = G0.globalAlpha * a * kH;
   G0.drawImage(GH_L[1], 0, 0, lw, lh, x0, y0, lw, lh); G0.restore();

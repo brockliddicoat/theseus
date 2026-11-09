@@ -213,22 +213,22 @@ S({
     const hlOf = i => TURN[i][0], t0Of = i => TURN[i][1];
     /* each joint of turn i in its turn (j: 0, 1, 2; the total last); the last turn, back on the index to settle, draws them together */
     const prog = (i, j) => { if (i === TURN.length - 1) return ep(t, t0Of(i) + 0.35 + j * 0.12, t0Of(i) + 0.85 + j * 0.12); const t0 = t0Of(i) + (i === 0 ? 0.35 : 0.3), fast = i > 0 && i < 4 ? 0.62 : 1; return ep(t, t0 + j * 0.95 * fast, t0 + j * 0.95 * fast + 0.75 * fast); };
-    const box = [LM, 290, 1110, 612], aB = tileA(t, 0.2, 0); demoWindow(...box, aB);
+    const box = [LM, 290, 1110, 628], aB = tileA(t, 0.2, 0); demoWindow(...box, aB);
     /* the side view: the index's knuckle at (ox, oy), 5.6 px per mm; the thumb's view (its knuckle at (tx, ty)) for the thumb's turn */
-    const s = 5.6, ox = box[0] + 113 * s + 18, oy = box[1] + 74 + 38 * s, st = 4.0, tx = box[0] + 113 * st + 60, ty = box[1] + 66 + 31 * st;
-    const kTv = ep(t, 12.4, 13.1, E.io3) * (1 - ep(t, 15.4, 16.1, E.io3));   /* the thumb's view in */
+    /* sized so the whole hand, the fingertips' arcs and their labels sit inside the window (GDHAND.side.box: 187 by 107 mm) */
+    const s = 4.55, ox = box[0] + 113 * s + 70, oy = box[1] + 64 + 38 * s, st = 3.62, tx = box[0] + 113 * st + 110, ty = box[1] + 66 + 31 * st;
+    /* the thumb's view: the side view fades out, then the thumb's in (never the two at once); and back for the settle */
+    const kSv = (1 - ep(t, 12.4, 12.75)) + ep(t, 15.75, 16.1), kTv = ep(t, 12.75, 13.1) * (1 - ep(t, 15.4, 15.75));
     const iNow = cur, fNow = hlOf(iNow), kIn = ep(t, t0Of(iNow), t0Of(iNow) + 0.45), kH = ep(t, 1.0, 1.45);
     G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
     const hA = aB * ep(t, 0.3, 0.9);
     /* the digit lifted now; across a change the last one hands over to the next */
     const fPrev = iNow > 0 ? hlOf(iNow - 1) : null;
-    const drawSide = (al, f, k) => ghPaint('side', ox, oy, s, { alpha: al, hl: f, kH: k, fade: [-113, -80] });
-    const drawThumb = (al, f, k) => ghPaint('thumb', tx, ty, st, { alpha: al, hl: f, kH: k, fade: [-113, -84] });
-    if (1 - kTv > 0.003) {
-      if (fPrev && fPrev !== 'thumb' && kIn < 1 && fNow !== 'thumb') { drawSide(hA * (1 - kTv), fPrev, kH * (1 - kIn)); if (kIn > 0) drawSide(hA * (1 - kTv) * kIn, fNow, kH); }
-      else drawSide(hA * (1 - kTv), fNow === 'thumb' ? 'thumb' : fNow, kH);
+    if (kSv > 0.003) {
+      const lifts = fPrev && fPrev !== 'thumb' && fNow !== 'thumb' && kIn < 1 ? [[fPrev, kH * (1 - kIn)], [fNow, kH * kIn]] : [[fNow, kH]];
+      ghPaint('side', ox, oy, s, { alpha: hA * kSv, lifts, fade: [-113, -80] });
     }
-    if (kTv > 0.003) drawThumb(hA * kTv, 'thumb', 1);
+    if (kTv > 0.003) ghPaint('thumb', tx, ty, st, { alpha: hA * kTv, hl: 'thumb', kH: 1, fade: [-113, -84] });
     G.restore();
     /* the arcs: the digit whose turn it is, on whichever view shows it */
     const M = { s, X: x => ox + x * s, Y: y => oy + y * s }, Mt = { s: st, X: x => tx + x * st, Y: y => ty + y * st };
@@ -236,23 +236,25 @@ S({
       if (al <= 0.003) return;
       if (f === 'thumb') {
         const J = ghJoints('thumb', 'thumb'), tot = (Th.mcp + Th.ip) * D2R, geo = { joints: J, tip: ghTip('thumb', 'thumb', tot) };
-        gdJointMarks(geo, [0, Th.mcp, Th.ip], [0, prog(i, 0), prog(i, 1)], Mt, { a: al, kSum: prog(i, 2), off: 13, refLen: 22, skip: [true], R: 10, ex: 15, Rt: 11 });
+        gdJointMarks(geo, [0, Th.mcp, Th.ip], [0, prog(i, 0), prog(i, 1)], Mt, { a: al, kSum: prog(i, 2), off: 17, refLen: 4, skip: [true], R: 10, ex: 15, Rt: 11 });
         const b = J[0], kb = ep(t, t0Of(i) + 2.6, t0Of(i) + 3.1) * al;
         circle(Mt.X(b[0]), Mt.Y(b[1]), 4.5, { fill: C.ink2, color: C.panel, w: 1.5, alpha: kb });
         rich([{ s: 'Base', role: 'label', size: 17, color: C.mute }, { s: Th.cmc + '°', role: 'num', size: 21, color: C.ink2, gap: 7 }], Mt.X(b[0]), Mt.Y(b[1]) + 34, { alpha: kb, align: 'center' });
         return;
       }
       const A = Ca[f], tot = sum(f) * D2R, J = ghJoints('side', f), geo = { joints: J, tip: ghTip('side', f, tot) };
-      gdJointMarks(geo, A, [prog(i, 0), prog(i, 1), prog(i, 2)], M, { a: al, kSum: prog(i, 3), off: 13, refLen: 17, R: 8.5, ex: 13, Rt: 9.5 });
+      /* the bones' lines ride off the joints: the index's 27 mm, clear of the hand's top (the middle finger rises 21 mm over its bones);
+         the others' near their own bones, over the nearer fingers (see-through then) */
+      gdJointMarks(geo, A, [prog(i, 0), prog(i, 1), prog(i, 2)], M, { a: al, kSum: prog(i, 3), off: { index: 27, middle: 17, ring: 13, little: 13 }[f], refLen: 4, R: 8.5, ex: 13, Rt: 9.5 });
     };
     const kOut = i => (i + 1 < TURN.length ? 1 - ep(t, t0Of(i + 1) - 0.05, t0Of(i + 1) + 0.35) : 1);
     if (iNow > 0) marks(hlOf(iNow - 1), iNow - 1, aB * kOut(iNow - 1) * (hlOf(iNow - 1) === 'thumb' ? kTv : 1));
-    marks(fNow, iNow, aB * ep(t, t0Of(iNow) + 0.1, t0Of(iNow) + 0.5) * (fNow === 'thumb' ? kTv : 1 - kTv));
-    text(kTv > 0.5 ? 'Seen along the thumb\'s bend' : 'Seen from the thumb\'s side', box[0] + 28, box[1] + 44, { role: 'label', size: 20, color: C.mute, alpha: aB * (kTv > 0.5 ? ep(kTv, 0.5, 1) : 1 - ep(kTv, 0, 0.5)) });
+    marks(fNow, iNow, aB * ep(t, t0Of(iNow) + 0.1, t0Of(iNow) + 0.5) * (fNow === 'thumb' ? kTv : clamp(kSv)));
+    text(kTv > 0.003 ? 'Seen along the thumb\'s bend' : 'Seen from the thumb\'s side', box[0] + 28, box[1] + 44, { role: 'label', size: 20, color: C.mute, alpha: aB * (kTv > 0.003 ? kTv : clamp(kSv)) });
     /* the table: every digit, its joints added up, built up as each takes its turn */
-    const tb = [box[0] + box[2] + 20, 290, RM - (box[0] + box[2] + 20), 612], aT = tileA(t, 0.25, 1); demoWindow(...tb, aT);
+    const tb = [box[0] + box[2] + 20, 290, RM - (box[0] + box[2] + 20), 628], aT = tileA(t, 0.25, 1); demoWindow(...tb, aT);
     ghTable(t, tb, aT, TURN, cur, prog);
-    source(t, 'Each joint: Lee & Jung 2014, 40 people, relaxed hands on the ground, forearm neutral (knuckle MCP, middle joint PIP, tip joint DIP; thumb base CMC, knuckle MCP, tip joint IP); sums derived. Wrist: NASA TM-2003-104805, 0° in all crew but one (3°). The hand: WebXR generic hand model (MIT, © 2019 Amazon), fitted to the ANSUR II mean hand (men) and these angles; outline traced (derived).', { t0: 2.0, maxW: 1760 });
+    source(t, 'Each joint: Lee & Jung 2014, 40 relaxed hands on the ground (knuckle MCP, middle joint PIP, tip joint DIP; thumb base CMC, knuckle MCP, tip joint IP); sums derived. Wrist: NASA TM-2003-104805, 0° in all crew but one (3°). Hand: WebXR generic hand model (MIT, © 2019 Amazon) fitted to the ANSUR II mean hand and posed at these angles (derived).', { t0: 2.0, maxW: 1760 });
   }
 });
 /** (G8) the table beside the hand: one row per digit (its joints, each counting in as it bends, and where its tip points, in blue),

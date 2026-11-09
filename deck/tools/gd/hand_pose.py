@@ -68,7 +68,7 @@ class Hand:
             ch = self.chain(f, 1)                      # proximal (thumb: proximal), ..., tip
             for j in range(len(L)):
                 a, b = self.pos(ch[j]), self.pos(ch[j + 1]); d = b - a; l = np.linalg.norm(d); u = d / l
-                last = j == len(L) - 1
+                last = f == 'thumb' and j == len(L) - 1     # only the thumb's list ends at its last bone (the fingers keep theirs)
                 if last:
                     # the last bone: the study ends it where the fingertip touches (trials.place), so its joint to the skin's front
                     sel = self.W[:, [self.ix[ch[j]], self.ix[ch[j + 1]]]].sum(1) > 0.5
