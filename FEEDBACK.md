@@ -1752,6 +1752,13 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
     0.1°; "FINGERTIP"; the thumb's bends in a circle "The thumb, seen from the palm". Live 1794249698-dff5 (gd_rest still G7's).
   - Sent 12:41: feedback/attachments/F65/1241-gd_joints-one-hand.png and 1241-thumb-circle.png.
 
+- **F65.15 OPEN (shape study)** (2026-11-09 13:14, on 1241-gd_joints-one-hand.png and the live link) "the hand looks more
+  natural there, but not perfect, and that also isn’t the hand in the presentation you’ve linked, the link still has the old
+  version".
+  - Checked 13:16: the artifact serves 1794249698-dff5 (published 12:41, the new hand on gd_joints). gd_rest (slide 3, the
+    first hand in the deck) still had G7's drawing; an app's saved copy may also show the old version.
+  - To do: the new hand on every slide (gd_rest first), and a realism pass on the drawing itself.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
