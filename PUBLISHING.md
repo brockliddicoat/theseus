@@ -34,7 +34,10 @@
   gradient descent", hand-built from the deck's engine (build target 'gd': `python3 tools/build.py gd` -> deck/dist/gd.html;
   slides deck/src/40-gd-*.js; data deck/tools/gd/, research/gd/). Not the Slides type: Brock asked for the film's own assets
   and art style. Republish with publish_files + slug + base_version.
-- Versions: 1794249698-dff5 (2026-11-09 12:41: G8 and G9, gd_joints on one whole hand traced from an open hand model (WebXR
+- Versions: 1794253362-7b17 (2026-11-09 13:42: G10, gd_rest on the same traced hand (trial 3's lifted grip and the
+  palm on the hump; the thumb's first bone fitted to Haeri's 46.9 mm so it reaches the study's z -3.8, y 15; the far fingers
+  clipped by the Sora's outline); the film's creases and A Soft nail folds; a bigger thumb circle; G7's finger code removed;
+  1.75 MB); 1794249698-dff5 (2026-11-09 12:41: G8 and G9, gd_joints on one whole hand traced from an open hand model (WebXR
   generic hand, MIT) posed at the measured angles, drawn flat in the film's greys; the thumb's bends in a circle seen from the
   palm; gd_rest still G7's drawing; 1.7 MB); 1794244526-ca02 (2026-11-09 11:15: G7, the film's own finger style (no 3D), gd_joints with every joint of every
   finger adding up; 1.6 MB); 1794151207-5df0 (2026-11-08 09:20: G6, the clay hand rendered in 3D, the joint-by-joint slide gd_joints; 10

@@ -1758,6 +1758,12 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   - Checked 13:16: the artifact serves 1794249698-dff5 (published 12:41, the new hand on gd_joints). gd_rest (slide 3, the
     first hand in the deck) still had G7's drawing; an app's saved copy may also show the old version.
   - To do: the new hand on every slide (gd_rest first), and a realism pass on the drawing itself.
+  - G10 (13:17-13:40): gd_rest on the traced hand; creases and nail folds in the film's style; a bigger thumb circle. Live
+    1794253362-7b17. Sent 13:42: feedback/attachments/F65/1342-gd_rest-new-hand.png, 1342-hand-detail-2x.png.
+  - Still open (G10's and my review): the little finger shows as a stub under the palm (same grey as the near hand, so it
+    doesn't read as behind); pale lit spots in the shadow read as blobs; the index's nail doesn't show from the side; the
+    thumbnail is still a little sticker-like; the two thumb poses overlap for about 0.5 s mid-move on gd_rest; the fingers no
+    longer relax from straight; gdTip's fingertip balls on gd_landscape and gd_strength still drawn the old way.
 
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
