@@ -1734,6 +1734,15 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
     Open for the next round: on gd_rest (t 14.5) the blue "Thumb, from its base" and the red "Was z 24, pinned to the index's
     tip joint" run together on one line; and the check image's labels used code names (finger(), fngGeo), not plain words.
 
+- **F65.14 STANDING (shape study), OPEN** (2026-11-09 11:25, on G7's gd_joints and the finger-style check, live 1794244526-ca02)
+  "why are you so bad at drawing hands, those are genuinely scary and make me very uncomfortable, they look very unnatural " /
+  "i also didn’t want to see all the fingers separated" / "the way you broke down the angles was good but that’s it" / "the area
+  where the finger meets the hand/palm(?) looks by far the weirdest, and there isn’t really anything to signify it’s a cross
+  section".
+  - Keep: the angle breakdown (each joint in plain words, the angles adding up to the fingertip's turn).
+  - Replace: the drawing. One whole hand with the fingers together, not six cut-out fingers. It must look like a real hand,
+    above all where the fingers meet the palm, and must not read as an unexplained slice through a hand.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
