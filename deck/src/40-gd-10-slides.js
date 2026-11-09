@@ -197,6 +197,9 @@ S({
    palm, away from this view, so for its turn the hand is seen along the thumb's bend, where its angles show at true size. The
    wrist's 0 deg is measured in orbit; every finger joint on relaxed hands on the ground (Lee & Jung). The thumb's base: the study
    doesn't name the line it is measured from, so it is shown and not added. ============================== */
+/* (G9) how the thumb's turn shows its bend at true size (2026-11-09 review: G8's palm-up turn read as a glove): 'inset', the side
+   view stays and a circle shows the thumb from the palm; 'turn', the whole hand turns to be seen along the thumb's bend */
+const GH_THUMB = 'inset';
 S({
   id: 'gd_joints', ch: 'shape', theme: 'night', title: 'The rest pose, joint by joint', settle: 17.5,
   src: ['gdLeeJung', 'gdSts57', 'gdBuryanov', 'gdAnsur', 'gdHandModel', 'gdHand3'],
@@ -205,56 +208,76 @@ S({
     const H_ = GD.hand, Ca = H_.cascade, Th = H_.thumb, sum = f => Ca[f].reduce((x, y) => x + y, 0), D2R = Math.PI / 180;
     gdCaptions(t, [[0.6, 'Each joint\'s bend is measured from the bone before it, so the bends add up: the index fingertip points ' + Ca.index.join('° + ') + '° = ' + sum('index') + '° below the back of the hand.'],
       [5.6, 'Every finger adds up the same way. The little finger curls the most: ' + Ca.little.join('° + ') + '° = ' + sum('little') + '°.'],
-      [12.4, 'The thumb bends across the palm, so the hand turns to show its bend side-on: knuckle and tip joint, ' + Th.mcp + '° + ' + Th.ip + '° = ' + (Th.mcp + Th.ip) + '°.'],
+      [12.4, GH_THUMB === 'inset' ? 'The thumb bends toward the palm, so from this side its bend is edge-on. Seen from the palm (the circle), knuckle and tip joint: ' + Th.mcp + '° + ' + Th.ip + '° = ' + (Th.mcp + Th.ip) + '°.'
+        : 'The thumb bends across the palm, so the hand turns to show its bend side-on: knuckle and tip joint, ' + Th.mcp + '° + ' + Th.ip + '° = ' + (Th.mcp + Th.ip) + '°.'],
       [15.4, 'The wrist rests straight, 0°, measured in orbit. Every finger joint here was measured on relaxed hands on the ground.']], { maxW: 1560 });
     /* the beats: each digit's turn [digit, start]; the joints bend in one by one, then the total; back to the index to settle */
     const TURN = [['index', 1.0], ['middle', 5.6], ['ring', 7.8], ['little', 10.0], ['thumb', 12.4], ['index', 15.4]];
     let cur = 0; TURN.forEach((q, i) => { if (t >= q[1]) cur = i; });
     const hlOf = i => TURN[i][0], t0Of = i => TURN[i][1];
     /* each joint of turn i in its turn (j: 0, 1, 2; the total last); the last turn, back on the index to settle, draws them together */
-    const prog = (i, j) => { if (i === TURN.length - 1) return ep(t, t0Of(i) + 0.35 + j * 0.12, t0Of(i) + 0.85 + j * 0.12); const t0 = t0Of(i) + (i === 0 ? 0.35 : 0.3), fast = i > 0 && i < 4 ? 0.62 : 1; return ep(t, t0 + j * 0.95 * fast, t0 + j * 0.95 * fast + 0.75 * fast); };
+    const prog = (i, j) => { if (i === TURN.length - 1) return ep(t, t0Of(i) + 0.35 + j * 0.12, t0Of(i) + 0.85 + j * 0.12); const t0 = t0Of(i) + (i === 0 ? 0.35 : 0.3), fast = i > 0 && i < 4 ? 0.62 : i === 4 ? 0.8 : 1;   /* the thumb's sum in place by 14.8 s, before its turn ends */ return ep(t, t0 + j * 0.95 * fast, t0 + j * 0.95 * fast + 0.75 * fast); };
     const box = [LM, 290, 1110, 628], aB = tileA(t, 0.2, 0); demoWindow(...box, aB);
     /* the side view: the index's knuckle at (ox, oy), 5.6 px per mm; the thumb's view (its knuckle at (tx, ty)) for the thumb's turn */
     /* sized so the whole hand, the fingertips' arcs and their labels sit inside the window (GDHAND.side.box: 187 by 107 mm) */
     const s = 4.55, ox = box[0] + 113 * s + 70, oy = box[1] + 64 + 38 * s, st = 3.62, tx = box[0] + 113 * st + 110, ty = box[1] + 66 + 31 * st;
     /* the thumb's view: the side view fades out, then the thumb's in (never the two at once); and back for the settle */
-    const kSv = (1 - ep(t, 12.4, 12.75)) + ep(t, 15.75, 16.1), kTv = ep(t, 12.75, 13.1) * (1 - ep(t, 15.4, 15.75));
+    const turnV = GH_THUMB !== 'inset';
+    const kSv = turnV ? (1 - ep(t, 12.4, 12.75)) + ep(t, 15.75, 16.1) : 1, kTv = turnV ? ep(t, 12.75, 13.1) * (1 - ep(t, 15.4, 15.75)) : 0;
+    /* (G9, GH_THUMB 'inset') the side view stays; the thumb's bend, seen from the palm along its bend (true size), in a circle
+       in the window's empty top right: (icx, icy) radius ir, the thumb's view at si px per mm, its knuckle at (ix0, iy0) */
+    const kI = turnV ? 0 : ep(t, 12.55, 12.95) * (1 - ep(t, 15.4, 15.75)), icx = box[0] + 962, icy = box[1] + 207, ir = 140, si = 4.2;
+    /* turned 25 deg (the thumb's first bone pointing down a little), so its fingertip's sum sits below it, inside the window; the
+       circle's centre is the thumb view's point (ic0) */
+    const ith = 25 * D2R, ic0 = [8.5, 22.5], iRot = q => [q[0] * Math.cos(ith) - q[1] * Math.sin(ith), q[0] * Math.sin(ith) + q[1] * Math.cos(ith)];
+    const iP = q => { const r = iRot(q); return [icx + si * (r[0] - ic0[0]), icy + si * (r[1] - ic0[1])]; };
     const iNow = cur, fNow = hlOf(iNow), kIn = ep(t, t0Of(iNow), t0Of(iNow) + 0.45), kH = ep(t, 1.0, 1.45);
     G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
     const hA = aB * ep(t, 0.3, 0.9);
     /* the digit lifted now; across a change the last one hands over to the next */
     const fPrev = iNow > 0 ? hlOf(iNow - 1) : null;
     if (kSv > 0.003) {
-      const lifts = fPrev && fPrev !== 'thumb' && fNow !== 'thumb' && kIn < 1 ? [[fPrev, kH * (1 - kIn)], [fNow, kH * kIn]] : [[fNow, kH]];
+      const hand = f => turnV ? f !== 'thumb' : true;      /* the thumb's turn on the side view too (inset): it hands over like the rest */
+      const lifts = fPrev && hand(fPrev) && hand(fNow) && kIn < 1 ? [[fPrev, kH * (1 - kIn)], [fNow, kH * kIn]] : [[fNow, kH]];
       ghPaint('side', ox, oy, s, { alpha: hA * kSv, lifts, fade: [-113, -80] });
     }
     if (kTv > 0.003) ghPaint('thumb', tx, ty, st, { alpha: hA * kTv, hl: 'thumb', kH: 1, fade: [-113, -84] });
     G.restore();
+    if (kI > 0.003) {
+      G.save(); G.globalAlpha = hA * kI; G.fillStyle = TH ? 'rgba(17,17,17,0.03)' : 'rgba(255,255,255,0.025)'; G.beginPath(); G.arc(icx, icy, ir, 0, TAU); G.fill(); G.restore();
+      G.save(); G.beginPath(); G.arc(icx, icy, ir, 0, TAU); G.clip();
+      G.translate(icx, icy); G.rotate(ith);
+      const lo = [-si * (ic0[0] * Math.cos(ith) + ic0[1] * Math.sin(ith)), -si * (-ic0[0] * Math.sin(ith) + ic0[1] * Math.cos(ith))];   /* the origin, in the turned frame */
+      ghPaint('thumb', lo[0], lo[1], si, { alpha: hA * kI, hl: 'thumb', kH: 1 });
+      G.restore();
+      circle(icx, icy, ir, { color: C.mute, w: 1.4, alpha: hA * kI * 0.7 });
+      text('The thumb, seen from the palm', box[0] + box[2] - 28, box[1] + 44, { role: 'label', size: 20, color: C.mute, align: 'right', alpha: hA * kI });
+    }
     /* the arcs: the digit whose turn it is, on whichever view shows it */
-    const M = { s, X: x => ox + x * s, Y: y => oy + y * s }, Mt = { s: st, X: x => tx + x * st, Y: y => ty + y * st };
+    const M = { s, X: x => ox + x * s, Y: y => oy + y * s }, Mt = turnV ? { s: st, X: x => tx + x * st, Y: y => ty + y * st } : { s: si, P: iP };
     const marks = (f, i, al) => {
       if (al <= 0.003) return;
       if (f === 'thumb') {
-        const J = ghJoints('thumb', 'thumb'), tot = (Th.mcp + Th.ip) * D2R, geo = { joints: J, tip: ghTip('thumb', 'thumb', tot) };
-        gdJointMarks(geo, [0, Th.mcp, Th.ip], [0, prog(i, 0), prog(i, 1)], Mt, { a: al, kSum: prog(i, 2), off: 17, refLen: 4, skip: [true], R: 10, ex: 15, Rt: 11 });
-        const b = J[0], kb = ep(t, t0Of(i) + 2.6, t0Of(i) + 3.1) * al;
-        circle(Mt.X(b[0]), Mt.Y(b[1]), 4.5, { fill: C.ink2, color: C.panel, w: 1.5, alpha: kb });
+        /* the thumb's knuckle and tip joint, from its first bone (the line runs back to its base, where the base's 45 deg is
+           shown and not added: the study doesn't name the line it is measured from) */
+        ghMarks('thumb', 'thumb', [Th.mcp, Th.ip], [prog(i, 0), prog(i, 1)], Mt, turnV ? { a: al, kSum: prog(i, 2), R: 10, Rt: 11, refLen: 80 } : { a: al, kSum: prog(i, 2), R: 10, Rt: 10, refLen: 15 });
+        if (!turnV) return;      /* the circle shows the knuckle's side; the base (not added) is in the table */
+        const b = ghView('thumb').J['thumb-metacarpal'], kb = ep(t, t0Of(i) + 2.6, t0Of(i) + 3.1) * al;
+        circle(Mt.X(b[0]), Mt.Y(b[1]), 4.6, { fill: C.ink2, color: C.panel, w: 1.5, alpha: kb });
         rich([{ s: 'Base', role: 'label', size: 17, color: C.mute }, { s: Th.cmc + '°', role: 'num', size: 21, color: C.ink2, gap: 7 }], Mt.X(b[0]), Mt.Y(b[1]) + 34, { alpha: kb, align: 'center' });
         return;
       }
-      const A = Ca[f], tot = sum(f) * D2R, J = ghJoints('side', f), geo = { joints: J, tip: ghTip('side', f, tot) };
-      /* the bones' lines ride off the joints: the index's 27 mm, clear of the hand's top (the middle finger rises 21 mm over its bones);
-         the others' near their own bones, over the nearer fingers (see-through then) */
-      gdJointMarks(geo, A, [prog(i, 0), prog(i, 1), prog(i, 2)], M, { a: al, kSum: prog(i, 3), off: { index: 27, middle: 17, ring: 13, little: 13 }[f], refLen: 4, R: 8.5, ex: 13, Rt: 9.5 });
+      /* (G9) on the finger itself: a line through its joints, a dot on each, the arcs beside them */
+      ghMarks('side', f, Ca[f], [prog(i, 0), prog(i, 1), prog(i, 2)], M, { a: al, kSum: prog(i, 3), R: 8.5, Rt: 12, side: [1, 1, -1], lab: [[0, 0], [0, 0], [-12, -14]] });
     };
     const kOut = i => (i + 1 < TURN.length ? 1 - ep(t, t0Of(i + 1) - 0.05, t0Of(i + 1) + 0.35) : 1);
-    if (iNow > 0) marks(hlOf(iNow - 1), iNow - 1, aB * kOut(iNow - 1) * (hlOf(iNow - 1) === 'thumb' ? kTv : 1));
-    marks(fNow, iNow, aB * ep(t, t0Of(iNow) + 0.1, t0Of(iNow) + 0.5) * (fNow === 'thumb' ? kTv : clamp(kSv)));
+    if (iNow > 0) marks(hlOf(iNow - 1), iNow - 1, aB * kOut(iNow - 1) * (hlOf(iNow - 1) === 'thumb' ? (turnV ? kTv : kI) : 1));
+    marks(fNow, iNow, aB * ep(t, t0Of(iNow) + 0.1, t0Of(iNow) + 0.5) * (fNow === 'thumb' ? (turnV ? kTv : kI) : clamp(kSv)));
     text(kTv > 0.003 ? 'Seen along the thumb\'s bend' : 'Seen from the thumb\'s side', box[0] + 28, box[1] + 44, { role: 'label', size: 20, color: C.mute, alpha: aB * (kTv > 0.003 ? kTv : clamp(kSv)) });
     /* the table: every digit, its joints added up, built up as each takes its turn */
     const tb = [box[0] + box[2] + 20, 290, RM - (box[0] + box[2] + 20), 628], aT = tileA(t, 0.25, 1); demoWindow(...tb, aT);
     ghTable(t, tb, aT, TURN, cur, prog);
-    source(t, 'Each joint: Lee & Jung 2014, 40 relaxed hands on the ground (knuckle MCP, middle joint PIP, tip joint DIP; thumb base CMC, knuckle MCP, tip joint IP); sums derived. Wrist: NASA TM-2003-104805, 0° in all crew but one (3°). Hand: WebXR generic hand model (MIT, © 2019 Amazon) fitted to the ANSUR II mean hand and posed at these angles (derived).', { t0: 2.0, maxW: 1760 });
+    source(t, 'Each joint: Lee & Jung 2014, 40 relaxed hands on the ground (knuckle MCP, middle joint PIP, tip joint DIP; thumb base CMC, knuckle MCP, tip joint IP); sums derived. Wrist: NASA TM-2003-104805, 0° in all crew but one (3°). Hand: WebXR generic hand model (MIT, © 2019 Amazon), ANSUR II mean size, posed to show these angles (derived).', { t0: 2.0, maxW: 1760 });
   }
 });
 /** (G8) the table beside the hand: one row per digit (its joints, each counting in as it bends, and where its tip points, in blue),
@@ -265,7 +288,7 @@ function ghTable(t, box, a, TURN, cur, prog) {
   const [x, y, w] = box, xn = x + 26, c1 = x + w - 330, c2 = x + w - 236, c3 = x + w - 142, cS = x + w - 26, y0 = y + 104, rh = 74;
   /* column heads */
   const hd = (s_, cx, al = 'right', col = C.mute) => text(s_, cx, y + 46, { role: 'label', size: 15, color: col, align: al, alpha: a });
-  hd('Knuckle', c1 + 4); hd('Middle', c2 + 4); hd('Tip joint', c3 + 4); hd('Tip points', cS, 'right', C.heroText);
+  hd('Knuckle', c1 + 4); hd('Middle', c2 + 4); hd('Tip joint', c3 + 4); hd('Fingertip', cS, 'right', C.heroText);
   text('joint', c2 + 4, y + 66, { role: 'label', size: 15, color: C.mute, align: 'right', alpha: a });
   line(xn, y + 82, x + w - 26, y + 82, { color: C.hair, w: 1.2, alpha: a });
   const rows = [['index', 'Index finger'], ['middle', 'Middle finger'], ['ring', 'Ring finger'], ['little', 'Little finger'], ['thumb', 'Thumb']];
@@ -295,7 +318,7 @@ function ghTable(t, box, a, TURN, cur, prog) {
   text('Wrist', xn, yw, { role: 'h3', size: 24, color: C.ink, alpha: a * (0.32 + 0.68 * kW) });
   text('0°', cS, yw + 3, { role: 'num', size: 30, color: ink, align: 'right', alpha: a * (0.25 + 0.75 * kW) });
   text('straight, measured in orbit', xn, yw + 26, { role: 'small', size: 16, weight: 600, color: C.mute, alpha: a * kW });
-  text('Tip points: how far the fingertip turns from the back of the hand.', xn, y + box[3] - 52, { role: 'small', size: 16, weight: 600, color: C.mute, alpha: a * ep(t, 4.4, 4.9) });
+  text('Fingertip: how far the fingertip turns from the back of the hand.', xn, y + box[3] - 52, { role: 'small', size: 16, weight: 600, color: C.mute, alpha: a * ep(t, 4.4, 4.9) });
   text('The thumb\'s base is measured from a line the study doesn\'t name.', xn, y + box[3] - 26, { role: 'small', size: 16, weight: 600, color: C.mute, alpha: a * ep(t, 14.9, 15.4) });
 }
 

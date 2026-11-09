@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw
 from scipy import ndimage, sparse
 from skimage import measure
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from hand_pose import Hand, rot, FING
+from hand_pose import Hand, rot, aff, FING
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'out', 'hand3')
@@ -90,6 +90,21 @@ def contours(field, level, s, box, tol=0.3, closed=True):
     return out
 
 
+def unhook(pl, look=3.0, maxturn=25.0):
+    """an open line's ends without a hook: drop end points while the first step turns more than maxturn deg from where the line
+    goes over the next `look` mm (the trace's tick where a run starts on a pixel corner: G8's notch at the index's top line)"""
+    pl = np.asarray(pl, float)
+    for _ in range(2):
+        while len(pl) > 4:
+            seg = np.linalg.norm(np.diff(pl[1:], axis=0), axis=1); j = min(1 + int(np.searchsorted(np.cumsum(seg), look)), len(pl) - 1)
+            d0, d1 = pl[1] - pl[0], pl[j] - pl[1]
+            c = d0 @ d1 / (np.linalg.norm(d0) * np.linalg.norm(d1) + 1e-12)
+            if np.degrees(np.arccos(np.clip(c, -1, 1))) > maxturn: pl = pl[1:]
+            else: break
+        pl = pl[::-1]
+    return pl
+
+
 def edge_runs(region_mask, label, depth, s, box, R_id, min_len=4.0, empty=False):
     """the stretches of a region's edge that are a real edge: the outside is a surface more than DJ mm behind (not empty: the
     silhouette is drawn on its own). Returns open polylines (mm)"""
@@ -123,6 +138,7 @@ def edge_runs(region_mask, label, depth, s, box, R_id, min_len=4.0, empty=False)
             if len(pts) < 3: continue
             pts = measure.approximate_polygon(smooth_line(pts), 0.3)
             mm = np.c_[x0 + (pts[:, 1] + 0.5) / s, y1 - (pts[:, 0] + 0.5) / s]
+            if len(seg) < len(c) - 2: mm = unhook(mm)
             if np.linalg.norm(np.diff(mm, axis=0), axis=1).sum() >= min_len: runs.append(mm)
     return runs
 
@@ -144,11 +160,28 @@ def nail_fields(h, V, n):
         Lf = a[sel].max()
         a0, a1 = c0 * Lf, c1 * Lf; am, ha = (a0 + a1) / 2, (a1 - a0) / 2
         up = n @ R[:, 1]
-        f = 1 - ((a - am) / ha) ** 4 - (b / w) ** 4
+        f = 1 - np.abs((a - am) / ha) ** 2.6 - np.abs(b / w) ** 2.6     # rounder than a box (G9: the thumbnail read as a button)
         f = np.where(sel & (up > 0.25), f, -1.0)
         nf = np.maximum(nf, f)
         fe = np.maximum(fe, np.where(f > -0.2, np.minimum(f + 0.2, (a - (a1 - 1.3)) / 1.3), -1.0))
     return nf, fe
+
+
+def round_shadow(shx, filled, label, s, idx, r_mm=3.0):
+    """the palm's shadow without sharp tips (2026-11-09 review: the web's leaf-shaped shadow between the thumb and the index
+    "ends in a sharp point"; it should read as shadow, not a cut-out): a round opening (a disc of r_mm) of the shadow on the
+    palm, so wherever it tapers thinner than 2 r_mm it ends in a round cap. The shadow is the field's, carried past the outline
+    as before (so its line still crosses the outline cleanly); only where the nearest skin is the palm's or the thumb's is it
+    opened (the fingers' narrow shadows are left alone)"""
+    S = shx < 0
+    rp = r_mm * s
+    E = ndimage.distance_transform_edt(S) > rp                 # eroded
+    if not E.any(): return shx
+    D = ndimage.distance_transform_edt(~E)                     # distance from the eroded shadow: <= rp is the opening
+    g = (rp - D) / s * 0.05                                    # > 0 inside the opening (about the shade's own slope per mm)
+    body = np.isin(label[idx[0], idx[1]], [0, 1])              # the palm's and the thumb's skin (the web is both), carried outward
+    out = np.where(body, np.maximum(shx, -g), shx)
+    return ndimage.gaussian_filter(out, 0.25 * s)
 
 
 def layer(V, F, P, shade, tri_part, include, B, box, s, own=None, nails=None):
@@ -162,11 +195,23 @@ def layer(V, F, P, shade, tri_part, include, B, box, s, own=None, nails=None):
     depth = interp(R, Z, H, W, -1e9)
     Pw = interp(R, P, H, W, 0.0)
     label = np.where(filled, Pw.argmax(-1), -1)
+    gap = np.zeros_like(filled)
+    if own is None:
+        # (G9) a narrow gap through the hand (between the thumb and the palm, from the thumb's side) read as a cut-out: it is
+        # drawn as the shadowed skin behind it, with the lines of the parts in front of it kept (holes under 60 mm2)
+        lab_, nh = ndimage.label(ndimage.binary_fill_holes(filled) & ~filled)
+        if nh:
+            area = ndimage.sum(np.ones_like(lab_), lab_, index=np.arange(1, nh + 1)) / s ** 2
+            gap = np.isin(lab_, 1 + np.nonzero(area < 60)[0])
+            label = np.where(gap, len(PARTS), label); depth = np.where(gap, depth[filled].min() - 50, depth)
     sh = interp(R, shade, H, W, np.nan)
     # the shade carried outward past the edge (nearest), so its line crosses the outline cleanly
     idx = ndimage.distance_transform_edt(~filled, return_distances=False, return_indices=True)
+    filled = filled | gap
     shx = sh[idx[0], idx[1]]
     shx = ndimage.gaussian_filter(shx, 1.2 * s)     # the light/shadow line evened out over about a millimetre (no wander on flat skin)
+    shx = round_shadow(shx, filled, label, s, idx)
+    if gap.any(): shx = np.where(ndimage.binary_dilation(gap, iterations=2), np.minimum(shx, -0.05), shx)
     if own is None:
         mask = filled
     else:
@@ -197,28 +242,91 @@ def q(pl, k=20):
     return np.round(np.asarray(pl) * k).astype(int).ravel().tolist()
 
 
-def build(view='side', preview=True):
-    h = Hand(os.path.join(OUT, 'rest.npz'), os.path.join(HERE, 'out', 'gd-deck.json')).fit().pose_rest(THUMB_TURN)
-    V = h.skin(); F = h.F; P = h.parts(); J = h.joints()
+FSEG = ['metacarpal', 'phalanx-proximal', 'phalanx-intermediate', 'phalanx-distal', 'tip']
+TSEG_ = ['metacarpal', 'phalanx-proximal', 'phalanx-distal', 'tip']
+
+
+def view_basis(h, view):
+    """the view's (right, up, toward the viewer) and its origin joint. Each depends only on frames a finger's or the thumb's
+    flexion leaves alone (the knuckles' own axes, the metacarpals), so posing the joints below never moves the view"""
+    J = h.joints()
     if view == 'side':
         # the side view: along the four fingers' knuckle axes (from the thumb's side), the middle metacarpal level, fingers right
         ax = np.mean([h.axis(FING[f] + '-phalanx-proximal', 0) for f in FING], 0)
         up = h.axis('middle-finger-metacarpal', 1)
         mc = J['middle-finger-phalanx-proximal'] - J['middle-finger-metacarpal']
-        org = J['index-finger-phalanx-proximal']
+        org = 'index-finger-phalanx-proximal'
     else:
         # the thumb's view: along its knuckle's axis, so its knuckle and tip joint bend in the picture's plane at true size; its
         # first bone (the metacarpal) level, pointing right
         ax = h.axis('thumb-phalanx-proximal', 0)
         up = h.axis('thumb-phalanx-proximal', 1)
         mc = J['thumb-phalanx-proximal'] - J['thumb-metacarpal']
-        org = J['thumb-phalanx-proximal']
+        org = 'thumb-phalanx-proximal'
     r, u, tv = basis(ax, up)
     if mc @ r < 0: r = -r                                    # mirror: the digit points right (the deck's z)
     a = np.arctan2(mc @ u, mc @ r)                           # level the reference bone
     r, u = np.cos(a) * r + np.sin(a) * u, -np.sin(a) * r + np.cos(a) * u
     tv = np.cross(r, u) * (1 if np.cross(r, u) @ (-ax) > 0 else -1)
-    B = (r, u, tv)
+    return (r, u, tv), org
+
+
+def drawn_angles(h, B, digit):
+    """a digit's joints' bends as the view draws them (deg, + toward the palm): the turn between its bones' projections, each
+    from the bone before it (the knuckle from the metacarpal), as the study measures them"""
+    r, u = B[0], B[1]
+    pre, seg = ('thumb', TSEG_) if digit == 'thumb' else (FING[digit], FSEG)
+    p = [np.array([h.pos(pre + '-' + s_) @ r, h.pos(pre + '-' + s_) @ u]) for s_ in seg]
+    d = [p[i + 1] - p[i] for i in range(len(p) - 1)]
+    return [-np.degrees(np.arctan2(d[i][0] * d[i + 1][1] - d[i][1] * d[i + 1][0], d[i] @ d[i + 1])) for i in range(len(d) - 1)]
+
+
+ADDUCT = {'index': 6.0, 'ring': 6.0, 'little': 11.0}   # deg toward the middle finger, the thumb's view only (an estimate: G9)
+
+
+def adduct(h, amounts):
+    """the fingers brought together (each turned about its knuckle's own back-of-the-finger axis toward the middle finger's tip):
+    the model's open hand has its fingers spread, which from the palm read as a glove's (2026-11-09 review). The study gives no
+    spread; this is an estimate, used only where the palm shows"""
+    mt = h.pos('middle-finger-tip')
+    for f, deg in amounts.items():
+        ch = h.chain(f, 1); Y = h.axis(ch[0], 1); p = h.pos(ch[0]); tip = h.pos(FING[f] + '-tip')
+        sg = min((1, -1), key=lambda g: np.linalg.norm(rot(Y, g * deg) @ (tip - p) + p - mt))
+        h.apply(ch, aff(rot(Y, sg * deg), p))
+        h.log.append(f'{f}: turned {deg} deg toward the middle finger (the thumb\'s view only, an estimate)')
+    return h
+
+
+def posed(spread=None):
+    """the study's hand at rest, each joint posed so that the view that shows it draws the study's angle (within 0.05 deg):
+    the fingers in the side view, the thumb's knuckle and tip joint in the thumb's view. A finger's knuckle axis is up to 11 deg
+    off the side view's line of sight (the fingers fan out), so a joint set to its angle about its own axis is drawn up to 2 deg
+    off it; each is turned until the drawing shows the study's number, a change of a few degrees about its own axis"""
+    h = Hand(os.path.join(OUT, 'rest.npz'), os.path.join(HERE, 'out', 'gd-deck.json')).fit()
+    if spread: adduct(h, spread)
+    h.pose_rest(THUMB_TURN)
+    H = h.H
+    for view, digits in (('side', list(FING)), ('thumb', ['thumb'])):
+        B, _ = view_basis(h, view)
+        for dg in digits:
+            want = H['cascade'][dg] if dg != 'thumb' else [H['thumb']['mcp'], H['thumb']['ip']]
+            tgt = list(map(float, want))
+            for _ in range(40):
+                got = drawn_angles(h, B, dg)[:len(want)]
+                err = [w - g for w, g in zip(want, got)]
+                if max(map(abs, err)) < 0.02: break
+                for k in range(len(want)):
+                    tgt[k] += err[k]; h.set_flex(dg, k + 1, tgt[k])
+            h.log.append(f'{dg}: posed about its own axes at {[round(float(x), 2) for x in tgt]} so the {view} view draws {want}')
+    return h
+
+
+def build(view='side', preview=True):
+    h = posed(ADDUCT if view == 'thumb' else None)
+    V = h.skin(); F = h.F; P = h.parts(); J = h.joints()
+    B, orgn = view_basis(h, view)
+    r, u, tv = B
+    org = J[orgn]
     V2 = V - org; Jo = {k: v - org for k, v in J.items()}
     n = smooth_normals(V2, F)
     L = -0.42 * r + 0.91 * u; L = L / np.linalg.norm(L); L = np.cos(np.radians(11.5)) * L + np.sin(np.radians(11.5)) * tv

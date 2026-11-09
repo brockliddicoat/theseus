@@ -522,13 +522,14 @@ function gdLedger(t, x, y, w, title, rows, sum, a, o = {}) {
    at true size. Paths in mm (1/q), x toward the fingertips, y up, the origin the index's knuckle (the thumb's view: the thumb's).
    Each digit is also its own layer (its whole shape, the palm in front of it kept), so one can be lifted out of the rest. ---------- */
 const GH_V = new Map();
-const GH_NEAR = ['thumb', 'index', 'middle', 'ring', 'little'];           /* nearest first, from the thumb's side */
+/* nearest first, as each view sees them: from the thumb's side; from the palm, along the thumb's bend (the thumb nearest) */
+const GH_NEAR = { side: ['thumb', 'index', 'middle', 'ring', 'little'], thumb: ['thumb', 'index', 'middle', 'ring', 'little'] };
 function ghView(v) {
   if (GH_V.has(v)) return GH_V.get(v);
   const D = GDHAND[v], q = D.q;
   const pts = a => { const o = []; for (let i = 0; i < a.length; i += 2) o.push([a[i] / q, -a[i + 1] / q]); return o; };
   const path = (L, close) => { const p = new Path2D(); for (const a of L) { const P = pts(a); P.forEach((c, i) => (i ? p.lineTo(c[0], c[1]) : p.moveTo(c[0], c[1]))); if (close) p.closePath(); } return p; };
-  const one = d => ({ sil: path(d.sil, true), sh: path(d.sh, true), edges: path(d.edges, false), nail: path(d.nail || [], true), free: path(d.free || [], true), silPts: d.sil.map(pts) });
+  const one = d => ({ sil: path(d.sil, true), sh: path(d.sh, true), edges: path(d.edges, false), nail: path(d.nail || [], true), free: path(d.free || [], true), silPts: d.sil.map(pts), edgePts: d.edges.map(pts) });
   const out = Object.assign(one(D), { parts: {}, J: {}, box: D.box, v });
   for (const k in D.parts) out.parts[k] = one(D.parts[k]);
   for (const k in D.joints) out.J[k] = [D.joints[k][0], -D.joints[k][1]];
@@ -547,36 +548,45 @@ function ghTip(v, f, dir) {
   for (const P of ghView(v).parts[f].silPts) for (const q of P) { const d = q[0] * c + q[1] * s_; if (d > bd) { bd = d; best = q; } }
   return best;
 }
-let GH_L = [null, null];
+let GH_L = [];
 function ghCanvas(i, w, h) {
   let c = GH_L[i]; if (!c) c = GH_L[i] = document.createElement('canvas');
   if (c.width < w || c.height < h) { c.width = Math.max(c.width, w); c.height = Math.max(c.height, h); }
-  const X = c.getContext('2d'); X.setTransform(1, 0, 0, 1, 0, 0); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over'; X.clearRect(0, 0, w, h); return X;
+  const X = c.getContext('2d'); X.setTransform(1, 0, 0, 1, 0, 0); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over'; X.filter = 'none'; X.clearRect(0, 0, w, h); return X;
 }
-/** fill, shadow, lines (in the layer's mm frame); outline: also stroke the silhouette (the whole hand: yes; a digit: its edges only) */
-function ghBody(X, d, P, px, outline) {
+/** fill, shadow, nails, lines (in the layer's mm frame). outline: also stroke the silhouette (the whole hand: yes); lines: the
+   edges at all (a digit drawn under a see-through nearer one: no); dpm: device px per mm (the nails' soft edge) */
+function ghBody(X, d, P, px, outline, dpm, lines = true) {
   X.fillStyle = P.lit; X.fill(d.sil);
   X.save(); X.clip(d.sil); X.fillStyle = P.sh; X.fill(d.sh, 'evenodd');
-  /* the nails, as the film's ("A Soft"): the skin's greys a little lighter, the free edge paler, the skin's fold round them */
+  /* the nails, as the film's ("A Soft"): the skin's greys a little lighter, the free edge paler. No line of their own (G9: the
+     thumbnail's closed outline read as a button): the tone's edge is soft instead, feathered over a few tenths of a millimetre */
   const NS = FNG_NAIL, k = P.k;
+  X.save(); X.filter = 'blur(' + Math.max(0.4, 0.16 * dpm).toFixed(2) + 'px)';
   X.fillStyle = rgba('#FFFFFF', NS.tone[k]); X.fill(d.nail);
   X.save(); X.clip(d.nail); X.fillStyle = rgba('#FFFFFF', NS.free[k]); X.fill(d.free); X.restore();
-  X.strokeStyle = P.line; X.globalAlpha *= NS.fold[k]; X.lineWidth = 1.0 * px; X.stroke(d.nail); X.globalAlpha /= NS.fold[k];
   X.restore();
+  X.restore();
+  if (!lines) return;
   X.lineJoin = 'round'; X.lineCap = 'round'; X.strokeStyle = P.edge; X.lineWidth = P.ew * px;
   X.stroke(d.edges); if (outline) X.stroke(d.sil);
 }
 /**
- * The hand, view v ('side' | 'thumb'), its origin at (x, y) on the stage, s px per mm. o = { alpha, hl (a digit lifted out of
- * the rest), kH (0..1: how far), dim (how far the rest recedes, 0.62), fade: [x0, x1] (mm: the forearm fades out from x1 back to
- * x0), ghost (the nearer digits' lines over the lifted one, 0.5) }. The lifted digit is drawn whole over the receding hand, its
- * base fading into the palm behind its knuckle; the digits nearer the viewer stay as faint lines over it.
+ * The hand, view v ('side' | 'thumb'), its origin at (x, y) on the stage, s px per mm. o = { alpha, hl (the digit whose turn it
+ * is), kH (0..1: how far it is marked), lifts: [[digit, k]] (instead of hl, kH: two at a handover), fade: [x0, x1] (mm: the forearm
+ * fades out from x1 back to x0), see (how see-through the nearer digits get over it, 0.5) }.
+ * (G9, after the 2026-11-09 review of G8's highlight: its fade across the finger's base put a light band at the knuckle, "the area
+ * where the finger meets the hand" Brock called the weirdest, and the dimmed rest read as a dark blob.) The whole hand is always
+ * drawn in its own tones. The digit whose turn it is is marked by its outline only: a brighter line along its own edge, fading
+ * out over its last few millimetres where the edge runs into the palm (never a fill fade, never across the skin). Where a nearer
+ * digit covers it, that nearer digit turns see-through over it (only there), so the whole digit shows.
  */
 function ghPaint(v, x, y, s, o = {}) {
   const a = o.alpha == null ? 1 : o.alpha; if (!(a > 0.003)) return;
   const H = ghView(v), P = fngPal(), [bx, by, bw, bh] = H.box;
   const T0 = G.getTransform(), dev = (typeof APP !== 'undefined' && APP.scale ? APP.scale * (APP.dpr || 1) : 1), sEff = s * Math.hypot(T0.a, T0.b) / dev, px = 1 / sEff;
   const G0 = G; G0.save(); G0.translate(x, y); G0.scale(s, s); const M = G0.getTransform(); G0.restore();
+  const dpm = Math.hypot(M.a, M.b);
   /* the box in device pixels (y down: the box's top is -by) */
   const cs = [[bx, -by], [bx + bw, -by], [bx, -by + bh], [bx + bw, -by + bh]].map(q => [M.a * q[0] + M.c * q[1] + M.e, M.b * q[0] + M.d * q[1] + M.f]);
   const cw = G0.canvas.width, ch = G0.canvas.height;
@@ -586,30 +596,99 @@ function ghPaint(v, x, y, s, o = {}) {
   const ramp = (gr, k0 = 1) => { for (let i = 0; i <= 8; i++) { const u = i / 8; gr.addColorStop(u, 'rgba(0,0,0,' + (k0 * (1 - u * u * (3 - 2 * u))).toFixed(3) + ')'); } return gr; };
   const lw = x1 - x0, lh = y1 - y0, fadeOut = X => { if (!o.fade) return; const [f0, f1] = o.fade; X.save(); X.globalCompositeOperation = 'destination-out';
     X.fillStyle = ramp(X.createLinearGradient(f0, 0, f1, 0)); X.fillRect(bx - 50, -by - 50, f1 - bx + 50, bh + 100); X.restore(); };
-  const lifts = (o.lifts || (o.hl ? [[o.hl, o.kH == null ? 1 : o.kH]] : [])).filter(q => q[1] > 0.003), kH = lifts.reduce((m, q) => Math.max(m, clamp(q[1])), 0);
-  /* the whole hand */
-  const L0 = ghCanvas(0, lw, lh); L0.setTransform(M.a, M.b, M.c, M.d, M.e - x0, M.f - y0);
-  ghBody(L0, H, P, px, true); fadeOut(L0);
-  G0.save(); G0.setTransform(1, 0, 0, 1, 0, 0); G0.globalAlpha = G0.globalAlpha * a * (1 - (o.dim == null ? 0.45 : o.dim) * kH);
-  G0.drawImage(GH_L[0], 0, 0, lw, lh, x0, y0, lw, lh); G0.restore();
-  for (const [f, k] of lifts) ghLift(v, H, f, clamp(k), P, px, M, x0, y0, lw, lh, a, ramp, o);
+  const lifts = (o.lifts || (o.hl ? [[o.hl, o.kH == null ? 1 : o.kH]] : [])).filter(q => q[1] > 0.003);
+  const put = (i, al) => { G0.save(); G0.setTransform(1, 0, 0, 1, 0, 0); G0.globalAlpha = G0.globalAlpha * al; G0.drawImage(GH_L[i], 0, 0, lw, lh, x0, y0, lw, lh); G0.restore(); };
+  const lay = i => { const X = ghCanvas(i, lw, lh); X.setTransform(M.a, M.b, M.c, M.d, M.e - x0, M.f - y0); return X; };
+  /* the whole hand, in its own tones */
+  const L0 = lay(0); ghBody(L0, H, P, px, true, dpm); fadeOut(L0); put(0, a);
+  for (const [f, k] of lifts) ghMark(v, H, f, clamp(k), P, px, dpm, lay, put, a, o, fadeOut);
 }
-/** one digit lifted out of the hand (ghPaint): whole, its base fading behind the knuckle into the palm, the nearer digits as faint
-   lines over it, set down at k */
-function ghLift(v, H, f, kH, P, px, M, x0, y0, lw, lh, a, ramp, o) {
-  const G0 = G, [bx, by, bw, bh] = H.box;
-  const d = H.parts[f], J = ghJoints(v, f), L1 = ghCanvas(1, lw, lh); L1.setTransform(M.a, M.b, M.c, M.d, M.e - x0, M.f - y0);
-  ghBody(L1, d, P, px, false);
-  { const k0 = f === 'thumb' ? J[1] : J[0], k1 = J[f === 'thumb' ? 2 : 1], ux = k1[0] - k0[0], uy = k1[1] - k0[1], ul = Math.hypot(ux, uy) || 1, e = [ux / ul, uy / ul];
-    /* fully gone just past the knuckle (where the layer's own edge crosses the skin), whole 12 mm on: no edge across the finger */
-    const GR = { thumb: [-6, 8], index: [7, 19], middle: [9, 21], ring: [12, 24], little: [12, 24] }, [g0, g1] = GR[f];   /* the far fingers' knuckles sit under the palm's edge: start further out */
-    L1.save(); L1.globalCompositeOperation = 'destination-out';
-    L1.fillStyle = ramp(L1.createLinearGradient(k0[0] + e[0] * g0, k0[1] + e[1] * g0, k0[0] + e[0] * g1, k0[1] + e[1] * g1));
-    L1.fillRect(bx - 50, -by - 50, bw + 100, bh + 100); L1.restore(); }
-  /* the nearer digits: faint lines over it, so it reads as behind them */
-  const near = GH_NEAR.slice(0, GH_NEAR.indexOf(f));
-  if (near.length) { L1.save(); L1.lineJoin = 'round'; L1.lineCap = 'round'; L1.strokeStyle = P.edge; L1.lineWidth = P.ew * px; L1.globalAlpha = o.ghost == null ? 0.32 : o.ghost;
-    for (const n of near) L1.stroke(H.parts[n].edges); L1.restore(); }
-  G0.save(); G0.setTransform(1, 0, 0, 1, 0, 0); G0.globalAlpha = G0.globalAlpha * a * kH;
-  G0.drawImage(GH_L[1], 0, 0, lw, lh, x0, y0, lw, lh); G0.restore();
+/** (G9) the digit whose turn it is, marked over the whole hand (ghPaint): the nearer digits see-through where they cover it, then
+   its outline brighter, fading out where it runs into the palm */
+function ghMark(v, H, f, k, P, px, dpm, lay, put, a, o, fadeOut) {
+  const d = H.parts[f], near = GH_NEAR[v].slice(0, GH_NEAR[v].indexOf(f)).filter(n => H.parts[n]);
+  if (near.length) {
+    /* where the nearer digits cover it: the digit itself, drawn in its own tones over them at o.see, and their edges again,
+       fainter, so they still read as in front */
+    const L2 = lay(2); L2.fillStyle = '#000'; for (const n of near) L2.fill(H.parts[n].sil);
+    const L1 = lay(1); ghBody(L1, d, P, px, false, dpm, false);
+    L1.save(); L1.setTransform(1, 0, 0, 1, 0, 0); L1.globalCompositeOperation = 'destination-in'; L1.drawImage(GH_L[2], 0, 0); L1.restore();
+    L1.save(); L1.clip(d.sil); L1.lineJoin = 'round'; L1.lineCap = 'round'; L1.strokeStyle = P.edge; L1.lineWidth = P.ew * px; L1.globalAlpha = 0.7;
+    for (const n of near) L1.stroke(H.parts[n].edges); L1.restore();
+    fadeOut(L1); put(1, a * k * (o.see == null ? 0.5 : o.see));
+  }
+  /* its outline, brighter: each run of its edge stroked in short pieces, fading over its last FADE mm at either end (a run ends
+     where the edge runs into the palm, or behind the palm); behind a see-through nearer digit, a little fainter */
+  const L3 = lay(3), FADE = 9, wq = P.ew * 1.55 * px;
+  L3.lineCap = 'round'; L3.lineJoin = 'round'; L3.strokeStyle = TH ? 'rgba(17,17,17,0.95)' : 'rgba(250,250,252,0.97)'; L3.lineWidth = wq;
+  for (const R of d.edgePts) {
+    if (R.length < 2) continue;
+    const cum = [0]; for (let i = 1; i < R.length; i++) cum.push(cum[i - 1] + Math.hypot(R[i][0] - R[i - 1][0], R[i][1] - R[i - 1][1]));
+    const L = cum[cum.length - 1], closed = Math.hypot(R[0][0] - R[R.length - 1][0], R[0][1] - R[R.length - 1][1]) < 0.6;
+    for (let i = 1; i < R.length; i++) {
+      const m = (cum[i] + cum[i - 1]) / 2, e = closed ? 1 : smooth(clamp(Math.min(m, L - m) / FADE));
+      if (e <= 0.01) continue;
+      L3.globalAlpha = e; L3.beginPath(); L3.moveTo(R[i - 1][0], R[i - 1][1]); L3.lineTo(R[i][0], R[i][1]); L3.stroke();
+    }
+  }
+  L3.globalAlpha = 1;
+  if (near.length) { L3.save(); L3.setTransform(1, 0, 0, 1, 0, 0); L3.globalCompositeOperation = 'destination-out'; L3.globalAlpha = 0.4; L3.drawImage(GH_L[2], 0, 0); L3.restore(); }
+  fadeOut(L3); put(3, a * k);
+}
+/** (G9) a digit's bends marked on the hand itself (2026-11-09 review: G8's guides floated about 25 mm over the joints; "the dots
+   must clearly belong to the joints"). A thin line through its joints, the bones as straight lines: in along the bone before the
+   first joint (a finger's long hand bone, under the back of the hand; the thumb's first bone), then joint to joint to the
+   fingertip. A dot on each joint and beside it, dashed, the bone before carried straight on, and the arc from there to the next
+   bone with its number, counting in. At the fingertip, in blue: the back of the hand's direction and the fingertip's, one arc
+   ticked at each joint's share, and the sum. The lines run through the drawing's own joints and the arcs span its own bends; the
+   hand is posed so those are the study's (hand_draw.posed: within 0.1 deg), so line, arc and number agree.
+   v, f: view and digit; A: the joints' angles (deg, the study's); kk: each joint's progress (0..1); M: { X, Y, s } (mm to px);
+   o = { a, kSum, R (mm, the arcs), Rt (mm, the sum's arc), refLen (mm of the bone before shown), lab: [[dx, dy] px per joint], totLab };
+   M.P: a mapping of whole points instead of X and Y (a turned view) */
+function ghMarks(v, f, A, kk, M, o = {}) {
+  const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
+  const Jv = ghView(v).J, s = M.s, P = M.P || (q => [M.X(q[0]), M.Y(q[1])]);
+  const names = f === 'thumb' ? ['metacarpal', 'phalanx-proximal', 'phalanx-distal', 'tip'].map(x => 'thumb-' + x)
+    : ['metacarpal', 'phalanx-proximal', 'phalanx-intermediate', 'phalanx-distal', 'tip'].map(x => GH_JN[f] + '-' + x);
+  const Q = names.map(n => P(Jv[n])), n = Q.length - 2;     /* Q[0]: the bone before's start; Q[1..n]: the joints; Q[n + 1]: the tip */
+  const ph = []; for (let i = 0; i <= n; i++) ph.push(Math.atan2(Q[i + 1][1] - Q[i][1], Q[i + 1][0] - Q[i][0]));
+  const wrap = x => { while (x > Math.PI) x -= TAU; while (x < -Math.PI) x += TAU; return x; };
+  const tn = []; for (let i = 1; i <= n; i++) tn.push(wrap(ph[i] - ph[i - 1]));
+  const ink = TH ? C.ink : '#F4F4F6', halo = TH ? 'rgba(255,255,255,0.55)' : 'rgba(12,12,14,0.5)', kG = clamp(Math.max(...kk) * 3);
+  const dir = f_ => [Math.cos(f_), Math.sin(f_)];
+  const stroke = (pts, w, col, al, dash) => { if (al <= 0.003) return; G.save(); G.globalAlpha = al; G.lineJoin = 'round'; G.lineCap = 'round'; G.setLineDash(dash || []);
+    G.beginPath(); pts.forEach((q, i) => (i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]))); G.strokeStyle = halo; G.lineWidth = w + 3; G.stroke(); G.strokeStyle = col; G.lineWidth = w; G.stroke(); G.restore(); };
+  const arcS = (c, R, f0, f1, w, col, al) => { if (al <= 0.003 || Math.abs(f1 - f0) < 0.002) return; G.save(); G.globalAlpha = al; G.lineCap = 'round';
+    G.beginPath(); G.arc(c[0], c[1], R, f0, f1, f1 < f0); G.strokeStyle = halo; G.lineWidth = w + 3; G.stroke(); G.strokeStyle = col; G.lineWidth = w; G.stroke(); G.restore(); };
+  /* the line: the bone before (refLen mm of it), then joint to joint to the fingertip */
+  const r0 = Math.min((o.refLen || 26) * s, Math.hypot(Q[1][0] - Q[0][0], Q[1][1] - Q[0][1])), d0 = dir(ph[0]);
+  stroke([[Q[1][0] - d0[0] * r0, Q[1][1] - d0[1] * r0]].concat(Q.slice(1)), 2, ink, a * 0.8 * kG);
+  /* each joint */
+  for (let i = 1; i <= n; i++) {
+    const ki = kk[i - 1]; if (ki <= 0) continue;
+    const c = Q[i], f0 = ph[i - 1], t_ = tn[i - 1], f1 = f0 + t_ * ki, R = (o.R || 8.5) * s, ex = R + 12, al = a * clamp(ki * 3), sg = t_ >= 0 ? 1 : -1;
+    stroke([c, [c[0] + Math.cos(f0) * ex, c[1] + Math.sin(f0) * ex]], 1.5, ink, al * 0.85, [5, 4]);
+    arcS(c, R, f0, f1, 2.8, ink, al);
+    G.save(); G.globalAlpha = al; G.fillStyle = halo; G.beginPath(); G.arc(c[0], c[1], 6.5, 0, TAU); G.fill(); G.fillStyle = ink; G.beginPath(); G.arc(c[0], c[1], 4.6, 0, TAU); G.fill(); G.restore();
+    /* the number: past the dashed line's end, on the side away from the bend (o.side[i] < 0: past the next bone, on the bend's
+       side, where the fingertip's sum would crowd it) */
+    const inside = o.side && o.side[i - 1] < 0, fb = inside ? ph[i] : f0, q_ = inside ? -1 : 1;
+    const nb = [Math.sin(fb) * sg * q_, -Math.cos(fb) * sg * q_], nud = (o.lab && o.lab[i - 1]) || [0, 0], rr = R + 16;
+    const lx = c[0] + Math.cos(fb) * rr + nb[0] * 20 + nud[0], ly = c[1] + Math.sin(fb) * rr + nb[1] * 20 + nud[1];
+    text(Math.round(A[i - 1] * ki) + '°', lx, ly + 9, { role: 'num', size: 26, color: ink, align: 'center', alpha: al, glow: halo, glowR: 9 });
+  }
+  /* the sum at the fingertip */
+  const kS = o.kSum == null ? 1 : o.kSum, tot = tn.reduce((p, q) => p + q, 0) * clamp(kS), sum = A.reduce((p, q) => p + q, 0);
+  if (kS > 0.004 && Math.abs(tot) > 0.004) {
+    const c = Q[n + 1], R = (o.Rt || 9.5) * s, ex = R + 18, al = a * clamp(kS * 2), f0 = ph[0], sg = tot >= 0 ? 1 : -1;
+    stroke([c, [c[0] + Math.cos(f0) * ex, c[1] + Math.sin(f0) * ex]], 1.6, C.heroText, al * 0.9, [5, 4]);
+    stroke([c, [c[0] + Math.cos(f0 + tot) * ex, c[1] + Math.sin(f0 + tot) * ex]], 1.6, C.heroText, al * 0.9, [5, 4]);
+    G.save(); G.globalAlpha = al * 0.24; G.fillStyle = C.hero; G.beginPath(); G.moveTo(c[0], c[1]); G.arc(c[0], c[1], R, f0, f0 + tot, tot < 0); G.closePath(); G.fill(); G.restore();
+    arcS(c, R, f0, f0 + tot, 3, C.heroText, al);
+    let acc = f0; for (let i = 0; i < n - 1; i++) { acc += tn[i]; if (Math.abs(acc - f0) >= Math.abs(tot) - 0.004) break; const u = dir(acc);
+      stroke([[c[0] + u[0] * (R - 7), c[1] + u[1] * (R - 7)], [c[0] + u[0] * (R + 7), c[1] + u[1] * (R + 7)]], 2.2, C.heroText, al); }
+    const ma = f0 + sg * Math.min(Math.abs(tot) / 2, 0.45), r_ = R + 28, nt = o.totLab || [0, 0];
+    text(Math.round(sum * clamp(kS)) + '°', c[0] + Math.cos(ma) * r_ + 10 + nt[0], c[1] + Math.sin(ma) * r_ + 10 + nt[1], { role: 'num', size: 28, color: C.heroText, align: 'center', alpha: al, glow: halo, glowR: 9 });
+  }
+  return { Q, ph, tn };
 }
