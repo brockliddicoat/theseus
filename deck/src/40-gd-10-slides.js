@@ -114,16 +114,30 @@ S({
     const zK = lerp(lerp(lifted.zK - 6, heel.zK, kH), lifted.zK, kL), yK = lerp(lerp(lifted.yK + 9, heel.yK, kH), lifted.yK, kL);
     const g = lerp(lerp(0, heel.gamma_deg, kH), 0, kL) * Math.PI / 180;
     G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
-    /* the hand, rendered (G6): it relaxes (the relax frames), lowers onto the hump (to the 'heel' frame), then lifts (to 'lifted');
-       each step mixes the frames either side of its progress. The far layer (palm, middle, ring, little) passes behind the Sora
-       once it is there; the Sora's line is drawn between the layers; the index and the thumb stay in front */
-    const P = gdHandPose(zK, yK, g, relax);
-    const list = kL > 0 ? gdSeq(gdStepSeq('hl', 'heel', 'lifted'), kL) : kH > 0 ? gdSeq(gdStepSeq('fh', 'rest_100', 'heel'), kH) : gdSeq(gdRelaxSeq(), relax);
-    gdHandDraw(list, map, zK, yK, g, aB * ep(t, 0.4, 1.0), { clip: () => gdClipOutSora(map, box), clipIn: () => gdClipInSora(map), clipK: kM, between: () => {
-      /* the Sora's side profile and the pad line arrive with the second beat */
-      line(box[0] + 24, map.Y(0), box[0] + box[2] - 24, map.Y(0), { color: C.hair, w: 1.5, alpha: aB * kM });
-      poly(GD.sora.profile.map(q => [map.X(q[0]), map.Y(q[1])]), { color: C.second, w: 3, alpha: aB, p: kM });
-    } });
+    /* the hand (G7, after Brock 2026-11-09: "the same style as the fingers we have on our presentation"): drawn as the film draws a
+       finger, every joint bent as the model bends it. Far to near: the little, ring and middle fingers (once the Sora is there they
+       pass behind it: they rest on its far half), the Sora's line, the index carrying the back of the hand, the palm and the forearm,
+       then the thumb on its nail. The model ends each finger's last bone on the surface it touches, so the drawn skin's front sits
+       there (gdStraight, contact) */
+    const P = gdHandPose(zK, yK, g, relax), hA = aB * ep(t, 0.4, 1.0), rot = -g, D2R = Math.PI / 180;
+    const angF = f => { const A = H_.cascade[f]; return [A[2], A[1], A[0]].map(v => v * relax * D2R); };
+    for (const f of ['little', 'ring', 'middle']) {
+      const geo = gdDigitGeo(f, angF(f), { back: 26, contact: true }), x = map.X(P[f][0][0]), y = map.Y(P[f][0][1]);
+      if (kM > 0) { gdPaint(geo, x, y, rot, s, { alpha: hA, clip: () => gdClipOutSora(map, box) }); if (kM < 1) gdPaint(geo, x, y, rot, s, { alpha: hA * (1 - kM), clip: () => gdClipInSora(map) }); }
+      else gdPaint(geo, x, y, rot, s, { alpha: hA });
+    }
+    /* the Sora's side profile and the pad line arrive with the second beat */
+    line(box[0] + 24, map.Y(0), box[0] + box[2] - 24, map.Y(0), { color: C.hair, w: 1.5, alpha: aB * kM });
+    poly(GD.sora.profile.map(q => [map.X(q[0]), map.Y(q[1])]), { color: C.second, w: 3, alpha: aB, p: kM });
+    gdPaint(gdDigitGeo('index', angF('index'), { back: 300, contact: true, wrist: g }), map.X(P.index[0][0]), map.Y(P.index[0][1]), rot, s, { alpha: hA });
+    /* the thumb, nearest of all, seen on its nail: from its base (riding with the hand, trials.place) to its tip on the side */
+    const cg = Math.cos(g), sg = Math.sin(g), cmcNow = [P.index[0][0] - TB.cmc_back_mm * cg + TB.cmc_palmar_mm * sg, P.index[0][1] - TB.cmc_back_mm * sg - TB.cmc_palmar_mm * cg];
+    const offOf = G_ => [G_.thumb.tip[0] - G_.thumb.cmc[0], G_.thumb.tip[1] - G_.thumb.cmc[1]], oL = offOf(lifted), oH = offOf(heel);
+    const tOff = [lerp(lerp(oL[0], oH[0], kH), oL[0], kL), lerp(lerp(oL[1], oH[1], kH), oL[1], kL)], tipNow = [cmcNow[0] + tOff[0], cmcNow[1] + tOff[1]];
+    /* only its free part shows: the two bones and its knuckle (56 mm from the tip along the line, the model's bones), the rest fading
+       into the ball of the thumb over the palm */
+    { const a_ = [map.X(cmcNow[0]), map.Y(cmcNow[1])], b_ = [map.X(tipNow[0]), map.Y(tipNow[1])], B_ = TB.bones, kn = Math.hypot(B_[1] + B_[2] * Math.cos(H_.thumb.ip * D2R), B_[2] * Math.sin(H_.thumb.ip * D2R));
+      gdPaint(gdThumbTopGeo(kn + FNG_DIG.thumb.belly + 22), b_[0], b_[1], Math.atan2(a_[1] - b_[1], a_[0] - b_[0]) + Math.PI, s, { alpha: hA, view: 'top', fade: 30 }); }
     gdFadeLeft(box, 150, aB);
     /* palm on the hump: the middle fingertip past the nose */
     const kF = ep(t, 6.6, 7.0) * (1 - ep(t, 8.5, 8.8));
@@ -132,7 +146,7 @@ S({
     const kT = ep(t, 10.0, 10.4);
     for (const f of ['index', 'middle']) { const q = P[f][3]; if (kT > 0) { circle(map.X(q[0]), map.Y(q[1]), 8, { fill: C.hero, alpha: kT }); circle(map.X(q[0]), map.Y(q[1]), 16, { color: C.hero, w: 2, alpha: 0.4 * kT }); } }
     /* the thumb, nearest of all (it rides the near side): its base (CMC) in the palm, its relaxed span to the tip on the side, and
-       the spot G1's pin to the index's DIP gave it (red, fading in after) */
+       the spot G1's pin to the index's DIP (its tip joint) gave it (red, fading in after) */
     const kTh = ep(t, 11.4, 12.0) * aB, kOld = ep(t, 12.4, 12.8) * aB;
     if (kTh > 0) {
       const cmc = lifted.thumb.cmc, a = [map.X(cmc[0]), map.Y(cmc[1])], b = [map.X(thTip[0]), map.Y(thTip[1])];
@@ -141,13 +155,13 @@ S({
       const kB = ep(t, 12.0, 12.4) * aB;
       circle(b[0], b[1], 9, { fill: C.hero, alpha: kB }); circle(b[0], b[1], 18, { color: C.hero, w: 2, alpha: 0.45 * kB });
       text('Thumb, from its base', b[0] - 26, b[1] + 50, { role: 'small', size: 20, weight: 650, color: C.heroText, align: 'right', alpha: kB });
-      text('Base: the CMC joint', a[0] - 22, map.Y(cmc[1] - 26), { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: kTh });
+      text('Thumb\'s base', a[0] - 22, map.Y(cmc[1] - 26), { role: 'label', size: 19, color: C.heroText, align: 'right', alpha: kTh });
       line(a[0] - 4, a[1] + 8, a[0] - 16, map.Y(cmc[1] - 26) - 22, { color: C.heroText, w: 1.2, alpha: kTh * 0.7 });
     }
     if (kOld > 0) {
       const o = [map.X(thOld), map.Y(thTip[1])];
       circle(o[0], o[1], 9, { color: C.red, w: 2.4, alpha: kOld });
-      text('Was z ' + fmtN(thOld, 0) + ', pinned to the index\'s DIP', box[0] + box[2] - 28, o[1] + 50, { role: 'small', size: 20, weight: 650, color: C.red, align: 'right', alpha: kOld });
+      text('Was z ' + fmtN(thOld, 0) + ', pinned to the index\'s tip joint', box[0] + box[2] - 28, o[1] + 50, { role: 'small', size: 20, weight: 650, color: C.red, align: 'right', alpha: kOld });
     }
     G.restore();
     if (kF > 0.5) faultTag(t, 6.9, [map.X(P.middle[3][0]), map.Y(P.middle[3][1])], 'Middle tip past the nose', { to: [map.X(P.middle[3][0]) - 50, map.Y(P.middle[3][1]) + 46], side: 'l', alpha: kF });
@@ -163,78 +177,85 @@ S({
     text(tag[0], box[0] + box[2] - 28, box[1] + 44, { role: 'label', size: 20, color: tag[1], align: 'right', alpha: aB * kTag });
     text('Side view, true scale', box[0] + 28, box[1] + 44, { role: 'label', size: 20, color: C.mute, alpha: aB });
     /* right: what the pose is made of, one tile per beat */
-    const rx = LM + 1160, rw = RM - rx, orb = H_.orbit_flex.reduce((a, b) => a + b, 0) / H_.orbit_flex.length;
-    statTile(t, 1.4, [rx, 290, rw, 200], { value: fmtN(orb, 0) + '°', label: 'Finger flexion in orbit, 9 hands', quiet: true, count: false, align: 'left' });
+    /* (G7) the first tile is the index's curl as gd_joints adds it up (29 + 29 + 10, derived): NASA's 41 deg per finger in orbit (joint
+       not stated) is a different measure and read as a sum of the joints (Brock 2026-11-09: "i dont understand how 29 + 29 + 10 equals
+       41"), so it moves to the source line, said so */
+    const rx = LM + 1160, rw = RM - rx, ixSum = H_.cascade.index.reduce((a, b) => a + b, 0);
+    statTile(t, 1.4, [rx, 290, rw, 200], { value: fmtN(ixSum, 0) + '°', label: 'Index tip below the back of the hand', quiet: true, count: false, align: 'left' });
     statTile(t, 2.2, [rx, 520, rw, 200], { value: '0°', label: 'Wrist bend in orbit, all crew but one', quiet: true, count: false, align: 'left' });
     statTile(t, 5.2, [rx, 750, rw, 200], { value: fmtN(H_.ansur.hand, 1), unit: 'mm', label: 'The hand, ANSUR II mean (men)', quiet: true, count: false, align: 'left' });
-    source(t, 'Hand posed by Lee & Jung 2014 (resting) on Buryanov & Kotiuk\'s bones, scaled to ANSUR II. Orbit: NASA TM-2003-104805. Thumb: its base ' + fmtN(TB.cmc_back_mm, 0) + ' mm behind the index knuckle (Veeger 1997), its bones Haeri 2022 and Freivalds, span ' + fmtN(TB.span, 0) + ' mm. Placement derived; palm skin, base depth, pad height, finger widths and spread are estimates.', { t0: 2.0, maxW: 1760 });
+    source(t, 'Lee & Jung 2014 (relaxed, on the ground) on Buryanov & Kotiuk\'s bones, ANSUR II mean; ' + fmtN(ixSum, 0) + '° = ' + H_.cascade.index.join('° + ') + '° (derived). NASA TM-2003-104805: wrist 0°; its 41° per finger (joint not stated) is a different measure. Thumb base ' + fmtN(TB.cmc_back_mm, 0) + ' mm behind the index knuckle (Veeger 1997), bones Haeri 2022, Freivalds. Placement derived; outlines, base depth, spread: estimates.', { t0: 2.0, maxW: 1760 });
   }
 });
 
-/* ============================== 3b. every joint at rest (G6, Brock 2026-11-08 08:05: "i'd also like the breakdown of each
-   joints angling at rest in zero gravity"). Orbit data where NASA has it (STS-57: the wrist, and each finger's flexion as one
-   number); every joint from Lee & Jung's resting hands on the ground, forearm neutral; the thumb's CMC reference and the spread
-   not stated or not measured, said so. ============================== */
+/* ============================== 3b. every joint at rest, one finger at a time (G7, after Brock 2026-11-09 10:38: "i dont
+   understand how 29 + 29 + 10 equals 41" / "the whole thing should be self explanatory to someone with no anatomy background, just
+   basic math reasoning as a glance and it should communicate the angles of each joint individually at whatever view works best").
+   Each finger drawn as the film draws a finger, from the side; the thumb from the side of its own bend. Each joint's bend is
+   measured from the bone before it, so the bends add up to where the tip points (drawn as one arc, ticked at each share). NASA's
+   one number per finger in orbit (41 deg, joint not stated) is a different measure: in the source line only, said so. The wrist's
+   0 deg is measured in orbit; every finger joint on relaxed hands on the ground (Lee & Jung). The thumb's base: the study doesn't
+   name the line it is measured from, so it is shown and not added. ============================== */
 S({
-  id: 'gd_joints', ch: 'shape', theme: 'night', title: 'The rest pose, joint by joint', settle: 12,
-  src: ['gdSts57', 'gdLeeJung', 'gdBuryanov', 'gdAnsur', 'gdHand', 'gdModel'],
+  id: 'gd_joints', ch: 'shape', theme: 'night', title: 'The rest pose, joint by joint', settle: 13,
+  src: ['gdLeeJung', 'gdSts57', 'gdBuryanov', 'gdAnsur', 'gdHand', 'gdModel'],
   draw: t => {
     header(t, 'The rest pose, joint by joint', { noIdeas: true });
-    const H_ = GD.hand, Ca = H_.cascade, Th = H_.thumb, orb = H_.orbit_flex, oMean = orb.reduce((a, b) => a + b, 0) / orb.length;
-    const ch = Object.values(H_.chords).map(c => c.angle_deg), cLo = Math.min(...ch), cHi = Math.max(...ch);
-    gdCaptions(t, [[0.6, 'Every joint of the relaxed hand, wrist to fingertip. The middle joints curl most, more toward the little finger; the last joints barely bend.'],
-      [5.6, 'In orbit NASA measured the wrist straight and each finger curled ' + fmtN(oMean, 0) + '° on average. The split by joint was measured on the ground, forearm neutral.']], { maxW: 1500 });
-    /* left: the hand, rendered, relaxing; the index's three angles on it, the wrist's line */
-    const box = [LM, 290, 1000, 650], aB = tileA(t, 0.2, 0); demoWindow(...box, aB);
-    const s = 4.8, zK = 0, yK = 0, ox = box[0] + 525, oy = box[1] + 250, map = { s, X: z => ox + z * s, Y: y => oy - y * s };
-    const relax = ep(t, 1.0, 4.2, E.io3);
-    G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
-    gdHandDraw(gdSeq(gdRelaxSeq(), relax), map, zK, yK, 0, aB * ep(t, 0.3, 0.9));
-    gdFadeLeft(box, 200, aB);
-    /* the wrist: the forearm's axis and the metacarpals' in one line, 0 deg (STS-57) */
-    const kw = ep(t, 1.2, 1.7) * aB, wy = map.Y(-6);
-    line(map.X(-96), wy, map.X(-36), wy, { color: C.ink, w: 1.6, dash: [6, 5], alpha: kw * 0.8 });
-    circle(map.X(-96), wy, 5, { fill: C.ink, alpha: kw });
-    text('Wrist 0°', map.X(-96), map.Y(24), { role: 'num', size: 24, color: C.ink, align: 'center', alpha: kw });
-    line(map.X(-96), map.Y(19), map.X(-96), wy - 6, { color: C.ink, w: 1.2, alpha: kw * 0.6 });
-    G.restore();
-    /* the index's angles, counting in as it relaxes, in a column right of the finger */
-    const P = gdHandPose(zK, yK, 0, relax);
-    gdJointArcs(P.index, 'index', relax, map, aB * ep(t, 1.0, 1.4), { off: [27, 27, 25] });
-    /* the thumb's joints, marked where they sit (its angles in the table: seen from the side they are foreshortened) */
-    const TJ = GD_HANDIMG.rest_100 && GD_HANDIMG.rest_100.thumb, kt = ep(t, 2.4, 2.9) * aB;
-    if (TJ && kt > 0) { const TK = gdSeq(gdRelaxSeq(), relax), F0 = GD_HANDIMG[TK[TK.length - 1][0]].thumb;
-      F0.forEach((q, i) => { if (i < 3) circle(map.X(q[2]), map.Y(q[1]), 4.5, { fill: C.ink, color: C.bg, w: 1.5, alpha: kt }); });
-      text('Dots on the thumb: CMC, MCP, IP (angles in the table)', box[0] + 28, box[1] + box[3] - 28, { role: 'label', size: 19, color: C.mute, alpha: kt }); }
-    text('Side view, true scale, the hand floating', box[0] + 28, box[1] + 44, { role: 'label', size: 20, color: C.mute, alpha: aB });
-    /* right: the table, every joint; each row counts in, joint by joint, as the hand relaxes */
-    const tx = LM + 1040, tw = RM - tx, kT = tileA(t, 0.6, 0); demoWindow(tx, 290, tw, 650, kT);
-    text('Flexion at rest, degrees', tx + 28, 290 + 44, { role: 'label', size: 20, color: C.mute, alpha: kT });
-    const rows = [['Wrist', [['Flexion', 0], ['Ulnar', 0]], 'Orbit, STS-57', null], ['Thumb', [['CMC', Th.cmc], ['MCP', Th.mcp], ['IP', Th.ip]], 'Ground, Lee & Jung', null],
-      ['Index', [['MCP', Ca.index[0]], ['PIP', Ca.index[1]], ['DIP', Ca.index[2]]], 'Ground, Lee & Jung', 'index'], ['Middle', Ca.middle.map((v, i) => [['MCP', 'PIP', 'DIP'][i], v]), 'Ground, Lee & Jung', 'middle'],
-      ['Ring', Ca.ring.map((v, i) => [['MCP', 'PIP', 'DIP'][i], v]), 'Ground, Lee & Jung', 'ring'], ['Little', Ca.little.map((v, i) => [['MCP', 'PIP', 'DIP'][i], v]), 'Ground, Lee & Jung', 'little']];
-    const cx = [tx + 236, tx + 340, tx + 444], rh = 70, y0 = 290 + 112;
-    rows.forEach(([nm, cells, src, f], r) => {
-      const y = y0 + r * rh, t0 = 1.0 + r * 0.42, k = ep(t, t0, t0 + 0.4) * kT;
-      text(nm, tx + 28, y + 6, { role: 'h3', size: 26, color: C.ink, alpha: k });
-      /* a small schematic of the finger: its bones at their resting angles, flexing with the count */
-      if (f) { const B = H_.bones[f], A = Ca[f], kc = ep(t, t0, t0 + 1.4, E.io3), sc = 0.5; let p = [tx + 128, y - 8], c = 0; const pts = [p];
-        for (let i = 0; i < 3; i++) { c += A[i] * kc * Math.PI / 180; p = [p[0] + B[i] * sc * Math.cos(c), p[1] + B[i] * sc * Math.sin(c)]; pts.push(p); }
-        poly(pts, { color: C.ink2, w: 2.2, alpha: k }); pts.slice(0, 3).forEach(q => circle(q[0], q[1], 3.2, { fill: C.ink2, alpha: k })); }
-      cells.forEach(([jn, v], j) => {
-        const kj = ep(t, t0 + j * 0.16, t0 + j * 0.16 + 1.2, E.io3), x = cx[j];
-        text(jn, x, y - 22, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: k });
-        text(Math.round(v * kj) + '°', x, y + 8, { role: 'num', size: 28, color: C.ink, align: 'right', alpha: k });
-      });
-      text(src, tx + tw - 28, y + 4, { role: 'label', size: 19, color: C.faint, align: 'right', alpha: k, caps: false });
-      line(tx + 28, y + 24, tx + tw - 28, y + 24, { color: C.hair, w: 1.5, alpha: k });
+    const H_ = GD.hand, Ca = H_.cascade, Th = H_.thumb, sum = f => Ca[f].reduce((x, y) => x + y, 0), D2R = Math.PI / 180;
+    gdCaptions(t, [[0.6, 'Each joint\'s bend is measured from the bone before it, so the bends add up: the index fingertip points ' + Ca.index.join('° + ') + '° = ' + sum('index') + '° below the back of the hand.'],
+      [5.2, 'Every finger adds up the same way. The little finger curls the most, ' + sum('little') + '° in all; the thumb\'s knuckle and tip joint add up to ' + (Th.mcp + Th.ip) + '°.'],
+      [10.0, 'The wrist rests straight, 0°, measured in orbit. Every finger joint here was measured on relaxed hands on the ground.']], { maxW: 1560 });
+    /* six cells: the four fingers, the thumb, the wrist; the fingers start straight and bend one joint at a time */
+    const CW = (RM - LM - 40) / 3, CH = 300, cell = i => [LM + (i % 3) * (CW + 20), 290 + Math.floor(i / 3) * (CH + 20), CW, CH];
+    const NM = { index: 'Index finger', middle: 'Middle finger', ring: 'Ring finger', little: 'Little finger' };
+    const s = 2.45, LW = 196;
+    [['index', 1.2, 1], ['middle', 5.4, 0.6], ['ring', 6.3, 0.6], ['little', 7.2, 0.6]].forEach(([f, t0, sp], i) => {
+      const box = cell(i), aC = tileA(t, 0.25, i); demoWindow(...box, aC);
+      if (aC <= 0.003) return;
+      const A = Ca[f], dk = 0.9 * sp, gp = 0.25 * sp;
+      const k1 = ep(t, t0, t0 + dk), k2 = ep(t, t0 + dk + gp, t0 + 2 * dk + gp), k3 = ep(t, t0 + 2 * dk + 2 * gp, t0 + 2.6 * dk + 2 * gp), tS = t0 + 2.6 * dk + 2.4 * gp, kS = ep(t, tS, tS + 0.5);
+      const geo = gdDigitGeo(f, [A[2] * k3 * D2R, A[1] * k2 * D2R, A[0] * k1 * D2R], { back: 32 });
+      const ox = box[0] + 100, oy = box[1] + 70, M = { s, X: x => ox + x * s, Y: y => oy + y * s };
+      G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
+      gdPaint(geo, ox, oy, 0, s, { alpha: aC, fade: 24, lod: 2 });
+      gdJointMarks(geo, A, [k1, k2, k3], M, { a: aC, kSum: clamp(k1 * 4), off: 11.5 * GD_FTH[f] });
+      G.restore();
+      gdLedger(t, box[0] + box[2] - LW - 24, box[1] + 44, LW, NM[f], [['Knuckle', A[0], k1], ['Middle joint', A[1], k2], ['Tip joint', A[2], k3]], ['Fingertip', sum(f), kS], aC, { note: 'from the back of the hand' });
     });
-    /* the orbit's whole-finger number against the model's knuckle-to-tip angle; the spread, unmeasured */
-    const ko = ep(t, 5.8, 6.3) * kT, yo = y0 + rows.length * rh + 10;
-    rich([{ s: 'Whole finger in orbit', role: 'small', size: 22, weight: 650, color: C.ink2 }, { s: fmtN(oMean, 0) + '°', role: 'num', size: 28, color: C.heroText, gap: 12 }, { s: fmtN(Math.min(...orb), 0) + ' to ' + fmtN(Math.max(...orb), 0) + '°, 9 hands', role: 'small', size: 20, weight: 600, color: C.mute, gap: 12 }], tx + 28, yo, { alpha: ko });
-    text('This cascade, knuckle to tip: ' + fmtN(cLo, 0) + ' to ' + fmtN(cHi, 0) + '° (derived)', tx + 28, yo + 34, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: ep(t, 6.2, 6.7) * kT });
-    text('Not measured: the thumb\'s abduction, the spread between fingers', tx + 28, yo + 66, { role: 'small', size: 20, weight: 600, color: C.mute, alpha: ep(t, 6.6, 7.1) * kT });
-    source(t, 'Orbit: NASA TM-2003-104805 (STS-57): wrist extension 0° in all crew but one (3°), ulnar bend 0° (two hands 9° and 3°), finger flexion 21 to 60°, mean ' + fmtN(oMean, 0) + '°, joint not stated. Each joint: Lee & Jung 2014, 40 people on the ground, forearm neutral; the CMC\'s reference segment not named. Thumb abduction and spread: no source, drawn as estimates.', { t0: 2.0, maxW: 1760 });
+    /* the thumb, from the side of its own bend: its first bone level, the knuckle and the tip joint added up; the base's 45 deg
+       is measured from a line the study doesn't name, so it is shown and left out of the sum */
+    { const box = cell(4), aC = tileA(t, 0.25, 4); demoWindow(...box, aC);
+      if (aC > 0.003) {
+        const t0 = 8.1, dk = 0.54, gp = 0.15, k1 = ep(t, t0, t0 + dk), k2 = ep(t, t0 + dk + gp, t0 + 1.6 * dk + gp), tS = t0 + 1.6 * dk + 1.4 * gp, kS = ep(t, tS, tS + 0.5);
+        const geo = gdDigitGeo('thumb', [Th.ip * k2 * D2R, Th.mcp * k1 * D2R, 0], { back: 12 });
+        const ox = box[0] + 176, oy = box[1] + 78, M = { s, X: x => ox + x * s, Y: y => oy + y * s };
+        G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
+        gdPaint(geo, ox, oy, 0, s, { alpha: aC, fade: 14, lod: 2 });
+        gdJointMarks(geo, [0, Th.mcp, Th.ip], [0, k1, k2], M, { a: aC, kSum: clamp(k1 * 4), off: 12.5, refLen: 4, skip: [true] });
+        G.restore();
+        const b = geo.joints[0], kb = ep(t, tS + 0.3, tS + 0.8) * aC, bx = M.X(b[0]), by = M.Y(b[1]);
+        circle(bx, by, 4.5, { fill: C.ink2, color: C.panel, w: 1.5, alpha: kb });
+        rich([{ s: 'Base', role: 'label', size: 17, color: C.mute }, { s: Th.cmc + '°', role: 'num', size: 21, color: C.ink2, gap: 7 }], bx + 4, M.Y(24) + 18, { alpha: kb, align: 'center' });
+        text('Base ' + Th.cmc + '°: from a line the study doesn\'t name, so it isn\'t added.', box[0] + 24, box[1] + box[3] - 22, { role: 'small', size: 18, weight: 600, color: C.mute, alpha: kb });
+        gdLedger(t, box[0] + box[2] - LW - 24, box[1] + 44, LW, 'Thumb', [['Knuckle', Th.mcp, k1], ['Tip joint', Th.ip, k2]], ['Thumb tip', Th.mcp + Th.ip, kS], aC, { note: 'from its first bone' });
+      } }
+    /* the wrist: in orbit the forearm and the back of the hand rest in one straight line (STS-57) */
+    { const box = cell(5), aC = tileA(t, 0.25, 5); demoWindow(...box, aC);
+      if (aC > 0.003) {
+        const kW = ep(t, 10.2, 10.8), A = Ca.index, geo = gdDigitGeo('index', [A[2] * D2R, A[1] * D2R, A[0] * D2R], { back: 140 });
+        const sw = 2.0, ox = box[0] + 24 + 140 * sw, oy = box[1] + 128, M = { s: sw, X: x => ox + x * sw, Y: y => oy + y * sw }, ink = TH ? C.ink : '#F2F2F2';
+        G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
+        gdPaint(geo, ox, oy, 0, sw, { alpha: aC, fade: 40, lod: 1 });
+        G.restore();
+        const yl = M.Y(-14.5), xw = M.X(-97);
+        line(M.X(-132), yl, M.X(-2), yl, { color: ink, w: 1.6, alpha: aC * 0.7, p: kW });
+        circle(xw, yl, 3.6, { fill: ink, alpha: aC * kW });
+        rich([{ s: 'Wrist', role: 'label', size: 17, color: C.mute }, { s: '0°', role: 'num', size: 27, color: ink, gap: 8 }], xw, yl - 14, { alpha: aC * kW, align: 'center' });
+        text('Wrist', box[0] + 24, box[1] + 44, { role: 'h3', size: 26, color: C.ink, alpha: aC });
+        text('0°', box[0] + box[2] - 24, box[1] + 62, { role: 'num', size: 52, color: ink, align: 'right', alpha: aC * kW });
+        text('Forearm and back of the hand in one line, measured in orbit.', box[0] + 24, box[1] + box[3] - 22, { role: 'small', size: 18, weight: 600, color: C.mute, alpha: aC * kW });
+      } }
+    source(t, 'Each joint: Lee & Jung 2014, 40 people, relaxed hands on the ground, forearm neutral (knuckle MCP, middle joint PIP, tip joint DIP; thumb base CMC, knuckle MCP, tip joint IP); sums derived. Wrist: NASA TM-2003-104805, 0° in all crew but one (3°). NASA\'s 41° per finger in orbit (joint not stated) is a different measure, not a sum of these joints.', { t0: 2.0, maxW: 1760 });
   }
 });
 
