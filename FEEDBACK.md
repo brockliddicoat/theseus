@@ -1742,6 +1742,11 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   - Keep: the angle breakdown (each joint in plain words, the angles adding up to the fingertip's turn).
   - Replace: the drawing. One whole hand with the fingers together, not six cut-out fingers. It must look like a real hand,
     above all where the fingers meet the palm, and must not read as an unexplained slice through a hand.
+  - G8 (11:47-12:20, worktree g8, branch g8-shape-gd): the hand traced from an open hand model (WebXR generic hand, MIT,
+    © 2019 Amazon) fitted to the study's hand and posed at Lee & Jung's angles, drawn flat in the film's greys.
+  - Sent 12:13: the plain new hand (feedback/attachments/F65/1213-new-hand-plain.png). G8's settle still was held back: its
+    lifted finger faded in across the knuckle (a light band right at the finger-palm junction), its angle guides floated about
+    25 mm off the joints, and its thumb view from below read like a glove. G9 is fixing those.
 
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
