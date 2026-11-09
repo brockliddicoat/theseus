@@ -1719,6 +1719,18 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   anatomically proportioned and posed by the joint angles. A per-joint breakdown of the rest posture in zero gravity goes on the
   slide with its sources: wrist; thumb CMC, MCP and IP; each finger's MCP, PIP and DIP.
 
+- **F65.13 STANDING (shape study), IN PROGRESS (G7)** (2026-11-09 10:38, on the clay hand and gd_joints) "i didn’t want a 3d
+  model, i wanted the same style as the fingers we have on our presentation, that still looks very bad, i also am only seeing the
+  angles of one finger here and i dont understand how 29 + 29 + 10 equals 41" / "the whole thing should be self explanatory to
+  someone with no anatomy background, just basic math reasoning as a glance and it should communicate the angles of each joint
+  individually at whatever view works best".
+  - The hand is drawn in the film's own 2D finger style (the kit's finger(): the A Line finger with A Soft nails, F52.1 and
+    F60.1), extended to whole fingers. No 3D renders.
+  - Every finger shows each joint's angle on its own, named in plain words ("knuckle", "middle joint", "tip joint"), with the
+    sum worked out: "29° + 29° + 10° = 68°, how far the fingertip turns".
+  - The orbit's 41° (NASA doesn't say which joint) is no longer set against the per-joint sum. No number on the slide may look
+    like it should equal a sum and not.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
