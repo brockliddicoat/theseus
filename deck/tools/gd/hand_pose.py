@@ -63,9 +63,11 @@ class Hand:
         # 2. each bone along itself to the study's length; what lies beyond moves with its end
         tb = H['thumbBase']['bones']
         targets = {f: H['bones'][f][:2] for f in FING}      # the last bone keeps the model's own fingertip (see the note)
-        targets['thumb'] = [tb[1], tb[2]]
+        # (G10) the thumb's metacarpal too (Haeri: as long as the middle finger's proximal phalanx, 46.9 mm; the model's was 33.2,
+        # its span from the base to the tip's skin 83.5 mm against the study's 96.0, so it could not reach where the study puts it)
+        targets['thumb'] = [tb[0], tb[1], tb[2]]
         for f, L in targets.items():
-            ch = self.chain(f, 1)                      # proximal (thumb: proximal), ..., tip
+            ch = self.chain(f, 0 if f == 'thumb' else 1)   # the fingers: proximal, ..., tip; the thumb: metacarpal, ..., tip
             for j in range(len(L)):
                 a, b = self.pos(ch[j]), self.pos(ch[j + 1]); d = b - a; l = np.linalg.norm(d); u = d / l
                 last = f == 'thumb' and j == len(L) - 1     # only the thumb's list ends at its last bone (the fingers keep theirs)
