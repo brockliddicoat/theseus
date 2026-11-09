@@ -166,6 +166,7 @@ def layer(V, F, P, shade, tri_part, include, B, box, s, own=None, nails=None):
     # the shade carried outward past the edge (nearest), so its line crosses the outline cleanly
     idx = ndimage.distance_transform_edt(~filled, return_distances=False, return_indices=True)
     shx = sh[idx[0], idx[1]]
+    shx = ndimage.gaussian_filter(shx, 1.2 * s)     # the light/shadow line evened out over about a millimetre (no wander on flat skin)
     if own is None:
         mask = filled
     else:
