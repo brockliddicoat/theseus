@@ -1730,6 +1730,9 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
     sum worked out: "29° + 29° + 10° = 68°, how far the fingertip turns".
   - The orbit's 41° (NASA doesn't say which joint) is no longer set against the per-joint sum. No number on the slide may look
     like it should equal a sum and not.
+  - Sent 11:17: gd_joints and the finger-style check (feedback/attachments/F65/1115-gd_joints.png, 1115-finger-style-match.png).
+    Open for the next round: on gd_rest (t 14.5) the blue "Thumb, from its base" and the red "Was z 24, pinned to the index's
+    tip joint" run together on one line; and the check image's labels used code names (finger(), fngGeo), not plain words.
 
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
