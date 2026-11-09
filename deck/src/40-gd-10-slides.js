@@ -118,7 +118,8 @@ S({
     const kS = ep(t, 1.0, 3.4, E.io3), kM = ep(t, 4.4, 5.2), kH = ep(t, 4.8, 6.6, E.cam), kL = ep(t, 8.6, 10.2, E.cam);
     const KL = lifted.joints.index[0], KH = heel.joints.index[0], KF = [KL[0] - 6, KL[1] + 9 + 5 * (1 - kS)];   /* floating: a little above the grip (G6) */
     const K = [lerp(lerp(KF[0], KH[0], kH), KL[0], kL), lerp(lerp(KF[1], KH[1], kH), KL[1], kL)], g = lerp(lerp(0, heel.gamma_deg, kH), 0, kL) * Math.PI / 180;
-    const wHeel = kH * (1 - kL), PL = GDHAND.grip.place, hA = aB * ep(t, 0.4, 1.0);
+    /* the thumb's two poses dissolve over the middle half second of each move only (a double thumb for the whole move read as a ghost) */
+    const wHeel = ep(t, 5.45, 5.95, E.io3) * (1 - ep(t, 9.15, 9.65, E.io3)), PL = GDHAND.grip.place, hA = aB * ep(t, 0.4, 1.0);
     const paint = (layer, o = {}) => ghPaintGrip([['grip', 1 - wHeel], ['heel', wHeel]], layer, map.X(K[0]), map.Y(K[1]), s, -g, Object.assign({ alpha: hA, dy: PL.sh, r2: -PL.lev, fade: [-113, -80] }, o));
     G.save(); G.beginPath(); G.rect(box[0], box[1], box[2], box[3]); G.clip();
     /* far to near: the middle, ring and little fingers (once the Sora is there they pass behind it: they rest on its far half), the
