@@ -34,7 +34,9 @@
   gradient descent", hand-built from the deck's engine (build target 'gd': `python3 tools/build.py gd` -> deck/dist/gd.html;
   slides deck/src/40-gd-*.js; data deck/tools/gd/, research/gd/). Not the Slides type: Brock asked for the film's own assets
   and art style. Republish with publish_files + slug + base_version.
-- Versions: 1794244526-ca02 (2026-11-09 11:15: G7, the film's own finger style (no 3D), gd_joints with every joint of every
+- Versions: 1794249698-dff5 (2026-11-09 12:41: G8 and G9, gd_joints on one whole hand traced from an open hand model (WebXR
+  generic hand, MIT) posed at the measured angles, drawn flat in the film's greys; the thumb's bends in a circle seen from the
+  palm; gd_rest still G7's drawing; 1.7 MB); 1794244526-ca02 (2026-11-09 11:15: G7, the film's own finger style (no 3D), gd_joints with every joint of every
   finger adding up; 1.6 MB); 1794151207-5df0 (2026-11-08 09:20: G6, the clay hand rendered in 3D, the joint-by-joint slide gd_joints; 10
   slides, 3.0 MB); 1794146456-6edb (2026-11-08 08:00: G5, the thumb modelled from its own base, F65.10; trials rerun, trial 3's
   waist at z 4); 1794098831-e906 (2026-11-07 18:47: G4, trial 3 the result, symmetry a rule, valleys scored on each finger's

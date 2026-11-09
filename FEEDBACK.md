@@ -1747,6 +1747,10 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   - Sent 12:13: the plain new hand (feedback/attachments/F65/1213-new-hand-plain.png). G8's settle still was held back: its
     lifted finger faded in across the knuckle (a light band right at the finger-palm junction), its angle guides floated about
     25 mm off the joints, and its thumb view from below read like a glove. G9 is fixing those.
+  - G9 (12:15-12:40): the hand keeps its own tones; the current finger marked by a bright edge along its outline (fading out
+    along the line into the palm, never across the fill); a line through the joints with a dot on each; drawn = labelled within
+    0.1°; "FINGERTIP"; the thumb's bends in a circle "The thumb, seen from the palm". Live 1794249698-dff5 (gd_rest still G7's).
+  - Sent 12:41: feedback/attachments/F65/1241-gd_joints-one-hand.png and 1241-thumb-circle.png.
 
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
