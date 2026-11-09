@@ -1719,7 +1719,7 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   anatomically proportioned and posed by the joint angles. A per-joint breakdown of the rest posture in zero gravity goes on the
   slide with its sources: wrist; thumb CMC, MCP and IP; each finger's MCP, PIP and DIP.
 
-- **F65.13 STANDING (shape study), IN PROGRESS (G7)** (2026-11-09 10:38, on the clay hand and gd_joints) "i didn’t want a 3d
+- **F65.13 STANDING (shape study), DONE (G7, live 1794244526-ca02)** (2026-11-09 10:38, on the clay hand and gd_joints) "i didn’t want a 3d
   model, i wanted the same style as the fingers we have on our presentation, that still looks very bad, i also am only seeing the
   angles of one finger here and i dont understand how 29 + 29 + 10 equals 41" / "the whole thing should be self explanatory to
   someone with no anatomy background, just basic math reasoning as a glance and it should communicate the angles of each joint
