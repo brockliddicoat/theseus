@@ -1765,6 +1765,18 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
     thumbnail is still a little sticker-like; the two thumb poses overlap for about 0.5 s mid-move on gd_rest; the fingers no
     longer relax from straight; gdTip's fingertip balls on gd_landscape and gd_strength still drawn the old way.
 
+- **F65.16 STANDING (shape study), OPEN** (2026-11-09 13:50, on the side-view hand, live 1794253362-7b17; the session's model
+  was switched to Fable 5.2 just before) "the angle needs to be towards the side at a like 3/4ths view ( or similar) in at least
+  one visualizations because it’s near impossible to tell the the fingers apart from just the side profile, and in many cases
+  the hand looks 4 fingers, j also want you to redo your research using fable 5.2 max, a much smarter model now that you have
+  access to it".
+  - At least one visualization shows the hand in a three-quarter view (or similar), so all five digits can be told apart. A
+    pure side profile reads as four fingers.
+  - The shape study's research is redone from the sources up by Fable 5.2 at max effort (the reading taken: the research
+    behind this mini presentation: the rest posture and joint angles, the hand's sizes, the thumb, friction, forces, what a
+    finger can feel, and the derivations built on them).
+  - G11 (the side view's polish, on the old model) was stopped at 13:52; its list carries over to the next agent.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
