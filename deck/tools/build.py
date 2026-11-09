@@ -78,5 +78,6 @@ if 'rec' in which: build('rec.html', 'THESEUS — Recommendations', ['11-slides-
 # data (tools/gd/out/gd-deck.json, research/gd/shape-gd.json) is embedded here only, as GD and GDSRC: never in main.html
 def gd_data():
     g = root / 'tools' / 'gd' / 'out' / 'gd-deck.json'; s = root.parent / 'research' / 'gd' / 'shape-gd.json'
-    return 'const GD = ' + g.read_text() + ';\nconst GDSRC = ' + s.read_text() + ';\n'
+    h = root / 'tools' / 'gd' / 'out' / 'hand3' / 'gd-hand.json'   # G8: the hand traced from the open hand model (tools/gd/hand_draw.py)
+    return 'const GD = ' + g.read_text() + ';\nconst GDSRC = ' + s.read_text() + ';\nconst GDHAND = ' + h.read_text() + ';\n'
 if 'gd' in which: build('gd.html', 'Shape, by gradient descent', sorted(p.name for p in src.glob('40-gd-*.js')), dev, flat=False, r3d=False, extra=gd_data())
