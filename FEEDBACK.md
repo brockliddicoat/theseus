@@ -1776,6 +1776,13 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
     behind this mini presentation: the rest posture and joint angles, the hand's sizes, the thumb, friction, forces, what a
     finger can feel, and the derivations built on them).
   - G11 (the side view's polish, on the old model) was stopped at 13:52; its list carries over to the next agent.
+  - Started 14:00, all on Fable 5.2: G12 (worktree g12, branch g12-shape-gd): a traced three-quarter view chosen by
+    measurement, gd_joints rebuilt on it, gd_rest opening on it and turning to the side, far fingers a step darker in the side
+    view, nails and creases, the section slides' fingertips. RA (worktree ra, ra-research-redo, max effort): the hand redone
+    from the sources (rest posture in orbit and on the ground, sizes, the thumb, the hand on a mouse, an audit of hand.py).
+    RB (worktree rb, rb-research-redo, max effort): what a finger can feel, friction, forces, finger stiffness, what "optimal
+    gradient strength" should mean, an audit of the optimisation. Reports go to research/gd/redo/ in each worktree; nothing
+    in the slides' numbers changes until Brock has seen what the redo found.
 
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
