@@ -27,11 +27,12 @@
    "29.0": 1.0469696004078772
   },
   "ray3_mm": 156.91,
-  "recommended": 1.0660888407367282,
-  "recommended_range": [
-   1.0469696004078772,
-   1.085208081065579
+  "skeletal_identity_c26": 1.0660888407367282,
+  "plausible_range": [
+   1.04,
+   1.09
   ],
+  "recommended": 1.0518964808982612,
   "crease_beyond_mcp3_mm": 21.59066088840737
  },
  "bones_mm": {
@@ -115,6 +116,43 @@
    "index": -3.752632719393294,
    "ring": 7.0361863488624,
    "little": 11.6310292524377
+  },
+  "sources": {
+   "GM18 specimen": {
+    "index": 0.7878778325123158,
+    "ring": 4.732027586206895,
+    "little": 13.370120197044326
+   },
+   "MyoHand model": {
+    "index": -1.3,
+    "ring": 3.0,
+    "little": 12.8
+   },
+   "Greiner + BK (derived)": {
+    "index": 0.669965874180221,
+    "ring": 7.3537795198535605,
+    "little": 18.874197947515327
+   }
+  },
+  "recommended_mm": {
+   "index": 0.0,
+   "middle": 0.0,
+   "ring": 5.0,
+   "little": 13.0
+  },
+  "recommended_range_mm": {
+   "index": [
+    -1.3,
+    0.9
+   ],
+   "ring": [
+    3.0,
+    7.4
+   ],
+   "little": [
+    12.8,
+    18.9
+   ]
   }
  },
  "gm18": {
@@ -135,17 +173,54 @@
   }
  },
  "thumb_base": {
-  "bones_mm": 66.12197183098593,
-  "greiner_bk_mm": 69.94036323630789,
-  "opensim_mm": 68.4081140379238,
   "gm18_mm": 53.28053596059112,
-  "recommended_mm": 68.15681636840587,
-  "recommended_HL": 0.3526325350186562,
+  "gm18_palmar_mm": 9.886999999999999,
+  "gm18_radial_mm": 2.613500000000002,
+  "myohand": {
+   "cmc_behind": 58.0,
+   "cmc_radial": 8.1,
+   "cmc_palmar": 13.1,
+   "wrist_to_mcp3": 81.5,
+   "wrist_to_dip3": 155.3,
+   "thumb_links": [
+    35.9,
+    31.1
+   ],
+   "knuckles_behind_middle": {
+    "index": -1.3,
+    "ring": 3.0,
+    "little": 12.8
+   },
+   "knuckles_palmar_of_middle": {
+    "index": 0.0,
+    "ring": 6.0,
+    "little": 14.1
+   }
+  },
+  "myohand_hand_est_mm": 190.3,
+  "opensim_wrist_mm": 68.4081140379238,
+  "bones_if_level_mm": 66.12197183098593,
+  "greiner_bk_flat_mm": 69.94036323630789,
+  "recommended_mm": 56.0,
+  "recommended_HL": 0.2897350993377483,
   "range_HL": [
    0.275,
-   0.37
+   0.34
   ],
-  "tmc_above_wrist_crease_mm": 18.781396964371158,
-  "index_knuckle_centre_above_wrist_crease_mm": 88.72176020067904
- }
+  "recommended_palmar_mm": 11.5,
+  "palmar_range_mm": [
+   10,
+   13
+  ],
+  "recommended_radial_mm": 5.0,
+  "radial_range_mm": [
+   3,
+   8
+  ]
+ },
+ "thumb_links_recommended_mm": [
+  37.0,
+  34.0,
+  26.0
+ ]
 }

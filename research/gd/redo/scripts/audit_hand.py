@@ -107,12 +107,17 @@ if __name__ == '__main__':
         run('cascade: every knuckle %+d deg' % d, CASCADE={f: (a + d, p, q) for f, (a, p, q) in BASE['CASCADE'].items()})
     for d in (-10, 10):
         run('cascade: every middle joint %+d deg' % d, CASCADE={f: (a, p + d, q) for f, (a, p, q) in BASE['CASCADE'].items()})
-    REC = dict(BONES=scaled_bones(1.066), KNUCKLE_BACK={'index': 0.7, 'middle': 0.0, 'ring': 6.0, 'little': 16.0}, THUMB_BONES=(49.27, 33.65, 23.10), THUMB_CMC_BACK=0.35)
-    run('RECOMMENDED SIZES together (bones 1.066, knuckles, thumb bones, base 0.35)', **REC)
+    run('thumb links between joint centres 37 / 34 / 26 (was bones 46.9 / 33.1 / 23.4)', THUMB_BONES=(37.0, 34.0, 26.0))
+    run('thumb base 0.29 hand lengths behind (was 0.275)', THUMB_CMC_BACK=0.29); run('thumb base 11.5 mm under the knuckle line (was 10)', THUMB_CMC_PALMAR=11.5)
+    REC = dict(KNUCKLE_BACK={'index': 0.0, 'middle': 0.0, 'ring': 5.0, 'little': 13.0}, THUMB_BONES=(37.0, 34.0, 26.0), THUMB_CMC_BACK=0.29, THUMB_CMC_PALMAR=11.5)
+    run('RECOMMENDED SIZES together (knuckles 0 / 5 / 13, thumb base 0.29 and 11.5 under, thumb links 37 / 34 / 26)', **REC)
     run('  ... and the thumb at Cooney\'s 12.5 / 12.5 deg', THUMB={'cmc': 45, 'mcp': 12.5, 'ip': 12.5}, **REC)
+    run('  ... at the far ends: base 0.33, thumb angles 39 / 10', **dict(REC, THUMB_CMC_BACK=0.33))
+    run('  ... at the near end: base 0.275, thumb angles 12.5 / 12.5', THUMB={'cmc': 45, 'mcp': 12.5, 'ip': 12.5}, **dict(REC, THUMB_CMC_BACK=0.275))
     out['variants'] = V
     print('\n== 3. hand sizes (5th, mean, 95th percentile hand length), the study\'s inputs and the recommended sizes ==')
-    for nm, kw in (('study', {}), ('recommended sizes', REC)):
+    RECC = dict(REC, THUMB={'cmc': 45, 'mcp': 12.5, 'ip': 12.5})
+    for nm, kw in (('study', {}), ('recommended sizes', REC), ('recommended_cooney sizes and Cooney thumb angles', RECC)):
         res = {}
         for hk, hl in T.HANDS.items():
             with patched(**kw): res[hk] = both(hl / T.HANDS['p50'])

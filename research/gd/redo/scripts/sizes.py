@@ -6,7 +6,8 @@ Sources (figures as read in the primaries; see hand-at-rest.md for pages and the
   A2    ANSUR II men, n 4,082 (public CSV recomputed by ansur_check.py; NATICK/TR-15/007 dimensions 42, 44, 65)
   G91   Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men n 1,003 (photometric; OCR copy)
   GM18  Goislard de Monsabert et al. 2018, Ann. Biomed. Eng. 46:71-85, ESM Tables S1, S3a-f (ONE specimen, hand 203 mm)
-  OSIM  OpenSim wrist model (opensim-models/Models/WristModel/wrist.osim; Gonzalez, Buchanan & Delp 1997), default pose
+  OSIM  OpenSim wrist model (opensim-models/Models/WristModel/wrist.osim; Gonzalez, Buchanan & Delp 1997), default pose (osim_joints.py)
+  MYO   MyoHand / MyoArm (MyoHub/myo_sim, Apache-2.0; from the MoBL model, Holzbaur et al. 2005, and the 2nd-Hand model), rest pose (mjcf_joints.py)
 Estimates are marked EST and carry a range."""
 import json, math
 
@@ -57,7 +58,10 @@ def main():
     out['scale'] = {'study': s_old, 'ansur_crease_over_bk_web': s_crease_web, 'greiner_d3_over_bk_web': s_g91, 'skeletal_identity': s_id, 'ray3_mm': ray3}
     print('2. scale BK -> ANSUR II mean man: the study %.4f; ANSUR (hand - palm) / BK external finger %.3f (crease against web: not like for like);' % (s_old, s_crease_web))
     print('   Greiner digit 3 length / BK external finger %.3f; skeletal identity (193.28 - c) / %.2f = %.3f (c 26; %.3f to %.3f for c 29 to 23)' % (s_g91, ray3, s_id[c_est], s_id[c_hi], s_id[c_lo]))
-    s = s_id[c_est]; out['scale']['recommended'] = s; out['scale']['recommended_range'] = [s_id[c_hi], s_id[c_lo]]
+    s = s_id[c_est]; out['scale']['skeletal_identity_c26'] = s; out['scale']['plausible_range'] = [1.04, 1.09]; out['scale']['recommended'] = s_old
+    # the base crease lies 14.4 to 19.6 mm beyond the knuckle joint (Bugbee & Botte 1993 as cited by Doyle & Botte 2003 in Kosif et al. 2015)
+    for nm, fl in (('ANSUR II (hand - palm)', A2['hand'] - A2['palm']), ('Greiner digit 3 length', G91['middle']['len'])):
+        print('   %s %.1f mm + crease 14.4 to 19.6 mm beyond the joint, over BK\'s %.2f mm: scale %.3f to %.3f' % (nm, fl, chain('middle'), (fl + 14.4) / chain('middle'), (fl + 19.6) / chain('middle')))
     X = s * chain('middle') - (A2['hand'] - A2['palm'])
     print('   check: the middle finger\'s base crease then lies %.1f mm beyond its knuckle joint (ANSUR II); with Greiner\'s crease %.1f mm' % (X, s * chain('middle') - G91['middle']['len']))
     out['scale']['crease_beyond_mcp3_mm'] = X
@@ -109,34 +113,45 @@ def main():
                    'knuckles_behind_middle_mean_hand_mm': {'index': k * (mcp[2][1] - mcp[3][1]), 'ring': k * (mcp[4][1] - mcp[3][1]), 'little': k * (mcp[5][1] - mcp[3][1])},
                    'position_variation_mm': {'CMC1_fe': 7.2, 'CMC1_aa': 14.1}}
 
-    # (6) the thumb's base along the hand, three more ways
+    # (6) the thumb's base relative to the index knuckle's centre: five readings
     print('6. the thumb\'s base behind the index knuckle\'s centre, along the hand:')
-    r_head = 6.5                                   # EST: the knuckle's centre of rotation behind its joint line (the metacarpal head's radius), 5.5 to 7.5 mm
-    # (a) bones: the thumb's saddle joint about level with the base of the index metacarpal (EST: within -4 to +8 mm, the base the more distal)
-    a = s * BK['index']['m'] - r_head
-    print('   (a) bones: index metacarpal %.1f - %.1f = %.1f mm if the saddle joint is level with that metacarpal\'s base (EST: %+d to %+d mm) -> %.3f hand lengths' % (s * BK['index']['m'], r_head, a, -4, 8, a / A2['hand']))
-    # (b) Greiner + BK: thumb tip to the wrist-crease baseline along the thumb, less the scaled thumb
-    g = G91['thumb']; cs1 = g['height'] / g['tipwrist']; L1 = s * (BK['thumb']['m'] + BK['thumb']['pp'] + BK['thumb']['pd'] + BK['thumb']['tip'])
-    tmc_h = (g['tipwrist'] - L1) * cs1
-    h2 = kn['rec']['height_mm']['index'] - r_head
-    b = h2 - tmc_h
-    print('   (b) Greiner men + BK x %.3f: thumb %.1f mm long; its base %.1f mm above the wrist crease (thumb held %.0f deg out); index knuckle centre %.1f mm -> %.1f mm behind, %.3f hand lengths' % (s, L1, tmc_h, math.degrees(math.acos(cs1)), h2, b, b / G91['hand']))
-    # (c) OpenSim wrist model: 79.7 mm behind along the index finger's line, index knuckle-to-tip-joint links 48.9 + 33.2 = 82.1 mm (osim_joints.py)
+    # MYO: the open MyoHand model (MyoHub/myo_sim, Apache-2.0; from the MoBL OpenSim model and the 2nd-Hand model), mjcf_joints.py, hand axes
+    MYO = {'cmc_behind': 58.0, 'cmc_radial': 8.1, 'cmc_palmar': 13.1, 'wrist_to_mcp3': 81.5, 'wrist_to_dip3': 155.3, 'thumb_links': (35.9, 31.1),
+           'knuckles_behind_middle': {'index': -1.3, 'ring': 3.0, 'little': 12.8}, 'knuckles_palmar_of_middle': {'index': 0.0, 'ring': 6.0, 'little': 14.1}}
+    myo_hand = MYO['wrist_to_dip3'] + 25.0 + 10.0   # EST: tip joint centre to the skin's tip about 25 mm, the wrist's centre about 10 mm beyond the wrist crease
+    print('   (1) GM18 specimen (hand 203 mm): %.1f mm behind, %.1f palmar, %.1f toward the thumb; x %.3f for the mean hand: %.1f mm = 0.276 hand lengths' % (cmc[1] - mcp[2][1], cmc[2] - mcp[2][2], cmc[0] - mcp[2][0], k, k * (cmc[1] - mcp[2][1])))
+    print('   (2) MyoHand model: %.1f mm behind, %.1f palmar, %.1f toward the thumb; its hand about %.0f mm (EST) -> %.2f hand lengths' % (MYO['cmc_behind'], MYO['cmc_palmar'], MYO['cmc_radial'], myo_hand, MYO['cmc_behind'] / myo_hand))
     osim_ratio = 79.7 / 82.1
-    idx_links = s * (BK['index']['pp'] + BK['index']['pm']) + 4.2     # EST: knuckle centre to tip-joint centre = the two bones + about 4 mm (head radii)
+    idx_links = s * (BK['index']['pp'] + BK['index']['pm']) + 4.2     # EST: knuckle centre to tip-joint centre = the two bones + about 4 mm
     c_ = osim_ratio * idx_links
-    print('   (c) OpenSim wrist model: 79.7 mm behind for an index of 82.1 mm (knuckle to tip joint), ratio %.2f; x the mean hand\'s %.1f mm -> %.1f mm, %.3f hand lengths' % (osim_ratio, idx_links, c_, c_ / A2['hand']))
-    gm = k * (cmc[1] - mcp[2][1])
-    print('   (d) GM18 specimen as recorded: %.1f mm, 0.275 hand lengths (position variation 7 to 14 mm)' % gm)
-    rec = (a + b + c_) / 3
-    print('   recommended: %.0f mm (%.2f hand lengths), range %.0f to %.0f mm (0.275 to 0.37)' % (round(rec), rec / A2['hand'], gm, 0.37 * A2['hand']))
-    out['thumb_base'] = {'bones_mm': a, 'greiner_bk_mm': b, 'opensim_mm': c_, 'gm18_mm': gm, 'recommended_mm': rec, 'recommended_HL': rec / A2['hand'], 'range_HL': [0.275, 0.37],
-                         'tmc_above_wrist_crease_mm': tmc_h, 'index_knuckle_centre_above_wrist_crease_mm': h2}
-
-    # (7) the clinical check: how far the thumb, laid along the index, reaches past the index knuckle
-    for nm, back in (('study 0.275', OLD['cmc_back_HL'] * A2['hand']), ('recommended', rec)):
-        reach = sum(thumb) + tips['thumb'] - back
-        print('7. thumb straight along the index (%s): its skin tip %.0f mm past the index knuckle\'s centre; the index\'s middle joint is %.0f mm past it' % (nm, reach, s * BK['index']['pp'] + 3))
+    print('   (3) OpenSim wrist model: 79.7 mm behind for an index of 82.1 mm knuckle to tip joint (MyoHand\'s index: 67.7 mm, ratio 0.86; GM18\'s 76.6, ratio 0.73): the outlier; scaled %.1f mm' % c_)
+    r_head = 6.5                                   # EST: the knuckle's centre behind its joint line (the metacarpal head's radius), 5.5 to 7.5 mm
+    a_ = s * BK['index']['m'] - r_head
+    print('   (4) bones: index metacarpal %.1f - %.1f = %.1f mm IF the base\'s centre were level with that metacarpal\'s base; (1) and (2) put it about 10 mm beyond that level -> about %.0f mm' % (s * BK['index']['m'], r_head, a_, a_ - 10))
+    g = G91['thumb']; cs1 = g['height'] / g['tipwrist']; L1 = s * (BK['thumb']['m'] + BK['thumb']['pp'] + BK['thumb']['pd'] + BK['thumb']['tip'])
+    tmc_h = (g['tipwrist'] - L1) * cs1; h2 = kn['rec']['height_mm']['index'] - r_head; b_ = h2 - tmc_h
+    fore = s * BK['thumb']['m'] * (1 - math.cos(math.radians(35)))   # EST: the thumb's metacarpal dips 35 deg out of the photograph's plane, so it reads shorter
+    print('   (5) Greiner men + BK x %.3f, a flat photograph: %.1f mm behind (the thumb\'s joint surface); less %.1f mm if its metacarpal dips 35 deg out of the picture, less about 5 mm to the centre -> about %.0f mm' % (s, b_, fore * cs1, b_ - fore * cs1 - 5))
+    rec = 56.0
+    print('   recommended: %.0f mm, %.2f hand lengths (range 53 to 66 mm, 0.275 to 0.34); %.1f mm under the knuckle line (10 to 13); about 5 mm toward the thumb side (3 to 8)' % (rec, rec / A2['hand'], 11.5))
+    out['thumb_base'] = {'gm18_mm': k * (cmc[1] - mcp[2][1]), 'gm18_palmar_mm': cmc[2] - mcp[2][2], 'gm18_radial_mm': cmc[0] - mcp[2][0], 'myohand': MYO, 'myohand_hand_est_mm': myo_hand,
+                         'opensim_wrist_mm': c_, 'bones_if_level_mm': a_, 'greiner_bk_flat_mm': b_, 'recommended_mm': rec, 'recommended_HL': rec / A2['hand'], 'range_HL': [0.275, 0.34],
+                         'recommended_palmar_mm': 11.5, 'palmar_range_mm': [10, 13], 'recommended_radial_mm': 5.0, 'radial_range_mm': [3, 8]}
+    # the thumb's links between joint centres: GM18 38.6 / 42.0 (noisy), MyoHand 35.9 / 31.1; BK's bones x s are 49.3 / 33.7 / 23.1 between joint surfaces
+    print('   thumb links between joint centres: GM18 %.1f / %.1f, MyoHand %.1f / %.1f mm; BK bones x %.3f: %s (joint surface to joint surface)' % (d(cmc, GM['MCP1']), d(GM['MCP1'], GM['IP1']), *MYO['thumb_links'], s, ' / '.join('%.1f' % v for v in thumb)))
+    print('   recommended chain from the base\'s centre: 37 (36 to 39) / 34 (31 to 36) / 26 to the bone\'s tip (+ %.0f mm of skin): %.0f mm straight, against the study\'s %.1f' % (tips['thumb'], 37 + 34 + 26, sum(OLD['thumb_bones'])))
+    out['thumb_links_recommended_mm'] = [37.0, 34.0, 26.0]
+    # (7) the knuckles behind the middle's, three sources
+    print('7. each knuckle behind the middle finger\'s (mm, mean hand): the study %s' % OLD['knuckle_back'])
+    srcs = {'GM18 specimen': out['gm18']['knuckles_behind_middle_mean_hand_mm'], 'MyoHand model': MYO['knuckles_behind_middle'], 'Greiner + BK (derived)': {f: kn['rec']['behind_middle_mm'][f] for f in ('index', 'ring', 'little')}}
+    for nm, v in srcs.items(): print('   %-24s index %+.1f, ring %+.1f, little %+.1f' % (nm, v['index'], v['ring'], v['little']))
+    print('   recommended: index 0 (-1.3 to 0.9), ring 5 (3.0 to 7.4), little 13 (12.8 to 18.9); the little finger\'s knuckle also sits 9 to 14 mm toward the palm (GM18 %.1f, MyoHand %.1f)' % (mcp[5][2] - mcp[3][2], MYO['knuckles_palmar_of_middle']['little']))
+    out['knuckles']['sources'] = srcs; out['knuckles']['recommended_mm'] = {'index': 0.0, 'middle': 0.0, 'ring': 5.0, 'little': 13.0}
+    out['knuckles']['recommended_range_mm'] = {'index': [-1.3, 0.9], 'ring': [3.0, 7.4], 'little': [12.8, 18.9]}
+    # (8) the thumb laid along the index: its tip against the index's middle joint (the thumb about 25 deg off the index's line)
+    for nm, back, chainlen in (('study: base 53.2 mm behind, bones 103.4', OLD['cmc_back_HL'] * A2['hand'], sum(OLD['thumb_bones'])), ('recommended: base 56 mm behind, links 97', rec, 97.0)):
+        reach = (chainlen + tips['thumb']) * math.cos(math.radians(25)) - back
+        print('8. thumb laid along the index (%s): its skin tip %.0f mm past the index knuckle\'s centre; the index\'s middle joint is %.0f mm past it' % (nm, reach, s * BK['index']['pp'] + 3))
     json.dump(out, open(__file__.replace('sizes.py', 'sizes_out.json'), 'w'), indent=1, default=float)
 
 if __name__ == '__main__':
