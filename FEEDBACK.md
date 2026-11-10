@@ -1796,6 +1796,23 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   - Sent 20:40: feedback/attachments/F65/2037-three-quarter-views.png (the two views, raw traces), with one question: may
     the little finger go behind while the other three are measured, or should the hand stay on view A throughout?
 
+- **F65.18 STANDING (shape study), OPEN** (2026-11-09 20:44, on 2037-three-quarter-views.png, which he attached back:
+  feedback/attachments/F65/2044-brock-attached-three-quarter-views.png) "the thumb doesn’t look right here, double check it, it
+  looks like it’s sticking out too much, make sure all the dimensions are right ( i’d like the average dimensions on the hand
+  too not just the angle)" / "also the nails don’t look like the new revamped ones i wanted".
+  - The thumb, checked: hand_pose.py's fit() (G10, 13:40) stretched the model's first thumb bone from 33.2 to 46.9 mm (the
+    study's figure) so the drawn thumb could reach the study's contact point; everything beyond moved out 13.7 mm. The drawn
+    hand's outside dimensions were never checked against measured averages.
+  - Rule from now: the drawn hand's skin is fitted to the average hand's measured outside dimensions (each with its survey
+    and definition) and to nothing else; the average sizes are shown on the hand as well as the angles. A check picture first
+    (the flat hand from the back, every dimension on it), then the slides.
+  - The nails: the picture was a raw preview (G12's quick trace, pale patches). The slides' nails must be the film's revamped
+    ones (A Soft, F60.1: fngNail's shape, FNG_NAIL's paint), proven side by side from real page captures. My mistake: only
+    captures from the built page go to him from now on.
+  - He did not answer the A or B question; the two-view plan stands until he does.
+  - 20:50: RA asked for the averages first (research/gd/redo/hand-sizes.json in its worktree); G13 told to take the stretch
+    out, build the measuring tool, fit to the averages, redo the nails with the kit's own nail code, and make the two checks.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
