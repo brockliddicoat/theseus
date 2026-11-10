@@ -1,0 +1,2385 @@
+{
+ "about": "Sizes of a man's hand for fitting the drawn hand of \"Shape, by gradient descent\" to the deck's reference hand, the ANSUR II men's mean (193.3 mm). Written by RA, 2026-11-09, for the drawing agent. Lengths in mm. Each outside dimension carries its survey, page, n, mean, SD, the survey's own definition, how many separately worded reads of the primary agreed (reads), and its value scaled to the reference hand. recommended_targets holds one value per dimension. Provisional or unverified values say so in their note or status.",
+ "reference_hand": {
+  "hand_length_mm": 193.28,
+  "palm_length_mm": 116.46,
+  "hand_breadth_mm": 88.26,
+  "source": "ANSUR II men, n 4,082",
+  "sd_mm": {
+   "hand_length": 9.95,
+   "palm_length": 6.23,
+   "hand_breadth": 4.39
+  }
+ },
+ "scaling": {
+  "rule": "value x (193.28 / the survey's mean hand length) for lengths; value x (88.26 / the survey's mean hand breadth) for breadths, depths and thicknesses",
+  "factors": {
+   "greiner1991": {
+    "lengths": 0.9958,
+    "breadths_and_depths": 0.9763
+   },
+   "garrett1970": {
+    "lengths": 0.9801,
+    "breadths_and_depths": 0.985
+   }
+  },
+  "recommendation": "Use the scaled values (scaled_to_reference_mm, and recommended_targets). Greiner's hands are 0.4 % longer than the reference and Garrett's 2.0 % longer: scaling moves Greiner's figures by under 1 mm and Garrett's by up to 4 mm (its fingertip heights)."
+ },
+ "surveys": {
+  "ansur2": {
+   "name": "ANSUR II, 2012 Anthropometric Survey of U.S. Army Personnel (Gordon et al. 2014, NATICK/TR-15/007), men",
+   "n": 4082,
+   "hand_length_mm": 193.28,
+   "hand_breadth_mm": 88.26,
+   "url": "https://apps.dtic.mil/sti/pdfs/ADA611869.pdf",
+   "method": "direct, calipers and tape",
+   "status": "verified: dimension pages 42, 43, 44 and 65 read; means and SDs recomputed from the public CSV (scripts/ansur_check.py)"
+  },
+  "greiner1991": {
+   "name": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "n": 1003,
+   "hand_length_mm": 194.1,
+   "hand_breadth_mm": 90.4,
+   "url": "https://apps.dtic.mil/sti/pdfs/ADA244533.pdf",
+   "method": "right hand photographed palm down on a photobox, 64 dimensions digitised from the silhouette and palm photograph; 22 measured directly",
+   "status": "verified in the primary (an OCR copy): the figures marked reads 2 were read twice with different wording"
+  },
+  "garrett1970": {
+   "name": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "n": 148,
+   "hand_length_mm": 197.2,
+   "hand_breadth_mm": 89.6,
+   "url": "https://apps.dtic.mil/sti/pdfs/AD0709883.pdf",
+   "method": "direct: sliding calipers, tape, and a tracing of the hand on a data blank",
+   "status": "verified in the primary (an OCR copy); reads as marked"
+  },
+  "bk2010": {
+   "name": "Buryanov & Kotiuk 2010, Proportions of Hand Segments, Int. J. Morphol. 28(3):755-758, Tables I and III",
+   "n": 66,
+   "url": "https://www.scielo.cl/pdf/ijmorphol/v28n3/art15.pdf",
+   "method": "front-to-back X-rays of adults aged 19 to 78 (sex split not given), right hands, lengths between joint surfaces",
+   "status": "verified: two reads"
+  }
+ },
+ "outside_dimensions": [
+  {
+   "key": "hand_length",
+   "name": "Hand length",
+   "survey": "ansur2",
+   "table_or_page": "dimension (44) HAND LENGTH",
+   "n": 4082,
+   "mean_mm": 193.28,
+   "sd_mm": 9.95,
+   "p5_mm": 177.0,
+   "p95_mm": 210.0,
+   "scaled_to_reference_mm": 193.3,
+   "scale_used": 1.0,
+   "scaled_by": "none (the reference survey)",
+   "definition": "Stylion landmark on the wrist (the lowest point of the radius, about level with the wrist crease) to the tip of the middle finger; Poech sliding caliper; hand flat and straight, the fingers' two end bones on a surface 8 mm above the table",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "hand_length",
+   "name": "Hand length",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 58 (digitised: middle fingertip to the wrist-crease baseline) and 59 (measured: middle fingertip to stylion)",
+   "n": 1003,
+   "mean_mm": 194.1,
+   "sd_mm": 10.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 193.3,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Middle fingertip to the wrist-crease baseline (the line through the ulnar and radial ends of the distal wrist crease); measured from the stylion it is the same 194.1 (SD 9.9)",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "hand_length",
+   "name": "Hand length",
+   "survey": "garrett1970",
+   "table_or_page": "dimension 1, p. 9",
+   "n": 148,
+   "mean_mm": 197.2,
+   "sd_mm": 9.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 193.3,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Wrist crease to the tip of the longest finger",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "palm_length",
+   "name": "Palm length",
+   "survey": "ansur2",
+   "table_or_page": "dimension (65) PALM LENGTH",
+   "n": 4082,
+   "mean_mm": 116.46,
+   "sd_mm": 6.23,
+   "p5_mm": 107.0,
+   "p95_mm": 127.0,
+   "scaled_to_reference_mm": 116.5,
+   "scale_used": 1.0,
+   "scaled_by": "none (the reference survey)",
+   "definition": "Centre of the crease at the base of the middle finger to the ventral stylion landmark; Poech sliding caliper; forearm level, hand straight, palm up, fingers together, thumb held out about 45 deg",
+   "reads": 1,
+   "recommended": true,
+   "note": "The reference survey's own. Greiner's is 6.5 mm shorter: the two surveys do not put the base crease in the same place (a finger's base crease is often double). Heights and tip-to-wrist-crease lengths do not depend on the crease."
+  },
+  {
+   "key": "palm_length",
+   "name": "Palm length",
+   "survey": "greiner1991",
+   "table_or_page": "dimension 61",
+   "n": 1003,
+   "mean_mm": 110.5,
+   "sd_mm": 6.0,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 110.0,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Base of the middle finger (point 9, the centre of the finger on its proximal flexion crease) to the wrist-crease baseline; from the photograph",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "hand_breadth",
+   "name": "Hand breadth at the knuckles",
+   "survey": "ansur2",
+   "table_or_page": "dimension (42) HAND BREADTH",
+   "n": 4082,
+   "mean_mm": 88.26,
+   "sd_mm": 4.39,
+   "p5_mm": 81.0,
+   "p95_mm": 96.0,
+   "scaled_to_reference_mm": 88.3,
+   "scale_used": 1.0,
+   "scaled_by": "none (the reference survey)",
+   "definition": "Between the landmarks metacarpale II and metacarpale V (the outermost points of the index and little fingers' knuckle joints); sliding caliper; palm on a table, fingers together, thumb held out",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "hand_breadth",
+   "name": "Hand breadth at the knuckles",
+   "survey": "greiner1991",
+   "table_or_page": "dimension 63 (measured)",
+   "n": 1003,
+   "mean_mm": 90.4,
+   "sd_mm": 4.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 88.3,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "Between metacarpale II and metacarpale V, measured directly; the digitised silhouette (dimension 62, hand pressed on glass) is 95.3 (SD 5.8)",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "hand_breadth",
+   "name": "Hand breadth at the knuckles",
+   "survey": "garrett1970",
+   "table_or_page": "dimension 2, p. 10",
+   "n": 148,
+   "mean_mm": 89.6,
+   "sd_mm": 4.0,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 88.3,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Across the knuckle joints of digits II and V, hand extended palm down, thumb held away; sliding caliper",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "hand_circumference",
+   "name": "Hand circumference at the knuckles",
+   "survey": "ansur2",
+   "table_or_page": "dimension (43) HAND CIRCUMFERENCE",
+   "n": 4082,
+   "mean_mm": 212.28,
+   "sd_mm": 10.24,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 212.3,
+   "scale_used": 1.0,
+   "scaled_by": "none (the reference survey)",
+   "definition": "Tape passing over metacarpale II and metacarpale V; palm on a table, fingers together, thumb held out",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "hand_thickness",
+   "name": "Hand thickness at the middle finger's knuckle",
+   "survey": "garrett1970",
+   "table_or_page": "dimension 8, p. 16",
+   "n": 148,
+   "mean_mm": 32.9,
+   "sd_mm": 2.0,
+   "p5_mm": 29.8,
+   "p95_mm": 36.1,
+   "scaled_to_reference_mm": 32.4,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Hand extended; the greatest thickness of the knuckle (metacarpal-phalangeal) joint of digit III; sliding caliper",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "thenar_depth",
+   "name": "Hand depth at the thenar pad (the ball of the thumb)",
+   "survey": "garrett1970",
+   "table_or_page": "dimension 9, p. 17",
+   "n": 148,
+   "mean_mm": 61.2,
+   "sd_mm": 4.4,
+   "p5_mm": 55.0,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 60.3,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest distance from the thenar pad to the back of the hand, the thumb lying beside the index; sliding caliper",
+   "reads": 1,
+   "recommended": true,
+   "note": "UNVERIFIED: the page's mean and SD were unreadable in the scan; 61.2 is the median of its percentile table, 4.4 a rough SD. 5th percentile 55.0; the 95th printed as 70.2 in one place and 61.9 in another."
+  },
+  {
+   "key": "wrist_breadth",
+   "name": "Wrist breadth",
+   "survey": "garrett1970",
+   "table_or_page": "dimension 37, p. 27",
+   "n": 148,
+   "mean_mm": 67.8,
+   "sd_mm": 3.7,
+   "p5_mm": 62.6,
+   "p95_mm": 73.3,
+   "scaled_to_reference_mm": 66.8,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Hand and wrist on the measuring board; sliding caliper at the wrist-crease baseline",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "wrist_breadth",
+   "name": "Wrist breadth",
+   "survey": "greiner1991",
+   "table_or_page": "dimension 64",
+   "n": 1003,
+   "mean_mm": 65.8,
+   "sd_mm": 4.5,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 64.2,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "Between the ulnar (point 2) and radial (point 38) edges of the silhouette at the distal wrist crease",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "wrist_circumference",
+   "name": "Wrist circumference",
+   "survey": "ansur2",
+   "table_or_page": "public CSV column wristcircumference",
+   "n": 4082,
+   "mean_mm": 175.92,
+   "sd_mm": 8.96,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 175.9,
+   "scale_used": 1.0,
+   "scaled_by": "none (the reference survey)",
+   "definition": "Tape around the wrist at the stylion (definition page not read; Greiner: over the stylion, square to the forearm)",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d1_length_from_crease",
+   "name": "Thumb length from its base crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "n": 1003,
+   "mean_mm": 69.7,
+   "sd_mm": 4.8,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 69.4,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the proximal flexion crease of the thumb's knuckle (point 4); from the palm photograph",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d1_length_to_crotch",
+   "name": "Thumb length, fingertip to crotch level",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "n": 148,
+   "mean_mm": 58.7,
+   "sd_mm": 4.5,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 57.5,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "reads": 2,
+   "recommended": true,
+   "note": "The page prints 2.31 in and 5.67 cm, which disagree; 58.7 mm is the inch value, which also sits mid-way between the 5th and 95th percentiles (50.7 and 65.7). Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
+  },
+  {
+   "key": "d1_tip_height",
+   "name": "Thumb tip height above the wrist crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "n": 1003,
+   "mean_mm": 100.3,
+   "sd_mm": 7.4,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 99.9,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d1_tip_height",
+   "name": "Thumb tip height above the wrist crease",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 38 to 42, p. 28 to 32",
+   "n": 148,
+   "mean_mm": 100.3,
+   "sd_mm": 9.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 98.3,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the wrist-crease baseline (tangent to the near edge of the thenar and hypothenar pads) to the middle of the fingertip; from the tracing",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d1_tip_to_wrist_crease",
+   "name": "Thumb tip to the wrist crease along the digit",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 3, 12, 24, 36, 48",
+   "n": 1003,
+   "mean_mm": 137.9,
+   "sd_mm": 8.7,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 137.3,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the wrist-crease baseline, measured along the digit's central axis; hand flat, as photographed",
+   "reads": 1,
+   "recommended": false,
+   "note": "For the thumb this depends on how far the thumb is held out (about 43 deg from the hand's line in Greiner's photographs, derived from height / length); Garrett's tracings give 127.0. Use the thumb tip's height (100.3 in both surveys) and the stylion-to-thumb-tip length instead."
+  },
+  {
+   "key": "d1_tip_to_wrist_crease",
+   "name": "Thumb tip to the wrist crease along the digit",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 52 to 56, p. 42 to 46",
+   "n": 148,
+   "mean_mm": 127.0,
+   "sd_mm": 11.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 124.5,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Tip to the wrist-crease baseline along the digit",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d2_length_from_crease",
+   "name": "Index finger length from its base crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "n": 1003,
+   "mean_mm": 75.3,
+   "sd_mm": 4.9,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 75.0,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the centre of the finger on its proximal flexion crease, the crease at its base; from the palm photograph",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d2_length_to_crotch",
+   "name": "Index finger length, fingertip to crotch level",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "n": 148,
+   "mean_mm": 75.3,
+   "sd_mm": 4.6,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 73.8,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "reads": 2,
+   "recommended": true,
+   "note": "Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
+  },
+  {
+   "key": "d2_tip_height",
+   "name": "Index finger tip height above the wrist crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "n": 1003,
+   "mean_mm": 180.0,
+   "sd_mm": 9.5,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 179.2,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d2_tip_height",
+   "name": "Index finger tip height above the wrist crease",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 38 to 42, p. 28 to 32",
+   "n": 148,
+   "mean_mm": 183.2,
+   "sd_mm": 8.8,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 179.6,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the wrist-crease baseline (tangent to the near edge of the thenar and hypothenar pads) to the middle of the fingertip; from the tracing",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d2_tip_to_wrist_crease",
+   "name": "Index finger tip to the wrist crease along the digit",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 3, 12, 24, 36, 48",
+   "n": 1003,
+   "mean_mm": 185.2,
+   "sd_mm": 9.9,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 184.4,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the wrist-crease baseline, measured along the digit's central axis; hand flat, as photographed",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d2_tip_to_wrist_crease",
+   "name": "Index finger tip to the wrist crease along the digit",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 52 to 56, p. 42 to 46",
+   "n": 148,
+   "mean_mm": 185.2,
+   "sd_mm": 8.8,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 181.5,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Tip to the wrist-crease baseline along the digit",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d3_length_from_crease",
+   "name": "Middle finger length from its base crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "n": 1003,
+   "mean_mm": 83.8,
+   "sd_mm": 5.4,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 83.4,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the centre of the finger on its proximal flexion crease, the crease at its base; from the palm photograph",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d3_length_to_crotch",
+   "name": "Middle finger length, fingertip to crotch level",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "n": 148,
+   "mean_mm": 85.7,
+   "sd_mm": 5.1,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 84.0,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "reads": 2,
+   "recommended": true,
+   "note": "Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
+  },
+  {
+   "key": "d3_tip_height",
+   "name": "Middle finger tip height above the wrist crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "n": 1003,
+   "mean_mm": 194.1,
+   "sd_mm": 10.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 193.3,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d3_tip_height",
+   "name": "Middle finger tip height above the wrist crease",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 38 to 42, p. 28 to 32",
+   "n": 148,
+   "mean_mm": 195.2,
+   "sd_mm": 9.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 191.3,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the wrist-crease baseline (tangent to the near edge of the thenar and hypothenar pads) to the middle of the fingertip; from the tracing",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d3_tip_to_wrist_crease",
+   "name": "Middle finger tip to the wrist crease along the digit",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 3, 12, 24, 36, 48",
+   "n": 1003,
+   "mean_mm": 194.5,
+   "sd_mm": 10.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 193.7,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the wrist-crease baseline, measured along the digit's central axis; hand flat, as photographed",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d3_tip_to_wrist_crease",
+   "name": "Middle finger tip to the wrist crease along the digit",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 52 to 56, p. 42 to 46",
+   "n": 148,
+   "mean_mm": 195.2,
+   "sd_mm": 9.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 191.3,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Tip to the wrist-crease baseline along the digit",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d4_length_from_crease",
+   "name": "Ring finger length from its base crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "n": 1003,
+   "mean_mm": 79.2,
+   "sd_mm": 5.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 78.9,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the centre of the finger on its proximal flexion crease, the crease at its base; from the palm photograph",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d4_length_to_crotch",
+   "name": "Ring finger length, fingertip to crotch level",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "n": 148,
+   "mean_mm": 80.5,
+   "sd_mm": 4.7,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 78.9,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "reads": 1,
+   "recommended": true,
+   "note": "Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
+  },
+  {
+   "key": "d4_tip_height",
+   "name": "Ring finger tip height above the wrist crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "n": 1003,
+   "mean_mm": 180.2,
+   "sd_mm": 10.1,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 179.4,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d4_tip_height",
+   "name": "Ring finger tip height above the wrist crease",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 38 to 42, p. 28 to 32",
+   "n": 148,
+   "mean_mm": 182.0,
+   "sd_mm": 8.9,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 178.4,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the wrist-crease baseline (tangent to the near edge of the thenar and hypothenar pads) to the middle of the fingertip; from the tracing",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d4_tip_to_wrist_crease",
+   "name": "Ring finger tip to the wrist crease along the digit",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 3, 12, 24, 36, 48",
+   "n": 1003,
+   "mean_mm": 185.0,
+   "sd_mm": 10.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 184.2,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the wrist-crease baseline, measured along the digit's central axis; hand flat, as photographed",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d4_tip_to_wrist_crease",
+   "name": "Ring finger tip to the wrist crease along the digit",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 52 to 56, p. 42 to 46",
+   "n": 148,
+   "mean_mm": 187.2,
+   "sd_mm": 9.1,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 183.5,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Tip to the wrist-crease baseline along the digit",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d5_length_from_crease",
+   "name": "Little finger length from its base crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "n": 1003,
+   "mean_mm": 64.7,
+   "sd_mm": 4.9,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 64.4,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the centre of the finger on its proximal flexion crease, the crease at its base; from the palm photograph",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d5_length_to_crotch",
+   "name": "Little finger length, fingertip to crotch level",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "n": 148,
+   "mean_mm": 61.4,
+   "sd_mm": 4.7,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 60.2,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "reads": 1,
+   "recommended": true,
+   "note": "Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
+  },
+  {
+   "key": "d5_tip_height",
+   "name": "Little finger tip height above the wrist crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "n": 1003,
+   "mean_mm": 145.4,
+   "sd_mm": 9.4,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 144.8,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d5_tip_height",
+   "name": "Little finger tip height above the wrist crease",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 38 to 42, p. 28 to 32",
+   "n": 148,
+   "mean_mm": 146.0,
+   "sd_mm": 8.0,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 143.1,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the wrist-crease baseline (tangent to the near edge of the thenar and hypothenar pads) to the middle of the fingertip; from the tracing",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d5_tip_to_wrist_crease",
+   "name": "Little finger tip to the wrist crease along the digit",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 3, 12, 24, 36, 48",
+   "n": 1003,
+   "mean_mm": 159.9,
+   "sd_mm": 9.8,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 159.2,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Tip of the digit to the wrist-crease baseline, measured along the digit's central axis; hand flat, as photographed",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d5_tip_to_wrist_crease",
+   "name": "Little finger tip to the wrist crease along the digit",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 52 to 56, p. 42 to 46",
+   "n": 148,
+   "mean_mm": 166.1,
+   "sd_mm": 9.1,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 162.8,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "Tip to the wrist-crease baseline along the digit",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "crotch1_height",
+   "name": "Crotch 1 height (the web between digits 1 and 2) above the wrist crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 69 to 72",
+   "n": 1003,
+   "mean_mm": 69.1,
+   "sd_mm": 4.7,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 68.8,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the deepest point of the web between the two digits to the wrist-crease baseline; hand flat, fingers as photographed",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "crotch1_height",
+   "name": "Crotch 1 height above the wrist crease",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 43 to 46, p. 33 to 36",
+   "n": 148,
+   "mean_mm": 68.1,
+   "sd_mm": 6.0,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 66.7,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "The same, from the tracing",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "crotch2_height",
+   "name": "Crotch 2 height (the web between digits 2 and 3) above the wrist crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 69 to 72",
+   "n": 1003,
+   "mean_mm": 110.4,
+   "sd_mm": 6.1,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 109.9,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the deepest point of the web between the two digits to the wrist-crease baseline; hand flat, fingers as photographed",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "crotch2_height",
+   "name": "Crotch 2 height above the wrist crease",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 43 to 46, p. 33 to 36",
+   "n": 148,
+   "mean_mm": 110.5,
+   "sd_mm": 6.0,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 108.3,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "The same, from the tracing",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "crotch3_height",
+   "name": "Crotch 3 height (the web between digits 3 and 4) above the wrist crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 69 to 72",
+   "n": 1003,
+   "mean_mm": 109.9,
+   "sd_mm": 6.4,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 109.4,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the deepest point of the web between the two digits to the wrist-crease baseline; hand flat, fingers as photographed",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "crotch3_height",
+   "name": "Crotch 3 height above the wrist crease",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 43 to 46, p. 33 to 36",
+   "n": 148,
+   "mean_mm": 108.7,
+   "sd_mm": 5.8,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 106.5,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "The same, from the tracing",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "crotch4_height",
+   "name": "Crotch 4 height (the web between digits 4 and 5) above the wrist crease",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 69 to 72",
+   "n": 1003,
+   "mean_mm": 96.6,
+   "sd_mm": 6.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 96.2,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Perpendicular distance from the deepest point of the web between the two digits to the wrist-crease baseline; hand flat, fingers as photographed",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "crotch4_height",
+   "name": "Crotch 4 height above the wrist crease",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 43 to 46, p. 33 to 36",
+   "n": 148,
+   "mean_mm": 97.2,
+   "sd_mm": 5.1,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 95.3,
+   "scale_used": 0.9801,
+   "scaled_by": "hand length",
+   "definition": "The same, from the tracing",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "wrist_to_thumb_tip",
+   "name": "Wrist (stylion) to the thumb's tip",
+   "survey": "greiner1991",
+   "table_or_page": "dimension 68",
+   "n": 1003,
+   "mean_mm": 124.5,
+   "sd_mm": 6.8,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 124.0,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Stylion landmark to the tip of digit 1; sliding caliper, straight line",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "wrist_to_index_tip",
+   "name": "Wrist (stylion) to the index fingertip",
+   "survey": "greiner1991",
+   "table_or_page": "dimension 67",
+   "n": 1003,
+   "mean_mm": 181.0,
+   "sd_mm": 9.1,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 180.2,
+   "scale_used": 0.9958,
+   "scaled_by": "hand length",
+   "definition": "Stylion landmark to the tip of digit 2; sliding caliper, straight line",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d2_pip_breadth",
+   "name": "Index finger breadth at its middle joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "n": 148,
+   "mean_mm": 21.5,
+   "sd_mm": 1.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 21.2,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d2_pip_depth",
+   "name": "Index finger depth at its middle joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "n": 148,
+   "mean_mm": 19.4,
+   "sd_mm": 1.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 19.1,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest depth (back to pad) of the joint; sliding caliper",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d2_dip_breadth",
+   "name": "Index finger breadth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "n": 148,
+   "mean_mm": 18.4,
+   "sd_mm": 1.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 18.1,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d2_dip_depth",
+   "name": "Index finger depth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "n": 148,
+   "mean_mm": 15.5,
+   "sd_mm": 1.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 15.3,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest depth of the joint; sliding caliper",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d2_pip_breadth",
+   "name": "Index finger breadth at its middle joint, silhouette",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 13, 25, 37, 49",
+   "n": 1003,
+   "mean_mm": 23.0,
+   "sd_mm": null,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 22.5,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "Between the silhouette's edges at the joint crease, the hand pressed palm down on the photobox (so wider than a free finger)",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d2_dip_breadth",
+   "name": "Index finger breadth at its tip joint, silhouette",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 15, 27, 39, 51",
+   "n": 1003,
+   "mean_mm": 20.1,
+   "sd_mm": null,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 19.6,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "As above, at the tip joint's crease",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d3_pip_breadth",
+   "name": "Middle finger breadth at its middle joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "n": 148,
+   "mean_mm": 21.8,
+   "sd_mm": 1.4,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 21.5,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d3_pip_depth",
+   "name": "Middle finger depth at its middle joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "n": 148,
+   "mean_mm": 20.1,
+   "sd_mm": 1.4,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 19.8,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest depth (back to pad) of the joint; sliding caliper",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d3_dip_breadth",
+   "name": "Middle finger breadth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "n": 148,
+   "mean_mm": 18.4,
+   "sd_mm": 1.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 18.1,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d3_dip_depth",
+   "name": "Middle finger depth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "n": 148,
+   "mean_mm": 16.0,
+   "sd_mm": 1.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 15.8,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest depth of the joint; sliding caliper",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d3_pip_breadth",
+   "name": "Middle finger breadth at its middle joint, silhouette",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 13, 25, 37, 49",
+   "n": 1003,
+   "mean_mm": 22.5,
+   "sd_mm": null,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 22.0,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "Between the silhouette's edges at the joint crease, the hand pressed palm down on the photobox (so wider than a free finger)",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d3_dip_breadth",
+   "name": "Middle finger breadth at its tip joint, silhouette",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 15, 27, 39, 51",
+   "n": 1003,
+   "mean_mm": 19.8,
+   "sd_mm": null,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 19.3,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "As above, at the tip joint's crease",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d4_pip_breadth",
+   "name": "Ring finger breadth at its middle joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "n": 148,
+   "mean_mm": 20.2,
+   "sd_mm": 1.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 19.9,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d4_pip_depth",
+   "name": "Ring finger depth at its middle joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "n": 148,
+   "mean_mm": 18.9,
+   "sd_mm": 1.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 18.6,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest depth (back to pad) of the joint; sliding caliper",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d4_dip_breadth",
+   "name": "Ring finger breadth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "n": 148,
+   "mean_mm": 17.2,
+   "sd_mm": 1.1,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 16.9,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d4_dip_depth",
+   "name": "Ring finger depth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "n": 148,
+   "mean_mm": 15.1,
+   "sd_mm": 1.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 14.9,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest depth of the joint; sliding caliper",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d4_pip_breadth",
+   "name": "Ring finger breadth at its middle joint, silhouette",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 13, 25, 37, 49",
+   "n": 1003,
+   "mean_mm": 21.4,
+   "sd_mm": null,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 20.9,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "Between the silhouette's edges at the joint crease, the hand pressed palm down on the photobox (so wider than a free finger)",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d4_dip_breadth",
+   "name": "Ring finger breadth at its tip joint, silhouette",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 15, 27, 39, 51",
+   "n": 1003,
+   "mean_mm": 18.5,
+   "sd_mm": null,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 18.1,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "As above, at the tip joint's crease",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d5_pip_breadth",
+   "name": "Little finger breadth at its middle joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "n": 148,
+   "mean_mm": 17.7,
+   "sd_mm": 1.4,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 17.4,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d5_pip_depth",
+   "name": "Little finger depth at its middle joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "n": 148,
+   "mean_mm": 16.7,
+   "sd_mm": 1.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 16.5,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest depth (back to pad) of the joint; sliding caliper",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d5_dip_breadth",
+   "name": "Little finger breadth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "n": 148,
+   "mean_mm": 15.7,
+   "sd_mm": 1.2,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 15.5,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d5_dip_depth",
+   "name": "Little finger depth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "n": 148,
+   "mean_mm": 13.7,
+   "sd_mm": 1.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 13.5,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest depth of the joint; sliding caliper",
+   "reads": 1,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d5_pip_breadth",
+   "name": "Little finger breadth at its middle joint, silhouette",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 13, 25, 37, 49",
+   "n": 1003,
+   "mean_mm": 19.2,
+   "sd_mm": null,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 18.7,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "Between the silhouette's edges at the joint crease, the hand pressed palm down on the photobox (so wider than a free finger)",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d5_dip_breadth",
+   "name": "Little finger breadth at its tip joint, silhouette",
+   "survey": "greiner1991",
+   "table_or_page": "dimensions 15, 27, 39, 51",
+   "n": 1003,
+   "mean_mm": 17.4,
+   "sd_mm": null,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 17.0,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "As above, at the tip joint's crease",
+   "reads": 1,
+   "recommended": false,
+   "note": ""
+  },
+  {
+   "key": "d1_ip_breadth",
+   "name": "Thumb breadth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimension 10, p. 18",
+   "n": 148,
+   "mean_mm": 22.9,
+   "sd_mm": 1.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 22.6,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest breadth of the thumb's tip (interphalangeal) joint; sliding caliper",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d1_ip_depth",
+   "name": "Thumb depth at its tip joint",
+   "survey": "garrett1970",
+   "table_or_page": "dimension 11, p. 18",
+   "n": 148,
+   "mean_mm": 20.2,
+   "sd_mm": 1.5,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 19.9,
+   "scale_used": 0.985,
+   "scaled_by": "hand breadth",
+   "definition": "Greatest depth of the thumb's tip joint; sliding caliper",
+   "reads": 2,
+   "recommended": true,
+   "note": ""
+  },
+  {
+   "key": "d1_ip_breadth",
+   "name": "Thumb breadth at its tip joint",
+   "survey": "greiner1991",
+   "table_or_page": "dimension 4 (measured directly, \"Thumb Breadth\")",
+   "n": 1003,
+   "mean_mm": 24.0,
+   "sd_mm": 1.3,
+   "p5_mm": null,
+   "p95_mm": null,
+   "scaled_to_reference_mm": 23.4,
+   "scale_used": 0.9763,
+   "scaled_by": "hand breadth",
+   "definition": "Measured directly with a caliper at the thumb's tip joint",
+   "reads": 2,
+   "recommended": false,
+   "note": ""
+  }
+ ],
+ "recommended_targets": {
+  "hand_length": {
+   "mm": 193.3,
+   "sd_mm": 9.95,
+   "survey": "ansur2",
+   "raw_mean_mm": 193.28
+  },
+  "palm_length": {
+   "mm": 116.5,
+   "sd_mm": 6.23,
+   "survey": "ansur2",
+   "raw_mean_mm": 116.46
+  },
+  "hand_breadth": {
+   "mm": 88.3,
+   "sd_mm": 4.39,
+   "survey": "ansur2",
+   "raw_mean_mm": 88.26
+  },
+  "hand_circumference": {
+   "mm": 212.3,
+   "sd_mm": 10.24,
+   "survey": "ansur2",
+   "raw_mean_mm": 212.28
+  },
+  "hand_thickness": {
+   "mm": 32.4,
+   "sd_mm": 2.0,
+   "survey": "garrett1970",
+   "raw_mean_mm": 32.9
+  },
+  "thenar_depth": {
+   "mm": 60.3,
+   "sd_mm": 4.4,
+   "survey": "garrett1970",
+   "raw_mean_mm": 61.2
+  },
+  "wrist_breadth": {
+   "mm": 66.8,
+   "sd_mm": 3.7,
+   "survey": "garrett1970",
+   "raw_mean_mm": 67.8
+  },
+  "d1_length_from_crease": {
+   "mm": 69.4,
+   "sd_mm": 4.8,
+   "survey": "greiner1991",
+   "raw_mean_mm": 69.7
+  },
+  "d1_length_to_crotch": {
+   "mm": 57.5,
+   "sd_mm": 4.5,
+   "survey": "garrett1970",
+   "raw_mean_mm": 58.7
+  },
+  "d1_tip_height": {
+   "mm": 99.9,
+   "sd_mm": 7.4,
+   "survey": "greiner1991",
+   "raw_mean_mm": 100.3
+  },
+  "d2_length_from_crease": {
+   "mm": 75.0,
+   "sd_mm": 4.9,
+   "survey": "greiner1991",
+   "raw_mean_mm": 75.3
+  },
+  "d2_length_to_crotch": {
+   "mm": 73.8,
+   "sd_mm": 4.6,
+   "survey": "garrett1970",
+   "raw_mean_mm": 75.3
+  },
+  "d2_tip_height": {
+   "mm": 179.2,
+   "sd_mm": 9.5,
+   "survey": "greiner1991",
+   "raw_mean_mm": 180.0
+  },
+  "d2_tip_to_wrist_crease": {
+   "mm": 184.4,
+   "sd_mm": 9.9,
+   "survey": "greiner1991",
+   "raw_mean_mm": 185.2
+  },
+  "d3_length_from_crease": {
+   "mm": 83.4,
+   "sd_mm": 5.4,
+   "survey": "greiner1991",
+   "raw_mean_mm": 83.8
+  },
+  "d3_length_to_crotch": {
+   "mm": 84.0,
+   "sd_mm": 5.1,
+   "survey": "garrett1970",
+   "raw_mean_mm": 85.7
+  },
+  "d3_tip_height": {
+   "mm": 193.3,
+   "sd_mm": 10.3,
+   "survey": "greiner1991",
+   "raw_mean_mm": 194.1
+  },
+  "d3_tip_to_wrist_crease": {
+   "mm": 193.7,
+   "sd_mm": 10.3,
+   "survey": "greiner1991",
+   "raw_mean_mm": 194.5
+  },
+  "d4_length_from_crease": {
+   "mm": 78.9,
+   "sd_mm": 5.2,
+   "survey": "greiner1991",
+   "raw_mean_mm": 79.2
+  },
+  "d4_length_to_crotch": {
+   "mm": 78.9,
+   "sd_mm": 4.7,
+   "survey": "garrett1970",
+   "raw_mean_mm": 80.5
+  },
+  "d4_tip_height": {
+   "mm": 179.4,
+   "sd_mm": 10.1,
+   "survey": "greiner1991",
+   "raw_mean_mm": 180.2
+  },
+  "d4_tip_to_wrist_crease": {
+   "mm": 184.2,
+   "sd_mm": 10.2,
+   "survey": "greiner1991",
+   "raw_mean_mm": 185.0
+  },
+  "d5_length_from_crease": {
+   "mm": 64.4,
+   "sd_mm": 4.9,
+   "survey": "greiner1991",
+   "raw_mean_mm": 64.7
+  },
+  "d5_length_to_crotch": {
+   "mm": 60.2,
+   "sd_mm": 4.7,
+   "survey": "garrett1970",
+   "raw_mean_mm": 61.4
+  },
+  "d5_tip_height": {
+   "mm": 144.8,
+   "sd_mm": 9.4,
+   "survey": "greiner1991",
+   "raw_mean_mm": 145.4
+  },
+  "d5_tip_to_wrist_crease": {
+   "mm": 159.2,
+   "sd_mm": 9.8,
+   "survey": "greiner1991",
+   "raw_mean_mm": 159.9
+  },
+  "crotch1_height": {
+   "mm": 68.8,
+   "sd_mm": 4.7,
+   "survey": "greiner1991",
+   "raw_mean_mm": 69.1
+  },
+  "crotch2_height": {
+   "mm": 109.9,
+   "sd_mm": 6.1,
+   "survey": "greiner1991",
+   "raw_mean_mm": 110.4
+  },
+  "crotch3_height": {
+   "mm": 109.4,
+   "sd_mm": 6.4,
+   "survey": "greiner1991",
+   "raw_mean_mm": 109.9
+  },
+  "crotch4_height": {
+   "mm": 96.2,
+   "sd_mm": 6.2,
+   "survey": "greiner1991",
+   "raw_mean_mm": 96.6
+  },
+  "wrist_to_thumb_tip": {
+   "mm": 124.0,
+   "sd_mm": 6.8,
+   "survey": "greiner1991",
+   "raw_mean_mm": 124.5
+  },
+  "wrist_to_index_tip": {
+   "mm": 180.2,
+   "sd_mm": 9.1,
+   "survey": "greiner1991",
+   "raw_mean_mm": 181.0
+  },
+  "d2_pip_breadth": {
+   "mm": 21.2,
+   "sd_mm": 1.3,
+   "survey": "garrett1970",
+   "raw_mean_mm": 21.5
+  },
+  "d2_pip_depth": {
+   "mm": 19.1,
+   "sd_mm": 1.2,
+   "survey": "garrett1970",
+   "raw_mean_mm": 19.4
+  },
+  "d2_dip_breadth": {
+   "mm": 18.1,
+   "sd_mm": 1.2,
+   "survey": "garrett1970",
+   "raw_mean_mm": 18.4
+  },
+  "d2_dip_depth": {
+   "mm": 15.3,
+   "sd_mm": 1.3,
+   "survey": "garrett1970",
+   "raw_mean_mm": 15.5
+  },
+  "d3_pip_breadth": {
+   "mm": 21.5,
+   "sd_mm": 1.4,
+   "survey": "garrett1970",
+   "raw_mean_mm": 21.8
+  },
+  "d3_pip_depth": {
+   "mm": 19.8,
+   "sd_mm": 1.4,
+   "survey": "garrett1970",
+   "raw_mean_mm": 20.1
+  },
+  "d3_dip_breadth": {
+   "mm": 18.1,
+   "sd_mm": 1.2,
+   "survey": "garrett1970",
+   "raw_mean_mm": 18.4
+  },
+  "d3_dip_depth": {
+   "mm": 15.8,
+   "sd_mm": 1.3,
+   "survey": "garrett1970",
+   "raw_mean_mm": 16.0
+  },
+  "d4_pip_breadth": {
+   "mm": 19.9,
+   "sd_mm": 1.3,
+   "survey": "garrett1970",
+   "raw_mean_mm": 20.2
+  },
+  "d4_pip_depth": {
+   "mm": 18.6,
+   "sd_mm": 1.3,
+   "survey": "garrett1970",
+   "raw_mean_mm": 18.9
+  },
+  "d4_dip_breadth": {
+   "mm": 16.9,
+   "sd_mm": 1.1,
+   "survey": "garrett1970",
+   "raw_mean_mm": 17.2
+  },
+  "d4_dip_depth": {
+   "mm": 14.9,
+   "sd_mm": 1.3,
+   "survey": "garrett1970",
+   "raw_mean_mm": 15.1
+  },
+  "d5_pip_breadth": {
+   "mm": 17.4,
+   "sd_mm": 1.4,
+   "survey": "garrett1970",
+   "raw_mean_mm": 17.7
+  },
+  "d5_pip_depth": {
+   "mm": 16.5,
+   "sd_mm": 1.2,
+   "survey": "garrett1970",
+   "raw_mean_mm": 16.7
+  },
+  "d5_dip_breadth": {
+   "mm": 15.5,
+   "sd_mm": 1.2,
+   "survey": "garrett1970",
+   "raw_mean_mm": 15.7
+  },
+  "d5_dip_depth": {
+   "mm": 13.5,
+   "sd_mm": 1.3,
+   "survey": "garrett1970",
+   "raw_mean_mm": 13.7
+  },
+  "d1_ip_breadth": {
+   "mm": 22.6,
+   "sd_mm": 1.3,
+   "survey": "garrett1970",
+   "raw_mean_mm": 22.9
+  },
+  "d1_ip_depth": {
+   "mm": 19.9,
+   "sd_mm": 1.5,
+   "survey": "garrett1970",
+   "raw_mean_mm": 20.2
+  }
+ },
+ "how_to_measure_the_model": [
+  "Lay the hand flat, palm down, fingers straight and together as far as they go, thumb held out. Draw the wrist-crease baseline: the line across the palm side at the distal wrist crease (through its ulnar and radial ends), square to the middle finger.",
+  "Heights are perpendicular to that baseline; tip-to-wrist-crease lengths run along each digit's own axis to the baseline; crotch heights go to the deepest point of each web.",
+  "Hand length: baseline (stylion level) to the middle fingertip. Hand breadth: across the outermost points of the index and little fingers' knuckle joints, thumb out of the way. Hand thickness: back to palm at the middle finger's knuckle.",
+  "Joint breadths and depths: the greatest breadth (side to side) and depth (back to pad) at each joint, finger free, not pressed flat."
+ ],
+ "not_found": {
+  "hand_breadth_across_the_thumb": "Not in Greiner 1991 or Garrett 1970. White 1980 (NATICK/TR-81/010, \"hand breadth at thumb\", measured at the thumb's first joint) has it, but its tables were unreadable in the scan.",
+  "hand_thickness_in_ansur": "ANSUR II and Greiner did not measure hand thickness; Garrett 1970 is the source.",
+  "fingertip_and_nail_sizes": "Not re-read in this pass. The film's finger (deck/src/06-motion.js) records, unverified here: AIST Japanese men (Kouchi 2012, n 327) index breadth at the tip joint 15.6, at mid-nail 13.9, depth at the tip joint 13.0, nail base to fingertip 14.2, nail breadth 10.9; thumb joint breadth 20.1, depth 17.3, nail base to tip 15.7, nail breadth 14.7; Ha et al. 2015 men's index nail 12.3 wide x 13.0 long, thumb 15.2 x 14.7. Against these, U.S. Air Force men measure 18.4 mm across and 15.5 mm deep at the index's tip joint and 22.9 by 20.2 at the thumb's (Garrett 1970, above): the Japanese figures are about 15 % slimmer."
+ },
+ "bones": {
+  "source": {
+   "name": "Buryanov & Kotiuk 2010, Proportions of Hand Segments, Int. J. Morphol. 28(3):755-758, Tables I and III",
+   "n": 66,
+   "url": "https://www.scielo.cl/pdf/ijmorphol/v28n3/art15.pdf",
+   "method": "front-to-back X-rays of adults aged 19 to 78 (sex split not given), right hands, lengths between joint surfaces",
+   "status": "verified: two reads"
+  },
+  "scale_to_reference_hand": 1.052,
+  "scale_note": "The study's 1.052. Re-derived three ways it comes out between 1.04 and 1.09 (scripts/sizes.py): stylion to the middle fingertip = carpus about 26 mm + metacarpal + three bones + tip gives 1.066; Greiner's middle finger over this sample's gives 1.047. Status: derived; the sample's own hand length was not published.",
+  "lengths_between_joint_surfaces_mm": {
+   "thumb": {
+    "metacarpal": {
+     "raw_mean_mm": 46.22,
+     "raw_sd_mm": 3.94,
+     "scaled_mm": 48.6
+    },
+    "proximal": {
+     "raw_mean_mm": 31.57,
+     "raw_sd_mm": 3.13,
+     "scaled_mm": 33.2
+    },
+    "distal": {
+     "raw_mean_mm": 21.67,
+     "raw_sd_mm": 1.6,
+     "scaled_mm": 22.8
+    },
+    "tip_soft_tissue": {
+     "raw_mean_mm": 5.67,
+     "raw_sd_mm": 0.61,
+     "scaled_mm": 6.0
+    }
+   },
+   "index": {
+    "metacarpal": {
+     "raw_mean_mm": 68.12,
+     "raw_sd_mm": 6.27,
+     "scaled_mm": 71.7
+    },
+    "proximal": {
+     "raw_mean_mm": 39.78,
+     "raw_sd_mm": 4.94,
+     "scaled_mm": 41.8
+    },
+    "middle": {
+     "raw_mean_mm": 22.38,
+     "raw_sd_mm": 2.51,
+     "scaled_mm": 23.5
+    },
+    "distal": {
+     "raw_mean_mm": 15.82,
+     "raw_sd_mm": 2.26,
+     "scaled_mm": 16.6
+    },
+    "tip_soft_tissue": {
+     "raw_mean_mm": 3.84,
+     "raw_sd_mm": 0.59,
+     "scaled_mm": 4.0
+    }
+   },
+   "middle": {
+    "metacarpal": {
+     "raw_mean_mm": 64.6,
+     "raw_sd_mm": 5.38,
+     "scaled_mm": 68.0
+    },
+    "proximal": {
+     "raw_mean_mm": 44.63,
+     "raw_sd_mm": 3.81,
+     "scaled_mm": 47.0
+    },
+    "middle": {
+     "raw_mean_mm": 26.33,
+     "raw_sd_mm": 3.0,
+     "scaled_mm": 27.7
+    },
+    "distal": {
+     "raw_mean_mm": 17.4,
+     "raw_sd_mm": 1.85,
+     "scaled_mm": 18.3
+    },
+    "tip_soft_tissue": {
+     "raw_mean_mm": 3.95,
+     "raw_sd_mm": 0.61,
+     "scaled_mm": 4.2
+    }
+   },
+   "ring": {
+    "metacarpal": {
+     "raw_mean_mm": 58.0,
+     "raw_sd_mm": 5.06,
+     "scaled_mm": 61.0
+    },
+    "proximal": {
+     "raw_mean_mm": 41.37,
+     "raw_sd_mm": 3.87,
+     "scaled_mm": 43.5
+    },
+    "middle": {
+     "raw_mean_mm": 25.65,
+     "raw_sd_mm": 3.29,
+     "scaled_mm": 27.0
+    },
+    "distal": {
+     "raw_mean_mm": 17.3,
+     "raw_sd_mm": 2.22,
+     "scaled_mm": 18.2
+    },
+    "tip_soft_tissue": {
+     "raw_mean_mm": 3.95,
+     "raw_sd_mm": 0.6,
+     "scaled_mm": 4.2
+    }
+   },
+   "little": {
+    "metacarpal": {
+     "raw_mean_mm": 53.69,
+     "raw_sd_mm": 4.36,
+     "scaled_mm": 56.5
+    },
+    "proximal": {
+     "raw_mean_mm": 32.74,
+     "raw_sd_mm": 2.77,
+     "scaled_mm": 34.4
+    },
+    "middle": {
+     "raw_mean_mm": 18.11,
+     "raw_sd_mm": 2.54,
+     "scaled_mm": 19.1
+    },
+    "distal": {
+     "raw_mean_mm": 15.96,
+     "raw_sd_mm": 2.45,
+     "scaled_mm": 16.8
+    },
+    "tip_soft_tissue": {
+     "raw_mean_mm": 3.73,
+     "raw_sd_mm": 0.62,
+     "scaled_mm": 3.9
+    }
+   }
+  },
+  "status": "raw lengths verified (two reads of Table I); scaled values derived"
+ },
+ "joint_centres_under_the_skin": {
+  "knuckle_joint_behind_the_web": {
+   "what": "how far each finger's knuckle joint lies toward the wrist from the web beside it, on the X-rays",
+   "values": {
+    "index": {
+     "percent_of_finger_from_web_to_tip": 15.52,
+     "finger_from_web_to_tip_raw_mm": 70.8,
+     "joint_behind_web_raw_mm": 11.0,
+     "joint_behind_web_scaled_mm": 11.6
+    },
+    "middle": {
+     "percent_of_finger_from_web_to_tip": 15.33,
+     "finger_from_web_to_tip_raw_mm": 80.0,
+     "joint_behind_web_raw_mm": 12.3,
+     "joint_behind_web_scaled_mm": 12.9
+    },
+    "ring": {
+     "percent_of_finger_from_web_to_tip": 18.49,
+     "finger_from_web_to_tip_raw_mm": 74.5,
+     "joint_behind_web_raw_mm": 13.8,
+     "joint_behind_web_scaled_mm": 14.5
+    },
+    "little": {
+     "percent_of_finger_from_web_to_tip": 24.72,
+     "finger_from_web_to_tip_raw_mm": 56.6,
+     "joint_behind_web_raw_mm": 14.0,
+     "joint_behind_web_scaled_mm": 14.7
+    }
+   },
+   "source": "Buryanov & Kotiuk 2010, Table III (per cent of the finger's length from the web to the skin's tip; the mm are derived). The thumb's was not measured.",
+   "status": "verified (two reads); mm derived"
+  },
+  "knuckle_joint_behind_the_base_crease_mm": {
+   "range": [
+    14.4,
+    19.6
+   ],
+   "source": "Bugbee & Botte 1993, as cited through Doyle & Botte 2003 in Kosif et al. 2015 (Int. J. Morphol. 33(1):173-177)",
+   "status": "partly verified (secondary)",
+   "note": "The crease at a finger's base lies about mid-way along its first bone, not over the knuckle."
+  },
+  "middle_joint_beyond_its_crease_mm": {
+   "range": [
+    1.6,
+    2.6
+   ],
+   "source": "the same",
+   "status": "partly verified (two secondaries)"
+  },
+  "tip_joint_beyond_its_crease_mm": {
+   "range": [
+    7.0,
+    7.8
+   ],
+   "source": "the same",
+   "status": "partly verified (two secondaries)"
+  },
+  "thumb": {
+   "tip_joint_beyond_its_crease_mm": 2.2,
+   "knuckle_crease": "over the joint",
+   "source": "the same",
+   "status": "partly verified (secondary)"
+  },
+  "centre_of_rotation_behind_the_joint_line_mm": {
+   "knuckle": 6.5,
+   "middle_joint": 4.0,
+   "tip_joint": 2.8,
+   "status": "ESTIMATE (the rounded head of the bone before the joint; not read in a source in this pass); range +/- 1 mm"
+  },
+  "links_between_joint_centres_mm": {
+   "values": {
+    "index": {
+     "knuckle_centre_to_middle_joint_centre_mm": 44.8,
+     "middle_joint_centre_to_tip_joint_centre_mm": 24.7,
+     "tip_joint_centre_to_skin_tip_mm": 23.5
+    },
+    "middle": {
+     "knuckle_centre_to_middle_joint_centre_mm": 50.0,
+     "middle_joint_centre_to_tip_joint_centre_mm": 28.9,
+     "tip_joint_centre_to_skin_tip_mm": 25.3
+    },
+    "ring": {
+     "knuckle_centre_to_middle_joint_centre_mm": 46.5,
+     "middle_joint_centre_to_tip_joint_centre_mm": 28.2,
+     "tip_joint_centre_to_skin_tip_mm": 25.2
+    },
+    "little": {
+     "knuckle_centre_to_middle_joint_centre_mm": 37.4,
+     "middle_joint_centre_to_tip_joint_centre_mm": 20.3,
+     "tip_joint_centre_to_skin_tip_mm": 23.5
+    }
+   },
+   "status": "derived from the scaled bones and the estimate above",
+   "check": "Open hand models, joint centre to joint centre: MyoHand index 42.6 / 25.1, middle 44.7 / 29.1, ring 40.4 / 24.9, little 36.1 / 21.0 (a hand of about 185 to 190 mm); one specimen of 203 mm (Goislard de Monsabert 2018): index 48.2 / 28.4"
+  },
+  "knuckle_joint_lines_above_the_wrist_crease_mm": {
+   "index": 96.4,
+   "middle": 97.2,
+   "ring": 89.8,
+   "little": 77.9,
+   "centres": "about 6.5 mm nearer the wrist: 89.9, 90.7, 83.3, 71.4",
+   "how": "Greiner's tip heights less each finger's scaled bones and tip, along the finger's own axis (scripts/sizes.py)",
+   "status": "derived; the little finger's is the least sure (+/- 4 mm)"
+  },
+  "knuckles_behind_the_middle_fingers_mm": {
+   "recommended": {
+    "index": 0.0,
+    "ring": 5.0,
+    "little": 13.0
+   },
+   "range": {
+    "index": [
+     -1.3,
+     0.9
+    ],
+    "ring": [
+     3.0,
+     7.4
+    ],
+    "little": [
+     12.8,
+     18.9
+    ]
+   },
+   "sources": {
+    "Goislard de Monsabert 2018 specimen, scaled": {
+     "index": 0.8,
+     "ring": 4.7,
+     "little": 13.4
+    },
+    "MyoHand model": {
+     "index": -1.3,
+     "ring": 3.0,
+     "little": 12.8
+    },
+    "Greiner + Buryanov (derived)": {
+     "index": 0.7,
+     "ring": 7.4,
+     "little": 18.9
+    }
+   }
+  },
+  "knuckles_toward_the_palm_from_the_middle_fingers_mm": {
+   "ring": [
+    4.6,
+    6.0
+   ],
+   "little": [
+    9.1,
+    14.1
+   ],
+   "note": "the arch across the knuckles: specimen, then MyoHand"
+  },
+  "knuckle_centres_side_to_side": "Index to little finger knuckle centres about 66 mm apart for the mean hand (the specimen's 69.6 mm at 203 mm), so each sits about 11 mm inside the skin of an 88.3 mm hand. Derived.",
+  "knuckle_centre_depth": "The hand is 32.9 mm thick at the middle knuckle (Garrett); the joint's centre is near mid-thickness, about 14 mm under the back's skin. ESTIMATE."
+ },
+ "thumb": {
+  "outside": {
+   "length_from_its_knuckle_crease_mm": {
+    "greiner1991": 69.7,
+    "scaled": 69.4,
+    "check": "Kosif et al. 2015, 56 right-handed Turkish men, crease to crease plus crease to tip: 34.97 + 34.42 = 69.4"
+   },
+   "fingertip_to_crotch_level_mm": {
+    "garrett1970": 58.7,
+    "scaled": 57.5,
+    "status": "the page's cm figure (5.67) disagrees with its inch figure (2.31 = 5.87 cm); the inch figure is used"
+   },
+   "tip_height_above_wrist_crease_mm": {
+    "greiner1991": 100.3,
+    "garrett1970": 100.3,
+    "scaled": 99.9,
+    "note": "thumb held out as photographed; both surveys give 100.3"
+   },
+   "stylion_to_tip_mm": {
+    "greiner1991": 124.5,
+    "scaled": 124.0
+   },
+   "crotch_1_height_mm": {
+    "greiner1991": 69.1,
+    "garrett1970": 68.1,
+    "scaled": 68.8
+   },
+   "tip_joint_breadth_mm": {
+    "garrett1970": 22.9,
+    "greiner1991_direct": 24.0,
+    "scaled": 22.6
+   },
+   "tip_joint_depth_mm": {
+    "garrett1970": 20.2,
+    "scaled": 19.9
+   },
+   "tip_soft_tissue_beyond_the_bone_mm": {
+    "bk2010": 5.67,
+    "scaled": 6.0
+   }
+  },
+  "bones_between_joint_surfaces_mm": {
+   "metacarpal": {
+    "raw_mean_mm": 46.22,
+    "raw_sd_mm": 3.94,
+    "scaled_mm": 48.6
+   },
+   "proximal": {
+    "raw_mean_mm": 31.57,
+    "raw_sd_mm": 3.13,
+    "scaled_mm": 33.2
+   },
+   "distal": {
+    "raw_mean_mm": 21.67,
+    "raw_sd_mm": 1.6,
+    "scaled_mm": 22.8
+   },
+   "tip_soft_tissue": {
+    "raw_mean_mm": 5.67,
+    "raw_sd_mm": 0.61,
+    "scaled_mm": 6.0
+   }
+  },
+  "links_between_joint_centres_mm": {
+   "base_to_knuckle": 37.0,
+   "knuckle_to_tip_joint": 35.0,
+   "tip_joint_to_skin_tip": 32.0,
+   "ranges": {
+    "base_to_knuckle": [
+     36,
+     39
+    ],
+    "knuckle_to_tip_joint": [
+     31,
+     36
+    ],
+    "tip_joint_to_skin_tip": [
+     30,
+     33
+    ]
+   },
+   "sources": "Base to knuckle: 38.6 mm in the one specimen (hand 203 mm), 35.9 mm in the MyoHand model. Knuckle to tip joint: MyoHand 31.1; the scaled bone 33.2 plus about 2. Tip joint to skin: scaled bone 22.8 + about 3 + 6.0 of soft tissue; Kosif's crease-to-tip 34.4 less the crease's 2.2.",
+   "status": "PROVISIONAL: two sources for the first link, derived for the others",
+   "for_the_drawing": "The whole first bone is 46 to 49 mm between its joint surfaces, but the base joint turns about a centre inside the bone's near end, so between joint centres the first link is 36 to 39 mm. A model whose thumb joints are joint centres should have a first link of about 37 mm, not 46.9: stretching it to 46.9 makes the thumb about 10 mm too long and pushes it outward."
+  },
+  "base_centre_relative_to_the_index_knuckle_centre_mm": {
+   "behind": 56.0,
+   "toward_the_palm": 11.5,
+   "toward_the_thumb_side": 5.0,
+   "ranges": {
+    "behind": [
+     53,
+     66
+    ],
+    "toward_the_palm": [
+     10,
+     13
+    ],
+    "toward_the_thumb_side": [
+     3,
+     8
+    ]
+   },
+   "sources": {
+    "Goislard de Monsabert 2018, one specimen, hand 203 mm (means of its two axis points; position variation 7 and 14 mm)": {
+     "behind": 56.0,
+     "toward_the_palm": 9.9,
+     "toward_the_thumb_side": 2.6,
+     "scaled_behind": 53.3
+    },
+    "MyoHand model (MyoHub/myo_sim; hand about 185 to 190 mm)": {
+     "behind": 58.0,
+     "toward_the_palm": 13.1,
+     "toward_the_thumb_side": 8.1
+    }
+   },
+   "status": "two sources agree; hand.py's 53.2 mm (0.275 hand lengths) and 10 mm stand within them"
+  },
+  "base_centre_relative_to_the_wrist": {
+   "beyond_the_wrists_centre_mm": [
+    24.8,
+    25.7
+   ],
+   "toward_the_thumb_side_of_it_mm": [
+    25.5,
+    31.8
+   ],
+   "beyond_the_wrist_crease_mm": "about 33 to 35 (ESTIMATE: the wrist's centre lies 8 to 10 mm beyond the crease; 8.4 in the specimen)",
+   "index_knuckle_centre_beyond_the_wrists_centre_mm": [
+    81.6,
+    82.8
+   ]
+  },
+  "knuckle_and_tip_joint_in_the_models_neutral_poses_mm": {
+   "note": "Pose-dependent: each source's own neutral pose, thumb held a little out. Axes: ahead (+) or behind (-) the index knuckle along the hand, toward the thumb side, toward the palm.",
+   "thumb_knuckle": {
+    "specimen": [
+     -23.5,
+     21.5,
+     19.0
+    ],
+    "MyoHand": [
+     -30.0,
+     23.5,
+     29.3
+    ]
+   },
+   "thumb_tip_joint": {
+    "specimen": [
+     8.2,
+     41.3,
+     -0.1
+    ],
+    "MyoHand": [
+     -5.0,
+     36.5,
+     42.6
+    ]
+   },
+   "first_bone_direction": {
+    "specimen": "30 deg toward the thumb side, 14 deg toward the palm",
+    "MyoHand": "29 deg toward the thumb side, 27 deg toward the palm"
+   }
+  },
+  "relaxed": {
+   "x_ray_rest_position": {
+    "source": "Cooney, Lucca, Chao & Linscheid 1981, J Bone Joint Surg 63-A:1371-81; 19 adults, two-plane X-rays; two reads",
+    "where_the_tip_lies": "the thumb's pulp against the thumb-side of the index finger, at the middle of the index's end bone",
+    "thumb_knuckle_flexion_deg": [
+     10,
+     15
+    ],
+    "thumb_tip_joint_flexion_deg": [
+     10,
+     15
+    ],
+    "first_bone_on_the_trapezium_deg": {
+     "flexion": [
+      20.5,
+      10
+     ],
+     "adduction": [
+      23.2,
+      5
+     ],
+     "pronation": [
+      13.6,
+      9
+     ],
+     "format": "[mean, SD]"
+    },
+    "trapezium_to_third_metacarpal_deg": {
+     "flexion": 46,
+     "abduction": 35,
+     "pronation": 82,
+     "n": "10 cadaver hands"
+    },
+    "status": "verified (primary, two reads); a positioned rest, on the ground"
+   },
+   "markers": {
+    "source": "Lee & Jung 2014, 40 hands, skin markers, forearm neutral",
+    "base_deg": [
+     45,
+     12
+    ],
+    "knuckle_deg": [
+     39,
+     12
+    ],
+    "tip_joint_deg": [
+     10,
+     6
+    ],
+    "format": "[mean, SD]",
+    "status": "verified figures; what the base and knuckle angles are measured from is not defined in the paper. The knuckle's 39 is three times the X-ray figure: markers on the back of the thumb over-read it. Not recommended for the knuckle."
+   },
+   "holding_a_mouse": {
+    "source": "Rogers, Barr, Kasemsontitum & Rempel 2008, Ergonomics 51(4):511-526; 100 hands (mean length 178.1 mm)",
+    "thumb_tip_joint_flexion_deg": [
+     17.1,
+     16.2
+    ],
+    "thumb_pad_centre_to_index_pad_centre_mm": [
+     60.1,
+     10.6
+    ],
+    "scaled_to_reference_mm": [
+     65.2,
+     11.5
+    ],
+    "index_pad_to_middle_pad_mm": [
+     21,
+     3
+    ],
+    "status": "verified (two reads); not a rest pose"
+   },
+   "recommended_for_the_drawing": {
+    "thumb_knuckle_flexion_deg": 12.5,
+    "thumb_tip_joint_flexion_deg": 12.5,
+    "first_bone": "turned toward the palm 35 to 45 deg from the palm's plane and brought in until the tip lies beside the index (ESTIMATE between the X-ray and marker figures)",
+    "where_the_tip_lies": "With the fingers at the study's rest angles (index 29 / 29 / 10 deg) a thumb of 104 mm from a base 56 mm behind the index knuckle cannot reach the index's end bone (it is about 115 mm away): its tip comes to rest against the thumb-side of the index's MIDDLE bone, about half-way along it, a little toward the palm. With more curled fingers (40 deg and more at the knuckles) it reaches the end bone, as in Cooney's X-rays.",
+    "status": "DERIVED from the links and base position above (scripts: audit_hand.py, sizes.py); provisional"
+   }
+  }
+ },
+ "changes": [
+  "2026-11-09 20:58 first issue (RA)."
+ ]
+}
