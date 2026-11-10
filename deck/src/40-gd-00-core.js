@@ -36,7 +36,7 @@ Object.assign(SRC, {
   gdFreivalds: { t: 'Freivalds, phalanx lengths as a percent of hand length (32 subjects), as tabulated in "A Functional Anatomy Based Kinematic Human Hand Model with Simple Size Adaptation", Table II: thumb proximal 17.1 %, distal 12.1 % (33.1 and 23.4 mm for the ANSUR II mean hand)', u: 'https://core.ac.uk/download/11151516.pdf' },
   gdBrockThumb: { t: 'Brock Liddicoat (designer\'s observation), 2026-11-08, on trial 3\'s waist moved to z 24: "actually no, the thumb never goes that far forward, that\'s unnatural". The study had put the thumb\'s tip level with the index\'s DIP joint (an estimate, no source); it now starts from the thumb\'s own base', u: '', n: 'His observation: a constraint, no tag.' },
   gdHandModel: { t: 'WebXR Input Profiles, generic hand model (npm @webxr-input-profiles/assets 1.0.20, dist/profiles/generic-hand/right.glb): 1,360 vertices on 25 joints. MIT License, Copyright (c) 2019 Amazon', u: 'https://github.com/immersive-web/webxr-input-profiles' },
-  gdHand3: { t: 'This study (G8 to G10): one whole hand traced from the WebXR generic hand model (deck/tools/gd/hand_pose.py, hand_draw.py): scaled to the ANSUR II mean hand (193.3 mm, wrist joint to the middle fingertip); each finger\'s first and middle bones stretched to Buryanov & Kotiuk\'s lengths (scaled), the thumb\'s metacarpal to Haeri\'s (46.9 mm) and its two phalanges to Freivalds\'; every finger joint set to Lee & Jung\'s resting flexion about the model\'s own joint axis, from the bone before it, turned until the drawing shows it (within 0.1 deg); the thumb\'s knuckle 39 and tip joint 10 the same way. The fingertips are the model\'s own: the skin\'s front 22.5 mm past the index\'s last joint (the film\'s finger: 21.9). In gd_rest the drawing is placed as the study places the hand: the index knuckle on the grip\'s, its metacarpal level, its own palm\'s skin on the study\'s palm line (the model\'s palm is 3.2 mm thinner than the 20 mm estimate), the thumb turned about its base until its tip is where the study puts it. Estimates: the nails (typical sizes) and the creases (the film\'s), the thumb\'s turn at its base (no named reference), the finger spread and the skin\'s shape', u: '', n: 'derived' },
+  gdHand3: { t: 'This study (G8 to G12): one whole hand traced from the WebXR generic hand model (deck/tools/gd/hand_pose.py, hand_draw.py): scaled to the ANSUR II mean hand (193.3 mm, wrist joint to the middle fingertip); each finger\'s first and middle bones stretched to Buryanov & Kotiuk\'s lengths (scaled), the thumb\'s metacarpal to Haeri\'s (46.9 mm) and its two phalanges to Freivalds\'; every finger joint set to Lee & Jung\'s resting flexion about the model\'s own joint axis, from the bone before it, the thumb\'s knuckle 39 and tip joint 10 the same way: one pose for every view, no joint nudged to suit a view. The views were measured (hand_views.py): from the side the ring finger is wholly behind the index and middle fingers (four digits show); from the front and above (65 deg round, 35 deg up) all five are apart but the index\'s bends are drawn at a quarter of their size; so the index, middle and ring fingers are measured turned 35 deg round and 25 deg up, where each bend is drawn at 0.66 or more of its true size, and the little finger and the thumb from the front (0.72 or more), each arc in its joint\'s own bending plane. The fingertips are the model\'s own: the skin\'s front 22.5 mm past the index\'s last joint (the film\'s finger: 21.9). In gd_rest the side drawing is placed as the study places the hand: the index knuckle on the grip\'s, its metacarpal level, its own palm\'s skin on the study\'s palm line (the model\'s palm is 3.1 mm thinner than the 20 mm estimate), the thumb turned about its base until its tip is where the study puts it. Estimates: the little finger\'s spread (15 deg at its knuckle: the model\'s own closes it 9 deg onto the ring finger), the thumb\'s turn at its base (no named reference), the nails (typical sizes), the creases (the film\'s) and the skin\'s shape', u: '', n: 'derived' },
   gdModel: { t: 'This study: the Sora V2 base fitted with arcs from 3d/shell/shell-sora.glb (plan 8 arcs, RMS 0.12 mm; section 7 arcs, 0.06 to 0.12 mm), regrouped into long arcs (nose, front, waist, hump, tail; crown, groove, shoulder); fingertip targets from the hand model, the thumb from its base (G5); the felt strength, the loss and the descent in deck/tools/gd/longarcs.py (Adam on central differences)', u: '', n: 'derived' }
 });
 
@@ -186,14 +186,15 @@ function gdSecFit(box, o = {}) {
   return { s, cx, by, X: (u, sd) => cx + sd * u * s, Y: v => by - v * s, P: (pts, sd) => pts.map(q => [cx + sd * q[0] * s, by - q[1] * s]) };
 }
 
-/* ---------- the fingertip: grey, technical (F9.24: never peach) ---------- */
-function gdTip(x, y, r, a = 1, o = {}) {
+/* ---------- the fingertip on the section and side drawings (G12): the film's own finger (finger(), 06-motion.js: Brock's picks
+   "A Line" with "A Soft" nails; grey on both grounds, F9.24), seen from the end, coming toward the viewer and fading out behind.
+   A section drawing cuts the mouse, never the finger: the fingertip is drawn whole (the grey balls it replaces read as an
+   unexplained slice). Its pad rests on the surface at (x, y); ang turns it about its own axis so the pad faces the surface
+   (0: a level surface; a slope's angle on the stage, clockwise positive); s px per mm (the drawing's own where it is to scale).
+   o = { digit ('index' | 'thumb'), press, len (mm of finger shown) } ---------- */
+function gdTip(x, y, ang, s, a = 1, o = {}) {
   if (a <= 0.003) return;
-  G.save(); G.globalAlpha = a;
-  const g = G.createRadialGradient(x - r * 0.3, y - r * 0.4, r * 0.1, x, y, r);
-  g.addColorStop(0, TH ? '#E4E4E4' : '#A0A0A0'); g.addColorStop(1, TH ? '#B6B6B6' : '#5E5E5E');
-  G.beginPath(); G.arc(x, y, r, 0, TAU); G.fillStyle = g; G.fill();
-  G.strokeStyle = o.edge || (TH ? 'rgba(28,28,28,0.55)' : 'rgba(242,242,242,0.45)'); G.lineWidth = 1.5; G.stroke(); G.restore();
+  finger(x, y, ang, Object.assign({ view: 'end', s, press: 0.2, len: 30, alpha: a }, o));
 }
 /* ---------- the palm's skin line under the knuckles (the study's GD.hand.palm_skin, an estimate) at z, for a hand whose index
    knuckle line is at (zK, yK) tilted g (rad); gd_rest's gap is measured to it (G10: G7's drawn fingers, gdDigitGeo and the rest,
@@ -210,147 +211,125 @@ function gdClipOutSora(map, box) {
 function gdClipInSora(map) {
   const P = GD.sora.profile; G.beginPath(); G.moveTo(map.X(P[0][0]), map.Y(-2)); P.forEach(q => G.lineTo(map.X(q[0]), map.Y(q[1]))); G.lineTo(map.X(P[P.length - 1][0]), map.Y(-2)); G.closePath(); G.clip();
 }
-/* ---------- (G8) the hand, one whole hand drawn from a real hand's shape (Brock 2026-11-09 11:25: "why are you so bad at drawing
-   hands" / "i also didn't want to see all the fingers separated" / "the area where the finger meets the hand/palm(?) looks by far
-   the weirdest"). The shape is the open WebXR generic hand model (MIT, (c) 2019 Amazon), fitted to the study's hand (the ANSUR II
-   mean, 193.3 mm; the study's bones) and posed at Lee & Jung's resting angles (deck/tools/gd/hand_pose.py), then traced as flat
-   vector paths in the film's finger style (hand_draw.py): the lit grey, the shadow grey beyond one smooth line, the light outline
-   round the hand and wherever one part passes in front of another, never across the skin where a finger runs on into the palm.
-   GDHAND.side: seen from the thumb's side, fingers right; GDHAND.thumb: seen along the thumb's knuckle axis, where its bends show
-   at true size. Paths in mm (1/q), x toward the fingertips, y up, the origin the index's knuckle (the thumb's view: the thumb's).
-   Each digit is also its own layer (its whole shape, the palm in front of it kept), so one can be lifted out of the rest. ---------- */
+/* ---------- the hand: one whole hand traced from a real hand's shape, in the film's finger style (G8 to G12).
+   Brock 2026-11-09: "why are you so bad at drawing hands" / "i also didn't want to see all the fingers separated" (11:25); "the hand
+   looks more natural there, but not perfect" (13:14); "the angle needs to be towards the side at a like 3/4ths view (or similar) in
+   at least one visualizations because it's near impossible to tell the fingers apart from just the side profile, and in many
+   cases the hand looks 4 fingers" (13:50).
+   The shape is the open WebXR generic hand model (MIT, (c) 2019 Amazon), fitted to the study's hand (the ANSUR II mean, 193.3 mm;
+   the study's bones) and posed with every joint at Lee & Jung's resting bend about its own axis (deck/tools/gd/hand_pose.py), ONE
+   pose for every view, then traced as flat vector paths (hand_draw.py): the lit grey, the shadow grey beyond one clean line per
+   digit, the light outline round the hand and wherever one part passes in front of another or two digits touch, never across the
+   skin where a finger runs on into the palm; nails with the skin's fold round them, creases on every joint.
+   GDHAND (hand_draw.build_all), paths in mm (1/q), x right, y up, the origin the index's knuckle:
+     tq0 .. tq8   the hand turning: from just off the side view (tq0) round toward the fingertips and up over the back of the hand
+                  (tq8). GH_VB (tq4): the fingers' and the thumb's bends read (each drawn at 0.66 or more of its true size);
+                  GH_VA (tq8): all five digits plainly apart, the little finger's bends read. Those two carry each digit's own
+                  outline (parts) and every view the joints' bending planes (arcs), so a bend is drawn where it is, in its plane
+     rx0 .. rx3   the hand relaxing from straight, in GH_VA's view
+     grip, heel   the side view as gd_rest places it, two layers (far: the middle, ring and little fingers where they show, each a
+                  step darker; near: the rest); gh0 .. gh2 the thumb on its way between the two ---------- */
 const GH_V = new Map();
-/* nearest first, as each view sees them: from the thumb's side; from the palm, along the thumb's bend (the thumb nearest) */
-const GH_NEAR = { side: ['thumb', 'index', 'middle', 'ring', 'little'], thumb: ['thumb', 'index', 'middle', 'ring', 'little'] };
+const GH_N = GDHAND.pose.turn.length, GH_VB = 'tq' + GDHAND.pose.vb, GH_VA = 'tq' + GDHAND.pose.va;
 function ghView(v) {
   if (GH_V.has(v)) return GH_V.get(v);
   const D = GDHAND[v], q = D.q;
   const pts = a => { const o = []; for (let i = 0; i < a.length; i += 2) o.push([a[i] / q, -a[i + 1] / q]); return o; };
-  const path = (L, close) => { const p = new Path2D(); for (const a of L) { const P = pts(a); P.forEach((c, i) => (i ? p.lineTo(c[0], c[1]) : p.moveTo(c[0], c[1]))); if (close) p.closePath(); } return p; };
-  const one = d => ({ sil: path(d.sil, true), sh: path(d.sh || [], true), edges: path(d.edges, false), nail: path(d.nail || [], true), free: path(d.free || [], true), silPts: d.sil.map(pts), edgePts: d.edges.map(pts),
-    crease: path(d.crease || [], false), fold: path(d.fold || [], false), out: d.out ? path(d.out, false) : null });
-  const out = Object.assign(D.sil ? one(D) : { sh: path(D.sh, true) }, { parts: {}, J: {}, box: D.box, v });
-  for (const k in D.parts || {}) out.parts[k] = one(D.parts[k]);
-  /* (G10) gd_rest's grips: two layers (far: the middle, ring and little fingers where they show; near: the rest), one shadow */
+  const path = (L, close) => { const p = new Path2D(); for (const a of (L || [])) { const P = pts(a); P.forEach((c, i) => (i ? p.lineTo(c[0], c[1]) : p.moveTo(c[0], c[1]))); if (close) p.closePath(); } return p; };
+  const one = d => ({ sil: path(d.sil, true), sh: path(d.sh, true), edges: path(d.edges, false), nail: path(d.nail, true), free: path(d.free, true), lun: path(d.lun, true),
+    crease: path(d.crease, false), fold: path(d.fold, false), out: d.out ? path(d.out, false) : null,
+    dark: Object.keys(d.dark || {}).map(k => [path(d.dark[k].p, true), d.dark[k].k]) });
+  const out = Object.assign(D.sil ? one(D) : { sh: path(D.sh, true) }, { parts: {}, J: {}, A: {}, box: D.box, v });
+  for (const k in D.parts || {}) out.parts[k] = { edgePts: D.parts[k].edges.map(pts), hid: path(D.parts[k].hid, true) };
   if (D.layers) { out.layers = {}; for (const k in D.layers) { out.layers[k] = one(D.layers[k]); out.layers[k].sh = out.sh; } }
   for (const k in D.joints) out.J[k] = [D.joints[k][0], -D.joints[k][1]];
+  /* each joint's bending plane: [x, y, e0, e1, deg] with y down */
+  const fl = a => [a[0], -a[1], [a[2], -a[3]], [a[4], -a[5]], a[6]];
+  for (const k in D.arcs || {}) { const a = D.arcs[k]; out.A[k] = { j: a.j.map(fl), tip: fl(a.tip), back: [a.back[0], -a.back[1]] }; }
+  if (D.fade) out.fade = D.fade.map(c => [c[0], -c[1]]);
   GH_V.set(v, out); return out;
 }
-const GH_JN = { index: 'index-finger', middle: 'middle-finger', ring: 'ring-finger', little: 'pinky-finger' };
-/** a digit's joints in the view (mm, y down): fingers [knuckle, middle joint, tip joint, tip]; the thumb [base, knuckle, tip joint, tip] */
-function ghJoints(v, f) {
-  const J = ghView(v).J;
-  if (f === 'thumb') return ['metacarpal', 'phalanx-proximal', 'phalanx-distal', 'tip'].map(s => J['thumb-' + s]);
-  return ['phalanx-proximal', 'phalanx-intermediate', 'phalanx-distal', 'tip'].map(s => J[GH_JN[f] + '-' + s]);
-}
-/** the skin's front of a digit along a direction (radians, y down): its outline's farthest point that way */
-function ghTip(v, f, dir) {
-  const c = Math.cos(dir), s_ = Math.sin(dir); let best = null, bd = -1e9;
-  for (const P of ghView(v).parts[f].silPts) for (const q of P) { const d = q[0] * c + q[1] * s_; if (d > bd) { bd = d; best = q; } }
-  return best;
-}
+const GH_JN = { index: 'index-finger', middle: 'middle-finger', ring: 'ring-finger', little: 'pinky-finger', thumb: 'thumb' };
+/** the skin's front of a digit's tip in a view (mm, y down) */
+function ghFront(v, f) { return ghView(v).J[GH_JN[f] + '-front']; }
 let GH_L = [];
 function ghCanvas(i, w, h) {
   let c = GH_L[i]; if (!c) c = GH_L[i] = document.createElement('canvas');
   if (c.width < w || c.height < h) { c.width = Math.max(c.width, w); c.height = Math.max(c.height, h); }
   const X = c.getContext('2d'); X.setTransform(1, 0, 0, 1, 0, 0); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over'; X.filter = 'none'; X.clearRect(0, 0, w, h); return X;
 }
-/** fill, shadow, nails, lines (in the layer's mm frame). outline: also stroke the silhouette (the whole hand: yes); lines: the
-   edges at all (a digit drawn under a see-through nearer one: no); dpm: device px per mm (the nails' soft edge) */
-function ghBody(X, d, P, px, outline, dpm, lines = true) {
+/** one drawing's fill, shadow, steps, nails and lines (in its own mm frame). dpm: device px per mm (the nails' soft edge) */
+function ghBody(X, d, P, px, dpm) {
   X.fillStyle = P.lit; X.fill(d.sil);
   X.save(); X.clip(d.sil); X.fillStyle = P.sh; X.fill(d.sh, 'evenodd');
-  /* the nails, as the film's ("A Soft"): the skin's greys a little lighter, the free edge paler. No line of their own (G9: the
-     thumbnail's closed outline read as a button): the tone's edge is soft instead, feathered over a few tenths of a millimetre */
+  /* (G12) the side view: each farther finger a step darker where it shows, so the fingers behind the index read as behind it
+     (ink over its own greys; every such patch ends on a line) */
+  for (const [pth, k] of d.dark) { X.fillStyle = rgba(P.inkHex, k); X.fill(pth, 'evenodd'); }
+  /* the nails, as the film's ("A Soft"): the skin's greys a little lighter, the free edge paler, the thumb's lunula. No line of
+     their own (G9: a closed outline read as a button): the tone's edge is soft, feathered over a few tenths of a millimetre */
   const NS = FNG_NAIL, k = P.k;
   X.save(); X.filter = 'blur(' + Math.max(0.4, 0.16 * dpm).toFixed(2) + 'px)';
   X.fillStyle = rgba('#FFFFFF', NS.tone[k]); X.fill(d.nail);
-  X.save(); X.clip(d.nail); X.fillStyle = rgba('#FFFFFF', NS.free[k]); X.fill(d.free); X.restore();
+  X.save(); X.clip(d.nail); X.fillStyle = rgba('#FFFFFF', NS.free[k]); X.fill(d.free); X.fillStyle = rgba('#FFFFFF', NS.free[k] * 0.45); X.fill(d.lun); X.restore();
   X.restore();
   X.restore();
-  /* (G10) the film's marks: the skin's fold round each nail (its sides and cuticle; the free edge has none) and each joint's
-     creases, in the film's crease line (fngPaint: P.line, 1 px; the fold at A Soft's alpha) */
+  /* the film's marks: the skin's fold round each nail (its sides and cuticle; the free edge has none) and each joint's creases,
+     in the film's crease line (fngPaint: P.line, 1 px; the fold at A Soft's alpha) */
   X.lineJoin = 'round'; X.lineCap = 'round'; X.strokeStyle = P.line;
-  if (d.fold) { X.save(); X.globalAlpha *= Math.min(1, NS.fold[k]); X.lineWidth = 1.0 * px * Math.max(1, NS.fold[k]); X.stroke(d.fold); X.restore(); }
-  if (d.crease) { X.lineWidth = px; X.stroke(d.crease); }
-  if (!lines) return;
+  X.save(); X.globalAlpha *= Math.min(1, NS.fold[k]); X.lineWidth = 1.0 * px * Math.max(1, NS.fold[k]); X.stroke(d.fold); X.restore();
+  X.lineWidth = px; X.stroke(d.crease);
   X.strokeStyle = P.edge; X.lineWidth = P.ew * px;
-  X.stroke(d.edges); if (outline) X.stroke(d.out || d.sil);
+  X.stroke(d.edges); X.stroke(d.out || d.sil);
 }
 /**
- * The hand, view v ('side' | 'thumb'), its origin at (x, y) on the stage, s px per mm. o = { alpha, hl (the digit whose turn it
- * is), kH (0..1: how far it is marked), lifts: [[digit, k]] (instead of hl, kH: two at a handover), fade: [x0, x1] (mm: the forearm
- * fades out from x1 back to x0), see (how see-through the nearer digits get over it, 0.5) }.
- * (G9, after the 2026-11-09 review of G8's highlight: its fade across the finger's base put a light band at the knuckle, "the area
- * where the finger meets the hand" Brock called the weirdest, and the dimmed rest read as a dark blob.) The whole hand is always
- * drawn in its own tones. The digit whose turn it is is marked by its outline only: a brighter line along its own edge, fading
- * out over its last few millimetres where the edge runs into the palm (never a fill fade, never across the skin). Where a nearer
- * digit covers it, that nearer digit turns see-through over it (only there), so the whole digit shows.
+ * The hand. views: a drawing's name ('tq8'), a layer of one ('grip:near'), or [[name, weight], ...] to dissolve between drawings
+ * (their weights summed per pixel, 'lighter': where they agree the hand stays solid, only what differs dissolves). The drawing's
+ * origin (the index's knuckle) at (x, y) on the stage, s px per mm. o = { alpha; rot, dy, r2 (the drawing turned by rot about its
+ * origin, then set dy mm down and turned r2 more: gd_rest's placement); clip (a clip set on the stage first); fade: false for no
+ * fade (the forearm fades out along its own line otherwise; fadeK: over that share of the line's length, from the wrist's end);
+ * fadeTo: [[x, y], [x, y]] on the stage, gone at the first point and whole by the second (so a window's edge never cuts the arm);
+ * hl, kH (the digit whose turn it is, 0..1) or lifts: [[digit, k]] }.
+ * The whole hand is always drawn in its own tones; the digit whose turn it is is marked by its outline only (ghMark): never a fill
+ * fade, never a band across the skin where it meets the palm (G9).
  */
-function ghPaint(v, x, y, s, o = {}) {
-  const a = o.alpha == null ? 1 : o.alpha; if (!(a > 0.003)) return;
-  const H = ghView(v), P = fngPal(), [bx, by, bw, bh] = H.box;
-  const T0 = G.getTransform(), dev = (typeof APP !== 'undefined' && APP.scale ? APP.scale * (APP.dpr || 1) : 1), sEff = s * Math.hypot(T0.a, T0.b) / dev, px = 1 / sEff;
-  const G0 = G; G0.save(); G0.translate(x, y); G0.scale(s, s); const M = G0.getTransform(); G0.restore();
-  const dpm = Math.hypot(M.a, M.b);
-  /* the box in device pixels (y down: the box's top is -by) */
-  const cs = [[bx, -by], [bx + bw, -by], [bx, -by + bh], [bx + bw, -by + bh]].map(q => [M.a * q[0] + M.c * q[1] + M.e, M.b * q[0] + M.d * q[1] + M.f]);
-  const cw = G0.canvas.width, ch = G0.canvas.height;
-  const x0 = Math.max(0, Math.floor(Math.min(...cs.map(q => q[0]))) - 4), y0 = Math.max(0, Math.floor(Math.min(...cs.map(q => q[1]))) - 4);
-  const x1 = Math.min(cw, Math.ceil(Math.max(...cs.map(q => q[0]))) + 4), y1 = Math.min(ch, Math.ceil(Math.max(...cs.map(q => q[1]))) + 4);
-  if (!(x1 > x0 && y1 > y0)) return;
-  const ramp = (gr, k0 = 1) => { for (let i = 0; i <= 8; i++) { const u = i / 8; gr.addColorStop(u, 'rgba(0,0,0,' + (k0 * (1 - u * u * (3 - 2 * u))).toFixed(3) + ')'); } return gr; };
-  const lw = x1 - x0, lh = y1 - y0, fadeOut = X => { if (!o.fade) return; const [f0, f1] = o.fade; X.save(); X.globalCompositeOperation = 'destination-out';
-    X.fillStyle = ramp(X.createLinearGradient(f0, 0, f1, 0)); X.fillRect(bx - 50, -by - 50, f1 - bx + 50, bh + 100); X.restore(); };
-  const lifts = (o.lifts || (o.hl ? [[o.hl, o.kH == null ? 1 : o.kH]] : [])).filter(q => q[1] > 0.003);
-  const put = (i, al) => { G0.save(); G0.setTransform(1, 0, 0, 1, 0, 0); G0.globalAlpha = G0.globalAlpha * al; G0.drawImage(GH_L[i], 0, 0, lw, lh, x0, y0, lw, lh); G0.restore(); };
-  const lay = i => { const X = ghCanvas(i, lw, lh); X.setTransform(M.a, M.b, M.c, M.d, M.e - x0, M.f - y0); return X; };
-  /* the whole hand, in its own tones */
-  const L0 = lay(0); ghBody(L0, H, P, px, true, dpm); fadeOut(L0); put(0, a);
-  for (const [f, k] of lifts) ghMark(v, H, f, clamp(k), P, px, dpm, lay, put, a, o, fadeOut);
-}
-/**
- * (G10) gd_rest's hand: one layer ('far' | 'near') of a grip's drawing (GDHAND.grip, GDHAND.heel), its origin (the index knuckle)
- * at (x, y) on the stage, turned by rot (radians; the hand on the hump is the lifted drawing's pose turned 15 deg about the knuckle),
- * s px per mm, then o.dy mm down and o.r2 radians more (place.sh, place.lev). views: [[name, weight], ...]: one drawing, or two cross-dissolved (their weights summed per pixel, 'lighter': where
- * the two drawings agree the hand stays solid; only what differs, the thumb, dissolves). o = { alpha, clip (a clip set on the stage
- * first), fade: [x0, x1] (mm: the forearm fades out from x1 back to x0) }
- */
-function ghPaintGrip(views, layer, x, y, s, rot, o = {}) {
-  const a = o.alpha == null ? 1 : o.alpha; views = views.filter(q => q[1] > 0.003); if (!(a > 0.003) || !views.length) return;
+function ghPaint(views, x, y, s, o = {}) {
+  const a = o.alpha == null ? 1 : o.alpha; views = (typeof views === 'string' ? [[views, 1]] : views).filter(q => q[1] > 0.003); if (!(a > 0.003) || !views.length) return;
   const P = fngPal(), T0 = G.getTransform(), dev = (typeof APP !== 'undefined' && APP.scale ? APP.scale * (APP.dpr || 1) : 1), px = 1 / (s * Math.hypot(T0.a, T0.b) / dev);
-  const G0 = G; G0.save(); G0.translate(x, y); G0.rotate(rot); G0.scale(s, s); G0.translate(0, o.dy || 0); G0.rotate(o.r2 || 0); const M = G0.getTransform(); G0.restore();
+  const G0 = G; G0.save(); G0.translate(x, y); G0.rotate(o.rot || 0); G0.scale(s, s); G0.translate(0, o.dy || 0); G0.rotate(o.r2 || 0); const M = G0.getTransform(); G0.restore();
   const dpm = Math.hypot(M.a, M.b), cw = G0.canvas.width, ch = G0.canvas.height;
+  const spec = views.map(([v, w]) => { const [nm, lay] = v.split(':'), H = ghView(nm); return { H, d: lay ? H.layers[lay] : H, w }; });
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
-  for (const [v] of views) { const [bx, by, bw, bh] = ghView(v).box; for (const q of [[bx, -by], [bx + bw, -by], [bx, -by + bh], [bx + bw, -by + bh]]) { const X_ = M.a * q[0] + M.c * q[1] + M.e, Y_ = M.b * q[0] + M.d * q[1] + M.f; x0 = Math.min(x0, X_); x1 = Math.max(x1, X_); y0 = Math.min(y0, Y_); y1 = Math.max(y1, Y_); } }
+  for (const { H } of spec) { const [bx, by, bw, bh] = H.box; for (const q of [[bx, -by], [bx + bw, -by], [bx, -by + bh], [bx + bw, -by + bh]]) { const X_ = M.a * q[0] + M.c * q[1] + M.e, Y_ = M.b * q[0] + M.d * q[1] + M.f; x0 = Math.min(x0, X_); x1 = Math.max(x1, X_); y0 = Math.min(y0, Y_); y1 = Math.max(y1, Y_); } }
   x0 = Math.max(0, Math.floor(x0) - 4); y0 = Math.max(0, Math.floor(y0) - 4); x1 = Math.min(cw, Math.ceil(x1) + 4); y1 = Math.min(ch, Math.ceil(y1) + 4);
   if (!(x1 > x0 && y1 > y0)) return;
   const lw = x1 - x0, lh = y1 - y0;
-  const ramp = gr => { for (let i = 0; i <= 8; i++) { const u = i / 8; gr.addColorStop(u, 'rgba(0,0,0,' + (1 - u * u * (3 - 2 * u)).toFixed(3) + ')'); } return gr; };
-  views.forEach(([v], i) => {
-    const H = ghView(v), d = H.layers[layer], X = ghCanvas(4 + i, lw, lh); X.setTransform(M.a, M.b, M.c, M.d, M.e - x0, M.f - y0);
-    ghBody(X, d, P, px, true, dpm);
-    if (o.fade) { const [f0, f1] = o.fade, [bx, by, bw, bh] = H.box; X.save(); X.globalCompositeOperation = 'destination-out'; X.fillStyle = ramp(X.createLinearGradient(f0, 0, f1, 0)); X.fillRect(bx - 50, -by - 50, f1 - bx + 50, bh + 100); X.restore(); }
-  });
+  const lay = i => { const X = ghCanvas(i, lw, lh); X.setTransform(M.a, M.b, M.c, M.d, M.e - x0, M.f - y0); return X; };
+  /* the forearm fades out along its own line (opaque at the line's second point, gone by its first) */
+  const fadeOut = (X, H) => { const F = o.fade === false ? null : H.fade; if (!F) return; const [bx, by, bw, bh] = H.box, fk = o.fadeK == null ? 1 : o.fadeK;
+    const gr = X.createLinearGradient(F[1][0] + (F[0][0] - F[1][0]) * fk, F[1][1] + (F[0][1] - F[1][1]) * fk, F[1][0], F[1][1]);
+    for (let i = 0; i <= 8; i++) { const u = i / 8; gr.addColorStop(u, 'rgba(0,0,0,' + (1 - u * u * (3 - 2 * u)).toFixed(3) + ')'); }
+    X.save(); X.globalCompositeOperation = 'destination-out'; X.fillStyle = gr; X.fillRect(bx - 400, -by - 400, bw + 800, bh + 800); X.restore(); };
+  /* o.fadeTo: [[x, y], [x, y]] on the stage: gone at the first point, whole by the second (a window's edge the arm must not be cut by) */
+  const fadeTo = X => { if (!o.fadeTo) return; const q = o.fadeTo.map(c => [T0.a * c[0] + T0.c * c[1] + T0.e - x0, T0.b * c[0] + T0.d * c[1] + T0.f - y0]), gr = X.createLinearGradient(q[0][0], q[0][1], q[1][0], q[1][1]);
+    for (let i = 0; i <= 8; i++) { const u = i / 8; gr.addColorStop(u, 'rgba(0,0,0,' + (1 - u * u * (3 - 2 * u)).toFixed(3) + ')'); }
+    X.save(); X.setTransform(1, 0, 0, 1, 0, 0); X.globalCompositeOperation = 'destination-out'; X.fillStyle = gr; X.fillRect(0, 0, lw, lh); X.restore(); };
+  spec.forEach((sp, i) => { const X = lay(4 + i); ghBody(X, sp.d, P, px, dpm); fadeOut(X, sp.H); fadeTo(X); });
   let src = GH_L[4];
-  if (views.length > 1) {
-    const C_ = ghCanvas(6, lw, lh); C_.globalAlpha = views[0][1]; C_.drawImage(GH_L[4], 0, 0, lw, lh, 0, 0, lw, lh);
-    C_.globalCompositeOperation = 'lighter'; C_.globalAlpha = views[1][1]; C_.drawImage(GH_L[5], 0, 0, lw, lh, 0, 0, lw, lh);
+  if (spec.length > 1) {
+    const C_ = ghCanvas(6, lw, lh); C_.globalAlpha = spec[0].w; C_.drawImage(GH_L[4], 0, 0, lw, lh, 0, 0, lw, lh);
+    C_.globalCompositeOperation = 'lighter'; C_.globalAlpha = spec[1].w; C_.drawImage(GH_L[5], 0, 0, lw, lh, 0, 0, lw, lh);
     C_.globalCompositeOperation = 'source-over'; C_.globalAlpha = 1; src = GH_L[6];
   }
-  G0.save(); if (o.clip) o.clip(); G0.setTransform(1, 0, 0, 1, 0, 0); G0.globalAlpha = G0.globalAlpha * a * (views.length > 1 ? 1 : views[0][1]);
-  G0.drawImage(src, 0, 0, lw, lh, x0, y0, lw, lh); G0.restore();
+  const put = (cv, al) => { G0.save(); if (o.clip) o.clip(); G0.setTransform(1, 0, 0, 1, 0, 0); G0.globalAlpha = G0.globalAlpha * al; G0.drawImage(cv, 0, 0, lw, lh, x0, y0, lw, lh); G0.restore(); };
+  put(src, a * (spec.length > 1 ? 1 : spec[0].w));
+  const lifts = (o.lifts || (o.hl ? [[o.hl, o.kH == null ? 1 : o.kH]] : [])).filter(q => q[1] > 0.003);
+  if (spec.length === 1) for (const [f, k] of lifts) { const H = spec[0].H; if (!H.parts[f]) continue; const L3 = lay(3); ghMark(L3, H.parts[f], P, px); fadeOut(L3, H); fadeTo(L3); put(GH_L[3], a * clamp(k)); }
 }
-/** (G9) the digit whose turn it is, marked over the whole hand (ghPaint): the nearer digits see-through where they cover it, then
-   its outline brighter, fading out where it runs into the palm */
-function ghMark(v, H, f, k, P, px, dpm, lay, put, a, o, fadeOut) {
-  const d = H.parts[f], near = GH_NEAR[v].slice(0, GH_NEAR[v].indexOf(f)).filter(n => H.parts[n]);
-  /* (G10, after G9's note: the see-through nearer fingers on the ring's and little finger's turns looked milky and busy) no fill
-     over the nearer digits: where they cover it, only its outline shows through, dimmer (a hidden line, as a drawing shows one) */
-  if (near.length) { const L2 = lay(2); L2.fillStyle = '#000'; for (const n of near) L2.fill(H.parts[n].sil); }
-  /* its outline, brighter: each run of its edge stroked in short pieces, fading over its last FADE mm at either end (a run ends
-     where the edge runs into the palm, or behind the palm); behind a see-through nearer digit, a little fainter */
-  const L3 = lay(3), FADE = 9, wq = P.ew * 1.55 * px;
+/** the digit whose turn it is, marked on the whole hand: its own outline brighter, each run fading out over its last few
+   millimetres where the edge runs on into the palm; where the rest of the hand hides it, fainter (a hidden line, as a drawing
+   shows one), so a finger behind another can still be followed */
+function ghMark(L3, d, P, px) {
+  const FADE = 9, wq = P.ew * 1.7 * px;
   L3.lineCap = 'round'; L3.lineJoin = 'round'; L3.strokeStyle = TH ? 'rgba(17,17,17,0.95)' : 'rgba(250,250,252,0.97)'; L3.lineWidth = wq;
   for (const R of d.edgePts) {
     if (R.length < 2) continue;
@@ -362,67 +341,65 @@ function ghMark(v, H, f, k, P, px, dpm, lay, put, a, o, fadeOut) {
       L3.globalAlpha = e; L3.beginPath(); L3.moveTo(R[i - 1][0], R[i - 1][1]); L3.lineTo(R[i][0], R[i][1]); L3.stroke();
     }
   }
-  L3.globalAlpha = 1;
-  if (near.length) { L3.save(); L3.setTransform(1, 0, 0, 1, 0, 0); L3.globalCompositeOperation = 'destination-out'; L3.globalAlpha = 0.55; L3.drawImage(GH_L[2], 0, 0); L3.restore(); }
-  fadeOut(L3); put(3, a * k);
+  L3.globalAlpha = 0.62; L3.globalCompositeOperation = 'destination-out'; L3.fillStyle = '#000'; L3.fill(d.hid, 'evenodd');
+  L3.globalAlpha = 1; L3.globalCompositeOperation = 'source-over';
 }
-/** (G9) a digit's bends marked on the hand itself (2026-11-09 review: G8's guides floated about 25 mm over the joints; "the dots
-   must clearly belong to the joints"). A thin line through its joints, the bones as straight lines: in along the bone before the
-   first joint (a finger's long hand bone, under the back of the hand; the thumb's first bone), then joint to joint to the
-   fingertip. A dot on each joint and beside it, dashed, the bone before carried straight on, and the arc from there to the next
-   bone with its number, counting in. At the fingertip, in blue: the back of the hand's direction and the fingertip's, one arc
-   ticked at each joint's share, and the sum. The lines run through the drawing's own joints and the arcs span its own bends; the
-   hand is posed so those are the study's (hand_draw.posed: within 0.1 deg), so line, arc and number agree.
-   v, f: view and digit; A: the joints' angles (deg, the study's); kk: each joint's progress (0..1); M: { X, Y, s } (mm to px);
-   o = { a, kSum, R (mm, the arcs), Rt (mm, the sum's arc), refLen (mm of the bone before shown), lab: [[dx, dy] px per joint], totLab };
-   M.P: a mapping of whole points instead of X and Y (a turned view) */
-function ghMarks(v, f, A, kk, M, o = {}) {
+/** the hand turning: position p along the turn's drawings (0: tq0 ... GH_N - 1: the last), as the views to dissolve between. Each
+   drawing is held for part of its step and dissolved into the next over the rest, so it reads as one hand turning, not a blur */
+function ghTurn(p, hold = 0.72) {
+  p = Math.max(0, Math.min(GH_N - 1, p)); const i = Math.min(GH_N - 2, Math.floor(p)), k = smooth(clamp((p - i - hold / 2) / (1 - hold)));
+  return k <= 0.003 ? [['tq' + i, 1]] : k >= 0.997 ? [['tq' + (i + 1), 1]] : [['tq' + i, 1 - k], ['tq' + (i + 1), k]];
+}
+/** a point that every drawing of the turn has (a joint's or a fingertip's name), at position p along it (mm, y down) */
+function ghTurnAt(p, name) {
+  p = Math.max(0, Math.min(GH_N - 1, p)); const i = Math.min(GH_N - 2, Math.floor(p)), k = p - i, A_ = ghView('tq' + i).J[name], B_ = ghView('tq' + (i + 1)).J[name];
+  return [lerp(A_[0], B_[0], k), lerp(A_[1], B_[1], k)];
+}
+/** (G12) a digit's bends marked on the hand, each where it is and in its own bending plane (hand_draw.arcs_data), so the marks
+   lie on the finger in any view: a thin line through its joints (in along the bone before the first one: a finger's long hand
+   bone under the back of the hand; the thumb's first bone), a dot on each joint; at each, dashed, the bone before carried
+   straight on, and the arc from there round to the next bone, a circle's arc in the joint's plane (part of an ellipse as drawn),
+   with its number counting in. At the fingertip, in blue: the back of the hand's direction and the fingertip's, one arc ticked at
+   each joint's share, and the sum. The arcs span the drawing's own bends, posed at the study's angles: line, arc and number agree.
+   v, f: the drawing and the digit; A: the joints' angles (deg, the study's); kk: each joint's progress (0..1);
+   M: { x, y, s } (the drawing's origin on the stage, px per mm); o = { a, kSum, R (mm, the arcs: one or one per joint), Rt (mm, the sum's), refLen (mm of the bone before
+   shown), lab: [[dx, dy] px per joint], side: [1 | -1 per joint: the number past the straight-on line (1) or past the next bone
+   (-1)], totLab: [dx, dy] } */
+function ghMarks3(v, f, A, kk, M, o = {}) {
   const a = o.a == null ? 1 : o.a; if (a <= 0.003) return;
-  const Jv = ghView(v).J, s = M.s, P = M.P || (q => [M.X(q[0]), M.Y(q[1])]);
-  const names = f === 'thumb' ? ['metacarpal', 'phalanx-proximal', 'phalanx-distal', 'tip'].map(x => 'thumb-' + x)
-    : ['metacarpal', 'phalanx-proximal', 'phalanx-intermediate', 'phalanx-distal', 'tip'].map(x => GH_JN[f] + '-' + x);
-  /* (G10) the line ends at the fingertip's skin (its front along the last bone, the same line): the model's own 'tip' marker sits
-     inside the fingertip (11.8 mm past the index's last joint; the skin's front 22.5 mm, the film's finger 21.9) */
-  const fr = (f === 'thumb' ? 'thumb' : GH_JN[f]) + '-front'; if (Jv[fr]) names[names.length - 1] = fr;
-  const Q = names.map(n => P(Jv[n])), n = Q.length - 2;     /* Q[0]: the bone before's start; Q[1..n]: the joints; Q[n + 1]: the tip */
-  const ph = []; for (let i = 0; i <= n; i++) ph.push(Math.atan2(Q[i + 1][1] - Q[i][1], Q[i + 1][0] - Q[i][0]));
-  const wrap = x => { while (x > Math.PI) x -= TAU; while (x < -Math.PI) x += TAU; return x; };
-  const tn = []; for (let i = 1; i <= n; i++) tn.push(wrap(ph[i] - ph[i - 1]));
+  const H = ghView(v), D = H.A[f], s = M.s, P = q => [M.x + q[0] * s, M.y + q[1] * s], n = D.j.length;
   const ink = TH ? C.ink : '#F4F4F6', halo = TH ? 'rgba(255,255,255,0.55)' : 'rgba(12,12,14,0.5)', kG = clamp(Math.max(...kk) * 3);
-  const dir = f_ => [Math.cos(f_), Math.sin(f_)];
-  const stroke = (pts, w, col, al, dash) => { if (al <= 0.003) return; G.save(); G.globalAlpha = al; G.lineJoin = 'round'; G.lineCap = 'round'; G.setLineDash(dash || []);
+  const stroke = (pts, w, col, al, dash) => { if (al <= 0.003 || pts.length < 2) return; G.save(); G.globalAlpha = al; G.lineJoin = 'round'; G.lineCap = 'round'; G.setLineDash(dash || []);
     G.beginPath(); pts.forEach((q, i) => (i ? G.lineTo(q[0], q[1]) : G.moveTo(q[0], q[1]))); G.strokeStyle = halo; G.lineWidth = w + 3; G.stroke(); G.strokeStyle = col; G.lineWidth = w; G.stroke(); G.restore(); };
-  const arcS = (c, R, f0, f1, w, col, al) => { if (al <= 0.003 || Math.abs(f1 - f0) < 0.002) return; G.save(); G.globalAlpha = al; G.lineCap = 'round';
-    G.beginPath(); G.arc(c[0], c[1], R, f0, f1, f1 < f0); G.strokeStyle = halo; G.lineWidth = w + 3; G.stroke(); G.strokeStyle = col; G.lineWidth = w; G.stroke(); G.restore(); };
-  /* the line: the bone before (refLen mm of it), then joint to joint to the fingertip */
-  const r0 = Math.min((o.refLen || 26) * s, Math.hypot(Q[1][0] - Q[0][0], Q[1][1] - Q[0][1])), d0 = dir(ph[0]);
-  stroke([[Q[1][0] - d0[0] * r0, Q[1][1] - d0[1] * r0]].concat(Q.slice(1)), 2, ink, a * 0.8 * kG);
-  /* each joint */
-  for (let i = 1; i <= n; i++) {
-    const ki = kk[i - 1]; if (ki <= 0) continue;
-    const c = Q[i], f0 = ph[i - 1], t_ = tn[i - 1], f1 = f0 + t_ * ki, R = (o.R || 8.5) * s, ex = R + 12, al = a * clamp(ki * 3), sg = t_ >= 0 ? 1 : -1;
-    stroke([c, [c[0] + Math.cos(f0) * ex, c[1] + Math.sin(f0) * ex]], 1.5, ink, al * 0.85, [5, 4]);
-    arcS(c, R, f0, f1, 2.8, ink, al);
+  /* a point of joint j's plane: r mm from it at angle ph from the straight-on line (px) */
+  const at = (j, c, ph, r) => [c[0] + r * s * (Math.cos(ph) * j[2][0] + Math.sin(ph) * j[3][0]), c[1] + r * s * (Math.cos(ph) * j[2][1] + Math.sin(ph) * j[3][1])];
+  const arcP = (j, c, a0, a1, r) => { const m = Math.max(2, Math.ceil(Math.abs(a1 - a0) / 0.035)), out = []; for (let q = 0; q <= m; q++) out.push(at(j, c, a0 + (a1 - a0) * q / m, r)); return out; };
+  const unit = (p, c) => { const dx = p[0] - c[0], dy = p[1] - c[1], l = Math.hypot(dx, dy) || 1; return [dx / l, dy / l]; };
+  /* the line: the bone before (refLen mm of it), then joint to joint to the fingertip's skin */
+  const Q = D.j.map(j => P(j)), tip = P(ghFront(v, f)), r0 = (o.refLen || 24) * s;
+  stroke([[Q[0][0] - D.back[0] * r0, Q[0][1] - D.back[1] * r0]].concat(Q, [tip]), 2, ink, a * 0.8 * kG);
+  D.j.forEach((j, i) => {
+    const ki = kk[i]; if (!(ki > 0)) return;
+    const c = Q[i], ang = j[4] * Math.PI / 180, R = (Array.isArray(o.R) ? o.R[i] : o.R) || 8.5, al = a * clamp(ki * 3), pe = at(j, c, 0, R + 3.6);
+    stroke([c, pe], 1.5, ink, al * 0.85, [5, 4]);
+    stroke(arcP(j, c, 0, ang * ki, R), 2.8, ink, al);
     G.save(); G.globalAlpha = al; G.fillStyle = halo; G.beginPath(); G.arc(c[0], c[1], 6.5, 0, TAU); G.fill(); G.fillStyle = ink; G.beginPath(); G.arc(c[0], c[1], 4.6, 0, TAU); G.fill(); G.restore();
-    /* the number: past the dashed line's end, on the side away from the bend (o.side[i] < 0: past the next bone, on the bend's
-       side, where the fingertip's sum would crowd it) */
-    const inside = o.side && o.side[i - 1] < 0, fb = inside ? ph[i] : f0, q_ = inside ? -1 : 1;
-    const nb = [Math.sin(fb) * sg * q_, -Math.cos(fb) * sg * q_], nud = (o.lab && o.lab[i - 1]) || [0, 0], rr = R + 16;
-    const lx = c[0] + Math.cos(fb) * rr + nb[0] * 20 + nud[0], ly = c[1] + Math.sin(fb) * rr + nb[1] * 20 + nud[1];
-    text(Math.round(A[i - 1] * ki) + '°', lx, ly + 9, { role: 'num', size: 26, color: ink, align: 'center', alpha: al, glow: halo, glowR: 9 });
-  }
+    /* the number: past the straight-on line's end, on the side away from the bend (side -1: past the next bone, on the bend's side) */
+    const inside = o.side && o.side[i] < 0, pb = inside ? at(j, c, ang, R + 3.6) : pe, d0 = unit(pb, c), po = unit(at(j, c, inside ? ang + 0.6 : -0.6, R), c);
+    const nb = [po[0] - d0[0] * (po[0] * d0[0] + po[1] * d0[1]), po[1] - d0[1] * (po[0] * d0[0] + po[1] * d0[1])], nl = Math.hypot(nb[0], nb[1]) || 1, nud = (o.lab && o.lab[i]) || [0, 0];
+    text(Math.round(A[i] * ki) + '°', pb[0] + d0[0] * 12 + nb[0] / nl * 20 + nud[0], pb[1] + d0[1] * 12 + nb[1] / nl * 20 + nud[1] + 9, { role: 'num', size: 26, color: ink, align: 'center', alpha: al, glow: halo, glowR: 9 });
+  });
   /* the sum at the fingertip */
-  const kS = o.kSum == null ? 1 : o.kSum, tot = tn.reduce((p, q) => p + q, 0) * clamp(kS), sum = A.reduce((p, q) => p + q, 0);
-  if (kS > 0.004 && Math.abs(tot) > 0.004) {
-    const c = Q[n + 1], R = (o.Rt || 9.5) * s, ex = R + 18, al = a * clamp(kS * 2), f0 = ph[0], sg = tot >= 0 ? 1 : -1;
-    stroke([c, [c[0] + Math.cos(f0) * ex, c[1] + Math.sin(f0) * ex]], 1.6, C.heroText, al * 0.9, [5, 4]);
-    stroke([c, [c[0] + Math.cos(f0 + tot) * ex, c[1] + Math.sin(f0 + tot) * ex]], 1.6, C.heroText, al * 0.9, [5, 4]);
-    G.save(); G.globalAlpha = al * 0.24; G.fillStyle = C.hero; G.beginPath(); G.moveTo(c[0], c[1]); G.arc(c[0], c[1], R, f0, f0 + tot, tot < 0); G.closePath(); G.fill(); G.restore();
-    arcS(c, R, f0, f0 + tot, 3, C.heroText, al);
-    let acc = f0; for (let i = 0; i < n - 1; i++) { acc += tn[i]; if (Math.abs(acc - f0) >= Math.abs(tot) - 0.004) break; const u = dir(acc);
-      stroke([[c[0] + u[0] * (R - 7), c[1] + u[1] * (R - 7)], [c[0] + u[0] * (R + 7), c[1] + u[1] * (R + 7)]], 2.2, C.heroText, al); }
-    const ma = f0 + sg * Math.min(Math.abs(tot) / 2, 0.45), r_ = R + 28, nt = o.totLab || [0, 0];
-    text(Math.round(sum * clamp(kS)) + '°', c[0] + Math.cos(ma) * r_ + 10 + nt[0], c[1] + Math.sin(ma) * r_ + 10 + nt[1], { role: 'num', size: 28, color: C.heroText, align: 'center', alpha: al, glow: halo, glowR: 9 });
+  const kS = o.kSum == null ? 1 : clamp(o.kSum), T = D.tip, sum = A.reduce((p, q) => p + q, 0);
+  if (kS > 0.004) {
+    const c = P(T), S_ = T[4] * Math.PI / 180 * kS, R = o.Rt || 10, al = a * clamp(kS * 2);
+    stroke([c, at(T, c, 0, R + 5)], 1.6, C.heroText, al * 0.9, [5, 4]);
+    stroke([c, at(T, c, S_, R + 5)], 1.6, C.heroText, al * 0.9, [5, 4]);
+    const w = arcP(T, c, 0, S_, R);
+    G.save(); G.globalAlpha = al * 0.24; G.fillStyle = C.hero; G.beginPath(); G.moveTo(c[0], c[1]); w.forEach(q => G.lineTo(q[0], q[1])); G.closePath(); G.fill(); G.restore();
+    stroke(w, 3, C.heroText, al);
+    let acc = 0; for (let i = 0; i < n - 1; i++) { acc += A[i] * Math.PI / 180; if (acc >= S_ - 0.004) break; stroke([at(T, c, acc, R - 1.8), at(T, c, acc, R + 1.8)], 2.2, C.heroText, al); }
+    const pm = at(T, c, S_ / 2, R), dm = unit(pm, c), nt = o.totLab || [0, 0];
+    text(Math.round(sum * kS) + '°', pm[0] + dm[0] * 34 + nt[0], pm[1] + dm[1] * 34 + 10 + nt[1], { role: 'num', size: 28, color: C.heroText, align: 'center', alpha: al, glow: halo, glowR: 9 });
   }
-  return { Q, ph, tn };
 }
