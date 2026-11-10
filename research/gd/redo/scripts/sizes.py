@@ -139,8 +139,8 @@ def main():
                          'recommended_palmar_mm': 11.5, 'palmar_range_mm': [10, 13], 'recommended_radial_mm': 5.0, 'radial_range_mm': [3, 8]}
     # the thumb's links between joint centres: GM18 38.6 / 42.0 (noisy), MyoHand 35.9 / 31.1; BK's bones x s are 49.3 / 33.7 / 23.1 between joint surfaces
     print('   thumb links between joint centres: GM18 %.1f / %.1f, MyoHand %.1f / %.1f mm; BK bones x %.3f: %s (joint surface to joint surface)' % (d(cmc, GM['MCP1']), d(GM['MCP1'], GM['IP1']), *MYO['thumb_links'], s, ' / '.join('%.1f' % v for v in thumb)))
-    print('   recommended chain from the base\'s centre: 37 (36 to 39) / 34 (31 to 36) / 26 to the bone\'s tip (+ %.0f mm of skin): %.0f mm straight, against the study\'s %.1f' % (tips['thumb'], 37 + 34 + 26, sum(OLD['thumb_bones'])))
-    out['thumb_links_recommended_mm'] = [37.0, 34.0, 26.0]
+    print('   recommended chain from the base\'s centre: 37 (36 to 39) / 35 (31 to 36) / 26 to the bone\'s tip (+ %.0f mm of skin): %.0f mm straight, against the study\'s %.1f' % (tips['thumb'], 37 + 35 + 26, sum(OLD['thumb_bones'])))
+    out['thumb_links_recommended_mm'] = [37.0, 35.0, 26.0]
     # (7) the knuckles behind the middle's, three sources
     print('7. each knuckle behind the middle finger\'s (mm, mean hand): the study %s' % OLD['knuckle_back'])
     srcs = {'GM18 specimen': out['gm18']['knuckles_behind_middle_mean_hand_mm'], 'MyoHand model': MYO['knuckles_behind_middle'], 'Greiner + BK (derived)': {f: kn['rec']['behind_middle_mm'][f] for f in ('index', 'ring', 'little')}}
@@ -149,7 +149,7 @@ def main():
     out['knuckles']['sources'] = srcs; out['knuckles']['recommended_mm'] = {'index': 0.0, 'middle': 0.0, 'ring': 5.0, 'little': 13.0}
     out['knuckles']['recommended_range_mm'] = {'index': [-1.3, 0.9], 'ring': [3.0, 7.4], 'little': [12.8, 18.9]}
     # (8) the thumb laid along the index: its tip against the index's middle joint (the thumb about 25 deg off the index's line)
-    for nm, back, chainlen in (('study: base 53.2 mm behind, bones 103.4', OLD['cmc_back_HL'] * A2['hand'], sum(OLD['thumb_bones'])), ('recommended: base 56 mm behind, links 97', rec, 97.0)):
+    for nm, back, chainlen in (('study: base 53.2 mm behind, bones 103.4', OLD['cmc_back_HL'] * A2['hand'], sum(OLD['thumb_bones'])), ('recommended: base 56 mm behind, links 98', rec, 98.0)):
         reach = (chainlen + tips['thumb']) * math.cos(math.radians(25)) - back
         print('8. thumb laid along the index (%s): its skin tip %.0f mm past the index knuckle\'s centre; the index\'s middle joint is %.0f mm past it' % (nm, reach, s * BK['index']['pp'] + 3))
     json.dump(out, open(__file__.replace('sizes.py', 'sizes_out.json'), 'w'), indent=1, default=float)
