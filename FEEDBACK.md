@@ -1813,6 +1813,24 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   - 20:50: RA asked for the averages first (research/gd/redo/hand-sizes.json in its worktree); G13 told to take the stretch
     out, build the measuring tool, fit to the averages, redo the nails with the kit's own nail code, and make the two checks.
 
+- **F65.19 STANDING (shape study), OPEN** (2026-11-09 20:54) "also the hand needs to be mirrored and in a position where all
+  the fingers can still be seen correctly" / "the mouse goes in the right hand not the left one".
+  - Checked: the traced hand is a left hand. hand_draw.py's side view mirrors on purpose so the fingers point right like the
+    deck's z (the first trace's choice, mine), and the three-quarter views inherit it. A mirrored right hand is a left hand.
+  - Rule: a right hand everywhere. In the side view the fingers then point left (a right hand seen from its thumb side), so
+    gd_rest's diagram flips, the mouse's nose pointing left.
+  - Read as his answer to A or B as well: every three-quarter view shows all five digits. gd_joints stays on the one
+    five-digit view; view B (little finger hidden) is dropped there; each joint's angle is a number with a small true-size
+    angle marker, since the bends flatten in that view.
+  - 20:58, RA's first delivery (research/gd/redo/hand-sizes.json in its worktree, commit a49286f): 81 survey rows, 50 targets
+    for men scaled to the 193.3 mm hand (ANSUR II, Greiner 1991, Garrett 1970; Buryanov & Kotiuk read in the primary). The
+    thumb: 46 to 49 mm is the whole first bone between its joint surfaces; between joint centres the first link is 36 to
+    39 mm, so the model's own 33.2 mm was close and the stretch made the thumb about 10 mm too long. Relaxed thumb: X-rays
+    (Cooney 1981, 19 adults) give 10 to 15° at the knuckle and at the tip joint, against Lee & Jung's 39° and 10° from skin
+    markers; RA recommends 12.5° and 12.5° (provisional). Brock asked 21:02 whether to switch the thumb's row.
+  - 21:00: G13 told all of this in one consolidated note (right hand, one five-digit view, fit to hand-sizes.json, thumb
+    links 37 / 35 / 32 mm, the thumb's bends as inputs built at 12.5° and 12.5° for now).
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
