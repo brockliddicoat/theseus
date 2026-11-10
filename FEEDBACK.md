@@ -1783,6 +1783,18 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
     RB (worktree rb, rb-research-redo, max effort): what a finger can feel, friction, forces, finger stiffness, what "optimal
     gradient strength" should mean, an audit of the optimisation. Reports go to research/gd/redo/ in each worktree; nothing
     in the slides' numbers changes until Brock has seen what the redo found.
+  - About 14:50 the account's weekly usage limit stopped all three agents (the notices gave its reset as Nov 13, 6am).
+    Their work was saved: G12 had the view study and every trace done (out/00_view_candidates.png; nine views from the side
+    round to the front), RA and RB each had an interim commit.
+
+- **F65.17** (2026-11-09 20:32) "continue".
+  - 20:35: RA and RB resumed where they stopped. G12 could not be resumed (its transcript would not load), so G13 took over
+    its worktree as it stood (g12, uncommitted) to finish the slides on the three-quarter views.
+  - G12's finding, measured: no one view shows five separate digits and also draws every bend at 60 % or more of true size.
+    Its choice: view A (yaw 65°, raised 35°, all five apart) to open and settle on, view B (yaw 35°, raised 25°) to measure
+    the index, middle and ring fingers, the hand turning between them.
+  - Sent 20:40: feedback/attachments/F65/2037-three-quarter-views.png (the two views, raw traces), with one question: may
+    the little finger go behind while the other three are measured, or should the hand stay on view A throughout?
 
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
