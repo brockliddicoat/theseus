@@ -1857,6 +1857,14 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
     39° + 10° = 49°, nothing says X-ray, and F65.21 (explain the X-ray values) falls away with it. He gets one picture of the
     corrected-length thumb at 39°, 25° and 12.5°, each labelled with what it rests on (G13: out/thumb_options.png).
   - Told Brock 21:14.
+  - 21:25, RA's second delivery (research/gd/redo/hand-variant.json, commit f2ba208, with a marked variant of hand.py):
+    the corrected thumb for the 5th, 50th and 95th percentile hands at knuckle 39°, 25° and 12.5°. Links between joint
+    centres 37 / 35 / 26 mm (the skin's tip 32), base 0.29 hand lengths behind the index knuckle and 11.5 mm under it, tip
+    joint 10°. Mean hand, grip z: -3.8 before; -11.5 (39°), -7.0 (25°), -4.4 (12.5°). The slide barely moves (16.7 to
+    17.2 mm; felt radius 278 to 286 mm). The overlap of the thumb's and pinky's paths: 9.0 mm before; 1.8 (39°), 6.3 (25°),
+    8.9 (12.5°). At 12.5° two old errors cancelled (first link 10 mm too long, knuckle too bent). Also found: the little
+    finger's knuckle 9.4 mm behind the middle's came from a unit slip; three sources say 13 mm. RB asked 21:27 to rerun the
+    trials on all three and on the corrected little finger.
 
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
