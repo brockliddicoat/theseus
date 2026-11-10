@@ -39,6 +39,24 @@ RUNS = [
     ('D2_cover_path_fwd_start', 'lifted_sym', dict(FIX, cover_path=True, start_dz=12.0), 500),
     ('A_fixes_1500', 'lifted_sym', dict(FIX), 1500),
 ]
+# ---- the hand redo's corrected thumb (RA, out/hand_paths_ra.json: copied as data from RA's hand-variant.json). Each block gives
+# the mean hand's [grip z, landing z] for the thumb and the pinky. H125 = the thumb's knuckle at 12.5 deg (the value approved),
+# H25 and H39 the other two offered; K = with the fingers' knuckles set back as RA recommends (the pinky 3.8 mm toward the tail).
+_HP = os.path.join(ROOT, 'out', 'hand_paths_ra.json')
+if os.path.exists(_HP):
+    _B = json.load(open(_HP))['blocks']
+    def _hand(block): p = _B[block]['per_hand']['p50']; return {'thumb': list(p['thumb']), 'pinky': list(p['pinky'])}
+    _KN = (('125', 'knuckle_12_5'), ('25', 'knuckle_25'), ('39', 'knuckle_39'))
+    # stock rules on the corrected thumb: trial 3 first (the result), with and without the fingers' knuckles set back
+    RUNS += [('H%s_stock_lifted_sym' % n, 'lifted_sym', {'hand': _hand(b)}, 500) for n, b in _KN]
+    RUNS += [('H%sK_stock_lifted_sym' % n, 'lifted_sym', {'hand': _hand(b + '_knuckles_back')}, 500) for n, b in _KN]
+    # the other mirrored trial, then the lopsided ones
+    RUNS += [('H%s_stock_heel_sym' % n, 'heel_sym', {'hand': _hand(b)}, 500) for n, b in _KN]
+    RUNS += [('H%s_stock_%s' % (n, t), t, {'hand': _hand(b)}, 500) for t in ('lifted_fwd', 'heel_fwd') for n, b in _KN]
+    # the corrected rules (A) on the corrected thumb, trial 3
+    RUNS += [('H%s_A_lifted_sym' % n, 'lifted_sym', dict(FIX, hand=_hand(b)), 500) for n, b in _KN]
+    RUNS += [('H125K_A_lifted_sym', 'lifted_sym', dict(FIX, hand=_hand('knuckle_12_5_knuckles_back')), 500)]
+    RUNS += [('H%sK_stock_heel_sym' % n, 'heel_sym', {'hand': _hand(b + '_knuckles_back')}, 500) for n, b in _KN]
 
 def summarise(key, r, opt, steps, secs):
     grip, pk = key.split('_'); v = np.array(r['v']); t, i = r['_terms'](v)
@@ -47,7 +65,8 @@ def summarise(key, r, opt, steps, secs):
     return {'trial': key, 'opt': {k: (v_ if not isinstance(v_, np.floating) else float(v_)) for k, v_ in opt.items()}, 'steps': steps, 'seconds': round(secs),
             'loss0': r['loss'][0] if r['loss'] else None, 'loss': r['loss'][-1] if r['loss'] else None, 'kept_step': len(r['loss']),
             'terms': {k: float(x) for k, x in t.items()}, 'final': [float(x) for x in p],
-            'R_felt': {k: float(1 / x) for k, x in r['k_felt'].items()},
+            'R_felt': {k: float(1 / x) for k, x in r['k_felt'].items()}, 'paths': {'thumb': r['targets']['thumb_path'], 'pinky': r['targets']['pinky_path']},
+            'rests': {'thumb': r['targets']['thumb_z'], 'pinky': r['targets']['pinky_z']},
             'thumb': {'R': float(L['R']), 'chord': float(p[0]), 'sagitta': float(p[1]), 'z_bottom': ML['z_bottom'], 'below_hump': ML['below_hump'], 'flare': ML['flare'], 'n_minima': ML['n_minima'],
                       'arc_z': [float(L['A'][1]), float(L['B'][1])], 'hump_arc_L': float(L['arcs'][5][0]), 'front_arc_L': float(L['arcs'][3][0])},
             'pinky': {'R': float(R_['R']), 'chord': float(p[5]), 'sagitta': float(p[6]), 'z_bottom': MR['z_bottom'], 'below_hump': MR['below_hump'], 'flare': MR['flare'], 'n_minima': MR['n_minima'],

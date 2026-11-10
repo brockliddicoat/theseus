@@ -61,7 +61,7 @@ Every source, number and rule in this area as recorded in `research/gd/shape-gd.
 | Recorded | Verdict | What was read, and where |
 |---|---|---|
 | Gordon & Morison 1982: threshold 0.09 mm base-to-peak over 20 mm (SD 0.03); gradient about 0.009 over 20, 30, 40 mm | **verified** | Tables 1 and 2 of the paper (Springer open PDF), two readings. Gradient 0.009 with SD 0.003, 0.005, 0.003 at 20, 30, 40 mm. Added: the strips were convex glass lenses with a raised paper edge, stroked twice in about a second with talc on the finger; the paper does not print its percent-correct criterion |
-| The same, "mean + 2 SD = gradient 0.015 = a turn of 3.44°" | **verified as arithmetic; relabel** | A circular arc turns 4 × (height ÷ half length), so 4 × 0.015 rad = 3.44°. It is "97.5 % of people at Gordon & Morison's own criterion" (75 % correct, as Pont 1999 reads it), which is also "the average person at about 87 % correct". Not "reliably" without that qualifier |
+| The same, "mean + 2 SD = gradient 0.015 = a turn of 3.44°" | **verified as arithmetic; relabel** | A circular arc turns 4 × (height ÷ half length), so 4 × 0.015 rad = 3.44°. It is "about 98 % of people at Gordon & Morison's own criterion" (75 % correct, as Pont 1999 reads it), which is also "the average person at about 87 % correct". Not "reliably" without that qualifier |
 | Pont, Kappers & Koenderink 1999: dynamic 3.3 to 5.3°, not changing with length; static 1.6 to 2.8° | **verified; one correction** | pp. 884, 889-890, two readings. The dynamic range is three subjects at 84 % correct, index finger swept by the forearm over 5 to 20 cm. Corrected: "1.6 to 2.8°" is not a range across people; it is two averages (2.8° when one end of the strip is tilted, 1.6° when both are) |
 | Goodwin, John & Marceglia 1991: concave 5.4 /m (R 185 mm), convex 4.9 /m (R 204 mm) told from flat at 75 % | **partly** (abstract, read on two pages that agree) | Spherical surfaces pressed onto fingerpads held still. The contact force is not in the abstract |
 | Derler & Gerhardt 2012: dry skin over 0.2, typically about 0.5 | **verified; narrow its use** | Abstract, two readings. It is a summary over all skin sites and loads. For fingers on flat surfaces the review gives dry 0.60 ± 0.38 (median 0.45) and moist 1.28 ± 0.67 (Sect. 3.2.1), mostly under 5 N |
@@ -100,8 +100,8 @@ Every source, number and rule in this area as recorded in `research/gd/shape-gd.
 | "Felt, and no more" (the pull onto the threshold from both sides) | **A design choice, not a finding.** It fixes the radii before the descent starts. Fair for the sides (Brock's eye); for the grooves it flattens the Sora's own R 50 groove fourfold |
 | Cover: the waist's chord at least the slide plus the contact patch | **Needs a position check.** It scores length only. In the result the pinky's slide is half off the arc |
 | Path: each side valley's bottom anywhere on its finger's slide at no cost | **Stands as Brock's ruling allows, with two notes.** Its 9 mm free band leaves the position to the starting point; and the thumb then grips 7.7 mm behind its valley's bottom |
-| One minimum per finger | **Stands.** Counted with a 4 µm tolerance, far finer than touch |
-| The ring finger: slope and rate of turn checked on the shoulder | **Not a check as coded.** It reads a corner arc whose curvature the model fixes to the Sora's, so it gives 11.7 °/mm in every trial whatever the shape does 0.5 mm away |
+| One minimum per finger | **Stands.** Counted with a 4 µm tolerance, finer than touch detects over a millimetre or more |
+| The ring finger: slope and rate of turn checked on the shoulder | **Nearly blind as coded.** It reads one point, which in every result lies on a corner arc whose curvature the model fixes to the Sora's: 11.7 °/mm four times, whatever the shape does 0.5 mm away |
 | Normal-mouse bounds (width 60.5 to 70 mm, 2.5 mm under the hump, 2.5 mm from the Sora, 2.0 mm on the section) | **Stand; none is active in the result.** One is missing: a smallest radius |
 | Friction "must be in the strength estimate" | **Stands, and goes further than recorded.** Friction is why the pocket cannot hold or move a finger; it is not in the loss at all, and need not be |
 
@@ -114,7 +114,7 @@ Every source, number and rule in this area as recorded in `research/gd/shape-gd.
 | Paper | Stimulus and touch | Task and criterion | Threshold | Spread between people |
 |---|---|---|---|---|
 | Gordon & Morison 1982 (P&P 31, 446-450). **Verified**, Tables 1-2 | Convex glass lenses masked to 10 × 20, 30, 40 mm; one fingertip stroked twice across, about 1 s, wrist and fingers moving, talc on the skin | Curved against flat, forced choice; criterion not printed (75 % per Pont 1999) | 0.09 mm high over 20 mm; as height ÷ half length, 0.009 at every length = a 2.06° turn end to end | SD 0.003 on 0.009 at 20 and 40 mm (n = 20 and 6), 0.005 at 30 mm (n = 6): a third to a half |
-| Same, Experiment 4 (staircase, 10 × 40 mm) | Spherical and cylindrical lenses | Staircase | Gradient 0.011 (sphere), 0.012 (cylinder): 2.5° and 2.8° | SD about 45 % |
+| Same, Experiment 4 (staircase, 10 × 40 mm) | Spherical and cylindrical lenses | Staircase | Gradient 0.011 (sphere), 0.012 (cylinder): 2.5° and 2.8° | SD 36 to 45 % of the mean (n = 12) |
 | Pont, Kappers & Koenderink 1999 (P&P 61, 874-894). **Verified**, pp. 884-890 | PVC strips 20 mm wide, arcs up to ±4 /m, convex and concave; index finger swept to and fro twice over 5 to 20 cm, the forearm moving | Which of two is more convex, flat reference; 84 % point | 3.3° to 5.3° of turn, the same at every length | Three subjects, a factor of 1.6 |
 | Same, static | Three fingers resting on the strip, about 8 s | Same | 2.8° with one end tilted, 1.6° with both | Three or four subjects |
 | Pont, Kappers & Koenderink 1997 (P&P 59, 1225-1240). **Partly** (one reading) | Strips 20 cm long under the still hand, along or across the fingers | 84 % point, about a flat reference | Along the fingers 0.43 to 0.55 /m (the three subjects' means); across them 0.77 to 1.07 /m | Three subjects; single placements from 0.27 to 1.48 /m |
@@ -122,7 +122,7 @@ Every source, number and rule in this area as recorded in `research/gd/shape-gd.
 | Louw, Kappers & Koenderink 2000, 2002. **Partly** (abstracts) | Gaussian bumps and dents 0.15 to 240 mm wide, explored freely | Shape against flat | Height from 1 µm to 8 mm, rising as width^1.3 above 1 mm; dents the same as bumps; telling two apart takes two to four times the detection height | Not in the abstracts |
 | Wijntjes et al. 2009 (IEEE Trans. Haptics 2). **Partly** (abstract) | A device that sets the surface's height and tilt under a moving finger separately | Curvature discrimination | The tilt under the finger dominates; height adds little | No numbers in the abstract |
 
-Could not be read: the Kappers 2011 review (PubMed Central behind a browser check, Europe PMC rate-limited both times, the
+Could not be read: the Kappers 2011 review (PubMed Central behind a browser check, Europe PMC rate-limited each time, the
 Utrecht copy failed), Kappers & Koenderink 1996, and van der Horst & Kappers. The Kappers 2011 abstract does say that touching
 a curved shape leaves an after-effect, strongest straight after contact.
 
@@ -162,8 +162,9 @@ Not established. Nothing found measures it. What differs from the laboratory:
 - **The reference.** The cue is the surface's tilt relative to the finger. In the laboratory the finger's own attitude is
   steady. In a grip the thumb swings about its base by far more than 3° while it slides.
 - **The surface.** Strips curved one way against a flat ground. A mouse's side is also curved top to bottom.
-- **Adaptation.** A curve held against the skin leaves an after-effect (Kappers 2011, abstract): what is held for a while
-  stops reading as curved. The cue is there when the hand takes hold, not through a long hold.
+- **Adaptation.** Touching a curved shape leaves an after-effect on what is touched next (Kappers 2011, abstract; the
+  review itself could not be read). If the hand's sense of flat drifts toward what it holds, a valley is most distinct as
+  the hand takes hold and fades through a long hold. That step is my inference.
 - In the thumb's favour: it lies along the side over more than a fingertip's length, and resting fingers detect smaller
   turns (1.6° to 2.8°) than sweeping ones.
 
@@ -275,7 +276,7 @@ None usable. What was found and read:
   down to about 30 g and then stops falling; below 30 g the grip-to-load ratio climbs. Theseus's weight is just under that
   line: its grip is set by how lightly a hand can hold at all, not by its weight.
 - One measured hand speed: a TechPowerUp reviewer reached 4.5 m/s on a Cooler Master MM711 (one reading). Sensor ratings
-  (10 m/s, 50 to 88 g) are limits of the sensor, not of the hand.
+  (10 m/s for that mouse's sensor; 88 g claimed for Logitech's HERO 2) are limits of the sensor, not of the hand.
 
 ### Newton's laws for Theseus (derived, `scripts/newton.py`)
 
@@ -332,7 +333,7 @@ curved in the top view, so it does nothing for lifting, which needs walls that l
 | Same, Table 4 (their estimates from the older papers) | Same joint, between straight and the resting angle | Kuo & Deshpande 2012: 0.016 to 0.210 (n = 10). Esteki & Mansour 1996: 0.025 to 0.058 (n = 3) |
 | Kuo & Deshpande 2012. **Partly** (abstract) | Where the stiffness comes from | The capsule and ligaments do more than half the passive work at every angle; the long muscles do most of the rest |
 | Milner & Franklin 1998. **Partly** (text; the tables could not be read) | Index fingertip, flexion plane only, pushed 4 mm in 50 ms, force read 130 to 150 ms later | 9.7 N/cm (SD 1.9) at about 10 N of fingertip force; at 20 % of full effort the stiffest direction is two to four times the relaxed finger's |
-| Hajian & Howe 1997. **Partly** (abstract) | Index fingertip, extension (2 to 20 N) and sideways (2 to 8 N), fast taps | Stiffness rises in proportion to the force; no figures in the abstract |
+| Hajian & Howe 1997. **Partly** (abstract) | Index fingertip, extension (2 to 20 N) and sideways (2 to 8 N), fast pushes | Stiffness rises in proportion to the force; no figures in the abstract |
 | Nakazawa et al. 2000, as cited by Delhaye 2014. **Partly** | The fingertip pad in shear | About 1 N/mm along the finger, 0.5 N/mm across |
 
 Not found for a living hand: the knuckle's side-to-side stiffness when relaxed, and any stiffness of the thumb's joints
@@ -395,8 +396,8 @@ The evidence does not answer it directly. Three things point the way Brock's eye
 2. The price of a misfit is the slope under the finger, the misfit divided by the radius. A fingertip 10 mm off the bottom
    of an R 278 arc sits on 2°. On an R 47 arc it sits on 12°, right at the friction angle of the driest skin (derived,
    section 6). Gentle arcs forgive hand size; tight ones do not.
-3. A short pocket has rims. A finger that misses sits on a ridge, which is the "pressure from the raised edges" that the
-   guidelines warn of, and it is a second dip in Brock's sense.
+3. A short pocket has rims. A finger that misses sits on a ridge: a hard edge under the skin, which is what the guide's
+   definition of contact pressure describes, and a second dip in Brock's sense.
 
 Against that: a gentle arc buys nothing mechanical (section 6). So the honest summary is that gentle, long pockets are the
 safe choice across hand sizes, and that no measurement shows they are better for the hand they fit.
@@ -473,7 +474,7 @@ times tighter than any side arc Brock would accept.
 | **Hands of other sizes.** A finger resting e from the bottom sits on a slope e ÷ R and spends (e ÷ R) ÷ μ of its friction staying there | — | 95th percentile thumb, 9.9 mm off: 2.0°, 7 % of its friction at μ 0.5, 18 % at μ 0.2 | 12°: 42 % at μ 0.5, and over 100 % at μ 0.2 (it slides) |
 | The same, across a groove (2.4 mm sideways spread between hands) | — | 0.6°, 2 % | 4.8°, 17 % (42 % at μ 0.2) |
 | **Depth**, so the look | c² ÷ 8R over a chord c | 0.78 mm over 41.5 mm | 4.9 mm over 41.5 mm; 10.9 mm over 60 mm |
-| **Help turns into hindrance**: a slope that helps one way costs the other | tan(φ ± θ) | ±7 % | ±40 % |
+| **Help turns into hindrance**: under the least-fitting hand's finger, a slope that helps one way costs the other | tan(φ ± θ) ÷ tan φ, μ 0.5 | +9 % and −9 % | +59 % and −48 % |
 
 ### So what should "optimal" mean
 
@@ -584,8 +585,9 @@ Findings:
    argument around the loss, not the loss.
 4. **The felt and cover rules never look at where the arc is.** Felt uses the waist's radius against the shorter of the
    two slides. Cover uses the chord's length. Neither checks that a finger's slide lies on the arc.
-5. **The ring finger's check cannot fail.** It reads the curvature at x 28.5 mm, which lies on the shoulder corner arc,
-   and the model fixes that arc's curvature to the Sora's. It returns 11.7 °/mm for every trial and every step.
+5. **The ring finger's check is nearly blind.** It reads the curvature at one point, x 28.5 mm. In all four results that
+   point lies on the shoulder corner arc, whose curvature the model fixes to the Sora's, so it reads 11.7 °/mm four times,
+   while 0.5 mm inboard the shape turns at 42 °/mm.
 6. **No smallest radius.** The earlier notch model had one (2 mm on the section, 5 mm in the top view). The long-arc model
    dropped it.
 
@@ -696,7 +698,7 @@ positions are the hand model's (RA).
 | gd_descent | "Descent starts from the Sora's waist" | From the Sora's waist slid 10 mm back, and from a groove that is not the Sora's |
 | gd_number | Loss from 33.12 to 0.04 | 14.5 of the 33 is the starting section failing to close |
 | gd_landscape | "Normals turn 3.4° across the 13 mm where fingertips land" | 13 mm is one contact plus the spread between hands; across one fingertip the turn is 2.2° |
-| gd_landscape | "Ring: 11.7 °/mm ... In the 6 to 22 °/mm band" | A fixed number; 0.5 mm inboard the shape turns at 42 °/mm |
+| gd_landscape | "Ring: 11.7 °/mm ... In the 6 to 22 °/mm band" | Read at one point, on an arc the model fixes; 0.5 mm inboard the shape turns at 42 °/mm |
 | gd_trials | "Felt: each waist turns 3.4° over the slide" | True of the mean thumb. The pinky's slide nets −0.6° |
 | gd_after | "Every curve now has a reason ... and nothing anywhere else" | The largest change is at the rear corner, with no reason; the crease has none either |
 | gd_after | "a valley under each finger" | The thumb grips 7.7 mm behind its valley's bottom |
@@ -738,7 +740,7 @@ positions are the hand model's (RA).
   2.8 times gentler than the Sora's R 50.
 - **C** shows the other reading: leave the Sora's groove alone and only centre it under the finger (0.43 mm outward). The
   section then stays within 0.11 mm of the Sora's.
-- **B** shows what the stricter reading of "reliably" costs: a waist a third tighter (R 187), 6 mm shorter and 1.90 mm in
+- **B** shows what the stricter reading of "reliably" costs: a waist a third tighter (R 187), 5.5 mm shorter and 1.90 mm in
   under the hump, and a groove at R 97 and 0.50 mm deep. It needed 1,500 steps to settle.
 - **D and D2** are the rule as Brock stated it (F65.6: felt over the whole slide, both side arcs) made to hold on the
   finished shape. The mirrored waist has to reach forward to z 33, where the pinky lands. From the stock start it becomes
@@ -767,7 +769,10 @@ positions are the hand model's (RA).
   7.5 mm from the valley's bottom. That is the price of mirroring, now visible in the number.
 - In trial 4 the tie-break puts each valley's bottom under its finger's grip rest (z −3.7 and 4.0 against rests of −3.8 and
   3.9), where the stock run left the pinky's 1 mm off.
-- A run to 1,500 steps (`A_fixes_1500`) is in `out/variants.json`; see the note under the table for what it changed.
+- **Run to 1,500 steps, A settles onto its rules** (lowest at step 845, loss 0.350): waist R 278.2 mm, chord 41.2 mm, depth
+  0.764 mm, narrowest at z 3.71; groove R 143.7 mm (its rule: 143.6), chord 19.2 mm, 0.353 mm deep against the button's
+  chord; tightest radius 4.66 mm; section 0.33 mm from the Sora's. At the deck's 500 steps the groove is 3 % past its rule
+  (R 139.6, 0.364 mm). The tables above are the 500-step runs, to compare like with like.
 
 ---
 
