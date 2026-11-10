@@ -1,0 +1,240 @@
+{
+ "poses": {
+  "Lee & Jung 2014, forearm neutral, mean of four arm angles (the study)": {
+   "index": {
+    "sum": 68,
+    "chord_angle": 45.19269348394007,
+    "ahead_mm": 56.04840532321537,
+    "below_mm": 56.42667571449204
+   },
+   "middle": {
+    "sum": 73,
+    "chord_angle": 48.96709733681612,
+    "ahead_mm": 58.946431910947524,
+    "below_mm": 67.73151827246667
+   },
+   "ring": {
+    "sum": 68,
+    "chord_angle": 44.14845620515976,
+    "ahead_mm": 60.9596085105025,
+    "below_mm": 59.17402183795234
+   },
+   "little": {
+    "sum": 82,
+    "chord_angle": 53.92170650245204,
+    "ahead_mm": 38.883779426848875,
+    "below_mm": 53.36542746836527
+   }
+  },
+  "Lee & Jung 2014, forearm neutral, arm forward 90 (gravity across the fingers)": {
+   "index": {
+    "sum": 66,
+    "chord_angle": 43.99679975106097,
+    "ahead_mm": 57.29456907673114,
+    "below_mm": 55.322538022545
+   },
+   "middle": {
+    "sum": 73,
+    "chord_angle": 48.96709733681612,
+    "ahead_mm": 58.946431910947524,
+    "below_mm": 67.73151827246667
+   },
+   "ring": {
+    "sum": 68,
+    "chord_angle": 42.85600727946163,
+    "ahead_mm": 61.99259997375073,
+    "below_mm": 57.51844037099626
+   },
+   "little": {
+    "sum": 82,
+    "chord_angle": 53.43138928140705,
+    "ahead_mm": 39.20204732562515,
+    "below_mm": 52.84606146078828
+   }
+  },
+  "Lee & Jung 2014, forearm neutral, arm hanging (gravity along the hand)": {
+   "index": {
+    "sum": 63,
+    "chord_angle": 41.7285231988342,
+    "ahead_mm": 59.79725876034731,
+    "below_mm": 53.330837255629966
+   },
+   "middle": {
+    "sum": 69,
+    "chord_angle": 47.297525333764106,
+    "ahead_mm": 61.44950749608271,
+    "below_mm": 66.58642275120941
+   },
+   "ring": {
+    "sum": 64,
+    "chord_angle": 41.93002166369515,
+    "ahead_mm": 63.662047026295994,
+    "below_mm": 57.18092827468811
+   },
+   "little": {
+    "sum": 75,
+    "chord_angle": 49.16441211949807,
+    "ahead_mm": 43.69274868390622,
+    "below_mm": 50.555019413784294
+   }
+  },
+  "Lee & Jung 2014, forearm pronated, mean": {
+   "index": {
+    "sum": 58,
+    "chord_angle": 39.06669114878212,
+    "ahead_mm": 62.70206775614773,
+    "below_mm": 50.89609058923588
+   },
+   "middle": {
+    "sum": 65,
+    "chord_angle": 44.61317471964866,
+    "ahead_mm": 64.73585683802823,
+    "below_mm": 63.86759355527954
+   },
+   "ring": {
+    "sum": 61,
+    "chord_angle": 39.91079173089604,
+    "ahead_mm": 65.99078070049411,
+    "below_mm": 55.19797947624637
+   },
+   "little": {
+    "sum": 75,
+    "chord_angle": 50.982667047958834,
+    "ahead_mm": 42.171397050327265,
+    "below_mm": 52.0451378439066
+   }
+  },
+  "Lee & Jung 2014, forearm supinated, mean (wrist 28 back)": {
+   "index": {
+    "sum": 83,
+    "chord_angle": 50.803846666689594,
+    "ahead_mm": 48.046648563271184,
+    "below_mm": 58.919087294481145
+   },
+   "middle": {
+    "sum": 92,
+    "chord_angle": 57.79557464077209,
+    "ahead_mm": 45.584824074335955,
+    "below_mm": 72.37507451044068
+   },
+   "ring": {
+    "sum": 86,
+    "chord_angle": 53.53552132622569,
+    "ahead_mm": 48.21908490562541,
+    "below_mm": 65.24891511081746
+   },
+   "little": {
+    "sum": 94,
+    "chord_angle": 58.10984527063604,
+    "ahead_mm": 33.3994319091414,
+    "below_mm": 53.67898902911924
+   }
+  },
+  "Varghese 2020, software workers, supinated, wrist 15 to 20 back": {
+   "index": {
+    "sum": 79.58,
+    "chord_angle": 48.74034989167968,
+    "ahead_mm": 50.57869857852169,
+    "below_mm": 57.654360684739245
+   },
+   "middle": {
+    "sum": 88.08,
+    "chord_angle": 56.02654535580149,
+    "ahead_mm": 48.219466204753694,
+    "below_mm": 71.5597915066498
+   },
+   "ring": {
+    "sum": 88.5,
+    "chord_angle": 55.04285837583816,
+    "ahead_mm": 46.38500113977498,
+    "below_mm": 66.35022465143138
+   },
+   "little": {
+    "sum": 85.39,
+    "chord_angle": 51.945603476468314,
+    "ahead_mm": 39.49249045658799,
+    "below_mm": 50.44928386835893
+   }
+  },
+  "Su 2005, relaxed fingers at a straight wrist (interpolated; which finger not stated in the abstract)": {
+   "index": {
+    "sum": 111.0,
+    "chord_angle": 70.86050457952157,
+    "ahead_mm": 24.14983201769218,
+    "below_mm": 69.58538640506629
+   }
+  },
+  "Rogers 2008, holding a mouse (not a rest pose)": {
+   "index": {
+    "sum": 37.4,
+    "chord_angle": 29.503265090253098,
+    "ahead_mm": 72.0233120882263,
+    "below_mm": 40.75424771250658
+   },
+   "middle": {
+    "sum": 45.0,
+    "chord_angle": 34.62583763484495,
+    "ahead_mm": 76.83023855830552,
+    "below_mm": 53.05278236983799
+   },
+   "ring": {
+    "sum": 40.5,
+    "chord_angle": 29.71605937485336,
+    "ahead_mm": 77.33778286684586,
+    "below_mm": 44.14142652513994
+   },
+   "little": {
+    "sum": 31.4,
+    "chord_angle": 24.212008040676878,
+    "ahead_mm": 64.76545268828222,
+    "below_mm": 29.12306513771989
+   }
+  }
+ },
+ "tenodesis_slope_deg_per_deg": {
+  "MCP": 0.3,
+  "PIP": 0.425,
+  "DIP": 0.15833333333333333
+ },
+ "gravity": {
+  "palm down, hand level": {
+   "torque_Nmm": 8.030341593322655,
+   "deg_at_0.039": 11.797555931942282
+  },
+  "palm up, hand level": {
+   "torque_Nmm": -8.030341593322655,
+   "deg_at_0.039": -11.797555931942282
+  },
+  "hand hanging, fingers down": {
+   "torque_Nmm": -5.837117474239005,
+   "deg_at_0.039": -8.575440917845077
+  }
+ },
+ "rogers_thumb_ahead_of_knuckle_mm": [
+  {
+   "lateral": 14.0,
+   "vertical": 15.0,
+   "mean": 14.36417535739249,
+   "lo": 2.3436437254681834,
+   "hi": 26.629106759717253
+  },
+  {
+   "lateral": 20.0,
+   "vertical": 17.0,
+   "mean": 16.567788606928687,
+   "lo": 4.1789101118043845,
+   "hi": 29.4058648462169
+  },
+  {
+   "lateral": 25.0,
+   "vertical": 20.0,
+   "mean": 19.45112957962605,
+   "lo": 6.548053071208443,
+   "hi": 33.13896716982867
+  }
+ ],
+ "rogers_scaled_distance_mm": [
+  65.22250421111735,
+  11.503469960696238
+ ]
+}
