@@ -1,0 +1,527 @@
+{
+ "inputs": {
+  "mass_kg": 0.02795,
+  "weight_N": 0.2740958675,
+  "mu": {
+   "dry skin, lowest (Derler & Gerhardt 2012, abstract)": 0.2,
+   "textured coat, along its ridges (Zhang 2017, 0.2-1 N, as the main film uses it)": 0.41,
+   "typical dry skin / matte plastic (Derler 2012 \"around 0.5\"; Dzidek 2014 rough PP 0.53)": 0.5,
+   "smooth plastic once the skin has sweated against it (Dzidek 2014 smooth PP, steady state, 0.4 N)": 1.2972143886999457
+  },
+  "P_side": 0.43,
+  "N_btn": 0.35,
+  "K_mcp": 0.0391
+ },
+ "friction_angle_deg": {
+  "dry skin, lowest (Derler & Gerhardt 2012, abstract)": 11.309932474020215,
+  "textured coat, along its ridges (Zhang 2017, 0.2-1 N, as the main film uses it)": 22.293629159694078,
+  "typical dry skin / matte plastic (Derler 2012 \"around 0.5\"; Dzidek 2014 rough PP 0.53)": 26.56505117707799,
+  "smooth plastic once the skin has sweated against it (Dzidek 2014 smooth PP, steady state, 0.4 N)": 52.371995754519155
+ },
+ "lift": {
+  "dry skin, lowest (Derler & Gerhardt 2012, abstract)": {
+   "undercut 0 deg, lift accel 0 g": 0.6852396687499999,
+   "undercut 0 deg, lift accel 1 g": 1.3704793374999997,
+   "undercut 5 deg, lift accel 0 g": 0.4683659661080955,
+   "undercut 5 deg, lift accel 1 g": 0.936731932216191,
+   "undercut 10 deg, lift accel 0 g": 0.3513298032126234,
+   "undercut 10 deg, lift accel 1 g": 0.7026596064252468
+  },
+  "textured coat, along its ridges (Zhang 2017, 0.2-1 N, as the main film uses it)": {
+   "undercut 0 deg, lift accel 0 g": 0.33426325304878046,
+   "undercut 0 deg, lift accel 1 g": 0.6685265060975609,
+   "undercut 5 deg, lift accel 0 g": 0.2655979639471244,
+   "undercut 5 deg, lift accel 1 g": 0.5311959278942489,
+   "undercut 10 deg, lift accel 0 g": 0.21684177276727395,
+   "undercut 10 deg, lift accel 1 g": 0.4336835455345479
+  },
+  "typical dry skin / matte plastic (Derler 2012 \"around 0.5\"; Dzidek 2014 rough PP 0.53)": {
+   "undercut 0 deg, lift accel 0 g": 0.27409586750000003,
+   "undercut 0 deg, lift accel 1 g": 0.5481917350000001,
+   "undercut 5 deg, lift accel 0 g": 0.22307300822125334,
+   "undercut 5 deg, lift accel 1 g": 0.4461460164425067,
+   "undercut 10 deg, lift accel 0 g": 0.18477055201000692,
+   "undercut 10 deg, lift accel 1 g": 0.36954110402001383
+  },
+  "smooth plastic once the skin has sweated against it (Dzidek 2014 smooth PP, steady state, 0.4 N)": {
+   "undercut 0 deg, lift accel 0 g": 0.10564786741792768,
+   "undercut 0 deg, lift accel 1 g": 0.21129573483585537,
+   "undercut 5 deg, lift accel 0 g": 0.0877402203267572,
+   "undercut 5 deg, lift accel 1 g": 0.1754804406535144,
+   "undercut 10 deg, lift accel 0 g": 0.0717322418302737,
+   "undercut 10 deg, lift accel 1 g": 0.1434644836605474
+  }
+ },
+ "swipe": {
+  "aiming flick, 5 cm in 100 ms (minimum-jerk peak 5.77 d/T^2)": {
+   "a_m_s2": 28.84999999999999,
+   "a_g": 2.941881274441322,
+   "F_N": 0.8063574999999997,
+   "squeeze_per_side_N": {
+    "dry skin, lowest (Derler & Gerhardt 2012, abstract)": 2.015893749999999,
+    "textured coat, along its ridges (Zhang 2017, 0.2-1 N, as the main film uses it)": 0.9833628048780485,
+    "typical dry skin / matte plastic (Derler 2012 \"around 0.5\"; Dzidek 2014 rough PP 0.53)": 0.8063574999999997,
+    "smooth plastic once the skin has sweated against it (Dzidek 2014 smooth PP, steady state, 0.4 N)": 0.310803482841461
+   }
+  },
+  "fast flick, 10 cm in 100 ms": {
+   "a_m_s2": 57.69999999999998,
+   "a_g": 5.883762548882644,
+   "F_N": 1.6127149999999995,
+   "squeeze_per_side_N": {
+    "dry skin, lowest (Derler & Gerhardt 2012, abstract)": 4.031787499999998,
+    "textured coat, along its ridges (Zhang 2017, 0.2-1 N, as the main film uses it)": 1.966725609756097,
+    "typical dry skin / matte plastic (Derler 2012 \"around 0.5\"; Dzidek 2014 rough PP 0.53)": 1.6127149999999995,
+    "smooth plastic once the skin has sweated against it (Dzidek 2014 smooth PP, steady state, 0.4 N)": 0.621606965682922
+   }
+  },
+  "all-out swipe: 4.5 m/s (TechPowerUp reviewer, MM711) reached over 12.5 cm at constant acceleration": {
+   "a_m_s2": 81.0,
+   "a_g": 8.259701325121219,
+   "F_N": 2.26395,
+   "squeeze_per_side_N": {
+    "dry skin, lowest (Derler & Gerhardt 2012, abstract)": 5.6598749999999995,
+    "textured coat, along its ridges (Zhang 2017, 0.2-1 N, as the main film uses it)": 2.7609146341463413,
+    "typical dry skin / matte plastic (Derler 2012 \"around 0.5\"; Dzidek 2014 rough PP 0.53)": 2.26395,
+    "smooth plastic once the skin has sweated against it (Dzidek 2014 smooth PP, steady state, 0.4 N)": 0.8726198305080883
+   }
+  }
+ },
+ "slope_help": {
+  "0.5": [
+   1.0219127844633666,
+   0.9782776147153425
+  ],
+  "1.0": [
+   1.044021864572733,
+   0.9567398916792264
+  ],
+  "1.57": [
+   1.0694734057238986,
+   0.932405015781506
+  ],
+  "2.09": [
+   1.0929295884423846,
+   0.9104009718807973
+  ],
+  "4.0": [
+   1.181150674430963,
+   0.8310886850200896
+  ],
+  "6.1": [
+   1.282255111183715,
+   0.746379196097847
+  ],
+  "10.0": [
+   1.4834391331209278,
+   0.5948977743889734
+  ]
+ },
+ "spring": {
+  "index": {
+   "lever = knuckle-to-tip chord": {
+    "r_mm": 78.4596719037594,
+    "k_N_per_mm": 0.0063516093886868494,
+    "k_subjects": [
+     0.00532820429536902,
+     0.007569948785493789
+    ],
+    "k_literature": [
+     0.002599124046521473,
+     0.03411350311059433
+    ]
+   },
+   "lever = reach along the hand": {
+    "r_mm": 55.29246801120488,
+    "k_N_per_mm": 0.012789242042767244,
+    "k_subjects": [
+     0.010728571329994005,
+     0.015242421462735386
+    ],
+    "k_literature": [
+     0.005233449429265368,
+     0.06868902375910796
+    ]
+   }
+  },
+  "middle": {
+   "lever = knuckle-to-tip chord": {
+    "r_mm": 88.57896198202018,
+    "k_N_per_mm": 0.004983283374668835,
+    "k_subjects": [
+     0.004180350247804035,
+     0.005939156144745977
+    ],
+    "k_literature": [
+     0.0020391952428312366,
+     0.02676443756215998
+    ]
+   },
+   "lever = reach along the hand": {
+    "r_mm": 58.15140826960739,
+    "k_N_per_mm": 0.011562620829172641,
+    "k_subjects": [
+     0.009699589851582164,
+     0.013780514850113683
+    ],
+    "k_literature": [
+     0.004731507244674226,
+     0.06210103258634921
+    ]
+   }
+  },
+  "ring": {
+   "lever = knuckle-to-tip chord": {
+    "r_mm": 83.81085763445813,
+    "k_N_per_mm": 0.005566422768183637,
+    "k_subjects": [
+     0.004669531120113127,
+     0.006634150920648528
+    ],
+    "k_literature": [
+     0.0022778200585917693,
+     0.02989638826901697
+    ]
+   },
+   "lever = reach along the hand": {
+    "r_mm": 60.13743270848101,
+    "k_N_per_mm": 0.010811525811555263,
+    "k_subjects": [
+     0.009069515258798276,
+     0.012885347898170724
+    ],
+    "k_literature": [
+     0.004424153784779647,
+     0.05806701842523287
+    ]
+   }
+  },
+  "little": {
+   "lever = knuckle-to-tip chord": {
+    "r_mm": 65.13836486225294,
+    "k_N_per_mm": 0.00921516365602928,
+    "k_subjects": [
+     0.007730367465927375,
+     0.010982778168055356
+    ],
+    "k_literature": [
+     0.0037709109589889635,
+     0.04949320633673014
+    ]
+   },
+   "lever = reach along the hand": {
+    "r_mm": 38.35934524301733,
+    "k_N_per_mm": 0.02657262056753933,
+    "k_subjects": [
+     0.022291098583511252,
+     0.03166967054852513
+    ],
+    "k_literature": [
+     0.010873706626103048,
+     0.1427173994676025
+    ]
+   }
+  }
+ },
+ "balance": {
+  "side arc, result (R 278)": {
+   "pocket_N_per_mm": 0.0015459284558691354,
+   "spring_N_per_mm": 0.0092,
+   "rho": 0.16803570172490603,
+   "friction_N": {
+    "0.2": 0.08600000000000001,
+    "0.5": 0.215,
+    "1.3": 0.559
+   },
+   "stuck_half_width_mm": {
+    "0.2": 8.003031134366909,
+    "0.5": 20.007577835917267,
+    "1.3": 52.0197023733849
+   },
+   "offset_to_slide_on_slope_alone_mm": {
+    "0.2": 55.629999999999995,
+    "0.5": 139.075,
+    "1.3": 361.59499999999997
+   }
+  },
+  "side arc, the Sora (R 381)": {
+   "pocket_N_per_mm": 0.0011280463810698076,
+   "spring_N_per_mm": 0.0092,
+   "rho": 0.12261373707280518,
+   "friction_N": {
+    "0.2": 0.08600000000000001,
+    "0.5": 0.215,
+    "1.3": 0.559
+   },
+   "stuck_half_width_mm": {
+    "0.2": 8.326840994597847,
+    "0.5": 20.817102486494612,
+    "1.3": 54.124466464886
+   },
+   "offset_to_slide_on_slope_alone_mm": {
+    "0.2": 76.238,
+    "0.5": 190.595,
+    "1.3": 495.547
+   }
+  },
+  "side arc, first estimate (R 46.7)": {
+   "pocket_N_per_mm": 0.009215602228889843,
+   "spring_N_per_mm": 0.0092,
+   "rho": 1.0016958944445482,
+   "friction_N": {
+    "0.2": 0.08600000000000001,
+    "0.5": 0.215,
+    "1.3": 0.559
+   },
+   "stuck_half_width_mm": {
+    "0.2": 4.669953169659899,
+    "0.5": 11.674882924149745,
+    "1.3": 30.35469560278934
+   },
+   "offset_to_slide_on_slope_alone_mm": {
+    "0.2": 9.331999999999999,
+    "0.5": 23.33,
+    "1.3": 60.657999999999994
+   }
+  },
+  "groove, result (R 224)": {
+   "pocket_N_per_mm": 0.0015645954403218597,
+   "spring_N_per_mm": 0.0128,
+   "rho": 0.12223401877514528,
+   "friction_N": {
+    "0.2": 0.06999999999999999,
+    "0.5": 0.175,
+    "1.3": 0.45499999999999996
+   },
+   "stuck_half_width_mm": {
+    "0.2": 4.8730923394826595,
+    "0.5": 12.18273084870665,
+    "1.3": 31.675100206637286
+   },
+   "offset_to_slide_on_slope_alone_mm": {
+    "0.2": 44.74,
+    "0.5": 111.85,
+    "1.3": 290.81
+   }
+  },
+  "groove, the Sora (R 50)": {
+   "pocket_N_per_mm": 0.0069804547267650575,
+   "spring_N_per_mm": 0.0128,
+   "rho": 0.5453480255285201,
+   "friction_N": {
+    "0.2": 0.06999999999999999,
+    "0.5": 0.175,
+    "1.3": 0.45499999999999996
+   },
+   "stuck_half_width_mm": {
+    "0.2": 3.5388468549857226,
+    "0.5": 8.847117137464307,
+    "1.3": 23.002504557407196
+   },
+   "offset_to_slide_on_slope_alone_mm": {
+    "0.2": 10.028,
+    "0.5": 25.07,
+    "1.3": 65.182
+   }
+  },
+  "groove, first estimate (R 28.7)": {
+   "pocket_N_per_mm": 0.01217391304347826,
+   "spring_N_per_mm": 0.0128,
+   "rho": 0.951086956521739,
+   "friction_N": {
+    "0.2": 0.06999999999999999,
+    "0.5": 0.175,
+    "1.3": 0.45499999999999996
+   },
+   "stuck_half_width_mm": {
+    "0.2": 2.8029247910863506,
+    "0.5": 7.007311977715877,
+    "1.3": 18.219011142061277
+   },
+   "offset_to_slide_on_slope_alone_mm": {
+    "0.2": 5.75,
+    "0.5": 14.375,
+    "1.3": 37.375
+   }
+  }
+ },
+ "felt": {
+  "sides": {
+   "G&M 1982 mean, 75 %": {
+    "p5": 199.72222222222226,
+    "p50": 463.6111111111112,
+    "p95": 819.4444444444445,
+    "turn_deg": 2.0626480624709633
+   },
+   "G&M at 84 % (Pont 1999, p. 890)": {
+    "p5": 147.1273766782364,
+    "p50": 341.5237714547657,
+    "p95": 603.6519627271174,
+    "turn_deg": 2.8
+   },
+   "the study: G&M mean + 2 SD, 75 %": {
+    "p5": 119.83333333333334,
+    "p50": 278.1666666666667,
+    "p95": 491.6666666666667,
+    "turn_deg": 3.437746770784939
+   },
+   "G&M mean + 2 SD moved to 84 %": {
+    "p5": 80.82758333333334,
+    "p50": 187.62341666666669,
+    "p95": 331.62916666666666,
+    "turn_deg": 5.096733537116293
+   },
+   "Pont 1999 dynamic, best subject, 84 %": {
+    "p5": 124.83534990880665,
+    "p50": 289.7777454767709,
+    "p95": 512.1895441320996,
+    "turn_deg": 3.3
+   },
+   "Pont 1999 dynamic, worst subject, 84 %": {
+    "p5": 77.7276706979362,
+    "p50": 180.42765284402716,
+    "p95": 318.9104708747035,
+    "turn_deg": 5.300000000000001
+   }
+  },
+  "groove": {
+   "G&M 1982 mean, 75 %": {
+    "own contact patch 8.62 mm": 239.44444444444443,
+    "patch + spread between hands 13.44 mm (stock)": 373.33333333333337
+   },
+   "G&M at 84 % (Pont 1999, p. 890)": {
+    "own contact patch 8.62 mm": 176.38914978670343,
+    "patch + spread between hands 13.44 mm (stock)": 275.0197416627951
+   },
+   "the study: G&M mean + 2 SD, 75 %": {
+    "own contact patch 8.62 mm": 143.66666666666666,
+    "patch + spread between hands 13.44 mm (stock)": 224.0
+   },
+   "G&M mean + 2 SD moved to 84 %": {
+    "own contact patch 8.62 mm": 96.90316666666665,
+    "patch + spread between hands 13.44 mm (stock)": 151.088
+   },
+   "Pont 1999 dynamic, best subject, 84 %": {
+    "own contact patch 8.62 mm": 149.6635210311423,
+    "patch + spread between hands 13.44 mm (stock)": 233.35008383509893
+   },
+   "Pont 1999 dynamic, worst subject, 84 %": {
+    "own contact patch 8.62 mm": 93.18672064203199,
+    "patch + spread between hands 13.44 mm (stock)": 145.29344842562762
+   }
+  }
+ },
+ "drag_change": {
+  "0.2": 0.3,
+  "0.5": 0.12,
+  "1.3": 0.04615384615384615
+ },
+ "catch_mm": {
+  "381.2": {
+   "10 % overload": 14.941363454593287,
+   "25 % overload": 36.19559045785872
+  },
+  "278.2": {
+   "10 % overload": 10.904216456106642,
+   "25 % overload": 26.415564704554814
+  },
+  "188.0": {
+   "10 % overload": 7.368773162286301,
+   "25 % overload": 17.850920792438192
+  },
+  "143.7": {
+   "10 % overload": 5.632407996917773,
+   "25 % overload": 13.644560201454086
+  },
+  "100.0": {
+   "10 % overload": 3.919560192705479,
+   "25 % overload": 9.495170634275635
+  },
+  "50.1": {
+   "10 % overload": 1.963699656545445,
+   "25 % overload": 4.757080487772093
+  },
+  "46.7": {
+   "10 % overload": 1.8304346099934587,
+   "25 % overload": 4.434244686206721
+  },
+  "28.7": {
+   "10 % overload": 1.1249137753064724,
+   "25 % overload": 2.725113972037107
+  }
+ },
+ "misfit": {
+  "result, thumb, mean hand (7.7 mm behind the bottom)": {
+   "slope_deg": 1.575134027614847,
+   "share_of_friction": {
+    "0.2": 0.13749101365923797,
+    "0.5": 0.05499640546369519
+   }
+  },
+  "result, thumb, 95th percentile hand (9.9 mm)": {
+   "slope_deg": 2.038062405266595,
+   "share_of_friction": {
+    "0.2": 0.1779295470884256,
+    "0.5": 0.07117181883537024
+   }
+  },
+  "first estimate R 46.7, 9.9 mm": {
+   "slope_deg": 11.969016723982476,
+   "share_of_friction": {
+    "0.2": 1.0599571734475373,
+    "0.5": 0.42398286937901497
+   }
+  },
+  "groove R 224, 2.4 mm sideways spread": {
+   "slope_deg": 0.6172440178528157,
+   "share_of_friction": {
+    "0.2": 0.05386678587393831,
+    "0.5": 0.021546714349575325
+   }
+  },
+  "groove R 50 (the Sora), 2.4 mm": {
+   "slope_deg": 2.754021347789467,
+   "share_of_friction": {
+    "0.2": 0.2405189620758483,
+    "0.5": 0.09620758483033932
+   }
+  },
+  "groove R 28.7 (first estimate), 2.4 mm": {
+   "slope_deg": 4.799987441431469,
+   "share_of_friction": {
+    "0.2": 0.41986062717770034,
+    "0.5": 0.16794425087108014
+   }
+  }
+ },
+ "R_min_friction": {
+  "X 0.1 mu 0.2": {
+   "side": 494.99999999999994,
+   "groove": 120.49999999999999
+  },
+  "X 0.1 mu 0.5": {
+   "side": 198.0,
+   "groove": 48.2
+  },
+  "X 0.2 mu 0.2": {
+   "side": 247.49999999999997,
+   "groove": 60.24999999999999
+  },
+  "X 0.2 mu 0.5": {
+   "side": 99.0,
+   "groove": 24.1
+  },
+  "X 1.0 mu 0.2": {
+   "side": 49.5,
+   "groove": 12.05
+  },
+  "X 1.0 mu 0.5": {
+   "side": 19.8,
+   "groove": 4.82
+  }
+ },
+ "first_estimate": {
+  "R_side": 46.66222066698299,
+  "R_groove": 28.745234140037585
+ }
+}
