@@ -1838,6 +1838,12 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
     37 / 35 / 32 mm, its base position, the X-ray bends) and write research/gd/redo/hand-variant.json; RB told a rerun of the
     trials on those paths will follow. The result's before and after go to Brock before any slide's result changes.
 
+- **F65.21 STANDING (shape study), OPEN** (2026-11-09 21:02) "but explain what it means to be using the x ray values on the
+  presentation". The joint slide itself says, in plain words, that the thumb's bends are read from X-rays of relaxed hands
+  (the bones themselves) and the fingers' from markers on the skin: in the thumb step's caption, as a tag on the thumb's row,
+  and in the source line. Only what the sources support; no reason for the difference unless the research gives one.
+  G13 told 21:05.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
