@@ -1,0 +1,3883 @@
+{
+ "about": "The thumb of the shape study's hand model, before and after the corrections of the research redo (RA, 2026-11-09). Only the thumb changes; the fingers, the two placements, the contact band (y 15) and the sizes are the model's. Three \"after\" blocks, one per value of the thumb's knuckle at rest (Brock chooses).",
+ "made_by": "research/gd/redo/scripts/hand_variant.py",
+ "variant_module": "research/gd/redo/variant/hand.py (set GD_THUMB_KNUCKLE to 39, 25 or 12.5)",
+ "shape": "each block: hand (as export_deck.py writes GD.hand), slide and path (as longarcs.py writes them to out/longarcs.json), thumb_by_hand (the table of the report)",
+ "frame": "the mouse's, mm: z toward the nose from the footprint's middle, height above the pad. The thumb touches the side at the contact band's middle, height 15 mm, in both placements (the model's rule).",
+ "inputs": {
+  "before": {
+   "THUMB": {
+    "cmc": 45,
+    "mcp": 39,
+    "ip": 10
+   },
+   "THUMB_BONES": [
+    46.93,
+    33.05,
+    23.39
+   ],
+   "THUMB_CMC_BACK": 0.27536945812807884,
+   "THUMB_CMC_PALMAR": 10.0
+  },
+  "after": {
+   "THUMB_BONES": [
+    37.0,
+    35.0,
+    26.0
+   ],
+   "THUMB_CMC_BACK": 0.29,
+   "THUMB_CMC_PALMAR": 11.5,
+   "THUMB": {
+    "cmc": 45,
+    "mcp": "39, 25 or 12.5",
+    "ip": 10
+   }
+  },
+  "why": {
+   "THUMB_BONES": "Links between joint centres. Base to knuckle 37 mm: 38.6 in one specimen of 203 mm (Goislard de Monsabert et al. 2018, ESM Table S3) and 35.9 in the open MyoHand model; the whole first bone is 46.2 mm (SD 3.9) between its joint surfaces (Buryanov & Kotiuk 2010, Table I; 48.6 scaled), but the base joint turns about a point inside the bone's near end. Knuckle to tip joint 35: Buryanov's 31.57 x 1.052 + about 2. Tip joint to the bone's tip 26: 21.67 x 1.052 + about 3. The chain ends at the bone's tip, as the fingers' chains do; the skin's tip is 6 mm further (5.67 x 1.052) and the pad's centre about 3 mm nearer. Status: two sources for the first link, the others derived.",
+   "THUMB_CMC_BACK": "The base's centre 56 mm behind the index knuckle's for the mean hand: 56.0 mm in the specimen (hand 203 mm, so 53.3 scaled), 58.0 mm in MyoHand (a hand of about 185 to 190 mm). Range 0.275 to 0.34 hand lengths.",
+   "THUMB_CMC_PALMAR": "11.5 mm under the knuckle line: the specimen 9.9, MyoHand 13.1. The model's 10 was an estimate.",
+   "tip_joint_10": "Measured: Lee & Jung 2014, 10 deg (SD 6), 40 hands, skin markers; Rogers et al. 2008, 100 hands, landmarks on the palm side: 6 deg (SD 15) relaxed round a large ball, 17 deg (SD 16) holding a mouse.",
+   "knuckle_39": "Measured: Lee & Jung 2014, 39 deg (SD 12), 40 relaxed hands, forearm neutral, skin markers; the paper does not define what the angle is measured from.",
+   "knuckle_25": "An estimate: 39 less a marker over-read of 6 to 24 deg, so 15 to 33 deg, taken at about the middle. The over-read: markers on the skin stand at different heights above the bones' axes (about 14 mm at the thumb's knuckle, 12 mm at its tip joint, marker centres included; the height of the base's \"virtual\" marker is not given: 0 if at the joint's centre, 12 if at the skin), so a straight thumb reads 6 to 24 deg bent across links of 37 and 35 mm. For fingers the same kind of markers read 4 to 5 deg high against a goniometer at about 30 deg (Cook et al. 2007, J Appl Biomech 23:70-78, 5 people).",
+   "knuckle_12_5": "Described, not measured: Cooney, Lucca, Chao & Linscheid 1981 (J Bone Joint Surg 63-A:1371-81) describe their rest position as the thumb against the side of the index's end bone with the knuckle and tip joint each flexed 10 to 15 deg."
+  }
+ },
+ "after": {
+  "knuckle_39": {
+   "hand": {
+    "cascade": {
+     "index": [
+      29,
+      29,
+      10
+     ],
+     "middle": [
+      32,
+      30,
+      11
+     ],
+     "ring": [
+      25,
+      34,
+      9
+     ],
+     "little": [
+      32,
+      37,
+      13
+     ]
+    },
+    "thumb": {
+     "cmc": 45,
+     "mcp": 39.0,
+     "ip": 10
+    },
+    "orbit_flex": [
+     42,
+     60,
+     30,
+     21,
+     57,
+     55,
+     47,
+     25,
+     35
+    ],
+    "bones": {
+     "index": [
+      41.83,
+      23.54,
+      16.64
+     ],
+     "middle": [
+      46.93,
+      27.69,
+      18.3
+     ],
+     "ring": [
+      43.51,
+      26.97,
+      18.19
+     ],
+     "little": [
+      34.43,
+      19.04,
+      16.78
+     ]
+    },
+    "chords": {
+     "index": {
+      "len": 78.4596719037594,
+      "angle_deg": 45.19269348394007,
+      "reach_along_metacarpal": 55.29246801120488
+     },
+     "middle": {
+      "len": 88.57896198202018,
+      "angle_deg": 48.967097336816124,
+      "reach_along_metacarpal": 58.15140826960739
+     },
+     "ring": {
+      "len": 83.81085763445813,
+      "angle_deg": 44.14845620515976,
+      "reach_along_metacarpal": 60.13743270848101
+     },
+     "little": {
+      "len": 65.13836486225294,
+      "angle_deg": 53.921706502452025,
+      "reach_along_metacarpal": 38.35934524301733
+     }
+    },
+    "grips": {
+     "heel": {
+      "zK": -12.819414640088715,
+      "yK": 60.99503302851027,
+      "gamma_deg": 14.999999999999998,
+      "palm_gap_mm": 4.02927631712406e-15,
+      "tip_misfit_mm": {
+       "index": 4.991631160947616,
+       "middle": -4.991631160947634
+      },
+      "joints": {
+       "index": [
+        [
+         -13.003,
+         60.946
+        ],
+        [
+         27.588,
+         50.825
+        ],
+        [
+         44.801,
+         34.774
+        ],
+        [
+         54.813,
+         21.488
+        ]
+       ],
+       "middle": [
+        [
+         -12.819,
+         60.995
+        ],
+        [
+         32.064,
+         47.273
+        ],
+        [
+         50.948,
+         27.022
+        ],
+        [
+         60.644,
+         11.504
+        ]
+       ],
+       "ring": [
+        [
+         -15.872,
+         60.177
+        ],
+        [
+         26.973,
+         52.622
+        ],
+        [
+         46.376,
+         33.885
+        ],
+        [
+         57.325,
+         19.355
+        ]
+       ],
+       "little": [
+        [
+         -21.889,
+         58.565
+        ],
+        [
+         11.036,
+         48.498
+        ],
+        [
+         22.231,
+         33.091
+        ],
+        [
+         28.789,
+         17.641
+        ]
+       ]
+      },
+      "z": {
+       "index": 54.81280921029948,
+       "middle": 60.64430552495501,
+       "ring": 57.325361236422225,
+       "little": 28.788527711484562,
+       "thumb": 5.703845565131772
+      },
+      "thumb": {
+       "cmc": [
+        -64.173,
+        35.329
+       ],
+       "reach": 69.87727113782273,
+       "span": 91.30945034569811,
+       "tip": [
+        5.703845565131772,
+        15.0
+       ]
+      }
+     },
+     "lifted": {
+      "zK": -25.102466184698223,
+      "yK": 85.27569821588439,
+      "gamma_deg": 0.0,
+      "palm_gap_mm": 28.335698215884392,
+      "tip_misfit_mm": {
+       "index": 4.906469837925556,
+       "middle": -4.906560447888488
+      },
+      "joints": {
+       "index": [
+        [
+         -25.292,
+         85.276
+        ],
+        [
+         11.296,
+         64.994
+        ],
+        [
+         23.768,
+         45.035
+        ],
+        [
+         30.0,
+         29.61
+        ]
+       ],
+       "middle": [
+        [
+         -25.102,
+         85.276
+        ],
+        [
+         14.7,
+         60.405
+        ],
+        [
+         27.699,
+         35.956
+        ],
+        [
+         33.049,
+         18.458
+        ]
+       ],
+       "ring": [
+        [
+         -28.262,
+         85.276
+        ],
+        [
+         11.167,
+         66.889
+        ],
+        [
+         25.06,
+         43.768
+        ],
+        [
+         31.875,
+         26.9
+        ]
+       ],
+       "little": [
+        [
+         -34.492,
+         85.276
+        ],
+        [
+         -5.294,
+         67.031
+        ],
+        [
+         1.531,
+         49.251
+        ],
+        [
+         3.867,
+         32.63
+        ]
+       ]
+      },
+      "z": {
+       "index": 30.00000182650666,
+       "middle": 33.048942084909164,
+       "ring": 31.87496652378279,
+       "little": 3.866879058319107,
+       "thumb": -11.472195046875498
+      },
+      "thumb": {
+       "cmc": [
+        -81.349,
+        73.776
+       ],
+       "reach": 69.87727113782273,
+       "span": 91.30945034569811,
+       "tip": [
+        -11.472195046875498,
+        15.0
+       ]
+      }
+     }
+    },
+    "thumbBase": {
+     "cmc_back_mm": 56.057,
+     "cmc_palmar_mm": 11.5,
+     "bones": [
+      37.0,
+      35.0,
+      26.0
+     ],
+     "span": 91.30945034569811,
+     "contact_y": 15.0,
+     "g1_dip": {
+      "heel": [
+       44.801,
+       34.774
+      ],
+      "lifted": [
+       23.768,
+       45.035
+      ]
+     }
+    },
+    "palm_skin": 20.0,
+    "ansur": {
+     "hand": 193.3,
+     "palm": 116.5,
+     "breadth": 88.3
+    }
+   },
+   "slide": {
+    "p50": {
+     "thumb": 17.17604061200727,
+     "pinky": 24.921648653165455
+    },
+    "range": {
+     "thumb": [
+      7.6323833739375,
+      30.03094989669171
+     ],
+     "pinky": [
+      14.724843918608986,
+      38.44573359375957
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -8.672365374152214,
+       -1.0399820002147138
+      ],
+      "pinky": [
+       6.070551593867258,
+       20.795395512476244
+      ],
+      "slide": {
+       "thumb": 7.6323833739375,
+       "pinky": 14.724843918608986
+      }
+     },
+     "p50": {
+      "thumb": [
+       -11.472195046875498,
+       5.703845565131772
+      ],
+      "pinky": [
+       3.866879058319107,
+       28.788527711484562
+      ],
+      "slide": {
+       "thumb": 17.17604061200727,
+       "pinky": 24.921648653165455
+      }
+     },
+     "p95": {
+      "thumb": [
+       -14.357893253704091,
+       15.673056642987618
+      ],
+      "pinky": [
+       1.6091286691378883,
+       40.05486226289746
+      ],
+      "slide": {
+       "thumb": 30.03094989669171,
+       "pinky": 38.44573359375957
+      }
+     }
+    },
+    "contact_side": 9.073203062167595,
+    "R_felt": {
+     "thumb": 286.2673435334545,
+     "pinky": 415.3608108860909
+    },
+    "basis": "hand model: the heel placement (palm on the hump, fingers relaxed) to the lifted (zero-g, tips on the buttons); derived"
+   },
+   "path": {
+    "p50": {
+     "thumb": [
+      -11.472195046875498,
+      5.703845565131772
+     ],
+     "pinky": [
+      3.866879058319107,
+      28.788527711484562
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -8.672365374152214,
+       -1.0399820002147138
+      ],
+      "pinky": [
+       6.070551593867258,
+       20.795395512476244
+      ]
+     },
+     "p50": {
+      "thumb": [
+       -11.472195046875498,
+       5.703845565131772
+      ],
+      "pinky": [
+       3.866879058319107,
+       28.788527711484562
+      ]
+     },
+     "p95": {
+      "thumb": [
+       -14.357893253704091,
+       15.673056642987618
+      ],
+      "pinky": [
+       1.6091286691378883,
+       40.05486226289746
+      ]
+     }
+    },
+    "overlap": {
+     "p5": -7.110533594081971,
+     "p50": 1.836966506812665,
+     "p95": 14.06392797384973
+    },
+    "overlap_hand_mm": 190.79294245457794,
+    "overlap_hand_note": "the shortest hand whose two paths still overlap",
+    "groove_end": 48.0
+   },
+   "thumb_by_hand": {
+    "p5": {
+     "hand_length_mm": 177.0,
+     "grip": {
+      "z": -8.672,
+      "height": 15.0,
+      "base": [
+       -71.96,
+       69.638
+      ],
+      "ahead_of_index_knuckle": 11.958
+     },
+     "hump": {
+      "z": -1.04,
+      "height": 15.0,
+      "base": [
+       -64.328,
+       34.546
+      ],
+      "ahead_of_index_knuckle": 16.432
+     },
+     "slide": 7.632,
+     "reach_along_the_mouse": 63.288,
+     "span_base_to_tip": 83.61,
+     "pinky": {
+      "grip_z": 6.071,
+      "hump_z": 20.795,
+      "slide": 14.725
+     },
+     "paths_overlap": -7.111,
+     "paths_overlap_from_to": [
+      6.071,
+      -1.04
+     ]
+    },
+    "p50": {
+     "hand_length_mm": 193.3,
+     "grip": {
+      "z": -11.472,
+      "height": 15.0,
+      "base": [
+       -81.349,
+       73.776
+      ],
+      "ahead_of_index_knuckle": 13.82
+     },
+     "hump": {
+      "z": 5.704,
+      "height": 15.0,
+      "base": [
+       -64.173,
+       35.329
+      ],
+      "ahead_of_index_knuckle": 18.707
+     },
+     "slide": 17.176,
+     "reach_along_the_mouse": 69.877,
+     "span_base_to_tip": 91.309,
+     "pinky": {
+      "grip_z": 3.867,
+      "hump_z": 28.789,
+      "slide": 24.922
+     },
+     "paths_overlap": 1.837,
+     "paths_overlap_from_to": [
+      3.867,
+      5.704
+     ]
+    },
+    "p95": {
+     "hand_length_mm": 210.0,
+     "grip": {
+      "z": -14.358,
+      "height": 15.0,
+      "base": [
+       -90.969,
+       78.015
+      ],
+      "ahead_of_index_knuckle": 15.711
+     },
+     "hump": {
+      "z": 15.673,
+      "height": 15.0,
+      "base": [
+       -60.938,
+       36.956
+      ],
+      "ahead_of_index_knuckle": 21.02
+     },
+     "slide": 30.031,
+     "reach_along_the_mouse": 76.612,
+     "span_base_to_tip": 99.198,
+     "pinky": {
+      "grip_z": 1.609,
+      "hump_z": 40.055,
+      "slide": 38.446
+     },
+     "paths_overlap": 14.064,
+     "paths_overlap_from_to": [
+      1.609,
+      15.673
+     ]
+    }
+   },
+   "variant_copy_check": {
+    "same_as_the_variant_module_run_on_its_own": true,
+    "thumb_grip_z_hump_z_span": [
+     -11.472195046875498,
+     5.703845565131772,
+     91.30945034569811
+    ]
+   }
+  },
+  "knuckle_25": {
+   "hand": {
+    "cascade": {
+     "index": [
+      29,
+      29,
+      10
+     ],
+     "middle": [
+      32,
+      30,
+      11
+     ],
+     "ring": [
+      25,
+      34,
+      9
+     ],
+     "little": [
+      32,
+      37,
+      13
+     ]
+    },
+    "thumb": {
+     "cmc": 45,
+     "mcp": 25.0,
+     "ip": 10
+    },
+    "orbit_flex": [
+     42,
+     60,
+     30,
+     21,
+     57,
+     55,
+     47,
+     25,
+     35
+    ],
+    "bones": {
+     "index": [
+      41.83,
+      23.54,
+      16.64
+     ],
+     "middle": [
+      46.93,
+      27.69,
+      18.3
+     ],
+     "ring": [
+      43.51,
+      26.97,
+      18.19
+     ],
+     "little": [
+      34.43,
+      19.04,
+      16.78
+     ]
+    },
+    "chords": {
+     "index": {
+      "len": 78.4596719037594,
+      "angle_deg": 45.19269348394007,
+      "reach_along_metacarpal": 55.29246801120488
+     },
+     "middle": {
+      "len": 88.57896198202018,
+      "angle_deg": 48.967097336816124,
+      "reach_along_metacarpal": 58.15140826960739
+     },
+     "ring": {
+      "len": 83.81085763445813,
+      "angle_deg": 44.14845620515976,
+      "reach_along_metacarpal": 60.13743270848101
+     },
+     "little": {
+      "len": 65.13836486225294,
+      "angle_deg": 53.921706502452025,
+      "reach_along_metacarpal": 38.35934524301733
+     }
+    },
+    "grips": {
+     "heel": {
+      "zK": -12.819414640088715,
+      "yK": 60.99503302851027,
+      "gamma_deg": 14.999999999999998,
+      "palm_gap_mm": 4.02927631712406e-15,
+      "tip_misfit_mm": {
+       "index": 4.991631160947616,
+       "middle": -4.991631160947634
+      },
+      "joints": {
+       "index": [
+        [
+         -13.003,
+         60.946
+        ],
+        [
+         27.588,
+         50.825
+        ],
+        [
+         44.801,
+         34.774
+        ],
+        [
+         54.813,
+         21.488
+        ]
+       ],
+       "middle": [
+        [
+         -12.819,
+         60.995
+        ],
+        [
+         32.064,
+         47.273
+        ],
+        [
+         50.948,
+         27.022
+        ],
+        [
+         60.644,
+         11.504
+        ]
+       ],
+       "ring": [
+        [
+         -15.872,
+         60.177
+        ],
+        [
+         26.973,
+         52.622
+        ],
+        [
+         46.376,
+         33.885
+        ],
+        [
+         57.325,
+         19.355
+        ]
+       ],
+       "little": [
+        [
+         -21.889,
+         58.565
+        ],
+        [
+         11.036,
+         48.498
+        ],
+        [
+         22.231,
+         33.091
+        ],
+        [
+         28.789,
+         17.641
+        ]
+       ]
+      },
+      "z": {
+       "index": 54.81280921029948,
+       "middle": 60.64430552495501,
+       "ring": 57.325361236422225,
+       "little": 28.788527711484562,
+       "thumb": 10.198296952435797
+      },
+      "thumb": {
+       "cmc": [
+        -64.173,
+        35.329
+       ],
+       "reach": 74.37172252512676,
+       "span": 94.79312112236394,
+       "tip": [
+        10.198296952435797,
+        15.0
+       ]
+      }
+     },
+     "lifted": {
+      "zK": -25.102466184698223,
+      "yK": 85.27569821588439,
+      "gamma_deg": 0.0,
+      "palm_gap_mm": 28.335698215884392,
+      "tip_misfit_mm": {
+       "index": 4.906469837925556,
+       "middle": -4.906560447888488
+      },
+      "joints": {
+       "index": [
+        [
+         -25.292,
+         85.276
+        ],
+        [
+         11.296,
+         64.994
+        ],
+        [
+         23.768,
+         45.035
+        ],
+        [
+         30.0,
+         29.61
+        ]
+       ],
+       "middle": [
+        [
+         -25.102,
+         85.276
+        ],
+        [
+         14.7,
+         60.405
+        ],
+        [
+         27.699,
+         35.956
+        ],
+        [
+         33.049,
+         18.458
+        ]
+       ],
+       "ring": [
+        [
+         -28.262,
+         85.276
+        ],
+        [
+         11.167,
+         66.889
+        ],
+        [
+         25.06,
+         43.768
+        ],
+        [
+         31.875,
+         26.9
+        ]
+       ],
+       "little": [
+        [
+         -34.492,
+         85.276
+        ],
+        [
+         -5.294,
+         67.031
+        ],
+        [
+         1.531,
+         49.251
+        ],
+        [
+         3.867,
+         32.63
+        ]
+       ]
+      },
+      "z": {
+       "index": 30.00000182650666,
+       "middle": 33.048942084909164,
+       "ring": 31.87496652378279,
+       "little": 3.866879058319107,
+       "thumb": -6.977743659571473
+      },
+      "thumb": {
+       "cmc": [
+        -81.349,
+        73.776
+       ],
+       "reach": 74.37172252512676,
+       "span": 94.79312112236394,
+       "tip": [
+        -6.977743659571473,
+        15.0
+       ]
+      }
+     }
+    },
+    "thumbBase": {
+     "cmc_back_mm": 56.057,
+     "cmc_palmar_mm": 11.5,
+     "bones": [
+      37.0,
+      35.0,
+      26.0
+     ],
+     "span": 94.79312112236394,
+     "contact_y": 15.0,
+     "g1_dip": {
+      "heel": [
+       44.801,
+       34.774
+      ],
+      "lifted": [
+       23.768,
+       45.035
+      ]
+     }
+    },
+    "palm_skin": 20.0,
+    "ansur": {
+     "hand": 193.3,
+     "palm": 116.5,
+     "breadth": 88.3
+    }
+   },
+   "slide": {
+    "p50": {
+     "thumb": 17.17604061200727,
+     "pinky": 24.921648653165455
+    },
+    "range": {
+     "thumb": [
+      7.6323833739375,
+      30.03094989669171
+     ],
+     "pinky": [
+      14.724843918608986,
+      38.44573359375957
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -4.514345632790565,
+       3.118037741146935
+      ],
+      "pinky": [
+       6.070551593867258,
+       20.795395512476244
+      ],
+      "slide": {
+       "thumb": 7.6323833739375,
+       "pinky": 14.724843918608986
+      }
+     },
+     "p50": {
+      "thumb": [
+       -6.977743659571473,
+       10.198296952435797
+      ],
+      "pinky": [
+       3.866879058319107,
+       28.788527711484562
+      ],
+      "slide": {
+       "thumb": 17.17604061200727,
+       "pinky": 24.921648653165455
+      }
+     },
+     "p95": {
+      "thumb": [
+       -9.516934457311734,
+       20.514015439379975
+      ],
+      "pinky": [
+       1.6091286691378883,
+       40.05486226289746
+      ],
+      "slide": {
+       "thumb": 30.03094989669171,
+       "pinky": 38.44573359375957
+      }
+     }
+    },
+    "contact_side": 9.073203062167595,
+    "R_felt": {
+     "thumb": 286.2673435334545,
+     "pinky": 415.3608108860909
+    },
+    "basis": "hand model: the heel placement (palm on the hump, fingers relaxed) to the lifted (zero-g, tips on the buttons); derived"
+   },
+   "path": {
+    "p50": {
+     "thumb": [
+      -6.977743659571473,
+      10.198296952435797
+     ],
+     "pinky": [
+      3.866879058319107,
+      28.788527711484562
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -4.514345632790565,
+       3.118037741146935
+      ],
+      "pinky": [
+       6.070551593867258,
+       20.795395512476244
+      ]
+     },
+     "p50": {
+      "thumb": [
+       -6.977743659571473,
+       10.198296952435797
+      ],
+      "pinky": [
+       3.866879058319107,
+       28.788527711484562
+      ]
+     },
+     "p95": {
+      "thumb": [
+       -9.516934457311734,
+       20.514015439379975
+      ],
+      "pinky": [
+       1.6091286691378883,
+       40.05486226289746
+      ]
+     }
+    },
+    "overlap": {
+     "p5": -2.9525138527203225,
+     "p50": 6.33141789411669,
+     "p95": 18.904886770242086
+    },
+    "overlap_hand_mm": 184.8981166541273,
+    "overlap_hand_note": "the shortest hand whose two paths still overlap",
+    "groove_end": 48.0
+   },
+   "thumb_by_hand": {
+    "p5": {
+     "hand_length_mm": 177.0,
+     "grip": {
+      "z": -4.514,
+      "height": 15.0,
+      "base": [
+       -71.96,
+       69.638
+      ],
+      "ahead_of_index_knuckle": 16.116
+     },
+     "hump": {
+      "z": 3.118,
+      "height": 15.0,
+      "base": [
+       -64.328,
+       34.546
+      ],
+      "ahead_of_index_knuckle": 20.59
+     },
+     "slide": 7.632,
+     "reach_along_the_mouse": 67.446,
+     "span_base_to_tip": 86.8,
+     "pinky": {
+      "grip_z": 6.071,
+      "hump_z": 20.795,
+      "slide": 14.725
+     },
+     "paths_overlap": -2.953,
+     "paths_overlap_from_to": [
+      6.071,
+      3.118
+     ]
+    },
+    "p50": {
+     "hand_length_mm": 193.3,
+     "grip": {
+      "z": -6.978,
+      "height": 15.0,
+      "base": [
+       -81.349,
+       73.776
+      ],
+      "ahead_of_index_knuckle": 18.314
+     },
+     "hump": {
+      "z": 10.198,
+      "height": 15.0,
+      "base": [
+       -64.173,
+       35.329
+      ],
+      "ahead_of_index_knuckle": 23.201
+     },
+     "slide": 17.176,
+     "reach_along_the_mouse": 74.372,
+     "span_base_to_tip": 94.793,
+     "pinky": {
+      "grip_z": 3.867,
+      "hump_z": 28.789,
+      "slide": 24.922
+     },
+     "paths_overlap": 6.331,
+     "paths_overlap_from_to": [
+      3.867,
+      10.198
+     ]
+    },
+    "p95": {
+     "hand_length_mm": 210.0,
+     "grip": {
+      "z": -9.517,
+      "height": 15.0,
+      "base": [
+       -90.969,
+       78.015
+      ],
+      "ahead_of_index_knuckle": 20.552
+     },
+     "hump": {
+      "z": 20.514,
+      "height": 15.0,
+      "base": [
+       -60.938,
+       36.956
+      ],
+      "ahead_of_index_knuckle": 25.861
+     },
+     "slide": 30.031,
+     "reach_along_the_mouse": 81.452,
+     "span_base_to_tip": 102.983,
+     "pinky": {
+      "grip_z": 1.609,
+      "hump_z": 40.055,
+      "slide": 38.446
+     },
+     "paths_overlap": 18.905,
+     "paths_overlap_from_to": [
+      1.609,
+      20.514
+     ]
+    }
+   },
+   "variant_copy_check": {
+    "same_as_the_variant_module_run_on_its_own": true,
+    "thumb_grip_z_hump_z_span": [
+     -6.977743659571473,
+     10.198296952435797,
+     94.79312112236394
+    ]
+   }
+  },
+  "knuckle_12_5": {
+   "hand": {
+    "cascade": {
+     "index": [
+      29,
+      29,
+      10
+     ],
+     "middle": [
+      32,
+      30,
+      11
+     ],
+     "ring": [
+      25,
+      34,
+      9
+     ],
+     "little": [
+      32,
+      37,
+      13
+     ]
+    },
+    "thumb": {
+     "cmc": 45,
+     "mcp": 12.5,
+     "ip": 10
+    },
+    "orbit_flex": [
+     42,
+     60,
+     30,
+     21,
+     57,
+     55,
+     47,
+     25,
+     35
+    ],
+    "bones": {
+     "index": [
+      41.83,
+      23.54,
+      16.64
+     ],
+     "middle": [
+      46.93,
+      27.69,
+      18.3
+     ],
+     "ring": [
+      43.51,
+      26.97,
+      18.19
+     ],
+     "little": [
+      34.43,
+      19.04,
+      16.78
+     ]
+    },
+    "chords": {
+     "index": {
+      "len": 78.4596719037594,
+      "angle_deg": 45.19269348394007,
+      "reach_along_metacarpal": 55.29246801120488
+     },
+     "middle": {
+      "len": 88.57896198202018,
+      "angle_deg": 48.967097336816124,
+      "reach_along_metacarpal": 58.15140826960739
+     },
+     "ring": {
+      "len": 83.81085763445813,
+      "angle_deg": 44.14845620515976,
+      "reach_along_metacarpal": 60.13743270848101
+     },
+     "little": {
+      "len": 65.13836486225294,
+      "angle_deg": 53.921706502452025,
+      "reach_along_metacarpal": 38.35934524301733
+     }
+    },
+    "grips": {
+     "heel": {
+      "zK": -12.819414640088715,
+      "yK": 60.99503302851027,
+      "gamma_deg": 14.999999999999998,
+      "palm_gap_mm": 4.02927631712406e-15,
+      "tip_misfit_mm": {
+       "index": 4.991631160947616,
+       "middle": -4.991631160947634
+      },
+      "joints": {
+       "index": [
+        [
+         -13.003,
+         60.946
+        ],
+        [
+         27.588,
+         50.825
+        ],
+        [
+         44.801,
+         34.774
+        ],
+        [
+         54.813,
+         21.488
+        ]
+       ],
+       "middle": [
+        [
+         -12.819,
+         60.995
+        ],
+        [
+         32.064,
+         47.273
+        ],
+        [
+         50.948,
+         27.022
+        ],
+        [
+         60.644,
+         11.504
+        ]
+       ],
+       "ring": [
+        [
+         -15.872,
+         60.177
+        ],
+        [
+         26.973,
+         52.622
+        ],
+        [
+         46.376,
+         33.885
+        ],
+        [
+         57.325,
+         19.355
+        ]
+       ],
+       "little": [
+        [
+         -21.889,
+         58.565
+        ],
+        [
+         11.036,
+         48.498
+        ],
+        [
+         22.231,
+         33.091
+        ],
+        [
+         28.789,
+         17.641
+        ]
+       ]
+      },
+      "z": {
+       "index": 54.81280921029948,
+       "middle": 60.64430552495501,
+       "ring": 57.325361236422225,
+       "little": 28.788527711484562,
+       "thumb": 12.728578879142702
+      },
+      "thumb": {
+       "cmc": [
+        -64.173,
+        35.329
+       ],
+       "reach": 76.90200445183366,
+       "span": 96.79101709081561,
+       "tip": [
+        12.728578879142702,
+        15.0
+       ]
+      }
+     },
+     "lifted": {
+      "zK": -25.102466184698223,
+      "yK": 85.27569821588439,
+      "gamma_deg": 0.0,
+      "palm_gap_mm": 28.335698215884392,
+      "tip_misfit_mm": {
+       "index": 4.906469837925556,
+       "middle": -4.906560447888488
+      },
+      "joints": {
+       "index": [
+        [
+         -25.292,
+         85.276
+        ],
+        [
+         11.296,
+         64.994
+        ],
+        [
+         23.768,
+         45.035
+        ],
+        [
+         30.0,
+         29.61
+        ]
+       ],
+       "middle": [
+        [
+         -25.102,
+         85.276
+        ],
+        [
+         14.7,
+         60.405
+        ],
+        [
+         27.699,
+         35.956
+        ],
+        [
+         33.049,
+         18.458
+        ]
+       ],
+       "ring": [
+        [
+         -28.262,
+         85.276
+        ],
+        [
+         11.167,
+         66.889
+        ],
+        [
+         25.06,
+         43.768
+        ],
+        [
+         31.875,
+         26.9
+        ]
+       ],
+       "little": [
+        [
+         -34.492,
+         85.276
+        ],
+        [
+         -5.294,
+         67.031
+        ],
+        [
+         1.531,
+         49.251
+        ],
+        [
+         3.867,
+         32.63
+        ]
+       ]
+      },
+      "z": {
+       "index": 30.00000182650666,
+       "middle": 33.048942084909164,
+       "ring": 31.87496652378279,
+       "little": 3.866879058319107,
+       "thumb": -4.447461732864568
+      },
+      "thumb": {
+       "cmc": [
+        -81.349,
+        73.776
+       ],
+       "reach": 76.90200445183366,
+       "span": 96.79101709081561,
+       "tip": [
+        -4.447461732864568,
+        15.0
+       ]
+      }
+     }
+    },
+    "thumbBase": {
+     "cmc_back_mm": 56.057,
+     "cmc_palmar_mm": 11.5,
+     "bones": [
+      37.0,
+      35.0,
+      26.0
+     ],
+     "span": 96.79101709081561,
+     "contact_y": 15.0,
+     "g1_dip": {
+      "heel": [
+       44.801,
+       34.774
+      ],
+      "lifted": [
+       23.768,
+       45.035
+      ]
+     }
+    },
+    "palm_skin": 20.0,
+    "ansur": {
+     "hand": 193.3,
+     "palm": 116.5,
+     "breadth": 88.3
+    }
+   },
+   "slide": {
+    "p50": {
+     "thumb": 17.17604061200727,
+     "pinky": 24.921648653165455
+    },
+    "range": {
+     "thumb": [
+      7.6323833739375,
+      30.03094989669171
+     ],
+     "pinky": [
+      14.724843918608986,
+      38.44573359375957
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -2.1756877361525255,
+       5.456695637784975
+      ],
+      "pinky": [
+       6.070551593867258,
+       20.795395512476244
+      ],
+      "slide": {
+       "thumb": 7.6323833739375,
+       "pinky": 14.724843918608986
+      }
+     },
+     "p50": {
+      "thumb": [
+       -4.447461732864568,
+       12.728578879142702
+      ],
+      "pinky": [
+       3.866879058319107,
+       28.788527711484562
+      ],
+      "slide": {
+       "thumb": 17.17604061200727,
+       "pinky": 24.921648653165455
+      }
+     },
+     "p95": {
+      "thumb": [
+       -6.789452454031959,
+       23.24149744265975
+      ],
+      "pinky": [
+       1.6091286691378883,
+       40.05486226289746
+      ],
+      "slide": {
+       "thumb": 30.03094989669171,
+       "pinky": 38.44573359375957
+      }
+     }
+    },
+    "contact_side": 9.073203062167595,
+    "R_felt": {
+     "thumb": 286.2673435334545,
+     "pinky": 415.3608108860909
+    },
+    "basis": "hand model: the heel placement (palm on the hump, fingers relaxed) to the lifted (zero-g, tips on the buttons); derived"
+   },
+   "path": {
+    "p50": {
+     "thumb": [
+      -4.447461732864568,
+      12.728578879142702
+     ],
+     "pinky": [
+      3.866879058319107,
+      28.788527711484562
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -2.1756877361525255,
+       5.456695637784975
+      ],
+      "pinky": [
+       6.070551593867258,
+       20.795395512476244
+      ]
+     },
+     "p50": {
+      "thumb": [
+       -4.447461732864568,
+       12.728578879142702
+      ],
+      "pinky": [
+       3.866879058319107,
+       28.788527711484562
+      ]
+     },
+     "p95": {
+      "thumb": [
+       -6.789452454031959,
+       23.24149744265975
+      ],
+      "pinky": [
+       1.6091286691378883,
+       40.05486226289746
+      ]
+     }
+    },
+    "overlap": {
+     "p5": -0.6138559560822827,
+     "p50": 8.861699820823596,
+     "p95": 21.63236877352186
+    },
+    "overlap_hand_mm": 178.59456490583835,
+    "overlap_hand_note": "the shortest hand whose two paths still overlap",
+    "groove_end": 48.0
+   },
+   "thumb_by_hand": {
+    "p5": {
+     "hand_length_mm": 177.0,
+     "grip": {
+      "z": -2.176,
+      "height": 15.0,
+      "base": [
+       -71.96,
+       69.638
+      ],
+      "ahead_of_index_knuckle": 18.454
+     },
+     "hump": {
+      "z": 5.457,
+      "height": 15.0,
+      "base": [
+       -64.328,
+       34.546
+      ],
+      "ahead_of_index_knuckle": 22.929
+     },
+     "slide": 7.632,
+     "reach_along_the_mouse": 69.784,
+     "span_base_to_tip": 88.629,
+     "pinky": {
+      "grip_z": 6.071,
+      "hump_z": 20.795,
+      "slide": 14.725
+     },
+     "paths_overlap": -0.614,
+     "paths_overlap_from_to": [
+      6.071,
+      5.457
+     ]
+    },
+    "p50": {
+     "hand_length_mm": 193.3,
+     "grip": {
+      "z": -4.447,
+      "height": 15.0,
+      "base": [
+       -81.349,
+       73.776
+      ],
+      "ahead_of_index_knuckle": 20.845
+     },
+     "hump": {
+      "z": 12.729,
+      "height": 15.0,
+      "base": [
+       -64.173,
+       35.329
+      ],
+      "ahead_of_index_knuckle": 25.732
+     },
+     "slide": 17.176,
+     "reach_along_the_mouse": 76.902,
+     "span_base_to_tip": 96.791,
+     "pinky": {
+      "grip_z": 3.867,
+      "hump_z": 28.789,
+      "slide": 24.922
+     },
+     "paths_overlap": 8.862,
+     "paths_overlap_from_to": [
+      3.867,
+      12.729
+     ]
+    },
+    "p95": {
+     "hand_length_mm": 210.0,
+     "grip": {
+      "z": -6.789,
+      "height": 15.0,
+      "base": [
+       -90.969,
+       78.015
+      ],
+      "ahead_of_index_knuckle": 23.28
+     },
+     "hump": {
+      "z": 23.241,
+      "height": 15.0,
+      "base": [
+       -60.938,
+       36.956
+      ],
+      "ahead_of_index_knuckle": 28.588
+     },
+     "slide": 30.031,
+     "reach_along_the_mouse": 84.18,
+     "span_base_to_tip": 105.153,
+     "pinky": {
+      "grip_z": 1.609,
+      "hump_z": 40.055,
+      "slide": 38.446
+     },
+     "paths_overlap": 21.632,
+     "paths_overlap_from_to": [
+      1.609,
+      23.241
+     ]
+    }
+   },
+   "variant_copy_check": {
+    "same_as_the_variant_module_run_on_its_own": true,
+    "thumb_grip_z_hump_z_span": [
+     -4.447461732864568,
+     12.728578879142702,
+     96.79101709081561
+    ]
+   }
+  }
+ },
+ "before": {
+  "hand": {
+   "cascade": {
+    "index": [
+     29,
+     29,
+     10
+    ],
+    "middle": [
+     32,
+     30,
+     11
+    ],
+    "ring": [
+     25,
+     34,
+     9
+    ],
+    "little": [
+     32,
+     37,
+     13
+    ]
+   },
+   "thumb": {
+    "cmc": 45,
+    "mcp": 39,
+    "ip": 10
+   },
+   "orbit_flex": [
+    42,
+    60,
+    30,
+    21,
+    57,
+    55,
+    47,
+    25,
+    35
+   ],
+   "bones": {
+    "index": [
+     41.83,
+     23.54,
+     16.64
+    ],
+    "middle": [
+     46.93,
+     27.69,
+     18.3
+    ],
+    "ring": [
+     43.51,
+     26.97,
+     18.19
+    ],
+    "little": [
+     34.43,
+     19.04,
+     16.78
+    ]
+   },
+   "chords": {
+    "index": {
+     "len": 78.4596719037594,
+     "angle_deg": 45.19269348394007,
+     "reach_along_metacarpal": 55.29246801120488
+    },
+    "middle": {
+     "len": 88.57896198202018,
+     "angle_deg": 48.967097336816124,
+     "reach_along_metacarpal": 58.15140826960739
+    },
+    "ring": {
+     "len": 83.81085763445813,
+     "angle_deg": 44.14845620515976,
+     "reach_along_metacarpal": 60.13743270848101
+    },
+    "little": {
+     "len": 65.13836486225294,
+     "angle_deg": 53.921706502452025,
+     "reach_along_metacarpal": 38.35934524301733
+    }
+   },
+   "grips": {
+    "heel": {
+     "zK": -12.819414640088715,
+     "yK": 60.99503302851027,
+     "gamma_deg": 14.999999999999998,
+     "palm_gap_mm": 4.02927631712406e-15,
+     "tip_misfit_mm": {
+      "index": 4.991631160947616,
+      "middle": -4.991631160947634
+     },
+     "joints": {
+      "index": [
+       [
+        -13.003,
+        60.946
+       ],
+       [
+        27.588,
+        50.825
+       ],
+       [
+        44.801,
+        34.774
+       ],
+       [
+        54.813,
+        21.488
+       ]
+      ],
+      "middle": [
+       [
+        -12.819,
+        60.995
+       ],
+       [
+        32.064,
+        47.273
+       ],
+       [
+        50.948,
+        27.022
+       ],
+       [
+        60.644,
+        11.504
+       ]
+      ],
+      "ring": [
+       [
+        -15.872,
+        60.177
+       ],
+       [
+        26.973,
+        52.622
+       ],
+       [
+        46.376,
+        33.885
+       ],
+       [
+        57.325,
+        19.355
+       ]
+      ],
+      "little": [
+       [
+        -21.889,
+        58.565
+       ],
+       [
+        11.036,
+        48.498
+       ],
+       [
+        22.231,
+        33.091
+       ],
+       [
+        28.789,
+        17.641
+       ]
+      ]
+     },
+     "z": {
+      "index": 54.81280921029948,
+      "middle": 60.64430552495501,
+      "ring": 57.325361236422225,
+      "little": 28.788527711484562,
+      "thumb": 12.894090589673787
+     },
+     "thumb": {
+      "cmc": [
+       -61.83,
+       37.51
+      ],
+      "reach": 74.72402560293291,
+      "span": 96.00437384682087,
+      "tip": [
+       12.894090589673787,
+       15.0
+      ]
+     }
+    },
+    "lifted": {
+     "zK": -25.102466184698223,
+     "yK": 85.27569821588439,
+     "gamma_deg": 0.0,
+     "palm_gap_mm": 28.335698215884392,
+     "tip_misfit_mm": {
+      "index": 4.906469837925556,
+      "middle": -4.906560447888488
+     },
+     "joints": {
+      "index": [
+       [
+        -25.292,
+        85.276
+       ],
+       [
+        11.296,
+        64.994
+       ],
+       [
+        23.768,
+        45.035
+       ],
+       [
+        30.0,
+        29.61
+       ]
+      ],
+      "middle": [
+       [
+        -25.102,
+        85.276
+       ],
+       [
+        14.7,
+        60.405
+       ],
+       [
+        27.699,
+        35.956
+       ],
+       [
+        33.049,
+        18.458
+       ]
+      ],
+      "ring": [
+       [
+        -28.262,
+        85.276
+       ],
+       [
+        11.167,
+        66.889
+       ],
+       [
+        25.06,
+        43.768
+       ],
+       [
+        31.875,
+        26.9
+       ]
+      ],
+      "little": [
+       [
+        -34.492,
+        85.276
+       ],
+       [
+        -5.294,
+        67.031
+       ],
+       [
+        1.531,
+        49.251
+       ],
+       [
+        3.867,
+        32.63
+       ]
+      ]
+     },
+     "z": {
+      "index": 30.00000182650666,
+      "middle": 33.048942084909164,
+      "ring": 31.87496652378279,
+      "little": 3.866879058319107,
+      "thumb": -3.7973568379229476
+     },
+     "thumb": {
+      "cmc": [
+       -78.521,
+       75.276
+      ],
+      "reach": 74.72402560293291,
+      "span": 96.00437384682087,
+      "tip": [
+       -3.7973568379229476,
+       15.0
+      ]
+     }
+    }
+   },
+   "thumbBase": {
+    "cmc_back_mm": 53.22891625615764,
+    "cmc_palmar_mm": 10.0,
+    "bones": [
+     46.933917568122695,
+     33.054300000000005,
+     23.389300000000002
+    ],
+    "span": 96.00437384682087,
+    "contact_y": 15.0,
+    "g1_dip": {
+     "heel": [
+      44.801,
+      34.774
+     ],
+     "lifted": [
+      23.768,
+      45.035
+     ]
+    }
+   },
+   "palm_skin": 20.0,
+   "ansur": {
+    "hand": 193.3,
+    "palm": 116.5,
+    "breadth": 88.3
+   }
+  },
+  "slide": {
+   "p50": {
+    "thumb": 16.691447427596735,
+    "pinky": 24.921648653165455
+   },
+   "range": {
+    "thumb": [
+     7.188653453396057,
+     29.504490668930657
+    ],
+    "pinky": [
+     14.724843918608986,
+     38.44573359375957
+    ]
+   },
+   "per_hand": {
+    "p5": {
+     "thumb": [
+      -1.6156138387502352,
+      5.573039614645822
+     ],
+     "pinky": [
+      6.070551593867258,
+      20.795395512476244
+     ],
+     "slide": {
+      "thumb": 7.188653453396057,
+      "pinky": 14.724843918608986
+     }
+    },
+    "p50": {
+     "thumb": [
+      -3.7973568379229476,
+      12.894090589673787
+     ],
+     "pinky": [
+      3.866879058319107,
+      28.788527711484562
+     ],
+     "slide": {
+      "thumb": 16.691447427596735,
+      "pinky": 24.921648653165455
+     }
+    },
+    "p95": {
+     "thumb": [
+      -6.048154911806847,
+      23.45633575712381
+     ],
+     "pinky": [
+      1.6091286691378883,
+      40.05486226289746
+     ],
+     "slide": {
+      "thumb": 29.504490668930657,
+      "pinky": 38.44573359375957
+     }
+    }
+   },
+   "contact_side": 9.073203062167595,
+   "R_felt": {
+    "thumb": 278.1907904599456,
+    "pinky": 415.3608108860909
+   },
+   "basis": "hand model: the heel placement (palm on the hump, fingers relaxed) to the lifted (zero-g, tips on the buttons); derived"
+  },
+  "path": {
+   "p50": {
+    "thumb": [
+     -3.7973568379229476,
+     12.894090589673787
+    ],
+    "pinky": [
+     3.866879058319107,
+     28.788527711484562
+    ]
+   },
+   "per_hand": {
+    "p5": {
+     "thumb": [
+      -1.6156138387502352,
+      5.573039614645822
+     ],
+     "pinky": [
+      6.070551593867258,
+      20.795395512476244
+     ]
+    },
+    "p50": {
+     "thumb": [
+      -3.7973568379229476,
+      12.894090589673787
+     ],
+     "pinky": [
+      3.866879058319107,
+      28.788527711484562
+     ]
+    },
+    "p95": {
+     "thumb": [
+      -6.048154911806847,
+      23.45633575712381
+     ],
+     "pinky": [
+      1.6091286691378883,
+      40.05486226289746
+     ]
+    }
+   },
+   "overlap": {
+    "p5": -0.49751197922143575,
+    "p50": 9.02721153135468,
+    "p95": 21.84720708798592
+   },
+   "overlap_hand_mm": 178.28215284030338,
+   "overlap_hand_note": "the shortest hand whose two paths still overlap",
+   "groove_end": 48.0
+  },
+  "thumb_by_hand": {
+   "p5": {
+    "hand_length_mm": 177.0,
+    "grip": {
+     "z": -1.616,
+     "height": 15.0,
+     "base": [
+      -69.37,
+      71.011
+     ],
+     "ahead_of_index_knuckle": 19.014
+    },
+    "hump": {
+     "z": 5.573,
+     "height": 15.0,
+     "base": [
+      -62.182,
+      36.543
+     ],
+     "ahead_of_index_knuckle": 23.045
+    },
+    "slide": 7.189,
+    "reach_along_the_mouse": 67.755,
+    "span_base_to_tip": 87.909,
+    "pinky": {
+     "grip_z": 6.071,
+     "hump_z": 20.795,
+     "slide": 14.725
+    },
+    "paths_overlap": -0.498,
+    "paths_overlap_from_to": [
+     6.071,
+     5.573
+    ]
+   },
+   "p50": {
+    "hand_length_mm": 193.3,
+    "grip": {
+     "z": -3.797,
+     "height": 15.0,
+     "base": [
+      -78.521,
+      75.276
+     ],
+     "ahead_of_index_knuckle": 21.495
+    },
+    "hump": {
+     "z": 12.894,
+     "height": 15.0,
+     "base": [
+      -61.83,
+      37.51
+     ],
+     "ahead_of_index_knuckle": 25.897
+    },
+    "slide": 16.691,
+    "reach_along_the_mouse": 74.724,
+    "span_base_to_tip": 96.004,
+    "pinky": {
+     "grip_z": 3.867,
+     "hump_z": 28.789,
+     "slide": 24.922
+    },
+    "paths_overlap": 9.027,
+    "paths_overlap_from_to": [
+     3.867,
+     12.894
+    ]
+   },
+   "p95": {
+    "hand_length_mm": 210.0,
+    "grip": {
+     "z": -6.048,
+     "height": 15.0,
+     "base": [
+      -87.897,
+      79.645
+     ],
+     "ahead_of_index_knuckle": 24.021
+    },
+    "hump": {
+     "z": 23.456,
+     "height": 15.0,
+     "base": [
+      -58.393,
+      39.325
+     ],
+     "ahead_of_index_knuckle": 28.803
+    },
+    "slide": 29.504,
+    "reach_along_the_mouse": 81.849,
+    "span_base_to_tip": 104.299,
+    "pinky": {
+     "grip_z": 1.609,
+     "hump_z": 40.055,
+     "slide": 38.446
+    },
+    "paths_overlap": 21.847,
+    "paths_overlap_from_to": [
+     1.609,
+     23.456
+    ]
+   }
+  }
+ },
+ "after_with_recommended_knuckles": {
+  "note": "The same three thumbs with the knuckles set back as three sources put them (index 0, ring 5, little 13 mm behind the middle's; the model has 0.19, 3.16, 9.39 from a unit slip: hand-at-rest.md). This moves the little finger about 3.8 mm toward the tail in both placements and so lengthens the overlap. Not part of the thumb variant; offered for the rerun.",
+  "KNUCKLE_BACK": {
+   "index": 0.0,
+   "middle": 0.0,
+   "ring": 5.0,
+   "little": 13.0
+  },
+  "knuckle_39": {
+   "hand": {
+    "cascade": {
+     "index": [
+      29,
+      29,
+      10
+     ],
+     "middle": [
+      32,
+      30,
+      11
+     ],
+     "ring": [
+      25,
+      34,
+      9
+     ],
+     "little": [
+      32,
+      37,
+      13
+     ]
+    },
+    "thumb": {
+     "cmc": 45,
+     "mcp": 39.0,
+     "ip": 10
+    },
+    "orbit_flex": [
+     42,
+     60,
+     30,
+     21,
+     57,
+     55,
+     47,
+     25,
+     35
+    ],
+    "bones": {
+     "index": [
+      41.83,
+      23.54,
+      16.64
+     ],
+     "middle": [
+      46.93,
+      27.69,
+      18.3
+     ],
+     "ring": [
+      43.51,
+      26.97,
+      18.19
+     ],
+     "little": [
+      34.43,
+      19.04,
+      16.78
+     ]
+    },
+    "chords": {
+     "index": {
+      "len": 78.4596719037594,
+      "angle_deg": 45.19269348394007,
+      "reach_along_metacarpal": 55.29246801120488
+     },
+     "middle": {
+      "len": 88.57896198202018,
+      "angle_deg": 48.967097336816124,
+      "reach_along_metacarpal": 58.15140826960739
+     },
+     "ring": {
+      "len": 83.81085763445813,
+      "angle_deg": 44.14845620515976,
+      "reach_along_metacarpal": 60.13743270848101
+     },
+     "little": {
+      "len": 65.13836486225294,
+      "angle_deg": 53.921706502452025,
+      "reach_along_metacarpal": 38.35934524301733
+     }
+    },
+    "grips": {
+     "heel": {
+      "zK": -12.911177593586165,
+      "yK": 60.97044521922554,
+      "gamma_deg": 14.999999999999998,
+      "palm_gap_mm": 1.489240217466571e-14,
+      "tip_misfit_mm": {
+       "index": 5.016218970232362,
+       "middle": -5.016218970232366
+      },
+      "joints": {
+       "index": [
+        [
+         -12.911,
+         60.97
+        ],
+        [
+         27.68,
+         50.85
+        ],
+        [
+         44.892,
+         34.799
+        ],
+        [
+         54.905,
+         21.512
+        ]
+       ],
+       "middle": [
+        [
+         -12.911,
+         60.97
+        ],
+        [
+         31.972,
+         47.248
+        ],
+        [
+         50.856,
+         26.998
+        ],
+        [
+         60.553,
+         11.48
+        ]
+       ],
+       "ring": [
+        [
+         -17.741,
+         59.676
+        ],
+        [
+         25.104,
+         52.122
+        ],
+        [
+         44.507,
+         33.384
+        ],
+        [
+         55.456,
+         18.854
+        ]
+       ],
+       "little": [
+        [
+         -25.468,
+         57.606
+        ],
+        [
+         7.457,
+         47.539
+        ],
+        [
+         18.652,
+         32.132
+        ],
+        [
+         25.21,
+         16.682
+        ]
+       ]
+      },
+      "z": {
+       "index": 54.90457216379695,
+       "middle": 60.55254257145756,
+       "ring": 55.456294762552886,
+       "little": 25.209772525083572,
+       "thumb": 5.760602737811666
+      },
+      "thumb": {
+       "cmc": [
+        -64.082,
+        35.354
+       ],
+       "reach": 69.84226535700515,
+       "span": 91.30945034569811,
+       "tip": [
+        5.760602737811666,
+        15.0
+       ]
+      }
+     },
+     "lifted": {
+      "zK": -25.292178930254238,
+      "yK": 85.31729075905476,
+      "gamma_deg": 0.0,
+      "palm_gap_mm": 28.470290759054755,
+      "tip_misfit_mm": {
+       "index": 4.948188549103424,
+       "middle": -4.948279559699209
+      },
+      "joints": {
+       "index": [
+        [
+         -25.292,
+         85.317
+        ],
+        [
+         11.296,
+         65.036
+        ],
+        [
+         23.768,
+         45.077
+        ],
+        [
+         30.0,
+         29.652
+        ]
+       ],
+       "middle": [
+        [
+         -25.292,
+         85.317
+        ],
+        [
+         14.51,
+         60.446
+        ],
+        [
+         27.509,
+         35.998
+        ],
+        [
+         32.859,
+         18.499
+        ]
+       ],
+       "ring": [
+        [
+         -30.292,
+         85.317
+        ],
+        [
+         9.137,
+         66.931
+        ],
+        [
+         23.03,
+         43.81
+        ],
+        [
+         29.845,
+         26.941
+        ]
+       ],
+       "little": [
+        [
+         -38.292,
+         85.317
+        ],
+        [
+         -9.094,
+         67.072
+        ],
+        [
+         -2.269,
+         49.292
+        ],
+        [
+         0.067,
+         32.672
+        ]
+       ]
+      },
+      "z": {
+       "index": 30.000289080950644,
+       "middle": 32.85922933935315,
+       "ring": 29.84525377822677,
+       "little": 0.06716631276309215,
+       "thumb": -11.506913573249093
+      },
+      "thumb": {
+       "cmc": [
+        -81.349,
+        73.817
+       ],
+       "reach": 69.84226535700515,
+       "span": 91.30945034569811,
+       "tip": [
+        -11.506913573249093,
+        15.0
+       ]
+      }
+     }
+    },
+    "thumbBase": {
+     "cmc_back_mm": 56.057,
+     "cmc_palmar_mm": 11.5,
+     "bones": [
+      37.0,
+      35.0,
+      26.0
+     ],
+     "span": 91.30945034569811,
+     "contact_y": 15.0,
+     "g1_dip": {
+      "heel": [
+       44.892,
+       34.799
+      ],
+      "lifted": [
+       23.768,
+       45.077
+      ]
+     }
+    },
+    "palm_skin": 20.0,
+    "ansur": {
+     "hand": 193.3,
+     "palm": 116.5,
+     "breadth": 88.3
+    }
+   },
+   "slide": {
+    "p50": {
+     "thumb": 17.26751631106076,
+     "pinky": 25.14260621232048
+    },
+    "range": {
+     "thumb": [
+      7.67655547530795,
+      30.130353383570394
+     ],
+     "pinky": [
+      14.88757933729952,
+      38.6858054232214
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -8.704969037020824,
+       -1.028413561712874
+      ],
+      "pinky": [
+       2.591273405993327,
+       17.478852743292848
+      ],
+      "slide": {
+       "thumb": 7.67655547530795,
+       "pinky": 14.88757933729952
+      }
+     },
+     "p50": {
+      "thumb": [
+       -11.506913573249093,
+       5.760602737811666
+      ],
+      "pinky": [
+       0.06716631276309215,
+       25.209772525083572
+      ],
+      "slide": {
+       "thumb": 17.26751631106076,
+       "pinky": 25.14260621232048
+      }
+     },
+     "p95": {
+      "thumb": [
+       -14.394804283675896,
+       15.735549099894499
+      ],
+      "pinky": [
+       -2.5188820588288863,
+       36.16692336439252
+      ],
+      "slide": {
+       "thumb": 30.130353383570394,
+       "pinky": 38.6858054232214
+      }
+     }
+    },
+    "contact_side": 9.073203062167595,
+    "R_felt": {
+     "thumb": 287.79193851767934,
+     "pinky": 419.04343687200804
+    },
+    "basis": "hand model: the heel placement (palm on the hump, fingers relaxed) to the lifted (zero-g, tips on the buttons); derived"
+   },
+   "path": {
+    "p50": {
+     "thumb": [
+      -11.506913573249093,
+      5.760602737811666
+     ],
+     "pinky": [
+      0.06716631276309215,
+      25.209772525083572
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -8.704969037020824,
+       -1.028413561712874
+      ],
+      "pinky": [
+       2.591273405993327,
+       17.478852743292848
+      ]
+     },
+     "p50": {
+      "thumb": [
+       -11.506913573249093,
+       5.760602737811666
+      ],
+      "pinky": [
+       0.06716631276309215,
+       25.209772525083572
+      ]
+     },
+     "p95": {
+      "thumb": [
+       -14.394804283675896,
+       15.735549099894499
+      ],
+      "pinky": [
+       -2.5188820588288863,
+       36.16692336439252
+      ]
+     }
+    },
+    "overlap": {
+     "p5": -3.619686967706201,
+     "p50": 5.693436425048574,
+     "p95": 18.254431158723385
+    },
+    "overlap_hand_mm": 185.7377551641964,
+    "overlap_hand_note": "the shortest hand whose two paths still overlap",
+    "groove_end": 48.0
+   },
+   "thumb_by_hand": {
+    "p5": {
+     "hand_length_mm": 177.0,
+     "grip": {
+      "z": -8.705,
+      "height": 15.0,
+      "base": [
+       -71.96,
+       69.676
+      ],
+      "ahead_of_index_knuckle": 11.925
+     },
+     "hump": {
+      "z": -1.028,
+      "height": 15.0,
+      "base": [
+       -64.283,
+       34.558
+      ],
+      "ahead_of_index_knuckle": 16.4
+     },
+     "slide": 7.677,
+     "reach_along_the_mouse": 63.255,
+     "span_base_to_tip": 83.61,
+     "pinky": {
+      "grip_z": 2.591,
+      "hump_z": 17.479,
+      "slide": 14.888
+     },
+     "paths_overlap": -3.62,
+     "paths_overlap_from_to": [
+      2.591,
+      -1.028
+     ]
+    },
+    "p50": {
+     "hand_length_mm": 193.3,
+     "grip": {
+      "z": -11.507,
+      "height": 15.0,
+      "base": [
+       -81.349,
+       73.817
+      ],
+      "ahead_of_index_knuckle": 13.785
+     },
+     "hump": {
+      "z": 5.761,
+      "height": 15.0,
+      "base": [
+       -64.082,
+       35.354
+      ],
+      "ahead_of_index_knuckle": 18.672
+     },
+     "slide": 17.268,
+     "reach_along_the_mouse": 69.842,
+     "span_base_to_tip": 91.309,
+     "pinky": {
+      "grip_z": 0.067,
+      "hump_z": 25.21,
+      "slide": 25.143
+     },
+     "paths_overlap": 5.693,
+     "paths_overlap_from_to": [
+      0.067,
+      5.761
+     ]
+    },
+    "p95": {
+     "hand_length_mm": 210.0,
+     "grip": {
+      "z": -14.395,
+      "height": 15.0,
+      "base": [
+       -90.969,
+       78.061
+      ],
+      "ahead_of_index_knuckle": 15.674
+     },
+     "hump": {
+      "z": 15.736,
+      "height": 15.0,
+      "base": [
+       -60.839,
+       36.983
+      ],
+      "ahead_of_index_knuckle": 20.983
+     },
+     "slide": 30.13,
+     "reach_along_the_mouse": 76.574,
+     "span_base_to_tip": 99.198,
+     "pinky": {
+      "grip_z": -2.519,
+      "hump_z": 36.167,
+      "slide": 38.686
+     },
+     "paths_overlap": 18.254,
+     "paths_overlap_from_to": [
+      -2.519,
+      15.736
+     ]
+    }
+   }
+  },
+  "knuckle_25": {
+   "hand": {
+    "cascade": {
+     "index": [
+      29,
+      29,
+      10
+     ],
+     "middle": [
+      32,
+      30,
+      11
+     ],
+     "ring": [
+      25,
+      34,
+      9
+     ],
+     "little": [
+      32,
+      37,
+      13
+     ]
+    },
+    "thumb": {
+     "cmc": 45,
+     "mcp": 25.0,
+     "ip": 10
+    },
+    "orbit_flex": [
+     42,
+     60,
+     30,
+     21,
+     57,
+     55,
+     47,
+     25,
+     35
+    ],
+    "bones": {
+     "index": [
+      41.83,
+      23.54,
+      16.64
+     ],
+     "middle": [
+      46.93,
+      27.69,
+      18.3
+     ],
+     "ring": [
+      43.51,
+      26.97,
+      18.19
+     ],
+     "little": [
+      34.43,
+      19.04,
+      16.78
+     ]
+    },
+    "chords": {
+     "index": {
+      "len": 78.4596719037594,
+      "angle_deg": 45.19269348394007,
+      "reach_along_metacarpal": 55.29246801120488
+     },
+     "middle": {
+      "len": 88.57896198202018,
+      "angle_deg": 48.967097336816124,
+      "reach_along_metacarpal": 58.15140826960739
+     },
+     "ring": {
+      "len": 83.81085763445813,
+      "angle_deg": 44.14845620515976,
+      "reach_along_metacarpal": 60.13743270848101
+     },
+     "little": {
+      "len": 65.13836486225294,
+      "angle_deg": 53.921706502452025,
+      "reach_along_metacarpal": 38.35934524301733
+     }
+    },
+    "grips": {
+     "heel": {
+      "zK": -12.911177593586165,
+      "yK": 60.97044521922554,
+      "gamma_deg": 14.999999999999998,
+      "palm_gap_mm": 1.489240217466571e-14,
+      "tip_misfit_mm": {
+       "index": 5.016218970232362,
+       "middle": -5.016218970232366
+      },
+      "joints": {
+       "index": [
+        [
+         -12.911,
+         60.97
+        ],
+        [
+         27.68,
+         50.85
+        ],
+        [
+         44.892,
+         34.799
+        ],
+        [
+         54.905,
+         21.512
+        ]
+       ],
+       "middle": [
+        [
+         -12.911,
+         60.97
+        ],
+        [
+         31.972,
+         47.248
+        ],
+        [
+         50.856,
+         26.998
+        ],
+        [
+         60.553,
+         11.48
+        ]
+       ],
+       "ring": [
+        [
+         -17.741,
+         59.676
+        ],
+        [
+         25.104,
+         52.122
+        ],
+        [
+         44.507,
+         33.384
+        ],
+        [
+         55.456,
+         18.854
+        ]
+       ],
+       "little": [
+        [
+         -25.468,
+         57.606
+        ],
+        [
+         7.457,
+         47.539
+        ],
+        [
+         18.652,
+         32.132
+        ],
+        [
+         25.21,
+         16.682
+        ]
+       ]
+      },
+      "z": {
+       "index": 54.90457216379695,
+       "middle": 60.55254257145756,
+       "ring": 55.456294762552886,
+       "little": 25.209772525083572,
+       "thumb": 10.257170569685485
+      },
+      "thumb": {
+       "cmc": [
+        -64.082,
+        35.354
+       ],
+       "reach": 74.33883318887897,
+       "span": 94.79312112236394,
+       "tip": [
+        10.257170569685485,
+        15.0
+       ]
+      }
+     },
+     "lifted": {
+      "zK": -25.292178930254238,
+      "yK": 85.31729075905476,
+      "gamma_deg": 0.0,
+      "palm_gap_mm": 28.470290759054755,
+      "tip_misfit_mm": {
+       "index": 4.948188549103424,
+       "middle": -4.948279559699209
+      },
+      "joints": {
+       "index": [
+        [
+         -25.292,
+         85.317
+        ],
+        [
+         11.296,
+         65.036
+        ],
+        [
+         23.768,
+         45.077
+        ],
+        [
+         30.0,
+         29.652
+        ]
+       ],
+       "middle": [
+        [
+         -25.292,
+         85.317
+        ],
+        [
+         14.51,
+         60.446
+        ],
+        [
+         27.509,
+         35.998
+        ],
+        [
+         32.859,
+         18.499
+        ]
+       ],
+       "ring": [
+        [
+         -30.292,
+         85.317
+        ],
+        [
+         9.137,
+         66.931
+        ],
+        [
+         23.03,
+         43.81
+        ],
+        [
+         29.845,
+         26.941
+        ]
+       ],
+       "little": [
+        [
+         -38.292,
+         85.317
+        ],
+        [
+         -9.094,
+         67.072
+        ],
+        [
+         -2.269,
+         49.292
+        ],
+        [
+         0.067,
+         32.672
+        ]
+       ]
+      },
+      "z": {
+       "index": 30.000289080950644,
+       "middle": 32.85922933935315,
+       "ring": 29.84525377822677,
+       "little": 0.06716631276309215,
+       "thumb": -7.010345741375275
+      },
+      "thumb": {
+       "cmc": [
+        -81.349,
+        73.817
+       ],
+       "reach": 74.33883318887897,
+       "span": 94.79312112236394,
+       "tip": [
+        -7.010345741375275,
+        15.0
+       ]
+      }
+     }
+    },
+    "thumbBase": {
+     "cmc_back_mm": 56.057,
+     "cmc_palmar_mm": 11.5,
+     "bones": [
+      37.0,
+      35.0,
+      26.0
+     ],
+     "span": 94.79312112236394,
+     "contact_y": 15.0,
+     "g1_dip": {
+      "heel": [
+       44.892,
+       34.799
+      ],
+      "lifted": [
+       23.768,
+       45.077
+      ]
+     }
+    },
+    "palm_skin": 20.0,
+    "ansur": {
+     "hand": 193.3,
+     "palm": 116.5,
+     "breadth": 88.3
+    }
+   },
+   "slide": {
+    "p50": {
+     "thumb": 17.26751631106076,
+     "pinky": 25.14260621232048
+    },
+    "range": {
+     "thumb": [
+      7.67655547530795,
+      30.130353383570394
+     ],
+     "pinky": [
+      14.88757933729952,
+      38.6858054232214
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -4.544920612216075,
+       3.1316348630918753
+      ],
+      "pinky": [
+       2.591273405993327,
+       17.478852743292848
+      ],
+      "slide": {
+       "thumb": 7.67655547530795,
+       "pinky": 14.88757933729952
+      }
+     },
+     "p50": {
+      "thumb": [
+       -7.010345741375275,
+       10.257170569685485
+      ],
+      "pinky": [
+       0.06716631276309215,
+       25.209772525083572
+      ],
+      "slide": {
+       "thumb": 17.26751631106076,
+       "pinky": 25.14260621232048
+      }
+     },
+     "p95": {
+      "thumb": [
+       -9.551633704543804,
+       20.57871967902659
+      ],
+      "pinky": [
+       -2.5188820588288863,
+       36.16692336439252
+      ],
+      "slide": {
+       "thumb": 30.130353383570394,
+       "pinky": 38.6858054232214
+      }
+     }
+    },
+    "contact_side": 9.073203062167595,
+    "R_felt": {
+     "thumb": 287.79193851767934,
+     "pinky": 419.04343687200804
+    },
+    "basis": "hand model: the heel placement (palm on the hump, fingers relaxed) to the lifted (zero-g, tips on the buttons); derived"
+   },
+   "path": {
+    "p50": {
+     "thumb": [
+      -7.010345741375275,
+      10.257170569685485
+     ],
+     "pinky": [
+      0.06716631276309215,
+      25.209772525083572
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -4.544920612216075,
+       3.1316348630918753
+      ],
+      "pinky": [
+       2.591273405993327,
+       17.478852743292848
+      ]
+     },
+     "p50": {
+      "thumb": [
+       -7.010345741375275,
+       10.257170569685485
+      ],
+      "pinky": [
+       0.06716631276309215,
+       25.209772525083572
+      ]
+     },
+     "p95": {
+      "thumb": [
+       -9.551633704543804,
+       20.57871967902659
+      ],
+      "pinky": [
+       -2.5188820588288863,
+       36.16692336439252
+      ]
+     }
+    },
+    "overlap": {
+     "p5": 0.5403614570985482,
+     "p50": 10.190004256922393,
+     "p95": 23.097601737855477
+    },
+    "overlap_hand_mm": 175.6255135351287,
+    "overlap_hand_note": "the shortest hand whose two paths still overlap",
+    "groove_end": 48.0
+   },
+   "thumb_by_hand": {
+    "p5": {
+     "hand_length_mm": 177.0,
+     "grip": {
+      "z": -4.545,
+      "height": 15.0,
+      "base": [
+       -71.96,
+       69.676
+      ],
+      "ahead_of_index_knuckle": 16.085
+     },
+     "hump": {
+      "z": 3.132,
+      "height": 15.0,
+      "base": [
+       -64.283,
+       34.558
+      ],
+      "ahead_of_index_knuckle": 20.56
+     },
+     "slide": 7.677,
+     "reach_along_the_mouse": 67.415,
+     "span_base_to_tip": 86.8,
+     "pinky": {
+      "grip_z": 2.591,
+      "hump_z": 17.479,
+      "slide": 14.888
+     },
+     "paths_overlap": 0.54,
+     "paths_overlap_from_to": [
+      2.591,
+      3.132
+     ]
+    },
+    "p50": {
+     "hand_length_mm": 193.3,
+     "grip": {
+      "z": -7.01,
+      "height": 15.0,
+      "base": [
+       -81.349,
+       73.817
+      ],
+      "ahead_of_index_knuckle": 18.282
+     },
+     "hump": {
+      "z": 10.257,
+      "height": 15.0,
+      "base": [
+       -64.082,
+       35.354
+      ],
+      "ahead_of_index_knuckle": 23.168
+     },
+     "slide": 17.268,
+     "reach_along_the_mouse": 74.339,
+     "span_base_to_tip": 94.793,
+     "pinky": {
+      "grip_z": 0.067,
+      "hump_z": 25.21,
+      "slide": 25.143
+     },
+     "paths_overlap": 10.19,
+     "paths_overlap_from_to": [
+      0.067,
+      10.257
+     ]
+    },
+    "p95": {
+     "hand_length_mm": 210.0,
+     "grip": {
+      "z": -9.552,
+      "height": 15.0,
+      "base": [
+       -90.969,
+       78.061
+      ],
+      "ahead_of_index_knuckle": 20.517
+     },
+     "hump": {
+      "z": 20.579,
+      "height": 15.0,
+      "base": [
+       -60.839,
+       36.983
+      ],
+      "ahead_of_index_knuckle": 25.826
+     },
+     "slide": 30.13,
+     "reach_along_the_mouse": 81.417,
+     "span_base_to_tip": 102.983,
+     "pinky": {
+      "grip_z": -2.519,
+      "hump_z": 36.167,
+      "slide": 38.686
+     },
+     "paths_overlap": 23.098,
+     "paths_overlap_from_to": [
+      -2.519,
+      20.579
+     ]
+    }
+   }
+  },
+  "knuckle_12_5": {
+   "hand": {
+    "cascade": {
+     "index": [
+      29,
+      29,
+      10
+     ],
+     "middle": [
+      32,
+      30,
+      11
+     ],
+     "ring": [
+      25,
+      34,
+      9
+     ],
+     "little": [
+      32,
+      37,
+      13
+     ]
+    },
+    "thumb": {
+     "cmc": 45,
+     "mcp": 12.5,
+     "ip": 10
+    },
+    "orbit_flex": [
+     42,
+     60,
+     30,
+     21,
+     57,
+     55,
+     47,
+     25,
+     35
+    ],
+    "bones": {
+     "index": [
+      41.83,
+      23.54,
+      16.64
+     ],
+     "middle": [
+      46.93,
+      27.69,
+      18.3
+     ],
+     "ring": [
+      43.51,
+      26.97,
+      18.19
+     ],
+     "little": [
+      34.43,
+      19.04,
+      16.78
+     ]
+    },
+    "chords": {
+     "index": {
+      "len": 78.4596719037594,
+      "angle_deg": 45.19269348394007,
+      "reach_along_metacarpal": 55.29246801120488
+     },
+     "middle": {
+      "len": 88.57896198202018,
+      "angle_deg": 48.967097336816124,
+      "reach_along_metacarpal": 58.15140826960739
+     },
+     "ring": {
+      "len": 83.81085763445813,
+      "angle_deg": 44.14845620515976,
+      "reach_along_metacarpal": 60.13743270848101
+     },
+     "little": {
+      "len": 65.13836486225294,
+      "angle_deg": 53.921706502452025,
+      "reach_along_metacarpal": 38.35934524301733
+     }
+    },
+    "grips": {
+     "heel": {
+      "zK": -12.911177593586165,
+      "yK": 60.97044521922554,
+      "gamma_deg": 14.999999999999998,
+      "palm_gap_mm": 1.489240217466571e-14,
+      "tip_misfit_mm": {
+       "index": 5.016218970232362,
+       "middle": -5.016218970232366
+      },
+      "joints": {
+       "index": [
+        [
+         -12.911,
+         60.97
+        ],
+        [
+         27.68,
+         50.85
+        ],
+        [
+         44.892,
+         34.799
+        ],
+        [
+         54.905,
+         21.512
+        ]
+       ],
+       "middle": [
+        [
+         -12.911,
+         60.97
+        ],
+        [
+         31.972,
+         47.248
+        ],
+        [
+         50.856,
+         26.998
+        ],
+        [
+         60.553,
+         11.48
+        ]
+       ],
+       "ring": [
+        [
+         -17.741,
+         59.676
+        ],
+        [
+         25.104,
+         52.122
+        ],
+        [
+         44.507,
+         33.384
+        ],
+        [
+         55.456,
+         18.854
+        ]
+       ],
+       "little": [
+        [
+         -25.468,
+         57.606
+        ],
+        [
+         7.457,
+         47.539
+        ],
+        [
+         18.652,
+         32.132
+        ],
+        [
+         25.21,
+         16.682
+        ]
+       ]
+      },
+      "z": {
+       "index": 54.90457216379695,
+       "middle": 60.55254257145756,
+       "ring": 55.456294762552886,
+       "little": 25.209772525083572,
+       "thumb": 12.788535099033922
+      },
+      "thumb": {
+       "cmc": [
+        -64.082,
+        35.354
+       ],
+       "reach": 76.8701977182274,
+       "span": 96.79101709081561,
+       "tip": [
+        12.788535099033922,
+        15.0
+       ]
+      }
+     },
+     "lifted": {
+      "zK": -25.292178930254238,
+      "yK": 85.31729075905476,
+      "gamma_deg": 0.0,
+      "palm_gap_mm": 28.470290759054755,
+      "tip_misfit_mm": {
+       "index": 4.948188549103424,
+       "middle": -4.948279559699209
+      },
+      "joints": {
+       "index": [
+        [
+         -25.292,
+         85.317
+        ],
+        [
+         11.296,
+         65.036
+        ],
+        [
+         23.768,
+         45.077
+        ],
+        [
+         30.0,
+         29.652
+        ]
+       ],
+       "middle": [
+        [
+         -25.292,
+         85.317
+        ],
+        [
+         14.51,
+         60.446
+        ],
+        [
+         27.509,
+         35.998
+        ],
+        [
+         32.859,
+         18.499
+        ]
+       ],
+       "ring": [
+        [
+         -30.292,
+         85.317
+        ],
+        [
+         9.137,
+         66.931
+        ],
+        [
+         23.03,
+         43.81
+        ],
+        [
+         29.845,
+         26.941
+        ]
+       ],
+       "little": [
+        [
+         -38.292,
+         85.317
+        ],
+        [
+         -9.094,
+         67.072
+        ],
+        [
+         -2.269,
+         49.292
+        ],
+        [
+         0.067,
+         32.672
+        ]
+       ]
+      },
+      "z": {
+       "index": 30.000289080950644,
+       "middle": 32.85922933935315,
+       "ring": 29.84525377822677,
+       "little": 0.06716631276309215,
+       "thumb": -4.478981212026838
+      },
+      "thumb": {
+       "cmc": [
+        -81.349,
+        73.817
+       ],
+       "reach": 76.8701977182274,
+       "span": 96.79101709081561,
+       "tip": [
+        -4.478981212026838,
+        15.0
+       ]
+      }
+     }
+    },
+    "thumbBase": {
+     "cmc_back_mm": 56.057,
+     "cmc_palmar_mm": 11.5,
+     "bones": [
+      37.0,
+      35.0,
+      26.0
+     ],
+     "span": 96.79101709081561,
+     "contact_y": 15.0,
+     "g1_dip": {
+      "heel": [
+       44.892,
+       34.799
+      ],
+      "lifted": [
+       23.768,
+       45.077
+      ]
+     }
+    },
+    "palm_skin": 20.0,
+    "ansur": {
+     "hand": 193.3,
+     "palm": 116.5,
+     "breadth": 88.3
+    }
+   },
+   "slide": {
+    "p50": {
+     "thumb": 17.26751631106076,
+     "pinky": 25.14260621232048
+    },
+    "range": {
+     "thumb": [
+      7.67655547530795,
+      30.130353383570394
+     ],
+     "pinky": [
+      14.88757933729952,
+      38.6858054232214
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -2.205227989144035,
+       5.471327486163915
+      ],
+      "pinky": [
+       2.591273405993327,
+       17.478852743292848
+      ],
+      "slide": {
+       "thumb": 7.67655547530795,
+       "pinky": 14.88757933729952
+      }
+     },
+     "p50": {
+      "thumb": [
+       -4.478981212026838,
+       12.788535099033922
+      ],
+      "pinky": [
+       0.06716631276309215,
+       25.209772525083572
+      ],
+      "slide": {
+       "thumb": 17.26751631106076,
+       "pinky": 25.14260621232048
+      }
+     },
+     "p95": {
+      "thumb": [
+       -6.823017653634864,
+       23.30733572993553
+      ],
+      "pinky": [
+       -2.5188820588288863,
+       36.16692336439252
+      ],
+      "slide": {
+       "thumb": 30.130353383570394,
+       "pinky": 38.6858054232214
+      }
+     }
+    },
+    "contact_side": 9.073203062167595,
+    "R_felt": {
+     "thumb": 287.79193851767934,
+     "pinky": 419.04343687200804
+    },
+    "basis": "hand model: the heel placement (palm on the hump, fingers relaxed) to the lifted (zero-g, tips on the buttons); derived"
+   },
+   "path": {
+    "p50": {
+     "thumb": [
+      -4.478981212026838,
+      12.788535099033922
+     ],
+     "pinky": [
+      0.06716631276309215,
+      25.209772525083572
+     ]
+    },
+    "per_hand": {
+     "p5": {
+      "thumb": [
+       -2.205227989144035,
+       5.471327486163915
+      ],
+      "pinky": [
+       2.591273405993327,
+       17.478852743292848
+      ]
+     },
+     "p50": {
+      "thumb": [
+       -4.478981212026838,
+       12.788535099033922
+      ],
+      "pinky": [
+       0.06716631276309215,
+       25.209772525083572
+      ]
+     },
+     "p95": {
+      "thumb": [
+       -6.823017653634864,
+       23.30733572993553
+      ],
+      "pinky": [
+       -2.5188820588288863,
+       36.16692336439252
+      ]
+     }
+    },
+    "overlap": {
+     "p5": 2.880054080170588,
+     "p50": 12.72136878627083,
+     "p95": 25.826217788764417
+    },
+    "overlap_hand_mm": 168.1430196274961,
+    "overlap_hand_note": "the shortest hand whose two paths still overlap",
+    "groove_end": 48.0
+   },
+   "thumb_by_hand": {
+    "p5": {
+     "hand_length_mm": 177.0,
+     "grip": {
+      "z": -2.205,
+      "height": 15.0,
+      "base": [
+       -71.96,
+       69.676
+      ],
+      "ahead_of_index_knuckle": 18.425
+     },
+     "hump": {
+      "z": 5.471,
+      "height": 15.0,
+      "base": [
+       -64.283,
+       34.558
+      ],
+      "ahead_of_index_knuckle": 22.899
+     },
+     "slide": 7.677,
+     "reach_along_the_mouse": 69.754,
+     "span_base_to_tip": 88.629,
+     "pinky": {
+      "grip_z": 2.591,
+      "hump_z": 17.479,
+      "slide": 14.888
+     },
+     "paths_overlap": 2.88,
+     "paths_overlap_from_to": [
+      2.591,
+      5.471
+     ]
+    },
+    "p50": {
+     "hand_length_mm": 193.3,
+     "grip": {
+      "z": -4.479,
+      "height": 15.0,
+      "base": [
+       -81.349,
+       73.817
+      ],
+      "ahead_of_index_knuckle": 20.813
+     },
+     "hump": {
+      "z": 12.789,
+      "height": 15.0,
+      "base": [
+       -64.082,
+       35.354
+      ],
+      "ahead_of_index_knuckle": 25.7
+     },
+     "slide": 17.268,
+     "reach_along_the_mouse": 76.87,
+     "span_base_to_tip": 96.791,
+     "pinky": {
+      "grip_z": 0.067,
+      "hump_z": 25.21,
+      "slide": 25.143
+     },
+     "paths_overlap": 12.721,
+     "paths_overlap_from_to": [
+      0.067,
+      12.789
+     ]
+    },
+    "p95": {
+     "hand_length_mm": 210.0,
+     "grip": {
+      "z": -6.823,
+      "height": 15.0,
+      "base": [
+       -90.969,
+       78.061
+      ],
+      "ahead_of_index_knuckle": 23.246
+     },
+     "hump": {
+      "z": 23.307,
+      "height": 15.0,
+      "base": [
+       -60.839,
+       36.983
+      ],
+      "ahead_of_index_knuckle": 28.554
+     },
+     "slide": 30.13,
+     "reach_along_the_mouse": 84.146,
+     "span_base_to_tip": 105.153,
+     "pinky": {
+      "grip_z": -2.519,
+      "hump_z": 36.167,
+      "slide": 38.686
+     },
+     "paths_overlap": 25.826,
+     "paths_overlap_from_to": [
+      -2.519,
+      23.307
+     ]
+    }
+   }
+  }
+ },
+ "skin_tip": "To place the SKIN's tip rather than the bone's, add 6.0 mm to the last link (26 -> 32): every thumb z below then moves about 6 mm toward the nose (5.7 to 6.6)."
+}
