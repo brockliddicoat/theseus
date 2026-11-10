@@ -18,6 +18,7 @@ from scipy import ndimage, sparse
 from skimage import measure
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from hand_pose import Hand, rot, aff, FING
+from kit_nail import Nail, HL_W, HL_STREAK
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'out', 'hand3')
@@ -171,30 +172,38 @@ def edge_runs(region_mask, label, depth, s, box, R_id, min_len=4.0, empty=False,
     return runs
 
 
-NAIL = {   # (half width mm, cuticle and free edge as fractions of the last joint to the skin's front): estimates, typical nails
-    'thumb': (6.2, 0.30, 0.96), 'index': (4.9, 0.30, 0.95), 'middle': (5.1, 0.30, 0.95), 'ring': (4.8, 0.30, 0.95), 'little': (4.1, 0.32, 0.95)}
+DIGITS = ('index', 'middle', 'ring', 'little', 'thumb')
+_KN = {}
 
 
-def nail_fields(h, V, n):
-    """per vertex: the nail (> 0 inside: a rounded box on the back of the last bone, where the skin faces the back) and its free
-    edge (> 0 inside the last 1.3 mm toward the tip), from each digit's last bone as posed"""
-    nf = np.full(len(V), -1.0); fe = np.full(len(V), -1.0); lf = np.full(len(V), -1.0)
-    for d, (w, c0, c1) in NAIL.items():
+def kit_nail(dig):
+    k = 'thumb' if dig == 'thumb' else 'index'
+    if k not in _KN: _KN[k] = Nail(k)
+    return _KN[k]
+
+
+def nail_attrs(h, V, n, L):
+    """(G13, Brock 2026-11-09 20:44: "the nails don't look like the new revamped ones i wanted") The kit's nails (kit_nail.py:
+    06-motion.js's fngNail, his pick "A Soft") laid on each fingertip's back. Per digit: every vertex's (u, z) in its last bone's
+    frame (u mm back from the skin's front along the bone, z mm across), where the skin is the fingertip's back (m), the nail's
+    scale k (the index's and the thumb's nails are the kit's own sizes; the middle, ring and little fingers wear the index's
+    scaled by their fingertip's breadth over the index's) and the sheen's side sg (the nail's half that faces the light L).
+    (u, z) are linear in position, so layer() carries them to every pixel exactly and reads the kit's outline there"""
+    out = {}; w9 = {}
+    for d in DIGITS:
         pre = 'thumb' if d == 'thumb' else FING[d]
         nm = pre + '-phalanx-distal'; i = h.ix[nm]
         R = h.M[i, :3, :3] @ h.FR[i, :3, :3]; R = R / np.linalg.norm(R, axis=0); o = h.pos(nm)
         sel = h.W[:, [h.ix[nm], h.ix[pre + '-tip']]].sum(1) > 0.35
-        Lc = (V - o) @ R; a = -Lc[:, 2]; b = Lc[:, 0]
-        Lf = a[sel].max()
-        a0, a1 = c0 * Lf, c1 * Lf; am, ha = (a0 + a1) / 2, (a1 - a0) / 2
-        up = n @ R[:, 1]
-        f = 1 - np.abs((a - am) / ha) ** 2.6 - np.abs(b / w) ** 2.6     # rounder than a box (G9: the thumbnail read as a button)
-        f = np.where(sel & (up > 0.25), f, -1.0)
-        nf = np.maximum(nf, f)
-        fe = np.maximum(fe, np.where(f > -0.2, np.minimum(f + 0.2, (a - (a1 - 1.3)) / 1.3), -1.0))
-        if d == 'thumb':     # (G12) its lunula, as the film's thumb shows (fngNail: 0.8 of the width, 2.3 mm): a half moon at the cuticle
-            lf = np.maximum(lf, np.where(f > -0.2, np.minimum(f + 0.05, 1 - ((a - a0) / 3.4) ** 2 - (b / (0.72 * w)) ** 2), -1.0))
-    return nf, fe, lf
+        Lc = (V - o) @ R; a = -Lc[:, 2]; z = Lc[:, 0]; u = a[sel].max() - a; up = n @ R[:, 1]
+        band = sel & (np.abs(u - 9.0) < 1.6); w9[d] = float(z[band].max() - z[band].min())
+        out[d] = dict(u=u, z=z, m=(sel & (up > 0.25)).astype(float), nail=kit_nail(d))
+    for d in DIGITS:
+        A = out[d]; k = 1.0 if d in ('index', 'thumb') else w9[d] / w9['index']; N = A['nail']; A['k'] = k; A['w9'] = w9[d]
+        on = (A['m'] > 0.5) & (np.abs(A['z'] / k) < N.W(A['u'] / k)); lit = n @ L
+        a_, b_ = on & (A['z'] > 0), on & (A['z'] < 0)
+        A['sg'] = 1 if (lit[a_].mean() if a_.any() else -9) >= (lit[b_].mean() if b_.any() else -9) else -1
+    return out
 
 
 def round_shadow(shx, filled, label, s, idx, r_mm=3.0):
@@ -275,18 +284,27 @@ def layer(V, F, P, shade, tri_part, include, B, box, s, own=None, nails=None, to
         # a digit on its own: its whole edge but where it runs on into the palm (the skin continues there: no line)
         lab2 = np.where(mask, PARTS.index(own), np.where(filled, 0, -1))
         edges = edge_runs(mask, lab2, depth, s, box, PARTS.index(own), empty=True)
-    nl, fr, lu, nfi, fei = [], [], [], None, None
+    nl, fr, lu, nfi, ufi, hls = [], [], [], None, None, [[], [], []]
     if nails is not None:
-        nf = interp(R, nails[0], H, W, -1.0); fe = interp(R, nails[1], H, W, -1.0)
         keep = mask if own is not None else filled
-        nf = np.where(keep, nf, -1.0); fe = np.where(keep & (nf > 0), fe, -1.0)
-        nfi, fei = ndimage.gaussian_filter(nf, 0.8), ndimage.gaussian_filter(fe, 0.8)
-        nl = contours(nfi, 0.0, s, box, tol=0.25)
-        fr = contours(fei, 0.0, s, box, tol=0.25)
-        if len(nails) > 2:
-            lf = interp(R, nails[2], H, W, -1.0); lf = np.where(keep & (nf > 0), lf, -1.0)
-            lu = contours(ndimage.gaussian_filter(lf, 0.8), 0.0, s, box, tol=0.2)
-    return dict(sil=sil, sh=shad, edges=edges, mask=mask, label=label, depth=depth, Pw=Pw, nail=nl, free=fr, lun=lu, nfi=nfi, fei=fei,
+        nf = np.full((H, W), -1.0); fe = np.full((H, W), -1.0); lf = np.full((H, W), -1.0); uf = np.full((H, W), -1.0); hd_ = np.full((H, W), 9.0)
+        for d, A in nails.items():
+            M = (interp(R, A['m'], H, W, 0.0) > 0.5) & keep
+            if not M.any(): continue
+            k = A['k']; N = A['nail']; U = interp(R, A['u'], H, W, 0.0)[M] / k; Z = interp(R, A['z'], H, W, 0.0)[M] / k
+            sd = N.at(N.sd, U, Z, -1.0) * k
+            nf[M] = np.maximum(nf[M], np.clip(sd, -1.0, None))
+            fe[M] = np.maximum(fe[M], np.where(sd > -0.3, N.at(N.free, U, Z, -1.0) * k, -1.0))
+            lf[M] = np.maximum(lf[M], np.where(sd > -0.3, N.at(N.lun, U, Z, -1.0) * k, -1.0))
+            hd_[M] = np.minimum(hd_[M], np.where(sd > -0.3, N.at(N.hlg, U, A['sg'] * Z, 9.0) * k, 9.0) / k)   # in the kit's own mm
+            uf[M] = np.where(sd > -0.6, U - N.uf0, uf[M])
+        nfi = ndimage.gaussian_filter(nf, 0.8); ufi = uf
+        nl = contours(nfi, 0.0, s, box, tol=0.2)
+        fr = contours(ndimage.gaussian_filter(np.where(nf > -0.2, fe, -1.0), 0.8), 0.0, s, box, tol=0.2)
+        lu = contours(ndimage.gaussian_filter(np.where(nf > -0.2, lf, -1.0), 0.8), 0.0, s, box, tol=0.2)
+        # the sheen (fngStreak: three strokes of the line, each narrower and stronger): three nested bands round the kit's line
+        hls = [contours(ndimage.gaussian_filter(np.clip(HL_W * f / 2 - hd_, -1.0, None), 0.6), 0.0, s, box, tol=0.15) for f, _ in HL_STREAK]
+    return dict(sil=sil, sh=shad, edges=edges, mask=mask, label=label, depth=depth, Pw=Pw, nail=nl, free=fr, lun=lu, nfi=nfi, ufi=ufi, hl0=hls[0], hl1=hls[1], hl2=hls[2],
                 filled=filled, box=box, s=s, R=R)
 
 
@@ -302,8 +320,9 @@ def _at(img, L, p, fill=-1):
 
 
 def nail_folds(L, region_of, digits=('index', 'middle', 'ring', 'little', 'thumb'), min_len=1.2):
-    """the skin's fold round each nail (A Soft, the film's fngNail fold: round its sides and the cuticle; the free edge has none),
-    as open lines: the nail's traced edge less its free edge and less where it lies on the digit's outline (drawn already)"""
+    """the skin's fold round each nail (A Soft, the kit's fngNail fold: from just behind the free edge's corners back along the
+    sides and round the cuticle's U; the free edge has none), as open lines: the nail's traced edge from the fold's start on, less
+    where it lies on the digit's outline (drawn already)"""
     if L['nfi'] is None: return []
     s = L['s']; x0, y1 = L['box'][0], L['box'][1]
     out = []
@@ -312,7 +331,7 @@ def nail_folds(L, region_of, digits=('index', 'middle', 'ring', 'little', 'thumb
         c = smooth_line(c)
         ri = np.clip(np.round(c[:, 0]).astype(int), 0, L['nfi'].shape[0] - 1); ci = np.clip(np.round(c[:, 1]).astype(int), 0, L['nfi'].shape[1] - 1)
         mm = np.c_[x0 + (c[:, 1] + 0.5) / s, y1 - (c[:, 0] + 0.5) / s]
-        fe = ndimage.map_coordinates(L['fei'], [c[:, 0], c[:, 1]], order=1)
+        uf = ndimage.map_coordinates(L['ufi'], [c[:, 0], c[:, 1]], order=0)     # u past the fold's start (the free edge has no fold)
         # near the digit's own outline (within 0.45 mm): no fold line (the outline is there)
         own = None
         for d in digits:
@@ -320,7 +339,7 @@ def nail_folds(L, region_of, digits=('index', 'middle', 'ring', 'little', 'thumb
             if reg is not None and reg[ri, ci].mean() > 0.5: own = reg; break
         if own is None: continue
         dist = ndimage.distance_transform_edt(own) / s
-        keep = (fe < -0.35) & (dist[ri, ci] > 0.45)
+        keep = (uf >= 0) & (dist[ri, ci] > 0.45)
         idx = np.nonzero(keep)[0]
         if not len(idx): continue
         segs = np.split(idx, np.nonzero(np.diff(idx) > 1)[0] + 1)
@@ -409,15 +428,27 @@ def posed3d(thumb_turn=None, spread=None, flex=1.0):
     return h
 
 
-def light(r, u, tv):
-    """the stage's light (FNG_LIGHT: from above, a little left) tipped 11.5 deg toward the viewer"""
-    L = -0.42 * r + 0.91 * u; L = L / np.linalg.norm(L); return np.cos(np.radians(11.5)) * L + np.sin(np.radians(11.5)) * tv
+TIP_SIDE = 11.5     # deg: the film's light in the side view (a straight finger's lower 40 % in shadow, as fngSide's termA)
+TIP_3Q = 30.0       # deg: by the three-quarter views (from yaw 35 on)
+
+
+def tip_at(yaw):
+    """(G13) how far the stage's light is tipped toward the viewer in a view yaw deg round from the side: the film's 11.5 deg in the
+    side view, rising evenly to 30 deg by yaw 35 and held from there. With the film's tip, a finger curled toward the viewer has
+    its whole end in shadow: a hard diagonal across every finger and dark fingertips (the review of the first three-quarter
+    traces, 2026-11-09); at 30 deg the light/shadow line runs along each finger, as it does along the film's own finger"""
+    return TIP_SIDE + (TIP_3Q - TIP_SIDE) * min(1.0, max(0.0, yaw / 35.0))
+
+
+def light(r, u, tv, tip=TIP_SIDE):
+    """the stage's light (FNG_LIGHT: from above, a little left) tipped `tip` deg toward the viewer"""
+    L = -0.42 * r + 0.91 * u; L = L / np.linalg.norm(L); return np.cos(np.radians(tip)) * L + np.sin(np.radians(tip)) * tv
 
 
 def pk(L_):
     out = dict(sil=[q(p) for p in L_['sil']], sh=[q(p) for p in L_['sh']], edges=[q(p) for p in L_['edges']], nail=[q(p) for p in L_['nail']],
                free=[q(p) for p in L_['free']])
-    for k in ('crease', 'fold', 'out', 'lun'):
+    for k in ('crease', 'fold', 'out', 'lun', 'hl0', 'hl1', 'hl2'):
         if k in L_ and L_[k] is not None and len(L_[k]): out[k] = [q(p) for p in L_[k]]
     return out
 
@@ -499,12 +530,12 @@ def build_grip(name, target, preview=True):
     V = h.skin(); F = h.F; P = h.parts(); J = h.joints()
     V2 = V - org
     n = smooth_normals(V2, F)
-    shade = n @ light(r, u, tv)
+    Lt = light(r, u, tv, TIP_SIDE); shade = n @ Lt
     tri_part = P[F].mean(1).argmax(-1)
     X, Y = V2 @ r, V2 @ u; s = S_PX
     box = (np.floor(X.min()) - 3, np.ceil(Y.max()) + 3)
     W, H = int((X.max() - box[0] + 3) * s), int((box[1] - Y.min() + 3) * s); box = (box[0], box[1], W, H)
-    NF = nail_fields(h, V, n)
+    NF = nail_attrs(h, V, n, Lt)
     comp = layer(V2, F, P, shade, tri_part, list(range(6)), B, box, s, nails=NF, touch=True, clean=24.0)
     lab, filled = comp['label'], comp['filled']
     farm = filled & np.isin(lab, [PARTS.index(f) for f in FAR])
@@ -522,7 +553,7 @@ def build_grip(name, target, preview=True):
         layers[nm] = L_
     for k, pn in enumerate(PARTS):
         for e in edge_runs(lab == k, lab, comp['depth'], s, box, k, touch=True): layers['far' if pn in FAR else 'near']['edges'].append(e)
-    for key, lst in (('nail', comp['nail']), ('free', comp['free']), ('crease', cr), ('fold', fo), ('lun', comp['lun'])):
+    for key, lst in (('nail', comp['nail']), ('free', comp['free']), ('crease', cr), ('fold', fo), ('lun', comp['lun']), ('hl0', comp['hl0']), ('hl1', comp['hl1']), ('hl2', comp['hl2'])):
         layers['near'].setdefault(key, []); layers['far'].setdefault(key, [])
         for pl in lst: layers[owner(pl)][key].append(pl)
     out = dict(view=name, s=s, box=[box[0], box[1], W / s, H / s], q=20, sh=[q(p) for p in comp['sh']],
@@ -548,7 +579,7 @@ def build_grip(name, target, preview=True):
     if preview:
         pv = dict(out); pv.update(dict(sil=[], sh=out['sh'], edges=[], nail=[], free=[], dark=dk))
         for k in ('far', 'near'):
-            for kk in ('sil', 'edges', 'nail', 'free', 'crease', 'fold', 'out', 'lun'): pv.setdefault(kk, []); pv[kk] = pv[kk] + out['layers'][k].get(kk, [])
+            for kk in ('sil', 'edges', 'nail', 'free', 'crease', 'fold', 'out', 'lun', 'hl0', 'hl1', 'hl2'): pv.setdefault(kk, []); pv[kk] = pv[kk] + out['layers'][k].get(kk, [])
         draw_preview(pv, os.path.join(OUT, name + '_preview.png'), outline=False)
     return out
 
@@ -577,6 +608,9 @@ def draw_preview(o, path, s=8, ss=3, outline=True):
     for p in o.get('nail', []): d.polygon(P(p), fill=(0xB0, 0xB0, 0xB6))
     for p in o.get('free', []): d.polygon(P(p), fill=(0xC0, 0xC0, 0xC5))
     for p in o.get('lun', []): d.polygon(P(p), fill=(0xBA, 0xBA, 0xBF))
+    for kk, c in (('hl0', 0xB8), ('hl1', 0xBE), ('hl2', 0xC6)):
+        for p in o.get(kk, []):
+            if len(p) >= 6: d.polygon(P(p), fill=(c, c, c + 4))
     for p in o.get('crease', []): d.line(P(p), fill=(70, 70, 74), width=int(1.0 * ss * 1.2))
     for p in o.get('fold', []): d.line(P(p), fill=(80, 80, 84), width=int(1.0 * ss * 1.2))
     if outline:
@@ -748,15 +782,15 @@ def fade_line(h, B, org):
     return [[round(float(p0 @ r), 2), round(float(p0 @ u), 2)], [round(float(p1 @ r), 2), round(float(p1 @ u), 2)]]
 
 
-def trace(h, B, org, parts=(), preview=None, dark=None, s=S_PX):
+def trace(h, B, org, parts=(), preview=None, dark=None, s=S_PX, tip=TIP_3Q):
     """one view of the hand as flat paths: the whole hand (outline, the light/shadow split cleaned of islands, the lines where one
     part passes in front of another or two digits touch, nails with their folds, the thumb's lunula, creases on every joint), and
     for each digit in `parts` its own outline (edges) and where the rest of the hand hides it (hid)"""
     V = h.skin(); F = h.F; P = h.parts(); J = h.joints(); r, u, tv = B
-    V2 = V - org; n = smooth_normals(V2, F); shade = n @ light(r, u, tv); tri_part = P[F].mean(1).argmax(-1)
+    V2 = V - org; n = smooth_normals(V2, F); Lt = light(r, u, tv, tip); shade = n @ Lt; tri_part = P[F].mean(1).argmax(-1)
     X, Y = V2 @ r, V2 @ u
     box = (np.floor(X.min()) - 3, np.ceil(Y.max()) + 3); W, H = int((X.max() - box[0] + 3) * s), int((box[1] - Y.min() + 3) * s); box = (box[0], box[1], W, H)
-    NF = nail_fields(h, V, n)
+    NF = nail_attrs(h, V, n, Lt)
     comp = layer(V2, F, P, shade, tri_part, list(range(6)), B, box, s, nails=NF, touch=True, clean=24.0)
     reg_c = lambda d: comp['label'] == PARTS.index(d)
     comp['crease'] = creases3d(h, V, B, org, comp, n); comp['fold'] = nail_folds(comp, reg_c)

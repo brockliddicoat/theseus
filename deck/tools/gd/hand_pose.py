@@ -12,6 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 FING = {'index': 'index-finger', 'middle': 'middle-finger', 'ring': 'ring-finger', 'little': 'pinky-finger'}
 SEG = ('metacarpal', 'phalanx-proximal', 'phalanx-intermediate', 'phalanx-distal', 'tip')
 TSEG = ('metacarpal', 'phalanx-proximal', 'phalanx-distal', 'tip')
+THUMB_STRETCH = False   # (G13) see Hand.fit: the thumb is the model's own
 
 
 def rot(axis, deg):
@@ -61,11 +62,15 @@ class Hand:
         self.V0 = (self.V0 - wr) * k + wr; self.FR[:, :3, 3] = (self.FR[:, :3, 3] - wr) * k + wr
         self.log.append(f'uniform scale {k:.4f} (model hand {reach:.1f} mm -> {H["ansur"]["hand"]})')
         # 2. each bone along itself to the study's length; what lies beyond moves with its end
-        tb = H['thumbBase']['bones']
         targets = {f: H['bones'][f][:2] for f in FING}      # the last bone keeps the model's own fingertip (see the note)
-        # (G10) the thumb's metacarpal too (Haeri: as long as the middle finger's proximal phalanx, 46.9 mm; the model's was 33.2,
-        # its span from the base to the tip's skin 83.5 mm against the study's 96.0, so it could not reach where the study puts it)
-        targets['thumb'] = [tb[0], tb[1], tb[2]]
+        # (G13, Brock 2026-11-09 20:44: "the thumb doesn't look right here ... it looks like it's sticking out too much, make sure
+        # all the dimensions are right") The thumb is the model's own. G10 had stretched its metacarpal from 33.2 to the study's
+        # 46.9 mm (and set its two phalanges to Freivalds') so the drawn thumb reached the study's contact point on the mouse:
+        # that pushed the whole thumb 13.7 mm out of the hand. The rule now: the skin is fitted to measured outside dimensions of
+        # the average hand (hand_measure.py) and to nothing else, never to a contact point or a bone chain; where the thumb then
+        # cannot reach the study's contact, it is drawn where it truly reaches and the gap is reported (hand_draw.pose_thumb)
+        if THUMB_STRETCH:
+            tb = H['thumbBase']['bones']; targets['thumb'] = [tb[0], tb[1], tb[2]]
         for f, L in targets.items():
             ch = self.chain(f, 0 if f == 'thumb' else 1)   # the fingers: proximal, ..., tip; the thumb: metacarpal, ..., tip
             for j in range(len(L)):
