@@ -1,0 +1,67 @@
+"""Writes research/gd/redo/hand-at-rest.json: the recommended values for the study's hand, keyed as deck/tools/gd/hand.py and trials.py
+name their inputs, each with its source and status. Run: python3 research/gd/redo/scripts/hand_at_rest.py
+Statuses: verified (read in the primary; reads = separately worded reads that agreed), partly verified (secondary or abstract),
+derived (computed by the script named), estimate, open."""
+import json, os
+LJ = 'K.-S. Lee and M.-C. Jung, Int. J. Occupational Safety and Ergonomics 20(1):91-101 (2014)'
+BK = 'A. Buryanov and V. Kotiuk, Proportions of Hand Segments, Int. J. Morphol. 28(3):755-758 (2010), Table I'
+out = {
+ 'about': 'Recommended inputs for the hand of "Shape, by gradient descent" (RA research redo, 2026-11-09). Keys follow deck/tools/gd/hand.py and trials.py. Nothing in deck/ was changed. Findings and reasons: hand-at-rest.md; sizes for the drawing: hand-sizes.json; the thumb before and after: hand-variant.json.',
+ 'hand_py': {
+  'ANSUR': {'value': {'hand': 193.3, 'palm': 116.5, 'breadth': 88.3}, 'exact': {'hand': 193.28, 'palm': 116.46, 'breadth': 88.26}, 'sd': {'hand': 9.95, 'palm': 6.23, 'breadth': 4.39}, 'n': 4082, 'change': 'none',
+            'source': 'ANSUR II men, public CSV recomputed (scripts/ansur_check.py); NATICK/TR-15/007 dimensions (44), (65), (42)', 'status': 'verified, reads 2',
+            'definitions': 'hand: stylion to the middle fingertip; palm: stylion to the centre of the crease at the base of the middle finger; breadth: metacarpale II to metacarpale V'},
+  'BONES_RAW': {'value': {'index': [39.78, 22.38, 15.82], 'middle': [44.63, 26.33, 17.40], 'ring': [41.37, 25.65, 17.30], 'little': [32.74, 18.11, 15.96]},
+                'sd': {'index': [4.94, 2.51, 2.26], 'middle': [3.81, 3.00, 1.85], 'ring': [3.87, 3.29, 2.22], 'little': [2.77, 2.54, 2.45]}, 'n': 66, 'change': 'none; cite the primary',
+                'source': BK + '; X-rays of adults aged 19 to 78, right hands, lengths between joint surfaces', 'status': 'verified, reads 2',
+                'also_in_the_table': {'thumb': {'metacarpal': 46.22, 'proximal': 31.57, 'distal': 21.67, 'tip_soft_tissue': 5.67}, 'metacarpals': {'index': 68.12, 'middle': 64.60, 'ring': 58.00, 'little': 53.69},
+                                      'tip_soft_tissue': {'index': 3.84, 'middle': 3.95, 'ring': 3.95, 'little': 3.73}}},
+  'WEB': {'value_mm': {'index': 11.0, 'middle': 12.3, 'ring': 13.8, 'little': 14.0}, 'was': {'index': 15.52, 'middle': 15.33, 'ring': 18.49, 'little': 24.72},
+          'change': 'the recorded values are per cent of the finger from the web to the skin\'s tip (Table III), not mm; in mm as given here (derived, scripts/sizes.py). Recommended: do not use WEB for SCALE or KNUCKLE_BACK.',
+          'source': 'Buryanov & Kotiuk 2010, Table III', 'status': 'corrected; verified, reads 2'},
+  'SCALE': {'value': 1.052, 'range': [1.04, 1.09], 'change': 'none in size; the derivation is replaced',
+            'source': 'three routes in scripts/sizes.py: stylion to fingertip = carpus (about 26 mm, estimate) + metacarpal + bones + tip: 1.066 (1.047 to 1.085); Greiner 1991 digit 3 length over this sample\'s: 1.047; crease-based: 0.99 to 1.12', 'status': 'derived'},
+  'CASCADE': {'value': {'index': [29, 29, 10], 'middle': [32, 30, 11], 'ring': [25, 34, 9], 'little': [32, 37, 13]}, 'sd': {'index': [8, 8, 5], 'middle': [7, 11, 5], 'ring': [6, 10, 5], 'little': [7, 8, 7]}, 'n': 40, 'change': 'none',
+              'condition': 'relaxed, on the ground; forearm neutral; means over four arm positions with the elbow straight (shoulder flexed 0, 45, 90, 135 deg); wrist from 16 deg extended to 24 deg flexed (mean 10 deg flexed)',
+              'source': LJ + ', Tables 4 to 7', 'status': 'verified, reads 2; ground figures', 'doubt_for_orbit_deg': {'knuckle': 10, 'middle_joint': 10, 'tip_joint': 5},
+              'alternative_arm_forward_90': {'index': [28, 29, 9], 'middle': [32, 30, 11], 'ring': [23, 35, 10], 'little': [31, 38, 13]},
+              'notes': 'Skin markers read finger knuckles about 4 to 5 deg high (Cook et al. 2007). The paper does not state that each angle is measured from the bone before; the values behave so.'},
+  'THUMB': {'value': {'cmc': 45, 'mcp': 'open: 39, 25 or 12.5 (Brock chooses)', 'ip': 10}, 'was': {'cmc': 45, 'mcp': 39, 'ip': 10},
+            'sources': {'cmc': LJ + ', Table 3: 45 (SD 12); what it is measured from is not stated; not used by the model', 'mcp_39': LJ + ', Table 3: 39 (SD 12), skin markers, reference not defined (measured)',
+                        'mcp_25': 'estimate: 39 less a marker over-read of 6 to 24 deg', 'mcp_12.5': 'W. P. Cooney III et al., J. Bone Joint Surg. 63-A(9):1371-1381 (1981): the rest position is described with knuckle and tip joint each flexed 10 to 15 deg (described, not measured)',
+                        'ip': LJ + ', Table 3: 10 (SD 6); Rogers et al. 2008, Table 4: 6 (SD 15) and 17 (SD 16)'}, 'status': 'ip verified (three sources); mcp open'},
+  'ORBIT_FINGER_FLEX': {'value': [42, 60, 30, 21, 57, 55, 47, 25, 35], 'mean': 41.3, 'sd': 14.4, 'mean_by_crew_member': 42.0, 'n': '9 hands of 6 crew', 'change': 'none',
+                        'source': 'Mount, Whitmore & Stealey, NASA/TM-2003-104805, Table 1 (p. 8-9)', 'status': 'verified, reads 2; the angle is not defined in the report'},
+  'KNUCKLE_BACK': {'value': {'index': 0.0, 'middle': 0.0, 'ring': 5.0, 'little': 13.0}, 'was': {'index': 0.19, 'middle': 0.0, 'ring': 3.16, 'little': 9.39}, 'range': {'index': [-1.3, 0.9], 'ring': [3.0, 7.4], 'little': [12.8, 18.9]},
+                   'source': 'one specimen (Goislard de Monsabert et al. 2018, ESM Table S3, scaled): 0.8 / 4.7 / 13.4; MyoHand model: -1.3 / 3.0 / 12.8; Greiner 1991 heights less Buryanov\'s fingers (derived): 0.7 / 7.4 / 18.9 (scripts/sizes.py)',
+                   'status': 'replaced (the old values came from the web heights read as mm)', 'effect': 'pinky 3.8 mm further back in both placements'},
+  'PALM_SKIN': {'value': 20.0, 'range': [15, 22], 'change': 'none; still an estimate',
+                'source': 'bounded by hand thickness at the middle knuckle, 32.9 mm (SD 2.0), Garrett 1970 (AMRL-TR-69-42), dimension 8: the skin is 16 to 19 mm under that joint\'s centre', 'status': 'estimate', 'effect': 'the hump grip moves 2.6 mm along the mouse per mm'},
+  'THUMB_CMC_BACK': {'value': 0.29, 'was': 0.2754, 'range': [0.275, 0.34], 'mm_for_the_mean_hand': 56.0,
+                     'source': 'Goislard de Monsabert et al. 2018, ESM Table S3 (one specimen, hand 203 mm; its own measurements, not Veeger 1997): 56.0 mm; MyoHand model: 58.0 mm (hand about 185 to 190 mm)', 'status': 'two sources; the attribution corrected'},
+  'THUMB_CMC_PALMAR': {'value': 11.5, 'was': 10.0, 'range': [10, 13], 'source': 'the same two: 9.9 and 13.1 mm', 'status': 'two sources (was an estimate)'},
+  'THUMB_CMC_RADIAL': {'value': 5.0, 'range': [3, 8], 'source': 'the same two: 2.6 and 8.1 mm toward the thumb side of the index knuckle', 'status': 'two sources; not an input of hand.py (the drawing uses it)'},
+  'THUMB_BONES': {'value': [37.0, 35.0, 26.0], 'was': [46.93, 33.05, 23.39], 'range': [[36, 39], [31, 36], [25, 27]], 'skin_tip_beyond_the_last': 6.0,
+                  'source': 'links between joint centres: base to knuckle 38.6 (the specimen) and 35.9 (MyoHand); knuckle to tip joint: Buryanov\'s 31.57 x 1.052 + about 2; tip joint to the bone\'s tip: 21.67 x 1.052 + about 3',
+                  'status': 'first link two sources; the others derived', 'effect': 'thumb 6.1 mm further back'},
+  'CONTACT_Y': {'value': 15.0, 'change': 'none', 'source': 'estimate; the Sora\'s side buttons start at y 16.4 (front) and 19.6 (rear) (scripts/glb_nodes.py), so the band 12 to 18 lies under them', 'status': 'estimate, consistent with the shell'}},
+ 'trials_py': {
+  'GRIP_HEEL_DEG': {'value': 15.0, 'change': 'state as an assumption and rerun at 20 to 30', 'measured_in_use': {'Lee, McLoone & Dennerlein 2008 (100 users)': '15 to 30 deg in 97 %', 'Oude Hengel et al. 2008 (30 users, 121 mm mouse)': '31.2 deg median (28.8 to 33.3)',
+                    'Rogers et al. 2008 (posed)': 'about 15 deg', 'Wang et al. 2023 (16 professional players, inertial sensors)': 'peak 9 to 12 deg'}, 'status': 'estimate', 'effect': 'about 3 mm of fingertip travel per degree'},
+  'lifted_anchor_index_tip_z': {'value': 30.0, 'change': 'make it a stated rule', 'status': 'an artefact of the solver\'s starting guess [-25, 85] (scripts/audit_hand.py)', 'effect': 'thumb 13 mm and each slide 10 mm per 10 mm'},
+  'fingertip_x': {'value': {'index': 16.0, 'middle': -16.0}, 'status': 'estimate', 'measured': 'index pad to middle pad about 21 mm (SD 3) with the fingers together, holding a mouse (Rogers et al. 2008); the Sora\'s buttons centre at x +/- 14.7'},
+  'HANDS': {'value': {'p5': 177.0, 'p50': 193.3, 'p95': 210.0}, 'status': 'verified (ANSUR II men)', 'note': 'hand length only: one SD of posture moves the fingertips 9 to 12 mm, one SD of hand length 3 mm'},
+  'BREADTH_SD': {'value': 4.4, 'exact': 4.39, 'status': 'verified'}},
+ 'rest_pose': {
+  'wrist_bend': {'value': 0, 'range': [0, 3], 'n': '6 crew', 'flag': 'orbit', 'source': 'STS-57 TM Table 1'},
+  'wrist_side_bend': {'value': 0, 'range': [0, 9], 'n': '6 crew', 'flag': 'orbit', 'source': 'STS-57 TM Table 1'},
+  'fingers_as_a_whole_in_orbit': {'value': 41.3, 'sd': 14.4, 'range': [21, 60], 'n': '9 hands', 'flag': 'orbit; joint not defined', 'source': 'STS-57 TM Table 1'},
+  'fingers': 'CASCADE above (ground)', 'thumb': 'THUMB above (ground)',
+  'spread_between_neighbouring_fingers_deg': {'value': [0, 5], 'flag': 'estimate', 'source': 'no measurement found'}},
+ 'thumb_axes_distal_radial_palmar': {'specimen': {'flexion': [0.93, -0.02, -0.36], 'abduction': [-0.24, 0.90, -0.38], 'angle_between_deg': 84, 'direction_variation_deg': [33.6, 47.0]},
+                                     'MyoHand': {'flexion': [0.76, -0.11, -0.64], 'abduction': [-0.63, 0.51, -0.58], 'angle_between_deg': 81}, 'status': 'verified figures (reads 2; model file); two sources disagree by about 40 deg on the abduction axis'},
+ 'thumb_on_a_mouse': {'tip_ahead_of_index_knuckle_mm': {'value': [14, 19], 'one_sd': [2, 33], 'source': 'derived (scripts/rest_pose.py) from Rogers et al. 2008: thumb pad centre to index pad centre 60.1 mm (SD 10.6), hands of 178.1 mm'},
+                      'sora_side_buttons_z': {'rear': [-9.8, 5.7], 'front': [8.2, 23.5]}},
+}
+p = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'hand-at-rest.json')
+json.dump(out, open(p, 'w'), indent=1, ensure_ascii=False); print('wrote', os.path.abspath(p))
