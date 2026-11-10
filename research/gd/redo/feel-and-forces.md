@@ -32,8 +32,9 @@ computed here from the inputs named, by the script named.
   it. With a minimum-radius rule it is gone.
 - **"Felt over the whole slide" holds for the thumb only.** The mirrored waist arc lies under all of the thumb's slide and
   under 12 of the pinky's 25 mm; the rest of the pinky's slide runs over the front arc, which curves the other way. Made to lie
-  under both slides, the waist becomes 64 mm long, 1.8 mm deep and takes the side 2.5 mm in under the hump: the
-  UltralightX's pocket, not the Sora's waist. This rests on the hand model's pinky slide, which is RA's to confirm.
+  under both slides, the waist becomes 54 to 64 mm long and 1.3 to 1.8 mm deep, with 1.5 mm of front rise, and runs into the
+  normal-mouse limits (the UltralightX's 2.5 mm pocket in one run, the narrowest real mouse's width in the other). This
+  rests on the hand model's slides, which RA is correcting.
 - **Friction decides everything at these loads.** "About 0.5" is right for dry skin on matte or textured plastic at mouse
   loads (0.41 to 0.53 measured). On smooth plastic it climbs to 1.1 to 1.5 within a minute as the skin sweats. Either way,
   10 mm from the valley's bottom friction can hold 0.22 N where the pocket pulls with 0.016 N and the finger's own spring
@@ -595,8 +596,12 @@ Findings:
 - **It does not stop "where nothing improves".** Trial 3's lowest point is its last step; the loss is still falling by
   0.0000025 a step. See the 1,500-step run below for what is left.
 - **Parameters:** 14 (9 free when mirrored). Each is scaled by a hand-set unit (8 mm for a chord, 0.4 mm for a depth,
-  0.08 mm for the groove's depth and so on). The "light pull to the start" is light or heavy according to those units: in
-  the stricter-threshold variant it reached 0.14 and held the groove 8 % off its rule.
+  0.08 mm for the groove's depth and so on). The "light pull to the start" is light or heavy according to those units.
+- **500 steps is enough only when the rules ask for little.** Stock trial 3 run to 1,500 steps: loss 0.0406 (lowest at step
+  1,414) against 0.0417; the waist unchanged (R 278.1, chord 41.6 mm, depth 0.777 mm, narrowest at z 3.85). The button's top
+  is still moving: the shoulder crease is 1.16 mm at R 2.0 where it was 0.63 mm at R 1.35, and the section is 0.51 mm from the
+  Sora's where it was 0.43. With the stricter 5.1° threshold the waist was still 8 % tighter than its rule at step 500
+  (R 172.6 against 187.6) and reached it by step 1,500 (R 186.7).
 
 ### How far trial 3 is from the untouched Sora V2 (`scripts/audit_geometry.py`)
 
@@ -710,39 +715,59 @@ positions are the hand model's (RA).
 
 ### Trial 3, before and after
 
-| | Stock (the deck) | **A: corrected rules** | C: A, grooves kept the Sora's | B: A at the stricter 5.1° | D: A, waist under both slides |
-|---|---|---|---|---|---|
-| Waist radius | 278.2 mm | **277.6** | 277.6 | 172.6 | 278.8 |
-| Waist chord | 41.5 mm | **41.2** | 41.2 | 35.7 | **63.8** |
-| Waist depth over its chord | 0.775 mm | **0.765** | 0.765 | 0.924 | **1.833** |
-| Narrowest point | z 3.86 | **z 3.71** | z 3.71 | z 3.70 | z 6.0 |
-| Waist arc from, to | z −25.7 to 15.8 | −25.5 to 15.7 | same | −20.0 to 15.7 | **−30.6 to 33.2** |
-| Side under the hump | 1.72 mm | **1.71** | 1.71 | 2.05 | **2.50** (the limit) |
-| Front rise | 0.48 mm | 0.48 | 0.48 | 0.87 | **1.57** |
-| Groove radius | 223.7 mm | **139.6** | 42.7 | 97.0 | 139.5 |
-| Groove chord | 21.2 mm | **19.3** | 7.4 | 18.2 | 19.3 |
-| Groove depth against the button's chord | 0.230 mm | **0.364** | 0.307 | 0.502 | 0.364 |
-| Groove lowest point | x 16.00 | 15.99 | 16.00 | 16.03 | 15.99 |
-| Tightest radius on the button's top | **1.35 mm** | **4.55** | 4.88 | 4.80 | 4.54 |
-| Outline from the Sora, at most | 0.52 mm | **0.51** | 0.51 | 0.77 | **1.73** |
-| Section from the Sora, at most | 0.43 mm | **0.40** | 0.11 | 0.36 | 0.40 |
-| Widest | 62.79 mm | 62.78 | 62.78 | 62.50 | 61.48 |
+| | Stock (the deck) | **A: corrected rules** | C: A, grooves kept the Sora's | B: A at the stricter 5.1° (1,500 steps) | D: A, waist under both slides | D2: as D, started 12 mm further forward |
+|---|---|---|---|---|---|---|
+| Waist radius | 278.2 mm | **277.6** | 277.6 | 186.7 | 278.8 | 278.6 |
+| Waist chord | 41.5 mm | **41.2** | 41.2 | 35.7 | **63.8** | **54.1** |
+| Waist depth over its chord | 0.775 mm | **0.765** | 0.765 | 0.854 | **1.833** | **1.316** |
+| Narrowest point | z 3.86 | **z 3.71** | z 3.71 | z 3.71 | z 6.0 | z 6.3 |
+| Waist arc from, to | z −25.7 to 15.8 | −25.5 to 15.7 | same | −20.0 to 15.7 | **−30.6 to 33.2** | **−20.8 to 33.2** |
+| Side under the hump | 1.72 mm | **1.71** | 1.71 | 1.90 | **2.50** (the limit) | 1.96 |
+| Front rise | 0.48 mm | 0.48 | 0.48 | 0.79 | **1.57** | **1.52** |
+| Groove radius | 223.7 mm | **139.6** | 42.7 | 97.0 | 139.5 | 139.5 |
+| Groove chord | 21.2 mm | **19.3** | 7.4 | 18.2 | 19.3 | 19.3 |
+| Groove depth against the button's chord | 0.230 mm | **0.364** | 0.307 | 0.500 | 0.364 | 0.364 |
+| Groove lowest point | x 16.00 | 15.99 | 16.00 | 16.03 | 15.99 | 16.00 |
+| Tightest radius on the button's top | **1.35 mm** | **4.55** | 4.88 | 4.82 | 4.54 | 4.55 |
+| Outline from the Sora, at most | 0.52 mm | **0.51** | 0.51 | 0.68 | **1.73** | **1.66** |
+| Section from the Sora, at most | 0.43 mm | **0.40** | 0.11 | 0.36 | 0.40 | 0.40 |
+| Widest | 62.79 mm | 62.78 | 62.78 | 62.41 | 61.48 | 60.48 (the limit) |
 
 - **A** moves only the grooves and removes the crease. The waist is the stock one (its 0.15 mm shift back is the tie-break).
   The groove goes from R 224 to R 140 and from 0.23 to 0.36 mm deep, a little deeper than the Sora's own 0.34 mm and still
   2.8 times gentler than the Sora's R 50.
 - **C** shows the other reading: leave the Sora's groove alone and only centre it under the finger (0.43 mm outward). The
   section then stays within 0.11 mm of the Sora's.
-- **B** shows what the stricter reading of "reliably" costs: a waist a third tighter and 2.05 mm in under the hump. It was
-  still falling at step 500 (see below).
-- **D** is the rule as Brock stated it (F65.6: felt over the whole slide, both side arcs) made to hold on the finished
-  shape. The mirrored waist has to run from z −31 to 33: 64 mm long, 1.83 mm deep, 2.5 mm in under the hump, 1.6 mm of front
-  rise. That is the UltralightX's pocket (2.5 mm) and more than its flare (1.1 mm), reached from the Sora by rule. It is
-  1.7 mm from the Sora at most, inside the 2.5 mm bound, and no longer "0.5 mm from the Sora".
+- **B** shows what the stricter reading of "reliably" costs: a waist a third tighter (R 187), 6 mm shorter and 1.90 mm in
+  under the hump, and a groove at R 97 and 0.50 mm deep. It needed 1,500 steps to settle.
+- **D and D2** are the rule as Brock stated it (F65.6: felt over the whole slide, both side arcs) made to hold on the
+  finished shape. The mirrored waist has to reach forward to z 33, where the pinky lands. From the stock start it becomes
+  64 mm long and 1.83 mm deep and takes the side 2.5 mm in under the hump, the UltralightX's pocket and the model's limit.
+  From a start further forward it settles shorter (54 mm, 1.32 mm deep, 1.96 mm under the hump) and narrows the hump to
+  60.5 mm, the narrowest of the 35 real mice. Both have about 1.5 mm of front rise (the UltralightX's flare is 1.1 mm) and sit
+  1.7 mm from the Sora at most, inside the 2.5 mm bound but no longer "0.5 mm from the Sora". Two starts, two answers: the
+  result is start-dependent here too.
 
 ### The other three trials under A, and the longer runs
 
-(Filled in from `out/variants.json` when those runs finish; see the table at the end of this section.)
+| Trial | | Loss | Thumb's waist: R, chord, depth, narrowest at | Pinky's waist: R, chord, depth, narrowest at | Groove: R, depth |
+|---|---|---|---|---|---|
+| 1, palm on the hump, mirrored | stock | 51.61 | 254.4 mm, 40.5 mm, 0.81 mm, z 12.3 | the same arc | 223.7 mm, 0.23 mm |
+| | A | 52.89 | 243.7, 39.4, 0.80, z 13.2 | the same arc | 139.5, 0.36 |
+| 2, palm on the hump, apart | stock | 51.59 | 278.1, 41.6, 0.78, z 10.4 | 415.0, 44.5, 0.60, z 27.3 | 223.7, 0.23 |
+| | A | 51.64 | 278.1, 42.1, 0.80, z 12.6 | 394.3, 42.0, 0.56, z 28.6 | 139.5, 0.36 |
+| **3, palm lifted, mirrored** | stock | 0.042 | 278.2, 41.5, 0.78, z 3.9 | the same arc | 223.7, 0.23 |
+| | **A** | 0.364 | **277.6, 41.2, 0.77, z 3.7** | the same arc | **139.6, 0.36** |
+| 4, palm lifted, apart | stock | 0.036 | 278.2, 40.7, 0.75, z −3.5 | 415.2, 44.8, 0.60, z 4.9 | 223.8, 0.23 |
+| | A | 0.070 | 268.5, 39.7, 0.74, z −3.7 | 408.0, 41.5, 0.53, z 4.0 | 139.5, 0.36 |
+
+- Trials 1 and 2 still fail where they failed: the index and middle tips past the grooves' front end (51.57 of the loss).
+- **Trial 3 is still the lowest mirrored loss**, so it is still the result. Its loss is higher under A (0.36 against 0.04)
+  because the written-down tie-break charges 0.28 for what the stock path rule let pass at no cost: the thumb gripping
+  7.5 mm from the valley's bottom. That is the price of mirroring, now visible in the number.
+- In trial 4 the tie-break puts each valley's bottom under its finger's grip rest (z −3.7 and 4.0 against rests of −3.8 and
+  3.9), where the stock run left the pinky's 1 mm off.
+- A run to 1,500 steps (`A_fixes_1500`) is in `out/variants.json`; see the note under the table for what it changed.
 
 ---
 
@@ -750,13 +775,160 @@ positions are the hand model's (RA).
 
 Ranked by how much each moves the result or what the slides claim. None has been applied to the deck.
 
-(Completed below once the last runs are in.)
+### 1. The grooves: count one fingertip's own contact, and forbid the crease
+
+The change with the largest certain effect on the result.
+
+- **Code.** In `longarcs.py`, `zones()`: the groove's stretch is the contact patch alone (`dB`), not `dB + 2 * lat`, with
+  Goodwin's 5.4 per metre as a floor on its curvature; add a term that charges any arc of the button's top tighter than the
+  Sora's own shoulder corner (4.88 mm). Both are in `model/longarcs_v.py` (`groove_zone='pad'`, `groove_kmin`, `rmin`).
+- **Result, trial 3, before and after.** Groove radius 223.7 to 139.6 mm; chord 21.2 to 19.3 mm; depth against the button's
+  chord 0.230 to 0.364 mm (the Sora's own: 0.336 mm at R 50); tightest radius on the button's top 1.35 to 4.55 mm; section's
+  distance from the Sora 0.43 to 0.40 mm. The waist does not move.
+- **Slide wording.**
+  - gd_landscape, the three lines under the section: "Normals turn 3.4°" / "across the 13 mm where" / "fingertips land;
+    felt from 3.4°" becomes "Normals turn 3.4°" / "across the 9 mm one" / "fingertip touches; felt from 3.4°".
+  - gd_landscape, inset: "One valley: 0.23 mm deep, at x 16" becomes "One valley: 0.36 mm deep, at x 16" (computed).
+  - gd_landscape, source line: add "A still fingertip tells a hollow from flat below about R 185 mm (Goodwin 1991)."
+  - gd_arcs: "Felt from R 224 mm" becomes "Felt from R 144 mm"; rows "Groove depth 0.25 mm", "Length 21 mm", "Radius
+    224 mm" become "0.33 mm", "19 mm", "140 mm" (computed). Source line: "the grooves over where the fingertip lands
+    (Serhat 2022, ANSUR II)" becomes "the grooves across one fingertip's own contact (Serhat 2022; a still fingertip's
+    limit is R 185 mm, Goodwin 1991)".
+  - gd_trials, each tile: "x ±16, R 224, 1 valley each" becomes "x ±16, R 140, 1 valley each" (computed).
+  - gd_after: "Grooves" row "R 224, felt where the tip lands, x ±16" becomes "R 140, felt across one fingertip, x ±16".
+    Source line: "on the buttons over where the fingertip lands" becomes "on the buttons across one fingertip's own contact".
+- **The alternative, for Brock to choose.** Leave the Sora's groove as it is and only centre it under the finger
+  (variant C): R 42.7 mm, 0.307 mm deep, the section within 0.11 mm of the Sora's. The physics allows anything from about
+  R 50 to R 144; "felt, and no more" picks the gentle end, the Sora's designer picked the firm end.
+
+### 2. Decide what "felt over the whole slide" means for the pinky on a mirrored shell
+
+The change with the largest possible effect. It waits on RA's corrected slides and on Brock.
+
+- **As the deck stands:** the mean thumb's slide turns 3.42°; the pinky's slide has 12 of its 25 mm on the valley and nets
+  −0.6°.
+- **If the rule is to hold on the finished shape for both fingers** (variants D and D2): waist chord 41.5 to 54 or 64 mm;
+  depth 0.78 to 1.32 or 1.83 mm; side under the hump 1.72 to 1.96 or 2.50 mm; front rise 0.48 to 1.5 mm; outline from the
+  Sora 0.52 to 1.7 mm; narrowest point z 3.9 to z 6.
+- **If it is kept as it is,** say so. gd_trials, source line: "Felt: each waist turns 3.4° over the slide." becomes "Felt:
+  each waist is curved to turn 3.4° over the thumb's slide; half of the pinky's slide lies on it." gd_after, "Side waists,
+  mirrored" row: "R 278, felt over the 17 mm thumb slide; bottom at z 4, on both fingers' slides" gains "; the thumb grips
+  8 mm behind it".
+
+### 3. Say what the descent decides and what the rules decide
+
+No number changes. These are the slides' claims.
+
+- gd_descent, third caption: "It stops where nothing improves: one mirrored valley on both fingers' slides, just deep enough
+  to be felt over the slide." becomes "After 500 steps every rule is met: one mirrored valley on both fingers' slides, curved
+  exactly as the felt rule asks."
+- gd_descent, second caption: "Descent starts from the Sora's waist and steps downhill." becomes "Descent starts from the
+  Sora's waist, slid back under the fingers, and steps downhill."
+- gd_after, second caption: "Every curve now has a reason: a valley under each finger, just deep enough to be felt, and
+  nothing anywhere else." becomes "Each valley has a reason: it sits on its finger's slide and is curved just enough to be
+  felt. Elsewhere the outline stays within 0.6 mm of the Sora's."
+- gd_number, the loss counter (33.12 down to 0.04): start the groove from one that closes onto the side wall (the Sora's
+  own), so the first figure is all rules and none of it the model repairing its own start. The counter would then start
+  near 19.
+- gd_landscape, "Ring: 11.7 °/mm, slope 42°" and "In the 6 to 22 °/mm band. No valley.": measure the rate of turn over the
+  finger's contact (a few millimetres either side of x 28.5) instead of at one point, so it can fail. Under A it reads
+  12.6 °/mm.
+- gd_after, "Front flare" row: "Lifting is not modelled yet; there flare would have to earn its place." becomes "Flare gives
+  no lift of its own: lifting hangs on friction, or on side walls that lean in toward the base. Neither is modelled yet."
+  (Derived: walls leaning in 5° cut the squeeze that holds Theseus's weight from 0.27 to 0.22 N a side at μ 0.5.)
+
+### 4. Give the felt figure as what it is
+
+- gd_strength, third caption: "Its job is to be felt. Over the 17 mm the thumb slides as you grip, the gentlest arc a
+  fingertip reliably feels is R 278 mm." becomes "Its job is to be felt. A stroking fingertip detects a curve once the
+  surface turns 2° to 5° under it. At 3.4° over the thumb's 17 mm slide, that is R 278 mm."
+- gd_strength, the steps tile: "Turn felt reliably" / "3.4°" / "Gordon 1982" becomes "Turn a fingertip detects (2.1° to
+  5.3°)" / "3.4°" / "Gordon 1982, Pont 1999".
+- gd_strength, the radius axis: shade R 180 to 464 mm behind the "Felt over the slide" dot.
+- gd_strength, source line: "Felt: Gordon & Morison 1982, mean + 2 SD = 3.4°; Pont 1999." becomes "Felt: a fingertip
+  stroking convex strips 20 to 40 mm long detects a 2.1° turn on average (Gordon & Morison 1982), 3.4° with two standard
+  deviations of people added; an index finger swept along 5 to 20 cm, 3.3° to 5.3° (Pont 1999). Not measured for a thumb in
+  a grip."
+- If the stricter reading were adopted (5.1°, variant B): waist radius 278 to 187 mm; chord 41.5 to 35.7 mm; depth 0.78 to
+  0.85 mm; side under the hump 1.72 to 1.90 mm; groove radius to 97 mm, 0.50 mm deep. I do not recommend adopting it without
+  the test in open question 1; I recommend showing the band.
+
+### 5. Friction: name the finish
+
+- gd_strength, second tile: "μ 0.2 to 0.5" / "dry skin on plastic" becomes "μ 0.2 to 0.5" / "dry skin on matte plastic",
+  with a line under it: "Smooth plastic climbs past 1 as the skin sweats".
+- gd_strength, second caption: "The pocket never has to hold it." becomes "A pocket this gentle never has to hold it, and
+  could not move it."
+- gd_strength, source line: "Friction: Derler & Gerhardt 2012." becomes "Friction: dry skin over 0.2, typically 0.5 (Derler
+  & Gerhardt 2012); a fingertip on roughened plastic 0.53 at 0.02 to 2 N, on smooth plastic 0.4 rising to 1.1 to 1.5 as it
+  sweats (Dzidek 2014)."
+
+### 6. The first estimate: say why it fails, and name the two strengths that mean something
+
+Optional, one sentence on gd_strength or a line in the notes.
+
+- Proposed line: "A pocket can be felt, or it can catch. Felt takes R 278 mm here. Catching a slipping finger within its
+  own width takes R 115 mm or tighter, which the sides of a normal mouse cannot carry and the grooves can."
+- Numbers behind it (derived): catch distance for a load 10 % over friction at μ 0.5: 10.9 mm at R 278, 5.6 mm at R 144,
+  2.0 mm at R 50. Share of friction the 95th percentile thumb spends resting 9.9 mm off: 7 % at R 278, 17 % at R 115, 42 % at
+  R 47.
+
+### 7. Write the path rule's tie-break down
+
+- **Code:** a small pull of each valley's bottom toward its finger's grip rest (`rest_tie`, weight 0.02).
+- **Result:** narrowest point z 3.86 to 3.71. From any start, where the stock run gives z 3.85, 6.3 or 11.4 according to
+  the start.
+- **Claim it supports:** the waist's position is a rule's, not the starting point's. It also makes trial 3's loss show the
+  cost of mirroring (0.36 against 0.07 for trial 4).
+
+### 8. Corrections to `research/gd/shape-gd.json` (the record)
+
+- `milner1998.figures.max_eigenvalue_20pct_mvc`: 9.7 N/cm (SD 1.9) is the stiffness along one direction at about 10 N of
+  fingertip force, not the largest at 20 % of full effort.
+- `pont1999.figures.static`: "1.6 to 2.8 deg" are two averages (both ends tilted, one end tilted), 84 % point. Add: the
+  dynamic range is three subjects at 84 %, and the paper puts Gordon & Morison at 2.8° on the same footing.
+- `gordon1982`: add the stimulus (convex lenses with a raised edge, talc, two strokes), n = 20, the SD at each length, and
+  that the criterion is not printed (75 % per Pont 1999).
+- `goodwin1991`: mark as read in the abstract; spheres on a still fingerpad.
+- `serhat2022`: the fit is to a finite-element model; add Delhaye 2014's measured areas (83 to 116 mm² at 0.5 N, 124 to
+  151 mm² at 1 N).
+- `johnson2000.note`: the journal's web abstract prints the values the right way round.
+- `derler2012`: add the finger rows (dry 0.60 ± 0.38, median 0.45; moist 1.28 ± 0.67).
+- `derived.strength.rule`: superseded; note why (section 6).
+- New sources to record: Pont 1997; Dzidek 2014; Delhaye 2014; Pang 1991; Lee, McLoone & Dennerlein 2008; Hiramatsu 2015;
+  NIOSH 2004-164; Harih & Dolšak 2014; Odell & Johnson 2015.
+- The deck's source line `gdDerler` (in `40-gd-00-core.js`): "on two plastics 0.16 to 0.31 at 20 N (Lewis)" becomes "on
+  glossy paper, plastics and lacquered aluminium 0.16 to 0.31 at 20 N (Lewis)".
 
 ---
 
 ## Open questions, and what would settle each
 
-(Completed below.)
+1. **Does a gripping thumb feel a 3.4° turn?** Everything on the sides rests on it and nothing measures it. A blind test
+   would settle it: printed side inserts on one shell, flat and R 150, 200, 280, 400 mm; ten people take hold and say which of
+   two was curved. It gives the threshold for the real task and whether the 2° to 5° band carries over.
+2. **How much grip will a player trade for a firmer pocket (the X of section 6), and how hard do players squeeze?** No
+   measurement exists. A shell with thin force sensors under both sides and both buttons, logged through flicks, lifts and
+   tracking, gives the squeeze, the overload at which fingers slip, and the safety margin. With X the strength has an
+   optimum, R = e ÷ (X μ), instead of a window.
+3. **Where do the thumb and pinky land, and how far do they slide?** RA's side. The cover and felt rules, the waist's
+   length and the mirrored valley's place all follow the slides one for one. Video from above of hands taking hold, or
+   pressure film on the sides, would replace the model's estimate.
+4. **Does the pinky's slide have to lie on the valley?** Brock's call (F65.6 says both side arcs). The answer changes the
+   waist from 41 mm to 54 or 64 mm.
+5. **Should the grooves be as gentle as can be felt, or as firm as the Sora's?** Brock's call. The physics allows R 50 to
+   144 mm.
+6. **Friction of Theseus's own coat against skin at 0.2 to 2 N, dry and after a minute's contact.** A pull test on a
+   coated coupon with five people would replace the borrowed 0.41 to 0.53.
+7. **Peak accelerations in play.** The sensor's own reports, logged at its full rate through a session and differenced,
+   would replace the kinematic estimates (3 to 8 g).
+8. **The contact patch at mouse loads on a curved shell.** 8.6 mm (a model) or 10.3 mm (measured areas on flat glass); an
+   ink print at a known press settles it. It moves the groove's felt radius between 144 and 172 mm.
+9. **The knuckle's side-to-side stiffness and the thumb's.** Unmeasured in a living hand as far as I could find. They
+   matter only if a force-balance rule returns; under section 6 they do not set anything.
+10. **Papers not read in full** (Kappers 2011, Louw 2000 and 2002, Hajian & Howe 1997, Westling & Johansson 1984, Esteki &
+    Mansour 1996, Hiramatsu 2015): a library copy would turn six "partly" marks into "verified" and might add the
+    between-people spread for still touch, which the abstracts do not give.
 
 ---
 

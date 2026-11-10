@@ -243,14 +243,23 @@ def trial(grip, pockets, steps=500, log=True, lr=0.05, start_felt=False, devboun
       start_dz    mm added to each waist's starting position
       start_groove (c, d, uc): the groove's start; 'sora' = the Sora's own groove
       rmin        mm: no arc of the section tighter than this (the shoulder arc S), penalised; None = stock (no rule)
-      rest_tie    weight of a small pull of each valley's bottom toward its finger's grip rest (the tie-break on the path)"""
+      rest_tie    weight of a small pull of each valley's bottom toward its finger's grip rest (the tie-break on the path)
+      cover_path  True: the waist arc itself must lie under each finger's whole slide
+      hand        {'thumb': [grip_z, landing_z], 'pinky': [grip_z, landing_z]} for the mean hand: replaces the hand model's side
+                  fingers (where each grips with the palm lifted, where it lands with the palm on the hump); either may be left out"""
     opt = opt or {}
     devbound = DEV_BOUND if devbound is None else devbound
     p50, sp, w, cd = zones(grip)
     TURN = opt.get('turn', TURN_REL); TURN_G = opt.get('turn_groove', TURN)
     if 'slide' in opt: w = dict(w, thumb=opt['slide']['thumb'], pinky=opt['slide']['pinky'])
     if opt.get('groove_zone') == 'pad': w = dict(w, groove=cd['contact_btn'])
-    zT0, zP0 = p50['z']['thumb'], p50['z']['little']; zT, zP = zT0, zP0; dS = cd['contact_side']
+    zT0, zP0 = p50['z']['thumb'], p50['z']['little']
+    PATH_ = {f: list(PATH[f]) for f in PATH}                    # (RB) the paths used by this run (stock: the module's)
+    if opt.get('hand'):
+        hd = opt['hand']
+        if 'thumb' in hd: gz, lz = hd['thumb']; PATH_['thumb'] = sorted([gz, lz]); w = dict(w, thumb=abs(lz - gz)); zT0 = gz if grip == 'lifted' else lz
+        if 'pinky' in hd: gz, lz = hd['pinky']; PATH_['pinky'] = sorted([gz, lz]); w = dict(w, pinky=abs(lz - gz)); zP0 = gz if grip == 'lifted' else lz
+    zT, zP = zT0, zP0; dS = cd['contact_side']
     # (G4) the grip's own failure: the index and middle tips past the grooves' front end (palm on the hump: z 55 and 61, the
     # middle past the nose). The same square as the sides (2 mm = 1). Fixed by the grip: the shape does not move the hand.
     reach = sum((max(0.0, p50['z'][f] - GROOVE_END) / 2.0) ** 2 for f in ('index', 'middle'))
@@ -283,7 +292,7 @@ def trial(grip, pockets, steps=500, log=True, lr=0.05, start_felt=False, devboun
         ML, MR, MS = side_measure(CL, zT), side_measure(CR, zP), sec_measure(CS, 16.0, 28.5)
         ML['rest_z'], MR['rest_z'] = zT0, zP0
         # each finger's one minimum on its own path as you grip (G4; G3: at its rest), felt and no deeper than normal
-        t['level'] = (off_path(ML['z_bottom'], PATH['thumb']) / 2.0) ** 2 + (off_path(MR['z_bottom'], PATH['pinky']) / 2.0) ** 2 + ((MS['u_bottom'] - 16.0) / 1.0) ** 2
+        t['level'] = (off_path(ML['z_bottom'], PATH_['thumb']) / 2.0) ** 2 + (off_path(MR['z_bottom'], PATH_['pinky']) / 2.0) ** 2 + ((MS['u_bottom'] - 16.0) / 1.0) ** 2
         t['reach'] = reach
         kL, kR, kS = 1 / L['R'], 1 / R_['R'], 1 / Sx['R']
         t['felt'] = max(0.0, (kT - kL) / kT) ** 2 * 4 + max(0.0, (kP - kR) / kP) ** 2 * 4 + max(0.0, (kG - kS) / kG) ** 2 * 4
@@ -293,8 +302,8 @@ def trial(grip, pockets, steps=500, log=True, lr=0.05, start_felt=False, devboun
         # (RB) cover_path: the waist arc itself must lie under each finger's whole slide (half a contact patch past each end),
         # not only be long enough: stock scores the chord's length, never where the arc sits. Mirrored: both slides on both sides.
         if opt.get('cover_path'):
-            need = {'L': [PATH['thumb']], 'R': [PATH['pinky']]}
-            if tie: need = {'L': [PATH['thumb'], PATH['pinky']], 'R': [PATH['thumb'], PATH['pinky']]}
+            need = {'L': [PATH_['thumb']], 'R': [PATH_['pinky']]}
+            if tie: need = {'L': [PATH_['thumb'], PATH_['pinky']], 'R': [PATH_['thumb'], PATH_['pinky']]}
             for side_, S_ in (('L', L), ('R', R_)):
                 zr, zf = float(S_['A'][1]), float(S_['B'][1])        # the waist arc's rear and front ends (z)
                 for P_ in need[side_]:
@@ -340,7 +349,7 @@ def trial(grip, pockets, steps=500, log=True, lr=0.05, start_felt=False, devboun
     tF, iF = terms(v); t0, i0 = terms(np.zeros(len(base)))
     return {'grip': grip, 'pockets': pockets, 'v': v.tolist(), 'base': base.tolist(), 'scale': scale.tolist(), 'final': unpack(v).tolist(), 'start': unpack(np.zeros(len(base))).tolist(),
             'loss': hist, 'path': path, 'terms0': t0, 'terms': tF, 'targets': {'thumb_z': zT0, 'pinky_z': zP0, 'pocket_z': [zT, zP], 'groove_u': 16.0, 'ring_u': 28.5, 'station_z': 30.0,
-                                                                                'thumb_path': PATH['thumb'], 'pinky_path': PATH['pinky'], 'groove_end': GROOVE_END, 'reach': reach},
+                                                                                'thumb_path': PATH_['thumb'], 'pinky_path': PATH_['pinky'], 'groove_end': GROOVE_END, 'reach': reach},
             'zones': {'thumb': wT, 'pinky': wP, 'groove': w['groove']}, 'cover': {'thumb': cT, 'pinky': cP}, 'spread': sp, 'contact': cd, 'k_felt': {'thumb': kT, 'pinky': kP, 'groove': kG},
             'placement': p50, '_loss': loss, '_terms': terms, '_unpack': unpack}
 
