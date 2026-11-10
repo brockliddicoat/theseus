@@ -377,7 +377,7 @@ whole hand a long way along the mouse:
   reach past the front" holds at 15° and stops holding by 20°.
 
 **C. The slide and the radius** inherit A and B. With the anchor between z 20 and z 40 and the tilt between 15 and 20°, the
-thumb's slide runs from about 1 to 27 mm and the radius from about 20 to 445 mm.
+thumb's slide runs from nothing (or backwards) to about 27 mm, and the radius with it, up to about 445 mm.
 
 **D. The thumb rule.** The base's distance and depth stand (section 3). The first link was a whole bone used from a joint centre
 (46.9 for 37). The knuckle's 39° is the weak figure. The two errors cancelled: see the variant below.
@@ -445,7 +445,7 @@ knuckles corrected. That is a consequence read off the rule, not a rerun.
 3. **Correct the thumb** (variant/hand.py): links 37 / 35 / 26, base 0.29 and 11.5 mm, tip joint 10°, knuckle as Brock chooses.
    Before and after in the table above. gd_rest caption 4, now: "The thumb hangs from its own base and reaches the side 21 mm ahead
    of the index knuckle, at z −4, not up by the fingertips." After: unchanged for 12.5°; "18 mm ... at z −7" for 25°; "14 mm ... at
-   z −12" for 39°. gd_rest source line, now: "Thumb base 53 mm behind the index knuckle (Veeger 1997), bones Haeri, Freivalds."
+   z −11.5" for 39°. gd_rest source line, now: "Thumb base 53 mm behind the index knuckle (Veeger 1997), bones Haeri, Freivalds."
    Proposed: "Thumb base 56 mm behind the index knuckle (one specimen, Goislard de Monsabert 2018; 58 mm in the MyoHand model);
    links between joint centres 37 / 35 / 26 mm (the same two sources and Buryanov & Kotiuk 2010)."
    gd_joints caption 3, now: "... knuckle and tip joint: 39° + 10° = 49°." For 12.5°: "... knuckle and tip joint: about 12° + 10° =
@@ -475,7 +475,9 @@ knuckles corrected. That is a consequence read off the rule, not a rerun.
 
 - **What STS-57's "finger flexion" measures.** The authors or NASA JSC's anthropometry group; the mission's stills (Appendix 2).
 - **Skylab's hand data.** JSC-09551 and Gundersen & Bond 1976 (NTRS 19790011996, download failed here): a request to NTRS or JSC.
-- **The thumb's knuckle at rest.** Palande & Gilbie 1981 (25 normal thumbs, at rest); or ten relaxed hands and a goniometer.
+- **The thumb's knuckle at rest.** Palande & Gilbie 1981 (25 normal thumbs, at rest); a 2024 paper in Indian J Plast Surg 57(4):248-255
+  (doi 10.1055/s-0044-1788593, PMC11571519), found by a search on the hand's resting cascade and not opened (bot walls on both
+  hosts), may hold resting angles; or ten relaxed hands and a goniometer.
 - **Finger spread at rest.** A hand-model data set's mean relaxed pose (MANO, licence permitting), or the same ten hands.
 - **Where the thumb and fingertips sit on a mouse.** Five hands on the Sora photographed from above and the side with a ruler, or
   pressure film on its sides: the thumb's z, the index tip's z, the wrist's tilt, the palm's gap. This one measurement would
@@ -495,4 +497,4 @@ Buryanov's Table I. Haeri 2022: not re-read; superseded. Bugbee & Botte 1993 its
 secondaries. Domalain 2010 on the thumb base's passive rest (bot wall). Mirakhorlo 2016's supplement. AIST's item pages. White
 1980's tables (OCR). PubMed Central pages (browser check). Thieme's 2024 paper on the hand's resting cascade (bot wall). WebFetch
 answers through a small model: every figure used above was either read twice with different wording or is marked "1 read".
-Web searches used: 38.
+Web searches used: about 42.
