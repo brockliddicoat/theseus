@@ -1831,6 +1831,13 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   - 21:00: G13 told all of this in one consolidated note (right hand, one five-digit view, fit to hand-sizes.json, thumb
     links 37 / 35 / 32 mm, the thumb's bends as inputs built at 12.5° and 12.5° for now).
 
+- **F65.20 DECIDED** (2026-11-09 21:01, answer to the question on the thumb's row) "yes it’s okay to switch the thumb to x ray
+  values". The relaxed thumb's knuckle and tip joint take the X-ray figures (RA: 12.5° and 12.5°, Cooney 1981, being read
+  again in the primary); the joint slide's thumb row becomes 12.5° + 12.5° = 25°, with the X-ray source in the source line.
+  - 21:03: G13 told (no longer provisional). RA asked to compute the corrected thumb in a variant of hand.py (links
+    37 / 35 / 32 mm, its base position, the X-ray bends) and write research/gd/redo/hand-variant.json; RB told a rerun of the
+    trials on those paths will follow. The result's before and after go to Brock before any slide's result changes.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
