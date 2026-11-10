@@ -83,7 +83,8 @@ add('d1_ip_breadth', 'Thumb breadth at its tip joint', 'greiner1991', 'dimension
 
 rec = {}
 for d in D:
-    if d['recommended']: rec[d['key']] = {'mm': d['scaled_to_reference_mm'], 'sd_mm': d['sd_mm'], 'survey': d['survey'], 'raw_mean_mm': d['mean_mm']}
+    if d['recommended']: rec[d['key']] = {'name': d['name'], 'mm': d['scaled_to_reference_mm'], 'sd_mm': d['sd_mm'], 'n': d['n'], 'raw_mean_mm': d['mean_mm'], 'survey': d['survey'], 'source': SURV[d['survey']]['name'],
+                                          'table_or_page': d['table_or_page'], 'definition': d['definition'], 'scaled_by': d['scaled_by'], 'reads': d['reads'], 'note': d['note']}
 
 # ---- bones
 BK = {'thumb': {'metacarpal': (46.22, 3.94), 'proximal': (31.57, 3.13), 'distal': (21.67, 1.60), 'tip_soft_tissue': (5.67, 0.61)},
@@ -107,6 +108,7 @@ out = {
           'Each outside dimension carries its survey, page, n, mean, SD, the survey\'s own definition, how many separately worded reads of the primary agreed (reads), and its value scaled to the reference hand. '
           'recommended_targets holds one value per dimension. Provisional or unverified values say so in their note or status.',
  'reference_hand': dict(REF, source='ANSUR II men, n 4,082', sd_mm={'hand_length': 9.95, 'palm_length': 6.23, 'hand_breadth': 4.39}),
+ 'which_hand': 'Every source here measured RIGHT hands: ANSUR II (the right hand), Greiner 1991 (right hands photographed), Garrett 1970 (right hand), Buryanov & Kotiuk 2010 (means for right hands), Rogers et al. 2008 (right hand), Lee & Jung 2014 (right-handed people, right hand).',
  'scaling': {'rule': 'value x (193.28 / the survey\'s mean hand length) for lengths; value x (88.26 / the survey\'s mean hand breadth) for breadths, depths and thicknesses',
              'factors': {s: {'lengths': round(kL(s), 4), 'breadths_and_depths': round(kB(s), 4)} for s in ('greiner1991', 'garrett1970')},
              'recommendation': 'Use the scaled values (scaled_to_reference_mm, and recommended_targets). Greiner\'s hands are 0.4 % longer than the reference and Garrett\'s 2.0 % longer: scaling moves Greiner\'s figures by under 1 mm and Garrett\'s by up to 4 mm (its fingertip heights).'},
@@ -182,7 +184,7 @@ out = {
              'derived_for_the_studys_hand': 'With the fingers at the study\'s rest angles (index 29 / 29 / 10 deg), links 37 / 35 / 32 mm and the base 56 mm behind, 11.5 mm toward the palm and 5 mm toward the thumb side of the index knuckle, the thumb\'s skin tip reaches the thumb side of the index\'s MIDDLE bone: about half-way along it with the knuckle at 12.5 deg, two-fifths with 25 deg, one-fifth with 39 deg. It does not reach the index\'s end bone unless the fingers are curled more (40 deg or more at their knuckles).',
              'status': 'DERIVED, provisional'},
         'for_the_slide_source_line': 'Thumb knuckle: 39 deg, Lee & Jung 2014 (skin markers, 40 hands; reference line not defined); 10 to 15 deg as described for the resting thumb by Cooney et al. 1981 (not measured). Thumb tip joint: 10 deg, Lee & Jung 2014; 6 deg and 17 deg in Rogers et al. 2008 (100 hands).'}},
- 'changes': ['2026-11-09 20:58 first issue (RA).', '2026-11-09 21:07 thumb at rest corrected: Cooney 1981\'s 10 to 15 deg is a description of a posed rest position, not an X-ray measurement (third read); the tip joint is 10 deg (measured), the knuckle is open between 39 (measured, reference undefined), 25 (estimate) and 12.5 (described); citations for the slide added; Garrett 1970\'s full table of joint breadths and depths had already been added.'],
+ 'changes': ['2026-11-09 20:58 first issue (RA).', '2026-11-09 21:18 each recommended target now carries its own source, page, definition and n (for the slide that shows the sizes on the hand); all sources measured right hands.', '2026-11-09 21:07 thumb at rest corrected: Cooney 1981\'s 10 to 15 deg is a description of a posed rest position, not an X-ray measurement (third read); the tip joint is 10 deg (measured), the knuckle is open between 39 (measured, reference undefined), 25 (estimate) and 12.5 (described); citations for the slide added; Garrett 1970\'s full table of joint breadths and depths had already been added.'],
 }
 p = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'hand-sizes.json')
 json.dump(out, open(p, 'w'), indent=1, ensure_ascii=False)

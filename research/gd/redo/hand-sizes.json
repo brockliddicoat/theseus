@@ -11,6 +11,7 @@
    "hand_breadth": 4.39
   }
  },
+ "which_hand": "Every source here measured RIGHT hands: ANSUR II (the right hand), Greiner 1991 (right hands photographed), Garrett 1970 (right hand), Buryanov & Kotiuk 2010 (means for right hands), Rogers et al. 2008 (right hand), Lee & Jung 2014 (right-handed people, right hand).",
  "scaling": {
   "rule": "value x (193.28 / the survey's mean hand length) for lengths; value x (88.26 / the survey's mean hand breadth) for breadths, depths and thicknesses",
   "factors": {
@@ -1523,304 +1524,704 @@
  ],
  "recommended_targets": {
   "hand_length": {
+   "name": "Hand length",
    "mm": 193.3,
    "sd_mm": 9.95,
+   "n": 4082,
+   "raw_mean_mm": 193.28,
    "survey": "ansur2",
-   "raw_mean_mm": 193.28
+   "source": "ANSUR II, 2012 Anthropometric Survey of U.S. Army Personnel (Gordon et al. 2014, NATICK/TR-15/007), men",
+   "table_or_page": "dimension (44) HAND LENGTH",
+   "definition": "Stylion landmark on the wrist (the lowest point of the radius, about level with the wrist crease) to the tip of the middle finger; Poech sliding caliper; hand flat and straight, the fingers' two end bones on a surface 8 mm above the table",
+   "scaled_by": "none (the reference survey)",
+   "reads": 2,
+   "note": ""
   },
   "palm_length": {
+   "name": "Palm length",
    "mm": 116.5,
    "sd_mm": 6.23,
+   "n": 4082,
+   "raw_mean_mm": 116.46,
    "survey": "ansur2",
-   "raw_mean_mm": 116.46
+   "source": "ANSUR II, 2012 Anthropometric Survey of U.S. Army Personnel (Gordon et al. 2014, NATICK/TR-15/007), men",
+   "table_or_page": "dimension (65) PALM LENGTH",
+   "definition": "Centre of the crease at the base of the middle finger to the ventral stylion landmark; Poech sliding caliper; forearm level, hand straight, palm up, fingers together, thumb held out about 45 deg",
+   "scaled_by": "none (the reference survey)",
+   "reads": 1,
+   "note": "The reference survey's own. Greiner's is 6.5 mm shorter: the two surveys do not put the base crease in the same place (a finger's base crease is often double). Heights and tip-to-wrist-crease lengths do not depend on the crease."
   },
   "hand_breadth": {
+   "name": "Hand breadth at the knuckles",
    "mm": 88.3,
    "sd_mm": 4.39,
+   "n": 4082,
+   "raw_mean_mm": 88.26,
    "survey": "ansur2",
-   "raw_mean_mm": 88.26
+   "source": "ANSUR II, 2012 Anthropometric Survey of U.S. Army Personnel (Gordon et al. 2014, NATICK/TR-15/007), men",
+   "table_or_page": "dimension (42) HAND BREADTH",
+   "definition": "Between the landmarks metacarpale II and metacarpale V (the outermost points of the index and little fingers' knuckle joints); sliding caliper; palm on a table, fingers together, thumb held out",
+   "scaled_by": "none (the reference survey)",
+   "reads": 2,
+   "note": ""
   },
   "hand_circumference": {
+   "name": "Hand circumference at the knuckles",
    "mm": 212.3,
    "sd_mm": 10.24,
+   "n": 4082,
+   "raw_mean_mm": 212.28,
    "survey": "ansur2",
-   "raw_mean_mm": 212.28
+   "source": "ANSUR II, 2012 Anthropometric Survey of U.S. Army Personnel (Gordon et al. 2014, NATICK/TR-15/007), men",
+   "table_or_page": "dimension (43) HAND CIRCUMFERENCE",
+   "definition": "Tape passing over metacarpale II and metacarpale V; palm on a table, fingers together, thumb held out",
+   "scaled_by": "none (the reference survey)",
+   "reads": 1,
+   "note": ""
   },
   "hand_thickness": {
+   "name": "Hand thickness at the middle finger's knuckle",
    "mm": 32.4,
    "sd_mm": 2.0,
+   "n": 148,
+   "raw_mean_mm": 32.9,
    "survey": "garrett1970",
-   "raw_mean_mm": 32.9
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimension 8, p. 16",
+   "definition": "Hand extended; the greatest thickness of the knuckle (metacarpal-phalangeal) joint of digit III; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 2,
+   "note": ""
   },
   "thenar_depth": {
+   "name": "Hand depth at the thenar pad (the ball of the thumb)",
    "mm": 60.3,
    "sd_mm": 4.4,
+   "n": 148,
+   "raw_mean_mm": 61.2,
    "survey": "garrett1970",
-   "raw_mean_mm": 61.2
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimension 9, p. 17",
+   "definition": "Greatest distance from the thenar pad to the back of the hand, the thumb lying beside the index; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": "UNVERIFIED: the page's mean and SD were unreadable in the scan; 61.2 is the median of its percentile table, 4.4 a rough SD. 5th percentile 55.0; the 95th printed as 70.2 in one place and 61.9 in another."
   },
   "wrist_breadth": {
+   "name": "Wrist breadth",
    "mm": 66.8,
    "sd_mm": 3.7,
+   "n": 148,
+   "raw_mean_mm": 67.8,
    "survey": "garrett1970",
-   "raw_mean_mm": 67.8
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimension 37, p. 27",
+   "definition": "Hand and wrist on the measuring board; sliding caliper at the wrist-crease baseline",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d1_length_from_crease": {
+   "name": "Thumb length from its base crease",
    "mm": 69.4,
    "sd_mm": 4.8,
+   "n": 1003,
+   "raw_mean_mm": 69.7,
    "survey": "greiner1991",
-   "raw_mean_mm": 69.7
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "definition": "Tip of the digit to the proximal flexion crease of the thumb's knuckle (point 4); from the palm photograph",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": ""
   },
   "d1_length_to_crotch": {
+   "name": "Thumb length, fingertip to crotch level",
    "mm": 57.5,
    "sd_mm": 4.5,
+   "n": 148,
+   "raw_mean_mm": 58.7,
    "survey": "garrett1970",
-   "raw_mean_mm": 58.7
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": "The page prints 2.31 in and 5.67 cm, which disagree; 58.7 mm is the inch value, which also sits mid-way between the 5th and 95th percentiles (50.7 and 65.7). Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
   },
   "d1_tip_height": {
+   "name": "Thumb tip height above the wrist crease",
    "mm": 99.9,
    "sd_mm": 7.4,
+   "n": 1003,
+   "raw_mean_mm": 100.3,
    "survey": "greiner1991",
-   "raw_mean_mm": 100.3
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": ""
   },
   "d2_length_from_crease": {
+   "name": "Index finger length from its base crease",
    "mm": 75.0,
    "sd_mm": 4.9,
+   "n": 1003,
+   "raw_mean_mm": 75.3,
    "survey": "greiner1991",
-   "raw_mean_mm": 75.3
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "definition": "Tip of the digit to the centre of the finger on its proximal flexion crease, the crease at its base; from the palm photograph",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": ""
   },
   "d2_length_to_crotch": {
+   "name": "Index finger length, fingertip to crotch level",
    "mm": 73.8,
    "sd_mm": 4.6,
+   "n": 148,
+   "raw_mean_mm": 75.3,
    "survey": "garrett1970",
-   "raw_mean_mm": 75.3
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": "Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
   },
   "d2_tip_height": {
+   "name": "Index finger tip height above the wrist crease",
    "mm": 179.2,
    "sd_mm": 9.5,
+   "n": 1003,
+   "raw_mean_mm": 180.0,
    "survey": "greiner1991",
-   "raw_mean_mm": 180.0
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d2_tip_to_wrist_crease": {
+   "name": "Index finger tip to the wrist crease along the digit",
    "mm": 184.4,
    "sd_mm": 9.9,
+   "n": 1003,
+   "raw_mean_mm": 185.2,
    "survey": "greiner1991",
-   "raw_mean_mm": 185.2
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 3, 12, 24, 36, 48",
+   "definition": "Tip of the digit to the wrist-crease baseline, measured along the digit's central axis; hand flat, as photographed",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d3_length_from_crease": {
+   "name": "Middle finger length from its base crease",
    "mm": 83.4,
    "sd_mm": 5.4,
+   "n": 1003,
+   "raw_mean_mm": 83.8,
    "survey": "greiner1991",
-   "raw_mean_mm": 83.8
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "definition": "Tip of the digit to the centre of the finger on its proximal flexion crease, the crease at its base; from the palm photograph",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d3_length_to_crotch": {
+   "name": "Middle finger length, fingertip to crotch level",
    "mm": 84.0,
    "sd_mm": 5.1,
+   "n": 148,
+   "raw_mean_mm": 85.7,
    "survey": "garrett1970",
-   "raw_mean_mm": 85.7
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": "Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
   },
   "d3_tip_height": {
+   "name": "Middle finger tip height above the wrist crease",
    "mm": 193.3,
    "sd_mm": 10.3,
+   "n": 1003,
+   "raw_mean_mm": 194.1,
    "survey": "greiner1991",
-   "raw_mean_mm": 194.1
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d3_tip_to_wrist_crease": {
+   "name": "Middle finger tip to the wrist crease along the digit",
    "mm": 193.7,
    "sd_mm": 10.3,
+   "n": 1003,
+   "raw_mean_mm": 194.5,
    "survey": "greiner1991",
-   "raw_mean_mm": 194.5
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 3, 12, 24, 36, 48",
+   "definition": "Tip of the digit to the wrist-crease baseline, measured along the digit's central axis; hand flat, as photographed",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d4_length_from_crease": {
+   "name": "Ring finger length from its base crease",
    "mm": 78.9,
    "sd_mm": 5.2,
+   "n": 1003,
+   "raw_mean_mm": 79.2,
    "survey": "greiner1991",
-   "raw_mean_mm": 79.2
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "definition": "Tip of the digit to the centre of the finger on its proximal flexion crease, the crease at its base; from the palm photograph",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d4_length_to_crotch": {
+   "name": "Ring finger length, fingertip to crotch level",
    "mm": 78.9,
    "sd_mm": 4.7,
+   "n": 148,
+   "raw_mean_mm": 80.5,
    "survey": "garrett1970",
-   "raw_mean_mm": 80.5
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": "Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
   },
   "d4_tip_height": {
+   "name": "Ring finger tip height above the wrist crease",
    "mm": 179.4,
    "sd_mm": 10.1,
+   "n": 1003,
+   "raw_mean_mm": 180.2,
    "survey": "greiner1991",
-   "raw_mean_mm": 180.2
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d4_tip_to_wrist_crease": {
+   "name": "Ring finger tip to the wrist crease along the digit",
    "mm": 184.2,
    "sd_mm": 10.2,
+   "n": 1003,
+   "raw_mean_mm": 185.0,
    "survey": "greiner1991",
-   "raw_mean_mm": 185.0
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 3, 12, 24, 36, 48",
+   "definition": "Tip of the digit to the wrist-crease baseline, measured along the digit's central axis; hand flat, as photographed",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d5_length_from_crease": {
+   "name": "Little finger length from its base crease",
    "mm": 64.4,
    "sd_mm": 4.9,
+   "n": 1003,
+   "raw_mean_mm": 64.7,
    "survey": "greiner1991",
-   "raw_mean_mm": 64.7
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 1, 10, 22, 34, 46",
+   "definition": "Tip of the digit to the centre of the finger on its proximal flexion crease, the crease at its base; from the palm photograph",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d5_length_to_crotch": {
+   "name": "Little finger length, fingertip to crotch level",
    "mm": 60.2,
    "sd_mm": 4.7,
+   "n": 148,
+   "raw_mean_mm": 61.4,
    "survey": "garrett1970",
-   "raw_mean_mm": 61.4
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 47 to 51, p. 37 to 41",
+   "definition": "Fingertip to the level of the crotch (the web) beside it, along the digit's axis; from the tracing on the data blank",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": "Which crotch: for the middle and ring fingers the figures fit the mean of the two neighbouring crotches, for the index crotch 2, for the little finger crotch 4 (inferred from the heights, not read)."
   },
   "d5_tip_height": {
+   "name": "Little finger tip height above the wrist crease",
    "mm": 144.8,
    "sd_mm": 9.4,
+   "n": 1003,
+   "raw_mean_mm": 145.4,
    "survey": "greiner1991",
-   "raw_mean_mm": 145.4
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 2, 11, 23, 35, 47",
+   "definition": "Perpendicular distance from the tip of the digit to the wrist-crease baseline; hand flat, palm down, as photographed",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "d5_tip_to_wrist_crease": {
+   "name": "Little finger tip to the wrist crease along the digit",
    "mm": 159.2,
    "sd_mm": 9.8,
+   "n": 1003,
+   "raw_mean_mm": 159.9,
    "survey": "greiner1991",
-   "raw_mean_mm": 159.9
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 3, 12, 24, 36, 48",
+   "definition": "Tip of the digit to the wrist-crease baseline, measured along the digit's central axis; hand flat, as photographed",
+   "scaled_by": "hand length",
+   "reads": 2,
+   "note": ""
   },
   "crotch1_height": {
+   "name": "Crotch 1 height (the web between digits 1 and 2) above the wrist crease",
    "mm": 68.8,
    "sd_mm": 4.7,
+   "n": 1003,
+   "raw_mean_mm": 69.1,
    "survey": "greiner1991",
-   "raw_mean_mm": 69.1
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 69 to 72",
+   "definition": "Perpendicular distance from the deepest point of the web between the two digits to the wrist-crease baseline; hand flat, fingers as photographed",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": ""
   },
   "crotch2_height": {
+   "name": "Crotch 2 height (the web between digits 2 and 3) above the wrist crease",
    "mm": 109.9,
    "sd_mm": 6.1,
+   "n": 1003,
+   "raw_mean_mm": 110.4,
    "survey": "greiner1991",
-   "raw_mean_mm": 110.4
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 69 to 72",
+   "definition": "Perpendicular distance from the deepest point of the web between the two digits to the wrist-crease baseline; hand flat, fingers as photographed",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": ""
   },
   "crotch3_height": {
+   "name": "Crotch 3 height (the web between digits 3 and 4) above the wrist crease",
    "mm": 109.4,
    "sd_mm": 6.4,
+   "n": 1003,
+   "raw_mean_mm": 109.9,
    "survey": "greiner1991",
-   "raw_mean_mm": 109.9
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 69 to 72",
+   "definition": "Perpendicular distance from the deepest point of the web between the two digits to the wrist-crease baseline; hand flat, fingers as photographed",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": ""
   },
   "crotch4_height": {
+   "name": "Crotch 4 height (the web between digits 4 and 5) above the wrist crease",
    "mm": 96.2,
    "sd_mm": 6.2,
+   "n": 1003,
+   "raw_mean_mm": 96.6,
    "survey": "greiner1991",
-   "raw_mean_mm": 96.6
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimensions 69 to 72",
+   "definition": "Perpendicular distance from the deepest point of the web between the two digits to the wrist-crease baseline; hand flat, fingers as photographed",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": ""
   },
   "wrist_to_thumb_tip": {
+   "name": "Wrist (stylion) to the thumb's tip",
    "mm": 124.0,
    "sd_mm": 6.8,
+   "n": 1003,
+   "raw_mean_mm": 124.5,
    "survey": "greiner1991",
-   "raw_mean_mm": 124.5
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimension 68",
+   "definition": "Stylion landmark to the tip of digit 1; sliding caliper, straight line",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": ""
   },
   "wrist_to_index_tip": {
+   "name": "Wrist (stylion) to the index fingertip",
    "mm": 180.2,
    "sd_mm": 9.1,
+   "n": 1003,
+   "raw_mean_mm": 181.0,
    "survey": "greiner1991",
-   "raw_mean_mm": 181.0
+   "source": "Greiner 1991, Hand Anthropometry of U.S. Army Personnel, NATICK/TR-92/011, men (1987-88 sample)",
+   "table_or_page": "dimension 67",
+   "definition": "Stylion landmark to the tip of digit 2; sliding caliper, straight line",
+   "scaled_by": "hand length",
+   "reads": 1,
+   "note": ""
   },
   "d2_pip_breadth": {
+   "name": "Index finger breadth at its middle joint",
    "mm": 21.2,
    "sd_mm": 1.3,
+   "n": 148,
+   "raw_mean_mm": 21.5,
    "survey": "garrett1970",
-   "raw_mean_mm": 21.5
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "scaled_by": "hand breadth",
+   "reads": 2,
+   "note": ""
   },
   "d2_pip_depth": {
+   "name": "Index finger depth at its middle joint",
    "mm": 19.1,
    "sd_mm": 1.2,
+   "n": 148,
+   "raw_mean_mm": 19.4,
    "survey": "garrett1970",
-   "raw_mean_mm": 19.4
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "definition": "Greatest depth (back to pad) of the joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 2,
+   "note": ""
   },
   "d2_dip_breadth": {
+   "name": "Index finger breadth at its tip joint",
    "mm": 18.1,
    "sd_mm": 1.2,
+   "n": 148,
+   "raw_mean_mm": 18.4,
    "survey": "garrett1970",
-   "raw_mean_mm": 18.4
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "scaled_by": "hand breadth",
+   "reads": 2,
+   "note": ""
   },
   "d2_dip_depth": {
+   "name": "Index finger depth at its tip joint",
    "mm": 15.3,
    "sd_mm": 1.3,
+   "n": 148,
+   "raw_mean_mm": 15.5,
    "survey": "garrett1970",
-   "raw_mean_mm": 15.5
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "definition": "Greatest depth of the joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 2,
+   "note": ""
   },
   "d3_pip_breadth": {
+   "name": "Middle finger breadth at its middle joint",
    "mm": 21.5,
    "sd_mm": 1.4,
+   "n": 148,
+   "raw_mean_mm": 21.8,
    "survey": "garrett1970",
-   "raw_mean_mm": 21.8
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d3_pip_depth": {
+   "name": "Middle finger depth at its middle joint",
    "mm": 19.8,
    "sd_mm": 1.4,
+   "n": 148,
+   "raw_mean_mm": 20.1,
    "survey": "garrett1970",
-   "raw_mean_mm": 20.1
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "definition": "Greatest depth (back to pad) of the joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d3_dip_breadth": {
+   "name": "Middle finger breadth at its tip joint",
    "mm": 18.1,
    "sd_mm": 1.2,
+   "n": 148,
+   "raw_mean_mm": 18.4,
    "survey": "garrett1970",
-   "raw_mean_mm": 18.4
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d3_dip_depth": {
+   "name": "Middle finger depth at its tip joint",
    "mm": 15.8,
    "sd_mm": 1.3,
+   "n": 148,
+   "raw_mean_mm": 16.0,
    "survey": "garrett1970",
-   "raw_mean_mm": 16.0
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "definition": "Greatest depth of the joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d4_pip_breadth": {
+   "name": "Ring finger breadth at its middle joint",
    "mm": 19.9,
    "sd_mm": 1.3,
+   "n": 148,
+   "raw_mean_mm": 20.2,
    "survey": "garrett1970",
-   "raw_mean_mm": 20.2
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d4_pip_depth": {
+   "name": "Ring finger depth at its middle joint",
    "mm": 18.6,
    "sd_mm": 1.3,
+   "n": 148,
+   "raw_mean_mm": 18.9,
    "survey": "garrett1970",
-   "raw_mean_mm": 18.9
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "definition": "Greatest depth (back to pad) of the joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d4_dip_breadth": {
+   "name": "Ring finger breadth at its tip joint",
    "mm": 16.9,
    "sd_mm": 1.1,
+   "n": 148,
+   "raw_mean_mm": 17.2,
    "survey": "garrett1970",
-   "raw_mean_mm": 17.2
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d4_dip_depth": {
+   "name": "Ring finger depth at its tip joint",
    "mm": 14.9,
    "sd_mm": 1.3,
+   "n": 148,
+   "raw_mean_mm": 15.1,
    "survey": "garrett1970",
-   "raw_mean_mm": 15.1
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "definition": "Greatest depth of the joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d5_pip_breadth": {
+   "name": "Little finger breadth at its middle joint",
    "mm": 17.4,
    "sd_mm": 1.4,
+   "n": 148,
+   "raw_mean_mm": 17.7,
    "survey": "garrett1970",
-   "raw_mean_mm": 17.7
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d5_pip_depth": {
+   "name": "Little finger depth at its middle joint",
    "mm": 16.5,
    "sd_mm": 1.2,
+   "n": 148,
+   "raw_mean_mm": 16.7,
    "survey": "garrett1970",
-   "raw_mean_mm": 16.7
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 16 to 36, p. 19 to 26",
+   "definition": "Greatest depth (back to pad) of the joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d5_dip_breadth": {
+   "name": "Little finger breadth at its tip joint",
    "mm": 15.5,
    "sd_mm": 1.2,
+   "n": 148,
+   "raw_mean_mm": 15.7,
    "survey": "garrett1970",
-   "raw_mean_mm": 15.7
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "definition": "Greatest breadth of the joint; sliding caliper, finger free",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d5_dip_depth": {
+   "name": "Little finger depth at its tip joint",
    "mm": 13.5,
    "sd_mm": 1.3,
+   "n": 148,
+   "raw_mean_mm": 13.7,
    "survey": "garrett1970",
-   "raw_mean_mm": 13.7
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimensions 13 to 33, p. 19 to 25",
+   "definition": "Greatest depth of the joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 1,
+   "note": ""
   },
   "d1_ip_breadth": {
+   "name": "Thumb breadth at its tip joint",
    "mm": 22.6,
    "sd_mm": 1.3,
+   "n": 148,
+   "raw_mean_mm": 22.9,
    "survey": "garrett1970",
-   "raw_mean_mm": 22.9
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimension 10, p. 18",
+   "definition": "Greatest breadth of the thumb's tip (interphalangeal) joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 2,
+   "note": ""
   },
   "d1_ip_depth": {
+   "name": "Thumb depth at its tip joint",
    "mm": 19.9,
    "sd_mm": 1.5,
+   "n": 148,
+   "raw_mean_mm": 20.2,
    "survey": "garrett1970",
-   "raw_mean_mm": 20.2
+   "source": "Garrett 1970, Anthropometry of the Hands of Male Air Force Flight Personnel, AMRL-TR-69-42",
+   "table_or_page": "dimension 11, p. 18",
+   "definition": "Greatest depth of the thumb's tip joint; sliding caliper",
+   "scaled_by": "hand breadth",
+   "reads": 2,
+   "note": ""
   }
  },
  "how_to_measure_the_model": [
@@ -2406,6 +2807,7 @@
  },
  "changes": [
   "2026-11-09 20:58 first issue (RA).",
+  "2026-11-09 21:18 each recommended target now carries its own source, page, definition and n (for the slide that shows the sizes on the hand); all sources measured right hands.",
   "2026-11-09 21:07 thumb at rest corrected: Cooney 1981's 10 to 15 deg is a description of a posed rest position, not an X-ray measurement (third read); the tip joint is 10 deg (measured), the knuckle is open between 39 (measured, reference undefined), 25 (estimate) and 12.5 (described); citations for the slide added; Garrett 1970's full table of joint breadths and depths had already been added."
  ]
 }
