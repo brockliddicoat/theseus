@@ -34,6 +34,10 @@ RUNS = [
     ('A_fixes_heel_sym', 'heel_sym', dict(FIX), 500),
     ('A_fixes_lifted_fwd', 'lifted_fwd', dict(FIX), 500),
     ('A_fixes_heel_fwd', 'heel_fwd', dict(FIX), 500),
+    # ---- added after the first pass: B was still falling at step 500; D from a start further forward (another way to cover both slides)
+    ('B_turn_5p1_1500', 'lifted_sym', dict(FIX, turn=4 * 0.015 / 0.6745), 1500),
+    ('D2_cover_path_fwd_start', 'lifted_sym', dict(FIX, cover_path=True, start_dz=12.0), 500),
+    ('A_fixes_1500', 'lifted_sym', dict(FIX), 1500),
 ]
 
 def summarise(key, r, opt, steps, secs):
