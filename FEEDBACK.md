@@ -1844,6 +1844,20 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   and in the source line. Only what the sources support; no reason for the difference unless the research gives one.
   G13 told 21:05.
 
+- **CORRECTION to F65.19 to F65.21 (21:12, RA's third reading of Cooney 1981; what I told Brock was too strong).** The
+  paper X-rayed 19 adults (9 men, 10 women) with the thumb held in six positions, but the "10 to 15°" at the thumb's knuckle
+  and tip joint is how its authors describe the rest position they set up (the thumb's pulp against the side of the index's
+  end bone); it is not measured (no mean, SD or table). The only joint it measures at rest is the base joint, from metal
+  markers taped to the skin. So 12.5° and 12.5° are NOT "X-ray values" and no slide may say so.
+  - What is measured on relaxed thumbs: the tip joint about 10° (Lee & Jung 10°, SD 6; Rogers 2008, 100 hands: 6° relaxed
+    round a large ball, 17° holding a mouse), so it stays 10°. The knuckle: Lee & Jung's 39° (SD 12) is the only measurement
+    found, its reference line not stated. Skin markers over-read finger knuckles by 4 to 5° at about 30° (Cook et al. 2007);
+    at the thumb's knuckle RA estimates 5 to 15°, so perhaps 24 to 34°.
+  - F65.20's "yes" was given on my overstatement, so it is not a decision. Until Brock chooses: the slide keeps the measured
+    39° + 10° = 49°, nothing says X-ray, and F65.21 (explain the X-ray values) falls away with it. He gets one picture of the
+    corrected-length thumb at 39°, 25° and 12.5°, each labelled with what it rests on (G13: out/thumb_options.png).
+  - Told Brock 21:14.
+
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
 - **F66.1 IN PROGRESS (R1, R2)** With a product render of two clear-housing mouse switches
