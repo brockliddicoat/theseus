@@ -47,7 +47,8 @@ Builders: clk = Clicks, gld = Glide, shl / shb / shc = Shell A / B / C, srf = Su
 Ownership and Shape, ntr = Intro and close, r3d = 3D models. The integrator does deck-wide items in the shared code
 (deck/src/01-core.js, 04-ui.js, 07-charts.js, 07-sim.js, 03-parts.js, 20-app.js).
 
-Last updated: 2026-11-06 17:00 (Chicago): F64 (the underdog that compounds; the loadout bars). Before that, 15:06: F63 (the revamp judged a regression; the next version starts from v23; the comparison viewer). Before that, 14:35: F62 (the pacing, a regression; autoplay off, live as v1793996750-29cc). Before that, 14:23: F61 completed: the lattice pattern (~14:15, F61.1, on L2's two sheets, now in
+Last updated: 2026-11-10 (Chicago): F67 (the handoff). Before that, through 2026-11-09: F65 (the shape study) and F66 (the
+renders). Before that, 2026-11-06 17:00: F64 (the underdog that compounds; the loadout bars). Before that, 15:06: F63 (the revamp judged a regression; the next version starts from v23; the comparison viewer). Before that, 14:35: F62 (the pacing, a regression; autoplay off, live as v1793996750-29cc). Before that, 14:23: F61 completed: the lattice pattern (~14:15, F61.1, on L2's two sheets, now in
 attachments/F61/; F57.1 and F43.4 point to it), the live link (13:58, F61.2; F38.6's live-link updates CONFIRMED) and
 the work left (13:59, F61.3, answered by WORK-LEFT.md); F59.1 given the integrator's lesson. (13:56: F60, with FG2's
 nail sheets; F58.1 points to it. 13:47: F59, with S2's nose sheet, the RTINGS photos left out; F51.1's front, F53.1 and
@@ -1865,6 +1866,13 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
     8.9 (12.5°). At 12.5° two old errors cancelled (first link 10 mm too long, knuckle too bent). Also found: the little
     finger's knuckle 9.4 mm behind the middle's came from a unit slip; three sources say 13 mm. RB asked 21:27 to rerun the
     trials on all three and on the corrected little finger.
+  - Late on 2026-11-09 the account's weekly usage limit stopped G13 and RB again. G13 (the drawing; worktree g12, branch
+    g12-shape-gd): one WIP commit (58ffe1b, the tracer only: the thumb back to the model's own); uncommitted, the hand data
+    partly re-traced and its previews; none of the three pictures for Brock made (the dimensions, the nails side by side, the
+    thumb options). RB (the contact research; rb-research-redo, 2b4551d): its rerun of the trials on the corrected thumb was
+    killed when its environment exited, so there are no rerun results. RA finished (ra-research-redo, 138a5c8):
+    research/gd/redo/hand-at-rest.md, hand-at-rest.json, hand-sizes.json, hand-variant.json; nothing in deck/ changed.
+    Still open with Brock: the thumb's knuckle (39°, 25° or 12.5°), on a picture not yet made.
 
 ## F66. Renders at product-shot quality (2026-11-07 14:30)
 
@@ -1906,3 +1914,14 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   reads modestly in the hero (clear over black); the back switch's base reads mid-grey; the hero's composition still differs from
   the reference.
 
+## F67. The handoff (2026-11-10 19:56)
+- **F67.1** (19:56) "Publish a private artifact called "Thesis Handoff" text only, with: / 1. The full feedback log (every
+  round, my words verbatim). / 2. REVAMP.md and DESIGN.md. / 3. Current decisions: the name Thesis, the weight target and the
+  full weight budget table, the redesigned PCB (layout, what moved, its mass), and the switch, encoder, sensor and battery
+  picks. / 4. Everything decided after the Nov 5 publish that the published deck does not show. / If they exist, also attach
+  as files: the new board's pcb-layout.json and its flat 2D geometry." Reading: a private, text-only page on his main account
+  with this log, REVAMP.md and deck/DESIGN.md unchanged, the current spec, and every decision after the deck as published on
+  2026-11-05 on the other account (PUBLISHING.md records v20 there, 04:07; v21 to v23 followed that morning), with the board's
+  layout (3d/pcb/pcb-layout.json, variant A, and pcb-layout-b.json) and its flat 2D geometry (deck/geo2d/board2d.json)
+  attached. No product is named "Thesis" anywhere in the repo ("thesis" is only the id of the intro's second slide, F27), so
+  the page keeps his title and records the name as Theseus. Sources and generator: handoff/thesis-handoff/.
