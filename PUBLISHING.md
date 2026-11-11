@@ -47,3 +47,13 @@
   trial 4 still lowest; on this branch as G3's 5909b55 picked); 1794082358-a29b (2026-11-07 14:12: G2's rework after Brock's 13:33 note: long arcs, the strength re-derived with
   friction and the fingertip's feel threshold, true scale; on this branch as 3bf8d2a); 1794079831-ee94 (13:30, the first cut:
   G1's 9 slides, branch g1-shape-gd at 44cfc16).
+
+## The handoff (F67): its own artifact
+
+- Slug 87e9454c-7fb4-45e4-bf69-95c2e6a85cbd, https://claude.ai/artifact/HnQfRQSWfwHa8Pgdsm9S36, title "Thesis Handoff" (Brock's
+  title; the name on record is Theseus), private. Hand-built, text only: index.html plus files/ (the board's layouts A and B,
+  board2d.json, pcb-mass.json, pcb-balance.json, FEEDBACK.md, the inbox, REVAMP.md, DESIGN.md, WORK-LEFT.md, and the page as
+  one markdown file). Built by `python3 handoff/thesis-handoff/build.py` (writes handoff/thesis-handoff/out/); republish with
+  publish_files + slug + base_version, the same paths.
+- Versions: 1794363559-def3 (2026-11-10 20:19 Chicago, built from 5d80e07).
+

@@ -1924,4 +1924,7 @@ Frames: feedback/frames/F31/ (v22, published 06:01: clk_switch, arc, anchors, si
   2026-11-05 on the other account (PUBLISHING.md records v20 there, 04:07; v21 to v23 followed that morning), with the board's
   layout (3d/pcb/pcb-layout.json, variant A, and pcb-layout-b.json) and its flat 2D geometry (deck/geo2d/board2d.json)
   attached. No product is named "Thesis" anywhere in the repo ("thesis" is only the id of the intro's second slide, F27), so
-  the page keeps his title and records the name as Theseus. Sources and generator: handoff/thesis-handoff/.
+  the page keeps his title and records the name as Theseus. Sources and generator: handoff/thesis-handoff/. **DONE**
+  (20:19, private: https://claude.ai/artifact/HnQfRQSWfwHa8Pgdsm9S36, version 1794363559-def3, built from 5d80e07). The five
+  work branches (g12-shape-gd, ra-research-redo, rb-research-redo, r1-switch-render, r2-switch-render) pushed to GitHub so
+  its pointers resolve.
