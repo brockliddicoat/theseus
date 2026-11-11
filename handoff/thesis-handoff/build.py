@@ -152,7 +152,9 @@ def main():
     s4_more = (f'## Every entry after the Nov 5 publish\n\n{n_idx} entries of the log, F28 on (F28 is 04:14 on Nov 5, after v20), '
                'in the log\'s own order. Each links to its section in part 1, where the full entry is.\n\n' + idx +
                f'\n\n## The live film, move by move\n\nThe film\'s manifest (deck/src/25-film.js, FILM.order) as live in '
-               f'1794039339-1c54: {n_film} slides in ten moves. Slide ids with their titles where the source gives one plainly.\n\n'
+               f'1794039339-1c54: {n_film} slides in the ten moves, plus v23\'s five testing-pair slides that play before their rebuilds '
+               f'(FILM_AB: lattice before b06_lattice, shlThin before b06_light, shbArches before b06_arches, tolerance before '
+               f'b07_tolerance, grind before b07_poron), {n_film + 5} in all. Slide ids, with their titles where the source gives one plainly.\n\n'
                + films +
                '\n\n## The backlog as written on Nov 6 and 7 (WORK-LEFT.md, unchanged)\n\nWritten at the revamp\'s stop (Nov 6 '
                '14:00) and updated that evening; parts are done since (section 12 above is current).\n\n')
@@ -226,9 +228,9 @@ def main():
         body.append(f'<section id="{pid}">\n<h2>{html.escape(head)}</h2>\n{inner}\n</section>')
         toc.append((pid, head, toc_sub))
 
-    toc_html = '<nav><h2>Contents</h2><ol class="toc">' + ''.join(
+    toc_html = '<nav><h2>Contents</h2><ul class="toc">' + ''.join(
         f'<li><a href="#{pid}">{html.escape(h)}</a>' + (('<ul>' + ''.join(f'<li><a href="#{s}">{html.escape(t)}</a></li>' for s, t in sub) + '</ul>') if sub else '') + '</li>'
-        for pid, h, sub in toc) + '</ol></nav>'
+        for pid, h, sub in toc) + '</ul></nav>'
 
     css = """
 :root{--ink:#1b1c1f;--mute:#5d5f66;--line:#d9dadf;--bg:#fbfbfc;--card:#f1f2f4;--blue:#2563eb}
